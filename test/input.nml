@@ -1,0 +1,89 @@
+&fms_io_nml
+    checksum_required       = F
+/
+
+ &fms_nml
+    print_memory_usage=.false.
+    domains_stack_size = 24000000
+/
+
+&mpp_io_nml
+    header_buffer_val       = 16384
+    global_field_on_root_pe = T
+    io_clocks_on            = F
+    shuffle                 = 0
+    deflate_level           = -1
+    cf_compliance           = F
+/
+
+&fv3jedi_geom_nml
+    size_cubic_grid   = 48
+    nlevs             = 64
+    ntracers          = 2
+    hydrostatic       = T
+    agrid_vel_rst     = T
+    halo              = 3
+    ntiles            = 6
+    stackmax          = 4000000
+    layout            = 1,1
+    io_layout         = 1,1
+    grid_spec_file    = "INPUT/C96_mosaic.nc"
+/
+
+&fv_core_nml
+    layout   = 1,1
+    io_layout = 1,1
+    npx      = 49
+    npy      = 49
+    ntiles   = 6
+    npz    = 64
+    grid_type = 0
+    fv_debug = .F.
+    n_sponge = 9
+    tau = 0.
+    rf_cutoff = 7.5e2
+    d2_bg_k1 = 0.15
+    d2_bg_k2 = 0.02
+    fv_sg_adj = 450
+    kord_tm =  9
+    kord_mt =  9
+    kord_wz =  9
+    kord_tr =  9
+    hydrostatic = .T.
+    make_nh = .T.
+    beta = 0.
+    a_imp = 1.
+    p_fac = 0.1 
+    k_split = 2
+    n_split = 0 
+    nwat = 1 
+    nord = 2
+    dddmp = 0.1
+    d4_bg = 0.12
+    d2_bg = 0.0
+    d_ext = 0.0
+    vtdm4 = 0.0
+    delt_max = 0.002
+    ke_bg = 0.0
+    do_vort_damp = .F.
+    d_con = 0.
+    hord_mt =  10
+    hord_vt =  10
+    hord_tm =  10
+    hord_dp =  10
+    hord_tr =  8
+    adjust_dry_mass = .F.
+    consv_te = 1. 
+    consv_am = .F.
+    fill = .T.
+    dwind_2d = .F.
+    z_tracer = .T.
+/
+
+ &main_nml
+/
+
+  &test_case_nml
+    test_case = 13
+ /
+

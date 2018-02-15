@@ -1,0 +1,25 @@
+{
+  "resolution": {
+    "grid_type": "0"
+  },
+  "model": {
+    "ncnst": "1",
+    "tstep": "PT15M",
+    "init_test_case": "0"
+  },
+  "initial": {
+    "filename": "INPUT/fv_core.res.nc",
+    "date": "2009-12-31T00:00:00Z"
+  },
+  "forecast_length": "P2D",
+  "output": {
+    "frequency": "PT1H",
+    "datadir": "Data",
+    "exp": "example",
+    "date": "2009-12-31T00:00:00Z",
+    "type": "fc"
+  },
+  "prints": {
+    "frequency": "PT3H"
+  }
+}
