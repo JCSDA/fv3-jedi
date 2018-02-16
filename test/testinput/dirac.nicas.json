@@ -4,7 +4,7 @@
   },
   "resolution": {
     "init_type": "inline",
-    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/"
   },
   "test_framework_runtime_config": "--log_level=test_suite",
   "variables": {
@@ -135,7 +135,7 @@
       "nobs": 200,
       "obsdis": 1.0,
       "obsop_interp": "bilin",
-      "nproc": 216
+      "nproc": 6
     },
     "state": [
       {
@@ -202,7 +202,7 @@
     "datadir": "Data",
     "exp": "dirac",
     "type": "an",
-    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/",
+    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/",
     "filename_core": "fv_core_nicas.res.nc",
     "filename_trcr": "fv_tracer_nicas.res.nc",
     "date": "2017-08-08T00:00:00Z"
@@ -211,7 +211,7 @@
     "datadir": "Data",
     "exp": "Bens",
     "type": "an",
-    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/",
+    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/",
     "filename_core": "fv_core_Bens.res.nc",
     "filename_trcr": "fv_tracer_Bens.res.nc",
     "date": "2017-08-08T00:00:00Z"
