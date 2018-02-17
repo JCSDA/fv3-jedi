@@ -153,7 +153,7 @@ call random_vector(self%Atm%u)
 call random_vector(self%Atm%v)
 call random_vector(self%Atm%pt)
 call random_vector(self%Atm%delp)
-call random_vector(self%Atm%q)
+call random_vector(self%Atm%q(:,:,:,1))
 if (.not. self%Atm%hydrostatic) then
    call random_vector(self%Atm%w)
    call random_vector(self%Atm%delz)
