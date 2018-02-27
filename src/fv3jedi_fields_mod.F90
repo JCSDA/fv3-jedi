@@ -453,7 +453,7 @@ subroutine read_file(fld, c_conf, vdate)
   use iso_c_binding
   use datetime_mod
   use fckit_log_module, only : log
-  use winds_interp_mod, only: d2a2c_vect
+  use variable_transforms, only: d2a2c_vect
   use mpp_domains_mod, only: mpp_update_domains, DGRID_NE
 
   use field_manager_mod,       only: MODEL_ATMOS
@@ -1127,6 +1127,11 @@ do jvar = 1, vars%nv
     enddo                      
   
   case ("virtual_temperature")
+
+    !call pressure_traj(geom, fld%geom%bk(1), fld%Atm%delp, pe, pk, pke, pc1, pc2)
+    !call delp2pk_tl(geom, pe, pke, pc1, pc2, delpp, pkp)
+    !call pt2tv_tl(geom, 1.0, pt, fld%Atm%pt, q, fld%Atm%q, pk, pkp, tvp)
+
 ! TODO: FV3 has potential temperature, needs conversion here
     do jlev = 1, fld%geom%nlevs
       ii = 0

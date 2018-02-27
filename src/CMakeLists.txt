@@ -38,7 +38,7 @@ fv3jedi_trajectories.F90
 instantiateLocalizationFactory.h
 module_fv3jedi.f90
 random_vectors_mod.F90
-winds_interp.F90
+variable_transforms.F90
 )
 
 set ( FMS_LIBRARIES $ENV{FMS_LIBRARIES} )
