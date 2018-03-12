@@ -39,7 +39,8 @@ public :: fv3jedi_field, &
         & dot_prod, add_incr, diff_incr, &
         & read_file, write_file, gpnorm, fldrms, &
         & change_resol, interp_tl, interp_ad, &
-        & convert_to_ug, convert_from_ug, dirac
+        & convert_to_ug, convert_from_ug, dirac, &
+        & analytic_IC
 public :: fv3jedi_field_registry
 
 ! ------------------------------------------------------------------------------
@@ -642,7 +643,32 @@ subroutine read_file(fld, c_conf, vdate)
 end subroutine read_file
 
 ! ------------------------------------------------------------------------------
+subroutine analytic_IC(fld, geom, c_conf, vdate)
 
+  use iso_c_binding
+  use datetime_mod
+  use fckit_log_module, only : log
+  use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, test1_advection_hadley
+  
+  implicit none
+
+  type(fv3jedi_field), intent(inout) :: fld !< Fields
+  type(fv3jedi_geom), intent(in) :: geom    !< Geometry 
+  type(c_ptr), intent(in)       :: c_conf   !< Configuration
+  type(datetime), intent(inout) :: vdate    !< DateTime
+
+  ! Note that we do need the geometry here as an input because we have to
+  ! initialize the geometry component of fields along with everything else
+  ! Remember that we are creating a fields object here - it did not exist
+  ! before so it's geometry is not yet defined.
+  ! Although if that is true, then how does read_file() initialize the
+  ! geometry?
+  
+  WRITE(*,*) "MSM: INTERFACES SUCCESS!"
+  
+end subroutine analytic_IC
+  
+! ------------------------------------------------------------------------------
 subroutine invent_state(flds,config)
 
 use kinds

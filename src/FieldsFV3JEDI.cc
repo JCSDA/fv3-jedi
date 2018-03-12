@@ -170,6 +170,13 @@ void FieldsFV3JEDI::read(const eckit::Configuration & config) {
   fv3jedi_field_read_file_f90(keyFlds_, &conf, &dtp);
 }
 // -----------------------------------------------------------------------------
+void FieldsFV3JEDI::analytic_init(const eckit::Configuration & config,
+				  const GeometryFV3JEDI & geom) {
+  const eckit::Configuration * conf = &config;
+  util::DateTime * dtp = &time_;
+  fv3jedi_field_analytic_init_f90(keyFlds_, geom.toFortran(), &conf, &dtp);
+}
+// -----------------------------------------------------------------------------
 void FieldsFV3JEDI::write(const eckit::Configuration & config) const {
   const eckit::Configuration * conf = &config;
   const util::DateTime * dtp = &time_;
