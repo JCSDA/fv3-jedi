@@ -26,6 +26,7 @@ list( APPEND fv3jedi_test_input
 #  testinput/test.json
 #  testinput/truth.json
 #  testinput/test_op_obs.json
+  testinput/analytic_init.json
   field_table
   input.nml
   inputpert.nml
@@ -144,6 +145,13 @@ ecbuild_add_test( TARGET  test_fv3jedi_state
                   BOOST
                   SOURCES executables/TestState.cc
                   ARGS    "testinput/interfaces.json"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_aninit
+                  BOOST
+                  SOURCES executables/TestState.cc
+                  ARGS    "testinput/analytic_init.json"
                   MPI     6
                   LIBS    fv3jedi )
 
