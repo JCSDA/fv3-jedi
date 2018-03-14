@@ -650,22 +650,31 @@ end subroutine read_file
 !!
 subroutine analytic_IC(fld, geom, c_conf, vdate)
 
+  use kinds
   use iso_c_binding
   use datetime_mod
   use fckit_log_module, only : log
+  use constants_mod, only: pi=>pi_8
   use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, test1_advection_hadley
   
   implicit none
 
-  type(fv3jedi_field), intent(inout) :: fld !< Fields
-  type(fv3jedi_geom), intent(in) :: geom    !< Geometry 
-  type(c_ptr), intent(in)       :: c_conf   !< Configuration
-  type(datetime), intent(inout) :: vdate    !< DateTime
+  type(fv3jedi_field), intent(inout)     :: fld !< Fields
+  type(fv3jedi_geom), target, intent(in) :: geom    !< Geometry 
+  type(c_ptr), intent(in)                :: c_conf   !< Configuration
+  type(datetime), intent(inout)          :: vdate    !< DateTime
 
   character(len=30) :: IC
   character(len=20) :: sdate
   character(len=1024) :: buf
-  
+  Integer :: i,j,k
+  real(kind=kind_real) :: deg_to_rad = pi/180.0_kind_real
+  real(kind=kind_real) :: rlat, rlon, z
+  real(kind=kind_real) :: p0,u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
+
+  ! Initialize geometry component of field object
+  fld%geom => geom
+
   If (config_element_exists(c_conf,"analytic_init")) Then
      IC = Trim(config_get_string(c_conf,len(IC),"analytic_init"))
   Else
@@ -681,14 +690,31 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
   !===================================================================
   int_option: Select Case (IC)
+
      Case("invent-state")
+
         call invent_state(fld,c_conf)
 
      Case ("dcmip-test-1-1")
 
+        do i = geom%bd%isc,geom%bd%iec
+           do j = geom%bd%jsc,geom%bd%jec
+              rlat = deg_to_rad*geom%grid_lat(i,j)
+              rlon = deg_to_rad*geom%grid_lon(i,j)
+              do k = 1, geom%nlevs
+                 z = 6000.d0 ! for testing
+                 Call test1_advection_deformation(rlon,rlat,p0,z,1,u0,v0,w0,t0,&
+                                                  phis0,ps0,rho0,hum0,q1,q2,q3,q4)
+              enddo
+           enddo
+        enddo
+
         WRITE(*,*) "DCMIP TEST 1-1"
         
      Case ("dcmip-test-1-2")
+
+ !          Call test1_advection_hadley(geom%lon(ix),geom%lat(iy),p0,z,1,&
+ !               u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1)
 
         WRITE(*,*) "DCMIP TEST 1-2"
 

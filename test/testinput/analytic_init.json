@@ -2,7 +2,7 @@
   "test_framework_runtime_config": "--log_level=test_suite",
   "Geometry": {
     "init_type": "inline",
-    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+    "datapath_in": "/home/vagrant/jedi/src/fv3-bundle/data/"
   },
   "Variables": {
     "variables": ["u","v","pt","delp","q"]
@@ -11,6 +11,7 @@
   "StateTest": {
     "StateFile": {
       "analytic_init": "dcmip-test-1-1",
+      "variables": ["u","v","pt","delp","q"],
       "filename": "INPUT/fv_core.res.nc",
       "date": "2016-01-01T06:00:00Z"
     },
