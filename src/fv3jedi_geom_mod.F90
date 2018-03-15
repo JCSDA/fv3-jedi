@@ -146,7 +146,6 @@ self%datapath_in = config_get_string(c_conf,len(self%datapath_in), "datapath_in"
 grid_spec_path = trim(adjustl(self%datapath_in))//trim(adjustl(grid_spec_file))
 fv_core_res_path = trim(adjustl(self%datapath_in))//trim(adjustl(fv_core_res_file))
 
-
 !Read namelist.
 if (file_exist('input.nml') )then
    nmlunit = 101
@@ -276,7 +275,7 @@ if (trim(init_type) .ne. "inline") then
 else
    
    if (pe == 0) print*, 'Grid generation method: inline'
-       
+
    !Intialize using the model setup routine
    call fv_init(FV_Atm, 300.0_kind_real, grids_on_this_pe, p_split)
                         !^some dummy value

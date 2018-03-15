@@ -100,6 +100,9 @@ extern "C" {
 
   void fv3jedi_field_read_file_f90(const F90flds &, const eckit::Configuration * const *,
                               util::DateTime * const *);
+  void fv3jedi_field_analytic_init_f90(const F90flds &, const F90geom &,
+				       const eckit::Configuration * const *,
+				       util::DateTime * const *);
   void fv3jedi_field_write_file_f90(const F90flds &, const eckit::Configuration * const *,
                                const util::DateTime * const *);
 

@@ -78,6 +78,7 @@ class FieldsFV3JEDI : public util::Printable,
 
 // Utilities
   void read(const eckit::Configuration &);
+  void analytic_init(const eckit::Configuration &, const GeometryFV3JEDI &);
   void write(const eckit::Configuration &) const;
   double norm() const;
   boost::shared_ptr<const GeometryFV3JEDI> geometry() const {return geom_;}

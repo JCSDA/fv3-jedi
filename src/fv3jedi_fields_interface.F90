@@ -342,6 +342,31 @@ end subroutine fv3jedi_field_read_file_c
 
 ! ------------------------------------------------------------------------------
 
+subroutine fv3jedi_field_analytic_init_c(c_key_fld, c_key_geom, c_conf, c_dt) bind(c,name='fv3jedi_field_analytic_init_f90')
+use iso_c_binding
+use fv3jedi_fields_mod
+use fv3jedi_geom_mod
+use datetime_mod
+
+implicit none
+integer(c_int), intent(in) :: c_key_fld  !< Fields
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
+type(c_ptr), intent(in)    :: c_conf !< Configuration
+type(c_ptr), intent(inout) :: c_dt   !< DateTime
+
+type(fv3jedi_field), pointer :: fld
+type(fv3jedi_geom), pointer :: geom
+type(datetime) :: fdate
+
+call fv3jedi_field_registry%get(c_key_fld,fld)
+call fv3jedi_geom_registry%get(c_key_geom,geom)
+call c_f_datetime(c_dt, fdate)
+call analytic_IC(fld, geom, c_conf, fdate)
+
+end subroutine fv3jedi_field_analytic_init_c
+
+! ------------------------------------------------------------------------------
+
 subroutine fv3jedi_field_write_file_c(c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_write_file_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
