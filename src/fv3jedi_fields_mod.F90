@@ -644,9 +644,22 @@ end subroutine read_file
 !! \author M. Miesch (adapted from a pre-existing call to invent_state)
 !! \date March 13, 2018: Created
 !!
-!! \warning Though a state file is not required for these analytic initialization routines,
-!! some grid information is still read in from an input file; see c_fv3jedi_geo_setup() in
-!! fv3jedi_geom_mod.F90.
+!! \warning This routine initializes the fv3jedi_field object.  However, since the fv_atmos_type
+!! component of fv3jedi_field is a subset of the corresponding object in the fv3 model,
+!! this initialization routine is not sufficient to comprehensively define the full fv3 state.
+!! So, this intitialization can be used for interpolation and other tests within JEDI but it is
+!! cannot currently be used to initiate a forecast with fv3gfs.
+!!
+!! \warning This routine does not initialize the fv3jedi_interp member of the fv3jedi_field object
+!!
+!! \warning Though an input state file is not required for these analytic initialization routines,
+!! some grid information (in particular the hybrid vertical grid coefficients ak and bk)
+!! is still read in from an input file when creating the geometry object that is a required
+!! member of fv3jedi_field; see c_fv3jedi_geo_setup() in fv3jedi_geom_mod.F90.
+!!
+!! \warning It's unclear whether the pt member of the fv_atmos_type structure is potential temperature
+!! or temperature.  This routine assumes the latter.  If this is not correct, then we will need to
+!! implement a conversion
 !!
 subroutine analytic_IC(fld, geom, c_conf, vdate)
 
@@ -670,7 +683,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   Integer :: i,j,k
   real(kind=kind_real) :: deg_to_rad = pi/180.0_kind_real
   real(kind=kind_real) :: rlat, rlon, z
-  real(kind=kind_real) :: p0,u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
+  real(kind=kind_real) :: pk,pe1,pe2,ps
+  real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
 
   ! Initialize geometry component of field object
   fld%geom => geom
@@ -701,20 +715,70 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
            do j = geom%bd%jsc,geom%bd%jec
               rlat = deg_to_rad*geom%grid_lat(i,j)
               rlon = deg_to_rad*geom%grid_lon(i,j)
+
+              ! Call the routine first just to get the surface pressure
+              Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
+                                               phis0,ps,rho0,hum0,q1,q2,q3,q4)
+
+              fld%Atm%phis(i,j) = phis0
+
+              ! Now loop over all levels
               do k = 1, geom%nlevs
-                 z = 6000.d0 ! for testing
-                 Call test1_advection_deformation(rlon,rlat,p0,z,1,u0,v0,w0,t0,&
+
+                 pe1 = geom%ak(k) + geom%bk(k)*ps
+                 pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
+                 pk = 0.5_kind_real * (pe1+pe2)
+                 Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
                                                   phis0,ps0,rho0,hum0,q1,q2,q3,q4)
+
+                 fld%Atm%ua(i,j,k) = u0
+                 fld%Atm%va(i,j,k) = v0
+                 If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
+                 fld%Atm%pt(i,j,k) = t0
+                 fld%Atm%delp(i,j,k) = pe2-pe1
+                 If (geom%ntracers >= 1) fld%Atm%q(i,j,k,1) = hum0
+                 If (geom%ntracers >= 2) fld%Atm%q(i,j,k,2) = q1
+                 If (geom%ntracers >= 3) fld%Atm%q(i,j,k,3) = q2
+                 If (geom%ntracers >= 4) fld%Atm%q(i,j,k,4) = q3
+                 If (geom%ntracers >= 5) fld%Atm%q(i,j,k,5) = q4
+                 
               enddo
            enddo
         enddo
 
-        WRITE(*,*) "DCMIP TEST 1-1"
-        
      Case ("dcmip-test-1-2")
 
- !          Call test1_advection_hadley(geom%lon(ix),geom%lat(iy),p0,z,1,&
- !               u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1)
+        do i = geom%bd%isc,geom%bd%iec
+           do j = geom%bd%jsc,geom%bd%jec
+              rlat = deg_to_rad*geom%grid_lat(i,j)
+              rlon = deg_to_rad*geom%grid_lon(i,j)
+
+              ! Call the routine first just to get the surface pressure
+              Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
+                                          t0,phis0,ps,rho0,hum0,q1)
+
+              fld%Atm%phis(i,j) = phis0
+
+              ! Now loop over all levels
+              do k = 1, geom%nlevs
+
+                 pe1 = geom%ak(k) + geom%bk(k)*ps
+                 pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
+                 pk = 0.5_kind_real * (pe1+pe2)
+                 Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
+                                             t0,phis0,ps,rho0,hum0,q1)
+
+                 fld%Atm%ua(i,j,k) = u0
+                 fld%Atm%va(i,j,k) = v0
+                 If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
+                 fld%Atm%pt(i,j,k) = t0
+                 fld%Atm%delp(i,j,k) = pe2-pe1
+                 If (geom%ntracers >= 1) fld%Atm%q(i,j,k,1) = hum0
+                 If (geom%ntracers >= 2) fld%Atm%q(i,j,k,2) = q1
+                 
+              enddo
+           enddo
+        enddo
 
         WRITE(*,*) "DCMIP TEST 1-2"
 
@@ -723,15 +787,6 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
      End Select int_option
         
-  ! Note that we do need the geometry here as an input because we have to
-  ! initialize the geometry component of fields along with everything else
-  ! Remember that we are creating a fields object here - it did not exist
-  ! before so it's geometry is not yet defined.
-  ! Although if that is true, then how does read_file() initialize the
-  ! geometry?
-  
-  WRITE(*,*) "MSM: INTERFACES SUCCESS!"
-  
 end subroutine analytic_IC
   
 ! ------------------------------------------------------------------------------
