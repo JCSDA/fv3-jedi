@@ -25,8 +25,8 @@ use mpp_mod,         only: mpp_pe, mpp_npes, mpp_init, mpp_exit, mpp_error, &
 use mpp_io_mod,      only: mpp_open, mpp_close, MPP_ASCII, MPP_RDONLY
 use fms_io_mod,      only: restart_file_type, register_restart_field, &
                            free_restart_type, restore_state, save_restart, file_exist
-use fv3jedi_mod,      only: fv_atmos_type, fv3jedi_interp_type
-use fv3jedi_mod,      only: allocate_fv_atmos_type
+use fv3jedi_mod,      only: fv_atmos_type
+use fv3jedi_mod,      only: allocate_fv_atmos_type, vt_coeffs
 
 use fv3jedi_constants,only: deg2rad
 
@@ -48,7 +48,6 @@ public :: fv3jedi_field_registry
 type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
   type(fv3jedi_geom), pointer :: geom
-  type(fv3jedi_interp_type) :: fv3jedi_interp
 end type fv3jedi_field
 
 #define LISTED_TYPE fv3jedi_field
@@ -1058,12 +1057,15 @@ subroutine interp_tl(fld, locs, vars, gom)
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
+use variable_transforms, only: delp2lnp_tl, delp2p_tl, delp2pe_tl, pt2tv_tl
 
 implicit none
-type(fv3jedi_field), intent(in)    :: fld 
-type(ufo_locs),     intent(in)    :: locs 
-type(ufo_vars),  intent(in)       :: vars
-type(ufo_geovals),  intent(inout) :: gom
+type(fv3jedi_field), intent(inout) :: fld 
+type(ufo_locs),     intent(in)     :: locs 
+type(ufo_vars),  intent(in)        :: vars
+type(ufo_geovals),  intent(inout)  :: gom
+
+type(vt_coeffs), pointer :: pvtc
 
 type(geomtype), pointer :: pgeom
 type(odatatype), pointer :: odata
@@ -1081,7 +1083,7 @@ call interp_checks("tl", fld, locs, vars, gom)
 
 ! Calculate interpolation weight using nicas
 ! ------------------------------------------
-call initialize_interp(fld%geom, locs, pgeom, odata)
+call initialize_interp(fld, fld%geom, locs, pgeom, odata, pvtc)
 write(*,*)'interp_tl after initialize_interp'
 
 ! Make sure the return values are allocated and set
@@ -1109,6 +1111,7 @@ do jvar = 1, vars%nv
   select case (trim(vars%fldnames(jvar)))
   
   case ("wind_u")
+
     do jlev = 1, fld%geom%nlevs
       mod_field(:,1) = reshape( fld%Atm%ua(fld%geom%bd%isc:fld%geom%bd%iec, &
                                            fld%geom%bd%jsc:fld%geom%bd%jec, &
@@ -1118,6 +1121,7 @@ do jvar = 1, vars%nv
     enddo
   
   case ("wind_v")
+
     do jlev = 1, fld%geom%nlevs
       mod_field(:,1) = reshape( fld%Atm%va(fld%geom%bd%isc:fld%geom%bd%iec, &
                                            fld%geom%bd%jsc:fld%geom%bd%jec, &
@@ -1128,11 +1132,9 @@ do jvar = 1, vars%nv
   
   case ("virtual_temperature")
 
-    !call pressure_traj(geom, fld%geom%bk(1), fld%Atm%delp, pe, pk, pke, pc1, pc2)
-    !call delp2pk_tl(geom, pe, pke, pc1, pc2, delpp, pkp)
-    !call pt2tv_tl(geom, 1.0, pt, fld%Atm%pt, q, fld%Atm%q, pk, pkp, tvp)
+    !Tangent linear of potential temperature to virtual temperature
+    call pt2tv_tl(fld%geom, pvtc%pe, pvtc%pke, pvtc%pkco, pvtc%pt2tvco, fld%Atm%delp, fld%Atm%pt, fld%Atm%q(:,:,:,1))
 
-! TODO: FV3 has potential temperature, needs conversion here
     do jlev = 1, fld%geom%nlevs
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
@@ -1141,15 +1143,12 @@ do jvar = 1, vars%nv
           mod_field(ii, 1) = fld%Atm%pt(ji, jj, jlev)
         enddo
       enddo
-  !   mod_field(:,1) = reshape( fld%Atm%pt(fld%geom%bd%isc:fld%geom%bd%iec, &
-  !                                        fld%geom%bd%jsc:fld%geom%bd%jec, &
-  !                                        jlev), [ngrid])
       call apply_obsop(pgeom,odata,mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo 
   
-  case ("humidity")
-! TODO: Not sure what FV3 stores in q, likely needs conversion here
+  case ("humidity_mixing_ratio")
+
     do jlev = 1, fld%geom%nlevs
       mod_field(:,1) = reshape( fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec, &
                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
@@ -1159,6 +1158,9 @@ do jvar = 1, vars%nv
     enddo 
   
   case ("atmosphere_ln_pressure_coordinate")
+
+    call delp2lnp_tl(fld%geom,pvtc%p,fld%Atm%delp)
+
     do jlev = 1, fld%geom%nlevs
       if (jlev == 1) then
         mod_field(:,1) = reshape( fld%Atm%delp(fld%geom%bd%isc:fld%geom%bd%iec, &
@@ -1178,6 +1180,16 @@ do jvar = 1, vars%nv
   
       gom%geovals(jvar)%vals(jlev,:) = log(obs_field(:,1))
     enddo
+
+  case ("air_pressure")
+
+    call delp2p_tl(fld%geom,fld%Atm%delp) 
+
+  case ("air_pressure_levels")
+
+    call delp2pe_tl(fld%geom,fld%Atm%delp) 
+    !Does not fill top of domain
+
   case default
     call abor1_ftn("fv3jedi_fields:interp_tl unknown variable")
   end select
@@ -1200,12 +1212,15 @@ subroutine interp_ad(fld, locs, vars, gom)
 use obsop_apply, only: apply_obsop_ad
 use type_geom, only: geomtype,compute_grid_mesh
 use type_odata, only: odatatype
+use variable_transforms, only: delp2lnp_ad, delp2p_ad, delp2pe_ad, pt2tv_ad
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld
-type(ufo_locs), intent(in)    :: locs
-type(ufo_vars), intent(in)    :: vars
-type(ufo_geovals), intent(in) :: gom
+type(ufo_locs), intent(in)         :: locs
+type(ufo_vars), intent(in)         :: vars
+type(ufo_geovals), intent(in)      :: gom
+
+type(vt_coeffs), pointer :: pvtc
 
 type(geomtype), pointer :: pgeom
 type(odatatype), pointer :: odata
@@ -1223,8 +1238,8 @@ call interp_checks("ad", fld, locs, vars, gom)
 
 ! Calculate interpolation weight using nicas
 ! ------------------------------------------
-call initialize_interp(fld%geom, locs, pgeom, odata)
-write(*,*)'interp_tl after initialize_interp'
+call initialize_interp(fld, fld%geom, locs, pgeom, odata, pvtc)
+write(*,*)'interp_ad after initialize_interp'
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1258,7 +1273,7 @@ do jvar = 1, vars%nv
     enddo                      
   
   case ("virtual_temperature")
-! TODO: FV3 has potential temperature, needs conversion here
+
     do jlev = 1, fld%geom%nlevs
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
       call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
@@ -1271,6 +1286,9 @@ do jvar = 1, vars%nv
       enddo
     enddo 
   
+    !Adjoint of potential temperature to virtual temperature
+    call pt2tv_ad(fld%geom, pvtc%pe, pvtc%pke, pvtc%pkco, pvtc%pt2tvco, fld%Atm%delp, fld%Atm%pt, fld%Atm%q(:,:,:,1))
+
   case ("humidity")
 ! TODO: Not sure what FV3 stores in q, likely needs conversion here
     do jlev = 1, fld%geom%nlevs
@@ -1283,6 +1301,15 @@ do jvar = 1, vars%nv
 
   case ("atmosphere_ln_pressure_coordinate")
 !   Not a control variable
+
+  case ("air_pressure")
+
+    call delp2p_ad(fld%geom,fld%Atm%delp) 
+
+  case ("air_pressure_levels")
+
+    call delp2pe_ad(fld%geom,fld%Atm%delp) 
+    !Does not fill top of domain
 
   case default
     call abor1_ftn("fv3jedi_fields:interp_ad unknown variable")
@@ -1297,7 +1324,7 @@ end subroutine interp_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_interp(grid, locs, pgeom, pdata)
+subroutine initialize_interp(fld, grid, locs, pgeom, pdata, pvtc)
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use model_oops, only: model_oops_coord
@@ -1306,16 +1333,22 @@ use type_nam, only: namtype
 use type_geom, only: geomtype,compute_grid_mesh
 use type_odata, only: odatatype
 use type_randgen, only: create_randgen
+use variable_transforms, only: dpppk_tj, pt2tv_tj
 
 implicit none
+type(fv3jedi_field), intent(in) :: fld
 type(fv3jedi_geom), intent(in) :: grid
 type(ufo_locs), intent(in)    :: locs
 type(geomtype), pointer, intent(out) :: pgeom
 type(odatatype), pointer, intent(out) :: pdata
 
+type(vt_coeffs), pointer, intent(out) :: pvtc
+
 logical, save :: interp_initialized = .FALSE.
 type(geomtype), save, target :: geom
 type(odatatype), save, target :: odata
+
+type(vt_coeffs), save, target :: vtc
 
 integer :: mod_nx,mod_ny,mod_nz,mod_num,obs_num
 real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
@@ -1401,11 +1434,25 @@ if (.NOT.interp_initialized) then
 
    deallocate( mod_lat, mod_lon )
 
+   !Variable transform trajectories
+   allocate(vtc%  p(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
+   allocate(vtc% pe(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
+   allocate(vtc% pk(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
+   allocate(vtc%pke(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
+   allocate(vtc%   pkco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,2))
+   allocate(vtc%pt2tvco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,3))
+
+!TODO delp,q and pt should be trajecotry, not field/increment
+   call dpppk_tj(grid, grid%bk(1), fld%Atm%delp, vtc%p, vtc%pe, vtc%pk, vtc%pke, vtc%pkco)
+   call pt2tv_tj(grid, 1.0_kind_real, fld%Atm%pt, fld%Atm%q, vtc%pk, vtc%pt2tvco)
+
    interp_initialized = .TRUE. 
 endif
 
 pgeom => geom
 pdata => odata
+
+pvtc => vtc
 
 end subroutine initialize_interp
 

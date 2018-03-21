@@ -26,7 +26,7 @@ module fv3jedi_mod
     public :: allocate_fv_atmos_type
     public :: setup_domain
     public :: fv_grid_type
-    public :: fv3jedi_interp_type
+    public :: vt_coeffs
 
 type fv_atmos_type
     ! A lean version from the model (fv_arrays.F90)
@@ -97,11 +97,11 @@ type :: fv_grid_type
   logical :: sw_corner, se_corner, ne_corner, nw_corner
 endtype
 
-type :: fv3jedi_interp_type
-  logical         :: interp_initialized = .FALSE.
-  type(geomtype)  :: geom
-  type(odatatype) :: odata
-endtype
+! Coefficients for variable transforms
+type vt_coeffs
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: p, pe, pk, pke
+  real(kind=kind_real), allocatable, dimension(:,:,:,:) :: pkco, pt2tvco
+end type vt_coeffs
 
 contains
 

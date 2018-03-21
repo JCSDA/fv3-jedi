@@ -1,8 +1,7 @@
 {
   "Geometry": {
-    "nx": 96,
-    "ny": 96,
-    "grid_type": 0
+    "init_type": "inline",
+    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
   },
   "Model": {
     "CP_i": 0,
