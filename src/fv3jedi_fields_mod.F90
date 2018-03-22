@@ -668,7 +668,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   use datetime_mod
   use fckit_log_module, only : log
   use constants_mod, only: pi=>pi_8
-  use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, test1_advection_hadley
+!  use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, test1_advection_hadley
   
   implicit none
 
@@ -686,106 +686,106 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   real(kind=kind_real) :: pk,pe1,pe2,ps
   real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
 
-  ! Initialize geometry component of field object
-  fld%geom => geom
-
-  If (config_element_exists(c_conf,"analytic_init")) Then
-     IC = Trim(config_get_string(c_conf,len(IC),"analytic_init"))
-  Else
-     ! This default value is for backward compatibility
-     IC = "invent-state"
-  EndIf
-
-  call log%warning("qg_fields:analytic_init: "//IC)
-  sdate = config_get_string(c_conf,len(sdate),"date")
-  WRITE(buf,*) 'validity date is: '//sdate
-  call log%info(buf)
-  call datetime_set(sdate, vdate)
-
-  !===================================================================
-  int_option: Select Case (IC)
-
-     Case("invent-state")
-
-        call invent_state(fld,c_conf)
-
-     Case ("dcmip-test-1-1")
-
-        do i = geom%bd%isc,geom%bd%iec
-           do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
-
-              ! Call the routine first just to get the surface pressure
-              Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
-                                               phis0,ps,rho0,hum0,q1,q2,q3,q4)
-
-              fld%Atm%phis(i,j) = phis0
-
-              ! Now loop over all levels
-              do k = 1, geom%nlevs
-
-                 pe1 = geom%ak(k) + geom%bk(k)*ps
-                 pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
-                 pk = 0.5_kind_real * (pe1+pe2)
-                 Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
-                                                  phis0,ps0,rho0,hum0,q1,q2,q3,q4)
-
-                 fld%Atm%ua(i,j,k) = u0
-                 fld%Atm%va(i,j,k) = v0
-                 If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
-                 fld%Atm%pt(i,j,k) = t0
-                 fld%Atm%delp(i,j,k) = pe2-pe1
-                 If (geom%ntracers >= 1) fld%Atm%q(i,j,k,1) = hum0
-                 If (geom%ntracers >= 2) fld%Atm%q(i,j,k,2) = q1
-                 If (geom%ntracers >= 3) fld%Atm%q(i,j,k,3) = q2
-                 If (geom%ntracers >= 4) fld%Atm%q(i,j,k,4) = q3
-                 If (geom%ntracers >= 5) fld%Atm%q(i,j,k,5) = q4
-                 
-              enddo
-           enddo
-        enddo
-
-     Case ("dcmip-test-1-2")
-
-        do i = geom%bd%isc,geom%bd%iec
-           do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
-
-              ! Call the routine first just to get the surface pressure
-              Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
-                                          t0,phis0,ps,rho0,hum0,q1)
-
-              fld%Atm%phis(i,j) = phis0
-
-              ! Now loop over all levels
-              do k = 1, geom%nlevs
-
-                 pe1 = geom%ak(k) + geom%bk(k)*ps
-                 pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
-                 pk = 0.5_kind_real * (pe1+pe2)
-                 Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
-                                             t0,phis0,ps,rho0,hum0,q1)
-
-                 fld%Atm%ua(i,j,k) = u0
-                 fld%Atm%va(i,j,k) = v0
-                 If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
-                 fld%Atm%pt(i,j,k) = t0
-                 fld%Atm%delp(i,j,k) = pe2-pe1
-                 If (geom%ntracers >= 1) fld%Atm%q(i,j,k,1) = hum0
-                 If (geom%ntracers >= 2) fld%Atm%q(i,j,k,2) = q1
-                 
-              enddo
-           enddo
-        enddo
-
-        WRITE(*,*) "DCMIP TEST 1-2"
-
-     Case Default
-        call invent_state(fld,c_conf)
-
-     End Select int_option
+!  ! Initialize geometry component of field object
+!  fld%geom => geom
+!
+!  If (config_element_exists(c_conf,"analytic_init")) Then
+!     IC = Trim(config_get_string(c_conf,len(IC),"analytic_init"))
+!  Else
+!     ! This default value is for backward compatibility
+!     IC = "invent-state"
+!  EndIf
+!
+!  call log%warning("qg_fields:analytic_init: "//IC)
+!  sdate = config_get_string(c_conf,len(sdate),"date")
+!  WRITE(buf,*) 'validity date is: '//sdate
+!  call log%info(buf)
+!  call datetime_set(sdate, vdate)
+!
+!  !===================================================================
+!  int_option: Select Case (IC)
+!
+!     Case("invent-state")
+!
+!        call invent_state(fld,c_conf)
+!
+!     Case ("dcmip-test-1-1")
+!
+!        do i = geom%bd%isc,geom%bd%iec
+!           do j = geom%bd%jsc,geom%bd%jec
+!              rlat = deg_to_rad*geom%grid_lat(i,j)
+!              rlon = deg_to_rad*geom%grid_lon(i,j)
+!
+!              ! Call the routine first just to get the surface pressure
+!              Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
+!                                               phis0,ps,rho0,hum0,q1,q2,q3,q4)
+!
+!              fld%Atm%phis(i,j) = phis0
+!
+!              ! Now loop over all levels
+!              do k = 1, geom%nlevs
+!
+!                 pe1 = geom%ak(k) + geom%bk(k)*ps
+!                 pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
+!                 pk = 0.5_kind_real * (pe1+pe2)
+!                 Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
+!                                                  phis0,ps0,rho0,hum0,q1,q2,q3,q4)
+!
+!                 fld%Atm%ua(i,j,k) = u0
+!                 fld%Atm%va(i,j,k) = v0
+!                 If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
+!                 fld%Atm%pt(i,j,k) = t0
+!                 fld%Atm%delp(i,j,k) = pe2-pe1
+!                 If (geom%ntracers >= 1) fld%Atm%q(i,j,k,1) = hum0
+!                 If (geom%ntracers >= 2) fld%Atm%q(i,j,k,2) = q1
+!                 If (geom%ntracers >= 3) fld%Atm%q(i,j,k,3) = q2
+!                 If (geom%ntracers >= 4) fld%Atm%q(i,j,k,4) = q3
+!                 If (geom%ntracers >= 5) fld%Atm%q(i,j,k,5) = q4
+!                 
+!              enddo
+!           enddo
+!        enddo
+!
+!     Case ("dcmip-test-1-2")
+!
+!        do i = geom%bd%isc,geom%bd%iec
+!           do j = geom%bd%jsc,geom%bd%jec
+!              rlat = deg_to_rad*geom%grid_lat(i,j)
+!              rlon = deg_to_rad*geom%grid_lon(i,j)
+!
+!              ! Call the routine first just to get the surface pressure
+!              Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
+!                                          t0,phis0,ps,rho0,hum0,q1)
+!
+!              fld%Atm%phis(i,j) = phis0
+!
+!              ! Now loop over all levels
+!              do k = 1, geom%nlevs
+!
+!                 pe1 = geom%ak(k) + geom%bk(k)*ps
+!                 pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
+!                 pk = 0.5_kind_real * (pe1+pe2)
+!                 Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
+!                                             t0,phis0,ps,rho0,hum0,q1)
+!
+!                 fld%Atm%ua(i,j,k) = u0
+!                 fld%Atm%va(i,j,k) = v0
+!                 If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
+!                 fld%Atm%pt(i,j,k) = t0
+!                 fld%Atm%delp(i,j,k) = pe2-pe1
+!                 If (geom%ntracers >= 1) fld%Atm%q(i,j,k,1) = hum0
+!                 If (geom%ntracers >= 2) fld%Atm%q(i,j,k,2) = q1
+!                 
+!              enddo
+!           enddo
+!        enddo
+!
+!        WRITE(*,*) "DCMIP TEST 1-2"
+!
+!     Case Default
+!        call invent_state(fld,c_conf)
+!
+!     End Select int_option
         
 end subroutine analytic_IC
   
