@@ -16,7 +16,6 @@ use kinds
 
 use fv_arrays_mod,  only: fv_atmos_type
 use mpp_mod,        only: mpp_pe, mpp_root_pe 
-use test_cases_mod, only: init_case, test_case
 
 #ifdef TLADPRES
 use fv_arrays_nlm_mod, only: fv_atmos_pert_type
@@ -51,8 +50,9 @@ type :: fv3jedi_model
   logical                                      :: hydrostatic         !<Convenience
   integer                                      :: ntracers            !<Convenience
   integer                                      :: nlevs               !<Convenience
-  integer                                      :: init_test_case = 0  !<Initialize with test case
   integer                                      :: cp_dyn_ind          !<Module index for checkpointing
+  integer                                      :: update_dgridwind=1  !<Update the fv3 pressures each time step
+  integer                                      :: update_pressures=1  !<Update the fv3 pressures each time step
 end type fv3jedi_model
 
 #define LISTED_TYPE fv3jedi_model
@@ -74,7 +74,7 @@ contains
 
 subroutine model_setup(model, geom, c_conf)
 
-use fv_control_mod, only: fv_init
+use fv_control_mod, only: fv_init, pelist_all
 
 #ifdef TLADPRES
 use fv_control_nlm_mod, only: fv_init_pert
@@ -117,13 +117,17 @@ model%DT = real(duration_seconds(dtstep),kind_real)
 
 !Call to fv_init
 call fv_init(model%FV_Atm, model%DT, model%grids_on_this_pe, model%p_split)
+deallocate(pelist_all)
 
-!Always allocate w, delz for now
+!Always allocate w, delz, q_con for now
 deallocate(model%FV_Atm(1)%w)
 deallocate(model%FV_Atm(1)%delz)
+deallocate(model%FV_Atm(1)%q_con)
 allocate  ( model%FV_Atm(1)%w (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
                                model%FV_Atm(1)%flagstruct%npz) )
 allocate  ( model%FV_Atm(1)%delz (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
+                               model%FV_Atm(1)%flagstruct%npz) )
+allocate  ( model%FV_Atm(1)%q_con(model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
                                model%FV_Atm(1)%flagstruct%npz) )
 
 !Different tracers than the FV3 standard
@@ -157,11 +161,8 @@ else
    endif
 endif
 
-if (config_element_exists(c_conf,"init_test_case")) model%init_test_case = config_get_int(c_conf,"init_test_case")
-
-if (model%init_test_case == 1) then
-   test_case = config_get_int(c_conf,"test_case")
-endif
+if (config_element_exists(c_conf,"update_dgridwind")) model%update_dgridwind = config_get_int(c_conf,"update_dgridwind")
+if (config_element_exists(c_conf,"update_pressures")) model%update_pressures = config_get_int(c_conf,"update_pressures")
 
 !Pointer to self when not nested
 if (.not. model%FV_Atm(1)%gridstruct%nested) model%FV_Atm(1)%parent_grid => model%FV_Atm(1)
@@ -254,11 +255,6 @@ end subroutine model_delete
 
 subroutine model_prepare_integration(self, flds)
 
-#ifdef TLADPRES
-use fv_dynamics_tlm_mod, only: IdealTestTLM => IdealTest
-use fv_dynamics_adm_mod, only: IdealTestADM => IdealTest
-#endif
-
 implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
@@ -275,45 +271,6 @@ FV_Atm => self%FV_Atm
 !-------------------------------------------
 FV_Atm(1)%phis = flds%Atm%phis
 
-
-!Intialize FV3 with a test case specified by the user
-!----------------------------------------------------
-if (self%init_test_case == 1) then
-
-   if (mpp_pe() == mpp_root_pe()) print*, 'Initializing the model with test case:', test_case
-
-   call init_case(FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%w,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q, &
-                  FV_Atm(1)%phis, FV_Atm(1)%ps,FV_Atm(1)%pe, FV_Atm(1)%peln,FV_Atm(1)%pk,FV_Atm(1)%pkz, &
-                  FV_Atm(1)%uc,FV_Atm(1)%vc, FV_Atm(1)%ua,FV_Atm(1)%va,        & 
-                  FV_Atm(1)%ak, FV_Atm(1)%bk, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,&
-                  FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ng, &
-                  FV_Atm(1)%flagstruct%ncnst, FV_Atm(1)%flagstruct%nwat,  &
-                  FV_Atm(1)%flagstruct%ndims, FV_Atm(1)%flagstruct%ntiles, &
-                  FV_Atm(1)%flagstruct%dry_mass, &
-                  FV_Atm(1)%flagstruct%mountain,       &
-                  FV_Atm(1)%flagstruct%moist_phys, FV_Atm(1)%flagstruct%hydrostatic, &
-                  FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%delz, FV_Atm(1)%ze0, &
-                  FV_Atm(1)%flagstruct%adiabatic, FV_Atm(1)%ks, FV_Atm(1)%neststruct%npx_global, &
-                  FV_Atm(1)%ptop, FV_Atm(1)%domain, FV_Atm(1)%tile, FV_Atm(1)%bd)
-
-   !Copy to fields and JEDI precision
-   flds%Atm%u    = FV_Atm(1)%u
-   flds%Atm%v    = FV_Atm(1)%v
-   flds%Atm%pt   = FV_Atm(1)%pt
-   flds%Atm%delp = FV_Atm(1)%delp
-   flds%Atm%q    = FV_Atm(1)%q
-   !if (.not. flds%geom%hydrostatic) then
-      flds%Atm%w    = FV_Atm(1)%w
-      flds%Atm%delz = FV_Atm(1)%delz
-   !endif
-   flds%Atm%phis = FV_Atm(1)%phis
-
-#ifdef TLADPRES
-   IdealTestTLM = .true.
-   IdealTestADM = .true.
-#endif
-
-endif
 
 end subroutine model_prepare_integration
 
@@ -339,26 +296,6 @@ FV_Atm => self%FV_Atm
 !-------------------------------------------
 FV_Atm(1)%phis = flds%Atm%phis
 
-
-!Intialize FV3 with a test case specified by the user
-!----------------------------------------------------
-if (self%init_test_case == 1) then
-
-   call init_case(FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%w,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q, &
-                  FV_Atm(1)%phis, FV_Atm(1)%ps,FV_Atm(1)%pe, FV_Atm(1)%peln,FV_Atm(1)%pk,FV_Atm(1)%pkz, &
-                  FV_Atm(1)%uc,FV_Atm(1)%vc, FV_Atm(1)%ua,FV_Atm(1)%va,        & 
-                  FV_Atm(1)%ak, FV_Atm(1)%bk, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,&
-                  FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ng, &
-                  FV_Atm(1)%flagstruct%ncnst, FV_Atm(1)%flagstruct%nwat,  &
-                  FV_Atm(1)%flagstruct%ndims, FV_Atm(1)%flagstruct%ntiles, &
-                  FV_Atm(1)%flagstruct%dry_mass, &
-                  FV_Atm(1)%flagstruct%mountain,       &
-                  FV_Atm(1)%flagstruct%moist_phys, FV_Atm(1)%flagstruct%hydrostatic, &
-                  FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%delz, FV_Atm(1)%ze0, &
-                  FV_Atm(1)%flagstruct%adiabatic, FV_Atm(1)%ks, FV_Atm(1)%neststruct%npx_global, &
-                  FV_Atm(1)%ptop, FV_Atm(1)%domain, FV_Atm(1)%tile, FV_Atm(1)%bd)
-
-endif
 
 end subroutine model_prepare_integration_ad
 
@@ -386,39 +323,17 @@ FV_Atm => self%FV_Atm
 FV_Atm(1)%phis = flds%Atm%phis
 
 
-!Intialize FV3 with a test case specified by the user
-!----------------------------------------------------
-if (self%init_test_case == 1) then
-
-   call init_case(FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%w,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q, &
-                  FV_Atm(1)%phis, FV_Atm(1)%ps,FV_Atm(1)%pe, FV_Atm(1)%peln,FV_Atm(1)%pk,FV_Atm(1)%pkz, &
-                  FV_Atm(1)%uc,FV_Atm(1)%vc, FV_Atm(1)%ua,FV_Atm(1)%va,        & 
-                  FV_Atm(1)%ak, FV_Atm(1)%bk, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,&
-                  FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ng, &
-                  FV_Atm(1)%flagstruct%ncnst, FV_Atm(1)%flagstruct%nwat,  &
-                  FV_Atm(1)%flagstruct%ndims, FV_Atm(1)%flagstruct%ntiles, &
-                  FV_Atm(1)%flagstruct%dry_mass, &
-                  FV_Atm(1)%flagstruct%mountain,       &
-                  FV_Atm(1)%flagstruct%moist_phys, FV_Atm(1)%flagstruct%hydrostatic, &
-                  FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%delz, FV_Atm(1)%ze0, &
-                  FV_Atm(1)%flagstruct%adiabatic, FV_Atm(1)%ks, FV_Atm(1)%neststruct%npx_global, &
-                  FV_Atm(1)%ptop, FV_Atm(1)%domain, FV_Atm(1)%tile, FV_Atm(1)%bd)
-
-endif
-
-
 end subroutine model_prepare_integration_tl
 
 ! ------------------------------------------------------------------------------
 
 subroutine model_propagate(self, flds)
 
-#ifdef TLADPRES
-use fv_dynamics_tlm_mod, only: fv_dynamics
-#else
 use fv_dynamics_mod, only: fv_dynamics
-#endif
+use fv_sg_mod, only: fv_subgrid_z
 use mpp_domains_mod, only: mpp_get_boundary, DGRID_NE
+use variable_transforms, only: compute_fv3_pressures
+use fms_mod, only: set_domain, nullify_domain
 
 implicit none
 type(fv3jedi_model), target :: self
@@ -430,7 +345,9 @@ type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
 #endif
 integer :: i,j,k
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate model NL'
+real(kind=kind_real), allocatable, dimension(:,:,:) :: u_dt, v_dt, t_dt
+
+if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 
 
 !Convenience pointer to the main FV_Atm structure
@@ -453,23 +370,34 @@ FV_Atm(1)%q    = flds%Atm%q
 !endif
 
 
-!Update edges of d-grid winds, probably not needed ultimately
-!------------------------------------------------------------
-call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
-                       wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                       sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                       gridtype=DGRID_NE, complete=.true. )
-do k=1,self%nlevs
-   do i=self%isc,self%iec
-      FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
+!Update edges of d-grid winds
+!----------------------------
+if (self%update_dgridwind) then
+   call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
+                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
+                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
+                          gridtype=DGRID_NE, complete=.true. )
+   do k=1,self%nlevs
+      do i=self%isc,self%iec
+         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
+      enddo
    enddo
-enddo
-do k=1,self%nlevs
-   do j=self%jsc,self%jec
-      FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
+   do k=1,self%nlevs
+      do j=self%jsc,self%jec
+         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
+      enddo
    enddo
-enddo
+endif
 
+!Compute the other pressure variables needed by FV3
+!--------------------------------------------------
+if (self%update_pressures) then
+   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
+                               self%nlevs, kappa, FV_Atm(1)%ptop, &
+                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
+endif
+
+call set_domain(FV_Atm(1)%domain)
 
 !Propagate FV3 one time step
 !---------------------------
@@ -486,12 +414,30 @@ call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, 
                   FV_Atm(1)%ak, FV_Atm(1)%bk,                                                  &
                   FV_Atm(1)%mfx, FV_Atm(1)%mfy, FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,     &
                   FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,   &
-#ifdef TLADPRES
-                  FV_AtmP(1)%flagstruct,                                                       &
-#endif
                   FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
                   FV_Atm(1)%domain )
 
+!Apply subgrid mixing
+!--------------------
+!if ( FV_Atm(1)%flagstruct%fv_sg_adj > 0 ) then
+!     allocate ( u_dt(self%isd:self%ied,self%jsd:self%jed,self%nlevs) )
+!     allocate ( v_dt(self%isd:self%ied,self%jsd:self%jed,self%nlevs) )
+!     allocate ( t_dt(self%isc:self%iec,self%jsc:self%jec,self%nlevs) )
+!     u_dt(:,:,:) = 0.0
+!     v_dt(:,:,:) = 0.0
+!     t_dt(:,:,:) = 0.0
+!     call fv_subgrid_z(self%isd, self%ied, self%jsd, self%jed, self%isc, self%iec, self%jsc, self%jec, FV_Atm(1)%npz, &
+!                       FV_Atm(1)%ncnst, self%DT, FV_Atm(1)%flagstruct%fv_sg_adj,      &
+!                       FV_Atm(1)%flagstruct%nwat, FV_Atm(1)%delp, FV_Atm(1)%pe,     &
+!                       FV_Atm(1)%peln, FV_Atm(1)%pkz, FV_Atm(1)%pt, FV_Atm(1)%q,       &
+!                       FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%flagstruct%hydrostatic,&
+!                       FV_Atm(1)%w, FV_Atm(1)%delz, u_dt, v_dt, t_dt, FV_Atm(1)%flagstruct%n_zfilter)
+!     deallocate ( u_dt )
+!     deallocate ( v_dt )
+!     deallocate ( t_dt )
+!endif
+
+call nullify_domain()
 
 !Copy back to fields and JEDI precision
 !--------------------------------------
@@ -504,6 +450,9 @@ flds%Atm%q    = FV_Atm(1)%q
    flds%Atm%w    = FV_Atm(1)%w
    flds%Atm%delz = FV_Atm(1)%delz
 !endif
+flds%Atm%ua    = FV_Atm(1)%ua
+flds%Atm%va    = FV_Atm(1)%va
+
 
 
 end subroutine model_propagate
@@ -530,7 +479,7 @@ type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
 integer :: i,j,k
 
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate model AD'
+if (mpp_pe() == mpp_root_pe()) print*, 'Propagate model adjoint'
 
 !Convenience pointer to the main FV_Atm structure
 !------------------------------------------------
@@ -773,7 +722,7 @@ type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
 integer :: i,j,k
 
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate model TL'
+if (mpp_pe() == mpp_root_pe()) print*, 'Propagate tagent linear model'
 
 
 !Convenience pointer to the main FV_Atm structure
