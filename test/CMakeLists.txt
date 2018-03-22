@@ -14,7 +14,7 @@ list( APPEND fv3jedi_test_input
 #  testinput/4dvar.obsbias.json
 #  testinput/4dvar.rpcg.json
 #  testinput/dfi.json
-#  testinput/forecast.json
+  testinput/forecast.json
 #  testinput/genenspert.json
   testinput/hofx.json
   testinput/interfaces.json
