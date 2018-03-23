@@ -486,151 +486,138 @@ subroutine read_file(fld, c_conf, vdate)
   integer :: ntracers, ntprog, nt, ierr
 
   integer :: print_read_info = 0
-  integer :: analytic_restart
 
   pe = mpp_pe()
-  
-  if (config_element_exists(c_conf,"analytic_restart")) then
-     analytic_restart = config_get_int(c_conf,"analytic_restart")
+
+  !Set filenames
+  !--------------
+  filename_core = 'INPUT/fv_core.res.nc'
+  filename_trcr = 'INPUT/fv_tracer.res.nc'
+  filename_cplr = 'INPUT/coupler.res'
+
+  if (config_element_exists(c_conf,"filename_core")) then
+     filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
+  endif
+  if (config_element_exists(c_conf,"filename_trcr")) then
+     filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
+  endif
+  if (config_element_exists(c_conf,"filename_cplr")) then
+     filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
   endif
 
-  if (analytic_restart == 1) then
- 
-     call analytic_IC(fld, fld%geom, c_conf, vdate)
+  if (mpp_pe() == mpp_root_pe()) print*, 'filename_core: ', trim(filename_core)
+  if (mpp_pe() == mpp_root_pe()) print*, 'filename_trcr: ', trim(filename_trcr)
 
-  else
 
-     !Set filenames
-     !--------------
-     filename_core = 'INPUT/fv_core.res.nc'
-     filename_trcr = 'INPUT/fv_tracer.res.nc'
-     filename_cplr = 'INPUT/coupler.res'
-   
-     if (config_element_exists(c_conf,"filename_core")) then
-        filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
-     endif
-     if (config_element_exists(c_conf,"filename_trcr")) then
-        filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
-     endif
-     if (config_element_exists(c_conf,"filename_cplr")) then
-        filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
-     endif
-   
-     if (mpp_pe() == mpp_root_pe()) print*, 'filename_core: ', trim(filename_core)
-     if (mpp_pe() == mpp_root_pe()) print*, 'filename_trcr: ', trim(filename_trcr)
-   
-   
-     !Register and read core fields
-     !------------------------------
-     id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%Atm%u, &
-                  domain=fld%geom%domain, position=NORTH)
-     id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%Atm%v, &
-                  domain=fld%geom%domain, position=EAST)
-     id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%Atm%phis, &
-                  domain=fld%geom%domain)
-     id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%Atm%pt, &
-                  domain=fld%geom%domain)
-     id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
-                  domain=fld%geom%domain)
-     if (fld%Atm%agrid_vel_rst) then
-        id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%ua, &
-                                            domain=fld%geom%domain)
-        id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%va, &
-                                            domain=fld%geom%domain)
-     endif
-     if (.not. fld%Atm%hydrostatic) then
-        id_restart =  register_restart_field(Fv_restart, filename_core, 'W', fld%Atm%w, &
-                      domain=fld%geom%domain)
-        id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
-                      domain=fld%geom%domain)
-     endif
-     call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
-     call free_restart_type(Fv_restart)
-   
-     !If A-Grid winds were not read then interpolate from D-grid
-     if (.not. fld%Atm%agrid_vel_rst) then
-   
-        fld%Atm%ua = 0.0_kind_real
-        fld%Atm%va = 0.0_kind_real
-   
-        !Fill halos of the d-grid winds
-   !    call mpp_update_domains(fld%Atm%u, fld%Atm%v, fld%geom%domain, gridtype=DGRID_NE, complete=.true.)
-   !
-   !    !Call interpolation level by level
-   !    do k = 1,fld%geom%nlevs
-   !       call d2a2c_vect( fld%Atm%u(:,:,k), fld%Atm%v(:,:,k), fld%Atm%ua(:,:,k), fld%Atm%va(:,:,k), &
-   !                        .true., fld%geom%gridstruct, &
-   !                        fld%geom%bd, fld%geom%size_cubic_grid, fld%geom%size_cubic_grid, .false., 0)
-   !    enddo 
-   
-     endif
-      
-   
-   ! !Register and read tracers
-   ! !-------------------------
-   ! call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
-   !
-   ! do nt = 1, ntprog
-   !    call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
-   !    call set_tracer_profile (MODEL_ATMOS, nt, fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%isc:fld%geom%bd%iec,:,nt) )
-   !    id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
-   !                                        domain=fld%geom%domain)
-   ! enddo
-   ! call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
-   ! call free_restart_type(Tr_restart)
-   
-     id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
-                                          domain=fld%geom%domain)
-   
-     call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
-     call free_restart_type(Tr_restart)
-   
-   
-     !Prints and getting dates from file
-     !----------------------------------
-      
-     if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
-   
-        print *,'ak=',fld%geom%ak
-        print *,'bk=',fld%geom%bk
-   
-        !print *,'read_file: pe,shape,minval,maxval for phis', &
-        !                    pe,shape(fld%Atm%phis),minval(fld%Atm%phis),maxval(fld%Atm%phis)
-        print *,'read_file: pe,shape,minval,maxval for potential temp',&
-                            pe,shape(fld%Atm%pt),minval(fld%Atm%pt),maxval(fld%Atm%pt)
-        print *,'read_file: pe,shape,minval,maxval for ua',&
-                            pe,shape(fld%Atm%ua),minval(fld%Atm%ua),maxval(fld%Atm%ua)
-        if (.not. fld%Atm%hydrostatic) print *,'read_file: pe,shape,minval,maxval for w',&
-                                                           pe,shape(fld%Atm%w),minval(fld%Atm%w),maxval(fld%Atm%w)
-   
-     endif
-   
-     ! read date from coupler.res text file.
-     sdate = config_get_string(c_conf,len(sdate),"date")
-     iounit = 101
-     open(iounit, file=trim(adjustl(fld%geom%datapath_in))//filename_cplr, form='formatted')
-     read(iounit, '(i6)')  calendar_type
-     read(iounit, '(6i6)') date_init
-     read(iounit, '(6i6)') date
-     close(iounit)
-     fld%Atm%date = date
-     fld%Atm%date_init = date_init
-     fld%Atm%calendar_type = calendar_type
-     idate=date(1)*10000+date(2)*100+date(3)
-     isecs=date(4)*3600+date(5)*60+date(6)
-   
-     if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
-        print *,'read_file: integer time from coupler.res: ',date,idate,isecs
-     endif
-   
-     call datetime_from_ifs(vdate, idate, isecs)
-     call datetime_to_string(vdate, validitydate)
-   
-     if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
-        print *,'read_file: validity date: ',trim(validitydate)
-        print *,'read_file: expected validity date: ',trim(sdate)
-     endif
+  !Register and read core fields
+  !------------------------------
+  id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%Atm%u, &
+               domain=fld%geom%domain, position=NORTH)
+  id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%Atm%v, &
+               domain=fld%geom%domain, position=EAST)
+  id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%Atm%phis, &
+               domain=fld%geom%domain)
+  id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%Atm%pt, &
+               domain=fld%geom%domain)
+  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
+               domain=fld%geom%domain)
+  if (fld%Atm%agrid_vel_rst) then
+     id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%ua, &
+                                         domain=fld%geom%domain)
+     id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%va, &
+                                         domain=fld%geom%domain)
+  endif
+  if (.not. fld%Atm%hydrostatic) then
+     id_restart =  register_restart_field(Fv_restart, filename_core, 'W', fld%Atm%w, &
+                   domain=fld%geom%domain)
+     id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
+                   domain=fld%geom%domain)
+  endif
+  call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+  call free_restart_type(Fv_restart)
 
+  !If A-Grid winds were not read then interpolate from D-grid
+  if (.not. fld%Atm%agrid_vel_rst) then
+
+     fld%Atm%ua = 0.0_kind_real
+     fld%Atm%va = 0.0_kind_real
+
+     !Fill halos of the d-grid winds
+!    call mpp_update_domains(fld%Atm%u, fld%Atm%v, fld%geom%domain, gridtype=DGRID_NE, complete=.true.)
+!
+!    !Call interpolation level by level
+!    do k = 1,fld%geom%nlevs
+!       call d2a2c_vect( fld%Atm%u(:,:,k), fld%Atm%v(:,:,k), fld%Atm%ua(:,:,k), fld%Atm%va(:,:,k), &
+!                        .true., fld%geom%gridstruct, &
+!                        fld%geom%bd, fld%geom%size_cubic_grid, fld%geom%size_cubic_grid, .false., 0)
+!    enddo 
+
+  endif
+   
+
+! !Register and read tracers
+! !-------------------------
+! call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
+!
+! do nt = 1, ntprog
+!    call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
+!    call set_tracer_profile (MODEL_ATMOS, nt, fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%isc:fld%geom%bd%iec,:,nt) )
+!    id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
+!                                        domain=fld%geom%domain)
+! enddo
+! call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+! call free_restart_type(Tr_restart)
+
+  id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
+                                       domain=fld%geom%domain)
+
+  call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+  call free_restart_type(Tr_restart)
+
+
+  !Prints and getting dates from file
+  !----------------------------------
+   
+  if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
+
+     print *,'ak=',fld%geom%ak
+     print *,'bk=',fld%geom%bk
+
+     !print *,'read_file: pe,shape,minval,maxval for phis', &
+     !                    pe,shape(fld%Atm%phis),minval(fld%Atm%phis),maxval(fld%Atm%phis)
+     print *,'read_file: pe,shape,minval,maxval for potential temp',&
+                         pe,shape(fld%Atm%pt),minval(fld%Atm%pt),maxval(fld%Atm%pt)
+     print *,'read_file: pe,shape,minval,maxval for ua',&
+                         pe,shape(fld%Atm%ua),minval(fld%Atm%ua),maxval(fld%Atm%ua)
+     if (.not. fld%Atm%hydrostatic) print *,'read_file: pe,shape,minval,maxval for w',&
+                                                        pe,shape(fld%Atm%w),minval(fld%Atm%w),maxval(fld%Atm%w)
+
+  endif
+
+  ! read date from coupler.res text file.
+  sdate = config_get_string(c_conf,len(sdate),"date")
+  iounit = 101
+  open(iounit, file=trim(adjustl(fld%geom%datapath_in))//filename_cplr, form='formatted')
+  read(iounit, '(i6)')  calendar_type
+  read(iounit, '(6i6)') date_init
+  read(iounit, '(6i6)') date
+  close(iounit)
+  fld%Atm%date = date
+  fld%Atm%date_init = date_init
+  fld%Atm%calendar_type = calendar_type
+  idate=date(1)*10000+date(2)*100+date(3)
+  isecs=date(4)*3600+date(5)*60+date(6)
+
+  if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
+     print *,'read_file: integer time from coupler.res: ',date,idate,isecs
+  endif
+
+  call datetime_from_ifs(vdate, idate, isecs)
+  call datetime_to_string(vdate, validitydate)
+
+  if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
+     print *,'read_file: validity date: ',trim(validitydate)
+     print *,'read_file: expected validity date: ',trim(sdate)
   endif
 
   return

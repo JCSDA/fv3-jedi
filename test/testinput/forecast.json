@@ -11,7 +11,6 @@
   "forecast_length": "PT240H",
   "initial": {
     "date": "2017-08-08T00:00:00Z",
-    "analytic_restart": 1,
     "analytic_init": "fv3_init_case",
     "fv3_test_case": 13,
     "filename_core": "INPUT/fv_core.res.nc",
