@@ -71,6 +71,7 @@ class StateFV3JEDI : public util::Printable,
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);
+  void analytic_init(const eckit::Configuration &, const GeometryFV3JEDI &);
   void write(const eckit::Configuration &) const;
   double norm() const {return fields_->norm();}
   const util::DateTime & validTime() const {return fields_->time();}
