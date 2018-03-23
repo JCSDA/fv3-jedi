@@ -372,7 +372,7 @@ FV_Atm(1)%q    = flds%Atm%q
 
 !Update edges of d-grid winds
 !----------------------------
-if (self%update_dgridwind) then
+if (self%update_dgridwind == 1) then
    call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
                           wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
                           sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
@@ -391,7 +391,7 @@ endif
 
 !Compute the other pressure variables needed by FV3
 !--------------------------------------------------
-if (self%update_pressures) then
+if (self%update_pressures == 1) then
    call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
                                self%nlevs, kappa, FV_Atm(1)%ptop, &
                                FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
