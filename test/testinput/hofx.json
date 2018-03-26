@@ -4,23 +4,19 @@
     "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
   },
   "Model": {
-    "CP_i": 0,
-    "CP_nt": 4,
-    "CP_gb": -0.1,
-    "CP_nm": 1,
-    "CP_dyn_ind": 1,
-    "CP_dyn_test": 1,
-    "CP_dyn_rep": 1,
     "ncnst": 1,
-    "init_test_case": 1,
-    "test_case": 13,
-    "tstep": "PT6H"
+    "tstep": "PT6H",
+    "update_dgridwind": "1",
+    "update_pressures": "1"
   },
   "Initial Condition": {
-    "datapath_in": "./",
-    "read_from_file": "1",
-    "filename": "INPUT/fv_core.res.nc",
-    "date": "2016-10-14T00:00:00Z"
+    "date": "2017-08-08T00:00:00Z",
+    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/",
+    "analytic_init": "fv3_init_case",
+    "fv3_test_case": 13,
+    "filename_core": "INPUT/fv_core.res.nc",
+    "filename_trcr": "INPUT/fv_tracer.res.nc",
+    "filename_cplr": "INPUT/coupler.res"
   },
   "Assimilation Window": {
     "Begin": "2016-10-14T00:00:00Z",
@@ -32,7 +28,7 @@
         "ObsType": "Radiosonde",
         "ObsData": {
           "ObsDataIn": {
-            "obsfile": "Data/diag_t_01_wprofiles.nc4"
+            "obsfile": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/Data/diag_t_01_wprofiles.nc4"
           }
         },
         "ObsBias": {}

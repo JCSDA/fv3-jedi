@@ -22,6 +22,7 @@
 #include "StateFV3JEDI.h"
 #include "util/DateTime.h"
 #include "util/Duration.h"
+#include "util/abor1_cpp.h"
 
 namespace fv3jedi {
 
@@ -123,16 +124,24 @@ void IncrementFV3JEDI::random() {
 // -----------------------------------------------------------------------------
 /// Interpolate to observation location
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateTL(const ufo::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
+void IncrementFV3JEDI::interpolateTL(const ufo::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols, const IncrementFV3JEDI & dx) const {
+
+  trajICst itra = traj_.find(dx.validTime());
+  if (itra == traj_.end()) {
+    oops::Log::error() << "TlmFV3JEDI: trajectory not available at time " << dx.validTime() << std::endl;
+    ABORT("TlmFV3JEDI: trajectory not available");
+  }
+
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" << *fields_ << std::endl;
-  fields_->interpolateTL(locs, vars, cols);
+  const eckit::Configuration * conf = &vars.toFortran();
+  fields_->interpolateTL(locs, vars, cols, itra->second);
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL gom " << cols << std::endl;
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::interpolateAD(const ufo::Locations & locs, const oops::Variables & vars, const ufo::GeoVaLs & cols) {
   oops::Log::debug() << "IncrementFV3JEDI::interpolateAD gom " << cols << std::endl;
   oops::Log::debug() << "IncrementFV3JEDI::interpolateAD fields in" << *fields_ << std::endl;
-  fields_->interpolateAD(locs, vars, cols);
+//  fields_->interpolateAD(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------
 /// Convert to/from unstructured grid

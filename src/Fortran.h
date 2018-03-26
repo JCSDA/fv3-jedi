@@ -107,7 +107,7 @@ extern "C" {
                                const util::DateTime * const *);
 
   void fv3jedi_field_interp_f90(const F90flds &, const F90locs &, const eckit::Configuration * const *, const F90goms &);
-  void fv3jedi_field_interp_tl_f90(const F90flds &, const F90locs &, const eckit::Configuration * const *, const F90goms &);
+  void fv3jedi_field_interp_tl_f90(const F90flds &, const F90locs &, const eckit::Configuration * const *, const F90goms &, const F90traj &);
   void fv3jedi_field_interp_ad_f90(const F90flds &, const F90locs &, const eckit::Configuration * const *, const F90goms &);
 
   void fv3jedi_field_gpnorm_f90(const F90flds &, const int &, double &);

@@ -64,7 +64,7 @@ class FieldsFV3JEDI : public util::Printable,
 
 // Interpolate to given location
   void interpolate(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void interpolateTL(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void interpolateTL(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &, const int &) const;
   void interpolateAD(const ufo::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
 
 // Interpolate full fields

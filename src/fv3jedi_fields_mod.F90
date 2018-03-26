@@ -38,7 +38,7 @@ public :: fv3jedi_field, &
         & self_add, self_schur, self_sub, self_mul, axpy, &
         & dot_prod, add_incr, diff_incr, &
         & read_file, write_file, gpnorm, fldrms, &
-        & change_resol, interp_tl, interp_ad, &
+        & change_resol, interp, interp_tl, interp_ad, &
         & convert_to_ug, convert_from_ug, dirac, &
         & analytic_IC
 public :: fv3jedi_field_registry
@@ -1252,18 +1252,169 @@ end subroutine convert_from_ug
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_tl(fld, locs, vars, gom)
+subroutine interp(fld, locs, vars, gom)
 
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
-use variable_transforms, only: delp2lnp_tl, delp2p_tl, delp2pe_tl, pt2tv_tl
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
 type(ufo_locs),     intent(in)     :: locs 
 type(ufo_vars),  intent(in)        :: vars
 type(ufo_geovals),  intent(inout)  :: gom
+
+type(geomtype), pointer :: pgeom
+type(odatatype), pointer :: odata
+
+integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
+real(kind=kind_real), allocatable :: mod_field(:,:)
+real(kind=kind_real), allocatable :: obs_field(:,:)
+
+if (mpp_pe() == mpp_root_pe()) print*, 'dh_INTERPOLATE'
+
+! Get grid dimensions and checks
+! ------------------------------
+ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
+nobs = locs%nlocs 
+write(*,*)'interp ngrid, nobs = : ',ngrid, nobs
+call interp_checks("tl", fld, locs, vars, gom)
+
+! Calculate interpolation weight using nicas
+! ------------------------------------------
+call initialize_interp(fld, fld%geom, locs, pgeom, odata)
+write(*,*)'interp after initialize_interp'
+
+! Make sure the return values are allocated and set
+! -------------------------------------------------
+do jvar=1,vars%nv
+   if (.not.allocated(gom%geovals(jvar)%vals)) then
+      gom%geovals(jvar)%nval = fld%geom%nlevs
+      gom%geovals(jvar)%nobs = ngrid
+      allocate( gom%geovals(jvar)%vals(fld%geom%nlevs,nobs) )
+   endif
+enddo
+gom%linit = .true.
+
+! Create Buffer for interpolated values
+! --------------------------------------
+allocate(mod_field(ngrid,1))
+allocate(obs_field(nobs,1))
+
+! Interpolate fields to obs locations using pre-calculated weights
+! ----------------------------------------------------------------
+write(*,*)'interp vars : ',vars%fldnames
+
+do jvar = 1, vars%nv
+
+  select case (trim(vars%fldnames(jvar)))
+  
+  case ("wind_u")
+
+    do jlev = 1, fld%geom%nlevs
+      mod_field(:,1) = reshape( fld%Atm%ua(fld%geom%bd%isc:fld%geom%bd%iec, &
+                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
+                                           jlev), [ngrid])
+      call apply_obsop(pgeom,odata,mod_field,obs_field)
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
+    enddo
+  
+  case ("wind_v")
+
+    do jlev = 1, fld%geom%nlevs
+      mod_field(:,1) = reshape( fld%Atm%va(fld%geom%bd%isc:fld%geom%bd%iec, &
+                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
+                                           jlev), [ngrid])
+      call apply_obsop(pgeom,odata,mod_field,obs_field)
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
+    enddo                      
+  
+  case ("virtual_temperature")
+
+    do jlev = 1, fld%geom%nlevs
+      ii = 0
+      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
+        do ji = fld%geom%bd%isc, fld%geom%bd%iec
+          ii = ii + 1
+          mod_field(ii, 1) = fld%Atm%pt(ji, jj, jlev)
+        enddo
+      enddo
+      call apply_obsop(pgeom,odata,mod_field,obs_field)
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
+    enddo 
+  
+  case ("humidity_mixing_ratio")
+
+    do jlev = 1, fld%geom%nlevs
+      mod_field(:,1) = reshape( fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec, &
+                                          fld%geom%bd%jsc:fld%geom%bd%jec, &
+                                          jlev, 1), [ngrid])
+      call apply_obsop(pgeom,odata,mod_field,obs_field)
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
+    enddo 
+  
+  case ("atmosphere_ln_pressure_coordinate")
+
+    do jlev = 1, fld%geom%nlevs
+      if (jlev == 1) then
+        mod_field(:,1) = reshape( fld%Atm%delp(fld%geom%bd%isc:fld%geom%bd%iec, &
+                                               fld%geom%bd%jsc:fld%geom%bd%jec, &
+                                               jlev), [ngrid])
+      else
+        ii = 0
+        do jj = fld%geom%bd%jsc, fld%geom%bd%jec
+          do ji = fld%geom%bd%isc, fld%geom%bd%iec
+            ii = ii + 1
+            mod_field(ii, 1) = mod_field(ii, 1) + fld%Atm%delp(ji, jj, jlev)
+          enddo
+        enddo
+      endif
+  
+      call apply_obsop(pgeom,odata,mod_field,obs_field)
+  
+      gom%geovals(jvar)%vals(jlev,:) = log(obs_field(:,1))
+    enddo
+
+  case ("air_pressure")
+
+
+  case ("air_pressure_levels")
+
+    !Does not fill top of domain
+
+  case default
+
+    call abor1_ftn("fv3jedi_fields:interp unknown variable")
+
+  end select
+
+enddo
+
+write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
+
+deallocate(mod_field)
+deallocate(obs_field)
+
+write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+
+end subroutine interp
+
+! ------------------------------------------------------------------------------
+
+subroutine interp_tl(fld, locs, vars, gom, traj)
+
+use obsop_apply, only: apply_obsop 
+use type_geom, only: geomtype
+use type_odata, only: odatatype
+use variable_transforms, only: delp2lnp_tl, delp2p_tl, delp2pe_tl, pt2tv_tl
+use fv3jedi_trajectories, only: fv3jedi_trajectory
+
+implicit none
+type(fv3jedi_field), intent(inout)   :: fld 
+type(ufo_locs),     intent(in)       :: locs 
+type(ufo_vars),  intent(in)          :: vars
+type(ufo_geovals),  intent(inout)    :: gom
+type(fv3jedi_trajectory), intent(in) :: traj
 
 type(vt_coeffs), pointer :: pvtc
 
@@ -1274,6 +1425,8 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
+if (mpp_pe() == mpp_root_pe()) print*, 'dh_INTERPOLATE_TL'
+
 ! Get grid dimensions and checks
 ! ------------------------------
 ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
@@ -1283,7 +1436,7 @@ call interp_checks("tl", fld, locs, vars, gom)
 
 ! Calculate interpolation weight using nicas
 ! ------------------------------------------
-call initialize_interp(fld, fld%geom, locs, pgeom, odata, pvtc)
+call initialize_interp(fld, fld%geom, locs, pgeom, odata)
 write(*,*)'interp_tl after initialize_interp'
 
 ! Make sure the return values are allocated and set
@@ -1301,6 +1454,10 @@ gom%linit = .true.
 ! --------------------------------------
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
+
+! Compute the trajectory elements of the interpolation
+! ----------------------------------------------------
+call initialize_interp_traj(fld, pvtc)
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
@@ -1429,6 +1586,8 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
+if (mpp_pe() == mpp_root_pe()) print*, 'dh_INTERPOLATE_AD'
+
 ! Get grid dimensions and checks
 ! ------------------------------
 ngrid  = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
@@ -1438,13 +1597,17 @@ call interp_checks("ad", fld, locs, vars, gom)
 
 ! Calculate interpolation weight using nicas
 ! ------------------------------------------
-call initialize_interp(fld, fld%geom, locs, pgeom, odata, pvtc)
+call initialize_interp(fld, fld%geom, locs, pgeom, odata)
 write(*,*)'interp_ad after initialize_interp'
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
+
+! Compute the trajectory elements of the interpolation
+! ----------------------------------------------------
+call initialize_interp_traj(fld, pvtc)
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
@@ -1524,7 +1687,48 @@ end subroutine interp_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_interp(fld, grid, locs, pgeom, pdata, pvtc)
+subroutine initialize_interp_traj(fld, pvtc)
+
+use variable_transforms, only: dpppk_tj, pt2tv_tj
+
+type(fv3jedi_field), intent(in), target :: fld
+type(vt_coeffs), pointer, intent(out) :: pvtc
+
+type(vt_coeffs), save, target :: vtc
+type(fv3jedi_geom), pointer :: grid
+
+logical, save :: traj_interp_initialized = .FALSE.
+
+!Create trajectory components required when performing varialble transforms
+!Saves recomputing them each time this is called.
+
+grid => fld%geom
+
+if (.not. traj_interp_initialized) then
+
+   !Variable transform trajectories
+   allocate(vtc%  p(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
+   allocate(vtc% pe(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
+   allocate(vtc% pk(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
+   allocate(vtc%pke(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
+   allocate(vtc%   pkco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,2))
+   allocate(vtc%pt2tvco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,3))
+   
+   !TODO delp,q and pt should be trajecotry, not field/increment
+   call dpppk_tj(grid, grid%bk(1), fld%Atm%delp, vtc%p, vtc%pe, vtc%pk, vtc%pke, vtc%pkco)
+   call pt2tv_tj(grid, 1.0_kind_real, fld%Atm%pt, fld%Atm%q, vtc%pk, vtc%pt2tvco)
+   
+   traj_interp_initialized = .true.
+
+endif
+   
+pvtc => vtc
+
+end subroutine initialize_interp_traj
+
+! ------------------------------------------------------------------------------
+
+subroutine initialize_interp(fld, grid, locs, pgeom, pdata)
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use model_oops, only: model_oops_coord
@@ -1533,7 +1737,6 @@ use type_nam, only: namtype
 use type_geom, only: geomtype,compute_grid_mesh
 use type_odata, only: odatatype
 use type_randgen, only: create_randgen
-use variable_transforms, only: dpppk_tj, pt2tv_tj
 
 implicit none
 type(fv3jedi_field), intent(in) :: fld
@@ -1542,13 +1745,9 @@ type(ufo_locs), intent(in)    :: locs
 type(geomtype), pointer, intent(out) :: pgeom
 type(odatatype), pointer, intent(out) :: pdata
 
-type(vt_coeffs), pointer, intent(out) :: pvtc
-
 logical, save :: interp_initialized = .FALSE.
 type(geomtype), save, target :: geom
 type(odatatype), save, target :: odata
-
-type(vt_coeffs), save, target :: vtc
 
 integer :: mod_nx,mod_ny,mod_nz,mod_num,obs_num
 real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
@@ -1634,25 +1833,12 @@ if (.NOT.interp_initialized) then
 
    deallocate( mod_lat, mod_lon )
 
-   !Variable transform trajectories
-   allocate(vtc%  p(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
-   allocate(vtc% pe(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
-   allocate(vtc% pk(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
-   allocate(vtc%pke(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
-   allocate(vtc%   pkco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,2))
-   allocate(vtc%pt2tvco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,3))
-
-!TODO delp,q and pt should be trajecotry, not field/increment
-   call dpppk_tj(grid, grid%bk(1), fld%Atm%delp, vtc%p, vtc%pe, vtc%pk, vtc%pke, vtc%pkco)
-   call pt2tv_tj(grid, 1.0_kind_real, fld%Atm%pt, fld%Atm%q, vtc%pk, vtc%pt2tvco)
-
    interp_initialized = .TRUE. 
+
 endif
 
 pgeom => geom
 pdata => odata
-
-pvtc => vtc
 
 end subroutine initialize_interp
 
