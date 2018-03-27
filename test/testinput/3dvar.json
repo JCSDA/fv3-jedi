@@ -1,0 +1,115 @@
+{
+  "resolution": {
+    "init_type": "inline",
+    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+  },
+  "model": {
+    "tstep": "PT15M",
+    "update_dgridwind": "1",
+    "update_pressures": "1"
+  },
+  "cost_function": {
+    "cost_type": "3D-Var",
+    "window_begin": "2017-08-07T21:00:00Z",
+    "window_length": "PT6H",
+    "variables": ["u","v","pt","q",delp"],
+    "Jb": {
+      "Background": {
+        "state": [{
+          "filename_core": "INPUT/fv_core.res.nc",
+          "filename_trcr": "INPUT/fv_tracer.res.nc",
+          "filename_cplr": "INPUT/coupler.res",
+          "date": "2017-08-08T00:00:00Z"
+        }]
+      },
+      "Covariance": {
+        "covariance": "FV3JEDIstatic",
+        "standard_deviation": "0.8",
+        "vertical_correlation": "0.2",
+        "horizontal_length_scale": "1e6",
+        "maximum_condition_number": "1.0e6",
+        "date": "2010-01-01T12:00:00Z"
+      }
+    },
+    "Jo": {
+      "ObsTypes": [
+        {
+          "ObsType": "Radiosonde",
+          "ObsData": {
+            "ObsDataIn": {
+              "obsfile": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/Data/diag_t_01_wprofiles.nc4"
+            },
+            "ObsDataOut": {
+              "obsfile": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/Data/fv3jedi.3dvar.obt"
+            },
+            "obsvalue": "ObsVal"
+          },
+          "Covariance": {
+            "covariance": "diagonal",
+            "obserror": "ObsErr"
+          }
+        }
+      ]
+    }
+  },
+  "minimizer": {
+    "algorithm": "DRIPCG"
+  },
+  "output": {
+    "first": "PT3H",
+    "frequency": "PT06H",
+    "datadir": "Data",
+    "exp": "example",
+    "type": "an"
+  },
+  "variational": {
+    "iteration": [
+      {
+        "resolution": {
+          "init_type": "inline",
+          "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+        },
+        "linearmodel": {
+          "tstep": "PT15M",
+          "update_dgridwind": "1",
+          "update_pressures": "1",
+          "trajectory": {
+            "tstep": "PT15M",
+            "update_dgridwind": "1",
+            "update_pressures": "1"
+          }
+        },
+        "ninner": "10",
+        "gradient_norm_reduction": "1e-10",
+        "test": "on",
+        "diagnostics": {
+          "departures": "ombg"
+        }
+      },
+      {
+        "resolution": {
+          "init_type": "inline",
+          "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+        },
+        "linearmodel": {
+          "tstep": "PT15M",
+          "update_dgridwind": "1",
+          "update_pressures": "1",
+          "trajectory": {
+            "tstep": "PT15M",
+            "update_dgridwind": "1",
+            "update_pressures": "1"
+          }
+        },
+        "ninner": "10",
+        "gradient_norm_reduction": "1e-10",
+        "test": "on"
+      }
+    ]
+  },
+  "final": {
+    "diagnostics": {
+      "departures": "oman"
+    }
+  }
+}
