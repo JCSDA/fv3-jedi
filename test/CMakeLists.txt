@@ -1,5 +1,5 @@
 list( APPEND fv3jedi_test_input
-#  testinput/3dvar.json
+  testinput/3dvar.json
 #  testinput/3dfgat.json
 #  testinput/4densvar.json
 #  testinput/4dvar.alpha.json
@@ -34,7 +34,7 @@ list( APPEND fv3jedi_test_input
 )
 
 list( APPEND fv3jedi_testoutput
-#  testoutput/3dvar.test
+  testoutput/3dvar.test
 #  testoutput/3dfgat.test
 #  testoutput/4densvar.test
 #  testoutput/4dvar.alpha.test

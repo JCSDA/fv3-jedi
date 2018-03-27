@@ -10,7 +10,7 @@
 #include "RunFV3JEDI.h"
 
 int main(int argc,  char ** argv) {
-  lfirc::RunFV3JEDI run(argc, argv);
+  fv3jedi::RunFV3JEDI run(argc, argv);
   oops::Variational<fv3jedi::FV3JEDITraits> var;
   run.execute(var);
   return 0;

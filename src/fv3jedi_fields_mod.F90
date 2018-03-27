@@ -488,6 +488,8 @@ subroutine read_file(fld, c_conf, vdate)
 
   pe = mpp_pe()
 
+print*, 'DH: read_file'
+
   !Set filenames
   !--------------
   filename_core = 'INPUT/fv_core.res.nc'
@@ -1271,7 +1273,7 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
-if (mpp_pe() == mpp_root_pe()) print*, 'dh_INTERPOLATE'
+if (mpp_pe() == mpp_root_pe()) print*, 'dh: interp'
 
 ! Get grid dimensions and checks
 ! ------------------------------
@@ -1282,7 +1284,10 @@ call interp_checks("tl", fld, locs, vars, gom)
 
 ! Calculate interpolation weight using nicas
 ! ------------------------------------------
+
+print*, 'dh: before initialize_interp'
 call initialize_interp(fld, fld%geom, locs, pgeom, odata)
+print*, 'dh: after initialize_interp'
 write(*,*)'interp after initialize_interp'
 
 ! Make sure the return values are allocated and set
@@ -1304,6 +1309,8 @@ allocate(obs_field(nobs,1))
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 write(*,*)'interp vars : ',vars%fldnames
+
+print*, 'dh_case', trim(vars%fldnames(jvar))
 
 do jvar = 1, vars%nv
 
@@ -1485,7 +1492,7 @@ do jvar = 1, vars%nv
                                            jlev), [ngrid])
       call apply_obsop(pgeom,odata,mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo                      
+    enddo
   
   case ("virtual_temperature")
 
@@ -1502,7 +1509,7 @@ do jvar = 1, vars%nv
       enddo
       call apply_obsop(pgeom,odata,mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo 
+    enddo
   
   case ("humidity_mixing_ratio")
 
@@ -1512,7 +1519,7 @@ do jvar = 1, vars%nv
                                           jlev, 1), [ngrid])
       call apply_obsop(pgeom,odata,mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo 
+    enddo
   
   case ("atmosphere_ln_pressure_coordinate")
 
@@ -1767,6 +1774,13 @@ mod_nz  = grid%nlevs
 obs_num = locs%nlocs 
 write(*,*)'initialize_interp mod_num,obs_num = ',mod_num,obs_num
 
+print*, 'dh: locs', locs%nlocs
+!print*, 'dh: locslat', locs%lat(:)
+!print*, 'dh: locslon', locs%lon(:)
+
+print*, 'dh: gridmax', maxval(grid%grid_lat),maxval(grid%grid_lon) 
+print*, 'dh: gridmin', minval(grid%grid_lat),minval(grid%grid_lon) 
+
 !Calculate interpolation weight using nicas
 !------------------------------------------
 if (.NOT.interp_initialized) then
@@ -1798,8 +1812,11 @@ if (.NOT.interp_initialized) then
    nam%nc3 = 1
    nam%dc = 1.0
 
+print*, 'dh: AAA'
+
    !Initialize random number generator
    call create_randgen(nam)
+print*, 'dh: BBB'
 
    !Initialize geometry
    geom%nc0a = mod_num  ! Number of grid points (local)
@@ -1815,9 +1832,11 @@ if (.NOT.interp_initialized) then
    deallocate(area)
    deallocate(vunit)
    deallocate(imask)
+print*, 'dh: CCC'
 
    !Compute grid mesh
    call compute_grid_mesh(nam,geom)
+print*, 'dh: DDD'
 
    !Initialize observation operator with observations coordinates (local)
    odata%nobsa = obs_num
@@ -1826,10 +1845,15 @@ if (.NOT.interp_initialized) then
    odata%lonobs(:) = locs%lon(:)
    odata%latobs(:) = locs%lat(:)
 
+
+
+print*, 'dh: EEE'
+
    !Setup observation operator
    odata%nam => nam
    odata%geom => geom
    call compute_parameters(odata,.true.)
+print*, 'dh: FFF'
 
    deallocate( mod_lat, mod_lon )
 
