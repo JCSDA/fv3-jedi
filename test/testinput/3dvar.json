@@ -70,6 +70,7 @@
           "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
         },
         "linearmodel": {
+          "version": "FV3JEDIIdTLM",
           "tstep": "PT15M",
           "update_dgridwind": "1",
           "update_pressures": "1",
@@ -92,6 +93,7 @@
           "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
         },
         "linearmodel": {
+          "version": "FV3JEDIIdTLM",
           "tstep": "PT15M",
           "update_dgridwind": "1",
           "update_pressures": "1",

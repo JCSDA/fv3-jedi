@@ -5,21 +5,18 @@
   },
   "Model": {
     "ncnst": 1,
-    "tstep": "PT6H",
+    "tstep": "PT15M",
     "update_dgridwind": "1",
     "update_pressures": "1"
   },
   "Initial Condition": {
     "date": "2017-08-08T00:00:00Z",
-    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/",
-    "analytic_init": "fv3_init_case",
-    "fv3_test_case": 13,
     "filename_core": "INPUT/fv_core.res.nc",
     "filename_trcr": "INPUT/fv_tracer.res.nc",
     "filename_cplr": "INPUT/coupler.res"
   },
   "Assimilation Window": {
-    "Begin": "2016-10-14T00:00:00Z",
+    "Begin": "2017-08-07T21:00:00Z",
     "Length": "PT6H"
   },
   "Observations": {
