@@ -127,10 +127,10 @@ void IncrementFV3JEDI::random() {
 void IncrementFV3JEDI::interpolateTL(const ufo::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols, const IncrementFV3JEDI & dx) const {
 
   trajICst itra = traj_.find(dx.validTime());
-  if (itra == traj_.end()) {
-    oops::Log::error() << "TlmFV3JEDI: trajectory not available at time " << dx.validTime() << std::endl;
-    ABORT("TlmFV3JEDI: trajectory not available");
-  }
+//  if (itra == traj_.end()) {
+//    oops::Log::error() << "IncrementFV3JEDI: trajectory not available at time " << dx.validTime() << std::endl;
+//    ABORT("IncrementFV3JEDI: trajectory not available");
+//  }
 
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" << *fields_ << std::endl;
   const eckit::Configuration * conf = &vars.toFortran();

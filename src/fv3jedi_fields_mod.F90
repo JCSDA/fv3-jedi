@@ -312,6 +312,8 @@ real(kind=kind_real) :: zp
 integer :: i,j,k,l
 integer :: ierr
 
+print*, 'dh: dot product A', zp
+
 zp=0.0_kind_real
 
 !u d-grid
@@ -325,6 +327,8 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
+print*, 'dh: dot product B', zp
+
 !v d-grid
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
@@ -335,6 +339,8 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
       enddo
    enddo
 enddo
+
+print*, 'dh: dot product C', zp
 
 !pt
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
@@ -347,6 +353,8 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
+print*, 'dh: dot product D', zp
+
 !delp
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
@@ -357,6 +365,8 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
       enddo
    enddo
 enddo
+
+print*, 'dh: dot product E', zp
 
 !q
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
@@ -371,7 +381,11 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
-call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
+print*, 'dh: dot product F', zp
+
+!call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
+
+print*, 'dh: dot product G', zp
 
 return
 end subroutine dot_prod
@@ -1257,6 +1271,7 @@ subroutine interp(fld, locs, vars, gom)
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
+use variable_transforms, only: T_to_Tv, delp_to_logp
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
@@ -1330,6 +1345,9 @@ do jvar = 1, vars%nv
   
   case ("virtual_temperature")
 
+    !Convert temperature to virtual temperature
+    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q)
+
     do jlev = 1, fld%geom%nlevs
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
@@ -1353,6 +1371,8 @@ do jvar = 1, vars%nv
     enddo 
   
   case ("atmosphere_ln_pressure_coordinate")
+
+    call delp_to_logP(fld%geom,fld%Atm%delp)
 
     do jlev = 1, fld%geom%nlevs
       if (jlev == 1) then
@@ -1400,20 +1420,21 @@ end subroutine interp
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_tl(fld, locs, vars, gom, traj)
+subroutine interp_tl(fld, locs, vars, gom, trajin)
 
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
-use variable_transforms, only: delp2lnp_tl, delp2p_tl, delp2pe_tl, pt2tv_tl
+use variable_transforms, only: T_to_Tv_tl, delp_to_logp_tl
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
-type(fv3jedi_field), intent(inout)   :: fld 
-type(ufo_locs),     intent(in)       :: locs 
-type(ufo_vars),  intent(in)          :: vars
-type(ufo_geovals),  intent(inout)    :: gom
-type(fv3jedi_trajectory), intent(in) :: traj
+type(fv3jedi_field),      intent(inout) :: fld 
+type(ufo_locs),           intent(in)    :: locs 
+type(ufo_vars),           intent(in)    :: vars
+type(ufo_geovals),        intent(inout) :: gom
+type(fv3jedi_trajectory), intent(in)    :: trajin
+
 
 type(vt_coeffs), pointer :: pvtc
 
@@ -1423,6 +1444,47 @@ type(odatatype), pointer :: odata
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
+
+
+!HACK: read the trajectory from file
+!-----------------------------------
+  type(restart_file_type) :: Fv_restart
+  type(restart_file_type) :: Tr_restart
+  integer :: id_restart
+  type(fv3jedi_trajectory) :: traj
+  character(len=255) :: filename_core
+  character(len=255) :: filename_trcr
+  real(kind_real), allocatable, dimension(:,:,:) :: pt,delp,q
+
+  filename_core = 'INPUT/fv_core.res.nc'
+  filename_trcr = 'INPUT/fv_tracer.res.nc'
+ 
+  allocate(pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
+  allocate(delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
+  allocate(q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
+
+  id_restart = register_restart_field(Fv_restart, filename_core, 'T',    pt,   domain=fld%geom%domain)
+  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', delp, domain=fld%geom%domain)
+
+  call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+  call free_restart_type(Fv_restart)
+
+  id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', q, domain=fld%geom%domain)
+
+  call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+  call free_restart_type(Tr_restart)
+
+  allocate(traj%pt  (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs))
+  allocate(traj%delp(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs))
+  allocate(traj%q   (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs,1))
+
+  traj%pt         = pt  (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,:)
+  traj%delp       = delp(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,:)
+  traj%q(:,:,:,1) = q   (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,:)
+ 
+  deallocate(pt,delp,q)
+!END HACK
+!--------
 
 ! Get grid dimensions and checks
 ! ------------------------------
@@ -1452,18 +1514,16 @@ gom%linit = .true.
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
-! Compute the trajectory elements of the interpolation
-! ----------------------------------------------------
-call initialize_interp_traj(fld, pvtc)
-
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 write(*,*)'interp_tl vars : ',vars%fldnames
 
 do jvar = 1, vars%nv
+ 
+print*, 'dh: jvar', jvar, trim(vars%fldnames(jvar))
 
   select case (trim(vars%fldnames(jvar)))
-  
+ 
   case ("wind_u")
 
     do jlev = 1, fld%geom%nlevs
@@ -1486,8 +1546,12 @@ do jvar = 1, vars%nv
   
   case ("virtual_temperature")
 
-    !Tangent linear of potential temperature to virtual temperature
-    call pt2tv_tl(fld%geom, pvtc%pe, pvtc%pke, pvtc%pkco, pvtc%pt2tvco, fld%Atm%delp, fld%Atm%pt, fld%Atm%q(:,:,:,1))
+print*, 'dh: interp_tl A'
+
+    !Tangent linear of temperature to virtual temperature
+    call T_to_Tv_tl(fld%geom,traj%pt,fld%Atm%pt,traj%q,fld%Atm%q)
+
+print*, 'dh: interp_tl B'
 
     do jlev = 1, fld%geom%nlevs
       ii = 0
@@ -1497,9 +1561,12 @@ do jvar = 1, vars%nv
           mod_field(ii, 1) = fld%Atm%pt(ji, jj, jlev)
         enddo
       enddo
+print*, 'dh: interp_tl C', odata%lonobs
       call apply_obsop(pgeom,odata,mod_field,obs_field)
+print*, 'dh: interp_tl D'
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
+print*, 'dh: interp_tl E'
   
   case ("humidity_mixing_ratio")
 
@@ -1513,7 +1580,7 @@ do jvar = 1, vars%nv
   
   case ("atmosphere_ln_pressure_coordinate")
 
-    call delp2lnp_tl(fld%geom,pvtc%p,fld%Atm%delp)
+    call delp_to_logP_tl(fld%geom,traj%delp,fld%Atm%delp)    
 
     do jlev = 1, fld%geom%nlevs
       if (jlev == 1) then
@@ -1537,15 +1604,14 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
-    call delp2p_tl(fld%geom,fld%Atm%delp) 
-
   case ("air_pressure_levels")
 
-    call delp2pe_tl(fld%geom,fld%Atm%delp) 
     !Does not fill top of domain
 
   case default
+
     call abor1_ftn("fv3jedi_fields:interp_tl unknown variable")
+
   end select
 
 enddo
@@ -1600,10 +1666,6 @@ write(*,*)'interp_ad after initialize_interp'
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
-! Compute the trajectory elements of the interpolation
-! ----------------------------------------------------
-call initialize_interp_traj(fld, pvtc)
-
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 write(0,*)'interp_ad vars : ',vars%fldnames
@@ -1644,8 +1706,8 @@ do jvar = 1, vars%nv
       enddo
     enddo 
   
-    !Adjoint of potential temperature to virtual temperature
-    call pt2tv_ad(fld%geom, pvtc%pe, pvtc%pke, pvtc%pkco, pvtc%pt2tvco, fld%Atm%delp, fld%Atm%pt, fld%Atm%q(:,:,:,1))
+    !Adjoint of temperature to virtual temperature
+    !call T_to_Tv_ad(fld%geom,traj%pt,fld%Atm%pt,traj%q,fld%Atm%q)
 
   case ("humidity")
 ! TODO: Not sure what FV3 stores in q, likely needs conversion here
@@ -1662,15 +1724,14 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
-    call delp2p_ad(fld%geom,fld%Atm%delp) 
-
   case ("air_pressure_levels")
 
-    call delp2pe_ad(fld%geom,fld%Atm%delp) 
     !Does not fill top of domain
 
   case default
+
     call abor1_ftn("fv3jedi_fields:interp_ad unknown variable")
+
   end select
 
 enddo
@@ -1679,47 +1740,6 @@ deallocate(mod_field)
 deallocate(obs_field)
 
 end subroutine interp_ad
-
-! ------------------------------------------------------------------------------
-
-subroutine initialize_interp_traj(fld, pvtc)
-
-use variable_transforms, only: dpppk_tj, pt2tv_tj
-
-type(fv3jedi_field), intent(in), target :: fld
-type(vt_coeffs), pointer, intent(out) :: pvtc
-
-type(vt_coeffs), save, target :: vtc
-type(fv3jedi_geom), pointer :: grid
-
-logical, save :: traj_interp_initialized = .FALSE.
-
-!Create trajectory components required when performing varialble transforms
-!Saves recomputing them each time this is called.
-
-grid => fld%geom
-
-if (.not. traj_interp_initialized) then
-
-   !Variable transform trajectories
-   allocate(vtc%  p(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
-   allocate(vtc% pe(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
-   allocate(vtc% pk(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs  ))
-   allocate(vtc%pke(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs+1))
-   allocate(vtc%   pkco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,2))
-   allocate(vtc%pt2tvco(grid%bd%isc:grid%bd%iec,grid%bd%jsc:grid%bd%jec,1:grid%nlevs,3))
-   
-   !TODO delp,q and pt should be trajecotry, not field/increment
-   call dpppk_tj(grid, grid%bk(1), fld%Atm%delp, vtc%p, vtc%pe, vtc%pk, vtc%pke, vtc%pkco)
-   call pt2tv_tj(grid, 1.0_kind_real, fld%Atm%pt, fld%Atm%q, vtc%pk, vtc%pt2tvco)
-   
-   traj_interp_initialized = .true.
-
-endif
-   
-pvtc => vtc
-
-end subroutine initialize_interp_traj
 
 ! ------------------------------------------------------------------------------
 
@@ -1831,6 +1851,8 @@ if (.NOT.interp_initialized) then
    interp_initialized = .TRUE. 
 
 endif
+
+print*, 'dh, create links to nicas structures'
 
 pgeom => geom
 pdata => odata

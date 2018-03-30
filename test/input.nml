@@ -17,7 +17,7 @@
 /
 
 &fv3jedi_geom_nml
-    size_cubic_grid   = 48
+    size_cubic_grid   = 96
     nlevs             = 64
     ntracers          = 2
     hydrostatic       = T
@@ -33,8 +33,8 @@
 &fv_core_nml
     layout   = 1,1
     io_layout = 1,1
-    npx      = 49
-    npy      = 49
+    npx      = 97
+    npy      = 97
     ntiles   = 6
     npz    = 64
     grid_type = 0

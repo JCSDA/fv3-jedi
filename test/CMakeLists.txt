@@ -9,7 +9,7 @@ list( APPEND fv3jedi_test_input
 #  testinput/4dvar.dripcg.json
 #  testinput/4dvar.drpcglmp.json
 #  testinput/4dvar.drpfom.json
-#  testinput/4dvar.drplanczos.json
+  testinput/4dvar.drplanczos.json
 #  testinput/4dvar.ipcg.json
 #  testinput/4dvar.obsbias.json
 #  testinput/4dvar.rpcg.json
@@ -44,7 +44,7 @@ list( APPEND fv3jedi_testoutput
 #  testoutput/4dvar.dripcg.test
 #  testoutput/4dvar.drpcglmp.test
 #  testoutput/4dvar.drpfom.test
-#  testoutput/4dvar.drplanczos.test
+  testoutput/4dvar.drplanczos.test
 #  testoutput/4dvar.ipcg.test
 #  testoutput/4dvar.obsbias.test
 #  testoutput/4dvar.rpcg.test

@@ -119,6 +119,11 @@ model%DT = real(duration_seconds(dtstep),kind_real)
 call fv_init(model%FV_Atm, model%DT, model%grids_on_this_pe, model%p_split)
 deallocate(pelist_all)
 
+!Set ptop, ak, bk
+model%FV_Atm(1)%ak = geom%ak
+model%FV_Atm(1)%bk = geom%bk
+model%FV_Atm(1)%ptop = geom%ptop
+
 !Always allocate w, delz, q_con for now
 deallocate(model%FV_Atm(1)%w)
 deallocate(model%FV_Atm(1)%delz)
@@ -170,7 +175,6 @@ if (.not. model%FV_Atm(1)%gridstruct%nested) model%FV_Atm(1)%parent_grid => mode
 #ifdef TLADPRES
 
 !Initialize perturbation variables and read config
-allocate(model%FV_AtmP(1))
 call fv_init_pert(model%FV_Atm,model%FV_AtmP)
 
 
@@ -340,9 +344,6 @@ type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
 
 type(fv_atmos_type), pointer :: FV_Atm(:)
-#ifdef TLADPRES
-type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
-#endif
 integer :: i,j,k
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: u_dt, v_dt, t_dt
@@ -353,9 +354,6 @@ if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 !Convenience pointer to the main FV_Atm structure
 !------------------------------------------------
 FV_Atm => self%FV_Atm
-#ifdef TLADPRES
-FV_AtmP => self%FV_AtmP
-#endif
 
 !Copy to model precision variables
 !---------------------------------
@@ -452,8 +450,6 @@ flds%Atm%q    = FV_Atm(1)%q
 !endif
 flds%Atm%ua    = FV_Atm(1)%ua
 flds%Atm%va    = FV_Atm(1)%va
-
-
 
 end subroutine model_propagate
 

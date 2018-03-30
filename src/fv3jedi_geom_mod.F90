@@ -49,6 +49,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat
   real(kind=kind_real), allocatable, dimension(:,:) :: area
   real(kind=kind_real), allocatable, dimension(:)   :: ak,bk
+  real(kind=kind_real) :: ptop
   character(len=255) :: datapath_in
 !Needed for d to a grid interpolation
   type(fv_grid_type) :: gridstruct
@@ -272,6 +273,8 @@ if (trim(init_type) .ne. "inline") then
    call restore_state(Fv_restart, directory='')
    call free_restart_type(Fv_restart)
    
+   self%ptop = self%ak(1)
+
 else
    
    if (pe == 0) print*, 'Grid generation method: inline'
@@ -279,6 +282,7 @@ else
    !Intialize using the model setup routine
    call fv_init(FV_Atm, 300.0_kind_real, grids_on_this_pe, p_split)
                         !^some dummy value
+   deallocate(pelist_all) !From fv_control
 
    self%domain = FV_Atm(1)%domain
    self%bd%isd = FV_Atm(1)%bd%isd
@@ -316,6 +320,8 @@ else
    id_restart = register_restart_field(Fv_restart, fv_core_res_path, 'bk', self%bk, no_domain=.true.)
    call restore_state(Fv_restart, directory='')
    call free_restart_type(Fv_restart)
+
+   self%ptop = self%ak(1)
    
    !Gridstruct needed to do interpolation from D to A grid
    if (.not. self%agrid_vel_rst) then
@@ -347,8 +353,7 @@ else
 
    !Done with the FV_Atm stucture here
    call deallocate_fv_atmos_type(FV_Atm(1))
-   deallocate(FV_Atm)
-   deallocate(pelist_all) !From fv_control
+   deallocate(FV_Atm)  
    deallocate(grids_on_this_pe)
 
 endif
@@ -409,6 +414,7 @@ allocate ( other%ak(other%nlevs+1) )
 allocate ( other%bk(other%nlevs+1) )
 other%ak = self%ak
 other%bk = self%bk
+other%ptop = self%ptop
 other%datapath_in = self%datapath_in
 if (.not. self%agrid_vel_rst) then
    allocate ( other%gridstruct%sin_sg (self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9) )
