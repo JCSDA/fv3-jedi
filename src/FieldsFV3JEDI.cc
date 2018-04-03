@@ -133,11 +133,11 @@ void FieldsFV3JEDI::interpolate(const ufo::Locations & locs, const oops::Variabl
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::interpolateTL(const ufo::Locations & locs, const oops::Variables & vars,
-                                ufo::GeoVaLs & gom, const int & second) const {
+                                ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran(), second);
+  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
 }
-//// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 void FieldsFV3JEDI::interpolateAD(const ufo::Locations & locs, const oops::Variables & vars,
                                 const ufo::GeoVaLs & gom) {
   const eckit::Configuration * conf = &vars.toFortran();

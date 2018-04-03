@@ -79,7 +79,7 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
   void dirac(const eckit::Configuration &);
 
 /// Interpolate to observation location
-  void interpolateTL(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &, const IncrementFV3JEDI &) const;
+  void interpolateTL(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
   void interpolateAD(const ufo::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
 
 /// Convert to/from generic unstructured grid
@@ -110,11 +110,6 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
  private:
   void print(std::ostream &) const;
   boost::scoped_ptr<FieldsFV3JEDI> fields_;
-  typedef std::map< util::DateTime, int >::iterator trajIter;
-  typedef std::map< util::DateTime, int >::const_iterator trajICst;
-
-  std::map< util::DateTime, F90traj> traj_;
-
 };
 // -----------------------------------------------------------------------------
 

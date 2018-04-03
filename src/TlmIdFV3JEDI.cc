@@ -38,9 +38,7 @@ TlmIdFV3JEDI::~TlmIdFV3JEDI() {
   oops::Log::trace() << "TlmIdFV3JEDI destructed" << std::endl;
 }
 // -----------------------------------------------------------------------------
-void TlmIdFV3JEDI::setTrajectory(const StateFV3JEDI &, StateFV3JEDI &, const ModelBiasFV3JEDI &) {
-  oops::Log::debug() << "dh: where traj would be" << std::endl;
-}
+void TlmIdFV3JEDI::setTrajectory(const StateFV3JEDI &, StateFV3JEDI &, const ModelBiasFV3JEDI &) {}
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
   fv3jedi_model_prepare_integration_tl_f90(keyConfig_, dx.fields().toFortran());

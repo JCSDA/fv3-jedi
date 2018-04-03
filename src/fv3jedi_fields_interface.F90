@@ -468,7 +468,7 @@ end subroutine fv3jedi_field_interp_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_interp_tl_c(c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_interp_tl_f90')
+subroutine fv3jedi_field_interp_tl_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_interp_tl_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use ufo_locs_mod
@@ -476,18 +476,15 @@ use ufo_locs_mod_c, only: ufo_locs_registry
 use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
-use fv3jedi_trajectories, only: fv3jedi_trajectory, fv3jedi_traj_registry
 implicit none
-integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated 
+integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
 type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
-integer(c_int), intent(in) :: c_key_traj !< Trajectory structure
 type(fv3jedi_field), pointer :: fld
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
-type(fv3jedi_trajectory), pointer :: traj
 
 write(*,*)'fv3jedi_field_interp_tl_c keys fld, locs, gom = ',c_key_fld,c_key_loc,c_key_gom
 call ufo_vars_setup(vars, c_vars)
@@ -495,9 +492,8 @@ call ufo_vars_setup(vars, c_vars)
 call fv3jedi_field_registry%get(c_key_fld, fld)
 call ufo_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
-call fv3jedi_traj_registry%get(c_key_traj,traj)
 
-call interp_tl(fld, locs, vars, gom, traj)
+call interp_tl(fld, locs, vars, gom)
 
 end subroutine fv3jedi_field_interp_tl_c
 

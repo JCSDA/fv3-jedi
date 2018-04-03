@@ -312,8 +312,6 @@ real(kind=kind_real) :: zp
 integer :: i,j,k,l
 integer :: ierr
 
-print*, 'dh: dot product A', zp
-
 zp=0.0_kind_real
 
 !u d-grid
@@ -327,8 +325,6 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
-print*, 'dh: dot product B', zp
-
 !v d-grid
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
@@ -339,8 +335,6 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
       enddo
    enddo
 enddo
-
-print*, 'dh: dot product C', zp
 
 !pt
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
@@ -353,8 +347,6 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
-print*, 'dh: dot product D', zp
-
 !delp
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
@@ -365,8 +357,6 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
       enddo
    enddo
 enddo
-
-print*, 'dh: dot product E', zp
 
 !q
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
@@ -381,11 +371,7 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
-print*, 'dh: dot product F', zp
-
-!call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
-
-print*, 'dh: dot product G', zp
+call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
 
 return
 end subroutine dot_prod
@@ -1372,6 +1358,7 @@ do jvar = 1, vars%nv
   
   case ("atmosphere_ln_pressure_coordinate")
 
+    !Convert pressure thickness to log pressure
     call delp_to_logP(fld%geom,fld%Atm%delp)
 
     do jlev = 1, fld%geom%nlevs
@@ -1420,12 +1407,12 @@ end subroutine interp
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_tl(fld, locs, vars, gom, trajin)
+subroutine interp_tl(fld, locs, vars, gom)
 
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
-use variable_transforms, only: T_to_Tv_tl, delp_to_logp_tl
+use variable_transforms, only: T_to_Tv_tl
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
@@ -1433,8 +1420,6 @@ type(fv3jedi_field),      intent(inout) :: fld
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_trajectory), intent(in)    :: trajin
-
 
 type(vt_coeffs), pointer :: pvtc
 
@@ -1446,8 +1431,8 @@ real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
 
-!HACK: read the trajectory from file
-!-----------------------------------
+!HACK: read a trajectory from file
+!---------------------------------
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
   integer :: id_restart
@@ -1580,27 +1565,7 @@ print*, 'dh: interp_tl E'
   
   case ("atmosphere_ln_pressure_coordinate")
 
-    call delp_to_logP_tl(fld%geom,traj%delp,fld%Atm%delp)    
-
-    do jlev = 1, fld%geom%nlevs
-      if (jlev == 1) then
-        mod_field(:,1) = reshape( fld%Atm%delp(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                               fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                               jlev), [ngrid])
-      else
-        ii = 0
-        do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-          do ji = fld%geom%bd%isc, fld%geom%bd%iec
-            ii = ii + 1
-            mod_field(ii, 1) = mod_field(ii, 1) + fld%Atm%delp(ji, jj, jlev)
-          enddo
-        enddo
-      endif
-  
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-  
-      gom%geovals(jvar)%vals(jlev,:) = log(obs_field(:,1))
-    enddo
+    !Not a control variable
 
   case ("air_pressure")
 
@@ -1710,6 +1675,7 @@ do jvar = 1, vars%nv
     !call T_to_Tv_ad(fld%geom,traj%pt,fld%Atm%pt,traj%q,fld%Atm%q)
 
   case ("humidity")
+
 ! TODO: Not sure what FV3 stores in q, likely needs conversion here
     do jlev = 1, fld%geom%nlevs
       mod_field(:,1) = reshape( fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec, &
@@ -1720,7 +1686,8 @@ do jvar = 1, vars%nv
     enddo 
 
   case ("atmosphere_ln_pressure_coordinate")
-!   Not a control variable
+
+     !Not a control variable
 
   case ("air_pressure")
 
