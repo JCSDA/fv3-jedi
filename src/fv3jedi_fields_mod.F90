@@ -1257,7 +1257,7 @@ subroutine interp(fld, locs, vars, gom)
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
-use variable_transforms, only: T_to_Tv, delp_to_logp
+use variable_transforms
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
@@ -1271,6 +1271,8 @@ type(odatatype), pointer :: odata
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
+
+real(kind=kind_real), allocatable :: geoval(:,:,:)
 
 ! Get grid dimensions and checks
 ! ------------------------------
@@ -1305,6 +1307,9 @@ allocate(obs_field(nobs,1))
 ! ----------------------------------------------------------------
 write(*,*)'interp vars : ',vars%fldnames
 
+!Temporary variable in case of variable transform
+allocate(geoval(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs))
+
 do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
@@ -1332,14 +1337,14 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     !Convert temperature to virtual temperature
-    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q)
+    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geoval)
 
     do jlev = 1, fld%geom%nlevs
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
         do ji = fld%geom%bd%isc, fld%geom%bd%iec
           ii = ii + 1
-          mod_field(ii, 1) = fld%Atm%pt(ji, jj, jlev)
+          mod_field(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
       call apply_obsop(pgeom,odata,mod_field,obs_field)
@@ -1359,13 +1364,13 @@ do jvar = 1, vars%nv
   case ("atmosphere_ln_pressure_coordinate")
 
     !Convert pressure thickness to log pressure
-    call delp_to_logP(fld%geom,fld%Atm%delp)
+    call delp_to_logP(fld%geom,fld%Atm%delp,geoval)
 
     do jlev = 1, fld%geom%nlevs
       if (jlev == 1) then
-        mod_field(:,1) = reshape( fld%Atm%delp(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                               fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                               jlev), [ngrid])
+        mod_field(:,1) = reshape( geoval(fld%geom%bd%isc:fld%geom%bd%iec, &
+                                         fld%geom%bd%jsc:fld%geom%bd%jec, &
+                                         jlev), [ngrid])
       else
         ii = 0
         do jj = fld%geom%bd%jsc, fld%geom%bd%jec
@@ -1396,6 +1401,8 @@ do jvar = 1, vars%nv
 
 enddo
 
+deallocate(geoval)
+
 write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 
 deallocate(mod_field)
@@ -1412,7 +1419,7 @@ subroutine interp_tl(fld, locs, vars, gom)
 use obsop_apply, only: apply_obsop 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
-use variable_transforms, only: T_to_Tv_tl
+use variable_transforms
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
@@ -1597,7 +1604,7 @@ subroutine interp_ad(fld, locs, vars, gom)
 use obsop_apply, only: apply_obsop_ad
 use type_geom, only: geomtype,compute_grid_mesh
 use type_odata, only: odatatype
-use variable_transforms, only: delp2lnp_ad, delp2p_ad, delp2pe_ad, pt2tv_ad
+use variable_transforms
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld

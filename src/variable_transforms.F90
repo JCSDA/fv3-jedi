@@ -192,19 +192,15 @@ end subroutine compute_pressures_bwd
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine T_to_Tv(geom,T,q)
+subroutine T_to_Tv(geom,T,q,Tv)
 
  implicit none
- type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(inout) :: T (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in   ) :: q (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
- 
- real(kind=kind_real) :: Tv(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs) !Local variable to hold virtual temperature
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: T (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: Tv (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
 
   Tv = T*(1.0 + epsilon*q)
-
-  !Replace temperature with virtual temperature
-  T = Tv
 
 end subroutine T_to_Tv
 
@@ -251,16 +247,16 @@ end subroutine T_to_Tv_ad
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine delp_to_logP(geom,delp)
+subroutine delp_to_logP(geom,delp,logp)
 
  implicit none
- type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(inout) :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs) !Pressure thickness
+ real(kind=kind_real), intent(out) :: logp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs) !Log of pressure
 
+ !locals
  real(kind=kind_real) ::   pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)
  real(kind=kind_real) ::    p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
- real(kind=kind_real) :: logp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
-
  integer :: k 
 
   !Pressure at layer edge
@@ -274,9 +270,6 @@ subroutine delp_to_logP(geom,delp)
 
   !Log pressure
   logp = log(p)
-
-  !Overwrite variable
-  delp = logp
 
 end subroutine delp_to_logP
 
