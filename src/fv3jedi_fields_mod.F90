@@ -1493,7 +1493,6 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     do jlev = 1, fld%geom%nlevs
-print*, 'dh: adjoint input jlev:', jlev, gom%geovals(jvar)%vals(jlev,:)
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
       call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
       ii = 0
@@ -1507,9 +1506,7 @@ print*, 'dh: adjoint input jlev:', jlev, gom%geovals(jvar)%vals(jlev,:)
   
     !Adjoint of temperature to virtual temperature
     call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
- 
-print*, 'dh: adjoint output:', fld%Atm%pt(10,10,10)
- 
+  
   case ("humidity_mixing_ratio")
   
   case ("atmosphere_ln_pressure_coordinate")
@@ -1589,7 +1586,11 @@ integer :: jvar
 ! ------------------------------
 ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
 nobs = locs%nlocs 
+
 write(*,*) trim(myname),' ngrid, nobs = : ',ngrid, nobs
+
+!Run some basic checks on the interpolation
+!------------------------------------------
 !call interp_checks(myname, fld, locs, vars, gom)
 
 ! Calculate interpolation weight using nicas
