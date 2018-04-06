@@ -196,9 +196,9 @@ subroutine T_to_Tv(geom,T,q,Tv)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: T (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: Tv (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: T (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Virtual temperature (K)
 
   Tv = T*(1.0 + epsilon*q)
 
@@ -210,12 +210,12 @@ subroutine T_to_Tv_tl(geom,T,T_tl,q,q_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) :: T (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in   ) :: q (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(inout) :: T_tl (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in   ) :: q_tl (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(in   ) :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(inout) :: T_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: q_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
 
- real(kind=kind_real) :: TV_tl(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Local variable to hold virtual temperature
+ real(kind=kind_real) :: Tv_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Local variable to hold virtual temperature
 
   Tv_tl = T_tl*(1.0 + epsilon*q) +  T_tl*epsilon*q_tl
 
@@ -230,12 +230,12 @@ subroutine T_to_Tv_ad(geom,T,T_ad,q,q_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in )   :: geom !Geometry for the model
- real(kind=kind_real), intent(in )   :: T (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in )   :: q (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(inout) :: T_ad (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(inout) :: q_ad (geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(in )   :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in )   :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(inout) :: T_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(inout) :: q_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
 
- real(kind=kind_real) :: TV_ad(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Local variable to hold virtual temperature
+ real(kind=kind_real) :: TV_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Local variable to hold virtual temperature
 
   Tv_ad = T_ad
   T_ad  = (1.0 + epsilon*q)*Tv_ad
@@ -251,12 +251,12 @@ subroutine delp_to_logP(geom,delp,logp)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs) !Pressure thickness
- real(kind=kind_real), intent(out) :: logp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs) !Log of pressure
+ real(kind=kind_real), intent(in ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs) !Pressure thickness
+ real(kind=kind_real), intent(out) :: logp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs) !Log of pressure
 
  !locals
- real(kind=kind_real) ::   pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)
- real(kind=kind_real) ::    p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
+ real(kind=kind_real) ::   pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
+ real(kind=kind_real) ::    p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
  integer :: k 
 
   !Pressure at layer edge
@@ -279,14 +279,14 @@ subroutine delp_to_logP_tl(geom,delp,delp_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(inout) :: delp_tl(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(inout) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
 
- real(kind=kind_real) ::      pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)
- real(kind=kind_real) ::       p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
- real(kind=kind_real) ::   pe_tl(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)
- real(kind=kind_real) ::    p_tl(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
- real(kind=kind_real) :: logp_tl(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
+ real(kind=kind_real) ::      pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
+ real(kind=kind_real) ::       p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) ::   pe_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
+ real(kind=kind_real) ::    p_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) :: logp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
 
  integer :: k 
 
@@ -316,14 +316,14 @@ subroutine delp_to_logP_ad(geom,delp,delp_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
 
- real(kind=kind_real) ::      pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)
- real(kind=kind_real) ::       p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
- real(kind=kind_real) ::   pe_ad(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)
- real(kind=kind_real) ::    p_ad(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
- real(kind=kind_real) :: logp_ad(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )
+ real(kind=kind_real) ::      pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
+ real(kind=kind_real) ::       p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) ::   pe_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
+ real(kind=kind_real) ::    p_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) :: logp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
 
  integer :: k 
 
@@ -360,474 +360,7 @@ end subroutine delp_to_logP_ad
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
 
-
-subroutine dpppk_tj(geom, ptop, delp, p, pe, pk, pke, pkco)
-
-  !Save the trajectory for when converting pressure variable
-
-  implicit none
-
-  type(fv3jedi_geom)  , intent(in)   :: geom !Geometry for the model
-
-  real(kind=kind_real), intent(in ) :: ptop
-  real(kind=kind_real), intent(in ) :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )   !Pressure thickness
-  real(kind=kind_real), intent(out) ::    p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )   !Pressure (mid point)
-  real(kind=kind_real), intent(out) ::   pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)   !Pressure (edges)
-  real(kind=kind_real), intent(out) ::   pk(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )   !Pressure to the kappa (mid point)
-  real(kind=kind_real), intent(out) ::  pke(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)   !Pressure to the kappa (edges)
-  real(kind=kind_real), intent(out) :: pkco(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs,2)   !Saved coeffs for pkp
-
-  integer :: k
-
-  pe = 0.0
-  pk = 0.0
-  pke = 0.0
-  pkco = 0.0
-
-  !Pressure at layer edge
-  pe(:,:,1) = ptop
-  do k = 2,geom%nlevs+1
-    pe(:,:,k) = pe(:,:,k-1) + delp(:,:,k-1)
-  enddo
-
-  !Pressure at layer mid point
-  p = 0.5*(pe(:,:,2:geom%nlevs+1) + pe(:,:,1:geom%nlevs))
-
-  !Pressure to the kappa at layer edge
-  pke = pe**kappa
-
-  !Multiplication coefficients used in tl and ad of pk computation
-  pkco(:,:,:,1)  = 1.0/(kappa*(log(pe(:,:,2:geom%nlevs+1)) - log(pe(:,:,1:geom%nlevs))))
-  pkco(:,:,:,2)  = pkco(:,:,:,1)*pk*kappa
-
-  !Pressure to the kappa at layer mid point
-  pk = pkco(:,:,:,1)*(pke(:,:,2:geom%nlevs+1) - pke(:,:,1:geom%nlevs))
-
-end subroutine dpppk_tj
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2lnp(geom,ptop,delp)
-
-  !Tangent linear of conversion from delp to log(p)
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-  real(kind=kind_real), intent(in)  :: ptop
-  real(kind=kind_real), intent(inout)  :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure (mid)
-  real(kind=kind_real) :: pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  integer :: k
-
-  !Pressure at the edges
-  pe(:,:,1) = ptop
-  do k = 2,geom%nlevs+1
-    pe(:,:,k) = pe(:,:,k-1) + delp(:,:,k-1)
-  enddo
-
-  !Pressure at mid points
-  p = 0.5*(pe(:,:,2:geom%nlevs+1) + pe(:,:,1:geom%nlevs))
-
-  !Overwrite with log pressure
-  delp = log(p)
-
-endsubroutine delp2lnp
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2lnp_tl(geom,p,delpp)
-
-  !Tangent linear of conversion from delp to log(p)
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-
-  !Trajectory
-  real(kind=kind_real), intent(in)  ::     p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure (edges)
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) ::   pp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure (edges)
-  integer :: k
-
-  !Linearized pressure at the edges
-  pep(:,:,1) = 0.0
-  do k = 2,geom%nlevs+1
-    pep(:,:,k) = pep(:,:,k-1) + delpp(:,:,k-1)
-  enddo
-
-  !Linearized pressure at mid points
-  pp = 0.5*(pep(:,:,2:geom%nlevs+1) + pep(:,:,1:geom%nlevs))
-
-  !Linearized overwrite with log pressure
-  delpp = pp / p
-
-endsubroutine delp2lnp_tl
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2lnp_ad(geom,p,delpp)
-
-  !Adjoint of conversion from delp to log(p)
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-
-  !Trajectory
-  real(kind=kind_real), intent(in)  ::     p(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure (edges)
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) ::   pp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure (edges)
-  real(kind=kind_real) :: lnpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Log pressure
-  integer :: k
-
-  !Adjoint overwrite with log pressure
-  pp = delpp / p
-
-  !Adjoint pressure at mid points
-  pep = 0.0_8
-  pep(:, :, 2:geom%nlevs+1) = pep(:, :, 2:geom%nlevs+1) + 0.5*pp
-  pep(:, :, 1:geom%nlevs  ) = pep(:, :, 1:geom%nlevs  ) + 0.5*pp
-
-  !Adjoint pressure at the edges
-  delpp = 0.0_8
-  DO k=geom%nlevs+1,2,-1
-    pep  (:, :, k-1) = pep  (:, :, k-1) + pep(:, :, k)
-    delpp(:, :, k-1) =                    pep(:, :, k)
-  END DO
-
-endsubroutine delp2lnp_ad
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2p(geom,ptop,delp)
-
-  !Tangent linear of conversion from delp to p at layer mid points 
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-  real(kind=kind_real), intent(in)  :: ptop
-
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  integer :: k
-
-  !Linearized pressure at the edges
-  pe(:,:,1) = ptop
-  do k = 2,geom%nlevs+1
-    pe(:,:,k) = pe(:,:,k-1) + delp(:,:,k-1)
-  enddo
-
-  !Linearized overwrite with pressure at mid points
-  delp = 0.5*(pe(:,:,2:geom%nlevs+1) + pe(:,:,1:geom%nlevs))
-
-endsubroutine delp2p
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2p_tl(geom,delpp)
-
-  !Tangent linear of conversion from delp to p at layer mid points 
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  integer :: k
-
-  !Linearized pressure at the edges
-  pep(:,:,1) = 0.0
-  do k = 2,geom%nlevs+1
-    pep(:,:,k) = pep(:,:,k-1) + delpp(:,:,k-1)
-  enddo
-
-  !Linearized overwrite with pressure at mid points
-  delpp = 0.5*(pep(:,:,2:geom%nlevs+1) + pep(:,:,1:geom%nlevs))
-
-endsubroutine delp2p_tl
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2p_ad(geom,delpp)
-
-  !Adjoint of conversion from delp to p at layer mid points 
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  integer :: k
-
-  !Adjoint overwrite with pressure at mid points
-  pep = 0.0_8
-  pep(:, :, 2:geom%nlevs+1) = pep(:, :, 2:geom%nlevs+1) + 0.5*delpp
-  pep(:, :, 1:geom%nlevs  ) = pep(:, :, 1:geom%nlevs  ) + 0.5*delpp
-
-  !Adjoint pressure at the edges
-  delpp = 0.0_8
-  DO k=geom%nlevs+1,2,-1
-    pep  (:, :, k-1) = pep  (:, :, k-1) + pep(:, :, k)
-    delpp(:, :, k-1) =                    pep(:, :, k)
-  END DO
-
-endsubroutine delp2p_ad
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2pe_tl(geom,delpp)
-
-  !Tangent linear of conversion from delp to p at layer edges 
-  !NOTE: only returns p from layer 2 to nlevs + 1. At top of domain pertubtaion is zero
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  integer :: k
-
-  !Linearized pressure at the edges
-  pep(:,:,1) = 0.0
-  do k = 2,geom%nlevs+1
-    pep(:,:,k) = pep(:,:,k-1) + delpp(:,:,k-1)
-  enddo
-
-  !Linearized overwrite with pressure at mid points
-  delpp = pep(:,:,2:geom%nlevs+1)
-
-endsubroutine delp2pe_tl
-
-! ------------------------------------------------------------------------------
-
-subroutine delp2pe_ad(geom,delpp)
-
-  !Adjoint of conversion from delp to p at layer edges 
-  !NOTE: only returns p from layer 2 to nlevs + 1. At top of domain pertubtaion is zero
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in)  :: geom
-
-  !Perturbations  
-  real(kind=kind_real), intent(inout)  :: delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs  )  !Pressure thickness
-
-  !Locals
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  integer :: k
-
-  !Adjoint overwrite with pressure at mid points
-  pep = 0.0_8
-  pep(:, :, 2:geom%nlevs+1) = delpp
-
-  !Adjoint pressure at the edges
-  delpp = 0.0_8
-  DO k=geom%nlevs+1,2,-1
-    pep  (:, :, k-1) = pep  (:, :, k-1) + pep(:, :, k)
-    delpp(:, :, k-1) =                    pep(:, :, k)
-  END DO
-
-endsubroutine delp2pe_ad
-
-! ------------------------------------------------------------------------------
-
-subroutine pt2tv(geom, p0, pt, q, pk)
-
-  !Nonlinear calculation of virtual temperature from potential temperature.
-
-  implicit none
-
-  !Convert potential temperature to virtual temperature
-  !Tv = (1 + eps q) * T
-  !   = (1 + eps q) * (P/P0)**kappa * pt
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in ) :: geom
-
-  real(kind=kind_real), intent(in   ) :: p0
-  real(kind=kind_real), intent(inout) :: pt(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(in   ) ::  q(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(in   ) :: pk(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-
-  pt = (1.0 + epsilon * q) * p0**(-kappa) * pk * pt
-
-end subroutine pt2tv
-
-! ------------------------------------------------------------------------------
-
-subroutine pt2tv_tj(geom, p0, pt, q, pk, pt2tvco)
-
-  !Trajectory componenents for tl and ad of potential temperature to virtual temperature
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in ) :: geom
-
-  !Trajecotory
-  real(kind=kind_real), intent(in)  :: p0
-  real(kind=kind_real), intent(in)  :: pt(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(in)  ::  q(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(in)  :: pk(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(out) :: pt2tvco(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs,3)
-
-  real(kind=kind_real) :: p0mk
-
-  p0mk = p0**(-kappa)
-  pt2tvco(:,:,:,1) = p0mk*(1.0 + epsilon*q)*pk
-  pt2tvco(:,:,:,2) = p0mk*epsilon*pk*pt
-  pt2tvco(:,:,:,3) = p0mk*(1.0 + epsilon*q)*pt
-
-end subroutine pt2tv_tj
-
-! ------------------------------------------------------------------------------
-
-subroutine pt2tv_tl(geom, pe, pke, pkco, pt2tvco, delpp, ptp, qp)
-
-  !Tangent linear of potential temperature to virtual temperature
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in ) :: geom
-
-  !Trajecotory
-  real(kind=kind_real), intent(in) ::      pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real), intent(in) ::     pke(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure to the kappa (edges)
-  real(kind=kind_real), intent(in) ::    pkco(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs,2)
-  real(kind=kind_real), intent(in) :: pt2tvco(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs,3)
-  !Perturbations
-  real(kind=kind_real), intent(in   ) ::  delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(inout) ::    ptp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(in   ) ::     qp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) :: lpep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) :: pkep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) ::  pkp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real) ::  tvp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-
-  integer :: k
-
-  !Linearized pressure at the edges
-  pep(:,:,1) = 0.0
-  do k = 2,geom%nlevs+1
-    pep(:,:,k) = pep(:,:,k-1) + delpp(:,:,k-1)
-  enddo
-
-  !Linearized log pressure (edges)
-  lpep = pep / pe
-
-  !Linearized p to the kappa at edges
-  pkep = kappa * (pke/pe) * pep 
-
-  !Linearized p to the kappa at midpoint
-  pkp = pkco(:,:,:,1) * (pkep(:,:,2:geom%nlevs+1) - pkep(:,:,1:geom%nlevs)) - pkco(:,:,:,2) * (lpep(:,:,2:geom%nlevs+1) - lpep(:,:,1:geom%nlevs))
-
-  !Linearized potential temperature to virtual temperature
-  tvp = pt2tvco(:,:,:,1) * ptp + pt2tvco(:,:,:,2) * qp + pt2tvco(:,:,:,3) * pkp
-
-  !Linearized overwrite
-  ptp = tvp
-
-end subroutine pt2tv_tl
-
-! ------------------------------------------------------------------------------
-
-subroutine pt2tv_ad(geom, pe, pke, pkco, pt2tvco, delpp, ptp, qp)
-
-  !Adjoint of potential temperature to virtual temperature
-
-  implicit none
-
-  !Geometry for the model
-  type(fv3jedi_geom)  , intent(in ) :: geom
-
-  !Trajecotory
-  real(kind=kind_real), intent(in) ::      pe(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real), intent(in) ::     pke(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure to the kappa (edges)
-  real(kind=kind_real), intent(in) ::    pkco(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs,2)
-  real(kind=kind_real), intent(in) :: pt2tvco(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs,3)
-  !Perturbations
-  real(kind=kind_real), intent(inout) ::  delpp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(inout) ::    ptp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real), intent(inout) ::     qp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-
-  real(kind=kind_real) ::  pep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) :: lpep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) :: pkep(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs+1)  !Pressure (edges)
-  real(kind=kind_real) ::  pkp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-  real(kind=kind_real) ::  tvp(geom%bd%isc:geom%bd%iec,geom%bd%jsc:geom%bd%jec,1:geom%nlevs)
-
-  integer :: k
-
-  !Adjoint of overwrite
-  tvp = ptp
-
-  !Adjoint of potential temperature to virtual temperature
-  ptp =      pt2tvco(:,:,:,1) * tvp
-   qp = qp + pt2tvco(:,:,:,2) * tvp
-  pkp =      pt2tvco(:,:,:,3) * tvp
-
-  !Adjoint of p to the kappa at midpoint
-  pkep = 0.0
-  lpep = 0.0
-  pkep(:,:,2:geom%nlevs+1) = pkep(:,:,2:geom%nlevs+1) + pkco(:,:,:,1) * pkp
-  pkep(:,:,1:geom%nlevs  ) = pkep(:,:,1:geom%nlevs  ) - pkco(:,:,:,1) * pkp
-  lpep(:,:,2:geom%nlevs+1) = lpep(:,:,2:geom%nlevs+1) - pkco(:,:,:,2) * pkp
-  lpep(:,:,1:geom%nlevs  ) = lpep(:,:,1:geom%nlevs  ) + pkco(:,:,:,2) * pkp
-
-  !Adjoint of p to the kappa at edges + adjoint of linearized log pressure
-  pep = kappa * (pke/pe) * pkep + lpep/pe
-
-  !Adjoint of pressure at edges
-  do k = geom%nlevs+1,2,-1
-       pep(:,:,k-1) =   pep(:,:,k-1) + pep(:,:,k)
-     delpp(:,:,k-1) = delpp(:,:,k-1) + pep(:,:,k)
-  enddo
-
-end subroutine pt2tv_ad
-
-! ------------------------------------------------------------------------------
-
-! Convert d-grid winds to a-grid.
-! -------------------------------
-
+ !Convert d-grid winds to a-grid.
  subroutine d2a2c_vect(u, v, ua, va, dord4, gridstruct, &
                        bd, npx, npy, nested, grid_type)
 

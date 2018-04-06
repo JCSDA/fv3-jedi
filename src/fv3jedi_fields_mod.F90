@@ -1254,7 +1254,7 @@ end subroutine convert_from_ug
 
 subroutine interp(fld, locs, vars, gom)
 
-use obsop_apply, only: apply_obsop 
+use obsop_apply, only: apply_obsop
 use type_geom, only: geomtype
 use type_odata, only: odatatype
 use variable_transforms
@@ -1265,38 +1265,20 @@ type(ufo_locs),     intent(in)     :: locs
 type(ufo_vars),  intent(in)        :: vars
 type(ufo_geovals),  intent(inout)  :: gom
 
+character(len=*), parameter :: myname = 'interp'
+
 type(geomtype), pointer :: pgeom
 type(odatatype), pointer :: odata
 
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
-
 real(kind=kind_real), allocatable :: geoval(:,:,:)
 
-! Get grid dimensions and checks
-! ------------------------------
-ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
-nobs = locs%nlocs 
-write(*,*)'interp ngrid, nobs = : ',ngrid, nobs
-call interp_checks("tl", fld, locs, vars, gom)
-
-! Calculate interpolation weight using nicas
-! ------------------------------------------
-
-call initialize_interp(fld, fld%geom, locs, pgeom, odata)
-write(*,*)'interp after initialize_interp'
-
-! Make sure the return values are allocated and set
-! -------------------------------------------------
-do jvar=1,vars%nv
-   if (.not.allocated(gom%geovals(jvar)%vals)) then
-      gom%geovals(jvar)%nval = fld%geom%nlevs
-      gom%geovals(jvar)%nobs = ngrid
-      allocate( gom%geovals(jvar)%vals(fld%geom%nlevs,nobs) )
-   endif
-enddo
-gom%linit = .true.
+! Initialize the interpolation
+! ----------------------------
+call initialize_interp( fld, locs, vars, gom, myname, &
+                        pgeom, odata, ngrid, nobs )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1305,35 +1287,18 @@ allocate(obs_field(nobs,1))
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
-write(*,*)'interp vars : ',vars%fldnames
 
 !Temporary variable in case of variable transform
-allocate(geoval(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs))
+allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
 
 do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
-  
+
   case ("wind_u")
 
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%ua(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                           jlev), [ngrid])
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
-  
   case ("wind_v")
-
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%va(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                           jlev), [ngrid])
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo                      
-  
+                
   case ("virtual_temperature")
 
     !Convert temperature to virtual temperature
@@ -1349,74 +1314,55 @@ do jvar = 1, vars%nv
       enddo
       call apply_obsop(pgeom,odata,mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo 
-  
+    enddo
+
   case ("humidity_mixing_ratio")
 
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                          fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                          jlev, 1), [ngrid])
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo 
-  
   case ("atmosphere_ln_pressure_coordinate")
 
-    !Convert pressure thickness to log pressure
+    !Convert pressure thickness to log pressure level mid point
     call delp_to_logP(fld%geom,fld%Atm%delp,geoval)
 
+    geoval = log(0.001) + geoval !Convert to kPa
+
     do jlev = 1, fld%geom%nlevs
-      if (jlev == 1) then
-        mod_field(:,1) = reshape( geoval(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                         fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                         jlev), [ngrid])
-      else
-        ii = 0
-        do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-          do ji = fld%geom%bd%isc, fld%geom%bd%iec
-            ii = ii + 1
-            mod_field(ii, 1) = mod_field(ii, 1) + fld%Atm%delp(ji, jj, jlev)
-          enddo
+      ii = 0
+      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
+        do ji = fld%geom%bd%isc, fld%geom%bd%iec
+          ii = ii + 1
+          mod_field(ii, 1) = geoval(ji, jj, jlev)
         enddo
-      endif
-  
+      enddo
       call apply_obsop(pgeom,odata,mod_field,obs_field)
-  
-      gom%geovals(jvar)%vals(jlev,:) = log(obs_field(:,1))
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
 
   case ("air_pressure")
 
-
   case ("air_pressure_levels")
-
-    !Does not fill top of domain
 
   case default
 
-    call abor1_ftn("fv3jedi_fields:interp unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable")
 
   end select
 
 enddo
 
 deallocate(geoval)
-
-write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-
 deallocate(mod_field)
 deallocate(obs_field)
 
+write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
 end subroutine interp
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_tl(fld, locs, vars, gom)
+subroutine interp_tl(fld, locs, vars, gom)!, traj)
 
-use obsop_apply, only: apply_obsop 
+use obsop_apply, only: apply_obsop
 use type_geom, only: geomtype
 use type_odata, only: odatatype
 use variable_transforms
@@ -1427,8 +1373,9 @@ type(fv3jedi_field),      intent(inout) :: fld
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
+type(fv3jedi_trajectory)                :: traj
 
-type(vt_coeffs), pointer :: pvtc
+character(len=*), parameter :: myname = 'interp_tl'
 
 type(geomtype), pointer :: pgeom
 type(odatatype), pointer :: odata
@@ -1437,69 +1384,10 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
-
-!HACK: read a trajectory from file
-!---------------------------------
-  type(restart_file_type) :: Fv_restart
-  type(restart_file_type) :: Tr_restart
-  integer :: id_restart
-  type(fv3jedi_trajectory) :: traj
-  character(len=255) :: filename_core
-  character(len=255) :: filename_trcr
-  real(kind_real), allocatable, dimension(:,:,:) :: pt,delp,q
-
-  filename_core = 'INPUT/fv_core.res.nc'
-  filename_trcr = 'INPUT/fv_tracer.res.nc'
- 
-  allocate(pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
-  allocate(delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
-  allocate(q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
-
-  id_restart = register_restart_field(Fv_restart, filename_core, 'T',    pt,   domain=fld%geom%domain)
-  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', delp, domain=fld%geom%domain)
-
-  call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
-  call free_restart_type(Fv_restart)
-
-  id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', q, domain=fld%geom%domain)
-
-  call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
-  call free_restart_type(Tr_restart)
-
-  allocate(traj%pt  (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs))
-  allocate(traj%delp(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs))
-  allocate(traj%q   (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,fld%geom%nlevs,1))
-
-  traj%pt         = pt  (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,:)
-  traj%delp       = delp(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,:)
-  traj%q(:,:,:,1) = q   (fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%jsc:fld%geom%bd%jec,:)
- 
-  deallocate(pt,delp,q)
-!END HACK
-!--------
-
-! Get grid dimensions and checks
-! ------------------------------
-ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
-nobs = locs%nlocs 
-write(*,*)'interp_tl ngrid, nobs = : ',ngrid, nobs
-call interp_checks("tl", fld, locs, vars, gom)
-
-! Calculate interpolation weight using nicas
-! ------------------------------------------
-call initialize_interp(fld, fld%geom, locs, pgeom, odata)
-write(*,*)'interp_tl after initialize_interp'
-
-! Make sure the return values are allocated and set
-! -------------------------------------------------
-do jvar=1,vars%nv
-   if (.not.allocated(gom%geovals(jvar)%vals)) then
-      gom%geovals(jvar)%nval = fld%geom%nlevs
-      gom%geovals(jvar)%nobs = ngrid
-      allocate( gom%geovals(jvar)%vals(fld%geom%nlevs,nobs) )
-   endif
-enddo
-gom%linit = .true.
+! Initialize the interpolation
+! ----------------------------
+call initialize_interp( fld, locs, vars, gom, myname, &
+                        pgeom, odata, ngrid, nobs, traj )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1508,42 +1396,16 @@ allocate(obs_field(nobs,1))
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
-write(*,*)'interp_tl vars : ',vars%fldnames
-
 do jvar = 1, vars%nv
  
-print*, 'dh: jvar', jvar, trim(vars%fldnames(jvar))
-
   select case (trim(vars%fldnames(jvar)))
- 
-  case ("wind_u")
-
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%ua(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                           jlev), [ngrid])
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
-  
+   
   case ("wind_v")
-
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%va(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                           jlev), [ngrid])
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
   
   case ("virtual_temperature")
 
-print*, 'dh: interp_tl A'
-
     !Tangent linear of temperature to virtual temperature
-    call T_to_Tv_tl(fld%geom,traj%pt,fld%Atm%pt,traj%q,fld%Atm%q)
-
-print*, 'dh: interp_tl B'
+    call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
 
     do jlev = 1, fld%geom%nlevs
       ii = 0
@@ -1553,36 +1415,21 @@ print*, 'dh: interp_tl B'
           mod_field(ii, 1) = fld%Atm%pt(ji, jj, jlev)
         enddo
       enddo
-print*, 'dh: interp_tl C', odata%lonobs
       call apply_obsop(pgeom,odata,mod_field,obs_field)
-print*, 'dh: interp_tl D'
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
-print*, 'dh: interp_tl E'
   
   case ("humidity_mixing_ratio")
-
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                          fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                          jlev, 1), [ngrid])
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
   
   case ("atmosphere_ln_pressure_coordinate")
-
-    !Not a control variable
 
   case ("air_pressure")
 
   case ("air_pressure_levels")
 
-    !Does not fill top of domain
-
   case default
 
-    call abor1_ftn("fv3jedi_fields:interp_tl unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable")
 
   end select
 
@@ -1599,20 +1446,22 @@ end subroutine interp_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_ad(fld, locs, vars, gom)
+subroutine interp_ad(fld, locs, vars, gom)!, traj)
 
-use obsop_apply, only: apply_obsop_ad
-use type_geom, only: geomtype,compute_grid_mesh
+use obsop_apply, only: apply_obsop_ad 
+use type_geom, only: geomtype
 use type_odata, only: odatatype
 use variable_transforms
+use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
-type(fv3jedi_field), intent(inout) :: fld
-type(ufo_locs), intent(in)         :: locs
-type(ufo_vars), intent(in)         :: vars
-type(ufo_geovals), intent(in)      :: gom
+type(fv3jedi_field),      intent(inout) :: fld 
+type(ufo_locs),           intent(in)    :: locs 
+type(ufo_vars),           intent(in)    :: vars
+type(ufo_geovals),        intent(inout) :: gom
+type(fv3jedi_trajectory)                :: traj
 
-type(vt_coeffs), pointer :: pvtc
+character(len=*), parameter :: myname = 'interp_ad'
 
 type(geomtype), pointer :: pgeom
 type(odatatype), pointer :: odata
@@ -1621,17 +1470,10 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
-! Get grid dimensions and checks
-! ------------------------------
-ngrid  = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
-nobs = locs%nlocs 
-write(*,*)'interp_ad ngrid, nobs = : ',ngrid, nobs
-call interp_checks("ad", fld, locs, vars, gom)
-
-! Calculate interpolation weight using nicas
-! ------------------------------------------
-call initialize_interp(fld, fld%geom, locs, pgeom, odata)
-write(*,*)'interp_ad after initialize_interp'
+! Initialize the interpolation
+! ----------------------------
+call initialize_interp( fld, locs, vars, gom, myname, &
+                        pgeom, odata, ngrid, nobs, traj )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1640,33 +1482,18 @@ allocate(obs_field(nobs,1))
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
-write(0,*)'interp_ad vars : ',vars%fldnames
-
 do jvar = 1, vars%nv
-
+ 
   select case (trim(vars%fldnames(jvar)))
-  
+ 
   case ("wind_u")
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%ua(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                           jlev), [ngrid])
-      call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
-!      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
   
   case ("wind_v")
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%va(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                           fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                           jlev), [ngrid])
-      call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
-!      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo                      
   
   case ("virtual_temperature")
 
     do jlev = 1, fld%geom%nlevs
+print*, 'dh: adjoint input jlev:', jlev, gom%geovals(jvar)%vals(jlev,:)
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
       call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
       ii = 0
@@ -1679,32 +1506,21 @@ do jvar = 1, vars%nv
     enddo 
   
     !Adjoint of temperature to virtual temperature
-    !call T_to_Tv_ad(fld%geom,traj%pt,fld%Atm%pt,traj%q,fld%Atm%q)
-
-  case ("humidity")
-
-! TODO: Not sure what FV3 stores in q, likely needs conversion here
-    do jlev = 1, fld%geom%nlevs
-      mod_field(:,1) = reshape( fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec, &
-                                          fld%geom%bd%jsc:fld%geom%bd%jec, &
-                                          jlev, 1), [ngrid])
-      call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
-!      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo 
-
+    call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+ 
+print*, 'dh: adjoint output:', fld%Atm%pt(10,10,10)
+ 
+  case ("humidity_mixing_ratio")
+  
   case ("atmosphere_ln_pressure_coordinate")
-
-     !Not a control variable
 
   case ("air_pressure")
 
   case ("air_pressure_levels")
 
-    !Does not fill top of domain
-
   case default
 
-    call abor1_ftn("fv3jedi_fields:interp_ad unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable")
 
   end select
 
@@ -1717,7 +1533,88 @@ end subroutine interp_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_interp(fld, grid, locs, pgeom, pdata)
+subroutine initialize_interp( fld, locs, vars, gom, myname, &
+                                   pgeom, odata, ngrid, nobs, traj )
+
+use type_geom, only: geomtype
+use type_odata, only: odatatype
+use variable_transforms
+use fv3jedi_trajectories, only: fv3jedi_trajectory
+
+implicit none
+type(fv3jedi_field),                intent(inout) :: fld 
+type(ufo_locs),                     intent(in   ) :: locs 
+type(ufo_vars),                     intent(in   ) :: vars
+type(ufo_geovals),                  intent(inout) :: gom
+type(fv3jedi_trajectory), optional, intent(inout) :: traj
+character(len=*),                   intent(in   ) :: myname
+type(geomtype), pointer,            intent(inout) :: pgeom
+type(odatatype), pointer,           intent(inout) :: odata
+integer,                            intent(  out) :: ngrid, nobs
+integer :: jvar
+
+!HACK: read a trajectory from file
+!---------------------------------
+  type(restart_file_type) :: Fv_restart
+  type(restart_file_type) :: Tr_restart
+  integer :: id_restart
+  character(len=255) :: filename_core
+  character(len=255) :: filename_trcr
+
+  if (present(traj)) then
+
+    filename_core = 'INPUT/fv_core.res.nc'
+    filename_trcr = 'INPUT/fv_tracer.res.nc'
+   
+    allocate(traj%pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
+    allocate(traj%delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
+    allocate(traj%q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs,fld%geom%ntracers))
+  
+    id_restart = register_restart_field(Fv_restart, filename_core, 'T',    traj%pt,   domain=fld%geom%domain)
+    id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', traj%delp, domain=fld%geom%domain)
+  
+    call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+    call free_restart_type(Fv_restart)
+  
+    id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', traj%q(:,:,:,1), domain=fld%geom%domain)
+  
+    call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+    call free_restart_type(Tr_restart) 
+
+  endif
+!END HACK
+!--------
+
+! Get grid dimensions and checks
+! ------------------------------
+ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
+nobs = locs%nlocs 
+write(*,*) trim(myname),' ngrid, nobs = : ',ngrid, nobs
+!call interp_checks(myname, fld, locs, vars, gom)
+
+! Calculate interpolation weight using nicas
+! ------------------------------------------
+call initialize_nicas(fld, fld%geom, locs, pgeom, odata)
+
+! Make sure the return values are allocated and set
+! -------------------------------------------------
+if (trim(myname)/="interp_ad") then
+   if (mpp_pe()==mpp_root_pe()) print*, trim(myname), ': allocating GeoVaLs'
+   do jvar=1,vars%nv
+      if (.not.allocated(gom%geovals(jvar)%vals)) then
+         gom%geovals(jvar)%nval = fld%geom%nlevs
+         gom%geovals(jvar)%nobs = nobs
+         allocate( gom%geovals(jvar)%vals(fld%geom%nlevs,nobs) )
+      endif
+   enddo
+   gom%linit = .true.
+endif
+
+end subroutine initialize_interp
+
+! ------------------------------------------------------------------------------
+
+subroutine initialize_nicas(fld, grid, locs, pgeom, pdata)
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use model_oops, only: model_oops_coord
@@ -1754,7 +1651,7 @@ mod_ny  = grid%bd%jec - grid%bd%jsc + 1
 mod_num = mod_nx * mod_ny
 mod_nz  = grid%nlevs
 obs_num = locs%nlocs 
-write(*,*)'initialize_interp mod_num,obs_num = ',mod_num,obs_num
+write(*,*)'initialize_nicas mod_num,obs_num = ',mod_num,obs_num
 
 !Calculate interpolation weight using nicas
 !------------------------------------------
@@ -1826,67 +1723,65 @@ if (.NOT.interp_initialized) then
 
 endif
 
-print*, 'dh, create links to nicas structures'
-
 pgeom => geom
 pdata => odata
 
-end subroutine initialize_interp
+end subroutine initialize_nicas
 
 ! ------------------------------------------------------------------------------
 
 subroutine interp_checks(cop, fld, locs, vars, gom)
 implicit none
-character(len=2), intent(in) :: cop
+character(len=*), intent(in) :: cop
 type(fv3jedi_field), intent(in) :: fld
 type(ufo_locs), intent(in)    :: locs
 type(ufo_vars), intent(in)    :: vars
 type(ufo_geovals), intent(in) :: gom
 
 integer :: jvar
-character(len=26) :: cinfo
+character(len=255) :: cinfo
 
-cinfo="fv3jedi_fields:checks "//cop//" : "
+cinfo="fv3jedi_fields:checks "//trim(cop)//" : "
 
 !Check things are the sizes we expect
 !------------------------------------
 if (gom%nobs /= locs%nlocs ) then
-   call abor1_ftn(cinfo//"geovals wrong size")
+   call abor1_ftn(trim(cinfo)//"geovals wrong size")
 endif
 if( gom%nvar .ne. vars%nv )then
-   call abor1_ftn(cinfo//"nvar wrong size")
+   call abor1_ftn(trim(cinfo)//"nvar wrong size")
 endif
 if( .not. allocated(gom%geovals) )then
-   call abor1_ftn(cinfo//"geovals unallocated")
+   call abor1_ftn(trim(cinfo)//"geovals unallocated")
 endif
 if( size(gom%geovals) .ne. vars%nv )then
-   call abor1_ftn(cinfo//"geovals wrong size")
+   call abor1_ftn(trim(cinfo)//"geovals wrong size")
 endif
-if (cop/="tl") then
+if (trim(cop)/="interp_tl" .and. trim(cop)/="interp_ad") then
 if (.not.gom%linit) then
-   call abor1_ftn(cinfo//"geovals not initialized")
+   call abor1_ftn(trim(cinfo)//"geovals not initialized")
 endif
 do jvar=1,vars%nv
    if (allocated(gom%geovals(jvar)%vals)) then  
       if( gom%geovals(jvar)%nval .ne. fld%geom%nlevs )then
-         call abor1_ftn(cinfo//"nval wrong size")
+         call abor1_ftn(trim(cinfo)//"nval wrong size")
       endif
       if( gom%geovals(jvar)%nobs .ne. locs%nlocs )then
-         call abor1_ftn(cinfo//"nobs wrong size")
+         call abor1_ftn(trim(cinfo)//"nobs wrong size")
       endif
       if( size(gom%geovals(jvar)%vals, 1) .ne. fld%geom%nlevs )then
-         call abor1_ftn(cinfo//"vals wrong size 1")
+         call abor1_ftn(trim(cinfo)//"vals wrong size 1")
       endif
       if( size(gom%geovals(jvar)%vals, 2) .ne. locs%nlocs )then
-         call abor1_ftn(cinfo//"vals wrong size 2")
+         call abor1_ftn(trim(cinfo)//"vals wrong size 2")
       endif       
    else
-     call abor1_ftn(cinfo//"vals not allocated")
+     call abor1_ftn(trim(cinfo)//"vals not allocated")
    endif 
 enddo
 endif
 
-write(*,*)'interp_checks ',cinfo,' done'
+write(*,*)'interp_checks ',trim(cinfo),' done'
 
 end subroutine interp_checks
 
