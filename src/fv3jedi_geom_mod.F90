@@ -28,8 +28,6 @@ use fv3jedi_constants,   only: rad2deg
 use fv_arrays_mod,      only: fv_atmos_type, deallocate_fv_atmos_type
 use fv_control_mod,     only: fv_init, pelist_all
 
-use ifport
-
 implicit none
 private
 public :: fv3jedi_geom
