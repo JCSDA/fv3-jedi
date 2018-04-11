@@ -19,8 +19,6 @@
   },
   "StateTest": {
     "StateFile": {
-      "_remove2test_analytic_init": "fv3_init_case",
-      "_remove2test_fv3_test_case": "13",
       "filename_core": "fv_core.res.nc",
       "filename_trcr": "fv_tracer.res.nc",
       "filename_cplr": "coupler.res",
@@ -34,8 +32,6 @@
     "date": "2016-01-01T06:00:00Z",
     "norm-file": 1952.9548113316434,
     "StateGenerate" : {
-      "_remove2test_analytic_init": "fv3_init_case",
-      "_remove2test_fv3_test_case": "13",
       "filename_core": "fv_core.res.nc",
       "filename_trcr": "fv_tracer.res.nc",
       "filename_cplr": "coupler.res",
@@ -58,7 +54,6 @@
       "lats": [8.59262775197223, 58.3436572887169],
       "lons": [88.4755056789305, 215.250002509653]
     },
-    "read_from_file": 1,
     "values": [2806.6869400934052]
   }
 }

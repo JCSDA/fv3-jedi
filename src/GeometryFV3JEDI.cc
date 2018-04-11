@@ -17,13 +17,17 @@ namespace fv3jedi {
 GeometryFV3JEDI::GeometryFV3JEDI(const eckit::Configuration & conf) {
   const eckit::Configuration * configc = &conf;
 
-  MPI_Barrier(MPI_COMM_WORLD);
-  std::remove("input.nml");
-  std::remove("field_table");
-  nml_file = conf.getString("nml_file");
-  trc_file = conf.getString("trc_file");
-  symlink(nml_file.c_str(), "./input.nml");
-  symlink(trc_file.c_str(), "./field_table");
+  int world_rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+  if (world_rank == 0) {
+    std::remove("input.nml");
+    std::remove("field_table");
+    nml_file = conf.getString("nml_file");
+    trc_file = conf.getString("trc_file");
+    symlink(nml_file.c_str(), "./input.nml");
+    symlink(trc_file.c_str(), "./field_table");
+  }
+  MPI_Barrier(MPI_COMM_WORLD); //Nobody move until file is in place
 
   fv3jedi_geo_setup_f90(keyGeom_, &configc);
 }
