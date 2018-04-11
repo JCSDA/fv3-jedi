@@ -53,6 +53,7 @@ type :: fv3jedi_model
   integer                                      :: cp_dyn_ind          !<Module index for checkpointing
   integer                                      :: update_dgridwind=1  !<Update the fv3 pressures each time step
   integer                                      :: update_pressures=1  !<Update the fv3 pressures each time step
+  integer                                      :: init_tlmadm         !<Is the TLM/ADM needed in this instance
 end type fv3jedi_model
 
 #define LISTED_TYPE fv3jedi_model
@@ -174,49 +175,56 @@ if (.not. model%FV_Atm(1)%gridstruct%nested) model%FV_Atm(1)%parent_grid => mode
 
 #ifdef TLADPRES
 
-!Initialize perturbation variables and read config
-call fv_init_pert(model%FV_Atm,model%FV_AtmP)
+model%init_tlmadm = 0
+if (config_element_exists(c_conf,"init_tlmadm")) &
+  model%init_tlmadm = config_get_int(c_conf,"init_tlmadm")
 
+if (model%init_tlmadm == 1) then
 
-!Set up controls for iterative checkpointing
-!-------------------------------------------
-
-!Global
-cp_iter_controls%cp_i  = 0! config_get_int (c_conf,"CP_i")
-cp_iter_controls%cp_nt = 4!config_get_int (c_conf,"CP_nt")
-cp_iter_controls%cp_gb = -0.1!config_get_real(c_conf,"CP_gb")
-cp_iter_controls%cp_nm = 1!config_get_int (c_conf,"CP_nm")
-call initialize_cp_iter
-
-if (cp_iter_controls%cp_i .ne. 0) then
-
-   !Dynamics
-   model%cp_dyn_ind = config_get_int (c_conf,"CP_dyn_ind")
-   cp_iter(model%cp_dyn_ind)%my_name(1:3) = 'dyn'
+   !Initialize perturbation variables and read config
+   call fv_init_pert(model%FV_Atm,model%FV_AtmP)
+      
+   !Set up controls for iterative checkpointing
+   !-------------------------------------------
    
-   cp_iter(model%cp_dyn_ind)%cp_test = .false.
-   tmp = config_get_int (c_conf,"CP_dyn_test")
-   if (tmp==1) cp_iter(model%cp_dyn_ind)%cp_test = .true.
+   !Global
+   cp_iter_controls%cp_i  = 0! config_get_int (c_conf,"CP_i")
+   cp_iter_controls%cp_nt = 4!config_get_int (c_conf,"CP_nt")
+   cp_iter_controls%cp_gb = -0.1!config_get_real(c_conf,"CP_gb")
+   cp_iter_controls%cp_nm = 1!config_get_int (c_conf,"CP_nm")
+   call initialize_cp_iter
    
-   cp_iter(model%cp_dyn_ind)%cp_rep = .false.
-   tmp = config_get_int (c_conf,"CP_dyn_rep")
-   if (tmp==1) cp_iter(model%cp_dyn_ind)%cp_test = .true.
+   if (cp_iter_controls%cp_i .ne. 0) then
    
-   !Hardwire these for now
-   cp_iter(model%cp_dyn_ind)%check_st_control = .false.
-   cp_iter(model%cp_dyn_ind)%check_st_integer = .false.
-   cp_iter(model%cp_dyn_ind)%check_st_real_r4 = .false.
-   cp_iter(model%cp_dyn_ind)%check_st_real_r8 = .false.
+      !Dynamics
+      model%cp_dyn_ind = config_get_int (c_conf,"CP_dyn_ind")
+      cp_iter(model%cp_dyn_ind)%my_name(1:3) = 'dyn'
+      
+      cp_iter(model%cp_dyn_ind)%cp_test = .false.
+      tmp = config_get_int (c_conf,"CP_dyn_test")
+      if (tmp==1) cp_iter(model%cp_dyn_ind)%cp_test = .true.
+      
+      cp_iter(model%cp_dyn_ind)%cp_rep = .false.
+      tmp = config_get_int (c_conf,"CP_dyn_rep")
+      if (tmp==1) cp_iter(model%cp_dyn_ind)%cp_test = .true.
+      
+      !Hardwire these for now
+      cp_iter(model%cp_dyn_ind)%check_st_control = .false.
+      cp_iter(model%cp_dyn_ind)%check_st_integer = .false.
+      cp_iter(model%cp_dyn_ind)%check_st_real_r4 = .false.
+      cp_iter(model%cp_dyn_ind)%check_st_real_r8 = .false.
+      
+      cp_iter(model%cp_dyn_ind)%test_dim_st_control = 0
+      cp_iter(model%cp_dyn_ind)%test_dim_st_integer = 0
+      cp_iter(model%cp_dyn_ind)%test_dim_st_real_r4 = 0
+      cp_iter(model%cp_dyn_ind)%test_dim_st_real_r8 = 0
+      
+      cp_iter(model%cp_dyn_ind)%test_dim_cp_control = 0
+      cp_iter(model%cp_dyn_ind)%test_dim_cp_integer = 0
+      cp_iter(model%cp_dyn_ind)%test_dim_cp_real_r4 = 0
+      cp_iter(model%cp_dyn_ind)%test_dim_cp_real_r8 = 0
    
-   cp_iter(model%cp_dyn_ind)%test_dim_st_control = 0
-   cp_iter(model%cp_dyn_ind)%test_dim_st_integer = 0
-   cp_iter(model%cp_dyn_ind)%test_dim_st_real_r4 = 0
-   cp_iter(model%cp_dyn_ind)%test_dim_st_real_r8 = 0
-   
-   cp_iter(model%cp_dyn_ind)%test_dim_cp_control = 0
-   cp_iter(model%cp_dyn_ind)%test_dim_cp_integer = 0
-   cp_iter(model%cp_dyn_ind)%test_dim_cp_real_r4 = 0
-   cp_iter(model%cp_dyn_ind)%test_dim_cp_real_r8 = 0
+   endif
 
 endif
 
@@ -247,10 +255,12 @@ call deallocate_fv_atmos_type(self%FV_Atm(1))
 deallocate(self%FV_Atm)
 
 #ifdef TLADPRES
-call deallocate_fv_atmos_pert_type(self%FV_AtmP(1))
-deallocate(self%FV_AtmP)
-
-if (cp_iter_controls%cp_i .ne. 0) call finalize_cp_iter
+if (self%init_tlmadm == 1) then
+   call deallocate_fv_atmos_pert_type(self%FV_AtmP(1))
+   deallocate(self%FV_AtmP)
+   
+   if (cp_iter_controls%cp_i .ne. 0) call finalize_cp_iter
+endif
 #endif
 
 end subroutine model_delete
@@ -351,105 +361,105 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: u_dt, v_dt, t_dt
 if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 
 
-!!Convenience pointer to the main FV_Atm structure
-!!------------------------------------------------
-!FV_Atm => self%FV_Atm
-!
-!!Copy to model precision variables
-!!---------------------------------
-!FV_Atm(1)%u    = flds%Atm%u
-!FV_Atm(1)%v    = flds%Atm%v
-!FV_Atm(1)%pt   = flds%Atm%pt
-!FV_Atm(1)%delp = flds%Atm%delp
-!FV_Atm(1)%q    = flds%Atm%q
-!!if (.not. flds%geom%hydrostatic) then
-!  FV_Atm(1)%w    = flds%Atm%w
-!  FV_Atm(1)%delz = flds%Atm%delz
-!!endif
-!
-!
-!!Update edges of d-grid winds
-!!----------------------------
-!if (self%update_dgridwind == 1) then
-!   call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
-!                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-!                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-!                          gridtype=DGRID_NE, complete=.true. )
-!   do k=1,self%npz
-!      do i=self%isc,self%iec
-!         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
-!      enddo
-!   enddo
-!   do k=1,self%npz
-!      do j=self%jsc,self%jec
-!         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
-!      enddo
-!   enddo
+!Convenience pointer to the main FV_Atm structure
+!------------------------------------------------
+FV_Atm => self%FV_Atm
+
+!Copy to model precision variables
+!---------------------------------
+FV_Atm(1)%u    = flds%Atm%u
+FV_Atm(1)%v    = flds%Atm%v
+FV_Atm(1)%pt   = flds%Atm%pt
+FV_Atm(1)%delp = flds%Atm%delp
+FV_Atm(1)%q    = flds%Atm%q
+!if (.not. flds%geom%hydrostatic) then
+  FV_Atm(1)%w    = flds%Atm%w
+  FV_Atm(1)%delz = flds%Atm%delz
 !endif
-!
-!!Compute the other pressure variables needed by FV3
-!!--------------------------------------------------
-!if (self%update_pressures == 1) then
-!   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
-!                               self%npz, kappa, FV_Atm(1)%ptop, &
-!                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
+
+
+!Update edges of d-grid winds
+!----------------------------
+if (self%update_dgridwind == 1) then
+   call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
+                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
+                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
+                          gridtype=DGRID_NE, complete=.true. )
+   do k=1,self%npz
+      do i=self%isc,self%iec
+         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
+      enddo
+   enddo
+   do k=1,self%npz
+      do j=self%jsc,self%jec
+         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
+      enddo
+   enddo
+endif
+
+!Compute the other pressure variables needed by FV3
+!--------------------------------------------------
+if (self%update_pressures == 1) then
+   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
+                               self%npz, kappa, FV_Atm(1)%ptop, &
+                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
+endif
+
+call set_domain(FV_Atm(1)%domain)
+
+!Propagate FV3 one time step
+!---------------------------
+call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,  &
+                  self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,           &
+                  FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                   &
+                  cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,          &
+                  FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                  &
+                  FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w, FV_Atm(1)%delz,                       &
+                  FV_Atm(1)%flagstruct%hydrostatic, FV_Atm(1)%pt, FV_Atm(1)%delp, FV_Atm(1)%q, &
+                  FV_Atm(1)%ps, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,     &
+                  FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                             &
+                  FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%uc, FV_Atm(1)%vc,                      &
+                  FV_Atm(1)%ak, FV_Atm(1)%bk,                                                  &
+                  FV_Atm(1)%mfx, FV_Atm(1)%mfy, FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,     &
+                  FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,   &
+                  FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
+                  FV_Atm(1)%domain )
+
+!Apply subgrid mixing (interface conflict between GMAO/NCEP so not straighforward to compile right now)
+!--------------------
+!if ( FV_Atm(1)%flagstruct%fv_sg_adj > 0 ) then
+!     allocate ( u_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
+!     allocate ( v_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
+!     allocate ( t_dt(self%isc:self%iec,self%jsc:self%jec,self%npz) )
+!     u_dt(:,:,:) = 0.0
+!     v_dt(:,:,:) = 0.0
+!     t_dt(:,:,:) = 0.0
+!     call fv_subgrid_z(self%isd, self%ied, self%jsd, self%jed, self%isc, self%iec, self%jsc, self%jec, FV_Atm(1)%npz, &
+!                       FV_Atm(1)%ncnst, self%DT, FV_Atm(1)%flagstruct%fv_sg_adj,      &
+!                       FV_Atm(1)%flagstruct%nwat, FV_Atm(1)%delp, FV_Atm(1)%pe,     &
+!                       FV_Atm(1)%peln, FV_Atm(1)%pkz, FV_Atm(1)%pt, FV_Atm(1)%q,       &
+!                       FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%flagstruct%hydrostatic,&
+!                       FV_Atm(1)%w, FV_Atm(1)%delz, u_dt, v_dt, t_dt, FV_Atm(1)%flagstruct%n_zfilter)
+!     deallocate ( u_dt )
+!     deallocate ( v_dt )
+!     deallocate ( t_dt )
 !endif
-!
-!call set_domain(FV_Atm(1)%domain)
-!
-!!Propagate FV3 one time step
-!!---------------------------
-!call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,  &
-!                  self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,           &
-!                  FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                   &
-!                  cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,          &
-!                  FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                  &
-!                  FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w, FV_Atm(1)%delz,                       &
-!                  FV_Atm(1)%flagstruct%hydrostatic, FV_Atm(1)%pt, FV_Atm(1)%delp, FV_Atm(1)%q, &
-!                  FV_Atm(1)%ps, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,     &
-!                  FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                             &
-!                  FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%uc, FV_Atm(1)%vc,                      &
-!                  FV_Atm(1)%ak, FV_Atm(1)%bk,                                                  &
-!                  FV_Atm(1)%mfx, FV_Atm(1)%mfy, FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,     &
-!                  FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,   &
-!                  FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
-!                  FV_Atm(1)%domain )
-!
-!!Apply subgrid mixing
-!!--------------------
-!!if ( FV_Atm(1)%flagstruct%fv_sg_adj > 0 ) then
-!!     allocate ( u_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
-!!     allocate ( v_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
-!!     allocate ( t_dt(self%isc:self%iec,self%jsc:self%jec,self%npz) )
-!!     u_dt(:,:,:) = 0.0
-!!     v_dt(:,:,:) = 0.0
-!!     t_dt(:,:,:) = 0.0
-!!     call fv_subgrid_z(self%isd, self%ied, self%jsd, self%jed, self%isc, self%iec, self%jsc, self%jec, FV_Atm(1)%npz, &
-!!                       FV_Atm(1)%ncnst, self%DT, FV_Atm(1)%flagstruct%fv_sg_adj,      &
-!!                       FV_Atm(1)%flagstruct%nwat, FV_Atm(1)%delp, FV_Atm(1)%pe,     &
-!!                       FV_Atm(1)%peln, FV_Atm(1)%pkz, FV_Atm(1)%pt, FV_Atm(1)%q,       &
-!!                       FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%flagstruct%hydrostatic,&
-!!                       FV_Atm(1)%w, FV_Atm(1)%delz, u_dt, v_dt, t_dt, FV_Atm(1)%flagstruct%n_zfilter)
-!!     deallocate ( u_dt )
-!!     deallocate ( v_dt )
-!!     deallocate ( t_dt )
-!!endif
-!
-!call nullify_domain()
-!
-!!Copy back to fields and JEDI precision
-!!--------------------------------------
-!flds%Atm%u    = FV_Atm(1)%u
-!flds%Atm%v    = FV_Atm(1)%v
-!flds%Atm%pt   = FV_Atm(1)%pt
-!flds%Atm%delp = FV_Atm(1)%delp
-!flds%Atm%q    = FV_Atm(1)%q
-!!if (.not. flds%geom%hydrostatic) then
-!   flds%Atm%w    = FV_Atm(1)%w
-!   flds%Atm%delz = FV_Atm(1)%delz
-!!endif
-!flds%Atm%ua    = FV_Atm(1)%ua
-!flds%Atm%va    = FV_Atm(1)%va
+
+call nullify_domain()
+
+!Copy back to fields and JEDI precision
+!--------------------------------------
+flds%Atm%u    = FV_Atm(1)%u
+flds%Atm%v    = FV_Atm(1)%v
+flds%Atm%pt   = FV_Atm(1)%pt
+flds%Atm%delp = FV_Atm(1)%delp
+flds%Atm%q    = FV_Atm(1)%q
+!if (.not. flds%geom%hydrostatic) then
+   flds%Atm%w    = FV_Atm(1)%w
+   flds%Atm%delz = FV_Atm(1)%delz
+!endif
+flds%Atm%ua    = FV_Atm(1)%ua
+flds%Atm%va    = FV_Atm(1)%va
 
 end subroutine model_propagate
 

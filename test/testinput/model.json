@@ -1,0 +1,43 @@
+{
+  "test_framework_runtime_config": "--log_level=test_suite",
+  "Geometry": {
+    "init_type": "inline",
+    "npx": "97",
+    "npy": "97",
+    "npz": "64",
+    "hydrostatic": "1",
+    "layout_1": "1",
+    "layout_2": "1",
+    "io_layout_1": "1",
+    "io_layout_2": "1",
+    "halo": "3",
+    "filename_spec": "grid_spec.nc",
+    "filename_core": "fv_core.res.nc",    
+    "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
+    "nml_file": "Data/fv3files/input.nml",
+    "trc_file": "Data/fv3files/field_table"
+  },
+  "State" : {
+    "filename_core": "fv_core.res.nc",
+    "filename_trcr": "fv_tracer.res.nc",
+    "filename_cplr": "coupler.res",
+    "nml_file": "Data/fv3files/input.nml",
+    "trc_file": "Data/fv3files/field_table",
+    "datapath_read": "Data/C96_RESTART_2016-01-01-06z/",
+    "datapath_tile": "Data/C96_RESTART_2016-01-01-06z/INPUT/",
+    "datapath_write": "",
+    "date": "2009-12-31T00:00:00Z"
+  },
+  "ModelTest": {
+    "fclength": "PT6H",
+    "finalnorm": "1952.9548113316434",
+    "tolerance": "0.005"
+  },
+  "ModelBias": null,
+  "Model": {
+    "tstep": "PT15M",
+    "init_tlmadm": "0",
+    "update_dgridwind": "0",
+    "update_pressures": "1"
+  }
+}

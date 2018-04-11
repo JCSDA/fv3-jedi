@@ -262,7 +262,6 @@ else
       call abor1_ftn("fv3-jedi geometry: input.nml inconsistent with regular input")
    endif
 
-   self%domain = FV_Atm(1)%domain
    self%bd%isd = FV_Atm(1)%bd%isd
    self%bd%ied = FV_Atm(1)%bd%ied
    self%bd%jsd = FV_Atm(1)%bd%jsd
@@ -295,6 +294,11 @@ else
    call deallocate_fv_atmos_type(FV_Atm(1))
    deallocate(FV_Atm)  
    deallocate(grids_on_this_pe)
+
+   !Resetup domain to avoid risk of copied pointers
+   call setup_domain( self%domain, self%size_cubic_grid, self%size_cubic_grid, &
+                      self%ntiles, self%layout, self%io_layout, self%halo)
+
 
 endif
 

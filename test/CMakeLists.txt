@@ -39,6 +39,9 @@ Data/fv3files/inputpert.nml
 list( APPEND fv3jedi_test_input
 testinput/geometry.json
 testinput/state.json
+testinput/analytic_init.json
+testinput/model.json
+testinput/linearmodel.json
 testinput/3dvar.json
 testinput/4dvar.drplanczos.json
 testinput/forecast.json
@@ -121,16 +124,23 @@ ecbuild_add_test( TARGET  test_fv3jedi_aninit
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_modelaux
-                  BOOST
-                  SOURCES executables/TestModelAuxControl.cc
-                  ARGS    "testinput/interfaces.json"
-                  MPI     6
-                  LIBS    fv3jedi )
-
 ecbuild_add_test( TARGET  test_fv3jedi_model
                   BOOST
                   SOURCES executables/TestModel.cc
+                  ARGS    "testinput/model.json"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_linearmodel
+                  BOOST
+                  SOURCES executables/TestLinearModel.cc
+                  ARGS    "testinput/linearmodel.json"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_modelaux
+                  BOOST
+                  SOURCES executables/TestModelAuxControl.cc
                   ARGS    "testinput/interfaces.json"
                   MPI     6
                   LIBS    fv3jedi )
@@ -158,13 +168,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_linobsoperator
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
                   BOOST
                   SOURCES executables/TestModelAuxCovariance.cc
-                  ARGS    "testinput/interfaces.json"
-                  MPI     6
-                  LIBS    fv3jedi )
-
-ecbuild_add_test( TARGET  test_fv3jedi_linearmodel
-                  BOOST
-                  SOURCES executables/TestLinearModel.cc
                   ARGS    "testinput/interfaces.json"
                   MPI     6
                   LIBS    fv3jedi )
