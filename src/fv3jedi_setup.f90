@@ -12,6 +12,7 @@ use mpp_mod,         only: mpp_init
 use mpp_domains_mod, only: mpp_domains_init
 use mpp_domains_mod, only: mpp_domains_set_stack_size
 use fms_io_mod,      only: fms_io_init
+use fms_mod,      only: fms_init
 
 implicit none
 
@@ -21,6 +22,7 @@ integer :: stackmax = 4000000
 call mpp_init(localcomm=mpi_comm_world)
 call mpp_domains_init
 call fms_io_init
+call fms_init()
 
 if (config_element_exists(c_conf,"stackmax")) stackmax = config_get_int(c_conf,"stackmax")
 call mpp_domains_set_stack_size(stackmax)

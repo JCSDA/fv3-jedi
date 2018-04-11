@@ -3,30 +3,30 @@
 
 module fv3jedi_geom_mod
 
+!General JEDI uses
 use kinds
 use iso_c_binding
 use config_mod
 
-use mpp_domains_mod,    only: domain2D, mpp_get_layout,mpp_get_tile_id
-use mpp_domains_mod,    only: mpp_copy_domain, mpp_deallocate_domain
-use mpp_domains_mod,    only: mpp_get_compute_domain, mpp_get_data_domain
-use mpp_io_mod,         only: mpp_open, mpp_close, MPP_ASCII, MPP_RDONLY
-use mpp_mod,            only: mpp_pe, mpp_npes, mpp_init, mpp_exit, mpp_error, &
-                              FATAL
-use fms_io_mod,         only: file_exist, read_data
-use fms_mod,            only: get_mosaic_tile_grid, fms_init, fms_end
-use fms_io_mod,         only: restart_file_type, register_restart_field, &
-                              free_restart_type, restore_state, save_restart, file_exist
+!Uses for setting up tracer numbers from field_table
 use tracer_manager_mod, only: get_number_tracers
 use field_manager_mod,  only: MODEL_ATMOS
 
-use fv3jedi_mod,         only: fv_grid_bounds_type, fv_grid_type
-use fv3jedi_mod,         only: setup_domain
+!Derived types within geometry
+use fv3jedi_mod,         only: fv_grid_bounds_type, setup_domain
 
-use fv3jedi_constants,   only: rad2deg
+!FMS/MPP uses
+use mpp_domains_mod,    only: domain2D, mpp_get_tile_id, mpp_deallocate_domain
+use mpp_domains_mod,    only: mpp_get_compute_domain, mpp_get_data_domain
+use mpp_mod,            only: mpp_pe
+use fms_mod,            only: get_mosaic_tile_grid
+use fms_io_mod,         only: restart_file_type, register_restart_field, &
+                              free_restart_type, restore_state, read_data
 
+!Uses for generating geometry using FV3 routines
 use fv_arrays_mod,      only: fv_atmos_type, deallocate_fv_atmos_type
 use fv_control_mod,     only: fv_init, pelist_all
+use fv3jedi_constants,   only: rad2deg
 
 implicit none
 private
@@ -91,9 +91,6 @@ type(c_ptr), intent(in)    :: c_conf
 type(fv3jedi_geom), pointer :: self
 character(len=20) :: init_type
 integer :: hydro_int
-character(len=256)      :: cwd
-character(len=256)      :: local_nml, local_trc
-integer                 :: status
 
 !Things needed for generting from file read
 character(len=256)                :: datapath_in
@@ -112,11 +109,6 @@ character(len=256)                :: fullpath_core
 type(fv_atmos_type), allocatable  :: FV_Atm(:)
 logical, allocatable              :: grids_on_this_pe(:)
 integer                           :: p_split = 1, fail
-
-! Init fms/mpp
-! ------------
-call fms_init()
-call mpp_init()
 
 ! Init, add and get key
 ! ---------------------
@@ -175,7 +167,7 @@ if (config_element_exists(c_conf,"filename_core")) then
 endif
 
 !Main data path for restarts
-datapath_in = config_get_string(c_conf,len(datapath_in), "datapath_in")
+datapath_in = config_get_string(c_conf,len(datapath_in), "datapath_geom")
 
 !Full paths to restarts
 fullpath_spec = trim(adjustl(datapath_in))//trim(adjustl(filename_spec))
@@ -400,8 +392,6 @@ integer(c_int), intent(in   ) :: c_key_self
 type(fv3jedi_geom), pointer :: self
 
 call fv3jedi_geom_registry%get(c_key_self, self)
-
-
 
 end subroutine c_fv3jedi_geo_info
 

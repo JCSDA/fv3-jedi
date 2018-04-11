@@ -89,6 +89,9 @@ class FieldsFV3JEDI : public util::Printable,
   int & toFortran() {return keyFlds_;}
   const int & toFortran() const {return keyFlds_;}
 
+  std::string nml_file;
+  std::string trc_file;
+
  private:
   void print(std::ostream &) const;
   F90flds keyFlds_;

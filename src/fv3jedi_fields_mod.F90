@@ -7,8 +7,6 @@
 
 module fv3jedi_fields_mod
 
-!#include <fms_platform.h>
-
 use iso_c_binding
 use config_mod
 use datetime_mod
@@ -18,10 +16,11 @@ use fv3jedi_kinds
 use ufo_locs_mod
 use ufo_geovals_mod
 
-use mpp_domains_mod,   only: domain2d, EAST, NORTH
+use mpp_domains_mod,   only: EAST, NORTH
 use mpp_mod,           only: mpp_pe, mpp_npes, mpp_root_pe
 use fms_io_mod,        only: restart_file_type, register_restart_field, &
                              free_restart_type, restore_state, save_restart
+
 use fv3jedi_mod,       only: fv_atmos_type, allocate_fv_atmos_type
 use fv3jedi_constants, only: deg2rad
 
@@ -503,7 +502,7 @@ subroutine read_file(fld, c_conf, vdate)
   integer :: date_init(6), date(6), calendar_type
   integer(kind=c_int) :: idate, isecs
 
-  character(len=255) :: datapath_in
+  character(len=255) :: datapath_in, datapath_ti
   character(len=255) :: filename_core
   character(len=255) :: filename_trcr
   character(len=255) :: filename_cplr
@@ -536,7 +535,8 @@ subroutine read_file(fld, c_conf, vdate)
      filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
   endif
 
-  datapath_in = config_get_string(c_conf,len(datapath_in),"datapath_in")
+  datapath_in = config_get_string(c_conf,len(datapath_in),"datapath_read")
+  datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
 
   !Register and read core fields
   !------------------------------
@@ -562,7 +562,7 @@ subroutine read_file(fld, c_conf, vdate)
      id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
                    domain=fld%geom%domain)
   endif
-  call restore_state(Fv_restart, directory=trim(adjustl(datapath_in)))
+  call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
   call free_restart_type(Fv_restart)
 
   !If A-Grid winds were not read then interpolate from D-grid
@@ -594,13 +594,13 @@ subroutine read_file(fld, c_conf, vdate)
 !    id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
 !                                        domain=fld%geom%domain)
 ! enddo
-! call restore_state(Tr_restart, directory=trim(adjustl(datapath_in)))
+! call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
 ! call free_restart_type(Tr_restart)
 
   id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
                                        domain=fld%geom%domain)
 
-  call restore_state(Tr_restart, directory=trim(adjustl(datapath_in)))
+  call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
   call free_restart_type(Tr_restart)
 
 
@@ -958,7 +958,7 @@ subroutine write_file(fld, c_conf, vdate)
 
   character(len=255) :: datapath_out
 
-  datapath_out = config_get_string(c_conf,len(datapath_out),"datapath_out")
+  datapath_out = config_get_string(c_conf,len(datapath_out),"datapath_write")
 
   pe = mpp_pe()
 
@@ -1585,13 +1585,14 @@ integer :: jvar
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
   integer :: id_restart
-  character(len=255) :: datapath_in
+  character(len=255) :: datapath_in, datapath_ti
   character(len=255) :: filename_core
   character(len=255) :: filename_trcr
 
   if (present(traj)) then
 
     datapath_in = 'Data/C96_RESTART_2016-01-01-06z/'
+    datapath_ti = 'Data/C96_RESTART_2016-01-01-06z/INPUT/'
 
     filename_core = 'fv_core.res.nc'
     filename_trcr = 'fv_tracer.res.nc'
@@ -1603,12 +1604,12 @@ integer :: jvar
     id_restart = register_restart_field(Fv_restart, filename_core, 'T',    traj%pt,   domain=fld%geom%domain)
     id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', traj%delp, domain=fld%geom%domain)
   
-    call restore_state(Fv_restart, directory=trim(adjustl(datapath_in)))
+    call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
     call free_restart_type(Fv_restart)
   
     id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', traj%q(:,:,:,1), domain=fld%geom%domain)
   
-    call restore_state(Tr_restart, directory=trim(adjustl(datapath_in)))
+    call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
     call free_restart_type(Tr_restart) 
 
   endif
