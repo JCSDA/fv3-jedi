@@ -15,7 +15,20 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 GeometryFV3JEDI::GeometryFV3JEDI(const eckit::Configuration & conf) {
   const eckit::Configuration * configc = &conf;
+
+  std::remove("input.nml");
+  std::remove("field_table");
+  nml_file = conf.getString("nml_file");
+  trc_file = conf.getString("trc_file");
+  std::cout << "dh: geom 1" << nml_file.c_str() << std::endl;
+  std::cout << "dh: geom 2" << trc_file.c_str() << std::endl;
+  symlink(nml_file.c_str(), "./input.nml");
+  symlink(trc_file.c_str(), "./field_table");
+
   fv3jedi_geo_setup_f90(keyGeom_, &configc);
+
+  std::remove("input.nml");
+  std::remove("field_table");
 }
 // -----------------------------------------------------------------------------
 GeometryFV3JEDI::GeometryFV3JEDI(const GeometryFV3JEDI & other) {

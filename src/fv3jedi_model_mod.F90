@@ -49,7 +49,7 @@ type :: fv3jedi_model
   integer                                      :: isd,ied,jsd,jed     !<Convenience
   logical                                      :: hydrostatic         !<Convenience
   integer                                      :: ntracers            !<Convenience
-  integer                                      :: nlevs               !<Convenience
+  integer                                      :: npz                 !<Convenience
   integer                                      :: cp_dyn_ind          !<Module index for checkpointing
   integer                                      :: update_dgridwind=1  !<Update the fv3 pressures each time step
   integer                                      :: update_pressures=1  !<Update the fv3 pressures each time step
@@ -101,15 +101,15 @@ model%isd = geom%bd%isd
 model%ied = geom%bd%ied
 model%jsd = geom%bd%jsd
 model%jed = geom%bd%jed
-model%nlevs = geom%nlevs
+model%npz = geom%npz
 model%hydrostatic = geom%hydrostatic
 model%ntracers = geom%ntracers
 
 !Halo holders for domain grid
-allocate(model%ebuffery(model%jsd:model%jed,model%nlevs))
-allocate(model%wbuffery(model%jsd:model%jed,model%nlevs))
-allocate(model%nbufferx(model%isd:model%ied,model%nlevs))
-allocate(model%sbufferx(model%isd:model%ied,model%nlevs))
+allocate(model%ebuffery(model%jsd:model%jed,model%npz))
+allocate(model%wbuffery(model%jsd:model%jed,model%npz))
+allocate(model%nbufferx(model%isd:model%ied,model%npz))
+allocate(model%sbufferx(model%isd:model%ied,model%npz))
 
 ststep = config_get_string(c_conf,len(ststep),"tstep")
 dtstep = trim(ststep)
@@ -375,12 +375,12 @@ if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 !                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
 !                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
 !                          gridtype=DGRID_NE, complete=.true. )
-!   do k=1,self%nlevs
+!   do k=1,self%npz
 !      do i=self%isc,self%iec
 !         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
 !      enddo
 !   enddo
-!   do k=1,self%nlevs
+!   do k=1,self%npz
 !      do j=self%jsc,self%jec
 !         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
 !      enddo
@@ -391,7 +391,7 @@ if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 !!--------------------------------------------------
 !if (self%update_pressures == 1) then
 !   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
-!                               self%nlevs, kappa, FV_Atm(1)%ptop, &
+!                               self%npz, kappa, FV_Atm(1)%ptop, &
 !                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
 !endif
 !
@@ -418,9 +418,9 @@ if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 !!Apply subgrid mixing
 !!--------------------
 !!if ( FV_Atm(1)%flagstruct%fv_sg_adj > 0 ) then
-!!     allocate ( u_dt(self%isd:self%ied,self%jsd:self%jed,self%nlevs) )
-!!     allocate ( v_dt(self%isd:self%ied,self%jsd:self%jed,self%nlevs) )
-!!     allocate ( t_dt(self%isc:self%iec,self%jsc:self%jec,self%nlevs) )
+!!     allocate ( u_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
+!!     allocate ( v_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
+!!     allocate ( t_dt(self%isc:self%iec,self%jsc:self%jec,self%npz) )
 !!     u_dt(:,:,:) = 0.0
 !!     v_dt(:,:,:) = 0.0
 !!     t_dt(:,:,:) = 0.0
@@ -486,7 +486,7 @@ FV_AtmP => self%FV_AtmP
 !Get up the trajectory for this time step 
 !----------------------------------------
 call get_traj( traj,flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed,&
-               flds%geom%nlevs,flds%geom%hydrostatic,flds%geom%ntracers,&
+               flds%geom%npz,flds%geom%hydrostatic,flds%geom%ntracers,&
                FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q,FV_Atm(1)%w,FV_Atm(1)%delz)
 
 
@@ -509,12 +509,12 @@ call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
                        wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
                        sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
                        gridtype=DGRID_NE, complete=.true. )
-do k=1,self%nlevs
+do k=1,self%npz
    do i=self%isc,self%iec
       FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
    enddo
 enddo
-do k=1,self%nlevs
+do k=1,self%npz
    do j=self%jsc,self%jec
       FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
    enddo
@@ -554,28 +554,28 @@ if (cp_iter_controls%cp_i <= 3) then
 
    if (cp_iter_controls%cp_i .ne. 0) then
       !Push end of timestep trajectory to stack
-      call PUSHREALARRAY(FV_Atm(1)%u   ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%v   ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%w   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%delz,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%pt  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%delp,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%q   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs*self%ntracers)
+      call PUSHREALARRAY(FV_Atm(1)%u   ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%v   ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%w   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%delz,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%pt  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%delp,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%q   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz*self%ntracers)
       call PUSHREALARRAY(FV_Atm(1)%ps  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1))
-      call PUSHREALARRAY(FV_Atm(1)%pe  ,(self%iec-self%isc+3)*(self%jec-self%jsc+3)*(self%nlevs+1))
-      call PUSHREALARRAY(FV_Atm(1)%pk  ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%nlevs+1))
-      call PUSHREALARRAY(FV_Atm(1)%peln,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%nlevs+1))
-      call PUSHREALARRAY(FV_Atm(1)%pkz ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*self%nlevs)
+      call PUSHREALARRAY(FV_Atm(1)%pe  ,(self%iec-self%isc+3)*(self%jec-self%jsc+3)*(self%npz+1))
+      call PUSHREALARRAY(FV_Atm(1)%pk  ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%npz+1))
+      call PUSHREALARRAY(FV_Atm(1)%peln,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%npz+1))
+      call PUSHREALARRAY(FV_Atm(1)%pkz ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*self%npz)
       call PUSHREALARRAY(FV_Atm(1)%phis,(self%ied-self%isd+1)*(self%jed-self%jsd+1))
-      call PUSHREALARRAY(FV_Atm(1)%omga,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%ua  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%va  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%uc  ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%vc  ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%mfx ,(self%iec-self%isc+2)*(self%jec-self%jsc+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%mfy ,(self%iec-self%isc+1)*(self%jec-self%jsc+2)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%cx  ,(self%iec-self%isc+2)*(self%jed-self%jsd+1)*self%nlevs)
-      call PUSHREALARRAY(FV_Atm(1)%cy  ,(self%ied-self%isd+1)*(self%jec-self%jsc+2)*self%nlevs)
+      call PUSHREALARRAY(FV_Atm(1)%omga,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%ua  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%va  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%uc  ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%vc  ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%mfx ,(self%iec-self%isc+2)*(self%jec-self%jsc+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%mfy ,(self%iec-self%isc+1)*(self%jec-self%jsc+2)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%cx  ,(self%iec-self%isc+2)*(self%jed-self%jsd+1)*self%npz)
+      call PUSHREALARRAY(FV_Atm(1)%cy  ,(self%ied-self%isd+1)*(self%jec-self%jsc+2)*self%npz)
       !Trick checkpoint schemes into not considering these superfluous checkpoints,
       !about to recover with the pop anyway.
       FV_Atm(1)%u    = 2.0_kind_real*FV_Atm(1)%u
@@ -611,28 +611,28 @@ endif
 
 if (cp_iter_controls%cp_i .ne. 0) then
    !Populate end of timestep trajectory from stack
-   call POPREALARRAY(FV_Atm(1)%cy  ,(self%ied-self%isd+1)*(self%jec-self%jsc+2)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%cx  ,(self%iec-self%isc+2)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%mfy ,(self%iec-self%isc+1)*(self%jec-self%jsc+2)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%mfx ,(self%iec-self%isc+2)*(self%jec-self%jsc+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%vc  ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%uc  ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%va  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%ua  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%omga,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
+   call POPREALARRAY(FV_Atm(1)%cy  ,(self%ied-self%isd+1)*(self%jec-self%jsc+2)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%cx  ,(self%iec-self%isc+2)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%mfy ,(self%iec-self%isc+1)*(self%jec-self%jsc+2)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%mfx ,(self%iec-self%isc+2)*(self%jec-self%jsc+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%vc  ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%uc  ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%va  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%ua  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%omga,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
    call POPREALARRAY(FV_Atm(1)%phis,(self%ied-self%isd+1)*(self%jed-self%jsd+1))
-   call POPREALARRAY(FV_Atm(1)%pkz ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%peln,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%nlevs+1))
-   call POPREALARRAY(FV_Atm(1)%pk  ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%nlevs+1))
-   call POPREALARRAY(FV_Atm(1)%pe  ,(self%iec-self%isc+3)*(self%jec-self%jsc+3)*(self%nlevs+1))
+   call POPREALARRAY(FV_Atm(1)%pkz ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%peln,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%npz+1))
+   call POPREALARRAY(FV_Atm(1)%pk  ,(self%iec-self%isc+1)*(self%jec-self%jsc+1)*(self%npz+1))
+   call POPREALARRAY(FV_Atm(1)%pe  ,(self%iec-self%isc+3)*(self%jec-self%jsc+3)*(self%npz+1))
    call POPREALARRAY(FV_Atm(1)%ps  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1))
-   call POPREALARRAY(FV_Atm(1)%q   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs*self%ntracers)
-   call POPREALARRAY(FV_Atm(1)%delp,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%pt  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%delz,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%w   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%v   ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%nlevs)
-   call POPREALARRAY(FV_Atm(1)%u   ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%nlevs)
+   call POPREALARRAY(FV_Atm(1)%q   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz*self%ntracers)
+   call POPREALARRAY(FV_Atm(1)%delp,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%pt  ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%delz,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%w   ,(self%ied-self%isd+1)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%v   ,(self%ied-self%isd+2)*(self%jed-self%jsd+1)*self%npz)
+   call POPREALARRAY(FV_Atm(1)%u   ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%npz)
 endif
 
 !Backward adjoint sweep of the dynamics
@@ -665,13 +665,13 @@ endif
 !Adjoint of update d-grid winds
 !------------------------------
 self%nbufferx = 0.0_kind_real
-do k=1,self%nlevs
+do k=1,self%npz
    do i=self%isc,self%iec
       self%nbufferx(i,k) = FV_AtmP(1)%up(i,self%jec+1,k)
    enddo
 enddo
 self%ebuffery = 0.0_kind_real
-do k=1,self%nlevs
+do k=1,self%npz
    do j=self%jsc,self%jec
       self%ebuffery(j,k) = FV_AtmP(1)%vp(self%iec+1,j,k)
    enddo
@@ -730,7 +730,7 @@ FV_AtmP => self%FV_AtmP
 !Get up the trajectory for this time step 
 !----------------------------------------
 call get_traj( traj,flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed,&
-               flds%geom%nlevs,flds%geom%hydrostatic,flds%geom%ntracers,&
+               flds%geom%npz,flds%geom%hydrostatic,flds%geom%ntracers,&
                FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q,FV_Atm(1)%w,FV_Atm(1)%delz)
 
 
@@ -753,12 +753,12 @@ call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
                        wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
                        sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
                        gridtype=DGRID_NE, complete=.true. )
-do k=1,self%nlevs
+do k=1,self%npz
    do i=self%isc,self%iec
       FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
    enddo
 enddo
-do k=1,self%nlevs
+do k=1,self%npz
    do j=self%jsc,self%jec
       FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
    enddo
@@ -768,12 +768,12 @@ call mpp_get_boundary( FV_AtmP(1)%up, FV_AtmP(1)%vp, FV_Atm(1)%domain, &
                        wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
                        sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
                        gridtype=DGRID_NE, complete=.true. )
-do k=1,self%nlevs
+do k=1,self%npz
    do i=self%isc,self%iec
       FV_AtmP(1)%up(i,self%jec+1,k) = self%nbufferx(i,k)
    enddo
 enddo
-do k=1,self%nlevs
+do k=1,self%npz
    do j=self%jsc,self%jec
       FV_AtmP(1)%vp(self%iec+1,j,k) = self%ebuffery(j,k)
    enddo
@@ -836,7 +836,7 @@ if (.not. flds%geom%hydrostatic) then
   self%FV_Atm(1)%delz = flds%Atm%delz
 endif
 
-call set_traj( traj,flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed,flds%geom%nlevs, &
+call set_traj( traj,flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed,flds%geom%npz, &
                flds%geom%ntracers,flds%geom%hydrostatic, &
                self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz)
 

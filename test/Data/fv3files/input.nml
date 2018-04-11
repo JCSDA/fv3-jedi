@@ -1,33 +1,19 @@
 &fms_io_nml
-    checksum_required       = F
+       checksum_required       = F
 /
 
- &fms_nml
-    print_memory_usage=.false.
-    domains_stack_size = 24000000
+&fms_nml
+       print_memory_usage=.false.
+       domains_stack_size = 24000000
 /
 
 &mpp_io_nml
-    header_buffer_val       = 16384
-    global_field_on_root_pe = T
-    io_clocks_on            = F
-    shuffle                 = 0
-    deflate_level           = -1
-    cf_compliance           = F
-/
-
-&fv3jedi_geom_nml
-    size_cubic_grid   = 96
-    nlevs             = 64
-    ntracers          = 2
-    hydrostatic       = T
-    agrid_vel_rst     = T
-    halo              = 3
-    ntiles            = 6
-    stackmax          = 4000000
-    layout            = 1,1
-    io_layout         = 1,1
-    grid_spec_file    = "INPUT/C96_mosaic.nc"
+       header_buffer_val       = 16384
+       global_field_on_root_pe = T
+       io_clocks_on            = F
+       shuffle                 = 0
+       deflate_level           = -1
+       cf_compliance           = F
 /
 
 &fv_core_nml
@@ -80,10 +66,9 @@
        z_tracer = .T.
  /
 
- &main_nml
+&main_nml
 /
 
-  &test_case_nml
-    test_case = 13
- /
-
+&test_case_nml
+       test_case = 13
+/

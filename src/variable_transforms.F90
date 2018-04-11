@@ -196,9 +196,9 @@ subroutine T_to_Tv(geom,T,q,Tv)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: T (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Virtual temperature (K)
+ real(kind=kind_real), intent(in ) :: T (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Virtual temperature (K)
 
   Tv = T*(1.0 + epsilon*q)
 
@@ -210,12 +210,12 @@ subroutine T_to_Tv_tl(geom,T,T_tl,q,q_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in   ) :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(inout) :: T_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in   ) :: q_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(in   ) :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(inout) :: T_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: q_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
 
- real(kind=kind_real) :: Tv_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Local variable to hold virtual temperature
+ real(kind=kind_real) :: Tv_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Local variable to hold virtual temperature
 
   Tv_tl = T_tl*(1.0 + epsilon*q) +  T_tl*epsilon*q_tl
 
@@ -230,12 +230,12 @@ subroutine T_to_Tv_ad(geom,T,T_ad,q,q_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in )   :: geom !Geometry for the model
- real(kind=kind_real), intent(in )   :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(in )   :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(inout) :: T_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(inout) :: q_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(in )   :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in )   :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(inout) :: T_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(inout) :: q_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
 
- real(kind=kind_real) :: TV_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Local variable to hold virtual temperature
+ real(kind=kind_real) :: TV_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Local variable to hold virtual temperature
 
   Tv_ad = T_ad
   T_ad  = (1.0 + epsilon*q)*Tv_ad
@@ -251,22 +251,22 @@ subroutine delp_to_logP(geom,delp,logp)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs) !Pressure thickness
- real(kind=kind_real), intent(out) :: logp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs) !Log of pressure
+ real(kind=kind_real), intent(in ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Pressure thickness
+ real(kind=kind_real), intent(out) :: logp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Log of pressure
 
  !locals
- real(kind=kind_real) ::   pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
- real(kind=kind_real) ::    p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) ::   pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+ real(kind=kind_real) ::    p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
  integer :: k 
 
   !Pressure at layer edge
   pe(:,:,1) = geom%ptop
-  do k = 2,geom%nlevs+1
+  do k = 2,geom%npz+1
     pe(:,:,k) = pe(:,:,k-1) + delp(:,:,k-1)
   enddo
 
   !Midpoint pressure
-  p = 0.5*(pe(:,:,2:geom%nlevs+1) + pe(:,:,1:geom%nlevs))  
+  p = 0.5*(pe(:,:,2:geom%npz+1) + pe(:,:,1:geom%npz))  
 
   !Log pressure
   logp = log(p)
@@ -279,28 +279,28 @@ subroutine delp_to_logP_tl(geom,delp,delp_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(inout) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(inout) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
 
- real(kind=kind_real) ::      pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
- real(kind=kind_real) ::       p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
- real(kind=kind_real) ::   pe_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
- real(kind=kind_real) ::    p_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
- real(kind=kind_real) :: logp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) ::      pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+ real(kind=kind_real) ::       p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
+ real(kind=kind_real) ::   pe_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+ real(kind=kind_real) ::    p_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
+ real(kind=kind_real) :: logp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
 
  integer :: k 
 
   !Pressure at layer edge
   pe   (:,:,1) = geom%ptop
   pe_tl(:,:,1) = 0.0
-  do k = 2,geom%nlevs+1
+  do k = 2,geom%npz+1
     pe   (:,:,k) = pe   (:,:,k-1) + delp   (:,:,k-1)
     pe_tl(:,:,k) = pe_tl(:,:,k-1) + delp_tl(:,:,k-1)
   enddo
 
   !Midpoint pressure
-  p    = 0.5*(pe   (:,:,2:geom%nlevs+1) + pe   (:,:,1:geom%nlevs))  
-  p_tl = 0.5*(pe_tl(:,:,2:geom%nlevs+1) + pe_tl(:,:,1:geom%nlevs))  
+  p    = 0.5*(pe   (:,:,2:geom%npz+1) + pe   (:,:,1:geom%npz))  
+  p_tl = 0.5*(pe_tl(:,:,2:geom%npz+1) + pe_tl(:,:,1:geom%npz))  
 
   !Log pressure
   logp_tl = p_tl/p
@@ -316,25 +316,25 @@ subroutine delp_to_logP_ad(geom,delp,delp_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
- real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs)  !Temperature (K)
+ real(kind=kind_real), intent(in   ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
 
- real(kind=kind_real) ::      pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
- real(kind=kind_real) ::       p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
- real(kind=kind_real) ::   pe_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs+1)
- real(kind=kind_real) ::    p_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
- real(kind=kind_real) :: logp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%nlevs  )
+ real(kind=kind_real) ::      pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+ real(kind=kind_real) ::       p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
+ real(kind=kind_real) ::   pe_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+ real(kind=kind_real) ::    p_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
+ real(kind=kind_real) :: logp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  )
 
  integer :: k 
 
   !Pressure at layer edge
   pe   (:,:,1) = geom%ptop
-  do k = 2,geom%nlevs+1
+  do k = 2,geom%npz+1
     pe   (:,:,k) = pe   (:,:,k-1) + delp   (:,:,k-1)
   enddo
 
   !Midpoint pressure
-  p    = 0.5*(pe   (:,:,2:geom%nlevs+1) + pe   (:,:,1:geom%nlevs))  
+  p    = 0.5*(pe   (:,:,2:geom%npz+1) + pe   (:,:,1:geom%npz))  
 
   !Adjoint of overwrite
   logp_ad = delp_ad
@@ -344,12 +344,12 @@ subroutine delp_to_logP_ad(geom,delp,delp_ad)
 
   !Adjoint of average
   pe_ad = 0.0
-  pe_ad(:,:,2:geom%nlevs+1) = pe_ad(:,:,2:geom%nlevs+1) + 0.5*p_ad
-  pe_ad(:,:,1:geom%nlevs  ) = pe_ad(:,:,1:geom%nlevs  ) + 0.5*p_ad
+  pe_ad(:,:,2:geom%npz+1) = pe_ad(:,:,2:geom%npz+1) + 0.5*p_ad
+  pe_ad(:,:,1:geom%npz  ) = pe_ad(:,:,1:geom%npz  ) + 0.5*p_ad
 
   !Adjoint of delp to p
   delp_ad = 0.0
-  DO k = geom%nlevs+1,2,-1
+  DO k = geom%npz+1,2,-1
     pe_ad(:,:,k-1) = pe_ad(:,:,k-1) + pe_ad(:,:,k)
     delp_ad(:,:,k-1) = delp_ad(:,:,k-1) + pe_ad(:,:,k)
     pe_ad(:,:,k) = 0.0

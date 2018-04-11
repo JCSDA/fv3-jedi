@@ -37,29 +37,29 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine set_traj(self,isd,ied,jsd,jed,nlevs,nq,hydrostatic,u,v,pt,delp,q,w,delz)
+subroutine set_traj(self,isd,ied,jsd,jed,npz,nq,hydrostatic,u,v,pt,delp,q,w,delz)
 
 implicit none
 
 type(fv3jedi_trajectory), intent(inout) :: self
-integer, intent(in) :: isd,ied,jsd,jed,nlevs,nq
+integer, intent(in) :: isd,ied,jsd,jed,npz,nq
 logical, intent(in) :: hydrostatic
-real(kind_real), intent(in) ::    u(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) ::    v(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) ::   pt(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) :: delp(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) ::    q(isd:ied,jsd:jed,nlevs,nq)
-real(kind_real), intent(in) ::    w(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) :: delz(isd:ied,jsd:jed,nlevs)
+real(kind_real), intent(in) ::    u(isd:ied,jsd:jed,npz)
+real(kind_real), intent(in) ::    v(isd:ied,jsd:jed,npz)
+real(kind_real), intent(in) ::   pt(isd:ied,jsd:jed,npz)
+real(kind_real), intent(in) :: delp(isd:ied,jsd:jed,npz)
+real(kind_real), intent(in) ::    q(isd:ied,jsd:jed,npz,nq)
+real(kind_real), intent(in) ::    w(isd:ied,jsd:jed,npz)
+real(kind_real), intent(in) :: delz(isd:ied,jsd:jed,npz)
 
-allocate(self%u   (isd:ied,jsd:jed,nlevs))
-allocate(self%v   (isd:ied,jsd:jed,nlevs))
-allocate(self%pt  (isd:ied,jsd:jed,nlevs))
-allocate(self%delp(isd:ied,jsd:jed,nlevs))
-allocate(self%q   (isd:ied,jsd:jed,nlevs,nq))
+allocate(self%u   (isd:ied,jsd:jed,npz))
+allocate(self%v   (isd:ied,jsd:jed,npz))
+allocate(self%pt  (isd:ied,jsd:jed,npz))
+allocate(self%delp(isd:ied,jsd:jed,npz))
+allocate(self%q   (isd:ied,jsd:jed,npz,nq))
 !if (.not. hydrostatic) then
-   allocate(self%w   (isd:ied,jsd:jed,nlevs))
-   allocate(self%delz(isd:ied,jsd:jed,nlevs))
+   allocate(self%w   (isd:ied,jsd:jed,npz))
+   allocate(self%delz(isd:ied,jsd:jed,npz))
 !endif
 
 self%u    = u
@@ -76,20 +76,20 @@ end subroutine set_traj
 
 ! ------------------------------------------------------------------------------
 
-subroutine get_traj(self,isd,ied,jsd,jed,nlevs,hydrostatic,nq,u,v,pt,delp,q,w,delz)
+subroutine get_traj(self,isd,ied,jsd,jed,npz,hydrostatic,nq,u,v,pt,delp,q,w,delz)
 
 implicit none
 
 type(fv3jedi_trajectory), intent(in) :: self
-integer, intent(in) :: isd,ied,jsd,jed,nlevs,nq
+integer, intent(in) :: isd,ied,jsd,jed,npz,nq
 logical, intent(in) :: hydrostatic
-real(kind_real), intent(inout) ::    u(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) ::    v(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) ::   pt(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) :: delp(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) ::    q(isd:ied,jsd:jed,nlevs,nq)
-real(kind_real), intent(inout) ::    w(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) :: delz(isd:ied,jsd:jed,nlevs)
+real(kind_real), intent(inout) ::    u(isd:ied,jsd:jed,npz)
+real(kind_real), intent(inout) ::    v(isd:ied,jsd:jed,npz)
+real(kind_real), intent(inout) ::   pt(isd:ied,jsd:jed,npz)
+real(kind_real), intent(inout) :: delp(isd:ied,jsd:jed,npz)
+real(kind_real), intent(inout) ::    q(isd:ied,jsd:jed,npz,nq)
+real(kind_real), intent(inout) ::    w(isd:ied,jsd:jed,npz)
+real(kind_real), intent(inout) :: delz(isd:ied,jsd:jed,npz)
 
 u    = self%u
 v    = self%v

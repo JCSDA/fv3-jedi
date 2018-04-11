@@ -60,7 +60,8 @@
     "frequency": "PT06H",
     "datadir": "Data",
     "exp": "example",
-    "type": "an"
+    "type": "an",
+    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
   },
   "variational": {
     "iteration": [

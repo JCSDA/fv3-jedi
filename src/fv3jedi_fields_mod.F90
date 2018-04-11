@@ -18,17 +18,12 @@ use fv3jedi_kinds
 use ufo_locs_mod
 use ufo_geovals_mod
 
-use mpp_domains_mod, only: domain2d, EAST, NORTH, mpp_get_layout
-use mpp_domains_mod, only: mpp_get_compute_domain, mpp_get_data_domain
-use mpp_mod,         only: mpp_pe, mpp_npes, mpp_init, mpp_exit, mpp_error, &
-                           mpp_root_pe
-use mpp_io_mod,      only: mpp_open, mpp_close, MPP_ASCII, MPP_RDONLY
-use fms_io_mod,      only: restart_file_type, register_restart_field, &
-                           free_restart_type, restore_state, save_restart, file_exist
-use fv3jedi_mod,      only: fv_atmos_type
-use fv3jedi_mod,      only: allocate_fv_atmos_type, vt_coeffs
-
-use fv3jedi_constants,only: deg2rad
+use mpp_domains_mod,   only: domain2d, EAST, NORTH
+use mpp_mod,           only: mpp_pe, mpp_npes, mpp_root_pe
+use fms_io_mod,        only: restart_file_type, register_restart_field, &
+                             free_restart_type, restore_state, save_restart
+use fv3jedi_mod,       only: fv_atmos_type, allocate_fv_atmos_type
+use fv3jedi_constants, only: deg2rad
 
 implicit none
 private
@@ -68,25 +63,22 @@ contains
 ! ------------------------------------------------------------------------------
 
 subroutine create(self, geom, vars)
+
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
 type(ufo_vars),  intent(in)    :: vars
-integer layout(2)
+logical :: agrid_vel_rst = .true.
 
-! FV3JEDI fields are stored in ATM
-! allocate fv_atmos ATM structure.
+! Allocate main fields
 call allocate_fv_atmos_type(self%Atm, &
                             geom%bd%isd, geom%bd%ied, geom%bd%jsd, geom%bd%jed, &
                             geom%bd%isc, geom%bd%iec, geom%bd%jsc, geom%bd%jec, &
-                            geom%nlevs, geom%ntracers, &
-                            geom%hydrostatic, geom%agrid_vel_rst)
+                            geom%npz, geom%ntracers, &
+                            geom%hydrostatic, agrid_vel_rst)
 
+! Pointer to geometry
 self%geom => geom
-!call mpp_get_layout(self%geom%domain, layout)
-!print *,'create get domain layout 1',layout
-!call mpp_get_layout(geom%domain, layout)
-!print *,'create get domain layout 2',layout
 
 !Initialize all domain arrays to zero
 self%Atm%u    = 0.0_kind_real
@@ -110,15 +102,16 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 
-if (allocated(self%Atm%u)) deallocate(self%Atm%u)
-if (allocated(self%Atm%v)) deallocate(self%Atm%v)
-if (allocated(self%Atm%pt)) deallocate(self%Atm%pt)
-if (allocated(self%Atm%delp)) deallocate(self%Atm%delp)
-if (allocated(self%Atm%q)) deallocate(self%Atm%q)
-if (allocated(self%Atm%w)) deallocate(self%Atm%w)
-if (allocated(self%Atm%delz)) deallocate(self%Atm%delz)
-if (allocated(self%Atm%ua)) deallocate(self%Atm%ua)
-if (allocated(self%Atm%va)) deallocate(self%Atm%va)
+if (allocated(   self%Atm%u)) deallocate (    self%Atm%u )
+if (allocated(   self%Atm%v)) deallocate (    self%Atm%v )
+if (allocated(  self%Atm%pt)) deallocate (   self%Atm%pt )
+if (allocated(self%Atm%delp)) deallocate ( self%Atm%delp )
+if (allocated(   self%Atm%q)) deallocate (    self%Atm%q )
+if (allocated(self%Atm%phis)) deallocate ( self%Atm%phis )
+if (allocated(  self%Atm%ua)) deallocate (   self%Atm%ua )
+if (allocated(  self%Atm%va)) deallocate (   self%Atm%va )
+if (allocated(   self%Atm%w)) deallocate (    self%Atm%w )
+if (allocated(self%Atm%delz)) deallocate ( self%Atm%delz )
 
 end subroutine delete
 
@@ -141,6 +134,26 @@ self%Atm%ua = 0.0_kind_real
 self%Atm%va = 0.0_kind_real
 
 end subroutine zeros
+
+! ------------------------------------------------------------------------------
+
+subroutine ones(self)
+implicit none
+type(fv3jedi_field), intent(inout) :: self
+
+self%Atm%u = 1.0_kind_real
+self%Atm%v = 1.0_kind_real
+self%Atm%pt = 1.0_kind_real
+self%Atm%delp = 1.0_kind_real
+self%Atm%q = 1.0_kind_real
+if (.not. self%Atm%hydrostatic) then
+   self%Atm%w = 1.0_kind_real
+   self%Atm%delz = 1.0_kind_real
+endif
+self%Atm%ua = 1.0_kind_real
+self%Atm%va = 1.0_kind_real
+
+end subroutine ones 
 
 ! ------------------------------------------------------------------------------
 
@@ -314,24 +327,42 @@ integer :: ierr
 
 zp=0.0_kind_real
 
-!u d-grid
+!!u d-grid
+!do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+!   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec+1
+!      do k = 1,fld1%geom%npz
+!         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
+!            zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
+!         endif
+!      enddo
+!   enddo
+!enddo
+!
+!!v d-grid
+!do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
+!   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+!      do k = 1,fld1%geom%npz
+!         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
+!            zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
+!         endif
+!      enddo
+!   enddo
+!enddo
+
+!u a-grid
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec+1
-      do k = 1,fld1%geom%nlevs
-         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-            zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
-         endif
+      do k = 1,fld1%geom%npz
+         zp = zp + fld1%Atm%ua(i,j,k) * fld2%Atm%ua(i,j,k)
       enddo
    enddo
 enddo
 
-!v d-grid
+!v a-grid
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%nlevs
-         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-            zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
-         endif
+      do k = 1,fld1%geom%npz
+         zp = zp + fld1%Atm%va(i,j,k) * fld2%Atm%va(i,j,k)
       enddo
    enddo
 enddo
@@ -339,7 +370,7 @@ enddo
 !pt
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%nlevs
+      do k = 1,fld1%geom%npz
          if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
             zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
          endif
@@ -350,7 +381,7 @@ enddo
 !delp
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%nlevs
+      do k = 1,fld1%geom%npz
          if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
             zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
          endif
@@ -358,11 +389,11 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    enddo
 enddo
 
-!q
+!sphu
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%nlevs
-         do l = 1,fld1%geom%ntracers
+      do k = 1,fld1%geom%npz
+         do l = 1,1 !fld1%geom%ntracers
             if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
                zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
             endif
@@ -472,6 +503,7 @@ subroutine read_file(fld, c_conf, vdate)
   integer :: date_init(6), date(6), calendar_type
   integer(kind=c_int) :: idate, isecs
 
+  character(len=255) :: datapath_in
   character(len=255) :: filename_core
   character(len=255) :: filename_trcr
   character(len=255) :: filename_cplr
@@ -490,9 +522,9 @@ subroutine read_file(fld, c_conf, vdate)
 
   !Set filenames
   !--------------
-  filename_core = 'INPUT/fv_core.res.nc'
-  filename_trcr = 'INPUT/fv_tracer.res.nc'
-  filename_cplr = 'INPUT/coupler.res'
+  filename_core = 'fv_core.res.nc'
+  filename_trcr = 'fv_tracer.res.nc'
+  filename_cplr = 'coupler.res'
 
   if (config_element_exists(c_conf,"filename_core")) then
      filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
@@ -504,9 +536,7 @@ subroutine read_file(fld, c_conf, vdate)
      filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
   endif
 
-  if (mpp_pe() == mpp_root_pe()) print*, 'filename_core: ', trim(filename_core)
-  if (mpp_pe() == mpp_root_pe()) print*, 'filename_trcr: ', trim(filename_trcr)
-
+  datapath_in = config_get_string(c_conf,len(datapath_in),"datapath_in")
 
   !Register and read core fields
   !------------------------------
@@ -532,7 +562,7 @@ subroutine read_file(fld, c_conf, vdate)
      id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
                    domain=fld%geom%domain)
   endif
-  call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+  call restore_state(Fv_restart, directory=trim(adjustl(datapath_in)))
   call free_restart_type(Fv_restart)
 
   !If A-Grid winds were not read then interpolate from D-grid
@@ -545,7 +575,7 @@ subroutine read_file(fld, c_conf, vdate)
 !    call mpp_update_domains(fld%Atm%u, fld%Atm%v, fld%geom%domain, gridtype=DGRID_NE, complete=.true.)
 !
 !    !Call interpolation level by level
-!    do k = 1,fld%geom%nlevs
+!    do k = 1,fld%geom%npz
 !       call d2a2c_vect( fld%Atm%u(:,:,k), fld%Atm%v(:,:,k), fld%Atm%ua(:,:,k), fld%Atm%va(:,:,k), &
 !                        .true., fld%geom%gridstruct, &
 !                        fld%geom%bd, fld%geom%size_cubic_grid, fld%geom%size_cubic_grid, .false., 0)
@@ -564,13 +594,13 @@ subroutine read_file(fld, c_conf, vdate)
 !    id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
 !                                        domain=fld%geom%domain)
 ! enddo
-! call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+! call restore_state(Tr_restart, directory=trim(adjustl(datapath_in)))
 ! call free_restart_type(Tr_restart)
 
   id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
                                        domain=fld%geom%domain)
 
-  call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+  call restore_state(Tr_restart, directory=trim(adjustl(datapath_in)))
   call free_restart_type(Tr_restart)
 
 
@@ -596,7 +626,7 @@ subroutine read_file(fld, c_conf, vdate)
   ! read date from coupler.res text file.
   sdate = config_get_string(c_conf,len(sdate),"date")
   iounit = 101
-  open(iounit, file=trim(adjustl(fld%geom%datapath_in))//filename_cplr, form='formatted')
+  open(iounit, file=trim(adjustl(datapath_in))//filename_cplr, form='formatted')
   read(iounit, '(i6)')  calendar_type
   read(iounit, '(6i6)') date_init
   read(iounit, '(6i6)') date
@@ -774,7 +804,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
               fld%Atm%phis(i,j) = phis0
 
               ! Now loop over all levels
-              do k = 1, geom%nlevs
+              do k = 1, geom%npz
 
                  pe1 = geom%ak(k) + geom%bk(k)*ps
                  pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
@@ -811,7 +841,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
               fld%Atm%phis(i,j) = phis0
 
               ! Now loop over all levels
-              do k = 1, geom%nlevs
+              do k = 1, geom%npz
 
                  pe1 = geom%ak(k) + geom%bk(k)*ps
                  pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
@@ -856,7 +886,7 @@ integer :: i,j,k
 !ua
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%nlevs
+      do k = 1,flds%geom%npz
          flds%Atm%ua(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
       enddo
    enddo
@@ -865,7 +895,7 @@ enddo
 !va
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%nlevs
+      do k = 1,flds%geom%npz
          flds%Atm%va(i,j,k) = 1.0_kind_real
       enddo
    enddo
@@ -874,7 +904,7 @@ enddo
 !pt
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%nlevs
+      do k = 1,flds%geom%npz
          flds%Atm%pt(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
       enddo
    enddo
@@ -883,7 +913,7 @@ enddo
 !delp
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%nlevs
+      do k = 1,flds%geom%npz
          flds%Atm%delp(i,j,k) = k
       enddo
    enddo
@@ -892,7 +922,7 @@ enddo
 !q
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%nlevs
+      do k = 1,flds%geom%npz
          flds%Atm%q(i,j,k,1) = 0.0
       enddo
    enddo
@@ -1044,7 +1074,7 @@ ii = 0
 
 do jy=fld%geom%bd%jsc,fld%geom%bd%jec
    do jx=fld%geom%bd%isc,fld%geom%bd%iec
-      do jz=1,fld%geom%nlevs
+      do jz=1,fld%geom%npz
          zz = zz + fld%Atm%pt(jx,jy,jz)**2
          zz = zz + fld%Atm%delp(jx,jy,jz)**2
          zz = zz + fld%Atm%ua(jx,jy,jz)**2
@@ -1116,7 +1146,7 @@ endif
 if (any(iydir<1).or.any(iydir>self%geom%size_cubic_grid)) then
    call abor1_ftn("fv3jedi_fields:dirac invalid iydir")
 endif
-if ((ildir<1).or.(ildir>self%geom%nlevs)) then
+if ((ildir<1).or.(ildir>self%geom%npz)) then
    call abor1_ftn("fv3jedi_fields:dirac invalid ildir")
 endif
 if ((ifdir<1).or.(ifdir>5)) then
@@ -1173,8 +1203,8 @@ nc0a = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%geom
 allocate(lon(nc0a))
 allocate(lat(nc0a))
 allocate(area(nc0a))
-allocate(vunit(self%geom%nlevs))
-allocate(imask(nc0a,self%geom%nlevs))
+allocate(vunit(self%geom%npz))
+allocate(imask(nc0a,self%geom%npz))
 
 ! Copy coordinates
 ic0a = 0
@@ -1189,7 +1219,7 @@ enddo
 imask = 1
 
 ! Define vertical unit
-do jl=1,self%geom%nlevs
+do jl=1,self%geom%npz
   sigmaup = self%geom%ak(jl+1)/101300.0+self%geom%bk(jl+1) ! si are now sigmas
   sigmadn = self%geom%ak(jl  )/101300.0+self%geom%bk(jl  )
   vunit(jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
@@ -1200,14 +1230,14 @@ nf = 5
 if (.not. self%geom%hydrostatic) nf = 7
 
 ! Create unstructured grid
-call create_unstructured_grid(ug, nc0a, self%geom%nlevs, nf, 1, lon, lat, area, vunit, imask)
+call create_unstructured_grid(ug, nc0a, self%geom%npz, nf, 1, lon, lat, area, vunit, imask)
 
 ! Copy field
 ic0a = 0
 do jy=self%geom%bd%jsc,self%geom%bd%jec
   do jx=self%geom%bd%isc,self%geom%bd%iec
     ic0a = ic0a+1
-    do jl=1,self%geom%nlevs
+    do jl=1,self%geom%npz
         ug%fld(ic0a,jl,1,1) = self%Atm%ua(jx,jy,jl)
         ug%fld(ic0a,jl,2,1) = self%Atm%va(jx,jy,jl)
         ug%fld(ic0a,jl,3,1) = self%Atm%pt(jx,jy,jl)
@@ -1236,7 +1266,7 @@ ic0a = 0
 do jy=self%geom%bd%jsc,self%geom%bd%jec
   do jx=self%geom%bd%isc,self%geom%bd%iec
     ic0a = ic0a+1
-    do jl=1,self%geom%nlevs
+    do jl=1,self%geom%npz
         self%Atm%ua(jx,jy,jl)   = ug%fld(ic0a,jl,1,1)
         self%Atm%va(jx,jy,jl)   = ug%fld(ic0a,jl,2,1)
         self%Atm%pt(jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
@@ -1289,7 +1319,7 @@ allocate(obs_field(nobs,1))
 ! ----------------------------------------------------------------
 
 !Temporary variable in case of variable transform
-allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
+allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
 
 do jvar = 1, vars%nv
 
@@ -1304,7 +1334,7 @@ do jvar = 1, vars%nv
     !Convert temperature to virtual temperature
     call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geoval)
 
-    do jlev = 1, fld%geom%nlevs
+    do jlev = 1, fld%geom%npz
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
         do ji = fld%geom%bd%isc, fld%geom%bd%iec
@@ -1325,7 +1355,7 @@ do jvar = 1, vars%nv
 
     geoval = log(0.001) + geoval !Convert to kPa
 
-    do jlev = 1, fld%geom%nlevs
+    do jlev = 1, fld%geom%npz
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
         do ji = fld%geom%bd%isc, fld%geom%bd%iec
@@ -1407,7 +1437,7 @@ do jvar = 1, vars%nv
     !Tangent linear of temperature to virtual temperature
     call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
 
-    do jlev = 1, fld%geom%nlevs
+    do jlev = 1, fld%geom%npz
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
         do ji = fld%geom%bd%isc, fld%geom%bd%iec
@@ -1492,7 +1522,7 @@ do jvar = 1, vars%nv
   
   case ("virtual_temperature")
 
-    do jlev = 1, fld%geom%nlevs
+    do jlev = 1, fld%geom%npz
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
       call apply_obsop_ad(pgeom,odata,obs_field,mod_field)
       ii = 0
@@ -1555,27 +1585,30 @@ integer :: jvar
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
   integer :: id_restart
+  character(len=255) :: datapath_in
   character(len=255) :: filename_core
   character(len=255) :: filename_trcr
 
   if (present(traj)) then
 
-    filename_core = 'INPUT/fv_core.res.nc'
-    filename_trcr = 'INPUT/fv_tracer.res.nc'
+    datapath_in = 'Data/C96_RESTART_2016-01-01-06z/'
+
+    filename_core = 'fv_core.res.nc'
+    filename_trcr = 'fv_tracer.res.nc'
    
-    allocate(traj%pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
-    allocate(traj%delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs))
-    allocate(traj%q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%nlevs,fld%geom%ntracers))
+    allocate(traj%pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
+    allocate(traj%delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
+    allocate(traj%q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz,fld%geom%ntracers))
   
     id_restart = register_restart_field(Fv_restart, filename_core, 'T',    traj%pt,   domain=fld%geom%domain)
     id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', traj%delp, domain=fld%geom%domain)
   
-    call restore_state(Fv_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+    call restore_state(Fv_restart, directory=trim(adjustl(datapath_in)))
     call free_restart_type(Fv_restart)
   
     id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', traj%q(:,:,:,1), domain=fld%geom%domain)
   
-    call restore_state(Tr_restart, directory=trim(adjustl(fld%geom%datapath_in)))
+    call restore_state(Tr_restart, directory=trim(adjustl(datapath_in)))
     call free_restart_type(Tr_restart) 
 
   endif
@@ -1603,9 +1636,9 @@ if (trim(myname)/="interp_ad") then
    if (mpp_pe()==mpp_root_pe()) print*, trim(myname), ': allocating GeoVaLs'
    do jvar=1,vars%nv
       if (.not.allocated(gom%geovals(jvar)%vals)) then
-         gom%geovals(jvar)%nval = fld%geom%nlevs
+         gom%geovals(jvar)%nval = fld%geom%npz
          gom%geovals(jvar)%nobs = nobs
-         allocate( gom%geovals(jvar)%vals(fld%geom%nlevs,nobs) )
+         allocate( gom%geovals(jvar)%vals(fld%geom%npz,nobs) )
       endif
    enddo
    gom%linit = .true.
@@ -1650,7 +1683,7 @@ integer :: ii, jj, ji, jvar, jlev
 mod_nx  = grid%bd%iec - grid%bd%isc + 1  
 mod_ny  = grid%bd%jec - grid%bd%jsc + 1
 mod_num = mod_nx * mod_ny
-mod_nz  = grid%nlevs
+mod_nz  = grid%npz
 obs_num = locs%nlocs 
 write(*,*)'initialize_nicas mod_num,obs_num = ',mod_num,obs_num
 
@@ -1764,13 +1797,13 @@ if (.not.gom%linit) then
 endif
 do jvar=1,vars%nv
    if (allocated(gom%geovals(jvar)%vals)) then  
-      if( gom%geovals(jvar)%nval .ne. fld%geom%nlevs )then
+      if( gom%geovals(jvar)%nval .ne. fld%geom%npz )then
          call abor1_ftn(trim(cinfo)//"nval wrong size")
       endif
       if( gom%geovals(jvar)%nobs .ne. locs%nlocs )then
          call abor1_ftn(trim(cinfo)//"nobs wrong size")
       endif
-      if( size(gom%geovals(jvar)%vals, 1) .ne. fld%geom%nlevs )then
+      if( size(gom%geovals(jvar)%vals, 1) .ne. fld%geom%npz )then
          call abor1_ftn(trim(cinfo)//"vals wrong size 1")
       endif
       if( size(gom%geovals(jvar)%vals, 2) .ne. locs%nlocs )then
@@ -1785,6 +1818,36 @@ endif
 write(*,*)'interp_checks ',trim(cinfo),' done'
 
 end subroutine interp_checks
+
+! ------------------------------------------------------------------------------
+
+subroutine check_resolution(x1, x2)
+
+implicit none
+type(fv3jedi_field), intent(in) :: x1, x2
+
+if (x1%geom%size_cubic_grid /= x2%geom%size_cubic_grid .or.  x1%geom%npz /= x2%geom%npz) then
+  call abor1_ftn ("fv3jedi_fields: resolution error")
+endif
+call check(x1)
+call check(x2)
+
+end subroutine check_resolution
+
+! ------------------------------------------------------------------------------
+
+subroutine check(self)
+implicit none
+type(fv3jedi_field), intent(in) :: self
+logical :: bad
+
+bad = .false.
+
+if (bad) then
+   call abor1_ftn ("fv3jedi_fields: field not consistent")
+endif
+
+end subroutine check
 
 ! ------------------------------------------------------------------------------
 
