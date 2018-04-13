@@ -15,6 +15,7 @@
 #include "StateFV3JEDI.h"
 #include "eckit/config/Configuration.h"
 #include "util/DateTime.h"
+#include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
@@ -24,7 +25,9 @@ ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol, const eckit::Configura
   oops::Log::trace() << "ModelFV3JEDI::ModelFV3JEDI" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));
   const eckit::Configuration * configc = &model;
+  stageFv3Files(model);
   fv3jedi_model_setup_f90(&configc, geom_.toFortran(), keyConfig_);
+  removeFv3Files();
   oops::Log::trace() << "ModelFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------

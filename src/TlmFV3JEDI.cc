@@ -19,6 +19,7 @@
 #include "util/DateTime.h"
 #include "util/Logger.h"
 #include "util/abor1_cpp.h"
+#include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {
 
@@ -32,8 +33,9 @@ TlmFV3JEDI::TlmFV3JEDI(const GeometryFV3JEDI & resol, const eckit::Configuration
   tstep_ = util::Duration(tlConf.getString("tstep"));
 
   const eckit::Configuration * configc = &tlConf;
+  stageFv3Files(tlConf);
   fv3jedi_model_setup_f90(&configc, resol_.toFortran(), keyConfig_);
-
+  removeFv3Files();
   oops::Log::trace() << "TlmFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------

@@ -36,9 +36,6 @@ class GeometryFV3JEDI : public util::Printable,
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
 
-  std::string nml_file;
-  std::string trc_file;
-
  private:
   GeometryFV3JEDI & operator=(const GeometryFV3JEDI &);
   void print(std::ostream &) const;

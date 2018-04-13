@@ -22,6 +22,7 @@
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
 #include "util/DateTime.h"
+#include "UtilitiesFV3JEDI.h"
 
 // -----------------------------------------------------------------------------
 namespace fv3jedi {
@@ -175,21 +176,9 @@ void FieldsFV3JEDI::analytic_init(const eckit::Configuration & config,
 				  const GeometryFV3JEDI & geom) {
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
-
-  //May use fv_init for initial condtion
-  int world_rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-  if (world_rank == 0) {
-    std::remove("input.nml");
-    std::remove("field_table");
-    nml_file = config.getString("nml_file");
-    trc_file = config.getString("trc_file");
-    symlink(nml_file.c_str(), "./input.nml");
-    symlink(trc_file.c_str(), "./field_table");
-  }
-  MPI_Barrier(MPI_COMM_WORLD); //Nobody move until file is in place
-
+  stageFv3Files(config);
   fv3jedi_field_analytic_init_f90(keyFlds_, geom.toFortran(), &conf, &dtp);
+  removeFv3Files();
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::write(const eckit::Configuration & config) const {
