@@ -32,7 +32,7 @@
   },
   "ModelTest": {
     "fclength": "PT6H",
-    "finalnorm": "1952.9548113316434",
+    "finalnorm": "1951.0602702143963",
     "tolerance": "0.005"
   },
   "ModelBias": null,

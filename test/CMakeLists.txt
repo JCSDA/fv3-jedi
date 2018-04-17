@@ -27,6 +27,7 @@ Data/C96_RESTART_2016-01-01-06z/INPUT/fv_tracer.res.tile3.nc
 Data/C96_RESTART_2016-01-01-06z/INPUT/fv_tracer.res.tile4.nc
 Data/C96_RESTART_2016-01-01-06z/INPUT/fv_tracer.res.tile5.nc
 Data/C96_RESTART_2016-01-01-06z/INPUT/fv_tracer.res.tile6.nc
+Data/RESTART/PlotCubeSphereField.py
 )
 
 list( APPEND fv3jedi_test_fv3files

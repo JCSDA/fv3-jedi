@@ -3,26 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #User input required for the follwing:
-plot_diff = 1         #Plot path2/file - path1/file
-path1  = '/discover/nobackup/drholdaw/Jedi/Experiments/Test12/'  #Path of first file
-path2  = '/discover/nobackup/drholdaw/Jedi/Experiments/Test13/'  #Path of second file
+plot_diff = 0         #Plot path2/file - path1/file
+path1  = './'  #Path of first file
+path2  = './'  #Path of second file
 file_tplt_befr = 'fv_core.res.tile'  #Filename before tile number
 file_tplt_aftr = '.nc'               #Filename after tile number
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'T'                        #Variable to plot
+readvar = 'ua'                       #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
 plot_level = 40                      #If 3D plot this level
-
-#Another example:
-#path  = '/discover/nobackup/drholdaw/Jedi/Experiments/INPUT/'
-#file_tplt_befr = 'C96_grid_spec.tile'
-#xdimvar = 'grid_x'
-#ydimvar = 'grid_y'
-#zdimvar = ' '
-#readvar = 'grid_lon'
-#Dim2dor3d = '2D'
 
 #Tile 1 handle for getting dimension
 fh1 = Dataset(path1 + file_tplt_befr + str(1) + file_tplt_aftr, mode='r')
