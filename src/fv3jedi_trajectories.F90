@@ -37,68 +37,72 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine set_traj(self,isd,ied,jsd,jed,npz,nq,hydrostatic,u,v,pt,delp,q,w,delz)
+subroutine set_traj(self,isc,iec,jsc,jec,isd,ied,jsd,jed,npz,nq,hydrostatic,u,v,pt,delp,q,w,delz)
 
 implicit none
 
 type(fv3jedi_trajectory), intent(inout) :: self
-integer, intent(in) :: isd,ied,jsd,jed,npz,nq
+integer, intent(in) :: isd,ied,jsd,jed,isc,iec,jsc,jec
+integer, intent(in) :: npz,nq
 logical, intent(in) :: hydrostatic
-real(kind_real), intent(in) ::    u(isd:ied,jsd:jed,npz)
-real(kind_real), intent(in) ::    v(isd:ied,jsd:jed,npz)
-real(kind_real), intent(in) ::   pt(isd:ied,jsd:jed,npz)
-real(kind_real), intent(in) :: delp(isd:ied,jsd:jed,npz)
-real(kind_real), intent(in) ::    q(isd:ied,jsd:jed,npz,nq)
-real(kind_real), intent(in) ::    w(isd:ied,jsd:jed,npz)
-real(kind_real), intent(in) :: delz(isd:ied,jsd:jed,npz)
 
-allocate(self%u   (isd:ied,jsd:jed,npz))
-allocate(self%v   (isd:ied,jsd:jed,npz))
-allocate(self%pt  (isd:ied,jsd:jed,npz))
-allocate(self%delp(isd:ied,jsd:jed,npz))
-allocate(self%q   (isd:ied,jsd:jed,npz,nq))
+real(kind_real), intent(in) ::    u(isd:ied  ,jsd:jed+1,npz)
+real(kind_real), intent(in) ::    v(isd:ied+1,jsd:jed  ,npz)
+real(kind_real), intent(in) ::   pt(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) :: delp(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) ::    q(isd:ied  ,jsd:jed  ,npz,nq)
+real(kind_real), intent(in) ::    w(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) :: delz(isd:ied  ,jsd:jed  ,npz)
+
+allocate(self%u   (isc:iec  ,jsc:jec+1,npz))
+allocate(self%v   (isc:iec+1,jsc:jec  ,npz))
+allocate(self%pt  (isc:iec  ,jsc:jec  ,npz))
+allocate(self%delp(isc:iec  ,jsc:jec  ,npz))
+allocate(self%q   (isc:iec  ,jsc:jec  ,npz,nq))
 !if (.not. hydrostatic) then
-   allocate(self%w   (isd:ied,jsd:jed,npz))
-   allocate(self%delz(isd:ied,jsd:jed,npz))
+   allocate(self%w   (isc:iec,jsc:jec,npz))
+   allocate(self%delz(isc:iec,jsc:jec,npz))
 !endif
 
-self%u    = u
-self%v    = v
-self%pt   = pt
-self%delp = delp
-self%q    = q
-!if (.not. hydrostatic) then
-   self%w    = w
-   self%delz = delz
+self%u    = u   (isc:iec  ,jsc:jec+1,:  )
+self%v    = v   (isc:iec+1,jsc:jec  ,:  )
+self%pt   = pt  (isc:iec  ,jsc:jec  ,:  )
+self%delp = delp(isc:iec  ,jsc:jec  ,:  )
+self%q    = q   (isc:iec  ,jsc:jec  ,:,:)
+!if (.not. flds%geom%hydrostatic) then
+   self%delz = delz(isc:iec  ,jsc:jec  ,:  )
+   self%w    = w   (isc:iec  ,jsc:jec  ,:  )
 !endif
 
 end subroutine set_traj
 
 ! ------------------------------------------------------------------------------
 
-subroutine get_traj(self,isd,ied,jsd,jed,npz,hydrostatic,nq,u,v,pt,delp,q,w,delz)
+subroutine get_traj(self,isc,iec,jsc,jec,isd,ied,jsd,jed,npz,hydrostatic,nq,u,v,pt,delp,q,w,delz)
 
 implicit none
 
 type(fv3jedi_trajectory), intent(in) :: self
-integer, intent(in) :: isd,ied,jsd,jed,npz,nq
+integer, intent(in) :: isd,ied,jsd,jed,isc,iec,jsc,jec
+integer, intent(in) :: npz,nq
 logical, intent(in) :: hydrostatic
-real(kind_real), intent(inout) ::    u(isd:ied,jsd:jed,npz)
-real(kind_real), intent(inout) ::    v(isd:ied,jsd:jed,npz)
-real(kind_real), intent(inout) ::   pt(isd:ied,jsd:jed,npz)
-real(kind_real), intent(inout) :: delp(isd:ied,jsd:jed,npz)
-real(kind_real), intent(inout) ::    q(isd:ied,jsd:jed,npz,nq)
-real(kind_real), intent(inout) ::    w(isd:ied,jsd:jed,npz)
-real(kind_real), intent(inout) :: delz(isd:ied,jsd:jed,npz)
 
-u    = self%u
-v    = self%v
-pt   = self%pt
-delp = self%delp
-q    = self%q
-!if (.not. hydrostatic) then
-   w    = self%w
-   delz = self%delz
+real(kind_real), intent(out) ::    u(isd:ied  ,jsd:jed+1,npz)
+real(kind_real), intent(out) ::    v(isd:ied+1,jsd:jed  ,npz)
+real(kind_real), intent(out) ::   pt(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) :: delp(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) ::    q(isd:ied  ,jsd:jed  ,npz,nq)
+real(kind_real), intent(out) ::    w(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) :: delz(isd:ied  ,jsd:jed  ,npz)
+
+u   (isc:iec  ,jsc:jec+1,:  ) = self%u
+v   (isc:iec+1,jsc:jec  ,:  ) = self%v
+pt  (isc:iec  ,jsc:jec  ,:  ) = self%pt
+delp(isc:iec  ,jsc:jec  ,:  ) = self%delp
+q   (isc:iec  ,jsc:jec  ,:,:) = self%q
+!if (.not. flds%geom%hydrostatic) then
+   delz(isc:iec  ,jsc:jec  ,:  ) = self%delz
+   w   (isc:iec  ,jsc:jec  ,:  ) = self%w
 !endif
 
 end subroutine get_traj

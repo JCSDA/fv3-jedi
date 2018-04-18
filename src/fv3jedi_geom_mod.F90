@@ -58,6 +58,8 @@ type :: fv3jedi_geom
   integer :: stackmax                                     !Stackmax
   real(kind=kind_real), allocatable :: grid_lon(:,:)      !Longitude at cell center
   real(kind=kind_real), allocatable :: grid_lat(:,:)      !Latitude at cell center
+  real(kind=kind_real), allocatable :: egrid_lon(:,:)      !Longitude at cell center
+  real(kind=kind_real), allocatable :: egrid_lat(:,:)      !Latitude at cell center
   real(kind=kind_real), allocatable :: area(:,:)          !Grid area
   real(kind=kind_real), allocatable :: ak(:),bk(:)        !Model level coefficients
   real(kind=kind_real) :: ptop                            !Pressure at top of domain
@@ -212,6 +214,11 @@ if (trim(init_type) .ne. "inline") then
    enddo
    deallocate(tmpx,tmpy)
    
+   allocate ( self%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+   allocate ( self%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+   self%egrid_lon = 0.0 !Not in the file
+   self%egrid_lat = 0.0
+
    ! get grid areas from superset grid in grid tile files.
    allocate ( self%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
    isc2 = 2*self%bd%isc-1; iec2 = 2*self%bd%iec
@@ -280,6 +287,11 @@ else
    self%grid_lat = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
    self%area = FV_Atm(1)%gridstruct%area_64
    
+   allocate ( self%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+   allocate ( self%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+   self%egrid_lon = rad2deg*real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
+   self%egrid_lat = rad2deg*real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
+
    !ak and bk are still read from file
    allocate ( self%ak(self%npz+1) )
    allocate ( self%bk(self%npz+1) )
@@ -322,6 +334,8 @@ call fv3jedi_geom_registry%get(c_key_self, self)
 
 allocate(other%grid_lon(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
 allocate(other%grid_lat(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
+allocate(other%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+allocate(other%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
 allocate(other%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
 allocate(other%ak(self%npz+1))
 allocate(other%bk(self%npz+1))
@@ -351,6 +365,8 @@ other%ntiles          = self%ntiles
 other%stackmax        = self%stackmax
 other%grid_lon        = self%grid_lon
 other%grid_lat        = self%grid_lat
+other%egrid_lon        = self%egrid_lon
+other%egrid_lat        = self%egrid_lat
 other%area            = self%area
 other%ak              = self%ak
 other%bk              = self%bk
@@ -376,6 +392,8 @@ call fv3jedi_geom_registry%get(c_key_self, self)
 ! Deallocate
 deallocate(self%grid_lon)
 deallocate(self%grid_lat)
+deallocate(self%egrid_lon)
+deallocate(self%egrid_lat)
 deallocate(self%area)
 deallocate(self%ak)
 deallocate(self%bk)

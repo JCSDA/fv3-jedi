@@ -79,7 +79,7 @@ call allocate_fv_atmos_type(self%Atm, &
 ! Pointer to geometry
 self%geom => geom
 
-!Initialize all domain arrays to zero
+! Initialize all domain arrays to zero
 call zeros(self)
 self%Atm%phis   = 0.0_kind_real
 
@@ -142,7 +142,7 @@ endif
 self%Atm%ua = 1.0_kind_real
 self%Atm%va = 1.0_kind_real
 
-end subroutine ones 
+end subroutine ones
 
 ! ------------------------------------------------------------------------------
 
@@ -316,24 +316,22 @@ integer :: ierr
 
 zp=0.0_kind_real
 
-!u d-grid
+!Only unique grid points, for D grid winds do not include shared edge
+
+!u
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-            zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
-         endif
+         zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
       enddo
    enddo
 enddo
 
-!v d-grid
+!v
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-            zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
-         endif
+         zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
       enddo
    enddo
 enddo
@@ -342,9 +340,7 @@ enddo
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-            zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
-         endif
+         zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
       enddo
    enddo
 enddo
@@ -353,33 +349,27 @@ enddo
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-            zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
-         endif
+         zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
       enddo
    enddo
 enddo
 
-!sphu
+!tracers
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         do l = 1,1 !fld1%geom%ntracers
-            if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-               zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
-            endif
+         do l = 1,fld1%geom%ntracers
+            zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
          enddo
       enddo
    enddo
 enddo
 
+!Get global dot product
 call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
 
-if (mpp_pe() == mpp_root_pe()) then
-
-print*, "Dot product test result: ", zprod
-
-endif
+!For debugging print result:
+if (mpp_pe() == mpp_root_pe()) print*, "Dot product test result: ", zprod
 
 return
 end subroutine dot_prod
@@ -1302,6 +1292,9 @@ allocate(obs_field(nobs,1))
 !Temporary variable in case of variable transform
 allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
 
+write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
+write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
+
 do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
@@ -1405,6 +1398,9 @@ call initialize_interp( fld, locs, vars, gom, myname, &
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
+write(*,*)'interp_tl model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
+write(*,*)'interp_tl model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
+
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
@@ -1416,7 +1412,7 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     !Tangent linear of temperature to virtual temperature
-    call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    !call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
 
     do jlev = 1, fld%geom%npz
       ii = 0
@@ -1446,12 +1442,12 @@ do jvar = 1, vars%nv
 
 enddo
 
-write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 
 deallocate(mod_field)
 deallocate(obs_field)
 
-write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+write(*,*)'interp_tl geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
+write(*,*)'interp_tl geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
 end subroutine interp_tl
 
@@ -1491,6 +1487,9 @@ call initialize_interp( fld, locs, vars, gom, myname, &
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
+write(*,*)'interp_ad geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
+write(*,*)'interp_ad geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
@@ -1517,7 +1516,7 @@ do jvar = 1, vars%nv
     enddo 
   
     !Adjoint of temperature to virtual temperature
-    call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    !call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
   
   case ("humidity_mixing_ratio")
   
@@ -1537,6 +1536,9 @@ enddo
 
 deallocate(mod_field)
 deallocate(obs_field)
+
+write(*,*)'interp_ad model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
+write(*,*)'interp_ad model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
 end subroutine interp_ad
 
@@ -1622,6 +1624,7 @@ if (trim(myname)/="interp_ad") then
          gom%geovals(jvar)%nval = fld%geom%npz
          gom%geovals(jvar)%nobs = nobs
          allocate( gom%geovals(jvar)%vals(fld%geom%npz,nobs) )
+         gom%geovals(jvar)%vals = 0.0
       endif
    enddo
    gom%linit = .true.
@@ -1674,12 +1677,12 @@ write(*,*)'initialize_nicas mod_num,obs_num = ',mod_num,obs_num
 !------------------------------------------
 if (.NOT.interp_initialized) then
    allocate( mod_lat(mod_num), mod_lon(mod_num) )
-   mod_lat = reshape( grid%grid_lat(grid%bd%isc:grid%bd%iec,      &
-                                    grid%bd%jsc:grid%bd%jec),     &
-                                    [mod_num] )  
-   mod_lon = reshape( grid%grid_lon(grid%bd%isc:grid%bd%iec,      &
-                                    grid%bd%jsc:grid%bd%jec),     &
-                                    [mod_num] )
+   mod_lat = deg2rad * reshape( grid%grid_lat(grid%bd%isc:grid%bd%iec,      &
+                                              grid%bd%jsc:grid%bd%jec),     &
+                                             [mod_num] )  
+   mod_lon = deg2rad * reshape( grid%grid_lon(grid%bd%isc:grid%bd%iec,      &
+                                              grid%bd%jsc:grid%bd%jec),     &
+                                             [mod_num] )
 
    !Important namelist options
    nam%obsop_interp = 'bilin' ! Interpolation type (bilinear)
@@ -1726,8 +1729,8 @@ if (.NOT.interp_initialized) then
    odata%nobsa = obs_num
    allocate(odata%lonobs(odata%nobsa))
    allocate(odata%latobs(odata%nobsa))
-   odata%lonobs(:) = locs%lon(:)
-   odata%latobs(:) = locs%lat(:)
+   odata%lonobs(:) = locs%lon(:) * deg2rad
+   odata%latobs(:) = locs%lat(:) * deg2rad
 
    !Setup observation operator
    odata%nam => nam
