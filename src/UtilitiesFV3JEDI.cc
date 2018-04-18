@@ -10,12 +10,15 @@
 #include "util/Logger.h"
 #include "UtilitiesFV3JEDI.h"
 #include <unistd.h>
+#include "util/abor1_cpp.h"
 
 namespace eckit {
   class Configuration;
 }
 
 namespace fv3jedi {
+
+// -----------------------------------------------------------------------------
 
  void stageFv3Files (const eckit::Configuration &conf) {
 
@@ -33,12 +36,20 @@ namespace fv3jedi {
      std::remove("field_table");
 
      // User provided input files for this geom/state/model etc
-     std::string nml_file = conf.getString("nml_file");
-     std::string trc_file = conf.getString("trc_file");
-
-     // Create links in the cwd 
-     symlink(nml_file.c_str(), "./input.nml");
-     symlink(trc_file.c_str(), "./field_table");
+     if (conf.has("nml_file")) {
+       std::string nml_file = conf.getString("nml_file");
+       symlink(nml_file.c_str(), "./input.nml");
+     }
+     else {
+       ABORT("input.nml not in configuration");
+     }
+     if (conf.has("trc_file")) {
+       std::string trc_file = conf.getString("trc_file");
+       symlink(trc_file.c_str(), "./field_table");
+     }
+     else {
+       ABORT("field_table not in configuration");
+     }
 
    }
 
@@ -46,6 +57,8 @@ namespace fv3jedi {
    MPI_Barrier(MPI_COMM_WORLD);
 
  }
+
+// -----------------------------------------------------------------------------
 
  void removeFv3Files () {
 
@@ -59,6 +72,73 @@ namespace fv3jedi {
    if (world_rank == 0) {
      std::remove("input.nml");
      std::remove("field_table");
+   }
+
+ }
+
+// -----------------------------------------------------------------------------
+
+ void stageFv3FilesPert (const eckit::Configuration &conf) {
+
+   oops::Log::trace() << "Staging fv3 input.nml, field_table and inputpert.nml" << std::endl;
+
+   // Get processor ID
+   int world_rank;
+   MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+   // Only one processor needs to move the files
+   if (world_rank == 0) {
+
+     // Remove anything currently present
+     std::remove("input.nml");
+     std::remove("field_table");
+     std::remove("inputpert.nml");
+
+     // User provided input files for this geom/state/model etc
+     if (conf.has("nml_file")) {
+       std::string nml_file = conf.getString("nml_file");
+       symlink(nml_file.c_str(), "./input.nml");
+     }
+     else {
+       ABORT("input.nml not in configuration");
+     }
+     if (conf.has("trc_file")) {
+       std::string trc_file = conf.getString("trc_file");
+       symlink(trc_file.c_str(), "./field_table");
+     }
+     else {
+       ABORT("field_table not in configuration");
+     }
+     if (conf.has("nml_file_pert")) {
+       std::string nml_file_pert = conf.getString("nml_file_pert");
+       symlink(nml_file_pert.c_str(), "./inputpert.nml");
+     }
+     else {
+       ABORT("inputpert.nml not in configuration");
+     }
+
+   }
+
+   // Nobody moves until files are in place
+   MPI_Barrier(MPI_COMM_WORLD);
+
+ }
+
+// -----------------------------------------------------------------------------
+
+ void removeFv3FilesPert () {
+
+   oops::Log::trace() << "Removing fv3 input.nml, field_table and inputpert.nml" << std::endl;
+
+   // Get processor ID
+   int world_rank;
+   MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+   // Only one processor needs to move the files
+   if (world_rank == 0) {
+     std::remove("input.nml");
+     std::remove("field_table");
+     std::remove("inputpert.nml");
    }
 
  }

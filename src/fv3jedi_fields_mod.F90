@@ -80,18 +80,8 @@ call allocate_fv_atmos_type(self%Atm, &
 self%geom => geom
 
 !Initialize all domain arrays to zero
-self%Atm%u    = 0.0_kind_real
-self%Atm%v    = 0.0_kind_real
-self%Atm%pt   = 0.0_kind_real
-self%Atm%delp = 0.0_kind_real
-self%Atm%q    = 0.0_kind_real
-self%Atm%ua   = 0.0_kind_real
-self%Atm%va   = 0.0_kind_real
+call zeros(self)
 self%Atm%phis   = 0.0_kind_real
-if (.not. geom%hydrostatic) then
-   self%Atm%w      = 0.0_kind_real
-   self%Atm%delz   = 0.0_kind_real
-endif
 
 end subroutine create
 
@@ -326,42 +316,24 @@ integer :: ierr
 
 zp=0.0_kind_real
 
-!!u d-grid
-!do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-!   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec+1
-!      do k = 1,fld1%geom%npz
-!         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-!            zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
-!         endif
-!      enddo
-!   enddo
-!enddo
-!
-!!v d-grid
-!do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
-!   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-!      do k = 1,fld1%geom%npz
-!         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
-!            zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
-!         endif
-!      enddo
-!   enddo
-!enddo
-
-!u a-grid
+!u d-grid
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec+1
+   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         zp = zp + fld1%Atm%ua(i,j,k) * fld2%Atm%ua(i,j,k)
+         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
+            zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
+         endif
       enddo
    enddo
 enddo
 
-!v a-grid
-do i = fld1%geom%bd%isc,fld1%geom%bd%iec+1
+!v d-grid
+do i = fld1%geom%bd%isc,fld1%geom%bd%iec
    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do k = 1,fld1%geom%npz
-         zp = zp + fld1%Atm%va(i,j,k) * fld2%Atm%va(i,j,k)
+         if (i .ne. fld1%geom%size_cubic_grid .and. j .ne. fld1%geom%size_cubic_grid) then
+            zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
+         endif
       enddo
    enddo
 enddo
@@ -402,6 +374,12 @@ do i = fld1%geom%bd%isc,fld1%geom%bd%iec
 enddo
 
 call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
+
+if (mpp_pe() == mpp_root_pe()) then
+
+print*, "Dot product test result: ", zprod
+
+endif
 
 return
 end subroutine dot_prod
@@ -958,7 +936,10 @@ subroutine write_file(fld, c_conf, vdate)
 
   character(len=255) :: datapath_out
 
-  datapath_out = config_get_string(c_conf,len(datapath_out),"datapath_write")
+  datapath_out = "Data/"
+  if (config_element_exists(c_conf,"datapath_write")) then
+     datapath_out = config_get_string(c_conf,len(datapath_out),"datapath_write")
+  endif
 
   pe = mpp_pe()
 
@@ -1529,6 +1510,7 @@ do jvar = 1, vars%nv
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
         do ji = fld%geom%bd%isc, fld%geom%bd%iec
           ii = ii + 1
+          fld%Atm%pt(ji, jj, jlev) = 0.0
           fld%Atm%pt(ji, jj, jlev) = fld%Atm%pt(ji, jj, jlev) + mod_field(ii, 1)
         enddo
       enddo

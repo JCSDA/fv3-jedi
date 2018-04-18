@@ -16,8 +16,10 @@ use kinds
 
 use fv_arrays_mod,  only: fv_atmos_type
 use mpp_mod,        only: mpp_pe, mpp_root_pe 
-
 use mpp_domains_mod, only: mpp_update_domains, mpp_get_boundary, DGRID_NE
+use variable_transforms, only: compute_fv3_pressures, compute_fv3_pressures_tlm, compute_fv3_pressures_bwd
+use fms_mod, only: set_domain, nullify_domain
+
 
 #ifdef TLADPRES
 use fv_arrays_nlm_mod, only: fv_atmos_pert_type
@@ -314,8 +316,6 @@ subroutine model_propagate(self, flds)
 
 use fv_dynamics_mod, only: fv_dynamics
 use fv_sg_mod, only: fv_subgrid_z
-use variable_transforms, only: compute_fv3_pressures
-use fms_mod, only: set_domain, nullify_domain
 
 implicit none
 type(fv3jedi_model), target :: self
@@ -412,7 +412,7 @@ call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, 
 !     deallocate ( t_dt )
 !endif
 
-!call nullify_domain()
+call nullify_domain()
 
 !Copy back to fields
 !-------------------
@@ -485,16 +485,17 @@ endif
 
 ! Copy to model variables
 ! -----------------------
-FV_AtmP(1)%up    = flds%Atm%u
-FV_AtmP(1)%vp    = flds%Atm%v
-FV_AtmP(1)%ptp   = flds%Atm%pt
-FV_AtmP(1)%delpp = flds%Atm%delp
-FV_AtmP(1)%qp    = flds%Atm%q
-!if (.not. flds%geom%hydrostatic) then
-  FV_AtmP(1)%wp    = flds%Atm%w
-  FV_AtmP(1)%delzp = flds%Atm%delz
-!endif
+call fields_to_model_pert(flds,self)
 
+!Compute the other pressure variables needed by FV3
+!--------------------------------------------------
+if (self%update_pressures == 1) then
+   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
+                               self%npz, kappa, FV_Atm(1)%ptop, &
+                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
+endif
+
+call set_domain(FV_Atm(1)%domain)
 
 ! Initilize the module level checkpointing
 ! ----------------------------------------
@@ -507,25 +508,25 @@ endif
 ! ----------------------------------------------------------------------------------
 if (cp_iter_controls%cp_i <= 3) then
 
-   call fv_dynamics_fwd(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
-                        self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
-                        FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
-                        cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,                              &
-                        FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                                      &
-                        FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w,                                                           &
-                        FV_Atm(1)%delz, FV_Atm(1)%flagstruct%hydrostatic,                                                &
-                        FV_Atm(1)%pt, FV_Atm(1)%delp,                                                                    &
-                        FV_Atm(1)%q, FV_Atm(1)%ps, FV_Atm(1)%pe,                                                         &
-                        FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,                                                     &
-                        FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                                                 &
-                        FV_Atm(1)%ua, FV_Atm(1)%va,                                                                      &
-                        FV_Atm(1)%uc, FV_Atm(1)%vc,                                                                      &
-                        FV_Atm(1)%ak, FV_Atm(1)%bk,                                                                      &
-                        FV_Atm(1)%mfx, FV_Atm(1)%mfy,                                                                    &
-                        FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,                                                       &
-                        FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,                       &
-                        FV_AtmP(1)%flagstruct,                                                                           &
-                        FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,FV_Atm(1)%domain      )
+!   call fv_dynamics_fwd(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
+!                        self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
+!                        FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
+!                        cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,                              &
+!                        FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                                      &
+!                        FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w,                                                           &
+!                        FV_Atm(1)%delz, FV_Atm(1)%flagstruct%hydrostatic,                                                &
+!                        FV_Atm(1)%pt, FV_Atm(1)%delp,                                                                    &
+!                        FV_Atm(1)%q, FV_Atm(1)%ps, FV_Atm(1)%pe,                                                         &
+!                        FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,                                                     &
+!                        FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                                                 &
+!                        FV_Atm(1)%ua, FV_Atm(1)%va,                                                                      &
+!                        FV_Atm(1)%uc, FV_Atm(1)%vc,                                                                      &
+!                        FV_Atm(1)%ak, FV_Atm(1)%bk,                                                                      &
+!                        FV_Atm(1)%mfx, FV_Atm(1)%mfy,                                                                    &
+!                        FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,                                                       &
+!                        FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,                       &
+!                        FV_AtmP(1)%flagstruct,                                                                           &
+!                        FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,FV_Atm(1)%domain      )
 
    if (cp_iter_controls%cp_i .ne. 0) then
       !Push end of timestep trajectory to stack
@@ -612,29 +613,45 @@ if (cp_iter_controls%cp_i .ne. 0) then
    call POPREALARRAY(FV_Atm(1)%u   ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%npz)
 endif
 
+call zero_pert_vars(FV_AtmP(1))
 
 ! Backward adjoint sweep of the dynamics
 ! --------------------------------------
-call fv_dynamics_bwd(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
-                     self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
-                     FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
-                     cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,                              &
-                     FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                                      &
-                     FV_Atm(1)%u, FV_AtmP(1)%up, FV_Atm(1)%v, FV_AtmP(1)%vp, FV_Atm(1)%w, FV_AtmP(1)%wp,                 &
-                     FV_Atm(1)%delz, FV_AtmP(1)%delzp, FV_Atm(1)%flagstruct%hydrostatic,                               &
-                     FV_Atm(1)%pt, FV_AtmP(1)%ptp, FV_Atm(1)%delp, FV_AtmP(1)%delpp,                                    &
-                     FV_Atm(1)%q, FV_AtmP(1)%qp, FV_Atm(1)%ps, FV_AtmP(1)%psp, FV_Atm(1)%pe, FV_AtmP(1)%pep,             &
-                     FV_Atm(1)%pk, FV_AtmP(1)%pkp, FV_Atm(1)%peln, FV_AtmP(1)%pelnp, FV_Atm(1)%pkz, FV_AtmP(1)%pkzp,     &
-                     FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga, FV_AtmP(1)%omgap,                                &
-                     FV_Atm(1)%ua, FV_AtmP(1)%uap, FV_Atm(1)%va, FV_AtmP(1)%vap,                                        &
-                     FV_Atm(1)%uc, FV_AtmP(1)%ucp, FV_Atm(1)%vc, FV_AtmP(1)%vcp,                                        &
-                     FV_Atm(1)%ak, FV_Atm(1)%bk,                                                                      &
-                     FV_Atm(1)%mfx, FV_AtmP(1)%mfxp, FV_Atm(1)%mfy, FV_AtmP(1)%mfyp,                                    &
-                     FV_Atm(1)%cx, FV_AtmP(1)%cxp, FV_Atm(1)%cy,  FV_AtmP(1)%cyp, FV_Atm(1)%ze0,                      &
-                     FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,                       &
-                     FV_AtmP(1)%flagstruct,                                                                           &
-                     FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,FV_Atm(1)%domain      )
+!call fv_dynamics_bwd(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
+!                     self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
+!                     FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
+!                     cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,                              &
+!                     FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                                      &
+!                     FV_Atm(1)%u, FV_AtmP(1)%up, FV_Atm(1)%v, FV_AtmP(1)%vp, FV_Atm(1)%w, FV_AtmP(1)%wp,                 &
+!                     FV_Atm(1)%delz, FV_AtmP(1)%delzp, FV_Atm(1)%flagstruct%hydrostatic,                               &
+!                     FV_Atm(1)%pt, FV_AtmP(1)%ptp, FV_Atm(1)%delp, FV_AtmP(1)%delpp,                                    &
+!                     FV_Atm(1)%q, FV_AtmP(1)%qp, FV_Atm(1)%ps, FV_AtmP(1)%psp, FV_Atm(1)%pe, FV_AtmP(1)%pep,             &
+!                     FV_Atm(1)%pk, FV_AtmP(1)%pkp, FV_Atm(1)%peln, FV_AtmP(1)%pelnp, FV_Atm(1)%pkz, FV_AtmP(1)%pkzp,     &
+!                     FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga, FV_AtmP(1)%omgap,                                &
+!                     FV_Atm(1)%ua, FV_AtmP(1)%uap, FV_Atm(1)%va, FV_AtmP(1)%vap,                                        &
+!                     FV_Atm(1)%uc, FV_AtmP(1)%ucp, FV_Atm(1)%vc, FV_AtmP(1)%vcp,                                        &
+!                     FV_Atm(1)%ak, FV_Atm(1)%bk,                                                                      &
+!                     FV_Atm(1)%mfx, FV_AtmP(1)%mfxp, FV_Atm(1)%mfy, FV_AtmP(1)%mfyp,                                    &
+!                     FV_Atm(1)%cx, FV_AtmP(1)%cxp, FV_Atm(1)%cy,  FV_AtmP(1)%cyp, FV_Atm(1)%ze0,                      &
+!                     FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,                       &
+!                     FV_AtmP(1)%flagstruct,                                                                           &
+!                     FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,FV_Atm(1)%domain      )
 
+
+!Adjoint of compute the other pressure variables needed by FV3
+!-------------------------------------------------------------
+if (self%update_pressures == 1) then
+   call compute_fv3_pressures_bwd( self%isc, self%iec, self%jsc, self%jec, &
+                                   self%isd, self%ied, self%jsd, self%jed, &
+                                   self%npz, kappa, FV_Atm(1)%ptop, &
+                                   FV_Atm(1)%delp, FV_AtmP(1)%delpp, &
+                                   FV_Atm(1)%pe, FV_AtmP(1)%pep, &
+                                   FV_Atm(1)%pk, FV_AtmP(1)%pkp, &
+                                   FV_Atm(1)%pkz, FV_AtmP(1)%pkzp, &
+                                   FV_Atm(1)%peln, FV_AtmP(1)%pelnp )
+endif
+
+call zero_pert_vars(FV_AtmP(1))
 
 ! Finalize iterative step and get ready for next iteration
 ! --------------------------------------------------------
@@ -670,6 +687,8 @@ if (self%update_dgridwind == 1) then
 
 endif
 
+call nullify_domain()
+
 ! Copy back to fields 
 ! -------------------
 call model_to_fields_pert(self,flds)
@@ -697,7 +716,7 @@ type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
 integer :: i,j,k
 
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate tagent linear model'
+if (mpp_pe() == mpp_root_pe()) print*, 'Propagate tangent linear model'
 
 
 !Convenience pointer to the main FV_Atm structure
@@ -762,27 +781,47 @@ if (self%update_dgridwind == 1) then
 
 endif
 
+!Compute the other pressure variables needed by FV3
+!--------------------------------------------------
+if (self%update_pressures == 1) then
+   call compute_fv3_pressures_tlm( self%isc, self%iec, self%jsc, self%jec, &
+                                   self%isd, self%ied, self%jsd, self%jed, &
+                                   self%npz, kappa, FV_Atm(1)%ptop, &
+                                   FV_Atm(1)%delp, FV_AtmP(1)%delpp, &
+                                   FV_Atm(1)%pe, FV_AtmP(1)%pep, &
+                                   FV_Atm(1)%pk, FV_AtmP(1)%pkp, &
+                                   FV_Atm(1)%pkz, FV_AtmP(1)%pkzp, &
+                                   FV_Atm(1)%peln, FV_AtmP(1)%pelnp )
+endif
+
+call set_domain(FV_Atm(1)%domain)
+
+call zero_pert_vars(FV_AtmP(1))
+
 !Propagate TLM one time step
 !---------------------------
-call fv_dynamics_tlm(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
-                     self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
-                     FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
-                     cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,                              &
-                     FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                                      &
-                     FV_Atm(1)%u, FV_AtmP(1)%up, FV_Atm(1)%v, FV_AtmP(1)%vp, FV_Atm(1)%w, FV_AtmP(1)%wp,                 &
-                     FV_Atm(1)%delz, FV_AtmP(1)%delzp, FV_Atm(1)%flagstruct%hydrostatic,                               &
-                     FV_Atm(1)%pt, FV_AtmP(1)%ptp, FV_Atm(1)%delp, FV_AtmP(1)%delpp,                                    &
-                     FV_Atm(1)%q, FV_AtmP(1)%qp, FV_Atm(1)%ps, FV_AtmP(1)%psp, FV_Atm(1)%pe, FV_AtmP(1)%pep,             &
-                     FV_Atm(1)%pk, FV_AtmP(1)%pkp, FV_Atm(1)%peln, FV_AtmP(1)%pelnp, FV_Atm(1)%pkz, FV_AtmP(1)%pkzp,     &
-                     FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga, FV_AtmP(1)%omgap,                                &
-                     FV_Atm(1)%ua, FV_AtmP(1)%uap, FV_Atm(1)%va, FV_AtmP(1)%vap,                                        &
-                     FV_Atm(1)%uc, FV_AtmP(1)%ucp, FV_Atm(1)%vc, FV_AtmP(1)%vcp,                                        &
-                     FV_Atm(1)%ak, FV_Atm(1)%bk,                                                                      &
-                     FV_Atm(1)%mfx, FV_AtmP(1)%mfxp, FV_Atm(1)%mfy, FV_AtmP(1)%mfyp,                                    &
-                     FV_Atm(1)%cx, FV_AtmP(1)%cxp, FV_Atm(1)%cy,  FV_AtmP(1)%cyp, FV_Atm(1)%ze0,                       &
-                     FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct, FV_AtmP(1)%flagstruct, &
-                     FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,FV_Atm(1)%domain      )
+!call fv_dynamics_tlm(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
+!                     self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
+!                     FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
+!                     cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,                              &
+!                     FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                                      &
+!                     FV_Atm(1)%u, FV_AtmP(1)%up, FV_Atm(1)%v, FV_AtmP(1)%vp, FV_Atm(1)%w, FV_AtmP(1)%wp,                 &
+!                     FV_Atm(1)%delz, FV_AtmP(1)%delzp, FV_Atm(1)%flagstruct%hydrostatic,                               &
+!                     FV_Atm(1)%pt, FV_AtmP(1)%ptp, FV_Atm(1)%delp, FV_AtmP(1)%delpp,                                    &
+!                     FV_Atm(1)%q, FV_AtmP(1)%qp, FV_Atm(1)%ps, FV_AtmP(1)%psp, FV_Atm(1)%pe, FV_AtmP(1)%pep,             &
+!                     FV_Atm(1)%pk, FV_AtmP(1)%pkp, FV_Atm(1)%peln, FV_AtmP(1)%pelnp, FV_Atm(1)%pkz, FV_AtmP(1)%pkzp,     &
+!                     FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga, FV_AtmP(1)%omgap,                                &
+!                     FV_Atm(1)%ua, FV_AtmP(1)%uap, FV_Atm(1)%va, FV_AtmP(1)%vap,                                        &
+!                     FV_Atm(1)%uc, FV_AtmP(1)%ucp, FV_Atm(1)%vc, FV_AtmP(1)%vcp,                                        &
+!                     FV_Atm(1)%ak, FV_Atm(1)%bk,                                                                      &
+!                     FV_Atm(1)%mfx, FV_AtmP(1)%mfxp, FV_Atm(1)%mfy, FV_AtmP(1)%mfyp,                                    &
+!                     FV_Atm(1)%cx, FV_AtmP(1)%cxp, FV_Atm(1)%cy,  FV_AtmP(1)%cyp, FV_Atm(1)%ze0,                       &
+!                     FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct, FV_AtmP(1)%flagstruct, &
+!                     FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,FV_Atm(1)%domain      )
+!
+call zero_pert_vars(FV_AtmP(1))
 
+call nullify_domain()
 
 !Copy back to fields
 !-------------------
@@ -882,8 +921,6 @@ if (.not. flds%geom%hydrostatic) then
    flds%Atm%delz = 0.0
    flds%Atm%w    = 0.0
 endif
-flds%Atm%ua   = 0.0
-flds%Atm%va   = 0.0
 
 !Only copy compute grid incase model versus geometry halos are different
 flds%Atm%u   (isc:iec  ,jsc:jec+1,:  ) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
@@ -895,8 +932,6 @@ if (.not. flds%geom%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  )
 endif
-flds%Atm%ua  (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%ua  (isc:iec  ,jsc:jec  ,:  )
-flds%Atm%va  (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%va  (isc:iec  ,jsc:jec  ,:  )
 
 end subroutine model_to_fields
 
@@ -964,8 +999,6 @@ if (.not. flds%geom%hydrostatic) then
    flds%Atm%delz = 0.0
    flds%Atm%w    = 0.0
 endif
-flds%Atm%ua   = 0.0
-flds%Atm%va   = 0.0
 
 !Only copy compute grid incase model versus geometry halos are different
 flds%Atm%u   (isc:iec  ,jsc:jec+1,:  ) = self%FV_AtmP(1)%up   (isc:iec  ,jsc:jec+1,:  )
@@ -977,8 +1010,6 @@ if (.not. flds%geom%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  )
 endif
-flds%Atm%ua  (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%uap  (isc:iec  ,jsc:jec  ,:  )
-flds%Atm%va  (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%vap  (isc:iec  ,jsc:jec  ,:  )
 
 end subroutine model_to_fields_pert
 
@@ -1000,6 +1031,32 @@ self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%Atm%phis(self%is
 call mpp_update_domains(self%FV_Atm(1)%phis, self%FV_Atm(1)%domain, complete=.true.)
 
 end subroutine get_phi_from_flds
+
+! ------------------------------------------------------------------------------
+
+subroutine zero_pert_vars(FV_AtmP)
+
+implicit none
+type(fv_atmos_pert_type), intent(inout) :: FV_AtmP
+
+FV_AtmP%ze0p = 0.0
+FV_AtmP%q_conp = 0.0
+FV_AtmP%psp = 0.0
+FV_AtmP%pep = 0.0
+FV_AtmP%pkp = 0.0
+FV_AtmP%pelnp = 0.0
+FV_AtmP%pkzp = 0.0
+FV_AtmP%omgap = 0.0
+FV_AtmP%uap = 0.0
+FV_AtmP%vap = 0.0
+FV_AtmP%ucp = 0.0
+FV_AtmP%vcp = 0.0
+FV_AtmP%mfxp = 0.0
+FV_AtmP%mfyp = 0.0
+FV_AtmP%cxp = 0.0
+FV_AtmP%cyp = 0.0
+
+end subroutine zero_pert_vars
 
 ! ------------------------------------------------------------------------------
 

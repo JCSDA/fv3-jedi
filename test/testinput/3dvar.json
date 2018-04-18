@@ -1,26 +1,49 @@
 {
+  "nml_file": "Data/fv3files/fmsmpp.nml",
+  "trc_file": "Data/fv3files/field_table",
+  "test_framework_runtime_config": "--log_level=test_suite",
   "resolution": {
     "init_type": "inline",
-    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+    "npx": "97",
+    "npy": "97",
+    "npz": "64",
+    "hydrostatic": "1",
+    "layout_1": "1",
+    "layout_2": "1",
+    "io_layout_1": "1",
+    "io_layout_2": "1",
+    "halo": "3",
+    "filename_spec": "grid_spec.nc",
+    "filename_core": "fv_core.res.nc",    
+    "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
+    "nml_file": "Data/fv3files/input.nml",
+    "trc_file": "Data/fv3files/field_table"
   },
   "model": {
+    "nml_file": "Data/fv3files/input.nml",
+    "trc_file": "Data/fv3files/field_table", 
     "tstep": "PT15M",
-    "update_dgridwind": "1",
+    "init_tlmadm": "0",
+    "update_dgridwind": "0",
     "update_pressures": "1"
   },
   "cost_function": {
     "cost_type": "3D-Var",
-    "window_begin": "2017-08-07T21:00:00Z",
+    "window_begin": "2016-01-01T03:00:00Z",
     "window_length": "PT6H",
     "variables": ["u","v","pt","q",delp"],
     "Jb": {
       "Background": {
-        "state": [{
-          "filename_core": "INPUT/fv_core.res.nc",
-          "filename_trcr": "INPUT/fv_tracer.res.nc",
-          "filename_cplr": "INPUT/coupler.res",
-          "date": "2017-08-08T00:00:00Z"
-        }]
+         "state" : [{
+           "filename_core": "fv_core.res.nc",
+           "filename_trcr": "fv_tracer.res.nc",
+           "filename_cplr": "coupler.res",
+           "nml_file": "Data/fv3files/input.nml",
+           "trc_file": "Data/fv3files/field_table",
+           "datapath_read": "Data/C96_RESTART_2016-01-01-06z/",
+           "datapath_tile": "Data/C96_RESTART_2016-01-01-06z/INPUT/",
+           "date": "2016-01-01T06:00:00Z"
+         }]
       },
       "Covariance": {
         "covariance": "FV3JEDIstatic",
@@ -28,7 +51,7 @@
         "vertical_correlation": "0.2",
         "horizontal_length_scale": "1e6",
         "maximum_condition_number": "1.0e6",
-        "date": "2010-01-01T12:00:00Z"
+        "date": "2016-01-01T06:00:00Z"
       }
     },
     "Jo": {
@@ -58,30 +81,45 @@
   "output": {
     "first": "PT3H",
     "frequency": "PT06H",
-    "datadir": "Data",
-    "exp": "example",
-    "type": "an",
-    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+    "datapath_write": "Data/"
   },
   "variational": {
     "iteration": [
       {
         "resolution": {
           "init_type": "inline",
-          "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+          "npx": "97",
+          "npy": "97",
+          "npz": "64",
+          "hydrostatic": "1",
+          "layout_1": "1",
+          "layout_2": "1",
+          "io_layout_1": "1",
+          "io_layout_2": "1",
+          "halo": "3",
+          "filename_spec": "grid_spec.nc",
+          "filename_core": "fv_core.res.nc",    
+          "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
+          "nml_file": "Data/fv3files/input.nml",
+          "trc_file": "Data/fv3files/field_table"
         },
         "linearmodel": {
-          "version": "FV3JEDIIdTLM",
+          "version": "FV3JEDITLM",
+          "nml_file": "Data/fv3files/input.nml",
+          "trc_file": "Data/fv3files/field_table", 
+          "nml_file_pert": "Data/fv3files/inputpert.nml",
           "tstep": "PT15M",
-          "update_dgridwind": "1",
+          "init_tlmadm": "1",
+          "update_dgridwind": "0",
           "update_pressures": "1",
           "trajectory": {
+            "nml_file": "Data/fv3files/input.nml",
+            "trc_file": "Data/fv3files/field_table", 
             "tstep": "PT15M",
-            "update_dgridwind": "1",
-            "update_pressures": "1"
+            "init_tlmadm": "0"
           }
         },
-        "ninner": "10",
+        "ninner": "1",
         "gradient_norm_reduction": "1e-10",
         "test": "on",
         "diagnostics": {
@@ -91,20 +129,38 @@
       {
         "resolution": {
           "init_type": "inline",
-          "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+          "npx": "97",
+          "npy": "97",
+          "npz": "64",
+          "hydrostatic": "1",
+          "layout_1": "1",
+          "layout_2": "1",
+          "io_layout_1": "1",
+          "io_layout_2": "1",
+          "halo": "3",
+          "filename_spec": "grid_spec.nc",
+          "filename_core": "fv_core.res.nc",    
+          "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
+          "nml_file": "Data/fv3files/input.nml",
+          "trc_file": "Data/fv3files/field_table"
         },
         "linearmodel": {
-          "version": "FV3JEDIIdTLM",
+          "version": "FV3JEDITLM",
+          "nml_file": "Data/fv3files/input.nml",
+          "trc_file": "Data/fv3files/field_table", 
+          "nml_file_pert": "Data/fv3files/inputpert.nml",
           "tstep": "PT15M",
-          "update_dgridwind": "1",
+          "init_tlmadm": "1",
+          "update_dgridwind": "0",
           "update_pressures": "1",
           "trajectory": {
+            "nml_file": "Data/fv3files/input.nml",
+            "trc_file": "Data/fv3files/field_table", 
             "tstep": "PT15M",
-            "update_dgridwind": "1",
-            "update_pressures": "1"
+            "init_tlmadm": "0"
           }
         },
-        "ninner": "10",
+        "ninner": "1",
         "gradient_norm_reduction": "1e-10",
         "test": "on"
       }

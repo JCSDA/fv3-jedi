@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #User input required for the follwing:
-plot_diff = 0         #Plot path2/file - path1/file
-path1  = './'  #Path of first file
+plot_diff = 1         #Plot path2/file - path1/file
+path1  = '../C96_RESTART_2016-01-01-06z/INPUT/'  #Path of first file
 path2  = './'  #Path of second file
 file_tplt_befr = 'fv_core.res.tile'  #Filename before tile number
 file_tplt_aftr = '.nc'               #Filename after tile number

@@ -124,9 +124,9 @@ subroutine compute_fv3_pressures_tlm( is, ie, js, je, isd, ied, jsd, jed, npz, &
 
 end subroutine compute_fv3_pressures_tlm
 
-subroutine compute_pressures_bwd( is, ie, js, je, isd, ied, jsd, jed, npz, &
-                                  kappa, ptop, delp, delp_ad, &
-                                  pe, pe_ad, pk, pk_ad, pkz, pkz_ad, peln, peln_ad)
+subroutine compute_fv3_pressures_bwd( is, ie, js, je, isd, ied, jsd, jed, npz, &
+                                      kappa, ptop, delp, delp_ad, &
+                                      pe, pe_ad, pk, pk_ad, pkz, pkz_ad, peln, peln_ad)
 
   implicit none
   integer, intent(in) :: is, ie, js, je, isd, ied, jsd, jed, npz
@@ -187,7 +187,7 @@ subroutine compute_pressures_bwd( is, ie, js, je, isd, ied, jsd, jed, npz, &
     end do
   end do
 
-end subroutine compute_pressures_bwd
+end subroutine compute_fv3_pressures_bwd
 
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------

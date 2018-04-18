@@ -55,13 +55,15 @@ testinput/hofx.json
 testinput/interfaces.json
 testinput/dirac.nicas.json
 testinput/analytic_init.json
+testinput/increment.json
 compare.sh
 )
 
 list( APPEND fv3jedi_testoutput
-  testoutput/3dvar.test
-  testoutput/4dvar.drplanczos.test
-  testoutput/dirac.nicas.test
+testoutput/hofx.test  
+testoutput/3dvar.test
+testoutput/4dvar.drplanczos.test
+testoutput/dirac.nicas.test
 )
 
 # Create Data directory for model input and symlink all files
@@ -155,14 +157,14 @@ ecbuild_add_test( TARGET  test_fv3jedi_linearmodel
 ecbuild_add_test( TARGET  test_fv3jedi_modelaux
                   BOOST
                   SOURCES executables/TestModelAuxControl.cc
-                  ARGS    "testinput/interfaces.json"
+                  ARGS    "testinput/model.json"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment
                   BOOST
                   SOURCES executables/TestIncrement.cc
-                  ARGS    "testinput/interfaces.json"
+                  ARGS    "testinput/increment.json"
                   MPI     6
                   LIBS    fv3jedi )
 
@@ -173,16 +175,10 @@ ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_linobsoperator
-                  BOOST
-                  SOURCES executables/TestLinearObsOperator.cc
-                  ARGS    "testinput/interfaces.json"
-                  LIBS    fv3jedi )
-
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
                   BOOST
                   SOURCES executables/TestModelAuxCovariance.cc
-                  ARGS    "testinput/interfaces.json"
+                  ARGS    "testinput/model.json"
                   MPI     6
                   LIBS    fv3jedi )
 
