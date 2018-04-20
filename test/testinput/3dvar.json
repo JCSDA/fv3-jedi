@@ -31,7 +31,7 @@
     "cost_type": "3D-Var",
     "window_begin": "2016-01-01T03:00:00Z",
     "window_length": "PT6H",
-    "variables": ["u","v","pt","q",delp"],
+    "variables": ["u","v","pt",delp","q"],
     "Jb": {
       "Background": {
          "state" : [{
@@ -79,8 +79,8 @@
     "algorithm": "DRIPCG"
   },
   "output": {
-    "first": "PT3H",
-    "frequency": "PT06H",
+    "first": "PT0H",
+    "frequency": "PT01H",
     "datapath_write": "Data/"
   },
   "variational": {
@@ -107,7 +107,7 @@
           "version": "FV3JEDITLM",
           "nml_file": "Data/fv3files/input.nml",
           "trc_file": "Data/fv3files/field_table", 
-          "nml_file_pert": "Data/fv3files/inputpert.nml",
+          "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
           "tstep": "PT15M",
           "init_tlmadm": "1",
           "update_dgridwind": "0",
@@ -148,7 +148,7 @@
           "version": "FV3JEDITLM",
           "nml_file": "Data/fv3files/input.nml",
           "trc_file": "Data/fv3files/field_table", 
-          "nml_file_pert": "Data/fv3files/inputpert.nml",
+          "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
           "tstep": "PT15M",
           "init_tlmadm": "1",
           "update_dgridwind": "0",

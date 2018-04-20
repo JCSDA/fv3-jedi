@@ -11,7 +11,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <mpi.h>
 
 #include "eckit/config/Configuration.h"
 #include "oops/base/Variables.h"
@@ -194,18 +193,16 @@ double FieldsFV3JEDI::norm() const {
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::print(std::ostream & os) const {
-  int nx = -1;
-  int ny = -1;
-  int nf = -1;
-  int nb = -1;
-  fv3jedi_field_sizes_f90(keyFlds_, nx, ny, nf, nb);
+  int nx = 0;
+  int ny = 0;
+  int nf = 5;
+  fv3jedi_field_sizes_f90(keyFlds_, nx, ny, nf);
   os << std::endl << "  Resolution = " << nx << ", " << ny
-     << ", Fields = " << nf << ", " << nb;
-  nf += nb;
+     << ", Fields = " << nf;
   std::vector<double> zstat(3*nf);
   fv3jedi_field_gpnorm_f90(keyFlds_, nf, zstat[0]);
   for (int jj = 0; jj < nf; ++jj) {
-    os << std::endl << "  Min=" << zstat[3*jj]
+    os << std::endl <<"Fld=" << jj+1 <<"  Min=" << zstat[3*jj]
        << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2];
   }
 }

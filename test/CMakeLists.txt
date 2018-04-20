@@ -34,7 +34,8 @@ Data/fv3files/field_table
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input.nml
 Data/fv3files/input_c48.nml
-Data/fv3files/inputpert.nml
+Data/fv3files/inputpert_fsoi.nml
+Data/fv3files/inputpert_4dvar.nml
 )
 
 list( APPEND fv3jedi_test_restart
@@ -56,6 +57,7 @@ testinput/interfaces.json
 testinput/dirac.nicas.json
 testinput/analytic_init.json
 testinput/increment.json
+testinput/4denvar.nicas.json
 compare.sh
 )
 

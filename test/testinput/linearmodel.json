@@ -3,10 +3,10 @@
   "trc_file": "Data/fv3files/field_table",
   "test_framework_runtime_config": "--log_level=test_suite",
   "LinearModelTest": {
-    "fclength": "PT15M",
+    "fclength": "PT30M",
     "testiterTL": "12",
     "toleranceTL": "1.0e-6",
-    "toleranceAD": "1.0e-12"
+    "toleranceAD": "1.0e-10"
   },
   "Geometry": {
     "init_type": "notinline",
@@ -29,6 +29,8 @@
     "variables": ["u","v","pt","delp","q"]
   },
   "State" : {
+    "_analytic_init": "fv3_init_case",
+    "_fv3_test_case": "13",
     "filename_core": "fv_core.res.nc",
     "filename_trcr": "fv_tracer.res.nc",
     "filename_cplr": "coupler.res",
@@ -60,7 +62,7 @@
     "version": "FV3JEDITLM",
     "nml_file": "Data/fv3files/input.nml",
     "trc_file": "Data/fv3files/field_table", 
-    "nml_file_pert": "Data/fv3files/inputpert.nml",
+    "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
     "tstep": "PT15M",
     "init_tlmadm": "1",
     "update_dgridwind": "1",

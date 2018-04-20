@@ -39,13 +39,13 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol, const oops::Variables 
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol, const eckit::Configuration & file)
   : fields_(), stash_()
 {
-// Should get variables from file. YT
+
   const std::vector<std::string> *vv;
 
   if (file.has("variables"))
     vv = new std::vector<std::string>(file.getStringVector("variables"));
   else
-    vv = new std::vector<std::string>({"cv"});
+    vv = new std::vector<std::string>({"u","v","pt","delp","q"});
       
   oops::Variables vars(*vv);
   fields_.reset(new FieldsFV3JEDI(resol, vars, util::DateTime()));

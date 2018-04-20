@@ -530,27 +530,21 @@ end subroutine fv3jedi_field_interp_ad_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nf,nb) bind(c,name='fv3jedi_field_sizes_f90')
+subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_field_sizes_f90')
+
 use iso_c_binding
 use fv3jedi_fields_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(inout) :: nx,ny,nf,nb
-                                                                           
+integer(c_int), intent(inout) :: nx,ny,nf
 type(fv3jedi_field), pointer :: self
 
 call fv3jedi_field_registry%get(c_key_self,self)
 
-!dh also not sure about this but the following prevents a crash
-nx = 1
-ny = 1
-nf = 1
-nb = 1
-
-!
-! I have NO IDEA what this is supposed to do
-! but it is defined within Fortran.h and expected to exist
-!
+nf = self%nf
+nx = self%geom%npx
+ny = self%geom%npy
 
 end subroutine fv3jedi_field_sizes_c
 

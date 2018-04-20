@@ -5,18 +5,22 @@ import matplotlib.pyplot as plt
 #User input required for the follwing:
 plot_diff = 1         #Plot path2/file - path1/file
 path1  = '../C96_RESTART_2016-01-01-06z/INPUT/'  #Path of first file
+path1  = '/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/ENSEMBLE/mem001/RESTART/'
 path2  = './'  #Path of second file
-file_tplt_befr = 'fv_core.res.tile'  #Filename before tile number
+file_tplt_befr1 = 'fv_core.res.tile'  #Filename before tile number
+file_tplt_befr1 = '20170801.000000.fv_core.res.tile'  #Filename before tile number
+file_tplt_befr2 = 'fv_core.res.tile'  #Filename before tile number
 file_tplt_aftr = '.nc'               #Filename after tile number
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'ua'                       #Variable to plot
+readvar = 'T'                       #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
 plot_level = 40                      #If 3D plot this level
 
 #Tile 1 handle for getting dimension
-fh1 = Dataset(path1 + file_tplt_befr + str(1) + file_tplt_aftr, mode='r')
+fh1 = Dataset(path1 + file_tplt_befr1 + str(1) + file_tplt_aftr, mode='r')
+fh2 = Dataset(path2 + file_tplt_befr2 + str(1) + file_tplt_aftr, mode='r')
 
 #Dimensions
 npx = len(fh1.dimensions[xdimvar])
@@ -30,9 +34,10 @@ else:
 
 #Read file
 for tile in range(6):
-    file_tile = file_tplt_befr + str(tile+1) + file_tplt_aftr
-    pathfile1 = path1 + file_tile
-    pathfile2 = path2 + file_tile
+    file_tile1 = file_tplt_befr1 + str(tile+1) + file_tplt_aftr
+    file_tile2 = file_tplt_befr2 + str(tile+1) + file_tplt_aftr
+    pathfile1 = path1 + file_tile1
+    pathfile2 = path2 + file_tile2
     print(pathfile1)
     if plot_diff == 1:
         print(' '+pathfile2)
@@ -93,18 +98,33 @@ minf = np.nanmin(fp)
 
 if minf < 0:
     minf = -maxf
-incf = (maxf - minf)/51
+incf = (maxf - minf)/101
 clev = np.arange(minf,maxf+incf,incf)
+
+incf = (maxf - minf)/10
+ctic = np.arange(minf,maxf+incf,incf)
+
+#Colormap
+cmap = plt.cm.seismic
+#cmap.set_under(color='white')
+
+itit = '  '
+if plot_diff == 1:
+   itit = ' increment '
 
 #Plot
 fig = plt.figure(figsize=(14,8))
-cp = plt.contourf(fp,clev)
-cbar = plt.colorbar(cp)
+cp = plt.contourf(fp,clev,cmap=cmap)
+cbar = plt.colorbar(cp,ticks=ctic)
 if Dim2dor3d == '3D':
-   plt.title('Cubed sphere plot of ' + readvar + ' at level: ' + str(plot_level))
+   plt.title('Cubed sphere plot of ' + readvar + itit + 'at level: ' + str(plot_level))
 else:
    plt.title('Cubed sphere plot of ' + readvar)
 plt.axis('off')
 plt.axis('equal')
 
-plt.savefig('CubedSpherePlot_Field-'+readvar+'_Level-'+str(plot_level)+'.png', bbox_inches='tight')
+fig.patch.set_facecolor('grey')
+
+#plt.show()
+
+plt.savefig('CubedSpherePlot_Field-'+readvar+'_Level-'+str(plot_level)+'.png', bbox_inches='tight',facecolor=fig.get_facecolor())

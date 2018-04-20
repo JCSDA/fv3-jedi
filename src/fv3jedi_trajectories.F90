@@ -54,8 +54,8 @@ real(kind_real), intent(in) ::    q(isd:ied  ,jsd:jed  ,npz,nq)
 real(kind_real), intent(in) ::    w(isd:ied  ,jsd:jed  ,npz)
 real(kind_real), intent(in) :: delz(isd:ied  ,jsd:jed  ,npz)
 
-allocate(self%u   (isc:iec  ,jsc:jec+1,npz))
-allocate(self%v   (isc:iec+1,jsc:jec  ,npz))
+allocate(self%u   (isc:iec  ,jsc:jec  ,npz))
+allocate(self%v   (isc:iec  ,jsc:jec  ,npz))
 allocate(self%pt  (isc:iec  ,jsc:jec  ,npz))
 allocate(self%delp(isc:iec  ,jsc:jec  ,npz))
 allocate(self%q   (isc:iec  ,jsc:jec  ,npz,nq))
@@ -64,8 +64,8 @@ allocate(self%q   (isc:iec  ,jsc:jec  ,npz,nq))
    allocate(self%delz(isc:iec,jsc:jec,npz))
 !endif
 
-self%u    = u   (isc:iec  ,jsc:jec+1,:  )
-self%v    = v   (isc:iec+1,jsc:jec  ,:  )
+self%u    = u   (isc:iec  ,jsc:jec  ,:  )
+self%v    = v   (isc:iec  ,jsc:jec  ,:  )
 self%pt   = pt  (isc:iec  ,jsc:jec  ,:  )
 self%delp = delp(isc:iec  ,jsc:jec  ,:  )
 self%q    = q   (isc:iec  ,jsc:jec  ,:,:)
@@ -95,8 +95,19 @@ real(kind_real), intent(out) ::    q(isd:ied  ,jsd:jed  ,npz,nq)
 real(kind_real), intent(out) ::    w(isd:ied  ,jsd:jed  ,npz)
 real(kind_real), intent(out) :: delz(isd:ied  ,jsd:jed  ,npz)
 
-u   (isc:iec  ,jsc:jec+1,:  ) = self%u
-v   (isc:iec+1,jsc:jec  ,:  ) = self%v
+u = 0.0
+v = 0.0
+pt = 0.0
+delp = 0.0
+q = 0.0
+!if (.not. flds%geom%hydrostatic) then
+   delz = 0.0
+   w    = 0.0
+!endif
+
+
+u   (isc:iec  ,jsc:jec  ,:  ) = self%u
+v   (isc:iec  ,jsc:jec  ,:  ) = self%v
 pt  (isc:iec  ,jsc:jec  ,:  ) = self%pt
 delp(isc:iec  ,jsc:jec  ,:  ) = self%delp
 q   (isc:iec  ,jsc:jec  ,:,:) = self%q

@@ -49,9 +49,10 @@ type :: fv3jedi_model
 #endif
   logical, allocatable                         :: grids_on_this_pe(:) !<FV3 record
   integer                                      :: p_split = 1         !<FV3 record
-  integer                                      :: isc,iec,jsc,jec     !<Convenience pointer to geom
-  integer                                      :: isd,ied,jsd,jed     !<Convenience pointer to geom
+  integer                                      :: isc,iec,jsc,jec     !<Convenience pointer to grid
+  integer                                      :: isd,ied,jsd,jed     !<Convenience pointer to grid
   integer                                      :: npz                 !<Convenience
+  logical                                      :: hydrostatic         !<Convenience
   integer                                      :: cp_dyn_ind          !<Module index for checkpointing
   integer                                      :: update_dgridwind=1  !<Update the fv3 pressures each time step
   integer                                      :: update_pressures=1  !<Update the fv3 pressures each time step
@@ -111,7 +112,7 @@ if ( (geom%bd%isc .ne. model%FV_Atm(1)%bd%isc) .or. (geom%bd%iec .ne. model%FV_A
    call abor1_ftn("fv3jedi model: compute areas for geometry and model do not agree")
 endif
 
-!Copy of geometry grid info, halos could be different between model and geometry
+!Copy of grid info for convenience
 model%isc = model%FV_Atm(1)%bd%isc
 model%iec = model%FV_Atm(1)%bd%iec
 model%jsc = model%FV_Atm(1)%bd%jsc
@@ -121,12 +122,13 @@ model%ied = model%FV_Atm(1)%bd%ied
 model%jsd = model%FV_Atm(1)%bd%jsd
 model%jed = model%FV_Atm(1)%bd%jed
 model%npz = model%FV_Atm(1)%npz
+model%hydrostatic = model%FV_Atm(1)%flagstruct%hydrostatic
 
 !Halo holders for domain grid
-allocate(model%ebuffery(model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,model%FV_Atm(1)%npz))
-allocate(model%wbuffery(model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,model%FV_Atm(1)%npz))
-allocate(model%nbufferx(model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%npz))
-allocate(model%sbufferx(model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%npz))
+allocate(model%wbuffery(model%FV_Atm(1)%bd%jsc:model%FV_Atm(1)%bd%jec,model%FV_Atm(1)%npz))
+allocate(model%sbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_Atm(1)%npz))
+allocate(model%ebuffery(model%FV_Atm(1)%bd%jsc:model%FV_Atm(1)%bd%jec,model%FV_Atm(1)%npz))
+allocate(model%nbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_Atm(1)%npz))
 
 !Set ptop, ak, bk to be same as geometry
 model%FV_Atm(1)%ak = geom%ak
@@ -143,6 +145,9 @@ allocate  ( model%FV_Atm(1)%delz (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,
                                model%FV_Atm(1)%flagstruct%npz) )
 allocate  ( model%FV_Atm(1)%q_con(model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
                                model%FV_Atm(1)%flagstruct%npz) )
+model%FV_Atm(1)%w = 0.0
+model%FV_Atm(1)%delz = 0.0
+model%FV_Atm(1)%q_con = 0.0
 
 !fC and f0
 if (model%FV_Atm(1)%flagstruct%grid_type == 4) then
@@ -338,7 +343,6 @@ type(fv3jedi_field)         :: flds
 type(fv_atmos_type), pointer :: FV_Atm(:)
 integer :: i,j,k
 
-real(kind=kind_real), allocatable, dimension(:,:,:) :: u_dt, v_dt, t_dt
 
 if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
 
@@ -357,11 +361,7 @@ call fields_to_model(flds,self)
 !----------------------------
 if (self%update_dgridwind == 1) then
 
-   !Zero the repeat edge points
-   FV_Atm(1)%u(:,self%jec+1,:) = 0.0
-   FV_Atm(1)%v(self%iec+1,:,:) = 0.0
-
-   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
+   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, flds%geom%domain, &
                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
                          gridtype=DGRID_NE, complete=.true. )
@@ -386,7 +386,11 @@ if (self%update_pressures == 1) then
                                FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
 endif
 
+
+! MPP set domain
+! --------------
 call set_domain(FV_Atm(1)%domain)
+
 
 !Propagate FV3 one time step
 !---------------------------
@@ -406,31 +410,16 @@ call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, 
                   FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
                   FV_Atm(1)%domain )
 
-!Apply subgrid mixing (interface conflict between GMAO/NCEP so not straighforward to compile right now)
-!--------------------
-!if ( FV_Atm(1)%flagstruct%fv_sg_adj > 0 ) then
-!     allocate ( u_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
-!     allocate ( v_dt(self%isd:self%ied,self%jsd:self%jed,self%npz) )
-!     allocate ( t_dt(self%isc:self%iec,self%jsc:self%jec,self%npz) )
-!     u_dt(:,:,:) = 0.0
-!     v_dt(:,:,:) = 0.0
-!     t_dt(:,:,:) = 0.0
-!     call fv_subgrid_z(self%isd, self%ied, self%jsd, self%jed, self%isc, self%iec, self%jsc, self%jec, FV_Atm(1)%npz, &
-!                       FV_Atm(1)%ncnst, self%DT, FV_Atm(1)%flagstruct%fv_sg_adj,      &
-!                       FV_Atm(1)%flagstruct%nwat, FV_Atm(1)%delp, FV_Atm(1)%pe,     &
-!                       FV_Atm(1)%peln, FV_Atm(1)%pkz, FV_Atm(1)%pt, FV_Atm(1)%q,       &
-!                       FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%flagstruct%hydrostatic,&
-!                       FV_Atm(1)%w, FV_Atm(1)%delz, u_dt, v_dt, t_dt, FV_Atm(1)%flagstruct%n_zfilter)
-!     deallocate ( u_dt )
-!     deallocate ( v_dt )
-!     deallocate ( t_dt )
-!endif
 
+! MPP nulify
+! ----------
 call nullify_domain()
+
 
 !Copy back to fields
 !-------------------
 call model_to_fields(self,flds)
+
 
 end subroutine model_propagate
 
@@ -466,9 +455,9 @@ FV_AtmP => self%FV_AtmP
 
 ! Get up the trajectory for this time step 
 ! ----------------------------------------
-call get_traj( traj,flds%geom%bd%isc,flds%geom%bd%iec,flds%geom%bd%jsc,flds%geom%bd%jec, &
-               flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed,&
-               flds%geom%npz,flds%geom%hydrostatic,FV_Atm(1)%ncnst,&
+call get_traj( traj,self%isc,self%iec,self%jsc,self%jec, &
+               self%isd,self%ied,self%jsd,self%jed,&
+               self%npz,FV_Atm(1)%flagstruct%hydrostatic,FV_Atm(1)%ncnst,&
                FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q,FV_Atm(1)%w,FV_Atm(1)%delz)
 
 
@@ -493,30 +482,22 @@ FV_Atm(1)%delz  = 0.0
 FV_Atm(1)%q_con = 0.0
 
 
-! Update edges of d-grid winds
-! ----------------------------
-if (self%update_dgridwind == 1) then
-
-   !Zero the repeat edge points
-   FV_Atm(1)%u(:,self%jec+1,:) = 0.0
-   FV_Atm(1)%v(self%iec+1,:,:) = 0.0
-
-   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
-                         wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                         sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                         gridtype=DGRID_NE, complete=.true. )
-   do k=1,self%npz
-      do i=self%isc,self%iec
-         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
-      enddo
+! Update edges of traj d-grid winds
+! ---------------------------------
+call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
+                      wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
+                      sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
+                      gridtype=DGRID_NE, complete=.true. )
+do k=1,self%npz
+   do i=self%isc,self%iec
+      FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
    enddo
-   do k=1,self%npz
-      do j=self%jsc,self%jec
-         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
-      enddo
+enddo
+do k=1,self%npz
+   do j=self%jsc,self%jec
+      FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
    enddo
-
-endif
+enddo
 
 
 !Compute the other pressure variables needed by FV3
@@ -649,6 +630,7 @@ if (cp_iter_controls%cp_i .ne. 0) then
    call POPREALARRAY(FV_Atm(1)%u   ,(self%ied-self%isd+1)*(self%jed-self%jsd+2)*self%npz)
 endif
 
+
 ! Make sure everything is zero
 ! ----------------------------
 call zero_pert_vars(FV_AtmP(1))
@@ -657,7 +639,6 @@ call zero_pert_vars(FV_AtmP(1))
 ! Copy to model variables
 ! -----------------------
 call fields_to_model_pert(flds,self)
-
 
 
 ! Backward adjoint sweep of the dynamics
@@ -773,9 +754,9 @@ FV_AtmP => self%FV_AtmP
 
 !Get up the trajectory for this time step 
 !----------------------------------------
-call get_traj( traj,flds%geom%bd%isc,flds%geom%bd%iec,flds%geom%bd%jsc,flds%geom%bd%jec, &
-               flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed,&
-               flds%geom%npz,flds%geom%hydrostatic,FV_Atm(1)%ncnst,&
+call get_traj( traj,self%isc,self%iec,self%jsc,self%jec, &
+               self%isd,self%ied,self%jsd,self%jed,&
+               self%npz,self%hydrostatic,FV_Atm(1)%ncnst,&
                FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q,FV_Atm(1)%w,FV_Atm(1)%delz)
 
 
@@ -924,9 +905,9 @@ type(fv3jedi_trajectory) :: traj
 
 call fields_to_model(flds,self)
 
-call set_traj( traj,flds%geom%bd%isc,flds%geom%bd%iec,flds%geom%bd%jsc,flds%geom%bd%jec, &
-               flds%geom%bd%isd,flds%geom%bd%ied,flds%geom%bd%jsd,flds%geom%bd%jed, &
-               flds%geom%npz, self%FV_Atm(1)%ncnst,flds%geom%hydrostatic, &
+call set_traj( traj,self%isc,self%iec,self%jsc,self%jec, &
+               self%isd,self%ied,self%jsd,self%jed, &
+               self%npz, self%FV_Atm(1)%ncnst,self%hydrostatic, &
                self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz)
 
 end subroutine model_prop_traj
@@ -965,13 +946,13 @@ self%FV_Atm(1)%q    = 0.0
 self%FV_Atm(1)%w    = 0.0
 self%FV_Atm(1)%delz = 0.0
 
-!Only copy compute grid incase model versus geometry halos are different
+!Only copy compute grid incase of halo differences
 self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  ) = flds%Atm%u   (isc:iec  ,jsc:jec+1,:  )
 self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  ) = flds%Atm%v   (isc:iec+1,jsc:jec  ,:  )
 self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  )
 self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delp(isc:iec  ,jsc:jec  ,:  )
 self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,:) = flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%geom%hydrostatic) then
+if (.not. self%hydrostatic) then
    self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delz(isc:iec  ,jsc:jec  ,:  )
    self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%w   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -1002,13 +983,13 @@ flds%Atm%q    = 0.0
 flds%Atm%delz = 0.0
 flds%Atm%w    = 0.0
 
-!Only copy compute grid incase model versus geometry halos are different
+!Only copy compute grid incase of halo differences
 flds%Atm%u   (isc:iec  ,jsc:jec+1,:  ) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
 flds%Atm%v   (isc:iec+1,jsc:jec  ,:  ) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
 flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
 flds%Atm%delp(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
 flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%geom%hydrostatic) then
+if (.not. self%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -1039,13 +1020,13 @@ self%FV_AtmP(1)%qp    = 0.0
 self%FV_AtmP(1)%wp   = 0.0
 self%FV_AtmP(1)%delzp = 0.0
 
-!Only copy compute grid incase model versus geometry halos are different
+!Only copy compute grid incase of halo differences
 self%FV_AtmP(1)%up   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%u   (isc:iec  ,jsc:jec  ,:  )
 self%FV_AtmP(1)%vp   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%v   (isc:iec  ,jsc:jec  ,:  )
 self%FV_AtmP(1)%ptp  (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  )
 self%FV_AtmP(1)%delpp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delp(isc:iec  ,jsc:jec  ,:  )
 self%FV_AtmP(1)%qp   (isc:iec  ,jsc:jec  ,:,:) = flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%geom%hydrostatic) then
+if (.not. self%hydrostatic) then
    self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delz(isc:iec  ,jsc:jec  ,:  )
    self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%w   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -1076,13 +1057,13 @@ flds%Atm%q    = 0.0
 flds%Atm%delz = 0.0
 flds%Atm%w    = 0.0
 
-!Only copy compute grid incase model versus geometry halos are different
+!Only copy compute grid incase of halo differences
 flds%Atm%u   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%up   (isc:iec  ,jsc:jec  ,:  )
 flds%Atm%v   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%vp   (isc:iec  ,jsc:jec  ,:  )
 flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%ptp  (isc:iec  ,jsc:jec  ,:  )
 flds%Atm%delp(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delpp(isc:iec  ,jsc:jec  ,:  )
 flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:) = self%FV_AtmP(1)%qp   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%geom%hydrostatic) then
+if (.not. self%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -1115,12 +1096,16 @@ subroutine zero_pert_vars(FV_AtmP)
 implicit none
 type(fv_atmos_pert_type), intent(inout) :: FV_AtmP
 
+!Prognostic
 FV_AtmP%up = 0.0
 FV_AtmP%vp = 0.0
 FV_AtmP%ptp = 0.0
 FV_AtmP%delpp = 0.0
 FV_AtmP%qp = 0.0
+FV_AtmP%wp = 0.0
+FV_AtmP%delzP = 0.0
 
+!Outputs
 FV_AtmP%ze0p = 0.0
 FV_AtmP%q_conp = 0.0
 FV_AtmP%psp = 0.0

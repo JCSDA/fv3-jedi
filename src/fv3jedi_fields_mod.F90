@@ -43,6 +43,7 @@ public :: fv3jedi_field_registry
 type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
   type(fv3jedi_geom), pointer :: geom
+  integer :: nf
 end type fv3jedi_field
 
 #define LISTED_TYPE fv3jedi_field
@@ -82,6 +83,8 @@ self%geom => geom
 ! Initialize all domain arrays to zero
 call zeros(self)
 self%Atm%phis   = 0.0_kind_real
+
+self%nf = 5
 
 end subroutine create
 
@@ -752,6 +755,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
         fld%Atm%phis = FV_AtmIC(1)%phis
         fld%geom%ak = FV_AtmIC(1)%ak
         fld%geom%ak = FV_AtmIC(1)%ak
+        fld%geom%ptop = FV_AtmIC(1)%ptop
 
         !Deallocate temporary FV_Atm fv3 structure
         call deallocate_fv_atmos_type(FV_AtmIC(1))
@@ -1024,9 +1028,46 @@ type(fv3jedi_field), intent(in) :: fld
 integer, intent(in) :: nf
 real(kind=kind_real), intent(inout) :: pstat(3, nf)
 
-pstat(:,:) = 0.0
+integer :: isc, iec, jsc, jec, gs
+
+!1. Min
+!2. Max
+!3. RMS
+
+isc = fld%geom%bd%isc
+iec = fld%geom%bd%iec
+jsc = fld%geom%bd%jsc
+jec = fld%geom%bd%jec
+
+gs = (iec-isc+1)*(jec-jsc+1)*fld%geom%npz
+
+!u
+pstat(1,1) = minval(fld%Atm%u(isc:iec,jsc:jec,:))
+pstat(2,1) = maxval(fld%Atm%u(isc:iec,jsc:jec,:))
+pstat(3,1) = sqrt((sum(fld%Atm%u(isc:iec,jsc:jec,:))/gs)**2)
+
+!v
+pstat(1,2) = minval(fld%Atm%v(isc:iec,jsc:jec,:))
+pstat(2,2) = maxval(fld%Atm%v(isc:iec,jsc:jec,:))
+pstat(3,2) = sqrt((sum(fld%Atm%v(isc:iec,jsc:jec,:))/gs)**2)
+
+!pt
+pstat(1,3) = minval(fld%Atm%pt(isc:iec,jsc:jec,:))
+pstat(2,3) = maxval(fld%Atm%pt(isc:iec,jsc:jec,:))
+pstat(3,3) = sqrt((sum(fld%Atm%pt(isc:iec,jsc:jec,:))/gs)**2)
+
+!delp
+pstat(1,4) = minval(fld%Atm%delp(isc:iec,jsc:jec,:))
+pstat(2,4) = maxval(fld%Atm%delp(isc:iec,jsc:jec,:))
+pstat(3,4) = sqrt((sum(fld%Atm%delp(isc:iec,jsc:jec,:))/gs)**2)
+
+!q
+pstat(1,5) = minval(fld%Atm%q(isc:iec,jsc:jec,:,1))
+pstat(2,5) = maxval(fld%Atm%q(isc:iec,jsc:jec,:,1))
+pstat(3,5) = sqrt((sum(fld%Atm%q(isc:iec,jsc:jec,:,1))/gs)**2)
 
 return
+
 end subroutine gpnorm
 
 ! ------------------------------------------------------------------------------
