@@ -3,9 +3,10 @@
   "trc_file": "Data/fv3files/field_table",
   "test_framework_runtime_config": "--log_level=test_suite",
   "LinearModelTest": {
-    "fclength": "PT30M",
-    "testiterTL": "12",
-    "toleranceTL": "1.0e-6",
+    "fclength": "PT1H",
+    "testiterTL": "10",
+    "firstmulTL": "0.01",
+    "toleranceTL": "1.0",
     "toleranceAD": "1.0e-10"
   },
   "Geometry": {
@@ -14,8 +15,8 @@
     "npy": "97",
     "npz": "64",
     "hydrostatic": "1",
-    "layout_1": "2",
-    "layout_2": "2",
+    "layout_1": "1",
+    "layout_2": "1",
     "io_layout_1": "1",
     "io_layout_2": "1",
     "halo": "3",
@@ -46,8 +47,10 @@
   "Model": {
     "nml_file": "Data/fv3files/input.nml",
     "trc_file": "Data/fv3files/field_table", 
+    "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
     "tstep": "PT15M",
-    "init_tlmadm": "0",
+    "init_tlmadm": "1",
+    "linmodtest": "1",
     "update_dgridwind": "1",
     "update_pressures": "1"
   },
@@ -66,13 +69,16 @@
     "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
     "tstep": "PT15M",
     "init_tlmadm": "1",
+    "linmodtest": "1",
     "update_dgridwind": "1",
     "update_pressures": "1",
     "trajectory": {
       "nml_file": "Data/fv3files/input.nml",
       "trc_file": "Data/fv3files/field_table", 
+      "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
       "tstep": "PT15M",
-      "init_tlmadm": "0"
+      "init_tlmadm": "1",
+      "linmodtest": "1"
     }
   }
 }

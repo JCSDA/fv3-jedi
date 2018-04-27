@@ -17,9 +17,7 @@ namespace eckit {
 namespace fv3jedi {
 
  void stageFv3Files(const eckit::Configuration &conf);
- void stageFv3FilesPert(const eckit::Configuration &conf);
  void removeFv3Files();
- void removeFv3FilesPert();
 
 }  // namespace fv3jedi
 
