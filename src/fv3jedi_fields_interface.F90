@@ -455,7 +455,6 @@ type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 
-write(*,*)'fv3jedi_field_interp_c keys fld, locs, gom = ',c_key_fld,c_key_loc,c_key_gom
 call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_field_registry%get(c_key_fld, fld)
@@ -486,7 +485,6 @@ type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 
-write(*,*)'fv3jedi_field_interp_tl_c keys fld, locs, gom = ',c_key_fld,c_key_loc,c_key_gom
 call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_field_registry%get(c_key_fld, fld)
@@ -517,7 +515,6 @@ type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 
-write(*,*)'fv3jedi_field_interp_ad_c keys fld, locs, gom = ',c_key_fld,c_key_loc,c_key_gom
 call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_field_registry%get(c_key_fld, fld)

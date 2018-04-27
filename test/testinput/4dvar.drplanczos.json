@@ -17,7 +17,8 @@
     "filename_core": "fv_core.res.nc",    
     "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
     "nml_file": "Data/fv3files/input.nml",
-    "trc_file": "Data/fv3files/field_table"
+    "trc_file": "Data/fv3files/field_table",
+    "wind_type": "D-grid"
   },
   "model": {
     "nml_file": "Data/fv3files/input.nml",
@@ -83,7 +84,7 @@
   },
   "output": {
     "first": "PT0H",
-    "frequency": "PT01H",
+    "frequency": "PT1H",
     "datapath_write": "Data/"
   },
   "variational": {
@@ -104,7 +105,8 @@
           "filename_core": "fv_core.res.nc",    
           "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
           "nml_file": "Data/fv3files/input.nml",
-          "trc_file": "Data/fv3files/field_table"
+          "trc_file": "Data/fv3files/field_table",
+          "wind_type": "D-grid"
         },
         "linearmodel": {
           "version": "FV3JEDITLM",
@@ -145,7 +147,8 @@
           "filename_core": "fv_core.res.nc",    
           "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
           "nml_file": "Data/fv3files/input.nml",
-          "trc_file": "Data/fv3files/field_table"
+          "trc_file": "Data/fv3files/field_table",
+          "wind_type": "D-grid"
         },
         "linearmodel": {
           "version": "FV3JEDITLM",

@@ -68,6 +68,9 @@ namespace fv3jedi {
    int world_rank;
    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
+   // No file deletion until everyone catches up
+   MPI_Barrier(MPI_COMM_WORLD);
+
    // Only one processor needs to move the files
    if (world_rank == 0) {
      std::remove("input.nml");

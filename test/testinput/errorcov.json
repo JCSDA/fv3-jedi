@@ -2,6 +2,9 @@
   "nml_file": "Data/fv3files/fmsmpp.nml",
   "trc_file": "Data/fv3files/field_table",
   "test_framework_runtime_config": "--log_level=test_suite",
+  "CovarianceTest": {
+    "tolerance": "0.01"
+  },
   "Geometry": {
     "init_type": "inline",
     "npx": "97",
@@ -20,7 +23,10 @@
     "trc_file": "Data/fv3files/field_table",
     "wind_type": "D-grid"
   },
-  "State" : {
+  "Variables": {
+    "variables": ["u","v","pt","delp","q"]
+  },
+  "State": {
     "filename_core": "fv_core.res.nc",
     "filename_trcr": "fv_tracer.res.nc",
     "filename_cplr": "coupler.res",
@@ -31,19 +37,12 @@
     "datapath_write": "",
     "date": "2016-01-01T06:00:00Z"
   },
-  "ModelTest": {
-    "fclength": "PT6H",
-    "finalnorm": "1952.7787780730134",
-    "tolerance": "0.005"
-  },
-  "ModelBias": null,
-  "ModelBiasCovariance": null,
-  "Model": {
-    "nml_file": "Data/fv3files/input.nml",
-    "trc_file": "Data/fv3files/field_table", 
-    "tstep": "PT15M",
-    "init_tlmadm": "0",
-    "update_dgridwind": "0",
-    "update_pressures": "1"
+  "Covariance": {
+    "covariance": "FV3JEDIstatic",
+    "standard_deviation": "0.8",
+    "vertical_correlation": "0.2",
+    "horizontal_length_scale": "1e6",
+    "maximum_condition_number": "1.0e6",
+    "date": "2016-01-01T06:00:00Z"
   }
 }

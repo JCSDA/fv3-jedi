@@ -94,7 +94,7 @@ character(len=20) :: ststep
 type(duration) :: dtstep
 
 integer :: i,j
-integer :: tmp, fail
+integer :: tmp
 
 !Model time step
 ststep = config_get_string(c_conf,len(ststep),"tstep")
@@ -180,6 +180,14 @@ if (config_element_exists(c_conf,"update_pressures")) model%update_pressures = c
 
 !Pointer to self when not nested
 if (.not. model%FV_Atm(1)%gridstruct%nested) model%FV_Atm(1)%parent_grid => model%FV_Atm(1)
+
+!Harwire some flags
+model%FV_Atm(1)%flagstruct%reproduce_sum = .false.
+model%FV_Atm(1)%flagstruct%fill = .false.
+model%FV_Atm(1)%flagstruct%fv_debug = .false.
+model%FV_Atm(1)%flagstruct%adiabatic = .false.
+model%FV_Atm(1)%flagstruct%do_sat_adj = .false.
+model%FV_Atm(1)%flagstruct%breed_vortex_inline = .false.
 
 #ifdef TLADPRES
 
@@ -281,10 +289,6 @@ implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
 
-!Get phis from fields, fixed for integration
-!-------------------------------------------
-call get_phi_from_flds(flds,self)
-
 end subroutine model_prepare_integration
 
 ! ------------------------------------------------------------------------------
@@ -295,17 +299,6 @@ implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
 
-!Get phis from fields, fixed for integration
-!-------------------------------------------
-call get_phi_from_flds(flds,self)
-
-self%FV_Atm(1)%flagstruct%reproduce_sum = .false.
-self%FV_Atm(1)%flagstruct%fill = .false.
-self%FV_Atm(1)%flagstruct%fv_debug = .false.
-self%FV_Atm(1)%flagstruct%adiabatic = .false.
-self%FV_Atm(1)%flagstruct%do_sat_adj = .false.
-self%FV_Atm(1)%flagstruct%breed_vortex_inline = .false.
-
 end subroutine model_prepare_integration_ad
 
 ! ------------------------------------------------------------------------------
@@ -315,17 +308,6 @@ subroutine model_prepare_integration_tl(self, flds)
 implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
-
-!Get phis from fields, fixed for integration
-!-------------------------------------------
-call get_phi_from_flds(flds,self)
-
-self%FV_Atm(1)%flagstruct%reproduce_sum = .false.
-self%FV_Atm(1)%flagstruct%fill = .false.
-self%FV_Atm(1)%flagstruct%fv_debug = .false.
-self%FV_Atm(1)%flagstruct%adiabatic = .false.
-self%FV_Atm(1)%flagstruct%do_sat_adj = .false.
-self%FV_Atm(1)%flagstruct%breed_vortex_inline = .false.
 
 end subroutine model_prepare_integration_tl
 
@@ -355,6 +337,11 @@ FV_Atm => self%FV_Atm
 !Copy to model variables
 !-----------------------
 call fields_to_model(flds,self)
+
+
+!Get phis from fields, fixed for integration
+!-------------------------------------------
+call get_phi_from_flds(flds,self)
 
 
 !Update edges of d-grid winds
@@ -455,10 +442,17 @@ FV_AtmP => self%FV_AtmP
 
 ! Get up the trajectory for this time step 
 ! ----------------------------------------
-call get_traj( traj,self%isc,self%iec,self%jsc,self%jec, &
-               self%isd,self%ied,self%jsd,self%jed,&
-               self%npz,FV_Atm(1)%flagstruct%hydrostatic,FV_Atm(1)%ncnst,&
-               FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q,FV_Atm(1)%w,FV_Atm(1)%delz)
+call get_traj( traj, &
+               self%isc,self%iec,self%jsc,self%jec, &
+               self%isd,self%ied,self%jsd,self%jed, &
+               self%npz, self%FV_Atm(1)%ncnst, self%hydrostatic, &
+               self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
+               self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis )
+
+
+! Fill phi halos
+! --------------
+call mpp_update_domains(self%FV_Atm(1)%phis, self%FV_Atm(1)%domain, complete=.true.)
 
 
 ! Zero parts of the trajectory that are recomputed or outputs
@@ -754,10 +748,17 @@ FV_AtmP => self%FV_AtmP
 
 !Get up the trajectory for this time step 
 !----------------------------------------
-call get_traj( traj,self%isc,self%iec,self%jsc,self%jec, &
-               self%isd,self%ied,self%jsd,self%jed,&
-               self%npz,self%hydrostatic,FV_Atm(1)%ncnst,&
-               FV_Atm(1)%u,FV_Atm(1)%v,FV_Atm(1)%pt,FV_Atm(1)%delp,FV_Atm(1)%q,FV_Atm(1)%w,FV_Atm(1)%delz)
+call get_traj( traj, &
+               self%isc,self%iec,self%jsc,self%jec, &
+               self%isd,self%ied,self%jsd,self%jed, &
+               self%npz, self%FV_Atm(1)%ncnst, self%hydrostatic, &
+               self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
+               self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis )
+
+
+! Fill phi halos
+! --------------
+call mpp_update_domains(self%FV_Atm(1)%phis, self%FV_Atm(1)%domain, complete=.true.)
 
 
 ! Zero parts of the trajectory that are recomputed or outputs
@@ -783,28 +784,20 @@ FV_Atm(1)%q_con = 0.0
 
 !Update edges of d-grid winds
 !----------------------------
-if (self%update_dgridwind == 1) then
-
-   !Zero the repeat edge points
-   FV_Atm(1)%u(:,self%jec+1,:) = 0.0
-   FV_Atm(1)%v(self%iec+1,:,:) = 0.0
-
-   call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
-                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                          gridtype=DGRID_NE, complete=.true. )
-   do k=1,self%npz
-      do i=self%isc,self%iec
-         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
-      enddo
+call mpp_get_boundary( FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%domain, &
+                       wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
+                       sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
+                       gridtype=DGRID_NE, complete=.true. )
+do k=1,self%npz
+   do i=self%isc,self%iec
+      FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
    enddo
-   do k=1,self%npz
-      do j=self%jsc,self%jec
-         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
-      enddo
+enddo
+do k=1,self%npz
+   do j=self%jsc,self%jec
+      FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
    enddo
-
-endif
+enddo
 
 
 ! Make sure everything is zero
@@ -905,10 +898,15 @@ type(fv3jedi_trajectory) :: traj
 
 call fields_to_model(flds,self)
 
-call set_traj( traj,self%isc,self%iec,self%jsc,self%jec, &
+self%FV_Atm(1)%phis = 0.0
+self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
+
+call set_traj( traj, &
+               self%isc,self%iec,self%jsc,self%jec, &
                self%isd,self%ied,self%jsd,self%jed, &
-               self%npz, self%FV_Atm(1)%ncnst,self%hydrostatic, &
-               self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz)
+               self%npz, self%FV_Atm(1)%ncnst, self%hydrostatic, &
+               self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
+               self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis)
 
 end subroutine model_prop_traj
 

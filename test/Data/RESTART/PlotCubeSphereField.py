@@ -5,16 +5,16 @@ import matplotlib.pyplot as plt
 #User input required for the follwing:
 plot_diff = 1         #Plot path2/file - path1/file
 path1  = '../C96_RESTART_2016-01-01-06z/INPUT/'  #Path of first file
-path1  = '/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/ENSEMBLE/mem001/RESTART/'
+#path1  = '/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/ENSEMBLE/mem001/RESTART/'
 path2  = './'  #Path of second file
 file_tplt_befr1 = 'fv_core.res.tile'  #Filename before tile number
-file_tplt_befr1 = '20170801.000000.fv_core.res.tile'  #Filename before tile number
+#file_tplt_befr1 = '20170801.000000.fv_core.res.tile'  #Filename before tile number
 file_tplt_befr2 = 'fv_core.res.tile'  #Filename before tile number
 file_tplt_aftr = '.nc'               #Filename after tile number
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'T'                       #Variable to plot
+readvar = 'u'                       #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
 plot_level = 40                      #If 3D plot this level
 
@@ -26,11 +26,20 @@ fh2 = Dataset(path2 + file_tplt_befr2 + str(1) + file_tplt_aftr, mode='r')
 npx = len(fh1.dimensions[xdimvar])
 npy = len(fh1.dimensions[ydimvar])
 npz = 0
+
+npxr = npx
+npyr = npy
+
+if (readvar == 'u'):
+   npyr = npyr + 1
+if (readvar == 'v'):
+   npxr = npxr + 1
+
 if Dim2dor3d == '3D':
    npz = len(fh1.dimensions[zdimvar])
-   fr = np.zeros(6*npz*npy*npx).reshape(6,npz,npy,npx)
+   fr = np.zeros(6*npz*npyr*npxr).reshape(6,npz,npyr,npxr)
 else:
-   fr = np.zeros(6*npy*npx).reshape(6,npy,npx)
+   fr = np.zeros(6*npyr*npxr).reshape(6,npyr,npxr)
 
 #Read file
 for tile in range(6):
@@ -44,14 +53,14 @@ for tile in range(6):
     fh1 = Dataset(pathfile1, mode='r')
     fh2 = Dataset(pathfile2, mode='r')
     if plot_diff == 1:
-        fr[tile,:,:] = fh2.variables[readvar][:] - fh1.variables[readvar][:]
+        fr[tile,:,:,:] = fh2.variables[readvar][:] - fh1.variables[readvar][:]
     else:
-        fr[tile,:,:] = fh1.variables[readvar][:]
+        fr[tile,:,:,:] = fh1.variables[readvar][:]
 
 #Get level to plot
 f = np.zeros(6*npy*npx).reshape(6,npy,npx)
 if Dim2dor3d == '3D':
-   f[:,:,:] = fr[:,plot_level,:,:]
+   f[:,:,:] = fr[:,plot_level,0:npy,0:npx]
 else:
    f = fr
 

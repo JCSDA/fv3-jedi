@@ -12,17 +12,14 @@ public
 ! -------------------------------
 type fv_atmos_type
   logical :: hydrostatic = .false.
-  logical :: agrid_vel_rst = .false.
-  real(kind=kind_real), allocatable, dimension(:,:,:)   :: u      ! D grid zonal wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:)   :: v      ! D grid meridional wind (m/s)
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: u      ! A or D grid zonal wind (m/s)
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: v      ! A or D grid meridional wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: pt     ! temperature (K)
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: delp   ! pressure thickness (pascal)
   real(kind=kind_real), allocatable, dimension(:,:,:,:) :: q      ! tracers (specific humidity and prognostic constituents)
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: w      ! cell center vertical wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: delz   ! layer thickness (meters)
   real(kind=kind_real), allocatable, dimension(:,:)     :: phis   ! Surface geopotential (g*Z_surf)
-  real(kind=kind_real), allocatable, dimension(:,:,:)   :: ua     ! A grid zonal wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:)   :: va     ! A grid meridional wind (m/s)
   integer :: calendar_type
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
@@ -57,31 +54,38 @@ contains
 ! ----------------------------------------
 subroutine allocate_fv_atmos_type(Atm, isd, ied, jsd, jed, &
                                        isc, iec, jsc, jec, &
-                                       nz, nq, hydrostatic, agrid_vel_rst)
+                                       nz, nq, hydrostatic, wind_type)
 
  implicit none
 
  type(fv_atmos_type), intent(inout), target :: Atm
- logical, intent(in) :: hydrostatic, agrid_vel_rst
+ logical, intent(in) :: hydrostatic
  integer, intent(in) :: isd, ied, jsd, jed
  integer, intent(in) :: isc, iec, jsc, jec
  integer, intent(in) :: nz, nq
+ character(len=255)  :: wind_type
 
   Atm%hydrostatic = hydrostatic
-  Atm%agrid_vel_rst = agrid_vel_rst
 
-  if (.not.allocated(   Atm%u)) allocate (    Atm%u(isd:ied,   jsd:jed+1 , nz     ) )
-  if (.not.allocated(   Atm%v)) allocate (    Atm%v(isd:ied+1, jsd:jed   , nz     ) )
+  if (trim(wind_type) == 'D-grid') then
+     if (.not.allocated(   Atm%u)) allocate (    Atm%u(isd:ied,   jsd:jed+1 , nz     ) )
+     if (.not.allocated(   Atm%v)) allocate (    Atm%v(isd:ied+1, jsd:jed   , nz     ) )
+  elseif (trim(wind_type) == 'A-grid') then
+     if (.not.allocated(   Atm%u)) allocate (    Atm%u(isd:ied, jsd:jed, nz     ) )
+     if (.not.allocated(   Atm%v)) allocate (    Atm%v(isd:ied, jsd:jed, nz     ) )
+  else
+     call abor1_ftn("module_fv3jedi: wind_type issue, must be either A-grid or D-grid")
+  endif
+
   if (.not.allocated(  Atm%pt)) allocate (   Atm%pt(isd:ied,   jsd:jed   , nz     ) )
   if (.not.allocated(Atm%delp)) allocate ( Atm%delp(isd:ied,   jsd:jed   , nz     ) )
   if (.not.allocated(   Atm%q)) allocate (    Atm%q(isd:ied,   jsd:jed   , nz, nq ) )
   if (.not.allocated(Atm%phis)) allocate ( Atm%phis(isd:ied,   jsd:jed            ) )
-  if (.not.allocated(  Atm%ua)) allocate (   Atm%ua(isd:ied,   jsd:jed   , nz     ) )
-  if (.not.allocated(  Atm%va)) allocate (   Atm%va(isd:ied,   jsd:jed   , nz     ) )
-!  if (.not. hydrostatic) then
-  if (.not.allocated(   Atm%w)) allocate (    Atm%w(isd:ied,   jsd:jed   , nz     ) )
-  if (.not.allocated(Atm%delz)) allocate ( Atm%delz(isd:ied,   jsd:jed   , nz     ) )
-!  endif
+
+  if (.not. hydrostatic) then
+     if (.not.allocated(   Atm%w)) allocate (    Atm%w(isd:ied,   jsd:jed   , nz     ) )
+     if (.not.allocated(Atm%delz)) allocate ( Atm%delz(isd:ied,   jsd:jed   , nz     ) )
+  endif
 
 end subroutine allocate_fv_atmos_type
 

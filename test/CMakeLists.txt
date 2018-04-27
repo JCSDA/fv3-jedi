@@ -53,11 +53,12 @@ testinput/3dvar.json
 testinput/4dvar.drplanczos.json
 testinput/forecast.json
 testinput/hofx.json
-testinput/interfaces.json
 testinput/dirac.nicas.json
 testinput/analytic_init.json
 testinput/increment.json
 testinput/4denvar.nicas.json
+testinput/errorcov.json
+testinput/localization.json
 compare.sh
 )
 
@@ -173,7 +174,7 @@ ecbuild_add_test( TARGET  test_fv3jedi_increment
 ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance
                   BOOST
                   SOURCES executables/TestErrorCovariance.cc
-                  ARGS    "testinput/interfaces.json"
+                  ARGS    "testinput/errorcov.json"
                   MPI     6
                   LIBS    fv3jedi )
 
@@ -187,28 +188,29 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
 ecbuild_add_test( TARGET  test_fv3jedi_localization
                   BOOST
                   SOURCES executables/TestLocalization.cc
-                  ARGS    "testinput/interfaces.json"
+                  ARGS    "testinput/localization.json"
                   MPI     6
                   LIBS    fv3jedi )
 
 # Test oops applications with FV3JEDI
+# compare.sh does not currently work with mpirun
 
-ecbuild_add_test( TARGET test_fv3jedi_dirac_nicas
-                  TYPE SCRIPT
-                  MPI     6
-                  COMMAND "compare.sh"
-                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.nicas.json"
-                       testoutput/dirac.nicas.test
-                  DEPENDS fv3jedi_dirac.x )
-
-ecbuild_add_test( TARGET test_fv3jedi_hofx
-                  TYPE SCRIPT
-                  MPI     6
-                  COMMAND "compare.sh"
-                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.json"
-                       testoutput/hofx.test
-                  DEPENDS fv3jedi_hofx.x )
-
+#ecbuild_add_test( TARGET test_fv3jedi_dirac_nicas
+#                  TYPE SCRIPT
+#                  MPI     6
+#                  COMMAND "compare.sh"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.nicas.json"
+#                       testoutput/dirac.nicas.test
+#                  DEPENDS fv3jedi_dirac.x )
+#
+#ecbuild_add_test( TARGET test_fv3jedi_hofx
+#                  TYPE SCRIPT
+#                  MPI     6
+#                  COMMAND "compare.sh"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.json"
+#                       testoutput/hofx.test
+#                  DEPENDS fv3jedi_hofx.x )
+#
 #ecbuild_add_test( TARGET test_fv3jedi_3dvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
@@ -216,25 +218,11 @@ ecbuild_add_test( TARGET test_fv3jedi_hofx
 #                       testoutput/3dvar.test
 #                  DEPENDS fv3jedi_4dvar.x )
 #
-#ecbuild_add_test( TARGET test_fv3jedi_3dfgat
+#ecbuild_add_test( TARGET test_fv3jedi_3denvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dfgat.json"
-#                       testoutput/3dfgat.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_drpcglmp
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.drpcglmp.json"
-#                       testoutput/4dvar.drpcglmp.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_drpfom
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.drpfom.json"
-#                       testoutput/4dvar.drpfom.test
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.json"
+#                       testoutput/3denvar_nicas.test
 #                  DEPENDS fv3jedi_4dvar.x )
 #
 #ecbuild_add_test( TARGET test_fv3jedi_4dvar_drplanczos
@@ -243,85 +231,3 @@ ecbuild_add_test( TARGET test_fv3jedi_hofx
 #                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.drplanczos.json"
 #                       testoutput/4dvar.drplanczos.test
 #                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_dripcg
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.dripcg.json"
-#                       testoutput/4dvar.dripcg.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#if( ${OOPS_SENSITIVE_TESTS} )
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_ipcg
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.ipcg.json"
-#                       testoutput/4dvar.ipcg.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#endif()
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_rpcg
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.rpcg.json"
-#                       testoutput/4dvar.rpcg.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_obsbias
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.obsbias.json"
-#                       testoutput/4dvar.obsbias.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_forcing
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dforcing.json"
-#                       testoutput/4dforcing.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_saddlepoint
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dsaddlepoint.json"
-#                       testoutput/4dsaddlepoint.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#if( ${OOPS_SENSITIVE_TESTS} )
-#ecbuild_add_test( TARGET test_fv3jedi_genenspert
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_genpert.x testinput/genenspert.json"
-#                       testoutput/genenspert.test
-#                  DEPENDS fv3jedi_genpert.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_hybrid
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dhybrid.json"
-#                       testoutput/4dhybrid.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_4densvar
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4densvar.json"
-#                       testoutput/4densvar.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_alpha
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.alpha.json"
-#                       testoutput/4dvar.alpha.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#endif()
-#
-#ecbuild_add_test( TARGET test_fv3jedi_dfi
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dfi.x testinput/dfi.json"
-#                       testoutput/dfi.test
-#                  DEPENDS fv3jedi_dfi.x )
-

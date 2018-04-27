@@ -48,6 +48,7 @@ type :: fv3jedi_geom
   integer :: halo                                         !Number of halo points, normally 3
   character(len=255) :: nml_file                          !Datapath for generating grid from file
   character(len=255) :: trc_file                          !Datapath for generating grid from file
+  character(len=255) :: wind_type                         !A-grid or D-grid in the control vector
   !Hardwired or determined
   integer :: size_cubic_grid                              !Size of cubed sphere grid (cell center)
   integer :: ntracers                                     !Number of tracers
@@ -144,6 +145,12 @@ self%halo = config_get_int(c_conf,"halo")
 
 self%nml_file = config_get_string(c_conf,len(self%nml_file),"nml_file")
 self%trc_file = config_get_string(c_conf,len(self%trc_file),"trc_file")
+
+self%wind_type = config_get_string(c_conf,len(self%nml_file),"wind_type")
+
+if (trim(self%wind_type) /= 'A-grid' .and. trim(self%wind_type) /= 'D-grid') then
+   call abor1_ftn("fv3-jedi geometry: wind_type must be either A-grid or D-grid")
+endif
 
 if (self%npx /= self%npy) then
    call abor1_ftn("fv3-jedi geometry: cube faces not square (npx /= npy)")
@@ -350,6 +357,7 @@ other%halo            = self%halo
 other%ntracers        = self%ntracers
 other%nml_file        = self%nml_file
 other%trc_file        = self%trc_file
+other%wind_type       = self%wind_type
 other%size_cubic_grid = self%size_cubic_grid
 other%ntracers        = self%ntracers
 other%bd%isc          = self%bd%isc

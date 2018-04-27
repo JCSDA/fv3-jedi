@@ -17,7 +17,8 @@
     "filename_core": "fv_core.res.nc",    
     "datapath_geom": "Data/C96_RESTART_2016-01-01-06z/",
     "nml_file": "Data/fv3files/input.nml",
-    "trc_file": "Data/fv3files/field_table"
+    "trc_file": "Data/fv3files/field_table",
+    "wind_type": "D-grid"
   },
   "StateTest": {
     "StateFile": {
@@ -32,7 +33,7 @@
       "date": "2016-01-01T06:00:00Z"
     },
     "date": "2016-01-01T06:00:00Z",
-    "norm-file": 1952.9548113316434,
+    "norm-file": 1952.8164917091935,
     "StateGenerate" : {
       "filename_core": "fv_core.res.nc",
       "filename_trcr": "fv_tracer.res.nc",
@@ -44,7 +45,7 @@
       "datapath_write": "",
       "date": "2009-12-31T00:00:00Z"
     },
-    "norm-gen": 1952.9548113316434,
+    "norm-gen": 1952.8164917091935,
     "tolerance": 1.0e-8,
     "Locations": {
       "positions": [0.717]

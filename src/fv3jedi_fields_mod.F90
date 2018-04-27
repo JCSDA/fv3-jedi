@@ -44,6 +44,8 @@ type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
   type(fv3jedi_geom), pointer :: geom
   integer :: nf
+  integer :: isc, iec, jsc, jec
+  integer :: root_pe
 end type fv3jedi_field
 
 #define LISTED_TYPE fv3jedi_field
@@ -68,14 +70,13 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
 type(ufo_vars),  intent(in)    :: vars
-logical :: agrid_vel_rst = .true.
 
 ! Allocate main fields
 call allocate_fv_atmos_type(self%Atm, &
                             geom%bd%isd, geom%bd%ied, geom%bd%jsd, geom%bd%jed, &
                             geom%bd%isc, geom%bd%iec, geom%bd%jsc, geom%bd%jec, &
                             geom%npz, geom%ntracers, &
-                            geom%hydrostatic, agrid_vel_rst)
+                            geom%hydrostatic, geom%wind_type)
 
 ! Pointer to geometry
 self%geom => geom
@@ -84,7 +85,17 @@ self%geom => geom
 call zeros(self)
 self%Atm%phis   = 0.0_kind_real
 
+! Number of fields
 self%nf = 5
+
+! For convenience
+self%isc = geom%bd%isc
+self%iec = geom%bd%iec
+self%jsc = geom%bd%jsc
+self%jec = geom%bd%jec
+
+self%root_pe = 0
+if (mpp_pe() == mpp_root_pe()) self%root_pe = 1
 
 end subroutine create
 
@@ -100,8 +111,6 @@ if (allocated(  self%Atm%pt)) deallocate (   self%Atm%pt )
 if (allocated(self%Atm%delp)) deallocate ( self%Atm%delp )
 if (allocated(   self%Atm%q)) deallocate (    self%Atm%q )
 if (allocated(self%Atm%phis)) deallocate ( self%Atm%phis )
-if (allocated(  self%Atm%ua)) deallocate (   self%Atm%ua )
-if (allocated(  self%Atm%va)) deallocate (   self%Atm%va )
 if (allocated(   self%Atm%w)) deallocate (    self%Atm%w )
 if (allocated(self%Atm%delz)) deallocate ( self%Atm%delz )
 
@@ -113,6 +122,8 @@ subroutine zeros(self)
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 
+!Zero out the entire domain
+
 self%Atm%u = 0.0_kind_real
 self%Atm%v = 0.0_kind_real
 self%Atm%pt = 0.0_kind_real
@@ -122,8 +133,6 @@ if (.not. self%Atm%hydrostatic) then
    self%Atm%w = 0.0_kind_real
    self%Atm%delz = 0.0_kind_real
 endif
-self%Atm%ua = 0.0_kind_real
-self%Atm%va = 0.0_kind_real
 
 end subroutine zeros
 
@@ -133,17 +142,17 @@ subroutine ones(self)
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 
-self%Atm%u = 1.0_kind_real
-self%Atm%v = 1.0_kind_real
-self%Atm%pt = 1.0_kind_real
-self%Atm%delp = 1.0_kind_real
-self%Atm%q = 1.0_kind_real
+call zeros(self)
+
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = 1.0_kind_real
 if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = 1.0_kind_real
-   self%Atm%delz = 1.0_kind_real
+   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
 endif
-self%Atm%ua = 1.0_kind_real
-self%Atm%va = 1.0_kind_real
 
 end subroutine ones
 
@@ -153,18 +162,19 @@ subroutine random(self)
 use random_vectors_mod
 implicit none
 type(fv3jedi_field), intent(inout) :: self
+integer :: nq
 
-call random_vector(self%Atm%u)
-call random_vector(self%Atm%v)
-call random_vector(self%Atm%pt)
-call random_vector(self%Atm%delp)
-call random_vector(self%Atm%q(:,:,:,1))
+call random_vector(self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:))
+call random_vector(self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:))
+call random_vector(self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:))
+call random_vector(self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:))
+do nq = 1,self%geom%ntracers
+   call random_vector(self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,nq))
+enddo
 if (.not. self%Atm%hydrostatic) then
-   call random_vector(self%Atm%w)
-   call random_vector(self%Atm%delz)
+   call random_vector(self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:))
+   call random_vector(self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:))
 endif
-call random_vector(self%Atm%ua)
-call random_vector(self%Atm%va)
 
 end subroutine random
 
@@ -178,17 +188,17 @@ type(fv3jedi_field), intent(in)    :: rhs
 self%Atm%calendar_type = rhs%Atm%calendar_type
 self%Atm%date = rhs%Atm%date
 self%Atm%date_init = rhs%Atm%date_init
-self%Atm%u = rhs%Atm%u
-self%Atm%v = rhs%Atm%v
-self%Atm%pt = rhs%Atm%pt
-self%Atm%delp = rhs%Atm%delp
-self%Atm%q = rhs%Atm%q
+
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
 if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = rhs%Atm%w
-   self%Atm%delz = rhs%Atm%delz
+   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
-self%Atm%ua = rhs%Atm%ua
-self%Atm%va = rhs%Atm%va
+self%Atm%phis(self%isc:self%iec,self%jsc:self%jec) = rhs%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
 
 return
 end subroutine copy
@@ -200,17 +210,15 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%u = self%Atm%u + rhs%Atm%u
-self%Atm%v = self%Atm%v + rhs%Atm%v
-self%Atm%pt = self%Atm%pt + rhs%Atm%pt
-self%Atm%delp = self%Atm%delp + rhs%Atm%delp
-self%Atm%q = self%Atm%q + rhs%Atm%q
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) + rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
 if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = self%Atm%w + rhs%Atm%w
-   self%Atm%delz = self%Atm%delz + rhs%Atm%delz
+   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
-self%Atm%ua = self%Atm%ua + rhs%Atm%ua
-self%Atm%va = self%Atm%va + rhs%Atm%va
 
 return
 end subroutine self_add
@@ -222,17 +230,15 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%u = self%Atm%u * rhs%Atm%u
-self%Atm%v = self%Atm%v * rhs%Atm%v
-self%Atm%pt = self%Atm%pt * rhs%Atm%pt
-self%Atm%delp = self%Atm%delp * rhs%Atm%delp
-self%Atm%q = self%Atm%q * rhs%Atm%q
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) * rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) * rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) * rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) * rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) * rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
 if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = self%Atm%w * rhs%Atm%w
-   self%Atm%delz = self%Atm%delz * rhs%Atm%delz
+   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) * rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) * rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
-self%Atm%ua = self%Atm%ua * rhs%Atm%ua
-self%Atm%va = self%Atm%va * rhs%Atm%va
 
 return
 end subroutine self_schur
@@ -244,17 +250,15 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%u = self%Atm%u - rhs%Atm%u
-self%Atm%v = self%Atm%v - rhs%Atm%v
-self%Atm%pt = self%Atm%pt - rhs%Atm%pt
-self%Atm%delp = self%Atm%delp - rhs%Atm%delp
-self%Atm%q = self%Atm%q - rhs%Atm%q
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) - rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) - rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) - rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) - rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) - rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
 if (.not. self%Atm%hydrostatic) then
    self%Atm%w = self%Atm%w - rhs%Atm%w
    self%Atm%delz = self%Atm%delz - rhs%Atm%delz
 endif
-self%Atm%ua = self%Atm%ua - rhs%Atm%ua
-self%Atm%va = self%Atm%va - rhs%Atm%va
 
 return
 end subroutine self_sub
@@ -266,17 +270,15 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 real(kind=kind_real), intent(in) :: zz
 
-self%Atm%u = zz * self%Atm%u
-self%Atm%v = zz * self%Atm%v
-self%Atm%pt = zz * self%Atm%pt
-self%Atm%delp = zz * self%Atm%delp
-self%Atm%q = zz * self%Atm%q
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = zz * self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = zz * self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = zz * self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = zz * self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = zz * self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
 if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = zz * self%Atm%w
-   self%Atm%delz = zz * self%Atm%delz
+   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = zz * self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = zz * self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
-self%Atm%ua = zz * self%Atm%ua
-self%Atm%va = zz * self%Atm%va
 
 return
 end subroutine self_mul
@@ -289,17 +291,15 @@ type(fv3jedi_field), intent(inout) :: self
 real(kind=kind_real), intent(in) :: zz
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%u = self%Atm%u + zz * rhs%Atm%u
-self%Atm%v = self%Atm%v + zz * rhs%Atm%v
-self%Atm%pt = self%Atm%pt + zz * rhs%Atm%pt
-self%Atm%delp = self%Atm%delp + zz * rhs%Atm%delp
-self%Atm%q = self%Atm%q + zz * rhs%Atm%q
+self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) + zz * rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) + zz * rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) + zz * rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) + zz * rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) + zz * rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
 if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = self%Atm%w + zz * rhs%Atm%w
-   self%Atm%delz = self%Atm%delz + zz * rhs%Atm%delz
+   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) + zz * rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) + zz * rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
-self%Atm%ua = self%Atm%ua + zz * rhs%Atm%ua
-self%Atm%va = self%Atm%va + zz * rhs%Atm%va
 
 return
 end subroutine axpy
@@ -318,8 +318,6 @@ integer :: i,j,k,l
 integer :: ierr
 
 zp=0.0_kind_real
-
-!Only unique grid points, for D grid winds do not include shared edge
 
 !u
 do i = fld1%geom%bd%isc,fld1%geom%bd%iec
@@ -372,7 +370,7 @@ enddo
 call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
 
 !For debugging print result:
-if (mpp_pe() == mpp_root_pe()) print*, "Dot product test result: ", zprod
+if (fld1%root_pe == 1) print*, "Dot product test result: ", zprod
 
 return
 end subroutine dot_prod
@@ -385,17 +383,15 @@ type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
 if (self%geom%size_cubic_grid==rhs%geom%size_cubic_grid) then
-   self%Atm%u = self%Atm%u + rhs%Atm%u
-   self%Atm%v = self%Atm%v + rhs%Atm%v
-   self%Atm%pt = self%Atm%pt + rhs%Atm%pt
-   self%Atm%delp = self%Atm%delp + rhs%Atm%delp
-   self%Atm%q = self%Atm%q + rhs%Atm%q
+   self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
+   self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) + rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
    if (.not. self%Atm%hydrostatic) then
-      self%Atm%w = self%Atm%w + rhs%Atm%w
-      self%Atm%delz = self%Atm%delz + rhs%Atm%delz
+      self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
+      self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
    endif
-   self%Atm%ua = self%Atm%ua + rhs%Atm%ua
-   self%Atm%va = self%Atm%va + rhs%Atm%va
 else
    call abor1_ftn("fv3jedi fields:  add_incr not implemented for low res increment yet")
 endif
@@ -413,17 +409,15 @@ type(fv3jedi_field), intent(in)    :: x2
 
 call zeros(lhs)
 if (x1%geom%size_cubic_grid==x2%geom%size_cubic_grid) then
-   lhs%Atm%u = x1%Atm%u - x2%Atm%u
-   lhs%Atm%v = x1%Atm%v - x2%Atm%v
-   lhs%Atm%pt = x1%Atm%pt - x2%Atm%pt
-   lhs%Atm%delp = x1%Atm%delp - x2%Atm%delp
-   lhs%Atm%q = x1%Atm%q - x2%Atm%q
+   lhs%Atm%u(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%u(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%u(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
+   lhs%Atm%v(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%v(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%v(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
+   lhs%Atm%pt(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%pt(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%pt(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
+   lhs%Atm%delp(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%delp(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%delp(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
+   lhs%Atm%q(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:,:) = x1%Atm%q(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:,:) - x2%Atm%q(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:,:)
    if (.not. lhs%Atm%hydrostatic) then
-      lhs%Atm%w = x1%Atm%w - x2%Atm%w
-      lhs%Atm%delz = x1%Atm%delz - x2%Atm%delz
+      lhs%Atm%w(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%w(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%w(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
+      lhs%Atm%delz(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%delz(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%delz(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
    endif
-   lhs%Atm%ua = x1%Atm%ua - x2%Atm%ua
-   lhs%Atm%va = x1%Atm%va - x2%Atm%va
 else
    call abor1_ftn("fv3jedi fields:  diff_incr not implemented for low res increment yet")
 endif
@@ -469,7 +463,7 @@ subroutine read_file(fld, c_conf, vdate)
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
 
-  integer :: id_restart, iounit, io_status, pe, layout(2)
+  integer :: id_restart, iounit, io_status, layout(2)
   integer :: date_init(6), date(6), calendar_type
   integer(kind=c_int) :: idate, isecs
 
@@ -488,7 +482,6 @@ subroutine read_file(fld, c_conf, vdate)
 
   integer :: print_read_info = 0
 
-  pe = mpp_pe()
 
   !Set filenames
   !--------------
@@ -509,51 +502,47 @@ subroutine read_file(fld, c_conf, vdate)
   datapath_in = config_get_string(c_conf,len(datapath_in),"datapath_read")
   datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
 
-  !Register and read core fields
-  !------------------------------
-  id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%Atm%u, &
-               domain=fld%geom%domain, position=NORTH)
-  id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%Atm%v, &
-               domain=fld%geom%domain, position=EAST)
-  id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%Atm%phis, &
-               domain=fld%geom%domain)
-  id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%Atm%pt, &
-               domain=fld%geom%domain)
-  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
-               domain=fld%geom%domain)
-  if (fld%Atm%agrid_vel_rst) then
-     id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%ua, &
+  ! Register the variables that should be read
+  ! ------------------------------------------
+  !Winds
+  if (trim(fld%geom%wind_type) == 'D-grid') then
+     id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%Atm%u, &
+                  domain=fld%geom%domain, position=NORTH)
+     id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%Atm%v, &
+                  domain=fld%geom%domain, position=EAST)
+  elseif (trim(fld%geom%wind_type) == 'A-grid') then
+     id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%u, &
                                          domain=fld%geom%domain)
-     id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%va, &
+     id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%v, &
                                          domain=fld%geom%domain)
   endif
+
+  !phis
+  id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%Atm%phis, &
+               domain=fld%geom%domain)
+
+  !Temperature
+  id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%Atm%pt, &
+               domain=fld%geom%domain)
+
+  !Pressure thickness
+  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
+               domain=fld%geom%domain)
+
+  !Nonhydrostatic variables
   if (.not. fld%Atm%hydrostatic) then
      id_restart =  register_restart_field(Fv_restart, filename_core, 'W', fld%Atm%w, &
                    domain=fld%geom%domain)
      id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
                    domain=fld%geom%domain)
   endif
+
+
+  ! Read file and fill variables
+  ! ----------------------------
   call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
   call free_restart_type(Fv_restart)
-
-  !If A-Grid winds were not read then interpolate from D-grid
-  if (.not. fld%Atm%agrid_vel_rst) then
-
-     fld%Atm%ua = 0.0_kind_real
-     fld%Atm%va = 0.0_kind_real
-
-     !Fill halos of the d-grid winds
-!    call mpp_update_domains(fld%Atm%u, fld%Atm%v, fld%geom%domain, gridtype=DGRID_NE, complete=.true.)
-!
-!    !Call interpolation level by level
-!    do k = 1,fld%geom%npz
-!       call d2a2c_vect( fld%Atm%u(:,:,k), fld%Atm%v(:,:,k), fld%Atm%ua(:,:,k), fld%Atm%va(:,:,k), &
-!                        .true., fld%geom%gridstruct, &
-!                        fld%geom%bd, fld%geom%size_cubic_grid, fld%geom%size_cubic_grid, .false., 0)
-!    enddo 
-
-  endif
-   
+ 
 
 ! !Register and read tracers
 ! !-------------------------
@@ -575,24 +564,8 @@ subroutine read_file(fld, c_conf, vdate)
   call free_restart_type(Tr_restart)
 
 
-  !Prints and getting dates from file
-  !----------------------------------
-   
-  if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
-
-     print *,'ak=',fld%geom%ak
-     print *,'bk=',fld%geom%bk
-
-     !print *,'read_file: pe,shape,minval,maxval for phis', &
-     !                    pe,shape(fld%Atm%phis),minval(fld%Atm%phis),maxval(fld%Atm%phis)
-     print *,'read_file: pe,shape,minval,maxval for potential temp',&
-                         pe,shape(fld%Atm%pt),minval(fld%Atm%pt),maxval(fld%Atm%pt)
-     print *,'read_file: pe,shape,minval,maxval for ua',&
-                         pe,shape(fld%Atm%ua),minval(fld%Atm%ua),maxval(fld%Atm%ua)
-     if (.not. fld%Atm%hydrostatic) print *,'read_file: pe,shape,minval,maxval for w',&
-                                                        pe,shape(fld%Atm%w),minval(fld%Atm%w),maxval(fld%Atm%w)
-
-  endif
+  ! Get dates from file
+  !--------------------
 
   ! read date from coupler.res text file.
   sdate = config_get_string(c_conf,len(sdate),"date")
@@ -608,19 +581,20 @@ subroutine read_file(fld, c_conf, vdate)
   idate=date(1)*10000+date(2)*100+date(3)
   isecs=date(4)*3600+date(5)*60+date(6)
 
-  if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
+  if (fld%root_pe == 1 .and. print_read_info == 1 ) then
      print *,'read_file: integer time from coupler.res: ',date,idate,isecs
   endif
 
   call datetime_from_ifs(vdate, idate, isecs)
   call datetime_to_string(vdate, validitydate)
 
-  if (mpp_pe() == mpp_root_pe() .and. print_read_info == 1 ) then
+  if (fld%root_pe == 1 .and. print_read_info == 1 ) then
      print *,'read_file: validity date: ',trim(validitydate)
      print *,'read_file: expected validity date: ',trim(sdate)
   endif
 
   return
+
 end subroutine read_file
 
 ! ------------------------------------------------------------------------------
@@ -746,8 +720,6 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
         fld%Atm%u = FV_AtmIC(1)%u
         fld%Atm%v = FV_AtmIC(1)%v
         fld%Atm%w = FV_AtmIC(1)%w
-        fld%Atm%ua = FV_AtmIC(1)%ua
-        fld%Atm%va = FV_AtmIC(1)%va
         fld%Atm%pt = FV_AtmIC(1)%pt
         fld%Atm%delp = FV_AtmIC(1)%delp
         fld%Atm%delz = FV_AtmIC(1)%delz
@@ -784,8 +756,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
                  !Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
                  !                                 phis0,ps0,rho0,hum0,q1,q2,q3,q4)
 
-                 fld%Atm%ua(i,j,k) = u0
-                 fld%Atm%va(i,j,k) = v0
+                 !fld%Atm%u(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
+                 !fld%Atm%v(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
                  If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
                  fld%Atm%pt(i,j,k) = t0
                  fld%Atm%delp(i,j,k) = pe2-pe1
@@ -821,8 +793,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
                  !Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                  !                            t0,phis0,ps,rho0,hum0,q1)
 
-                 fld%Atm%ua(i,j,k) = u0
-                 fld%Atm%va(i,j,k) = v0
+                 !fld%Atm%u(i,j,k) = u0 !ATTN comment above
+                 !fld%Atm%v(i,j,k) = v0
                  If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
                  fld%Atm%pt(i,j,k) = t0
                  fld%Atm%delp(i,j,k) = pe2-pe1
@@ -855,20 +827,20 @@ type(c_ptr), intent(in)           :: config  !< Configuration structure
 
 integer :: i,j,k
 
-!ua
+!u
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
       do k = 1,flds%geom%npz
-         flds%Atm%ua(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
+         flds%Atm%u(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
       enddo
    enddo
 enddo
 
-!va
+!v
 do i = flds%geom%bd%isc,flds%geom%bd%iec
    do j = flds%geom%bd%jsc,flds%geom%bd%jec
       do k = 1,flds%geom%npz
-         flds%Atm%va(i,j,k) = 1.0_kind_real
+         flds%Atm%v(i,j,k) = 1.0_kind_real
       enddo
    enddo
 enddo
@@ -919,7 +891,7 @@ subroutine write_file(fld, c_conf, vdate)
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
 
-  integer :: id_restart, iounit, io_status, pe
+  integer :: id_restart, iounit, io_status
   integer :: date_init(6), date(6), calendar_type, layout(2)
   integer(kind=c_int) :: idate, isecs
 
@@ -930,43 +902,50 @@ subroutine write_file(fld, c_conf, vdate)
 
   character(len=255) :: datapath_out
 
+
+  ! Place to save restarts
+  ! ----------------------
   datapath_out = "Data/"
   if (config_element_exists(c_conf,"datapath_write")) then
      datapath_out = config_get_string(c_conf,len(datapath_out),"datapath_write")
   endif
 
-  pe = mpp_pe()
 
-  !Write core fields to file
-  !-------------------------
+  ! Naming convection for the file
+  ! ------------------------------
   filename_core = 'fv_core.res.nc'
   if (config_element_exists(c_conf,"filename_core")) then
     filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
   endif
 
-  !ak,bk
-  !id_restart = register_restart_field(Fv_restart, filename_core, 'ak', fld%geom%ak(:), no_domain=.true.)
-  !id_restart = register_restart_field(Fv_restart, filename_core, 'bk', fld%geom%bk(:), no_domain=.true.)
-  !call save_restart(Fv_restart, directory=trim(adjustl(datapath_out))//'RESTART')
-  !call free_restart_type(Fv_restart)
-
-  !u,v,phis,pt,delp
-  id_restart = register_restart_field( Fv_restart, filename_core, 'u', fld%Atm%u, &
-                                       domain=fld%geom%domain,position=NORTH )
-  id_restart = register_restart_field( Fv_restart, filename_core, 'v', fld%Atm%v, &
-                                       domain=fld%geom%domain,position=EAST )
-  id_restart = register_restart_field( Fv_restart, filename_core, 'phis', fld%Atm%phis, &
-                                       domain=fld%geom%domain )
-  id_restart = register_restart_field( Fv_restart, filename_core, 'T', fld%Atm%pt, &
-                                       domain=fld%geom%domain )
-  id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
-                                       domain=fld%geom%domain )
-  if (fld%Atm%agrid_vel_rst) then
-      id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%ua, &
+  ! Register the variables that should be written
+  ! ---------------------------------------------
+  !Winds
+  if (trim(fld%geom%wind_type) == 'D-grid') then
+     id_restart = register_restart_field( Fv_restart, filename_core, 'u', fld%Atm%u, &
+                                          domain=fld%geom%domain,position=NORTH )
+     id_restart = register_restart_field( Fv_restart, filename_core, 'v', fld%Atm%v, &
+                                          domain=fld%geom%domain,position=EAST )
+  elseif (trim(fld%geom%wind_type) == 'A-grid') then
+      id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%u, &
                                             domain=fld%geom%domain )
-      id_restart =  register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%va, &
+      id_restart =  register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%v, &
                                             domain=fld%geom%domain )
   endif
+
+  !phis
+  id_restart = register_restart_field( Fv_restart, filename_core, 'phis', fld%Atm%phis, &
+                                       domain=fld%geom%domain )
+
+  !Temperature
+  id_restart = register_restart_field( Fv_restart, filename_core, 'T', fld%Atm%pt, &
+                                       domain=fld%geom%domain )
+
+  !Pressure thickness
+  id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
+                                       domain=fld%geom%domain )
+
+  !Nonhydrostatic fields
   if (.not. fld%Atm%hydrostatic) then
       id_restart =  register_restart_field( Fv_restart, filename_core, 'W', fld%Atm%w, &
                                             domain=fld%geom%domain )
@@ -974,6 +953,9 @@ subroutine write_file(fld, c_conf, vdate)
                                             domain=fld%geom%domain )
   endif
 
+
+  ! Write variables to file
+  ! -----------------------
   call save_restart(Fv_restart, directory=trim(adjustl(datapath_out))//'RESTART')
   call free_restart_type(Fv_restart)
 
@@ -995,8 +977,6 @@ subroutine write_file(fld, c_conf, vdate)
   !Write date/time info in coupler.res
   !-----------------------------------
   call datetime_to_ifs(vdate, idate, isecs)
-  !idate=date(1)*10000+date(2)*100+date(3)
-  !isecs=date(4)*3600+date(5)*60+date(6)
   date(1) = idate/10000
   date(2) = idate/100 - date(1)*100
   date(3) = idate - (date(1)*10000 + date(2)*100)
@@ -1004,7 +984,7 @@ subroutine write_file(fld, c_conf, vdate)
   date(5) = (isecs - date(4)*3600)/60
   date(6) = isecs - (date(4)*3600 + date(5)*60)
   iounit = 101
-  if (mpp_pe() == mpp_root_pe()) then
+  if (fld%root_pe == 1) then
      print *,'write_file: date = ',fld%Atm%date_init
      print *,'write_file: date = ',date,fld%Atm%date
      open(iounit, file=trim(adjustl(datapath_out))//'RESTART/coupler.res', form='formatted')
@@ -1018,6 +998,7 @@ subroutine write_file(fld, c_conf, vdate)
   endif
 
 return
+
 end subroutine write_file
 
 ! ------------------------------------------------------------------------------
@@ -1078,7 +1059,7 @@ implicit none
 type(fv3jedi_field), intent(in) :: fld
 real(kind=kind_real), intent(out) :: prms
 real(kind=kind_real) :: zz
-integer pe,jx,jy,jz,ii,nt,ierr,npes,iisum
+integer jx,jy,jz,ii,nt,ierr,npes,iisum
 
 zz = 0.0_kind_real
 prms = 0.0_kind_real
@@ -1089,8 +1070,6 @@ do jy=fld%geom%bd%jsc,fld%geom%bd%jec
       do jz=1,fld%geom%npz
          zz = zz + fld%Atm%pt(jx,jy,jz)**2
          zz = zz + fld%Atm%delp(jx,jy,jz)**2
-         zz = zz + fld%Atm%ua(jx,jy,jz)**2
-         zz = zz + fld%Atm%va(jx,jy,jz)**2
          if (.not. fld%Atm%hydrostatic) then
             zz = zz + fld%Atm%w(jx,jy,jz)**2
             zz = zz + fld%Atm%delz(jx,jy,jz)**2
@@ -1103,21 +1082,18 @@ do jy=fld%geom%bd%jsc,fld%geom%bd%jec
    enddo
 enddo
 
-
-npes = mpp_npes(); pe = mpp_pe()
-! note: this will fail if kind_real does not match mpi_real8
+!Get global values
 call mpi_allreduce(zz,prms,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
 call mpi_allreduce(ii,iisum,1,mpi_int,mpi_sum,mpi_comm_world,ierr)
+
 if (ierr .ne. 0) then
    print *,'error in fldrms/mpi_allreduce, error code=',ierr
 endif
 prms = sqrt(prms/real(iisum,kind_real))
-if (pe == mpp_root_pe()) print *,'prms = ',prms
 
-!print *,'pe,shape,minval,maxval for phis',pe,shape(fld%Atm%phis),minval(fld%Atm%phis),maxval(fld%Atm%phis)
-print *,'fldrms: pe,shape,minval,maxval for potential temp',pe,shape(fld%Atm%pt),minval(fld%Atm%pt),maxval(fld%Atm%pt)
-print *,'fldrms: pe,shape,minval,maxval for ua',pe,shape(fld%Atm%ua),minval(fld%Atm%ua),maxval(fld%Atm%ua)
-if (.not. fld%Atm%hydrostatic) print *,'fldrms: pe,shape,minval,maxval for w',pe,shape(fld%Atm%w),minval(fld%Atm%w),maxval(fld%Atm%w)
+!Print for debugging
+if (fld%root_pe == 1) print *,'fldrms: prms = ', prms
+if (fld%root_pe == 1) print *,'fldrms: iisum = ', iisum
 
 end subroutine fldrms
 
@@ -1180,9 +1156,9 @@ do idir=1,ndir
        iydir(idir) >= self%geom%bd%jsc .and. iydir(idir) <= self%geom%bd%jec) then
        ! If so, perturb desired field and level
        if (ifdir == 1) then
-          self%Atm%ua(ixdir(idir),iydir(idir),ildir) = 1.0
+          self%Atm%u(ixdir(idir),iydir(idir),ildir) = 1.0
        else if (ifdir == 2) then
-          self%Atm%va(ixdir(idir),iydir(idir),ildir) = 1.0
+          self%Atm%v(ixdir(idir),iydir(idir),ildir) = 1.0
        else if (ifdir == 3) then
           self%Atm%pt(ixdir(idir),iydir(idir),ildir) = 1.0
        else if (ifdir == 4) then
@@ -1250,8 +1226,8 @@ do jy=self%geom%bd%jsc,self%geom%bd%jec
   do jx=self%geom%bd%isc,self%geom%bd%iec
     ic0a = ic0a+1
     do jl=1,self%geom%npz
-        ug%fld(ic0a,jl,1,1) = self%Atm%ua(jx,jy,jl)
-        ug%fld(ic0a,jl,2,1) = self%Atm%va(jx,jy,jl)
+        ug%fld(ic0a,jl,1,1) = self%Atm%u(jx,jy,jl)
+        ug%fld(ic0a,jl,2,1) = self%Atm%v(jx,jy,jl)
         ug%fld(ic0a,jl,3,1) = self%Atm%pt(jx,jy,jl)
         ug%fld(ic0a,jl,4,1) = self%Atm%q(jx,jy,jl,1)
         ug%fld(ic0a,jl,5,1) = self%Atm%delp(jx,jy,jl)
@@ -1279,8 +1255,8 @@ do jy=self%geom%bd%jsc,self%geom%bd%jec
   do jx=self%geom%bd%isc,self%geom%bd%iec
     ic0a = ic0a+1
     do jl=1,self%geom%npz
-        self%Atm%ua(jx,jy,jl)   = ug%fld(ic0a,jl,1,1)
-        self%Atm%va(jx,jy,jl)   = ug%fld(ic0a,jl,2,1)
+        self%Atm%u(jx,jy,jl)    = ug%fld(ic0a,jl,1,1)
+        self%Atm%v(jx,jy,jl)    = ug%fld(ic0a,jl,2,1)
         self%Atm%pt(jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
         self%Atm%q(jx,jy,jl,1)  = ug%fld(ic0a,jl,4,1)
         self%Atm%delp(jx,jy,jl) = ug%fld(ic0a,jl,5,1)
@@ -1333,8 +1309,8 @@ allocate(obs_field(nobs,1))
 !Temporary variable in case of variable transform
 allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
 
-write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
-write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
+!write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
+!write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
 do jvar = 1, vars%nv
 
@@ -1398,8 +1374,8 @@ deallocate(geoval)
 deallocate(mod_field)
 deallocate(obs_field)
 
-write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+!write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
+!write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
 end subroutine interp
 
@@ -1439,8 +1415,8 @@ call initialize_interp( fld, locs, vars, gom, myname, &
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
-write(*,*)'interp_tl model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
-write(*,*)'interp_tl model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
+!write(*,*)'interp_tl model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
+!write(*,*)'interp_tl model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
@@ -1487,8 +1463,8 @@ enddo
 deallocate(mod_field)
 deallocate(obs_field)
 
-write(*,*)'interp_tl geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-write(*,*)'interp_tl geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+!write(*,*)'interp_tl geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
+!write(*,*)'interp_tl geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
 end subroutine interp_tl
 
@@ -1528,8 +1504,8 @@ call initialize_interp( fld, locs, vars, gom, myname, &
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
-write(*,*)'interp_ad geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-write(*,*)'interp_ad geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+!write(*,*)'interp_ad geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
+!write(*,*)'interp_ad geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
@@ -1578,8 +1554,8 @@ enddo
 deallocate(mod_field)
 deallocate(obs_field)
 
-write(*,*)'interp_ad model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
-write(*,*)'interp_ad model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
+!write(*,*)'interp_ad model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
+!write(*,*)'interp_ad model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
 end subroutine interp_ad
 
@@ -1646,8 +1622,6 @@ integer :: jvar
 ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
 nobs = locs%nlocs 
 
-write(*,*) trim(myname),' ngrid, nobs = : ',ngrid, nobs
-
 !Run some basic checks on the interpolation
 !------------------------------------------
 !call interp_checks(myname, fld, locs, vars, gom)
@@ -1659,7 +1633,7 @@ call initialize_nicas(fld, fld%geom, locs, pgeom, odata)
 ! Make sure the return values are allocated and set
 ! -------------------------------------------------
 if (trim(myname)/="interp_ad") then
-   if (mpp_pe()==mpp_root_pe()) print*, trim(myname), ': allocating GeoVaLs'
+   if (fld%root_pe == 1) print*, trim(myname), ': allocating GeoVaLs'
    do jvar=1,vars%nv
       if (.not.allocated(gom%geovals(jvar)%vals)) then
          gom%geovals(jvar)%nval = fld%geom%npz
@@ -1712,11 +1686,13 @@ mod_ny  = grid%bd%jec - grid%bd%jsc + 1
 mod_num = mod_nx * mod_ny
 mod_nz  = grid%npz
 obs_num = locs%nlocs 
-write(*,*)'initialize_nicas mod_num,obs_num = ',mod_num,obs_num
 
 !Calculate interpolation weight using nicas
 !------------------------------------------
 if (.NOT.interp_initialized) then
+
+   write(*,*)'initialize_nicas mod_num,obs_num = ',mod_num,obs_num
+
    allocate( mod_lat(mod_num), mod_lon(mod_num) )
    mod_lat = deg2rad * reshape( grid%grid_lat(grid%bd%isc:grid%bd%iec,      &
                                               grid%bd%jsc:grid%bd%jec),     &
