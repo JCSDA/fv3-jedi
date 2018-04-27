@@ -471,8 +471,6 @@ FV_Atm(1)%mfy   = 0.0
 FV_Atm(1)%cx    = 0.0
 FV_Atm(1)%cy    = 0.0
 FV_Atm(1)%ze0   = 0.0
-FV_Atm(1)%w     = 0.0
-FV_Atm(1)%delz  = 0.0
 FV_Atm(1)%q_con = 0.0
 
 
@@ -777,8 +775,6 @@ FV_Atm(1)%mfy   = 0.0
 FV_Atm(1)%cx    = 0.0
 FV_Atm(1)%cy    = 0.0
 FV_Atm(1)%ze0   = 0.0
-FV_Atm(1)%w     = 0.0
-FV_Atm(1)%delz  = 0.0
 FV_Atm(1)%q_con = 0.0
 
 
@@ -950,7 +946,7 @@ self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  ) = flds%Atm%v   (isc:iec+1,jsc:jec  
 self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  )
 self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delp(isc:iec  ,jsc:jec  ,:  )
 self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,:) = flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. self%hydrostatic) then
+if (.not. flds%Atm%hydrostatic) then
    self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delz(isc:iec  ,jsc:jec  ,:  )
    self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%w   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -978,8 +974,10 @@ flds%Atm%v    = 0.0
 flds%Atm%pt   = 0.0
 flds%Atm%delp = 0.0
 flds%Atm%q    = 0.0
-flds%Atm%delz = 0.0
-flds%Atm%w    = 0.0
+if (.not. flds%Atm%hydrostatic) then
+   flds%Atm%delz = 0.0
+   flds%Atm%w    = 0.0
+endif
 
 !Only copy compute grid incase of halo differences
 flds%Atm%u   (isc:iec  ,jsc:jec+1,:  ) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
@@ -987,7 +985,7 @@ flds%Atm%v   (isc:iec+1,jsc:jec  ,:  ) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  
 flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
 flds%Atm%delp(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
 flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. self%hydrostatic) then
+if (.not. flds%Atm%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -1024,7 +1022,7 @@ self%FV_AtmP(1)%vp   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%v   (isc:iec  ,jsc:jec
 self%FV_AtmP(1)%ptp  (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  )
 self%FV_AtmP(1)%delpp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delp(isc:iec  ,jsc:jec  ,:  )
 self%FV_AtmP(1)%qp   (isc:iec  ,jsc:jec  ,:,:) = flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. self%hydrostatic) then
+if (.not. flds%Atm%hydrostatic) then
    self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delz(isc:iec  ,jsc:jec  ,:  )
    self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%w   (isc:iec  ,jsc:jec  ,:  )
 endif
@@ -1052,8 +1050,10 @@ flds%Atm%v    = 0.0
 flds%Atm%pt   = 0.0
 flds%Atm%delp = 0.0
 flds%Atm%q    = 0.0
-flds%Atm%delz = 0.0
-flds%Atm%w    = 0.0
+if (.not. flds%Atm%hydrostatic) then
+   flds%Atm%delz = 0.0
+   flds%Atm%w    = 0.0
+endif
 
 !Only copy compute grid incase of halo differences
 flds%Atm%u   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%up   (isc:iec  ,jsc:jec  ,:  )
@@ -1061,7 +1061,7 @@ flds%Atm%v   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%vp   (isc:iec  ,jsc:jec
 flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%ptp  (isc:iec  ,jsc:jec  ,:  )
 flds%Atm%delp(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delpp(isc:iec  ,jsc:jec  ,:  )
 flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:) = self%FV_AtmP(1)%qp   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. self%hydrostatic) then
+if (.not. flds%Atm%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  )
 endif

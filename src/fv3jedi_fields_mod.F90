@@ -719,15 +719,17 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
         !Copy from temporary structure into fields
         fld%Atm%u = FV_AtmIC(1)%u
         fld%Atm%v = FV_AtmIC(1)%v
-        fld%Atm%w = FV_AtmIC(1)%w
         fld%Atm%pt = FV_AtmIC(1)%pt
         fld%Atm%delp = FV_AtmIC(1)%delp
-        fld%Atm%delz = FV_AtmIC(1)%delz
         fld%Atm%q = FV_AtmIC(1)%q
         fld%Atm%phis = FV_AtmIC(1)%phis
         fld%geom%ak = FV_AtmIC(1)%ak
         fld%geom%ak = FV_AtmIC(1)%ak
         fld%geom%ptop = FV_AtmIC(1)%ptop
+        if (.not. fld%Atm%hydrostatic) then
+           fld%Atm%w = FV_AtmIC(1)%w
+           fld%Atm%delz = FV_AtmIC(1)%delz
+        endif
 
         !Deallocate temporary FV_Atm fv3 structure
         call deallocate_fv_atmos_type(FV_AtmIC(1))
