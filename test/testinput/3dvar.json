@@ -61,10 +61,10 @@
           "ObsType": "Radiosonde",
           "ObsData": {
             "ObsDataIn": {
-              "obsfile": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/Data/diag_t_01_wprofiles.nc4"
+              "obsfile": "../../ufo/test/Data/diag_t_01_wprofiles.nc4"
             },
             "ObsDataOut": {
-              "obsfile": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/Data/fv3jedi.3dvar.obt"
+              "obsfile": "Data/fv3jedi.3dvar.obt"
             },
             "obsvalue": "ObsVal"
           },
