@@ -1594,8 +1594,8 @@ integer :: jvar
 
   if (present(traj)) then
 
-    datapath_in = 'Data/C96_RESTART_2016-01-01-06z/'
-    datapath_ti = 'Data/C96_RESTART_2016-01-01-06z/INPUT/'
+    datapath_in = 'Data/C96_RESTART_2016-01-01-06/'
+    datapath_ti = 'Data/C96_RESTART_2016-01-01-06/INPUT/'
 
     filename_core = 'fv_core.res.nc'
     filename_trcr = 'fv_tracer.res.nc'
