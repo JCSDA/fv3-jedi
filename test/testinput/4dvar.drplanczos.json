@@ -16,12 +16,12 @@
     "filename_spec": "grid_spec.nc",
     "filename_core": "fv_core.res.nc",    
     "datapath_geom": "Data/C96_RESTART_2016-01-01-06/",
-    "nml_file": "Data/fv3files/input.nml",
+    "nml_file": "Data/fv3files/input_c96.nml",
     "trc_file": "Data/fv3files/field_table",
     "wind_type": "D-grid"
   },
   "model": {
-    "nml_file": "Data/fv3files/input.nml",
+    "nml_file": "Data/fv3files/input_c96.nml",
     "trc_file": "Data/fv3files/field_table", 
     "tstep": "PT15M",
     "init_tlmadm": "0",
@@ -39,7 +39,7 @@
            "filename_core": "fv_core.res.nc",
            "filename_trcr": "fv_tracer.res.nc",
            "filename_cplr": "coupler.res",
-           "nml_file": "Data/fv3files/input.nml",
+           "nml_file": "Data/fv3files/input_c96.nml",
            "trc_file": "Data/fv3files/field_table",
            "datapath_read": "Data/C96_RESTART_2016-01-01-06/",
            "datapath_tile": "Data/C96_RESTART_2016-01-01-06/INPUT/",
@@ -104,13 +104,13 @@
           "filename_spec": "grid_spec.nc",
           "filename_core": "fv_core.res.nc",    
           "datapath_geom": "Data/C96_RESTART_2016-01-01-06/",
-          "nml_file": "Data/fv3files/input.nml",
+          "nml_file": "Data/fv3files/input_c96.nml",
           "trc_file": "Data/fv3files/field_table",
           "wind_type": "D-grid"
         },
         "linearmodel": {
           "version": "FV3JEDITLM",
-          "nml_file": "Data/fv3files/input.nml",
+          "nml_file": "Data/fv3files/input_c96.nml",
           "trc_file": "Data/fv3files/field_table", 
           "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
           "tstep": "PT15M",
@@ -118,7 +118,7 @@
           "update_dgridwind": "1",
           "update_pressures": "1",
           "trajectory": {
-            "nml_file": "Data/fv3files/input.nml",
+            "nml_file": "Data/fv3files/input_c96.nml",
             "trc_file": "Data/fv3files/field_table", 
             "tstep": "PT15M",
             "init_tlmadm": "0"
@@ -146,13 +146,13 @@
           "filename_spec": "grid_spec.nc",
           "filename_core": "fv_core.res.nc",    
           "datapath_geom": "Data/C96_RESTART_2016-01-01-06/",
-          "nml_file": "Data/fv3files/input.nml",
+          "nml_file": "Data/fv3files/input_c96.nml",
           "trc_file": "Data/fv3files/field_table",
           "wind_type": "D-grid"
         },
         "linearmodel": {
           "version": "FV3JEDITLM",
-          "nml_file": "Data/fv3files/input.nml",
+          "nml_file": "Data/fv3files/input_c96.nml",
           "trc_file": "Data/fv3files/field_table", 
           "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
           "tstep": "PT15M",
@@ -160,7 +160,7 @@
           "update_dgridwind": "1",
           "update_pressures": "1",
           "trajectory": {
-            "nml_file": "Data/fv3files/input.nml",
+            "nml_file": "Data/fv3files/input_c96.nml",
             "trc_file": "Data/fv3files/field_table", 
             "tstep": "PT15M",
             "init_tlmadm": "0"

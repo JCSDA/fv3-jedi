@@ -16,7 +16,7 @@
     "filename_spec": "grid_spec.nc",
     "filename_core": "fv_core.res.nc",    
     "datapath_geom": "Data/C96_RESTART_2016-01-01-06/",
-    "nml_file": "Data/fv3files/input.nml",
+    "nml_file": "Data/fv3files/input_c96.nml",
     "trc_file": "Data/fv3files/field_table",
     "wind_type": "D-grid"
   }
