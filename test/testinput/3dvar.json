@@ -106,7 +106,7 @@
           "wind_type": "D-grid"
         },
         "linearmodel": {
-          "version": "FV3JEDITLM",
+          "version": "FV3JEDIIdTLM",
           "nml_file": "Data/fv3files/input_c96.nml",
           "trc_file": "Data/fv3files/field_table", 
           "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",
@@ -148,7 +148,7 @@
           "wind_type": "D-grid"
         },
         "linearmodel": {
-          "version": "FV3JEDITLM",
+          "version": "FV3JEDIIdTLM",
           "nml_file": "Data/fv3files/input_c96.nml",
           "trc_file": "Data/fv3files/field_table", 
           "nml_file_pert": "Data/fv3files/inputpert_4dvar.nml",

@@ -373,13 +373,14 @@ testinput/analytic_init.json
 testinput/model.json
 testinput/linearmodel.json
 testinput/3dvar.json
+testinput/4dvar.dripcg.json
 testinput/4dvar.drplanczos.json
 testinput/forecast.json
 testinput/hofx.json
 testinput/dirac.nicas.json
 testinput/analytic_init.json
 testinput/increment.json
-testinput/4denvar.nicas.json
+testinput/3denvar.nicas.json
 testinput/errorcov.json
 testinput/localization.json
 compare.sh
@@ -388,6 +389,7 @@ compare.sh
 list( APPEND fv3jedi_testoutput
 testoutput/hofx.test  
 testoutput/3dvar.test
+testoutput/4dvar.dripcg.test
 testoutput/4dvar.drplanczos.test
 testoutput/dirac.nicas.test
 )

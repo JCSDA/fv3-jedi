@@ -1396,7 +1396,7 @@ type(fv3jedi_field),      intent(inout) :: fld
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_trajectory)                :: traj
+type(fv3jedi_trajectory), pointer       :: traj
 
 character(len=*), parameter :: myname = 'interp_tl'
 
@@ -1431,7 +1431,7 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     !Tangent linear of temperature to virtual temperature
-    !call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
 
     do jlev = 1, fld%geom%npz
       ii = 0
@@ -1485,7 +1485,7 @@ type(fv3jedi_field),      intent(inout) :: fld
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_trajectory)                :: traj
+type(fv3jedi_trajectory), pointer       :: traj
 
 character(len=*), parameter :: myname = 'interp_ad'
 
@@ -1535,7 +1535,7 @@ do jvar = 1, vars%nv
     enddo 
   
     !Adjoint of temperature to virtual temperature
-    !call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
   
   case ("humidity_mixing_ratio")
   
@@ -1564,7 +1564,7 @@ end subroutine interp_ad
 ! ------------------------------------------------------------------------------
 
 subroutine initialize_interp( fld, locs, vars, gom, myname, &
-                                   pgeom, odata, ngrid, nobs, traj )
+                                   pgeom, odata, ngrid, nobs, trajp )
 
 use type_geom, only: geomtype
 use type_odata, only: odatatype
@@ -1576,7 +1576,7 @@ type(fv3jedi_field),                intent(inout) :: fld
 type(ufo_locs),                     intent(in   ) :: locs 
 type(ufo_vars),                     intent(in   ) :: vars
 type(ufo_geovals),                  intent(inout) :: gom
-type(fv3jedi_trajectory), optional, intent(inout) :: traj
+type(fv3jedi_trajectory), optional, pointer, intent(inout) :: trajp
 character(len=*),                   intent(in   ) :: myname
 type(geomtype), pointer,            intent(inout) :: pgeom
 type(odatatype), pointer,           intent(inout) :: odata
@@ -1585,35 +1585,70 @@ integer :: jvar
 
 !HACK: read a trajectory from file
 !---------------------------------
+
+  type(fv3jedi_trajectory), save, target :: traj
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
   integer :: id_restart
   character(len=255) :: datapath_in, datapath_ti
   character(len=255) :: filename_core
   character(len=255) :: filename_trcr
+  integer, save :: gottraj = 0
 
-  if (present(traj)) then
+  if (present(trajp)) then
 
-    datapath_in = 'Data/C96_RESTART_2016-01-01-06/'
-    datapath_ti = 'Data/C96_RESTART_2016-01-01-06/INPUT/'
+    if (gottraj == 0) then
 
-    filename_core = 'fv_core.res.nc'
-    filename_trcr = 'fv_tracer.res.nc'
-   
-    allocate(traj%pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
-    allocate(traj%delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
-    allocate(traj%q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz,fld%geom%ntracers))
-  
-    id_restart = register_restart_field(Fv_restart, filename_core, 'T',    traj%pt,   domain=fld%geom%domain)
-    id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', traj%delp, domain=fld%geom%domain)
-  
-    call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
-    call free_restart_type(Fv_restart)
-  
-    id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', traj%q(:,:,:,1), domain=fld%geom%domain)
-  
-    call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
-    call free_restart_type(Tr_restart) 
+      if (fld%geom%npx == 97) then
+
+         if (fld%root_pe == 1) print*, 'HACK TO PROVIDE TRAJECOTORY FOR INTERPOLATION (C96)'
+
+         datapath_in = 'Data/C96_RESTART_2016-01-01-06/'
+         datapath_ti = 'Data/C96_RESTART_2016-01-01-06/INPUT/'
+
+         filename_core = 'fv_core.res.nc'
+         filename_trcr = 'fv_tracer.res.nc'
+
+      elseif (fld%geom%npx == 49) then
+
+         if (fld%root_pe == 1) print*, 'HACK TO PROVIDE TRAJECOTORY FOR INTERPOLATION (C48)'
+
+         datapath_in = 'Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
+         datapath_ti = 'Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
+
+         filename_core = '20170801.000000.fv_core.res.nc'
+         filename_trcr = '20170801.000000.fv_tracer.res.nc'
+
+      else
+
+         call abor1_ftn("Resolution not supported for trajectory hack")
+
+      endif
+
+      allocate(traj%pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
+      allocate(traj%delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
+      allocate(traj%q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz,fld%geom%ntracers))
+
+      id_restart = register_restart_field(Fv_restart, filename_core, 'T',    traj%pt,   domain=fld%geom%domain)
+      id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', traj%delp, domain=fld%geom%domain)
+
+      call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
+      call free_restart_type(Fv_restart)
+
+      id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', traj%q(:,:,:,1), domain=fld%geom%domain)
+
+      call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
+      call free_restart_type(Tr_restart) 
+
+      trajp => traj
+
+      gottraj = 1
+
+    else
+
+      trajp => traj
+
+    endif
 
   endif
 !END HACK
@@ -1635,9 +1670,9 @@ call initialize_nicas(fld, fld%geom, locs, pgeom, odata)
 ! Make sure the return values are allocated and set
 ! -------------------------------------------------
 if (trim(myname)/="interp_ad") then
-   if (fld%root_pe == 1) print*, trim(myname), ': allocating GeoVaLs'
    do jvar=1,vars%nv
       if (.not.allocated(gom%geovals(jvar)%vals)) then
+         if (fld%root_pe == 1) print*, trim(myname), ': allocating ', trim(vars%fldnames(jvar)),' GeoVaLs'
          gom%geovals(jvar)%nval = fld%geom%npz
          gom%geovals(jvar)%nobs = nobs
          allocate( gom%geovals(jvar)%vals(fld%geom%npz,nobs) )

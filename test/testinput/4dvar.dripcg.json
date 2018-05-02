@@ -8,8 +8,8 @@
     "npy": "49",
     "npz": "64",
     "hydrostatic": "1",
-    "layout_1": "1",
-    "layout_2": "1",
+    "layout_1": "2",
+    "layout_2": "2",
     "io_layout_1": "1",
     "io_layout_2": "1",
     "halo": "3",
@@ -64,7 +64,7 @@
               "obsfile": "../../ufo/test/Data/diag_t_01_wprofiles.nc4"
             },
             "ObsDataOut": {
-              "obsfile": "Data/fv3jedi.4dvar.drplanczos.obt"
+              "obsfile": "Data/fv3jedi.4dvar.dripcg.obt"
             },
             "obsvalue": "ObsVal"
           },
@@ -77,10 +77,7 @@
     }
   },
   "minimizer": {
-    "algorithm": "DRPLanczos",
-    "preconditioner": {
-      "maxpairs": "3"
-    }
+    "algorithm": "DRIPCG"
   },
   "output": {
     "first": "PT0H",
@@ -96,8 +93,8 @@
           "npy": "49",
           "npz": "64",
           "hydrostatic": "1",
-          "layout_1": "1",
-          "layout_2": "1",
+          "layout_1": "2",
+          "layout_2": "2",
           "io_layout_1": "1",
           "io_layout_2": "1",
           "halo": "3",
@@ -124,7 +121,7 @@
             "init_tlmadm": "0"
           }
         },
-        "ninner": "10",
+        "ninner": "5",
         "gradient_norm_reduction": "1e-10",
         "test": "on",
         "diagnostics": {
@@ -138,8 +135,8 @@
           "npy": "49",
           "npz": "64",
           "hydrostatic": "1",
-          "layout_1": "1",
-          "layout_2": "1",
+          "layout_1": "2",
+          "layout_2": "2",
           "io_layout_1": "1",
           "io_layout_2": "1",
           "halo": "3",
@@ -166,7 +163,7 @@
             "init_tlmadm": "0"
           }
         },
-        "ninner": "10",
+        "ninner": "3",
         "gradient_norm_reduction": "1e-10",
         "test": "on"
       }
