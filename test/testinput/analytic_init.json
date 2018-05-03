@@ -50,7 +50,7 @@
       "date": "2009-12-31T00:00:00Z"
     },
     "norm-gen": 2395.5304342427162,
-    "tolerance": 1.0e-8,
+    "tolerance": 2.0e-4,
     "Locations": {
       "positions": [0.717]
     },
