@@ -217,7 +217,7 @@ subroutine T_to_Tv_tl(geom,T,T_tl,q,q_tl)
 
  real(kind=kind_real) :: Tv_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Local variable to hold virtual temperature
 
-  Tv_tl = T_tl*(1.0 + epsilon*q) +  T_tl*epsilon*q_tl
+  Tv_tl = T_tl*(1.0 + epsilon*q) + T*epsilon*q_tl
 
   !Replace temperature with virtual temperature
   T_tl = Tv_tl
@@ -238,8 +238,8 @@ subroutine T_to_Tv_ad(geom,T,T_ad,q,q_ad)
  real(kind=kind_real) :: TV_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Local variable to hold virtual temperature
 
   Tv_ad = T_ad
-  T_ad  = (1.0 + epsilon*q)*Tv_ad
-  q_ad  =        epsilon*T +Tv_ad
+  T_ad  =        (1.0 + epsilon*q)*Tv_ad
+  q_ad  = q_ad +        epsilon*T *Tv_ad
   Tv_ad = 0.0
 
 end subroutine T_to_Tv_ad

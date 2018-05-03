@@ -1424,6 +1424,8 @@ allocate(obs_field(nobs,1))
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
  
+  gom%geovals(jvar)%vals(:,:) = 0.0
+
   select case (trim(vars%fldnames(jvar)))
    
   case ("wind_v")
@@ -1528,7 +1530,6 @@ do jvar = 1, vars%nv
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
         do ji = fld%geom%bd%isc, fld%geom%bd%iec
           ii = ii + 1
-          fld%Atm%pt(ji, jj, jlev) = 0.0
           fld%Atm%pt(ji, jj, jlev) = fld%Atm%pt(ji, jj, jlev) + mod_field(ii, 1)
         enddo
       enddo
@@ -1680,6 +1681,7 @@ if (trim(myname)/="interp_ad") then
       endif
    enddo
    gom%linit = .true.
+   gom%lalloc = .true.
 endif
 
 end subroutine initialize_interp

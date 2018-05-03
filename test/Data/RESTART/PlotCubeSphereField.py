@@ -4,17 +4,23 @@ import matplotlib.pyplot as plt
 
 #User input required for the follwing:
 plot_diff = 1         #Plot path2/file - path1/file
-path1  = '../C96_RESTART_2016-01-01-06z/INPUT/'  #Path of first file
-#path1  = '/gpfsm/dnb31/drholdaw/Jedi/Experiments/DiracTest/ENSEMBLE/mem001/RESTART/'
-path2  = './'  #Path of second file
-file_tplt_befr1 = 'fv_core.res.tile'  #Filename before tile number
-#file_tplt_befr1 = '20170801.000000.fv_core.res.tile'  #Filename before tile number
-file_tplt_befr2 = 'fv_core.res.tile'  #Filename before tile number
-file_tplt_aftr = '.nc'               #Filename after tile number
+cube = 96
+
+path1  = './'                         #Path of first/only file
+file_tplt_befr1 = 'fv_core.res.tile'  #Filename befor tile number
+file_tplt_aftr = '.nc'                #Filename after tile number
+
+if (cube == 48):
+    path2  = '../C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
+    file_tplt_befr2 = '20170801.000000.fv_core.res.tile'
+elif (cube == 96):
+    path2  = '../C96_RESTART_2016-01-01-06/INPUT/'
+    file_tplt_befr2 = 'fv_core.res.tile'
+
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'u'                       #Variable to plot
+readvar = 'T'                       #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
 plot_level = 40                      #If 3D plot this level
 
