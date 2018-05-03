@@ -29,7 +29,7 @@
     "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
     "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
     "datapath_write": "./",
-    "date": "2016-01-01T06:00:00Z"
+    "date": "2017-08-01T00:00:00Z"
   },
   "ModelTest": {
     "fclength": "PT1H",
