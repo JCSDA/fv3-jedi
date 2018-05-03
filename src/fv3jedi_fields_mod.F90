@@ -1483,7 +1483,7 @@ type(fv3jedi_trajectory), pointer       :: traj
 
 character(len=*), parameter :: myname = 'interp_ad'
 
-type(geomtype), pointer :: pbump
+type(bump_type), pointer :: pbump
 
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
@@ -1727,6 +1727,7 @@ if (.NOT.interp_initialized) then
    bump%nam%nobs = obs_num         ! Number of observations
    bump%nam%obsop_interp = 'bilin' ! Interpolation type (bilinear)
    bump%nam%obsdis = 'local'       ! Observation distribution parameter ('random','local' or 'adjusted')
+   bump%nam%diag_interp = 'bilin'
 
    !Less important namelist options (should not be changed)
    bump%nam%default_seed = .true.
