@@ -19,6 +19,7 @@ public :: fv3jedi_traj_registry
 type :: fv3jedi_trajectory
   real(kind_real), allocatable, dimension(:,:,:)   :: u,v,pt,delp,w,delz
   real(kind_real), allocatable, dimension(:,:,:,:) :: q
+  real(kind_real), allocatable, dimension(:,:) :: phis
 end type fv3jedi_trajectory
 
 #define LISTED_TYPE fv3jedi_trajectory
@@ -37,69 +38,98 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine set_traj(self,isd,ied,jsd,jed,nlevs,nq,hydrostatic,u,v,pt,delp,q,w,delz)
+subroutine set_traj( self, &
+                     isc,iec,jsc,jec, &
+                     isd,ied,jsd,jed, &
+                     npz, nq, hydrostatic, &
+                     u,v,pt,delp,q,w,delz,phis )
 
 implicit none
 
 type(fv3jedi_trajectory), intent(inout) :: self
-integer, intent(in) :: isd,ied,jsd,jed,nlevs,nq
+integer, intent(in) :: isd,ied,jsd,jed
+integer, intent(in) :: isc,iec,jsc,jec
+integer, intent(in) :: npz,nq
 logical, intent(in) :: hydrostatic
-real(kind_real), intent(in) ::    u(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) ::    v(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) ::   pt(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) :: delp(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) ::    q(isd:ied,jsd:jed,nlevs,nq)
-real(kind_real), intent(in) ::    w(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(in) :: delz(isd:ied,jsd:jed,nlevs)
+real(kind_real), intent(in) ::    u(isd:ied  ,jsd:jed+1,npz)
+real(kind_real), intent(in) ::    v(isd:ied+1,jsd:jed  ,npz)
+real(kind_real), intent(in) ::   pt(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) :: delp(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) ::    q(isd:ied  ,jsd:jed  ,npz, nq)
+real(kind_real), intent(in) ::    w(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) :: delz(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(in) :: phis(isd:ied  ,jsd:jed )
 
-allocate(self%u   (isd:ied,jsd:jed,nlevs))
-allocate(self%v   (isd:ied,jsd:jed,nlevs))
-allocate(self%pt  (isd:ied,jsd:jed,nlevs))
-allocate(self%delp(isd:ied,jsd:jed,nlevs))
-allocate(self%q   (isd:ied,jsd:jed,nlevs,nq))
-!if (.not. hydrostatic) then
-   allocate(self%w   (isd:ied,jsd:jed,nlevs))
-   allocate(self%delz(isd:ied,jsd:jed,nlevs))
-!endif
+allocate(self%u   (isc:iec, jsc:jec, npz    ))
+allocate(self%v   (isc:iec, jsc:jec, npz    ))
+allocate(self%pt  (isc:iec, jsc:jec, npz    ))
+allocate(self%delp(isc:iec, jsc:jec, npz    ))
+allocate(self%q   (isc:iec, jsc:jec, npz, nq))
+if (.not. hydrostatic) then
+   allocate(self%w   (isc:iec, jsc:jec, npz))
+   allocate(self%delz(isc:iec, jsc:jec, npz))
+endif
+allocate(self%phis(isc:iec, jsc:jec))
 
-self%u    = u
-self%v    = v
-self%pt   = pt
-self%delp = delp
-self%q    = q
-!if (.not. hydrostatic) then
-   self%w    = w
-   self%delz = delz
-!endif
+
+self%u   (isc:iec, jsc:jec, :    ) = u   (isc:iec, jsc:jec, :   )
+self%v   (isc:iec, jsc:jec, :    ) = v   (isc:iec, jsc:jec, :   )
+self%pt  (isc:iec, jsc:jec, :    ) = pt  (isc:iec, jsc:jec, :   )
+self%delp(isc:iec, jsc:jec, :    ) = delp(isc:iec, jsc:jec, :   )
+self%q   (isc:iec, jsc:jec, :, : ) = q   (isc:iec, jsc:jec, :, :)
+if (.not. hydrostatic) then
+   self%delz(isc:iec, jsc:jec, : ) = delz(isc:iec, jsc:jec, : )
+   self%w   (isc:iec, jsc:jec, : ) = w   (isc:iec, jsc:jec, : )
+endif
+self%phis(isc:iec, jsc:jec) = phis(isc:iec, jsc:jec)
 
 end subroutine set_traj
 
 ! ------------------------------------------------------------------------------
 
-subroutine get_traj(self,isd,ied,jsd,jed,nlevs,hydrostatic,nq,u,v,pt,delp,q,w,delz)
+subroutine get_traj( self, &
+                     isc,iec,jsc,jec, &
+                     isd,ied,jsd,jed, &
+                     npz, nq, hydrostatic, &
+                     u,v,pt,delp,q,w,delz,phis )
 
 implicit none
 
 type(fv3jedi_trajectory), intent(in) :: self
-integer, intent(in) :: isd,ied,jsd,jed,nlevs,nq
+integer, intent(in) :: isd,ied,jsd,jed
+integer, intent(in) :: isc,iec,jsc,jec
+integer, intent(in) :: npz,nq
 logical, intent(in) :: hydrostatic
-real(kind_real), intent(inout) ::    u(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) ::    v(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) ::   pt(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) :: delp(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) ::    q(isd:ied,jsd:jed,nlevs,nq)
-real(kind_real), intent(inout) ::    w(isd:ied,jsd:jed,nlevs)
-real(kind_real), intent(inout) :: delz(isd:ied,jsd:jed,nlevs)
+real(kind_real), intent(out) ::    u(isd:ied  ,jsd:jed+1,npz)
+real(kind_real), intent(out) ::    v(isd:ied+1,jsd:jed  ,npz)
+real(kind_real), intent(out) ::   pt(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) :: delp(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) ::    q(isd:ied  ,jsd:jed  ,npz, nq)
+real(kind_real), intent(out) ::    w(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) :: delz(isd:ied  ,jsd:jed  ,npz)
+real(kind_real), intent(out) :: phis(isd:ied  ,jsd:jed )
 
-u    = self%u
-v    = self%v
-pt   = self%pt
-delp = self%delp
-q    = self%q
-!if (.not. hydrostatic) then
-   w    = self%w
-   delz = self%delz
-!endif
+!Initialize to zero, including halo
+u = 0.0
+v = 0.0
+pt = 0.0
+delp = 0.0
+q = 0.0
+delz = 0.0
+w    = 0.0
+phis = 0.0
+
+!Get compute domain from trajectory
+u   (isc:iec, jsc:jec, :    ) = self%u   (isc:iec, jsc:jec, :   )
+v   (isc:iec, jsc:jec, :    ) = self%v   (isc:iec, jsc:jec, :   )
+pt  (isc:iec, jsc:jec, :    ) = self%pt  (isc:iec, jsc:jec, :   )
+delp(isc:iec, jsc:jec, :    ) = self%delp(isc:iec, jsc:jec, :   )
+q   (isc:iec, jsc:jec, :, : ) = self%q   (isc:iec, jsc:jec, :, :)
+if (.not. hydrostatic) then
+   delz(isc:iec, jsc:jec, : ) = self%delz(isc:iec, jsc:jec, : )
+   w   (isc:iec, jsc:jec, : ) = self%w   (isc:iec, jsc:jec, : )
+endif
+phis(isc:iec, jsc:jec) = self%phis(isc:iec, jsc:jec)
 
 end subroutine get_traj
 
@@ -109,13 +139,14 @@ subroutine delete_traj(self)
 implicit none
 type(fv3jedi_trajectory), intent(inout) :: self
 
-deallocate(self%u   )
-deallocate(self%v   )
-deallocate(self%pt  )
-deallocate(self%delp)
-deallocate(self%q   )
+if (allocated(self%u   )) deallocate(self%u   )
+if (allocated(self%v   )) deallocate(self%v   )
+if (allocated(self%pt  )) deallocate(self%pt  )
+if (allocated(self%delp)) deallocate(self%delp)
+if (allocated(self%q   )) deallocate(self%q   )
 if (allocated(self%w   )) deallocate(self%w   )
 if (allocated(self%delz)) deallocate(self%delz)
+if (allocated(self%phis)) deallocate(self%phis)
 
 end subroutine delete_traj
 
@@ -169,6 +200,11 @@ if (allocated(self%delz)) then
    pminmax(2,7)=maxval(self%delz(:,:,:))
    pminmax(3,7)=sqrt(sum(self%delz(:,:,:)**2)/zz)
 endif
+
+zz=real(size(self%phis),kind_real)
+pminmax(1,5)=minval(self%phis(:,:))
+pminmax(2,5)=maxval(self%phis(:,:))
+pminmax(3,5)=sqrt(sum(self%phis(:,:)**2)/zz)
 
 end subroutine c_minmax_traj
 

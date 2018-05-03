@@ -18,7 +18,7 @@
 namespace fv3jedi {
 
 void instantiateLocalizationFactory() {
-  //static oops::LocalizationMaker<fv3jedi::FV3JEDITraits, LocalizationMatrix> makerWSpeed_("FV3JEDI");
+//  static oops::LocalizationMaker<fv3jedi::FV3JEDITraits, LocalizationMatrix> makerRadiosonde_("FV3JEDI");
 }
 
 }  // namespace fv3jedi

@@ -1,0 +1,48 @@
+{
+  "nml_file": "Data/fv3files/fmsmpp.nml",
+  "trc_file": "Data/fv3files/field_table",
+  "test_framework_runtime_config": "--log_level=test_suite",
+  "CovarianceTest": {
+    "tolerance": "0.01"
+  },
+  "Geometry": {
+    "init_type": "inline",
+    "npx": "97",
+    "npy": "97",
+    "npz": "64",
+    "hydrostatic": "1",
+    "layout_1": "1",
+    "layout_2": "1",
+    "io_layout_1": "1",
+    "io_layout_2": "1",
+    "halo": "3",
+    "filename_spec": "grid_spec.nc",
+    "filename_core": "fv_core.res.nc",    
+    "datapath_geom": "Data/C96_RESTART_2016-01-01-06/",
+    "nml_file": "Data/fv3files/input_c96.nml",
+    "trc_file": "Data/fv3files/field_table",
+    "wind_type": "D-grid"
+  },
+  "Variables": {
+    "variables": ["u","v","pt","delp","q"]
+  },
+  "State": {
+    "filename_core": "fv_core.res.nc",
+    "filename_trcr": "fv_tracer.res.nc",
+    "filename_cplr": "coupler.res",
+    "nml_file": "Data/fv3files/input_c96.nml",
+    "trc_file": "Data/fv3files/field_table",
+    "datapath_read": "Data/C96_RESTART_2016-01-01-06/",
+    "datapath_tile": "Data/C96_RESTART_2016-01-01-06/INPUT/",
+    "datapath_write": "",
+    "date": "2016-01-01T06:00:00Z"
+  },
+  "Covariance": {
+    "covariance": "FV3JEDIstatic",
+    "standard_deviation": "0.8",
+    "vertical_correlation": "0.2",
+    "horizontal_length_scale": "1e6",
+    "maximum_condition_number": "1.0e6",
+    "date": "2016-01-01T06:00:00Z"
+  }
+}

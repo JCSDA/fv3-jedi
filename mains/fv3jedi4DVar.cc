@@ -6,13 +6,18 @@
  */
 
 #include "FV3JEDITraits.h"
+#include "instantiateLocalizationFactory.h"
 #include "oops/runs/Variational.h"
 #include "RunFV3JEDI.h"
+#include "ufo/instantiateObsOperatorFactory.h"
+#include "ufo/instantiateLinearObsOpFactory.h"
 
 int main(int argc,  char ** argv) {
-  lfirc::RunFV3JEDI run(argc, argv);
+  fv3jedi::RunFV3JEDI run(argc, argv);
+  fv3jedi::instantiateLocalizationFactory();
+  ufo::instantiateObsOperatorFactory<fv3jedi::FV3JEDITraits>();
+  ufo::instantiateLinearObsOpFactory<fv3jedi::FV3JEDITraits>();    
   oops::Variational<fv3jedi::FV3JEDITraits> var;
   run.execute(var);
   return 0;
 };
-

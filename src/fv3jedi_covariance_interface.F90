@@ -123,7 +123,7 @@ type(fv3jedi_field), pointer :: xout
 call fv3jedi_covar_registry%get(c_key_self,self)
 call fv3jedi_field_registry%get(c_key_out,xout)
 
-!call fv3jedi_covar_sqrt_mult(self%nx,self%ny,xout,xctl,self)
+call random(xout)
 
 end subroutine c_fv3jedi_b_randomize
 

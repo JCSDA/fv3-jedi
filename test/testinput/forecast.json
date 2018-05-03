@@ -1,31 +1,45 @@
 {
+  "nml_file": "Data/fv3files/fmsmpp.nml",
+  "trc_file": "Data/fv3files/field_table",
+  "test_framework_runtime_config": "--log_level=test_suite",
   "resolution": {
-    "init_type": "inline",
-    "datapath_in": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/"
+    "init_type": "notinline",
+    "npx": "97",
+    "npy": "97",
+    "npz": "64",
+    "hydrostatic": "1",
+    "layout_1": "1",
+    "layout_2": "1",
+    "io_layout_1": "1",
+    "io_layout_2": "1",
+    "halo": "3",
+    "filename_spec": "grid_spec.nc",
+    "filename_core": "fv_core.res.nc",    
+    "datapath_geom": "Data/C96_RESTART_2016-01-01-06/",
+    "nml_file": "Data/fv3files/input_c96.nml",
+    "trc_file": "Data/fv3files/field_table"
   },
+  "initial" : {
+    "filename_core": "fv_core.res.nc",
+    "filename_trcr": "fv_tracer.res.nc",
+    "filename_cplr": "coupler.res",
+    "nml_file": "Data/fv3files/input_c96.nml",
+    "trc_file": "Data/fv3files/field_table",
+    "datapath_read": "Data/C96_RESTART_2016-01-01-06/",
+    "datapath_tile": "Data/C96_RESTART_2016-01-01-06/INPUT/",
+    "datapath_write": "",
+    "date": "2009-12-31T00:00:00Z"
+  },
+  "forecast_length": "PT6H",
   "model": {
+    "nml_file": "Data/fv3files/input_c96.nml",
+    "trc_file": "Data/fv3files/field_table", 
     "tstep": "PT15M",
+    "init_tlmadm": "0",
     "update_dgridwind": "1",
     "update_pressures": "1"
   },
-  "forecast_length": "PT240H",
-  "initial": {
-    "date": "2017-08-08T00:00:00Z",
-    "analytic_init": "fv3_init_case",
-    "fv3_test_case": 13,
-    "filename_core": "INPUT/fv_core.res.nc",
-    "filename_trcr": "INPUT/fv_tracer.res.nc",
-    "filename_cplr": "INPUT/coupler.res"
-  },
-  "output": {
-    "datapath_out": "/gpfsm/dnb31/drholdaw/Jedi/Experiments/",
-    "filename_core_out": "fv_core.res.nc",
-    "filename_trcr_out": "fv_tracer.res.nc",
-    "frequency": "PT3H",
-    "date": "2017-08-08T00:00:00Z",
-    "type": "fc"
-  },
-  "prints": {
-    "frequency": "PT3H"
+  "output" : {
+    "datapath_write": "Data/"
   }
-}
+ }

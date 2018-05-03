@@ -1,0 +1,12 @@
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C96_RESTART_2016-01-01-06/*.nc filter=lfs diff=lfs merge=lfs -text
+test/Data/C96_RESTART_2016-01-01-06/INPUT/*.nc filter=lfs diff=lfs merge=lfs -text

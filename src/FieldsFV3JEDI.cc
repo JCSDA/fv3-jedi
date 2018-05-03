@@ -21,6 +21,7 @@
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
 #include "util/DateTime.h"
+#include "UtilitiesFV3JEDI.h"
 
 // -----------------------------------------------------------------------------
 namespace fv3jedi {
@@ -129,7 +130,7 @@ void FieldsFV3JEDI::random() {
 void FieldsFV3JEDI::interpolate(const ufo::Locations & locs, const oops::Variables & vars,
                               ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+  fv3jedi_field_interp_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::interpolateTL(const ufo::Locations & locs, const oops::Variables & vars,
@@ -174,7 +175,9 @@ void FieldsFV3JEDI::analytic_init(const eckit::Configuration & config,
 				  const GeometryFV3JEDI & geom) {
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
+  stageFv3Files(config);
   fv3jedi_field_analytic_init_f90(keyFlds_, geom.toFortran(), &conf, &dtp);
+  removeFv3Files();
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::write(const eckit::Configuration & config) const {
@@ -190,18 +193,16 @@ double FieldsFV3JEDI::norm() const {
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::print(std::ostream & os) const {
-  int nx = -1;
-  int ny = -1;
-  int nf = -1;
-  int nb = -1;
-  fv3jedi_field_sizes_f90(keyFlds_, nx, ny, nf, nb);
+  int nx = 0;
+  int ny = 0;
+  int nf = 5;
+  fv3jedi_field_sizes_f90(keyFlds_, nx, ny, nf);
   os << std::endl << "  Resolution = " << nx << ", " << ny
-     << ", Fields = " << nf << ", " << nb;
-  nf += nb;
+     << ", Fields = " << nf;
   std::vector<double> zstat(3*nf);
   fv3jedi_field_gpnorm_f90(keyFlds_, nf, zstat[0]);
   for (int jj = 0; jj < nf; ++jj) {
-    os << std::endl << "  Min=" << zstat[3*jj]
+    os << std::endl <<"Fld=" << jj+1 <<"  Min=" << zstat[3*jj]
        << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2];
   }
 }

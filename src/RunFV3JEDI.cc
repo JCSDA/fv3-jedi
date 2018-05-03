@@ -5,6 +5,8 @@
 #include "util/Logger.h"
 #include "oops/runs/Run.h"
 #include "eckit/config/Configuration.h"
+#include <fstream>
+#include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {
 
@@ -13,7 +15,11 @@ namespace fv3jedi {
 RunFV3JEDI::RunFV3JEDI(int argc, char ** argv) : oops::Run(argc, argv) {
   oops::Log::trace() << "Creating RunFV3JEDI" << std::endl;
   const eckit::Configuration * conf = &config();
+
+  stageFv3Files(config());
   fv3jedi_setup_f(&conf);
+  removeFv3Files();
+
   oops::Log::trace() << "RunFV3JEDI created" << std::endl;
 }
 

@@ -46,16 +46,18 @@ void ErrorCovarianceFV3JEDI::linearize(const StateFV3JEDI &, const GeometryFV3JE
 // -----------------------------------------------------------------------------
 
 void ErrorCovarianceFV3JEDI::multiply(const IncrementFV3JEDI & dxin, IncrementFV3JEDI & dxout) const {
-  fv3jedi_b_mult_f90(keyFtnConfig_, dxin.fields().toFortran(),
-                            dxout.fields().toFortran());
+    dxout = dxin;
+//  fv3jedi_b_mult_f90(keyFtnConfig_, dxin.fields().toFortran(),
+//                            dxout.fields().toFortran());
 }
 
 // -----------------------------------------------------------------------------
 
 void ErrorCovarianceFV3JEDI::inverseMultiply(const IncrementFV3JEDI & dxin,
                                            IncrementFV3JEDI & dxout) const {
-  fv3jedi_b_invmult_f90(keyFtnConfig_, dxin.fields().toFortran(),
-                               dxout.fields().toFortran());
+    dxout = dxin;
+//  fv3jedi_b_invmult_f90(keyFtnConfig_, dxin.fields().toFortran(),
+//                               dxout.fields().toFortran());
 }
 
 // -----------------------------------------------------------------------------

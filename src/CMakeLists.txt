@@ -24,6 +24,10 @@ TlmFV3JEDI.cc
 TlmFV3JEDI.h
 TlmIdFV3JEDI.cc
 TlmIdFV3JEDI.h
+UtilitiesFV3JEDI.cc
+UtilitiesFV3JEDI.h
+VariablesFV3JEDI.cc
+VariablesFV3JEDI.h
 fv3jedi_constants.f90
 fv3jedi_covariance_interface.F90
 fv3jedi_covariance_mod.F90
@@ -39,7 +43,6 @@ instantiateLocalizationFactory.h
 module_fv3jedi.f90
 random_vectors_mod.F90
 variable_transforms.F90
-winds_interp.F90
 )
 
 set ( FMS_LIBRARIES $ENV{FMS_LIBRARIES} )

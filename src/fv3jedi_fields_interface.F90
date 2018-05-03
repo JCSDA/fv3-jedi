@@ -437,6 +437,36 @@ end subroutine fv3jedi_field_rms_c
 
 ! ------------------------------------------------------------------------------
 
+subroutine fv3jedi_field_interp_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_interp_f90')
+use iso_c_binding
+use fv3jedi_fields_mod
+use ufo_locs_mod
+use ufo_locs_mod_c, only: ufo_locs_registry
+use ufo_vars_mod
+use ufo_geovals_mod
+use ufo_geovals_mod_c, only: ufo_geovals_registry
+implicit none
+integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated
+integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
+type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
+integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
+type(fv3jedi_field), pointer :: fld
+type(ufo_locs),  pointer :: locs
+type(ufo_geovals),  pointer :: gom
+type(ufo_vars) :: vars
+
+call ufo_vars_setup(vars, c_vars)
+
+call fv3jedi_field_registry%get(c_key_fld, fld)
+call ufo_locs_registry%get(c_key_loc, locs)
+call ufo_geovals_registry%get(c_key_gom, gom)
+
+call interp(fld, locs, vars, gom)
+
+end subroutine fv3jedi_field_interp_c
+
+! ------------------------------------------------------------------------------
+
 subroutine fv3jedi_field_interp_tl_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_interp_tl_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
@@ -455,7 +485,6 @@ type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 
-write(*,*)'fv3jedi_field_interp_tl_c keys fld, locs, gom = ',c_key_fld,c_key_loc,c_key_gom
 call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_field_registry%get(c_key_fld, fld)
@@ -486,6 +515,8 @@ type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 
+call ufo_vars_setup(vars, c_vars)
+
 call fv3jedi_field_registry%get(c_key_fld, fld)
 call ufo_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
@@ -496,27 +527,21 @@ end subroutine fv3jedi_field_interp_ad_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nf,nb) bind(c,name='fv3jedi_field_sizes_f90')
+subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_field_sizes_f90')
+
 use iso_c_binding
 use fv3jedi_fields_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(inout) :: nx,ny,nf,nb
-                                                                           
+integer(c_int), intent(inout) :: nx,ny,nf
 type(fv3jedi_field), pointer :: self
 
 call fv3jedi_field_registry%get(c_key_self,self)
 
-!dh also not sure about this but the following prevents a crash
-nx = 1
-ny = 1
-nf = 1
-nb = 1
-
-!
-! I have NO IDEA what this is supposed to do
-! but it is defined within Fortran.h and expected to exist
-!
+nf = self%nf
+nx = self%geom%npx
+ny = self%geom%npy
 
 end subroutine fv3jedi_field_sizes_c
 

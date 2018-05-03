@@ -64,7 +64,7 @@ include_directories( ${UFO_INCLUDE_DIRS} )
 ################################################################################
 
 #Uncomment to compile with TLM/ADM
-#set(COMPDEFS "${COMPDEFS};-DTLADPRES")
+set(COMPDEFS "${COMPDEFS};-DTLADPRES")
 add_definitions( ${COMPDEFS} )
 
 ################################################################################
