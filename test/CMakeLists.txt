@@ -373,6 +373,7 @@ testinput/analytic_init.json
 testinput/model.json
 testinput/linearmodel.json
 testinput/3dvar.json
+testinput/3dvar_c48.json
 testinput/4dvar.dripcg.json
 testinput/4dvar.drplanczos.json
 testinput/forecast.json

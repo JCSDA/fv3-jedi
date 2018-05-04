@@ -955,6 +955,16 @@ subroutine write_file(fld, c_conf, vdate)
                                             domain=fld%geom%domain )
   endif
 
+  !Cell center lat/lon
+  id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lat', fld%geom%grid_lat, &
+                                       domain=fld%geom%domain )
+  id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', fld%geom%grid_lon, &
+                                       domain=fld%geom%domain )
+
+  id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', fld%Atm%ua, &
+                                        domain=fld%geom%domain )
+  id_restart =  register_restart_field( Fv_restart, filename_core, 'va', fld%Atm%va, &
+                                        domain=fld%geom%domain )
 
   ! Write variables to file
   ! -----------------------
