@@ -16,24 +16,25 @@
     "io_layout_1": "1",
     "io_layout_2": "1",
     "halo": "3",
-    "filename_spec": "grid_spec.nc",
-    "filename_core": "fv_core.res.nc",    
-    "datapath_geom": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-    "nml_file": "Data/fv3files/input_c96.nml",
-    "trc_file": "Data/fv3files/field_table"
+    "filename_spec": "20170801.000000.grid_spec.nc",
+    "filename_core": "20170801.000000.fv_core.res.nc",    
+    "datapath_geom": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+    "nml_file": "Data/fv3files/input_c48.nml",
+    "trc_file": "Data/fv3files/field_table",
+    "wind_type": "D-grid"
   },
   "variables": {
     "variables": ["u","v","pt","q",delp"]
   },
   "initial": {
-    "filename_core": "fv_core.res.nc",
-    "filename_trcr": "fv_tracer.res.nc",
-    "filename_cplr": "coupler.res",
-    "nml_file": "Data/fv3files/input_c96.nml",
+    "filename_core": "20170801.000000.fv_core.res.nc",
+    "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+    "filename_cplr": "20170801.000000.coupler.res",
+    "nml_file": "Data/fv3files/input_c48.nml",
     "trc_file": "Data/fv3files/field_table",
-    "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-    "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-    "date": "2017-08-08T00:00:00Z"
+    "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+    "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+    "date": "2017-08-01T00:00:00Z"
   },
   "Covariance": {
     "covariance": "ensemble",
@@ -41,7 +42,7 @@
     "variables": {
       "variables": ["u","v","pt","q",delp"]
     },
-    "date": "2017-08-08T00:00:00Z",
+    "date": "2017-08-01T00:00:00Z",
     "localization": {
       "localization": "HDIAG_NICAS",
       "variables": {
@@ -49,104 +50,104 @@
       },
       "hdiag_ensemble": [
       {
-        "filename_core": "../ENSEMBLE/mem001/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem001/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem002/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem002/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem003/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem003/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem004/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem004/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem005/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem005/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem006/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem006/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem007/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem007/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem008/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem008/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem009/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem009/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem010/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem010/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       }
       ],
       "prefix": "fv3jedi",
@@ -210,104 +211,104 @@
     },
     "state": [
       {
-        "filename_core": "../ENSEMBLE/mem001/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem001/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem002/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem002/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem003/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem003/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem004/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem004/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem005/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem005/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-       "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/",
+       "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem006/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem006/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem007/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem007/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem008/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem008/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem009/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem009/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       },
       {
-        "filename_core": "../ENSEMBLE/mem010/RESTART/20170801.000000.fv_core.res.nc",
-        "filename_trcr": "../ENSEMBLE/mem010/RESTART/20170801.000000.fv_tracer.res.nc",
-        "filename_cplr": "coupler.res",
-        "nml_file": "Data/fv3files/input_c96.nml",
+        "filename_core": "20170801.000000.fv_core.res.nc",
+        "filename_trcr": "20170801.000000.fv_tracer.res.nc",
+        "filename_cplr": "20170801.000000.coupler.res",
+        "nml_file": "Data/fv3files/input_c48.nml",
         "trc_file": "Data/fv3files/field_table",
-        "datapath_read": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "datapath_tile": "Data/Data/C48_RESTART_2017-08-01-00/ENSEMBLE/INPUT/",
-        "date": "2017-08-08T00:00:00Z"
+        "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/",
+        "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/",
+        "date": "2017-08-01T00:00:00Z"
       }
     ]
   },
@@ -326,7 +327,7 @@
     "datapath_out": "Data/",
     "filename_core": "fv_core_nicas.res.nc",
     "filename_trcr": "fv_tracer_nicas.res.nc",
-    "date": "2017-08-08T00:00:00Z"
+    "date": "2017-08-01T00:00:00Z"
   },
   "output_Bens": {
     "datadir": "Data",
@@ -335,6 +336,6 @@
     "datapath_out": "Data/",
     "filename_core": "fv_core_Bens.res.nc",
     "filename_trcr": "fv_tracer_Bens.res.nc",
-    "date": "2017-08-08T00:00:00Z"
+    "date": "2017-08-01T00:00:00Z"
   }
 }
