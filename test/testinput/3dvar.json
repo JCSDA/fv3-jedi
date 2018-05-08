@@ -82,6 +82,9 @@
   "output": {
     "first": "PT0H",
     "frequency": "PT01H",
+    "filename_core": "3D-Var.fv_core.res.nc",
+    "filename_trcr": "3D-Var.fv_tracer.res.nc",
+    "filename_cplr": "3D-Var.coupler.res",
     "datapath_write": "Data/"
   },
   "variational": {

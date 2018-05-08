@@ -899,6 +899,8 @@ subroutine write_file(fld, c_conf, vdate)
 
   character(len=64) :: filename_core
   character(len=64) :: filename_trcr
+  character(len=64) :: filename_cplr
+  character(len=64) :: datefile
 
   character(len=20) :: sdate,validitydate
 
@@ -913,12 +915,40 @@ subroutine write_file(fld, c_conf, vdate)
   endif
 
 
+  ! Current date
+  ! ------------
+  call datetime_to_ifs(vdate, idate, isecs)
+  date(1) = idate/10000
+  date(2) = idate/100 - date(1)*100
+  date(3) = idate - (date(1)*10000 + date(2)*100)
+  date(4) = isecs/3600
+  date(5) = (isecs - date(4)*3600)/60
+  date(6) = isecs - (date(4)*3600 + date(5)*60)
+ 
+
   ! Naming convection for the file
   ! ------------------------------
   filename_core = 'fv_core.res.nc'
   if (config_element_exists(c_conf,"filename_core")) then
     filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
   endif
+
+  filename_trcr = 'fv_tracer.res.nc'
+  if (config_element_exists(c_conf,"filename_trcr")) then
+    filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
+  endif
+
+  filename_cplr = 'coupler.res'
+  if (config_element_exists(c_conf,"filename_cplr")) then
+    filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
+  endif
+
+  !Append with the date
+  write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2,A1)') date(1),date(2),date(3),".",date(4),date(5),date(6),"."
+  filename_core = trim(datefile)//trim(filename_core)
+  filename_trcr = trim(datefile)//trim(filename_trcr)
+  filename_cplr = trim(datefile)//trim(filename_cplr)
+
 
   ! Register the variables that should be written
   ! ---------------------------------------------
@@ -974,11 +1004,6 @@ subroutine write_file(fld, c_conf, vdate)
 
   !Write tracers to file
   !---------------------
-  filename_trcr = 'fv_tracer.res.nc'
-  if (config_element_exists(c_conf,"filename_trcr")) then
-    filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
-  endif
-
   id_restart = register_restart_field( Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
                                        domain=fld%geom%domain )
 
@@ -988,18 +1013,12 @@ subroutine write_file(fld, c_conf, vdate)
 
   !Write date/time info in coupler.res
   !-----------------------------------
-  call datetime_to_ifs(vdate, idate, isecs)
-  date(1) = idate/10000
-  date(2) = idate/100 - date(1)*100
-  date(3) = idate - (date(1)*10000 + date(2)*100)
-  date(4) = isecs/3600
-  date(5) = (isecs - date(4)*3600)/60
-  date(6) = isecs - (date(4)*3600 + date(5)*60)
   iounit = 101
   if (fld%root_pe == 1) then
-     print *,'write_file: date = ',fld%Atm%date_init
-     print *,'write_file: date = ',date,fld%Atm%date
-     open(iounit, file=trim(adjustl(datapath_out))//'RESTART/coupler.res', form='formatted')
+     print *,'write_file: date model init = ',fld%Atm%date_init
+     print *,'write_file: date model now  = ',fld%Atm%date
+     print *,'write_file: date vdate      = ',date
+     open(iounit, file=trim(adjustl(datapath_out))//'RESTART/'//trim(adjustl(filename_cplr)), form='formatted')
      write( iounit, '(i6,8x,a)' ) fld%Atm%calendar_type, &
           '(Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)'
      write( iounit, '(6i6,8x,a)' )date, &
