@@ -13,7 +13,7 @@ use datetime_mod
 use fv3jedi_geom_mod
 use ufo_vars_mod
 use fv3jedi_kinds
-use ufo_locs_mod
+use ioda_locs_mod
 use ufo_geovals_mod
 
 use mpp_domains_mod,   only: EAST, NORTH
@@ -1281,7 +1281,7 @@ use variable_transforms
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
-type(ufo_locs),     intent(in)     :: locs 
+type(ioda_locs),     intent(in)     :: locs 
 type(ufo_vars),  intent(in)        :: vars
 type(ufo_geovals),  intent(inout)  :: gom
 
@@ -1393,7 +1393,7 @@ use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
-type(ufo_locs),           intent(in)    :: locs 
+type(ioda_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_trajectory), pointer       :: traj
@@ -1484,7 +1484,7 @@ use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
-type(ufo_locs),           intent(in)    :: locs 
+type(ioda_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_trajectory), pointer       :: traj
@@ -1574,7 +1574,7 @@ use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
 type(fv3jedi_field),                intent(inout) :: fld 
-type(ufo_locs),                     intent(in   ) :: locs 
+type(ioda_locs),                     intent(in   ) :: locs 
 type(ufo_vars),                     intent(in   ) :: vars
 type(ufo_geovals),                  intent(inout) :: gom
 type(fv3jedi_trajectory), optional, pointer, intent(inout) :: trajp
@@ -1701,7 +1701,7 @@ use type_randgen, only: create_randgen
 implicit none
 type(fv3jedi_field), intent(in) :: fld
 type(fv3jedi_geom), intent(in) :: grid
-type(ufo_locs), intent(in)    :: locs
+type(ioda_locs), intent(in)    :: locs
 type(geomtype), pointer, intent(out) :: pgeom
 type(odatatype), pointer, intent(out) :: pdata
 
@@ -1810,7 +1810,7 @@ subroutine interp_checks(cop, fld, locs, vars, gom)
 implicit none
 character(len=*), intent(in) :: cop
 type(fv3jedi_field), intent(in) :: fld
-type(ufo_locs), intent(in)    :: locs
+type(ioda_locs), intent(in)    :: locs
 type(ufo_vars), intent(in)    :: vars
 type(ufo_geovals), intent(in) :: gom
 

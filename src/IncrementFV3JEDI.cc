@@ -15,7 +15,7 @@
 #include "oops/generic/UnstructuredGrid.h"
 #include "util/Logger.h"
 #include "ufo/GeoVaLs.h"
-#include "ufo/Locations.h"
+#include "ioda/Locations.h"
 #include "ErrorCovarianceFV3JEDI.h"
 #include "FieldsFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
@@ -123,13 +123,13 @@ void IncrementFV3JEDI::random() {
 // -----------------------------------------------------------------------------
 /// Interpolate to observation location
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateTL(const ufo::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
+void IncrementFV3JEDI::interpolateTL(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" << *fields_ << std::endl;
   fields_->interpolateTL(locs, vars, cols);
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL gom " << cols << std::endl;
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateAD(const ufo::Locations & locs, const oops::Variables & vars, const ufo::GeoVaLs & cols) {
+void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs, const oops::Variables & vars, const ufo::GeoVaLs & cols) {
   oops::Log::debug() << "IncrementFV3JEDI::interpolateAD gom " << cols << std::endl;
   oops::Log::debug() << "IncrementFV3JEDI::interpolateAD fields in" << *fields_ << std::endl;
   fields_->interpolateAD(locs, vars, cols);

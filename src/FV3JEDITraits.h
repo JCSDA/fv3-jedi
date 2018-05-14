@@ -20,9 +20,9 @@
 #include "ModelBiasCovarianceFV3JEDI.h"
 #include "StateFV3JEDI.h"
 #include "ufo/GeoVaLs.h"
-#include "ufo/Locations.h"
-#include "ufo/ObsSpace.h"
-#include "ufo/ObsVector.h"
+#include "ioda/Locations.h"
+#include "ioda/ObsSpace.h"
+#include "ioda/ObsVector.h"
 #include "ufo/ObsBias.h"
 #include "ufo/ObsBiasIncrement.h"
 #include "ufo/ObsCheck.h"
@@ -47,8 +47,8 @@ struct FV3JEDITraits {
 
   typedef fv3jedi::LocalizationMatrixFV3JEDI   LocalizationMatrix;
 
-  typedef ufo::ObsSpace                    ObsSpace;
-  typedef ufo::ObsVector                   ObsVector;
+  typedef ioda::ObsSpace                    ObsSpace;
+  typedef ioda::ObsVector                   ObsVector;
 
   typedef ufo::ObsBias                     ObsAuxControl;
   typedef ufo::ObsBiasIncrement            ObsAuxIncrement;
@@ -56,7 +56,7 @@ struct FV3JEDITraits {
   typedef ufo::ObsCheck                    ObsCheck;  
 
   typedef ufo::GeoVaLs                     GeoVaLs;
-  typedef ufo::Locations                   Locations;
+  typedef ioda::Locations                   Locations;
 };
 
 }  // namespace fv3jedi
