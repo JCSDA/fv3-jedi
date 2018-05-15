@@ -20,6 +20,8 @@ type fv_atmos_type
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: w      ! cell center vertical wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: delz   ! layer thickness (meters)
   real(kind=kind_real), allocatable, dimension(:,:)     :: phis   ! Surface geopotential (g*Z_surf)
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: ua     ! A grid zonal wind (m/s)
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: va     ! A grid meridional wind (m/s)
   integer :: calendar_type
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
@@ -86,6 +88,9 @@ subroutine allocate_fv_atmos_type(Atm, isd, ied, jsd, jed, &
      if (.not.allocated(   Atm%w)) allocate (    Atm%w(isd:ied,   jsd:jed   , nz     ) )
      if (.not.allocated(Atm%delz)) allocate ( Atm%delz(isd:ied,   jsd:jed   , nz     ) )
   endif
+
+  if (.not.allocated(   Atm%ua)) allocate (    Atm%ua(isd:ied, jsd:jed, nz     ) )
+  if (.not.allocated(   Atm%va)) allocate (    Atm%va(isd:ied, jsd:jed, nz     ) )
 
 end subroutine allocate_fv_atmos_type
 

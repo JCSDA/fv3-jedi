@@ -24,6 +24,9 @@ namespace eckit {
 
 namespace ufo {
   class GeoVaLs;
+}
+
+namespace ioda {
   class Locations;
 }
 
@@ -57,7 +60,7 @@ class StateFV3JEDI : public util::Printable,
   StateFV3JEDI & operator=(const StateFV3JEDI &);
 
 /// Interpolate to observation location
-  void interpolate(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void interpolate(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
 
 /// Interpolate full fields
   void changeResolution(const StateFV3JEDI & xx);

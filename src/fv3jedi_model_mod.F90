@@ -1023,6 +1023,8 @@ if (.not. flds%Atm%hydrostatic) then
    flds%Atm%delz = 0.0
    flds%Atm%w    = 0.0
 endif
+flds%Atm%ua    = 0.0
+flds%Atm%va    = 0.0
 
 !Only copy compute grid incase of halo differences
 flds%Atm%u   (isc:iec  ,jsc:jec+1,:  ) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
@@ -1034,6 +1036,9 @@ if (.not. flds%Atm%hydrostatic) then
   flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  )
   flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  )
 endif
+flds%Atm%ua(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%ua(isc:iec  ,jsc:jec  ,:  )
+flds%Atm%va(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%va(isc:iec  ,jsc:jec  ,:  )
+
 
 end subroutine model_to_fields
 
