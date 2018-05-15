@@ -39,10 +39,38 @@ public :: fv3jedi_field_registry
 
 ! ------------------------------------------------------------------------------
 
+!> Fortran derived type to hold CRTM required inputs not part of the increment
+type fv3_jedi_crtm_fields
+  real(kind_real), dimension(:,:,:) :: mass_concentration_of_carbon_dioxide_in_air
+  real(kind_real), dimension(:,:,:) :: atmosphere_mass_content_of_cloud_liquid_water
+  real(kind_real), dimension(:,:,:) :: atmosphere_mass_content_of_cloud_ice
+  real(kind_real), dimension(:,:,:) :: effective_radius_of_cloud_liquid_water_particle
+  real(kind_real), dimension(:,:,:) :: effective_radius_of_cloud_ice_particle
+  real(kind_real), dimension(:,:)   :: Water_Fraction
+  real(kind_real), dimension(:,:)   :: Land_Fraction
+  real(kind_real), dimension(:,:)   :: Ice_Fraction
+  real(kind_real), dimension(:,:)   :: Snow_Fraction
+  real(kind_real), dimension(:,:)   :: Water_Temperature
+  real(kind_real), dimension(:,:)   :: Land_Temperature
+  real(kind_real), dimension(:,:)   :: Ice_Temperature
+  real(kind_real), dimension(:,:)   :: Snow_Temperature
+  real(kind_real), dimension(:,:)   :: Vegetation_Fraction
+  real(kind_real), dimension(:,:)   :: Sfc_Wind_Speed
+  real(kind_real), dimension(:,:)   :: Sfc_Wind_Direction
+  real(kind_real), dimension(:,:)   :: Lai
+  real(kind_real), dimension(:,:)   :: Soil_Moisture
+  real(kind_real), dimension(:,:)   :: Soil_Temperature
+  real(kind_real), dimension(:,:)   :: Land_Type_Index
+  real(kind_real), dimension(:,:)   :: Vegetation_Type
+  real(kind_real), dimension(:,:)   :: Soil_Type
+  real(kind_real), dimension(:,:)   :: Snow_Depth
+end type
+
 !> Fortran derived type to hold FV3JEDI fields
 type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
   type(fv3jedi_geom), pointer :: geom
+  type(fv3_jedi_crtm_fields) :: crtm
   integer :: nf
   integer :: isc, iec, jsc, jec
   integer :: root_pe
@@ -536,6 +564,11 @@ subroutine read_file(fld, c_conf, vdate)
      id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
                    domain=fld%geom%domain)
   endif
+
+  !Surface fields for CRTM
+  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
+               domain=fld%geom%domain)
+
 
 
   ! Read file and fill variables
