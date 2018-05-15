@@ -381,7 +381,7 @@ testinput/hofx.json
 testinput/dirac.nicas.json
 testinput/analytic_init.json
 testinput/increment.json
-testinput/3denvar.nicas.json
+testinput/3denvar.bump.json
 testinput/errorcov.json
 testinput/localization.json
 compare.sh
