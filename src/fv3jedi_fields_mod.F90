@@ -1678,14 +1678,6 @@ integer :: jvar
 ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
 nobs = locs%nlocs 
 
-!Run some basic checks on the interpolation
-!------------------------------------------
-!call interp_checks(myname, fld, locs, vars, gom)
-
-! Calculate interpolation weight using BUMP
-! -----------------------------------------
-call initialize_bump(fld, fld%geom, locs, pbump)
-
 ! Make sure the return values are allocated and set
 ! -------------------------------------------------
 if (trim(myname)/="interp_ad") then
@@ -1701,6 +1693,14 @@ if (trim(myname)/="interp_ad") then
    gom%linit = .true.
    gom%lalloc = .true.
 endif
+
+!Run some basic checks on the interpolation
+!------------------------------------------
+call interp_checks(myname, fld, locs, vars, gom)
+
+! Calculate interpolation weight using BUMP
+! -----------------------------------------
+call initialize_bump(fld, fld%geom, locs, pbump)
 
 end subroutine initialize_interp
 
