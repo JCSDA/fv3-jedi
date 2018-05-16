@@ -1744,12 +1744,12 @@ if (.NOT.interp_initialized) then
    write(*,*)'initialize_bump mod_num,obs_num = ',mod_num,obs_num
 
    allocate( mod_lat(mod_num), mod_lon(mod_num) )
-   mod_lat = deg2rad * reshape( grid%grid_lat(grid%bd%isc:grid%bd%iec,      &
-                                              grid%bd%jsc:grid%bd%jec),     &
-                                             [mod_num] )  
-   mod_lon = deg2rad * reshape( grid%grid_lon(grid%bd%isc:grid%bd%iec,      &
-                                              grid%bd%jsc:grid%bd%jec),     &
-                                             [mod_num] )
+   mod_lat = reshape( grid%grid_lat(grid%bd%isc:grid%bd%iec,      &
+                                    grid%bd%jsc:grid%bd%jec),     &
+                                   [mod_num] )  
+   mod_lon = reshape( grid%grid_lon(grid%bd%isc:grid%bd%iec,      &
+                                    grid%bd%jsc:grid%bd%jec),     &
+                                   [mod_num] )
 
    !Important namelist options
    bump%nam%prefix = 'oops_data'   ! Prefix for files output
@@ -1781,8 +1781,8 @@ if (.NOT.interp_initialized) then
    lmask = .true.       ! Mask
 
    !Initialize BUMP
-   call bump%setup_online(mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
- & nobs=obs_num,lonobs=locs%lon(:) * deg2rad,latobs=locs%lat(:) * deg2rad)
+   call bump%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+                           nobs=obs_num,lonobs=locs%lon(:),latobs=locs%lat(:) )
 
    !Release memory
    deallocate(area)
