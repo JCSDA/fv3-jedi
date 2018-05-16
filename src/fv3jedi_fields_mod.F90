@@ -1355,7 +1355,8 @@ type(odatatype), pointer :: odata
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
-real(kind=kind_real), allocatable :: geoval(:,:,:)
+real(kind=kind_real), allocatable :: geovale(:,:,:), geovalm(:,:,:), geoval2(:,:,:)
+real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
 
 ! Initialize the interpolation
@@ -1372,7 +1373,9 @@ allocate(obs_field(nobs,1))
 ! ----------------------------------------------------------------
 
 !Temporary variable in case of variable transform
-allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz+1))
+allocate(geovale(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz+1))
+allocate(geovalc(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
+allocate(geoval2(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,1))
 
 !write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
@@ -1383,45 +1386,46 @@ do jvar = 1, vars%nv
   ! --------------------------------------
   select case (trim(vars%fldnames(jvar)))
 
-  geoval = 0.0_kind_real
+  geovalm = 0.0_kind_real
+  geovale = 0.0_kind_real
+  geoval2 = 0.0_kind_real
 
-  case ("wind_u")
-
-  case ("wind_v")
-                
   case ("temperature")
 
     nvl = fld%geom%npz
-    geoval(:,:,1:nvl) = fld%Atm%pt
+    geovalm = fld%Atm%pt
+    geoval => geovalm
 
   case ("virtual_temperature")
 
-    !Convert temperature to virtual temperature
     nvl = fld%geom%npz
-    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geoval(:,:,1:nvl))
+    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geovalm)
+    geoval => geovalm
 
   case ("air_pressure")
 
     nvl = fld%geom%npz
-    call delp_to_P(fld%geom,fld%Atm%delp,geoval(:,:,1:nvl))
+    call delp_to_p(fld%geom,fld%Atm%delp,geovalm)
+    geoval => geovalm
 
   case ("air_pressure_levels")
 
     nvl = fld%geom%npz + 1
-    call delp_to_PL(fld%geom,fld%Atm%delp,geoval)
-
-  case ("humidity_mixing_ratio")
+    call delp_to_pe(fld%geom,fld%Atm%delp,geovale)
+    geoval => geovale
 
   case ("atmosphere_ln_pressure_coordinate")
 
-    !Convert pressure thickness to log pressure level mid point
     nvl = fld%geom%npz
-    call delp_to_logP(fld%geom,fld%Atm%delp,geoval(:,:,1:nvl))
-    geoval = log(0.001) + geoval !Convert to kPa
+    call delp_to_logP(fld%geom,fld%Atm%delp,geovalm)
+    geovalm = log(0.001) + geovalm !Convert to kPa
+    geoval => geovalm
 
-  case ("air_pressure")
+  case ("humidity_mixing_ratio")
 
-  case ("air_pressure_levels")
+    nvl = fld%geom%npz
+
+    geoval => geovalm    
 
   case default
 
@@ -1449,10 +1453,11 @@ do jvar = 1, vars%nv
     !Grid box values so find grid box for that ob
   endif
 
+  nullify(geoval)
 
 enddo
 
-deallocate(geoval)
+deallocate(geovalm,geovale,geoval)
 deallocate(mod_field)
 deallocate(obs_field)
 
