@@ -15,7 +15,7 @@
 #include "oops/generic/UnstructuredGrid.h"
 #include "util/Logger.h"
 #include "ufo/GeoVaLs.h"
-#include "ufo/Locations.h"
+#include "ioda/Locations.h"
 #include "ModelBiasFV3JEDI.h"
 #include "FieldsFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
@@ -87,7 +87,7 @@ StateFV3JEDI & StateFV3JEDI::operator=(const StateFV3JEDI & rhs) {
 // -----------------------------------------------------------------------------
 /// Interpolate to observation location
 // -----------------------------------------------------------------------------
-void StateFV3JEDI::interpolate(const ufo::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
+void StateFV3JEDI::interpolate(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
   fields_->interpolate(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------

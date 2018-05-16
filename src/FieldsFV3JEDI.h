@@ -29,8 +29,11 @@ namespace oops {
   class UnstructuredGrid;
 }
 
-namespace ufo {
+namespace ioda {
   class Locations;
+}
+
+namespace ufo {
   class GeoVaLs;
 }
 
@@ -63,9 +66,9 @@ class FieldsFV3JEDI : public util::Printable,
   void dirac(const eckit::Configuration &);
 
 // Interpolate to given location
-  void interpolate(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void interpolateTL(const ufo::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void interpolateAD(const ufo::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
+  void interpolate(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void interpolateTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void interpolateAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
 
 // Interpolate full fields
   void changeResolution(const FieldsFV3JEDI &);
