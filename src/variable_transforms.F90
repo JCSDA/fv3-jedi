@@ -247,7 +247,7 @@ end subroutine T_to_Tv_ad
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine delp_to_logP(geom,delp,logp)
+subroutine delp_to_logp(geom,delp,logp)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
@@ -271,11 +271,11 @@ subroutine delp_to_logP(geom,delp,logp)
   !Log pressure
   logp = log(p)
 
-end subroutine delp_to_logP
+end subroutine delp_to_logp
 
 !----------------------------------------------------------------------------
 
-subroutine delp_to_logP_tl(geom,delp,delp_tl)
+subroutine delp_to_logp_tl(geom,delp,delp_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
@@ -308,11 +308,11 @@ subroutine delp_to_logP_tl(geom,delp,delp_tl)
   !Overwrite variable
   delp_tl = logp_tl
 
-end subroutine delp_to_logP_tl
+end subroutine delp_to_logp_tl
 
 !----------------------------------------------------------------------------
 
-subroutine delp_to_logP_ad(geom,delp,delp_ad)
+subroutine delp_to_logp_ad(geom,delp,delp_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
@@ -343,7 +343,7 @@ subroutine delp_to_logP_ad(geom,delp,delp_ad)
   p_ad = logp_ad/p
 
   !Adjoint of average
-  pe_ad = 0.0
+!  pe_ad = 0.0
   pe_ad(:,:,2:geom%npz+1) = pe_ad(:,:,2:geom%npz+1) + 0.5*p_ad
   pe_ad(:,:,1:geom%npz  ) = pe_ad(:,:,1:geom%npz  ) + 0.5*p_ad
 
@@ -355,7 +355,144 @@ subroutine delp_to_logP_ad(geom,delp,delp_ad)
     pe_ad(:,:,k) = 0.0
   END DO
 
-end subroutine delp_to_logP_ad
+end subroutine delp_to_logp_ad
+
+!----------------------------------------------------------------------------
+!----------------------------------------------------------------------------
+
+subroutine delp_to_p(geom,delp,p)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Pressure thickness
+ real(kind=kind_real), intent(out) ::    p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Log of pressure
+
+ !locals
+ real(kind=kind_real) ::   pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+ integer :: k 
+
+  !Pressure at layer edge
+  pe(:,:,1) = geom%ptop
+  do k = 2,geom%npz+1
+    pe(:,:,k) = pe(:,:,k-1) + delp(:,:,k-1)
+  enddo
+
+  !Midpoint pressure
+  p = 0.5*(pe(:,:,2:geom%npz+1) + pe(:,:,1:geom%npz))  
+
+end subroutine delp_to_p
+
+!----------------------------------------------------------------------------
+
+subroutine delp_to_p_tl(geom,delp_tl,p_tl)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature
+ real(kind=kind_real), intent(out) ::    p_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Pressue
+
+ real(kind=kind_real) :: pe_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+
+ integer :: k 
+
+  !Pressure at layer edge
+  pe_tl(:,:,1) = 0.0
+  do k = 2,geom%npz+1
+    pe_tl(:,:,k) = pe_tl(:,:,k-1) + delp_tl(:,:,k-1)
+  enddo
+
+  !Midpoint pressure
+  p_tl = 0.5*(pe_tl(:,:,2:geom%npz+1) + pe_tl(:,:,1:geom%npz))  
+
+end subroutine delp_to_p_tl
+
+!----------------------------------------------------------------------------
+
+subroutine delp_to_P_ad(geom,delp_ad,p_ad)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) ::    p_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+
+ real(kind=kind_real) ::   pe_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+
+ integer :: k 
+
+  !Adjoint of average
+  pe_ad = 0.0
+  pe_ad(:,:,2:geom%npz+1) = pe_ad(:,:,2:geom%npz+1) + 0.5*p_ad
+  pe_ad(:,:,1:geom%npz  ) = pe_ad(:,:,1:geom%npz  ) + 0.5*p_ad
+
+  !Adjoint of delp to p
+  DO k = geom%npz+1,2,-1
+    pe_ad(:,:,k-1) = pe_ad(:,:,k-1) + pe_ad(:,:,k)
+    delp_ad(:,:,k-1) = delp_ad(:,:,k-1) + pe_ad(:,:,k)
+    pe_ad(:,:,k) = 0.0
+  END DO
+
+end subroutine delp_to_P_ad
+
+!----------------------------------------------------------------------------
+!----------------------------------------------------------------------------
+
+subroutine delp_to_pe(geom,delp,pe)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(out) ::   pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+
+ !locals
+ integer :: k 
+
+  !Pressure at layer edge
+  pe(:,:,1) = geom%ptop
+  do k = 2,geom%npz+1
+    pe(:,:,k) = pe(:,:,k-1) + delp(:,:,k-1)
+  enddo
+
+end subroutine delp_to_pe
+
+!----------------------------------------------------------------------------
+
+subroutine delp_to_pe_tl(geom,delp_tl,pe_tl)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(out) ::   pe_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+
+ !locals
+ integer :: k 
+
+  !Pressure at layer edge
+  pe_tl(:,:,1) = 0.0
+  do k = 2,geom%npz+1
+    pe_tl(:,:,k) = pe_tl(:,:,k-1) + delp_tl(:,:,k-1)
+  enddo
+
+end subroutine delp_to_pe_tl
+
+!----------------------------------------------------------------------------
+
+subroutine delp_to_pe_ad(geom,delp_ad,pe_ad)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) ::   pe_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)
+
+ integer :: k 
+
+  !Adjoint of delp to p
+  DO k = geom%npz+1,2,-1
+    pe_ad(:,:,k-1) = pe_ad(:,:,k-1) + pe_ad(:,:,k)
+    delp_ad(:,:,k-1) = delp_ad(:,:,k-1) + pe_ad(:,:,k)
+    pe_ad(:,:,k) = 0.0
+  END DO
+
+end subroutine delp_to_pe_ad
 
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------

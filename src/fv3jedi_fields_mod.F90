@@ -1343,7 +1343,7 @@ use variable_transforms
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
-type(ioda_locs),     intent(in)     :: locs 
+type(ioda_locs),     intent(in)    :: locs 
 type(ufo_vars),  intent(in)        :: vars
 type(ufo_geovals),  intent(inout)  :: gom
 
@@ -1356,6 +1356,7 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 real(kind=kind_real), allocatable :: geoval(:,:,:)
+integer :: nvl
 
 ! Initialize the interpolation
 ! ----------------------------
@@ -1371,56 +1372,52 @@ allocate(obs_field(nobs,1))
 ! ----------------------------------------------------------------
 
 !Temporary variable in case of variable transform
-allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
+allocate(geoval(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz+1))
 
 !write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
 do jvar = 1, vars%nv
 
+  ! Convert to observation variables/units
+  ! --------------------------------------
   select case (trim(vars%fldnames(jvar)))
+
+  geoval = 0.0_kind_real
 
   case ("wind_u")
 
   case ("wind_v")
                 
+  case ("temperature")
+
+    nvl = fld%geom%npz
+    geoval(:,:,1:nvl) = fld%Atm%pt
+
   case ("virtual_temperature")
 
     !Convert temperature to virtual temperature
-    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geoval)
+    nvl = fld%geom%npz
+    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geoval(:,:,1:nvl))
 
-    do jlev = 1, fld%geom%npz
-      ii = 0
-      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-        do ji = fld%geom%bd%isc, fld%geom%bd%iec
-          ii = ii + 1
-          mod_field(ii, 1) = geoval(ji, jj, jlev)
-        enddo
-      enddo
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
+  case ("air_pressure")
+
+    nvl = fld%geom%npz
+    call delp_to_P(fld%geom,fld%Atm%delp,geoval(:,:,1:nvl))
+
+  case ("air_pressure_levels")
+
+    nvl = fld%geom%npz + 1
+    call delp_to_PL(fld%geom,fld%Atm%delp,geoval)
 
   case ("humidity_mixing_ratio")
 
   case ("atmosphere_ln_pressure_coordinate")
 
     !Convert pressure thickness to log pressure level mid point
-    call delp_to_logP(fld%geom,fld%Atm%delp,geoval)
-
+    nvl = fld%geom%npz
+    call delp_to_logP(fld%geom,fld%Atm%delp,geoval(:,:,1:nvl))
     geoval = log(0.001) + geoval !Convert to kPa
-
-    do jlev = 1, fld%geom%npz
-      ii = 0
-      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-        do ji = fld%geom%bd%isc, fld%geom%bd%iec
-          ii = ii + 1
-          mod_field(ii, 1) = geoval(ji, jj, jlev)
-        enddo
-      enddo
-      call apply_obsop(pgeom,odata,mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
 
   case ("air_pressure")
 
@@ -1431,6 +1428,27 @@ do jvar = 1, vars%nv
     call abor1_ftn(trim(myname)//"unknown variable")
 
   end select
+
+
+  ! Find observation location equivlent
+  ! -----------------------------------
+  if (do_interp) then
+    !Perform level-by-level interpolation using BUMP
+    do jlev = 1, nvl
+      ii = 0
+      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
+        do ji = fld%geom%bd%isc, fld%geom%bd%iec
+          ii = ii + 1
+          mod_field(ii, 1) = geoval(ji, jj, jlev)
+        enddo
+      enddo
+      call apply_obsop(pgeom,odata,mod_field,obs_field)
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
+    enddo
+  elseif (do_gba) then
+    !Grid box values so find grid box for that ob
+  endif
+
 
 enddo
 
