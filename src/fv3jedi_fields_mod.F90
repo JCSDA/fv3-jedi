@@ -1519,7 +1519,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    geovalm = log(0.001) + logp !to kPa
+    geovalm = log(0.001_kind_real) + logp !to kPa
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
@@ -1716,6 +1716,16 @@ do jvar = 1, vars%nv
     call abor1_ftn(trim(myname)//"unknown variable")
 
   end select
+
+
+  ! Allocate geovals%vals
+  ! ---------------------
+  call allocate_geovals_vals(gom,jvar,nobs,nvl)
+
+
+  !Run some basic checks on the interpolation
+  !------------------------------------------
+  call interp_checks(myname, fld, locs, vars, gom, jvar)
 
 
   ! Find observation location equivlent
@@ -2018,31 +2028,33 @@ integer :: jvar
 ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
 nobs = locs%nlocs 
 
-! Make sure the return values are allocated and set
-! -------------------------------------------------
-if (trim(myname)/="interp_ad") then
-   do jvar=1,vars%nv
-      if (.not.allocated(gom%geovals(jvar)%vals)) then
-         if (fld%root_pe == 1) print*, trim(myname), ': allocating ', trim(vars%fldnames(jvar)),' GeoVaLs'
-         gom%geovals(jvar)%nval = fld%geom%npz
-         gom%geovals(jvar)%nobs = nobs
-         allocate( gom%geovals(jvar)%vals(fld%geom%npz,nobs) )
-         gom%geovals(jvar)%vals = 0.0
-      endif
-   enddo
-   gom%linit = .true.
-   gom%lalloc = .true.
-endif
-
-!Run some basic checks on the interpolation
-!------------------------------------------
-call interp_checks(myname, fld, locs, vars, gom)
-
 ! Calculate interpolation weight using BUMP
 ! -----------------------------------------
 call initialize_bump(fld, fld%geom, locs, pbump)
 
 end subroutine initialize_interp
+
+! ------------------------------------------------------------------------------
+
+subroutine allocate_geovals_vals(gom,jvar,nobs,gvlev)
+
+implicit none
+integer, intent(in) :: jvar, nobs, gvlev
+type(ufo_geovals), intent(inout) :: gom
+
+! Allocate geovals for this jvar
+if (allocated(gom%geovals(jvar)%vals)) deallocate(gom%geovals(jvar)%vals)
+
+allocate(gom%geovals(jvar)%vals(gvlev,nobs))
+
+gom%geovals(jvar)%nval = gvlev
+gom%geovals(jvar)%nobs = nobs
+gom%geovals(jvar)%vals = 0.0_kind_real
+
+gom%linit  = .true.
+gom%lalloc = .true.
+
+end subroutine allocate_geovals_vals
 
 ! ------------------------------------------------------------------------------
 
@@ -2140,15 +2152,15 @@ end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_checks(cop, fld, locs, vars, gom)
+subroutine interp_checks(cop, fld, locs, vars, gom, jvar)
 implicit none
 character(len=*), intent(in) :: cop
 type(fv3jedi_field), intent(in) :: fld
-type(ioda_locs), intent(in)    :: locs
-type(ufo_vars), intent(in)    :: vars
-type(ufo_geovals), intent(in) :: gom
+type(ioda_locs), intent(in)     :: locs
+type(ufo_vars), intent(in)      :: vars
+type(ufo_geovals), intent(in)   :: gom
+integer, intent(in)             :: jvar
 
-integer :: jvar
 character(len=255) :: cinfo
 
 cinfo="fv3jedi_fields:checks "//trim(cop)//" : "
@@ -2162,36 +2174,24 @@ if( gom%nvar .ne. vars%nv )then
    call abor1_ftn(trim(cinfo)//"nvar wrong size")
 endif
 if( .not. allocated(gom%geovals) )then
-   call abor1_ftn(trim(cinfo)//"geovals unallocated")
+   call abor1_ftn(trim(cinfo)//"geovals not allocated")
 endif
 if( size(gom%geovals) .ne. vars%nv )then
    call abor1_ftn(trim(cinfo)//"geovals wrong size")
 endif
-if (trim(cop)/="interp_tl" .and. trim(cop)/="interp_ad") then
 if (.not.gom%linit) then
    call abor1_ftn(trim(cinfo)//"geovals not initialized")
 endif
-do jvar=1,vars%nv
-   if (allocated(gom%geovals(jvar)%vals)) then  
-      if( gom%geovals(jvar)%nval .ne. fld%geom%npz )then
-         call abor1_ftn(trim(cinfo)//"nval wrong size")
-      endif
-      if( gom%geovals(jvar)%nobs .ne. locs%nlocs )then
-         call abor1_ftn(trim(cinfo)//"nobs wrong size")
-      endif
-      if( size(gom%geovals(jvar)%vals, 1) .ne. fld%geom%npz )then
-         call abor1_ftn(trim(cinfo)//"vals wrong size 1")
-      endif
-      if( size(gom%geovals(jvar)%vals, 2) .ne. locs%nlocs )then
-         call abor1_ftn(trim(cinfo)//"vals wrong size 2")
-      endif       
-   else
-     call abor1_ftn(trim(cinfo)//"vals not allocated")
-   endif 
-enddo
-endif
-
-write(*,*)'interp_checks ',trim(cinfo),' done'
+if (allocated(gom%geovals(jvar)%vals)) then  
+   if( gom%geovals(jvar)%nobs .ne. locs%nlocs )then
+      call abor1_ftn(trim(cinfo)//"nobs wrong size")
+   endif
+   if( size(gom%geovals(jvar)%vals, 2) .ne. locs%nlocs )then
+      call abor1_ftn(trim(cinfo)//"vals wrong size 2")
+   endif       
+else
+  call abor1_ftn(trim(cinfo)//"vals not allocated")
+endif 
 
 end subroutine interp_checks
 

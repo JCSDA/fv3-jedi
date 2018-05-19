@@ -57,10 +57,10 @@
         "ObsBias": {}
       },
       {
-        "ObsType": "amsua",
+        "ObsType": "Radiance",
         "ObsData": {
           "ObsDataIn": {
-            "obsfile": "../../ufo/test/Data/amsua_n19_geovals.nc4"
+            "obsfile": "../../ufo/test/Data/amsua_n19_obs.nc4"
           }
         },
         "ObsBias": {}
