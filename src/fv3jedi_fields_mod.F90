@@ -22,7 +22,7 @@ use fms_io_mod,        only: restart_file_type, register_restart_field, &
                              free_restart_type, restore_state, save_restart
 
 use fv3jedi_mod,       only: fv_atmos_type, allocate_fv_atmos_type
-use fv3jedi_constants, only: deg2rad
+use fv3jedi_constants, only: deg2rad, constoz
 
 implicit none
 private
@@ -39,38 +39,10 @@ public :: fv3jedi_field_registry
 
 ! ------------------------------------------------------------------------------
 
-!> Fortran derived type to hold CRTM required inputs not part of the increment
-type fv3_jedi_crtm_fields
-  real(kind_real), dimension(:,:,:) :: mass_concentration_of_carbon_dioxide_in_air
-  real(kind_real), dimension(:,:,:) :: atmosphere_mass_content_of_cloud_liquid_water
-  real(kind_real), dimension(:,:,:) :: atmosphere_mass_content_of_cloud_ice
-  real(kind_real), dimension(:,:,:) :: effective_radius_of_cloud_liquid_water_particle
-  real(kind_real), dimension(:,:,:) :: effective_radius_of_cloud_ice_particle
-  real(kind_real), dimension(:,:)   :: Water_Fraction
-  real(kind_real), dimension(:,:)   :: Land_Fraction
-  real(kind_real), dimension(:,:)   :: Ice_Fraction
-  real(kind_real), dimension(:,:)   :: Snow_Fraction
-  real(kind_real), dimension(:,:)   :: Water_Temperature
-  real(kind_real), dimension(:,:)   :: Land_Temperature
-  real(kind_real), dimension(:,:)   :: Ice_Temperature
-  real(kind_real), dimension(:,:)   :: Snow_Temperature
-  real(kind_real), dimension(:,:)   :: Vegetation_Fraction
-  real(kind_real), dimension(:,:)   :: Sfc_Wind_Speed
-  real(kind_real), dimension(:,:)   :: Sfc_Wind_Direction
-  real(kind_real), dimension(:,:)   :: Lai
-  real(kind_real), dimension(:,:)   :: Soil_Moisture
-  real(kind_real), dimension(:,:)   :: Soil_Temperature
-  real(kind_real), dimension(:,:)   :: Land_Type_Index
-  real(kind_real), dimension(:,:)   :: Vegetation_Type
-  real(kind_real), dimension(:,:)   :: Soil_Type
-  real(kind_real), dimension(:,:)   :: Snow_Depth
-end type
-
 !> Fortran derived type to hold FV3JEDI fields
 type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
   type(fv3jedi_geom), pointer :: geom
-  type(fv3_jedi_crtm_fields) :: crtm
   integer :: nf
   integer :: isc, iec, jsc, jec
   integer :: root_pe
@@ -476,11 +448,10 @@ subroutine read_file(fld, c_conf, vdate)
   use iso_c_binding
   use datetime_mod
   use fckit_log_module, only : log
-  use variable_transforms, only: d2a2c_vect
   use mpp_domains_mod, only: mpp_update_domains, DGRID_NE
 
   use field_manager_mod,       only: MODEL_ATMOS
-  use tracer_manager_mod,      only: get_number_tracers, get_tracer_names, set_tracer_profile
+  use tracer_manager_mod,      only: get_number_tracers, get_tracer_names, set_tracer_profile, get_tracer_index
 
   implicit none
 
@@ -490,6 +461,7 @@ subroutine read_file(fld, c_conf, vdate)
 
   type(restart_file_type) :: Fv_restart
   type(restart_file_type) :: Tr_restart
+  type(restart_file_type) :: Sf_restart
 
   integer :: id_restart, iounit, io_status, layout(2)
   integer :: date_init(6), date(6), calendar_type
@@ -498,6 +470,8 @@ subroutine read_file(fld, c_conf, vdate)
   character(len=255) :: datapath_in, datapath_ti
   character(len=255) :: filename_core
   character(len=255) :: filename_trcr
+  character(len=255) :: filename_sfcd
+  character(len=255) :: filename_sfcw
   character(len=255) :: filename_cplr
 
   character(len=20) :: sdate,validitydate
@@ -515,6 +489,8 @@ subroutine read_file(fld, c_conf, vdate)
   !--------------
   filename_core = 'fv_core.res.nc'
   filename_trcr = 'fv_tracer.res.nc'
+  filename_sfcd = 'sfc_data.nc'
+  filename_sfcw = 'srf_wnd.nc'
   filename_cplr = 'coupler.res'
 
   if (config_element_exists(c_conf,"filename_core")) then
@@ -522,6 +498,12 @@ subroutine read_file(fld, c_conf, vdate)
   endif
   if (config_element_exists(c_conf,"filename_trcr")) then
      filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
+  endif
+  if (config_element_exists(c_conf,"filename_sfcd")) then
+     filename_sfcd = config_get_string(c_conf,len(filename_sfcd),"filename_sfcd")
+  endif
+  if (config_element_exists(c_conf,"filename_sfcw")) then
+     filename_sfcw = config_get_string(c_conf,len(filename_sfcw),"filename_sfcw")
   endif
   if (config_element_exists(c_conf,"filename_cplr")) then
      filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
@@ -565,36 +547,46 @@ subroutine read_file(fld, c_conf, vdate)
                    domain=fld%geom%domain)
   endif
 
-  !Surface fields for CRTM
-  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
-               domain=fld%geom%domain)
-
-
-
   ! Read file and fill variables
   ! ----------------------------
   call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
   call free_restart_type(Fv_restart)
  
 
-! !Register and read tracers
-! !-------------------------
-! call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
-!
-! do nt = 1, ntprog
-!    call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
-!    call set_tracer_profile (MODEL_ATMOS, nt, fld%Atm%q(fld%geom%bd%isc:fld%geom%bd%iec,fld%geom%bd%isc:fld%geom%bd%iec,:,nt) )
-!    id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
-!                                        domain=fld%geom%domain)
-! enddo
-! call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
-! call free_restart_type(Tr_restart)
-
-  id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
-                                       domain=fld%geom%domain)
+  !Register and read tracers
+  !-------------------------
+  call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
+ 
+  do nt = 1, ntprog
+     call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
+     call set_tracer_profile (MODEL_ATMOS, nt, fld%Atm%q(:,:,:,nt) )
+     id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
+                                         domain=fld%geom%domain)
+  enddo
 
   call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
   call free_restart_type(Tr_restart)
+
+  !Register and read surface fields needed for crtm calculation
+  !------------------------------------------------------------
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%Atm%slmsk , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%Atm%sheleg, domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%Atm%tsea  , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%Atm%vtype , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%Atm%stype , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%Atm%vfrac , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%Atm%stc   , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%Atm%smc   , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%Atm%f10m  , domain=fld%geom%domain)
+
+  call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
+  call free_restart_type(Sf_restart)
+
+  id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%Atm%u_srf , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%Atm%v_srf , domain=fld%geom%domain)
+
+  call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
+  call free_restart_type(Sf_restart)
 
 
   ! Get dates from file
@@ -1337,7 +1329,13 @@ end subroutine convert_from_ug
 subroutine interp(fld, locs, vars, gom)
 
 use type_bump, only: bump_type
-use variable_transforms
+use surface_vt_mod
+use pressure_vt_mod
+use tmprture_vt_mod
+use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
+use wind_vt_mod
+use field_manager_mod, only: MODEL_ATMOS
+use tracer_manager_mod,only: get_tracer_index
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
@@ -1352,9 +1350,62 @@ type(bump_type), pointer :: pbump
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
-real(kind=kind_real), allocatable :: geovale(:,:,:), geovalm(:,:,:), geoval2(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geoval2(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
+logical :: do_interp
+
+integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
+
+integer :: ti_q, ti_ql, ti_qi, ti_o3
+
+!Local pressure variables
+real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
+real(kind=kind_real), allocatable :: prs (:,:,:) !Pressure Pa, midpoint
+real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
+
+!Local temperature variables
+real(kind=kind_real), allocatable :: Tv(:,:,:) !Virtual temperature K
+
+!Local CRTM moisture variables
+real(kind=kind_real), allocatable :: ql_ade(:,:,:) !Cloud liq water kgm^2
+real(kind=kind_real), allocatable :: qi_ade(:,:,:) !Cloud ice water kgm^2
+real(kind=kind_real), allocatable :: ql_efr(:,:,:) !Cloud effective radius microns
+real(kind=kind_real), allocatable :: qi_efr(:,:,:) !Cloud effective radium microns
+real(kind=kind_real), allocatable :: qmr(:,:,:) !Moisture mixing ratio
+
+!Local CRTM surface variables
+integer             , allocatable :: vegetation_type(:,:)          !Index of vege type              | surface(1)%Vegetation_Type
+integer             , allocatable :: land_type(:,:)                !Index of land type              | surface(1)%Land_Type
+integer             , allocatable :: soil_type(:,:)                !Index of soil type              | surface(1)%Soil_Type
+real(kind=kind_real), allocatable :: wind_speed(:,:)               !10 meter wind speed m/s         | surface(1)%wind_speed
+real(kind=kind_real), allocatable :: wind_direction(:,:)           !10 meter wind direction degrees | surface(1)%wind_direction
+real(kind=kind_real), allocatable :: water_coverage(:,:)           !Fraction of water coverage      | surface(1)%water_coverage
+real(kind=kind_real), allocatable :: land_coverage(:,:)            !Fraction of land coverage       | surface(1)%land_coverage
+real(kind=kind_real), allocatable :: ice_coverage(:,:)             !Fraction of ice coverage        | surface(1)%ice_coverage
+real(kind=kind_real), allocatable :: snow_coverage(:,:)            !Fraction of snow coverage       | surface(1)%snow_coverage
+real(kind=kind_real), allocatable :: lai(:,:)                      !Leaf area index                 ! surface(1)%lai
+real(kind=kind_real), allocatable :: water_temperature(:,:)        !Water temp (K)                  | surface(1)%water_temperature    
+real(kind=kind_real), allocatable :: land_temperature(:,:)         !Land temp (K)                   | surface(1)%land_temperature     
+real(kind=kind_real), allocatable :: ice_temperature(:,:)          !Ice temp (K)                    | surface(1)%ice_temperature      
+real(kind=kind_real), allocatable :: snow_temperature(:,:)         !Snow temp (K)                   | surface(1)%snow_temperature     
+real(kind=kind_real), allocatable :: soil_moisture_content(:,:)    !Soil moisture content           | surface(1)%soil_moisture_content
+real(kind=kind_real), allocatable :: vegetation_fraction(:,:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
+real(kind=kind_real), allocatable :: soil_temperature(:,:)         !Soil temperature                | surface(1)%soil_temperature     
+real(kind=kind_real), allocatable :: snow_depth(:,:)               !Snow depth                      | surface(1)%snow_depth           
+
+
+! Grid convenience
+! ----------------
+isc = fld%geom%bd%isc
+iec = fld%geom%bd%iec
+jsc = fld%geom%bd%jsc
+jec = fld%geom%bd%jec
+isd = fld%geom%bd%isd
+ied = fld%geom%bd%ied
+jsd = fld%geom%bd%jsd
+jed = fld%geom%bd%jed
+npz = fld%geom%npz
 
 ! Initialize the interpolation
 ! ----------------------------
@@ -1366,63 +1417,299 @@ call initialize_interp( fld, locs, vars, gom, myname, &
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
 
-! Interpolate fields to obs locations using pre-calculated weights
-! ----------------------------------------------------------------
+! Local GeoVals
+! -------------
+allocate(geovale(isd:ied,jsd:jed,npz+1))
+allocate(geovalm(isd:ied,jsd:jed,npz))
+allocate(geoval2(isd:ied,jsd:jed,1))
 
-!Temporary variable in case of variable transform
-allocate(geovale(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz+1))
-allocate(geovalc(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
-allocate(geoval2(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,1))
+! Get pressures at edge, center & log center
+! ------------------------------------------
+allocate(prsi(isd:ied,jsd:jed,npz+1))
+allocate(prs (isd:ied,jsd:jed,npz  ))
+allocate(logp(isd:ied,jsd:jed,npz  ))
+
+call delp_to_pe_p_logp(fld%geom,fld%Atm%delp,prsi,prs,logp)
+
+! Tracer indexes 
+! --------------
+ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
+ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
+ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
+ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
+
+
+! Get CRTM surface variables
+! ----------------------
+allocate(land_type(isd:ied,jsd:jed))
+allocate(vegetation_type(isd:ied,jsd:jed))
+allocate(soil_type(isd:ied,jsd:jed))
+allocate(wind_speed(isd:ied,jsd:jed))
+allocate(wind_direction(isd:ied,jsd:jed))
+allocate(water_coverage(isd:ied,jsd:jed))
+allocate(land_coverage(isd:ied,jsd:jed))
+allocate(ice_coverage(isd:ied,jsd:jed))
+allocate(snow_coverage(isd:ied,jsd:jed))
+allocate(lai(isd:ied,jsd:jed))
+allocate(water_temperature(isd:ied,jsd:jed))
+allocate(land_temperature(isd:ied,jsd:jed))
+allocate(ice_temperature(isd:ied,jsd:jed))
+allocate(snow_temperature(isd:ied,jsd:jed))
+allocate(soil_moisture_content(isd:ied,jsd:jed))
+allocate(vegetation_fraction(isd:ied,jsd:jed))
+allocate(soil_temperature(isd:ied,jsd:jed))
+allocate(snow_depth(isd:ied,jsd:jed))
+
+call crtm_surface( fld%geom, fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
+                   fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, &
+                   land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
+                   snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
+                   snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth )
+
+call sfc_10m_winds(fld%geom,fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m,wind_speed,wind_direction)
+
+! Get CRTM moisture variables
+! ---------------------------
+allocate(ql_ade(isd:ied,jsd:jed,npz))
+allocate(qi_ade(isd:ied,jsd:jed,npz))
+allocate(ql_efr(isd:ied,jsd:jed,npz))
+allocate(qi_efr(isd:ied,jsd:jed,npz))
+allocate(qmr(isd:ied,jsd:jed,npz))
+
+!TODO Is it water_coverage or sea_coverage fed in here?
+call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage,fld%Atm%q(:,:,:,ti_q), &
+                   fld%Atm%q(:,:,:,ti_ql),fld%Atm%q(:,:,:,ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
+
+call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,ti_q),qmr)
+
 
 !write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
-do jvar = 1, vars%nv
+! Variable transforms and interpolate to obs locations
+! ----------------------------------------------------
 
-  ! Convert to observation variables/units
-  ! --------------------------------------
-  select case (trim(vars%fldnames(jvar)))
+do jvar = 1, vars%nv
 
   geovalm = 0.0_kind_real
   geovale = 0.0_kind_real
   geoval2 = 0.0_kind_real
 
+  do_interp = .false.
+
+  ! Convert to observation variables/units
+  ! --------------------------------------
+  select case (trim(vars%fldnames(jvar)))
+
   case ("temperature")
 
-    nvl = fld%geom%npz
+    nvl = npz
+    do_interp = .true.
     geovalm = fld%Atm%pt
     geoval => geovalm
 
   case ("virtual_temperature")
 
-    nvl = fld%geom%npz
+    nvl = npz
+    do_interp = .true.
     call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geovalm)
     geoval => geovalm
 
-  case ("air_pressure")
-
-    nvl = fld%geom%npz
-    call delp_to_p(fld%geom,fld%Atm%delp,geovalm)
-    geoval => geovalm
-
-  case ("air_pressure_levels")
-
-    nvl = fld%geom%npz + 1
-    call delp_to_pe(fld%geom,fld%Atm%delp,geovale)
-    geoval => geovale
-
   case ("atmosphere_ln_pressure_coordinate")
 
-    nvl = fld%geom%npz
-    call delp_to_logP(fld%geom,fld%Atm%delp,geovalm)
-    geovalm = log(0.001) + geovalm !Convert to kPa
+    nvl = npz
+    do_interp = .true.
+    geovalm = log(0.001) + logp !to kPa
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
 
-    nvl = fld%geom%npz
+    nvl = npz
+    do_interp = .true.
+    geovalm = qmr
+    geoval => geovalm  
 
-    geoval => geovalm    
+  case ("air_pressure")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = prs / 100.0_kind_real !to hPa
+    geoval => geovalm
+
+  case ("air_pressure_levels")
+
+    nvl = npz + 1
+    do_interp = .true.
+    geovale = prsi / 100.0_kind_real !to hPa
+    geoval => geovale
+
+  case ("mass_concentration_of_ozone_in_air")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = fld%Atm%q(:,:,:,ti_o3) * constoz
+   geoval => geovalm
+
+  case ("mass_concentration_of_carbon_dioxide_in_air")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = 407.0_kind_real !Just a constant for now
+   geoval => geovalm
+
+  case ("atmosphere_mass_content_of_cloud_liquid_water")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = ql_ade
+   geoval => geovalm
+
+  case ("atmosphere_mass_content_of_cloud_ice")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = qi_ade
+   geoval => geovalm
+
+  case ("effective_radius_of_cloud_liquid_water_particle")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = ql_efr
+   geoval => geovalm
+
+  case ("effective_radius_of_cloud_ice_particle")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = qi_efr
+   geoval => geovalm
+
+  case ("Water_Fraction")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = water_coverage
+   geoval => geoval2
+
+  case ("Land_Fraction")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = land_coverage
+   geoval => geoval2
+
+  case ("Ice_Fraction")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = ice_coverage
+   geoval => geoval2
+
+  case ("Snow_Fraction")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = snow_coverage
+   geoval => geoval2
+
+  case ("Water_Temperature")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = water_temperature
+   geoval => geoval2
+
+  case ("Land_Temperature")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = land_temperature
+   geoval => geoval2
+
+  case ("Ice_Temperature")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = ice_temperature
+   geoval => geoval2
+
+  case ("Snow_Temperature")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = snow_temperature
+   geoval => geoval2
+
+  case ("Snow_Depth")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = snow_depth
+   geoval => geoval2
+
+  case ("Vegetation_Fraction")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = vegetation_fraction
+   geoval => geoval2
+
+  case ("Sfc_Wind_Speed")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = wind_speed
+   geoval => geoval2
+
+  case ("Sfc_Wind_Direction")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = wind_direction
+   geoval => geoval2
+
+  case ("Lai")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = lai
+   geoval => geoval2
+
+  case ("Soil_Moisture")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = soil_moisture_content
+   geoval => geoval2
+
+  case ("Soil_Temperature")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = soil_temperature
+   geoval => geoval2
+
+  case ("Land_Type_Index")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = land_type
+   geoval => geoval2
+
+  case ("Vegetation_Type")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = vegetation_type
+   geoval => geoval2
+
+  case ("Soil_Type")
+
+   nvl = 1
+   do_interp = .true.
+   geoval2(:,:,1) = soil_type
+   geoval => geoval2
 
   case default
 
@@ -1437,8 +1724,8 @@ do jvar = 1, vars%nv
     !Perform level-by-level interpolation using BUMP
     do jlev = 1, nvl
       ii = 0
-      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-        do ji = fld%geom%bd%isc, fld%geom%bd%iec
+      do jj = jsc, jec
+        do ji = isc, iec
           ii = ii + 1
           mod_field(ii, 1) = geoval(ji, jj, jlev)
         enddo
@@ -1446,15 +1733,13 @@ do jvar = 1, vars%nv
       call pbump%apply_obsop(mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
-  elseif (do_gba) then
-    !Grid box values so find grid box for that ob
   endif
 
   nullify(geoval)
 
 enddo
 
-deallocate(geovalm,geovale,geoval)
+deallocate(geovalm,geovale,geoval2)
 deallocate(mod_field)
 deallocate(obs_field)
 
@@ -1468,7 +1753,7 @@ end subroutine interp
 subroutine interp_tl(fld, locs, vars, gom)!, traj)
 
 use type_bump, only: bump_type
-use variable_transforms
+use tmprture_vt_mod
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
@@ -1556,7 +1841,7 @@ end subroutine interp_tl
 subroutine interp_ad(fld, locs, vars, gom)!, traj)
 
 use type_bump, only: bump_type
-use variable_transforms
+use tmprture_vt_mod
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
@@ -1644,7 +1929,6 @@ subroutine initialize_interp( fld, locs, vars, gom, myname, &
                                    pbump, ngrid, nobs, trajp )
 
 use type_bump, only: bump_type
-use variable_transforms
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none

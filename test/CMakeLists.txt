@@ -378,6 +378,7 @@ testinput/4dvar.dripcg.json
 testinput/4dvar.drplanczos.json
 testinput/forecast.json
 testinput/hofx.json
+testinput/hofx_c48.json
 testinput/dirac.nicas.json
 testinput/analytic_init.json
 testinput/increment.json
