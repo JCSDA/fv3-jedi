@@ -10,6 +10,7 @@ module surface_vt_mod
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use kinds, only: kind_real
+use type_bump, only: bump_type
 
 implicit none
 public
@@ -20,7 +21,7 @@ contains
 ! Surface quantities in the form needed by the crtm ------------------------- 
 !----------------------------------------------------------------------------
 
-subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, & 
+subroutine crtm_surface( geom, nobs, pbump, slmsk, sheleg, tsea, vtype, & 
                          stype, vfrac, stc, smc, &
                          land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
                          snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
@@ -29,7 +30,10 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
  implicit none
 
  !Arguments
- type(fv3jedi_geom)  , intent(in )                 :: geom !Geometry for the model
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ integer, intent(in)               :: nobs
+ type(bump_type), pointer          :: pbump
+
  integer             , intent(in ), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: slmsk
  real(kind=kind_real), intent(in ), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: sheleg
  real(kind=kind_real), intent(in ), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: tsea
@@ -38,30 +42,43 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
  real(kind=kind_real), intent(in ), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: vfrac
  real(kind=kind_real), intent(in ), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4) :: stc
  real(kind=kind_real), intent(in ), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4) :: smc
- integer             , intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: vegetation_type
- integer             , intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: land_type
- integer             , intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: soil_type
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: water_coverage
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: land_coverage
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: ice_coverage
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: snow_coverage
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: lai
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: water_temperature
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: land_temperature
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: ice_temperature
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: snow_temperature
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: soil_moisture_content
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: vegetation_fraction
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: soil_temperature
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: snow_depth
+
+ integer             , intent(out), dimension(nobs) :: vegetation_type
+ integer             , intent(out), dimension(nobs) :: land_type
+ integer             , intent(out), dimension(nobs) :: soil_type
+ real(kind=kind_real), intent(out), dimension(nobs) :: water_coverage
+ real(kind=kind_real), intent(out), dimension(nobs) :: land_coverage
+ real(kind=kind_real), intent(out), dimension(nobs) :: ice_coverage
+ real(kind=kind_real), intent(out), dimension(nobs) :: snow_coverage
+ real(kind=kind_real), intent(out), dimension(nobs) :: lai
+ real(kind=kind_real), intent(out), dimension(nobs) :: water_temperature
+ real(kind=kind_real), intent(out), dimension(nobs) :: land_temperature
+ real(kind=kind_real), intent(out), dimension(nobs) :: ice_temperature
+ real(kind=kind_real), intent(out), dimension(nobs) :: snow_temperature
+ real(kind=kind_real), intent(out), dimension(nobs) :: soil_moisture_content
+ real(kind=kind_real), intent(out), dimension(nobs) :: vegetation_fraction
+ real(kind=kind_real), intent(out), dimension(nobs) :: soil_temperature
+ real(kind=kind_real), intent(out), dimension(nobs) :: snow_depth
 
  !Locals
- integer :: wlis_msk(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Water, land, ice + snow
- integer :: lai_type(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ integer :: wlis_msk(nobs) !Water, land, ice + snow
+ integer :: lai_type(nobs)
 
- integer :: isc,iec,jsc,jec,i,j
+ integer :: isc,iec,jsc,jec,n,ngrid
 
- ! Indices for the CRTM NPOESS EmisCoeff file
+ integer             , allocatable(:) :: slmsk_obs
+ real(kind=kind_real), allocatable(:) :: sheleg_obs
+ real(kind=kind_real), allocatable(:) :: tsea_obs
+ integer             , allocatable(:) :: vtype_obs
+ integer             , allocatable(:) :: stype_obs
+ real(kind=kind_real), allocatable(:) :: vfrac_obs
+ real(kind=kind_real), allocatable(:) :: stc_obs
+ real(kind=kind_real), allocatable(:) :: smc_obs
+ real(kind=kind_real), allocatable(:) :: rslmsk_obs
+ real(kind=kind_real), allocatable(:) :: rvtype_obs
+ real(kind=kind_real), allocatable(:) :: rstype_obs
+
+   ! Indices for the CRTM NPOESS EmisCoeff file
  integer, parameter :: invalid_land = 0
  integer, parameter :: compacted_soil = 1
  integer, parameter :: tilled_soil = 2
@@ -85,7 +102,7 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
                                                        pine_forest, broadleaf_brush, scrub, scrub, scrub_soil, tundra, &
                                                        compacted_soil, tilled_soil, compacted_soil/)
  integer :: itype, istype
-
+ 
 
 !*!*!*!*! TODO TODO TODO
 ! THE BELOW NEEDS TO BE REPLACED WITH THE PROPER WAY, BY TAKING FRACTIONS OF THE SURROUNDING GRID BOXES
@@ -98,6 +115,49 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
  iec = geom%bd%iec
  jsc = geom%bd%jsc
  jec = geom%bd%jec
+
+ ! Ineterpolate the inputs to the obs locations
+ ! --------------------------------------------
+
+ ngrid = (ied - isd + 1) * (jed - jsd + 1)
+
+ allocate(slmsk_obs (nobs))
+ allocate(sheleg_obs(nobs))
+ allocate(tsea_obs  (nobs))
+ allocate(vtype_obs (nobs))
+ allocate(stype_obs (nobs))
+ allocate(vfrac_obs (nobs))
+ allocate(stc_obs   (nobs))
+ allocate(smc_obs   (nobs))
+
+ tmp = reshape(real(slmsk,kind_real),(/ngrid/))
+ call pbump%apply_obsop(tmp,rslmsk_obs)
+
+ tmp = reshape(sheleg,(/ngrid/))
+ call pbump%apply_obsop(tmp,sheleg_obs)
+
+ tmp = reshape(tsea,(/ngrid/))
+ call pbump%apply_obsop(tmp,tsea_obs)
+
+ tmp = reshape(real(vtype,kind_real),(/ngrid/))
+ call pbump%apply_obsop(tmp,rvtype_obs)
+
+ tmp = reshape(real(stype,kind_real),(/ngrid/))
+ call pbump%apply_obsop(tmp,rstype_obs)
+
+ tmp = reshape(vfrac,(/ngrid/))
+ call pbump%apply_obsop(tmp,vfrac_obs)
+
+ tmp = reshape(stc(:,:,1),(/ngrid/))
+ call pbump%apply_obsop(tmp,stc_obs)
+
+ tmp = reshape(smc(:,:,1),(/ngrid/))
+ call pbump%apply_obsop(tmp,smc_obs)
+
+ slmsk_obs = int(rslmsk_obs)
+ vtype_obs = int(rvtype_obs)
+ stype_obs = int(rstype_obs)
+
 
  ! Zero outputs
  ! ------------
@@ -121,18 +181,16 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
 
  ! Vegation, land and soil types
  ! -----------------------------
- do j = jsc,jec
-   do i = isc,iec
+ do n = 1,nobs
 
-     itype  = min(max(0,vtype(i,j)),vegetation_n_types)
-     istype = min(max(1,stype(i,j)),soil_n_types)
+   itype  = min(max(0,vtype_obs(n)),vegetation_n_types)
+   istype = min(max(1,stype_obs(n)),soil_n_types)
 
-     vegetation_type(i,j) = jedi_to_crtm(itype)
-     land_type(i,j) = max(1,itype)
-     soil_type(i,j) = istype
-     lai_type(i,j) = itype
+   vegetation_type(n) = jedi_to_crtm(itype)
+   land_type(n) = max(1,itype)
+   soil_type(n) = istype
+   lai_type(n)  = itype
 
-   enddo
  enddo
 
 
@@ -140,41 +198,36 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
  ! ------------------------------
 
  !Surface mask - 0: water | 1: land | 2: ice
- wlis_msk(isc:iec,jsc:jec) = slmsk(isc:iec,jsc:jec)
+ wlis_msk = slmsk_obs
 
- do j = jsc,jec
-   do i = isc,iec
+ do n = 1,nobs
 
-      !Add if snow | 3: snow
-      if(wlis_msk(i,j) >=1 .and. sheleg(i,j) > 1.0_kind_real/10.0_kind_real) wlis_msk(i,j) = 3
+    !Add if snow | 3: snow
+    if(wlis_msk(n) >=1 .and. sheleg_obs(n) > 1.0_kind_real/10.0_kind_real) wlis_msk(n) = 3
 
-      !Set percentages (wrong way to do this but done to get working!)
-      if (wlis_msk(i,j) == 0) then
-        water_coverage(i,j) = 1.0_kind_real
-      elseif  (wlis_msk(i,j) == 1) then
-        land_coverage(i,j) = 1.0_kind_real
-      elseif (wlis_msk(i,j) == 2) then
-        ice_coverage(i,j) = 1.0_kind_real
-      elseif (wlis_msk(i,j) == 3) then
-        snow_coverage(i,j) = 1.0_kind_real
-      endif
+    !Set percentages (wrong way to do this but done to get working!)
+    if (wlis_msk(n) == 0) then
+      water_coverage(n) = 1.0_kind_real
+    elseif  (wlis_msk(n) == 1) then
+      land_coverage(n) = 1.0_kind_real
+    elseif (wlis_msk(n) == 2) then
+      ice_coverage(n) = 1.0_kind_real
+    elseif (wlis_msk(n) == 3) then
+      snow_coverage(n) = 1.0_kind_real
+    endif
 
-      !Set percentages (wrong way to do this but done to get working!)
-      if (wlis_msk(i,j) == 0) then
-        water_temperature(i,j) = tsea(i,j)
-      elseif  (wlis_msk(i,j) == 1) then
-        land_temperature(i,j) = tsea(i,j)
-      elseif (wlis_msk(i,j) == 2) then
-        ice_temperature(i,j) = tsea(i,j)
-      elseif (wlis_msk(i,j) == 3) then
-        snow_temperature(i,j) = tsea(i,j)
-      endif
+    !Set percentages (wrong way to do this but done to get working!)
+    if (wlis_msk(n) == 0) then
+      water_temperature(n) = tsea_obs(n)
+    elseif  (wlis_msk(n) == 1) then
+      land_temperature(n) = tsea_obs(n)
+    elseif (wlis_msk(n) == 2) then
+      ice_temperature(n) = tsea_obs(n)
+    elseif (wlis_msk(n) == 3) then
+      snow_temperature(n) = tsea_obs(n)
+    endif
 
-   enddo
  enddo
-
-
- !TODO BY NOW WE SHOULD WE WORKING WITH OBSLOCATION DATA
 
 
  ! Bounds on coverage
@@ -187,24 +240,22 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
  ! Get vegetation lai from summer and winter values
  ! ------------------------------------------------
  Lai  = 0.0_kind_real
- do j = jsc,jec
-   do i = isc,iec
+ do n = 1,nobs
 
-     if (land_coverage(i,j) > 0.0_kind_real) then
+   if (land_coverage(n) > 0.0_kind_real) then
 
-       if (lai_type(i,j) > 0) then
-         !call get_lai(data_s,nchanl,nreal,itime,ilate,lai_type,lai(i,j))
-       endif     
-     
-       !For Glacial land ice soil type and vegetation type
-       if (Soil_Type(i,j) == 9 .OR. Vegetation_Type(i,j) == 13) then
-         ice_coverage(i,j) = min(ice_coverage(i,j) + land_coverage(i,j), 1.0_kind_real)
-         land_coverage = 0.0_kind_real
-       endif
-
+     if (lai_type(n) > 0) then
+       !call get_lai(data_s,nchanl,nreal,itime,ilate,lai_type,lai(n))
+     endif     
+   
+     !For Glacial land ice soil type and vegetation type
+     if (Soil_Type(n) == 9 .OR. Vegetation_Type(n) == 13) then
+       ice_coverage(n) = min(ice_coverage(n) + land_coverage(n), 1.0_kind_real)
+       land_coverage = 0.0_kind_real
      endif
 
-   enddo
+   endif
+
  enddo
 
  ! Set some bounds on temperatures
@@ -214,10 +265,10 @@ subroutine crtm_surface( geom, slmsk, sheleg, tsea, vtype, &
  snow_temperature  = min(snow_temperature ,280._kind_real)
 
 
- soil_moisture_content = smc(:,:,1)
- vegetation_fraction = vfrac
- soil_temperature = stc(:,:,1)
- snow_depth = sheleg
+ soil_moisture_content = smc_obs
+ vegetation_fraction = vfrac_obs
+ soil_temperature = stc_obs
+ snow_depth = sheleg_obs
 
 end subroutine crtm_surface
 

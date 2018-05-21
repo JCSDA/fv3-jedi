@@ -3,8 +3,8 @@
   "trc_file": "Data/fv3files/field_table",
   "test_framework_runtime_config": "--log_level=test_suite",
   "Assimilation Window": {
-    "Begin": "2016-01-01T06:00:00Z",
-    "Length": "PT6H"
+    "Begin": "2017-08-01T00:00:00Z",
+    "Length": "PT15M"
   },
   "Geometry": {
     "init_type": "inline",
@@ -43,7 +43,7 @@
     "datapath_read": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
     "datapath_tile": "Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/",
     "datapath_write": "",
-    "date": "2016-01-01T06:00:00Z"
+    "date": "2017-08-01T00:00:00Z"
   },
   "Observations": {
     "ObsTypes": [
