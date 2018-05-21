@@ -16,9 +16,9 @@
 #include "GeometryFV3JEDI.h"
 #include "eckit/config/Configuration.h"
 #include "oops/interface/LocalizationBase.h"
-#include "util/DateTime.h"
-#include "util/ObjectCounter.h"
-#include "util/Printable.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
 
 #include "Fortran.h"
 

@@ -27,6 +27,7 @@
 #include "ufo/ObsBiasIncrement.h"
 #include "ufo/ObsCheck.h"
 #include "ufo/ObsBiasCovariance.h"
+#include "Nothing.h"
 
 namespace fv3jedi {
 
@@ -46,6 +47,8 @@ struct FV3JEDITraits {
   typedef fv3jedi::ModelBiasCovarianceFV3JEDI  ModelAuxCovariance;
 
   typedef fv3jedi::LocalizationMatrixFV3JEDI   LocalizationMatrix;
+
+  typedef fv3jedi::Nothing                     InterpolatorTraj;
 
   typedef ioda::ObsSpace                    ObsSpace;
   typedef ioda::ObsVector                   ObsVector;

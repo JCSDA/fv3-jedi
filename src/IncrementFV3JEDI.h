@@ -17,11 +17,11 @@
 #include "FieldsFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
 #include "oops/base/GeneralizedDepartures.h"
-#include "util/DateTime.h"
-#include "util/Duration.h"
-#include "util/ObjectCounter.h"
-#include "util/Printable.h"
-#include "util/dot_product.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/Duration.h"
+#include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
+#include "oops/util/dot_product.h"
 
 namespace eckit {
   class Configuration;
@@ -44,6 +44,7 @@ namespace fv3jedi {
   class ModelBiasIncrementFV3JEDI;
   class ErrorCovarianceFV3JEDI;
   class StateFV3JEDI;
+  class Nothing;
 
 /// Increment Class: Difference between two states
 /*!
@@ -81,9 +82,13 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
   void random();
   void dirac(const eckit::Configuration &);
 
+/// Get increment values at observation locations
+  void getValuesTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &, const Nothing &) const;
+  void getValuesAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &, const Nothing &);
+
 /// Interpolate to observation location
-  void interpolateTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void interpolateAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
+  void interpolateTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &, const Nothing &) const;
+  void interpolateAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &, const Nothing &);
 
 /// Convert to/from generic unstructured grid
   void define(oops::UnstructuredGrid &) const;

@@ -15,10 +15,10 @@
 
 #include "GeometryFV3JEDI.h"
 #include "oops/base/Variables.h"
-#include "util/DateTime.h"
-#include "util/Duration.h"
-#include "util/ObjectCounter.h"
-#include "util/Printable.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/Duration.h"
+#include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
 
 // Forward declarations
 namespace eckit {
@@ -64,6 +64,11 @@ class FieldsFV3JEDI : public util::Printable,
   void schur_product_with(const FieldsFV3JEDI &);
   void random();
   void dirac(const eckit::Configuration &);
+
+// Get fields values at given location
+  void getValues(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void getValuesTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void getValuesAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
 
 // Interpolate to given location
   void interpolate(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
