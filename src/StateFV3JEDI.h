@@ -14,9 +14,9 @@
 #include <boost/scoped_ptr.hpp>
 
 #include "FieldsFV3JEDI.h"
-#include "util/DateTime.h"
-#include "util/ObjectCounter.h"
-#include "util/Printable.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
 
 namespace eckit {
   class Configuration;
@@ -38,6 +38,7 @@ namespace oops {
 namespace fv3jedi {
   class GeometryFV3JEDI;
   class IncrementFV3JEDI;
+  class Nothing;
 
 /// FV3JEDI model state
 /*!
@@ -59,8 +60,13 @@ class StateFV3JEDI : public util::Printable,
   virtual ~StateFV3JEDI();
   StateFV3JEDI & operator=(const StateFV3JEDI &);
 
+/// Get state values at observation locations
+  void getValues(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void getValues(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &, Nothing &) const;
+
 /// Interpolate to observation location
   void interpolate(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
+  void interpolate(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &, const Nothing &) const;
 
 /// Interpolate full fields
   void changeResolution(const StateFV3JEDI & xx);

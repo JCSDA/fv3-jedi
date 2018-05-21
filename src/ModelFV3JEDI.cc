@@ -7,14 +7,14 @@
 
 #include "ModelFV3JEDI.h"
 
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "ModelBiasFV3JEDI.h"
 #include "FieldsFV3JEDI.h"
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
 #include "StateFV3JEDI.h"
 #include "eckit/config/Configuration.h"
-#include "util/DateTime.h"
+#include "oops/util/DateTime.h"
 #include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {

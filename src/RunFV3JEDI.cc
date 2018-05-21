@@ -2,7 +2,7 @@
 #include "RunFV3JEDI.h"
 
 #include "Fortran.h"
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "oops/runs/Run.h"
 #include "eckit/config/Configuration.h"
 #include <fstream>

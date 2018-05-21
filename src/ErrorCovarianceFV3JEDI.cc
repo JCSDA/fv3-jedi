@@ -9,7 +9,7 @@
 
 #include <cmath>
 
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "FieldsFV3JEDI.h"
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"

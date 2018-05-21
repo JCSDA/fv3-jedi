@@ -7,10 +7,10 @@
 
 #include <mpi.h>
 #include "eckit/config/Configuration.h"
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "UtilitiesFV3JEDI.h"
 #include <unistd.h>
-#include "util/abor1_cpp.h"
+#include "oops/util/abor1_cpp.h"
 
 namespace eckit {
   class Configuration;

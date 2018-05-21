@@ -17,10 +17,10 @@
 #include "oops/generic/UnstructuredGrid.h"
 #include "ufo/GeoVaLs.h"
 #include "ioda/Locations.h"
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
-#include "util/DateTime.h"
+#include "oops/util/DateTime.h"
 #include "UtilitiesFV3JEDI.h"
 
 // -----------------------------------------------------------------------------
@@ -102,6 +102,25 @@ void FieldsFV3JEDI::zero() {
 void FieldsFV3JEDI::dirac(const eckit::Configuration & config) {
   const eckit::Configuration * conf = &config;
   fv3jedi_field_dirac_f90(keyFlds_, &conf);
+}
+// -----------------------------------------------------------------------------
+void FieldsFV3JEDI::getValues(const ioda::Locations & locs, const oops::Variables & vars,
+                         ufo::GeoVaLs & gom) const {
+  const eckit::Configuration * conf = &vars.toFortran();
+  fv3jedi_field_interp_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+}
+// -----------------------------------------------------------------------------
+void FieldsFV3JEDI::getValuesTL(const ioda::Locations & locs, const oops::Variables & vars,
+                           ufo::GeoVaLs & gom) const {
+  const eckit::Configuration * conf = &vars.toFortran();
+
+  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+}
+// -----------------------------------------------------------------------------
+void FieldsFV3JEDI::getValuesAD(const ioda::Locations & locs, const oops::Variables & vars,
+                           const ufo::GeoVaLs & gom) {
+  const eckit::Configuration * conf = &vars.toFortran();
+  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::zero(const util::DateTime & time) {
