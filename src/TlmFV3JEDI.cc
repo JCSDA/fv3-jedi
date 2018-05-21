@@ -16,9 +16,9 @@
 #include "ModelFV3JEDI.h"
 #include "StateFV3JEDI.h"
 #include "FV3JEDITraits.h"
-#include "util/DateTime.h"
-#include "util/Logger.h"
-#include "util/abor1_cpp.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/Logger.h"
+#include "oops/util/abor1_cpp.h"
 #include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {

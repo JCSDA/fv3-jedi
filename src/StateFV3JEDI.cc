@@ -13,7 +13,7 @@
 #include "eckit/config/LocalConfiguration.h"
 #include "oops/base/Variables.h"
 #include "oops/generic/UnstructuredGrid.h"
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "ufo/GeoVaLs.h"
 #include "ioda/Locations.h"
 #include "ModelBiasFV3JEDI.h"
@@ -21,8 +21,9 @@
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "ModelFV3JEDI.h"
-#include "util/DateTime.h"
-#include "util/Duration.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/Duration.h"
+#include "Nothing.h"
 
 namespace fv3jedi {
 
@@ -85,9 +86,27 @@ StateFV3JEDI & StateFV3JEDI::operator=(const StateFV3JEDI & rhs) {
   return *this;
 }
 // -----------------------------------------------------------------------------
+/// Get state values at observation locations
+// -----------------------------------------------------------------------------
+void StateFV3JEDI::getValues(const ioda::Locations & locs, const oops::Variables & vars,
+                        ufo::GeoVaLs & cols) const {
+  fields_->getValues(locs, vars, cols);
+}
+// -----------------------------------------------------------------------------
+void StateFV3JEDI::getValues(const ioda::Locations & locs, const oops::Variables & vars,
+                        ufo::GeoVaLs & cols, Nothing &) const {
+  fields_->getValues(locs, vars, cols);
+}
+// -----------------------------------------------------------------------------
 /// Interpolate to observation location
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::interpolate(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
+  fields_->interpolate(locs, vars, cols);
+}
+// -----------------------------------------------------------------------------
+/// Interpolate to observation location
+// -----------------------------------------------------------------------------
+void StateFV3JEDI::interpolate(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols, const Nothing &) const {
   fields_->interpolate(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------

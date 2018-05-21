@@ -13,15 +13,16 @@
 #include "eckit/config/LocalConfiguration.h"
 #include "oops/base/Variables.h"
 #include "oops/generic/UnstructuredGrid.h"
-#include "util/Logger.h"
+#include "oops/util/Logger.h"
 #include "ufo/GeoVaLs.h"
 #include "ioda/Locations.h"
 #include "ErrorCovarianceFV3JEDI.h"
 #include "FieldsFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
 #include "StateFV3JEDI.h"
-#include "util/DateTime.h"
-#include "util/Duration.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/Duration.h"
+#include "Nothing.h"
 
 namespace fv3jedi {
 
@@ -123,13 +124,13 @@ void IncrementFV3JEDI::random() {
 // -----------------------------------------------------------------------------
 /// Interpolate to observation location
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateTL(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols) const {
+void IncrementFV3JEDI::interpolateTL(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols, const Nothing &) const {
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" << *fields_ << std::endl;
   fields_->interpolateTL(locs, vars, cols);
   oops::Log::debug() << "IncrementFV3JEDI::interpolateTL gom " << cols << std::endl;
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs, const oops::Variables & vars, const ufo::GeoVaLs & cols) {
+void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs, const oops::Variables & vars, const ufo::GeoVaLs & cols, const Nothing &) {
   oops::Log::debug() << "IncrementFV3JEDI::interpolateAD gom " << cols << std::endl;
   oops::Log::debug() << "IncrementFV3JEDI::interpolateAD fields in" << *fields_ << std::endl;
   fields_->interpolateAD(locs, vars, cols);
@@ -139,6 +140,18 @@ void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs, const oops::V
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::define(oops::UnstructuredGrid & ug) const {
   oops::Log::warning() << "IncrementFV3JEDI::define undefined!!!" << std::endl;
+}
+// -----------------------------------------------------------------------------
+/// Get increment values at observation locations
+// -----------------------------------------------------------------------------
+void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs, const oops::Variables & vars,
+                              ufo::GeoVaLs & cols, const Nothing &) const {
+  fields_->getValuesTL(locs, vars, cols);
+}
+// -----------------------------------------------------------------------------
+void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs, const oops::Variables & vars,
+                             const ufo::GeoVaLs & cols, const Nothing &) {
+  fields_->getValuesAD(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
