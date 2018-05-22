@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 
 #User input required for the follwing:
-plot_diff = 0         #Plot path1/file - path2/file
-cube = 96
-filetype = 'pdf'
+plot_diff = 1         #Plot path1/file - path2/file
+cube = 48
+filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = 'fv_core.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20170801.000000.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
@@ -134,7 +134,7 @@ fp[:,2*npx:3*npx] = np.concatenate([f12[8,:,:], f12[9,:,:], f12[10,:,:], f12[11,
 fp = np.flipud(np.transpose(fp))
 
 #Contour levels
-maxf = np.nanmax(fp)
+maxf = np.nanmax(np.abs(fp))
 minf = np.nanmin(fp)
 
 if minf < 0:
@@ -147,7 +147,6 @@ ctic = np.arange(minf,maxf+incf,incf)
 
 #Colormap
 cmap = plt.cm.seismic
-#cmap.set_under(color='white')
 
 itit = '  '
 if plot_diff == 1:
@@ -284,3 +283,5 @@ plt.axis('equal')
 fig.patch.set_facecolor('grey')
 
 plt.savefig('CubedSpherePlot_Field-'+readvar+'_Level-'+str(plot_level)+'.'+filetype, bbox_inches='tight',facecolor=fig.get_facecolor())
+
+plt.show()
