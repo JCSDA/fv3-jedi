@@ -283,5 +283,3 @@ plt.axis('equal')
 fig.patch.set_facecolor('grey')
 
 plt.savefig('CubedSpherePlot_Field-'+readvar+'_Level-'+str(plot_level)+'.'+filetype, bbox_inches='tight',facecolor=fig.get_facecolor())
-
-plt.show()
