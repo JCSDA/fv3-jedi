@@ -642,7 +642,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   use datetime_mod
   use fckit_log_module, only : log
   use constants_mod, only: pi=>pi_8
-!  use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, test1_advection_hadley
+  use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, test1_advection_hadley
   
   !FV3 Test Cases
   use fv_arrays_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
@@ -744,8 +744,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
               rlon = deg_to_rad*geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
-              !Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
-              !                                 phis0,ps,rho0,hum0,q1,q2,q3,q4)
+              Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
+                                               phis0,ps,rho0,hum0,q1,q2,q3,q4)
 
               fld%Atm%phis(i,j) = phis0
 
@@ -755,11 +755,11 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
                  pe1 = geom%ak(k) + geom%bk(k)*ps
                  pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
                  pk = 0.5_kind_real * (pe1+pe2)
-                 !Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
-                 !                                 phis0,ps0,rho0,hum0,q1,q2,q3,q4)
+                 Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
+                                                  phis0,ps0,rho0,hum0,q1,q2,q3,q4)
 
-                 !fld%Atm%u(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
-                 !fld%Atm%v(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
+                 fld%Atm%u(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
+                 fld%Atm%v(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
                  If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
                  fld%Atm%pt(i,j,k) = t0
                  fld%Atm%delp(i,j,k) = pe2-pe1
@@ -781,8 +781,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
               rlon = deg_to_rad*geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
-              !Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
-              !                            t0,phis0,ps,rho0,hum0,q1)
+              Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
+                                          t0,phis0,ps,rho0,hum0,q1)
 
               fld%Atm%phis(i,j) = phis0
 
@@ -792,11 +792,11 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
                  pe1 = geom%ak(k) + geom%bk(k)*ps
                  pe2 = geom%ak(k+1) + geom%bk(k+1)*ps
                  pk = 0.5_kind_real * (pe1+pe2)
-                 !Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
-                 !                            t0,phis0,ps,rho0,hum0,q1)
+                 Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
+                                             t0,phis0,ps,rho0,hum0,q1)
 
-                 !fld%Atm%u(i,j,k) = u0 !ATTN comment above
-                 !fld%Atm%v(i,j,k) = v0
+                 fld%Atm%u(i,j,k) = u0 !ATTN comment above
+                 fld%Atm%v(i,j,k) = v0
                  If (.not.fld%Atm%hydrostatic) fld%Atm%w(i,j,k) = w0
                  fld%Atm%pt(i,j,k) = t0
                  fld%Atm%delp(i,j,k) = pe2-pe1
