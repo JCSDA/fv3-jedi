@@ -701,7 +701,7 @@
                    "Jo": {"ObsTypes": [{"ObsType": "Radiosonde",
                                         "ObsData": {"ObsDataIn": {"obsfile": "../../ufo/test/Data/diag_t_01_wprofiles.nc4"},
                    				 "ObsDataOut": {"obsfile": "Data/fv3jedi.3dvar.obt"},
-                   				 "obsvalue": "ObsVal"},
+                   				 "obsvalue": "Observation"},
                                         "Covariance": { "covariance": "diagonal",
                    				   "obserror": "ObsErr"}}]}},
 "minimizer": { "algorithm": "DRIPCG"},
