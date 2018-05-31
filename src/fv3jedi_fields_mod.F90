@@ -577,6 +577,7 @@ subroutine read_file(fld, c_conf, vdate)
   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%Atm%vfrac , domain=fld%geom%domain)
   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%Atm%stc   , domain=fld%geom%domain)
   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%Atm%smc   , domain=fld%geom%domain)
+  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%Atm%snwdph, domain=fld%geom%domain)
   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%Atm%f10m  , domain=fld%geom%domain)
 
   call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
@@ -1355,7 +1356,7 @@ real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
 logical :: do_interp
 
-integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
+integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,i,j
 
 integer :: ti_q, ti_ql, ti_qi, ti_o3
 
@@ -1364,35 +1365,48 @@ real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
 real(kind=kind_real), allocatable :: prs (:,:,:) !Pressure Pa, midpoint
 real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
 
-!Local temperature variables
-real(kind=kind_real), allocatable :: Tv(:,:,:) !Virtual temperature K
-
 !Local CRTM moisture variables
 real(kind=kind_real), allocatable :: ql_ade(:,:,:) !Cloud liq water kgm^2
 real(kind=kind_real), allocatable :: qi_ade(:,:,:) !Cloud ice water kgm^2
 real(kind=kind_real), allocatable :: ql_efr(:,:,:) !Cloud effective radius microns
 real(kind=kind_real), allocatable :: qi_efr(:,:,:) !Cloud effective radium microns
-real(kind=kind_real), allocatable :: qmr(:,:,:) !Moisture mixing ratio
+real(kind=kind_real), allocatable :: qmr(:,:,:)    !Moisture mixing ratio
+real(kind=kind_real), allocatable :: water_coverage_m(:,:) !Water coverage, model grid
 
 !Local CRTM surface variables
-integer             , allocatable :: vegetation_type(:,:)          !Index of vege type              | surface(1)%Vegetation_Type
-integer             , allocatable :: land_type(:,:)                !Index of land type              | surface(1)%Land_Type
-integer             , allocatable :: soil_type(:,:)                !Index of soil type              | surface(1)%Soil_Type
-real(kind=kind_real), allocatable :: wind_speed(:,:)               !10 meter wind speed m/s         | surface(1)%wind_speed
-real(kind=kind_real), allocatable :: wind_direction(:,:)           !10 meter wind direction degrees | surface(1)%wind_direction
-real(kind=kind_real), allocatable :: water_coverage(:,:)           !Fraction of water coverage      | surface(1)%water_coverage
-real(kind=kind_real), allocatable :: land_coverage(:,:)            !Fraction of land coverage       | surface(1)%land_coverage
-real(kind=kind_real), allocatable :: ice_coverage(:,:)             !Fraction of ice coverage        | surface(1)%ice_coverage
-real(kind=kind_real), allocatable :: snow_coverage(:,:)            !Fraction of snow coverage       | surface(1)%snow_coverage
-real(kind=kind_real), allocatable :: lai(:,:)                      !Leaf area index                 ! surface(1)%lai
-real(kind=kind_real), allocatable :: water_temperature(:,:)        !Water temp (K)                  | surface(1)%water_temperature    
-real(kind=kind_real), allocatable :: land_temperature(:,:)         !Land temp (K)                   | surface(1)%land_temperature     
-real(kind=kind_real), allocatable :: ice_temperature(:,:)          !Ice temp (K)                    | surface(1)%ice_temperature      
-real(kind=kind_real), allocatable :: snow_temperature(:,:)         !Snow temp (K)                   | surface(1)%snow_temperature     
-real(kind=kind_real), allocatable :: soil_moisture_content(:,:)    !Soil moisture content           | surface(1)%soil_moisture_content
-real(kind=kind_real), allocatable :: vegetation_fraction(:,:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
-real(kind=kind_real), allocatable :: soil_temperature(:,:)         !Soil temperature                | surface(1)%soil_temperature     
-real(kind=kind_real), allocatable :: snow_depth(:,:)               !Snow depth                      | surface(1)%snow_depth           
+integer             , allocatable :: vegetation_type(:)          !Index of vege type              | surface(1)%Vegetation_Type
+integer             , allocatable :: land_type(:)                !Index of land type              | surface(1)%Land_Type
+integer             , allocatable :: soil_type(:)                !Index of soil type              | surface(1)%Soil_Type
+real(kind=kind_real), allocatable :: wind_speed(:)               !10 meter wind speed m/s         | surface(1)%wind_speed
+real(kind=kind_real), allocatable :: wind_direction(:)           !10 meter wind direction degrees | surface(1)%wind_direction
+real(kind=kind_real), allocatable :: water_coverage(:)           !Fraction of water coverage      | surface(1)%water_coverage
+real(kind=kind_real), allocatable :: land_coverage(:)            !Fraction of land coverage       | surface(1)%land_coverage
+real(kind=kind_real), allocatable :: ice_coverage(:)             !Fraction of ice coverage        | surface(1)%ice_coverage
+real(kind=kind_real), allocatable :: snow_coverage(:)            !Fraction of snow coverage       | surface(1)%snow_coverage
+real(kind=kind_real), allocatable :: lai(:)                      !Leaf area index                 ! surface(1)%lai
+real(kind=kind_real), allocatable :: water_temperature(:)        !Water temp (K)                  | surface(1)%water_temperature    
+real(kind=kind_real), allocatable :: land_temperature(:)         !Land temp (K)                   | surface(1)%land_temperature     
+real(kind=kind_real), allocatable :: ice_temperature(:)          !Ice temp (K)                    | surface(1)%ice_temperature      
+real(kind=kind_real), allocatable :: snow_temperature(:)         !Snow temp (K)                   | surface(1)%snow_temperature     
+real(kind=kind_real), allocatable :: soil_moisture_content(:)    !Soil moisture content           | surface(1)%soil_moisture_content
+real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
+real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
+real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
+
+integer :: nn
+real(kind=kind_real), allocatable :: weights_sfc(:,:)
+integer             , allocatable :: slmsk(:,:)
+real(kind=kind_real), allocatable :: sheleg(:,:)
+real(kind=kind_real), allocatable :: tsea(:,:)
+integer             , allocatable :: vtype(:,:)
+integer             , allocatable :: stype(:,:)
+real(kind=kind_real), allocatable :: vfrac(:,:)
+real(kind=kind_real), allocatable :: stc(:,:)
+real(kind=kind_real), allocatable :: smc(:,:)
+real(kind=kind_real), allocatable :: snwdph(:,:)
+real(kind=kind_real), allocatable :: u_srf(:,:)
+real(kind=kind_real), allocatable :: v_srf(:,:)
+real(kind=kind_real), allocatable :: f10m(:,:)
 
 
 ! Grid convenience
@@ -1441,32 +1455,57 @@ ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
 
 ! Get CRTM surface variables
 ! ----------------------
-allocate(land_type(isd:ied,jsd:jed))
-allocate(vegetation_type(isd:ied,jsd:jed))
-allocate(soil_type(isd:ied,jsd:jed))
-allocate(wind_speed(isd:ied,jsd:jed))
-allocate(wind_direction(isd:ied,jsd:jed))
-allocate(water_coverage(isd:ied,jsd:jed))
-allocate(land_coverage(isd:ied,jsd:jed))
-allocate(ice_coverage(isd:ied,jsd:jed))
-allocate(snow_coverage(isd:ied,jsd:jed))
-allocate(lai(isd:ied,jsd:jed))
-allocate(water_temperature(isd:ied,jsd:jed))
-allocate(land_temperature(isd:ied,jsd:jed))
-allocate(ice_temperature(isd:ied,jsd:jed))
-allocate(snow_temperature(isd:ied,jsd:jed))
-allocate(soil_moisture_content(isd:ied,jsd:jed))
-allocate(vegetation_fraction(isd:ied,jsd:jed))
-allocate(soil_temperature(isd:ied,jsd:jed))
-allocate(snow_depth(isd:ied,jsd:jed))
+allocate(wind_speed(nobs))
+allocate(wind_direction(nobs))
+allocate(land_type(nobs))
+allocate(vegetation_type(nobs))
+allocate(soil_type(nobs))
+allocate(water_coverage(nobs))
+allocate(land_coverage(nobs))
+allocate(ice_coverage(nobs))
+allocate(snow_coverage(nobs))
+allocate(lai(nobs))
+allocate(water_temperature(nobs))
+allocate(land_temperature(nobs))
+allocate(ice_temperature(nobs))
+allocate(snow_temperature(nobs))
+allocate(soil_moisture_content(nobs))
+allocate(vegetation_fraction(nobs))
+allocate(soil_temperature(nobs))
+allocate(snow_depth(nobs))
 
-call crtm_surface( fld%geom, fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
-                   fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, &
-                   land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
-                   snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
-                   snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth )
+nn = 4
+allocate(weights_sfc(locs%nlocs,nn))
+allocate(slmsk(locs%nlocs,nn))
+allocate(sheleg(locs%nlocs,nn))
+allocate(tsea(locs%nlocs,nn))
+allocate(vtype(locs%nlocs,nn))
+allocate(stype(locs%nlocs,nn))
+allocate(vfrac(locs%nlocs,nn))
+allocate(stc(locs%nlocs,nn))
+allocate(smc(locs%nlocs,nn))
+allocate(snwdph(locs%nlocs,nn))
+allocate(u_srf(locs%nlocs,nn))
+allocate(v_srf(locs%nlocs,nn))
+allocate(f10m(locs%nlocs,nn))
 
-call sfc_10m_winds(fld%geom,fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m,wind_speed,wind_direction)
+
+
+call crtm_surface_neighbours( fld%geom,locs%nlocs,ngrid,deg2rad*locs%lat(:),deg2rad*locs%lon(:),nn,weights_sfc,&
+                              fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
+                              fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, fld%Atm%snwdph, &
+                              fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m, &
+                              slmsk, sheleg, tsea, vtype, &
+                              stype, vfrac, stc, smc, snwdph, &
+                              u_srf, v_srf, f10m )
+!
+!call crtm_surface( fld%geom, nobs, nn, weights_sfc, slmsk, sheleg, tsea, vtype, &
+!                   stype, vfrac, stc, smc, snwdph, &
+!                   u_srf, v_srf, f10m, &
+!                   land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
+!                   snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
+!                   snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
+!                   wind_speed, wind_direction )
 
 ! Get CRTM moisture variables
 ! ---------------------------
@@ -1475,9 +1514,17 @@ allocate(qi_ade(isd:ied,jsd:jed,npz))
 allocate(ql_efr(isd:ied,jsd:jed,npz))
 allocate(qi_efr(isd:ied,jsd:jed,npz))
 allocate(qmr(isd:ied,jsd:jed,npz))
+allocate(water_coverage_m(isd:ied,jsd:jed))
 
 !TODO Is it water_coverage or sea_coverage fed in here?
-call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage,fld%Atm%q(:,:,:,ti_q), &
+water_coverage_m = 0.0_kind_real
+do j = jsc,jec
+  do i = isc,iec
+    if (fld%Atm%slmsk(i,j) == 0) water_coverage_m(i,j) = 1.0_kind_real
+  enddo
+enddo
+
+call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,ti_q), &
                    fld%Atm%q(:,:,:,ti_ql),fld%Atm%q(:,:,:,ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
 
 call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,ti_q),qmr)
@@ -1500,6 +1547,7 @@ do jvar = 1, vars%nv
   ! Convert to observation variables/units
   ! --------------------------------------
   select case (trim(vars%fldnames(jvar)))
+
 
   case ("temperature")
 
@@ -1588,128 +1636,110 @@ do jvar = 1, vars%nv
   case ("Water_Fraction")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = water_coverage
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = water_coverage
 
   case ("Land_Fraction")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = land_coverage
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = land_coverage
 
   case ("Ice_Fraction")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = ice_coverage
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = ice_coverage
 
   case ("Snow_Fraction")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = snow_coverage
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = snow_coverage
 
   case ("Water_Temperature")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = water_temperature
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = water_temperature
 
   case ("Land_Temperature")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = land_temperature
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = land_temperature
 
   case ("Ice_Temperature")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = ice_temperature
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = ice_temperature
 
   case ("Snow_Temperature")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = snow_temperature
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = snow_temperature
 
   case ("Snow_Depth")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = snow_depth
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = snow_depth
 
   case ("Vegetation_Fraction")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = vegetation_fraction
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = vegetation_fraction
 
   case ("Sfc_Wind_Speed")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = wind_speed
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = wind_speed
 
   case ("Sfc_Wind_Direction")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = wind_direction
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = wind_direction
 
   case ("Lai")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = lai
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = lai
 
   case ("Soil_Moisture")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = soil_moisture_content
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = soil_moisture_content
 
   case ("Soil_Temperature")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = soil_temperature
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = soil_temperature
 
   case ("Land_Type_Index")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = land_type
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = land_type
 
   case ("Vegetation_Type")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = vegetation_type
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = vegetation_type
 
   case ("Soil_Type")
 
    nvl = 1
-   do_interp = .true.
-   geoval2(:,:,1) = soil_type
-   geoval => geoval2
+   do_interp = .false.
+   obs_field(:,1) = soil_type
 
   case default
 
@@ -1743,6 +1773,8 @@ do jvar = 1, vars%nv
       call pbump%apply_obsop(mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
+  else
+    gom%geovals(jvar)%vals(nvl,:) = obs_field(:,1)
   endif
 
   nullify(geoval)
@@ -1752,6 +1784,48 @@ enddo
 deallocate(geovalm,geovale,geoval2)
 deallocate(mod_field)
 deallocate(obs_field)
+
+deallocate(prsi)
+deallocate(prs)
+deallocate(logp)
+deallocate(ql_ade)
+deallocate(qi_ade)
+deallocate(ql_efr)
+deallocate(qi_efr)
+deallocate(qmr)
+deallocate(water_coverage_m)
+deallocate(vegetation_type)
+deallocate(land_type)
+deallocate(soil_type)
+deallocate(wind_speed)
+deallocate(wind_direction)
+deallocate(water_coverage)
+deallocate(land_coverage)
+deallocate(ice_coverage)
+deallocate(snow_coverage)
+deallocate(lai)
+deallocate(water_temperature)
+deallocate(land_temperature)
+deallocate(ice_temperature)
+deallocate(snow_temperature)
+deallocate(soil_moisture_content)
+deallocate(vegetation_fraction)
+deallocate(soil_temperature)
+deallocate(snow_depth)
+
+deallocate(weights_sfc)
+deallocate(slmsk)
+deallocate(sheleg)
+deallocate(tsea)
+deallocate(vtype)
+deallocate(stype)
+deallocate(vfrac)
+deallocate(stc)
+deallocate(smc)
+deallocate(snwdph)
+deallocate(u_srf)
+deallocate(v_srf)
+deallocate(f10m)
 
 !write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 !write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
@@ -2052,7 +2126,6 @@ gom%geovals(jvar)%nobs = nobs
 gom%geovals(jvar)%vals = 0.0_kind_real
 
 gom%linit  = .true.
-gom%lalloc = .true.
 
 end subroutine allocate_geovals_vals
 

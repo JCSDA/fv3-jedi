@@ -35,6 +35,7 @@ type fv_atmos_type
   real(kind=kind_real), allocatable, dimension(:,:)   :: vfrac
   real(kind=kind_real), allocatable, dimension(:,:,:) :: stc
   real(kind=kind_real), allocatable, dimension(:,:,:) :: smc
+  real(kind=kind_real), allocatable, dimension(:,:)   :: snwdph
   real(kind=kind_real), allocatable, dimension(:,:)   :: u_srf
   real(kind=kind_real), allocatable, dimension(:,:)   :: v_srf
   real(kind=kind_real), allocatable, dimension(:,:)   :: f10m
@@ -114,6 +115,7 @@ subroutine allocate_fv_atmos_type(Atm, isd, ied, jsd, jed, &
   if (.not.allocated(Atm%vfrac )) allocate(Atm%vfrac (isd:ied,jsd:jed))
   if (.not.allocated(Atm%stc   )) allocate(Atm%stc   (isd:ied,jsd:jed,4))
   if (.not.allocated(Atm%smc   )) allocate(Atm%smc   (isd:ied,jsd:jed,4))
+  if (.not.allocated(Atm%u_srf )) allocate(Atm%snwdph(isd:ied,jsd:jed))
   if (.not.allocated(Atm%u_srf )) allocate(Atm%u_srf (isd:ied,jsd:jed))
   if (.not.allocated(Atm%v_srf )) allocate(Atm%v_srf (isd:ied,jsd:jed))
   if (.not.allocated(Atm%f10m  )) allocate(Atm%f10m  (isd:ied,jsd:jed))
