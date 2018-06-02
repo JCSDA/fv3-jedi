@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Variable transforms on wind variables for fv3-jedi 
+!> Variable transforms/interpolation for surface variables in fv3-jedi 
 !> Daniel Holdaway, NASA/JCSDA
 
 module surface_vt_mod
@@ -14,7 +14,12 @@ use crtm_module, only: crtm_irlandcoeff_classification
 use fv3jedi_constants, only: rad2deg, deg2rad, pi
 
 implicit none
-public
+public crtm_surface
+
+interface crtm_surface_kdtree_getfieldneighbours
+ module procedure crtm_surface_kdtree_getfieldneighbours_int
+ module procedure crtm_surface_kdtree_getfieldneighbours_real
+end interface
 
 contains
 
@@ -22,8 +27,9 @@ contains
 ! Surface quantities in the form needed by the crtm ------------------------- 
 !----------------------------------------------------------------------------
 
-subroutine crtm_surface( geom, nobs, nn, weights, slmsk, sheleg, tsea, vtype, & 
-                         stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m, &
+subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
+                         fld_slmsk, fld_sheleg, fld_tsea, fld_vtype, fld_stype, fld_vfrac, fld_stc, &
+                         fld_smc, fld_snwdph, fld_u_srf, fld_v_srf, fld_f10m, &
                          land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
                          snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                          snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
@@ -32,55 +38,41 @@ subroutine crtm_surface( geom, nobs, nn, weights, slmsk, sheleg, tsea, vtype, &
  implicit none
 
  !Arguments
- type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- integer, intent(in)               :: nobs, nn
-
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: weights    !Weights applied to neighbours
- integer             , intent(inout), dimension(nobs,nn) :: slmsk
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: sheleg
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: tsea
- integer             , intent(inout), dimension(nobs,nn) :: vtype
- integer             , intent(inout), dimension(nobs,nn) :: stype
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: vfrac
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: snwdph
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: stc
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: smc
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: u_srf
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: v_srf
- real(kind=kind_real), intent(inout), dimension(nobs,nn) :: f10m
-
- !Incase of need for two time levels
- integer             , dimension(nobs,nn) :: slmskp
- real(kind=kind_real), dimension(nobs,nn) :: shelegp
- real(kind=kind_real), dimension(nobs,nn) :: tseap
- integer             , dimension(nobs,nn) :: vtypep
- integer             , dimension(nobs,nn) :: stypep
- real(kind=kind_real), dimension(nobs,nn) :: vfracp
- real(kind=kind_real), dimension(nobs,nn) :: snwdphp
- real(kind=kind_real), dimension(nobs,nn) :: stcp
- real(kind=kind_real), dimension(nobs,nn) :: smcp
- real(kind=kind_real), dimension(nobs,nn) :: u_srfp
- real(kind=kind_real), dimension(nobs,nn) :: v_srfp
- real(kind=kind_real), dimension(nobs,nn) :: f10mp
-
- integer             , intent(out), dimension(nobs) :: vegetation_type
- integer             , intent(out), dimension(nobs) :: land_type
- integer             , intent(out), dimension(nobs) :: soil_type
- real(kind=kind_real), intent(out), dimension(nobs) :: water_coverage
- real(kind=kind_real), intent(out), dimension(nobs) :: land_coverage
- real(kind=kind_real), intent(out), dimension(nobs) :: ice_coverage
- real(kind=kind_real), intent(out), dimension(nobs) :: snow_coverage
- real(kind=kind_real), intent(out), dimension(nobs) :: lai
- real(kind=kind_real), intent(out), dimension(nobs) :: water_temperature
- real(kind=kind_real), intent(out), dimension(nobs) :: land_temperature
- real(kind=kind_real), intent(out), dimension(nobs) :: ice_temperature
- real(kind=kind_real), intent(out), dimension(nobs) :: snow_temperature
- real(kind=kind_real), intent(out), dimension(nobs) :: soil_moisture_content
- real(kind=kind_real), intent(out), dimension(nobs) :: vegetation_fraction
- real(kind=kind_real), intent(out), dimension(nobs) :: soil_temperature
- real(kind=kind_real), intent(out), dimension(nobs) :: snow_depth
- real(kind=kind_real), intent(out), dimension(nobs) :: wind_speed
- real(kind=kind_real), intent(out), dimension(nobs) :: wind_direction
+ type(fv3jedi_geom)  , intent(in)  :: geom !Geometry for the model
+ integer             , intent(in)  :: nobs
+ integer             , intent(in)  :: ngrid
+ real(kind=kind_real), intent(in)  :: lats_ob(nobs)
+ real(kind=kind_real), intent(in)  :: lons_ob(nobs)
+ integer             , intent(in)  :: fld_slmsk (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_sheleg(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_tsea  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ integer             , intent(in)  :: fld_vtype (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ integer             , intent(in)  :: fld_stype (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_vfrac (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_stc   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4)
+ real(kind=kind_real), intent(in)  :: fld_smc   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4)
+ real(kind=kind_real), intent(in)  :: fld_snwdph(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_u_srf (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_v_srf (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real), intent(in)  :: fld_f10m  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ integer             , intent(out) :: vegetation_type(nobs)
+ integer             , intent(out) :: land_type(nobs)
+ integer             , intent(out) :: soil_type(nobs)
+ real(kind=kind_real), intent(out) :: water_coverage(nobs)
+ real(kind=kind_real), intent(out) :: land_coverage(nobs)
+ real(kind=kind_real), intent(out) :: ice_coverage(nobs)
+ real(kind=kind_real), intent(out) :: snow_coverage(nobs)
+ real(kind=kind_real), intent(out) :: lai(nobs)
+ real(kind=kind_real), intent(out) :: water_temperature(nobs)
+ real(kind=kind_real), intent(out) :: land_temperature(nobs)
+ real(kind=kind_real), intent(out) :: ice_temperature(nobs)
+ real(kind=kind_real), intent(out) :: snow_temperature(nobs)
+ real(kind=kind_real), intent(out) :: soil_moisture_content(nobs)
+ real(kind=kind_real), intent(out) :: vegetation_fraction(nobs)
+ real(kind=kind_real), intent(out) :: soil_temperature(nobs)
+ real(kind=kind_real), intent(out) :: snow_depth(nobs)
+ real(kind=kind_real), intent(out) :: wind_speed(nobs)
+ real(kind=kind_real), intent(out) :: wind_direction(nobs)
 
  !Locals
  real(kind=kind_real), parameter :: minsnow = 1.0_kind_real / 10.0_kind_real
@@ -141,17 +133,97 @@ subroutine crtm_surface( geom, nobs, nn, weights, slmsk, sheleg, tsea, vtype, &
   integer, parameter, dimension(1:SOIL_N_TYPES) :: map_soil_to_crtm=(/1, &
     1, 4, 2, 2, 8, 7, 2, 6, 5, 2, 3, 8, 1, 6, 9/)
 
+ !For interpolation
+ integer :: nn
+ real(kind=kind_real), allocatable, dimension(:,:) :: interp_w
+ integer             , allocatable, dimension(:,:) :: interp_i
+ integer             , allocatable, dimension(:,:) :: slmsk
+ real(kind=kind_real), allocatable, dimension(:,:) :: sheleg
+ real(kind=kind_real), allocatable, dimension(:,:) :: tsea
+ integer             , allocatable, dimension(:,:) :: vtype
+ integer             , allocatable, dimension(:,:) :: stype
+ real(kind=kind_real), allocatable, dimension(:,:) :: vfrac
+ real(kind=kind_real), allocatable, dimension(:,:) :: snwdph
+ real(kind=kind_real), allocatable, dimension(:,:) :: stc
+ real(kind=kind_real), allocatable, dimension(:,:) :: smc
+ real(kind=kind_real), allocatable, dimension(:,:) :: u_srf
+ real(kind=kind_real), allocatable, dimension(:,:) :: v_srf
+ real(kind=kind_real), allocatable, dimension(:,:) :: f10m
+ integer             , allocatable, dimension(:,:) :: slmskp
+ real(kind=kind_real), allocatable, dimension(:,:) :: shelegp
+ real(kind=kind_real), allocatable, dimension(:,:) :: tseap
+ integer             , allocatable, dimension(:,:) :: vtypep
+ integer             , allocatable, dimension(:,:) :: stypep
+ real(kind=kind_real), allocatable, dimension(:,:) :: vfracp
+ real(kind=kind_real), allocatable, dimension(:,:) :: snwdphp
+ real(kind=kind_real), allocatable, dimension(:,:) :: stcp
+ real(kind=kind_real), allocatable, dimension(:,:) :: smcp
+ real(kind=kind_real), allocatable, dimension(:,:) :: u_srfp
+ real(kind=kind_real), allocatable, dimension(:,:) :: v_srfp
+ real(kind=kind_real), allocatable, dimension(:,:) :: f10mp
+
+!Number of weights
+nn = 4
+
+allocate(interp_w(nobs,nn))
+allocate(interp_i(nobs,nn))
+allocate(slmsk(nobs,nn))
+allocate(sheleg(nobs,nn))
+allocate(tsea(nobs,nn))
+allocate(vtype(nobs,nn))
+allocate(stype(nobs,nn))
+allocate(vfrac(nobs,nn))
+allocate(stc(nobs,nn))
+allocate(smc(nobs,nn))
+allocate(snwdph(nobs,nn))
+allocate(u_srf(nobs,nn))
+allocate(v_srf(nobs,nn))
+allocate(f10m(nobs,nn))
+
+allocate(slmskp(nobs,nn))
+allocate(shelegp(nobs,nn))
+allocate(tseap(nobs,nn))
+allocate(vtypep(nobs,nn))
+allocate(stypep(nobs,nn))
+allocate(vfracp(nobs,nn))
+allocate(stcp(nobs,nn))
+allocate(smcp(nobs,nn))
+allocate(snwdphp(nobs,nn))
+allocate(u_srfp(nobs,nn))
+allocate(v_srfp(nobs,nn))
+allocate(f10mp(nobs,nn))
 
  !Second time level option, zero for now
- slmskp = 0.0_kind_real
+ slmskp = 0
  shelegp = 0.0_kind_real
  tseap = 0.0_kind_real
  vtypep = 0.0_kind_real
- stypep = 0.0_kind_real
- vfracp = 0.0_kind_real
+ stypep = 0
+ vfracp = 0
  snwdphp = 0.0_kind_real
  stcp = 0.0_kind_real
  smcp = 0.0_kind_real
+ snwdphp = 0.0_kind_real
+ u_srfp = 0.0_kind_real
+ v_srfp = 0.0_kind_real
+ f10mp = 0.0_kind_real
+
+ !Get interpolation weight and index in global grid
+ call crtm_surface_kdtree_setup( geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i ) 
+
+ !Get field at nn neighbours
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_slmsk     , slmsk  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_sheleg    , sheleg )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_tsea      , tsea   )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_vtype     , vtype  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_stype     , stype  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_vfrac     , vfrac  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_stc(:,:,1), stc    )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_smc(:,:,1), smc    )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_snwdph    , snwdph )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_u_srf     , u_srf  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_v_srf     , v_srf  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_f10m      , f10m   )
 
  dtsfc  = 1.0_kind_real
  dtsfcp = 0.0_kind_real
@@ -181,10 +253,10 @@ subroutine crtm_surface( geom, nobs, nn, weights, slmsk, sheleg, tsea, vtype, &
 ! Stage 1, like deter_sfc in GSI
 ! ------------------------------
 
-    w00 = weights(n,1)
-    w10 = weights(n,2)
-    w01 = weights(n,3)
-    w11 = weights(n,4)
+    w00 = interp_w(n,1)
+    w10 = interp_w(n,2)
+    w01 = interp_w(n,3)
+    w11 = interp_w(n,4)
  
     istyp00 = slmsk(n,1)
     istyp10 = slmsk(n,2)
@@ -465,7 +537,6 @@ subroutine crtm_surface( geom, nobs, nn, weights, slmsk, sheleg, tsea, vtype, &
    soil_temperature(n)      = stp
    snow_depth(n)            = sn
 
-
  enddo
 
  deallocate(map_to_crtm_ir)
@@ -476,128 +547,52 @@ end subroutine crtm_surface
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine crtm_surface_neighbours( geom, nobs, ngrid, lats_ob, lons_ob, nn, weights, &
-                                    slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, &
-                                    u_srf, v_srf, f10m, &
-                                    slmsko, shelego, tseao, vtypeo, stypeo, vfraco, stco, smco, snwdpho, &
-                                    u_srfo, v_srfo, f10mo )
+subroutine crtm_surface_kdtree_setup( geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i )
 
 use mpp_mod, only: mpp_npes, mpp_pe
 use mpi
-
-!Return the neighbouring grid points and weights 
+use type_kdtree, only: kdtree_type
 
 implicit none
 
+!Arguments
 type(fv3jedi_geom)  , intent(in)    :: geom               !Model geometry
 integer             , intent(in)    :: nobs               !Number of obs on this processor
-integer             , intent(in)    :: ngrid              !Number of obs on this processor
+integer             , intent(in)    :: ngrid              !Number of grid points on this processor
 real(kind=kind_real), intent(in)    :: lats_ob(nobs)      !Observation locations, lats
 real(kind=kind_real), intent(in)    :: lons_ob(nobs)      !Observation locations, lons
-integer             , intent(in)    :: nn                 !Number of neighbours
+integer             , intent(in)    :: nn                 !Number of neighbours to get back
+real(kind=kind_real), intent(out)   :: interp_w(nobs,nn)  !Interpolation weights
+integer             , intent(out)   :: interp_i(nobs,nn)  !Interpolation indices (global unstructured grid)
 
-integer             , intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: slmsk
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: sheleg
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: tsea
-integer             , intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: vtype
-integer             , intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: stype
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: vfrac
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: snwdph
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4) :: stc
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4) :: smc
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: u_srf
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: v_srf
-real(kind=kind_real), intent(in), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)   :: f10m
-
-!Outputs on stencil used
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: weights    !Weights applied to neighbours
-integer             , intent(inout), dimension(nobs,nn) :: slmsko
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: shelego
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: tseao
-integer             , intent(inout), dimension(nobs,nn) :: vtypeo
-integer             , intent(inout), dimension(nobs,nn) :: stypeo
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: vfraco
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: snwdpho
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: stco
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: smco
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: u_srfo
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: v_srfo
-real(kind=kind_real), intent(inout), dimension(nobs,nn) :: f10mo
-
-real(kind=kind_real), allocatable, dimension(:,:) :: grid_loc, grid_glo
-real(kind=kind_real), allocatable, dimension(:)   :: grid_tmp
-real(kind=kind_real), allocatable, dimension(:,:,:,:) :: grid_glo_str
-real(kind=kind_real), allocatable, dimension(:,:,:) :: grid_obs
-
-integer :: isc,iec,jsc,jec, nvars, ngrid_glo, lowerb, upperb
-integer :: i,j,jj,n,t
-integer :: tind, iind, jind
-
-integer :: npes, peid, ierr, stquad
-integer, allocatable, dimension(:) :: ngridv, displs, rcvcnt
-
-real(kind=kind_real) :: llo(2), ll1(2), ll2(2), ll3(2), ll4(2), dist(4)
-real(kind=kind_real) :: dist_new, lats_gd, lons_gd
-
-integer :: ind_cor, ind_til, ind_ict, ind_jct, ind_lat, ind_lon, ind_wei
-integer :: tmin(4), imin(4), jmin(4)
-
-
-integer :: i1, i2, j1, j2
-
-! Processor info
-! --------------
-npes = mpp_npes()
-peid = mpp_pe()
-
-
-! Convenience
-! -----------
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
-
-
-! Create array holding all information that needs to be passed to ob location
-! ---------------------------------------------------------------------------
-
-nvars = 7 !Number of things to be passed
-
-ind_cor = 1
-ind_til = 2
-ind_ict = 3
-ind_jct = 4
-ind_lat = 5
-ind_lon = 6
-ind_wei = 7 !Always last as not allocated until ob procs
-
-allocate(grid_loc(ngrid,nvars-1))
-
-jj = 0
-do j = jsc,jec
-  do i = isc,iec
-
-     jj = jj + 1
-
-     !Bookkeeping of corners as the number of neighbours is different
-     grid_loc(jj,ind_cor) = 0.0_kind_real
-     if (i == 1          .and. j == 1         ) grid_loc(jj,ind_cor) = 1.0_kind_real !SW Corner
-     if (i == geom%npx-1 .and. j == 1         ) grid_loc(jj,ind_cor) = 2.0_kind_real !SE Corner
-     if (i == geom%npx-1 .and. j == geom%npy-1) grid_loc(jj,ind_cor) = 3.0_kind_real !NE Corner
-     if (i == 1          .and. j == geom%npy-1) grid_loc(jj,ind_cor) = 4.0_kind_real !NW Corner
-
-     grid_loc(jj,ind_til) = real(geom%ntile,kind_real)
-     grid_loc(jj,ind_ict) = real(i,kind_real)
-     grid_loc(jj,ind_jct) = real(j,kind_real)
-     grid_loc(jj,ind_lat) = deg2rad*geom%grid_lat(i,j)
-     grid_loc(jj,ind_lon) = deg2rad*geom%grid_lon(i,j)
-
-  enddo
-enddo
+!Locals
+integer :: npes, peid, ierr
+integer :: i, j, k, l, n, jj, lowerb, upperb, ngrid_glo
+real(kind=kind_real), allocatable :: grid_lat_loc(:), grid_lon_loc(:), grid_lat_glo(:), grid_lon_glo(:)
+integer, allocatable :: ngridv(:), displs(:), rcvcnt(:)
+logical, allocatable :: mask(:)
+integer, allocatable :: nn_index(:,:)
+real(kind=kind_real), allocatable :: nn_dist(:,:)
+type(kdtree_type) :: kdtree
+real(kind=kind_real) :: dist, tmplat(1), tmplon(1)
 
 ! Gather the model grid to all processors
 ! ---------------------------------------
+
+npes = mpp_npes()
+peid = mpp_pe()
+
+!Unstructured local grid
+allocate(grid_lat_loc(ngrid))
+allocate(grid_lon_loc(ngrid))
+jj = 0
+do j = geom%bd%jsc,geom%bd%jec
+  do i = geom%bd%isc,geom%bd%iec
+     jj = jj + 1
+     grid_lat_loc(jj) = geom%grid_lat(i,j)
+     grid_lon_loc(jj) = geom%grid_lon(i,j)
+  enddo
+enddo
 
 allocate(ngridv(0:npes-1))
 allocate(displs(0:npes-1))
@@ -625,110 +620,225 @@ enddo
 lowerb = displs(peid)+1
 upperb = displs(peid)+rcvcnt(peid)
 
-allocate(grid_glo(ngrid_glo,nvars-1))
-allocate(grid_tmp(ngrid_glo))
+allocate(grid_lat_glo(ngrid_glo))
+allocate(grid_lon_glo(ngrid_glo))
 
-do n = 1,nvars-1
-  grid_tmp(lowerb:upperb) = grid_loc(:,n)
-  call mpi_allgatherv(grid_tmp(lowerb), rcvcnt(peid), mpi_real8, grid_tmp, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
-  grid_glo(:,n) = grid_tmp
+grid_lat_glo(lowerb:upperb) = grid_lat_loc
+grid_lon_glo(lowerb:upperb) = grid_lon_loc
+
+call mpi_allgatherv(grid_lat_glo(lowerb), rcvcnt(peid), mpi_real8, grid_lat_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
+call mpi_allgatherv(grid_lon_glo(lowerb), rcvcnt(peid), mpi_real8, grid_lon_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
+
+
+!Create cover tree for gloval grid
+allocate(mask(ngrid_glo))
+mask = .true.
+
+call kdtree%create(ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
+
+
+allocate(nn_index(nobs,nn))
+allocate(nn_dist(nobs,nn))
+
+do k = 1,nobs
+
+  tmplon(1) = deg2rad*lons_ob(k)
+  tmplat(1) = deg2rad*lats_ob(k)
+
+  call kdtree%find_nearest_neighbors(tmplon(1),tmplat(1),nn,nn_index(k,:),nn_dist(k,:))
+
+  dist=sum(nn_dist(k,:))
+
+  do l = 1, nn
+     interp_w(k,l) = (dist-nn_dist(k,l))
+     interp_i(k,l) = nn_index(k,l)
+  end do
+  
+  interp_w(k,:) = interp_w(k,:) / sum(interp_w(k,:))
+  
 enddo
 
+!Deallocate
+call kdtree%delete
+deallocate(mask)
+deallocate(nn_index,nn_dist)
+deallocate(grid_lon_glo,grid_lat_glo)
+deallocate(grid_lat_loc,grid_lon_loc)
 deallocate(ngridv,displs,rcvcnt)
-deallocate(grid_tmp,grid_loc)
 
-!Everyone has entire grid_loc
+end subroutine crtm_surface_kdtree_setup
+
+!----------------------------------------------------------------------------
+!----------------------------------------------------------------------------
+
+subroutine crtm_surface_kdtree_getfieldneighbours_int( geom, nobs, ngrid, nn, interp_i, field_in, field_out )
+
+use mpp_mod, only: mpp_npes, mpp_pe
+use mpi
+
+implicit none
+
+!Arguments
+type(fv3jedi_geom)  , intent(in)  :: geom               !Model geometry
+integer             , intent(in)  :: nobs               !Number of obs on this processor
+integer             , intent(in)  :: ngrid              !Number of grid points on this processor
+integer             , intent(in)  :: nn                 !Number of neighbours
+integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
+
+integer             , intent(in)  :: field_in(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Fields in
+integer             , intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
+
+!Locals
+integer :: npes, peid, ierr
+integer :: i, j, k, l, n, jj, lowerb, upperb, ngrid_glo
+integer, allocatable :: field_loc(:), field_glo(:)
+integer, allocatable :: ngridv(:), displs(:), rcvcnt(:)
 
 
-! Reorganise to a structured global grid
-! --------------------------------------
-allocate(grid_glo_str(nvars-1,geom%ntiles,isc:iec,jsc:jec))
-grid_glo_str = 0.0_kind_real
+! Gather the model grid to all processors
+! ---------------------------------------
 
-do n = 1,nvars-1
-  do j = 1,ngrid_glo
+npes = mpp_npes()
+peid = mpp_pe()
 
-     tind = nint(grid_glo(j,ind_til))
-     iind = nint(grid_glo(j,ind_ict))
-     jind = nint(grid_glo(j,ind_jct))
-
-     grid_glo_str(n,tind,iind,jind) = grid_glo(j,n)
-
+!Unstructured local grid
+allocate(field_loc(ngrid))
+jj = 0
+do j = geom%bd%jsc,geom%bd%jec
+  do i = geom%bd%isc,geom%bd%iec
+     jj = jj + 1
+     field_loc(jj) = field_in(i,j)
   enddo
 enddo
 
-deallocate(grid_glo)
+allocate(ngridv(0:npes-1))
+allocate(displs(0:npes-1))
+allocate(rcvcnt(0:npes-1))
 
+ngridv = 0
+ngridv(peid) = ngrid
 
-! Loop over observations and compute weights and create array with fields at the neighbours
-! -----------------------------------------------------------------------------------------
-
-allocate(grid_obs(nobs,4,nvars))
-
-do n = 1,nobs
-
-  llo(1) = lons_ob(n)
-  llo(2) = lats_ob(n)
-
-  dist = 10.0e10
-  do j = jsc,jec
-    do i = isc,iec
-      do t = 1,geom%ntiles
-     
-        ll1(1) = grid_glo_str(ind_lon,t,i,j)
-        ll1(2) = grid_glo_str(ind_lat,t,i,j)
-        call great_circle_dist(llo,ll1,dist_new)
-
-        if (dist_new < dist(1)) then
-          dist(4) = dist(3)
-          dist(3) = dist(2)
-          dist(2) = dist(1)
-          dist(1) = dist_new
-          tmin(4) = tmin(3)
-          tmin(3) = tmin(2)
-          tmin(2) = tmin(1)
-          tmin(1) = t
-          imin(4) = imin(3)
-          imin(3) = imin(2)
-          imin(2) = imin(1)
-          imin(1) = i
-          jmin(4) = jmin(3)
-          jmin(3) = jmin(2)
-          jmin(2) = jmin(1)
-          jmin(1) = j
-        endif
-
-      enddo
-    enddo 
-  enddo
-
-  ll1(1) = grid_glo_str(ind_lon,tmin(1),imin(1),jmin(1))
-  ll1(2) = grid_glo_str(ind_lat,tmin(1),imin(1),jmin(1))
-  ll2(1) = grid_glo_str(ind_lon,tmin(2),imin(2),jmin(2))
-  ll2(2) = grid_glo_str(ind_lat,tmin(2),imin(2),jmin(2))
-  ll3(1) = grid_glo_str(ind_lon,tmin(3),imin(3),jmin(3))
-  ll3(2) = grid_glo_str(ind_lat,tmin(3),imin(3),jmin(3))
-  ll4(1) = grid_glo_str(ind_lon,tmin(4),imin(4),jmin(4))
-  ll4(2) = grid_glo_str(ind_lat,tmin(4),imin(4),jmin(4))
-
-  call bilin_interp_irregular(ll1,ll2,ll3,ll4,llo,grid_obs(n,:,ind_wei))
-
- 
-  !print*, 'corner', grid_glo_str(ind_cor,tmin,imin,jmin)
-
-  !print*, 'lats', grid_glo_str(ind_lat,tmin,i1,j1), grid_glo_str(ind_lat,tmin,i1,j2), grid_glo_str(ind_lat,tmin,i2,j1), grid_glo_str(ind_lat,tmin,i2,j2)
-  !print*, 'lons', grid_glo_str(ind_lat,tmin,i1,j1), grid_glo_str(ind_lat,tmin,i1,j2), grid_glo_str(ind_lat,tmin,i2,j1), grid_glo_str(ind_lat,tmin,i2,j2)
-
-call abor1_ftn("crtm_surface_neighbours done")
-
-
+do n = 0,npes-1
+   displs(n) = n
+   rcvcnt(n) = 1
 enddo
 
-deallocate(grid_glo_str)
+call mpi_allgatherv(ngridv(peid), 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+ngrid_glo = sum(ngridv)
 
-call abor1_ftn("crtm_surface_neighbours done")
+do n = 0,npes-1
+   rcvcnt(n) = ngridv(n)
+enddo
+displs(0) = 0
+do n = 1,npes-1
+   displs(n) = displs(n-1) + rcvcnt(n-1)
+enddo
 
-end subroutine crtm_surface_neighbours
+lowerb = displs(peid)+1
+upperb = displs(peid)+rcvcnt(peid)
+
+allocate(field_glo(ngrid_glo))
+
+field_glo(lowerb:upperb) = field_loc
+
+call mpi_allgatherv(field_glo(lowerb), rcvcnt(peid), mpi_int, field_glo, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+
+
+do k = 1,nobs
+   field_out(k,1) = field_glo(interp_i(k,1))
+   field_out(k,2) = field_glo(interp_i(k,2))
+   field_out(k,3) = field_glo(interp_i(k,3))
+   field_out(k,4) = field_glo(interp_i(k,4))
+enddo
+
+
+deallocate(field_glo)
+deallocate(ngridv,displs,rcvcnt)
+deallocate(field_loc)
+
+end subroutine crtm_surface_kdtree_getfieldneighbours_int
+
+subroutine crtm_surface_kdtree_getfieldneighbours_real( geom, nobs, ngrid, nn, interp_i, field_in, field_out )
+
+use mpp_mod, only: mpp_npes, mpp_pe
+use mpi
+
+!Arguments
+type(fv3jedi_geom)  , intent(in)  :: geom               !Model geometry
+integer             , intent(in)  :: nobs               !Number of obs on this processor
+integer             , intent(in)  :: ngrid              !Number of grid points on this processor
+integer             , intent(in)  :: nn                 !Number of neighbours
+integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
+
+real(kind=kind_real), intent(in)  :: field_in(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Fields in
+real(kind=kind_real), intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
+
+!Locals
+integer :: npes, peid, ierr
+integer :: i, j, k, l, n, jj, lowerb, upperb, ngrid_glo
+real(kind=kind_real), allocatable :: field_loc(:), field_glo(:)
+integer, allocatable :: ngridv(:), displs(:), rcvcnt(:)
+
+! Gather the model grid to all processors
+! ---------------------------------------
+
+npes = mpp_npes()
+peid = mpp_pe()
+
+!Unstructured local grid
+allocate(field_loc(ngrid))
+jj = 0
+do j = geom%bd%jsc,geom%bd%jec
+  do i = geom%bd%isc,geom%bd%iec
+     jj = jj + 1
+     field_loc(jj) = field_in(i,j)
+  enddo
+enddo
+
+allocate(ngridv(0:npes-1))
+allocate(displs(0:npes-1))
+allocate(rcvcnt(0:npes-1))
+
+ngridv = 0
+ngridv(peid) = ngrid
+
+do n = 0,npes-1
+   displs(n) = n
+   rcvcnt(n) = 1
+enddo
+
+call mpi_allgatherv(ngridv(peid), 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+ngrid_glo = sum(ngridv)
+
+do n = 0,npes-1
+   rcvcnt(n) = ngridv(n)
+enddo
+displs(0) = 0
+do n = 1,npes-1
+   displs(n) = displs(n-1) + rcvcnt(n-1)
+enddo
+
+lowerb = displs(peid)+1
+upperb = displs(peid)+rcvcnt(peid)
+
+allocate(field_glo(ngrid_glo))
+
+field_glo(lowerb:upperb) = field_loc
+
+call mpi_allgatherv(field_glo(lowerb), rcvcnt(peid), mpi_real8, field_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
+
+do k = 1,nobs
+   field_out(k,1) = field_glo(interp_i(k,1))
+   field_out(k,2) = field_glo(interp_i(k,2))
+   field_out(k,3) = field_glo(interp_i(k,3))
+   field_out(k,4) = field_glo(interp_i(k,4))
+enddo
+
+deallocate(field_glo)
+deallocate(ngridv,displs,rcvcnt)
+deallocate(field_loc)
+
+end subroutine crtm_surface_kdtree_getfieldneighbours_real
 
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
@@ -743,203 +853,6 @@ subroutine get_lai(lai_type,lai)
   !Needs to be figured out
 
   end subroutine get_lai
-
-!----------------------------------------------------------------------------
-!----------------------------------------------------------------------------
-
-  subroutine bilin_interp_irregular(ll1,ll2,ll3,ll4,llo,w)
-
-   implicit none
-   real(kind=kind_real), intent(in ) :: ll1(2), ll2(2), ll3(2), ll4(2), llo(2)
-   real(kind=kind_real), intent(out) :: w(4)
-
-   integer :: indin(4), indout(4),  tind
-
-   real(kind=kind_real) :: lats(4), latssort(2,4), tmp1, tmp2
-   real(kind=kind_real) :: lons(4), lonssort(2,4)
-   real(kind=kind_real) :: lat1, lat2, lat3, lat4
-   real(kind=kind_real) :: lon1, lon2, lon3, lon4
-
-   real(kind=kind_real) :: dll1(2), dll2(2)
-
-   real(kind=kind_real) :: dlat12, dlon12
-   real(kind=kind_real) :: dlat23, dlon23
-   real(kind=kind_real) :: dlat34, dlon34
-   real(kind=kind_real) :: dlat41, dlon41
-
-   real(kind=kind_real) :: s, t, t1, t2
-
-   integer :: j,k
-
-   !Index 1 of ll is lon
-   !Index 2 of ll is lat
-
-   indin(1) = 1
-   indin(2) = 2
-   indin(3) = 3
-   indin(4) = 4
-
-   lats(1) = ll1(1)
-   lats(2) = ll2(1)
-   lats(3) = ll3(1)
-   lats(4) = ll4(1)
-
-   lons(1) = ll1(2)
-   lons(2) = ll2(2)
-   lons(3) = ll3(2)
-   lons(4) = ll4(2)
-
-   !Sort to structure the points
-   ! 1 = SW
-   ! 2 = SE
-   ! 3 = NE
-   ! 4 = NW
-   latssort(1,:) = lats
-   latssort(2,:) = lons
-   indout = indin
-   do j = 1,3
-     do k = j,4
-       if (latssort(1,j) > latssort(1,k)) then
-          tmp1 = latssort(1,k)
-          tmp2 = latssort(2,k)
-          tind = indout(k)
-          latssort(1,k) = latssort(1,j)
-          latssort(1,j) = tmp1
-          latssort(2,k) = latssort(2,j)
-          latssort(2,j) = tmp2
-          indout(k) = indout(j)
-          indout(j) = tind
-       endif
-     enddo
-   enddo
-
-   if (latssort(2,1) < latssort(2,2)) then
-     lat1 = latssort(1,1)
-     lon1 = latssort(2,1)
-     lat2 = latssort(1,2)
-     lon2 = latssort(2,2)
-   else
-     lat2 = latssort(1,1)
-     lon2 = latssort(2,1)
-     lat1 = latssort(1,2)
-     lon1 = latssort(2,2)
-   endif
-   if (latssort(2,3) < latssort(2,4)) then
-     lat4 = latssort(1,3)
-     lon4 = latssort(2,3)
-     lat3 = latssort(1,4)
-     lon3 = latssort(2,4)
-   else
-     lat3 = latssort(1,3)
-     lon3 = latssort(2,3)
-     lat4 = latssort(1,4)
-     lon4 = latssort(2,4)
-   endif
-
-   print*, '1', lat1, lon1
-   print*, '2', lat2, lon2
-   print*, '3', lat3, lon3
-   print*, '4', lat4, lon4
-
-   dll1(1) = lat1
-   dll1(2) = lon1
-   dll2(1) = lat2
-   dll2(2) = lon1
-   call great_circle_dist(dll1,dll2,dlat12)
-
-   dll1(1) = lat1
-   dll1(2) = lon1
-   dll2(1) = lat1
-   dll2(2) = lon2
-   call great_circle_dist(dll1,dll2,dlon12)
-
-   dll1(1) = lat2
-   dll1(2) = lon2
-   dll2(1) = lat3
-   dll2(2) = lon2
-   call great_circle_dist(dll1,dll2,dlat23)
-
-   dll1(1) = lat2
-   dll1(2) = lon2
-   dll2(1) = lat2
-   dll2(2) = lon3
-   call great_circle_dist(dll1,dll2,dlon23)
-
-   dll1(1) = lat3
-   dll1(2) = lon3
-   dll2(1) = lat4
-   dll2(2) = lon3
-   call great_circle_dist(dll1,dll2,dlat34)
-
-   dll1(1) = lat3
-   dll1(2) = lon3
-   dll2(1) = lat3
-   dll2(2) = lon4
-   call great_circle_dist(dll1,dll2,dlon34)
-
-   dll1(1) = lat4
-   dll1(2) = lon4
-   dll2(1) = lat1
-   dll2(2) = lon4
-   call great_circle_dist(dll1,dll2,dlat41)
-
-   dll1(1) = lat4
-   dll1(2) = lon4
-   dll2(1) = lat4
-   dll2(2) = lon1
-   call great_circle_dist(dll1,dll2,dlon41)
-
-   A = dlon41 * dlat34 - dlat31 * dlon42
-   B = llo(1) * (dlon23 - dlon41) - llo(2) * (dlat23 - dlat41) + dlat41*lat2 - dlat41*lon2 + lat4*dlat23 - lat4*dlon23
-   C = llo(1)*dlon34 - llo(2)*dlat34 + lon4*lat3 - lon3*lat4
-
-   t1 = -B - sqrt(B**2 - 4*A*C) / (2*C)
-   t2 = -B + sqrt(B**2 - 4*A*C) / (2*C)
-
-   if (0.0 <= t1 .and. t1 <= 1.0) then
-      t = t1
-   elseif (0.0 <= t2 .and. t2 <= 1.0) then
-      t = t2
-   else
-      call abor1_ftn("bilin_interp_irregular failure")      
-   endif
-
-   !check
-   if (0.0 <= t1 .and. t1 <= 1.0 .and. 0.0 <= t2 .and. t2 <= 1.0) then
-      call abor1_ftn("bilin_interp_irregular no unique solution")
-   endif
-
-   s = (llo(1) - lat4 - dlat41*t) / (lat3 + dlat23*t - lat4 - dlat41*t)
-
-   w(1) = (1 - s) * t
-   w(2) = s * t
-   w(3) = s * (1 - t)
-   w(4) = (1 - s) * (1 - t)
-
-  end subroutine bilin_interp_irregular
-
-!----------------------------------------------------------------------------
-!----------------------------------------------------------------------------
-
-  subroutine great_circle_dist(ll1,ll2,d)
-
-   use fv3jedi_constants, only: radius
-
-   implicit none
-
-   !Arguments
-   real(kind=kind_real), intent(in ) :: ll1(2), ll2(2)
-   real(kind=kind_real), intent(out) :: d
-
-   !Locals
-   real(kind=kind_real) :: dlat, dlon
-
-   dlat = ll2(1) - ll1(1)
-   dlon = ll2(2) - ll1(2)
-
-   d = radius * 2 * asin( sqrt( sin(dlat/2.)**2 + cos(ll1(1)) * cos(ll2(1)) * sin(dlon/2.)**2 ) )
-
-  end subroutine great_circle_dist
 
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------

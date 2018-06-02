@@ -1351,7 +1351,7 @@ type(bump_type), pointer :: pbump
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
-real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geoval2(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
 logical :: do_interp
@@ -1393,21 +1393,6 @@ real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fra
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
 
-integer :: nn
-real(kind=kind_real), allocatable :: weights_sfc(:,:)
-integer             , allocatable :: slmsk(:,:)
-real(kind=kind_real), allocatable :: sheleg(:,:)
-real(kind=kind_real), allocatable :: tsea(:,:)
-integer             , allocatable :: vtype(:,:)
-integer             , allocatable :: stype(:,:)
-real(kind=kind_real), allocatable :: vfrac(:,:)
-real(kind=kind_real), allocatable :: stc(:,:)
-real(kind=kind_real), allocatable :: smc(:,:)
-real(kind=kind_real), allocatable :: snwdph(:,:)
-real(kind=kind_real), allocatable :: u_srf(:,:)
-real(kind=kind_real), allocatable :: v_srf(:,:)
-real(kind=kind_real), allocatable :: f10m(:,:)
-
 
 ! Grid convenience
 ! ----------------
@@ -1421,11 +1406,13 @@ jsd = fld%geom%bd%jsd
 jed = fld%geom%bd%jed
 npz = fld%geom%npz
 
+print*, 'dh, interp'
+
 ! Initialize the interpolation
 ! ----------------------------
-call initialize_interp( fld, locs, vars, gom, myname, &
-                        pbump, ngrid, nobs )
+call initialize_interp( fld, locs, vars, pbump, ngrid, nobs )
 
+print*, 'dhnobs', nobs
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_field(ngrid,1))
@@ -1435,7 +1422,6 @@ allocate(obs_field(nobs,1))
 ! -------------
 allocate(geovale(isd:ied,jsd:jed,npz+1))
 allocate(geovalm(isd:ied,jsd:jed,npz))
-allocate(geoval2(isd:ied,jsd:jed,1))
 
 ! Get pressures at edge, center & log center
 ! ------------------------------------------
@@ -1474,38 +1460,34 @@ allocate(vegetation_fraction(nobs))
 allocate(soil_temperature(nobs))
 allocate(snow_depth(nobs))
 
-nn = 4
-allocate(weights_sfc(locs%nlocs,nn))
-allocate(slmsk(locs%nlocs,nn))
-allocate(sheleg(locs%nlocs,nn))
-allocate(tsea(locs%nlocs,nn))
-allocate(vtype(locs%nlocs,nn))
-allocate(stype(locs%nlocs,nn))
-allocate(vfrac(locs%nlocs,nn))
-allocate(stc(locs%nlocs,nn))
-allocate(smc(locs%nlocs,nn))
-allocate(snwdph(locs%nlocs,nn))
-allocate(u_srf(locs%nlocs,nn))
-allocate(v_srf(locs%nlocs,nn))
-allocate(f10m(locs%nlocs,nn))
+wind_speed = 0.0_kind_real
+wind_direction = 0.0_kind_real
+land_type = 0
+vegetation_type = 0
+soil_type = 0
+water_coverage = 0.0_kind_real
+land_coverage = 0.0_kind_real
+ice_coverage = 0.0_kind_real
+snow_coverage = 0.0_kind_real
+lai = 0.0_kind_real
+water_temperature = 0.0_kind_real
+land_temperature = 0.0_kind_real
+ice_temperature = 0.0_kind_real
+snow_temperature = 0.0_kind_real
+soil_moisture_content = 0.0_kind_real
+vegetation_fraction = 0.0_kind_real
+soil_temperature = 0.0_kind_real
+snow_depth = 0.0_kind_real
 
-
-
-call crtm_surface_neighbours( fld%geom,locs%nlocs,ngrid,deg2rad*locs%lat(:),deg2rad*locs%lon(:),nn,weights_sfc,&
-                              fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
-                              fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, fld%Atm%snwdph, &
-                              fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m, &
-                              slmsk, sheleg, tsea, vtype, &
-                              stype, vfrac, stc, smc, snwdph, &
-                              u_srf, v_srf, f10m )
-!
-!call crtm_surface( fld%geom, nobs, nn, weights_sfc, slmsk, sheleg, tsea, vtype, &
-!                   stype, vfrac, stc, smc, snwdph, &
-!                   u_srf, v_srf, f10m, &
-!                   land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
-!                   snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
-!                   snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
-!                   wind_speed, wind_direction )
+!TODO only if a radiance
+call crtm_surface( fld%geom, nobs, ngrid, locs%lat(:), locs%lon(:), &
+                   fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
+                   fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, fld%Atm%snwdph, &
+                   fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m, &
+                   land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
+                   snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
+                   snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
+                   wind_speed, wind_direction )
 
 ! Get CRTM moisture variables
 ! ---------------------------
@@ -1540,7 +1522,6 @@ do jvar = 1, vars%nv
 
   geovalm = 0.0_kind_real
   geovale = 0.0_kind_real
-  geoval2 = 0.0_kind_real
 
   do_interp = .false.
 
@@ -1727,19 +1708,19 @@ do jvar = 1, vars%nv
 
    nvl = 1
    do_interp = .false.
-   obs_field(:,1) = land_type
+   obs_field(:,1) = real(land_type,kind_real)
 
   case ("Vegetation_Type")
 
    nvl = 1
    do_interp = .false.
-   obs_field(:,1) = vegetation_type
+   obs_field(:,1) = real(vegetation_type,kind_real)
 
   case ("Soil_Type")
 
    nvl = 1
    do_interp = .false.
-   obs_field(:,1) = soil_type
+   obs_field(:,1) = real(soil_type,kind_real)
 
   case default
 
@@ -1748,8 +1729,8 @@ do jvar = 1, vars%nv
   end select
 
 
-  ! Allocate geovals%vals
-  ! ---------------------
+  ! Allocate geovals%val for this jvars
+  ! -----------------------------------
   call allocate_geovals_vals(gom,jvar,nobs,nvl)
 
 
@@ -1781,24 +1762,20 @@ do jvar = 1, vars%nv
 
 enddo
 
-deallocate(geovalm,geovale,geoval2)
+print*, 'dh, here 1' 
+
 deallocate(mod_field)
 deallocate(obs_field)
-
+deallocate(geovale)
+deallocate(geovalm)
 deallocate(prsi)
-deallocate(prs)
+deallocate(prs )
 deallocate(logp)
-deallocate(ql_ade)
-deallocate(qi_ade)
-deallocate(ql_efr)
-deallocate(qi_efr)
-deallocate(qmr)
-deallocate(water_coverage_m)
-deallocate(vegetation_type)
-deallocate(land_type)
-deallocate(soil_type)
 deallocate(wind_speed)
 deallocate(wind_direction)
+deallocate(land_type)
+deallocate(vegetation_type)
+deallocate(soil_type)
 deallocate(water_coverage)
 deallocate(land_coverage)
 deallocate(ice_coverage)
@@ -1812,20 +1789,14 @@ deallocate(soil_moisture_content)
 deallocate(vegetation_fraction)
 deallocate(soil_temperature)
 deallocate(snow_depth)
+deallocate(ql_ade)
+deallocate(qi_ade)
+deallocate(ql_efr)
+deallocate(qi_efr)
+deallocate(qmr)
+deallocate(water_coverage_m)
 
-deallocate(weights_sfc)
-deallocate(slmsk)
-deallocate(sheleg)
-deallocate(tsea)
-deallocate(vtype)
-deallocate(stype)
-deallocate(vfrac)
-deallocate(stc)
-deallocate(smc)
-deallocate(snwdph)
-deallocate(u_srf)
-deallocate(v_srf)
-deallocate(f10m)
+print*, 'dh, here 2'
 
 !write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 !write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
@@ -1857,8 +1828,7 @@ real(kind=kind_real), allocatable :: obs_field(:,:)
 
 ! Initialize the interpolation
 ! ----------------------------
-call initialize_interp( fld, locs, vars, gom, myname, &
-                        pbump, ngrid, nobs, traj )
+call initialize_interp( fld, locs, vars, pbump, ngrid, nobs, traj )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1945,8 +1915,7 @@ real(kind=kind_real), allocatable :: obs_field(:,:)
 
 ! Initialize the interpolation
 ! ----------------------------
-call initialize_interp( fld, locs, vars, gom, myname, &
-                        pbump,  ngrid, nobs, traj )
+call initialize_interp( fld, locs, vars, pbump, ngrid, nobs, traj )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -2009,22 +1978,22 @@ end subroutine interp_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_interp( fld, locs, vars, gom, myname, &
-                                   pbump, ngrid, nobs, trajp )
+subroutine initialize_interp( fld, locs, vars, pbump, ngrid, nobs, trajp )
 
 use type_bump, only: bump_type
 use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
 type(fv3jedi_field),                intent(inout) :: fld 
-type(ioda_locs),                     intent(in   ) :: locs 
-type(ufo_vars),                     intent(in   ) :: vars
-type(ufo_geovals),                  intent(inout) :: gom
+type(ioda_locs),                    intent(in   ) :: locs 
 type(fv3jedi_trajectory), optional, pointer, intent(inout) :: trajp
-character(len=*),                   intent(in   ) :: myname
 type(bump_type), pointer,           intent(inout) :: pbump
 integer,                            intent(  out) :: ngrid, nobs
+type(ufo_vars),           intent(in)    :: vars
+
 integer :: jvar
+integer :: obtype
+integer :: numobtype
 
 !HACK: read a trajectory from file
 !---------------------------------
@@ -2044,8 +2013,6 @@ integer :: jvar
 
       if (fld%geom%npx == 97) then
 
-         if (fld%root_pe == 1) print*, 'HACK TO PROVIDE TRAJECOTORY FOR INTERPOLATION (C96)'
-
          datapath_in = 'Data/C96_RESTART_2016-01-01-06/'
          datapath_ti = 'Data/C96_RESTART_2016-01-01-06/INPUT/'
 
@@ -2053,8 +2020,6 @@ integer :: jvar
          filename_trcr = 'fv_tracer.res.nc'
 
       elseif (fld%geom%npx == 49) then
-
-         if (fld%root_pe == 1) print*, 'HACK TO PROVIDE TRAJECOTORY FOR INTERPOLATION (C48)'
 
          datapath_in = 'Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
          datapath_ti = 'Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
@@ -2097,6 +2062,17 @@ integer :: jvar
 !END HACK
 !--------
 
+
+!*****HACK HACK HACK HACK********
+numobtype = 2
+if (vars%nv == 2) then
+  obtype = 1 !Raob
+elseif (vars%nv == 28) then
+  obtype = 2 !Amsua
+endif
+!*****HACK HACK HACK HACK********
+
+
 ! Get grid dimensions and checks
 ! ------------------------------
 ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
@@ -2104,7 +2080,7 @@ nobs = locs%nlocs
 
 ! Calculate interpolation weight using BUMP
 ! -----------------------------------------
-call initialize_bump(fld, fld%geom, locs, pbump)
+call initialize_bump(fld%geom, locs, pbump, obtype, numobtype)
 
 end subroutine initialize_interp
 
@@ -2131,20 +2107,23 @@ end subroutine allocate_geovals_vals
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_bump(fld, grid, locs, pbump)
+subroutine initialize_bump(geom, locs, pbump, obtype, numobtype)
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use type_bump, only: bump_type
 use mpi, only: mpi_comm_world
 
 implicit none
-type(fv3jedi_field), intent(in) :: fld
-type(fv3jedi_geom), intent(in) :: grid
-type(ioda_locs), intent(in)    :: locs
+type(fv3jedi_geom)      , intent(in)  :: geom
+type(ioda_locs)         , intent(in)  :: locs
 type(bump_type), pointer, intent(out) :: pbump
+integer, intent(in) :: obtype
+integer, intent(in) :: numobtype
 
-logical, save :: interp_initialized = .FALSE.
-type(bump_type), save, target :: bump
+logical, save :: array_init = .false.
+
+logical, allocatable, save :: interp_initialized(:)
+type(bump_type), allocatable, save, target :: bump(:)
 
 integer :: mod_nx,mod_ny,mod_nz,mod_num,obs_num
 real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
@@ -2154,48 +2133,57 @@ logical, allocatable :: lmask(:,:)
 
 integer :: ii, jj, ji, jvar, jlev
 
+!Allocate bumps and initialize tracker
+!-------------------------------------
+if (.not.array_init) then
+  allocate(interp_initialized(numobtype))
+  allocate(bump(numobtype))
+  interp_initialized = .false.
+  array_init = .true.
+endif
+
 !Get the Solution dimensions
 !---------------------------
-mod_nx  = grid%bd%iec - grid%bd%isc + 1  
-mod_ny  = grid%bd%jec - grid%bd%jsc + 1
+mod_nx  = geom%bd%iec - geom%bd%isc + 1  
+mod_ny  = geom%bd%jec - geom%bd%jsc + 1
 mod_num = mod_nx * mod_ny
-mod_nz  = grid%npz
+mod_nz  = geom%npz
 obs_num = locs%nlocs 
 
 !Calculate interpolation weight using BUMP
 !-----------------------------------------
-if (.NOT.interp_initialized) then
+if (.NOT.interp_initialized(obtype)) then 
 
    write(*,*)'initialize_bump mod_num,obs_num = ',mod_num,obs_num
 
    allocate( mod_lat(mod_num), mod_lon(mod_num) )
-   mod_lat = reshape( grid%grid_lat(grid%bd%isc:grid%bd%iec,      &
-                                    grid%bd%jsc:grid%bd%jec),     &
+   mod_lat = reshape( geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
+                                    geom%bd%jsc:geom%bd%jec),     &
                                    [mod_num] )  
-   mod_lon = reshape( grid%grid_lon(grid%bd%isc:grid%bd%iec,      &
-                                    grid%bd%jsc:grid%bd%jec),     &
+   mod_lon = reshape( geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
+                                    geom%bd%jsc:geom%bd%jec),     &
                                    [mod_num] )
 
    !Important namelist options
-   bump%nam%prefix = 'oops_data'   ! Prefix for files output
-   bump%nam%nobs = obs_num         ! Number of observations
-   bump%nam%obsop_interp = 'bilin' ! Interpolation type (bilinear)
-   bump%nam%obsdis = 'local'       ! Observation distribution parameter ('random','local' or 'adjusted')
-   bump%nam%diag_interp = 'bilin'
+   bump(obtype)%nam%prefix = 'oops_data'   ! Prefix for files output
+   bump(obtype)%nam%nobs = obs_num         ! Number of observations
+   bump(obtype)%nam%obsop_interp = 'bilin' ! Interpolation type (bilinear)
+   bump(obtype)%nam%obsdis = 'local'       ! Observation distribution parameter ('random','local' or 'adjusted')
+   bump(obtype)%nam%diag_interp = 'bilin'
 
    !Less important namelist options (should not be changed)
-   bump%nam%default_seed = .true.
-   bump%nam%new_hdiag = .false.
-   bump%nam%new_param = .false.
-   bump%nam%check_adjoints = .false.
-   bump%nam%check_pos_def = .false.
-   bump%nam%check_sqrt = .false.
-   bump%nam%check_dirac = .false.
-   bump%nam%check_randomization = .false.
-   bump%nam%check_consistency = .false.
-   bump%nam%check_optimality = .false.
-   bump%nam%new_lct = .false.
-   bump%nam%new_obsop = .true.
+   bump(obtype)%nam%default_seed = .true.
+   bump(obtype)%nam%new_hdiag = .false.
+   bump(obtype)%nam%new_param = .false.
+   bump(obtype)%nam%check_adjoints = .false.
+   bump(obtype)%nam%check_pos_def = .false.
+   bump(obtype)%nam%check_sqrt = .false.
+   bump(obtype)%nam%check_dirac = .false.
+   bump(obtype)%nam%check_randomization = .false.
+   bump(obtype)%nam%check_consistency = .false.
+   bump(obtype)%nam%check_optimality = .false.
+   bump(obtype)%nam%new_lct = .false.
+   bump(obtype)%nam%new_obsop = .true.
 
    !Initialize geometry
    allocate(area(mod_num))
@@ -2205,9 +2193,17 @@ if (.NOT.interp_initialized) then
    vunit = 1.0          ! Dummy vertical unit
    lmask = .true.       ! Mask
 
+print*, 'dh bump 1'
+
+
+print*, obs_num, size(locs%lat), size(locs%lon), locs%nlocs
+
+
    !Initialize BUMP
-   call bump%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                           nobs=obs_num,lonobs=locs%lon(:),latobs=locs%lat(:) )
+   call bump(obtype)%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+                                   nobs=obs_num,lonobs=locs%lon(:),latobs=locs%lat(:) )
+
+print*, 'dh bump 2'
 
    !Release memory
    deallocate(area)
@@ -2215,11 +2211,11 @@ if (.NOT.interp_initialized) then
    deallocate(lmask)
    deallocate( mod_lat, mod_lon )
 
-   interp_initialized = .TRUE. 
+   interp_initialized(obtype) = .TRUE. 
 
 endif
 
-pbump => bump
+pbump => bump(obtype)
 
 end subroutine initialize_bump
 
