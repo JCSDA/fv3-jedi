@@ -1,7 +1,7 @@
 from netCDF4 import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
+#from mpl_toolkits.basemap import Basemap
 
 #User input required for the follwing:
 plot_diff = 1         #Plot path1/file - path2/file
@@ -153,100 +153,100 @@ if plot_diff == 1:
    itit = ' increment '
 
 
-#Plot with coast lines
-
-fig = plt.figure(figsize=(14,8))
-
-axN = fig.add_subplot(3,4,2)
-ax1 = fig.add_subplot(3,4,5)
-ax2 = fig.add_subplot(3,4,6)
-ax3 = fig.add_subplot(3,4,7)
-ax4 = fig.add_subplot(3,4,8)
-axS = fig.add_subplot(3,4,10)
-
-bl = 48.0 #np.min(f12lat[0,:,:])
-
-mapN = Basemap(projection='npstere', boundinglat= bl,lon_0 = np.min(0.5*(f12lon[5,npx/2-1,:] + f12lon[5,npx/2,:])), ax = axN)
-mapS = Basemap(projection='spstere', boundinglat=-bl,lon_0 = np.min(0.5*(f12lon[7,npx/2-1,:] + f12lon[7,npx/2,:])), ax = axS)
-
-map1 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[4,:,:]), urcrnrlat = np.max(f12lat[4,:,:]),\
-                                  llcrnrlon = -(360.0-np.min(f12lon[4,1,:])), urcrnrlon = np.max(f12lon[4,npx-1,:]), ax=ax1)
-map2 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[5,:,:]), urcrnrlat = np.max(f12lat[5,:,:]),\
-                                  llcrnrlon = np.min(f12lon[5,:,:]), urcrnrlon = np.max(f12lon[5,:,:]), ax=ax2)
-map3 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[6,:,:]), urcrnrlat = np.max(f12lat[6,:,:]),\
-                                  llcrnrlon = np.min(f12lon[6,:,:]), urcrnrlon = np.max(f12lon[6,:,:]), ax=ax3)
-map4 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[7,:,:]), urcrnrlat = np.max(f12lat[7,:,:]),\
-                                  llcrnrlon = np.min(f12lon[7,:,:]), urcrnrlon = np.max(f12lon[7,:,:]), ax=ax4)
-
-mapN.drawcoastlines()
-map1.drawcoastlines()
-map2.drawcoastlines()
-map3.drawcoastlines()
-map4.drawcoastlines()
-mapS.drawcoastlines()
-
-x,y = np.meshgrid(np.linspace(mapN.xmin,mapN.xmax,npx),np.linspace(mapN.ymin,mapN.ymax,npx))
-csN = mapN.contourf(x,y,np.rot90(f12[1,:,:]),clev,cmap=cmap)
-
-x,y = np.meshgrid(np.linspace(mapS.xmin,mapS.xmax,npx),np.linspace(mapS.ymin,mapS.ymax,npx))
-csS = mapS.contourf(x,y,np.rot90(f12[9,:,:],3),clev,cmap=cmap)
-
-latplt = np.linspace(np.min(f12lat[4,:,:]), np.max(f12lat[4,:,:]), num=npx)
-lonplt = np.linspace(-(360.0-np.min(f12lon[4,1,:])), np.max(f12lon[4,npx-1,:]), num=npx)
-lonpltm, latpltm = np.meshgrid(lonplt, latplt)
-x, y = map1(lonpltm,latpltm)
-cs1 = map1.contourf(x,y,np.rot90(f12[4,:,:]),clev,cmap=cmap)
-
-latplt = np.linspace(np.min(f12lat[5,:,:]), np.max(f12lat[5,:,:]), num=npx)
-lonplt = np.linspace(np.min(f12lon[5,:,:]), np.max(f12lon[5,:,:]), num=npx)
-lonpltm, latpltm = np.meshgrid(lonplt, latplt)
-x, y = map2(lonpltm,latpltm)
-cs2 = map2.contourf(x,y,np.rot90(f12[5,:,:]),clev,cmap=cmap)
-
-latplt = np.linspace(np.min(f12lat[6,:,:]), np.max(f12lat[6,:,:]), num=npx)
-lonplt = np.linspace(np.min(f12lon[6,:,:]), np.max(f12lon[6,:,:]), num=npx)
-lonpltm, latpltm = np.meshgrid(lonplt, latplt)
-x, y = map3(lonpltm,latpltm)
-cs3 = map3.contourf(x,y,np.rot90(f12[6,:,:]),clev,cmap=cmap)
-
-latplt = np.linspace(np.min(f12lat[7,:,:]), np.max(f12lat[7,:,:]), num=npx)
-lonplt = np.linspace(np.min(f12lon[7,:,:]), np.max(f12lon[7,:,:]), num=npx)
-lonpltm, latpltm = np.meshgrid(lonplt, latplt)
-x, y = map4(lonpltm,latpltm)
-cs4 = map4.contourf(x,y,np.rot90(f12[7,:,:]),clev,cmap=cmap)
-
-fig.patch.set_facecolor('grey')
-
-facemult = 1.115
-facedown = .016
-
-plt.tight_layout()
-
-pos1 = axN.get_position() 
-pos2 = [pos1.x0, pos1.y0,  pos1.width, pos1.height] 
-axN.set_position(pos2) 
-
-pos1 = ax1.get_position() 
-pos2 = [pos1.x0+0.058, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
-ax1.set_position(pos2)
-
-pos1 = ax2.get_position() 
-pos2 = [pos1.x0-0.014, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
-ax2.set_position(pos2)
-
-pos1 = ax3.get_position() 
-pos2 = [pos1.x0-0.085, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
-ax3.set_position(pos2)
-
-pos1 = ax4.get_position() 
-pos2 = [pos1.x0-0.155, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
-ax4.set_position(pos2)
-
-pos1 = axS.get_position() 
-pos2 = [pos1.x0, pos1.y0,  pos1.width, pos1.height] 
-axS.set_position(pos2)
-
-plt.savefig('CubedSpherePlotCoasts_Field-'+readvar+'_Level-'+str(plot_level)+'.'+filetype, bbox_inches='tight',facecolor=fig.get_facecolor())
+# #Plot with coast lines
+# 
+# fig = plt.figure(figsize=(14,8))
+# 
+# axN = fig.add_subplot(3,4,2)
+# ax1 = fig.add_subplot(3,4,5)
+# ax2 = fig.add_subplot(3,4,6)
+# ax3 = fig.add_subplot(3,4,7)
+# ax4 = fig.add_subplot(3,4,8)
+# axS = fig.add_subplot(3,4,10)
+# 
+# bl = 48.0 #np.min(f12lat[0,:,:])
+# 
+# mapN = Basemap(projection='npstere', boundinglat= bl,lon_0 = np.min(0.5*(f12lon[5,npx/2-1,:] + f12lon[5,npx/2,:])), ax = axN)
+# mapS = Basemap(projection='spstere', boundinglat=-bl,lon_0 = np.min(0.5*(f12lon[7,npx/2-1,:] + f12lon[7,npx/2,:])), ax = axS)
+# 
+# map1 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[4,:,:]), urcrnrlat = np.max(f12lat[4,:,:]),\
+#                                   llcrnrlon = -(360.0-np.min(f12lon[4,1,:])), urcrnrlon = np.max(f12lon[4,npx-1,:]), ax=ax1)
+# map2 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[5,:,:]), urcrnrlat = np.max(f12lat[5,:,:]),\
+#                                   llcrnrlon = np.min(f12lon[5,:,:]), urcrnrlon = np.max(f12lon[5,:,:]), ax=ax2)
+# map3 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[6,:,:]), urcrnrlat = np.max(f12lat[6,:,:]),\
+#                                   llcrnrlon = np.min(f12lon[6,:,:]), urcrnrlon = np.max(f12lon[6,:,:]), ax=ax3)
+# map4 = Basemap(projection='merc', llcrnrlat = np.min(f12lat[7,:,:]), urcrnrlat = np.max(f12lat[7,:,:]),\
+#                                   llcrnrlon = np.min(f12lon[7,:,:]), urcrnrlon = np.max(f12lon[7,:,:]), ax=ax4)
+# 
+# mapN.drawcoastlines()
+# map1.drawcoastlines()
+# map2.drawcoastlines()
+# map3.drawcoastlines()
+# map4.drawcoastlines()
+# mapS.drawcoastlines()
+# 
+# x,y = np.meshgrid(np.linspace(mapN.xmin,mapN.xmax,npx),np.linspace(mapN.ymin,mapN.ymax,npx))
+# csN = mapN.contourf(x,y,np.rot90(f12[1,:,:]),clev,cmap=cmap)
+# 
+# x,y = np.meshgrid(np.linspace(mapS.xmin,mapS.xmax,npx),np.linspace(mapS.ymin,mapS.ymax,npx))
+# csS = mapS.contourf(x,y,np.rot90(f12[9,:,:],3),clev,cmap=cmap)
+# 
+# latplt = np.linspace(np.min(f12lat[4,:,:]), np.max(f12lat[4,:,:]), num=npx)
+# lonplt = np.linspace(-(360.0-np.min(f12lon[4,1,:])), np.max(f12lon[4,npx-1,:]), num=npx)
+# lonpltm, latpltm = np.meshgrid(lonplt, latplt)
+# x, y = map1(lonpltm,latpltm)
+# cs1 = map1.contourf(x,y,np.rot90(f12[4,:,:]),clev,cmap=cmap)
+# 
+# latplt = np.linspace(np.min(f12lat[5,:,:]), np.max(f12lat[5,:,:]), num=npx)
+# lonplt = np.linspace(np.min(f12lon[5,:,:]), np.max(f12lon[5,:,:]), num=npx)
+# lonpltm, latpltm = np.meshgrid(lonplt, latplt)
+# x, y = map2(lonpltm,latpltm)
+# cs2 = map2.contourf(x,y,np.rot90(f12[5,:,:]),clev,cmap=cmap)
+# 
+# latplt = np.linspace(np.min(f12lat[6,:,:]), np.max(f12lat[6,:,:]), num=npx)
+# lonplt = np.linspace(np.min(f12lon[6,:,:]), np.max(f12lon[6,:,:]), num=npx)
+# lonpltm, latpltm = np.meshgrid(lonplt, latplt)
+# x, y = map3(lonpltm,latpltm)
+# cs3 = map3.contourf(x,y,np.rot90(f12[6,:,:]),clev,cmap=cmap)
+# 
+# latplt = np.linspace(np.min(f12lat[7,:,:]), np.max(f12lat[7,:,:]), num=npx)
+# lonplt = np.linspace(np.min(f12lon[7,:,:]), np.max(f12lon[7,:,:]), num=npx)
+# lonpltm, latpltm = np.meshgrid(lonplt, latplt)
+# x, y = map4(lonpltm,latpltm)
+# cs4 = map4.contourf(x,y,np.rot90(f12[7,:,:]),clev,cmap=cmap)
+# 
+# fig.patch.set_facecolor('grey')
+# 
+# facemult = 1.115
+# facedown = .016
+# 
+# plt.tight_layout()
+# 
+# pos1 = axN.get_position() 
+# pos2 = [pos1.x0, pos1.y0,  pos1.width, pos1.height] 
+# axN.set_position(pos2) 
+# 
+# pos1 = ax1.get_position() 
+# pos2 = [pos1.x0+0.058, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
+# ax1.set_position(pos2)
+# 
+# pos1 = ax2.get_position() 
+# pos2 = [pos1.x0-0.014, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
+# ax2.set_position(pos2)
+# 
+# pos1 = ax3.get_position() 
+# pos2 = [pos1.x0-0.085, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
+# ax3.set_position(pos2)
+# 
+# pos1 = ax4.get_position() 
+# pos2 = [pos1.x0-0.155, pos1.y0-facedown,  facemult*pos1.width, facemult*pos1.height] 
+# ax4.set_position(pos2)
+# 
+# pos1 = axS.get_position() 
+# pos2 = [pos1.x0, pos1.y0,  pos1.width, pos1.height] 
+# axS.set_position(pos2)
+# 
+# plt.savefig('CubedSpherePlotCoasts_Field-'+readvar+'_Level-'+str(plot_level)+'.'+filetype, bbox_inches='tight',facecolor=fig.get_facecolor())
 
 #Nan out repeat locations
 for tile in range(4):
