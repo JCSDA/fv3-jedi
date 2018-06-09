@@ -1,11 +1,17 @@
+/*
+ * (C) Copyright 2018 UCAR
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ */
 
-#include "RunFV3JEDI.h"
+#include <fstream>
 
+#include "src/RunFV3JEDI.h"
 #include "Fortran.h"
 #include "oops/util/Logger.h"
 #include "oops/runs/Run.h"
 #include "eckit/config/Configuration.h"
-#include <fstream>
 #include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {

@@ -1,5 +1,12 @@
-#ifndef FV3JEDI_RUNFV3JEDI_H_
-#define FV3JEDI_RUNFV3JEDI_H_
+/*
+ * (C) Copyright 2018 UCAR
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+#ifndef FV3_JEDI_SRC_RUNFV3JEDI_H_
+#define FV3_JEDI_SRC_RUNFV3JEDI_H_
 
 #include "oops/runs/Run.h"
 
@@ -20,4 +27,4 @@ class RunFV3JEDI : public oops::Run {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_RUNFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_RUNFV3JEDI_H_

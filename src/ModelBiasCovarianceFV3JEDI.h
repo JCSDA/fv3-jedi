@@ -1,12 +1,12 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_MODELBIASCOVARIANCEFV3JEDI_H_
-#define FV3JEDI_MODEL_MODELBIASCOVARIANCEFV3JEDI_H_
+#ifndef FV3_JEDI_SRC_MODELBIASCOVARIANCEFV3JEDI_H_
+#define FV3_JEDI_SRC_MODELBIASCOVARIANCEFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -24,19 +24,23 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 
 class ModelBiasCovarianceFV3JEDI : public util::Printable,
-                                 private boost::noncopyable,
-                                 private util::ObjectCounter<ModelBiasCovarianceFV3JEDI> {
+                       private boost::noncopyable,
+                       private util::ObjectCounter<ModelBiasCovarianceFV3JEDI> {
  public:
-  static const std::string classname() {return "fv3jedi::ModelBiasCovarianceFV3JEDI";}
+  static const std::string classname()
+                                 {return "fv3jedi::ModelBiasCovarianceFV3JEDI";}
 
 /// Constructor, destructor
-  ModelBiasCovarianceFV3JEDI(const eckit::Configuration & conf, const GeometryFV3JEDI &): conf_(conf) {}
+  ModelBiasCovarianceFV3JEDI(const eckit::Configuration & conf,
+                             const GeometryFV3JEDI &): conf_(conf) {}
   ~ModelBiasCovarianceFV3JEDI() {}
 
 /// Linear algebra operators
   void linearize(const ModelBiasFV3JEDI &, const GeometryFV3JEDI &) {}
-  void multiply(const ModelBiasIncrementFV3JEDI &, ModelBiasIncrementFV3JEDI) const {}
-  void inverseMultiply(const ModelBiasIncrementFV3JEDI &, ModelBiasIncrementFV3JEDI) const {}
+  void multiply(const ModelBiasIncrementFV3JEDI &,
+                ModelBiasIncrementFV3JEDI) const {}
+  void inverseMultiply(const ModelBiasIncrementFV3JEDI &,
+                ModelBiasIncrementFV3JEDI) const {}
   void randomize(ModelBiasIncrementFV3JEDI &) const {}
 
   const eckit::Configuration & config() const {return conf_;}
@@ -50,4 +54,4 @@ class ModelBiasCovarianceFV3JEDI : public util::Printable,
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_MODEL_MODELBIASCOVARIANCEFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_MODELBIASCOVARIANCEFV3JEDI_H_

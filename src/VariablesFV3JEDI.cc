@@ -5,7 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "VariablesFV3JEDI.h"
+#include "src/VariablesFV3JEDI.h"
 
 #include<vector>
 
@@ -18,7 +18,8 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 
 VariablesFV3JEDI::VariablesFV3JEDI(const oops::Variables & oopsvars) {
-  oops::Log::debug() << "VariablesFV3JEDI oopsvar:" << oopsvars.variables() << std::endl;
+  oops::Log::debug() << "VariablesFV3JEDI oopsvar:" << oopsvars.variables()
+                     << std::endl;
   this->setF90(oopsvars.variables());
   print(oops::Log::debug());
 }
@@ -42,11 +43,11 @@ void VariablesFV3JEDI::setF90(const std::vector<std::string> vars) {
   fvars_[0] = nv;
   for (size_t jj = 0; jj < nv; ++jj) {
      int ii = 0;
-     if (vars[jj]=="u") ii = 1;
-     if (vars[jj]=="v") ii = 2;
-     if (vars[jj]=="pt") ii = 3;
-     if (vars[jj]=="delp") ii = 4;
-     if (vars[jj]=="q") ii = 5;
+     if (vars[jj] == "u") ii = 1;
+     if (vars[jj] == "v") ii = 2;
+     if (vars[jj] == "pt") ii = 3;
+     if (vars[jj] == "delp") ii = 4;
+     if (vars[jj] == "q") ii = 5;
      ASSERT(ii > 0);
      fvars_[jj+1] = ii;
   }
@@ -60,7 +61,8 @@ VariablesFV3JEDI::~VariablesFV3JEDI() {}
 
 // -----------------------------------------------------------------------------
 
-VariablesFV3JEDI::VariablesFV3JEDI(const VariablesFV3JEDI & other): fvars_(other.fvars_) {}
+VariablesFV3JEDI::VariablesFV3JEDI(const VariablesFV3JEDI & other):
+                                    fvars_(other.fvars_) {}
 
 // -----------------------------------------------------------------------------
 
