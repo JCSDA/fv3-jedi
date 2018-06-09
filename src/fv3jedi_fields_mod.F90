@@ -1406,13 +1406,11 @@ jsd = fld%geom%bd%jsd
 jed = fld%geom%bd%jed
 npz = fld%geom%npz
 
-print*, 'dh, interp'
 
 ! Initialize the interpolation
 ! ----------------------------
 call initialize_interp( fld, locs, vars, pbump, ngrid, nobs )
 
-print*, 'dhnobs', nobs
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_field(ngrid,1))
@@ -1762,8 +1760,6 @@ do jvar = 1, vars%nv
 
 enddo
 
-print*, 'dh, here 1' 
-
 deallocate(mod_field)
 deallocate(obs_field)
 deallocate(geovale)
@@ -1795,8 +1791,6 @@ deallocate(ql_efr)
 deallocate(qi_efr)
 deallocate(qmr)
 deallocate(water_coverage_m)
-
-print*, 'dh, here 2'
 
 !write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 !write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
@@ -2193,17 +2187,10 @@ if (.NOT.interp_initialized(obtype)) then
    vunit = 1.0          ! Dummy vertical unit
    lmask = .true.       ! Mask
 
-print*, 'dh bump 1'
-
-
-print*, obs_num, size(locs%lat), size(locs%lon), locs%nlocs
-
-
    !Initialize BUMP
    call bump(obtype)%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
                                    nobs=obs_num,lonobs=locs%lon(:),latobs=locs%lat(:) )
 
-print*, 'dh bump 2'
 
    !Release memory
    deallocate(area)
