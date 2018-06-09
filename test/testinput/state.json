@@ -46,6 +46,7 @@
       "date": "2016-01-01T06:00:00Z",
       "variables": ["virtual_temperature","atmosphere_ln_pressure_coordinate"]
     },
+    "norm-gen": "644.45678204516503",
     "norm-file": "1952.8164917091935",
     "norm-gen": "1983.7898891675839",
     "tolerance": 1.0e-8,
