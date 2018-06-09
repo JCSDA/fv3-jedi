@@ -1,12 +1,12 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_LOCALIZATIONMATRIXFV3JEDI_H_
-#define FV3JEDI_MODEL_LOCALIZATIONMATRIXFV3JEDI_H_
+#ifndef FV3_JEDI_SRC_LOCALIZATIONMATRIXFV3JEDI_H_
+#define FV3_JEDI_SRC_LOCALIZATIONMATRIXFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -31,12 +31,14 @@ namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
 class LocalizationMatrixFV3JEDI: public util::Printable,
-                            private boost::noncopyable,
-                            private util::ObjectCounter<LocalizationMatrixFV3JEDI> {
+                        private boost::noncopyable,
+                        private util::ObjectCounter<LocalizationMatrixFV3JEDI> {
  public:
-  static const std::string classname() {return "fv3jedi::LocalizationMatrixFV3JEDI";}
+  static const std::string classname()
+                             {return "fv3jedi::LocalizationMatrixFV3JEDI";}
 
-  LocalizationMatrixFV3JEDI(const GeometryFV3JEDI &, const eckit::Configuration &);
+  LocalizationMatrixFV3JEDI(const GeometryFV3JEDI &,
+                            const eckit::Configuration &);
   ~LocalizationMatrixFV3JEDI();
   void multiply(IncrementFV3JEDI &) const;
 
@@ -48,4 +50,4 @@ class LocalizationMatrixFV3JEDI: public util::Printable,
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_MODEL_LOCALIZATIONMATRIXFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_LOCALIZATIONMATRIXFV3JEDI_H_

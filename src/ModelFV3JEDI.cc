@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "ModelFV3JEDI.h"
+#include "src/ModelFV3JEDI.h"
 
 #include "oops/util/Logger.h"
 #include "ModelBiasFV3JEDI.h"
@@ -19,7 +19,8 @@
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol, const eckit::Configuration & model)
+ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol,
+                            const eckit::Configuration & model)
   : keyConfig_(0), tstep_(0), geom_(resol)
 {
   oops::Log::trace() << "ModelFV3JEDI::ModelFV3JEDI" << std::endl;
@@ -42,22 +43,27 @@ void ModelFV3JEDI::initialize(StateFV3JEDI & xx) const {
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
-  oops::Log::debug() << "ModelFV3JEDI::step fields in" << xx.fields() << std::endl;
+  oops::Log::debug() << "ModelFV3JEDI::step fields in"
+                     << xx.fields() << std::endl;
   fv3jedi_model_propagate_f90(keyConfig_, xx.fields().toFortran());
   xx.validTime() += tstep_;
-  oops::Log::debug() << "ModelFV3JEDI::step fields out" << xx.fields() << std::endl;
+  oops::Log::debug() << "ModelFV3JEDI::step fields out"
+                     << xx.fields() << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::finalize(StateFV3JEDI & xx) const {
   oops::Log::debug() << "ModelFV3JEDI::finalize" << xx.fields() << std::endl;
 }
 // -----------------------------------------------------------------------------
-int ModelFV3JEDI::saveTrajectory(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
+int ModelFV3JEDI::saveTrajectory(StateFV3JEDI & xx,
+                                 const ModelBiasFV3JEDI &) const {
   int ftraj = 0;
-  oops::Log::debug() << "ModelFV3JEDI::saveTrajectory fields in" << xx.fields() << std::endl;
+  oops::Log::debug() << "ModelFV3JEDI::saveTrajectory fields in"
+                     << xx.fields() << std::endl;
   fv3jedi_model_prop_traj_f90(keyConfig_, xx.fields().toFortran(), ftraj);
   ASSERT(ftraj != 0);
-  oops::Log::debug() << "ModelFV3JEDI::saveTrajectory fields out" << xx.fields() << std::endl;
+  oops::Log::debug() << "ModelFV3JEDI::saveTrajectory fields out"
+                     << xx.fields() << std::endl;
   return ftraj;
 }
 // -----------------------------------------------------------------------------

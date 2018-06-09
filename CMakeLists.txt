@@ -92,6 +92,7 @@ endforeach()
 
 include( fv3jedi_compiler_flags )
 include_directories( ${FV3JEDI_INCLUDE_DIRS} ${FV3JEDI_EXTRA_INCLUDE_DIRS}
+                     ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 add_subdirectory( mains )
@@ -107,4 +108,9 @@ ecbuild_install_project( NAME fv3jedi )
 
 # print the summary of the configuration
 ecbuild_print_summary()
+
+ecbuild_add_test( TARGET fv3jedi_coding_norms
+                  TYPE SCRIPT
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/cpplint.py
+                  ARGS --quiet --recursive ${CMAKE_CURRENT_SOURCE_DIR} )
 

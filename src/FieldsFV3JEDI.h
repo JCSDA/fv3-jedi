@@ -1,12 +1,12 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_FIELDSFV3JEDI_H_
-#define FV3JEDI_MODEL_FIELDSFV3JEDI_H_
+#ifndef FV3_JEDI_SRC_FIELDSFV3JEDI_H_
+#define FV3_JEDI_SRC_FIELDSFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -46,7 +46,8 @@ class FieldsFV3JEDI : public util::Printable,
   static const std::string classname() {return "fv3jedi::FieldsFV3JEDI";}
 
 // Constructors and basic operators
-  FieldsFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &, const util::DateTime &);
+  FieldsFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
+                const util::DateTime &);
   FieldsFV3JEDI(const FieldsFV3JEDI &, const GeometryFV3JEDI &);
   FieldsFV3JEDI(const FieldsFV3JEDI &, const oops::Variables &);
   FieldsFV3JEDI(const FieldsFV3JEDI &, const bool);
@@ -66,14 +67,20 @@ class FieldsFV3JEDI : public util::Printable,
   void dirac(const eckit::Configuration &);
 
 // Get fields values at given location
-  void getValues(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void getValuesTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void getValuesAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
+  void getValues(const ioda::Locations &, const oops::Variables &,
+                 ufo::GeoVaLs &) const;
+  void getValuesTL(const ioda::Locations &, const oops::Variables &,
+                   ufo::GeoVaLs &) const;
+  void getValuesAD(const ioda::Locations &, const oops::Variables &,
+                   const ufo::GeoVaLs &);
 
 // Interpolate to given location
-  void interpolate(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void interpolateTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &) const;
-  void interpolateAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &);
+  void interpolate(const ioda::Locations &, const oops::Variables &,
+                   ufo::GeoVaLs &) const;
+  void interpolateTL(const ioda::Locations &, const oops::Variables &,
+                   ufo::GeoVaLs &) const;
+  void interpolateAD(const ioda::Locations &, const oops::Variables &,
+                   const ufo::GeoVaLs &);
 
 // Interpolate full fields
   void changeResolution(const FieldsFV3JEDI &);
@@ -107,4 +114,4 @@ class FieldsFV3JEDI : public util::Printable,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_FIELDSFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_FIELDSFV3JEDI_H_

@@ -14,5 +14,5 @@ int main(const int argc, const char ** argv) {
   test::ModelIncrement<fv3jedi::FV3JEDITraits> tests;
   run.execute(tests);
   return 0;
-};
+}
 

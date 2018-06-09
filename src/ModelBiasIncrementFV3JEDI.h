@@ -1,12 +1,12 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_MODELBIASINCREMENTFV3JEDI_H_
-#define FV3JEDI_MODEL_MODELBIASINCREMENTFV3JEDI_H_
+#ifndef FV3_JEDI_SRC_MODELBIASINCREMENTFV3JEDI_H_
+#define FV3_JEDI_SRC_MODELBIASINCREMENTFV3JEDI_H_
 
 #include <iostream>
 
@@ -26,20 +26,27 @@ namespace fv3jedi {
 class ModelBiasIncrementFV3JEDI : public util::Printable {
  public:
 /// Constructor, destructor
-  ModelBiasIncrementFV3JEDI(const GeometryFV3JEDI &, const eckit::Configuration &) {}
-  ModelBiasIncrementFV3JEDI(const ModelBiasIncrementFV3JEDI &, const bool) {}
-  ModelBiasIncrementFV3JEDI(const ModelBiasIncrementFV3JEDI &, const eckit::Configuration &) {}
+  ModelBiasIncrementFV3JEDI(const GeometryFV3JEDI &,
+                            const eckit::Configuration &) {}
+  ModelBiasIncrementFV3JEDI(const ModelBiasIncrementFV3JEDI &,
+                            const bool) {}
+  ModelBiasIncrementFV3JEDI(const ModelBiasIncrementFV3JEDI &,
+                            const eckit::Configuration &) {}
   ~ModelBiasIncrementFV3JEDI() {}
 
 /// Linear algebra operators
   void diff(const ModelBiasFV3JEDI &, const ModelBiasFV3JEDI &) {}
   void zero() {}
-  ModelBiasIncrementFV3JEDI & operator=(const ModelBiasIncrementFV3JEDI &) {return *this;}
-  ModelBiasIncrementFV3JEDI & operator+=(const ModelBiasIncrementFV3JEDI &) {return *this;}
-  ModelBiasIncrementFV3JEDI & operator-=(const ModelBiasIncrementFV3JEDI &) {return *this;}
+  ModelBiasIncrementFV3JEDI & operator=(const
+                                  ModelBiasIncrementFV3JEDI &) {return *this;}
+  ModelBiasIncrementFV3JEDI & operator+=(const
+                                  ModelBiasIncrementFV3JEDI &) {return *this;}
+  ModelBiasIncrementFV3JEDI & operator-=(const
+                                  ModelBiasIncrementFV3JEDI &) {return *this;}
   ModelBiasIncrementFV3JEDI & operator*=(const double) {return *this;}
   void axpy(const double, const ModelBiasIncrementFV3JEDI &) {}
-  double dot_product_with(const ModelBiasIncrementFV3JEDI &) const {return 0.0;}
+  double dot_product_with(const ModelBiasIncrementFV3JEDI &)
+                          const {return 0.0;}
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &) {}
@@ -55,4 +62,4 @@ class ModelBiasIncrementFV3JEDI : public util::Printable {
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_MODEL_MODELBIASINCREMENTFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_MODELBIASINCREMENTFV3JEDI_H_

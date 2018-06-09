@@ -14,5 +14,5 @@ int main(int argc,  char ** argv) {
   test::LinearModel<fv3jedi::FV3JEDITraits> tests;
   run.execute(tests);
   return 0;
-};
+}
 

@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "TlmIdFV3JEDI.h"
+#include "src/TlmIdFV3JEDI.h"
 
 #include "eckit/config/LocalConfiguration.h"
 #include "oops/util/Logger.h"
@@ -21,9 +21,11 @@
 namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
-static oops::LinearModelMaker<FV3JEDITraits, TlmIdFV3JEDI> makerFV3JEDIIdTLM_("FV3JEDIIdTLM");
+static oops::LinearModelMaker<FV3JEDITraits, TlmIdFV3JEDI>
+                                      makerFV3JEDIIdTLM_("FV3JEDIIdTLM");
 // -----------------------------------------------------------------------------
-TlmIdFV3JEDI::TlmIdFV3JEDI(const GeometryFV3JEDI & resol, const eckit::Configuration & tlConf)
+TlmIdFV3JEDI::TlmIdFV3JEDI(const GeometryFV3JEDI & resol,
+                            const eckit::Configuration & tlConf)
   : keyConfig_(0), tstep_(), resol_(resol)
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
@@ -41,14 +43,16 @@ TlmIdFV3JEDI::~TlmIdFV3JEDI() {
   oops::Log::trace() << "TlmIdFV3JEDI destructed" << std::endl;
 }
 // -----------------------------------------------------------------------------
-void TlmIdFV3JEDI::setTrajectory(const StateFV3JEDI &, StateFV3JEDI &, const ModelBiasFV3JEDI &) {}
+void TlmIdFV3JEDI::setTrajectory(const StateFV3JEDI &, StateFV3JEDI &,
+                                 const ModelBiasFV3JEDI &) {}
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
   fv3jedi_model_prepare_integration_tl_f90(keyConfig_, dx.fields().toFortran());
-  oops::Log::debug() << "TlmIdFV3JEDI::initializeTL" << dx.fields() << std::endl;
+  oops::Log::debug() << "TlmIdFV3JEDI::initializTL" << dx.fields() << std::endl;
 }
 // -----------------------------------------------------------------------------
-void TlmIdFV3JEDI::stepTL(IncrementFV3JEDI & dx, const ModelBiasIncrementFV3JEDI &) const {
+void TlmIdFV3JEDI::stepTL(IncrementFV3JEDI & dx,
+                             const ModelBiasIncrementFV3JEDI &) const {
   dx.updateTime(tstep_);
 }
 // -----------------------------------------------------------------------------
@@ -57,10 +61,11 @@ void TlmIdFV3JEDI::finalizeTL(IncrementFV3JEDI & dx) const {
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::initializeAD(IncrementFV3JEDI & dx) const {
-  oops::Log::debug() << "TlmIdFV3JEDI::initializeAD" << dx.fields() << std::endl;
+  oops::Log::debug() << "TlmIdFV3JEDI::initializAD" << dx.fields() << std::endl;
 }
 // -----------------------------------------------------------------------------
-void TlmIdFV3JEDI::stepAD(IncrementFV3JEDI & dx, ModelBiasIncrementFV3JEDI &) const {
+void TlmIdFV3JEDI::stepAD(IncrementFV3JEDI & dx,
+                               ModelBiasIncrementFV3JEDI &) const {
   dx.updateTime(-tstep_);
 }
 // -----------------------------------------------------------------------------

@@ -1,17 +1,16 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "FieldsFV3JEDI.h"
 
 #include <cmath>
 #include <map>
 #include <string>
 #include <vector>
-
+#include "src/FieldsFV3JEDI.h"
 #include "eckit/config/Configuration.h"
 #include "oops/base/Variables.h"
 #include "oops/generic/UnstructuredGrid.h"
@@ -26,7 +25,8 @@
 // -----------------------------------------------------------------------------
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-FieldsFV3JEDI::FieldsFV3JEDI(const GeometryFV3JEDI & geom, const oops::Variables & vars,
+FieldsFV3JEDI::FieldsFV3JEDI(const GeometryFV3JEDI & geom,
+                             const oops::Variables & vars,
                            const util::DateTime & time):
   geom_(new GeometryFV3JEDI(geom)), vars_(vars), time_(time)
 {
@@ -54,7 +54,8 @@ FieldsFV3JEDI::FieldsFV3JEDI(const FieldsFV3JEDI & other)
   fv3jedi_field_copy_f90(keyFlds_, other.keyFlds_);
 }
 // -----------------------------------------------------------------------------
-FieldsFV3JEDI::FieldsFV3JEDI(const FieldsFV3JEDI & other, const GeometryFV3JEDI & geom)
+FieldsFV3JEDI::FieldsFV3JEDI(const FieldsFV3JEDI & other,
+                             const GeometryFV3JEDI & geom)
   : geom_(new GeometryFV3JEDI(geom)), vars_(other.vars_), time_(other.time_)
 {
   const eckit::Configuration * conf = &vars_.toFortran();
@@ -62,7 +63,8 @@ FieldsFV3JEDI::FieldsFV3JEDI(const FieldsFV3JEDI & other, const GeometryFV3JEDI 
   fv3jedi_field_change_resol_f90(keyFlds_, other.keyFlds_);
 }
 // -----------------------------------------------------------------------------
-FieldsFV3JEDI::FieldsFV3JEDI(const FieldsFV3JEDI & other, const oops::Variables & vars)
+FieldsFV3JEDI::FieldsFV3JEDI(const FieldsFV3JEDI & other,
+                              const oops::Variables & vars)
   : geom_(other.geom_), vars_(vars), time_(other.time_)
 {
   const eckit::Configuration * conf = &vars_.toFortran();
@@ -104,23 +106,28 @@ void FieldsFV3JEDI::dirac(const eckit::Configuration & config) {
   fv3jedi_field_dirac_f90(keyFlds_, &conf);
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::getValues(const ioda::Locations & locs, const oops::Variables & vars,
+void FieldsFV3JEDI::getValues(const ioda::Locations & locs,
+                         const oops::Variables & vars,
                          ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
   fv3jedi_field_interp_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::getValuesTL(const ioda::Locations & locs, const oops::Variables & vars,
+void FieldsFV3JEDI::getValuesTL(const ioda::Locations & locs,
+                           const oops::Variables & vars,
                            ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
 
-  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf,
+                                gom.toFortran());
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::getValuesAD(const ioda::Locations & locs, const oops::Variables & vars,
+void FieldsFV3JEDI::getValuesAD(const ioda::Locations & locs,
+                           const oops::Variables & vars,
                            const ufo::GeoVaLs & gom) {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf,
+                                gom.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::zero(const util::DateTime & time) {
@@ -146,22 +153,27 @@ void FieldsFV3JEDI::random() {
   fv3jedi_field_random_f90(keyFlds_);
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::interpolate(const ioda::Locations & locs, const oops::Variables & vars,
+void FieldsFV3JEDI::interpolate(const ioda::Locations & locs,
+                              const oops::Variables & vars,
                               ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
   fv3jedi_field_interp_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::interpolateTL(const ioda::Locations & locs, const oops::Variables & vars,
+void FieldsFV3JEDI::interpolateTL(const ioda::Locations & locs,
+                                const oops::Variables & vars,
                                 ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf,
+                               gom.toFortran());
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::interpolateAD(const ioda::Locations & locs, const oops::Variables & vars,
+void FieldsFV3JEDI::interpolateAD(const ioda::Locations & locs,
+                                const oops::Variables & vars,
                                 const ufo::GeoVaLs & gom) {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf,
+                                gom.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::changeResolution(const FieldsFV3JEDI & other) {
@@ -191,7 +203,7 @@ void FieldsFV3JEDI::read(const eckit::Configuration & config) {
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::analytic_init(const eckit::Configuration & config,
-				  const GeometryFV3JEDI & geom) {
+                                  const GeometryFV3JEDI & geom) {
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
   stageFv3Files(config);
