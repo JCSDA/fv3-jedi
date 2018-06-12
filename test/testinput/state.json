@@ -34,7 +34,7 @@
     },
     "date": "2016-01-01T06:00:00Z",
     "StateGenerate" : {
-      "analytic_init": "dcmip-test-3-1",
+      "analytic_init": "dcmip-test-1-1",
       "filename_core": "fv_core.res.nc",
       "filename_trcr": "fv_tracer.res.nc",
       "filename_cplr": "coupler.res",
@@ -55,11 +55,11 @@
       "variables": ["virtual_temperature","atmosphere_ln_pressure_coordinate"]
     },
     "Locations": {
-      "lats": [8.59262775197223, 58.3436572887169],
-      "lons": [88.4755056789305, 215.250002509653],
-       "heights": ["0.25","0.75"],
-       "Nrandom": "8",
-       "random_seed": "560921"
+     "lats": ["55.0"],
+     "lons": ["10.0"],
+     "heights": ["0.25","0.75"],
+     "Nrandom": "8",
+     "random_seed": "560921"
     },
     "values": [2806.6869400934052]
   }

@@ -476,12 +476,12 @@ ecbuild_add_test( TARGET  test_fv3jedi_geometry
                   MPI     6
                   LIBS    fv3jedi )
 
-#ecbuild_add_test( TARGET  test_fv3jedi_state
-#                  BOOST
-#                  SOURCES executables/TestState.cc
-#                  ARGS    "testinput/state.json"
-#                  MPI     6
-#                  LIBS    fv3jedi )
+ecbuild_add_test( TARGET  test_fv3jedi_state
+                  BOOST
+                  SOURCES executables/TestState.cc
+                  ARGS    "testinput/state.json"
+                  MPI     6
+                  LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model
                   BOOST
