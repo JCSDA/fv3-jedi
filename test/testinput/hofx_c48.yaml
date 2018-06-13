@@ -3,7 +3,7 @@ trc_file: Data/fv3files/field_table
 test_framework_runtime_config: --log_level=test_suite
 Assimilation Window:
   Begin: '2017-08-01T00:00:00Z'
-  Length: PT6H
+  Length: PT1H
 Geometry:
   datapath_geom: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
   filename_core: 20170801.000000.fv_core.res.nc
@@ -29,8 +29,11 @@ Initial Condition:
   filename_core: 20170801.000000.fv_core.res.nc
   filename_cplr: 20170801.000000.coupler.res
   filename_trcr: 20170801.000000.fv_tracer.res.nc
+  filename_sfcd: 20170801.000000.sfc_data.nc
+  filename_sfcw: 20170801.000000.fv_srf_wnd.res.nc
   nml_file: Data/fv3files/input_c48.nml
   trc_file: Data/fv3files/field_table_crtm
+  read_crtm_surface: 1
 Model:
   init_tlmadm: '0'
   nml_file: Data/fv3files/input_c48.nml
