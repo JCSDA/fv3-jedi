@@ -37,7 +37,7 @@ StateTest:
     nml_file: Data/fv3files/input_c96.nml
     trc_file: Data/fv3files/field_table
   StateGenerate:
-    analytic_init: dcmip-test-1-1
+    analytic_init: dcmip-test-4-0
     datapath_read: Data/C96_RESTART_2016-01-01-06/
     datapath_tile: Data/C96_RESTART_2016-01-01-06/INPUT/
     datapath_write: ''
@@ -55,9 +55,9 @@ StateTest:
     - virtual_temperature
     - atmosphere_ln_pressure_coordinate
   date: '2016-01-01T06:00:00Z'
-  interp_tolerance: '0.01'
+  interp_tolerance: 2.0e-5
   norm-file: '1952.8164917091935'
-  norm-gen: '1983.7898891675839'
+  norm-gen: '1977.8036041253058'
   tolerance: 1.0e-08
   values:
   - 2806.686940093405
