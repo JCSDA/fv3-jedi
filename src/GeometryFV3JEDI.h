@@ -1,12 +1,12 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_GEOMETRYFV3JEDI_H_
-#define FV3JEDI_MODEL_GEOMETRYFV3JEDI_H_
+#ifndef FV3_JEDI_SRC_GEOMETRYFV3JEDI_H_
+#define FV3_JEDI_SRC_GEOMETRYFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -45,4 +45,4 @@ class GeometryFV3JEDI : public util::Printable,
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_MODEL_GEOMETRYFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_GEOMETRYFV3JEDI_H_

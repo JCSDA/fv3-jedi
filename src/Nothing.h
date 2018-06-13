@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_NOTHING_H_
-#define FV3JEDI_MODEL_NOTHING_H_
+#ifndef FV3_JEDI_SRC_NOTHING_H_
+#define FV3_JEDI_SRC_NOTHING_H_
 
 #include <ostream>
 
@@ -18,7 +18,7 @@ namespace fv3jedi {
 
 class Nothing : public util::Printable {
  public:
-  explicit Nothing() {}
+  Nothing() {}
   ~Nothing() {}
 
  private:
@@ -29,4 +29,4 @@ class Nothing : public util::Printable {
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_MODEL_NOTHING_H_
+#endif  // FV3_JEDI_SRC_NOTHING_H_

@@ -1,12 +1,12 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_INCREMENTFV3JEDI_H_
-#define FV3JEDI_MODEL_INCREMENTFV3JEDI_H_
+#ifndef FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
+#define FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -62,7 +62,8 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
   static const std::string classname() {return "fv3jedi::IncrementFV3JEDI";}
 
 /// Constructor, destructor
-  IncrementFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &, const util::DateTime &);
+  IncrementFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
+                   const util::DateTime &);
   IncrementFV3JEDI(const GeometryFV3JEDI &, const IncrementFV3JEDI &);
   IncrementFV3JEDI(const IncrementFV3JEDI &, const bool);
   IncrementFV3JEDI(const IncrementFV3JEDI &);
@@ -83,12 +84,16 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
   void dirac(const eckit::Configuration &);
 
 /// Get increment values at observation locations
-  void getValuesTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &, const Nothing &) const;
-  void getValuesAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &, const Nothing &);
+  void getValuesTL(const ioda::Locations &, const oops::Variables &,
+                   ufo::GeoVaLs &, const Nothing &) const;
+  void getValuesAD(const ioda::Locations &, const oops::Variables &,
+                   const ufo::GeoVaLs &, const Nothing &);
 
 /// Interpolate to observation location
-  void interpolateTL(const ioda::Locations &, const oops::Variables &, ufo::GeoVaLs &, const Nothing &) const;
-  void interpolateAD(const ioda::Locations &, const oops::Variables &, const ufo::GeoVaLs &, const Nothing &);
+  void interpolateTL(const ioda::Locations &, const oops::Variables &,
+                    ufo::GeoVaLs &, const Nothing &) const;
+  void interpolateAD(const ioda::Locations &, const oops::Variables &,
+                    const ufo::GeoVaLs &, const Nothing &);
 
 /// Convert to/from generic unstructured grid
   void define(oops::UnstructuredGrid &) const;
@@ -123,4 +128,4 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_MODEL_INCREMENTFV3JEDI_H_
+#endif  // FV3_JEDI_SRC_INCREMENTFV3JEDI_H_

@@ -14,5 +14,5 @@ int main(int argc,  char ** argv) {
   test::ErrorCovariance<fv3jedi::FV3JEDITraits> tests;
   run.execute(tests);
   return 0;
-};
+}
 

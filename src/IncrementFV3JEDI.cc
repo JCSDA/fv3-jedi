@@ -1,15 +1,15 @@
 /*
  * (C) Copyright 2017 UCAR
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "IncrementFV3JEDI.h"
 
 #include <algorithm>
 #include <string>
 
+#include "src/IncrementFV3JEDI.h"
 #include "eckit/config/LocalConfiguration.h"
 #include "oops/base/Variables.h"
 #include "oops/generic/UnstructuredGrid.h"
@@ -29,21 +29,24 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 /// Constructor, destructor
 // -----------------------------------------------------------------------------
-IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & resol, const oops::Variables & vars,
-                         const util::DateTime & vt)
+IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & resol,
+                                    const oops::Variables & vars,
+                                    const util::DateTime & vt)
   : fields_(new FieldsFV3JEDI(resol, vars, vt))
 {
   fields_->zero();
   oops::Log::trace() << "IncrementFV3JEDI constructed." << std::endl;
 }
 // -----------------------------------------------------------------------------
-IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & resol, const IncrementFV3JEDI & other)
+IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & resol,
+                                    const IncrementFV3JEDI & other)
   : fields_(new FieldsFV3JEDI(*other.fields_, resol))
 {
   oops::Log::trace() << "IncrementFV3JEDI constructed from other." << std::endl;
 }
 // -----------------------------------------------------------------------------
-IncrementFV3JEDI::IncrementFV3JEDI(const IncrementFV3JEDI & other, const bool copy)
+IncrementFV3JEDI::IncrementFV3JEDI(const IncrementFV3JEDI & other,
+                                    const bool copy)
   : fields_(new FieldsFV3JEDI(*other.fields_, copy))
 {
   oops::Log::trace() << "IncrementFV3JEDI copy-created." << std::endl;
@@ -114,7 +117,8 @@ void IncrementFV3JEDI::schur_product_with(const IncrementFV3JEDI & dx) {
   fields_->schur_product_with(*dx.fields_);
 }
 // -----------------------------------------------------------------------------
-double IncrementFV3JEDI::dot_product_with(const IncrementFV3JEDI & other) const {
+double IncrementFV3JEDI::dot_product_with(const IncrementFV3JEDI & other)
+                                           const {
   return dot_product(*fields_, *other.fields_);
 }
 // -----------------------------------------------------------------------------
@@ -124,15 +128,21 @@ void IncrementFV3JEDI::random() {
 // -----------------------------------------------------------------------------
 /// Interpolate to observation location
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateTL(const ioda::Locations & locs, const oops::Variables & vars, ufo::GeoVaLs & cols, const Nothing &) const {
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" << *fields_ << std::endl;
+void IncrementFV3JEDI::interpolateTL(const ioda::Locations & locs,
+   const oops::Variables & vars, ufo::GeoVaLs & cols, const Nothing &) const {
+  oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" <<
+                         *fields_ << std::endl;
   fields_->interpolateTL(locs, vars, cols);
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateTL gom " << cols << std::endl;
+  oops::Log::debug() << "IncrementFV3JEDI::interpolateTL gom " <<
+                          cols << std::endl;
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs, const oops::Variables & vars, const ufo::GeoVaLs & cols, const Nothing &) {
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateAD gom " << cols << std::endl;
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateAD fields in" << *fields_ << std::endl;
+void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs,
+     const oops::Variables & vars, const ufo::GeoVaLs & cols, const Nothing &) {
+  oops::Log::debug() << "IncrementFV3JEDI::interpolateAD gom "
+                     << cols << std::endl;
+  oops::Log::debug() << "IncrementFV3JEDI::interpolateAD fields in"
+                     << *fields_ << std::endl;
   fields_->interpolateAD(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------
@@ -144,12 +154,14 @@ void IncrementFV3JEDI::define(oops::UnstructuredGrid & ug) const {
 // -----------------------------------------------------------------------------
 /// Get increment values at observation locations
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs, const oops::Variables & vars,
+void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
+                              const oops::Variables & vars,
                               ufo::GeoVaLs & cols, const Nothing &) const {
   fields_->getValuesTL(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs, const oops::Variables & vars,
+void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
+                             const oops::Variables & vars,
                              const ufo::GeoVaLs & cols, const Nothing &) {
   fields_->getValuesAD(locs, vars, cols);
 }
