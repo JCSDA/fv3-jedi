@@ -25,6 +25,21 @@ type fv_atmos_type
   integer :: calendar_type
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
+
+  !2D Fields to be read
+  integer             , allocatable, dimension(:,:)   :: slmsk
+  real(kind=kind_real), allocatable, dimension(:,:)   :: sheleg
+  real(kind=kind_real), allocatable, dimension(:,:)   :: tsea
+  integer             , allocatable, dimension(:,:)   :: vtype
+  integer             , allocatable, dimension(:,:)   :: stype
+  real(kind=kind_real), allocatable, dimension(:,:)   :: vfrac
+  real(kind=kind_real), allocatable, dimension(:,:,:) :: stc
+  real(kind=kind_real), allocatable, dimension(:,:,:) :: smc
+  real(kind=kind_real), allocatable, dimension(:,:)   :: snwdph
+  real(kind=kind_real), allocatable, dimension(:,:)   :: u_srf
+  real(kind=kind_real), allocatable, dimension(:,:)   :: v_srf
+  real(kind=kind_real), allocatable, dimension(:,:)   :: f10m
+
 end type fv_atmos_type
 
 
@@ -91,6 +106,19 @@ subroutine allocate_fv_atmos_type(Atm, isd, ied, jsd, jed, &
 
   if (.not.allocated(   Atm%ua)) allocate (    Atm%ua(isd:ied, jsd:jed, nz     ) )
   if (.not.allocated(   Atm%va)) allocate (    Atm%va(isd:ied, jsd:jed, nz     ) )
+
+  if (.not.allocated(Atm%slmsk )) allocate(Atm%slmsk (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%sheleg)) allocate(Atm%sheleg(isd:ied,jsd:jed))
+  if (.not.allocated(Atm%tsea  )) allocate(Atm%tsea  (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%vtype )) allocate(Atm%vtype (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%stype )) allocate(Atm%stype (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%vfrac )) allocate(Atm%vfrac (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%stc   )) allocate(Atm%stc   (isd:ied,jsd:jed,4))
+  if (.not.allocated(Atm%smc   )) allocate(Atm%smc   (isd:ied,jsd:jed,4))
+  if (.not.allocated(Atm%u_srf )) allocate(Atm%snwdph(isd:ied,jsd:jed))
+  if (.not.allocated(Atm%u_srf )) allocate(Atm%u_srf (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%v_srf )) allocate(Atm%v_srf (isd:ied,jsd:jed))
+  if (.not.allocated(Atm%f10m  )) allocate(Atm%f10m  (isd:ied,jsd:jed))
 
 end subroutine allocate_fv_atmos_type
 

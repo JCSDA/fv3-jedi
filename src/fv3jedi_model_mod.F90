@@ -17,7 +17,7 @@ use kinds
 use fv_arrays_mod,  only: fv_atmos_type
 use mpp_mod,        only: mpp_pe, mpp_root_pe 
 use mpp_domains_mod, only: mpp_update_domains, mpp_get_boundary, DGRID_NE
-use variable_transforms, only: compute_fv3_pressures, compute_fv3_pressures_tlm, compute_fv3_pressures_bwd
+use pressure_vt_mod, only: compute_fv3_pressures, compute_fv3_pressures_tlm, compute_fv3_pressures_bwd
 use fms_mod, only: set_domain, nullify_domain
 
 

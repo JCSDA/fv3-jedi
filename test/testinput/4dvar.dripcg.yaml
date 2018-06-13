@@ -24,7 +24,7 @@ cost_function:
         obserror: ObsErr
       ObsData:
         ObsDataIn:
-          obsfile: ../../ufo/test/Data/diag_t_01_wprofiles.nc4
+          obsfile: Data/diag_t_01_wprofiles.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.4dvar.dripcg.obt
         obsvalue: Observation

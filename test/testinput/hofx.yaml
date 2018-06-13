@@ -40,7 +40,7 @@ Observations:
   - ObsBias: {}
     ObsData:
       ObsDataIn:
-        obsfile: ../../ufo/test/Data/diag_t_01_wprofiles.nc4
+        obsfile: Data/diag_t_01_wprofiles.nc4
     ObsType: Radiosonde
 Prints:
   frequency: PT3H

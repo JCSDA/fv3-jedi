@@ -54,5 +54,6 @@ real(kind=kind_real), parameter, public :: rho_seawater  = 1026.0_kind_real
 real(kind=kind_real), parameter, public :: rho_seaice    = 917.0_kind_real
 real(kind=kind_real), parameter, public :: rho_snow      = 330.0_kind_real
 real(kind=kind_real), parameter, public :: f_coriolis_angle = 0.0_kind_real
+real(kind=kind_real), parameter, public :: constoz = 604229.0_kind_real
 
 end module fv3jedi_constants
