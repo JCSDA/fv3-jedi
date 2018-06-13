@@ -46,6 +46,7 @@ type :: fv3jedi_field
   integer :: nf
   integer :: isc, iec, jsc, jec
   integer :: root_pe
+  logical :: havecrtmfields
 end type fv3jedi_field
 
 #define LISTED_TYPE fv3jedi_field
@@ -319,51 +320,27 @@ integer :: ierr
 
 zp=0.0_kind_real
 
-!u
-do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%npz
-         zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
-      enddo
-   enddo
+!u,v,T,delp
+do k = 1,fld1%geom%npz
+  do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+    do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+      zp = zp + fld1%Atm%u   (i,j,k) * fld2%Atm%u   (i,j,k)
+      zp = zp + fld1%Atm%v   (i,j,k) * fld2%Atm%v   (i,j,k)
+      zp = zp + fld1%Atm%pt  (i,j,k) * fld2%Atm%pt  (i,j,k)
+      zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
+    enddo
+  enddo
 enddo
 
-!v
-do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%npz
-         zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
+!Tracers
+do l = 1,fld1%geom%ntracers
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
       enddo
-   enddo
-enddo
-
-!pt
-do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%npz
-         zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
-      enddo
-   enddo
-enddo
-
-!delp
-do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%npz
-         zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
-      enddo
-   enddo
-enddo
-
-!tracers
-do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-   do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do k = 1,fld1%geom%npz
-         do l = 1,fld1%geom%ntracers
-            zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
-         enddo
-      enddo
-   enddo
+    enddo
+  enddo
 enddo
 
 !Get global dot product
@@ -484,6 +461,7 @@ subroutine read_file(fld, c_conf, vdate)
 
   integer :: print_read_info = 0
 
+  integer :: read_crtm_surface
 
   !Set filenames
   !--------------
@@ -556,6 +534,10 @@ subroutine read_file(fld, c_conf, vdate)
   !Register and read tracers
   !-------------------------
   call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
+
+  if (ntracers /= fld%geom%ntracers) then
+    call abor1_ftn("fv3jedi_fields: tracer table does not match geomtry")
+  endif
  
   do nt = 1, ntprog
      call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
@@ -569,26 +551,46 @@ subroutine read_file(fld, c_conf, vdate)
 
   !Register and read surface fields needed for crtm calculation
   !------------------------------------------------------------
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%Atm%slmsk , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%Atm%sheleg, domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%Atm%tsea  , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%Atm%vtype , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%Atm%stype , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%Atm%vfrac , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%Atm%stc   , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%Atm%smc   , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%Atm%snwdph, domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%Atm%f10m  , domain=fld%geom%domain)
+  read_crtm_surface = 0
+  if (config_element_exists(c_conf,"read_crtm_surface")) then
+    read_crtm_surface = config_get_int(c_conf,"read_crtm_surface")
+  endif
 
-  call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
-  call free_restart_type(Sf_restart)
+  if (read_crtm_surface == 1) then
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%Atm%slmsk , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%Atm%sheleg, domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%Atm%tsea  , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%Atm%vtype , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%Atm%stype , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%Atm%vfrac , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%Atm%stc   , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%Atm%smc   , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%Atm%snwdph, domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%Atm%f10m  , domain=fld%geom%domain)
 
-  id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%Atm%u_srf , domain=fld%geom%domain)
-  id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%Atm%v_srf , domain=fld%geom%domain)
+    call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
+    call free_restart_type(Sf_restart)
 
-  call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
-  call free_restart_type(Sf_restart)
+    id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%Atm%u_srf , domain=fld%geom%domain)
+    id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%Atm%v_srf , domain=fld%geom%domain)
 
+    call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
+    call free_restart_type(Sf_restart)
+  else
+    fld%havecrtmfields = .false.
+    fld%Atm%slmsk  = 0.0_kind_real
+    fld%Atm%sheleg = 0.0_kind_real
+    fld%Atm%tsea   = 0.0_kind_real
+    fld%Atm%vtype  = 0.0_kind_real
+    fld%Atm%stype  = 0.0_kind_real
+    fld%Atm%vfrac  = 0.0_kind_real
+    fld%Atm%stc    = 0.0_kind_real
+    fld%Atm%smc    = 0.0_kind_real
+    fld%Atm%u_srf  = 0.0_kind_real
+    fld%Atm%u_srf  = 0.0_kind_real
+    fld%Atm%v_srf  = 0.0_kind_real
+    fld%Atm%f10m   = 0.0_kind_real
+  endif
 
   ! Get dates from file
   !--------------------
@@ -890,48 +892,48 @@ type(c_ptr), intent(in)           :: config  !< Configuration structure
 integer :: i,j,k
 
 !u
-do i = flds%geom%bd%isc,flds%geom%bd%iec
-   do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%npz
-         flds%Atm%u(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
-      enddo
-   enddo
+do k = 1,flds%geom%npz
+  do j = flds%geom%bd%jsc,flds%geom%bd%jec
+    do i = flds%geom%bd%isc,flds%geom%bd%iec
+      flds%Atm%u(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
+    enddo
+  enddo
 enddo
 
 !v
-do i = flds%geom%bd%isc,flds%geom%bd%iec
-   do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%npz
-         flds%Atm%v(i,j,k) = 1.0_kind_real
-      enddo
-   enddo
+do k = 1,flds%geom%npz
+  do j = flds%geom%bd%jsc,flds%geom%bd%jec
+    do i = flds%geom%bd%isc,flds%geom%bd%iec
+      flds%Atm%v(i,j,k) = 1.0_kind_real
+    enddo
+  enddo
 enddo
 
 !pt
-do i = flds%geom%bd%isc,flds%geom%bd%iec
-   do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%npz
-         flds%Atm%pt(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
-      enddo
-   enddo
+do k = 1,flds%geom%npz
+  do j = flds%geom%bd%jsc,flds%geom%bd%jec
+    do i = flds%geom%bd%isc,flds%geom%bd%iec
+      flds%Atm%pt(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
+    enddo
+  enddo
 enddo
 
 !delp
-do i = flds%geom%bd%isc,flds%geom%bd%iec
-   do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%npz
-         flds%Atm%delp(i,j,k) = k
-      enddo
-   enddo
+do k = 1,flds%geom%npz
+  do j = flds%geom%bd%jsc,flds%geom%bd%jec
+    do i = flds%geom%bd%isc,flds%geom%bd%iec
+      flds%Atm%delp(i,j,k) = k
+    enddo
+  enddo
 enddo
 
 !q
-do i = flds%geom%bd%isc,flds%geom%bd%iec
-   do j = flds%geom%bd%jsc,flds%geom%bd%jec
-      do k = 1,flds%geom%npz
-         flds%Atm%q(i,j,k,1) = 0.0
-      enddo
-   enddo
+do k = 1,flds%geom%npz
+  do j = flds%geom%bd%jsc,flds%geom%bd%jec
+    do i = flds%geom%bd%isc,flds%geom%bd%iec
+      flds%Atm%q(i,j,k,1) = 0.0
+    enddo
+  enddo
 enddo
 
 return
@@ -1370,7 +1372,7 @@ use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
 use wind_vt_mod
 use field_manager_mod, only: MODEL_ATMOS
-use tracer_manager_mod,only: get_tracer_index
+use tracer_manager_mod,only: get_tracer_index, get_tracer_names
 
 implicit none
 type(fv3jedi_field), intent(inout) :: fld 
@@ -1392,7 +1394,8 @@ logical :: do_interp
 
 integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,i,j
 
-integer :: ti_q, ti_ql, ti_qi, ti_o3
+integer :: nt, ti_q, ti_ql, ti_qi, ti_o3, trcount
+character(len=20) :: trname
 
 !Local pressure variables
 real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
@@ -1465,11 +1468,24 @@ call delp_to_pe_p_logp(fld%geom,fld%Atm%delp,prsi,prs,logp)
 
 ! Tracer indexes 
 ! --------------
-ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
-ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
-ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
-ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
+!Check we have what is needed for CRTM
+trcount = 0
+do nt = 1,fld%geom%ntracers
+  call get_tracer_names(MODEL_ATMOS,nt,trname)
+  if (trim(trname) == "sphum"   .or. trim(trname) == "liq_wat" .or. &
+      trim(trname) == "ice_wat" .or. trim(trname) == "o3mr"    ) then
+    trcount = trcount + 1
+  endif
+enddo
 
+if (trcount == 4) then
+  ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
+  ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
+  ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
+  ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
+else
+  fld%havecrtmfields = .false.
+endif
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -1511,15 +1527,17 @@ vegetation_fraction = 0.0_kind_real
 soil_temperature = 0.0_kind_real
 snow_depth = 0.0_kind_real
 
-!TODO only if a radiance
-call crtm_surface( fld%geom, nobs, ngrid, locs%lat(:), locs%lon(:), &
-                   fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
-                   fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, fld%Atm%snwdph, &
-                   fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m, &
-                   land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
-                   snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
-                   snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
-                   wind_speed, wind_direction )
+if (fld%havecrtmfields) then
+  !TODO only if a radiance
+  call crtm_surface( fld%geom, nobs, ngrid, locs%lat(:), locs%lon(:), &
+                     fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
+                     fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, fld%Atm%snwdph, &
+                     fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m, &
+                     land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
+                     snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
+                     snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
+                     wind_speed, wind_direction )
+endif
 
 ! Get CRTM moisture variables
 ! ---------------------------
@@ -1530,19 +1548,27 @@ allocate(qi_efr(isd:ied,jsd:jed,npz))
 allocate(qmr(isd:ied,jsd:jed,npz))
 allocate(water_coverage_m(isd:ied,jsd:jed))
 
-!TODO Is it water_coverage or sea_coverage fed in here?
-water_coverage_m = 0.0_kind_real
-do j = jsc,jec
-  do i = isc,iec
-    if (fld%Atm%slmsk(i,j) == 0) water_coverage_m(i,j) = 1.0_kind_real
+ql_ade = 0.0_kind_real
+qi_ade = 0.0_kind_real
+ql_efr = 0.0_kind_real
+qi_efr = 0.0_kind_real
+
+if (fld%havecrtmfields) then
+
+  !TODO Is it water_coverage or sea_coverage fed in here?
+  water_coverage_m = 0.0_kind_real
+  do j = jsc,jec
+    do i = isc,iec
+      if (fld%Atm%slmsk(i,j) == 0) water_coverage_m(i,j) = 1.0_kind_real
+    enddo
   enddo
-enddo
+  
+  call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,ti_q), &
+                     fld%Atm%q(:,:,:,ti_ql),fld%Atm%q(:,:,:,ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
+  
+  call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,ti_q),qmr)
 
-call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,ti_q), &
-                   fld%Atm%q(:,:,:,ti_ql),fld%Atm%q(:,:,:,ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
-
-call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,ti_q),qmr)
-
+endif
 
 !write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
@@ -1854,14 +1880,43 @@ integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
+integer :: nvl
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), pointer :: geoval(:,:,:)
+logical :: do_interp
+
+integer :: isc, iec, jsc, jec, isd, ied, jsd, jed, npz
+
+
+! Grid convenience
+! ----------------
+isc = fld%geom%bd%isc
+iec = fld%geom%bd%iec
+jsc = fld%geom%bd%jsc
+jec = fld%geom%bd%jec
+isd = fld%geom%bd%isd
+ied = fld%geom%bd%ied
+jsd = fld%geom%bd%jsd
+jed = fld%geom%bd%jed
+npz = fld%geom%npz
+
+
 ! Initialize the interpolation
 ! ----------------------------
 call initialize_interp( fld, locs, vars, pbump, ngrid, nobs, traj )
+
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_field(ngrid,1))
 allocate(obs_field(nobs,1))
+
+
+! Local GeoVals
+! -------------
+allocate(geovale(isd:ied,jsd:jed,npz+1))
+allocate(geovalm(isd:ied,jsd:jed,npz))
+
 
 !write(*,*)'interp_tl model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp_tl model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
@@ -1870,7 +1925,10 @@ allocate(obs_field(nobs,1))
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
  
-  gom%geovals(jvar)%vals(:,:) = 0.0
+  geovalm = 0.0_kind_real
+  geovale = 0.0_kind_real
+
+  do_interp = .false.
 
   select case (trim(vars%fldnames(jvar)))
    
@@ -1879,20 +1937,12 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     !Tangent linear of temperature to virtual temperature
+    nvl = fld%geom%npz
+    do_interp = .true.
     call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    geovalm = fld%Atm%pt
+    geoval => geovalm
 
-    do jlev = 1, fld%geom%npz
-      ii = 0
-      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-        do ji = fld%geom%bd%isc, fld%geom%bd%iec
-          ii = ii + 1
-          mod_field(ii, 1) = fld%Atm%pt(ji, jj, jlev)
-        enddo
-      enddo
-      call pbump%apply_obsop(mod_field,obs_field)
-      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
-    enddo
-  
   case ("humidity_mixing_ratio")
   
   case ("atmosphere_ln_pressure_coordinate")
@@ -1907,8 +1957,40 @@ do jvar = 1, vars%nv
 
   end select
 
+  ! Allocate geovals%val for this jvars
+  ! -----------------------------------
+  call allocate_geovals_vals(gom,jvar,nobs,nvl)
+
+
+  !Run some basic checks on the interpolation
+  !------------------------------------------
+  call interp_checks(myname, fld, locs, vars, gom, jvar)
+
+
+  ! Find observation location equivlent
+  ! -----------------------------------
+  if (do_interp) then
+    !Perform level-by-level interpolation using BUMP
+    do jlev = 1, nvl
+      ii = 0
+      do jj = jsc, jec
+        do ji = isc, iec
+          ii = ii + 1
+          mod_field(ii, 1) = geoval(ji, jj, jlev)
+        enddo
+      enddo
+      call pbump%apply_obsop(mod_field,obs_field)
+      gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
+    enddo
+  else
+    gom%geovals(jvar)%vals(nvl,:) = obs_field(:,1)
+  endif
+
+  nullify(geoval)
+
 enddo
 
+deallocate(geovalm,geovale)
 
 deallocate(mod_field)
 deallocate(obs_field)

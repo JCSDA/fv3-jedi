@@ -354,6 +354,7 @@ Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/20170801.000000.sfc_data.
 
 list( APPEND fv3jedi_test_fv3files
 Data/fv3files/field_table
+Data/fv3files/field_table_crtm
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_c96.nml
 Data/fv3files/input_c48.nml
