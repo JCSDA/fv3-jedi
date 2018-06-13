@@ -673,7 +673,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   logical, allocatable             :: grids_on_this_pe(:)
   integer                          :: p_split = 1
 
-  ! Poitner to geometry component of field object
+  ! Pointer to geometry component of field object
   fld%geom => geom
 
   If (config_element_exists(c_conf,"analytic_init")) Then
