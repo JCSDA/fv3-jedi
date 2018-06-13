@@ -51,7 +51,7 @@
         "ObsType": "Radiosonde",
         "ObsData": {
           "ObsDataIn": {
-            "obsfile": "../../ufo/test/Data/diag_t_01_wprofiles.nc4"
+            "obsfile": "Data/diag_t_01_wprofiles.nc4"
           }
         },
         "ObsBias": {}
@@ -60,7 +60,7 @@
         "ObsType": "Radiance",
         "ObsData": {
           "ObsDataIn": {
-            "obsfile": "../../ufo/test/Data/amsua_n19_obs.nc4"
+            "obsfile": "Data/amsua_n19_obs.nc4"
           }
         },
         "ObsBias": {}
