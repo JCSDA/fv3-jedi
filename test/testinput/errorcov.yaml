@@ -1,0 +1,46 @@
+Covariance:
+  covariance: FV3JEDIstatic
+  date: '2016-01-01T06:00:00Z'
+  horizontal_length_scale: 1e6
+  maximum_condition_number: 1.0e6
+  standard_deviation: '0.8'
+  vertical_correlation: '0.2'
+CovarianceTest:
+  tolerance: '0.01'
+Geometry:
+  datapath_geom: Data/C96_RESTART_2016-01-01-06/
+  filename_core: fv_core.res.nc
+  filename_spec: grid_spec.nc
+  halo: '3'
+  hydrostatic: '1'
+  init_type: inline
+  io_layout_1: '1'
+  io_layout_2: '1'
+  layout_1: '1'
+  layout_2: '1'
+  nml_file: Data/fv3files/input_c96.nml
+  npx: '97'
+  npy: '97'
+  npz: '64'
+  trc_file: Data/fv3files/field_table
+  wind_type: D-grid
+State:
+  datapath_read: Data/C96_RESTART_2016-01-01-06/
+  datapath_tile: Data/C96_RESTART_2016-01-01-06/INPUT/
+  datapath_write: ''
+  date: '2016-01-01T06:00:00Z'
+  filename_core: fv_core.res.nc
+  filename_cplr: coupler.res
+  filename_trcr: fv_tracer.res.nc
+  nml_file: Data/fv3files/input_c96.nml
+  trc_file: Data/fv3files/field_table
+Variables:
+  variables:
+  - u
+  - v
+  - pt
+  - delp
+  - q
+nml_file: Data/fv3files/fmsmpp.nml
+test_framework_runtime_config: --log_level=test_suite
+trc_file: Data/fv3files/field_table

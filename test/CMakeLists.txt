@@ -367,21 +367,21 @@ Data/RESTART/PlotCubeSphereField.py
 
 
 list( APPEND fv3jedi_test_input
-testinput/geometry.json
-testinput/state.json
-testinput/model.json
-testinput/linearmodel.json
-testinput/3dvar.json
-testinput/3dvar_c48.json
-testinput/4dvar.dripcg.json
-testinput/4dvar.drplanczos.json
-testinput/forecast.json
-testinput/hofx.json
-testinput/dirac.nicas.json
-testinput/increment.json
-testinput/3denvar.bump.json
-testinput/errorcov.json
-testinput/localization.json
+testinput/geometry.yaml
+testinput/state.yaml
+testinput/model.yaml
+testinput/linearmodel.yaml
+testinput/3dvar.yaml
+testinput/3dvar_c48.yaml
+testinput/4dvar.dripcg.yaml
+testinput/4dvar.drplanczos.yaml
+testinput/forecast.yaml
+testinput/hofx.yaml
+testinput/dirac.nicas.yaml
+testinput/increment.yaml
+testinput/3denvar.bump.yaml
+testinput/errorcov.yaml
+testinput/localization.yaml
 compare.sh
 )
 
@@ -472,56 +472,56 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 ecbuild_add_test( TARGET  test_fv3jedi_geometry
                   BOOST
                   SOURCES executables/TestGeometry.cc
-                  ARGS    "testinput/geometry.json"
+                  ARGS    "testinput/geometry.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_state
                   BOOST
                   SOURCES executables/TestState.cc
-                  ARGS    "testinput/state.json"
+                  ARGS    "testinput/state.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model
                   BOOST
                   SOURCES executables/TestModel.cc
-                  ARGS    "testinput/model.json"
+                  ARGS    "testinput/model.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linearmodel
                   BOOST
                   SOURCES executables/TestLinearModel.cc
-                  ARGS    "testinput/linearmodel.json"
+                  ARGS    "testinput/linearmodel.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelaux
                   BOOST
                   SOURCES executables/TestModelAuxControl.cc
-                  ARGS    "testinput/model.json"
+                  ARGS    "testinput/model.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment
                   BOOST
                   SOURCES executables/TestIncrement.cc
-                  ARGS    "testinput/increment.json"
+                  ARGS    "testinput/increment.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance
                   BOOST
                   SOURCES executables/TestErrorCovariance.cc
-                  ARGS    "testinput/errorcov.json"
+                  ARGS    "testinput/errorcov.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
                   BOOST
                   SOURCES executables/TestModelAuxCovariance.cc
-                  ARGS    "testinput/model.json"
+                  ARGS    "testinput/model.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
@@ -529,7 +529,7 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
 #ecbuild_add_test( TARGET  test_fv3jedi_localization
 #                  BOOST
 #                  SOURCES executables/TestLocalization.cc
-#                  ARGS    "testinput/localization.json"
+#                  ARGS    "testinput/localization.yaml"
 #                  MPI     6
 #                  LIBS    fv3jedi )
 
@@ -540,7 +540,7 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
 #                  TYPE SCRIPT
 #                  MPI     6
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.nicas.json"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.nicas.yaml"
 #                       testoutput/dirac.nicas.test
 #                  DEPENDS fv3jedi_dirac.x )
 #
@@ -548,27 +548,27 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
 #                  TYPE SCRIPT
 #                  MPI     6
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.json"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.yaml"
 #                       testoutput/hofx.test
 #                  DEPENDS fv3jedi_hofx.x )
 #
 #ecbuild_add_test( TARGET test_fv3jedi_3dvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.json"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.yaml"
 #                       testoutput/3dvar.test
 #                  DEPENDS fv3jedi_4dvar.x )
 #
 #ecbuild_add_test( TARGET test_fv3jedi_3denvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.json"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.yaml"
 #                       testoutput/3denvar_nicas.test
 #                  DEPENDS fv3jedi_4dvar.x )
 #
 #ecbuild_add_test( TARGET test_fv3jedi_4dvar_drplanczos
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.drplanczos.json"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.drplanczos.yaml"
 #                       testoutput/4dvar.drplanczos.test
 #                  DEPENDS fv3jedi_4dvar.x )

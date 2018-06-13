@@ -1,0 +1,151 @@
+cost_function:
+  Jb:
+    Background:
+      state:
+      - datapath_read: Data/C96_RESTART_2016-01-01-06/
+        datapath_tile: Data/C96_RESTART_2016-01-01-06/INPUT/
+        date: '2016-01-01T06:00:00Z'
+        filename_core: fv_core.res.nc
+        filename_cplr: coupler.res
+        filename_trcr: fv_tracer.res.nc
+        nml_file: Data/fv3files/input_c96.nml
+        trc_file: Data/fv3files/field_table
+    Covariance:
+      covariance: FV3JEDIstatic
+      date: '2016-01-01T06:00:00Z'
+      horizontal_length_scale: 1e6
+      maximum_condition_number: 1.0e6
+      standard_deviation: '0.8'
+      vertical_correlation: '0.2'
+  Jo:
+    ObsTypes:
+    - Covariance:
+        covariance: diagonal
+        obserror: ObsErr
+      ObsData:
+        ObsDataIn:
+          obsfile: ../../ufo/test/Data/diag_t_01_wprofiles.nc4
+        ObsDataOut:
+          obsfile: Data/fv3jedi.3dvar.obt
+        obsvalue: Observation
+      ObsType: Radiosonde
+  cost_type: 3D-Var
+  variables:
+  - u
+  - v
+  - pt
+  - delp
+  - q
+  window_begin: '2016-01-01T03:00:00Z'
+  window_length: PT6H
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  init_tlmadm: '0'
+  nml_file: Data/fv3files/input_c96.nml
+  trc_file: Data/fv3files/field_table
+  tstep: PT15M
+  update_dgridwind: '0'
+  update_pressures: '1'
+nml_file: Data/fv3files/fmsmpp.nml
+output:
+  datapath_write: Data/
+  filename_core: 3D-Var.fv_core.res.nc
+  filename_cplr: 3D-Var.coupler.res
+  filename_trcr: 3D-Var.fv_tracer.res.nc
+  first: PT0H
+  frequency: PT01H
+resolution:
+  datapath_geom: Data/C96_RESTART_2016-01-01-06/
+  filename_core: fv_core.res.nc
+  filename_spec: grid_spec.nc
+  halo: '3'
+  hydrostatic: '1'
+  init_type: inline
+  io_layout_1: '1'
+  io_layout_2: '1'
+  layout_1: '1'
+  layout_2: '1'
+  nml_file: Data/fv3files/input_c96.nml
+  npx: '97'
+  npy: '97'
+  npz: '64'
+  trc_file: Data/fv3files/field_table
+  wind_type: D-grid
+test_framework_runtime_config: --log_level=test_suite
+trc_file: Data/fv3files/field_table
+variational:
+  iteration:
+  - diagnostics:
+      departures: ombg
+    gradient_norm_reduction: 1e-10
+    linearmodel:
+      init_tlmadm: '1'
+      nml_file: Data/fv3files/input_c96.nml
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      trajectory:
+        init_tlmadm: '0'
+        nml_file: Data/fv3files/input_c96.nml
+        trc_file: Data/fv3files/field_table
+        tstep: PT15M
+      trc_file: Data/fv3files/field_table
+      tstep: PT15M
+      update_dgridwind: '0'
+      update_pressures: '1'
+      version: FV3JEDIIdTLM
+    ninner: '10'
+    resolution:
+      datapath_geom: Data/C96_RESTART_2016-01-01-06/
+      filename_core: fv_core.res.nc
+      filename_spec: grid_spec.nc
+      halo: '3'
+      hydrostatic: '1'
+      init_type: inline
+      io_layout_1: '1'
+      io_layout_2: '1'
+      layout_1: '1'
+      layout_2: '1'
+      nml_file: Data/fv3files/input_c96.nml
+      npx: '97'
+      npy: '97'
+      npz: '64'
+      trc_file: Data/fv3files/field_table
+      wind_type: D-grid
+    test: 'on'
+  - gradient_norm_reduction: 1e-10
+    linearmodel:
+      init_tlmadm: '1'
+      nml_file: Data/fv3files/input_c96.nml
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      trajectory:
+        init_tlmadm: '0'
+        nml_file: Data/fv3files/input_c96.nml
+        trc_file: Data/fv3files/field_table
+        tstep: PT15M
+      trc_file: Data/fv3files/field_table
+      tstep: PT15M
+      update_dgridwind: '0'
+      update_pressures: '1'
+      version: FV3JEDIIdTLM
+    ninner: '10'
+    resolution:
+      datapath_geom: Data/C96_RESTART_2016-01-01-06/
+      filename_core: fv_core.res.nc
+      filename_spec: grid_spec.nc
+      halo: '3'
+      hydrostatic: '1'
+      init_type: inline
+      io_layout_1: '1'
+      io_layout_2: '1'
+      layout_1: '1'
+      layout_2: '1'
+      nml_file: Data/fv3files/input_c96.nml
+      npx: '97'
+      npy: '97'
+      npz: '64'
+      trc_file: Data/fv3files/field_table
+      wind_type: D-grid
+    test: 'on'

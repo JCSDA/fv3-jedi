@@ -1,0 +1,43 @@
+Geometry:
+  datapath_geom: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
+  filename_core: 20170801.000000.fv_core.res.nc
+  filename_spec: grid_spec.nc
+  halo: '3'
+  hydrostatic: '1'
+  init_type: inline
+  io_layout_1: '1'
+  io_layout_2: '1'
+  layout_1: '1'
+  layout_2: '1'
+  nml_file: Data/fv3files/input_c48.nml
+  npx: '49'
+  npy: '49'
+  npz: '64'
+  trc_file: Data/fv3files/field_table
+  wind_type: D-grid
+Model:
+  init_tlmadm: '0'
+  nml_file: Data/fv3files/input_c48.nml
+  trc_file: Data/fv3files/field_table
+  tstep: PT15M
+  update_dgridwind: '0'
+  update_pressures: '1'
+ModelBias: null
+ModelBiasCovariance: null
+ModelTest:
+  fclength: PT1H
+  finalnorm: '1953.9236770666996'
+  tolerance: '0.005'
+State:
+  datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
+  datapath_write: ./
+  date: '2017-08-01T00:00:00Z'
+  filename_core: 20170801.000000.fv_core.res.nc
+  filename_cplr: 20170801.000000.coupler.res
+  filename_trcr: 20170801.000000.fv_tracer.res.nc
+  nml_file: Data/fv3files/input_c48.nml
+  trc_file: Data/fv3files/field_table
+nml_file: Data/fv3files/fmsmpp.nml
+test_framework_runtime_config: --log_level=test_suite
+trc_file: Data/fv3files/field_table
