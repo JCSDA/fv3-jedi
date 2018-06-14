@@ -659,7 +659,7 @@ do k = 1,nobs
 enddo
 
 !Deallocate
-call kdtree%delete
+call kdtree%dealloc
 deallocate(mask)
 deallocate(nn_index,nn_dist)
 deallocate(grid_lon_glo,grid_lat_glo)
