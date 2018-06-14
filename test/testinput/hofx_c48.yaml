@@ -46,13 +46,13 @@ Observations:
   - ObsBias: {}
     ObsData:
       ObsDataIn:
-        obsfile: Data/diag_t_01_wprofiles.nc4
-    ObsType: Radiosonde
+        obsfile: Data/amsua_n19_obs.nc4
+    ObsType: Radiance
   - ObsBias: {}
     ObsData:
       ObsDataIn:
-        obsfile: Data/amsua_n19_obs.nc4
-    ObsType: Radiance
+        obsfile: Data/diag_t_01_wprofiles.nc4
+    ObsType: Radiosonde
 Prints:
   frequency: PT3H
 

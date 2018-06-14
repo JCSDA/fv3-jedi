@@ -115,6 +115,19 @@ if (allocated(self%Atm%phis)) deallocate ( self%Atm%phis )
 if (allocated(   self%Atm%w)) deallocate (    self%Atm%w )
 if (allocated(self%Atm%delz)) deallocate ( self%Atm%delz )
 
+if (allocated(self%Atm%slmsk )) deallocate(self%Atm%slmsk )
+if (allocated(self%Atm%sheleg)) deallocate(self%Atm%sheleg)
+if (allocated(self%Atm%tsea  )) deallocate(self%Atm%tsea  )
+if (allocated(self%Atm%vtype )) deallocate(self%Atm%vtype )
+if (allocated(self%Atm%stype )) deallocate(self%Atm%stype )
+if (allocated(self%Atm%vfrac )) deallocate(self%Atm%vfrac )
+if (allocated(self%Atm%stc   )) deallocate(self%Atm%stc   )
+if (allocated(self%Atm%smc   )) deallocate(self%Atm%smc   )
+if (allocated(self%Atm%u_srf )) deallocate(self%Atm%snwdph)
+if (allocated(self%Atm%u_srf )) deallocate(self%Atm%u_srf )
+if (allocated(self%Atm%v_srf )) deallocate(self%Atm%v_srf )
+if (allocated(self%Atm%f10m  )) deallocate(self%Atm%f10m  )
+
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
@@ -576,6 +589,7 @@ subroutine read_file(fld, c_conf, vdate)
 
     call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
     call free_restart_type(Sf_restart)
+    fld%havecrtmfields = .true.
   else
     fld%havecrtmfields = .false.
     fld%Atm%slmsk  = 0.0_kind_real
