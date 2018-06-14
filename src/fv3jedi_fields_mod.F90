@@ -2269,8 +2269,8 @@ integer, intent(in) :: numobtype
 
 logical, save :: array_init = .false.
 
-logical, allocatable, save :: interp_initialized(:)
-type(bump_type), allocatable, save, target :: bump(:)
+logical, save :: interp_initialized(2)
+type(bump_type), save, target :: bump(2)
 
 integer :: mod_nx,mod_ny,mod_nz,mod_num,obs_num
 real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
@@ -2283,8 +2283,8 @@ integer :: ii, jj, ji, jvar, jlev
 !Allocate bumps and initialize tracker
 !-------------------------------------
 if (.not.array_init) then
-  allocate(interp_initialized(numobtype))
-  allocate(bump(numobtype))
+!  allocate(interp_initialized(numobtype))
+!  allocate(bump(numobtype))
   interp_initialized = .false.
   array_init = .true.
 endif
