@@ -2085,6 +2085,7 @@ do jvar = 1, vars%nv
 
     do jlev = 1, fld%geom%npz
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
+      gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
       call pbump%apply_obsop_ad(obs_field,mod_field)
       ii = 0
       do jj = fld%geom%bd%jsc, fld%geom%bd%jec
