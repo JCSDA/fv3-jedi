@@ -606,7 +606,7 @@ do n = 0,npes-1
    rcvcnt(n) = 1
 enddo
 
-call mpi_allgatherv(ngridv(peid), 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+call mpi_allgatherv(ngrid, 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
 ngrid_glo = sum(ngridv)
 
 do n = 0,npes-1
@@ -626,9 +626,8 @@ allocate(grid_lon_glo(ngrid_glo))
 grid_lat_glo(lowerb:upperb) = grid_lat_loc
 grid_lon_glo(lowerb:upperb) = grid_lon_loc
 
-call mpi_allgatherv(grid_lat_glo(lowerb), rcvcnt(peid), mpi_real8, grid_lat_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
-call mpi_allgatherv(grid_lon_glo(lowerb), rcvcnt(peid), mpi_real8, grid_lon_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
-
+call mpi_allgatherv(grid_lat_loc, rcvcnt(peid), mpi_real8, grid_lat_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
+call mpi_allgatherv(grid_lon_loc, rcvcnt(peid), mpi_real8, grid_lon_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
 
 !Create cover tree for gloval grid
 allocate(mask(ngrid_glo))
@@ -723,7 +722,7 @@ do n = 0,npes-1
    rcvcnt(n) = 1
 enddo
 
-call mpi_allgatherv(ngridv(peid), 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+call mpi_allgatherv(ngrid, 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
 ngrid_glo = sum(ngridv)
 
 do n = 0,npes-1
@@ -741,7 +740,7 @@ allocate(field_glo(ngrid_glo))
 
 field_glo(lowerb:upperb) = field_loc
 
-call mpi_allgatherv(field_glo(lowerb), rcvcnt(peid), mpi_int, field_glo, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+call mpi_allgatherv(field_loc, rcvcnt(peid), mpi_int, field_glo, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
 
 
 do k = 1,nobs
@@ -807,7 +806,7 @@ do n = 0,npes-1
    rcvcnt(n) = 1
 enddo
 
-call mpi_allgatherv(ngridv(peid), 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
+call mpi_allgatherv(ngrid, 1, mpi_int, ngridv, rcvcnt, displs, mpi_int, mpi_comm_world, ierr)
 ngrid_glo = sum(ngridv)
 
 do n = 0,npes-1
@@ -825,7 +824,7 @@ allocate(field_glo(ngrid_glo))
 
 field_glo(lowerb:upperb) = field_loc
 
-call mpi_allgatherv(field_glo(lowerb), rcvcnt(peid), mpi_real8, field_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
+call mpi_allgatherv(field_loc, rcvcnt(peid), mpi_real8, field_glo, rcvcnt, displs, mpi_real8, mpi_comm_world, ierr)
 
 do k = 1,nobs
    field_out(k,1) = field_glo(interp_i(k,1))
