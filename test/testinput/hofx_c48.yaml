@@ -1,6 +1,3 @@
-nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
-test_framework_runtime_config: --log_level=test_suite
 Assimilation Window:
   Begin: '2017-08-01T00:00:00Z'
   Length: PT1H
@@ -43,16 +40,17 @@ Model:
   update_pressures: '1'
 Observations:
   ObsTypes:
-  - ObsBias: {}
+  - ObsType: Radiance
     ObsData:
       ObsDataIn:
         obsfile: Data/amsua_n19_obs.nc4
-    ObsType: Radiance
-  - ObsBias: {}
+    ObsBias: {}
+  - ObsType: Radiosonde
     ObsData:
       ObsDataIn:
         obsfile: Data/diag_t_01_wprofiles.nc4
-    ObsType: Radiosonde
+    ObsBias: {}
 Prints:
   frequency: PT3H
-
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table

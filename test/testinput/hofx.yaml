@@ -37,13 +37,12 @@ Model:
   update_pressures: '1'
 Observations:
   ObsTypes:
-  - ObsBias: {}
+  - ObsType: Radiosonde
     ObsData:
       ObsDataIn:
         obsfile: Data/diag_t_01_wprofiles.nc4
-    ObsType: Radiosonde
+    ObsBias: {}
 Prints:
   frequency: PT3H
 nml_file: Data/fv3files/fmsmpp.nml
-test_framework_runtime_config: --log_level=test_suite
 trc_file: Data/fv3files/field_table
