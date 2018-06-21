@@ -57,6 +57,7 @@ subroutine c_fv3jedi_model_prepare_integration(c_key_self, c_key_state) &
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_model_mod
 
 implicit none
@@ -80,6 +81,7 @@ subroutine c_fv3jedi_model_prepare_integration_ad(c_key_self, c_key_incr) &
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_model_mod
 
 implicit none
@@ -103,6 +105,7 @@ subroutine c_fv3jedi_model_prepare_integration_tl(c_key_self, c_key_incr) &
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_model_mod
 
 implicit none
@@ -125,6 +128,7 @@ subroutine c_fv3jedi_model_propagate(c_key_self, c_key_state) bind(c,name='fv3je
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_model_mod
 
 implicit none
@@ -148,6 +152,7 @@ subroutine c_fv3jedi_model_propagate_ad(c_key_self, c_key_incr, c_key_traj) &
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_trajectories
 use fv3jedi_model_mod
 
@@ -175,6 +180,7 @@ subroutine c_fv3jedi_model_propagate_tl(c_key_self, c_key_incr, c_key_traj) &
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_trajectories
 use fv3jedi_model_mod
 
@@ -201,6 +207,7 @@ subroutine c_fv3jedi_model_prop_traj(c_key_self, c_key_state, c_key_traj) bind(c
 
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_model_mod
 use fv3jedi_trajectories
 

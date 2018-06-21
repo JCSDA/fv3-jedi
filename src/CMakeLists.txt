@@ -33,7 +33,9 @@ fv3jedi_constants.f90
 fv3jedi_covariance_interface.F90
 fv3jedi_covariance_mod.F90
 fv3jedi_fields_interface.F90
+fv3jedi_fields_io_mod.F90
 fv3jedi_fields_mod.F90
+fv3jedi_fields_utils_mod.F90
 fv3jedi_geom_mod.F90
 fv3jedi_kinds_mod.F90
 fv3jedi_model_interface.F90
@@ -41,7 +43,6 @@ fv3jedi_model_mod.F90
 fv3jedi_setup.f90
 fv3jedi_trajectories.F90
 instantiateLocalizationFactory.h
-module_fv3jedi.f90
 random_vectors_mod.F90
 VariableTransforms/wind_variables.F90
 VariableTransforms/moisture_variables.F90
