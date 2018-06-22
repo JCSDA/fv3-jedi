@@ -7,12 +7,10 @@
 
 #include "RunFV3JEDI.h"
 #include "oops/runs/HofX.h"
-#include "ufo/instantiateObsOperatorFactory.h"
 #include "FV3JEDITraits.h"
 
 int main(int argc,  char ** argv) {
   fv3jedi::RunFV3JEDI run(argc, argv);
-  ufo::instantiateObsOperatorFactory<fv3jedi::FV3JEDITraits>();
   oops::HofX<fv3jedi::FV3JEDITraits> hofx;
   run.execute(hofx);
   return 0;
