@@ -57,6 +57,7 @@ type :: fv3jedi_field
   integer :: isc, iec, jsc, jec
   integer :: root_pe
   logical :: havecrtmfields
+  integer :: ti_q, ti_ql, ti_qi, ti_o3
 end type fv3jedi_field
 
 contains

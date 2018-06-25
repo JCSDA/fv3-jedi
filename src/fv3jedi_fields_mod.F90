@@ -16,10 +16,12 @@ use fv3jedi_kinds
 use ioda_locs_mod
 use ufo_geovals_mod
 
-use mpp_domains_mod,   only: EAST, NORTH
-use mpp_mod,           only: mpp_pe, mpp_npes, mpp_root_pe
-use fms_io_mod,        only: restart_file_type, register_restart_field, &
-                             free_restart_type, restore_state, save_restart
+use mpp_domains_mod,    only: EAST, NORTH
+use mpp_mod,            only: mpp_pe, mpp_npes, mpp_root_pe
+use fms_io_mod,         only: restart_file_type, register_restart_field, &
+                              free_restart_type, restore_state, save_restart
+use field_manager_mod,  only: MODEL_ATMOS
+use tracer_manager_mod, only: get_tracer_index, get_tracer_names
 
 use fv3jedi_fields_utils_mod
 use fv3jedi_fields_io_mod
@@ -84,6 +86,12 @@ self%isc = geom%bd%isc
 self%iec = geom%bd%iec
 self%jsc = geom%bd%jsc
 self%jec = geom%bd%jec
+
+! Index in q for the required tracers
+self%ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
+self%ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
+self%ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
+self%ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
 
 self%root_pe = 0
 if (mpp_pe() == mpp_root_pe()) self%root_pe = 1

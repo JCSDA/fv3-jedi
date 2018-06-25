@@ -350,7 +350,7 @@ character(len=255) :: datapath_out
                                        domain=fld%geom%domain )
 
  ! Write variables to file
- ! -----------------------
+ ! -----------------------`/
  call save_restart(Fv_restart, directory=trim(adjustl(datapath_out))//'RESTART')
  call free_restart_type(Fv_restart)
 
@@ -397,76 +397,128 @@ type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
 character(len=255) :: datapath
-character(len=255) :: filename_core
-character(len=255) :: filename_moist
-character(len=255) :: filename_chem
+character(len=255) :: filename_eta
+character(len=255) :: filename_sfc
 
 integer :: ncid, ncstat, dimid, varid
 
-integer :: im, jm, lm, l
+integer :: im, jm, lm, nm, l
+
+integer :: date(6)
+integer :: intdate, inttime
+character(len=8) :: cdate
+character(len=6) :: ctime
+integer(kind=c_int) :: idate, isecs
+character(len=20) :: sdate, validitydate
 
 real(kind=kind_real), allocatable :: field2d_global(:,:)
 
-integer :: istart(4), icount(4)
+integer, allocatable :: istart(:), icount(:)
 
 integer :: tileoff
 logical :: tiledimension = .false.
 
 integer :: isc,iec,jsc,jec
 
+
+ !> Convenience
+ !> -----------
  isc = fld%geom%bd%isc
  iec = fld%geom%bd%iec
  jsc = fld%geom%bd%jsc
  jec = fld%geom%bd%jec
 
- !Set filenames
- !--------------
- filename_core  = 'fvcore_internal_rst'
- filename_moist = 'moist_internal_rst'
- filename_chem  = 'pchem_internal_rst'
 
- if (config_element_exists(c_conf,"filename_core")) then
-    filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
+ !> Set filenames
+ !> -------------
+ filename_eta = 'GEOS.bkg.eta.nc4'
+ filename_sfc = 'GEOS.sfc.sfc.nc4'
+
+ if (config_element_exists(c_conf,"filename_eta")) then
+    filename_eta = config_get_string(c_conf,len(filename_eta),"filename_eta")
  endif
- if (config_element_exists(c_conf,"filename_moist")) then
-    filename_moist = config_get_string(c_conf,len(filename_moist),"filename_moist")
- endif
- if (config_element_exists(c_conf,"filename_chem")) then
-    filename_chem = config_get_string(c_conf,len(filename_chem),"filename_chem")
+ if (config_element_exists(c_conf,"filename_sfc")) then
+    filename_sfc = config_get_string(c_conf,len(filename_sfc),"filename_sfc")
  endif
 
  datapath = config_get_string(c_conf,len(datapath),"datapath_read")
 
- filename_core  = trim(datapath)//trim("/")//trim(filename_core )
- filename_moist = trim(datapath)//trim("/")//trim(filename_moist)
- filename_chem  = trim(datapath)//trim("/")//trim(filename_chem )
+ filename_eta  = trim(datapath)//trim("/")//trim(filename_eta )
+ filename_sfc = trim(datapath)//trim("/")//trim(filename_sfc)
 
- ncstat = nf90_open(filename_core, NF90_NOWRITE, ncid)
+ !> Open the file
+ ncstat = nf90_open(filename_eta, NF90_NOWRITE, ncid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
+ !> Get dimensions, lon,lat,lev,time
  ncstat = nf90_inq_dimid(ncid, "lon", dimid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-
  ncstat = nf90_inquire_dimension(ncid, dimid, len = im)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
  ncstat = nf90_inq_dimid(ncid, "lat", dimid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-
  ncstat = nf90_inquire_dimension(ncid, dimid, len = jm)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
  ncstat = nf90_inq_dimid(ncid, "lev", dimid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-
  ncstat = nf90_inquire_dimension(ncid, dimid, len = lm)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
+ ncstat = nf90_inq_dimid(ncid, "time", dimid)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+ ncstat = nf90_inquire_dimension(ncid, dimid, len = nm)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
+
+ !> Read the time
+ !> -------------
+ allocate(istart(1))
+ allocate(icount(1))
+ istart = 1
+ icount = 1
+
+ !> Get time attributes
+ ncstat = nf90_inq_varid(ncid, "time", varid)
+ if(ncstat /= nf90_noerr) print *, "time: "//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_att(ncid, varid, "begin_date", intdate)
+ if(ncstat /= nf90_noerr) print *, "time: "//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_att(ncid, varid, "begin_time", inttime)
+ if(ncstat /= nf90_noerr) print *, "time: "//trim(nf90_strerror(ncstat))
+
+ !> Pad with leading zeros if need be
+ write(cdate,"(I0.8)") intdate
+ write(ctime,"(I0.6)") inttime
+
+ !> Back to integer
+ read(cdate(1:4),*) date(1)
+ read(cdate(5:6),*) date(2)
+ read(cdate(7:8),*) date(3)
+ read(ctime(1:2),*) date(4)
+ read(ctime(3:4),*) date(5)
+ read(ctime(5:6),*) date(6)
+
+ !> To idate/isecs for Jedi
+ idate = date(1)*10000 + date(2)*100 + date(3)
+ isecs = date(4)*3600  + date(5)*60  + date(6)
+
+ call datetime_from_ifs(vdate, idate, isecs)
+ call datetime_to_string(vdate, validitydate)
+
+ !> Print info to user
+ sdate = config_get_string(c_conf,len(sdate),"date")
+ if (fld%geom%am_i_root_pe) then
+    print *,'read_file: validity date: ',trim(validitydate)
+    print *,'read_file: expected validity date: ',trim(sdate)
+ endif
+
+ !> Make sure file dimensions equal to geometry
  if ( im /= fld%geom%npx-1 .or. lm /= fld%geom%npz) then
    call abor1_ftn("GEOS restarts: restart dimension not compatible with geometry")
  endif
 
+ !> GEOS can use concatenated tiles or tile as a dimension
  if ( (im == fld%geom%npx-1) .and. (jm == 6*(fld%geom%npy-1) ) ) then
    tiledimension = .false.
    tileoff = (fld%geom%ntile-1)*(jm/fld%geom%ntiles)
@@ -476,41 +528,134 @@ integer :: isc,iec,jsc,jec
    call abor1_ftn("GEOS restarts: tile dimension in file not done yet")
  endif
 
+
+ !> Read the state level by level
+ !> -----------------------------
  allocate(field2d_global(im,jm))
 
+ !> starts and counts
+ deallocate(istart,icount)
+ allocate(istart(4))
+ allocate(icount(4))
  istart = 1
  icount(1) = im
  icount(2) = jm
  icount(3) = 1
  icount(4) = 1
 
+ !> Loop over levels
  do l = 1,lm
 
-    istart(3) = l
+   istart(3) = l
 
-    !fld%Atm%u
-    ncstat = nf90_inq_varid (ncid, 'U', varid)
-    if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-    ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
-    if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-    fld%Atm%u(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   !fld%Atm%u (dgrid)
+   ncstat = nf90_inq_varid (ncid, 'u', varid)
+   if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
+   fld%Atm%u(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%v (dgrid)
+   ncstat = nf90_inq_varid (ncid, 'v', varid)
+   if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
+   fld%Atm%v(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%pt
+   ncstat = nf90_inq_varid (ncid, 'T', varid)
+   if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
+   fld%Atm%pt(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%delp
+   ncstat = nf90_inq_varid (ncid, 'delp', varid)
+   if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
+   fld%Atm%delp(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%ua (agrid)
+   ncstat = nf90_inq_varid (ncid, 'ua', varid)
+   if (ncstat == nf90_noerr) then
+     ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+     if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
+     fld%Atm%ua(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   else
+     if (fld%geom%am_i_root_pe) print*, 'ua not in the restart file'
+   endif
+
+   !fld%Atm%va (agrid)
+   ncstat = nf90_inq_varid (ncid, 'va', varid)
+   if (ncstat == nf90_noerr) then
+     ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+     if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
+     fld%Atm%va(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   else
+     if (fld%geom%am_i_root_pe) print*, 'va not in the restart file'
+   endif
+
+   !fld%Atm%q (sphum)
+   ncstat = nf90_inq_varid (ncid, 'sphum', varid)
+   if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
+   fld%Atm%q(isc:iec,jsc:jec,l,fld%ti_q) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%q (liq_wat)
+   ncstat = nf90_inq_varid (ncid, 'liq_wat', varid)
+   if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
+   fld%Atm%q(isc:iec,jsc:jec,l,fld%ti_ql) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%q (ice_wat)
+   ncstat = nf90_inq_varid (ncid, 'ice_wat', varid)
+   if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
+   fld%Atm%q(isc:iec,jsc:jec,l,fld%ti_qi) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+   !fld%Atm%q (o3mr)
+   ncstat = nf90_inq_varid (ncid, 'o3mr', varid)
+   if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
+   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
+   fld%Atm%q(isc:iec,jsc:jec,l,fld%ti_o3) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
  enddo
 
+ deallocate(istart,icount)
 
+ !Two dimensional variables
+ 
+ allocate(istart(3))
+ allocate(icount(3))
+ 
+ istart = 1
+ icount(1) = im
+ icount(2) = jm
+ icount(3) = 1
+ 
+ !fld%Atm%phis
+ ncstat = nf90_inq_varid (ncid, 'phis', varid)
+ if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+ if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
+ fld%Atm%phis(isc:iec,jsc:jec) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+ !Close this file
  ncstat = nf90_close(ncid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
 
-print*, 'b', maxval(fld%Atm%u)
+ !TODO: ADD THE SURFACE VARIABLES AND TRANSFORM THEM TO FV3FGFS STYLE
 
- print*, 'dan lat', im
- print*, 'dan lon', jm
- print*, 'dan lon', lm
 
  deallocate(field2d_global)
+ deallocate(istart,icount)
 
- call abor1_ftn("testing testing")
 
 end subroutine read_geos_restart
 
