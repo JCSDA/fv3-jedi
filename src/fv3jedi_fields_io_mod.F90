@@ -12,6 +12,9 @@ use mpp_domains_mod,   only: EAST, NORTH
 use fms_io_mod,        only: restart_file_type, register_restart_field, &
                              free_restart_type, restore_state, save_restart
 
+!For GEOS like restarts
+use netcdf
+
 implicit none
 private
 public read_fms_restart, write_fms_restart, &
@@ -393,6 +396,121 @@ type(fv3jedi_field), intent(inout) :: fld      !< Fields
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
+character(len=255) :: datapath
+character(len=255) :: filename_core
+character(len=255) :: filename_moist
+character(len=255) :: filename_chem
+
+integer :: ncid, ncstat, dimid, varid
+
+integer :: im, jm, lm, l
+
+real(kind=kind_real), allocatable :: field2d_global(:,:)
+
+integer :: istart(4), icount(4)
+
+integer :: tileoff
+logical :: tiledimension = .false.
+
+integer :: isc,iec,jsc,jec
+
+ isc = fld%geom%bd%isc
+ iec = fld%geom%bd%iec
+ jsc = fld%geom%bd%jsc
+ jec = fld%geom%bd%jec
+
+ !Set filenames
+ !--------------
+ filename_core  = 'fvcore_internal_rst'
+ filename_moist = 'moist_internal_rst'
+ filename_chem  = 'pchem_internal_rst'
+
+ if (config_element_exists(c_conf,"filename_core")) then
+    filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
+ endif
+ if (config_element_exists(c_conf,"filename_moist")) then
+    filename_moist = config_get_string(c_conf,len(filename_moist),"filename_moist")
+ endif
+ if (config_element_exists(c_conf,"filename_chem")) then
+    filename_chem = config_get_string(c_conf,len(filename_chem),"filename_chem")
+ endif
+
+ datapath = config_get_string(c_conf,len(datapath),"datapath_read")
+
+ filename_core  = trim(datapath)//trim("/")//trim(filename_core )
+ filename_moist = trim(datapath)//trim("/")//trim(filename_moist)
+ filename_chem  = trim(datapath)//trim("/")//trim(filename_chem )
+
+ ncstat = nf90_open(filename_core, NF90_NOWRITE, ncid)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+ ncstat = nf90_inq_dimid(ncid, "lon", dimid)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+ ncstat = nf90_inquire_dimension(ncid, dimid, len = im)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+ ncstat = nf90_inq_dimid(ncid, "lat", dimid)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+ ncstat = nf90_inquire_dimension(ncid, dimid, len = jm)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+ ncstat = nf90_inq_dimid(ncid, "lev", dimid)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+ ncstat = nf90_inquire_dimension(ncid, dimid, len = lm)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+
+ if ( im /= fld%geom%npx-1 .or. lm /= fld%geom%npz) then
+   call abor1_ftn("GEOS restarts: restart dimension not compatible with geometry")
+ endif
+
+ if ( (im == fld%geom%npx-1) .and. (jm == 6*(fld%geom%npy-1) ) ) then
+   tiledimension = .false.
+   tileoff = (fld%geom%ntile-1)*(jm/fld%geom%ntiles)
+ else
+   tiledimension = .true.
+   tileoff = 0
+   call abor1_ftn("GEOS restarts: tile dimension in file not done yet")
+ endif
+
+ allocate(field2d_global(im,jm))
+
+ istart = 1
+ icount(1) = im
+ icount(2) = jm
+ icount(3) = 1
+ icount(4) = 1
+
+ do l = 1,lm
+
+    istart(3) = l
+
+    !fld%Atm%u
+    ncstat = nf90_inq_varid (ncid, 'U', varid)
+    if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+    ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+    if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+    fld%Atm%u(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+
+ enddo
+
+
+ ncstat = nf90_close(ncid)
+ if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+
+
+print*, 'b', maxval(fld%Atm%u)
+
+ print*, 'dan lat', im
+ print*, 'dan lon', jm
+ print*, 'dan lon', lm
+
+ deallocate(field2d_global)
+
+ call abor1_ftn("testing testing")
 
 end subroutine read_geos_restart
 

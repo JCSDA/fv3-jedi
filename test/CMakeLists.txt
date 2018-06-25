@@ -356,10 +356,13 @@ list( APPEND fv3jedi_test_fv3files
 Data/fv3files/field_table
 Data/fv3files/field_table_crtm
 Data/fv3files/fmsmpp.nml
-Data/fv3files/input_c96.nml
-Data/fv3files/input_c48.nml
-Data/fv3files/inputpert_fsoi.nml
+Data/fv3files/input_fv3gfs_c48.nml
+Data/fv3files/input_fv3gfs_c96.nml
+Data/fv3files/input_geos_c24.nml
+Data/fv3files/input_geos_c48.nml
+Data/fv3files/input_geos_c90.nml
 Data/fv3files/inputpert_4dvar.nml
+Data/fv3files/inputpert_fsoi.nml
 )
 
 list( APPEND fv3jedi_test_restart
@@ -377,6 +380,7 @@ testinput/3dvar_c48.yaml
 testinput/4dvar.dripcg.yaml
 testinput/4dvar.drplanczos.yaml
 testinput/forecast.yaml
+testinput/forecast_geos.yaml
 testinput/hofx.yaml
 testinput/hofx_c48.yaml
 testinput/dirac.nicas.yaml

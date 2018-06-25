@@ -781,7 +781,22 @@ subroutine read_file(fld, c_conf, vdate)
   type(c_ptr), intent(in)            :: c_conf   !< Configuration
   type(datetime), intent(inout)      :: vdate    !< DateTime
 
-  call read_fms_restart(fld, c_conf, vdate)
+  character(len=10) :: restart_type
+
+  restart_type = 'fmsrst'
+  if (config_element_exists(c_conf,"restart_type")) then
+    restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
+  endif
+
+  if (trim(restart_type) == 'fmsrst') then
+     call read_fms_restart(fld, c_conf, vdate)
+  elseif (trim(restart_type) == 'fmshist') then
+     call abor1_ftn("fv3jedi_fields read: fms history not supported yet")
+  elseif (trim(restart_type) == 'geos') then
+     call read_geos_restart(fld, c_conf, vdate)
+  else
+     call abor1_ftn("fv3jedi_fields read: restart type not supported")
+  endif
 
   return
 
@@ -790,9 +805,6 @@ end subroutine read_file
 ! ------------------------------------------------------------------------------
 
 subroutine write_file(fld, c_conf, vdate)
-  use iso_c_binding
-  use datetime_mod
-  use fckit_log_module, only : log
 
   implicit none
 
@@ -800,7 +812,22 @@ subroutine write_file(fld, c_conf, vdate)
   type(c_ptr), intent(in)            :: c_conf   !< Configuration
   type(datetime), intent(inout)      :: vdate    !< DateTime
 
-  call write_fms_restart(fld, c_conf, vdate)
+  character(len=10) :: restart_type
+
+  restart_type = 'fmsrst'
+  if (config_element_exists(c_conf,"restart_type")) then
+    restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
+  endif
+
+  if (trim(restart_type) == 'fmsrst') then
+     call write_fms_restart(fld, c_conf, vdate)
+  elseif (trim(restart_type) == 'fmshist') then
+     call abor1_ftn("fv3jedi_fields write: fms history not supported yet")
+  elseif (trim(restart_type) == 'geos') then
+     call write_geos_restart(fld, c_conf, vdate)
+  else
+     call abor1_ftn("fv3jedi_fields write: restart type not supported")
+  endif
 
   return
 
