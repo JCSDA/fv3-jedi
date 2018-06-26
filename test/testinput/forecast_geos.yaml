@@ -1,7 +1,10 @@
-forecast_length: PT6H
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+forecast_length: PT1H
 initial:
   restart_type: geos
-  datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/GEOSRST/
+  datapath_read: Data/INPUTS/GEOS_c24/
   datapath_write: ''
   date: '2018-04-14T21:00:00Z'
   filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4
@@ -15,17 +18,15 @@ model:
   tstep: PT15M
   update_dgridwind: '1'
   update_pressures: '1'
-nml_file: Data/fv3files/fmsmpp.nml
 output:
+  restart_type: fv3gfs
   datapath_write: Data/
 resolution:
   filename_akbk: akbk72.nc4
-  filepath_akbk: /gpfsm/dnb31/drholdaw/JediScratch/GEOSRST/
+  filepath_akbk: Data/INPUTS/GEOS_c24/
   ak_var: AK
   bk_var: BK
   halo: '3'
   nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table_crtm
+  trc_file: Data/fv3files/field_table
   wind_type: D-grid
-test_framework_runtime_config: --log_level=test_suite
-trc_file: Data/fv3files/field_table
