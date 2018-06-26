@@ -354,7 +354,6 @@ Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/20170801.000000.sfc_data.
 
 list( APPEND fv3jedi_test_fv3files
 Data/fv3files/field_table
-Data/fv3files/field_table_crtm
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_fv3gfs_c48.nml
 Data/fv3files/input_fv3gfs_c96.nml
@@ -371,7 +370,8 @@ Data/RESTART/PlotCubeSphereField.py
 
 
 list( APPEND fv3jedi_test_input
-testinput/geometry.yaml
+testinput/geometry_fv3gfs.yaml
+testinput/geometry_geos.yaml
 testinput/state.yaml
 testinput/model.yaml
 testinput/linearmodel.yaml
@@ -509,10 +509,17 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 
 # Test interface classes with FV3JEDI
 
-ecbuild_add_test( TARGET  test_fv3jedi_geometry
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_fv3gfs
                   BOOST
                   SOURCES executables/TestGeometry.cc
-                  ARGS    "testinput/geometry.yaml"
+                  ARGS    "testinput/geometry_fv3gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
+                  BOOST
+                  SOURCES executables/TestGeometry.cc
+                  ARGS    "testinput/geometry_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

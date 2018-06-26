@@ -14,13 +14,9 @@ use tracer_manager_mod, only: get_number_tracers
 use field_manager_mod,  only: MODEL_ATMOS
 
 !FMS/MPP uses
-use mpp_domains_mod,    only: domain2D, mpp_get_tile_id, mpp_deallocate_domain
-use mpp_domains_mod,    only: mpp_get_compute_domain, mpp_get_data_domain
+use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
 use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
 use mpp_mod,            only: mpp_pe, mpp_root_pe, mpp_npes, mpp_error, FATAL, NOTE
-use fms_mod,            only: get_mosaic_tile_grid
-use fms_io_mod,         only: restart_file_type, register_restart_field, &
-                              free_restart_type, restore_state, read_data
 
 !Uses for generating geometry using FV3 routines
 use fv_arrays_mod,      only: fv_atmos_type, deallocate_fv_atmos_type
@@ -63,9 +59,9 @@ type :: fv3jedi_geom
   integer :: layout(2)                                    !Processor layout for computation
   integer :: io_layout(2)                                 !Processor layout for read/write
   integer :: halo                                         !Number of halo points, normally 3
-  character(len=255) :: nml_file                          !Datapath for generating grid from file
-  character(len=255) :: trc_file                          !Datapath for generating grid from file
-  character(len=255) :: wind_type                         !A-grid or D-grid in the control vector
+  character(len=255) :: nml_file                          !FV3 nml file associated with this geom
+  character(len=255) :: trc_file                          !FV3 field_table associated with this geom
+  character(len=255) :: wind_type                         !A-grid or D-grid in the state vector
   !Hardwired or determined
   logical :: am_i_root_pe = .false.                       !Is this the root process 
   integer :: size_cubic_grid                              !Size of cubed sphere grid (cell center)
@@ -199,15 +195,15 @@ self%io_layout(2) = FV_Atm(1)%io_layout(2)
 self%hydrostatic = FV_Atm(1)%flagstruct%hydrostatic
 
 !Lat,lon and area from
+allocate ( self%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
 allocate ( self%grid_lon(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
 allocate ( self%grid_lat(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
-allocate ( self%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
-self%grid_lon = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
-self%grid_lat = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
-self%area = FV_Atm(1)%gridstruct%area_64
-
 allocate ( self%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
 allocate ( self%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+
+self%area = FV_Atm(1)%gridstruct%area_64
+self%grid_lon = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
+self%grid_lat = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
 self%egrid_lon = rad2deg*real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
 self%egrid_lat = rad2deg*real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
 
@@ -269,7 +265,6 @@ self%size_cubic_grid = self%npx-1
 !Resetup domain to avoid risk of copied pointers
 call setup_domain( self%domain, self%size_cubic_grid, self%size_cubic_grid, &
                    self%ntiles, self%layout, self%io_layout, self%halo)
-
 
 end subroutine c_fv3jedi_geo_setup
 
@@ -378,8 +373,6 @@ end subroutine c_fv3jedi_geo_info
 
 ! ------------------------------------------------------------------------------
 
-! Setup domain for generating grid without using fv_init
-! ------------------------------------------------------
 subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
  implicit none
