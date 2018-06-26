@@ -355,21 +355,28 @@ testinput/geometry_fv3gfs.yaml
 testinput/geometry_geos.yaml
 testinput/state_fv3gfs.yaml
 testinput/state_geos.yaml
-testinput/model.yaml
-testinput/linearmodel.yaml
-testinput/3dvar.yaml
-testinput/3dvar_c48.yaml
-testinput/4dvar.dripcg.yaml
-testinput/4dvar.drplanczos.yaml
-testinput/forecast.yaml
+testinput/model_fv3gfs.yaml
+testinput/model_geos.yaml
+testinput/linearmodel_fv3gfs.yaml
+testinput/linearmodel_geos.yaml
+testinput/3dvar_fv3gfs.yaml
+testinput/3dvar_geos.yaml
+testinput/4dvar.dripcg_fv3gfs.yaml
+testinput/4dvar.dripcg_geos.yaml
+testinput/forecast_fv3gfs.yaml
 testinput/forecast_geos.yaml
-testinput/hofx.yaml
-testinput/hofx_c48.yaml
-testinput/dirac.nicas.yaml
-testinput/increment.yaml
-testinput/3denvar.bump.yaml
-testinput/errorcov.yaml
-testinput/localization.yaml
+testinput/hofx_fv3gfs.yaml
+testinput/hofx_geos.yaml
+testinput/dirac.nicas_fv3gfs.yaml
+testinput/dirac.nicas_geos.yaml
+testinput/increment_fv3gfs.yaml
+testinput/increment_geos.yaml
+testinput/3denvar.bump_fv3gfs.yaml
+testinput/3denvar.bump_geos.yaml
+testinput/errorcov_fv3gfs.yaml
+testinput/errorcov_geos.yaml
+testinput/localization_fv3gfs.yaml
+testinput/localization_geos.yaml
 compare.sh
 )
 
@@ -521,45 +528,87 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_model
+ecbuild_add_test( TARGET  test_fv3jedi_model_fv3gfs
                   BOOST
                   SOURCES executables/TestModel.cc
-                  ARGS    "testinput/model.yaml"
+                  ARGS    "testinput/model_fv3gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_linearmodel
+ecbuild_add_test( TARGET  test_fv3jedi_model_geos
+                  BOOST
+                  SOURCES executables/TestModel.cc
+                  ARGS    "testinput/model_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_fv3gfs
                   BOOST
                   SOURCES executables/TestLinearModel.cc
-                  ARGS    "testinput/linearmodel.yaml"
+                  ARGS    "testinput/linearmodel_fv3gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_modelaux
+ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_geos
+                  BOOST
+                  SOURCES executables/TestLinearModel.cc
+                  ARGS    "testinput/linearmodel_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_modelaux_fv3gfs
                   BOOST
                   SOURCES executables/TestModelAuxControl.cc
-                  ARGS    "testinput/model.yaml"
+                  ARGS    "testinput/model_fv3gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_increment
+ecbuild_add_test( TARGET  test_fv3jedi_modelaux_geos
+                  BOOST
+                  SOURCES executables/TestModelAuxControl.cc
+                  ARGS    "testinput/model_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_increment_fv3gfs
                   BOOST
                   SOURCES executables/TestIncrement.cc
-                  ARGS    "testinput/increment.yaml"
+                  ARGS    "testinput/increment_fv3gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance
+ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
+                  BOOST
+                  SOURCES executables/TestIncrement.cc
+                  ARGS    "testinput/increment_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_fv3gfs
                   BOOST
                   SOURCES executables/TestErrorCovariance.cc
-                  ARGS    "testinput/errorcov.yaml"
+                  ARGS    "testinput/errorcov_fv3gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance
+ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_geos
+                  BOOST
+                  SOURCES executables/TestErrorCovariance.cc
+                  ARGS    "testinput/errorcov_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_fv3gfs
                   BOOST
                   SOURCES executables/TestModelAuxCovariance.cc
-                  ARGS    "testinput/model.yaml"
+                  ARGS    "testinput/model_fv3gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
+                  BOOST
+                  SOURCES executables/TestModelAuxCovariance.cc
+                  ARGS    "testinput/model_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

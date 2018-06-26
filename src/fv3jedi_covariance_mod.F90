@@ -5,7 +5,7 @@
 
 module fv3jedi_covariance_mod
 
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
+use fv3jedi_fields_mod, only: fv3jedi_field
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use iso_c_binding
 use config_mod

@@ -8,7 +8,7 @@ cost_function:
         filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
         filename_cplr: 20170801.000000.coupler.res
         filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-        nml_file: Data/fv3files/input_c48.nml
+        nml_file: Data/fv3files/input_fv3gfs_c48.nml
         trc_file: Data/fv3files/field_table
       - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
         datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -16,7 +16,7 @@ cost_function:
         filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
         filename_cplr: 20170801.010000.coupler.res
         filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-        nml_file: Data/fv3files/input_c48.nml
+        nml_file: Data/fv3files/input_fv3gfs_c48.nml
         trc_file: Data/fv3files/field_table
       - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
         datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -24,7 +24,7 @@ cost_function:
         filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
         filename_cplr: 20170801.020000.coupler.res
         filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-        nml_file: Data/fv3files/input_c48.nml
+        nml_file: Data/fv3files/input_fv3gfs_c48.nml
         trc_file: Data/fv3files/field_table
     Covariance:
       covariance_time:
@@ -39,7 +39,7 @@ cost_function:
             filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -47,7 +47,7 @@ cost_function:
             filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -55,7 +55,7 @@ cost_function:
             filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -63,7 +63,7 @@ cost_function:
             filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -71,7 +71,7 @@ cost_function:
             filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -79,7 +79,7 @@ cost_function:
             filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -87,7 +87,7 @@ cost_function:
             filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -95,7 +95,7 @@ cost_function:
             filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -103,7 +103,7 @@ cost_function:
             filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -111,7 +111,7 @@ cost_function:
             filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.000000.coupler.res
             filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           check_adjoints: 1
           check_consistency: 0
@@ -177,7 +177,7 @@ cost_function:
           filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -185,7 +185,7 @@ cost_function:
           filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -193,7 +193,7 @@ cost_function:
           filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -201,7 +201,7 @@ cost_function:
           filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -209,7 +209,7 @@ cost_function:
           filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -217,7 +217,7 @@ cost_function:
           filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -225,7 +225,7 @@ cost_function:
           filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -233,7 +233,7 @@ cost_function:
           filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -241,7 +241,7 @@ cost_function:
           filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -249,7 +249,7 @@ cost_function:
           filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.000000.coupler.res
           filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         variables:
           variables:
@@ -269,7 +269,7 @@ cost_function:
             filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -277,7 +277,7 @@ cost_function:
             filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -285,7 +285,7 @@ cost_function:
             filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -293,7 +293,7 @@ cost_function:
             filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -301,7 +301,7 @@ cost_function:
             filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -309,7 +309,7 @@ cost_function:
             filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -317,7 +317,7 @@ cost_function:
             filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -325,7 +325,7 @@ cost_function:
             filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -333,7 +333,7 @@ cost_function:
             filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -341,7 +341,7 @@ cost_function:
             filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.010000.coupler.res
             filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           check_adjoints: 1
           check_consistency: 0
@@ -407,7 +407,7 @@ cost_function:
           filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -415,7 +415,7 @@ cost_function:
           filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -423,7 +423,7 @@ cost_function:
           filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -431,7 +431,7 @@ cost_function:
           filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -439,7 +439,7 @@ cost_function:
           filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -447,7 +447,7 @@ cost_function:
           filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -455,7 +455,7 @@ cost_function:
           filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -463,7 +463,7 @@ cost_function:
           filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -471,7 +471,7 @@ cost_function:
           filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -479,7 +479,7 @@ cost_function:
           filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.010000.coupler.res
           filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         variables:
           variables:
@@ -499,7 +499,7 @@ cost_function:
             filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -507,7 +507,7 @@ cost_function:
             filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -515,7 +515,7 @@ cost_function:
             filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -523,7 +523,7 @@ cost_function:
             filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -531,7 +531,7 @@ cost_function:
             filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -539,7 +539,7 @@ cost_function:
             filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -547,7 +547,7 @@ cost_function:
             filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -555,7 +555,7 @@ cost_function:
             filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -563,7 +563,7 @@ cost_function:
             filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
             datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -571,7 +571,7 @@ cost_function:
             filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
             filename_cplr: 20170801.020000.coupler.res
             filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
-            nml_file: Data/fv3files/input_c48.nml
+            nml_file: Data/fv3files/input_fv3gfs_c48.nml
             trc_file: Data/fv3files/field_table
           check_adjoints: 1
           check_consistency: 0
@@ -637,7 +637,7 @@ cost_function:
           filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -645,7 +645,7 @@ cost_function:
           filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -653,7 +653,7 @@ cost_function:
           filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -661,7 +661,7 @@ cost_function:
           filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -669,7 +669,7 @@ cost_function:
           filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -677,7 +677,7 @@ cost_function:
           filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -685,7 +685,7 @@ cost_function:
           filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -693,7 +693,7 @@ cost_function:
           filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -701,7 +701,7 @@ cost_function:
           filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
           datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/
@@ -709,7 +709,7 @@ cost_function:
           filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
           filename_cplr: 20170801.020000.coupler.res
           filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
-          nml_file: Data/fv3files/input_c48.nml
+          nml_file: Data/fv3files/input_fv3gfs_c48.nml
           trc_file: Data/fv3files/field_table
         variables:
           variables:
@@ -747,7 +747,7 @@ minimizer:
   algorithm: DRIPCG
 model:
   init_tlmadm: '0'
-  nml_file: Data/fv3files/input_c48.nml
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table
   tstep: PT1H
   update_dgridwind: '0'
@@ -768,7 +768,7 @@ resolution:
   io_layout_2: '1'
   layout_1: '1'
   layout_2: '1'
-  nml_file: Data/fv3files/input_c48.nml
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
   npx: '49'
   npy: '49'
   npz: '64'
@@ -783,11 +783,11 @@ variational:
     gradient_norm_reduction: 1e-10
     linearmodel:
       init_tlmadm: '1'
-      nml_file: Data/fv3files/input_c48.nml
+      nml_file: Data/fv3files/input_fv3gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       trajectory:
         init_tlmadm: '0'
-        nml_file: Data/fv3files/input_c48.nml
+        nml_file: Data/fv3files/input_fv3gfs_c48.nml
         trc_file: Data/fv3files/field_table
         tstep: PT15M
       trc_file: Data/fv3files/field_table
@@ -807,7 +807,7 @@ variational:
       io_layout_2: '1'
       layout_1: '1'
       layout_2: '1'
-      nml_file: Data/fv3files/input_c48.nml
+      nml_file: Data/fv3files/input_fv3gfs_c48.nml
       npx: '49'
       npy: '49'
       npz: '64'
@@ -817,11 +817,11 @@ variational:
   - gradient_norm_reduction: 1e-10
     linearmodel:
       init_tlmadm: '1'
-      nml_file: Data/fv3files/input_c48.nml
+      nml_file: Data/fv3files/input_fv3gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       trajectory:
         init_tlmadm: '0'
-        nml_file: Data/fv3files/input_c48.nml
+        nml_file: Data/fv3files/input_fv3gfs_c48.nml
         trc_file: Data/fv3files/field_table
         tstep: PT15M
       trc_file: Data/fv3files/field_table
@@ -841,7 +841,7 @@ variational:
       io_layout_2: '1'
       layout_1: '1'
       layout_2: '1'
-      nml_file: Data/fv3files/input_c48.nml
+      nml_file: Data/fv3files/input_fv3gfs_c48.nml
       npx: '49'
       npy: '49'
       npz: '64'

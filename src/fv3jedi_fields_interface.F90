@@ -8,7 +8,6 @@
 subroutine fv3jedi_field_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='fv3jedi_field_create_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_geom_mod
 use ufo_vars_mod
 implicit none
@@ -34,7 +33,6 @@ end subroutine fv3jedi_field_create_c
 subroutine fv3jedi_field_delete_c(c_key_self) bind(c,name='fv3jedi_field_delete_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(inout) :: c_key_self
 type(fv3jedi_field), pointer :: self
@@ -52,7 +50,6 @@ end subroutine fv3jedi_field_delete_c
 subroutine fv3jedi_field_zero_c(c_key_self) bind(c,name='fv3jedi_field_zero_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 type(fv3jedi_field), pointer :: self
@@ -67,7 +64,6 @@ end subroutine fv3jedi_field_zero_c
 subroutine fv3jedi_field_dirac_c(c_key_self,c_conf) bind(c,name='fv3jedi_field_dirac_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 type(c_ptr), intent(in)    :: c_conf !< Configuration
@@ -82,8 +78,7 @@ end subroutine fv3jedi_field_dirac_c
 
 subroutine fv3jedi_field_random_c(c_key_self) bind(c,name='fv3jedi_field_random_f90')
 use iso_c_binding
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, random
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
+use fv3jedi_fields_mod, only: fv3jedi_field_registry, random, fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 type(fv3jedi_field), pointer :: self
@@ -99,7 +94,6 @@ subroutine fv3jedi_field_convert_to_c(c_key_fld, c_key_ug) bind (c,name='fv3jedi
 
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use unstructured_grid_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld
@@ -120,7 +114,6 @@ subroutine fv3jedi_field_convert_from_c(c_key_fld, c_key_ug) bind (c,name='fv3je
 
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use unstructured_grid_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld
@@ -140,7 +133,6 @@ end subroutine fv3jedi_field_convert_from_c
 subroutine fv3jedi_field_copy_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_field_copy_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
@@ -159,7 +151,6 @@ end subroutine fv3jedi_field_copy_c
 subroutine fv3jedi_field_self_add_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_field_self_add_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
@@ -178,7 +169,6 @@ end subroutine fv3jedi_field_self_add_c
 subroutine fv3jedi_field_self_schur_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_field_self_schur_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
@@ -197,7 +187,6 @@ end subroutine fv3jedi_field_self_schur_c
 subroutine fv3jedi_field_self_sub_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_field_self_sub_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
@@ -216,7 +205,6 @@ end subroutine fv3jedi_field_self_sub_c
 subroutine fv3jedi_field_self_mul_c(c_key_self,c_zz) bind(c,name='fv3jedi_field_self_mul_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds
 implicit none
 integer(c_int), intent(in) :: c_key_self
@@ -236,7 +224,6 @@ end subroutine fv3jedi_field_self_mul_c
 subroutine fv3jedi_field_axpy_c(c_key_self,c_zz,c_key_rhs) bind(c,name='fv3jedi_field_axpy_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds
 implicit none
 integer(c_int), intent(in) :: c_key_self
@@ -260,7 +247,6 @@ end subroutine fv3jedi_field_axpy_c
 subroutine fv3jedi_field_dot_prod_c(c_key_fld1,c_key_fld2,c_prod) bind(c,name='fv3jedi_field_dot_prod_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds
 implicit none
 integer(c_int), intent(in)    :: c_key_fld1, c_key_fld2
@@ -282,7 +268,6 @@ end subroutine fv3jedi_field_dot_prod_c
 subroutine fv3jedi_field_add_incr_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_field_add_incr_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
@@ -301,7 +286,6 @@ end subroutine fv3jedi_field_add_incr_c
 subroutine fv3jedi_field_diff_incr_c(c_key_lhs,c_key_x1,c_key_x2) bind(c,name='fv3jedi_field_diff_incr_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_lhs
 integer(c_int), intent(in) :: c_key_x1
@@ -323,7 +307,6 @@ end subroutine fv3jedi_field_diff_incr_c
 subroutine fv3jedi_field_change_resol_c(c_key_fld,c_key_rhs) bind(c,name='fv3jedi_field_change_resol_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_fld
 integer(c_int), intent(in) :: c_key_rhs
@@ -341,7 +324,6 @@ end subroutine fv3jedi_field_change_resol_c
 subroutine fv3jedi_field_read_file_c(c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_read_file_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use datetime_mod
 
 implicit none
@@ -363,7 +345,6 @@ end subroutine fv3jedi_field_read_file_c
 subroutine fv3jedi_field_analytic_init_c(c_key_fld, c_key_geom, c_conf, c_dt) bind(c,name='fv3jedi_field_analytic_init_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use fv3jedi_geom_mod
 use datetime_mod
 
@@ -389,7 +370,6 @@ end subroutine fv3jedi_field_analytic_init_c
 subroutine fv3jedi_field_write_file_c(c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_write_file_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use datetime_mod
 
 implicit none
@@ -411,7 +391,6 @@ end subroutine fv3jedi_field_write_file_c
 subroutine fv3jedi_field_gpnorm_c(c_key_fld, kf, pstat) bind(c,name='fv3jedi_field_gpnorm_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds
 implicit none
 integer(c_int), intent(in) :: c_key_fld
@@ -440,7 +419,6 @@ end subroutine fv3jedi_field_gpnorm_c
 subroutine fv3jedi_field_rms_c(c_key_fld, prms) bind(c,name='fv3jedi_field_rms_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds
 implicit none
 integer(c_int), intent(in) :: c_key_fld
@@ -462,7 +440,6 @@ end subroutine fv3jedi_field_rms_c
 subroutine fv3jedi_field_interp_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_interp_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use ioda_locs_mod
 use ioda_locs_mod_c, only: ioda_locs_registry
 use ufo_vars_mod
@@ -493,7 +470,6 @@ end subroutine fv3jedi_field_interp_c
 subroutine fv3jedi_field_interp_tl_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_interp_tl_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use ioda_locs_mod
 use ioda_locs_mod_c, only: ioda_locs_registry
 use ufo_vars_mod
@@ -524,7 +500,6 @@ end subroutine fv3jedi_field_interp_tl_c
 subroutine fv3jedi_field_interp_ad_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_interp_ad_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use ioda_locs_mod
 use ioda_locs_mod_c, only: ioda_locs_registry
 use ufo_vars_mod
@@ -556,7 +531,6 @@ subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_field
 
 use iso_c_binding
 use fv3jedi_fields_mod
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 
 implicit none
 integer(c_int), intent(in) :: c_key_self

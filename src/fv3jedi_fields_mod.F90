@@ -37,6 +37,9 @@ public :: create, delete, zeros, random, copy, &
           change_resol, interp, interp_tl, interp_ad, &
           convert_to_ug, convert_from_ug, dirac, &
           analytic_IC
+
+public :: fv3jedi_field
+
 public :: fv3jedi_field_registry
 
 ! ------------------------------------------------------------------------------
@@ -817,15 +820,10 @@ subroutine write_file(fld, c_conf, vdate)
 
   character(len=10) :: restart_type
 
-  restart_type = 'fmsrst'
-  if (config_element_exists(c_conf,"restart_type")) then
-    restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
-  endif
+  restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
-  if (trim(restart_type) == 'fmsrst') then
+  if (trim(restart_type) == 'fv3gfs') then
      call write_fms_restart(fld, c_conf, vdate)
-  elseif (trim(restart_type) == 'fmshist') then
-     call abor1_ftn("fv3jedi_fields write: fms history not supported yet")
   elseif (trim(restart_type) == 'geos') then
      call write_geos_restart(fld, c_conf, vdate)
   else
@@ -1843,18 +1841,10 @@ integer :: numobtype
 
     if (gottraj == 0) then
 
-      if (fld%geom%npx == 97) then
+      if (fld%geom%npx == 49) then
 
-         datapath_in = 'Data/C96_RESTART_2016-01-01-06/'
-         datapath_ti = 'Data/C96_RESTART_2016-01-01-06/INPUT/'
-
-         filename_core = 'fv_core.res.nc'
-         filename_trcr = 'fv_tracer.res.nc'
-
-      elseif (fld%geom%npx == 49) then
-
-         datapath_in = 'Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
-         datapath_ti = 'Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
+         datapath_in = 'Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
+         datapath_ti = 'Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
 
          filename_core = '20170801.000000.fv_core.res.nc'
          filename_trcr = '20170801.000000.fv_tracer.res.nc'

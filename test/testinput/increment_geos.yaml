@@ -1,0 +1,20 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+Geometry:
+  nml_file: Data/fv3files/input_geos_c48.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  wind_type: D-grid
+  filepath_akbk: Data/INPUTS/GEOS_c48/
+  filename_akbk: akbk72.nc4
+  ak_var: AK
+  bk_var: BK
+TestDate: '2018-04-14T21:00:00Z'
+Variables:
+  variables:
+  - u
+  - v
+  - pt
+  - delp
+  - q
