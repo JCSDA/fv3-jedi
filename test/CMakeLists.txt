@@ -353,7 +353,8 @@ Data/RESTART/PlotCubeSphereField.py
 list( APPEND fv3jedi_test_input
 testinput/geometry_fv3gfs.yaml
 testinput/geometry_geos.yaml
-testinput/state.yaml
+testinput/state_fv3gfs.yaml
+testinput/state_geos.yaml
 testinput/model.yaml
 testinput/linearmodel.yaml
 testinput/3dvar.yaml
@@ -506,10 +507,17 @@ ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_state
+ecbuild_add_test( TARGET  test_fv3jedi_state_fv3gfs
                   BOOST
                   SOURCES executables/TestState.cc
-                  ARGS    "testinput/state.yaml"
+                  ARGS    "testinput/state_fv3gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_state_geos
+                  BOOST
+                  SOURCES executables/TestState.cc
+                  ARGS    "testinput/state_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

@@ -1,0 +1,59 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+Geometry:
+  nml_file: Data/fv3files/input_geos_c48.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  wind_type: D-grid
+  filepath_akbk: Data/INPUTS/GEOS_c48/
+  filename_akbk: akbk72.nc4 
+  ak_var: AK
+  bk_var: BK
+StateTest:
+  Locations:
+    Rdist: '1'
+    Nrandom: '8'
+    heights:
+    - '0.25'
+    lats:
+    - '55.0'
+    lons:
+    - '10.0'
+    random_seed: '560921'
+  StateFile:
+    restart_type: geos
+    datapath_read: Data/INPUTS/GEOS_c48/
+    datapath_write: 'Data/'
+    date: '2018-04-14T21:00:00Z'
+    read_crtm_surface: 0
+    filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
+    filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
+    nml_file: Data/fv3files/input_geos_c48.nml
+    trc_file: Data/fv3files/field_table
+  StateGenerate:
+    analytic_init: dcmip-test-4-0
+    restart_type: geos
+    datapath_read: Data/INPUTS/GEOS_c48/
+    datapath_write: 'Data/'
+    read_crtm_surface: 0
+    date: '2018-04-14T21:00:00Z'
+    filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
+    filename_sfc: GEOS.sfc.c48.eta.20180414_21z.nc4    
+    nml_file: Data/fv3files/input_geos_c48.nml
+    trc_file: Data/fv3files/field_table
+    variables:
+    - virtual_temperature
+    - atmosphere_ln_pressure_coordinate
+  Variables:
+    variables:
+    - virtual_temperature
+    - atmosphere_ln_pressure_coordinate
+  date: '2018-04-14T21:00:00Z'
+  interp_tolerance: 6.0e-5
+  norm-file: '1968.1642976683538'
+  norm-gen: '1990.9865057021741'
+  tolerance: 1.0e-08
+  values:
+  - 2806.686940093405
+

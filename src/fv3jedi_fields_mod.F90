@@ -791,15 +791,10 @@ subroutine read_file(fld, c_conf, vdate)
 
   character(len=10) :: restart_type
 
-  restart_type = 'fmsrst'
-  if (config_element_exists(c_conf,"restart_type")) then
-    restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
-  endif
+  restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
-  if (trim(restart_type) == 'fmsrst') then
+  if (trim(restart_type) == 'fv3gfs') then
      call read_fms_restart(fld, c_conf, vdate)
-  elseif (trim(restart_type) == 'fmshist') then
-     call abor1_ftn("fv3jedi_fields read: fms history not supported yet")
   elseif (trim(restart_type) == 'geos') then
      call read_geos_restart(fld, c_conf, vdate)
   else
@@ -1141,7 +1136,7 @@ logical :: do_interp
 
 integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,i,j
 
-integer :: nt, ti_q, ti_ql, ti_qi, ti_o3, trcount
+integer :: nt, trcount
 character(len=20) :: trname
 
 !Local pressure variables
@@ -1212,27 +1207,6 @@ allocate(prs (isd:ied,jsd:jed,npz  ))
 allocate(logp(isd:ied,jsd:jed,npz  ))
 
 call delp_to_pe_p_logp(fld%geom,fld%Atm%delp,prsi,prs,logp)
-
-! Tracer indexes 
-! --------------
-!Check we have what is needed for CRTM
-trcount = 0
-do nt = 1,fld%geom%ntracers
-  call get_tracer_names(MODEL_ATMOS,nt,trname)
-  if (trim(trname) == "sphum"   .or. trim(trname) == "liq_wat" .or. &
-      trim(trname) == "ice_wat" .or. trim(trname) == "o3mr"    ) then
-    trcount = trcount + 1
-  endif
-enddo
-
-if (trcount == 4) then
-  ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
-  ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
-  ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
-  ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
-else
-  fld%havecrtmfields = .false.
-endif
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -1310,10 +1284,10 @@ if (fld%havecrtmfields) then
     enddo
   enddo
   
-  call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,ti_q), &
-                     fld%Atm%q(:,:,:,ti_ql),fld%Atm%q(:,:,:,ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
+  call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,fld%ti_q), &
+                     fld%Atm%q(:,:,:,fld%ti_ql),fld%Atm%q(:,:,:,fld%ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
   
-  call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,ti_q),qmr)
+  call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,fld%ti_q),qmr)
 
 endif
 
@@ -1381,7 +1355,7 @@ do jvar = 1, vars%nv
 
    nvl = npz
    do_interp = .true.
-   geovalm = fld%Atm%q(:,:,:,ti_o3) * constoz
+   geovalm = fld%Atm%q(:,:,:,fld%ti_o3) * constoz
    geoval => geovalm
 
   case ("mass_concentration_of_carbon_dioxide_in_air")

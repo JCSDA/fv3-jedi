@@ -56,7 +56,7 @@ type :: fv3jedi_field
   integer :: nf
   integer :: isc, iec, jsc, jec
   integer :: root_pe
-  logical :: havecrtmfields
+  logical :: havecrtmfields = .false.
   integer :: ti_q, ti_ql, ti_qi, ti_o3
 end type fv3jedi_field
 
