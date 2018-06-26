@@ -5,6 +5,12 @@
 
 module fv3jedi_covariance_mod
 
+use fv3jedi_fields_mod, only: fv3jedi_field
+use fv3jedi_geom_mod,         only: fv3jedi_geom
+use iso_c_binding
+use config_mod
+
+
 implicit none
 
 !> Fortran derived type to hold configuration data for the background/model covariance
@@ -36,9 +42,6 @@ contains
 !! error covariance structure.
 
 subroutine fv3jedi_covar_setup(self, geom, c_conf)
-use iso_c_binding
-use fv3jedi_geom_mod
-use config_mod
 
 implicit none
 type(fv3jedi_covar), intent(inout) :: self    !< Covariance structure
@@ -50,6 +53,7 @@ end subroutine fv3jedi_covar_setup
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_covar_delete(self)
+
 implicit none
 type(fv3jedi_covar), intent(inout) :: self  !< Covariance structure
 
@@ -60,7 +64,6 @@ end subroutine fv3jedi_covar_delete
 !> Multiply streamfunction by inverse(sqrt(C)), where C is 3d covariance matrix
 
 subroutine fv3jedi_covar_sqrt_inv_mult(self, xctl, xincr)
-use fv3jedi_fields_mod
 
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
@@ -74,7 +77,6 @@ end subroutine fv3jedi_covar_sqrt_inv_mult
 !> Multiply streamfunction by inverse(sqrt(C)) - Adjoint
 
 subroutine fv3jedi_covar_sqrt_inv_mult_ad(self, xctl, xincr)
-use fv3jedi_fields_mod
 
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
@@ -88,7 +90,6 @@ end subroutine fv3jedi_covar_sqrt_inv_mult_ad
 !> Multiply streamfunction by sqrt(C), where C is a 3d covariance matrix
 
 subroutine fv3jedi_covar_sqrt_mult(self, xincr, xctl)
-use fv3jedi_fields_mod
 
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
@@ -102,7 +103,6 @@ end subroutine fv3jedi_covar_sqrt_mult
 !> Multiply streamfunction by sqrt(C) - Adjoint
 
 subroutine fv3jedi_covar_sqrt_mult_ad(self, xincr, xctl)
-use fv3jedi_fields_mod
 
 implicit none
 type(fv3jedi_covar), intent(in)    :: self

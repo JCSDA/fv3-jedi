@@ -1,0 +1,41 @@
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+Assimilation Window:
+  Begin: '2018-04-14T21:00:00Z'
+  Length: PT1H
+Geometry:
+  nml_file: Data/fv3files/input_geos_c24.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  wind_type: D-grid
+  filepath_akbk: Data/INPUTS/GEOS_c24/
+  filename_akbk: akbk72.nc4
+  ak_var: AK
+  bk_var: BK
+Initial Condition:
+  restart_type: geos
+  datapath_read: Data/INPUTS/GEOS_c24/
+  datapath_write: 'Data/'
+  date: '2018-04-14T21:00:00Z'
+  read_crtm_surface: 0
+  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
+  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
+  nml_file: Data/fv3files/input_geos_c24.nml
+  trc_file: Data/fv3files/field_table
+  read_crtm_surface: 0
+Model:
+  init_tlmadm: '0'
+  nml_file: Data/fv3files/input_geos_c24.nml
+  trc_file: Data/fv3files/field_table
+  tstep: PT15M
+  update_dgridwind: '1'
+  update_pressures: '1'
+Observations:
+  ObsTypes:
+  - ObsType: Radiosonde
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/diag_t_01_wprofiles.nc4
+    ObsBias: {}
+Prints:
+  frequency: PT3H

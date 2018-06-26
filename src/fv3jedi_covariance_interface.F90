@@ -10,7 +10,7 @@ subroutine c_fv3jedi_b_setup(c_key_self, c_conf, c_key_geom) &
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_geom_mod
+use fv3jedi_geom_mod, only: fv3jedi_geom, fv3jedi_geom_registry
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self  !< Background error covariance structure
@@ -53,7 +53,7 @@ subroutine c_fv3jedi_b_inv_mult(c_key_self, c_key_in, c_key_out) bind(c,name='fv
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_fields_mod
+use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
 use kinds
 
 implicit none
@@ -82,7 +82,7 @@ subroutine c_fv3jedi_b_mult(c_key_self, c_key_in, c_key_out) bind(c,name='fv3jed
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_fields_mod
+use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
 use kinds
 
 implicit none
@@ -111,7 +111,7 @@ subroutine c_fv3jedi_b_randomize(c_key_self, c_key_out) bind(c,name='fv3jedi_b_r
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_fields_mod
+use fv3jedi_fields_mod, only: fv3jedi_field_registry, random, fv3jedi_field
 use kinds
 
 implicit none

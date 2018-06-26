@@ -1,0 +1,71 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+Covariance:
+  covariance: FV3JEDIstatic
+  date: '2017-08-01T00:00:00Z'
+  horizontal_length_scale: 1e6
+  maximum_condition_number: 1.0e6
+  standard_deviation: '0.8'
+  vertical_correlation: '0.2'
+Geometry:
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  wind_type: D-grid
+  filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_akbk: 20170801.000000.fv_core.res.nc
+  ak_var: ak
+  bk_var: bk
+LinearModel:
+  init_tlmadm: '1'
+  linmodtest: '1'
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  trajectory:
+    init_tlmadm: '1'
+    linmodtest: '1'
+    nml_file: Data/fv3files/input_fv3gfs_c48.nml
+    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+    trc_file: Data/fv3files/field_table
+    tstep: PT15M
+  trc_file: Data/fv3files/field_table
+  tstep: PT15M
+  update_dgridwind: '1'
+  update_pressures: '1'
+  version: FV3JEDITLM
+LinearModelTest:
+  fclength: PT30M
+  firstmulTL: '0.01'
+  testiterTL: '10'
+  toleranceAD: '1.0e-10'
+  toleranceTL: '1.0'
+Model:
+  init_tlmadm: '1'
+  linmodtest: '1'
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  trc_file: Data/fv3files/field_table
+  tstep: PT15M
+  update_dgridwind: '1'
+  update_pressures: '1'
+ModelBias: null
+State:
+  restart_type: fv3gfs
+  datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_write: 'Data/'
+  date: '2017-08-01T00:00:00Z'
+  read_crtm_surface: 0
+  filename_core: 20170801.000000.fv_core.res.nc
+  filename_cplr: 20170801.000000.coupler.res
+  filename_trcr: 20170801.000000.fv_tracer.res.nc
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+Variables:
+  variables:
+  - u
+  - v
+  - pt
+  - delp
+  - q

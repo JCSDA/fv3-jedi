@@ -1,0 +1,63 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+Geometry:
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  wind_type: D-grid
+  filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_akbk: 20170801.000000.fv_core.res.nc
+  ak_var: ak
+  bk_var: bk
+StateTest:
+  Locations:
+    Rdist: '1'
+    Nrandom: '8'
+    heights:
+    - '0.25'
+    lats:
+    - '55.0'
+    lons:
+    - '10.0'
+    random_seed: '560921'
+  StateFile:
+    restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+    datapath_write: 'Data/'
+    date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
+    filename_core: 20170801.000000.fv_core.res.nc
+    filename_cplr: 20170801.000000.coupler.res
+    filename_trcr: 20170801.000000.fv_tracer.res.nc
+    nml_file: Data/fv3files/input_fv3gfs_c48.nml
+    trc_file: Data/fv3files/field_table
+  StateGenerate:
+    analytic_init: dcmip-test-4-0
+    restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+    datapath_write: 'Data/'
+    read_crtm_surface: 0
+    date: '2017-08-01T00:00:00Z'
+    filename_core: 20170801.000000.fv_core.res.nc
+    filename_cplr: 20170801.000000.coupler.res
+    filename_trcr: 20170801.000000.fv_tracer.res.nc
+    nml_file: Data/fv3files/input_fv3gfs_c48.nml
+    trc_file: Data/fv3files/field_table
+    variables:
+    - virtual_temperature
+    - atmosphere_ln_pressure_coordinate
+  Variables:
+    variables:
+    - virtual_temperature
+    - atmosphere_ln_pressure_coordinate
+  date: '2017-08-01T00:00:00Z'
+  interp_tolerance: 6.0e-5
+  norm-file: '1953.9027370946089'
+  norm-gen: '1977.8035951763902'
+  tolerance: 1.0e-08
+  values:
+  - 2806.686940093405
+

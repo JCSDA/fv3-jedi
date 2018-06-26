@@ -5,16 +5,21 @@ import matplotlib.pyplot as plt
 
 #User input required for the follwing:
 plot_diff = 1         #Plot path1/file - path2/file
+model = 'geos'
 cube = 48
 filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20170801.000000.fv_core.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20170801.000000.3D-Var.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
-    path2  = '../C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/'
-    file_tplt_befr2 = '20170801.000000.fv_core.res.tile'
+    if (model == 'geos'):
+        path2  = '../INPUTS/GEOS_c48/'
+        file_tplt_befr2 = '20170801.000000.fv_core.res.tile'
+    elif (model == 'fv3gfs'):
+        path2  = '../INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
+        file_tplt_befr2 = '20170801.000000.fv_core.res.tile'
 elif (cube == 96):
     path2  = '../C96_RESTART_2016-01-01-06/INPUT/'
     file_tplt_befr2 = 'fv_core.res.tile'

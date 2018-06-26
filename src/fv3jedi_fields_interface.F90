@@ -78,7 +78,7 @@ end subroutine fv3jedi_field_dirac_c
 
 subroutine fv3jedi_field_random_c(c_key_self) bind(c,name='fv3jedi_field_random_f90')
 use iso_c_binding
-use fv3jedi_fields_mod
+use fv3jedi_fields_mod, only: fv3jedi_field_registry, random, fv3jedi_field
 implicit none
 integer(c_int), intent(in) :: c_key_self
 type(fv3jedi_field), pointer :: self
