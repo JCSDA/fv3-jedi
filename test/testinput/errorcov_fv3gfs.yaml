@@ -3,7 +3,7 @@ nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 Covariance:
   covariance: FV3JEDIstatic
-  date: '2016-01-01T06:00:00Z'
+  date: '2018-04-14T21:00:00Z'
   horizontal_length_scale: 1e6
   maximum_condition_number: 1.0e6
   standard_deviation: '0.8'
