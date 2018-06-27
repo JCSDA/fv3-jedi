@@ -44,7 +44,7 @@ namespace fv3jedi {
   class ModelBiasIncrementFV3JEDI;
   class ErrorCovarianceFV3JEDI;
   class StateFV3JEDI;
-  class Nothing;
+  class GetValuesTrajFV3JEDI;
 
 /// Increment Class: Difference between two states
 /*!
@@ -85,15 +85,9 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 
 /// Get increment values at observation locations
   void getValuesTL(const ioda::Locations &, const oops::Variables &,
-                   ufo::GeoVaLs &, const Nothing &) const;
+                   ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &) const;
   void getValuesAD(const ioda::Locations &, const oops::Variables &,
-                   const ufo::GeoVaLs &, const Nothing &);
-
-/// Interpolate to observation location
-  void interpolateTL(const ioda::Locations &, const oops::Variables &,
-                    ufo::GeoVaLs &, const Nothing &) const;
-  void interpolateAD(const ioda::Locations &, const oops::Variables &,
-                    const ufo::GeoVaLs &, const Nothing &);
+                   const ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &);
 
 /// Convert to/from generic unstructured grid
   void define(oops::UnstructuredGrid &) const;

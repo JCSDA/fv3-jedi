@@ -27,6 +27,8 @@ use fv3jedi_fields_utils_mod
 use fv3jedi_fields_io_mod
 use fv3jedi_constants, only: deg2rad, constoz
 
+use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
+
 implicit none
 private
 
@@ -34,7 +36,7 @@ public :: create, delete, zeros, random, copy, &
           self_add, self_schur, self_sub, self_mul, axpy, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, fldrms, &
-          change_resol, interp, interp_tl, interp_ad, &
+          change_resol, getvalues, getvalues_tl, getvalues_ad, &
           convert_to_ug, convert_from_ug, dirac, &
           analytic_IC
 
@@ -1103,7 +1105,7 @@ end subroutine convert_from_ug
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp(fld, locs, vars, gom)
+subroutine getvalues(fld, locs, vars, gom, traj)
 
 use type_bump, only: bump_type
 use surface_vt_mod
@@ -1115,10 +1117,11 @@ use field_manager_mod, only: MODEL_ATMOS
 use tracer_manager_mod,only: get_tracer_index, get_tracer_names
 
 implicit none
-type(fv3jedi_field), intent(inout) :: fld 
-type(ioda_locs),     intent(in)    :: locs 
-type(ufo_vars),  intent(in)        :: vars
-type(ufo_geovals),  intent(inout)  :: gom
+type(fv3jedi_field),                        intent(inout) :: fld 
+type(ioda_locs),                            intent(in)    :: locs 
+type(ufo_vars),                             intent(in)    :: vars
+type(ufo_geovals),                          intent(inout) :: gom
+type(fv3jedi_getvaltraj), optional, target, intent(inout) :: traj
 
 character(len=*), parameter :: myname = 'interp'
 
@@ -1183,10 +1186,36 @@ jsd = fld%geom%bd%jsd
 jed = fld%geom%bd%jed
 npz = fld%geom%npz
 
+ngrid = (iec-isc+1)*(jec-jsc+1)
+nobs = locs%nlocs 
 
 ! Initialize the interpolation
 ! ----------------------------
-call initialize_interp( fld, locs, vars, pbump, ngrid, nobs )
+if (present(traj)) then
+
+  if (.not. traj%lalloc) then
+  
+     traj%ngrid = ngrid
+     traj%nobs = nobs
+   
+     if (.not.allocated(traj%pt)) allocate(traj%pt(isd:ied,jsd:jed,1:npz))
+     if (.not.allocated(traj%q )) allocate(traj%q (isd:ied,jsd:jed,1:npz,1:fld%geom%ntracers))
+  
+     traj%pt = fld%Atm%pt
+     traj%q  = fld%Atm%q
+ 
+     traj%lalloc = .true.
+
+  endif
+
+else
+
+
+endif
+
+! Initialize the interpolation
+! ----------------------------
+call initialize_interp( fld, locs, vars, pbump )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1574,28 +1603,27 @@ deallocate(water_coverage_m)
 !write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 !write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
-end subroutine interp
+end subroutine getvalues
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_tl(fld, locs, vars, gom)!, traj)
+subroutine getvalues_tl(fld, locs, vars, gom, traj)
 
 use type_bump, only: bump_type
 use tmprture_vt_mod
-use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
-type(ioda_locs),           intent(in)    :: locs 
+type(ioda_locs),          intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_trajectory), pointer       :: traj
+type(fv3jedi_getvaltraj), intent(in)    :: traj
 
 character(len=*), parameter :: myname = 'interp_tl'
 
 type(bump_type), pointer :: pbump
 
-integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
+integer :: ii, jj, ji, jvar, jlev
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
@@ -1605,6 +1633,12 @@ real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
 integer :: isc, iec, jsc, jec, isd, ied, jsd, jed, npz
+
+
+! Check traj is implemented
+! -------------------------
+if (.not.traj%lalloc) &
+call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
 
 
 ! Grid convenience
@@ -1622,13 +1656,13 @@ npz = fld%geom%npz
 
 ! Initialize the interpolation
 ! ----------------------------
-call initialize_interp( fld, locs, vars, pbump, ngrid, nobs, traj )
+call initialize_interp( fld, locs, vars, pbump )
 
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
-allocate(mod_field(ngrid,1))
-allocate(obs_field(nobs,1))
+allocate(mod_field(traj%ngrid,1))
+allocate(obs_field(traj%nobs,1))
 
 
 ! Local GeoVals
@@ -1678,7 +1712,7 @@ do jvar = 1, vars%nv
 
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
-  call allocate_geovals_vals(gom,jvar,nobs,nvl)
+  call allocate_geovals_vals(gom,jvar,traj%nobs,nvl)
 
 
   !Run some basic checks on the interpolation
@@ -1717,39 +1751,45 @@ deallocate(obs_field)
 !write(*,*)'interp_tl geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 !write(*,*)'interp_tl geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
 
-end subroutine interp_tl
+end subroutine getvalues_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_ad(fld, locs, vars, gom)!, traj)
+subroutine getvalues_ad(fld, locs, vars, gom, traj)
 
 use type_bump, only: bump_type
 use tmprture_vt_mod
-use fv3jedi_trajectories, only: fv3jedi_trajectory
 
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
-type(ioda_locs),           intent(in)    :: locs 
+type(ioda_locs),           intent(in)   :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_trajectory), pointer       :: traj
+type(fv3jedi_getvaltraj), intent(in)    :: traj
 
 character(len=*), parameter :: myname = 'interp_ad'
 
 type(bump_type), pointer :: pbump
 
-integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
+integer :: ii, jj, ji, jvar, jlev
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
+
+! Check traj is implemented
+! -------------------------
+if (.not.traj%lalloc) &
+call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
+
+
 ! Initialize the interpolation
 ! ----------------------------
-call initialize_interp( fld, locs, vars, pbump, ngrid, nobs, traj )
+call initialize_interp( fld, locs, vars, pbump )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
-allocate(mod_field(ngrid,1))
-allocate(obs_field(nobs,1))
+allocate(mod_field(traj%ngrid,1))
+allocate(obs_field(traj%nobs,1))
 
 !write(*,*)'interp_ad geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
 !write(*,*)'interp_ad geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
@@ -1804,11 +1844,11 @@ deallocate(obs_field)
 !write(*,*)'interp_ad model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp_ad model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
-end subroutine interp_ad
+end subroutine getvalues_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_interp( fld, locs, vars, pbump, ngrid, nobs, trajp )
+subroutine initialize_interp( fld, locs, vars, pbump )
 
 use type_bump, only: bump_type
 use fv3jedi_trajectories, only: fv3jedi_trajectory
@@ -1816,73 +1856,12 @@ use fv3jedi_trajectories, only: fv3jedi_trajectory
 implicit none
 type(fv3jedi_field),                intent(inout) :: fld 
 type(ioda_locs),                    intent(in   ) :: locs 
-type(fv3jedi_trajectory), optional, pointer, intent(inout) :: trajp
 type(bump_type), pointer,           intent(inout) :: pbump
-integer,                            intent(  out) :: ngrid, nobs
 type(ufo_vars),           intent(in)    :: vars
 
 integer :: jvar
 integer :: obtype
 integer :: numobtype
-
-!HACK: read a trajectory from file
-!---------------------------------
-
-  type(fv3jedi_trajectory), save, target :: traj
-  type(restart_file_type) :: Fv_restart
-  type(restart_file_type) :: Tr_restart
-  integer :: id_restart
-  character(len=255) :: datapath_in, datapath_ti
-  character(len=255) :: filename_core
-  character(len=255) :: filename_trcr
-  integer, save :: gottraj = 0
-
-  if (present(trajp)) then
-
-    if (gottraj == 0) then
-
-      if (fld%geom%npx == 49) then
-
-         datapath_in = 'Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
-         datapath_ti = 'Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
-
-         filename_core = '20170801.000000.fv_core.res.nc'
-         filename_trcr = '20170801.000000.fv_tracer.res.nc'
-
-      else
-
-         call abor1_ftn("Resolution not supported for trajectory hack")
-
-      endif
-
-      allocate(traj%pt  (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
-      allocate(traj%delp(fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz))
-      allocate(traj%q   (fld%geom%bd%isd:fld%geom%bd%ied,fld%geom%bd%jsd:fld%geom%bd%jed,fld%geom%npz,fld%geom%ntracers))
-
-      id_restart = register_restart_field(Fv_restart, filename_core, 'T',    traj%pt,   domain=fld%geom%domain)
-      id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', traj%delp, domain=fld%geom%domain)
-
-      call restore_state(Fv_restart, directory=trim(adjustl(datapath_ti)))
-      call free_restart_type(Fv_restart)
-
-      id_restart =  register_restart_field(Tr_restart, filename_trcr, 'sphum', traj%q(:,:,:,1), domain=fld%geom%domain)
-
-      call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
-      call free_restart_type(Tr_restart) 
-
-      trajp => traj
-
-      gottraj = 1
-
-    else
-
-      trajp => traj
-
-    endif
-
-  endif
-!END HACK
-!--------
 
 
 !*****HACK HACK HACK HACK********
@@ -1893,12 +1872,6 @@ elseif (vars%nv == 28) then
   obtype = 2 !Amsua
 endif
 !*****HACK HACK HACK HACK********
-
-
-! Get grid dimensions and checks
-! ------------------------------
-ngrid = (fld%geom%bd%iec - fld%geom%bd%isc + 1)*(fld%geom%bd%jec - fld%geom%bd%jsc + 1)
-nobs = locs%nlocs 
 
 ! Calculate interpolation weight using BUMP
 ! -----------------------------------------

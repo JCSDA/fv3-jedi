@@ -21,6 +21,8 @@
 #include "GeometryFV3JEDI.h"
 #include "oops/util/DateTime.h"
 #include "UtilitiesFV3JEDI.h"
+#include "GetValuesTrajFV3JEDI.h"
+#include "oops/util/abor1_cpp.h"
 
 // -----------------------------------------------------------------------------
 namespace fv3jedi {
@@ -107,27 +109,39 @@ void FieldsFV3JEDI::dirac(const eckit::Configuration & config) {
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::getValues(const ioda::Locations & locs,
-                         const oops::Variables & vars,
-                         ufo::GeoVaLs & gom) const {
+                              const oops::Variables & vars,
+                              ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
+  fv3jedi_field_getvalues_notraj_f90(keyFlds_, locs.toFortran(), &conf,
+                              gom.toFortran());
+}
+// -----------------------------------------------------------------------------
+void FieldsFV3JEDI::getValues(const ioda::Locations & locs,
+                              const oops::Variables & vars,
+                              ufo::GeoVaLs & gom,
+                              const GetValuesTrajFV3JEDI & traj) const {
+  const eckit::Configuration * conf = &vars.toFortran();
+  fv3jedi_field_getvalues_f90(keyFlds_, locs.toFortran(), &conf,
+                              gom.toFortran(), traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::getValuesTL(const ioda::Locations & locs,
-                           const oops::Variables & vars,
-                           ufo::GeoVaLs & gom) const {
+                                const oops::Variables & vars,
+                                ufo::GeoVaLs & gom,
+                                const GetValuesTrajFV3JEDI & traj) const {
   const eckit::Configuration * conf = &vars.toFortran();
 
-  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf,
-                                gom.toFortran());
+  fv3jedi_field_getvalues_tl_f90(keyFlds_, locs.toFortran(), &conf,
+                                gom.toFortran(), traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::getValuesAD(const ioda::Locations & locs,
-                           const oops::Variables & vars,
-                           const ufo::GeoVaLs & gom) {
+                                const oops::Variables & vars,
+                                const ufo::GeoVaLs & gom,
+                                const GetValuesTrajFV3JEDI & traj) {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf,
-                                gom.toFortran());
+  fv3jedi_field_getvalues_ad_f90(keyFlds_, locs.toFortran(), &conf,
+                                gom.toFortran(), traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::zero(const util::DateTime & time) {
@@ -151,29 +165,6 @@ void FieldsFV3JEDI::schur_product_with(const FieldsFV3JEDI & dx) {
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::random() {
   fv3jedi_field_random_f90(keyFlds_);
-}
-// -----------------------------------------------------------------------------
-void FieldsFV3JEDI::interpolate(const ioda::Locations & locs,
-                              const oops::Variables & vars,
-                              ufo::GeoVaLs & gom) const {
-  const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_f90(keyFlds_, locs.toFortran(), &conf, gom.toFortran());
-}
-// -----------------------------------------------------------------------------
-void FieldsFV3JEDI::interpolateTL(const ioda::Locations & locs,
-                                const oops::Variables & vars,
-                                ufo::GeoVaLs & gom) const {
-  const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_tl_f90(keyFlds_, locs.toFortran(), &conf,
-                               gom.toFortran());
-}
-// -----------------------------------------------------------------------------
-void FieldsFV3JEDI::interpolateAD(const ioda::Locations & locs,
-                                const oops::Variables & vars,
-                                const ufo::GeoVaLs & gom) {
-  const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_interp_ad_f90(keyFlds_, locs.toFortran(), &conf,
-                                gom.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::changeResolution(const FieldsFV3JEDI & other) {

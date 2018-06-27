@@ -5,28 +5,33 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_NOTHING_H_
-#define FV3_JEDI_SRC_NOTHING_H_
+#ifndef FV3_JEDI_SRC_GETVALUESTRAJFV3JEDI_H_
+#define FV3_JEDI_SRC_GETVALUESTRAJFV3JEDI_H_
 
 #include <ostream>
 
 #include "oops/util/Printable.h"
+#include "Fortran.h"
 
 namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
 
-class Nothing : public util::Printable {
+class GetValuesTrajFV3JEDI : public util::Printable {
  public:
-  Nothing() {}
-  ~Nothing() {}
+  GetValuesTrajFV3JEDI();
+  ~GetValuesTrajFV3JEDI();
+
+  int & toFortran() {return keyGetValuesTraj_;}
+  const int & toFortran() const {return keyGetValuesTraj_;}
 
  private:
   void print(std::ostream &) const {}
+  F90ootrj keyGetValuesTraj_;
 };
 
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_NOTHING_H_
+#endif  // FV3_JEDI_SRC_GETVALUESTRAJFV3JEDI_H_

@@ -23,7 +23,7 @@
 #include "ModelFV3JEDI.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
-#include "Nothing.h"
+#include "GetValuesTrajFV3JEDI.h"
 
 namespace fv3jedi {
 
@@ -93,37 +93,23 @@ StateFV3JEDI & StateFV3JEDI::operator=(const StateFV3JEDI & rhs) {
 /// Get state values at observation locations
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::getValues(const ioda::Locations & locs,
-                        const oops::Variables & vars,
-                        ufo::GeoVaLs & cols) const {
+                             const oops::Variables & vars,
+                             ufo::GeoVaLs & cols) const {
   fields_->getValues(locs, vars, cols);
 }
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::getValues(const ioda::Locations & locs,
-                        const oops::Variables & vars,
-                        ufo::GeoVaLs & cols, Nothing &) const {
-  fields_->getValues(locs, vars, cols);
-}
-// -----------------------------------------------------------------------------
-/// Interpolate to observation location
-// -----------------------------------------------------------------------------
-void StateFV3JEDI::interpolate(const ioda::Locations & locs,
-                      const oops::Variables & vars, ufo::GeoVaLs & cols) const {
-  fields_->interpolate(locs, vars, cols);
-}
-// -----------------------------------------------------------------------------
-/// Interpolate to observation location
-// -----------------------------------------------------------------------------
-void StateFV3JEDI::interpolate(const ioda::Locations & locs,
-                             const oops::Variables & vars, ufo::GeoVaLs & cols,
-                             const Nothing &) const {
-  fields_->interpolate(locs, vars, cols);
+                             const oops::Variables & vars,
+                             ufo::GeoVaLs & cols,
+                             const GetValuesTrajFV3JEDI & traj) const {
+  fields_->getValues(locs, vars, cols, traj);
 }
 // -----------------------------------------------------------------------------
 /// Interpolate full fields
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::changeResolution(const StateFV3JEDI & other) {
   fields_->changeResolution(*other.fields_);
-  oops::Log::trace() << "StateFV3JEDI interpolated" << std::endl;
+  oops::Log::trace() << "StateFV3JEDI changed resolution" << std::endl;
 }
 // -----------------------------------------------------------------------------
 /// Interactions with Increments

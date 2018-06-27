@@ -14,6 +14,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "GeometryFV3JEDI.h"
+#include "GetValuesTrajFV3JEDI.h"
 #include "oops/base/Variables.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
@@ -69,18 +70,12 @@ class FieldsFV3JEDI : public util::Printable,
 // Get fields values at given location
   void getValues(const ioda::Locations &, const oops::Variables &,
                  ufo::GeoVaLs &) const;
+  void getValues(const ioda::Locations &, const oops::Variables &,
+                 ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &) const;
   void getValuesTL(const ioda::Locations &, const oops::Variables &,
-                   ufo::GeoVaLs &) const;
+                   ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &) const;
   void getValuesAD(const ioda::Locations &, const oops::Variables &,
-                   const ufo::GeoVaLs &);
-
-// Interpolate to given location
-  void interpolate(const ioda::Locations &, const oops::Variables &,
-                   ufo::GeoVaLs &) const;
-  void interpolateTL(const ioda::Locations &, const oops::Variables &,
-                   ufo::GeoVaLs &) const;
-  void interpolateAD(const ioda::Locations &, const oops::Variables &,
-                   const ufo::GeoVaLs &);
+                   const ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &);
 
 // Interpolate full fields
   void changeResolution(const FieldsFV3JEDI &);

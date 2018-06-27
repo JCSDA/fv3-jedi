@@ -38,7 +38,7 @@ namespace oops {
 namespace fv3jedi {
   class GeometryFV3JEDI;
   class IncrementFV3JEDI;
-  class Nothing;
+  class GetValuesTrajFV3JEDI;
 
 /// FV3JEDI model state
 /*!
@@ -65,13 +65,7 @@ class StateFV3JEDI : public util::Printable,
   void getValues(const ioda::Locations &, const oops::Variables &,
                   ufo::GeoVaLs &) const;
   void getValues(const ioda::Locations &, const oops::Variables &,
-                  ufo::GeoVaLs &, Nothing &) const;
-
-/// Interpolate to observation location
-  void interpolate(const ioda::Locations &, const oops::Variables &,
-                    ufo::GeoVaLs &) const;
-  void interpolate(const ioda::Locations &, const oops::Variables &,
-                    ufo::GeoVaLs &, const Nothing &) const;
+                  ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &) const;
 
 /// Interpolate full fields
   void changeResolution(const StateFV3JEDI & xx);

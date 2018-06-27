@@ -36,6 +36,9 @@ typedef int F90traj;
 typedef int F90bmat;
 // Localization matrix
 typedef int F90lclz;
+// ObOp trajectory
+typedef int F90ootrj;
+
 
 /// Interface to Fortran FV3JEDI model
 /*!
@@ -116,12 +119,17 @@ extern "C" {
                                      const eckit::Configuration * const *,
                                      const util::DateTime * const *);
 
-  void fv3jedi_field_interp_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_notraj_f90(const F90flds &, const F90locs &,
                         const eckit::Configuration * const *, const F90goms &);
-  void fv3jedi_field_interp_tl_f90(const F90flds &, const F90locs &,
-                        const eckit::Configuration * const *, const F90goms &);
-  void fv3jedi_field_interp_ad_f90(const F90flds &, const F90locs &,
-                        const eckit::Configuration * const *, const F90goms &);
+  void fv3jedi_field_getvalues_f90(const F90flds &, const F90locs &,
+                        const eckit::Configuration * const *, const F90goms &,
+                        const F90ootrj &);
+  void fv3jedi_field_getvalues_tl_f90(const F90flds &, const F90locs &,
+                        const eckit::Configuration * const *, const F90goms &,
+                        const F90ootrj &);
+  void fv3jedi_field_getvalues_ad_f90(const F90flds &, const F90locs &,
+                        const eckit::Configuration * const *, const F90goms &,
+                        const F90ootrj &);
 
   void fv3jedi_field_gpnorm_f90(const F90flds &, const int &, double &);
   void fv3jedi_field_sizes_f90(const F90flds &, int &, int &, int &);
@@ -131,6 +139,9 @@ extern "C" {
 
   void fv3jedi_field_dirac_f90(const F90flds &,
                                 const eckit::Configuration * const *);
+
+  void fv3jedi_getvaltraj_setup_f90(const F90ootrj &);
+  void fv3jedi_getvaltraj_delete_f90(const F90ootrj &);
 
 // -----------------------------------------------------------------------------
 //  Background error
