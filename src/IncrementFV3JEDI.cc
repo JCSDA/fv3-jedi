@@ -22,7 +22,7 @@
 #include "StateFV3JEDI.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
-#include "Nothing.h"
+#include "GetValuesTrajFV3JEDI.h"
 
 namespace fv3jedi {
 
@@ -126,26 +126,6 @@ void IncrementFV3JEDI::random() {
   fields_->random();
 }
 // -----------------------------------------------------------------------------
-/// Interpolate to observation location
-// -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateTL(const ioda::Locations & locs,
-   const oops::Variables & vars, ufo::GeoVaLs & cols, const Nothing &) const {
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateTL fields in" <<
-                         *fields_ << std::endl;
-  fields_->interpolateTL(locs, vars, cols);
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateTL gom " <<
-                          cols << std::endl;
-}
-// -----------------------------------------------------------------------------
-void IncrementFV3JEDI::interpolateAD(const ioda::Locations & locs,
-     const oops::Variables & vars, const ufo::GeoVaLs & cols, const Nothing &) {
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateAD gom "
-                     << cols << std::endl;
-  oops::Log::debug() << "IncrementFV3JEDI::interpolateAD fields in"
-                     << *fields_ << std::endl;
-  fields_->interpolateAD(locs, vars, cols);
-}
-// -----------------------------------------------------------------------------
 /// Convert to/from unstructured grid
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::define(oops::UnstructuredGrid & ug) const {
@@ -156,14 +136,16 @@ void IncrementFV3JEDI::define(oops::UnstructuredGrid & ug) const {
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
                               const oops::Variables & vars,
-                              ufo::GeoVaLs & cols, const Nothing &) const {
-  fields_->getValuesTL(locs, vars, cols);
+                              ufo::GeoVaLs & cols,
+                              const GetValuesTrajFV3JEDI & traj) const {
+  fields_->getValuesTL(locs, vars, cols, traj);
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
                              const oops::Variables & vars,
-                             const ufo::GeoVaLs & cols, const Nothing &) {
-  fields_->getValuesAD(locs, vars, cols);
+                             const ufo::GeoVaLs & cols,
+                             const GetValuesTrajFV3JEDI & traj) {
+  fields_->getValuesAD(locs, vars, cols, traj);
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {

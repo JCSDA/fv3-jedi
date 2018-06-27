@@ -7,6 +7,8 @@ FieldsFV3JEDI.h
 Fortran.h
 GeometryFV3JEDI.cc
 GeometryFV3JEDI.h
+GetValuesTrajFV3JEDI.cc
+GetValuesTrajFV3JEDI.h
 IncrementFV3JEDI.cc
 IncrementFV3JEDI.h
 LocalizationMatrixFV3JEDI.cc
@@ -16,7 +18,6 @@ ModelBiasFV3JEDI.h
 ModelBiasIncrementFV3JEDI.h
 ModelFV3JEDI.cc
 ModelFV3JEDI.h
-Nothing.h
 RunFV3JEDI.cc
 RunFV3JEDI.h
 StateFV3JEDI.cc
@@ -35,6 +36,7 @@ fv3jedi_fields_io_mod.F90
 fv3jedi_fields_mod.F90
 fv3jedi_fields_utils_mod.F90
 fv3jedi_geom_mod.F90
+fv3jedi_getvaltraj_mod.F90
 fv3jedi_kinds_mod.F90
 fv3jedi_model_interface.F90
 fv3jedi_model_mod.F90

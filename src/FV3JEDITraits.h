@@ -29,7 +29,7 @@
 #include "ufo/ObsCheck.h"
 #include "ufo/ObsOperator.h"
 #include "ufo/LinearObsOperator.h"
-#include "Nothing.h"
+#include "GetValuesTrajFV3JEDI.h"
 
 namespace fv3jedi {
 
@@ -49,7 +49,8 @@ struct FV3JEDITraits {
   typedef fv3jedi::ModelBiasCovarianceFV3JEDI  ModelAuxCovariance;
 
   typedef fv3jedi::LocalizationMatrixFV3JEDI   LocalizationMatrix;
-  typedef fv3jedi::Nothing                     InterpolatorTraj;
+
+  typedef fv3jedi::GetValuesTrajFV3JEDI        InterpolatorTraj;
 
   typedef ufo::ObsOperator                     ObsOperator;
   typedef ufo::LinearObsOperator               LinearObsOperator;
@@ -61,8 +62,8 @@ struct FV3JEDITraits {
   typedef ufo::ObsBiasCovariance               ObsAuxCovariance;
   typedef ufo::ObsCheck                        ObsCheck;
 
-  typedef ufo::GeoVaLs                     GeoVaLs;
-  typedef ioda::Locations                   Locations;
+  typedef ufo::GeoVaLs                         GeoVaLs;
+  typedef ioda::Locations                      Locations;
 };
 
 }  // namespace fv3jedi
