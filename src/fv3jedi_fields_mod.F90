@@ -1287,6 +1287,7 @@ if (fld%havecrtmfields) then
                      wind_speed, wind_direction )
 endif
 
+
 ! Get CRTM moisture variables
 ! ---------------------------
 allocate(ql_ade(isd:ied,jsd:jed,npz))
@@ -1318,6 +1319,7 @@ if (fld%havecrtmfields) then
 
 endif
 
+
 !write(*,*)'interp model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
 !write(*,*)'interp model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
@@ -1334,7 +1336,6 @@ do jvar = 1, vars%nv
   ! Convert to observation variables/units
   ! --------------------------------------
   select case (trim(vars%fldnames(jvar)))
-
 
   case ("temperature")
 
@@ -1611,6 +1612,7 @@ subroutine getvalues_tl(fld, locs, vars, gom, traj)
 
 use type_bump, only: bump_type
 use tmprture_vt_mod
+use moisture_vt_mod, only: crtm_mixratio_tl
 
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
@@ -1671,9 +1673,6 @@ allocate(geovale(isd:ied,jsd:jed,npz+1))
 allocate(geovalm(isd:ied,jsd:jed,npz))
 
 
-!write(*,*)'interp_tl model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
-!write(*,*)'interp_tl model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
-
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
@@ -1685,24 +1684,81 @@ do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
    
-  case ("wind_v")
+  case ("temperature")
   
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%pt
+    geoval => geovalm
+
   case ("virtual_temperature")
 
-    !Tangent linear of temperature to virtual temperature
     nvl = fld%geom%npz
     do_interp = .true.
     call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("atmosphere_ln_pressure_coordinate")
+
   case ("humidity_mixing_ratio")
   
-  case ("atmosphere_ln_pressure_coordinate")
+    nvl = fld%geom%npz
+    do_interp = .true.
+    call crtm_mixratio_tl(fld%geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
+    geoval => geovalm  
 
   case ("air_pressure")
 
   case ("air_pressure_levels")
+
+  case ("mass_concentration_of_ozone_in_air")
+
+  case ("mass_concentration_of_carbon_dioxide_in_air")
+
+  case ("atmosphere_mass_content_of_cloud_liquid_water")
+
+  case ("atmosphere_mass_content_of_cloud_ice")
+
+  case ("effective_radius_of_cloud_liquid_water_particle")
+
+  case ("effective_radius_of_cloud_ice_particle")
+
+  case ("Water_Fraction")
+
+  case ("Land_Fraction")
+ 
+  case ("Ice_Fraction")
+ 
+  case ("Snow_Fraction")
+ 
+  case ("Water_Temperature")
+ 
+  case ("Land_Temperature")
+ 
+  case ("Ice_Temperature")
+
+  case ("Snow_Temperature")
+
+  case ("Snow_Depth")
+
+  case ("Vegetation_Fraction")
+
+  case ("Sfc_Wind_Speed")
+
+  case ("Sfc_Wind_Direction")
+
+  case ("Lai")
+
+  case ("Soil_Moisture")
+
+  case ("Soil_Temperature")
+
+  case ("Land_Type_Index")
+
+  case ("Vegetation_Type")
+
+  case ("Soil_Type")
 
   case default
 
@@ -1748,9 +1804,6 @@ deallocate(geovalm,geovale)
 deallocate(mod_field)
 deallocate(obs_field)
 
-!write(*,*)'interp_tl geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-!write(*,*)'interp_tl geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
-
 end subroutine getvalues_tl
 
 ! ------------------------------------------------------------------------------
@@ -1759,6 +1812,7 @@ subroutine getvalues_ad(fld, locs, vars, gom, traj)
 
 use type_bump, only: bump_type
 use tmprture_vt_mod
+use moisture_vt_mod, only: crtm_mixratio_ad
 
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
@@ -1775,6 +1829,13 @@ integer :: ii, jj, ji, jvar, jlev
 real(kind=kind_real), allocatable :: mod_field(:,:)
 real(kind=kind_real), allocatable :: obs_field(:,:)
 
+integer :: nvl
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), pointer :: geoval(:,:,:)
+logical :: do_interp
+
+integer :: isc, iec, jsc, jec, isd, ied, jsd, jed, npz
+
 
 ! Check traj is implemented
 ! -------------------------
@@ -1782,53 +1843,119 @@ if (.not.traj%lalloc) &
 call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
 
 
+! Grid convenience
+! ----------------
+isc = fld%geom%bd%isc
+iec = fld%geom%bd%iec
+jsc = fld%geom%bd%jsc
+jec = fld%geom%bd%jec
+isd = fld%geom%bd%isd
+ied = fld%geom%bd%ied
+jsd = fld%geom%bd%jsd
+jed = fld%geom%bd%jed
+npz = fld%geom%npz
+
+
 ! Initialize the interpolation
 ! ----------------------------
 call initialize_interp( fld, locs, vars, pbump )
+
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_field(traj%ngrid,1))
 allocate(obs_field(traj%nobs,1))
 
-!write(*,*)'interp_ad geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-!write(*,*)'interp_ad geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+
+! Local GeoVals
+! -------------
+allocate(geovale(isd:ied,jsd:jed,npz+1))
+allocate(geovalm(isd:ied,jsd:jed,npz))
+
+geovale = 0.0_kind_real
+geovalm = 0.0_kind_real
 
 ! Interpolate fields to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
- 
+
+  ! PART 1, do_interp flag
+  ! ----------------------
+  do_interp = .false.
+
   select case (trim(vars%fldnames(jvar)))
- 
-  case ("wind_u")
+   
+  case ("temperature")
   
-  case ("wind_v")
-  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case ("virtual_temperature")
 
-    do jlev = 1, fld%geom%npz
-      obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
-      gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
-      call pbump%apply_obsop_ad(obs_field,mod_field)
-      ii = 0
-      do jj = fld%geom%bd%jsc, fld%geom%bd%jec
-        do ji = fld%geom%bd%isc, fld%geom%bd%iec
-          ii = ii + 1
-          fld%Atm%pt(ji, jj, jlev) = fld%Atm%pt(ji, jj, jlev) + mod_field(ii, 1)
-        enddo
-      enddo
-    enddo 
-  
-    !Adjoint of temperature to virtual temperature
-    call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
-  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("atmosphere_ln_pressure_coordinate")
+
   case ("humidity_mixing_ratio")
   
-  case ("atmosphere_ln_pressure_coordinate")
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
 
   case ("air_pressure")
 
   case ("air_pressure_levels")
+
+  case ("mass_concentration_of_ozone_in_air")
+
+  case ("mass_concentration_of_carbon_dioxide_in_air")
+
+  case ("atmosphere_mass_content_of_cloud_liquid_water")
+
+  case ("atmosphere_mass_content_of_cloud_ice")
+
+  case ("effective_radius_of_cloud_liquid_water_particle")
+
+  case ("effective_radius_of_cloud_ice_particle")
+
+  case ("Water_Fraction")
+
+  case ("Land_Fraction")
+ 
+  case ("Ice_Fraction")
+ 
+  case ("Snow_Fraction")
+ 
+  case ("Water_Temperature")
+ 
+  case ("Land_Temperature")
+ 
+  case ("Ice_Temperature")
+
+  case ("Snow_Temperature")
+
+  case ("Snow_Depth")
+
+  case ("Vegetation_Fraction")
+
+  case ("Sfc_Wind_Speed")
+
+  case ("Sfc_Wind_Direction")
+
+  case ("Lai")
+
+  case ("Soil_Moisture")
+
+  case ("Soil_Temperature")
+
+  case ("Land_Type_Index")
+
+  case ("Vegetation_Type")
+
+  case ("Soil_Type")
 
   case default
 
@@ -1836,13 +1963,111 @@ do jvar = 1, vars%nv
 
   end select
 
+  !Part 2, apply adjoint of interp
+  !-------------------------------
+  if (do_interp) then
+    !Perform level-by-level interpolation using BUMP
+    do jlev = nvl, 1, -1
+      obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
+      gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
+      call pbump%apply_obsop_ad(obs_field,mod_field)
+      ii = 0
+      do jj = jsc, jec
+        do ji = isc, iec
+          ii = ii + 1
+          geoval(ji, jj, jlev) = mod_field(ii, 1)
+        enddo
+      enddo
+    enddo
+  else
+    obs_field(:,1) = gom%geovals(jvar)%vals(nvl,:)
+  endif
+
+  !Part 3, back to state variables
+  !-------------------------------
+ 
+  select case (trim(vars%fldnames(jvar)))
+ 
+  case ("temperature")
+  
+    fld%Atm%pt = geovalm 
+
+  case ("virtual_temperature")
+    
+    fld%Atm%pt = geovalm
+    call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+
+  case ("atmosphere_ln_pressure_coordinate")
+
+  case ("humidity_mixing_ratio")
+  
+    call crtm_mixratio_ad(fld%geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
+
+  case ("air_pressure")
+
+  case ("air_pressure_levels")
+
+  case ("mass_concentration_of_ozone_in_air")
+
+  case ("mass_concentration_of_carbon_dioxide_in_air")
+
+  case ("atmosphere_mass_content_of_cloud_liquid_water")
+
+  case ("atmosphere_mass_content_of_cloud_ice")
+
+  case ("effective_radius_of_cloud_liquid_water_particle")
+
+  case ("effective_radius_of_cloud_ice_particle")
+
+  case ("Water_Fraction")
+
+  case ("Land_Fraction")
+ 
+  case ("Ice_Fraction")
+ 
+  case ("Snow_Fraction")
+ 
+  case ("Water_Temperature")
+ 
+  case ("Land_Temperature")
+ 
+  case ("Ice_Temperature")
+
+  case ("Snow_Temperature")
+
+  case ("Snow_Depth")
+
+  case ("Vegetation_Fraction")
+
+  case ("Sfc_Wind_Speed")
+
+  case ("Sfc_Wind_Direction")
+
+  case ("Lai")
+
+  case ("Soil_Moisture")
+
+  case ("Soil_Temperature")
+
+  case ("Land_Type_Index")
+
+  case ("Vegetation_Type")
+
+  case ("Soil_Type")
+
+  case default
+
+    call abor1_ftn(trim(myname)//"unknown variable")
+
+  end select
+
+  geovale = 0.0_kind_real
+  geovalm = 0.0_kind_real
+
 enddo
 
 deallocate(mod_field)
 deallocate(obs_field)
-
-!write(*,*)'interp_ad model    t min, max= ',minval(fld%Atm%pt),maxval(fld%Atm%pt)
-!write(*,*)'interp_ad model delp min, max= ',minval(fld%Atm%delp),maxval(fld%Atm%delp)
 
 end subroutine getvalues_ad
 

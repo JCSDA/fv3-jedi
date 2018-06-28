@@ -17,9 +17,9 @@ public
 
 contains
 
-!----------------------------------------------------------------------------
-! Compute cloud area density and effective radius for the crtm --------------
-!----------------------------------------------------------------------------
+!>----------------------------------------------------------------------------
+!> Compute cloud area density and effective radius for the crtm --------------
+!>----------------------------------------------------------------------------
 
 subroutine crtm_ade_efr( geom,p,T,delp,sea_frac,q,ql,qi,ql_ade,qi_ade,ql_efr,qi_efr)
 
@@ -81,14 +81,23 @@ do k = 1,npz
   do j = jsc,jec
     do i = isc,iec
        if (seamask(i,j)) then
+
          kgkg_to_kgm2 = delp(i,j,k) / grav
-         ql_ade(i,j,k) = ql_ade(i,j,k) * kgkg_to_kgm2
-         qi_ade(i,j,k) = qi_ade(i,j,k) * kgkg_to_kgm2
+         ql_ade(i,j,k) = max(ql(i,j,k),0.0_kind_real) * kgkg_to_kgm2
+         qi_ade(i,j,k) = max(qi(i,j,k),0.0_kind_real) * kgkg_to_kgm2
+
+         if (t(i,j,k) - tice > -20.0_kind_real) then
+            ql_ade(i,j,k) = max(1.001_kind_real*1.0E-6_kind_real,ql_ade(i,j,k))
+         endif
+
+         if (t(i,j,k) < tice) then
+            qi_ade(i,j,k) = max(1.001_kind_real*1.0E-6_kind_real,qi_ade(i,j,k))
+         endif
+
        endif
     enddo
   enddo
 enddo
-
 
 ! Cloud liquid water effective radius
 ! -----------------------------------
@@ -103,8 +112,6 @@ do k = 1,npz
   enddo
 enddo
 
-ql_efr = max(0.0_kind_real,ql_efr)
-   
 
 ! Cloud ice water effective radius
 ! ---------------------------------
@@ -134,6 +141,8 @@ do k = 1,npz
   enddo
 enddo 
 
+
+ql_efr = max(0.0_kind_real,ql_efr)
 qi_efr = max(0.0_kind_real,qi_efr)
 
 deallocate(seamask)
@@ -181,6 +190,87 @@ enddo
 
 
 end subroutine crtm_mixratio
+
+subroutine crtm_mixratio_tl(geom,q,q_tl,qmr_tl)
+
+implicit none
+
+!Arguments
+type(fv3jedi_geom)  , intent(in ) :: geom
+real(kind=kind_real), intent(in ) :: q     (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(in ) :: q_tl  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(out) :: qmr_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Mixing ratio | 1
+
+!Locals
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+real(kind=kind_real) :: c3, c3_tl
+
+
+! Grid convenience
+! ----------------
+isc = geom%bd%isc
+iec = geom%bd%iec
+jsc = geom%bd%jsc
+jec = geom%bd%jec
+npz = geom%npz
+
+
+! Convert specific humidity
+! -------------------------
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+       c3_tl = -((-q_tl(i,j,k))/(1.0_kind_real-q(i,j,k))**2)
+       c3 = 1.0_kind_real / (1.0_kind_real - q(i,j,k))
+       qmr_tl(i,j,k) = 1000.0_kind_real*(q_tl(i,j,k)*c3+q(i,j,k)*c3_tl)
+    enddo
+  enddo
+enddo 
+
+end subroutine crtm_mixratio_tl
+
+subroutine crtm_mixratio_ad(geom,q,q_ad,qmr_ad)
+
+implicit none
+
+!Arguments
+type(fv3jedi_geom)  , intent(in )   :: geom
+real(kind=kind_real), intent(in )   :: q     (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(inout) :: q_ad  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(inout) :: qmr_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Mixing ratio | 1
+
+!Locals
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+real(kind=kind_real) :: c3, c3_ad
+
+
+! Grid convenience
+! ----------------
+isc = geom%bd%isc
+iec = geom%bd%iec
+jsc = geom%bd%jsc
+jec = geom%bd%jec
+npz = geom%npz
+
+
+! Convert specific humidity
+! -------------------------
+q_ad = 0.0_kind_real
+do k=npz,1,-1
+  do j=jec,jsc,-1
+    do i=iec,isc,-1
+     c3_ad = 1000.0_kind_real*q(i,j,k)*qmr_ad(i,j,k)
+     c3 = 1.0_kind_real / (1.0_kind_real - q(i,j,k))
+     q_ad(i,j,k) = q_ad(i,j,k) + c3_ad/(1.0_kind_real-q(i, j, k))**2 + 1000.0_kind_real*c3*qmr_ad(i,j,k)
+     qmr_ad(i, j, k) = 0.0_kind_real
+    end do
+  end do
+end do
+
+end subroutine crtm_mixratio_ad
+
 
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
