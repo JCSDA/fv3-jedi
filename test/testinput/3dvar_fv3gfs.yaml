@@ -24,6 +24,17 @@ cost_function:
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
   Jo:
+#    ObsTypes:
+#    - Covariance:
+#        covariance: diagonal
+#        obserror: Inverse_Observation_Error
+#      ObsData:
+#        ObsDataIn:
+#          obsfile: Data/amsua_n19_obs.nc4
+#        ObsDataOut:
+#          obsfile: Data/fv3jedi.3dvar.obt
+#        obsvalue: Observation
+#      ObsType: Radiance
     ObsTypes:
     - Covariance:
         covariance: diagonal
