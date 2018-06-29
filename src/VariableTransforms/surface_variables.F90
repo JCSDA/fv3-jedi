@@ -552,7 +552,7 @@ subroutine crtm_surface_kdtree_setup( geom, nobs, ngrid, lats_ob, lons_ob, nn, i
 use mpp_mod, only: mpp_npes, mpp_pe
 use mpi
 use type_kdtree, only: kdtree_type
-use type_mpl, only: mpl_type
+!use type_mpl, only: mpl_type
 
 implicit none
 
@@ -577,7 +577,7 @@ real(kind=kind_real), allocatable :: nn_dist(:,:)
 type(kdtree_type) :: kdtree
 real(kind=kind_real) :: dist, tmplat(1), tmplon(1)
 
-type(mpl_type) :: mpl
+!type(mpl_type) :: mpl
 
 ! Gather the model grid to all processors
 ! ---------------------------------------
@@ -637,10 +637,11 @@ allocate(mask(ngrid_glo))
 mask = .true.
 
 !Initialize mpl
-call mpl%init(mpi_comm_world)
+!call mpl%init(mpi_comm_world)
 
 !Create kdtree
-call kdtree%create(mpl,ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
+!call kdtree%create(mpl,ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
+call kdtree%create(ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
 
 
 allocate(nn_index(nobs,nn))

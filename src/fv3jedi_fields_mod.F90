@@ -202,9 +202,7 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%calendar_type = rhs%Atm%calendar_type
-self%Atm%date = rhs%Atm%date
-self%Atm%date_init = rhs%Atm%date_init
+self%Atm%hydrostatic = rhs%Atm%hydrostatic
 
 self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
 self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
@@ -216,6 +214,45 @@ if (.not. self%Atm%hydrostatic) then
    self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
 self%Atm%phis(self%isc:self%iec,self%jsc:self%jec) = rhs%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
+
+self%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%va(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%va(self%isc:self%iec,self%jsc:self%jec,:)
+
+self%Atm%calendar_type = rhs%Atm%calendar_type
+self%Atm%date = rhs%Atm%date
+self%Atm%date_init = rhs%Atm%date_init
+
+self%Atm%slmsk  = rhs%Atm%slmsk
+self%Atm%sheleg = rhs%Atm%sheleg
+self%Atm%tsea   = rhs%Atm%tsea
+self%Atm%vtype  = rhs%Atm%vtype
+self%Atm%stype  = rhs%Atm%stype
+self%Atm%vfrac  = rhs%Atm%vfrac
+self%Atm%stc    = rhs%Atm%stc
+self%Atm%smc    = rhs%Atm%smc
+self%Atm%snwdph = rhs%Atm%snwdph
+self%Atm%u_srf  = rhs%Atm%u_srf
+self%Atm%v_srf  = rhs%Atm%v_srf
+self%Atm%f10m   = rhs%Atm%f10m
+
+self%geom => rhs%geom
+
+self%nf = rhs%nf
+
+self%isc = rhs%isc
+self%iec = rhs%iec
+self%jsc = rhs%jsc
+self%jec = rhs%jec
+
+self%root_pe = rhs%root_pe
+
+self%havecrtmfields = rhs%havecrtmfields
+
+self%ti_q  = rhs%ti_q 
+self%ti_ql = rhs%ti_ql
+self%ti_qi = rhs%ti_qi
+self%ti_o3 = rhs%ti_o3
+
 
 return
 end subroutine copy
