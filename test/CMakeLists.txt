@@ -360,6 +360,7 @@ testinput/model_geos.yaml
 testinput/linearmodel_fv3gfs.yaml
 testinput/linearmodel_geos.yaml
 testinput/3dvar_fv3gfs.yaml
+testinput/3dvar_amsua_fv3gfs.yaml
 testinput/3dvar_geos.yaml
 testinput/4dvar.dripcg_fv3gfs.yaml
 testinput/4dvar.dripcg_geos.yaml
