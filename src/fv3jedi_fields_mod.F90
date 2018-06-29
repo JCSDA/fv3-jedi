@@ -202,9 +202,7 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%calendar_type = rhs%Atm%calendar_type
-self%Atm%date = rhs%Atm%date
-self%Atm%date_init = rhs%Atm%date_init
+self%Atm%hydrostatic = rhs%Atm%hydrostatic
 
 self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
 self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
@@ -216,6 +214,45 @@ if (.not. self%Atm%hydrostatic) then
    self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
 endif
 self%Atm%phis(self%isc:self%iec,self%jsc:self%jec) = rhs%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
+
+self%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:)
+self%Atm%va(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%va(self%isc:self%iec,self%jsc:self%jec,:)
+
+self%Atm%calendar_type = rhs%Atm%calendar_type
+self%Atm%date = rhs%Atm%date
+self%Atm%date_init = rhs%Atm%date_init
+
+self%Atm%slmsk  = rhs%Atm%slmsk
+self%Atm%sheleg = rhs%Atm%sheleg
+self%Atm%tsea   = rhs%Atm%tsea
+self%Atm%vtype  = rhs%Atm%vtype
+self%Atm%stype  = rhs%Atm%stype
+self%Atm%vfrac  = rhs%Atm%vfrac
+self%Atm%stc    = rhs%Atm%stc
+self%Atm%smc    = rhs%Atm%smc
+self%Atm%snwdph = rhs%Atm%snwdph
+self%Atm%u_srf  = rhs%Atm%u_srf
+self%Atm%v_srf  = rhs%Atm%v_srf
+self%Atm%f10m   = rhs%Atm%f10m
+
+self%geom => rhs%geom
+
+self%nf = rhs%nf
+
+self%isc = rhs%isc
+self%iec = rhs%iec
+self%jsc = rhs%jsc
+self%jec = rhs%jec
+
+self%root_pe = rhs%root_pe
+
+self%havecrtmfields = rhs%havecrtmfields
+
+self%ti_q  = rhs%ti_q 
+self%ti_ql = rhs%ti_ql
+self%ti_qi = rhs%ti_qi
+self%ti_o3 = rhs%ti_o3
+
 
 return
 end subroutine copy
@@ -1107,7 +1144,6 @@ end subroutine convert_from_ug
 
 subroutine getvalues(fld, locs, vars, gom, traj)
 
-use type_bump, only: bump_type
 use surface_vt_mod
 use pressure_vt_mod
 use tmprture_vt_mod
@@ -1115,6 +1151,7 @@ use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
 use wind_vt_mod
 use field_manager_mod, only: MODEL_ATMOS
 use tracer_manager_mod,only: get_tracer_index, get_tracer_names
+use type_bump, only: bump_type
 
 implicit none
 type(fv3jedi_field),                        intent(inout) :: fld 
@@ -1125,6 +1162,7 @@ type(fv3jedi_getvaltraj), optional, target, intent(inout) :: traj
 
 character(len=*), parameter :: myname = 'interp'
 
+type(bump_type), target  :: bump
 type(bump_type), pointer :: pbump
 
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
@@ -1193,6 +1231,8 @@ nobs = locs%nlocs
 ! ----------------------------
 if (present(traj)) then
 
+  pbump => traj%bump(1)
+
   if (.not. traj%lalloc) then
   
      traj%ngrid = ngrid
@@ -1204,18 +1244,19 @@ if (present(traj)) then
      traj%pt = fld%Atm%pt
      traj%q  = fld%Atm%q
  
+     call initialize_bump(fld%geom, locs, pbump)
+
      traj%lalloc = .true.
 
   endif
 
 else
 
+  pbump => bump
+  call initialize_bump(fld%geom, locs, pbump)
 
 endif
 
-! Initialize the interpolation
-! ----------------------------
-call initialize_interp( fld, locs, vars, pbump )
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -1569,6 +1610,8 @@ do jvar = 1, vars%nv
 
 enddo
 
+nullify(pbump)
+
 deallocate(mod_field)
 deallocate(obs_field)
 deallocate(geovale)
@@ -1654,11 +1697,6 @@ ied = fld%geom%bd%ied
 jsd = fld%geom%bd%jsd
 jed = fld%geom%bd%jed
 npz = fld%geom%npz
-
-
-! Initialize the interpolation
-! ----------------------------
-call initialize_interp( fld, locs, vars, pbump )
 
 
 ! Create Buffer for interpolated values
@@ -1854,11 +1892,6 @@ ied = fld%geom%bd%ied
 jsd = fld%geom%bd%jsd
 jed = fld%geom%bd%jed
 npz = fld%geom%npz
-
-
-! Initialize the interpolation
-! ----------------------------
-call initialize_interp( fld, locs, vars, pbump )
 
 
 ! Create Buffer for interpolated values
@@ -2073,39 +2106,6 @@ end subroutine getvalues_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_interp( fld, locs, vars, pbump )
-
-use type_bump, only: bump_type
-use fv3jedi_trajectories, only: fv3jedi_trajectory
-
-implicit none
-type(fv3jedi_field),                intent(inout) :: fld 
-type(ioda_locs),                    intent(in   ) :: locs 
-type(bump_type), pointer,           intent(inout) :: pbump
-type(ufo_vars),           intent(in)    :: vars
-
-integer :: jvar
-integer :: obtype
-integer :: numobtype
-
-
-!*****HACK HACK HACK HACK********
-numobtype = 2
-if (vars%nv == 2) then
-  obtype = 1 !Raob
-elseif (vars%nv == 28) then
-  obtype = 2 !Amsua
-endif
-!*****HACK HACK HACK HACK********
-
-! Calculate interpolation weight using BUMP
-! -----------------------------------------
-call initialize_bump(fld%geom, locs, pbump, obtype, numobtype)
-
-end subroutine initialize_interp
-
-! ------------------------------------------------------------------------------
-
 subroutine allocate_geovals_vals(gom,jvar,nobs,gvlev)
 
 implicit none
@@ -2127,108 +2127,102 @@ end subroutine allocate_geovals_vals
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_bump(geom, locs, pbump, obtype, numobtype)
+subroutine initialize_bump(geom, locs, bump)
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use type_bump, only: bump_type
 use mpi, only: mpi_comm_world
 
 implicit none
-type(fv3jedi_geom)      , intent(in)  :: geom
-type(ioda_locs)         , intent(in)  :: locs
-type(bump_type), pointer, intent(out) :: pbump
-integer, intent(in) :: obtype
-integer, intent(in) :: numobtype
 
-logical, save :: array_init = .false.
+!Arguments
+type(fv3jedi_geom), intent(in)    :: geom
+type(ioda_locs),    intent(in)    :: locs
+type(bump_type),    intent(inout) :: bump
 
-logical, save :: interp_initialized(2)
-type(bump_type), save, target :: bump(2)
-
-integer :: mod_nx,mod_ny,mod_nz,mod_num,obs_num
+!Locals
+integer :: mod_num
 real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
-
 real(kind=kind_real), allocatable :: area(:),vunit(:,:)
 logical, allocatable :: lmask(:,:)
 
-integer :: ii, jj, ji, jvar, jlev
+integer, save :: bumpcount = 0
+character(len=5) :: cbumpcount
+character(len=16) :: bump_nam_prefix
 
-!Allocate bumps and initialize tracker
-!-------------------------------------
-if (.not.array_init) then
-!  allocate(interp_initialized(numobtype))
-!  allocate(bump(numobtype))
-  interp_initialized = .false.
-  array_init = .true.
-endif
+
+! Each bump%nam%prefix must be distinct
+! -------------------------------------
+bumpcount = bumpcount + 1
+write(cbumpcount,"(I0.5)") bumpcount
+bump_nam_prefix = 'oops_data_'//cbumpcount
+
 
 !Get the Solution dimensions
 !---------------------------
-mod_nx  = geom%bd%iec - geom%bd%isc + 1  
-mod_ny  = geom%bd%jec - geom%bd%jsc + 1
-mod_num = mod_nx * mod_ny
-mod_nz  = geom%npz
-obs_num = locs%nlocs 
+mod_num = (geom%bd%iec - geom%bd%isc + 1) * (geom%bd%jec - geom%bd%jsc + 1)
+
 
 !Calculate interpolation weight using BUMP
 !-----------------------------------------
-if (.NOT.interp_initialized(obtype)) then 
 
-   write(*,*)'initialize_bump mod_num,obs_num = ',mod_num,obs_num
+write(*,*)'initialize_bump mod_num, obs_num = ',mod_num,locs%nlocs
 
-   allocate( mod_lat(mod_num), mod_lon(mod_num) )
-   mod_lat = reshape( geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
-                                    geom%bd%jsc:geom%bd%jec),     &
-                                   [mod_num] )  
-   mod_lon = reshape( geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
-                                    geom%bd%jsc:geom%bd%jec),     &
-                                   [mod_num] )
+allocate( mod_lat(mod_num), mod_lon(mod_num) )
+mod_lat = reshape( geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
+                                 geom%bd%jsc:geom%bd%jec),     &
+                                [mod_num] )  
+mod_lon = reshape( geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
+                                 geom%bd%jsc:geom%bd%jec),     &
+                                [mod_num] ) - 180.0_kind_real
 
-   !Important namelist options
-   bump(obtype)%nam%prefix = 'oops_data'   ! Prefix for files output
-   bump(obtype)%nam%nobs = obs_num         ! Number of observations
-   bump(obtype)%nam%obsop_interp = 'bilin' ! Interpolation type (bilinear)
-   bump(obtype)%nam%obsdis = 'local'       ! Observation distribution parameter ('random','local' or 'adjusted')
-   bump(obtype)%nam%diag_interp = 'bilin'
+!Important namelist options
+!call bump%nam%init
 
-   !Less important namelist options (should not be changed)
-   bump(obtype)%nam%default_seed = .true.
-   bump(obtype)%nam%new_hdiag = .false.
-   bump(obtype)%nam%new_param = .false.
-   bump(obtype)%nam%check_adjoints = .false.
-   bump(obtype)%nam%check_pos_def = .false.
-   bump(obtype)%nam%check_sqrt = .false.
-   bump(obtype)%nam%check_dirac = .false.
-   bump(obtype)%nam%check_randomization = .false.
-   bump(obtype)%nam%check_consistency = .false.
-   bump(obtype)%nam%check_optimality = .false.
-   bump(obtype)%nam%new_lct = .false.
-   bump(obtype)%nam%new_obsop = .true.
+bump%nam%prefix = bump_nam_prefix   ! Prefix for files output
+bump%nam%nobs = locs%nlocs          ! Number of observations
+bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
+bump%nam%obsdis = 'local'           ! Observation distribution parameter ('random','local' or 'adjusted')
+bump%nam%diag_interp = 'bilin'
 
-   !Initialize geometry
-   allocate(area(mod_num))
-   allocate(vunit(mod_num,1))
-   allocate(lmask(mod_num,1))
-   area = 1.0           ! Dummy area
-   vunit = 1.0          ! Dummy vertical unit
-   lmask = .true.       ! Mask
+bump%nam%local_diag = .false.
+bump%nam%nldwv = 10
 
-   !Initialize BUMP
-   call bump(obtype)%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                                   nobs=obs_num,lonobs=locs%lon(:),latobs=locs%lat(:) )
+!Less important namelist options (should not be changed)
+bump%nam%default_seed = .true.
+bump%nam%new_hdiag = .false.
+bump%nam%new_param = .false.
+bump%nam%check_adjoints = .false.
+bump%nam%check_pos_def = .false.
+bump%nam%check_sqrt = .false.
+bump%nam%check_dirac = .false.
+bump%nam%check_randomization = .false.
+bump%nam%check_consistency = .false.
+bump%nam%check_optimality = .false.
+bump%nam%new_lct = .false.
+bump%nam%new_obsop = .true.
 
+!Initialize geometry
+allocate(area(mod_num))
+allocate(vunit(mod_num,1))
+allocate(lmask(mod_num,1))
+area = 1.0           ! Dummy area
+vunit = 1.0          ! Dummy vertical unit
+lmask = .true.       ! Mask
 
-   !Release memory
-   deallocate(area)
-   deallocate(vunit)
-   deallocate(lmask)
-   deallocate( mod_lat, mod_lon )
+write(*,*)'initialize_bump call'
 
-   interp_initialized(obtype) = .TRUE. 
+!Initialize BUMP
+call bump%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+                                nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
 
-endif
+!Release memory
+deallocate(area)
+deallocate(vunit)
+deallocate(lmask)
+deallocate( mod_lat, mod_lon )
 
-pbump => bump(obtype)
+write(*,*)'initialize_bump done'
 
 end subroutine initialize_bump
 
