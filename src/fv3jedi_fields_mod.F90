@@ -1653,7 +1653,6 @@ end subroutine getvalues
 
 subroutine getvalues_tl(fld, locs, vars, gom, traj)
 
-use type_bump, only: bump_type
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_tl
 
@@ -1665,8 +1664,6 @@ type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvaltraj), intent(in)    :: traj
 
 character(len=*), parameter :: myname = 'interp_tl'
-
-type(bump_type), pointer :: pbump
 
 integer :: ii, jj, ji, jvar, jlev
 real(kind=kind_real), allocatable :: mod_field(:,:)
@@ -1826,7 +1823,7 @@ do jvar = 1, vars%nv
           mod_field(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
-      call pbump%apply_obsop(mod_field,obs_field)
+      call traj%bump(1)%apply_obsop(mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
   else
@@ -1848,7 +1845,6 @@ end subroutine getvalues_tl
 
 subroutine getvalues_ad(fld, locs, vars, gom, traj)
 
-use type_bump, only: bump_type
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_ad
 
@@ -1860,8 +1856,6 @@ type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvaltraj), intent(in)    :: traj
 
 character(len=*), parameter :: myname = 'interp_ad'
-
-type(bump_type), pointer :: pbump
 
 integer :: ii, jj, ji, jvar, jlev
 real(kind=kind_real), allocatable :: mod_field(:,:)
@@ -2003,7 +1997,7 @@ do jvar = 1, vars%nv
     do jlev = nvl, 1, -1
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
       gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
-      call pbump%apply_obsop_ad(obs_field,mod_field)
+      call traj%bump(1)%apply_obsop_ad(obs_field,mod_field)
       ii = 0
       do jj = jsc, jec
         do ji = isc, iec
@@ -2155,7 +2149,7 @@ character(len=16) :: bump_nam_prefix
 ! -------------------------------------
 bumpcount = bumpcount + 1
 write(cbumpcount,"(I0.5)") bumpcount
-bump_nam_prefix = 'oops_data_'//cbumpcount
+bump_nam_prefix = 'fv3jedi_bump_data_'//cbumpcount
 
 
 !Get the Solution dimensions
@@ -2165,9 +2159,6 @@ mod_num = (geom%bd%iec - geom%bd%isc + 1) * (geom%bd%jec - geom%bd%jsc + 1)
 
 !Calculate interpolation weight using BUMP
 !-----------------------------------------
-
-write(*,*)'initialize_bump mod_num, obs_num = ',mod_num,locs%nlocs
-
 allocate( mod_lat(mod_num), mod_lon(mod_num) )
 mod_lat = reshape( geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
                                  geom%bd%jsc:geom%bd%jec),     &
@@ -2177,12 +2168,12 @@ mod_lon = reshape( geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
                                 [mod_num] ) - 180.0_kind_real
 
 !Important namelist options
-!call bump%nam%init
+call bump%nam%init
 
 bump%nam%prefix = bump_nam_prefix   ! Prefix for files output
 bump%nam%nobs = locs%nlocs          ! Number of observations
 bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
-bump%nam%obsdis = 'local'           ! Observation distribution parameter ('random','local' or 'adjusted')
+bump%nam%obsdis = 'random'          ! Observation distribution parameter ('random','local' or 'adjusted')
 bump%nam%diag_interp = 'bilin'
 
 bump%nam%local_diag = .false.
@@ -2210,8 +2201,6 @@ area = 1.0           ! Dummy area
 vunit = 1.0          ! Dummy vertical unit
 lmask = .true.       ! Mask
 
-write(*,*)'initialize_bump call'
-
 !Initialize BUMP
 call bump%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
                                 nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
@@ -2221,8 +2210,6 @@ deallocate(area)
 deallocate(vunit)
 deallocate(lmask)
 deallocate( mod_lat, mod_lon )
-
-write(*,*)'initialize_bump done'
 
 end subroutine initialize_bump
 
