@@ -1164,6 +1164,8 @@ character(len=*), parameter :: myname = 'interp'
 
 type(bump_type), target  :: bump
 type(bump_type), pointer :: pbump
+logical, target :: bump_alloc
+logical, pointer :: pbumpa
 
 integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
 real(kind=kind_real), allocatable :: mod_field(:,:)
@@ -1244,17 +1246,21 @@ if (present(traj)) then
      traj%pt = fld%Atm%pt
      traj%q  = fld%Atm%q
  
-     call initialize_bump(fld%geom, locs, pbump)
-
-     traj%lalloc = .true.
+     pbumpa => traj%lalloc
 
   endif
 
 else
 
   pbump => bump
-  call initialize_bump(fld%geom, locs, pbump)
+  bump_alloc = .false.
+  pbumpa => bump_alloc
 
+endif
+
+if (.not. pbumpa) then
+   call initialize_bump(fld%geom, locs, pbump)
+   pbumpa = .true.
 endif
 
 
