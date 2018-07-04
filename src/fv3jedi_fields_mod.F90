@@ -1233,7 +1233,7 @@ nobs = locs%nlocs
 ! ----------------------------
 if (present(traj)) then
 
-  pbump => traj%bump(1)
+  pbump => traj%bump
 
   if (.not. traj%lalloc) then
   
@@ -1829,7 +1829,7 @@ do jvar = 1, vars%nv
           mod_field(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
-      call traj%bump(1)%apply_obsop(mod_field,obs_field)
+      call traj%bump%apply_obsop(mod_field,obs_field)
       gom%geovals(jvar)%vals(jlev,:) = obs_field(:,1)
     enddo
   else
@@ -2003,7 +2003,7 @@ do jvar = 1, vars%nv
     do jlev = nvl, 1, -1
       obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
       gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
-      call traj%bump(1)%apply_obsop_ad(obs_field,mod_field)
+      call traj%bump%apply_obsop_ad(obs_field,mod_field)
       ii = 0
       do jj = jsc, jec
         do ji = isc, iec
@@ -2179,11 +2179,9 @@ call bump%nam%init
 bump%nam%prefix = bump_nam_prefix   ! Prefix for files output
 bump%nam%nobs = locs%nlocs          ! Number of observations
 bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
-bump%nam%obsdis = 'random'          ! Observation distribution parameter ('random','local' or 'adjusted')
+bump%nam%obsdis = 'local'           ! Local or BUMP may try to redistribute obs
 bump%nam%diag_interp = 'bilin'
-
 bump%nam%local_diag = .false.
-bump%nam%nldwv = 10
 
 !Less important namelist options (should not be changed)
 bump%nam%default_seed = .true.

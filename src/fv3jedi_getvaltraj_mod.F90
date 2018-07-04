@@ -19,7 +19,7 @@ type :: fv3jedi_getvaltraj
  integer :: nobs, ngrid
  real(kind=kind_real), allocatable :: pt(:,:,:)
  real(kind=kind_real), allocatable :: q(:,:,:,:)
- type(bump_type), allocatable :: bump(:)
+ type(bump_type) :: bump
  logical :: lalloc = .false.
 end type fv3jedi_getvaltraj
 
@@ -56,7 +56,6 @@ print*, 'dh: getvaltraj_setup', c_key_self
 self%lalloc = .false.
 self%nobs = 0
 self%ngrid = 0
-allocate(self%bump(1))
 
 end subroutine c_fv3jedi_getvaltraj_setup
 
@@ -76,7 +75,7 @@ if (self%lalloc) then
   self%ngrid = 0
   if (allocated(self%pt)) deallocate(self%pt)
   if (allocated(self%q)) deallocate(self%q)
-  deallocate(self%bump)
+  call self%bump%dealloc
   self%lalloc = .false.
 endif
 
