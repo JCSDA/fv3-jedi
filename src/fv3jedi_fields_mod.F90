@@ -1381,6 +1381,20 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("upper_air_u_component")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%u
+    geoval => geovalm
+
+  case ("upper_air_v_component")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%v
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = npz
@@ -1399,7 +1413,11 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    geovalm = qmr
+    if (fld%havecrtmfields) then
+      geovalm = qmr
+    else
+      geovalm = fld%Atm%q(:,:,:,1)
+    endif
     geoval => geovalm  
 
   case ("air_pressure")
@@ -1728,6 +1746,20 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("upper_air_u_component")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%u
+    geoval => geovalm
+
+  case ("upper_air_v_component")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%v
+    geoval => geovalm
+  
   case ("virtual_temperature")
 
     nvl = fld%geom%npz
@@ -1928,6 +1960,18 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
+  case ("upper_air_u_component")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("upper_air_v_component")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = npz
@@ -2029,6 +2073,14 @@ do jvar = 1, vars%nv
   
     fld%Atm%pt = geovalm 
 
+  case ("upper_air_u_component")
+  
+    fld%Atm%u = geovalm 
+
+  case ("upper_air_v_component")
+  
+    fld%Atm%v = geovalm 
+
   case ("virtual_temperature")
     
     fld%Atm%pt = geovalm
@@ -2127,8 +2179,10 @@ integer :: numobtype
 
 
 !*****HACK HACK HACK HACK********
-numobtype = 2
-if (vars%nv == 2) then
+numobtype = 3
+if (vars%nv == 5) then
+  obtype = 3 !Aircraft
+elseif (vars%nv == 2) then
   obtype = 1 !Raob
 elseif (vars%nv == 28) then
   obtype = 2 !Amsua
