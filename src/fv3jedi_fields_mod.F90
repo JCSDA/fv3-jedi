@@ -2048,18 +2048,20 @@ do jvar = 1, vars%nv
   !-------------------------------
   if (do_interp) then
     !Perform level-by-level interpolation using BUMP
-    do jlev = nvl, 1, -1
-      obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
-      gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
-      call pbump%apply_obsop_ad(obs_field,mod_field)
-      ii = 0
-      do jj = jsc, jec
-        do ji = isc, iec
-          ii = ii + 1
-          geoval(ji, jj, jlev) = mod_field(ii, 1)
+    if (size(gom%geovals(jvar)%vals, 2) > 1) then
+      do jlev = nvl, 1, -1
+        obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
+        gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
+        call pbump%apply_obsop_ad(obs_field,mod_field)
+        ii = 0
+        do jj = jsc, jec
+          do ji = isc, iec
+            ii = ii + 1
+            geoval(ji, jj, jlev) = mod_field(ii, 1)
+          enddo
         enddo
       enddo
-    enddo
+    endif
   else
     obs_field(:,1) = gom%geovals(jvar)%vals(nvl,:)
   endif
@@ -2180,9 +2182,9 @@ integer :: numobtype
 
 !*****HACK HACK HACK HACK********
 numobtype = 3
-if (vars%nv == 5) then
+if (vars%nv == 4) then
   obtype = 3 !Aircraft
-elseif (vars%nv == 2) then
+elseif (vars%nv == 5) then
   obtype = 1 !Raob
 elseif (vars%nv == 28) then
   obtype = 2 !Amsua
@@ -2233,8 +2235,8 @@ integer, intent(in) :: numobtype
 
 logical, save :: array_init = .false.
 
-logical, save :: interp_initialized(2)
-type(bump_type), save, target :: bump(2)
+logical, save :: interp_initialized(3)
+type(bump_type), save, target :: bump(3)
 
 integer :: mod_nx,mod_ny,mod_nz,mod_num,obs_num
 real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
