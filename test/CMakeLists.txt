@@ -633,14 +633,14 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 #                       testoutput/dirac.nicas.test
 #                  DEPENDS fv3jedi_dirac.x )
 #
-#ecbuild_add_test( TARGET test_fv3jedi_hofx
-#                  TYPE SCRIPT
-#                  MPI     6
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.yaml"
-#                       testoutput/hofx.test
-#                  DEPENDS fv3jedi_hofx.x )
-#
+ecbuild_add_test( TARGET test_fv3jedi_hofx
+                  TYPE SCRIPT
+                  MPI     6
+                  COMMAND "compare.sh"
+                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx_fv3gfs.yaml"
+                       testoutput/hofx.test
+                  DEPENDS fv3jedi_hofx.x )
+
 ecbuild_add_test( TARGET test_fv3jedi_3dvar
                   TYPE SCRIPT
                   MPI     6
