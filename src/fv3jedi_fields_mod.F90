@@ -1616,6 +1616,10 @@ do jvar = 1, vars%nv
 
 enddo
 
+if (.not. present(traj)) then
+  call pbump%dealloc
+endif
+
 nullify(pbump)
 
 deallocate(mod_field)

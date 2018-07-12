@@ -51,8 +51,6 @@ call fv3jedi_getvaltraj_registry%init()
 call fv3jedi_getvaltraj_registry%add(c_key_self)
 call fv3jedi_getvaltraj_registry%get(c_key_self,self)
 
-print*, 'dh: getvaltraj_setup', c_key_self
-
 self%lalloc = .false.
 self%nobs = 0
 self%ngrid = 0
