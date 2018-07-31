@@ -38,7 +38,7 @@ cost_function:
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserrors:
+        obserror:
         - TOE
         - QOE
         - WOE
@@ -47,7 +47,7 @@ cost_function:
           obsfile: Data/aircraft_full.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.3dvar.obt
-        obsvariables:
+        obsvalue:
         - TOB
         - QOB
         - UOB
