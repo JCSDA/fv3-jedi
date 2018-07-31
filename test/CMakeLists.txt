@@ -484,6 +484,7 @@ endforeach(FILENAME)
 list( APPEND ufo_obs
   test/testinput/diag_t_01_wprofiles.nc4
   test/testinput/amsua_n19_obs.nc4
+  test/testinput/aircraft_full.nc4
 )
 
 foreach(FILENAME ${ufo_obs})
@@ -632,21 +633,22 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 #                       testoutput/dirac.nicas.test
 #                  DEPENDS fv3jedi_dirac.x )
 #
-#ecbuild_add_test( TARGET test_fv3jedi_hofx
-#                  TYPE SCRIPT
-#                  MPI     6
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.yaml"
-#                       testoutput/hofx.test
-#                  DEPENDS fv3jedi_hofx.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_3dvar
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.yaml"
-#                       testoutput/3dvar.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
+ecbuild_add_test( TARGET test_fv3jedi_hofx
+                  TYPE SCRIPT
+                  MPI     6
+                  COMMAND "compare.sh"
+                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx_fv3gfs.yaml"
+                       testoutput/hofx.test
+                  DEPENDS fv3jedi_hofx.x )
+
+ecbuild_add_test( TARGET test_fv3jedi_3dvar
+                  TYPE SCRIPT
+                  MPI     6
+                  COMMAND "compare.sh"
+                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar_fv3gfs.yaml"
+                       testoutput/3dvar.test
+                  DEPENDS fv3jedi_4dvar.x )
+
 #ecbuild_add_test( TARGET test_fv3jedi_3denvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
