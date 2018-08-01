@@ -362,7 +362,7 @@ end subroutine axpy
 
 subroutine dot_prod(fld1,fld2,zprod)
 
-use mpi,             only: mpi_real8,mpi_comm_world,mpi_sum
+use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 
 implicit none
 type(fv3jedi_field), intent(in) :: fld1, fld2
@@ -370,6 +370,9 @@ real(kind=kind_real), intent(inout) :: zprod
 real(kind=kind_real) :: zp
 integer :: i,j,k,l
 integer :: ierr
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
 
@@ -397,7 +400,7 @@ do l = 1,fld1%geom%ntracers
 enddo
 
 !Get global dot product
-call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
+call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 
 !For debugging print result:
 if (fld1%root_pe == 1) print*, "Dot product test result: ", zprod
@@ -926,12 +929,15 @@ end subroutine gpnorm
 ! ------------------------------------------------------------------------------
 
 subroutine fldrms(fld, prms)
-use mpi,             only: mpi_real8,mpi_comm_world,mpi_sum,mpi_int
+use fckit_mpi_module, only : fckit_mpi_comm, fckit_mpi_sum
 implicit none
 type(fv3jedi_field), intent(in) :: fld
 real(kind=kind_real), intent(out) :: prms
 real(kind=kind_real) :: zz
 integer jx,jy,jz,ii,nt,ierr,npes,iisum
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
 
 zz = 0.0_kind_real
 prms = 0.0_kind_real
@@ -955,12 +961,12 @@ do jy=fld%geom%bd%jsc,fld%geom%bd%jec
 enddo
 
 !Get global values
-call mpi_allreduce(zz,prms,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(ii,iisum,1,mpi_int,mpi_sum,mpi_comm_world,ierr)
+call f_comm%allreduce(zz,prms,fckit_mpi_sum())
+call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
 
-if (ierr .ne. 0) then
-   print *,'error in fldrms/mpi_allreduce, error code=',ierr
-endif
+!if (ierr .ne. 0) then
+!   print *,'error in fldrms/mpi_allreduce, error code=',ierr
+!endif
 prms = sqrt(prms/real(iisum,kind_real))
 
 !Print for debugging
@@ -974,7 +980,6 @@ end subroutine fldrms
 subroutine dirac(self, c_conf)
 
 use iso_c_binding
-use mpi
 
 implicit none
 type(fv3jedi_field), intent(inout) :: self
@@ -2133,9 +2138,9 @@ end subroutine allocate_geovals_vals
 
 subroutine initialize_bump(geom, locs, bump)
 
+use fckit_mpi_module, only: fckit_mpi_comm
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use type_bump, only: bump_type
-use mpi, only: mpi_comm_world
 
 implicit none
 
@@ -2154,6 +2159,9 @@ integer, save :: bumpcount = 0
 character(len=5) :: cbumpcount
 character(len=16) :: bump_nam_prefix
 
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
 
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------
@@ -2210,7 +2218,7 @@ vunit = 1.0          ! Dummy vertical unit
 lmask = .true.       ! Mask
 
 !Initialize BUMP
-call bump%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+call bump%setup_online( f_comm%communicator(),mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
                                 nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
 
 !Release memory
