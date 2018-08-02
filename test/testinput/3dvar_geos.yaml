@@ -26,14 +26,16 @@ cost_function:
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserror: ObsErr
+        obserrors:
+        - TOE
       ObsData:
         ObsDataIn:
-          obsfile: Data/diag_t_01_wprofiles.nc4
+          obsfile: Data/aircraft_full.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.3dvar.obt
-        obsvalue: Observation
-      ObsType: Radiosonde
+        obsvariables:
+        - TOB
+      ObsType: Aircraft
   cost_type: 3D-Var
   variables:
   - u
