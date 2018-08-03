@@ -1396,20 +1396,6 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
-  case ("upper_air_u_component")
-
-    nvl = npz
-    do_interp = .true.
-    geovalm = fld%Atm%u
-    geoval => geovalm
-
-  case ("upper_air_v_component")
-
-    nvl = npz
-    do_interp = .true.
-    geovalm = fld%Atm%v
-    geoval => geovalm
-
   case ("virtual_temperature")
 
     nvl = npz
@@ -1428,11 +1414,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    if (fld%havecrtmfields) then
-      geovalm = qmr
-    else
-      geovalm = fld%Atm%q(:,:,:,1)
-    endif
+    geovalm = qmr
     geoval => geovalm  
 
   case ("air_pressure")
@@ -1759,20 +1741,6 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
-  case ("upper_air_u_component")
-
-    nvl = npz
-    do_interp = .true.
-    geovalm = fld%Atm%u
-    geoval => geovalm
-
-  case ("upper_air_v_component")
-
-    nvl = npz
-    do_interp = .true.
-    geovalm = fld%Atm%v
-    geoval => geovalm
-  
   case ("virtual_temperature")
 
     nvl = fld%geom%npz
@@ -1965,18 +1933,6 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
-  case ("upper_air_u_component")
-
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
-
-  case ("upper_air_v_component")
-
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
-
   case ("virtual_temperature")
 
     nvl = npz
@@ -2053,20 +2009,18 @@ do jvar = 1, vars%nv
   !-------------------------------
   if (do_interp) then
     !Perform level-by-level interpolation using BUMP
-    if (size(gom%geovals(jvar)%vals, 2) > 1) then
-      do jlev = nvl, 1, -1
-        obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
-        gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
-        call traj%bump%apply_obsop_ad(obs_field,mod_field)
-        ii = 0
-        do jj = jsc, jec
-          do ji = isc, iec
-            ii = ii + 1
-            geoval(ji, jj, jlev) = mod_field(ii, 1)
-          enddo
+    do jlev = nvl, 1, -1
+      obs_field(:,1) = gom%geovals(jvar)%vals(jlev,:)
+      gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
+      call traj%bump%apply_obsop_ad(obs_field,mod_field)
+      ii = 0
+      do jj = jsc, jec
+        do ji = isc, iec
+          ii = ii + 1
+          geoval(ji, jj, jlev) = mod_field(ii, 1)
         enddo
       enddo
-    endif
+    enddo
   else
     obs_field(:,1) = gom%geovals(jvar)%vals(nvl,:)
   endif
@@ -2079,14 +2033,6 @@ do jvar = 1, vars%nv
   case ("temperature")
   
     fld%Atm%pt = geovalm 
-
-  case ("upper_air_u_component")
-  
-    fld%Atm%u = geovalm 
-
-  case ("upper_air_v_component")
-  
-    fld%Atm%v = geovalm 
 
   case ("virtual_temperature")
     
