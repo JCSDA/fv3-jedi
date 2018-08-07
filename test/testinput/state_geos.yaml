@@ -45,7 +45,7 @@ StateTest:
     variables:
     - virtual_temperature
     - atmosphere_ln_pressure_coordinate
-  Variables:
+  InterpTest:
     variables:
     - virtual_temperature
     - atmosphere_ln_pressure_coordinate
