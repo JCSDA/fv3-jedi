@@ -368,8 +368,8 @@ testinput/forecast_fv3gfs.yaml
 testinput/forecast_geos.yaml
 testinput/hofx_fv3gfs.yaml
 testinput/hofx_geos.yaml
-testinput/dirac.nicas_fv3gfs.yaml
-testinput/dirac.nicas_geos.yaml
+testinput/dirac.bump_fv3gfs.yaml
+testinput/dirac.bump_geos.yaml
 testinput/increment_fv3gfs.yaml
 testinput/increment_geos.yaml
 testinput/3denvar.bump_fv3gfs.yaml
@@ -386,7 +386,7 @@ testoutput/hofx.test
 testoutput/3dvar.test
 testoutput/4dvar.dripcg.test
 testoutput/4dvar.drplanczos.test
-testoutput/dirac.nicas.test
+testoutput/dirac.bump.test
 )
 
 # Create Data directory for model input and symlink all files
@@ -624,14 +624,14 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 # Test oops applications with FV3JEDI
 # compare.sh does not currently work with mpirun
 
-#ecbuild_add_test( TARGET test_fv3jedi_dirac_nicas
-#                  TYPE SCRIPT
-#                  MPI     6
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.nicas.yaml"
-#                       testoutput/dirac.nicas.test
-#                  DEPENDS fv3jedi_dirac.x )
-#
+ecbuild_add_test( TARGET test_fv3jedi_dirac_bump_fv3gfs
+                  TYPE SCRIPT
+                  MPI     6
+                  COMMAND "compare.sh"
+                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.bump_fv3gfs.yaml"
+                       testoutput/dirac.bump_fv3gfs.test
+                  DEPENDS fv3jedi_dirac.x )
+
 #ecbuild_add_test( TARGET test_fv3jedi_hofx
 #                  TYPE SCRIPT
 #                  MPI     6
@@ -651,7 +651,7 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
 #                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.yaml"
-#                       testoutput/3denvar_nicas.test
+#                       testoutput/3denvar_bump.test
 #                  DEPENDS fv3jedi_4dvar.x )
 #
 #ecbuild_add_test( TARGET test_fv3jedi_4dvar_drplanczos

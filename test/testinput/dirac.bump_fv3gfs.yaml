@@ -1,7 +1,11 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
 Covariance:
   covariance: ensemble
   date: '2017-08-01T00:00:00Z'
   localization:
+    advmode: 0
     check_adjoints: 1
     check_consistency: 0
     check_dirac: 0
@@ -15,92 +19,114 @@ Covariance:
     diag_interp: bilin
     diag_rhflt: 0.0
     displ_diag: 0
-    displ_explicit: 0
-    displ_niter: 0
-    displ_rad: 0.0
-    displ_rhflt: 0.0
-    displ_tol: 0.0
-    fit_type: fast
-    fit_wgt: 1
-    flt_type: average
-    full_var: 0
+    draw_type: random_uniform
     gau_approx: 0
-    hdiag_ensemble:
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
+    bump_ensemble:
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem002/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem002/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem003/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem003/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem004/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem004/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem005/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem005/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem006/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem006/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem007/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem007/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem008/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem008/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem009/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem009/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
       trc_file: Data/fv3files/field_table
-    - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/
-      datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/
+    - restart_type: fv3gfs
+      datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem010/RESTART/
+      datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem010/RESTART/
+      datapath_write: 'Data/'
       date: '2017-08-01T00:00:00Z'
+      read_crtm_surface: 0
       filename_core: 20170801.000000.fv_core.res.nc
       filename_cplr: 20170801.000000.coupler.res
       filename_trcr: 20170801.000000.fv_tracer.res.nc
@@ -109,39 +135,34 @@ Covariance:
     lhomh: 0
     lhomv: 0
     local_diag: 0
-    local_rad: 0.0
-    localization: HDIAG_NICAS
+    localization: BUMP
     logpres: 0
-    lsqrt: 0
+    lsqrt: 1
     mask_check: 0
     mask_th: 0
     mask_type: none
     method: loc
+    minim_algo: fast
     mpicom: 2
     nc1: 400
     nc3: 10
-    ndir: 0
     ne: 10
     network: 0
     new_hdiag: 1
     new_lct: 0
-    new_obsop: 1
+    new_obsop: 0
     new_param: 1
     nicas_interp: bilin
-    nl0r: 1
+    nl0r: 11
     nldwh: 0
     nldwv: 0
-    nobs: 200
     nproc: 6
     nrep: 2
     ntry: 3
-    obsdis: 1.0
-    obsop_interp: bilin
     prefix: fv3jedi
-    resol: 10.0
+    resol: 6.0
     rvflt: 0.0
     strategy: common
-    transform: 0
     variables:
       variables:
       - u
@@ -151,81 +172,111 @@ Covariance:
       - delp
   members: '10'
   state:
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem002/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem002/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem002/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem003/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem003/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem003/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem004/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem004/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem004/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem005/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem005/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem005/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem006/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem006/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem006/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem007/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem007/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem007/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem008/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem008/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem008/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem009/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem009/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem009/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
-  - datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/
-    datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem010/RESTART/
+  - restart_type: fv3gfs
+    datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem010/RESTART/
+    datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem010/RESTART/
+    datapath_write: 'Data/'
     date: '2017-08-01T00:00:00Z'
+    read_crtm_surface: 0
     filename_core: 20170801.000000.fv_core.res.nc
     filename_cplr: 20170801.000000.coupler.res
     filename_trcr: 20170801.000000.fv_tracer.res.nc
@@ -246,52 +297,44 @@ dirac:
   iydir(1): 10
   ndir: 1
 initial:
-  datapath_read: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
-  datapath_tile: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
+  restart_type: fv3gfs
+  datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_write: 'Data/'
   date: '2017-08-01T00:00:00Z'
+  read_crtm_surface: 0
   filename_core: 20170801.000000.fv_core.res.nc
   filename_cplr: 20170801.000000.coupler.res
   filename_trcr: 20170801.000000.fv_tracer.res.nc
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table
-logging:
-  categories: Info, Test, Warning, Error
-nml_file: Data/fv3files/fmsmpp.nml
 output_Bens:
+  restart_type: fv3gfs
   datadir: Data
-  datapath_out: Data/
+  datapath_write: Data/
   date: '2017-08-01T00:00:00Z'
   exp: Bens
   filename_core: fv_core_Bens.res.nc
   filename_trcr: fv_tracer_Bens.res.nc
   type: an
-output_nicas:
+output_bump:
+  restart_type: fv3gfs
   datadir: Data
-  datapath_out: Data/
+  datapath_write: Data/
   date: '2017-08-01T00:00:00Z'
   exp: dirac
-  filename_core: fv_core_nicas.res.nc
-  filename_trcr: fv_tracer_nicas.res.nc
+  filename_core: fv_core_bump.res.nc
+  filename_trcr: fv_tracer_bump.res.nc
   type: an
 resolution:
-  datapath_geom: Data/C48_RESTART_2017-08-01-00/ENSEMBLE/mem001/RESTART/
-  filename_core: 20170801.000000.fv_core.res.nc
-  filename_spec: 20170801.000000.grid_spec.nc
-  halo: '3'
-  hydrostatic: '1'
-  init_type: inline
-  io_layout_1: '1'
-  io_layout_2: '1'
-  layout_1: '1'
-  layout_2: '1'
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
-  npx: '49'
-  npy: '49'
-  npz: '64'
   trc_file: Data/fv3files/field_table
+  halo: '3'
   wind_type: D-grid
-test_framework_runtime_config: --log_level=test_suite
-trc_file: Data/fv3files/field_table
+  filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_akbk: 20170801.000000.fv_core.res.nc
+  ak_var: ak
+  bk_var: bk
 variables:
   variables:
   - u
