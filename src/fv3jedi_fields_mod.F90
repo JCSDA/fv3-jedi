@@ -25,7 +25,7 @@ use tracer_manager_mod, only: get_tracer_index, get_tracer_names
 
 use fv3jedi_fields_utils_mod
 use fv3jedi_fields_io_mod
-use fv3jedi_constants, only: deg2rad, constoz
+use fv3jedi_constants, only: constoz
 
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 
@@ -1071,8 +1071,8 @@ ic0a = 0
 do jy=self%geom%bd%jsc,self%geom%bd%jec
   do jx=self%geom%bd%isc,self%geom%bd%iec
     ic0a = ic0a+1
-    lon(ic0a) = deg2rad*self%geom%grid_lon(jx,jy)
-    lat(ic0a) = deg2rad*self%geom%grid_lat(jx,jy)
+    lon(ic0a) = self%geom%grid_lon(jx,jy)
+    lat(ic0a) = self%geom%grid_lat(jx,jy)
     area(ic0a) = self%geom%area(jx,jy)
   enddo
 enddo
