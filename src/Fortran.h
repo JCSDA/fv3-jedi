@@ -38,6 +38,8 @@ typedef int F90bmat;
 typedef int F90lclz;
 // ObOp trajectory
 typedef int F90ootrj;
+// ChangeVar key
+typedef int F90cvar;
 
 
 /// Interface to Fortran FV3JEDI model
@@ -157,6 +159,24 @@ extern "C" {
   void fv3jedi_b_invmult_f90(const F90bmat &, const F90flds &, const F90flds &);
 
   void fv3jedi_b_randomize_f90(const F90bmat &, const F90flds &);
+
+// -----------------------------------------------------------------------------
+//  Change variable for B matrix
+// -----------------------------------------------------------------------------
+
+  void fv3jedi_changevar_setup_f90(const F90cvar &,
+                                   const eckit::Configuration * const *);
+  void fv3jedi_changevar_delete_f90(F90cvar &);
+  void fv3jedi_changevar_linearize_f90(F90cvar &,const F90geom &,
+                                       const F90flds &);
+  void fv3jedi_changevar_transform_f90(const F90cvar &, const F90flds &,
+                                       const F90flds &);
+  void fv3jedi_changevar_transformadjoint_f90(const F90cvar &, const F90flds &,
+                                       const F90flds &);
+  void fv3jedi_changevar_transforminverse_f90(const F90cvar &, const F90flds &,
+                                       const F90flds &);
+  void fv3jedi_changevar_transforminverseadjoint_f90(const F90cvar &,
+                                              const F90flds &, const F90flds &);
 
 // -----------------------------------------------------------------------------
 //  Localization matrix

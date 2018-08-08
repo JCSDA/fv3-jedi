@@ -11,6 +11,8 @@
 #include <ostream>
 #include <string>
 
+#include "Fortran.h"
+#include "eckit/config/Configuration.h"
 #include "oops/util/Printable.h"
 
 // Forward declarations
@@ -44,6 +46,7 @@ class ChangeVarFV3JEDI: public util::Printable {
                                      IncrementFV3JEDI &) const;
 
  private:
+  F90cvar keyFtnConfig_;
   void print(std::ostream &) const override;
 };
 // -----------------------------------------------------------------------------
