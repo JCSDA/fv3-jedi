@@ -9,12 +9,19 @@ use fv3jedi_fields_mod, only: fv3jedi_field
 use fv3jedi_geom_mod,   only: fv3jedi_geom
 use iso_c_binding
 use config_mod
+use kinds
+
+use moisture_vt_mod, only: esinit
 
 implicit none
 
 !> Fortran derived type to hold configuration data for the B mat variable change
 type :: fv3jedi_changevar
-  integer :: nothing_yet
+ integer :: degsubs   = 100
+ real(8) :: tmintbl   = 150.0, tmaxtbl = 333.0
+ integer :: tablesize
+ real(8), allocatable :: estblx(:)
+ real(kind=kind_real), allocatable :: ttraj, qtraj, qsattraj
 end type fv3jedi_changevar
 
 #define LISTED_TYPE fv3jedi_changevar
@@ -38,6 +45,11 @@ implicit none
 type(fv3jedi_changevar), intent(inout) :: self    !< Change variable structure
 type(c_ptr),             intent(in)    :: c_conf  !< Configuration
 
+!Create lookup table for computing saturation specific humidity
+self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
+allocate(self%estblx(self%tablesize))
+call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)
+
 end subroutine fv3jedi_changevar_setup
 
 ! ------------------------------------------------------------------------------
@@ -46,6 +58,11 @@ subroutine fv3jedi_changevar_delete(self)
 
 implicit none
 type(fv3jedi_changevar), intent(inout) :: self
+
+if (allocated(self%estblx)) deallocate(self%estblx)
+if (allocated(self%ttraj)) deallocate(self%ttraj)
+if (allocated(self%qtraj)) deallocate(self%qtraj)
+if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
 end subroutine fv3jedi_changevar_delete
 

@@ -21,7 +21,6 @@ use mpp_mod,            only: mpp_pe, mpp_root_pe, mpp_npes, mpp_error, FATAL, N
 !Uses for generating geometry using FV3 routines
 use fv_arrays_mod,      only: fv_atmos_type, deallocate_fv_atmos_type
 use fv_control_mod,     only: fv_init, pelist_all
-use fv3jedi_constants,  only: rad2deg
 
 implicit none
 private
@@ -29,19 +28,6 @@ public :: fv3jedi_geom
 public :: fv3jedi_geom_registry
 
 ! ------------------------------------------------------------------------------
-
-!> Skinny version of fv_grid_type
-!type :: fv_grid_type
-!  real(kind=kind_real), allocatable, dimension(:,:,:) :: sin_sg
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: cosa_u
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: cosa_v
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: cosa_s
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: rsin_u
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: rsin_v
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: rsin2
-!  real(kind=kind_real), allocatable, dimension(:,:)   :: dxa, dya
-!  logical :: sw_corner, se_corner, ne_corner, nw_corner
-!endtype
 
 !> Skinny version of fv_grid_bounds_type
 type fv_grid_bounds_type
@@ -78,6 +64,30 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable :: area(:,:)          !Grid area
   real(kind=kind_real), allocatable :: ak(:),bk(:)        !Model level coefficients
   real(kind=kind_real) :: ptop                            !Pressure at top of domain
+  real(kind=kind_real), allocatable :: sin_sg(:,:,:)
+  real(kind=kind_real), allocatable :: cos_sg(:,:,:)
+  real(kind=kind_real), allocatable :: cosa_u(:,:)
+  real(kind=kind_real), allocatable :: cosa_v(:,:)
+  real(kind=kind_real), allocatable :: cosa_s(:,:)
+  real(kind=kind_real), allocatable :: rsin_u(:,:)
+  real(kind=kind_real), allocatable :: rsin_v(:,:)
+  real(kind=kind_real), allocatable :: rsin2(:,:)
+  real(kind=kind_real), allocatable :: dxa(:,:)
+  real(kind=kind_real), allocatable :: dya(:,:)
+  real(kind=kind_real), allocatable :: dx(:,:)
+  real(kind=kind_real), allocatable :: dy(:,:)
+  real(kind=kind_real), allocatable :: dxc(:,:)
+  real(kind=kind_real), allocatable :: dyc(:,:)
+  real(kind=kind_real), allocatable :: rarea(:,:)
+  real(kind=kind_real), allocatable :: rarea_c(:,:)
+  real(kind=kind_real), allocatable :: edge_w(:)
+  real(kind=kind_real), allocatable :: edge_e(:)
+  real(kind=kind_real), allocatable :: edge_s(:)
+  real(kind=kind_real), allocatable :: edge_n(:)
+  real(kind=kind_real), allocatable :: grid(:,:,:)
+  real(kind=kind_real), allocatable :: agrid(:,:,:)
+
+  logical :: sw_corner, se_corner, ne_corner, nw_corner
 end type fv3jedi_geom
 
 #define LISTED_TYPE fv3jedi_geom
@@ -202,10 +212,60 @@ allocate ( self%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) 
 allocate ( self%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
 
 self%area = FV_Atm(1)%gridstruct%area_64
-self%grid_lon = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
-self%grid_lat = rad2deg*real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
-self%egrid_lon = rad2deg*real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
-self%egrid_lat = rad2deg*real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
+self%grid_lon = real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
+self%grid_lat = real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
+self%egrid_lon = real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
+self%egrid_lat = real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
+
+allocate( self%sin_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
+allocate( self%cos_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
+allocate( self%cosa_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate( self%cosa_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate( self%cosa_s(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate( self%rsin_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate( self%rsin_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate(  self%rsin2(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(    self%dxa(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(    self%dya(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(     self%dx(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate(     self%dy(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate(    self%dxc(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed ))
+allocate(    self%dyc(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate(  self%rarea(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(self%rarea_c(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed+1))
+allocate(self%edge_s(self%npx))
+allocate(self%edge_n(self%npx))
+allocate(self%edge_w(self%npy))
+allocate(self%edge_e(self%npy))
+allocate(self%grid (self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed+1,1:2))
+allocate(self%agrid(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,1:2))
+
+self%sin_sg = Fv_Atm(1)%gridstruct%sin_sg
+self%cos_sg = Fv_Atm(1)%gridstruct%cos_sg
+self%cosa_u = Fv_Atm(1)%gridstruct%cosa_u
+self%cosa_v = Fv_Atm(1)%gridstruct%cosa_v
+self%cosa_s = Fv_Atm(1)%gridstruct%cosa_s
+self%rsin_u = Fv_Atm(1)%gridstruct%rsin_u
+self%rsin_v = Fv_Atm(1)%gridstruct%rsin_v
+self%rsin2 = Fv_Atm(1)%gridstruct%rsin2
+self%dxa = Fv_Atm(1)%gridstruct%dxa
+self%dya = Fv_Atm(1)%gridstruct%dya
+self%dx = Fv_Atm(1)%gridstruct%dx
+self%dy = Fv_Atm(1)%gridstruct%dy
+self%dxc = Fv_Atm(1)%gridstruct%dxc
+self%dyc = Fv_Atm(1)%gridstruct%dyc
+self%rarea = Fv_Atm(1)%gridstruct%rarea
+self%rarea_c = Fv_Atm(1)%gridstruct%rarea_c
+self%sw_corner = FV_Atm(1)%gridstruct%sw_corner
+self%se_corner = FV_Atm(1)%gridstruct%se_corner
+self%ne_corner = FV_Atm(1)%gridstruct%ne_corner
+self%nw_corner = FV_Atm(1)%gridstruct%nw_corner
+self%edge_s = FV_Atm(1)%gridstruct%edge_s
+self%edge_n = FV_Atm(1)%gridstruct%edge_n
+self%edge_w = FV_Atm(1)%gridstruct%edge_w
+self%edge_e = FV_Atm(1)%gridstruct%edge_e
+self%grid = FV_Atm(1)%gridstruct%grid
+self%agrid = FV_Atm(1)%gridstruct%agrid
 
 !ak and bk are read from file
 allocate ( self%ak(self%npz+1) )
@@ -292,6 +352,29 @@ allocate(other%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
 allocate(other%ak(self%npz+1))
 allocate(other%bk(self%npz+1))
 
+allocate( other%sin_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
+allocate( other%cos_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
+allocate( other%cosa_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate( other%cosa_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate( other%cosa_s(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate( other%rsin_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate( other%rsin_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate(  other%rsin2(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(    other%dxa(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(    other%dya(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(     other%dx(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate(     other%dy(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate(    other%dxc(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
+allocate(    other%dyc(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
+allocate(  other%rarea(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(other%rarea_c(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate(other%edge_s(self%npx))
+allocate(other%edge_n(self%npx))
+allocate(other%edge_w(self%npy))
+allocate(other%edge_e(self%npy))
+allocate(other%grid (self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed+1,1:2))
+allocate(other%agrid(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,1:2))
+
 other%npx             = self%npx
 other%npy             = self%npy
 other%npz             = self%npz
@@ -326,6 +409,33 @@ other%bk              = self%bk
 other%ptop            = self%ptop
 other%am_i_root_pe    = self%am_i_root_pe
 
+other%sin_sg = self%sin_sg
+other%cos_sg = self%cos_sg
+other%cosa_u = self%cosa_u
+other%cosa_v = self%cosa_v
+other%cosa_s = self%cosa_s
+other%rsin_u = self%rsin_u
+other%rsin_v = self%rsin_v
+other%rsin2 = self%rsin2
+other%dxa = self%dxa
+other%dya = self%dya
+other%dx = self%dx
+other%dy = self%dy
+other%dxc = self%dxc
+other%dyc = self%dyc
+other%rarea = self%rarea
+other%rarea_c = self%rarea_c
+other%sw_corner = self%sw_corner
+other%se_corner = self%se_corner
+other%ne_corner = self%ne_corner
+other%nw_corner = self%nw_corner
+other%edge_s = self%edge_s
+other%edge_n = self%edge_n
+other%edge_w = self%edge_w
+other%edge_e = self%edge_e
+other%grid   = self%grid
+other%agrid  = self%agrid
+
 call setup_domain( other%domain, other%size_cubic_grid, other%size_cubic_grid, &
                    other%ntiles, other%layout, other%io_layout, other%halo)
 
@@ -351,6 +461,30 @@ deallocate(self%egrid_lat)
 deallocate(self%area)
 deallocate(self%ak)
 deallocate(self%bk)
+
+deallocate(self%sin_sg)
+deallocate(self%cos_sg)
+deallocate(self%cosa_u)
+deallocate(self%cosa_v)
+deallocate(self%cosa_s)
+deallocate(self%rsin_u)
+deallocate(self%rsin_v)
+deallocate( self%rsin2)
+deallocate(   self%dxa)
+deallocate(   self%dya)
+deallocate(    self%dx)
+deallocate(    self%dy)
+deallocate(    self%dxc)
+deallocate(    self%dyc)
+deallocate( self%rarea)
+deallocate( self%rarea_c)
+deallocate(self%edge_s)
+deallocate(self%edge_n)
+deallocate(self%edge_w)
+deallocate(self%edge_e)
+deallocate(self%grid)
+deallocate(self%agrid)
+
 call mpp_deallocate_domain(self%domain)
 
 ! Remove key
