@@ -1,4 +1,6 @@
 list( APPEND fv3jedi_src_files
+ChangeVarFV3JEDI.cc
+ChangeVarFV3JEDI.h
 ErrorCovarianceFV3JEDI.cc
 ErrorCovarianceFV3JEDI.h
 FV3JEDITraits.h
