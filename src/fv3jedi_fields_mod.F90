@@ -1051,8 +1051,6 @@ implicit none
 type(fv3jedi_field), intent(in) :: self
 type(unstructured_grid), intent(inout) :: ug
 
-integer :: nf
-
 ! Set local number of points
 ug%nmga = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%geom%bd%jsc + 1)
 
@@ -1060,8 +1058,8 @@ ug%nmga = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%g
 ug%nl0 = self%geom%npz
 
 ! Set number of variables (should this come from self/vars?)
-nf = 5
-if (.not. self%geom%hydrostatic) nf = 7
+ug%nf = 5
+if (.not. self%geom%hydrostatic) ug%nf = 7
 
 ! Set number of timeslots
 ug%nts = 1
