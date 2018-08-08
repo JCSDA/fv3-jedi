@@ -148,12 +148,16 @@ void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
   fields_->getValuesAD(locs, vars, cols, traj);
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
-  fields_->convert_to(ug);
+void IncrementFV3JEDI::ug_coord(oops::UnstructuredGrid & ug) const {
+  fields_->ug_coord(ug);
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::convert_from(const oops::UnstructuredGrid & ug) {
-  fields_->convert_from(ug);
+void IncrementFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug) const {
+  fields_->field_to_ug(ug);
+}
+// -----------------------------------------------------------------------------
+void IncrementFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug) {
+  fields_->field_from_ug(ug);
 }
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics

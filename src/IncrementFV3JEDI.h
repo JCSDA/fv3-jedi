@@ -89,10 +89,10 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
   void getValuesAD(const ioda::Locations &, const oops::Variables &,
                    const ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &);
 
-/// Convert to/from generic unstructured grid
-  void define(oops::UnstructuredGrid &) const;
-  void convert_to(oops::UnstructuredGrid &) const;
-  void convert_from(const oops::UnstructuredGrid &);
+/// Unstructured grid
+  void ug_coord(oops::UnstructuredGrid &) const;
+  void field_to_ug(oops::UnstructuredGrid &) const;
+  void ug_to_field(const oops::UnstructuredGrid &);
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);

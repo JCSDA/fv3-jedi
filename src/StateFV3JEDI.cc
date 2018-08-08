@@ -121,16 +121,6 @@ StateFV3JEDI & StateFV3JEDI::operator+=(const IncrementFV3JEDI & dx) {
   return *this;
 }
 // -----------------------------------------------------------------------------
-/// Convert to/from unstructured grid
-// -----------------------------------------------------------------------------
-void StateFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
-  fields_->convert_to(ug);
-}
-// -----------------------------------------------------------------------------
-void StateFV3JEDI::convert_from(const oops::UnstructuredGrid & ug) {
-  fields_->convert_from(ug);
-}
-// -----------------------------------------------------------------------------
 /// I/O and diagnostics
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::read(const eckit::Configuration & files) {
