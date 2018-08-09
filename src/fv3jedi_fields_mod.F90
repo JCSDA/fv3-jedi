@@ -29,6 +29,8 @@ use fv3jedi_constants, only: rad2deg, constoz
 
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 
+use fv3jedi_vars_mod, only: fv3jedi_vars
+
 implicit none
 private
 
@@ -67,7 +69,22 @@ subroutine create(self, geom, vars)
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
-type(ufo_vars),  intent(in)    :: vars
+type(fv3jedi_vars),  intent(in)    :: vars
+
+integer :: isd,ied,jsd,jed,npz,nq
+integer :: var
+
+! Grid convenience
+isd = geom%bd%isd
+ied = geom%bd%ied
+jsd = geom%bd%jsd
+jed = geom%bd%jed
+npz = geom%npz
+nq  = geom%ntracers
+
+! Root proc flag
+self%root_pe = 0
+if (mpp_pe() == mpp_root_pe()) self%root_pe = 1
 
 ! Allocate main fields
 call allocate_fv_atmos_type(self%Atm, &
@@ -75,6 +92,45 @@ call allocate_fv_atmos_type(self%Atm, &
                             geom%bd%isc, geom%bd%iec, geom%bd%jsc, geom%bd%jec, &
                             geom%npz, geom%ntracers, &
                             geom%hydrostatic, geom%wind_type)
+
+! Copy the variable names
+self%vars%nv = vars%nv
+allocate(self%vars%fldnames(self%vars%nv))
+self%vars%fldnames = vars%fldnames
+
+! Allocate varialbes based on names
+do var = 1, self%vars%nv
+
+   if (self%root_pe == 1) print*, 'Allocating ', trim(self%vars%fldnames(var))
+
+   select case (trim(self%vars%fldnames(var)))
+
+     case("u")
+       if (.not.allocated(   self%Atm%u)) allocate (   self%Atm%u(isd:ied,  jsd:jed+1, npz    ))
+     case("v")
+       if (.not.allocated(   self%Atm%v)) allocate (   self%Atm%v(isd:ied+1,jsd:jed  , npz    ))
+     case("t","pt")
+       if (.not.allocated(  self%Atm%pt)) allocate (  self%Atm%pt(isd:ied,  jsd:jed  , npz    ))
+     case("delp")
+       if (.not.allocated(self%Atm%delp)) allocate (self%Atm%delp(isd:ied,  jsd:jed  , npz    ))
+     case("q")
+       if (.not.allocated(   self%Atm%q)) allocate (   self%Atm%q(isd:ied,  jsd:jed  , npz, nq))
+     case("psi")
+       if (.not.allocated( self%Atm%psi)) allocate ( self%Atm%psi(isd:ied,  jsd:jed  , npz    ))
+     case("chi")
+       if (.not.allocated( self%Atm%chi)) allocate ( self%Atm%chi(isd:ied,  jsd:jed  , npz    ))
+     case("tv")
+       if (.not.allocated(  self%Atm%tv)) allocate (  self%Atm%tv(isd:ied,  jsd:jed  , npz    ))
+     case("ps")
+       if (.not.allocated(  self%Atm%ps)) allocate (  self%Atm%ps(isd:ied,  jsd:jed           ))
+     case("qct")
+       if (.not.allocated( self%Atm%qct)) allocate ( self%Atm%qct(isd:ied,  jsd:jed  , npz, nq))
+     case default 
+       call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
+
+   end select
+
+enddo
 
 ! Pointer to geometry
 self%geom => geom
@@ -97,9 +153,6 @@ self%ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
 self%ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
 self%ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
 self%ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
-
-self%root_pe = 0
-if (mpp_pe() == mpp_root_pe()) self%root_pe = 1
 
 end subroutine create
 
@@ -388,28 +441,117 @@ integer :: ierr
 
 zp=0.0_kind_real
 
-!u,v,T,delp
-do k = 1,fld1%geom%npz
-  do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-    do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-      zp = zp + fld1%Atm%u   (i,j,k) * fld2%Atm%u   (i,j,k)
-      zp = zp + fld1%Atm%v   (i,j,k) * fld2%Atm%v   (i,j,k)
-      zp = zp + fld1%Atm%pt  (i,j,k) * fld2%Atm%pt  (i,j,k)
-      zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
-    enddo
-  enddo
-enddo
-
-!Tracers
-do l = 1,fld1%geom%ntracers
+!u
+if (allocated(fld1%Atm%u)) then
   do k = 1,fld1%geom%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-        zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
+        zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
       enddo
     enddo
   enddo
-enddo
+endif
+
+!v
+if (allocated(fld1%Atm%v)) then
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!pt
+if (allocated(fld1%Atm%pt)) then
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!delp
+if (allocated(fld1%Atm%delp)) then
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld1%Atm%q)) then
+  do l = 1,fld1%geom%ntracers
+    do k = 1,fld1%geom%npz
+      do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+        do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+          zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
+        enddo
+      enddo
+    enddo
+  enddo
+endif
+
+!psi
+if (allocated(fld1%Atm%psi)) then
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%psi(i,j,k) * fld2%Atm%psi(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!chi
+if (allocated(fld1%Atm%chi)) then
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%chi(i,j,k) * fld2%Atm%chi(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!tv
+if (allocated(fld1%Atm%tv)) then
+  do k = 1,fld1%geom%npz
+    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+        zp = zp + fld1%Atm%tv(i,j,k) * fld2%Atm%tv(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!ps
+if (allocated(fld1%Atm%ps)) then
+  do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+    do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+      zp = zp + fld1%Atm%ps(i,j) * fld2%Atm%ps(i,j)
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld1%Atm%qct)) then
+  do l = 1,fld1%geom%ntracers
+    do k = 1,fld1%geom%npz
+      do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
+        do i = fld1%geom%bd%isc,fld1%geom%bd%iec
+          zp = zp + fld1%Atm%qct(i,j,k,l) * fld2%Atm%qct(i,j,k,l)
+        enddo
+      enddo
+    enddo
+  enddo
+endif
 
 !Get global dot product
 call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)

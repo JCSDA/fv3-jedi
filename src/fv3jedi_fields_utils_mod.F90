@@ -8,9 +8,10 @@
 module fv3jedi_fields_utils_mod
 
 use kinds
-use mpp_mod,         only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
-use mpp_domains_mod, only: domain2D, mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
-use fv3jedi_geom_mod,only: fv3jedi_geom
+use mpp_mod,          only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
+use mpp_domains_mod,  only: domain2D, mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
+use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_vars_mod, only: fv3jedi_vars 
 
 implicit none
 private
@@ -62,6 +63,7 @@ end type fv_atmos_type
 !> Fortran derived type to hold FV3JEDI fields
 type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
+  type(fv3jedi_vars) :: vars 
   type(fv3jedi_geom), pointer :: geom
   integer :: nf
   integer :: isc, iec, jsc, jec
@@ -89,19 +91,6 @@ subroutine allocate_fv_atmos_type(Atm, isd, ied, jsd, jed, &
 
   Atm%hydrostatic = hydrostatic
 
-  if (trim(wind_type) == 'D-grid') then
-     if (.not.allocated(   Atm%u)) allocate (    Atm%u(isd:ied,   jsd:jed+1 , nz     ) )
-     if (.not.allocated(   Atm%v)) allocate (    Atm%v(isd:ied+1, jsd:jed   , nz     ) )
-  elseif (trim(wind_type) == 'A-grid') then
-     if (.not.allocated(   Atm%u)) allocate (    Atm%u(isd:ied, jsd:jed, nz     ) )
-     if (.not.allocated(   Atm%v)) allocate (    Atm%v(isd:ied, jsd:jed, nz     ) )
-  else
-     call abor1_ftn("module_fv3jedi: wind_type issue, must be either A-grid or D-grid")
-  endif
-
-  if (.not.allocated(  Atm%pt)) allocate (   Atm%pt(isd:ied,   jsd:jed   , nz     ) )
-  if (.not.allocated(Atm%delp)) allocate ( Atm%delp(isd:ied,   jsd:jed   , nz     ) )
-  if (.not.allocated(   Atm%q)) allocate (    Atm%q(isd:ied,   jsd:jed   , nz, nq ) )
   if (.not.allocated(Atm%phis)) allocate ( Atm%phis(isd:ied,   jsd:jed            ) )
 
   if (.not. hydrostatic) then

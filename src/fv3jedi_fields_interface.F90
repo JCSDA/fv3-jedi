@@ -9,7 +9,8 @@ subroutine fv3jedi_field_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='f
 use iso_c_binding
 use fv3jedi_fields_mod
 use fv3jedi_geom_mod
-use ufo_vars_mod
+use fv3jedi_vars_mod
+
 implicit none
 integer(c_int), intent(inout) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom !< Geometry
@@ -17,13 +18,14 @@ type(c_ptr), intent(in)    :: c_vars     !< List of variables
 
 type(fv3jedi_field), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
-type(ufo_vars) :: vars
+type(fv3jedi_vars) :: vars
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%init()
 call fv3jedi_field_registry%add(c_key_self)
 call fv3jedi_field_registry%get(c_key_self,self)
 
+call fv3jedi_vars_create(c_vars,vars)
 call create(self, geom, vars)
 
 end subroutine fv3jedi_field_create_c
