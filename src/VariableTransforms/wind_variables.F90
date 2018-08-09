@@ -14,9 +14,7 @@ use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds, only: kind_real
 
 implicit none
-private
-public sfc_10m_winds, uv_to_vortdivg, vortdivg_to_psichi, psichi_to_uava, psichi_to_udvd
-public psichi_to_udvd_adm, control_to_state_tlm, control_to_state_adm
+public
 
 contains
 
@@ -1874,116 +1872,6 @@ real(kind=kind_real) function extrap_corner ( p0, p1, p2, q1, q2 )
     q2_ad = q2_ad - temp_ad
   END SUBROUTINE EXTRAP_CORNER_ADM
 
-!----------------------------------------------------------------------------
-
-subroutine control_to_state_tlm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
-
-! use wind_vt_mod, only: psichi_to_udvd
- use tmprture_vt_mod, only: tv_to_t_tl
- use pressure_vt_mod, only: ps_to_delp_tl
- use moisture_vt_mod, only: q_to_rh_tl 
-
- implicit none
- type(fv3jedi_geom), intent(inout) :: geom
-
- !Input: control vector
- real(kind=kind_real), intent(inout) ::  psi(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) ::  chi(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(inout) ::   tv(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   ps(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed             ) !Surface pressure
- real(kind=kind_real), intent(inout) ::   qc(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity
-
- !Output: state/model vector
- real(kind=kind_real), intent(inout) ::    u(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::    v(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Dgrid winds (v)
- real(kind=kind_real), intent(inout) ::    t(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) :: delp(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Pressure thickness
- real(kind=kind_real), intent(inout) ::   qs(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity
- 
- !Trajectory for virtual temperature to temperature
- real(kind=kind_real), intent(in   ) ::  tvt(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !VTemperature traj
- real(kind=kind_real), intent(in   ) ::   qt(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity traj
- real(kind=kind_real), intent(in   ) :: qsat(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Sat spec hum
-
- u    = 0.0_kind_real
- v    = 0.0_kind_real
- t    = 0.0_kind_real
- delp = 0.0_kind_real
- qs   = 0.0_kind_real
-
- !psi and chi to D-grid u and v 
- !-----------------------------
- call psichi_to_udvd(geom,psi,chi,u,v)
-
- !Virtual temperature to temperature
- !----------------------------------
- call Tv_to_T_tl(geom,Tvt,Tv,qt,qc,T)
-
- !Ps to delp
- !----------
- call ps_to_delp_tl(geom,ps,delp)
-
- !Specific to relative humidity
- !-----------------------------
- call q_to_rh_tl(geom,qsat,qc,qs)
-
-endsubroutine control_to_state_tlm
-
 ! ------------------------------------------------------------------------------
-
-!> Control variables to state variables - Adjoint
-
-subroutine control_to_state_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
-
-! use wind_vt_mod, only: psichi_to_udvd_adm
- use tmprture_vt_mod, only: tv_to_t_ad
- use pressure_vt_mod, only: ps_to_delp_ad
- use moisture_vt_mod, only: q_to_rh_ad 
-
- implicit none
- type(fv3jedi_geom), intent(inout) :: geom
-
- !Input: control vector
- real(kind=kind_real), intent(inout) ::  psi(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) ::  chi(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(inout) ::   tv(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   ps(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed             ) !Surface pressure
- real(kind=kind_real), intent(inout) ::   qc(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity
-
- !Output: state/model vector
- real(kind=kind_real), intent(inout) ::    u(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::    v(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Dgrid winds (v)
- real(kind=kind_real), intent(inout) ::    t(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) :: delp(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Pressure thickness
- real(kind=kind_real), intent(inout) ::   qs(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity
- 
- !Trajectory for virtual temperature to temperature
- real(kind=kind_real), intent(in   ) ::  tvt(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !VTemperature traj
- real(kind=kind_real), intent(in   ) ::   qt(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity traj
- real(kind=kind_real), intent(in   ) :: qsat(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Sat spec hum
-
- psi = 0.0_kind_real
- chi = 0.0_kind_real
- tv  = 0.0_kind_real
- ps  = 0.0_kind_real
- qc  = 0.0_kind_real
-
- !Specific to relative humidity
- !-----------------------------
- call q_to_rh_ad(geom,qsat,qc,qs)
-
- !Ps to delp
- !----------
- call ps_to_delp_ad(geom,ps,delp)
-
- !Virtual temperature to temperature
- !----------------------------------
- call Tv_to_T_ad(geom,Tvt,Tv,qt,qc,T)
-
- !psi and chi to D-grid u and v 
- !-----------------------------
- call psichi_to_udvd_adm(geom,psi,chi,u,v)
-
-endsubroutine control_to_state_adm
 
 end module wind_vt_mod

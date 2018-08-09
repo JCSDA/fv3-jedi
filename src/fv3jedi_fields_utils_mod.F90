@@ -37,6 +37,7 @@ type fv_atmos_type
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: chi    ! Velocity potential
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: tv     ! Virtual temperature
   real(kind=kind_real), allocatable, dimension(:,:)     :: ps     ! Surface temperature
+  real(kind=kind_real), allocatable, dimension(:,:,:,:) :: qct    ! Tracer control variables
 
   integer :: calendar_type
   integer, dimension(6) :: date
@@ -125,12 +126,15 @@ subroutine allocate_fv_atmos_type(Atm, isd, ied, jsd, jed, &
   if (.not.allocated(Atm%f10m  )) allocate(Atm%f10m  (isd:ied,jsd:jed))
 
   !Control variables for B, co-located A-Grid
+  if (.not.allocated(Atm%psi)) allocate (Atm%psi(isd:ied,jsd:jed,nz))
+  if (.not.allocated(Atm%chi)) allocate (Atm%chi(isd:ied,jsd:jed,nz))
+  if (.not.allocated(Atm%tv )) allocate (Atm%tv (isd:ied,jsd:jed,nz))
+  if (.not.allocated(Atm%ps )) allocate (Atm%ps (isd:ied,jsd:jed   ))
+  if (.not.allocated(Atm%qct)) allocate (Atm%qct(isd:ied,jsd:jed,nz,nq))
+
+  !For computing statistical balance (u,v->v,d->psichi
   if (.not.allocated(Atm%vort)) allocate (Atm%vort(isd:ied,jsd:jed,nz))
   if (.not.allocated(Atm%divg)) allocate (Atm%divg(isd:ied,jsd:jed,nz))
-  if (.not.allocated(Atm%psi )) allocate (Atm%psi (isd:ied,jsd:jed,nz))
-  if (.not.allocated(Atm%chi )) allocate (Atm%chi (isd:ied,jsd:jed,nz))
-  if (.not.allocated(Atm%tv  )) allocate (Atm%tv  (isd:ied,jsd:jed,nz))
-  if (.not.allocated(Atm%ps  )) allocate (Atm%ps  (isd:ied,jsd:jed   ))
 
 end subroutine allocate_fv_atmos_type
 

@@ -137,6 +137,7 @@ if (allocated(self%Atm%psi )) deallocate(self%Atm%psi )
 if (allocated(self%Atm%chi )) deallocate(self%Atm%chi )
 if (allocated(self%Atm%tv  )) deallocate(self%Atm%tv  )
 if (allocated(self%Atm%ps  )) deallocate(self%Atm%ps  )
+if (allocated(self%Atm%qct )) deallocate(self%Atm%qct )
 
 end subroutine delete
 
@@ -266,6 +267,7 @@ self%Atm%psi  = rhs%Atm%psi
 self%Atm%chi  = rhs%Atm%chi 
 self%Atm%tv   = rhs%Atm%tv 
 self%Atm%ps   = rhs%Atm%ps 
+self%Atm%qct  = rhs%Atm%qct
 
 return
 end subroutine copy
