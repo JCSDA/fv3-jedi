@@ -46,6 +46,7 @@ fv3jedi_model_interface.F90
 fv3jedi_model_mod.F90
 fv3jedi_setup.f90
 fv3jedi_trajectories.F90
+fv3jedi_vars_mod.F90
 instantiateLocalizationFactory.h
 random_vectors_mod.F90
 VariableTransforms/wind_variables.F90
