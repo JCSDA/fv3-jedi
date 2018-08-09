@@ -43,8 +43,11 @@ StateTest:
     nml_file: Data/fv3files/input_geos_c48.nml
     trc_file: Data/fv3files/field_table
     variables:
-    - virtual_temperature
-    - atmosphere_ln_pressure_coordinate
+    - u
+    - v
+    - t
+    - delp
+    - q
   InterpTest:
     variables:
     - virtual_temperature
