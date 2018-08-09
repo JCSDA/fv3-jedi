@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "ChangeVarFV3JEDI.h"
 #include "ErrorCovarianceFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
@@ -43,6 +44,7 @@ struct FV3JEDITraits {
   typedef fv3jedi::ModelFV3JEDI                Model;
   typedef fv3jedi::IncrementFV3JEDI            Increment;
   typedef fv3jedi::ErrorCovarianceFV3JEDI      Covariance;
+  typedef fv3jedi::ChangeVarFV3JEDI            ChangeVar;
 
   typedef fv3jedi::ModelBiasFV3JEDI            ModelAuxControl;
   typedef fv3jedi::ModelBiasIncrementFV3JEDI   ModelAuxIncrement;

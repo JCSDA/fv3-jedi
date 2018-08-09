@@ -1,4 +1,6 @@
 list( APPEND fv3jedi_src_files
+ChangeVarFV3JEDI.cc
+ChangeVarFV3JEDI.h
 ErrorCovarianceFV3JEDI.cc
 ErrorCovarianceFV3JEDI.h
 FV3JEDITraits.h
@@ -29,6 +31,8 @@ TlmIdFV3JEDI.h
 UtilitiesFV3JEDI.cc
 UtilitiesFV3JEDI.h
 fv3jedi_constants.f90
+fv3jedi_changevar_interface.F90
+fv3jedi_changevar_mod.F90
 fv3jedi_covariance_interface.F90
 fv3jedi_covariance_mod.F90
 fv3jedi_fields_interface.F90

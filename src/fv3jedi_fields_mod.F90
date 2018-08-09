@@ -25,7 +25,7 @@ use tracer_manager_mod, only: get_tracer_index, get_tracer_names
 
 use fv3jedi_fields_utils_mod
 use fv3jedi_fields_io_mod
-use fv3jedi_constants, only: constoz
+use fv3jedi_constants, only: rad2deg, constoz
 
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 
@@ -130,6 +130,14 @@ if (allocated(self%Atm%u_srf )) deallocate(self%Atm%snwdph)
 if (allocated(self%Atm%u_srf )) deallocate(self%Atm%u_srf )
 if (allocated(self%Atm%v_srf )) deallocate(self%Atm%v_srf )
 if (allocated(self%Atm%f10m  )) deallocate(self%Atm%f10m  )
+
+if (allocated(self%Atm%vort)) deallocate(self%Atm%vort)
+if (allocated(self%Atm%divg)) deallocate(self%Atm%divg)
+if (allocated(self%Atm%psi )) deallocate(self%Atm%psi )
+if (allocated(self%Atm%chi )) deallocate(self%Atm%chi )
+if (allocated(self%Atm%tv  )) deallocate(self%Atm%tv  )
+if (allocated(self%Atm%ps  )) deallocate(self%Atm%ps  )
+if (allocated(self%Atm%qct )) deallocate(self%Atm%qct )
 
 end subroutine delete
 
@@ -253,6 +261,13 @@ self%ti_ql = rhs%ti_ql
 self%ti_qi = rhs%ti_qi
 self%ti_o3 = rhs%ti_o3
 
+self%Atm%vort = rhs%Atm%vort
+self%Atm%divg = rhs%Atm%divg
+self%Atm%psi  = rhs%Atm%psi 
+self%Atm%chi  = rhs%Atm%chi 
+self%Atm%tv   = rhs%Atm%tv 
+self%Atm%ps   = rhs%Atm%ps 
+self%Atm%qct  = rhs%Atm%qct
 
 return
 end subroutine copy
@@ -540,7 +555,6 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   character(len=20) :: sdate
   character(len=1024) :: buf
   Integer :: i,j,k
-  real(kind=kind_real) :: deg_to_rad = pi/180.0_kind_real
   real(kind=kind_real) :: rlat, rlon, z
   real(kind=kind_real) :: pk,pe1,pe2,ps
   real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
@@ -620,8 +634,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
@@ -657,8 +671,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
@@ -691,8 +705,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test3_gravity_wave(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
@@ -724,8 +738,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,1,u0,v0,w0,&
@@ -2197,12 +2211,12 @@ mod_num = (geom%bd%iec - geom%bd%isc + 1) * (geom%bd%jec - geom%bd%jsc + 1)
 !Calculate interpolation weight using BUMP
 !-----------------------------------------
 allocate( mod_lat(mod_num), mod_lon(mod_num) )
-mod_lat = reshape( geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
-                                 geom%bd%jsc:geom%bd%jec),     &
-                                [mod_num] )  
-mod_lon = reshape( geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
-                                 geom%bd%jsc:geom%bd%jec),     &
-                                [mod_num] ) - 180.0_kind_real
+mod_lat = reshape( rad2deg*geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
+                                         geom%bd%jsc:geom%bd%jec),     &
+                                        [mod_num] )  
+mod_lon = reshape( rad2deg*geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
+                                         geom%bd%jsc:geom%bd%jec),     &
+                                        [mod_num] ) - 180.0_kind_real
 
 !Important namelist options
 call bump%nam%init
