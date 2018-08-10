@@ -101,8 +101,6 @@ self%vars%fldnames = vars%fldnames
 ! Allocate varialbes based on names
 do var = 1, self%vars%nv
 
-   if (self%root_pe == 1) print*, 'Allocating ', trim(self%vars%fldnames(var))
-
    select case (trim(self%vars%fldnames(var)))
 
      case("u")
@@ -147,12 +145,19 @@ self%isc = geom%bd%isc
 self%iec = geom%bd%iec
 self%jsc = geom%bd%jsc
 self%jec = geom%bd%jec
+self%isd = geom%bd%isd
+self%ied = geom%bd%ied
+self%jsd = geom%bd%jsd
+self%jed = geom%bd%jed
+self%npz = geom%npz
 
 ! Index in q for the required tracers
 self%ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
 self%ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
 self%ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
 self%ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
+
+print*, 'self%geom%npz', self%geom%npz
 
 end subroutine create
 
@@ -202,15 +207,21 @@ type(fv3jedi_field), intent(inout) :: self
 
 !Zero out the entire domain
 
-self%Atm%u = 0.0_kind_real
-self%Atm%v = 0.0_kind_real
-self%Atm%pt = 0.0_kind_real
-self%Atm%delp = 0.0_kind_real
-self%Atm%q = 0.0_kind_real
-if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = 0.0_kind_real
-   self%Atm%delz = 0.0_kind_real
-endif
+!Model
+if(allocated(self%Atm%u   )) self%Atm%u    = 0.0_kind_real
+if(allocated(self%Atm%v   )) self%Atm%v    = 0.0_kind_real
+if(allocated(self%Atm%pt  )) self%Atm%pt   = 0.0_kind_real
+if(allocated(self%Atm%delp)) self%Atm%delp = 0.0_kind_real
+if(allocated(self%Atm%q   )) self%Atm%q    = 0.0_kind_real
+if(allocated(self%Atm%w   )) self%Atm%w    = 0.0_kind_real
+if(allocated(self%Atm%delz)) self%Atm%delz = 0.0_kind_real
+
+!Control
+if(allocated(self%Atm%psi)) self%Atm%psi = 0.0_kind_real
+if(allocated(self%Atm%chi)) self%Atm%chi = 0.0_kind_real
+if(allocated(self%Atm%tv )) self%Atm%tv  = 0.0_kind_real
+if(allocated(self%Atm%ps )) self%Atm%ps  = 0.0_kind_real
+if(allocated(self%Atm%qct)) self%Atm%qct = 0.0_kind_real
 
 end subroutine zeros
 
@@ -222,15 +233,21 @@ type(fv3jedi_field), intent(inout) :: self
 
 call zeros(self)
 
-self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = 1.0_kind_real
-if (.not. self%Atm%hydrostatic) then
-   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-endif
+!Model
+if(allocated(self%Atm%u   )) self%Atm%u   (self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%v   )) self%Atm%v   (self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%pt  )) self%Atm%pt  (self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%delp)) self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%q   )) self%Atm%q   (self%isc:self%iec,self%jsc:self%jec,:,:) = 1.0_kind_real
+if(allocated(self%Atm%w   )) self%Atm%w   (self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%delz)) self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+
+!Control
+if(allocated(self%Atm%psi)) self%Atm%psi(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%chi)) self%Atm%chi(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%tv )) self%Atm%tv (self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
+if(allocated(self%Atm%ps )) self%Atm%ps (self%isc:self%iec,self%jsc:self%jec  ) = 1.0_kind_real
+if(allocated(self%Atm%qct)) self%Atm%qct(self%isc:self%iec,self%jsc:self%jec,:,:) = 1.0_kind_real
 
 end subroutine ones
 
@@ -242,16 +259,37 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 integer :: nq
 
-call random_vector(self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:))
-call random_vector(self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:))
-call random_vector(self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:))
-call random_vector(self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:))
-do nq = 1,self%geom%ntracers
-   call random_vector(self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,nq))
-enddo
-if (.not. self%Atm%hydrostatic) then
+if(allocated(self%Atm%u   )) &
+  call random_vector(self%Atm%u   (self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%v   )) &
+  call random_vector(self%Atm%v   (self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%pt  )) &
+  call random_vector(self%Atm%pt  (self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%delp)) &
+  call random_vector(self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%q   )) then
+  do nq = 1,self%geom%ntracers
+     call random_vector(self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,nq))
+  enddo
+endif
+if(allocated(self%Atm%w   )) &
    call random_vector(self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%delz)) &
    call random_vector(self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:))
+
+!Control
+if(allocated(self%Atm%psi))  &
+  call random_vector(self%Atm%psi(self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%chi))  &
+  call random_vector(self%Atm%chi(self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%tv ))  &
+  call random_vector(self%Atm%tv (self%isc:self%iec,self%jsc:self%jec,:))
+if(allocated(self%Atm%ps ))  &
+  call random_vector(self%Atm%ps (self%isc:self%iec,self%jsc:self%jec  ))
+if(allocated(self%Atm%qct))  then
+  do nq = 1,self%geom%ntracers
+     call random_vector(self%Atm%qct(self%isc:self%iec,self%jsc:self%jec,:,nq))
+  enddo
 endif
 
 end subroutine random
@@ -263,17 +301,41 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%hydrostatic = rhs%Atm%hydrostatic
+integer :: isc,iec,jsc,jec
 
-self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
-if (.not. self%Atm%hydrostatic) then
-   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
-   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
-endif
+isc = self%isc
+iec = self%iec
+jsc = self%jsc
+jec = self%jec
+
+if(allocated(self%Atm%u   )) &
+  self%Atm%u(isc:iec,jsc:jec,:) = rhs%Atm%u(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%v   )) &
+  self%Atm%v(isc:iec,jsc:jec,:) = rhs%Atm%v(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%pt  )) &
+  self%Atm%pt(isc:iec,jsc:jec,:) = rhs%Atm%pt(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%delp)) &
+  self%Atm%delp(isc:iec,jsc:jec,:) = rhs%Atm%delp(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%q   )) &
+  self%Atm%q(isc:iec,jsc:jec,:,:) = rhs%Atm%q(isc:iec,jsc:jec,:,:)
+if(allocated(self%Atm%w   )) &
+  self%Atm%w(isc:iec,jsc:jec,:) = rhs%Atm%w(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%delz)) &
+  self%Atm%delz(isc:iec,jsc:jec,:) = rhs%Atm%delz(isc:iec,jsc:jec,:)
+
+!Control
+if(allocated(self%Atm%psi))  &
+  self%Atm%psi(isc:iec,jsc:jec,:) = rhs%Atm%psi(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%chi))  &
+  self%Atm%chi(isc:iec,jsc:jec,:) = rhs%Atm%chi(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%tv ))  &
+  self%Atm%tv(isc:iec,jsc:jec,:) = rhs%Atm%tv(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%ps ))  &
+  self%Atm%ps(isc:iec,jsc:jec) = rhs%Atm%ps(isc:iec,jsc:jec)
+if(allocated(self%Atm%qct))  & 
+  self%Atm%qct(isc:iec,jsc:jec,:,:) = rhs%Atm%qct(isc:iec,jsc:jec,:,:)
+
+
 self%Atm%phis(self%isc:self%iec,self%jsc:self%jec) = rhs%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
 
 self%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:)
@@ -316,11 +378,6 @@ self%ti_o3 = rhs%ti_o3
 
 self%Atm%vort = rhs%Atm%vort
 self%Atm%divg = rhs%Atm%divg
-self%Atm%psi  = rhs%Atm%psi 
-self%Atm%chi  = rhs%Atm%chi 
-self%Atm%tv   = rhs%Atm%tv 
-self%Atm%ps   = rhs%Atm%ps 
-self%Atm%qct  = rhs%Atm%qct
 
 return
 end subroutine copy
@@ -430,7 +487,7 @@ end subroutine axpy
 
 subroutine dot_prod(fld1,fld2,zprod)
 
-use mpi,             only: mpi_real8,mpi_comm_world,mpi_sum
+use mpi, only: mpi_real8, mpi_comm_world, mpi_sum
 
 implicit none
 type(fv3jedi_field), intent(in) :: fld1, fld2
@@ -443,7 +500,7 @@ zp=0.0_kind_real
 
 !u
 if (allocated(fld1%Atm%u)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
@@ -454,7 +511,7 @@ endif
 
 !v
 if (allocated(fld1%Atm%v)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
@@ -465,7 +522,7 @@ endif
 
 !pt
 if (allocated(fld1%Atm%pt)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
@@ -476,7 +533,7 @@ endif
 
 !delp
 if (allocated(fld1%Atm%delp)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
@@ -500,7 +557,7 @@ endif
 
 !psi
 if (allocated(fld1%Atm%psi)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%psi(i,j,k) * fld2%Atm%psi(i,j,k)
@@ -511,7 +568,7 @@ endif
 
 !chi
 if (allocated(fld1%Atm%chi)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%chi(i,j,k) * fld2%Atm%chi(i,j,k)
@@ -522,7 +579,7 @@ endif
 
 !tv
 if (allocated(fld1%Atm%tv)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%tv(i,j,k) * fld2%Atm%tv(i,j,k)
@@ -543,7 +600,7 @@ endif
 !q Tracers
 if (allocated(fld1%Atm%qct)) then
   do l = 1,fld1%geom%ntracers
-    do k = 1,fld1%geom%npz
+    do k = 1,fld1%npz
       do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
         do i = fld1%geom%bd%isc,fld1%geom%bd%iec
           zp = zp + fld1%Atm%qct(i,j,k,l) * fld2%Atm%qct(i,j,k,l)
@@ -1087,28 +1144,135 @@ implicit none
 type(fv3jedi_field), intent(in) :: fld
 real(kind=kind_real), intent(out) :: prms
 real(kind=kind_real) :: zz
-integer jx,jy,jz,ii,nt,ierr,npes,iisum
+integer i,j,k,l,ii,nt,ierr,npes,iisum
 
 zz = 0.0_kind_real
 prms = 0.0_kind_real
 ii = 0
 
-do jy=fld%geom%bd%jsc,fld%geom%bd%jec
-   do jx=fld%geom%bd%isc,fld%geom%bd%iec
-      do jz=1,fld%geom%npz
-         zz = zz + fld%Atm%pt(jx,jy,jz)**2
-         zz = zz + fld%Atm%delp(jx,jy,jz)**2
-         if (.not. fld%Atm%hydrostatic) then
-            zz = zz + fld%Atm%w(jx,jy,jz)**2
-            zz = zz + fld%Atm%delz(jx,jy,jz)**2
-         endif
-         do nt=1,fld%geom%ntracers
-            zz = zz + fld%Atm%q(jx,jy,jz,nt)**2
-         enddo
-         ii = ii + 1
+print*, 'issue', fld%npz, fld%geom%bd%jsc,fld%geom%bd%jec
+
+!u
+if (allocated(fld%Atm%u)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%u(i,j,k)**2
+        ii = ii + 1
       enddo
-   enddo
-enddo
+    enddo
+  enddo
+endif
+
+!v
+if (allocated(fld%Atm%v)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%v(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!pt
+if (allocated(fld%Atm%pt)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%pt(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!delp
+if (allocated(fld%Atm%delp)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%delp(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld%Atm%q)) then
+  do l = 1,fld%geom%ntracers
+    do k = 1,fld%npz
+      do j = fld%geom%bd%jsc,fld%geom%bd%jec
+        do i = fld%geom%bd%isc,fld%geom%bd%iec
+          zz = zz + fld%Atm%q(i,j,k,l)**2
+          ii = ii + 1
+        enddo
+      enddo
+    enddo
+  enddo
+endif
+
+!psi
+if (allocated(fld%Atm%psi)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%psi(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!chi
+if (allocated(fld%Atm%chi)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%chi(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!tv
+if (allocated(fld%Atm%tv)) then
+  do k = 1,fld%npz
+    do j = fld%geom%bd%jsc,fld%geom%bd%jec
+      do i = fld%geom%bd%isc,fld%geom%bd%iec
+        zz = zz + fld%Atm%tv(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!ps
+if (allocated(fld%Atm%ps)) then
+  do j = fld%geom%bd%jsc,fld%geom%bd%jec
+    do i = fld%geom%bd%isc,fld%geom%bd%iec
+      zz = zz + fld%Atm%ps(i,j)**2
+      ii = ii + 1
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld%Atm%qct)) then
+  do l = 1,fld%geom%ntracers
+    do k = 1,fld%npz
+      do j = fld%geom%bd%jsc,fld%geom%bd%jec
+        do i = fld%geom%bd%isc,fld%geom%bd%iec
+          zz = zz + fld%Atm%qct(i,j,k,l)**2
+          ii = ii + 1
+        enddo
+      enddo
+    enddo
+  enddo
+endif
 
 !Get global values
 call mpi_allreduce(zz,prms,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
@@ -1180,8 +1344,8 @@ do idir=1,ndir
 
    ! is specified grid point, tile number on this processor
    if (self%geom%ntile == itiledir .and. &
-       ixdir(idir) >= self%geom%bd%isc .and. ixdir(idir) <= self%geom%bd%iec .and. &
-       iydir(idir) >= self%geom%bd%jsc .and. iydir(idir) <= self%geom%bd%jec) then
+       ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
+       iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
        ! If so, perturb desired field and level
        if (ifdir == 1) then
           self%Atm%u(ixdir(idir),iydir(idir),ildir) = 1.0
@@ -1209,11 +1373,11 @@ type(unstructured_grid), intent(inout) :: ug
 
 integer :: nmga,ic0a,jx,jy,jl,nf
 integer,allocatable :: imask(:,:)
-real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:)
+real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:),ptmp(:,:,:)
 real(kind=kind_real) :: sigmaup,sigmadn
 
 ! Define local number of gridpoints
-nmga = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%geom%bd%jsc + 1)
+nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
 
 ! Allocation
 allocate(lon(nmga))
@@ -1224,8 +1388,8 @@ allocate(imask(nmga,self%geom%npz))
 
 ! Copy coordinates
 ic0a = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
+do jy=self%jsc,self%jec
+  do jx=self%isc,self%iec
     ic0a = ic0a+1
     lon(ic0a) = self%geom%grid_lon(jx,jy)
     lat(ic0a) = self%geom%grid_lat(jx,jy)
@@ -1242,28 +1406,59 @@ do jl=1,self%geom%npz
 enddo
 
 ! Should this come from self/vars?
-nf = 5
-if (.not. self%geom%hydrostatic) nf = 7
+nf = 8
 
 ! Create unstructured grid
 call create_unstructured_grid(ug, nmga, self%geom%npz, nf, 1, lon, lat, area, vunit, imask)
 
 ! Copy field
-ic0a = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
-    ic0a = ic0a+1
-    do jl=1,self%geom%npz
-        ug%fld(ic0a,jl,1,1) = self%Atm%u(jx,jy,jl)
-        ug%fld(ic0a,jl,2,1) = self%Atm%v(jx,jy,jl)
-        ug%fld(ic0a,jl,3,1) = self%Atm%pt(jx,jy,jl)
-        ug%fld(ic0a,jl,4,1) = self%Atm%q(jx,jy,jl,1)
-        ug%fld(ic0a,jl,5,1) = self%Atm%delp(jx,jy,jl)
-        if (.not. self%geom%hydrostatic) ug%fld(ic0a,jl,6,1) = self%Atm%w(jx,jy,jl)
-        if (.not. self%geom%hydrostatic) ug%fld(ic0a,jl,7,1) = self%Atm%delz(jx,jy,jl)
+
+if (allocated(self%Atm%u)) then
+
+  ic0a = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      ic0a = ic0a+1
+      do jl=1,self%geom%npz
+          ug%fld(ic0a,jl,1,1) = self%Atm%u   (jx,jy,jl)
+          ug%fld(ic0a,jl,2,1) = self%Atm%v   (jx,jy,jl)
+          ug%fld(ic0a,jl,3,1) = self%Atm%pt  (jx,jy,jl)
+          ug%fld(ic0a,jl,4,1) = self%Atm%delp(jx,jy,jl)
+          ug%fld(ic0a,jl,5,1) = self%Atm%q   (jx,jy,jl,1)
+          ug%fld(ic0a,jl,6,1) = self%Atm%q   (jx,jy,jl,2)
+          ug%fld(ic0a,jl,7,1) = self%Atm%q   (jx,jy,jl,3)
+          ug%fld(ic0a,jl,8,1) = self%Atm%q   (jx,jy,jl,4)
+      enddo
     enddo
   enddo
-enddo
+
+elseif (allocated(self%Atm%psi)) then
+
+  allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%geom%npz))
+  
+  ptmp = 0.0
+  ptmp(:,:,self%geom%npz) = self%Atm%ps(self%isc:self%iec,self%jsc:self%jec)
+
+  ic0a = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      ic0a = ic0a+1
+      do jl=1,self%geom%npz
+          ug%fld(ic0a,jl,1,1) = self%Atm%psi (jx,jy,jl)
+          ug%fld(ic0a,jl,2,1) = self%Atm%chi (jx,jy,jl)
+          ug%fld(ic0a,jl,3,1) = self%Atm%tv  (jx,jy,jl)
+          ug%fld(ic0a,jl,4,1) = ptmp         (jx,jy,jl)
+          ug%fld(ic0a,jl,5,1) = self%Atm%qct (jx,jy,jl,1)
+          ug%fld(ic0a,jl,6,1) = self%Atm%qct (jx,jy,jl,2)
+          ug%fld(ic0a,jl,7,1) = self%Atm%qct (jx,jy,jl,3)
+          ug%fld(ic0a,jl,8,1) = self%Atm%qct (jx,jy,jl,4)
+      enddo
+    enddo
+  enddo
+
+  deallocate(ptmp)
+
+endif
 
 end subroutine convert_to_ug
 
@@ -1276,23 +1471,54 @@ type(fv3jedi_field), intent(inout) :: self
 type(unstructured_grid), intent(in) :: ug
 
 integer :: ic0a,jx,jy,jl
+real(kind=kind_real),allocatable :: ptmp(:,:,:)
 
-! Copy field
-ic0a = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
-    ic0a = ic0a+1
-    do jl=1,self%geom%npz
-        self%Atm%u(jx,jy,jl)    = ug%fld(ic0a,jl,1,1)
-        self%Atm%v(jx,jy,jl)    = ug%fld(ic0a,jl,2,1)
-        self%Atm%pt(jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
-        self%Atm%q(jx,jy,jl,1)  = ug%fld(ic0a,jl,4,1)
-        self%Atm%delp(jx,jy,jl) = ug%fld(ic0a,jl,5,1)
-        if (.not. self%geom%hydrostatic) self%Atm%w(jx,jy,jl) = ug%fld(ic0a,jl,6,1)
-        if (.not. self%geom%hydrostatic) self%Atm%delz(jx,jy,jl) = ug%fld(ic0a,jl,7,1)
+if (allocated(self%Atm%u)) then
+
+  ! Copy field
+  ic0a = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      ic0a = ic0a+1
+      do jl=1,self%geom%npz
+          self%Atm%u   (jx,jy,jl)   = ug%fld(ic0a,jl,1,1)
+          self%Atm%v   (jx,jy,jl)   = ug%fld(ic0a,jl,2,1)
+          self%Atm%pt  (jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
+          self%Atm%delp(jx,jy,jl)   = ug%fld(ic0a,jl,4,1)
+          self%Atm%q   (jx,jy,jl,1) = ug%fld(ic0a,jl,5,1)
+          self%Atm%q   (jx,jy,jl,2) = ug%fld(ic0a,jl,6,1)
+          self%Atm%q   (jx,jy,jl,3) = ug%fld(ic0a,jl,7,1)
+          self%Atm%q   (jx,jy,jl,4) = ug%fld(ic0a,jl,8,1)
+      enddo
     enddo
   enddo
-enddo
+
+elseif (allocated(self%Atm%psi)) then
+
+  allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%geom%npz))
+
+  ic0a = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      ic0a = ic0a+1
+      do jl=1,self%geom%npz
+          self%Atm%psi (jx,jy,jl)   = ug%fld(ic0a,jl,1,1)
+          self%Atm%chi (jx,jy,jl)   = ug%fld(ic0a,jl,2,1)
+          self%Atm%tv  (jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
+          ptmp         (jx,jy,jl)   = ug%fld(ic0a,jl,4,1)
+          self%Atm%qct (jx,jy,jl,1) = ug%fld(ic0a,jl,5,1)
+          self%Atm%qct (jx,jy,jl,2) = ug%fld(ic0a,jl,6,1)
+          self%Atm%qct (jx,jy,jl,3) = ug%fld(ic0a,jl,7,1)
+          self%Atm%qct (jx,jy,jl,4) = ug%fld(ic0a,jl,8,1)
+      enddo
+    enddo
+  enddo
+
+  self%Atm%ps(self%isc:self%iec,self%jsc:self%jec) = ptmp(:,:,self%geom%npz)
+
+  deallocate(ptmp)
+
+endif
 
 end subroutine convert_from_ug
 
