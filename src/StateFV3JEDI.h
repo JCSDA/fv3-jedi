@@ -73,10 +73,6 @@ class StateFV3JEDI : public util::Printable,
 /// Interactions with Increment
   StateFV3JEDI & operator+=(const IncrementFV3JEDI &);
 
-/// Convert to/from generic unstructured grid
-  void convert_to(oops::UnstructuredGrid &) const;
-  void convert_from(const oops::UnstructuredGrid &);
-
 /// I/O and diagnostics
   void read(const eckit::Configuration &);
   void analytic_init(const eckit::Configuration &, const GeometryFV3JEDI &);

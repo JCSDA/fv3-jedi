@@ -39,7 +39,7 @@ public :: create, delete, zeros, random, copy, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, fldrms, &
           change_resol, getvalues, getvalues_tl, getvalues_ad, &
-          convert_to_ug, convert_from_ug, dirac, &
+          ug_coord, field_to_ug, field_from_ug, dirac, &
           analytic_IC
 
 public :: fv3jedi_field
@@ -1365,69 +1365,97 @@ end subroutine dirac
 
 ! ------------------------------------------------------------------------------
 
-subroutine convert_to_ug(self, ug)
+subroutine ug_size(self, ug)
 use unstructured_grid_mod
 implicit none
 type(fv3jedi_field), intent(in) :: self
 type(unstructured_grid), intent(inout) :: ug
 
-integer :: nmga,ic0a,jx,jy,jl,nf
-integer,allocatable :: imask(:,:)
-real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:),ptmp(:,:,:)
+! Set local number of points
+ug%nmga = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%geom%bd%jsc + 1)
+
+! Set number of levels
+ug%nl0 = self%geom%npz
+
+! Set number of variables (should this come from self/vars?)
+ug%nv = 8
+
+! Set number of timeslots
+ug%nts = 1
+
+end subroutine ug_size
+
+! ------------------------------------------------------------------------------
+
+subroutine ug_coord(self, ug)
+use unstructured_grid_mod
+implicit none
+type(fv3jedi_field), intent(in) :: self
+type(unstructured_grid), intent(inout) :: ug
+
+integer :: imga,jx,jy,jl
+real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:)
 real(kind=kind_real) :: sigmaup,sigmadn
 
-! Define local number of gridpoints
-nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
+! Define size
+call ug_size(self, ug)
 
-! Allocation
-allocate(lon(nmga))
-allocate(lat(nmga))
-allocate(area(nmga))
-allocate(vunit(nmga,self%geom%npz))
-allocate(imask(nmga,self%geom%npz))
+! Allocate unstructured grid coordinates
+call allocate_unstructured_grid_coord(ug)
 
 ! Copy coordinates
-ic0a = 0
-do jy=self%jsc,self%jec
-  do jx=self%isc,self%iec
-    ic0a = ic0a+1
-    lon(ic0a) = self%geom%grid_lon(jx,jy)
-    lat(ic0a) = self%geom%grid_lat(jx,jy)
-    area(ic0a) = self%geom%area(jx,jy)
+imga = 0
+do jy=self%geom%bd%jsc,self%geom%bd%jec
+  do jx=self%geom%bd%isc,self%geom%bd%iec
+    imga = imga+1
+    ug%lon(imga) = rad2deg*self%geom%grid_lon(jx,jy)
+    ug%lat(imga) = rad2deg*self%geom%grid_lat(jx,jy)
+    ug%area(imga) = self%geom%area(jx,jy)
+    do jl=1,self%geom%npz
+      sigmaup = self%geom%ak(jl+1)/101300.0+self%geom%bk(jl+1) ! si are now sigmas
+      sigmadn = self%geom%ak(jl  )/101300.0+self%geom%bk(jl  )
+      ug%vunit(imga,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+      ug%lmask(imga,jl) = .true.
+    enddo
   enddo
 enddo
-imask = 1
 
-! Define vertical unit
-do jl=1,self%geom%npz
-  sigmaup = self%geom%ak(jl+1)/101300.0+self%geom%bk(jl+1) ! si are now sigmas
-  sigmadn = self%geom%ak(jl  )/101300.0+self%geom%bk(jl  )
-  vunit(:,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
-enddo
+end subroutine ug_coord
 
-! Should this come from self/vars?
-nf = 8
+! ------------------------------------------------------------------------------
 
-! Create unstructured grid
-call create_unstructured_grid(ug, nmga, self%geom%npz, nf, 1, lon, lat, area, vunit, imask)
+subroutine field_to_ug(self, ug)
+use unstructured_grid_mod
+implicit none
+type(fv3jedi_field), intent(in) :: self
+type(unstructured_grid), intent(inout) :: ug
+
+integer :: imga,jx,jy,jl
+real(kind=kind_real),allocatable :: ptmp(:,:,:)
+
+! Define size
+call ug_size(self, ug)
+
+! Allocate unstructured grid field
+call allocate_unstructured_grid_field(ug)
 
 ! Copy field
 
 if (allocated(self%Atm%u)) then
 
-  ic0a = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      ic0a = ic0a+1
+  imga = 0
+  do jy=self%geom%bd%jsc,self%geom%bd%jec
+    do jx=self%geom%bd%isc,self%geom%bd%iec
+      imga = imga+1
       do jl=1,self%geom%npz
-          ug%fld(ic0a,jl,1,1) = self%Atm%u   (jx,jy,jl)
-          ug%fld(ic0a,jl,2,1) = self%Atm%v   (jx,jy,jl)
-          ug%fld(ic0a,jl,3,1) = self%Atm%pt  (jx,jy,jl)
-          ug%fld(ic0a,jl,4,1) = self%Atm%delp(jx,jy,jl)
-          ug%fld(ic0a,jl,5,1) = self%Atm%q   (jx,jy,jl,1)
-          ug%fld(ic0a,jl,6,1) = self%Atm%q   (jx,jy,jl,2)
-          ug%fld(ic0a,jl,7,1) = self%Atm%q   (jx,jy,jl,3)
-          ug%fld(ic0a,jl,8,1) = self%Atm%q   (jx,jy,jl,4)
+          ug%fld(imga,jl,1,1) = self%Atm%u   (jx,jy,jl)
+          ug%fld(imga,jl,2,1) = self%Atm%v   (jx,jy,jl)
+          ug%fld(imga,jl,3,1) = self%Atm%pt  (jx,jy,jl)
+          ug%fld(imga,jl,4,1) = self%Atm%delp(jx,jy,jl)
+          ug%fld(imga,jl,5,1) = self%Atm%q   (jx,jy,jl,1)
+          ug%fld(imga,jl,6,1) = self%Atm%q   (jx,jy,jl,2)
+          ug%fld(imga,jl,7,1) = self%Atm%q   (jx,jy,jl,3)
+          ug%fld(imga,jl,8,1) = self%Atm%q   (jx,jy,jl,4)
       enddo
     enddo
   enddo
@@ -1435,23 +1463,22 @@ if (allocated(self%Atm%u)) then
 elseif (allocated(self%Atm%psi)) then
 
   allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%geom%npz))
-  
   ptmp = 0.0
   ptmp(:,:,self%geom%npz) = self%Atm%ps(self%isc:self%iec,self%jsc:self%jec)
 
-  ic0a = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      ic0a = ic0a+1
+  imga = 0
+  do jy=self%geom%bd%jsc,self%geom%bd%jec
+    do jx=self%geom%bd%isc,self%geom%bd%iec
+      imga = imga+1
       do jl=1,self%geom%npz
-          ug%fld(ic0a,jl,1,1) = self%Atm%psi (jx,jy,jl)
-          ug%fld(ic0a,jl,2,1) = self%Atm%chi (jx,jy,jl)
-          ug%fld(ic0a,jl,3,1) = self%Atm%tv  (jx,jy,jl)
-          ug%fld(ic0a,jl,4,1) = ptmp         (jx,jy,jl)
-          ug%fld(ic0a,jl,5,1) = self%Atm%qct (jx,jy,jl,1)
-          ug%fld(ic0a,jl,6,1) = self%Atm%qct (jx,jy,jl,2)
-          ug%fld(ic0a,jl,7,1) = self%Atm%qct (jx,jy,jl,3)
-          ug%fld(ic0a,jl,8,1) = self%Atm%qct (jx,jy,jl,4)
+          ug%fld(imga,jl,1,1) = self%Atm%psi (jx,jy,jl)
+          ug%fld(imga,jl,2,1) = self%Atm%chi (jx,jy,jl)
+          ug%fld(imga,jl,3,1) = self%Atm%tv  (jx,jy,jl)
+          ug%fld(imga,jl,4,1) = ptmp         (jx,jy,jl)
+          ug%fld(imga,jl,5,1) = self%Atm%qct (jx,jy,jl,1)
+          ug%fld(imga,jl,6,1) = self%Atm%qct (jx,jy,jl,2)
+          ug%fld(imga,jl,7,1) = self%Atm%qct (jx,jy,jl,3)
+          ug%fld(imga,jl,8,1) = self%Atm%qct (jx,jy,jl,4)
       enddo
     enddo
   enddo
@@ -1460,35 +1487,36 @@ elseif (allocated(self%Atm%psi)) then
 
 endif
 
-end subroutine convert_to_ug
+end subroutine field_to_ug
 
 ! -----------------------------------------------------------------------------
 
-subroutine convert_from_ug(self, ug)
+subroutine field_from_ug(self, ug)
 use unstructured_grid_mod
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(unstructured_grid), intent(in) :: ug
 
-integer :: ic0a,jx,jy,jl
+integer :: imga,jx,jy,jl
 real(kind=kind_real),allocatable :: ptmp(:,:,:)
+
+! Copy field
 
 if (allocated(self%Atm%u)) then
 
-  ! Copy field
-  ic0a = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      ic0a = ic0a+1
+  imga = 0
+  do jy=self%geom%bd%jsc,self%geom%bd%jec
+    do jx=self%geom%bd%isc,self%geom%bd%iec
+      imga = imga+1
       do jl=1,self%geom%npz
-          self%Atm%u   (jx,jy,jl)   = ug%fld(ic0a,jl,1,1)
-          self%Atm%v   (jx,jy,jl)   = ug%fld(ic0a,jl,2,1)
-          self%Atm%pt  (jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
-          self%Atm%delp(jx,jy,jl)   = ug%fld(ic0a,jl,4,1)
-          self%Atm%q   (jx,jy,jl,1) = ug%fld(ic0a,jl,5,1)
-          self%Atm%q   (jx,jy,jl,2) = ug%fld(ic0a,jl,6,1)
-          self%Atm%q   (jx,jy,jl,3) = ug%fld(ic0a,jl,7,1)
-          self%Atm%q   (jx,jy,jl,4) = ug%fld(ic0a,jl,8,1)
+          self%Atm%u   (jx,jy,jl)   = ug%fld(imga,jl,1,1)
+          self%Atm%v   (jx,jy,jl)   = ug%fld(imga,jl,2,1)
+          self%Atm%pt  (jx,jy,jl)   = ug%fld(imga,jl,3,1)
+          self%Atm%delp(jx,jy,jl)   = ug%fld(imga,jl,4,1)
+          self%Atm%q   (jx,jy,jl,1) = ug%fld(imga,jl,5,1)
+          self%Atm%q   (jx,jy,jl,2) = ug%fld(imga,jl,6,1)
+          self%Atm%q   (jx,jy,jl,3) = ug%fld(imga,jl,7,1)
+          self%Atm%q   (jx,jy,jl,4) = ug%fld(imga,jl,8,1)
       enddo
     enddo
   enddo
@@ -1497,19 +1525,19 @@ elseif (allocated(self%Atm%psi)) then
 
   allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%geom%npz))
 
-  ic0a = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      ic0a = ic0a+1
+  imga = 0
+  do jy=self%geom%bd%jsc,self%geom%bd%jec
+    do jx=self%geom%bd%isc,self%geom%bd%iec
+      imga = imga+1
       do jl=1,self%geom%npz
-          self%Atm%psi (jx,jy,jl)   = ug%fld(ic0a,jl,1,1)
-          self%Atm%chi (jx,jy,jl)   = ug%fld(ic0a,jl,2,1)
-          self%Atm%tv  (jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
-          ptmp         (jx,jy,jl)   = ug%fld(ic0a,jl,4,1)
-          self%Atm%qct (jx,jy,jl,1) = ug%fld(ic0a,jl,5,1)
-          self%Atm%qct (jx,jy,jl,2) = ug%fld(ic0a,jl,6,1)
-          self%Atm%qct (jx,jy,jl,3) = ug%fld(ic0a,jl,7,1)
-          self%Atm%qct (jx,jy,jl,4) = ug%fld(ic0a,jl,8,1)
+          self%Atm%psi (jx,jy,jl)   = ug%fld(imga,jl,1,1)
+          self%Atm%chi (jx,jy,jl)   = ug%fld(imga,jl,2,1)
+          self%Atm%tv  (jx,jy,jl)   = ug%fld(imga,jl,3,1)
+          ptmp         (jx,jy,jl)   = ug%fld(imga,jl,4,1)
+          self%Atm%qct (jx,jy,jl,1) = ug%fld(imga,jl,5,1)
+          self%Atm%qct (jx,jy,jl,2) = ug%fld(imga,jl,6,1)
+          self%Atm%qct (jx,jy,jl,3) = ug%fld(imga,jl,7,1)
+          self%Atm%qct (jx,jy,jl,4) = ug%fld(imga,jl,8,1)
       enddo
     enddo
   enddo
@@ -1520,7 +1548,7 @@ elseif (allocated(self%Atm%psi)) then
 
 endif
 
-end subroutine convert_from_ug
+end subroutine field_from_ug
 
 ! ------------------------------------------------------------------------------
 

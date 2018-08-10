@@ -587,19 +587,19 @@ ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_changevariable_fv3gfs
-                  BOOST
-                  SOURCES executables/TestChangeVariable.cc
-                  ARGS    "testinput/changevar_fv3gfs.yaml"
-                  MPI     6
-                  LIBS    fv3jedi )
-
-ecbuild_add_test( TARGET  test_fv3jedi_changevariable_geos
-                  BOOST
-                  SOURCES executables/TestChangeVariable.cc
-                  ARGS    "testinput/changevar_geos.yaml"
-                  MPI     6
-                  LIBS    fv3jedi )
+#ecbuild_add_test( TARGET  test_fv3jedi_changevariable_fv3gfs
+#                  BOOST
+#                  SOURCES executables/TestChangeVariable.cc
+#                  ARGS    "testinput/changevar_fv3gfs.yaml"
+#                  MPI     6
+#                  LIBS    fv3jedi )
+#
+#ecbuild_add_test( TARGET  test_fv3jedi_changevariable_geos
+#                  BOOST
+#                  SOURCES executables/TestChangeVariable.cc
+#                  ARGS    "testinput/changevar_geos.yaml"
+#                  MPI     6
+#                  LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_fv3gfs
                   BOOST

@@ -179,12 +179,16 @@ void FieldsFV3JEDI::diff(const FieldsFV3JEDI & x1, const FieldsFV3JEDI & x2) {
   fv3jedi_field_diff_incr_f90(keyFlds_, x1.keyFlds_, x2.keyFlds_);
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
-  fv3jedi_field_convert_to_f90(keyFlds_, ug.toFortran());
+void FieldsFV3JEDI::ug_coord(oops::UnstructuredGrid & ug) const {
+  fv3jedi_field_ug_coord_f90(keyFlds_, ug.toFortran());
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::convert_from(const oops::UnstructuredGrid & ug) {
-  fv3jedi_field_convert_from_f90(keyFlds_, ug.toFortran());
+void FieldsFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug) const {
+  fv3jedi_field_field_to_ug_f90(keyFlds_, ug.toFortran());
+}
+// -----------------------------------------------------------------------------
+void FieldsFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug) {
+  fv3jedi_field_field_from_ug_f90(keyFlds_, ug.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::read(const eckit::Configuration & config) {
