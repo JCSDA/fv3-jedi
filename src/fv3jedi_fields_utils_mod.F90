@@ -66,7 +66,8 @@ type :: fv3jedi_field
   type(fv3jedi_vars) :: vars 
   type(fv3jedi_geom), pointer :: geom
   integer :: nf
-  integer :: isc, iec, jsc, jec
+  integer :: isc, iec, jsc, jec, npz
+  integer :: isd, ied, jsd, jed
   integer :: root_pe
   logical :: havecrtmfields = .false.
   integer :: ti_q, ti_ql, ti_qi, ti_o3

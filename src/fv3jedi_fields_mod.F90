@@ -145,12 +145,19 @@ self%isc = geom%bd%isc
 self%iec = geom%bd%iec
 self%jsc = geom%bd%jsc
 self%jec = geom%bd%jec
+self%isd = geom%bd%isd
+self%ied = geom%bd%ied
+self%jsd = geom%bd%jsd
+self%jed = geom%bd%jed
+self%npz = geom%npz
 
 ! Index in q for the required tracers
 self%ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
 self%ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
 self%ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
 self%ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
+
+print*, 'self%geom%npz', self%geom%npz
 
 end subroutine create
 
@@ -493,7 +500,7 @@ zp=0.0_kind_real
 
 !u
 if (allocated(fld1%Atm%u)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
@@ -504,7 +511,7 @@ endif
 
 !v
 if (allocated(fld1%Atm%v)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
@@ -515,7 +522,7 @@ endif
 
 !pt
 if (allocated(fld1%Atm%pt)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
@@ -526,7 +533,7 @@ endif
 
 !delp
 if (allocated(fld1%Atm%delp)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
@@ -550,7 +557,7 @@ endif
 
 !psi
 if (allocated(fld1%Atm%psi)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%psi(i,j,k) * fld2%Atm%psi(i,j,k)
@@ -561,7 +568,7 @@ endif
 
 !chi
 if (allocated(fld1%Atm%chi)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%chi(i,j,k) * fld2%Atm%chi(i,j,k)
@@ -572,7 +579,7 @@ endif
 
 !tv
 if (allocated(fld1%Atm%tv)) then
-  do k = 1,fld1%geom%npz
+  do k = 1,fld1%npz
     do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
       do i = fld1%geom%bd%isc,fld1%geom%bd%iec
         zp = zp + fld1%Atm%tv(i,j,k) * fld2%Atm%tv(i,j,k)
@@ -593,7 +600,7 @@ endif
 !q Tracers
 if (allocated(fld1%Atm%qct)) then
   do l = 1,fld1%geom%ntracers
-    do k = 1,fld1%geom%npz
+    do k = 1,fld1%npz
       do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
         do i = fld1%geom%bd%isc,fld1%geom%bd%iec
           zp = zp + fld1%Atm%qct(i,j,k,l) * fld2%Atm%qct(i,j,k,l)
@@ -1143,9 +1150,11 @@ zz = 0.0_kind_real
 prms = 0.0_kind_real
 ii = 0
 
+print*, 'issue', fld%npz, fld%geom%bd%jsc,fld%geom%bd%jec
+
 !u
 if (allocated(fld%Atm%u)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%u(i,j,k)**2
@@ -1157,7 +1166,7 @@ endif
 
 !v
 if (allocated(fld%Atm%v)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%v(i,j,k)**2
@@ -1169,7 +1178,7 @@ endif
 
 !pt
 if (allocated(fld%Atm%pt)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%pt(i,j,k)**2
@@ -1181,7 +1190,7 @@ endif
 
 !delp
 if (allocated(fld%Atm%delp)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%delp(i,j,k)**2
@@ -1194,7 +1203,7 @@ endif
 !q Tracers
 if (allocated(fld%Atm%q)) then
   do l = 1,fld%geom%ntracers
-    do k = 1,fld%geom%npz
+    do k = 1,fld%npz
       do j = fld%geom%bd%jsc,fld%geom%bd%jec
         do i = fld%geom%bd%isc,fld%geom%bd%iec
           zz = zz + fld%Atm%q(i,j,k,l)**2
@@ -1207,7 +1216,7 @@ endif
 
 !psi
 if (allocated(fld%Atm%psi)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%psi(i,j,k)**2
@@ -1219,7 +1228,7 @@ endif
 
 !chi
 if (allocated(fld%Atm%chi)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%chi(i,j,k)**2
@@ -1231,7 +1240,7 @@ endif
 
 !tv
 if (allocated(fld%Atm%tv)) then
-  do k = 1,fld%geom%npz
+  do k = 1,fld%npz
     do j = fld%geom%bd%jsc,fld%geom%bd%jec
       do i = fld%geom%bd%isc,fld%geom%bd%iec
         zz = zz + fld%Atm%tv(i,j,k)**2
@@ -1254,7 +1263,7 @@ endif
 !q Tracers
 if (allocated(fld%Atm%qct)) then
   do l = 1,fld%geom%ntracers
-    do k = 1,fld%geom%npz
+    do k = 1,fld%npz
       do j = fld%geom%bd%jsc,fld%geom%bd%jec
         do i = fld%geom%bd%isc,fld%geom%bd%iec
           zz = zz + fld%Atm%qct(i,j,k,l)**2
