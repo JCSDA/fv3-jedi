@@ -591,19 +591,19 @@ end subroutine fv3jedi_field_getvalues_ad_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_field_sizes_f90')
+subroutine fv3jedi_field_sizes_c(c_key_self,nx,ny,nv) bind(c,name='fv3jedi_field_sizes_f90')
 
 use iso_c_binding
 use fv3jedi_fields_mod
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(inout) :: nx,ny,nf
+integer(c_int), intent(inout) :: nx,ny,nv
 type(fv3jedi_field), pointer :: self
 
 call fv3jedi_field_registry%get(c_key_self,self)
 
-nf = self%nf
+nv = self%vars%nv
 nx = self%geom%npx
 ny = self%geom%npy
 

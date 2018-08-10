@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_CHANGEVAR_H_
-#define FV3JEDI_MODEL_CHANGEVAR_H_
+#ifndef SRC_VARCHANGEFV3JEDI_H_
+#define SRC_VARCHANGEFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -28,28 +28,28 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 /// FV3JEDI linear change of variable
 
-class ChangeVarFV3JEDI: public util::Printable {
+class VarChangeFV3JEDI: public util::Printable {
  public:
-  static const std::string classname() {return "fv3jedi::ChangeVar";}
+  static const std::string classname() {return "fv3jedi::VarChangeFV3JEDI";}
 
-  explicit ChangeVarFV3JEDI(const eckit::Configuration &);
-  ~ChangeVarFV3JEDI();
+  explicit VarChangeFV3JEDI(const eckit::Configuration &);
+  ~VarChangeFV3JEDI();
 
 /// Set linearisation state
   void linearize(const StateFV3JEDI &, const GeometryFV3JEDI &);
 
-/// Perform linear transforms
-  void transform(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void transformInverse(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void transformAdjoint(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void transformInverseAdjoint(const IncrementFV3JEDI &,
+/// Perform linear multiplications
+  void multiply(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
+  void multiplyInverse(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
+  void multiplyAD(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
+  void multiplyInverseAD(const IncrementFV3JEDI &,
                                      IncrementFV3JEDI &) const;
 
  private:
-  F90cvar keyFtnConfig_;
+  F90vcha keyFtnConfig_;
   void print(std::ostream &) const override;
 };
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_CHANGEVAR_H_
+#endif  // SRC_VARCHANGEFV3JEDI_H_

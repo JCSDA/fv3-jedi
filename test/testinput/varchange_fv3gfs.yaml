@@ -1,24 +1,22 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
-ChangeVariableTest:
-  varchange: StatVariableChange
+LinearVariableChangeTest:
+  varchange: VarChangeFV3JEDI
   inputVariables:
-    variables:
-    - psi
-    - chi
-    - t
-    - ps
-    - qct
-  outputVariables:
-    variables:
+    variables: 
     - u
     - v
     - pt
     - delp
     - q
-CovarianceTest:
-  tolerance: '0.01'
+  outputVariables:
+    variables:
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
 Geometry:
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table

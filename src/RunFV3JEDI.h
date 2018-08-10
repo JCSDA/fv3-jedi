@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_RUNFV3JEDI_H_
-#define FV3_JEDI_SRC_RUNFV3JEDI_H_
+#ifndef SRC_RUNFV3JEDI_H_
+#define SRC_RUNFV3JEDI_H_
 
 #include "oops/runs/Run.h"
 
@@ -27,4 +27,4 @@ class RunFV3JEDI : public oops::Run {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_RUNFV3JEDI_H_
+#endif  // SRC_RUNFV3JEDI_H_

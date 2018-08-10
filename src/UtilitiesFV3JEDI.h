@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_UTILITIESFV3JEDI_H_
-#define FV3_JEDI_SRC_UTILITIESFV3JEDI_H_
+#ifndef SRC_UTILITIESFV3JEDI_H_
+#define SRC_UTILITIESFV3JEDI_H_
 
 #include "eckit/config/Configuration.h"
 
@@ -21,5 +21,5 @@ namespace fv3jedi {
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_UTILITIESFV3JEDI_H_
+#endif  // SRC_UTILITIESFV3JEDI_H_
 

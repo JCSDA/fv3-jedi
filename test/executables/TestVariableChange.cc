@@ -7,11 +7,13 @@
 
 #include "FV3JEDITraits.h"
 #include "RunFV3JEDI.h"
-#include "test/interface/ChangeVariable.h"
+#include "test/interface/LinearVariableChange.h"
+#include "src/instantiateFV3JEDIVarChangeFactory.h"
 
 int main(int argc,  char ** argv) {
   fv3jedi::RunFV3JEDI run(argc, argv);
-  test::ChangeVariable<fv3jedi::FV3JEDITraits> tests;
+  fv3jedi::instantiateFV3JEDIVarChangeFactory();
+  test::LinearVariableChange<fv3jedi::FV3JEDITraits> tests;
   run.execute(tests);
   return 0;
 }

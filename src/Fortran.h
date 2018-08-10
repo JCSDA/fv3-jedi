@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FORTRAN_H_
-#define FV3_JEDI_SRC_FORTRAN_H_
+#ifndef SRC_FORTRAN_H_
+#define SRC_FORTRAN_H_
 
 // Forward declarations
 namespace eckit {
@@ -38,8 +38,8 @@ typedef int F90bmat;
 typedef int F90lclz;
 // ObOp trajectory
 typedef int F90ootrj;
-// ChangeVar key
-typedef int F90cvar;
+// VarChange key
+typedef int F90vcha;
 
 
 /// Interface to Fortran FV3JEDI model
@@ -165,18 +165,18 @@ extern "C" {
 //  Change variable for B matrix
 // -----------------------------------------------------------------------------
 
-  void fv3jedi_changevar_setup_f90(const F90cvar &,
+  void fv3jedi_varchange_setup_f90(const F90vcha &,
                                    const eckit::Configuration * const *);
-  void fv3jedi_changevar_delete_f90(F90cvar &);
-  void fv3jedi_changevar_linearize_f90(F90cvar &,const F90geom &,
+  void fv3jedi_varchange_delete_f90(F90vcha &);
+  void fv3jedi_varchange_linearize_f90(F90vcha &, const F90geom &,
                                        const F90flds &);
-  void fv3jedi_changevar_transform_f90(const F90cvar &, const F90flds &,
-                                       const F90flds &);
-  void fv3jedi_changevar_transformadjoint_f90(const F90cvar &, const F90flds &,
-                                       const F90flds &);
-  void fv3jedi_changevar_transforminverse_f90(const F90cvar &, const F90flds &,
-                                       const F90flds &);
-  void fv3jedi_changevar_transforminverseadjoint_f90(const F90cvar &,
+  void fv3jedi_varchange_multiply_f90(const F90vcha &, const F90flds &,
+                                      const F90flds &);
+  void fv3jedi_varchange_multiplyadjoint_f90(const F90vcha &, const F90flds &,
+                                      const F90flds &);
+  void fv3jedi_varchange_multiplyinverse_f90(const F90vcha &, const F90flds &,
+                                      const F90flds &);
+  void fv3jedi_varchange_multiplyinverseadjoint_f90(const F90vcha &,
                                               const F90flds &, const F90flds &);
 
 // -----------------------------------------------------------------------------
@@ -192,4 +192,4 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_FORTRAN_H_
+#endif  // SRC_FORTRAN_H_

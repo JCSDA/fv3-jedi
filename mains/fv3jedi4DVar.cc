@@ -7,12 +7,14 @@
 
 #include "FV3JEDITraits.h"
 #include "instantiateLocalizationFactory.h"
+#include "instantiateFV3JEDIVarChangeFactory.h"
 #include "oops/runs/Variational.h"
 #include "RunFV3JEDI.h"
 
 int main(int argc,  char ** argv) {
   fv3jedi::RunFV3JEDI run(argc, argv);
   fv3jedi::instantiateLocalizationFactory();
+  fv3jedi::instantiateFV3JEDIVarChangeFactory();
   oops::Variational<fv3jedi::FV3JEDITraits> var;
   run.execute(var);
   return 0;

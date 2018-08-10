@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_GEOMETRYFV3JEDI_H_
-#define FV3_JEDI_SRC_GEOMETRYFV3JEDI_H_
+#ifndef SRC_GEOMETRYFV3JEDI_H_
+#define SRC_GEOMETRYFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -45,4 +45,4 @@ class GeometryFV3JEDI : public util::Printable,
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_GEOMETRYFV3JEDI_H_
+#endif  // SRC_GEOMETRYFV3JEDI_H_

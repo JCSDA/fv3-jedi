@@ -5,12 +5,11 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FV3JEDITRAITS_H_
-#define FV3_JEDI_SRC_FV3JEDITRAITS_H_
+#ifndef SRC_FV3JEDITRAITS_H_
+#define SRC_FV3JEDITRAITS_H_
 
 #include <string>
 
-#include "ChangeVarFV3JEDI.h"
 #include "ErrorCovarianceFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
@@ -44,7 +43,6 @@ struct FV3JEDITraits {
   typedef fv3jedi::ModelFV3JEDI                Model;
   typedef fv3jedi::IncrementFV3JEDI            Increment;
   typedef fv3jedi::ErrorCovarianceFV3JEDI      Covariance;
-  typedef fv3jedi::ChangeVarFV3JEDI            ChangeVar;
 
   typedef fv3jedi::ModelBiasFV3JEDI            ModelAuxControl;
   typedef fv3jedi::ModelBiasIncrementFV3JEDI   ModelAuxIncrement;
@@ -70,4 +68,4 @@ struct FV3JEDITraits {
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_FV3JEDITRAITS_H_
+#endif  // SRC_FV3JEDITRAITS_H_

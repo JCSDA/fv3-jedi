@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef FV3_JEDI_SRC_INSTANTIATELOCALIZATIONFACTORY_H_
-#define FV3_JEDI_SRC_INSTANTIATELOCALIZATIONFACTORY_H_
+#ifndef SRC_INSTANTIATELOCALIZATIONFACTORY_H_
+#define SRC_INSTANTIATELOCALIZATIONFACTORY_H_
 
 #include "oops/interface/LocalizationBase.h"
 #include "LocalizationMatrixFV3JEDI.h"
@@ -24,4 +24,4 @@ void instantiateLocalizationFactory() {
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_INSTANTIATELOCALIZATIONFACTORY_H_
+#endif  // SRC_INSTANTIATELOCALIZATIONFACTORY_H_
