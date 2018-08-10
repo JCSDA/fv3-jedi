@@ -9,7 +9,8 @@ subroutine fv3jedi_field_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='f
 use iso_c_binding
 use fv3jedi_fields_mod
 use fv3jedi_geom_mod
-use ufo_vars_mod
+use fv3jedi_vars_mod
+
 implicit none
 integer(c_int), intent(inout) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom !< Geometry
@@ -17,13 +18,14 @@ type(c_ptr), intent(in)    :: c_vars     !< List of variables
 
 type(fv3jedi_field), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
-type(ufo_vars) :: vars
+type(fv3jedi_vars) :: vars
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%init()
 call fv3jedi_field_registry%add(c_key_self)
 call fv3jedi_field_registry%get(c_key_self,self)
 
+call fv3jedi_vars_create(c_vars,vars)
 call create(self, geom, vars)
 
 end subroutine fv3jedi_field_create_c
@@ -124,13 +126,13 @@ type(unstructured_grid), pointer :: ug
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call unstructured_grid_registry%get(c_key_ug,ug)
 
-call field_to_ug_ug(fld, ug)
+call field_to_ug(fld, ug)
 
 end subroutine fv3jedi_field_field_to_ug_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_convert_from_c(c_key_fld, c_key_ug) bind (c,name='fv3jedi_field_convert_from_f90')
+subroutine fv3jedi_field_field_from_ug_c(c_key_fld, c_key_ug) bind (c,name='fv3jedi_field_field_from_ug_f90')
 
 use iso_c_binding
 use fv3jedi_fields_mod
@@ -144,9 +146,9 @@ type(unstructured_grid), pointer :: ug
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call unstructured_grid_registry%get(c_key_ug,ug)
 
-call convert_from_ug(fld, ug)
+call field_from_ug(fld, ug)
 
-end subroutine fv3jedi_field_convert_from_c
+end subroutine fv3jedi_field_field_from_ug_c
 
 ! ------------------------------------------------------------------------------
 

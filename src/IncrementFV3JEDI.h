@@ -92,7 +92,7 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 /// Unstructured grid
   void ug_coord(oops::UnstructuredGrid &) const;
   void field_to_ug(oops::UnstructuredGrid &) const;
-  void ug_to_field(const oops::UnstructuredGrid &);
+  void field_from_ug(const oops::UnstructuredGrid &);
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);

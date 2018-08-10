@@ -47,16 +47,19 @@ StateTest:
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     variables:
-    - virtual_temperature
-    - atmosphere_ln_pressure_coordinate
+    - u
+    - v
+    - t
+    - delp
+    - q
   InterpTest:
     variables:
     - virtual_temperature
     - atmosphere_ln_pressure_coordinate
   date: '2017-08-01T00:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '1953.9027370946089'
-  norm-gen: '1977.8035951763902'
+  norm-file: '504.27297470532858'
+  norm-gen: '510.42449142929979'
   tolerance: 1.0e-08
   values:
   - 2806.686940093405

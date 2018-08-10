@@ -126,12 +126,6 @@ void IncrementFV3JEDI::random() {
   fields_->random();
 }
 // -----------------------------------------------------------------------------
-/// Convert to/from unstructured grid
-// -----------------------------------------------------------------------------
-void IncrementFV3JEDI::define(oops::UnstructuredGrid & ug) const {
-  oops::Log::warning() << "IncrementFV3JEDI::define undefined!!!" << std::endl;
-}
-// -----------------------------------------------------------------------------
 /// Get increment values at observation locations
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
