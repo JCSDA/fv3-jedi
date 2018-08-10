@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FORTRAN_H_
-#define FV3_JEDI_SRC_FORTRAN_H_
+#ifndef SRC_FORTRAN_H_
+#define SRC_FORTRAN_H_
 
 // Forward declarations
 namespace eckit {
@@ -168,7 +168,7 @@ extern "C" {
   void fv3jedi_varchange_setup_f90(const F90vcha &,
                                    const eckit::Configuration * const *);
   void fv3jedi_varchange_delete_f90(F90vcha &);
-  void fv3jedi_varchange_linearize_f90(F90vcha &,const F90geom &,
+  void fv3jedi_varchange_linearize_f90(F90vcha &, const F90geom &,
                                        const F90flds &);
   void fv3jedi_varchange_multiply_f90(const F90vcha &, const F90flds &,
                                       const F90flds &);
@@ -192,4 +192,4 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_FORTRAN_H_
+#endif  // SRC_FORTRAN_H_

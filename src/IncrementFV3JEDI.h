@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
-#define FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
+#ifndef SRC_INCREMENTFV3JEDI_H_
+#define SRC_INCREMENTFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -122,4 +122,4 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
+#endif  // SRC_INCREMENTFV3JEDI_H_

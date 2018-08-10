@@ -31,13 +31,13 @@ VarChangeFV3JEDI::~VarChangeFV3JEDI() {
 // -----------------------------------------------------------------------------
 void VarChangeFV3JEDI::linearize(const StateFV3JEDI & other,
                                  const GeometryFV3JEDI & resol) {
-    fv3jedi_varchange_linearize_f90(keyFtnConfig_,resol.toFortran(),
+    fv3jedi_varchange_linearize_f90(keyFtnConfig_, resol.toFortran(),
                                      other.fields().toFortran());
 }
 // -----------------------------------------------------------------------------
 void VarChangeFV3JEDI::multiply(const IncrementFV3JEDI & dxa,
                                 IncrementFV3JEDI & dxm) const {
-  fv3jedi_varchange_multiply_f90(keyFtnConfig_,dxa.fields().toFortran(),
+  fv3jedi_varchange_multiply_f90(keyFtnConfig_, dxa.fields().toFortran(),
                                   dxm.fields().toFortran());
 }
 // -----------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void VarChangeFV3JEDI::multiplyInverse(const IncrementFV3JEDI & dxm,
 // -----------------------------------------------------------------------------
 void VarChangeFV3JEDI::multiplyAD(const IncrementFV3JEDI & dxm,
                                        IncrementFV3JEDI & dxa) const {
-  fv3jedi_varchange_multiplyadjoint_f90(keyFtnConfig_,dxm.fields().toFortran(),
+  fv3jedi_varchange_multiplyadjoint_f90(keyFtnConfig_, dxm.fields().toFortran(),
                                          dxa.fields().toFortran());
 }
 // -----------------------------------------------------------------------------

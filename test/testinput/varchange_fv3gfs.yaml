@@ -14,7 +14,7 @@ LinearVariableChangeTest:
     variables:
     - psi
     - chi
-    - t
+    - tv
     - ps
     - qct
 Geometry:

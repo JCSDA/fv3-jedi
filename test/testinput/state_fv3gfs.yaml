@@ -58,8 +58,8 @@ StateTest:
     - atmosphere_ln_pressure_coordinate
   date: '2017-08-01T00:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '504.27297470532858'
-  norm-gen: '510.42449142929979'
+  norm-file: '690.86375246754722'
+  norm-gen: '699.29144964837087'
   tolerance: 1.0e-08
   values:
   - 2806.686940093405

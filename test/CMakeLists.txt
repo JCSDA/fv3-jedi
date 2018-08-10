@@ -640,13 +640,14 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 # Test oops applications with FV3JEDI
 # compare.sh does not currently work with mpirun
 
-ecbuild_add_test( TARGET test_fv3jedi_dirac_bump_fv3gfs
-                  TYPE SCRIPT
-                  MPI     6
-                  COMMAND "compare.sh"
-                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.bump_fv3gfs.yaml"
-                       testoutput/dirac.bump_fv3gfs.test
-                  DEPENDS fv3jedi_dirac.x )
+#Mpi tasks dont pass tests
+#ecbuild_add_test( TARGET test_fv3jedi_dirac_bump_fv3gfs
+#                  TYPE SCRIPT
+#                  MPI     6
+#                  COMMAND "compare.sh"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x testinput/dirac.bump_fv3gfs.yaml"
+#                       testoutput/dirac.bump_fv3gfs.test
+#                  DEPENDS fv3jedi_dirac.x )
 
 #ecbuild_add_test( TARGET test_fv3jedi_hofx
 #                  TYPE SCRIPT

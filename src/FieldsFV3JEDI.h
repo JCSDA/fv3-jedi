@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FIELDSFV3JEDI_H_
-#define FV3_JEDI_SRC_FIELDSFV3JEDI_H_
+#ifndef SRC_FIELDSFV3JEDI_H_
+#define SRC_FIELDSFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -110,4 +110,4 @@ class FieldsFV3JEDI : public util::Printable,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_FIELDSFV3JEDI_H_
+#endif  // SRC_FIELDSFV3JEDI_H_

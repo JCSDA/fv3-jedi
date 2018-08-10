@@ -21,8 +21,8 @@ ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
-  finalnorm: '1953.9236770666996'
-  tolerance: '0.005'
+  finalnorm: '690.8708030959217'
+  tolerance: '1.0e-7'
 State:
   restart_type: fv3gfs
   datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
