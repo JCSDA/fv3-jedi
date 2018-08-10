@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-module fv3jedi_changevar_mod
+module fv3jedi_varchange_mod
 
 use fv3jedi_fields_mod, only: fv3jedi_field
 use fv3jedi_geom_mod,   only: fv3jedi_geom
@@ -17,7 +17,7 @@ use pressure_vt_mod, only: delp_to_pe_p_logp
 implicit none
 
 !> Fortran derived type to hold configuration data for the B mat variable change
-type :: fv3jedi_changevar
+type :: fv3jedi_varchange
  integer :: degsubs   = 100
  real(8) :: tmintbl   = 150.0, tmaxtbl = 333.0
  integer :: tablesize
@@ -25,15 +25,15 @@ type :: fv3jedi_changevar
  real(kind=kind_real), allocatable :: ttraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
-end type fv3jedi_changevar
+end type fv3jedi_varchange
 
-#define LISTED_TYPE fv3jedi_changevar
+#define LISTED_TYPE fv3jedi_varchange
 
 !> Linked list interface - defines registry_t type
 #include "linkedList_i.f"
 
 !> Global registry
-type(registry_t) :: fv3jedi_changevar_registry
+type(registry_t) :: fv3jedi_varchange_registry
 
 ! ------------------------------------------------------------------------------
 contains
@@ -42,10 +42,10 @@ contains
 #include "linkedList_c.f"
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_setup(self, c_conf)
+subroutine fv3jedi_varchange_setup(self, c_conf)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self    !< Change variable structure
+type(fv3jedi_varchange), intent(inout) :: self    !< Change variable structure
 type(c_ptr),             intent(in)    :: c_conf  !< Configuration
 
 !Create lookup table for computing saturation specific humidity
@@ -53,28 +53,28 @@ self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
 allocate(self%estblx(self%tablesize))
 call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)
 
-end subroutine fv3jedi_changevar_setup
+end subroutine fv3jedi_varchange_setup
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_delete(self)
+subroutine fv3jedi_varchange_delete(self)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self
+type(fv3jedi_varchange), intent(inout) :: self
 
 if (allocated(self%estblx)) deallocate(self%estblx)
 if (allocated(self%ttraj)) deallocate(self%ttraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
-end subroutine fv3jedi_changevar_delete
+end subroutine fv3jedi_varchange_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_linearize(self,geom,traj)
+subroutine fv3jedi_varchange_linearize(self,geom,traj)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self
+type(fv3jedi_varchange), intent(inout) :: self
 type(fv3jedi_geom),  intent(inout) :: geom
 type(fv3jedi_field), intent(inout) :: traj
 
@@ -105,14 +105,14 @@ deallocate(dqsatdt)
 deallocate(pm)
 deallocate(pe)
 
-end subroutine fv3jedi_changevar_linearize
+end subroutine fv3jedi_varchange_linearize
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_transform(self,xctl,xmod)
+subroutine fv3jedi_varchange_transform(self,xctl,xmod)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self
+type(fv3jedi_varchange), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xctl
 type(fv3jedi_field), intent(inout) :: xmod
 
@@ -123,14 +123,14 @@ call control_to_state_tlm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%A
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%ttraj,self%qtraj,self%qsattraj)
 
-end subroutine fv3jedi_changevar_transform
+end subroutine fv3jedi_varchange_transform
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_transformadjoint(self,xmod,xctl)
+subroutine fv3jedi_varchange_transformadjoint(self,xmod,xctl)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self
+type(fv3jedi_varchange), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xmod
 type(fv3jedi_field), intent(inout) :: xctl
 
@@ -139,33 +139,33 @@ call control_to_state_adm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%A
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%ttraj,self%qtraj,self%qsattraj)
 
-end subroutine fv3jedi_changevar_transformadjoint
+end subroutine fv3jedi_varchange_transformadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_transforminverse(self,xinc,xctr)
+subroutine fv3jedi_varchange_transforminverse(self,xinc,xctr)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self
+type(fv3jedi_varchange), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xinc
 type(fv3jedi_field), intent(inout) :: xctr
 
 !> Not implemented
 
-end subroutine fv3jedi_changevar_transforminverse
+end subroutine fv3jedi_varchange_transforminverse
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_changevar_transforminverseadjoint(self,xinc,xctr)
+subroutine fv3jedi_varchange_transforminverseadjoint(self,xinc,xctr)
 
 implicit none
-type(fv3jedi_changevar), intent(inout) :: self
+type(fv3jedi_varchange), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xinc
 type(fv3jedi_field), intent(inout) :: xctr
 
 !> Not implemented
 
-end subroutine fv3jedi_changevar_transforminverseadjoint
+end subroutine fv3jedi_varchange_transforminverseadjoint
 
 ! ------------------------------------------------------------------------------
 
@@ -283,4 +283,4 @@ endsubroutine control_to_state_adm
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_changevar_mod
+end module fv3jedi_varchange_mod
