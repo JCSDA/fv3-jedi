@@ -18,9 +18,6 @@
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-// static oops::VariableChangeMaker<FV3JEDITraits, VarChange>
-// makerChVarFV3JEDI("FV3JEDICV");
-// -----------------------------------------------------------------------------
 VarChangeFV3JEDI::VarChangeFV3JEDI(const eckit::Configuration & conf) {
     const eckit::Configuration * configc = &conf;
     fv3jedi_varchange_setup_f90(keyFtnConfig_, &configc);
@@ -38,24 +35,24 @@ void VarChangeFV3JEDI::linearize(const StateFV3JEDI & other,
                                      other.fields().toFortran());
 }
 // -----------------------------------------------------------------------------
-void VarChangeFV3JEDI::transform(const IncrementFV3JEDI & dxa,
+void VarChangeFV3JEDI::multiply(const IncrementFV3JEDI & dxa,
                                 IncrementFV3JEDI & dxm) const {
-  fv3jedi_varchange_transform_f90(keyFtnConfig_,dxa.fields().toFortran(),
+  fv3jedi_varchange_multiply_f90(keyFtnConfig_,dxa.fields().toFortran(),
                                   dxm.fields().toFortran());
 }
 // -----------------------------------------------------------------------------
-void VarChangeFV3JEDI::transformInverse(const IncrementFV3JEDI & dxm,
+void VarChangeFV3JEDI::multiplyInverse(const IncrementFV3JEDI & dxm,
                                        IncrementFV3JEDI & dxa) const {
   dxa = dxm;
 }
 // -----------------------------------------------------------------------------
-void VarChangeFV3JEDI::transformAdjoint(const IncrementFV3JEDI & dxm,
+void VarChangeFV3JEDI::multiplyAD(const IncrementFV3JEDI & dxm,
                                        IncrementFV3JEDI & dxa) const {
-  fv3jedi_varchange_transformadjoint_f90(keyFtnConfig_,dxm.fields().toFortran(),
+  fv3jedi_varchange_multiplyadjoint_f90(keyFtnConfig_,dxm.fields().toFortran(),
                                          dxa.fields().toFortran());
 }
 // -----------------------------------------------------------------------------
-void VarChangeFV3JEDI::transformInverseAdjoint(const IncrementFV3JEDI & dxa,
+void VarChangeFV3JEDI::multiplyInverseAD(const IncrementFV3JEDI & dxa,
                                               IncrementFV3JEDI & dxm) const {
   dxm = dxa;
 }

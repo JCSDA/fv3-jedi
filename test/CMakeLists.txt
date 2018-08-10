@@ -351,8 +351,8 @@ Data/RESTART/PlotCubeSphereField.py
 
 
 list( APPEND fv3jedi_test_input
-testinput/changevar_fv3gfs.yaml
-testinput/changevar_geos.yaml
+testinput/varchange_fv3gfs.yaml
+testinput/varchange_geos.yaml
 testinput/geometry_fv3gfs.yaml
 testinput/geometry_geos.yaml
 testinput/state_fv3gfs.yaml

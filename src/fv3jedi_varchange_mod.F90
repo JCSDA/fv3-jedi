@@ -109,7 +109,7 @@ end subroutine fv3jedi_varchange_linearize
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_transform(self,xctl,xmod)
+subroutine fv3jedi_varchange_multiply(self,xctl,xmod)
 
 implicit none
 type(fv3jedi_varchange), intent(inout) :: self
@@ -123,11 +123,11 @@ call control_to_state_tlm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%A
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%ttraj,self%qtraj,self%qsattraj)
 
-end subroutine fv3jedi_varchange_transform
+end subroutine fv3jedi_varchange_multiply
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_transformadjoint(self,xmod,xctl)
+subroutine fv3jedi_varchange_multiplyadjoint(self,xmod,xctl)
 
 implicit none
 type(fv3jedi_varchange), intent(inout) :: self
@@ -139,11 +139,11 @@ call control_to_state_adm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%A
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%ttraj,self%qtraj,self%qsattraj)
 
-end subroutine fv3jedi_varchange_transformadjoint
+end subroutine fv3jedi_varchange_multiplyadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_transforminverse(self,xinc,xctr)
+subroutine fv3jedi_varchange_multiplyinverse(self,xinc,xctr)
 
 implicit none
 type(fv3jedi_varchange), intent(inout) :: self
@@ -152,11 +152,11 @@ type(fv3jedi_field), intent(inout) :: xctr
 
 !> Not implemented
 
-end subroutine fv3jedi_varchange_transforminverse
+end subroutine fv3jedi_varchange_multiplyinverse
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_transforminverseadjoint(self,xinc,xctr)
+subroutine fv3jedi_varchange_multiplyinverseadjoint(self,xinc,xctr)
 
 implicit none
 type(fv3jedi_varchange), intent(inout) :: self
@@ -165,7 +165,7 @@ type(fv3jedi_field), intent(inout) :: xctr
 
 !> Not implemented
 
-end subroutine fv3jedi_varchange_transforminverseadjoint
+end subroutine fv3jedi_varchange_multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
 

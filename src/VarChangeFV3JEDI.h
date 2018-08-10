@@ -30,7 +30,7 @@ namespace fv3jedi {
 
 class VarChangeFV3JEDI: public util::Printable {
  public:
-  static const std::string classname() {return "fv3jedi::VarChange";}
+  static const std::string classname() {return "fv3jedi::VarChangeFV3JEDI";}
 
   explicit VarChangeFV3JEDI(const eckit::Configuration &);
   ~VarChangeFV3JEDI();
@@ -38,11 +38,11 @@ class VarChangeFV3JEDI: public util::Printable {
 /// Set linearisation state
   void linearize(const StateFV3JEDI &, const GeometryFV3JEDI &);
 
-/// Perform linear transforms
-  void transform(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void transformInverse(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void transformAdjoint(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void transformInverseAdjoint(const IncrementFV3JEDI &,
+/// Perform linear multiplications
+  void multiply(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
+  void multiplyInverse(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
+  void multiplyAD(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
+  void multiplyInverseAD(const IncrementFV3JEDI &,
                                      IncrementFV3JEDI &) const;
 
  private:

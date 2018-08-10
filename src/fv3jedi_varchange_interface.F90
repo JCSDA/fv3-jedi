@@ -73,8 +73,8 @@ end subroutine c_fv3jedi_varchange_linearize
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varchange_transform(c_key_self, c_key_in, c_key_out) &
-           bind (c,name='fv3jedi_varchange_transform_f90')
+subroutine c_fv3jedi_varchange_multiply(c_key_self, c_key_in, c_key_out) &
+           bind (c,name='fv3jedi_varchange_multiply_f90')
 
 use iso_c_binding
 use fv3jedi_varchange_mod
@@ -94,14 +94,14 @@ call fv3jedi_varchange_registry%get(c_key_self,self)
 call fv3jedi_field_registry%get(c_key_in,xin)
 call fv3jedi_field_registry%get(c_key_out,xout)
 
-call fv3jedi_varchange_transform(self,xin,xout)
+call fv3jedi_varchange_multiply(self,xin,xout)
 
-end subroutine c_fv3jedi_varchange_transform
+end subroutine c_fv3jedi_varchange_multiply
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varchange_transformadjoint(c_key_self, c_key_in, &
-           c_key_out) bind (c,name='fv3jedi_varchange_transformadjoint_f90')
+subroutine c_fv3jedi_varchange_multiplyadjoint(c_key_self, c_key_in, &
+           c_key_out) bind (c,name='fv3jedi_varchange_multiplyadjoint_f90')
 
 use iso_c_binding
 use fv3jedi_varchange_mod
@@ -121,16 +121,16 @@ call fv3jedi_varchange_registry%get(c_key_self,self)
 call fv3jedi_field_registry%get(c_key_in,xin)
 call fv3jedi_field_registry%get(c_key_out,xout)
 
-call fv3jedi_varchange_transformadjoint(self,xin,xout)
+call fv3jedi_varchange_multiplyadjoint(self,xin,xout)
 
-end subroutine c_fv3jedi_varchange_transformadjoint
+end subroutine c_fv3jedi_varchange_multiplyadjoint
 
 ! ----------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varchange_transforminverse(c_key_self, c_key_in, c_key_out) &
-           bind (c,name='fv3jedi_varchange_transforminverse_f90')
+subroutine c_fv3jedi_varchange_multiplyinverse(c_key_self, c_key_in, c_key_out) &
+           bind (c,name='fv3jedi_varchange_multiplyinverse_f90')
 
 use iso_c_binding
 use fv3jedi_varchange_mod
@@ -150,14 +150,14 @@ call fv3jedi_varchange_registry%get(c_key_self,self)
 call fv3jedi_field_registry%get(c_key_in,xin)
 call fv3jedi_field_registry%get(c_key_out,xout)
 
-call fv3jedi_varchange_transforminverse(self,xin,xout)
+call fv3jedi_varchange_multiplyinverse(self,xin,xout)
 
-end subroutine c_fv3jedi_varchange_transforminverse
+end subroutine c_fv3jedi_varchange_multiplyinverse
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varchange_transforminverseadjoint(c_key_self, c_key_in, &
-      c_key_out) bind (c,name='fv3jedi_varchange_transforminverseadjoint_f90')
+subroutine c_fv3jedi_varchange_multiplyinverseadjoint(c_key_self, c_key_in, &
+      c_key_out) bind (c,name='fv3jedi_varchange_multiplyinverseadjoint_f90')
 
 use iso_c_binding
 use fv3jedi_varchange_mod
@@ -177,8 +177,8 @@ call fv3jedi_varchange_registry%get(c_key_self,self)
 call fv3jedi_field_registry%get(c_key_in,xin)
 call fv3jedi_field_registry%get(c_key_out,xout)
 
-call fv3jedi_varchange_transforminverseadjoint(self,xin,xout)
+call fv3jedi_varchange_multiplyinverseadjoint(self,xin,xout)
 
-end subroutine c_fv3jedi_varchange_transforminverseadjoint
+end subroutine c_fv3jedi_varchange_multiplyinverseadjoint
 
 ! ----------------------------------------------------------------------------

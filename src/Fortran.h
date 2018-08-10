@@ -170,13 +170,13 @@ extern "C" {
   void fv3jedi_varchange_delete_f90(F90vcha &);
   void fv3jedi_varchange_linearize_f90(F90vcha &,const F90geom &,
                                        const F90flds &);
-  void fv3jedi_varchange_transform_f90(const F90vcha &, const F90flds &,
-                                       const F90flds &);
-  void fv3jedi_varchange_transformadjoint_f90(const F90vcha &, const F90flds &,
-                                       const F90flds &);
-  void fv3jedi_varchange_transforminverse_f90(const F90vcha &, const F90flds &,
-                                       const F90flds &);
-  void fv3jedi_varchange_transforminverseadjoint_f90(const F90vcha &,
+  void fv3jedi_varchange_multiply_f90(const F90vcha &, const F90flds &,
+                                      const F90flds &);
+  void fv3jedi_varchange_multiplyadjoint_f90(const F90vcha &, const F90flds &,
+                                      const F90flds &);
+  void fv3jedi_varchange_multiplyinverse_f90(const F90vcha &, const F90flds &,
+                                      const F90flds &);
+  void fv3jedi_varchange_multiplyinverseadjoint_f90(const F90vcha &,
                                               const F90flds &, const F90flds &);
 
 // -----------------------------------------------------------------------------
