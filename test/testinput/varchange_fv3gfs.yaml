@@ -4,19 +4,19 @@ trc_file: Data/fv3files/field_table
 LinearVariableChangeTest:
   varchange: VarChangeFV3JEDI
   inputVariables:
+    variables: 
+    - u
+    - v
+    - pt
+    - delp
+    - q
+  outputVariables:
     variables:
     - psi
     - chi
     - t
     - ps
     - qct
-  outputVariables:
-    variables:
-    - u
-    - v
-    - pt
-    - delp
-    - q
 Geometry:
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table
