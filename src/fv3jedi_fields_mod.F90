@@ -157,8 +157,6 @@ self%ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
 self%ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
 self%ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
 
-print*, 'self%geom%npz', self%geom%npz
-
 end subroutine create
 
 ! ------------------------------------------------------------------------------
@@ -1149,8 +1147,6 @@ integer i,j,k,l,ii,nt,ierr,npes,iisum
 zz = 0.0_kind_real
 prms = 0.0_kind_real
 ii = 0
-
-print*, 'issue', fld%npz, fld%geom%bd%jsc,fld%geom%bd%jec
 
 !u
 if (allocated(fld%Atm%u)) then
