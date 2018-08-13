@@ -12,14 +12,13 @@ use config_mod
 use kinds
 
 use moisture_vt_mod, only: esinit, dqsat
-use pressure_vt_mod, only: delp_to_pe_p_logp
 
 implicit none
 
 !> Fortran derived type to hold configuration data for the B mat variable change
 type :: fv3jedi_varchange
  integer :: degsubs   = 100
- real(8) :: tmintbl   = 150.0, tmaxtbl = 333.0
+ real(8) :: tmintbl   = 150.0_8, tmaxtbl = 333.0_8
  integer :: tablesize
  real(8), allocatable :: estblx(:)
  real(kind=kind_real), allocatable :: tvtraj(:,:,:)
@@ -74,6 +73,7 @@ end subroutine fv3jedi_varchange_delete
 subroutine fv3jedi_varchange_linearize(self,geom,traj)
 
 use tmprture_vt_mod, only: T_to_Tv
+use pressure_vt_mod, only: delp_to_pe_p_logp
 
 implicit none
 type(fv3jedi_varchange), intent(inout) :: self
@@ -100,9 +100,9 @@ allocate(self%qsattraj(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%np
 
 allocate(pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1))
 allocate(pm(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
-call delp_to_pe_p_logp(geom,traj%Atm%delp,pe,pm)
-
 allocate(dqsatdt(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
+
+call delp_to_pe_p_logp(geom,traj%Atm%delp,pe,pm)
 call dqsat( geom,traj%Atm%pt,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
             self%tablesize,self%estblx,dqsatdt,self%qsattraj)
 
@@ -174,7 +174,6 @@ end subroutine fv3jedi_varchange_multiplyinverseadjoint
 
 subroutine control_to_state_tlm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
 
-! use wind_vt_mod, only: psichi_to_udvd
  use wind_vt_mod, only: psichi_to_udvd
  use tmprture_vt_mod, only: tv_to_t_tl
  use pressure_vt_mod, only: ps_to_delp_tl
@@ -232,7 +231,6 @@ endsubroutine control_to_state_tlm
 
 subroutine control_to_state_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
 
-! use wind_vt_mod, only: psichi_to_udvd_adm
  use wind_vt_mod, only: psichi_to_udvd_adm
  use tmprture_vt_mod, only: tv_to_t_ad
  use pressure_vt_mod, only: ps_to_delp_ad
@@ -265,7 +263,6 @@ subroutine control_to_state_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  tv  = 0.0_kind_real
  ps  = 0.0_kind_real
  qc  = 0.0_kind_real
-
 
  !Virtual temperature to temperature
  !----------------------------------
