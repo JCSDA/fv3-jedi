@@ -273,6 +273,73 @@ end subroutine crtm_mixratio_ad
 
 !----------------------------------------------------------------------------
 
+subroutine rh_to_q(geom,qsat,rh,q)
+
+ implicit none
+ type(fv3jedi_geom),   intent(in)    :: geom
+ real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ 
+ integer :: i,j,k
+ 
+ do k=1,geom%npz
+   do j=geom%bd%jsc,geom%bd%jec
+     do i=geom%bd%isc,geom%bd%iec
+       q(i,j,k) = rh(i,j,k) * qsat(i,j,k)
+     end do
+   end do
+ end do
+
+end subroutine rh_to_q
+
+!----------------------------------------------------------------------------
+
+subroutine rh_to_q_tl(geom,qsat,rh,q)
+
+ implicit none
+ type(fv3jedi_geom),   intent(in)    :: geom
+ real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ 
+ integer :: i,j,k
+ 
+ do k=1,geom%npz
+   do j=geom%bd%jsc,geom%bd%jec
+     do i=geom%bd%isc,geom%bd%iec
+       q(i,j,k) = rh(i,j,k) * qsat(i,j,k)
+     end do
+   end do
+ end do
+
+end subroutine rh_to_q_tl
+
+!----------------------------------------------------------------------------
+
+subroutine rh_to_q_ad(geom,qsat,rh,q)
+
+ implicit none
+ type(fv3jedi_geom),   intent(in)    :: geom
+ real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ 
+ integer :: i,j,k
+ 
+ do k=geom%npz,1,-1
+   do j=geom%bd%jec,geom%bd%jsc,-1
+     do i=geom%bd%iec,geom%bd%isc,-1
+       rh(i,j,k) = rh(i,j,k) + q(i,j,k) * qsat(i,j,k)
+     end do
+   end do
+ end do
+
+end subroutine rh_to_q_ad
+
+!----------------------------------------------------------------------------
+!----------------------------------------------------------------------------
+
 subroutine q_to_rh(geom,qsat,q,rh)
 
  implicit none

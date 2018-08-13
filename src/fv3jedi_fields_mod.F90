@@ -93,7 +93,8 @@ self%vars%fldnames = vars%fldnames
 
 self%Atm%hydrostatic = geom%hydrostatic
 
-! Allocate varialbes based on names
+
+! Allocate variables based on names
 do var = 1, self%vars%nv
 
    select case (trim(self%vars%fldnames(var)))
@@ -1394,10 +1395,10 @@ type(fv3jedi_field), intent(in) :: self
 type(unstructured_grid), intent(inout) :: ug
 
 ! Set local number of points
-ug%nmga = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%geom%bd%jsc + 1)
+ug%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
 
 ! Set number of levels
-ug%nl0 = self%geom%npz
+ug%nl0 = self%npz
 
 ! Set number of variables (should this come from self/vars?)
 ug%nv = 8
@@ -1427,13 +1428,13 @@ call allocate_unstructured_grid_coord(ug)
 
 ! Copy coordinates
 imga = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
+do jy=self%jsc,self%jec
+  do jx=self%isc,self%iec
     imga = imga+1
     ug%lon(imga) = rad2deg*self%geom%grid_lon(jx,jy)
     ug%lat(imga) = rad2deg*self%geom%grid_lat(jx,jy)
     ug%area(imga) = self%geom%area(jx,jy)
-    do jl=1,self%geom%npz
+    do jl=1,self%npz
       sigmaup = self%geom%ak(jl+1)/101300.0+self%geom%bk(jl+1) ! si are now sigmas
       sigmadn = self%geom%ak(jl  )/101300.0+self%geom%bk(jl  )
       ug%vunit(imga,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
@@ -1466,10 +1467,10 @@ call allocate_unstructured_grid_field(ug)
 if (allocated(self%Atm%u)) then
 
   imga = 0
-  do jy=self%geom%bd%jsc,self%geom%bd%jec
-    do jx=self%geom%bd%isc,self%geom%bd%iec
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
       imga = imga+1
-      do jl=1,self%geom%npz
+      do jl=1,self%npz
           ug%fld(imga,jl,1,1) = self%Atm%u   (jx,jy,jl)
           ug%fld(imga,jl,2,1) = self%Atm%v   (jx,jy,jl)
           ug%fld(imga,jl,3,1) = self%Atm%pt  (jx,jy,jl)
@@ -1489,10 +1490,10 @@ elseif (allocated(self%Atm%psi)) then
   ptmp(:,:,self%geom%npz) = self%Atm%ps(self%isc:self%iec,self%jsc:self%jec)
 
   imga = 0
-  do jy=self%geom%bd%jsc,self%geom%bd%jec
-    do jx=self%geom%bd%isc,self%geom%bd%iec
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
       imga = imga+1
-      do jl=1,self%geom%npz
+      do jl=1,self%npz
           ug%fld(imga,jl,1,1) = self%Atm%psi (jx,jy,jl)
           ug%fld(imga,jl,2,1) = self%Atm%chi (jx,jy,jl)
           ug%fld(imga,jl,3,1) = self%Atm%tv  (jx,jy,jl)
@@ -1527,10 +1528,10 @@ real(kind=kind_real),allocatable :: ptmp(:,:,:)
 if (allocated(self%Atm%u)) then
 
   imga = 0
-  do jy=self%geom%bd%jsc,self%geom%bd%jec
-    do jx=self%geom%bd%isc,self%geom%bd%iec
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
       imga = imga+1
-      do jl=1,self%geom%npz
+      do jl=1,self%npz
           self%Atm%u   (jx,jy,jl)   = ug%fld(imga,jl,1,1)
           self%Atm%v   (jx,jy,jl)   = ug%fld(imga,jl,2,1)
           self%Atm%pt  (jx,jy,jl)   = ug%fld(imga,jl,3,1)
@@ -1548,10 +1549,10 @@ elseif (allocated(self%Atm%psi)) then
   allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%geom%npz))
 
   imga = 0
-  do jy=self%geom%bd%jsc,self%geom%bd%jec
-    do jx=self%geom%bd%isc,self%geom%bd%iec
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
       imga = imga+1
-      do jl=1,self%geom%npz
+      do jl=1,self%npz
           self%Atm%psi (jx,jy,jl)   = ug%fld(imga,jl,1,1)
           self%Atm%chi (jx,jy,jl)   = ug%fld(imga,jl,2,1)
           self%Atm%tv  (jx,jy,jl)   = ug%fld(imga,jl,3,1)

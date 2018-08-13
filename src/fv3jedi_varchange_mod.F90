@@ -22,7 +22,7 @@ type :: fv3jedi_varchange
  real(8) :: tmintbl   = 150.0, tmaxtbl = 333.0
  integer :: tablesize
  real(8), allocatable :: estblx(:)
- real(kind=kind_real), allocatable :: ttraj(:,:,:)
+ real(kind=kind_real), allocatable :: tvtraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
 end type fv3jedi_varchange
@@ -63,7 +63,7 @@ implicit none
 type(fv3jedi_varchange), intent(inout) :: self
 
 if (allocated(self%estblx)) deallocate(self%estblx)
-if (allocated(self%ttraj)) deallocate(self%ttraj)
+if (allocated(self%tvtraj)) deallocate(self%tvtraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
@@ -72,6 +72,8 @@ end subroutine fv3jedi_varchange_delete
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_varchange_linearize(self,geom,traj)
+
+use tmprture_vt_mod, only: T_to_Tv
 
 implicit none
 type(fv3jedi_varchange), intent(inout) :: self
@@ -82,22 +84,25 @@ real(kind=kind_real), allocatable :: pe(:,:,:)
 real(kind=kind_real), allocatable :: pm(:,:,:)
 real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
 
-!> Compute saturation specific humidity for q to RH transform
 
-allocate(self%ttraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
+!> Virtual temperature trajectory
+allocate(self%tvtraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
+call T_to_Tv(geom,traj%Atm%pt,traj%Atm%q(:,:,:,1),self%tvtraj)
+
+
+!> Specific humidity trajecotory
 allocate(self%qtraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
-allocate(self%qsattraj(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
-
-self%ttraj = traj%Atm%pt
 self%qtraj = traj%Atm%q(:,:,:,1)
+
+
+!> Compute saturation specific humidity for q to RH transform
+allocate(self%qsattraj(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
 
 allocate(pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1))
 allocate(pm(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
-
 call delp_to_pe_p_logp(geom,traj%Atm%delp,pe,pm)
 
 allocate(dqsatdt(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
-
 call dqsat( geom,traj%Atm%pt,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
             self%tablesize,self%estblx,dqsatdt,self%qsattraj)
 
@@ -117,11 +122,9 @@ type(fv3jedi_field), intent(inout) :: xctl
 type(fv3jedi_field), intent(inout) :: xmod
 
 !Tangent linear of analysis (control) to model variables
-xctl%Atm%qct = 0.0_kind_real
-
 call control_to_state_tlm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%Atm%ps  ,xctl%Atm%qct(:,:,:,1), &
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
-                                    self%ttraj,self%qtraj,self%qsattraj)
+                                    self%tvtraj,self%qtraj,self%qsattraj)
 
 end subroutine fv3jedi_varchange_multiply
 
@@ -137,7 +140,7 @@ type(fv3jedi_field), intent(inout) :: xctl
 !Adjoint of analysis (control) to model variables
 call control_to_state_adm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%Atm%ps  ,xctl%Atm%qct(:,:,:,1), &
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
-                                    self%ttraj,self%qtraj,self%qsattraj)
+                                    self%tvtraj,self%qtraj,self%qsattraj)
 
 end subroutine fv3jedi_varchange_multiplyadjoint
 
@@ -175,7 +178,7 @@ subroutine control_to_state_tlm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  use wind_vt_mod, only: psichi_to_udvd
  use tmprture_vt_mod, only: tv_to_t_tl
  use pressure_vt_mod, only: ps_to_delp_tl
- use moisture_vt_mod, only: q_to_rh_tl 
+ use moisture_vt_mod, only: rh_to_q_tl 
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
@@ -199,27 +202,27 @@ subroutine control_to_state_tlm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  real(kind=kind_real), intent(in   ) ::   qt(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Specific humidity traj
  real(kind=kind_real), intent(in   ) :: qsat(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Sat spec hum
 
- u    = 0.0_kind_real
- v    = 0.0_kind_real
- t    = 0.0_kind_real
+ u = 0.0_kind_real
+ v = 0.0_kind_real
+ t = 0.0_kind_real
  delp = 0.0_kind_real
- qs   = 0.0_kind_real
+ qs = 0.0_kind_real
 
  !psi and chi to D-grid u and v 
  !-----------------------------
  call psichi_to_udvd(geom,psi,chi,u,v)
-
- !Virtual temperature to temperature
- !----------------------------------
- call Tv_to_T_tl(geom,Tvt,Tv,qt,qc,T)
-
- !Ps to delp
+ 
+ !ps to delp
  !----------
  call ps_to_delp_tl(geom,ps,delp)
 
- !Specific to relative humidity
- !-----------------------------
- call q_to_rh_tl(geom,qsat,qc,qs)
+ !Relative humidity to specific humidity
+ !--------------------------------------
+ call rh_to_q_tl(geom,qsat,qc,qs)
+
+ !Virtual temperature to temperature
+ !----------------------------------
+ call Tv_to_T_tl(geom,Tvt,Tv,qt,qs,T)
 
 endsubroutine control_to_state_tlm
 
@@ -233,7 +236,7 @@ subroutine control_to_state_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  use wind_vt_mod, only: psichi_to_udvd_adm
  use tmprture_vt_mod, only: tv_to_t_ad
  use pressure_vt_mod, only: ps_to_delp_ad
- use moisture_vt_mod, only: q_to_rh_ad 
+ use moisture_vt_mod, only: rh_to_q_ad 
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
@@ -263,17 +266,18 @@ subroutine control_to_state_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  ps  = 0.0_kind_real
  qc  = 0.0_kind_real
 
- !Specific to relative humidity
- !-----------------------------
- call q_to_rh_ad(geom,qsat,qc,qs)
+
+ !Virtual temperature to temperature
+ !----------------------------------
+ call Tv_to_T_ad(geom,Tvt,Tv,qt,qs,T)
+
+ !Relative humidity to specific humidity
+ !--------------------------------------
+ call rh_to_q_ad(geom,qsat,qc,qs)
 
  !Ps to delp
  !----------
  call ps_to_delp_ad(geom,ps,delp)
-
- !Virtual temperature to temperature
- !----------------------------------
- call Tv_to_T_ad(geom,Tvt,Tv,qt,qc,T)
 
  !psi and chi to D-grid u and v 
  !-----------------------------
