@@ -130,23 +130,22 @@ subroutine Tv_to_T_tl(geom,Tv,Tv_tl,q,q_tl,T_tl)
  real(kind=kind_real), intent(in   ) :: q_tl (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
  real(kind=kind_real), intent(inout) :: T_tl (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
  
- integer :: isc,iec,jsc,jec,i,j,k
- real(kind=kind_real) :: temp
+ integer :: isc,iec,jsc,jec,npz,i,j,k
 
  isc = geom%bd%isc
  iec = geom%bd%iec
  jsc = geom%bd%jsc
  jec = geom%bd%jec
+ npz = geom%npz
 
- T_tl = 0.0_kind_real
- do k = 1,geom%npz
-   do j = jsc,jec
-     do i = isc,iec
-       temp = epsilon*q(i,j,k) + 1.0_kind_real
-       T_tl(i,j,k) = Tv_tl(i,j,k)/temp - Tv(i,j,k)*epsilon*q_tl(i,j,k)/temp**2
-     enddo
-   enddo
- enddo
+ t_tl = 0.0
+ do k=1,npz
+   do j=jsc,jec
+     do i=isc,iec
+       t_tl(i,j,k) = (tv_tl(i,j,k)*(1.0_kind_real+epsilon*q(i,j,k))-tv(i,j,k)*epsilon*q_tl(i,j,k))/(1.0+epsilon*q(i,j,k))**2
+     end do
+   end do
+ end do
 
 end subroutine Tv_to_T_tl
 
@@ -160,25 +159,25 @@ subroutine Tv_to_T_ad(geom,Tv,Tv_ad,q,q_ad,T_ad)
  real(kind=kind_real), intent(inout) :: q_ad (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
  real(kind=kind_real), intent(inout) :: T_ad (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
  
- integer :: isc,iec,jsc,jec,i,j,k
+ integer :: isc,iec,jsc,jec,npz,i,j,k
  real(kind=kind_real) :: temp
 
  isc = geom%bd%isc
  iec = geom%bd%iec
  jsc = geom%bd%jsc
  jec = geom%bd%jec
+ npz = geom%npz
 
- Tv_ad = 0.0_kind_real
- do k = geom%npz,1,-1
-   do j = jec,jsc,-1
-     do i = iec,isc,-1
-        temp = epsilon*q(i,j,k) + 1.0_kind_real
-        Tv_ad(i,j,k) = Tv_ad(i,j,k) + T_ad(i,j,k)/temp
-        q_ad(i,j,k) = q_ad(i,j,k) - Tv(i,j,k)*epsilon*T_ad(i,j,k)/temp**2
-        T_ad(i,j,k) = 0.0_kind_real
-     enddo
-   enddo
- enddo
+ do k=npz,1,-1
+   do j=jec,jsc,-1
+     do i=iec,isc,-1
+       temp = epsilon*q(i,j,k) + 1.0_kind_real
+       tv_ad(i,j,k) = tv_ad(i,j,k) + t_ad(i,j,k)/temp
+       q_ad(i,j,k) = q_ad(i,j,k) - tv(i,j,k)*epsilon*t_ad(i,j,k)/temp**2
+       t_ad(i,j,k) = 0.0
+     end do
+   end do
+ end do
 
 end subroutine Tv_to_T_ad
 
