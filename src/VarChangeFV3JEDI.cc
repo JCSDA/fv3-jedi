@@ -18,21 +18,18 @@
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-VarChangeFV3JEDI::VarChangeFV3JEDI(const eckit::Configuration & conf) {
+VarChangeFV3JEDI::VarChangeFV3JEDI(const StateFV3JEDI & bg,
+                                   const StateFV3JEDI & fg,
+                                   const eckit::Configuration & conf) {
     const eckit::Configuration * configc = &conf;
-    fv3jedi_varchange_setup_f90(keyFtnConfig_, &configc);
+    fv3jedi_varchange_setup_f90(keyFtnConfig_, bg.fields().toFortran(),
+                                fg.fields().toFortran(), &configc);
     oops::Log::trace() << "VarChangeFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------
 VarChangeFV3JEDI::~VarChangeFV3JEDI() {
     fv3jedi_varchange_delete_f90(keyFtnConfig_);
     oops::Log::trace() << "ChangeFV3JEDI destructed" << std::endl;
-}
-// -----------------------------------------------------------------------------
-void VarChangeFV3JEDI::linearize(const StateFV3JEDI & other,
-                                 const GeometryFV3JEDI & resol) {
-    fv3jedi_varchange_linearize_f90(keyFtnConfig_, resol.toFortran(),
-                                     other.fields().toFortran());
 }
 // -----------------------------------------------------------------------------
 void VarChangeFV3JEDI::multiply(const IncrementFV3JEDI & dxa,

@@ -41,16 +41,53 @@ contains
 #include "linkedList_c.f"
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_setup(self, c_conf)
+subroutine fv3jedi_varchange_setup(self, bg, fg, c_conf)
+
+use tmprture_vt_mod, only: T_to_Tv
+use pressure_vt_mod, only: delp_to_pe_p_logp
 
 implicit none
-type(fv3jedi_varchange), intent(inout) :: self    !< Change variable structure
-type(c_ptr),             intent(in)    :: c_conf  !< Configuration
+type(fv3jedi_varchange), intent(inout)  :: self    !< Change variable structure
+type(fv3jedi_field), target, intent(in) :: bg
+type(fv3jedi_field), target, intent(in) :: fg
+type(c_ptr),             intent(in)     :: c_conf  !< Configuration
+
+type(fv3jedi_geom), pointer :: geom
+real(kind=kind_real), allocatable :: pe(:,:,:)
+real(kind=kind_real), allocatable :: pm(:,:,:)
+real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
+
+geom => bg%geom
 
 !Create lookup table for computing saturation specific humidity
 self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
 allocate(self%estblx(self%tablesize))
 call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)
+
+!> Virtual temperature trajectory
+allocate(self%tvtraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
+call T_to_Tv(geom,bg%Atm%pt,bg%Atm%q(:,:,:,1),self%tvtraj)
+
+!> Specific humidity trajecotory
+allocate(self%qtraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
+self%qtraj = bg%Atm%q(:,:,:,1)
+
+!> Compute saturation specific humidity for q to RH transform
+allocate(self%qsattraj(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
+
+allocate(pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1))
+allocate(pm(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
+allocate(dqsatdt(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
+
+call delp_to_pe_p_logp(geom,bg%Atm%delp,pe,pm)
+call dqsat( geom,bg%Atm%pt,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
+            self%tablesize,self%estblx,dqsatdt,self%qsattraj)
+
+deallocate(dqsatdt)
+deallocate(pm)
+deallocate(pe)
+
+nullify(geom)
 
 end subroutine fv3jedi_varchange_setup
 
@@ -67,50 +104,6 @@ if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
 end subroutine fv3jedi_varchange_delete
-
-! ------------------------------------------------------------------------------
-
-subroutine fv3jedi_varchange_linearize(self,geom,traj)
-
-use tmprture_vt_mod, only: T_to_Tv
-use pressure_vt_mod, only: delp_to_pe_p_logp
-
-implicit none
-type(fv3jedi_varchange), intent(inout) :: self
-type(fv3jedi_geom),  intent(inout) :: geom
-type(fv3jedi_field), intent(inout) :: traj
-
-real(kind=kind_real), allocatable :: pe(:,:,:)
-real(kind=kind_real), allocatable :: pm(:,:,:)
-real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
-
-
-!> Virtual temperature trajectory
-allocate(self%tvtraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
-call T_to_Tv(geom,traj%Atm%pt,traj%Atm%q(:,:,:,1),self%tvtraj)
-
-
-!> Specific humidity trajecotory
-allocate(self%qtraj   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
-self%qtraj = traj%Atm%q(:,:,:,1)
-
-
-!> Compute saturation specific humidity for q to RH transform
-allocate(self%qsattraj(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz))
-
-allocate(pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1))
-allocate(pm(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
-allocate(dqsatdt(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz  ))
-
-call delp_to_pe_p_logp(geom,traj%Atm%delp,pe,pm)
-call dqsat( geom,traj%Atm%pt,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
-            self%tablesize,self%estblx,dqsatdt,self%qsattraj)
-
-deallocate(dqsatdt)
-deallocate(pm)
-deallocate(pe)
-
-end subroutine fv3jedi_varchange_linearize
 
 ! ------------------------------------------------------------------------------
 

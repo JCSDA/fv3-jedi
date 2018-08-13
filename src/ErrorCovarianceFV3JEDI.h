@@ -40,7 +40,8 @@ class ErrorCovarianceFV3JEDI : public util::Printable,
                                   {return "fv3jedi::ErrorCovarianceFV3JEDI";}
 
   ErrorCovarianceFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
-                       const eckit::Configuration &, const StateFV3JEDI &);
+                       const eckit::Configuration &, const StateFV3JEDI &,
+                       const StateFV3JEDI &);
   ~ErrorCovarianceFV3JEDI();
 
   void linearize(const StateFV3JEDI &, const GeometryFV3JEDI &);

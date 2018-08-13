@@ -25,6 +25,7 @@ namespace fv3jedi {
 ErrorCovarianceFV3JEDI::ErrorCovarianceFV3JEDI(const GeometryFV3JEDI & resol,
                                      const oops::Variables &,
                                      const eckit::Configuration & conf,
+                                     const StateFV3JEDI &,
                                      const StateFV3JEDI &) {
   time_ = util::DateTime(conf.getString("date"));
   const eckit::Configuration * configc = &conf;

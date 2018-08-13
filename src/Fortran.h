@@ -165,11 +165,10 @@ extern "C" {
 //  Change variable for B matrix
 // -----------------------------------------------------------------------------
 
-  void fv3jedi_varchange_setup_f90(const F90vcha &,
+  void fv3jedi_varchange_setup_f90(const F90vcha &, const F90flds &,
+                                   const F90flds &,
                                    const eckit::Configuration * const *);
   void fv3jedi_varchange_delete_f90(F90vcha &);
-  void fv3jedi_varchange_linearize_f90(F90vcha &, const F90geom &,
-                                       const F90flds &);
   void fv3jedi_varchange_multiply_f90(const F90vcha &, const F90flds &,
                                       const F90flds &);
   void fv3jedi_varchange_multiplyadjoint_f90(const F90vcha &, const F90flds &,

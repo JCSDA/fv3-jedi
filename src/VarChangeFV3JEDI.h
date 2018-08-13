@@ -32,18 +32,15 @@ class VarChangeFV3JEDI: public util::Printable {
  public:
   static const std::string classname() {return "fv3jedi::VarChangeFV3JEDI";}
 
-  explicit VarChangeFV3JEDI(const eckit::Configuration &);
+  explicit VarChangeFV3JEDI(const StateFV3JEDI &, const StateFV3JEDI &,
+                            const eckit::Configuration &);
   ~VarChangeFV3JEDI();
-
-/// Set linearisation state
-  void linearize(const StateFV3JEDI &, const GeometryFV3JEDI &);
 
 /// Perform linear multiplications
   void multiply(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
   void multiplyInverse(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
   void multiplyAD(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
-  void multiplyInverseAD(const IncrementFV3JEDI &,
-                                     IncrementFV3JEDI &) const;
+  void multiplyInverseAD(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
 
  private:
   F90vcha keyFtnConfig_;
