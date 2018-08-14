@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-module fv3jedi_varchange_mod
+module fv3jedi_varcha_c2m_mod
 
 use fv3jedi_fields_mod, only: fv3jedi_field
 use fv3jedi_geom_mod,   only: fv3jedi_geom
@@ -16,7 +16,7 @@ use moisture_vt_mod, only: esinit, dqsat
 implicit none
 
 !> Fortran derived type to hold configuration data for the B mat variable change
-type :: fv3jedi_varchange
+type :: fv3jedi_varcha_c2m
  integer :: degsubs   = 100
  real(8) :: tmintbl   = 150.0_8, tmaxtbl = 333.0_8
  integer :: tablesize
@@ -24,15 +24,15 @@ type :: fv3jedi_varchange
  real(kind=kind_real), allocatable :: tvtraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
-end type fv3jedi_varchange
+end type fv3jedi_varcha_c2m
 
-#define LISTED_TYPE fv3jedi_varchange
+#define LISTED_TYPE fv3jedi_varcha_c2m
 
 !> Linked list interface - defines registry_t type
 #include "linkedList_i.f"
 
 !> Global registry
-type(registry_t) :: fv3jedi_varchange_registry
+type(registry_t) :: fv3jedi_varcha_c2m_registry
 
 ! ------------------------------------------------------------------------------
 contains
@@ -41,23 +41,21 @@ contains
 #include "linkedList_c.f"
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_setup(self, bg, fg, c_conf)
+subroutine fv3jedi_varcha_c2m_setup(self, bg, fg, geom, c_conf)
 
 use tmprture_vt_mod, only: T_to_Tv
 use pressure_vt_mod, only: delp_to_pe_p_logp
 
 implicit none
-type(fv3jedi_varchange), intent(inout)  :: self    !< Change variable structure
+type(fv3jedi_varcha_c2m), intent(inout) :: self    !< Change variable structure
 type(fv3jedi_field), target, intent(in) :: bg
 type(fv3jedi_field), target, intent(in) :: fg
-type(c_ptr),             intent(in)     :: c_conf  !< Configuration
+type(fv3jedi_geom),         intent(in)  :: geom
+type(c_ptr),                intent(in)  :: c_conf  !< Configuration
 
-type(fv3jedi_geom), pointer :: geom
 real(kind=kind_real), allocatable :: pe(:,:,:)
 real(kind=kind_real), allocatable :: pm(:,:,:)
 real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
-
-geom => bg%geom
 
 !Create lookup table for computing saturation specific humidity
 self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
@@ -87,30 +85,28 @@ deallocate(dqsatdt)
 deallocate(pm)
 deallocate(pe)
 
-nullify(geom)
-
-end subroutine fv3jedi_varchange_setup
+end subroutine fv3jedi_varcha_c2m_setup
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_delete(self)
+subroutine fv3jedi_varcha_c2m_delete(self)
 
 implicit none
-type(fv3jedi_varchange), intent(inout) :: self
+type(fv3jedi_varcha_c2m), intent(inout) :: self
 
 if (allocated(self%estblx)) deallocate(self%estblx)
 if (allocated(self%tvtraj)) deallocate(self%tvtraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
-end subroutine fv3jedi_varchange_delete
+end subroutine fv3jedi_varcha_c2m_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_multiply(self,xctl,xmod)
+subroutine fv3jedi_varcha_c2m_multiply(self,xctl,xmod)
 
 implicit none
-type(fv3jedi_varchange), intent(inout) :: self
+type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xctl
 type(fv3jedi_field), intent(inout) :: xmod
 
@@ -119,14 +115,14 @@ call control_to_state_tlm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%A
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%tvtraj,self%qtraj,self%qsattraj)
 
-end subroutine fv3jedi_varchange_multiply
+end subroutine fv3jedi_varcha_c2m_multiply
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_multiplyadjoint(self,xmod,xctl)
+subroutine fv3jedi_varcha_c2m_multiplyadjoint(self,xmod,xctl)
 
 implicit none
-type(fv3jedi_varchange), intent(inout) :: self
+type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xmod
 type(fv3jedi_field), intent(inout) :: xctl
 
@@ -135,33 +131,33 @@ call control_to_state_adm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%A
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%tvtraj,self%qtraj,self%qsattraj)
 
-end subroutine fv3jedi_varchange_multiplyadjoint
+end subroutine fv3jedi_varcha_c2m_multiplyadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_multiplyinverse(self,xinc,xctr)
+subroutine fv3jedi_varcha_c2m_multiplyinverse(self,xinc,xctr)
 
 implicit none
-type(fv3jedi_varchange), intent(inout) :: self
+type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xinc
 type(fv3jedi_field), intent(inout) :: xctr
 
 !> Not implemented
 
-end subroutine fv3jedi_varchange_multiplyinverse
+end subroutine fv3jedi_varcha_c2m_multiplyinverse
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varchange_multiplyinverseadjoint(self,xinc,xctr)
+subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint(self,xinc,xctr)
 
 implicit none
-type(fv3jedi_varchange), intent(inout) :: self
+type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xinc
 type(fv3jedi_field), intent(inout) :: xctr
 
 !> Not implemented
 
-end subroutine fv3jedi_varchange_multiplyinverseadjoint
+end subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
 
@@ -277,4 +273,4 @@ endsubroutine control_to_state_adm
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_varchange_mod
+end module fv3jedi_varcha_c2m_mod

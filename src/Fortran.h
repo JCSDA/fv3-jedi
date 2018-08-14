@@ -39,7 +39,7 @@ typedef int F90lclz;
 // ObOp trajectory
 typedef int F90ootrj;
 // VarChange key
-typedef int F90vcha;
+typedef int F90vcc2m;
 
 
 /// Interface to Fortran FV3JEDI model
@@ -165,17 +165,17 @@ extern "C" {
 //  Change variable for B matrix
 // -----------------------------------------------------------------------------
 
-  void fv3jedi_varchange_setup_f90(const F90vcha &, const F90flds &,
-                                   const F90flds &,
+  void fv3jedi_varcha_c2m_setup_f90(const F90vcc2m &, const F90flds &,
+                                   const F90flds &, const F90geom &,
                                    const eckit::Configuration * const *);
-  void fv3jedi_varchange_delete_f90(F90vcha &);
-  void fv3jedi_varchange_multiply_f90(const F90vcha &, const F90flds &,
+  void fv3jedi_varcha_c2m_delete_f90(F90vcc2m &);
+  void fv3jedi_varcha_c2m_multiply_f90(const F90vcc2m &, const F90flds &,
                                       const F90flds &);
-  void fv3jedi_varchange_multiplyadjoint_f90(const F90vcha &, const F90flds &,
+  void fv3jedi_varcha_c2m_multiplyadjoint_f90(const F90vcc2m &, const F90flds &,
                                       const F90flds &);
-  void fv3jedi_varchange_multiplyinverse_f90(const F90vcha &, const F90flds &,
+  void fv3jedi_varcha_c2m_multiplyinverse_f90(const F90vcc2m &, const F90flds &,
                                       const F90flds &);
-  void fv3jedi_varchange_multiplyinverseadjoint_f90(const F90vcha &,
+  void fv3jedi_varcha_c2m_multiplyinverseadjoint_f90(const F90vcc2m &,
                                               const F90flds &, const F90flds &);
 
 // -----------------------------------------------------------------------------

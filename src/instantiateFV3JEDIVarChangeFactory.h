@@ -8,7 +8,7 @@
 #ifndef SRC_INSTANTIATEFV3JEDIVARCHANGEFACTORY_H_
 #define SRC_INSTANTIATEFV3JEDIVARCHANGEFACTORY_H_
 
-#include "src/VarChangeFV3JEDI.h"
+#include "src/VarChaC2MFV3JEDI.h"
 #include "src/FV3JEDITraits.h"
 #include "oops/interface/LinearVariableChange.h"
 
@@ -17,8 +17,8 @@ namespace fv3jedi {
 void instantiateFV3JEDIVarChangeFactory() {
   static oops::LinearVariableChangeMaker<fv3jedi::FV3JEDITraits,
          oops::LinearVariableChange<fv3jedi::FV3JEDITraits,
-                                    fv3jedi::VarChangeFV3JEDI> >
-    makerVarChangeFV3JEDI_("VarChangeFV3JEDI");
+                                    fv3jedi::VarChaC2MFV3JEDI> >
+    makerVarChangeFV3JEDI_("Control2Model");
 }
 
 }  // namespace fv3jedi

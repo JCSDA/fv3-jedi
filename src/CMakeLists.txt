@@ -29,8 +29,8 @@ TlmIdFV3JEDI.cc
 TlmIdFV3JEDI.h
 UtilitiesFV3JEDI.cc
 UtilitiesFV3JEDI.h
-VarChangeFV3JEDI.cc
-VarChangeFV3JEDI.h
+VarChaC2MFV3JEDI.cc
+VarChaC2MFV3JEDI.h
 fv3jedi_constants.f90
 fv3jedi_covariance_interface.F90
 fv3jedi_covariance_mod.F90
@@ -45,8 +45,8 @@ fv3jedi_model_interface.F90
 fv3jedi_model_mod.F90
 fv3jedi_setup.f90
 fv3jedi_trajectories.F90
-fv3jedi_varchange_interface.F90
-fv3jedi_varchange_mod.F90
+fv3jedi_varcha_c2m_interface.F90
+fv3jedi_varcha_c2m_mod.F90
 fv3jedi_vars_mod.F90
 instantiateLocalizationFactory.h
 random_vectors_mod.F90
