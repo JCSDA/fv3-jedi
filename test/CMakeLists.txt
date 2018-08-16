@@ -381,6 +381,9 @@ testinput/errorcov_fv3gfs.yaml
 testinput/errorcov_geos.yaml
 testinput/localization_fv3gfs.yaml
 testinput/localization_geos.yaml
+testinput/parametersbump_fv3gfs.cov.yaml
+testinput/parametersbump_fv3gfs.loc.yaml
+testinput/parametersbump_fv3gfs.lct.yaml
 compare.sh
 )
 

@@ -1,0 +1,85 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+logging:
+  categories: Info, Test, Warning, Error
+resolution:
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  wind_type: D-grid
+  filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_akbk: 20170801.000000.fv_core.res.nc
+  ak_var: ak
+  bk_var: bk
+variables:
+  variables:
+  - u
+  - v
+  - t
+  - delp
+  - q
+model:
+  init_tlmadm: '0'
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  tstep: PT15M
+  update_dgridwind: '1'
+initial:
+  restart_type: fv3gfs
+  datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_write: 'Data/'
+  date: '2017-08-01T00:00:00Z'
+  read_crtm_surface: 0
+  filename_core: 20170801.000000.fv_core.res.nc
+  filename_cplr: 20170801.000000.coupler.res
+  filename_trcr: 20170801.000000.fv_tracer.res.nc
+  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+Covariance:
+  covariance: BUMP
+  date: '2017-08-01T00:00:00Z'
+  prefix: bump
+  strategy: common
+  new_param: 1
+  check_adjoints: 1
+  ntry: 3
+  nrep: 2
+  lsqrt: 1
+  resol: 2
+  nicas_interp: bilin
+  network: 0
+  mpicom: 2
+  advmode: 0
+  forced_radii: 1
+  rh: 2800000
+  rv: 2.407
+  variable_changes:
+  - varchange: ErrStdDevQG
+    inputVariables:
+      variables:
+      - u
+      - v
+      - t
+      - delp
+      - q
+    outputVariables:
+      variables:
+      - u
+      - v
+      - t
+      - delp
+      - q
+    standard_deviation: '0.8'
+dirac:
+  ndir: 1
+  ixdir(1): 20
+  iydir(1): 10
+  ildir: 1
+  ifdir: 1
+output_B:
+  datadir: Data
+  exp: B_bumpcov
+  type: an
+  date: '2017-08-01T00:00:00Z'
