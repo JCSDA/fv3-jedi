@@ -25,6 +25,7 @@ type :: fv3jedi_varcha_c2m
  real(kind=kind_real), allocatable :: tvtraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
+ type(fv3jedi_geom), pointer :: geom
 end type fv3jedi_varcha_c2m
 
 #define LISTED_TYPE fv3jedi_varcha_c2m
@@ -51,12 +52,14 @@ implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self    !< Change variable structure
 type(fv3jedi_field), target, intent(in) :: bg
 type(fv3jedi_field), target, intent(in) :: fg
-type(fv3jedi_geom),         intent(in)  :: geom
+type(fv3jedi_geom), target,  intent(in)  :: geom
 type(c_ptr),                intent(in)  :: c_conf  !< Configuration
 
 real(kind=kind_real), allocatable :: pe(:,:,:)
 real(kind=kind_real), allocatable :: pm(:,:,:)
 real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
+
+self%geom => geom
 
 !Create lookup table for computing saturation specific humidity
 self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
@@ -105,6 +108,8 @@ if (allocated(self%ttraj)) deallocate(self%ttraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
+nullify(self%geom)
+
 end subroutine fv3jedi_varcha_c2m_delete
 
 ! ------------------------------------------------------------------------------
@@ -143,12 +148,16 @@ end subroutine fv3jedi_varcha_c2m_multiplyadjoint
 
 subroutine fv3jedi_varcha_c2m_multiplyinverse(self,xmod,xctr)
 
+use wind_vt_mod, only: uv_to_vortdivg, vortdivg_to_psichi
+use tmprture_vt_mod, only: t_to_tv_tl
+use moisture_vt_mod, only: q_to_rh_tl
+
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_field), intent(inout) :: xmod
 type(fv3jedi_field), intent(inout) :: xctr
 
-real(kind=kind_real), dimension(:,:,:) :: vort, div, ua, va
+real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
 !Tangent linear inverse (model to control)
 
@@ -156,26 +165,26 @@ real(kind=kind_real), dimension(:,:,:) :: vort, div, ua, va
  xctr%Atm%chi = 0.0_kind_real
  xctr%Atm%tv  = 0.0_kind_real
  xctr%Atm%ps  = 0.0_kind_real
- xctr%Atm%qc  = 0.0_kind_real
+ xctr%Atm%qct = 0.0_kind_real
 
 !Allocate vorticity/divergence and A-grid winds
-allocate (vort(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%nz))
-allocate (divg(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%nz))
-allocate (  ua(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%nz))
-allocate (  va(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%nz))
+allocate (vort(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
+allocate (divg(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
+allocate (  ua(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
+allocate (  va(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
 
 !> Convert u,v to vorticity and divergence
 call uv_to_vortdivg(self%geom,xmod%Atm%u,xmod%Atm%v,ua,va,vort,divg)
 
 !> Poisson solver for vorticity and divergence to psi and chi
-call vortdivg_to_psichi(self%geom,fld,vort,divg,xctr%Atm%psi,xctr%Atm%chi)
+call vortdivg_to_psichi(self%geom,xctr,vort,divg,xctr%Atm%psi,xctr%Atm%chi)
 
 !> T to Tv
 call t_to_tv_tl(self%geom,self%ttraj,xmod%Atm%pt,self%qtraj,xmod%Atm%q(:,:,:,1))
-xctr%Atm%t = xmod%Atm%pt
+xctr%Atm%tv = xmod%Atm%pt
 
 !> q to RH
-call q_to_rh_tl(self%geom,self%qsattraj,xmod%Atm%q(:,:,:,1),xctr%Atm%qc(:,:,:,1))
+call q_to_rh_tl(self%geom,self%qsattraj,xmod%Atm%q(:,:,:,1),xctr%Atm%qct(:,:,:,1))
 
 !Deallocate
 deallocate(vort,divg,ua,va)

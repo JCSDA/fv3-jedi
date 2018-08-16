@@ -136,8 +136,8 @@ extern "C" {
   void fv3jedi_field_gpnorm_f90(const F90flds &, const int &, double &);
   void fv3jedi_field_sizes_f90(const F90flds &, int &, int &, int &);
   void fv3jedi_field_rms_f90(const F90flds &, double &);
-  void fv3jedi_field_ug_coord_f90(const F90flds &, const int &);
-  void fv3jedi_field_field_to_ug_f90(const F90flds &, const int &);
+  void fv3jedi_field_ug_coord_f90(const F90flds &, const int &, const int &);
+  void fv3jedi_field_field_to_ug_f90(const F90flds &, const int &, const int &);
   void fv3jedi_field_field_from_ug_f90(const F90flds &, const int &);
 
   void fv3jedi_field_dirac_f90(const F90flds &,

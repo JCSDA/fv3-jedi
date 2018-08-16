@@ -92,7 +92,7 @@ end subroutine fv3jedi_field_random_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_ug_coord_c(c_key_fld, c_key_ug) bind (c,name='fv3jedi_field_ug_coord_f90')
+subroutine fv3jedi_field_ug_coord_c(c_key_fld, c_key_ug, c_colocated) bind (c,name='fv3jedi_field_ug_coord_f90')
 
 use iso_c_binding
 use fv3jedi_fields_mod
@@ -100,19 +100,23 @@ use unstructured_grid_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld
 integer(c_int), intent(in) :: c_key_ug
+integer(c_int), intent(in) :: c_colocated
 type(fv3jedi_field), pointer :: fld
 type(unstructured_grid), pointer :: ug
+integer :: colocated
+
+colocated = c_colocated
 
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call unstructured_grid_registry%get(c_key_ug,ug)
 
-call ug_coord(fld, ug)
+call ug_coord(fld, ug, colocated)
 
 end subroutine fv3jedi_field_ug_coord_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_field_to_ug_c(c_key_fld, c_key_ug) bind (c,name='fv3jedi_field_field_to_ug_f90')
+subroutine fv3jedi_field_field_to_ug_c(c_key_fld, c_key_ug, c_colocated) bind (c,name='fv3jedi_field_field_to_ug_f90')
 
 use iso_c_binding
 use fv3jedi_fields_mod
@@ -120,13 +124,17 @@ use unstructured_grid_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld
 integer(c_int), intent(in) :: c_key_ug
+integer(c_int), intent(in) :: c_colocated
 type(fv3jedi_field), pointer :: fld
 type(unstructured_grid), pointer :: ug
+integer :: colocated
+
+colocated = c_colocated
 
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call unstructured_grid_registry%get(c_key_ug,ug)
 
-call field_to_ug(fld, ug)
+call field_to_ug(fld, ug, colocated)
 
 end subroutine fv3jedi_field_field_to_ug_c
 
