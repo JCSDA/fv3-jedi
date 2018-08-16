@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Handle fields for the FV3JEDI model
+!> Handle fields for the FV3JEDI odel
 
 module fv3jedi_fields_mod
 
@@ -2800,7 +2800,7 @@ bump%nam%local_diag = .false.
 !Less important namelist options (should not be changed)
 bump%nam%default_seed = .true.
 bump%nam%new_hdiag = .false.
-bump%nam%new_param = .false.
+bump%nam%new_nicas = .false.
 bump%nam%check_adjoints = .false.
 bump%nam%check_pos_def = .false.
 bump%nam%check_sqrt = .false.
