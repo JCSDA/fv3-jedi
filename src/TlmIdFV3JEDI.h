@@ -59,6 +59,7 @@ class TlmIdFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
 /// Other utilities
   const util::Duration & timeResolution() const override {return tstep_;}
   const GeometryFV3JEDI & resolution() const {return resol_;}
+  const oops::Variables & variables() const override {return linvars_;}
 
  private:
   void print(std::ostream &) const override;
@@ -67,6 +68,7 @@ class TlmIdFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
   int keyConfig_;
   util::Duration tstep_;
   const GeometryFV3JEDI resol_;
+  const oops::Variables linvars_;
 };
 // -----------------------------------------------------------------------------
 

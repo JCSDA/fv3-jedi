@@ -179,12 +179,14 @@ void FieldsFV3JEDI::diff(const FieldsFV3JEDI & x1, const FieldsFV3JEDI & x2) {
   fv3jedi_field_diff_incr_f90(keyFlds_, x1.keyFlds_, x2.keyFlds_);
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::ug_coord(oops::UnstructuredGrid & ug) const {
-  fv3jedi_field_ug_coord_f90(keyFlds_, ug.toFortran());
+void FieldsFV3JEDI::ug_coord(oops::UnstructuredGrid & ug,
+                             const int & colocated) const {
+  fv3jedi_field_ug_coord_f90(keyFlds_, ug.toFortran(), colocated);
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug) const {
-  fv3jedi_field_field_to_ug_f90(keyFlds_, ug.toFortran());
+void FieldsFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug,
+                                const int & colocated) const {
+  fv3jedi_field_field_to_ug_f90(keyFlds_, ug.toFortran(), colocated);
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug) {

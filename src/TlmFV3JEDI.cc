@@ -30,7 +30,8 @@ static oops::LinearModelMaker<FV3JEDITraits, TlmFV3JEDI>
 TlmFV3JEDI::TlmFV3JEDI(const GeometryFV3JEDI & resol,
                         const eckit::Configuration & tlConf)
   : keyConfig_(0), tstep_(), resol_(resol), traj_(),
-    lrmodel_(resol_, eckit::LocalConfiguration(tlConf, "trajectory"))
+    lrmodel_(resol_, eckit::LocalConfiguration(tlConf, "trajectory")),
+    linvars_(std::vector<std::string>{"u", "v", "t", "delp", "q"})
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
 
