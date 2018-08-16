@@ -5,6 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <vector>
+
 #include "src/TlmIdFV3JEDI.h"
 
 #include "eckit/config/LocalConfiguration.h"
@@ -26,7 +28,8 @@ static oops::LinearModelMaker<FV3JEDITraits, TlmIdFV3JEDI>
 // -----------------------------------------------------------------------------
 TlmIdFV3JEDI::TlmIdFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & tlConf)
-  : keyConfig_(0), tstep_(), resol_(resol)
+  : keyConfig_(0), tstep_(), resol_(resol),
+  linvars_(std::vector<std::string>{"u", "v", "t", "delp", "q"})
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
 

@@ -39,9 +39,11 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
 }
 // -----------------------------------------------------------------------------
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
+                           const oops::Variables & varsin,
                            const eckit::Configuration & file)
   : fields_(), stash_()
 {
+
   const std::vector<std::string> *vv;
 
   if (file.has("variables"))
@@ -50,6 +52,7 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
     vv = new std::vector<std::string>({"u", "v", "pt", "delp", "q"});
 
   oops::Variables vars(*vv);
+
   fields_.reset(new FieldsFV3JEDI(resol, vars, util::DateTime()));
 
   if (file.has("analytic_init"))

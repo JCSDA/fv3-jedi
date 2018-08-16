@@ -55,7 +55,8 @@ class StateFV3JEDI : public util::Printable,
 /// Constructor, destructor
   StateFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
                const util::DateTime &);  // Is it used?
-  StateFV3JEDI(const GeometryFV3JEDI &, const eckit::Configuration &);
+  StateFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
+               const eckit::Configuration &);
   StateFV3JEDI(const GeometryFV3JEDI &, const StateFV3JEDI &);
   StateFV3JEDI(const StateFV3JEDI &);
   virtual ~StateFV3JEDI();
