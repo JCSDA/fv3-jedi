@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.basemap import Basemap
 
 #User input required for the follwing:
-plot_diff = 0         #Plot path1/file - path2/file
+plot_diff = 1         #Plot path1/file - path2/file
 model = 'fv3gfs'
 cube = 48
 filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20170801.000000.fv_core_bump.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20170801.000000.3D-Var.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
