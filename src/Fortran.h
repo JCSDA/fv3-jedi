@@ -77,12 +77,15 @@ extern "C" {
   void fv3jedi_model_prepare_integration_ad_f90(const F90model &,
                                                  const F90flds &);
 
-  void fv3jedi_model_propagate_f90(const F90model &, const F90flds &);
+  void fv3jedi_model_propagate_f90(const F90geom &, const F90model &,
+                                   const F90flds &);
   void fv3jedi_model_prop_traj_f90(const F90model &, const F90flds &,
                                     F90traj &);
-  void fv3jedi_model_propagate_tl_f90(const F90model &, const F90flds &,
+  void fv3jedi_model_propagate_tl_f90(const F90geom &, const F90model &,
+                                      const F90flds &,
                                        const F90traj &);
-  void fv3jedi_model_propagate_ad_f90(const F90model &, const F90flds &,
+  void fv3jedi_model_propagate_ad_f90(const F90geom &, const F90model &,
+                                      const F90flds &,
                                        const F90traj &);
 
   void fv3jedi_model_wipe_traj_f90(F90traj &);
@@ -111,37 +114,43 @@ extern "C" {
 
   void fv3jedi_field_change_resol_f90(const F90flds &, const F90flds &);
 
-  void fv3jedi_field_read_file_f90(const F90flds &,
+  void fv3jedi_field_read_file_f90(const F90geom &, const F90flds &,
                                     const eckit::Configuration * const *,
                                     util::DateTime * const *);
   void fv3jedi_field_analytic_init_f90(const F90flds &, const F90geom &,
                                         const eckit::Configuration * const *,
                                         util::DateTime * const *);
-  void fv3jedi_field_write_file_f90(const F90flds &,
+  void fv3jedi_field_write_file_f90(const F90geom &, const F90flds &,
                                      const eckit::Configuration * const *,
                                      const util::DateTime * const *);
 
-  void fv3jedi_field_getvalues_notraj_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_notraj_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &);
-  void fv3jedi_field_getvalues_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &,
                         const F90ootrj &);
-  void fv3jedi_field_getvalues_tl_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_tl_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &,
                         const F90ootrj &);
-  void fv3jedi_field_getvalues_ad_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_ad_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &,
                         const F90ootrj &);
 
   void fv3jedi_field_gpnorm_f90(const F90flds &, const int &, double &);
   void fv3jedi_field_sizes_f90(const F90flds &, int &, int &, int &);
   void fv3jedi_field_rms_f90(const F90flds &, double &);
-  void fv3jedi_field_ug_coord_f90(const F90flds &, const int &, const int &);
+  void fv3jedi_field_ug_coord_f90(const F90flds &, const int &, const int &,
+                                  const F90geom &);
   void fv3jedi_field_field_to_ug_f90(const F90flds &, const int &, const int &);
   void fv3jedi_field_field_from_ug_f90(const F90flds &, const int &);
 
   void fv3jedi_field_dirac_f90(const F90flds &,
-                                const eckit::Configuration * const *);
+                                const eckit::Configuration * const *,
+                                 const F90geom &);
 
   void fv3jedi_getvaltraj_setup_f90(const F90ootrj &);
   void fv3jedi_getvaltraj_delete_f90(const F90ootrj &);
@@ -169,13 +178,17 @@ extern "C" {
                                    const F90flds &, const F90geom &,
                                    const eckit::Configuration * const *);
   void fv3jedi_varcha_c2m_delete_f90(F90vcc2m &);
-  void fv3jedi_varcha_c2m_multiply_f90(const F90vcc2m &, const F90flds &,
+  void fv3jedi_varcha_c2m_multiply_f90(const F90vcc2m &, const F90geom &,
+                                       const F90flds &,
+                                       const F90flds &);
+  void fv3jedi_varcha_c2m_multiplyadjoint_f90(const F90vcc2m &, const F90geom &,
+                                      const F90flds &,
                                       const F90flds &);
-  void fv3jedi_varcha_c2m_multiplyadjoint_f90(const F90vcc2m &, const F90flds &,
-                                      const F90flds &);
-  void fv3jedi_varcha_c2m_multiplyinverse_f90(const F90vcc2m &, const F90flds &,
+  void fv3jedi_varcha_c2m_multiplyinverse_f90(const F90vcc2m &, const F90geom &,
+                                      const F90flds &,
                                       const F90flds &);
   void fv3jedi_varcha_c2m_multiplyinverseadjoint_f90(const F90vcc2m &,
+                                              const F90geom &,
                                               const F90flds &, const F90flds &);
 
 // -----------------------------------------------------------------------------

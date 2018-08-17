@@ -25,7 +25,6 @@ type :: fv3jedi_varcha_c2m
  real(kind=kind_real), allocatable :: tvtraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
- type(fv3jedi_geom), pointer :: geom
 end type fv3jedi_varcha_c2m
 
 #define LISTED_TYPE fv3jedi_varcha_c2m
@@ -58,8 +57,6 @@ type(c_ptr),                intent(in)  :: c_conf  !< Configuration
 real(kind=kind_real), allocatable :: pe(:,:,:)
 real(kind=kind_real), allocatable :: pm(:,:,:)
 real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
-
-self%geom => geom
 
 !Create lookup table for computing saturation specific humidity
 self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
@@ -108,21 +105,20 @@ if (allocated(self%ttraj)) deallocate(self%ttraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
-nullify(self%geom)
-
 end subroutine fv3jedi_varcha_c2m_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiply(self,xctl,xmod)
+subroutine fv3jedi_varcha_c2m_multiply(self,geom,xctl,xmod)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
+type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_field), intent(inout) :: xctl
 type(fv3jedi_field), intent(inout) :: xmod
 
 !Tangent linear of analysis (control) to model variables
-call control_to_model_tlm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%Atm%ps  ,xctl%Atm%qct(:,:,:,1), &
+call control_to_model_tlm(geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%Atm%ps  ,xctl%Atm%qct(:,:,:,1), &
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%tvtraj,self%qtraj,self%qsattraj)
 
@@ -130,15 +126,16 @@ end subroutine fv3jedi_varcha_c2m_multiply
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiplyadjoint(self,xmod,xctl)
+subroutine fv3jedi_varcha_c2m_multiplyadjoint(self,geom,xmod,xctl)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
+type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_field), intent(inout) :: xmod
 type(fv3jedi_field), intent(inout) :: xctl
 
 !Adjoint of analysis (control) to model variables
-call control_to_model_adm(xctl%geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%Atm%ps  ,xctl%Atm%qct(:,:,:,1), &
+call control_to_model_adm(geom,xctl%Atm%psi,xctl%Atm%chi,xctl%Atm%tv,xctl%Atm%ps  ,xctl%Atm%qct(:,:,:,1), &
                                     xmod%Atm%u  ,xmod%Atm%v  ,xmod%Atm%pt,xmod%Atm%delp,xmod%Atm%q  (:,:,:,1), &
                                     self%tvtraj,self%qtraj,self%qsattraj)
 
@@ -146,7 +143,7 @@ end subroutine fv3jedi_varcha_c2m_multiplyadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiplyinverse(self,xmod,xctr)
+subroutine fv3jedi_varcha_c2m_multiplyinverse(self,geom,xmod,xctr)
 
 use wind_vt_mod, only: uv_to_vortdivg, vortdivg_to_psichi
 use tmprture_vt_mod, only: t_to_tv_tl
@@ -154,6 +151,7 @@ use moisture_vt_mod, only: q_to_rh_tl
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
+type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_field), intent(inout) :: xmod
 type(fv3jedi_field), intent(inout) :: xctr
 
@@ -167,36 +165,42 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
  xctr%Atm%ps  = 0.0_kind_real
  xctr%Atm%qct = 0.0_kind_real
 
-!Allocate vorticity/divergence and A-grid winds
-allocate (vort(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
-allocate (divg(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
-allocate (  ua(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
-allocate (  va(self%geom%bd%isd:self%geom%bd%ied,self%geom%bd%jsd:self%geom%bd%jed,self%geom%npz))
+ xctr%Atm%psi =  xmod%Atm%u
+ xctr%Atm%chi =  xmod%Atm%v
+ xctr%Atm%tv  =  xmod%Atm%pt
+ xctr%Atm%ps  =  xmod%Atm%delp(:,:,geom%npz)
+ xctr%Atm%qct =  xmod%Atm%q
 
-!> Convert u,v to vorticity and divergence
-call uv_to_vortdivg(self%geom,xmod%Atm%u,xmod%Atm%v,ua,va,vort,divg)
-
-!> Poisson solver for vorticity and divergence to psi and chi
-call vortdivg_to_psichi(self%geom,xctr,vort,divg,xctr%Atm%psi,xctr%Atm%chi)
-
-!> T to Tv
-call t_to_tv_tl(self%geom,self%ttraj,xmod%Atm%pt,self%qtraj,xmod%Atm%q(:,:,:,1))
-xctr%Atm%tv = xmod%Atm%pt
-
-!> q to RH
-call q_to_rh_tl(self%geom,self%qsattraj,xmod%Atm%q(:,:,:,1),xctr%Atm%qct(:,:,:,1))
-
-!Deallocate
-deallocate(vort,divg,ua,va)
+!allocate (vort(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,geom%npz))
+!allocate (divg(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,geom%npz))
+!allocate (  ua(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,geom%npz))
+!allocate (  va(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,geom%npz))
+!
+!!> Convert u,v to vorticity and divergence
+!call uv_to_vortdivg(geom,xmod%Atm%u,xmod%Atm%v,ua,va,vort,divg)
+!
+!!> Poisson solver for vorticity and divergence to psi and chi
+!call vortdivg_to_psichi(geom,xctr,vort,divg,xctr%Atm%psi,xctr%Atm%chi)
+!
+!!> T to Tv
+!call t_to_tv_tl(geom,self%ttraj,xmod%Atm%pt,self%qtraj,xmod%Atm%q(:,:,:,1))
+!xctr%Atm%tv = xmod%Atm%pt
+!
+!!> q to RH
+!call q_to_rh_tl(geom,self%qsattraj,xmod%Atm%q(:,:,:,1),xctr%Atm%qct(:,:,:,1))
+!
+!!Deallocate
+!deallocate(vort,divg,ua,va)
 
 end subroutine fv3jedi_varcha_c2m_multiplyinverse
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint(self,xctr,xmod)
+subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint(self,geom,xctr,xmod)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
+type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_field), intent(inout) :: xctr
 type(fv3jedi_field), intent(inout) :: xmod
 

@@ -44,6 +44,7 @@ class VarChaC2MFV3JEDI: public util::Printable {
   void multiplyInverseAD(const IncrementFV3JEDI &, IncrementFV3JEDI &) const;
 
  private:
+  boost::shared_ptr<const GeometryFV3JEDI> geom_;
   F90vcc2m keyFtnConfig_;
   void print(std::ostream &) const override;
 };

@@ -8,7 +8,6 @@
 module fv3jedi_fields_utils_mod
 
 use kinds
-use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_vars_mod, only: fv3jedi_vars 
 
 implicit none
@@ -61,10 +60,10 @@ end type fv_atmos_type
 type :: fv3jedi_field
   type(fv_atmos_type) :: Atm
   type(fv3jedi_vars) :: vars 
-  type(fv3jedi_geom), pointer :: geom
 !  integer :: nf
-  integer :: isc, iec, jsc, jec, npz, nq
+  integer :: isc, iec, jsc, jec
   integer :: isd, ied, jsd, jed
+  integer :: npx, npy, npz, nq
   integer :: root_pe
   logical :: havecrtmfields = .false.
   integer :: ti_q, ti_ql, ti_qi, ti_o3

@@ -48,7 +48,8 @@ void ModelFV3JEDI::initialize(StateFV3JEDI & xx) const {
 void ModelFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
   oops::Log::debug() << "ModelFV3JEDI::step fields in"
                      << xx.fields() << std::endl;
-  fv3jedi_model_propagate_f90(keyConfig_, xx.fields().toFortran());
+  fv3jedi_model_propagate_f90(geom_.toFortran(),
+                              keyConfig_, xx.fields().toFortran());
   xx.validTime() += tstep_;
   oops::Log::debug() << "ModelFV3JEDI::step fields out"
                      << xx.fields() << std::endl;
