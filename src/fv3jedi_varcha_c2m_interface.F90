@@ -5,8 +5,8 @@
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_c2m_setup(c_key_self, c_key_state_bg, c_key_state_fg, &
-           c_key_geom, c_conf) bind (c,name='fv3jedi_varcha_c2m_setup_f90')
+subroutine c_fv3jedi_varcha_c2m_setup(c_key_self, c_key_geom, c_key_state_bg, c_key_state_fg, &
+           c_conf) bind (c,name='fv3jedi_varcha_c2m_setup_f90')
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
@@ -59,7 +59,7 @@ end subroutine c_fv3jedi_varcha_c2m_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_c2m_multiply(c_key_geom, c_key_self, c_key_in, c_key_out) &
+subroutine c_fv3jedi_varcha_c2m_multiply(c_key_self, c_key_geom, c_key_in, c_key_out) &
            bind (c,name='fv3jedi_varcha_c2m_multiply_f90')
 
 use iso_c_binding
@@ -90,7 +90,7 @@ end subroutine c_fv3jedi_varcha_c2m_multiply
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_c2m_multiplyadjoint(c_key_geom, c_key_self, c_key_in, &
+subroutine c_fv3jedi_varcha_c2m_multiplyadjoint(c_key_self, c_key_geom, c_key_in, &
            c_key_out) bind (c,name='fv3jedi_varcha_c2m_multiplyadjoint_f90')
 
 use iso_c_binding
@@ -123,7 +123,7 @@ end subroutine c_fv3jedi_varcha_c2m_multiplyadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_c2m_multiplyinverse(c_key_geom, c_key_self, c_key_in, c_key_out) &
+subroutine c_fv3jedi_varcha_c2m_multiplyinverse(c_key_self, c_key_geom, c_key_in, c_key_out) &
            bind (c,name='fv3jedi_varcha_c2m_multiplyinverse_f90')
 
 use iso_c_binding
@@ -154,7 +154,7 @@ end subroutine c_fv3jedi_varcha_c2m_multiplyinverse
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_c2m_multiplyinverseadjoint(c_key_geom, c_key_self, c_key_in, &
+subroutine c_fv3jedi_varcha_c2m_multiplyinverseadjoint(c_key_self, c_key_geom, c_key_in, &
       c_key_out) bind (c,name='fv3jedi_varcha_c2m_multiplyinverseadjoint_f90')
 
 use iso_c_binding

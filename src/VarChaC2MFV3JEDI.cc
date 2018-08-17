@@ -25,8 +25,8 @@ VarChaC2MFV3JEDI::VarChaC2MFV3JEDI(const StateFV3JEDI & bg,
     geom_(new GeometryFV3JEDI(resol))
 {
     const eckit::Configuration * configc = &conf;
-    fv3jedi_varcha_c2m_setup_f90(keyFtnConfig_, bg.fields().toFortran(),
-                                 fg.fields().toFortran(), geom_->toFortran(),
+    fv3jedi_varcha_c2m_setup_f90(keyFtnConfig_, geom_->toFortran(), bg.fields().toFortran(),
+                                 fg.fields().toFortran(),
                                  &configc);
     oops::Log::trace() << "VarChaC2MFV3JEDI created" << std::endl;
 }

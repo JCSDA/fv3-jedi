@@ -174,21 +174,20 @@ extern "C" {
 //  Change variable for B matrix
 // -----------------------------------------------------------------------------
 
-  void fv3jedi_varcha_c2m_setup_f90(const F90vcc2m &, const F90flds &,
-                                   const F90flds &, const F90geom &,
+  void fv3jedi_varcha_c2m_setup_f90(const F90vcc2m &, const F90geom &, const F90flds &,
+                                   const F90flds &,
                                    const eckit::Configuration * const *);
   void fv3jedi_varcha_c2m_delete_f90(F90vcc2m &);
-  void fv3jedi_varcha_c2m_multiply_f90(const F90vcc2m &, const F90geom &,
+  void fv3jedi_varcha_c2m_multiply_f90(const F90vcc2m &, const F90geom &, 
                                        const F90flds &,
                                        const F90flds &);
-  void fv3jedi_varcha_c2m_multiplyadjoint_f90(const F90vcc2m &, const F90geom &,
+  void fv3jedi_varcha_c2m_multiplyadjoint_f90(const F90vcc2m &, const F90geom &, 
                                       const F90flds &,
                                       const F90flds &);
   void fv3jedi_varcha_c2m_multiplyinverse_f90(const F90vcc2m &, const F90geom &,
                                       const F90flds &,
                                       const F90flds &);
-  void fv3jedi_varcha_c2m_multiplyinverseadjoint_f90(const F90vcc2m &,
-                                              const F90geom &,
+  void fv3jedi_varcha_c2m_multiplyinverseadjoint_f90(const F90vcc2m &, const F90geom &, 
                                               const F90flds &, const F90flds &);
 
 // -----------------------------------------------------------------------------
