@@ -63,16 +63,20 @@ end subroutine fv3jedi_field_zero_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_dirac_c(c_key_self,c_conf) bind(c,name='fv3jedi_field_dirac_f90')
+subroutine fv3jedi_field_dirac_c(c_key_self,c_conf,c_key_geom) bind(c,name='fv3jedi_field_dirac_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
+use fv3jedi_geom_mod
 implicit none
 integer(c_int), intent(in) :: c_key_self
 type(c_ptr), intent(in)    :: c_conf !< Configuration
+integer(c_int), intent(in) :: c_key_geom !< Geometry
 type(fv3jedi_field), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_self,self)
-call dirac(self,c_conf)
+call dirac(self,c_conf,geom)
 
 end subroutine fv3jedi_field_dirac_c
 
@@ -92,25 +96,29 @@ end subroutine fv3jedi_field_random_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_ug_coord_c(c_key_fld, c_key_ug, c_colocated) bind (c,name='fv3jedi_field_ug_coord_f90')
+subroutine fv3jedi_field_ug_coord_c(c_key_fld, c_key_ug, c_colocated, c_key_geom) bind (c,name='fv3jedi_field_ug_coord_f90')
 
 use iso_c_binding
 use fv3jedi_fields_mod
 use unstructured_grid_mod
+use fv3jedi_geom_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld
 integer(c_int), intent(in) :: c_key_ug
 integer(c_int), intent(in) :: c_colocated
+integer(c_int), intent(in) :: c_key_geom !< Geometry
 type(fv3jedi_field), pointer :: fld
 type(unstructured_grid), pointer :: ug
 integer :: colocated
+type(fv3jedi_geom),  pointer :: geom
 
 colocated = c_colocated
 
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call unstructured_grid_registry%get(c_key_ug,ug)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call ug_coord(fld, ug, colocated)
+call ug_coord(fld, ug, colocated, geom)
 
 end subroutine fv3jedi_field_ug_coord_c
 
@@ -351,22 +359,26 @@ end subroutine fv3jedi_field_change_resol_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_read_file_c(c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_read_file_f90')
+subroutine fv3jedi_field_read_file_c(c_key_geom, c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_read_file_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use datetime_mod
+use fv3jedi_geom_mod
 
 implicit none
 integer(c_int), intent(in) :: c_key_fld  !< Fields
 type(c_ptr), intent(in)    :: c_conf !< Configuration
 type(c_ptr), intent(inout) :: c_dt   !< DateTime
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
 
 type(fv3jedi_field), pointer :: fld
 type(datetime) :: fdate
+type(fv3jedi_geom),  pointer :: geom
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call c_f_datetime(c_dt, fdate)
-call read_file(fld, c_conf, fdate)
+call read_file(geom, fld, c_conf, fdate)
 
 end subroutine fv3jedi_field_read_file_c
 
@@ -388,8 +400,8 @@ type(fv3jedi_field), pointer :: fld
 type(fv3jedi_geom), pointer :: geom
 type(datetime) :: fdate
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_fld,fld)
-call fv3jedi_geom_registry%get(c_key_geom,geom)
 call c_f_datetime(c_dt, fdate)
 call analytic_IC(fld, geom, c_conf, fdate)
 
@@ -397,22 +409,26 @@ end subroutine fv3jedi_field_analytic_init_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_write_file_c(c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_write_file_f90')
+subroutine fv3jedi_field_write_file_c(c_key_geom, c_key_fld, c_conf, c_dt) bind(c,name='fv3jedi_field_write_file_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use datetime_mod
+use fv3jedi_geom_mod
 
 implicit none
 integer(c_int), intent(in) :: c_key_fld  !< Fields
 type(c_ptr), intent(in) :: c_conf !< Configuration
 type(c_ptr), intent(in) :: c_dt   !< DateTime
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
 
 type(fv3jedi_field), pointer :: fld
 type(datetime) :: fdate
+type(fv3jedi_geom),  pointer :: geom
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_fld,fld)
 call c_f_datetime(c_dt, fdate)
-call write_file(fld, c_conf, fdate)
+call write_file(geom, fld, c_conf, fdate)
 
 end subroutine fv3jedi_field_write_file_c
 
@@ -467,7 +483,7 @@ end subroutine fv3jedi_field_rms_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_getvalues_notraj_c(c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_getvalues_notraj_f90')
+subroutine fv3jedi_field_getvalues_notraj_c(c_key_geom, c_key_fld,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_field_getvalues_notraj_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use ioda_locs_mod
@@ -475,29 +491,33 @@ use ioda_locs_mod_c, only: ioda_locs_registry
 use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
+use fv3jedi_geom_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
 type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_field), pointer :: fld
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
+type(fv3jedi_geom),  pointer :: geom
 
 call ufo_vars_setup(vars, c_vars)
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_fld, fld)
 call ioda_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
 
-call getvalues(fld, locs, vars, gom)
+call getvalues(geom, fld, locs, vars, gom)
 
 end subroutine fv3jedi_field_getvalues_notraj_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_getvalues_c(c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_getvalues_f90')
+subroutine fv3jedi_field_getvalues_c(c_key_geom, c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_getvalues_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use ioda_locs_mod
@@ -506,32 +526,36 @@ use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj, fv3jedi_getvaltraj_registry
+use fv3jedi_geom_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
 type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in), optional :: c_key_traj !< Trajectory for interpolation/transforms
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_field), pointer :: fld
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 type(fv3jedi_getvaltraj), pointer :: traj
+type(fv3jedi_geom),  pointer :: geom
 
 call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_field_registry%get(c_key_fld, fld)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call ioda_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvaltraj_registry%get(c_key_traj, traj)
 
-call getvalues(fld, locs, vars, gom, traj)
+call getvalues(geom, fld, locs, vars, gom, traj)
 
 end subroutine fv3jedi_field_getvalues_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_getvalues_tl_c(c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_getvalues_tl_f90')
+subroutine fv3jedi_field_getvalues_tl_c(c_key_geom, c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_getvalues_tl_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use ioda_locs_mod
@@ -540,32 +564,36 @@ use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj, fv3jedi_getvaltraj_registry
+use fv3jedi_geom_mod
 implicit none
 integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
 type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_field), pointer :: fld
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 type(fv3jedi_getvaltraj), pointer :: traj
+type(fv3jedi_geom),  pointer :: geom
 
 call ufo_vars_setup(vars, c_vars)
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_fld, fld)
 call ioda_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvaltraj_registry%get(c_key_traj, traj)
 
-call getvalues_tl(fld, locs, vars, gom, traj)
+call getvalues_tl(geom, fld, locs, vars, gom, traj)
 
 end subroutine fv3jedi_field_getvalues_tl_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_field_getvalues_ad_c(c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_getvalues_ad_f90')
+subroutine fv3jedi_field_getvalues_ad_c(c_key_geom, c_key_fld,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_field_getvalues_ad_f90')
 use iso_c_binding
 use fv3jedi_fields_mod
 use ioda_locs_mod
@@ -573,6 +601,7 @@ use ioda_locs_mod_c, only: ioda_locs_registry
 use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
+use fv3jedi_geom_mod
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj, fv3jedi_getvaltraj_registry
 implicit none
 integer(c_int), intent(in) :: c_key_fld  !< Fields to be interpolated
@@ -580,20 +609,23 @@ integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
 type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
+integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_field), pointer :: fld
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 type(fv3jedi_getvaltraj), pointer :: traj
+type(fv3jedi_geom),  pointer :: geom
 
 call ufo_vars_setup(vars, c_vars)
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_field_registry%get(c_key_fld, fld)
 call ioda_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvaltraj_registry%get(c_key_traj, traj)
 
-call getvalues_ad(fld, locs, vars, gom, traj)
+call getvalues_ad(geom, fld, locs, vars, gom, traj)
 
 end subroutine fv3jedi_field_getvalues_ad_c
 
@@ -612,8 +644,8 @@ type(fv3jedi_field), pointer :: self
 call fv3jedi_field_registry%get(c_key_self,self)
 
 nv = self%vars%nv
-nx = self%geom%npx
-ny = self%geom%npy
+nx = self%npx
+ny = self%npy
 
 end subroutine fv3jedi_field_sizes_c
 

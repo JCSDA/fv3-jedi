@@ -320,7 +320,7 @@ end subroutine model_prepare_integration_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate(self, flds)
+subroutine model_propagate(geom, self, flds)
 
 use fv_dynamics_mod, only: fv_dynamics
 use fv_dynamics_tlm_mod, only: fv_dynamics_nlm => fv_dynamics
@@ -329,6 +329,7 @@ use fv_sg_mod, only: fv_subgrid_z
 implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
+type(fv3jedi_geom)          :: geom
 
 type(fv_atmos_type), pointer :: FV_Atm(:)
 integer :: i,j,k
@@ -375,7 +376,7 @@ FV_Atm(1)%q_con = 0.0
 !----------------------------
 if (self%update_dgridwind == 1) then
 
-   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, flds%geom%domain, &
+   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, geom%domain, &
                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
                          gridtype=DGRID_NE, complete=.true. )
@@ -457,7 +458,7 @@ end subroutine model_propagate
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate_ad(self, flds, traj)
+subroutine model_propagate_ad(geom, self, flds, traj)
 
 #ifdef TLADPRES
 use fv_dynamics_adm_mod, only: fv_dynamics_fwd, fv_dynamics_bwd
@@ -470,6 +471,7 @@ implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
 type(fv3jedi_trajectory)    :: traj
+type(fv3jedi_geom)          :: geom
 
 #ifdef TLADPRES
 type(fv_atmos_type), pointer :: FV_Atm(:)
@@ -763,7 +765,7 @@ end subroutine model_propagate_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate_tl(self, flds, traj)
+subroutine model_propagate_tl(geom, self, flds, traj)
 
 #ifdef TLADPRES
 use fv_dynamics_tlm_mod, only: fv_dynamics_tlm
@@ -773,6 +775,7 @@ implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_field)         :: flds
 type(fv3jedi_trajectory)    :: traj
+type(fv3jedi_geom)          :: geom
 
 #ifdef TLADPRES
 type(fv_atmos_type), pointer :: FV_Atm(:)

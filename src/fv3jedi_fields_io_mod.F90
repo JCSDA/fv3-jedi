@@ -4,6 +4,7 @@ use config_mod
 use iso_c_binding
 use datetime_mod
 
+use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds, only: kind_real
 use fv3jedi_fields_utils_mod, only: fv3jedi_field
 
@@ -24,7 +25,7 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_fms_restart(fld, c_conf, vdate)
+subroutine read_fms_restart(geom, fld, c_conf, vdate)
 
 use iso_c_binding
 use datetime_mod
@@ -36,6 +37,7 @@ use tracer_manager_mod,  only: get_number_tracers, get_tracer_names, set_tracer_
 implicit none
 
 !Arguments
+type(fv3jedi_geom), intent(inout)  :: geom
 type(fv3jedi_field), intent(inout) :: fld      !< Fields
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
@@ -98,36 +100,36 @@ integer :: read_crtm_surface
  ! Register the variables that should be read
  ! ------------------------------------------
  !Winds
- if (trim(fld%geom%wind_type) == 'D-grid') then
+ if (trim(geom%wind_type) == 'D-grid') then
     id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%Atm%u, &
-                 domain=fld%geom%domain, position=NORTH)
+                 domain=geom%domain, position=NORTH)
     id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%Atm%v, &
-                 domain=fld%geom%domain, position=EAST)
- elseif (trim(fld%geom%wind_type) == 'A-grid') then
+                 domain=geom%domain, position=EAST)
+ elseif (trim(geom%wind_type) == 'A-grid') then
     id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%u, &
-                                        domain=fld%geom%domain)
+                                        domain=geom%domain)
     id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%v, &
-                                        domain=fld%geom%domain)
+                                        domain=geom%domain)
  endif
 
  !phis
  id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%Atm%phis, &
-              domain=fld%geom%domain)
+              domain=geom%domain)
 
  !Temperature
  id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%Atm%pt, &
-              domain=fld%geom%domain)
+              domain=geom%domain)
 
  !Pressure thickness
  id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
-              domain=fld%geom%domain)
+              domain=geom%domain)
 
  !Nonhydrostatic variables
  if (.not. fld%Atm%hydrostatic) then
     id_restart =  register_restart_field(Fv_restart, filename_core, 'W', fld%Atm%w, &
-                  domain=fld%geom%domain)
+                  domain=geom%domain)
     id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
-                  domain=fld%geom%domain)
+                  domain=geom%domain)
  endif
 
  ! Read file and fill variables
@@ -140,7 +142,7 @@ integer :: read_crtm_surface
  !-------------------------
  call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
 
- if (ntracers /= fld%geom%ntracers) then
+ if (ntracers /= geom%ntracers) then
    call abor1_ftn("fv3jedi_fields: tracer table does not match geomtry")
  endif
  
@@ -148,7 +150,7 @@ integer :: read_crtm_surface
     call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
     call set_tracer_profile (MODEL_ATMOS, nt, fld%Atm%q(:,:,:,nt) )
     id_restart = register_restart_field(Tr_restart, filename_trcr, tracer_name, fld%Atm%q(:,:,:,nt), &
-                                        domain=fld%geom%domain)
+                                        domain=geom%domain)
  enddo
 
  call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
@@ -162,22 +164,22 @@ integer :: read_crtm_surface
  endif
 
  if (read_crtm_surface == 1) then
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%Atm%slmsk , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%Atm%sheleg, domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%Atm%tsea  , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%Atm%vtype , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%Atm%stype , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%Atm%vfrac , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%Atm%stc   , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%Atm%smc   , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%Atm%snwdph, domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%Atm%f10m  , domain=fld%geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%Atm%slmsk , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%Atm%sheleg, domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%Atm%tsea  , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%Atm%vtype , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%Atm%stype , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%Atm%vfrac , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%Atm%stc   , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%Atm%smc   , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%Atm%snwdph, domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%Atm%f10m  , domain=geom%domain)
 
    call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
    call free_restart_type(Sf_restart)
 
-   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%Atm%u_srf , domain=fld%geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%Atm%v_srf , domain=fld%geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%Atm%u_srf , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%Atm%v_srf , domain=geom%domain)
 
    call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
    call free_restart_type(Sf_restart)
@@ -233,11 +235,12 @@ end subroutine read_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_fms_restart(fld, c_conf, vdate)
+subroutine write_fms_restart(geom, fld, c_conf, vdate)
 
 implicit none
 
 !Arguments
+type(fv3jedi_geom), intent(inout)  :: geom
 type(fv3jedi_field), intent(in)    :: fld      !< Fields
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
@@ -306,48 +309,48 @@ character(len=255) :: datapath_out
  ! Register the variables that should be written
  ! ---------------------------------------------
  !Winds
- if (trim(fld%geom%wind_type) == 'D-grid') then
+ if (trim(geom%wind_type) == 'D-grid') then
     id_restart = register_restart_field( Fv_restart, filename_core, 'u', fld%Atm%u, &
-                                         domain=fld%geom%domain,position=NORTH )
+                                         domain=geom%domain,position=NORTH )
     id_restart = register_restart_field( Fv_restart, filename_core, 'v', fld%Atm%v, &
-                                         domain=fld%geom%domain,position=EAST )
- elseif (trim(fld%geom%wind_type) == 'A-grid') then
+                                         domain=geom%domain,position=EAST )
+ elseif (trim(geom%wind_type) == 'A-grid') then
      id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', fld%Atm%u, &
-                                           domain=fld%geom%domain )
+                                           domain=geom%domain )
      id_restart =  register_restart_field(Fv_restart, filename_core, 'va', fld%Atm%v, &
-                                           domain=fld%geom%domain )
+                                           domain=geom%domain )
  endif
 
  !phis
  id_restart = register_restart_field( Fv_restart, filename_core, 'phis', fld%Atm%phis, &
-                                      domain=fld%geom%domain )
+                                      domain=geom%domain )
 
  !Temperature
  id_restart = register_restart_field( Fv_restart, filename_core, 'T', fld%Atm%pt, &
-                                      domain=fld%geom%domain )
+                                      domain=geom%domain )
 
  !Pressure thickness
  id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', fld%Atm%delp, &
-                                      domain=fld%geom%domain )
+                                      domain=geom%domain )
 
  !Nonhydrostatic fields
  if (.not. fld%Atm%hydrostatic) then
      id_restart =  register_restart_field( Fv_restart, filename_core, 'W', fld%Atm%w, &
-                                           domain=fld%geom%domain )
+                                           domain=geom%domain )
      id_restart =  register_restart_field( Fv_restart, filename_core, 'DZ', fld%Atm%delz, &
-                                           domain=fld%geom%domain )
+                                           domain=geom%domain )
  endif
 
  !Cell center lat/lon
- id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lat', fld%geom%grid_lat, &
-                                      domain=fld%geom%domain )
- id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', fld%geom%grid_lon, &
-                                      domain=fld%geom%domain )
+ id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lat', geom%grid_lat, &
+                                      domain=geom%domain )
+ id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', geom%grid_lon, &
+                                      domain=geom%domain )
 
  id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', fld%Atm%ua, &
-                                       domain=fld%geom%domain )
+                                       domain=geom%domain )
  id_restart =  register_restart_field( Fv_restart, filename_core, 'va', fld%Atm%va, &
-                                       domain=fld%geom%domain )
+                                       domain=geom%domain )
 
  ! Write variables to file
  ! -----------------------`/
@@ -358,7 +361,7 @@ character(len=255) :: datapath_out
  !Write tracers to file
  !---------------------
  id_restart = register_restart_field( Tr_restart, filename_trcr, 'sphum', fld%Atm%q(:,:,:,1), &
-                                      domain=fld%geom%domain )
+                                      domain=geom%domain )
 
  call save_restart(Tr_restart, directory=trim(adjustl(datapath_out))//'RESTART')
  call free_restart_type(Tr_restart)
@@ -387,11 +390,12 @@ end subroutine write_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_geos_restart(fld, c_conf, vdate)
+subroutine read_geos_restart(geom, fld, c_conf, vdate)
 
 implicit none
 
 !Arguments
+type(fv3jedi_geom), intent(inout)  :: geom
 type(fv3jedi_field), intent(inout) :: fld      !< Fields
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
@@ -423,10 +427,10 @@ integer :: isc,iec,jsc,jec
 
  !> Convenience
  !> -----------
- isc = fld%geom%bd%isc
- iec = fld%geom%bd%iec
- jsc = fld%geom%bd%jsc
- jec = fld%geom%bd%jec
+ isc = geom%bd%isc
+ iec = geom%bd%iec
+ jsc = geom%bd%jsc
+ jec = geom%bd%jec
 
 
  !> Set filenames
@@ -508,20 +512,20 @@ integer :: isc,iec,jsc,jec
 
  !> Print info to user
  sdate = config_get_string(c_conf,len(sdate),"date")
- if (fld%geom%am_i_root_pe) then
+ if (geom%am_i_root_pe) then
     print *,'read_file: validity date: ',trim(validitydate)
     print *,'read_file: expected validity date: ',trim(sdate)
  endif
 
  !> Make sure file dimensions equal to geometry
- if ( im /= fld%geom%npx-1 .or. lm /= fld%geom%npz) then
+ if ( im /= geom%npx-1 .or. lm /= geom%npz) then
    call abor1_ftn("GEOS restarts: restart dimension not compatible with geometry")
  endif
 
  !> GEOS can use concatenated tiles or tile as a dimension
- if ( (im == fld%geom%npx-1) .and. (jm == 6*(fld%geom%npy-1) ) ) then
+ if ( (im == geom%npx-1) .and. (jm == 6*(geom%npy-1) ) ) then
    tiledimension = .false.
-   tileoff = (fld%geom%ntile-1)*(jm/fld%geom%ntiles)
+   tileoff = (geom%ntile-1)*(jm/geom%ntiles)
  else
    tiledimension = .true.
    tileoff = 0
@@ -583,7 +587,7 @@ integer :: isc,iec,jsc,jec
      if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
      fld%Atm%ua(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
    else
-     if (fld%geom%am_i_root_pe) print*, 'ua not in the restart file'
+     if (geom%am_i_root_pe) print*, 'ua not in the restart file'
    endif
 
    !fld%Atm%va (agrid)
@@ -593,7 +597,7 @@ integer :: isc,iec,jsc,jec
      if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
      fld%Atm%va(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
    else
-     if (fld%geom%am_i_root_pe) print*, 'va not in the restart file'
+     if (geom%am_i_root_pe) print*, 'va not in the restart file'
    endif
 
    !fld%Atm%q (sphum)
@@ -661,11 +665,12 @@ end subroutine read_geos_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_geos_restart(fld, c_conf, vdate)
+subroutine write_geos_restart(geom, fld, c_conf, vdate)
 
 implicit none
 
 !Arguments
+type(fv3jedi_geom), intent(inout)  :: geom
 type(fv3jedi_field), intent(in)    :: fld      !< Fields
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime

@@ -84,7 +84,8 @@ void TlmFV3JEDI::stepTL(IncrementFV3JEDI & dx,
   }
   oops::Log::debug() << "TlmFV3JEDI::stepTL fields in"
                      << dx.fields() << std::endl;
-  fv3jedi_model_propagate_tl_f90(keyConfig_, dx.fields().toFortran(),
+  fv3jedi_model_propagate_tl_f90(resol_.toFortran(), keyConfig_,
+                                 dx.fields().toFortran(),
                                   itra->second);
   oops::Log::debug() << "TlmFV3JEDI::stepTL fields out"
                      << dx.fields() << std::endl;
@@ -110,7 +111,8 @@ void TlmFV3JEDI::stepAD(IncrementFV3JEDI & dx, ModelBiasIncrementFV3JEDI &)
   }
   oops::Log::debug() << "TlmFV3JEDI::stepAD fields in"
                      << dx.fields() << std::endl;
-  fv3jedi_model_propagate_ad_f90(keyConfig_, dx.fields().toFortran(),
+  fv3jedi_model_propagate_ad_f90(resol_.toFortran(), keyConfig_,
+                                 dx.fields().toFortran(),
                                   itra->second);
   oops::Log::debug() << "TlmFV3JEDI::stepAD fields out"
                      << dx.fields() << std::endl;
