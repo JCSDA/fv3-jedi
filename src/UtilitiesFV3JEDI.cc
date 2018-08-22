@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <string>
 #include "eckit/config/Configuration.h"
+#include "oops/parallel/mpi/mpi.h"
 #include "oops/util/Logger.h"
 #include "src/UtilitiesFV3JEDI.h"
 #include "oops/util/abor1_cpp.h"
@@ -25,8 +26,7 @@ void stageFv3Files(const eckit::Configuration &conf) {
   oops::Log::trace() << "Staging fv3 input.nml and field_table" << std::endl;
 
   // Get processor ID
-  int world_rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+  int world_rank = oops::mpi::comm().rank();
 
   // Only one processor needs to move the files
   if (world_rank == 0) {
@@ -58,7 +58,7 @@ void stageFv3Files(const eckit::Configuration &conf) {
   }
 
   // Nobody moves until files are in place
-  MPI_Barrier(MPI_COMM_WORLD);
+  oops::mpi::comm().barrier();
 }
 
 // -----------------------------------------------------------------------------
@@ -67,11 +67,10 @@ void removeFv3Files() {
   oops::Log::trace() << "Removing fv3 input.nml and field_table" << std::endl;
 
   // Get processor ID
-  int world_rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+  int world_rank = oops::mpi::comm().rank();
 
   // No file deletion until everyone catches up
-  MPI_Barrier(MPI_COMM_WORLD);
+  oops::mpi::comm().barrier();
 
   // Only one processor needs to move the files
   if (world_rank == 0) {
