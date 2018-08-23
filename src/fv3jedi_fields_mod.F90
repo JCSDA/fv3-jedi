@@ -1154,6 +1154,7 @@ use pressure_vt_mod
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
 use wind_vt_mod
+use height_vt_mod,   only: geop_height
 use field_manager_mod, only: MODEL_ATMOS
 use tracer_manager_mod,only: get_tracer_index, get_tracer_names
 use type_bump, only: bump_type
@@ -1217,6 +1218,7 @@ real(kind=kind_real), allocatable :: soil_moisture_content(:)    !Soil moisture 
 real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
+logical,  parameter                ::use_compress = .true.  !!could be a fv3 namelist option?
 
 
 ! Grid convenience
@@ -1396,6 +1398,13 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%q(:,:,:,1)
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = npz
@@ -1411,11 +1420,10 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
-
     nvl = npz
     do_interp = .true.
     geovalm = qmr
-    geoval => geovalm  
+    geoval => geovalm
 
   case ("air_pressure")
 
@@ -1430,6 +1438,12 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geovale = prsi / 100.0_kind_real !to hPa
     geoval => geovale
+
+  case ("geopotential_height")
+    call geop_height(fld%geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -1670,7 +1684,7 @@ subroutine getvalues_tl(fld, locs, vars, gom, traj)
 
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_tl
-
+use pressure_vt_mod
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
 type(ioda_locs),          intent(in)    :: locs 
@@ -1741,6 +1755,13 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%q(:,:,:,1)
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = fld%geom%npz
@@ -1752,15 +1773,21 @@ do jvar = 1, vars%nv
   case ("atmosphere_ln_pressure_coordinate")
 
   case ("humidity_mixing_ratio")
-  
+
     nvl = fld%geom%npz
     do_interp = .true.
     call crtm_mixratio_tl(fld%geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
-    geoval => geovalm  
+    geoval => geovalm
 
   case ("air_pressure")
+    nvl = fld%geom%npz
+    do_interp = .true.
+    call delp_to_p_tl(fld%geom,fld%Atm%delp,geovalm)
+    geoval => geovalm
 
   case ("air_pressure_levels")
+ 
+  case ("geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -1862,7 +1889,7 @@ subroutine getvalues_ad(fld, locs, vars, gom, traj)
 
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_ad
-
+use pressure_vt_mod
 implicit none
 type(fv3jedi_field),      intent(inout) :: fld 
 type(ioda_locs),           intent(in)   :: locs 
@@ -1933,6 +1960,12 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
+  case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = npz
@@ -1948,8 +1981,13 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("air_pressure")
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
 
   case ("air_pressure_levels")
+
+  case ("geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -2031,8 +2069,10 @@ do jvar = 1, vars%nv
   select case (trim(vars%fldnames(jvar)))
  
   case ("temperature")
-  
-    fld%Atm%pt = geovalm 
+    fld%Atm%pt = geovalm
+
+  case ("specific_humidity")
+    fld%Atm%q(:,:,:,1) = geovalm
 
   case ("virtual_temperature")
     
@@ -2042,12 +2082,14 @@ do jvar = 1, vars%nv
   case ("atmosphere_ln_pressure_coordinate")
 
   case ("humidity_mixing_ratio")
-  
     call crtm_mixratio_ad(fld%geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
 
   case ("air_pressure")
+    call delp_to_p_ad(fld%geom,fld%Atm%delp,geovalm)
 
   case ("air_pressure_levels")
+ 
+  case ("geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
