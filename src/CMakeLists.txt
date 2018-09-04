@@ -55,6 +55,7 @@ VariableTransforms/moisture_variables.F90
 VariableTransforms/pressure_variables.F90
 VariableTransforms/surface_variables.F90
 VariableTransforms/tmprture_variables.F90
+VariableTransforms/height_variables.F90
 )
 
 set ( FMS_LIBRARIES $ENV{FMS_LIBRARIES} )

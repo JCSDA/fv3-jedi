@@ -384,6 +384,7 @@ testinput/localization_geos.yaml
 testinput/parametersbump_fv3gfs.cov.yaml
 testinput/parametersbump_fv3gfs.loc.yaml
 testinput/parametersbump_fv3gfs.lct.yaml
+testinput/3dvar_fv3gfs_GnssroRef.yaml
 compare.sh
 )
 
@@ -490,6 +491,7 @@ endforeach(FILENAME)
 list( APPEND ufo_obs
   test/testinput/diag_t_01_wprofiles.nc4
   test/testinput/amsua_n19_obs.nc4
+  test/testinput/gdas.gpsro.2017080100.bufr2nc_qced.nc4
 )
 
 foreach(FILENAME ${ufo_obs})

@@ -501,7 +501,7 @@ end subroutine axpy
 
 subroutine dot_prod(fld1,fld2,zprod)
 
-use mpi, only: mpi_real8, mpi_comm_world, mpi_sum
+use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 
 implicit none
 type(fv3jedi_field), intent(in) :: fld1, fld2
@@ -509,6 +509,9 @@ real(kind=kind_real), intent(inout) :: zprod
 real(kind=kind_real) :: zp
 integer :: i,j,k,l
 integer :: ierr
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
 
@@ -625,7 +628,7 @@ if (allocated(fld1%Atm%qct)) then
 endif
 
 !Get global dot product
-call mpi_allreduce(zp,zprod,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
+call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 
 !For debugging print result:
 if (fld1%root_pe == 1) print*, "Dot product test result: ", zprod
@@ -1162,20 +1165,23 @@ end subroutine gpnorm
 ! ------------------------------------------------------------------------------
 
 subroutine fldrms(fld, prms)
-use mpi,             only: mpi_real8,mpi_comm_world,mpi_sum,mpi_int
+use fckit_mpi_module, only : fckit_mpi_comm, fckit_mpi_sum
 implicit none
 type(fv3jedi_field), intent(in) :: fld
 real(kind=kind_real), intent(out) :: prms
+
 real(kind=kind_real) :: zz
 integer i,j,k,l,ii,nt,ierr,npes,iisum
-
 integer :: isc,iec,jsc,jec,npz
+type(fckit_mpi_comm) :: f_comm
 
 isc = fld%isc
 iec = fld%iec
 jsc = fld%jsc
 jec = fld%jec
 npz = fld%npz
+
+f_comm = fckit_mpi_comm()
 
 zz = 0.0_kind_real
 prms = 0.0_kind_real
@@ -1304,12 +1310,12 @@ if (allocated(fld%Atm%qct)) then
 endif
 
 !Get global values
-call mpi_allreduce(zz,prms,1,mpi_real8,mpi_sum,mpi_comm_world,ierr)
-call mpi_allreduce(ii,iisum,1,mpi_int,mpi_sum,mpi_comm_world,ierr)
+call f_comm%allreduce(zz,prms,fckit_mpi_sum())
+call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
 
-if (ierr .ne. 0) then
-   print *,'error in fldrms/mpi_allreduce, error code=',ierr
-endif
+!if (ierr .ne. 0) then
+!   print *,'error in fldrms/mpi_allreduce, error code=',ierr
+!endif
 prms = sqrt(prms/real(iisum,kind_real))
 
 !Print for debugging
@@ -1323,7 +1329,6 @@ end subroutine fldrms
 subroutine dirac(self, c_conf, geom)
 
 use iso_c_binding
-use mpi
 
 implicit none
 type(fv3jedi_field), intent(inout) :: self
@@ -1767,6 +1772,7 @@ use pressure_vt_mod
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
 use wind_vt_mod
+use height_vt_mod,   only: geop_height
 use field_manager_mod, only: MODEL_ATMOS
 use tracer_manager_mod,only: get_tracer_index, get_tracer_names
 use type_bump, only: bump_type
@@ -1831,6 +1837,7 @@ real(kind=kind_real), allocatable :: soil_moisture_content(:)    !Soil moisture 
 real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
+logical,  parameter                ::use_compress = .true.  !!could be a fv3 namelist option?
 
 
 ! Grid convenience
@@ -2010,6 +2017,13 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%q(:,:,:,1)
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = npz
@@ -2025,11 +2039,10 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
-
     nvl = npz
     do_interp = .true.
     geovalm = qmr
-    geoval => geovalm  
+    geoval => geovalm
 
   case ("air_pressure")
 
@@ -2044,6 +2057,12 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geovale = prsi / 100.0_kind_real !to hPa
     geoval => geovale
+
+  case ("geopotential_height")
+    call geop_height(fld%geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -2284,7 +2303,7 @@ subroutine getvalues_tl(geom, fld, locs, vars, gom, traj)
 
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_tl
-
+use pressure_vt_mod
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_field),      intent(inout) :: fld 
@@ -2356,6 +2375,13 @@ do jvar = 1, vars%nv
     geovalm = fld%Atm%pt
     geoval => geovalm
 
+  case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = fld%Atm%q(:,:,:,1)
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = fld%npz
@@ -2374,8 +2400,14 @@ do jvar = 1, vars%nv
     geoval => geovalm  
 
   case ("air_pressure")
+    nvl = fld%geom%npz
+    do_interp = .true.
+    call delp_to_p_tl(fld%geom,fld%Atm%delp,geovalm)
+    geoval => geovalm
 
   case ("air_pressure_levels")
+ 
+  case ("geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -2477,7 +2509,7 @@ subroutine getvalues_ad(geom, fld, locs, vars, gom, traj)
 
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_ad
-
+use pressure_vt_mod
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_field),      intent(inout) :: fld 
@@ -2549,6 +2581,12 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
+  case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case ("virtual_temperature")
 
     nvl = npz
@@ -2564,8 +2602,13 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("air_pressure")
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
 
   case ("air_pressure_levels")
+
+  case ("geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -2647,8 +2690,10 @@ do jvar = 1, vars%nv
   select case (trim(vars%fldnames(jvar)))
  
   case ("temperature")
-  
-    fld%Atm%pt = geovalm 
+    fld%Atm%pt = geovalm
+
+  case ("specific_humidity")
+    fld%Atm%q(:,:,:,1) = geovalm
 
   case ("virtual_temperature")
     
@@ -2663,7 +2708,11 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
+    call delp_to_p_ad(fld%geom,fld%Atm%delp,geovalm)
+
   case ("air_pressure_levels")
+ 
+  case ("geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -2754,9 +2803,9 @@ end subroutine allocate_geovals_vals
 
 subroutine initialize_bump(geom, locs, bump)
 
+use fckit_mpi_module, only: fckit_mpi_comm
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use type_bump, only: bump_type
-use mpi, only: mpi_comm_world
 
 implicit none
 
@@ -2775,6 +2824,9 @@ integer, save :: bumpcount = 0
 character(len=5) :: cbumpcount
 character(len=16) :: bump_nam_prefix
 
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
 
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------
@@ -2831,7 +2883,7 @@ vunit = 1.0          ! Dummy vertical unit
 lmask = .true.       ! Mask
 
 !Initialize BUMP
-call bump%setup_online( mpi_comm_world,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+call bump%setup_online( f_comm%communicator(),mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
                                 nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
 
 !Release memory

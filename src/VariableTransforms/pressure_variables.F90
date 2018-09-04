@@ -239,6 +239,52 @@ end subroutine delp_to_pe_p_logp
 
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
+subroutine delp_to_p_tl(geom,delp_tl,p_tl)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(in ) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)!Pressure thickness
+ real(kind=kind_real), intent(out) :: p_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure mid point
+ !Locals
+ integer :: isc,iec,jsc,jec,k
+
+ isc = geom%bd%isc
+ iec = geom%bd%iec
+ jsc = geom%bd%jsc
+ jec = geom%bd%jec
+
+ p_tl(isc:iec,jsc:jec,1) = 0.5*delp_tl(isc:iec,jsc:jec,1) 
+ do k = 2,geom%npz
+   p_tl(isc:iec,jsc:jec,k)=p_tl(isc:iec,jsc:jec,k-1)+ 0.5*(delp_tl(isc:iec,jsc:jec,k-1)+delp_tl(isc:iec,jsc:jec,k))
+ enddo
+ p_tl(isc:iec,jsc:jec,k)=   p_tl(isc:iec,jsc:jec,k)/100.0
+end subroutine delp_to_p_tl
+
+subroutine delp_to_p_ad(geom,delp_ad,p_ad)
+
+ implicit none
+ type(fv3jedi_geom)  , intent(in )  :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout):: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)!Pressure thickness
+ real(kind=kind_real), intent(inout):: p_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure mid point
+ integer :: isc,iec,jsc,jec,k
+
+ isc = geom%bd%isc
+ iec = geom%bd%iec
+ jsc = geom%bd%jsc
+ jec = geom%bd%jec
+
+ delp_ad =  0.0_kind_real
+ 
+ do k = geom%npz,2,-1
+   delp_ad(isc:iec,jsc:jec,k)   = 0.5*p_ad(isc:iec,jsc:jec,k)+delp_ad(isc:iec,jsc:jec,k)
+   delp_ad(isc:iec,jsc:jec,k-1) = 0.5*p_ad(isc:iec,jsc:jec,k)+delp_ad(isc:iec,jsc:jec,k-1)
+      p_ad(isc:iec,jsc:jec,k-1) = p_ad(isc:iec,jsc:jec,k) + p_ad(isc:iec,jsc:jec,k-1)
+      p_ad(isc:iec,jsc:jec,k)   = 0.0_kind_real
+ enddo
+   delp_ad(isc:iec,jsc:jec,1)   = 0.5*p_ad(isc:iec,jsc:jec,1)+delp_ad(isc:iec,jsc:jec,1) 
+      p_ad(isc:iec,jsc:jec,1)   = 0.0_kind_real
+   delp_ad(isc:iec,jsc:jec,:)   = delp_ad(isc:iec,jsc:jec,:) /100.0
+end subroutine delp_to_p_ad
 
 subroutine ps_to_delp(geom,ps,delp)
 
