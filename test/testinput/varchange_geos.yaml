@@ -3,21 +3,33 @@ nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 LinearVariableChangeTests:
 - varchange: StatsVariableChange
+  toleranceInverse: 1.0e-10
+  variables:
+    variables:
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
+  prefix: bump
+  strategy: common
+  check_vbal: 1
   inputVariables:
     variables:
-    - u
-    - v
-    - pt
-    - delp
-    - q
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
   outputVariables:
     variables:
-    - u
-    - v
-    - pt
-    - delp
-    - q
-- varchange: VarChangeFV3JEDI
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
+- varchange: Control2Model
+  toleranceInverse: -0.1
   inputVariables:
     variables:
     - u
