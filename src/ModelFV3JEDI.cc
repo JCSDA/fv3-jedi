@@ -5,6 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <vector>
+
 #include "src/ModelFV3JEDI.h"
 
 #include "oops/util/Logger.h"
@@ -21,7 +23,8 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & model)
-  : keyConfig_(0), tstep_(0), geom_(resol)
+  : keyConfig_(0), tstep_(0), geom_(resol),
+  vars_(std::vector<std::string>{"u", "v", "t", "delp", "q"})
 {
   oops::Log::trace() << "ModelFV3JEDI::ModelFV3JEDI" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));
@@ -45,7 +48,8 @@ void ModelFV3JEDI::initialize(StateFV3JEDI & xx) const {
 void ModelFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
   oops::Log::debug() << "ModelFV3JEDI::step fields in"
                      << xx.fields() << std::endl;
-  fv3jedi_model_propagate_f90(keyConfig_, xx.fields().toFortran());
+  fv3jedi_model_propagate_f90(geom_.toFortran(),
+                              keyConfig_, xx.fields().toFortran());
   xx.validTime() += tstep_;
   oops::Log::debug() << "ModelFV3JEDI::step fields out"
                      << xx.fields() << std::endl;

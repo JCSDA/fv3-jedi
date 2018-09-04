@@ -39,6 +39,7 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
 }
 // -----------------------------------------------------------------------------
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
+                           const oops::Variables & varsin,
                            const eckit::Configuration & file)
   : fields_(), stash_()
 {
@@ -50,6 +51,7 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
     vv = new std::vector<std::string>({"u", "v", "pt", "delp", "q"});
 
   oops::Variables vars(*vv);
+
   fields_.reset(new FieldsFV3JEDI(resol, vars, util::DateTime()));
 
   if (file.has("analytic_init"))
@@ -119,16 +121,6 @@ StateFV3JEDI & StateFV3JEDI::operator+=(const IncrementFV3JEDI & dx) {
   ASSERT(fields_);
   fields_->add(dx.fields());
   return *this;
-}
-// -----------------------------------------------------------------------------
-/// Convert to/from unstructured grid
-// -----------------------------------------------------------------------------
-void StateFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
-  fields_->convert_to(ug);
-}
-// -----------------------------------------------------------------------------
-void StateFV3JEDI::convert_from(const oops::UnstructuredGrid & ug) {
-  fields_->convert_from(ug);
 }
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics

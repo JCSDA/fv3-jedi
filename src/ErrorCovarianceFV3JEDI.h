@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_ERRORCOVARIANCEFV3JEDI_H_
-#define FV3_JEDI_SRC_ERRORCOVARIANCEFV3JEDI_H_
+#ifndef SRC_ERRORCOVARIANCEFV3JEDI_H_
+#define SRC_ERRORCOVARIANCEFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -40,7 +40,8 @@ class ErrorCovarianceFV3JEDI : public util::Printable,
                                   {return "fv3jedi::ErrorCovarianceFV3JEDI";}
 
   ErrorCovarianceFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
-                       const eckit::Configuration &, const StateFV3JEDI &);
+                       const eckit::Configuration &, const StateFV3JEDI &,
+                       const StateFV3JEDI &);
   ~ErrorCovarianceFV3JEDI();
 
   void linearize(const StateFV3JEDI &, const GeometryFV3JEDI &);
@@ -57,4 +58,4 @@ class ErrorCovarianceFV3JEDI : public util::Printable,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_ERRORCOVARIANCEFV3JEDI_H_
+#endif  // SRC_ERRORCOVARIANCEFV3JEDI_H_

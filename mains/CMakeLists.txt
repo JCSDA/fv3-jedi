@@ -18,3 +18,8 @@ ecbuild_add_executable( TARGET  fv3jedi_hofx.x
                          SOURCES fv3jedi4DVar.cc
                          LIBS    fv3jedi
                        )
+
+ ecbuild_add_executable( TARGET  fv3jedi_parameters.x
+                         SOURCES fv3jediEstimateParams.cc
+                         LIBS    fv3jedi
+                       )

@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FORTRAN_H_
-#define FV3_JEDI_SRC_FORTRAN_H_
+#ifndef SRC_FORTRAN_H_
+#define SRC_FORTRAN_H_
 
 // Forward declarations
 namespace eckit {
@@ -38,6 +38,8 @@ typedef int F90bmat;
 typedef int F90lclz;
 // ObOp trajectory
 typedef int F90ootrj;
+// VarChange key
+typedef int F90vcc2m;
 
 
 /// Interface to Fortran FV3JEDI model
@@ -75,12 +77,15 @@ extern "C" {
   void fv3jedi_model_prepare_integration_ad_f90(const F90model &,
                                                  const F90flds &);
 
-  void fv3jedi_model_propagate_f90(const F90model &, const F90flds &);
+  void fv3jedi_model_propagate_f90(const F90geom &, const F90model &,
+                                   const F90flds &);
   void fv3jedi_model_prop_traj_f90(const F90model &, const F90flds &,
                                     F90traj &);
-  void fv3jedi_model_propagate_tl_f90(const F90model &, const F90flds &,
+  void fv3jedi_model_propagate_tl_f90(const F90geom &, const F90model &,
+                                      const F90flds &,
                                        const F90traj &);
-  void fv3jedi_model_propagate_ad_f90(const F90model &, const F90flds &,
+  void fv3jedi_model_propagate_ad_f90(const F90geom &, const F90model &,
+                                      const F90flds &,
                                        const F90traj &);
 
   void fv3jedi_model_wipe_traj_f90(F90traj &);
@@ -109,36 +114,43 @@ extern "C" {
 
   void fv3jedi_field_change_resol_f90(const F90flds &, const F90flds &);
 
-  void fv3jedi_field_read_file_f90(const F90flds &,
+  void fv3jedi_field_read_file_f90(const F90geom &, const F90flds &,
                                     const eckit::Configuration * const *,
                                     util::DateTime * const *);
   void fv3jedi_field_analytic_init_f90(const F90flds &, const F90geom &,
                                         const eckit::Configuration * const *,
                                         util::DateTime * const *);
-  void fv3jedi_field_write_file_f90(const F90flds &,
+  void fv3jedi_field_write_file_f90(const F90geom &, const F90flds &,
                                      const eckit::Configuration * const *,
                                      const util::DateTime * const *);
 
-  void fv3jedi_field_getvalues_notraj_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_notraj_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &);
-  void fv3jedi_field_getvalues_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &,
                         const F90ootrj &);
-  void fv3jedi_field_getvalues_tl_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_tl_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &,
                         const F90ootrj &);
-  void fv3jedi_field_getvalues_ad_f90(const F90flds &, const F90locs &,
+  void fv3jedi_field_getvalues_ad_f90(const F90geom &, const F90flds &,
+                        const F90locs &,
                         const eckit::Configuration * const *, const F90goms &,
                         const F90ootrj &);
 
   void fv3jedi_field_gpnorm_f90(const F90flds &, const int &, double &);
   void fv3jedi_field_sizes_f90(const F90flds &, int &, int &, int &);
   void fv3jedi_field_rms_f90(const F90flds &, double &);
-  void fv3jedi_field_convert_to_f90(const F90flds &, const int &);
-  void fv3jedi_field_convert_from_f90(const F90flds &, const int &);
+  void fv3jedi_field_ug_coord_f90(const F90flds &, const int &, const int &,
+                                  const F90geom &);
+  void fv3jedi_field_field_to_ug_f90(const F90flds &, const int &, const int &);
+  void fv3jedi_field_field_from_ug_f90(const F90flds &, const int &);
 
   void fv3jedi_field_dirac_f90(const F90flds &,
-                                const eckit::Configuration * const *);
+                                const eckit::Configuration * const *,
+                                 const F90geom &);
 
   void fv3jedi_getvaltraj_setup_f90(const F90ootrj &);
   void fv3jedi_getvaltraj_delete_f90(const F90ootrj &);
@@ -159,6 +171,33 @@ extern "C" {
   void fv3jedi_b_randomize_f90(const F90bmat &, const F90flds &);
 
 // -----------------------------------------------------------------------------
+//  Change variable for B matrix
+// -----------------------------------------------------------------------------
+
+  void fv3jedi_varcha_c2m_setup_f90(const F90vcc2m &,
+                                    const F90geom &,
+                                    const F90flds &,
+                                    const F90flds &,
+                                    const eckit::Configuration * const *);
+  void fv3jedi_varcha_c2m_delete_f90(F90vcc2m &);
+  void fv3jedi_varcha_c2m_multiply_f90(const F90vcc2m &,
+                                       const F90geom &,
+                                       const F90flds &,
+                                       const F90flds &);
+  void fv3jedi_varcha_c2m_multiplyadjoint_f90(const F90vcc2m &,
+                                              const F90geom &,
+                                              const F90flds &,
+                                              const F90flds &);
+  void fv3jedi_varcha_c2m_multiplyinverse_f90(const F90vcc2m &,
+                                              const F90geom &,
+                                              const F90flds &,
+                                              const F90flds &);
+  void fv3jedi_varcha_c2m_multiplyinverseadjoint_f90(const F90vcc2m &,
+                                                     const F90geom &,
+                                                     const F90flds &,
+                                                     const F90flds &);
+
+// -----------------------------------------------------------------------------
 //  Localization matrix
 // -----------------------------------------------------------------------------
   void fv3jedi_localization_setup_f90(F90lclz &,
@@ -171,4 +210,4 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_FORTRAN_H_
+#endif  // SRC_FORTRAN_H_

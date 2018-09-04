@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FV3JEDITRAITS_H_
-#define FV3_JEDI_SRC_FV3JEDITRAITS_H_
+#ifndef SRC_FV3JEDITRAITS_H_
+#define SRC_FV3JEDITRAITS_H_
 
 #include <string>
 
@@ -68,4 +68,4 @@ struct FV3JEDITraits {
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_FV3JEDITRAITS_H_
+#endif  // SRC_FV3JEDITRAITS_H_

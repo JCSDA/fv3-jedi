@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
-#define FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
+#ifndef SRC_INCREMENTFV3JEDI_H_
+#define SRC_INCREMENTFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -89,10 +89,10 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
   void getValuesAD(const ioda::Locations &, const oops::Variables &,
                    const ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &);
 
-/// Convert to/from generic unstructured grid
-  void define(oops::UnstructuredGrid &) const;
-  void convert_to(oops::UnstructuredGrid &) const;
-  void convert_from(const oops::UnstructuredGrid &);
+/// Unstructured grid
+  void ug_coord(oops::UnstructuredGrid &, const int &) const;
+  void field_to_ug(oops::UnstructuredGrid &, const int &) const;
+  void field_from_ug(const oops::UnstructuredGrid &);
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);
@@ -122,4 +122,4 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_INCREMENTFV3JEDI_H_
+#endif  // SRC_INCREMENTFV3JEDI_H_

@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_MODELFV3JEDI_H_
-#define FV3_JEDI_SRC_MODELFV3JEDI_H_
+#ifndef SRC_MODELFV3JEDI_H_
+#define SRC_MODELFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -15,6 +15,7 @@
 
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
+#include "oops/base/Variables.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
@@ -56,14 +57,16 @@ class ModelFV3JEDI: public util::Printable,
 
 /// Utilities
   const util::Duration & timeResolution() const {return tstep_;}
+  const oops::Variables & variables() const {return vars_;}
 
  private:
   void print(std::ostream &) const;
   F90model keyConfig_;
   util::Duration tstep_;
   const GeometryFV3JEDI geom_;
+  const oops::Variables vars_;
 };
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_MODELFV3JEDI_H_
+#endif  // SRC_MODELFV3JEDI_H_

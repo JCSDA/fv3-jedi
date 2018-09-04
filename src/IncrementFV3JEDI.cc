@@ -126,12 +126,6 @@ void IncrementFV3JEDI::random() {
   fields_->random();
 }
 // -----------------------------------------------------------------------------
-/// Convert to/from unstructured grid
-// -----------------------------------------------------------------------------
-void IncrementFV3JEDI::define(oops::UnstructuredGrid & ug) const {
-  oops::Log::warning() << "IncrementFV3JEDI::define undefined!!!" << std::endl;
-}
-// -----------------------------------------------------------------------------
 /// Get increment values at observation locations
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
@@ -148,12 +142,18 @@ void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
   fields_->getValuesAD(locs, vars, cols, traj);
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
-  fields_->convert_to(ug);
+void IncrementFV3JEDI::ug_coord(oops::UnstructuredGrid & ug,
+                                const int & colocated) const {
+  fields_->ug_coord(ug, colocated);
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::convert_from(const oops::UnstructuredGrid & ug) {
-  fields_->convert_from(ug);
+void IncrementFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug,
+                                   const int & colocated) const {
+  fields_->field_to_ug(ug, colocated);
+}
+// -----------------------------------------------------------------------------
+void IncrementFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug) {
+  fields_->field_from_ug(ug);
 }
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics

@@ -1,6 +1,49 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
+LinearVariableChangeTests:
+- varchange: StatsVariableChange
+  toleranceInverse: 1.0e-10
+  variables:
+    variables:
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
+  prefix: bump
+  strategy: common
+  check_vbal: 1
+  inputVariables:
+    variables:
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
+  outputVariables:
+    variables:
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
+- varchange: Control2Model
+  toleranceInverse: -0.1
+  inputVariables:
+    variables:
+    - u
+    - v
+    - pt
+    - delp
+    - q
+  outputVariables:
+    variables:
+    - psi
+    - chi
+    - tv
+    - ps
+    - qct
 Geometry:
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table
@@ -10,19 +53,6 @@ Geometry:
   filename_akbk: 20170801.000000.fv_core.res.nc
   ak_var: ak
   bk_var: bk
-Model:
-  init_tlmadm: '0'
-  nml_file: Data/fv3files/input_fv3gfs_c48.nml
-  trc_file: Data/fv3files/field_table
-  tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
-ModelBias: null
-ModelBiasCovariance: null
-ModelTest:
-  fclength: PT1H
-  finalnorm: '690.8708030959217'
-  tolerance: '1.0e-7'
 State:
   restart_type: fv3gfs
   datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
@@ -35,3 +65,10 @@ State:
   filename_trcr: 20170801.000000.fv_tracer.res.nc
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table
+Variables:
+  variables:
+  - u
+  - v
+  - pt
+  - delp
+  - q

@@ -105,14 +105,15 @@ void FieldsFV3JEDI::zero() {
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::dirac(const eckit::Configuration & config) {
   const eckit::Configuration * conf = &config;
-  fv3jedi_field_dirac_f90(keyFlds_, &conf);
+  fv3jedi_field_dirac_f90(keyFlds_, &conf, geom_->toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::getValues(const ioda::Locations & locs,
                               const oops::Variables & vars,
                               ufo::GeoVaLs & gom) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_getvalues_notraj_f90(keyFlds_, locs.toFortran(), &conf,
+  fv3jedi_field_getvalues_notraj_f90(geom_->toFortran(), keyFlds_,
+                              locs.toFortran(), &conf,
                               gom.toFortran());
 }
 // -----------------------------------------------------------------------------
@@ -121,8 +122,8 @@ void FieldsFV3JEDI::getValues(const ioda::Locations & locs,
                               ufo::GeoVaLs & gom,
                               const GetValuesTrajFV3JEDI & traj) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_getvalues_f90(keyFlds_, locs.toFortran(), &conf,
-                              gom.toFortran(), traj.toFortran());
+  fv3jedi_field_getvalues_f90(geom_->toFortran(), keyFlds_, locs.toFortran(),
+                              &conf, gom.toFortran(), traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::getValuesTL(const ioda::Locations & locs,
@@ -131,8 +132,8 @@ void FieldsFV3JEDI::getValuesTL(const ioda::Locations & locs,
                                 const GetValuesTrajFV3JEDI & traj) const {
   const eckit::Configuration * conf = &vars.toFortran();
 
-  fv3jedi_field_getvalues_tl_f90(keyFlds_, locs.toFortran(), &conf,
-                                gom.toFortran(), traj.toFortran());
+  fv3jedi_field_getvalues_tl_f90(geom_->toFortran(), keyFlds_, locs.toFortran(),
+                                 &conf, gom.toFortran(), traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::getValuesAD(const ioda::Locations & locs,
@@ -140,8 +141,8 @@ void FieldsFV3JEDI::getValuesAD(const ioda::Locations & locs,
                                 const ufo::GeoVaLs & gom,
                                 const GetValuesTrajFV3JEDI & traj) {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_field_getvalues_ad_f90(keyFlds_, locs.toFortran(), &conf,
-                                gom.toFortran(), traj.toFortran());
+  fv3jedi_field_getvalues_ad_f90(geom_->toFortran(), keyFlds_, locs.toFortran(),
+                                 &conf, gom.toFortran(), traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::zero(const util::DateTime & time) {
@@ -179,18 +180,25 @@ void FieldsFV3JEDI::diff(const FieldsFV3JEDI & x1, const FieldsFV3JEDI & x2) {
   fv3jedi_field_diff_incr_f90(keyFlds_, x1.keyFlds_, x2.keyFlds_);
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::convert_to(oops::UnstructuredGrid & ug) const {
-  fv3jedi_field_convert_to_f90(keyFlds_, ug.toFortran());
+void FieldsFV3JEDI::ug_coord(oops::UnstructuredGrid & ug,
+                             const int & colocated) const {
+  fv3jedi_field_ug_coord_f90(keyFlds_, ug.toFortran(), colocated,
+                             geom_->toFortran());
 }
 // -----------------------------------------------------------------------------
-void FieldsFV3JEDI::convert_from(const oops::UnstructuredGrid & ug) {
-  fv3jedi_field_convert_from_f90(keyFlds_, ug.toFortran());
+void FieldsFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug,
+                                const int & colocated) const {
+  fv3jedi_field_field_to_ug_f90(keyFlds_, ug.toFortran(), colocated);
+}
+// -----------------------------------------------------------------------------
+void FieldsFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug) {
+  fv3jedi_field_field_from_ug_f90(keyFlds_, ug.toFortran());
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::read(const eckit::Configuration & config) {
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
-  fv3jedi_field_read_file_f90(keyFlds_, &conf, &dtp);
+  fv3jedi_field_read_file_f90(geom_->toFortran(), keyFlds_, &conf, &dtp);
 }
 // -----------------------------------------------------------------------------
 void FieldsFV3JEDI::analytic_init(const eckit::Configuration & config,
@@ -205,7 +213,7 @@ void FieldsFV3JEDI::analytic_init(const eckit::Configuration & config,
 void FieldsFV3JEDI::write(const eckit::Configuration & config) const {
   const eckit::Configuration * conf = &config;
   const util::DateTime * dtp = &time_;
-  fv3jedi_field_write_file_f90(keyFlds_, &conf, &dtp);
+  fv3jedi_field_write_file_f90(geom_->toFortran(), keyFlds_, &conf, &dtp);
 }
 // -----------------------------------------------------------------------------
 double FieldsFV3JEDI::norm() const {

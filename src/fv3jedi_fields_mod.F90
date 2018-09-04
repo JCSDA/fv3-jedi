@@ -1,9 +1,9 @@
-! (C) Copyright 2017 UCAR
+! (C) Copyright 2017-2018 UCAR
 ! 
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Handle fields for the FV3JEDI model
+!> Handle fields for the FV3JEDI odel
 
 module fv3jedi_fields_mod
 
@@ -25,9 +25,11 @@ use tracer_manager_mod, only: get_tracer_index, get_tracer_names
 
 use fv3jedi_fields_utils_mod
 use fv3jedi_fields_io_mod
-use fv3jedi_constants, only: constoz
+use fv3jedi_constants, only: rad2deg, constoz
 
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
+
+use fv3jedi_vars_mod, only: fv3jedi_vars
 
 implicit none
 private
@@ -37,7 +39,7 @@ public :: create, delete, zeros, random, copy, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, fldrms, &
           change_resol, getvalues, getvalues_tl, getvalues_ad, &
-          convert_to_ug, convert_from_ug, dirac, &
+          ug_coord, field_to_ug, field_from_ug, dirac, &
           analytic_IC
 
 public :: fv3jedi_field
@@ -67,39 +69,111 @@ subroutine create(self, geom, vars)
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
-type(ufo_vars),  intent(in)    :: vars
+type(fv3jedi_vars),  intent(in)    :: vars
 
-! Allocate main fields
-call allocate_fv_atmos_type(self%Atm, &
-                            geom%bd%isd, geom%bd%ied, geom%bd%jsd, geom%bd%jed, &
-                            geom%bd%isc, geom%bd%iec, geom%bd%jsc, geom%bd%jec, &
-                            geom%npz, geom%ntracers, &
-                            geom%hydrostatic, geom%wind_type)
+integer :: isd,ied,jsd,jed,npz,nq
+integer :: var
 
-! Pointer to geometry
-self%geom => geom
+! Grid convenience
+isd = geom%bd%isd
+ied = geom%bd%ied
+jsd = geom%bd%jsd
+jed = geom%bd%jed
+npz = geom%npz
+nq  = geom%ntracers
+
+! Root proc flag
+self%root_pe = 0
+if (mpp_pe() == mpp_root_pe()) self%root_pe = 1
+
+! Copy the variable names
+self%vars%nv = vars%nv
+allocate(self%vars%fldnames(self%vars%nv))
+self%vars%fldnames = vars%fldnames
+
+self%Atm%hydrostatic = geom%hydrostatic
+
+
+! Allocate variables based on names
+do var = 1, self%vars%nv
+
+   select case (trim(self%vars%fldnames(var)))
+
+     case("u")
+       if (.not.allocated(   self%Atm%u)) allocate (   self%Atm%u(isd:ied,  jsd:jed+1, npz    ))
+     case("v")
+       if (.not.allocated(   self%Atm%v)) allocate (   self%Atm%v(isd:ied+1,jsd:jed  , npz    ))
+     case("t","pt")
+       if (.not.allocated(  self%Atm%pt)) allocate (  self%Atm%pt(isd:ied,  jsd:jed  , npz    ))
+     case("delp")
+       if (.not.allocated(self%Atm%delp)) allocate (self%Atm%delp(isd:ied,  jsd:jed  , npz    ))
+     case("q")
+       if (.not.allocated(   self%Atm%q)) allocate (   self%Atm%q(isd:ied,  jsd:jed  , npz, nq))
+     case("psi")
+       if (.not.allocated( self%Atm%psi)) allocate ( self%Atm%psi(isd:ied,  jsd:jed  , npz    ))
+     case("chi")
+       if (.not.allocated( self%Atm%chi)) allocate ( self%Atm%chi(isd:ied,  jsd:jed  , npz    ))
+     case("tv")
+       if (.not.allocated(  self%Atm%tv)) allocate (  self%Atm%tv(isd:ied,  jsd:jed  , npz    ))
+     case("ps")
+       if (.not.allocated(  self%Atm%ps)) allocate (  self%Atm%ps(isd:ied,  jsd:jed           ))
+     case("qct")
+       if (.not.allocated( self%Atm%qct)) allocate ( self%Atm%qct(isd:ied,  jsd:jed  , npz, nq))
+     case default 
+       call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
+
+   end select
+
+enddo
+
+!Extra dynamical variables
+if (.not.allocated(self%Atm%phis)) allocate(self%Atm%phis(isd:ied,jsd:jed    ))
+if (.not. self%Atm%hydrostatic) then
+if (.not.allocated(self%Atm%w   )) allocate(self%Atm%w   (isd:ied,jsd:jed,npz))
+if (.not.allocated(self%Atm%delz)) allocate(self%Atm%delz(isd:ied,jsd:jed,npz))
+endif
+if (.not.allocated(self%Atm%ua  )) allocate(self%Atm%ua  (isd:ied,jsd:jed,npz))
+if (.not.allocated(self%Atm%va  )) allocate(self%Atm%va  (isd:ied,jsd:jed,npz))
+if (.not.allocated(self%Atm%vort)) allocate(self%Atm%vort(isd:ied,jsd:jed,npz))
+if (.not.allocated(self%Atm%divg)) allocate(self%Atm%divg(isd:ied,jsd:jed,npz))
+
+!CRTM surface variables
+if (.not.allocated(self%Atm%slmsk )) allocate(self%Atm%slmsk (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%sheleg)) allocate(self%Atm%sheleg(isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%tsea  )) allocate(self%Atm%tsea  (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%vtype )) allocate(self%Atm%vtype (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%stype )) allocate(self%Atm%stype (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%vfrac )) allocate(self%Atm%vfrac (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%stc   )) allocate(self%Atm%stc   (isd:ied,jsd:jed,4))
+if (.not.allocated(self%Atm%smc   )) allocate(self%Atm%smc   (isd:ied,jsd:jed,4))
+if (.not.allocated(self%Atm%u_srf )) allocate(self%Atm%snwdph(isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%u_srf )) allocate(self%Atm%u_srf (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%v_srf )) allocate(self%Atm%v_srf (isd:ied,jsd:jed))
+if (.not.allocated(self%Atm%f10m  )) allocate(self%Atm%f10m  (isd:ied,jsd:jed))
 
 ! Initialize all domain arrays to zero
 call zeros(self)
 self%Atm%phis   = 0.0_kind_real
-
-! Number of fields
-self%nf = 5
 
 ! For convenience
 self%isc = geom%bd%isc
 self%iec = geom%bd%iec
 self%jsc = geom%bd%jsc
 self%jec = geom%bd%jec
+self%isd = geom%bd%isd
+self%ied = geom%bd%ied
+self%jsd = geom%bd%jsd
+self%jed = geom%bd%jed
+self%npx = geom%npx
+self%npy = geom%npy
+self%npz = geom%npz
+self%nq  = geom%ntracers
 
 ! Index in q for the required tracers
 self%ti_q  = get_tracer_index (MODEL_ATMOS, 'sphum')
 self%ti_ql = get_tracer_index (MODEL_ATMOS, 'liq_wat')
 self%ti_qi = get_tracer_index (MODEL_ATMOS, 'ice_wat')
 self%ti_o3 = get_tracer_index (MODEL_ATMOS, 'o3mr')
-
-self%root_pe = 0
-if (mpp_pe() == mpp_root_pe()) self%root_pe = 1
 
 end subroutine create
 
@@ -131,6 +205,14 @@ if (allocated(self%Atm%u_srf )) deallocate(self%Atm%u_srf )
 if (allocated(self%Atm%v_srf )) deallocate(self%Atm%v_srf )
 if (allocated(self%Atm%f10m  )) deallocate(self%Atm%f10m  )
 
+if (allocated(self%Atm%vort)) deallocate(self%Atm%vort)
+if (allocated(self%Atm%divg)) deallocate(self%Atm%divg)
+if (allocated(self%Atm%psi )) deallocate(self%Atm%psi )
+if (allocated(self%Atm%chi )) deallocate(self%Atm%chi )
+if (allocated(self%Atm%tv  )) deallocate(self%Atm%tv  )
+if (allocated(self%Atm%ps  )) deallocate(self%Atm%ps  )
+if (allocated(self%Atm%qct )) deallocate(self%Atm%qct )
+
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
@@ -141,15 +223,21 @@ type(fv3jedi_field), intent(inout) :: self
 
 !Zero out the entire domain
 
-self%Atm%u = 0.0_kind_real
-self%Atm%v = 0.0_kind_real
-self%Atm%pt = 0.0_kind_real
-self%Atm%delp = 0.0_kind_real
-self%Atm%q = 0.0_kind_real
-if (.not. self%Atm%hydrostatic) then
-   self%Atm%w = 0.0_kind_real
-   self%Atm%delz = 0.0_kind_real
-endif
+!Model
+if(allocated(self%Atm%u   )) self%Atm%u    = 0.0_kind_real
+if(allocated(self%Atm%v   )) self%Atm%v    = 0.0_kind_real
+if(allocated(self%Atm%pt  )) self%Atm%pt   = 0.0_kind_real
+if(allocated(self%Atm%delp)) self%Atm%delp = 0.0_kind_real
+if(allocated(self%Atm%q   )) self%Atm%q    = 0.0_kind_real
+if(allocated(self%Atm%w   )) self%Atm%w    = 0.0_kind_real
+if(allocated(self%Atm%delz)) self%Atm%delz = 0.0_kind_real
+
+!Control
+if(allocated(self%Atm%psi)) self%Atm%psi = 0.0_kind_real
+if(allocated(self%Atm%chi)) self%Atm%chi = 0.0_kind_real
+if(allocated(self%Atm%tv )) self%Atm%tv  = 0.0_kind_real
+if(allocated(self%Atm%ps )) self%Atm%ps  = 0.0_kind_real
+if(allocated(self%Atm%qct)) self%Atm%qct = 0.0_kind_real
 
 end subroutine zeros
 
@@ -159,17 +247,30 @@ subroutine ones(self)
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 
+integer :: isc,iec,jsc,jec
+
+isc = self%isc
+iec = self%iec
+jsc = self%jsc
+jec = self%jec
+
 call zeros(self)
 
-self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = 1.0_kind_real
-if (.not. self%Atm%hydrostatic) then
-   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = 1.0_kind_real
-endif
+!Model
+if(allocated(self%Atm%u   )) self%Atm%u   (isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%v   )) self%Atm%v   (isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%pt  )) self%Atm%pt  (isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%delp)) self%Atm%delp(isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%q   )) self%Atm%q   (isc:iec,jsc:jec,:,:) = 1.0_kind_real
+if(allocated(self%Atm%w   )) self%Atm%w   (isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%delz)) self%Atm%delz(isc:iec,jsc:jec,:) = 1.0_kind_real
+
+!Control
+if(allocated(self%Atm%psi)) self%Atm%psi(isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%chi)) self%Atm%chi(isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%tv )) self%Atm%tv (isc:iec,jsc:jec,:) = 1.0_kind_real
+if(allocated(self%Atm%ps )) self%Atm%ps (isc:iec,jsc:jec  ) = 1.0_kind_real
+if(allocated(self%Atm%qct)) self%Atm%qct(isc:iec,jsc:jec,:,:) = 1.0_kind_real
 
 end subroutine ones
 
@@ -181,16 +282,37 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 integer :: nq
 
-call random_vector(self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:))
-call random_vector(self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:))
-call random_vector(self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:))
-call random_vector(self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:))
-do nq = 1,self%geom%ntracers
-   call random_vector(self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,nq))
-enddo
-if (.not. self%Atm%hydrostatic) then
-   call random_vector(self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:))
-   call random_vector(self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:))
+integer :: isc,iec,jsc,jec
+
+isc = self%isc
+iec = self%iec
+jsc = self%jsc
+jec = self%jec
+
+if(allocated(self%Atm%u   )) call random_vector(self%Atm%u   (isc:iec,jsc:jec,:))
+if(allocated(self%Atm%v   )) call random_vector(self%Atm%v   (isc:iec,jsc:jec,:))
+if(allocated(self%Atm%pt  )) call random_vector(self%Atm%pt  (isc:iec,jsc:jec,:))
+if(allocated(self%Atm%delp)) call random_vector(self%Atm%delp(isc:iec,jsc:jec,:))
+
+if(allocated(self%Atm%q   )) then
+  do nq = 1,self%nq
+     call random_vector(self%Atm%q(isc:iec,jsc:jec,:,nq))
+  enddo
+endif
+
+if(allocated(self%Atm%w   )) call random_vector(self%Atm%w   (isc:iec,jsc:jec,:))
+if(allocated(self%Atm%delz)) call random_vector(self%Atm%delz(isc:iec,jsc:jec,:))
+
+!Control
+if(allocated(self%Atm%psi))  call random_vector(self%Atm%psi(isc:iec,jsc:jec,:))
+if(allocated(self%Atm%chi))  call random_vector(self%Atm%chi(isc:iec,jsc:jec,:))
+if(allocated(self%Atm%tv ))  call random_vector(self%Atm%tv (isc:iec,jsc:jec,:))
+if(allocated(self%Atm%ps ))  call random_vector(self%Atm%ps (isc:iec,jsc:jec  ))
+
+if(allocated(self%Atm%qct))  then
+  do nq = 1,self%nq
+     call random_vector(self%Atm%qct(isc:iec,jsc:jec,:,nq))
+  enddo
 endif
 
 end subroutine random
@@ -202,17 +324,29 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%hydrostatic = rhs%Atm%hydrostatic
+integer :: isc,iec,jsc,jec
 
-self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
-if (.not. self%Atm%hydrostatic) then
-   self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
-   self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
-endif
+isc = self%isc
+iec = self%iec
+jsc = self%jsc
+jec = self%jec
+
+if(allocated(self%Atm%u   )) self%Atm%u   (isc:iec,jsc:jec,:)   = rhs%Atm%u   (isc:iec,jsc:jec,:)
+if(allocated(self%Atm%v   )) self%Atm%v   (isc:iec,jsc:jec,:)   = rhs%Atm%v   (isc:iec,jsc:jec,:)
+if(allocated(self%Atm%pt  )) self%Atm%pt  (isc:iec,jsc:jec,:)   = rhs%Atm%pt  (isc:iec,jsc:jec,:)
+if(allocated(self%Atm%delp)) self%Atm%delp(isc:iec,jsc:jec,:)   = rhs%Atm%delp(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%q   )) self%Atm%q   (isc:iec,jsc:jec,:,:) = rhs%Atm%q   (isc:iec,jsc:jec,:,:)
+if(allocated(self%Atm%w   )) self%Atm%w   (isc:iec,jsc:jec,:)   = rhs%Atm%w   (isc:iec,jsc:jec,:)
+if(allocated(self%Atm%delz)) self%Atm%delz(isc:iec,jsc:jec,:)   = rhs%Atm%delz(isc:iec,jsc:jec,:)
+
+!Control
+if(allocated(self%Atm%psi)) self%Atm%psi(isc:iec,jsc:jec,:)   = rhs%Atm%psi(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%chi)) self%Atm%chi(isc:iec,jsc:jec,:)   = rhs%Atm%chi(isc:iec,jsc:jec,:)
+if(allocated(self%Atm%tv )) self%Atm%tv (isc:iec,jsc:jec,:)   = rhs%Atm%tv (isc:iec,jsc:jec,:)
+if(allocated(self%Atm%ps )) self%Atm%ps (isc:iec,jsc:jec)     = rhs%Atm%ps (isc:iec,jsc:jec)
+if(allocated(self%Atm%qct)) self%Atm%qct(isc:iec,jsc:jec,:,:) = rhs%Atm%qct(isc:iec,jsc:jec,:,:)
+
+
 self%Atm%phis(self%isc:self%iec,self%jsc:self%jec) = rhs%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
 
 self%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:) = rhs%Atm%ua(self%isc:self%iec,self%jsc:self%jec,:)
@@ -235,10 +369,6 @@ self%Atm%u_srf  = rhs%Atm%u_srf
 self%Atm%v_srf  = rhs%Atm%v_srf
 self%Atm%f10m   = rhs%Atm%f10m
 
-self%geom => rhs%geom
-
-self%nf = rhs%nf
-
 self%isc = rhs%isc
 self%iec = rhs%iec
 self%jsc = rhs%jsc
@@ -253,6 +383,8 @@ self%ti_ql = rhs%ti_ql
 self%ti_qi = rhs%ti_qi
 self%ti_o3 = rhs%ti_o3
 
+self%Atm%vort = rhs%Atm%vort
+self%Atm%divg = rhs%Atm%divg
 
 return
 end subroutine copy
@@ -264,11 +396,18 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%delp(self%isc:self%iec,self%jsc:self%jec,:)
-self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) = self%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:) + rhs%Atm%q(self%isc:self%iec,self%jsc:self%jec,:,:)
+integer :: isc,iec,jsc,jec
+
+isc = self%isc
+iec = self%iec
+jsc = self%jsc
+jec = self%jec
+
+self%Atm%u   (isc:iec,jsc:jec,:) = self%Atm%u   (isc:iec,jsc:jec,:) + rhs%Atm%u   (isc:iec,jsc:jec,:)
+self%Atm%v   (isc:iec,jsc:jec,:) = self%Atm%v   (isc:iec,jsc:jec,:) + rhs%Atm%v   (isc:iec,jsc:jec,:)
+self%Atm%pt  (isc:iec,jsc:jec,:) = self%Atm%pt  (isc:iec,jsc:jec,:) + rhs%Atm%pt  (isc:iec,jsc:jec,:)
+self%Atm%delp(isc:iec,jsc:jec,:) = self%Atm%delp(isc:iec,jsc:jec,:) + rhs%Atm%delp(isc:iec,jsc:jec,:)
+self%Atm%q   (isc:iec,jsc:jec,:,:) = self%Atm%q (isc:iec,jsc:jec,:,:) + rhs%Atm%q (isc:iec,jsc:jec,:,:)
 if (.not. self%Atm%hydrostatic) then
    self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%w(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%w(self%isc:self%iec,self%jsc:self%jec,:)
    self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%delz(self%isc:self%iec,self%jsc:self%jec,:)
@@ -376,28 +515,117 @@ f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
 
-!u,v,T,delp
-do k = 1,fld1%geom%npz
-  do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-    do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-      zp = zp + fld1%Atm%u   (i,j,k) * fld2%Atm%u   (i,j,k)
-      zp = zp + fld1%Atm%v   (i,j,k) * fld2%Atm%v   (i,j,k)
-      zp = zp + fld1%Atm%pt  (i,j,k) * fld2%Atm%pt  (i,j,k)
-      zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
-    enddo
-  enddo
-enddo
-
-!Tracers
-do l = 1,fld1%geom%ntracers
-  do k = 1,fld1%geom%npz
-    do j = fld1%geom%bd%jsc,fld1%geom%bd%jec
-      do i = fld1%geom%bd%isc,fld1%geom%bd%iec
-        zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
+!u
+if (allocated(fld1%Atm%u)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%u(i,j,k) * fld2%Atm%u(i,j,k)
       enddo
     enddo
   enddo
-enddo
+endif
+
+!v
+if (allocated(fld1%Atm%v)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%v(i,j,k) * fld2%Atm%v(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!pt
+if (allocated(fld1%Atm%pt)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%pt(i,j,k) * fld2%Atm%pt(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!delp
+if (allocated(fld1%Atm%delp)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%delp(i,j,k) * fld2%Atm%delp(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld1%Atm%q)) then
+  do l = 1,fld1%nq
+    do k = 1,fld1%npz
+      do j = fld1%jsc,fld1%jec
+        do i = fld1%isc,fld1%iec
+          zp = zp + fld1%Atm%q(i,j,k,l) * fld2%Atm%q(i,j,k,l)
+        enddo
+      enddo
+    enddo
+  enddo
+endif
+
+!psi
+if (allocated(fld1%Atm%psi)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%psi(i,j,k) * fld2%Atm%psi(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!chi
+if (allocated(fld1%Atm%chi)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%chi(i,j,k) * fld2%Atm%chi(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!tv
+if (allocated(fld1%Atm%tv)) then
+  do k = 1,fld1%npz
+    do j = fld1%jsc,fld1%jec
+      do i = fld1%isc,fld1%iec
+        zp = zp + fld1%Atm%tv(i,j,k) * fld2%Atm%tv(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!ps
+if (allocated(fld1%Atm%ps)) then
+  do j = fld1%jsc,fld1%jec
+    do i = fld1%isc,fld1%iec
+      zp = zp + fld1%Atm%ps(i,j) * fld2%Atm%ps(i,j)
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld1%Atm%qct)) then
+  do l = 1,fld1%nq
+    do k = 1,fld1%npz
+      do j = fld1%jsc,fld1%jec
+        do i = fld1%isc,fld1%iec
+          zp = zp + fld1%Atm%qct(i,j,k,l) * fld2%Atm%qct(i,j,k,l)
+        enddo
+      enddo
+    enddo
+  enddo
+endif
 
 !Get global dot product
 call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
@@ -415,7 +643,10 @@ implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(fv3jedi_field), intent(in)    :: rhs
 
-if (self%geom%size_cubic_grid==rhs%geom%size_cubic_grid) then
+integer :: check
+check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
+
+if (check==0) then
    self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%u(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%u(self%isc:self%iec,self%jsc:self%jec,:)
    self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%v(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%v(self%isc:self%iec,self%jsc:self%jec,:)
    self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) = self%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:) + rhs%Atm%pt(self%isc:self%iec,self%jsc:self%jec,:)
@@ -440,8 +671,11 @@ type(fv3jedi_field), intent(inout) :: lhs
 type(fv3jedi_field), intent(in)    :: x1
 type(fv3jedi_field), intent(in)    :: x2
 
+integer :: check
+check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
+
 call zeros(lhs)
-if (x1%geom%size_cubic_grid==x2%geom%size_cubic_grid) then
+if (check==0) then
    lhs%Atm%u(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%u(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%u(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
    lhs%Atm%v(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%v(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%v(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
    lhs%Atm%pt(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) = x1%Atm%pt(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:) - x2%Atm%pt(lhs%isc:lhs%iec,lhs%jsc:lhs%jec,:)
@@ -465,7 +699,10 @@ implicit none
 type(fv3jedi_field), intent(inout) :: fld
 type(fv3jedi_field), intent(in)    :: rhs
 
-if (fld%geom%size_cubic_grid==rhs%geom%size_cubic_grid) then
+integer :: check
+check = (rhs%iec-rhs%isc+1) - (fld%iec-fld%isc+1)
+
+if (check==0) then
    call copy(fld, rhs)
 else
    call abor1_ftn("fv3jedi_fields: change_resol not implmeneted yet")
@@ -534,16 +771,15 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
   implicit none
 
-  type(fv3jedi_field), intent(inout)     :: fld !< Fields
-  type(fv3jedi_geom), target, intent(in) :: geom    !< Geometry 
-  type(c_ptr), intent(in)                :: c_conf   !< Configuration
-  type(datetime), intent(inout)          :: vdate    !< DateTime
+  type(fv3jedi_field), intent(inout) :: fld !< Fields
+  type(fv3jedi_geom),  intent(inout) :: geom    !< Geometry 
+  type(c_ptr), intent(in)            :: c_conf   !< Configuration
+  type(datetime), intent(inout)      :: vdate    !< DateTime
 
   character(len=30) :: IC
   character(len=20) :: sdate
   character(len=1024) :: buf
   Integer :: i,j,k
-  real(kind=kind_real) :: deg_to_rad = pi/180.0_kind_real
   real(kind=kind_real) :: rlat, rlon, z
   real(kind=kind_real) :: pk,pe1,pe2,ps
   real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
@@ -552,9 +788,6 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
   real(kind=kind_real)             :: DTdummy = 900.0
   logical, allocatable             :: grids_on_this_pe(:)
   integer                          :: p_split = 1
-
-  ! Pointer to geometry component of field object
-  fld%geom => geom
 
   If (config_element_exists(c_conf,"analytic_init")) Then
      IC = Trim(config_get_string(c_conf,len(IC),"analytic_init"))
@@ -574,7 +807,7 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
      Case("invent-state")
 
-        call invent_state(fld,c_conf)
+        call invent_state(fld,c_conf,geom)
 
      Case("fv3_init_case")
 
@@ -606,9 +839,9 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
         fld%Atm%delp = FV_AtmIC(1)%delp
         fld%Atm%q = FV_AtmIC(1)%q
         fld%Atm%phis = FV_AtmIC(1)%phis
-        fld%geom%ak = FV_AtmIC(1)%ak
-        fld%geom%ak = FV_AtmIC(1)%ak
-        fld%geom%ptop = FV_AtmIC(1)%ptop
+        geom%ak = FV_AtmIC(1)%ak
+        geom%ak = FV_AtmIC(1)%ak
+        geom%ptop = FV_AtmIC(1)%ptop
         if (.not. fld%Atm%hydrostatic) then
            fld%Atm%w = FV_AtmIC(1)%w
            fld%Atm%delz = FV_AtmIC(1)%delz
@@ -623,8 +856,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
@@ -660,8 +893,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
@@ -694,8 +927,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test3_gravity_wave(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
@@ -727,8 +960,8 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
         do i = geom%bd%isc,geom%bd%iec
            do j = geom%bd%jsc,geom%bd%jec
-              rlat = deg_to_rad*geom%grid_lat(i,j)
-              rlon = deg_to_rad*geom%grid_lon(i,j)
+              rlat = geom%grid_lat(i,j)
+              rlon = geom%grid_lon(i,j)
 
               ! Call the routine first just to get the surface pressure
               Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,1,u0,v0,w0,&
@@ -758,64 +991,65 @@ subroutine analytic_IC(fld, geom, c_conf, vdate)
 
      Case Default
 
-        call invent_state(fld,c_conf)
+        call invent_state(fld,c_conf,geom)
 
      End Select int_option
         
 end subroutine analytic_IC
   
 ! ------------------------------------------------------------------------------
-subroutine invent_state(flds,config)
+subroutine invent_state(flds,config,geom)
 
 use kinds
 
 implicit none
 
 type(fv3jedi_field), intent(inout) :: flds    !< Model fields
-type(c_ptr), intent(in)           :: config  !< Configuration structure
+type(c_ptr), intent(in)            :: config  !< Configuration structure
+type(fv3jedi_geom),  intent(in)    :: geom
 
 integer :: i,j,k
 
 !u
-do k = 1,flds%geom%npz
-  do j = flds%geom%bd%jsc,flds%geom%bd%jec
-    do i = flds%geom%bd%isc,flds%geom%bd%iec
-      flds%Atm%u(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
+do k = 1,geom%npz
+  do j = geom%bd%jsc,geom%bd%jec
+    do i = geom%bd%isc,geom%bd%iec
+      flds%Atm%u(i,j,k) = cos(0.25*geom%grid_lon(i,j)) + cos(0.25*geom%grid_lat(i,j))
     enddo
   enddo
 enddo
 
 !v
-do k = 1,flds%geom%npz
-  do j = flds%geom%bd%jsc,flds%geom%bd%jec
-    do i = flds%geom%bd%isc,flds%geom%bd%iec
+do k = 1,geom%npz
+  do j = geom%bd%jsc,geom%bd%jec
+    do i = geom%bd%isc,geom%bd%iec
       flds%Atm%v(i,j,k) = 1.0_kind_real
     enddo
   enddo
 enddo
 
 !pt
-do k = 1,flds%geom%npz
-  do j = flds%geom%bd%jsc,flds%geom%bd%jec
-    do i = flds%geom%bd%isc,flds%geom%bd%iec
-      flds%Atm%pt(i,j,k) = cos(0.25*flds%geom%grid_lon(i,j)) + cos(0.25*flds%geom%grid_lat(i,j))
+do k = 1,geom%npz
+  do j = geom%bd%jsc,geom%bd%jec
+    do i = geom%bd%isc,geom%bd%iec
+      flds%Atm%pt(i,j,k) = cos(0.25*geom%grid_lon(i,j)) + cos(0.25*geom%grid_lat(i,j))
     enddo
   enddo
 enddo
 
 !delp
-do k = 1,flds%geom%npz
-  do j = flds%geom%bd%jsc,flds%geom%bd%jec
-    do i = flds%geom%bd%isc,flds%geom%bd%iec
+do k = 1,geom%npz
+  do j = geom%bd%jsc,geom%bd%jec
+    do i = geom%bd%isc,geom%bd%iec
       flds%Atm%delp(i,j,k) = k
     enddo
   enddo
 enddo
 
 !q
-do k = 1,flds%geom%npz
-  do j = flds%geom%bd%jsc,flds%geom%bd%jec
-    do i = flds%geom%bd%isc,flds%geom%bd%iec
+do k = 1,geom%npz
+  do j = geom%bd%jsc,geom%bd%jec
+    do i = geom%bd%isc,geom%bd%iec
       flds%Atm%q(i,j,k,1) = 0.0
     enddo
   enddo
@@ -826,10 +1060,11 @@ end subroutine invent_state
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_file(fld, c_conf, vdate)
+subroutine read_file(geom, fld, c_conf, vdate)
 
   implicit none
 
+  type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
   type(fv3jedi_field), intent(inout) :: fld      !< Fields
   type(c_ptr), intent(in)            :: c_conf   !< Configuration
   type(datetime), intent(inout)      :: vdate    !< DateTime
@@ -839,9 +1074,9 @@ subroutine read_file(fld, c_conf, vdate)
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
   if (trim(restart_type) == 'fv3gfs') then
-     call read_fms_restart(fld, c_conf, vdate)
+     call read_fms_restart(geom, fld, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call read_geos_restart(fld, c_conf, vdate)
+     call read_geos_restart(geom, fld, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_fields read: restart type not supported")
   endif
@@ -852,10 +1087,11 @@ end subroutine read_file
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_file(fld, c_conf, vdate)
+subroutine write_file(geom, fld, c_conf, vdate)
 
   implicit none
 
+  type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
   type(fv3jedi_field), intent(in)    :: fld      !< Fields
   type(c_ptr), intent(in)            :: c_conf   !< Configuration
   type(datetime), intent(inout)      :: vdate    !< DateTime
@@ -865,9 +1101,9 @@ subroutine write_file(fld, c_conf, vdate)
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
   if (trim(restart_type) == 'fv3gfs') then
-     call write_fms_restart(fld, c_conf, vdate)
+     call write_fms_restart(geom, fld, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call write_geos_restart(fld, c_conf, vdate)
+     call write_geos_restart(geom, fld, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_fields write: restart type not supported")
   endif
@@ -890,12 +1126,12 @@ integer :: isc, iec, jsc, jec, gs
 !2. Max
 !3. RMS
 
-isc = fld%geom%bd%isc
-iec = fld%geom%bd%iec
-jsc = fld%geom%bd%jsc
-jec = fld%geom%bd%jec
+isc = fld%isc
+iec = fld%iec
+jsc = fld%jsc
+jec = fld%jec
 
-gs = (iec-isc+1)*(jec-jsc+1)*fld%geom%npz
+gs = (iec-isc+1)*(jec-jsc+1)*fld%npz
 
 !u
 pstat(1,1) = minval(fld%Atm%u(isc:iec,jsc:jec,:))
@@ -933,9 +1169,17 @@ use fckit_mpi_module, only : fckit_mpi_comm, fckit_mpi_sum
 implicit none
 type(fv3jedi_field), intent(in) :: fld
 real(kind=kind_real), intent(out) :: prms
+
 real(kind=kind_real) :: zz
-integer jx,jy,jz,ii,nt,ierr,npes,iisum
+integer i,j,k,l,ii,nt,ierr,npes,iisum
+integer :: isc,iec,jsc,jec,npz
 type(fckit_mpi_comm) :: f_comm
+
+isc = fld%isc
+iec = fld%iec
+jsc = fld%jsc
+jec = fld%jec
+npz = fld%npz
 
 f_comm = fckit_mpi_comm()
 
@@ -943,22 +1187,127 @@ zz = 0.0_kind_real
 prms = 0.0_kind_real
 ii = 0
 
-do jy=fld%geom%bd%jsc,fld%geom%bd%jec
-   do jx=fld%geom%bd%isc,fld%geom%bd%iec
-      do jz=1,fld%geom%npz
-         zz = zz + fld%Atm%pt(jx,jy,jz)**2
-         zz = zz + fld%Atm%delp(jx,jy,jz)**2
-         if (.not. fld%Atm%hydrostatic) then
-            zz = zz + fld%Atm%w(jx,jy,jz)**2
-            zz = zz + fld%Atm%delz(jx,jy,jz)**2
-         endif
-         do nt=1,fld%geom%ntracers
-            zz = zz + fld%Atm%q(jx,jy,jz,nt)**2
-         enddo
-         ii = ii + 1
+!u
+if (allocated(fld%Atm%u)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%u(i,j,k)**2
+        ii = ii + 1
       enddo
-   enddo
-enddo
+    enddo
+  enddo
+endif
+
+!v
+if (allocated(fld%Atm%v)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%v(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!pt
+if (allocated(fld%Atm%pt)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%pt(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!delp
+if (allocated(fld%Atm%delp)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%delp(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld%Atm%q)) then
+  do l = 1,fld%nq
+    do k = 1,npz
+      do j = jsc,jec
+        do i = isc,iec
+          zz = zz + fld%Atm%q(i,j,k,l)**2
+          ii = ii + 1
+        enddo
+      enddo
+    enddo
+  enddo
+endif
+
+!psi
+if (allocated(fld%Atm%psi)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%psi(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!chi
+if (allocated(fld%Atm%chi)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%chi(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!tv
+if (allocated(fld%Atm%tv)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + fld%Atm%tv(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!ps
+if (allocated(fld%Atm%ps)) then
+  do j = jsc,jec
+    do i = isc,iec
+      zz = zz + fld%Atm%ps(i,j)**2
+      ii = ii + 1
+    enddo
+  enddo
+endif
+
+!q Tracers
+if (allocated(fld%Atm%qct)) then
+  do l = 1,fld%nq
+    do k = 1,npz
+      do j = jsc,jec
+        do i = isc,iec
+          zz = zz + fld%Atm%qct(i,j,k,l)**2
+          ii = ii + 1
+        enddo
+      enddo
+    enddo
+  enddo
+endif
 
 !Get global values
 call f_comm%allreduce(zz,prms,fckit_mpi_sum())
@@ -977,13 +1326,14 @@ end subroutine fldrms
 
 ! ------------------------------------------------------------------------------
 
-subroutine dirac(self, c_conf)
+subroutine dirac(self, c_conf, geom)
 
 use iso_c_binding
 
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(c_ptr), intent(in)       :: c_conf   !< Configuration
+type(fv3jedi_geom), intent(in) :: geom
 integer :: ndir,idir,ildir,ifdir,itiledir
 integer,allocatable :: ixdir(:),iydir(:)
 character(len=3) :: idirchar
@@ -1005,13 +1355,13 @@ itiledir = config_get_int(c_conf,"itiledir")
 
 ! Check
 if (ndir<1) call abor1_ftn("fv3jedi_fields:dirac non-positive ndir")
-if (any(ixdir<1).or.any(ixdir>self%geom%size_cubic_grid)) then
+if (any(ixdir<1).or.any(ixdir>self%npx)) then
    call abor1_ftn("fv3jedi_fields:dirac invalid ixdir")
 endif
-if (any(iydir<1).or.any(iydir>self%geom%size_cubic_grid)) then
+if (any(iydir<1).or.any(iydir>geom%size_cubic_grid)) then
    call abor1_ftn("fv3jedi_fields:dirac invalid iydir")
 endif
-if ((ildir<1).or.(ildir>self%geom%npz)) then
+if ((ildir<1).or.(ildir>self%npz)) then
    call abor1_ftn("fv3jedi_fields:dirac invalid ildir")
 endif
 if ((ifdir<1).or.(ifdir>5)) then
@@ -1028,9 +1378,9 @@ call zeros(self)
 do idir=1,ndir
 
    ! is specified grid point, tile number on this processor
-   if (self%geom%ntile == itiledir .and. &
-       ixdir(idir) >= self%geom%bd%isc .and. ixdir(idir) <= self%geom%bd%iec .and. &
-       iydir(idir) >= self%geom%bd%jsc .and. iydir(idir) <= self%geom%bd%jec) then
+   if (geom%ntile == itiledir .and. &
+       ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
+       iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
        ! If so, perturb desired field and level
        if (ifdir == 1) then
           self%Atm%u(ixdir(idir),iydir(idir),ildir) = 1.0
@@ -1050,104 +1400,372 @@ end subroutine dirac
 
 ! ------------------------------------------------------------------------------
 
-subroutine convert_to_ug(self, ug)
+subroutine ug_size(self, ug)
 use unstructured_grid_mod
 implicit none
 type(fv3jedi_field), intent(in) :: self
 type(unstructured_grid), intent(inout) :: ug
 
-integer :: nmga,ic0a,jx,jy,jl,nf
-integer,allocatable :: imask(:,:)
+integer :: igrid
+
+! Set number of grids
+if (ug%colocated==1) then
+   ! Colocatd
+   ug%ngrid = 1
+else
+   ! Not colocatedd
+   ug%ngrid = 1
+end if
+
+! Allocate grid instances
+if (.not.allocated(ug%grid)) allocate(ug%grid(ug%ngrid))
+
+if (ug%colocated==1) then
+  ! colocatedd
+
+  ! Set local number of points
+  ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1) 
+
+  ! Set number of levels
+  ug%grid(1)%nl0 = self%npz
+
+  ! Set number of variables
+  ug%grid(1)%nv = 8
+
+  ! Set number of timeslots
+  ug%grid(1)%nts = 1
+else
+  ! Not colocatedd
+  do igrid=1,ug%ngrid
+     ! Set local number of points
+     ug%grid(igrid)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
+
+     ! Set number of levels
+     ug%grid(igrid)%nl0 = self%npz
+
+     ! Set number of variables
+     ug%grid(igrid)%nv = 8
+
+     ! Set number of timeslots
+     ug%grid(igrid)%nts = 1
+  enddo
+end if
+
+end subroutine ug_size
+
+! ------------------------------------------------------------------------------
+
+subroutine ug_coord(self, ug, colocated, geom)
+use unstructured_grid_mod
+implicit none
+type(fv3jedi_field), intent(in) :: self
+type(unstructured_grid), intent(inout) :: ug
+integer, intent(in) :: colocated
+type(fv3jedi_geom), intent(in) :: geom
+
+integer :: imga,jx,jy,jl
 real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:)
 real(kind=kind_real) :: sigmaup,sigmadn
+integer :: igrid
 
-! Define local number of gridpoints
-nmga = (self%geom%bd%iec - self%geom%bd%isc + 1) * (self%geom%bd%jec - self%geom%bd%jsc + 1)
+! Copy colocated
+ug%colocated = colocated
 
-! Allocation
-allocate(lon(nmga))
-allocate(lat(nmga))
-allocate(area(nmga))
-allocate(vunit(nmga,self%geom%npz))
-allocate(imask(nmga,self%geom%npz))
+! Define size
+call ug_size(self, ug)
 
-! Copy coordinates
-ic0a = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
-    ic0a = ic0a+1
-    lon(ic0a) = self%geom%grid_lon(jx,jy)
-    lat(ic0a) = self%geom%grid_lat(jx,jy)
-    area(ic0a) = self%geom%area(jx,jy)
-  enddo
-enddo
-imask = 1
+! Allocate unstructured grid coordinates
+call allocate_unstructured_grid_coord(ug)
 
-! Define vertical unit
-do jl=1,self%geom%npz
-  sigmaup = self%geom%ak(jl+1)/101300.0+self%geom%bk(jl+1) ! si are now sigmas
-  sigmadn = self%geom%ak(jl  )/101300.0+self%geom%bk(jl  )
-  vunit(:,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
-enddo
-
-! Should this come from self/vars?
-nf = 5
-if (.not. self%geom%hydrostatic) nf = 7
-
-! Create unstructured grid
-call create_unstructured_grid(ug, nmga, self%geom%npz, nf, 1, lon, lat, area, vunit, imask)
-
-! Copy field
-ic0a = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
-    ic0a = ic0a+1
-    do jl=1,self%geom%npz
-        ug%fld(ic0a,jl,1,1) = self%Atm%u(jx,jy,jl)
-        ug%fld(ic0a,jl,2,1) = self%Atm%v(jx,jy,jl)
-        ug%fld(ic0a,jl,3,1) = self%Atm%pt(jx,jy,jl)
-        ug%fld(ic0a,jl,4,1) = self%Atm%q(jx,jy,jl,1)
-        ug%fld(ic0a,jl,5,1) = self%Atm%delp(jx,jy,jl)
-        if (.not. self%geom%hydrostatic) ug%fld(ic0a,jl,6,1) = self%Atm%w(jx,jy,jl)
-        if (.not. self%geom%hydrostatic) ug%fld(ic0a,jl,7,1) = self%Atm%delz(jx,jy,jl)
+if (ug%colocated==1) then
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      ug%grid(1)%lon(imga) = rad2deg*geom%grid_lon(jx,jy)
+      ug%grid(1)%lat(imga) = rad2deg*geom%grid_lat(jx,jy)
+      ug%grid(1)%area(imga) = geom%area(jx,jy)
+      do jl=1,self%npz
+        sigmaup = geom%ak(jl+1)/101300.0+geom%bk(jl+1) ! si are now sigmas
+        sigmadn = geom%ak(jl  )/101300.0+geom%bk(jl  )
+        ug%grid(1)%vunit(imga,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+        ug%grid(1)%lmask(imga,jl) = .true.
+      enddo
+    enddo
+  enddo 
+else
+  !Not colocated
+  do igrid=1,ug%ngrid
+    imga = 0
+    do jy=self%jsc,self%jec
+      do jx=self%isc,self%iec
+        imga = imga+1
+        ug%grid(igrid)%lon(imga) = rad2deg*geom%grid_lon(jx,jy)
+        ug%grid(igrid)%lat(imga) = rad2deg*geom%grid_lat(jx,jy)
+        ug%grid(igrid)%area(imga) = geom%area(jx,jy)
+        do jl=1,self%npz
+          sigmaup = geom%ak(jl+1)/101300.0+geom%bk(jl+1) ! si are now sigmas
+          sigmadn = geom%ak(jl  )/101300.0+geom%bk(jl  )
+          ug%grid(igrid)%vunit(imga,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+          ug%grid(igrid)%lmask(imga,jl) = .true.
+        enddo
+      enddo
     enddo
   enddo
+endif
+
+end subroutine ug_coord
+
+! ------------------------------------------------------------------------------
+
+subroutine field_to_ug(self, ug, colocated)
+use unstructured_grid_mod
+implicit none
+type(fv3jedi_field), intent(in) :: self
+type(unstructured_grid), intent(inout) :: ug
+integer, intent(in) :: colocated
+
+integer :: imga,jx,jy,jl
+real(kind=kind_real),allocatable :: ptmp(:,:,:)
+integer :: igrid
+
+! Copy colocated
+ug%colocated = colocated
+
+! Define size
+call ug_size(self, ug)
+
+! Allocate unstructured grid field
+call allocate_unstructured_grid_field(ug)
+
+! Copy field
+
+if (ug%colocated==1) then
+
+if (allocated(self%Atm%u)) then
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          ug%grid(1)%fld(imga,jl,1,1) = self%Atm%u   (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,2,1) = self%Atm%v   (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,3,1) = self%Atm%pt  (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,4,1) = self%Atm%delp(jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,5,1) = self%Atm%q   (jx,jy,jl,1)
+          ug%grid(1)%fld(imga,jl,6,1) = self%Atm%q   (jx,jy,jl,2)
+          ug%grid(1)%fld(imga,jl,7,1) = self%Atm%q   (jx,jy,jl,3)
+          ug%grid(1)%fld(imga,jl,8,1) = self%Atm%q   (jx,jy,jl,4)
+      enddo
+    enddo
+  enddo
+
+elseif (allocated(self%Atm%psi)) then
+
+  allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+  ptmp = 0.0
+  ptmp(:,:,self%npz) = self%Atm%ps(self%isc:self%iec,self%jsc:self%jec)
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          ug%grid(1)%fld(imga,jl,1,1) = self%Atm%psi (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,2,1) = self%Atm%chi (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,3,1) = self%Atm%tv  (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,4,1) = ptmp         (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,5,1) = self%Atm%qct (jx,jy,jl,1)
+          ug%grid(1)%fld(imga,jl,6,1) = self%Atm%qct (jx,jy,jl,2)
+          ug%grid(1)%fld(imga,jl,7,1) = self%Atm%qct (jx,jy,jl,3)
+          ug%grid(1)%fld(imga,jl,8,1) = self%Atm%qct (jx,jy,jl,4)
+      enddo
+    enddo
+  enddo
+
+  deallocate(ptmp)
+
+endif
+
+else
+
+do igrid=1,ug%ngrid
+
+if (allocated(self%Atm%u)) then
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          ug%grid(igrid)%fld(imga,jl,1,1) = self%Atm%u   (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,2,1) = self%Atm%v   (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,3,1) = self%Atm%pt  (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,4,1) = self%Atm%delp(jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,5,1) = self%Atm%q   (jx,jy,jl,1)
+          ug%grid(igrid)%fld(imga,jl,6,1) = self%Atm%q   (jx,jy,jl,2)
+          ug%grid(igrid)%fld(imga,jl,7,1) = self%Atm%q   (jx,jy,jl,3)
+          ug%grid(igrid)%fld(imga,jl,8,1) = self%Atm%q   (jx,jy,jl,4)
+      enddo
+    enddo
+  enddo
+
+elseif (allocated(self%Atm%psi)) then
+
+  allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+  ptmp = 0.0
+  ptmp(:,:,self%npz) = self%Atm%ps(self%isc:self%iec,self%jsc:self%jec)
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          ug%grid(igrid)%fld(imga,jl,1,1) = self%Atm%psi (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,2,1) = self%Atm%chi (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,3,1) = self%Atm%tv  (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,4,1) = ptmp         (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,5,1) = self%Atm%qct (jx,jy,jl,1)
+          ug%grid(igrid)%fld(imga,jl,6,1) = self%Atm%qct (jx,jy,jl,2)
+          ug%grid(igrid)%fld(imga,jl,7,1) = self%Atm%qct (jx,jy,jl,3)
+          ug%grid(igrid)%fld(imga,jl,8,1) = self%Atm%qct (jx,jy,jl,4)
+      enddo
+    enddo
+  enddo
+
+  deallocate(ptmp)
+
+endif
+
 enddo
 
-end subroutine convert_to_ug
+endif
+
+end subroutine field_to_ug
 
 ! -----------------------------------------------------------------------------
 
-subroutine convert_from_ug(self, ug)
+subroutine field_from_ug(self, ug)
 use unstructured_grid_mod
 implicit none
 type(fv3jedi_field), intent(inout) :: self
 type(unstructured_grid), intent(in) :: ug
 
-integer :: ic0a,jx,jy,jl
+integer :: imga,jx,jy,jl
+real(kind=kind_real),allocatable :: ptmp(:,:,:)
+integer :: igrid
 
 ! Copy field
-ic0a = 0
-do jy=self%geom%bd%jsc,self%geom%bd%jec
-  do jx=self%geom%bd%isc,self%geom%bd%iec
-    ic0a = ic0a+1
-    do jl=1,self%geom%npz
-        self%Atm%u(jx,jy,jl)    = ug%fld(ic0a,jl,1,1)
-        self%Atm%v(jx,jy,jl)    = ug%fld(ic0a,jl,2,1)
-        self%Atm%pt(jx,jy,jl)   = ug%fld(ic0a,jl,3,1)
-        self%Atm%q(jx,jy,jl,1)  = ug%fld(ic0a,jl,4,1)
-        self%Atm%delp(jx,jy,jl) = ug%fld(ic0a,jl,5,1)
-        if (.not. self%geom%hydrostatic) self%Atm%w(jx,jy,jl) = ug%fld(ic0a,jl,6,1)
-        if (.not. self%geom%hydrostatic) self%Atm%delz(jx,jy,jl) = ug%fld(ic0a,jl,7,1)
+
+if (ug%colocated==1) then
+
+if (allocated(self%Atm%u)) then
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%Atm%u   (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,1,1)
+          self%Atm%v   (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,2,1)
+          self%Atm%pt  (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,3,1)
+          self%Atm%delp(jx,jy,jl)   = ug%grid(1)%fld(imga,jl,4,1)
+          self%Atm%q   (jx,jy,jl,1) = ug%grid(1)%fld(imga,jl,5,1)
+          self%Atm%q   (jx,jy,jl,2) = ug%grid(1)%fld(imga,jl,6,1)
+          self%Atm%q   (jx,jy,jl,3) = ug%grid(1)%fld(imga,jl,7,1)
+          self%Atm%q   (jx,jy,jl,4) = ug%grid(1)%fld(imga,jl,8,1)
+      enddo
     enddo
   enddo
+
+elseif (allocated(self%Atm%psi)) then
+
+  allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%Atm%psi (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,1,1)
+          self%Atm%chi (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,2,1)
+          self%Atm%tv  (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,3,1)
+          ptmp         (jx,jy,jl)   = ug%grid(1)%fld(imga,jl,4,1)
+          self%Atm%qct (jx,jy,jl,1) = ug%grid(1)%fld(imga,jl,5,1)
+          self%Atm%qct (jx,jy,jl,2) = ug%grid(1)%fld(imga,jl,6,1)
+          self%Atm%qct (jx,jy,jl,3) = ug%grid(1)%fld(imga,jl,7,1)
+          self%Atm%qct (jx,jy,jl,4) = ug%grid(1)%fld(imga,jl,8,1)
+      enddo
+    enddo
+  enddo
+
+  self%Atm%ps(self%isc:self%iec,self%jsc:self%jec) = ptmp(:,:,self%npz)
+
+  deallocate(ptmp)
+
+endif
+
+else
+
+do igrid=1,ug%ngrid
+
+if (allocated(self%Atm%u)) then
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%Atm%u   (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,1,1)
+          self%Atm%v   (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,2,1)
+          self%Atm%pt  (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,3,1)
+          self%Atm%delp(jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,4,1)
+          self%Atm%q   (jx,jy,jl,1) = ug%grid(igrid)%fld(imga,jl,5,1)
+          self%Atm%q   (jx,jy,jl,2) = ug%grid(igrid)%fld(imga,jl,6,1)
+          self%Atm%q   (jx,jy,jl,3) = ug%grid(igrid)%fld(imga,jl,7,1)
+          self%Atm%q   (jx,jy,jl,4) = ug%grid(igrid)%fld(imga,jl,8,1)
+      enddo
+    enddo
+  enddo
+
+elseif (allocated(self%Atm%psi)) then
+
+  allocate(ptmp(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%Atm%psi (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,1,1)
+          self%Atm%chi (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,2,1)
+          self%Atm%tv  (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,3,1)
+          ptmp         (jx,jy,jl)   = ug%grid(igrid)%fld(imga,jl,4,1)
+          self%Atm%qct (jx,jy,jl,1) = ug%grid(igrid)%fld(imga,jl,5,1)
+          self%Atm%qct (jx,jy,jl,2) = ug%grid(igrid)%fld(imga,jl,6,1)
+          self%Atm%qct (jx,jy,jl,3) = ug%grid(igrid)%fld(imga,jl,7,1)
+          self%Atm%qct (jx,jy,jl,4) = ug%grid(igrid)%fld(imga,jl,8,1)
+      enddo
+    enddo
+  enddo
+
+  self%Atm%ps(self%isc:self%iec,self%jsc:self%jec) = ptmp(:,:,self%npz)
+
+  deallocate(ptmp)
+
+endif
+
 enddo
 
-end subroutine convert_from_ug
+endif
+
+
+end subroutine field_from_ug
 
 ! ------------------------------------------------------------------------------
 
-subroutine getvalues(fld, locs, vars, gom, traj)
+subroutine getvalues(geom, fld, locs, vars, gom, traj)
 
 use surface_vt_mod
 use pressure_vt_mod
@@ -1160,6 +1778,7 @@ use tracer_manager_mod,only: get_tracer_index, get_tracer_names
 use type_bump, only: bump_type
 
 implicit none
+type(fv3jedi_geom),                         intent(inout) :: geom 
 type(fv3jedi_field),                        intent(inout) :: fld 
 type(ioda_locs),                            intent(in)    :: locs 
 type(ufo_vars),                             intent(in)    :: vars
@@ -1223,15 +1842,15 @@ logical,  parameter                ::use_compress = .true.  !!could be a fv3 nam
 
 ! Grid convenience
 ! ----------------
-isc = fld%geom%bd%isc
-iec = fld%geom%bd%iec
-jsc = fld%geom%bd%jsc
-jec = fld%geom%bd%jec
-isd = fld%geom%bd%isd
-ied = fld%geom%bd%ied
-jsd = fld%geom%bd%jsd
-jed = fld%geom%bd%jed
-npz = fld%geom%npz
+isc = fld%isc
+iec = fld%iec
+jsc = fld%jsc
+jec = fld%jec
+isd = fld%isd
+ied = fld%ied
+jsd = fld%jsd
+jed = fld%jed
+npz = fld%npz
 
 ngrid = (iec-isc+1)*(jec-jsc+1)
 nobs = locs%nlocs 
@@ -1248,7 +1867,7 @@ if (present(traj)) then
      traj%nobs = nobs
    
      if (.not.allocated(traj%pt)) allocate(traj%pt(isd:ied,jsd:jed,1:npz))
-     if (.not.allocated(traj%q )) allocate(traj%q (isd:ied,jsd:jed,1:npz,1:fld%geom%ntracers))
+     if (.not.allocated(traj%q )) allocate(traj%q (isd:ied,jsd:jed,1:npz,1:fld%nq))
   
      traj%pt = fld%Atm%pt
      traj%q  = fld%Atm%q
@@ -1266,7 +1885,7 @@ else
 endif
 
 if (.not. pbumpa) then
-   call initialize_bump(fld%geom, locs, pbump)
+   call initialize_bump(geom, locs, pbump)
    pbumpa = .true.
 endif
 
@@ -1287,7 +1906,7 @@ allocate(prsi(isd:ied,jsd:jed,npz+1))
 allocate(prs (isd:ied,jsd:jed,npz  ))
 allocate(logp(isd:ied,jsd:jed,npz  ))
 
-call delp_to_pe_p_logp(fld%geom,fld%Atm%delp,prsi,prs,logp)
+call delp_to_pe_p_logp(geom,fld%Atm%delp,prsi,prs,logp)
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -1331,7 +1950,7 @@ snow_depth = 0.0_kind_real
 
 if (fld%havecrtmfields) then
   !TODO only if a radiance
-  call crtm_surface( fld%geom, nobs, ngrid, locs%lat(:), locs%lon(:), &
+  call crtm_surface( geom, nobs, ngrid, locs%lat(:), locs%lon(:), &
                      fld%Atm%slmsk, fld%Atm%sheleg, fld%Atm%tsea, fld%Atm%vtype, &
                      fld%Atm%stype, fld%Atm%vfrac, fld%Atm%stc, fld%Atm%smc, fld%Atm%snwdph, &
                      fld%Atm%u_srf,fld%Atm%v_srf,fld%Atm%f10m, &
@@ -1366,10 +1985,10 @@ if (fld%havecrtmfields) then
     enddo
   enddo
   
-  call crtm_ade_efr( fld%geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,fld%ti_q), &
+  call crtm_ade_efr( geom,prsi,fld%Atm%pt,fld%Atm%delp,water_coverage_m,fld%Atm%q(:,:,:,fld%ti_q), &
                      fld%Atm%q(:,:,:,fld%ti_ql),fld%Atm%q(:,:,:,fld%ti_qi),ql_ade,qi_ade,ql_efr,qi_efr )
   
-  call crtm_mixratio(fld%geom,fld%Atm%q(:,:,:,fld%ti_q),qmr)
+  call crtm_mixratio(geom,fld%Atm%q(:,:,:,fld%ti_q),qmr)
 
 endif
 
@@ -1409,7 +2028,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    call T_to_Tv(fld%geom,fld%Atm%pt,fld%Atm%q,geovalm)
+    call T_to_Tv(geom,fld%Atm%pt,fld%Atm%q,geovalm)
     geoval => geovalm
 
   case ("atmosphere_ln_pressure_coordinate")
@@ -1440,7 +2059,7 @@ do jvar = 1, vars%nv
     geoval => geovale
 
   case ("geopotential_height")
-    call geop_height(fld%geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
+    call geop_height(geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
     nvl = npz
     do_interp = .true.
     geoval => geovalm
@@ -1680,12 +2299,13 @@ end subroutine getvalues
 
 ! ------------------------------------------------------------------------------
 
-subroutine getvalues_tl(fld, locs, vars, gom, traj)
+subroutine getvalues_tl(geom, fld, locs, vars, gom, traj)
 
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_tl
 use pressure_vt_mod
 implicit none
+type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_field),      intent(inout) :: fld 
 type(ioda_locs),          intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
@@ -1714,15 +2334,15 @@ call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
 
 ! Grid convenience
 ! ----------------
-isc = fld%geom%bd%isc
-iec = fld%geom%bd%iec
-jsc = fld%geom%bd%jsc
-jec = fld%geom%bd%jec
-isd = fld%geom%bd%isd
-ied = fld%geom%bd%ied
-jsd = fld%geom%bd%jsd
-jed = fld%geom%bd%jed
-npz = fld%geom%npz
+isc = fld%isc
+iec = fld%iec
+jsc = fld%jsc
+jec = fld%jec
+isd = fld%isd
+ied = fld%ied
+jsd = fld%jsd
+jed = fld%jed
+npz = fld%npz
 
 
 ! Create Buffer for interpolated values
@@ -1764,25 +2384,26 @@ do jvar = 1, vars%nv
 
   case ("virtual_temperature")
 
-    nvl = fld%geom%npz
+    nvl = fld%npz
     do_interp = .true.
-    call T_to_Tv_tl(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    call T_to_Tv_tl(geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
     geovalm = fld%Atm%pt
     geoval => geovalm
 
   case ("atmosphere_ln_pressure_coordinate")
 
   case ("humidity_mixing_ratio")
-
-    nvl = fld%geom%npz
+  
+    nvl = fld%npz
     do_interp = .true.
-    call crtm_mixratio_tl(fld%geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
-    geoval => geovalm
+    call crtm_mixratio_tl(geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
+    geoval => geovalm  
 
   case ("air_pressure")
-    nvl = fld%geom%npz
+
+    nvl = geom%npz
     do_interp = .true.
-    call delp_to_p_tl(fld%geom,fld%Atm%delp,geovalm)
+    call delp_to_p_tl(geom,fld%Atm%delp,geovalm)
     geoval => geovalm
 
   case ("air_pressure_levels")
@@ -1885,12 +2506,13 @@ end subroutine getvalues_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine getvalues_ad(fld, locs, vars, gom, traj)
+subroutine getvalues_ad(geom, fld, locs, vars, gom, traj)
 
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_ad
 use pressure_vt_mod
 implicit none
+type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_field),      intent(inout) :: fld 
 type(ioda_locs),           intent(in)   :: locs 
 type(ufo_vars),           intent(in)    :: vars
@@ -1919,15 +2541,15 @@ call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
 
 ! Grid convenience
 ! ----------------
-isc = fld%geom%bd%isc
-iec = fld%geom%bd%iec
-jsc = fld%geom%bd%jsc
-jec = fld%geom%bd%jec
-isd = fld%geom%bd%isd
-ied = fld%geom%bd%ied
-jsd = fld%geom%bd%jsd
-jed = fld%geom%bd%jed
-npz = fld%geom%npz
+isc = fld%isc
+iec = fld%iec
+jsc = fld%jsc
+jec = fld%jec
+isd = fld%isd
+ied = fld%ied
+jsd = fld%jsd
+jed = fld%jed
+npz = fld%npz
 
 
 ! Create Buffer for interpolated values
@@ -2077,15 +2699,17 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
     
     fld%Atm%pt = geovalm
-    call T_to_Tv_ad(fld%geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
+    call T_to_Tv_ad(geom, traj%pt, fld%Atm%pt, traj%q(:,:,:,1), fld%Atm%q (:,:,:,1) )
 
   case ("atmosphere_ln_pressure_coordinate")
 
   case ("humidity_mixing_ratio")
-    call crtm_mixratio_ad(fld%geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
+  
+    call crtm_mixratio_ad(geom, traj%q(:,:,:,1), fld%Atm%q(:,:,:,1), geovalm)
 
   case ("air_pressure")
-    call delp_to_p_ad(fld%geom,fld%Atm%delp,geovalm)
+
+    call delp_to_p_ad(geom,fld%Atm%delp,geovalm)
 
   case ("air_pressure_levels")
  
@@ -2220,12 +2844,12 @@ mod_num = (geom%bd%iec - geom%bd%isc + 1) * (geom%bd%jec - geom%bd%jsc + 1)
 !Calculate interpolation weight using BUMP
 !-----------------------------------------
 allocate( mod_lat(mod_num), mod_lon(mod_num) )
-mod_lat = reshape( geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
-                                 geom%bd%jsc:geom%bd%jec),     &
-                                [mod_num] )  
-mod_lon = reshape( geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
-                                 geom%bd%jsc:geom%bd%jec),     &
-                                [mod_num] ) - 180.0_kind_real
+mod_lat = reshape( rad2deg*geom%grid_lat(geom%bd%isc:geom%bd%iec,      &
+                                         geom%bd%jsc:geom%bd%jec),     &
+                                        [mod_num] )  
+mod_lon = reshape( rad2deg*geom%grid_lon(geom%bd%isc:geom%bd%iec,      &
+                                         geom%bd%jsc:geom%bd%jec),     &
+                                        [mod_num] ) - 180.0_kind_real
 
 !Important namelist options
 call bump%nam%init
@@ -2240,7 +2864,7 @@ bump%nam%local_diag = .false.
 !Less important namelist options (should not be changed)
 bump%nam%default_seed = .true.
 bump%nam%new_hdiag = .false.
-bump%nam%new_param = .false.
+bump%nam%new_nicas = .false.
 bump%nam%check_adjoints = .false.
 bump%nam%check_pos_def = .false.
 bump%nam%check_sqrt = .false.
@@ -2323,7 +2947,7 @@ subroutine check_resolution(x1, x2)
 implicit none
 type(fv3jedi_field), intent(in) :: x1, x2
 
-if (x1%geom%size_cubic_grid /= x2%geom%size_cubic_grid .or.  x1%geom%npz /= x2%geom%npz) then
+if (x1%npx /= x2%npx .or.  x1%npz /= x2%npz) then
   call abor1_ftn ("fv3jedi_fields: resolution error")
 endif
 call check(x1)

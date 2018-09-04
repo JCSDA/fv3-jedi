@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_TLMIDFV3JEDI_H_
-#define FV3_JEDI_SRC_TLMIDFV3JEDI_H_
+#ifndef SRC_TLMIDFV3JEDI_H_
+#define SRC_TLMIDFV3JEDI_H_
 
 #include <string>
 
@@ -59,6 +59,7 @@ class TlmIdFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
 /// Other utilities
   const util::Duration & timeResolution() const override {return tstep_;}
   const GeometryFV3JEDI & resolution() const {return resol_;}
+  const oops::Variables & variables() const override {return linvars_;}
 
  private:
   void print(std::ostream &) const override;
@@ -67,8 +68,9 @@ class TlmIdFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
   int keyConfig_;
   util::Duration tstep_;
   const GeometryFV3JEDI resol_;
+  const oops::Variables linvars_;
 };
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_TLMIDFV3JEDI_H_
+#endif  // SRC_TLMIDFV3JEDI_H_

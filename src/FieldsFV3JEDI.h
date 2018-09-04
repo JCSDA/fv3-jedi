@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_FIELDSFV3JEDI_H_
-#define FV3_JEDI_SRC_FIELDSFV3JEDI_H_
+#ifndef SRC_FIELDSFV3JEDI_H_
+#define SRC_FIELDSFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -82,9 +82,10 @@ class FieldsFV3JEDI : public util::Printable,
   void add(const FieldsFV3JEDI &);
   void diff(const FieldsFV3JEDI &, const FieldsFV3JEDI &);
 
-// Convert to/from generic unstructured grid
-  void convert_to(oops::UnstructuredGrid &) const;
-  void convert_from(const oops::UnstructuredGrid &);
+// Unstructured grid
+  void ug_coord(oops::UnstructuredGrid &, const int &) const;
+  void field_to_ug(oops::UnstructuredGrid &, const int &) const;
+  void field_from_ug(const oops::UnstructuredGrid &);
 
 // Utilities
   void read(const eckit::Configuration &);
@@ -109,4 +110,4 @@ class FieldsFV3JEDI : public util::Printable,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3_JEDI_SRC_FIELDSFV3JEDI_H_
+#endif  // SRC_FIELDSFV3JEDI_H_

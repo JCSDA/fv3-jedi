@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3_JEDI_SRC_STATEFV3JEDI_H_
-#define FV3_JEDI_SRC_STATEFV3JEDI_H_
+#ifndef SRC_STATEFV3JEDI_H_
+#define SRC_STATEFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -55,7 +55,8 @@ class StateFV3JEDI : public util::Printable,
 /// Constructor, destructor
   StateFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
                const util::DateTime &);  // Is it used?
-  StateFV3JEDI(const GeometryFV3JEDI &, const eckit::Configuration &);
+  StateFV3JEDI(const GeometryFV3JEDI &, const oops::Variables &,
+               const eckit::Configuration &);
   StateFV3JEDI(const GeometryFV3JEDI &, const StateFV3JEDI &);
   StateFV3JEDI(const StateFV3JEDI &);
   virtual ~StateFV3JEDI();
@@ -72,10 +73,6 @@ class StateFV3JEDI : public util::Printable,
 
 /// Interactions with Increment
   StateFV3JEDI & operator+=(const IncrementFV3JEDI &);
-
-/// Convert to/from generic unstructured grid
-  void convert_to(oops::UnstructuredGrid &) const;
-  void convert_from(const oops::UnstructuredGrid &);
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);
@@ -106,4 +103,4 @@ class StateFV3JEDI : public util::Printable,
 
 }  // namespace fv3jedi
 
-#endif  // FV3_JEDI_SRC_STATEFV3JEDI_H_
+#endif  // SRC_STATEFV3JEDI_H_
