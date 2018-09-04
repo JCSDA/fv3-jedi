@@ -2059,7 +2059,7 @@ do jvar = 1, vars%nv
     geoval => geovale
 
   case ("geopotential_height")
-    call geop_height(fld%geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
+    call geop_height(geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
     nvl = npz
     do_interp = .true.
     geoval => geovalm
@@ -2400,9 +2400,10 @@ do jvar = 1, vars%nv
     geoval => geovalm  
 
   case ("air_pressure")
-    nvl = fld%geom%npz
+
+    nvl = geom%npz
     do_interp = .true.
-    call delp_to_p_tl(fld%geom,fld%Atm%delp,geovalm)
+    call delp_to_p_tl(geom,fld%Atm%delp,geovalm)
     geoval => geovalm
 
   case ("air_pressure_levels")
@@ -2708,7 +2709,7 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
-    call delp_to_p_ad(fld%geom,fld%Atm%delp,geovalm)
+    call delp_to_p_ad(geom,fld%Atm%delp,geovalm)
 
   case ("air_pressure_levels")
  
