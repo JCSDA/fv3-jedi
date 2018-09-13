@@ -488,9 +488,9 @@ foreach(FILENAME ${crtm_test_input})
    execute_process( COMMAND ln -s ${crtm_SOURCE_DIR}/fix/${FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/Data )
 endforeach(FILENAME)
 
-file(GLOB ufo_obs "${ufo_SOURCE_DIR}/test/testinput/atmosphere/*nc4")
+file(GLOB ioda_obs "${ioda_SOURCE_DIR}/test/testinput/atmosphere/*nc4")
 
-foreach(FILENAME ${ufo_obs})
+foreach(FILENAME ${ioda_obs})
    execute_process( COMMAND ln -s ${FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/Data )
 endforeach(FILENAME)
 

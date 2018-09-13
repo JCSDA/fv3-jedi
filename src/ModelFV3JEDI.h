@@ -10,15 +10,19 @@
 
 #include <ostream>
 #include <string>
+
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include "Fortran.h"
-#include "GeometryFV3JEDI.h"
+#include "oops/base/ModelBase.h"
 #include "oops/base/Variables.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
+
+#include "FV3JEDITraits.h"
+#include "Fortran.h"
+#include "GeometryFV3JEDI.h"
 
 // Forward declarations
 namespace eckit {
@@ -36,9 +40,8 @@ namespace fv3jedi {
  *  FV3JEDI nonlinear model definition and configuration parameters.
  */
 
-class ModelFV3JEDI: public util::Printable,
-               private boost::noncopyable,
-               private util::ObjectCounter<ModelFV3JEDI> {
+class ModelFV3JEDI: public oops::ModelBase<FV3JEDITraits>,
+                    private util::ObjectCounter<ModelFV3JEDI> {
  public:
   static const std::string classname() {return "fv3jedi::ModelFV3JEDI";}
 

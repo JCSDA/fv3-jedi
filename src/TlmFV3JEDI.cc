@@ -7,18 +7,19 @@
 
 #include <vector>
 
-#include "src/TlmFV3JEDI.h"
-
 #include "eckit/config/LocalConfiguration.h"
+
+#include "oops/util/DateTime.h"
+#include "oops/util/Logger.h"
+#include "oops/util/abor1_cpp.h"
+
+#include "FV3JEDITraits.h"
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "ModelFV3JEDI.h"
 #include "StateFV3JEDI.h"
-#include "FV3JEDITraits.h"
-#include "oops/util/DateTime.h"
-#include "oops/util/Logger.h"
-#include "oops/util/abor1_cpp.h"
+#include "TlmFV3JEDI.h"
 #include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {
