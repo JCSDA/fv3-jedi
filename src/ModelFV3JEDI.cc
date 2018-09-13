@@ -16,7 +16,7 @@
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
 #include "ModelBiasFV3JEDI.h"
-#include "ModelFV3JEDI.h"
+#include "src/ModelFV3JEDI.h"
 #include "StateFV3JEDI.h"
 #include "UtilitiesFV3JEDI.h"
 

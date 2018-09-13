@@ -19,7 +19,7 @@
 #include "IncrementFV3JEDI.h"
 #include "ModelFV3JEDI.h"
 #include "StateFV3JEDI.h"
-#include "TlmFV3JEDI.h"
+#include "src/TlmFV3JEDI.h"
 #include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {
