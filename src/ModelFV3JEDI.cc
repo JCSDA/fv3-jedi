@@ -7,19 +7,22 @@
 
 #include <vector>
 
-#include "src/ModelFV3JEDI.h"
+#include "eckit/config/Configuration.h"
 
+#include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
-#include "ModelBiasFV3JEDI.h"
+
 #include "FieldsFV3JEDI.h"
 #include "Fortran.h"
 #include "GeometryFV3JEDI.h"
+#include "ModelBiasFV3JEDI.h"
+#include "src/ModelFV3JEDI.h"
 #include "StateFV3JEDI.h"
-#include "eckit/config/Configuration.h"
-#include "oops/util/DateTime.h"
 #include "UtilitiesFV3JEDI.h"
 
 namespace fv3jedi {
+// -----------------------------------------------------------------------------
+static oops::ModelMaker<FV3JEDITraits, ModelFV3JEDI> makermodel_("FV3JEDI");
 // -----------------------------------------------------------------------------
 ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & model)

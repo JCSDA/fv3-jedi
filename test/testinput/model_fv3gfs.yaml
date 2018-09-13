@@ -11,6 +11,7 @@ Geometry:
   ak_var: ak
   bk_var: bk
 Model:
+  name: 'FV3JEDI'
   init_tlmadm: '0'
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table

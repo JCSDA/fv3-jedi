@@ -18,11 +18,13 @@ Geometry:
   ak_var: ak
   bk_var: bk
 LinearModel:
+  name: 'FV3JEDITLM'
   init_tlmadm: '1'
   linmodtest: '1'
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   trajectory:
+    name: 'FV3JEDI'
     init_tlmadm: '1'
     linmodtest: '1'
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
@@ -41,6 +43,7 @@ LinearModelTest:
   toleranceAD: '1.0e-10'
   toleranceTL: '1.0'
 Model:
+  name: 'FV3JEDI'
   init_tlmadm: '1'
   linmodtest: '1'
   nml_file: Data/fv3files/input_fv3gfs_c48.nml

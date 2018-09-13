@@ -13,7 +13,6 @@
 #include <boost/noncopyable.hpp>
 
 #include "oops/base/LinearModelBase.h"
-
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"

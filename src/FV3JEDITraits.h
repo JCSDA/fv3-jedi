@@ -11,25 +11,26 @@
 #include <string>
 
 #include "ErrorCovarianceFV3JEDI.h"
+#include "GetValuesTrajFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "LocalizationMatrixFV3JEDI.h"
-#include "ModelFV3JEDI.h"
 #include "ModelBiasFV3JEDI.h"
 #include "ModelBiasIncrementFV3JEDI.h"
 #include "ModelBiasCovarianceFV3JEDI.h"
 #include "StateFV3JEDI.h"
-#include "ufo/GeoVaLs.h"
+
 #include "ioda/Locations.h"
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
+
+#include "ufo/GeoVaLs.h"
+#include "ufo/LinearObsOperator.h"
 #include "ufo/ObsBias.h"
 #include "ufo/ObsBiasIncrement.h"
 #include "ufo/ObsBiasCovariance.h"
 #include "ufo/ObsCheck.h"
 #include "ufo/ObsOperator.h"
-#include "ufo/LinearObsOperator.h"
-#include "GetValuesTrajFV3JEDI.h"
 
 namespace fv3jedi {
 
@@ -40,7 +41,6 @@ struct FV3JEDITraits {
   typedef fv3jedi::GeometryFV3JEDI             Geometry;
 
   typedef fv3jedi::StateFV3JEDI                State;
-  typedef fv3jedi::ModelFV3JEDI                Model;
   typedef fv3jedi::IncrementFV3JEDI            Increment;
   typedef fv3jedi::ErrorCovarianceFV3JEDI      Covariance;
 

@@ -40,7 +40,7 @@ cost_function:
         obserror: One
       ObsData:
         ObsDataIn:
-          obsfile: Data/sondes_geoval_2018041500_m.nc4
+          obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.3dvar.obt
         obsvalue: Observation
@@ -60,6 +60,7 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
+  name: 'FV3JEDI'
   init_tlmadm: '0'
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
