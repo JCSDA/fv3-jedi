@@ -23,13 +23,24 @@ cost_function:
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
   Jo:
+#    ObsTypes:
+#    - Covariance:
+#        covariance: diagonal
+#        obserror: Inverse_Observation_Error
+#      ObsData:
+#        ObsDataIn:
+#          obsfile: Data/amsua_n19_obs.nc4
+#        ObsDataOut:
+#          obsfile: Data/fv3jedi.3dvar.obt
+#        obsvalue: Observation
+#      ObsType: Radiance
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserror: ObsErr
+        obserror: One
       ObsData:
         ObsDataIn:
-          obsfile: Data/diag_t_01_wprofiles.nc4
+          obsfile: Data/sondes_geoval_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.3dvar.obt
         obsvalue: Observation
@@ -91,6 +102,7 @@ variational:
       update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_geos_c48.nml
@@ -117,6 +129,7 @@ variational:
       update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_geos_c48.nml

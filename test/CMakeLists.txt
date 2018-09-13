@@ -488,14 +488,10 @@ foreach(FILENAME ${crtm_test_input})
    execute_process( COMMAND ln -s ${crtm_SOURCE_DIR}/fix/${FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/Data )
 endforeach(FILENAME)
 
-list( APPEND ufo_obs
-  test/testinput/diag_t_01_wprofiles.nc4
-  test/testinput/amsua_n19_obs.nc4
-  test/testinput/gdas.gpsro.2017080100.bufr2nc_qced.nc4
-)
+file(GLOB ufo_obs "${ufo_SOURCE_DIR}/test/testinput/atmosphere/*nc4")
 
 foreach(FILENAME ${ufo_obs})
-   execute_process( COMMAND ln -s ${ufo_SOURCE_DIR}/${FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/Data )
+   execute_process( COMMAND ln -s ${FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/Data )
 endforeach(FILENAME)
 
 ecbuild_add_resources( TARGET   fv3jedi_test_scripts
@@ -635,7 +631,7 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-#Too expensive for laptops
+#Expensive for laptops, so off for now
 #ecbuild_add_test( TARGET  test_fv3jedi_localization
 #                  BOOST
 #                  SOURCES executables/TestLocalization.cc
@@ -643,10 +639,37 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 #                  MPI     6
 #                  LIBS    fv3jedi )
 
-# Test oops applications with FV3JEDI
-# compare.sh does not currently work with mpirun
+#Tests that just check for sucessful run
+#---------------------------------------
 
-#Mpi tasks dont pass tests
+ecbuild_add_test( TARGET test_fv3jedi_hofx_fv3gfs
+                  TYPE EXE
+                  SOURCES ../mains/fv3jediHofX.cc
+                  ARGS "testinput/hofx_fv3gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_hofx_geos
+                  TYPE EXE
+                  SOURCES ../mains/fv3jediHofX.cc
+                  ARGS "testinput/hofx_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_3dvar_fv3gfs
+                  TYPE EXE
+                  SOURCES ../mains/fv3jedi4DVar.cc
+                  ARGS "testinput/3dvar_fv3gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_3dvar_geos
+                  TYPE EXE
+                  SOURCES ../mains/fv3jedi4DVar.cc
+                  ARGS "testinput/3dvar_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
 #ecbuild_add_test( TARGET test_fv3jedi_dirac_bump_fv3gfs
 #                  TYPE SCRIPT
 #                  MPI     6
@@ -655,21 +678,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 #                       testoutput/dirac.bump_fv3gfs.test
 #                  DEPENDS fv3jedi_dirac.x )
 
-#ecbuild_add_test( TARGET test_fv3jedi_hofx
-#                  TYPE SCRIPT
-#                  MPI     6
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x testinput/hofx.yaml"
-#                       testoutput/hofx.test
-#                  DEPENDS fv3jedi_hofx.x )
-#
-#ecbuild_add_test( TARGET test_fv3jedi_3dvar
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.yaml"
-#                       testoutput/3dvar.test
-#                  DEPENDS fv3jedi_4dvar.x )
-#
 #ecbuild_add_test( TARGET test_fv3jedi_3denvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
@@ -677,9 +685,3 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 #                       testoutput/3denvar_bump.test
 #                  DEPENDS fv3jedi_4dvar.x )
 #
-#ecbuild_add_test( TARGET test_fv3jedi_4dvar_drplanczos
-#                  TYPE SCRIPT
-#                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/4dvar.drplanczos.yaml"
-#                       testoutput/4dvar.drplanczos.test
-#                  DEPENDS fv3jedi_4dvar.x )
