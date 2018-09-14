@@ -23,7 +23,7 @@ ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
   finalnorm: '695.90657798593088'
-  tolerance: '1.0e-7'
+  tolerance: '1.0e-4'
 State:
   restart_type: geos
   datapath_read: Data/INPUTS/GEOS_c48/

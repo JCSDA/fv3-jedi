@@ -9,7 +9,7 @@ Geometry:
   halo: '3'
   wind_type: D-grid
   filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20170801.000000.fv_core.res.nc
+  filename_akbk: 20180415.000000.fv_core.res.nc
   ak_var: ak
   bk_var: bk
 Localization:
@@ -18,99 +18,99 @@ Localization:
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem001/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem001/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem001/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem001/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem002/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem002/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem002/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem002/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem003/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem003/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem003/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem003/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem004/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem004/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem004/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem004/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem005/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem005/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem005/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem005/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem006/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem006/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem006/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem006/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem007/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem007/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem007/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem007/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem008/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem008/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem008/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem008/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem009/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem009/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem009/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem009/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
   - restart_type: fv3gfs
     datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
     datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/
-    date: '2017-08-01T00:00:00Z'
-    filename_core: mem010/RESTART/20170801.000000.fv_core.res.nc
-    filename_cplr: 20170801.000000.coupler.res
-    filename_trcr: mem010/RESTART/20170801.000000.fv_tracer.res.nc
+    date: '2018-04-15T00:00:00Z'
+    filename_core: mem010/RESTART/20180415.000000.fv_core.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    filename_trcr: mem010/RESTART/20180415.000000.fv_tracer.res.nc
     nml_file: Data/fv3files/input_fv3gfs_c48.nml
     trc_file: Data/fv3files/field_table
     read_crtm_surface: 0
@@ -170,7 +170,7 @@ Localization:
     - pt
     - delp
     - q
-TestDate: '2017-08-01T00:00:00Z'
+TestDate: '2018-04-15T00:00:00Z'
 Variables:
   variables:
   - u

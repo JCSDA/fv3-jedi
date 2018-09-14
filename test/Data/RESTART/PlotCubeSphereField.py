@@ -12,24 +12,24 @@ cube = 48
 filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20170801.000000.3D-Var.fv_core.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20180415.000000.3D-Var.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
     if (model == 'geos'):
         path2  = '../INPUTS/GEOS_c48/'
-        file_tplt_befr2 = '20170801.000000.fv_core.res.tile'
+        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
     elif (model == 'fv3gfs'):
         path2  = '../INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
-        file_tplt_befr2 = '20170801.000000.fv_core.res.tile'
+        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
 elif (cube == 96):
-    path2  = '../C96_RESTART_2016-01-01-06/INPUT/'
+    path2  = ''
     file_tplt_befr2 = 'fv_core.res.tile'
 
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'T'                       #Variable to plot
+readvar = 'T'                        #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
 plot_level = 40                      #If 3D plot this level
 

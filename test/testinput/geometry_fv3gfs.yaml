@@ -7,6 +7,6 @@ Geometry:
   halo: '3'
   wind_type: D-grid
   filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20170801.000000.fv_core.res.nc
+  filename_akbk: 20180415.000000.fv_core.res.nc
   ak_var: ak
   bk_var: bk
