@@ -9,16 +9,16 @@ cost_function:
         datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_write: 'Data/'
-        date: '2017-08-01T00:00:00Z'
+        date: '2018-04-15T00:00:00Z'
         read_crtm_surface: 0
-        filename_core: 20170801.000000.fv_core.res.nc
-        filename_cplr: 20170801.000000.coupler.res
-        filename_trcr: 20170801.000000.fv_tracer.res.nc
+        filename_core: 20180415.000000.fv_core.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
         nml_file: Data/fv3files/input_fv3gfs_c48.nml
         trc_file: Data/fv3files/field_table
     Covariance:
       covariance: FV3JEDIstatic
-      date: '2017-08-01T00:00:00Z'
+      date: '2018-04-15T00:00:00Z'
       horizontal_length_scale: 1e6
       maximum_condition_number: 1.0e6
       standard_deviation: '0.8'
@@ -30,7 +30,7 @@ cost_function:
         obserror: REFOE_GSI
       ObsData:
         ObsDataIn: 
-          obsfile: Data/gdas.gpsro.2017080100.bufr2nc_qced.nc4
+          obsfile: Data/gdas.gpsro.2018041500.bufr2nc_qced.nc4
         obsvalue: REF
         ObsDataOut:
           obsfile: fv3jedi.3dvar.obt  
@@ -71,7 +71,7 @@ resolution:
   halo: '3'
   wind_type: D-grid
   filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20170801.000000.fv_core.res.nc
+  filename_akbk: 20180415.000000.fv_core.res.nc
   ak_var: ak
   bk_var: bk
 variational:
@@ -100,7 +100,7 @@ variational:
       halo: '3'
       wind_type: D-grid
       filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20170801.000000.fv_core.res.nc
+      filename_akbk: 20180415.000000.fv_core.res.nc
       ak_var: ak
       bk_var: bk
     test: 'on'
@@ -126,7 +126,7 @@ variational:
       halo: '3'
       wind_type: D-grid
       filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20170801.000000.fv_core.res.nc
+      filename_akbk: 20180415.000000.fv_core.res.nc
       ak_var: ak
       bk_var: bk
     test: 'on'
