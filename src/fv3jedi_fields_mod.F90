@@ -25,7 +25,7 @@ use tracer_manager_mod, only: get_tracer_index, get_tracer_names
 
 use fv3jedi_fields_utils_mod
 use fv3jedi_fields_io_mod
-use fv3jedi_constants, only: rad2deg, constoz
+use fv3jedi_constants, only: rad2deg, constoz, grav
 
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 
@@ -1772,7 +1772,7 @@ use pressure_vt_mod
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
 use wind_vt_mod
-use height_vt_mod,   only: geop_height
+use height_vt_mod,   only: geop_height,geop_height_levels
 use field_manager_mod, only: MODEL_ATMOS
 use tracer_manager_mod,only: get_tracer_index, get_tracer_names
 use type_bump, only: bump_type
@@ -2064,6 +2064,18 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
+  case ("geopotential_height_levels")
+    call geop_height_levels(geom,prs,prsi,fld%Atm%pt,fld%Atm%q,fld%Atm%phis,use_compress,geovalm)
+    nvl = npz+1
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("sfc_geopotential_height")
+    nvl = 1
+    do_interp = .true.
+    geovalm(:,:,1) = fld%Atm%phis/grav
+    geoval => geovalm
+
   case ("mass_concentration_of_ozone_in_air")
 
    nvl = npz
@@ -2304,6 +2316,7 @@ subroutine getvalues_tl(geom, fld, locs, vars, gom, traj)
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_tl
 use pressure_vt_mod
+use height_vt_mod,   only: geop_height_tl, geop_height_levels_tl
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_field),      intent(inout) :: fld 
@@ -2410,6 +2423,10 @@ do jvar = 1, vars%nv
  
   case ("geopotential_height")
 
+  case ("geopotential_height_levels")
+
+  case ("sfc_geopotential_height")
+
   case ("mass_concentration_of_ozone_in_air")
 
   case ("mass_concentration_of_carbon_dioxide_in_air")
@@ -2511,6 +2528,7 @@ subroutine getvalues_ad(geom, fld, locs, vars, gom, traj)
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_mixratio_ad
 use pressure_vt_mod
+use height_vt_mod,   only: geop_height_ad, geop_height_levels_ad
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_field),      intent(inout) :: fld 
@@ -2610,6 +2628,10 @@ do jvar = 1, vars%nv
   case ("air_pressure_levels")
 
   case ("geopotential_height")
+
+  case ("geopotential_height_levels")
+
+  case ("sfc_geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
@@ -2714,6 +2736,10 @@ do jvar = 1, vars%nv
   case ("air_pressure_levels")
  
   case ("geopotential_height")
+
+  case ("geopotential_height_levels")
+
+  case ("sfc_geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
