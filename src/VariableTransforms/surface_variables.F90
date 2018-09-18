@@ -43,18 +43,18 @@ subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
  integer             , intent(in)  :: ngrid
  real(kind=kind_real), intent(in)  :: lats_ob(nobs)
  real(kind=kind_real), intent(in)  :: lons_ob(nobs)
- integer             , intent(in)  :: fld_slmsk (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_sheleg(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_tsea  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- integer             , intent(in)  :: fld_vtype (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- integer             , intent(in)  :: fld_stype (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_vfrac (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_stc   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4)
- real(kind=kind_real), intent(in)  :: fld_smc   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,4)
- real(kind=kind_real), intent(in)  :: fld_snwdph(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_u_srf (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_v_srf (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real), intent(in)  :: fld_f10m  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)
+ integer             , intent(in)  :: fld_slmsk (geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_sheleg(geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_tsea  (geom%isd:geom%ied,geom%jsd:geom%jed)
+ integer             , intent(in)  :: fld_vtype (geom%isd:geom%ied,geom%jsd:geom%jed)
+ integer             , intent(in)  :: fld_stype (geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_vfrac (geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_stc   (geom%isd:geom%ied,geom%jsd:geom%jed,4)
+ real(kind=kind_real), intent(in)  :: fld_smc   (geom%isd:geom%ied,geom%jsd:geom%jed,4)
+ real(kind=kind_real), intent(in)  :: fld_snwdph(geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_u_srf (geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_v_srf (geom%isd:geom%ied,geom%jsd:geom%jed)
+ real(kind=kind_real), intent(in)  :: fld_f10m  (geom%isd:geom%ied,geom%jsd:geom%jed)
  integer             , intent(out) :: vegetation_type(nobs)
  integer             , intent(out) :: land_type(nobs)
  integer             , intent(out) :: soil_type(nobs)
@@ -589,8 +589,8 @@ peid = mpp_pe()
 allocate(grid_lat_loc(ngrid))
 allocate(grid_lon_loc(ngrid))
 jj = 0
-do j = geom%bd%jsc,geom%bd%jec
-  do i = geom%bd%isc,geom%bd%iec
+do j = geom%jsc,geom%jec
+  do i = geom%isc,geom%iec
      jj = jj + 1
      grid_lat_loc(jj) = geom%grid_lat(i,j)
      grid_lon_loc(jj) = geom%grid_lon(i,j)
@@ -691,7 +691,7 @@ integer             , intent(in)  :: ngrid              !Number of grid points o
 integer             , intent(in)  :: nn                 !Number of neighbours
 integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
 
-integer             , intent(in)  :: field_in(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Fields in
+integer             , intent(in)  :: field_in(geom%isd:geom%ied,geom%jsd:geom%jed) !Fields in
 integer             , intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
 
 !Locals
@@ -710,8 +710,8 @@ peid = mpp_pe()
 !Unstructured local grid
 allocate(field_loc(ngrid))
 jj = 0
-do j = geom%bd%jsc,geom%bd%jec
-  do i = geom%bd%isc,geom%bd%iec
+do j = geom%jsc,geom%jec
+  do i = geom%isc,geom%iec
      jj = jj + 1
      field_loc(jj) = field_in(i,j)
   enddo
@@ -776,7 +776,7 @@ integer             , intent(in)  :: ngrid              !Number of grid points o
 integer             , intent(in)  :: nn                 !Number of neighbours
 integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
 
-real(kind=kind_real), intent(in)  :: field_in(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Fields in
+real(kind=kind_real), intent(in)  :: field_in(geom%isd:geom%ied,geom%jsd:geom%jed) !Fields in
 real(kind=kind_real), intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
 
 !Locals
@@ -794,8 +794,8 @@ peid = mpp_pe()
 !Unstructured local grid
 allocate(field_loc(ngrid))
 jj = 0
-do j = geom%bd%jsc,geom%bd%jec
-  do i = geom%bd%isc,geom%bd%iec
+do j = geom%jsc,geom%jec
+  do i = geom%isc,geom%iec
      jj = jj + 1
      field_loc(jj) = field_in(i,j)
   enddo

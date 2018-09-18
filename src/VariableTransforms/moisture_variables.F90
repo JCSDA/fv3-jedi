@@ -27,18 +27,18 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom)  , intent(in)  :: geom
-real(kind=kind_real), intent(in)  :: p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)     !Pressure | Pa
-real(kind=kind_real), intent(in)  :: t(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)     !Temperature | K
-real(kind=kind_real), intent(in)  :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Layer thickness | Pa
-real(kind=kind_real), intent(in)  :: sea_frac(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)          !Sea fraction | 1
-real(kind=kind_real), intent(in)  :: q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)     !Specific humidity | kg/kg
-real(kind=kind_real), intent(in)  :: ql(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)    !Mixing ratio of cloud liquid water | kg/kg
-real(kind=kind_real), intent(in)  :: qi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)    !Mixing ratio of cloud ice water | kg/kg
+real(kind=kind_real), intent(in)  :: p(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)     !Pressure | Pa
+real(kind=kind_real), intent(in)  :: t(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)     !Temperature | K
+real(kind=kind_real), intent(in)  :: delp(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Layer thickness | Pa
+real(kind=kind_real), intent(in)  :: sea_frac(geom%isd:geom%ied,geom%jsd:geom%jed)          !Sea fraction | 1
+real(kind=kind_real), intent(in)  :: q(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)     !Specific humidity | kg/kg
+real(kind=kind_real), intent(in)  :: ql(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)    !Mixing ratio of cloud liquid water | kg/kg
+real(kind=kind_real), intent(in)  :: qi(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)    !Mixing ratio of cloud ice water | kg/kg
 
-real(kind=kind_real), intent(out) :: ql_ade(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !area density for cloud liquid water | kg/m^2
-real(kind=kind_real), intent(out) :: qi_ade(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !area density for cloud ice water | kg/m^2
-real(kind=kind_real), intent(out) :: ql_efr(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !efr for cloud liquid water | microns
-real(kind=kind_real), intent(out) :: qi_efr(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !efr for cloud ice | microns
+real(kind=kind_real), intent(out) :: ql_ade(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !area density for cloud liquid water | kg/m^2
+real(kind=kind_real), intent(out) :: qi_ade(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !area density for cloud ice water | kg/m^2
+real(kind=kind_real), intent(out) :: ql_efr(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !efr for cloud liquid water | microns
+real(kind=kind_real), intent(out) :: qi_efr(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !efr for cloud ice | microns
 
 !Locals
 integer :: isc,iec,jsc,jec,npz
@@ -49,10 +49,10 @@ real(kind=kind_real) :: tem1, tem2, tem3, kgkg_to_kgm2
 
 ! Grid convenience
 ! ----------------
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
 npz = geom%npz
 
 
@@ -159,8 +159,8 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom)  , intent(in ) :: geom
-real(kind=kind_real), intent(in ) :: q  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
-real(kind=kind_real), intent(out) :: qmr(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Mixing ratio | 1
+real(kind=kind_real), intent(in ) :: q  (geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(out) :: qmr(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
 integer :: isc,iec,jsc,jec,npz
@@ -170,10 +170,10 @@ real(kind=kind_real) :: c3
 
 ! Grid convenience
 ! ----------------
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
 npz = geom%npz
 
 
@@ -197,9 +197,9 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom)  , intent(in ) :: geom
-real(kind=kind_real), intent(in ) :: q     (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
-real(kind=kind_real), intent(in ) :: q_tl  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
-real(kind=kind_real), intent(out) :: qmr_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Mixing ratio | 1
+real(kind=kind_real), intent(in ) :: q     (geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(in ) :: q_tl  (geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(out) :: qmr_tl(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
 integer :: isc,iec,jsc,jec,npz
@@ -209,10 +209,10 @@ real(kind=kind_real) :: c3, c3_tl
 
 ! Grid convenience
 ! ----------------
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
 npz = geom%npz
 
 
@@ -236,9 +236,9 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom)  , intent(in )   :: geom
-real(kind=kind_real), intent(in )   :: q     (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
-real(kind=kind_real), intent(inout) :: q_ad  (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Specific humidity | kg/kg
-real(kind=kind_real), intent(inout) :: qmr_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed, 1:geom%npz)  !Mixing ratio | 1
+real(kind=kind_real), intent(in )   :: q     (geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(inout) :: q_ad  (geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Specific humidity | kg/kg
+real(kind=kind_real), intent(inout) :: qmr_ad(geom%isd:geom%ied,geom%jsd:geom%jed, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
 integer :: isc,iec,jsc,jec,npz
@@ -248,10 +248,10 @@ real(kind=kind_real) :: c3, c3_ad
 
 ! Grid convenience
 ! ----------------
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
 npz = geom%npz
 
 
@@ -277,15 +277,15 @@ subroutine rh_to_q(geom,qsat,rh,q)
 
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
- real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: i,j,k
  
  do k=1,geom%npz
-   do j=geom%bd%jsc,geom%bd%jec
-     do i=geom%bd%isc,geom%bd%iec
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
        q(i,j,k) = rh(i,j,k) * qsat(i,j,k)
      end do
    end do
@@ -299,15 +299,15 @@ subroutine rh_to_q_tl(geom,qsat,rh,q)
 
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
- real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: i,j,k
  
  do k=1,geom%npz
-   do j=geom%bd%jsc,geom%bd%jec
-     do i=geom%bd%isc,geom%bd%iec
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
        q(i,j,k) = rh(i,j,k) * qsat(i,j,k)
      end do
    end do
@@ -321,15 +321,15 @@ subroutine rh_to_q_ad(geom,qsat,rh,q)
 
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
- real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: i,j,k
  
  do k=geom%npz,1,-1
-   do j=geom%bd%jec,geom%bd%jsc,-1
-     do i=geom%bd%iec,geom%bd%isc,-1
+   do j=geom%jec,geom%jsc,-1
+     do i=geom%iec,geom%isc,-1
        rh(i,j,k) = rh(i,j,k) + q(i,j,k) * qsat(i,j,k)
      end do
    end do
@@ -344,15 +344,15 @@ subroutine q_to_rh(geom,qsat,q,rh)
 
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
- real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in)    ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    ::    q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: i,j,k
  
  do k=1,geom%npz
-   do j=geom%bd%jsc,geom%bd%jec
-     do i=geom%bd%isc,geom%bd%iec
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
        rh(i,j,k) = q(i,j,k) / qsat(i,j,k)
      end do
    end do
@@ -366,15 +366,15 @@ subroutine q_to_rh_tl(geom,qsat,q,rh)
 
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
- real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in)    ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    ::    q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: i,j,k
  
  do k=1,geom%npz
-   do j=geom%bd%jsc,geom%bd%jec
-     do i=geom%bd%isc,geom%bd%iec
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
        rh(i,j,k) = q(i,j,k) / qsat(i,j,k)
      end do
    end do
@@ -388,15 +388,15 @@ subroutine q_to_rh_ad(geom,qsat,q,rh)
 
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
- real(kind=kind_real), intent(in)    :: qsat(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::    q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in)    :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::    q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) ::   rh(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: i,j,k
  
  do k=geom%npz,1,-1
-   do j=geom%bd%jec,geom%bd%jsc,-1
-     do i=geom%bd%iec,geom%bd%isc,-1
+   do j=geom%jec,geom%jsc,-1
+     do i=geom%iec,geom%isc,-1
        q(i,j,k) = rh(i,j,k) / qsat(i,j,k)
      end do
    end do
@@ -587,13 +587,13 @@ subroutine dqsat(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qs
  integer,              intent(in) :: degsubs
  real(8),              intent(in) :: tmintbl, tmaxtbl
  integer,              intent(in) :: tablesize
- real(kind=kind_real), intent(in) :: temp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in) :: pmid(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in) :: temp(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in) :: pmid(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  real(8),              intent(in) :: estblx(tablesize)
 
  !outputs
- real(kind=kind_real), intent(inout) :: dqsi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: qssi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: dqsi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: qssi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
  !locals
  real(8), parameter :: max_mixing_ratio = 1.0_8
@@ -610,8 +610,8 @@ subroutine dqsat(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qs
  esfac = real(h2omw,8)/real(airmw,8)
 
  do k=1,geom%npz
-    do j=geom%bd%jsc,geom%bd%jec
-      do i=geom%bd%isc,geom%bd%iec
+    do j=geom%jsc,geom%jec
+      do i=geom%isc,geom%iec
 
           temp8 = real(temp(i,j,k),8)
           pmid8 = real(pmid(i,j,k),8)

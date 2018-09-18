@@ -35,7 +35,6 @@ type(c_ptr),        intent(in)    :: c_vars
 type(fv3jedi_vars), intent(inout) :: self
 
 character(len=1023) :: varlist
-integer :: n
 
 !Get long comma seperated list of variables
 varlist = config_get_string(c_vars,len(varlist),"variables")

@@ -58,7 +58,7 @@ model:
   update_dgridwind: '1'
   update_pressures: '1'
 output:
-  restart_type: fv3gfs
+  restart_type: gfs
   datapath_write: Data/
   filename_core: 3D-Var.fv_core.res.nc
   filename_cplr: 3D-Var.coupler.res
@@ -69,7 +69,6 @@ resolution:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  wind_type: D-grid
   filepath_akbk: Data/INPUTS/GEOS_c48/
   filename_akbk: akbk72.nc4
   ak_var: AK
@@ -98,7 +97,6 @@ variational:
       nml_file: Data/fv3files/input_geos_c48.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      wind_type: D-grid
       filepath_akbk: Data/INPUTS/GEOS_c48/
       filename_akbk: akbk72.nc4
       ak_var: AK
@@ -124,7 +122,6 @@ variational:
       nml_file: Data/fv3files/input_geos_c48.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      wind_type: D-grid
       filepath_akbk: Data/INPUTS/GEOS_c48/
       filename_akbk: akbk72.nc4
       ak_var: AK

@@ -28,11 +28,11 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
 
  !Arguments
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: usrf(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Lowest model level u m/s
- real(kind=kind_real), intent(in ) :: vsrf(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Lowest model level v m/s
- real(kind=kind_real), intent(in ) :: f10r(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !Ratio of lowest level to 10m
- real(kind=kind_real), intent(out) :: spd10m(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !10m wind speed u m/s
- real(kind=kind_real), intent(out) :: dir10m(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed) !10m model wind direction
+ real(kind=kind_real), intent(in ) :: usrf(geom%isd:geom%ied,geom%jsd:geom%jed) !Lowest model level u m/s
+ real(kind=kind_real), intent(in ) :: vsrf(geom%isd:geom%ied,geom%jsd:geom%jed) !Lowest model level v m/s
+ real(kind=kind_real), intent(in ) :: f10r(geom%isd:geom%ied,geom%jsd:geom%jed) !Ratio of lowest level to 10m
+ real(kind=kind_real), intent(out) :: spd10m(geom%isd:geom%ied,geom%jsd:geom%jed) !10m wind speed u m/s
+ real(kind=kind_real), intent(out) :: dir10m(geom%isd:geom%ied,geom%jsd:geom%jed) !10m model wind direction
 
  !Locals
  integer :: isc,iec,jsc,jec,i,j
@@ -45,10 +45,10 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
 
  !In GSI these calculations are done after interpolation to obs location
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  !10m wind speed
  spd10m(isc:iec,jsc:jec) = f10r(isc:iec,jsc:jec)*sqrt( usrf(isc:iec,jsc:jec)*usrf(isc:iec,jsc:jec) + &
@@ -90,22 +90,22 @@ subroutine uv_to_vortdivg(geom,u,v,ua,va,vort,divg)
 
  implicit none
  type(fv3jedi_geom),   intent(inout)  :: geom
- real(kind=kind_real), intent(inout) ::    u(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::    v(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Dgrid winds (v)
- real(kind=kind_real), intent(inout) :: vort(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Vorticity
- real(kind=kind_real), intent(inout) :: divg(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Divergence
+ real(kind=kind_real), intent(inout) ::    u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz) !Dgrid winds (u)
+ real(kind=kind_real), intent(inout) ::    v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz) !Dgrid winds (v)
+ real(kind=kind_real), intent(inout) :: vort(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Vorticity
+ real(kind=kind_real), intent(inout) :: divg(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Divergence
 
- real(kind=kind_real), intent(inout) :: ua(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real), intent(inout) :: va(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real) :: uc(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real) :: vc(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz)
- real(kind=kind_real) :: ut(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  )
- real(kind=kind_real) :: vt(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1)
+ real(kind=kind_real), intent(inout) :: ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real) :: uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real) :: vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz)
+ real(kind=kind_real) :: ut(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
+ real(kind=kind_real) :: vt(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
 
- real(kind=kind_real) :: wbuffer(geom%bd%jsc:geom%bd%jec,geom%npz)
- real(kind=kind_real) :: sbuffer(geom%bd%isc:geom%bd%iec,geom%npz)
- real(kind=kind_real) :: ebuffer(geom%bd%jsc:geom%bd%jec,geom%npz)
- real(kind=kind_real) :: nbuffer(geom%bd%isc:geom%bd%iec,geom%npz)
+ real(kind=kind_real) :: wbuffer(geom%jsc:geom%jec,geom%npz)
+ real(kind=kind_real) :: sbuffer(geom%isc:geom%iec,geom%npz)
+ real(kind=kind_real) :: ebuffer(geom%jsc:geom%jec,geom%npz)
+ real(kind=kind_real) :: nbuffer(geom%isc:geom%iec,geom%npz)
 
  integer :: i,j,k,isc,iec,jsc,jec,npz
  real(kind=kind_real) :: dt
@@ -123,10 +123,10 @@ subroutine uv_to_vortdivg(geom,u,v,ua,va,vort,divg)
  !       x-----------------x
  !              ud,vc
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
  npz = geom%npz
 
  ua = 0.0_kind_real
@@ -193,12 +193,12 @@ subroutine vortdivg_to_psichi(geom,fld,vort,divg,psi,chi)
  implicit none
  type(fv3jedi_geom),   intent(inout) :: geom
  type(fv3jedi_field),  intent(in)    :: fld 
- real(kind=kind_real), intent(in)    :: vort(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Vorticity
- real(kind=kind_real), intent(in)    :: divg(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Divergence
- real(kind=kind_real), intent(out)   :: psi (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Stream function
- real(kind=kind_real), intent(out)   :: chi (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Velocity potential
+ real(kind=kind_real), intent(in)    :: vort(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Vorticity
+ real(kind=kind_real), intent(in)    :: divg(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Divergence
+ real(kind=kind_real), intent(out)   :: psi (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
+ real(kind=kind_real), intent(out)   :: chi (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
 
- real(kind=kind_real) :: psinew(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Stream function
+ real(kind=kind_real) :: psinew(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
  
  integer :: i,j,k,isc,iec,jsc,jec,npz
  integer :: maxiter, iter, ierr
@@ -229,18 +229,18 @@ subroutine gauss_seidel(geom,fld,x,b)
  implicit none
  type(fv3jedi_geom),   intent(inout) :: geom
  type(fv3jedi_field),  intent(in   ) :: fld
- real(kind=kind_real), intent(inout) :: x(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: b(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: x(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: b(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
  integer :: i,j,k,isc,iec,jsc,jec,npz
  integer :: maxiter, iter, ierr
  real(kind=kind_real) :: tolerance, converged, convergedg
- real(kind=kind_real) :: xnew(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real) :: xnew(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
  npz = geom%npz
 
  x = 0.0_kind_real
@@ -273,7 +273,7 @@ subroutine gauss_seidel(geom,fld,x,b)
    call mpi_allreduce(converged,convergedg,1,mpi_real8,mpi_max,mpi_comm_world,ierr)
 
    !Print info
-   if (fld%root_pe == 1) print*, 'Gauss-Seidel iteration number and max difference, ', iter, convergedg
+   if (fld%am_i_root_pe) print*, 'Gauss-Seidel iteration number and max difference, ', iter, convergedg
 
    !Update guess
    x = xnew
@@ -290,10 +290,10 @@ subroutine psichi_to_uava(geom,psi,chi,ua,va)
 
  implicit none
  type(fv3jedi_geom),   intent(inout) :: geom
- real(kind=kind_real), intent(inout) :: psi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) :: chi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(out)   ::  ua(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Agrid winds (u)
- real(kind=kind_real), intent(out)   ::  va(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) !Agrid winds (v)
+ real(kind=kind_real), intent(inout) :: psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
+ real(kind=kind_real), intent(inout) :: chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
+ real(kind=kind_real), intent(out)   ::  ua(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Agrid winds (u)
+ real(kind=kind_real), intent(out)   ::  va(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Agrid winds (v)
 
  integer :: i,j,k
 
@@ -312,8 +312,8 @@ subroutine psichi_to_uava(geom,psi,chi,ua,va)
  call mpp_update_domains(chi, geom%domain, complete=.true.)
  
  do k=1,geom%npz
-   do j=geom%bd%jsc,geom%bd%jec
-     do i=geom%bd%isc,geom%bd%iec
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
 
         ua(i,j,k) =  (psi(i,j+1,k) - psi(i,j-1,k))/(geom%dyc(i,j) + geom%dyc(i,j+1)) + &
                      (chi(i+1,j,k) - chi(i-1,j,k))/(geom%dxc(i,j) + geom%dxc(i+1,j))
@@ -334,13 +334,13 @@ subroutine psichi_to_udvd(geom,psi,chi,u,v)
 
  implicit none
  type(fv3jedi_geom),   intent(inout) :: geom
- real(kind=kind_real), intent(inout) :: psi(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) :: chi(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(out)   ::   u(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(out)   ::   v(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz) !Dgrid winds (v)
+ real(kind=kind_real), intent(inout) :: psi(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Stream function
+ real(kind=kind_real), intent(inout) :: chi(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Velocity potential
+ real(kind=kind_real), intent(out)   ::   u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz) !Dgrid winds (u)
+ real(kind=kind_real), intent(out)   ::   v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz) !Dgrid winds (v)
 
  integer :: i,j,k
- real(kind=kind_real) :: chib(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real) :: chib(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
  !       x-----------------x
  !       |                 |
@@ -359,11 +359,11 @@ subroutine psichi_to_udvd(geom,psi,chi,u,v)
  call mpp_update_domains(chi, geom%domain, complete=.true.)
  
  !Interpolate chi to the B grid
- call a2b_ord4(chi, chib, geom, geom%npx, geom%npy, geom%bd%isc, geom%bd%iec, geom%bd%jsc, geom%bd%jec, geom%halo)
+ call a2b_ord4(chi, chib, geom, geom%npx, geom%npy, geom%isc, geom%iec, geom%jsc, geom%jec, geom%halo)
 
  do k=1,geom%npz
-   do j=geom%bd%jsc,geom%bd%jec
-     do i=geom%bd%isc,geom%bd%iec
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
 
         u(i,j,k) =  (psi (i,j+1,k) - psi (i,j,k))/(geom%dyc(i,j)) + &
                     (chib(i+1,j,k) - chib(i,j,k))/(geom%dx (i,j))
@@ -391,37 +391,37 @@ subroutine d_to_ac(geom, u, v, ua, va, uc, vc)
  implicit none
 
  type(fv3jedi_geom), intent(inout) :: geom
- real(kind=kind_real),           intent(inout) ::  u(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz)
- real(kind=kind_real),           intent(inout) ::  v(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real),           intent(inout) :: ua(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real),           intent(inout) :: va(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real), optional, intent(inout) :: uc(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real), optional, intent(inout) :: vc(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz)
+ real(kind=kind_real),           intent(inout) ::  u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz)
+ real(kind=kind_real),           intent(inout) ::  v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real),           intent(inout) :: ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real),           intent(inout) :: va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real), optional, intent(inout) :: uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real), optional, intent(inout) :: vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz)
 
- real(kind=kind_real) :: wbuffer(geom%bd%jsc:geom%bd%jec,geom%npz)
- real(kind=kind_real) :: sbuffer(geom%bd%isc:geom%bd%iec,geom%npz)
- real(kind=kind_real) :: ebuffer(geom%bd%jsc:geom%bd%jec,geom%npz)
- real(kind=kind_real) :: nbuffer(geom%bd%isc:geom%bd%iec,geom%npz)
+ real(kind=kind_real) :: wbuffer(geom%jsc:geom%jec,geom%npz)
+ real(kind=kind_real) :: sbuffer(geom%isc:geom%iec,geom%npz)
+ real(kind=kind_real) :: ebuffer(geom%jsc:geom%jec,geom%npz)
+ real(kind=kind_real) :: nbuffer(geom%isc:geom%iec,geom%npz)
 
  integer isc,iec,jsc,jec
  integer isd,ied,jsd,jed
  integer npz
  integer i,j,k
  
- real(kind=kind_real) :: ut(geom%bd%isd:geom%bd%ied, geom%bd%jsd:geom%bd%jed)
- real(kind=kind_real) :: vt(geom%bd%isd:geom%bd%ied, geom%bd%jsd:geom%bd%jed)
+ real(kind=kind_real) :: ut(geom%isd:geom%ied, geom%jsd:geom%jed)
+ real(kind=kind_real) :: vt(geom%isd:geom%ied, geom%jsd:geom%jed)
 
- real(kind=kind_real) :: uctemp(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ,1:geom%npz)
- real(kind=kind_real) :: vctemp(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1,1:geom%npz)
+ real(kind=kind_real) :: uctemp(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
+ real(kind=kind_real) :: vctemp(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz)
 
- isc=geom%bd%isc
- iec=geom%bd%iec
- jsc=geom%bd%jsc
- jec=geom%bd%jec
- isd=geom%bd%isd
- ied=geom%bd%ied
- jsd=geom%bd%jsd
- jed=geom%bd%jed
+ isc=geom%isc
+ iec=geom%iec
+ jsc=geom%jsc
+ jec=geom%jec
+ isd=geom%isd
+ ied=geom%ied
+ jsd=geom%jsd
+ jed=geom%jed
  npz = geom%npz
  
  uctemp = 0.0_kind_real
@@ -463,15 +463,15 @@ subroutine d2a2c_vect(geom, u, v, ua, va, uc, vc, ut, vt, dord4)
   implicit none
   type(fv3jedi_geom), intent(IN), target :: geom
   logical, intent(in):: dord4
-  real(kind=kind_real), intent(in) ::  u(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1)
-  real(kind=kind_real), intent(in) ::  v(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed)
-  real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ):: uc
-  real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed+1):: vc
-  real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ):: ua, va
-  real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ):: ut, vt
+  real(kind=kind_real), intent(in) ::  u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
+  real(kind=kind_real), intent(in) ::  v(geom%isd:geom%ied+1,geom%jsd:geom%jed)
+  real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied+1,geom%jsd:geom%jed  ):: uc
+  real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed+1):: vc
+  real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed  ):: ua, va
+  real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed  ):: ut, vt
 
  ! Local 
-  real(kind=kind_real), dimension(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed):: utmp, vtmp
+  real(kind=kind_real), dimension(geom%isd:geom%ied,geom%jsd:geom%jed):: utmp, vtmp
   integer npt, i, j, ifirst, ilast, id
   integer :: npx, npy
   integer :: is,  ie,  js,  je
@@ -488,14 +488,14 @@ subroutine d2a2c_vect(geom, u, v, ua, va, uc, vc, ut, vt, dord4)
   real(kind=kind_real), parameter :: c2 = 11./14.
   real(kind=kind_real), parameter :: c3 =  5./14.
 
-      is  = geom%bd%isc
-      ie  = geom%bd%iec
-      js  = geom%bd%jsc
-      je  = geom%bd%jec
-      isd = geom%bd%isd
-      ied = geom%bd%ied
-      jsd = geom%bd%jsd
-      jed = geom%bd%jed
+      is  = geom%isc
+      ie  = geom%iec
+      js  = geom%jsc
+      je  = geom%jec
+      isd = geom%isd
+      ied = geom%ied
+      jsd = geom%jsd
+      jed = geom%jed
       npx = geom%npx
       npy = geom%npy
 
@@ -778,23 +778,23 @@ end function edge_interpolate4
 
  implicit none
  type(fv3jedi_geom),   intent(in) :: geom
- real(kind=kind_real), intent(in),  dimension(geom%bd%isd:geom%bd%ied,  geom%bd%jsd:geom%bd%jed+1):: u
- real(kind=kind_real), intent(in),  dimension(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed  ):: v
- real(kind=kind_real), intent(in),  dimension(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ):: ua
- real(kind=kind_real), intent(in),  dimension(geom%bd%isd:geom%bd%ied  ,geom%bd%jsd:geom%bd%jed  ):: va
- real(kind=kind_real), intent(out), dimension(geom%bd%isd:geom%bd%ied+1,geom%bd%jsd:geom%bd%jed+1):: divg_d
+ real(kind=kind_real), intent(in),  dimension(geom%isd:geom%ied,  geom%jsd:geom%jed+1):: u
+ real(kind=kind_real), intent(in),  dimension(geom%isd:geom%ied+1,geom%jsd:geom%jed  ):: v
+ real(kind=kind_real), intent(in),  dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed  ):: ua
+ real(kind=kind_real), intent(in),  dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed  ):: va
+ real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied+1,geom%jsd:geom%jed+1):: divg_d
 
  !Local
  integer :: is,  ie,  js,  je
  integer :: npx, npy
  integer i,j,is2,ie1
- real(kind=kind_real) :: uf(geom%bd%isc-2:geom%bd%iec+2,geom%bd%jsc-1:geom%bd%jec+2)
- real(kind=kind_real) :: vf(geom%bd%isc-1:geom%bd%iec+2,geom%bd%jsc-2:geom%bd%jec+2)
+ real(kind=kind_real) :: uf(geom%isc-2:geom%iec+2,geom%jsc-1:geom%jec+2)
+ real(kind=kind_real) :: vf(geom%isc-1:geom%iec+2,geom%jsc-2:geom%jec+2)
 
- is  = geom%bd%isc
- ie  = geom%bd%iec
- js  = geom%bd%jsc
- je  = geom%bd%jec
+ is  = geom%isc
+ ie  = geom%iec
+ js  = geom%jsc
+ je  = geom%jec
 
  npx = geom%npx
  npy = geom%npy  
@@ -1083,30 +1083,30 @@ real(kind=kind_real) function extrap_corner ( p0, p1, p2, q1, q2 )
     IMPLICIT NONE
     TYPE(FV3JEDI_GEOM), INTENT(INOUT) :: geom
 !Stream function
-    REAL(kind=kind_real) :: psi(geom%bd%isd:geom%bd%ied, &
-&   geom%bd%jsd:geom%bd%jed, geom%npz)
-    REAL(kind=kind_real), INTENT(INOUT) :: psi_ad(geom%bd%isd:geom%bd%&
-&   ied, geom%bd%jsd:geom%bd%jed, geom%npz)
+    REAL(kind=kind_real) :: psi(geom%isd:geom%ied, &
+&   geom%jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real), INTENT(INOUT) :: psi_ad(geom%isd:geom%&
+&   ied, geom%jsd:geom%jed, geom%npz)
 !Velocity potential
-    REAL(kind=kind_real) :: chi(geom%bd%isd:geom%bd%ied, &
-&   geom%bd%jsd:geom%bd%jed, geom%npz)
-    REAL(kind=kind_real), INTENT(INOUT) :: chi_ad(geom%bd%isd:geom%bd%&
-&   ied, geom%bd%jsd:geom%bd%jed, geom%npz)
+    REAL(kind=kind_real) :: chi(geom%isd:geom%ied, &
+&   geom%jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real), INTENT(INOUT) :: chi_ad(geom%isd:geom%&
+&   ied, geom%jsd:geom%jed, geom%npz)
 !Dgrid winds (u)
-    REAL(kind=kind_real) :: u(geom%bd%isd:geom%bd%ied, geom%bd%jsd:geom%&
-&   bd%jed+1, geom%npz)
-    REAL(kind=kind_real) :: u_ad(geom%bd%isd:geom%bd%ied, geom%bd%jsd:&
-&   geom%bd%jed+1, geom%npz)
+    REAL(kind=kind_real) :: u(geom%isd:geom%ied, geom%jsd:geom%&
+&   jed+1, geom%npz)
+    REAL(kind=kind_real) :: u_ad(geom%isd:geom%ied, geom%jsd:&
+&   geom%jed+1, geom%npz)
 !Dgrid winds (v)
-    REAL(kind=kind_real) :: v(geom%bd%isd:geom%bd%ied+1, geom%bd%jsd:&
-&   geom%bd%jed, geom%npz)
-    REAL(kind=kind_real) :: v_ad(geom%bd%isd:geom%bd%ied+1, geom%bd%jsd:&
-&   geom%bd%jed, geom%npz)
+    REAL(kind=kind_real) :: v(geom%isd:geom%ied+1, geom%jsd:&
+&   geom%jed, geom%npz)
+    REAL(kind=kind_real) :: v_ad(geom%isd:geom%ied+1, geom%jsd:&
+&   geom%jed, geom%npz)
     INTEGER :: i, j, k
-    REAL(kind=kind_real) :: chib(geom%bd%isd:geom%bd%ied, geom%bd%jsd:&
-&   geom%bd%jed, geom%npz)
-    REAL(kind=kind_real) :: chib_ad(geom%bd%isd:geom%bd%ied, geom%bd%jsd&
-&   :geom%bd%jed, geom%npz)
+    REAL(kind=kind_real) :: chib(geom%isd:geom%ied, geom%jsd:&
+&   geom%jed, geom%npz)
+    REAL(kind=kind_real) :: chib_ad(geom%isd:geom%ied, geom%jsd&
+&   :geom%jed, geom%npz)
 !       x-----------------x
 !       |                 |
 !       |                 |
@@ -1132,8 +1132,8 @@ real(kind=kind_real) function extrap_corner ( p0, p1, p2, q1, q2 )
 
     chib_ad = 0.0_8
     DO k=geom%npz,1,-1
-      DO j=geom%bd%jec,geom%bd%jsc,-1
-        DO i=geom%bd%iec,geom%bd%isc,-1
+      DO j=geom%jec,geom%jsc,-1
+        DO i=geom%iec,geom%isc,-1
           temp_ad = v_ad(i, j, k)/geom%dy(i, j)
           temp_ad0 = -(v_ad(i, j, k)/geom%dxc(i, j))
           chib_ad(i, j+1, k) = chib_ad(i, j+1, k) + temp_ad
@@ -1152,7 +1152,7 @@ real(kind=kind_real) function extrap_corner ( p0, p1, p2, q1, q2 )
       END DO
     END DO
     CALL A2B_ORD4_ADM(chi, chi_ad, chib, chib_ad, geom, geom%npx, geom%&
-&               npy, geom%bd%isc, geom%bd%iec, geom%bd%jsc, geom%bd%jec&
+&               npy, geom%isc, geom%iec, geom%jsc, geom%jec&
 &               , geom%halo)
     CALL MPP_UPDATE_DOMAINS_ADM(chi, chi_ad, geom%domain, complete=&
 &                         .true.)

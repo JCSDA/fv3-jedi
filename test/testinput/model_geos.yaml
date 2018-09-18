@@ -5,7 +5,6 @@ Geometry:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  wind_type: D-grid
   filepath_akbk: Data/INPUTS/GEOS_c48/
   filename_akbk: akbk72.nc4
   ak_var: AK
@@ -34,3 +33,14 @@ State:
   filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
+  variables:
+  - ud
+  - vd
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3

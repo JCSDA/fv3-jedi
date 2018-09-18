@@ -12,16 +12,16 @@ subroutine geop_height(geom,prs,prsi,T,q,phis,use_compress,gph)
 
 implicit none
 type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
-real(kind_real), intent(in ) :: prs(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)    !mid layerpressure
-real(kind_real), intent(in ) :: prsi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1) ! interface pressure
-real(kind_real), intent(in ) :: phis(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)              !Surface geopotential (grav*Z_sfc)
-real(kind_real), intent(in ) :: T(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)            
-real(kind_real), intent(in ) :: q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)     ! specific humidity
-real(kind_real), intent(out) :: gph(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !geopotential height (meters)
+real(kind_real), intent(in ) :: prs(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)    !mid layerpressure
+real(kind_real), intent(in ) :: prsi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz+1) ! interface pressure
+real(kind_real), intent(in ) :: phis(geom%isd:geom%ied,geom%jsd:geom%jed)              !Surface geopotential (grav*Z_sfc)
+real(kind_real), intent(in ) :: T(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)            
+real(kind_real), intent(in ) :: q(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)     ! specific humidity
+real(kind_real), intent(out) :: gph(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !geopotential height (meters)
 
 !locals
-real(kind_real)       :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
-real(kind_real)       :: qmr(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) ! mixing ratio|kg/kg
+real(kind_real)       :: Tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+real(kind_real)       :: qmr(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) ! mixing ratio|kg/kg
 logical               :: use_compress
 integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
@@ -49,10 +49,10 @@ real(kind_real),parameter ::  ef_alpha = 1.00062_kind_real           !
 real(kind_real),parameter ::  ef_beta  = 3.14e-8_kind_real           !  (1/Pa)
 real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real            !  (1/K2)
 
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
 npz = geom%npz
 
 

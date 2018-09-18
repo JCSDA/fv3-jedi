@@ -5,17 +5,28 @@ cost_function:
   Jb:
     Background:
       state:
-      - restart_type: fv3gfs
-        datapath_read: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
-        datapath_tile: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_write: 'Data/'
         date: '2018-04-15T00:00:00Z'
         read_crtm_surface: 0
         filename_core: 20180415.000000.fv_core.res.nc
         filename_cplr: 20180415.000000.coupler.res
         filename_trcr: 20180415.000000.fv_tracer.res.nc
-        nml_file: Data/fv3files/input_fv3gfs_c48.nml
+        nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -24,26 +35,39 @@ cost_function:
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
   Jo:
+#    ObsTypes:
+#    - Covariance:
+#        covariance: diagonal
+#        obserror: Inverse_Observation_Error
+#      ObsData:
+#        ObsDataIn:
+#          obsfile: Data/amsua_n19_obs.nc4
+#        ObsDataOut:
+#          obsfile: Data/fv3jedi.3dvar.obt
+#        obsvalue: Observation
+#      ObsType: Radiance
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserror: REFOE_GSI
+        obserror: air_temperature_err
       ObsData:
-        ObsDataIn: 
-          obsfile: Data/gdas.gpsro.2018041500.bufr2nc_qced.nc4
-        obsvalue: REF
+        ObsDataIn:
+          obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: fv3jedi.3dvar.obt  
-        obsvalue: REF
-      ObsType: GnssroRef
+          obsfile: Data/fv3jedi.3dvar.obt
+        obsvalue: air_temperature
+      ObsType: Radiosonde
   cost_type: 3D-Var
   variables:
-  - u
-  - v
-  - pt
+  - ud
+  - vd
+  - t
   - delp
   - q
-  window_begin: '2017-07-31T21:00:00Z'
+  - qi
+  - ql
+  - o3
+  window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
 final:
   diagnostics:
@@ -51,26 +75,26 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
+  name: 'FV3JEDI'
   init_tlmadm: '0'
-  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  tstep: PT30M
+  tstep: PT15M
   update_dgridwind: '1'
   update_pressures: '1'
 output:
-  restart_type: fv3gfs
+  restart_type: gfs
   datapath_write: Data/
   filename_core: 3D-Var.fv_core.res.nc
   filename_cplr: 3D-Var.coupler.res
   filename_trcr: 3D-Var.fv_tracer.res.nc
   first: PT0H
-  frequency: PT03H
+  frequency: PT01H
 resolution:
-  nml_file: Data/fv3files/input_fv3gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  wind_type: D-grid
-  filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+  filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   filename_akbk: 20180415.000000.fv_core.res.nc
   ak_var: ak
   bk_var: bk
@@ -81,25 +105,25 @@ variational:
     gradient_norm_reduction: 1e-10
     linearmodel:
       init_tlmadm: '1'
-      nml_file: Data/fv3files/input_fv3gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       trajectory:
         init_tlmadm: '0'
-        nml_file: Data/fv3files/input_fv3gfs_c48.nml
+        nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
-        tstep: PT30M
+        tstep: PT15M
       trc_file: Data/fv3files/field_table
-      tstep: PT30M
-      update_dgridwind: '1'
+      tstep: PT15M
+      update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
-    ninner: '2'
+      varchange: 'Identity'
+    ninner: '10'
     resolution:
-      nml_file: Data/fv3files/input_fv3gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c48.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      wind_type: D-grid
-      filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180415.000000.fv_core.res.nc
       ak_var: ak
       bk_var: bk
@@ -107,25 +131,25 @@ variational:
   - gradient_norm_reduction: 1e-10
     linearmodel:
       init_tlmadm: '1'
-      nml_file: Data/fv3files/input_fv3gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       trajectory:
         init_tlmadm: '0'
-        nml_file: Data/fv3files/input_fv3gfs_c48.nml
+        nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
-        tstep: PT30M
+        tstep: PT15M
       trc_file: Data/fv3files/field_table
-      tstep: PT30M
-      update_dgridwind: '1'
+      tstep: PT15M
+      update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
-      nml_file: Data/fv3files/input_fv3gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c48.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      wind_type: D-grid
-      filepath_akbk: Data/INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/
+      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180415.000000.fv_core.res.nc
       ak_var: ak
       bk_var: bk

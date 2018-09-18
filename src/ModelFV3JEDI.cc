@@ -27,7 +27,8 @@ static oops::ModelMaker<FV3JEDITraits, ModelFV3JEDI> makermodel_("FV3JEDI");
 ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & model)
   : keyConfig_(0), tstep_(0), geom_(resol),
-  vars_(std::vector<std::string>{"u", "v", "t", "delp", "q"})
+  vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
+                                 "q", "qi", "ql", "o3"})
 {
   oops::Log::trace() << "ModelFV3JEDI::ModelFV3JEDI" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));

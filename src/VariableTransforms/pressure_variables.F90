@@ -208,18 +208,18 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure thickness
- real(kind=kind_real), intent(out) ::   pe(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1) !Pressure edge/interface
- real(kind=kind_real), intent(out) ::    p(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure mid point
- real(kind=kind_real), optional, intent(out) :: logp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Log of pressure mid point
+ real(kind=kind_real), intent(in ) :: delp(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure thickness
+ real(kind=kind_real), intent(out) ::   pe(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz+1) !Pressure edge/interface
+ real(kind=kind_real), intent(out) ::    p(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure mid point
+ real(kind=kind_real), optional, intent(out) :: logp(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Log of pressure mid point
  
  !Locals
  integer :: isc,iec,jsc,jec,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  !Pressure at layer edge
  pe(isc:iec,jsc:jec,1) = geom%ptop
@@ -243,15 +243,15 @@ subroutine delp_to_p_tl(geom,delp_tl,p_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)!Pressure thickness
- real(kind=kind_real), intent(out) :: p_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure mid point
+ real(kind=kind_real), intent(in ) :: delp_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)!Pressure thickness
+ real(kind=kind_real), intent(out) :: p_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure mid point
  !Locals
  integer :: isc,iec,jsc,jec,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  p_tl(isc:iec,jsc:jec,1) = 0.5*delp_tl(isc:iec,jsc:jec,1) 
  do k = 2,geom%npz
@@ -264,14 +264,14 @@ subroutine delp_to_p_ad(geom,delp_ad,p_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in )  :: geom !Geometry for the model
- real(kind=kind_real), intent(inout):: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)!Pressure thickness
- real(kind=kind_real), intent(inout):: p_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure mid point
+ real(kind=kind_real), intent(inout):: delp_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)!Pressure thickness
+ real(kind=kind_real), intent(inout):: p_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure mid point
  integer :: isc,iec,jsc,jec,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  delp_ad =  0.0_kind_real
  
@@ -290,15 +290,15 @@ subroutine ps_to_delp(geom,ps,delp)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) ::   ps(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed           )   !Surface pressure
- real(kind=kind_real), intent(inout) :: delp(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure thickness
+ real(kind=kind_real), intent(in   ) ::   ps(geom%isd:geom%ied,geom%jsd:geom%jed           )   !Surface pressure
+ real(kind=kind_real), intent(inout) :: delp(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure thickness
 
  integer :: isc,iec,jsc,jec,i,j,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  do k = 1,geom%npz
    do j = jsc,jec
@@ -314,15 +314,15 @@ subroutine ps_to_delp_tl(geom,ps_tl,delp_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in   ) ::   ps_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed           )   !Surface pressure
- real(kind=kind_real), intent(inout) :: delp_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure thickness
+ real(kind=kind_real), intent(in   ) ::   ps_tl(geom%isd:geom%ied,geom%jsd:geom%jed           )   !Surface pressure
+ real(kind=kind_real), intent(inout) :: delp_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure thickness
 
  integer :: isc,iec,jsc,jec,i,j,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  delp_tl = 0.0_kind_real
  do k = 1,geom%npz
@@ -339,15 +339,15 @@ subroutine ps_to_delp_ad(geom,ps_ad,delp_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
- real(kind=kind_real), intent(inout) ::   ps_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed           )   !Surface pressure
- real(kind=kind_real), intent(inout) :: delp_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)   !Pressure thickness
+ real(kind=kind_real), intent(inout) ::   ps_ad(geom%isd:geom%ied,geom%jsd:geom%jed           )   !Surface pressure
+ real(kind=kind_real), intent(inout) :: delp_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)   !Pressure thickness
 
  integer :: isc,iec,jsc,jec,i,j,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  ps_ad = 0.0_kind_real
 

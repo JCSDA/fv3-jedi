@@ -17,8 +17,8 @@ public c_fv3jedi_getvaltraj_setup, c_fv3jedi_getvaltraj_delete
 
 type :: fv3jedi_getvaltraj
  integer :: nobs, ngrid
- real(kind=kind_real), allocatable :: pt(:,:,:)
- real(kind=kind_real), allocatable :: q(:,:,:,:)
+ real(kind=kind_real), allocatable :: t(:,:,:)
+ real(kind=kind_real), allocatable :: q(:,:,:)
  type(bump_type) :: bump
  logical :: lalloc = .false.
 end type fv3jedi_getvaltraj
@@ -71,7 +71,7 @@ call fv3jedi_getvaltraj_registry%get(c_key_self, self)
 if (self%lalloc) then
   self%nobs = 0
   self%ngrid = 0
-  if (allocated(self%pt)) deallocate(self%pt)
+  if (allocated(self%t)) deallocate(self%t)
   if (allocated(self%q)) deallocate(self%q)
   call self%bump%dealloc
   self%lalloc = .false.

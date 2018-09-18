@@ -29,31 +29,19 @@ public :: fv3jedi_geom_registry
 
 ! ------------------------------------------------------------------------------
 
-!> Skinny version of fv_grid_bounds_type
-type fv_grid_bounds_type
-    integer :: isd, ied, jsd, jed ! data domain
-    integer :: isc, iec, jsc, jec ! compute domain
-end type fv_grid_bounds_type
-
 !> Fortran derived type to hold geometry data for the FV3JEDI model
 type :: fv3jedi_geom
-  !From user, maybe via input.nml
-  integer :: npx                                          !x-dir grid edge points per tile
-  integer :: npy                                          !y-dir grid edge points per tile
-  integer :: npz                                          !z-dir grid points global
-  logical :: hydrostatic                                  !Are fields on this geometry hydrostatic
+
+  integer :: isd, ied, jsd, jed                           !data domain
+  integer :: isc, iec, jsc, jec                           !compute domain
+  integer :: npx,npy,npz                                  !x/y/z-dir grid edge points per tile
   integer :: layout(2)                                    !Processor layout for computation
   integer :: io_layout(2)                                 !Processor layout for read/write
   integer :: halo                                         !Number of halo points, normally 3
   character(len=255) :: nml_file                          !FV3 nml file associated with this geom
-  character(len=255) :: trc_file                          !FV3 field_table associated with this geom
-  character(len=255) :: wind_type                         !A-grid or D-grid in the state vector
-  !Hardwired or determined
   logical :: am_i_root_pe = .false.                       !Is this the root process 
   integer :: size_cubic_grid                              !Size of cubed sphere grid (cell center)
-  integer :: ntracers                                     !Number of tracers
   type(domain2D) :: domain                                !MPP domain
-  type(fv_grid_bounds_type) :: bd                         !FV grid bounds
   integer :: ntile                                        !Tile ID
   integer :: ntiles = 6                                   !Number of tiles, always 6
   integer :: stackmax                                     !Stackmax
@@ -86,8 +74,8 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable :: edge_n(:)
   real(kind=kind_real), allocatable :: grid(:,:,:)
   real(kind=kind_real), allocatable :: agrid(:,:,:)
-
   logical :: sw_corner, se_corner, ne_corner, nw_corner
+
 end type fv3jedi_geom
 
 #define LISTED_TYPE fv3jedi_geom
@@ -136,26 +124,13 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! Is this the root
 if (mpp_pe() == mpp_root_pe()) self%am_i_root_pe = .true.
 
-! User input for grid and layout
-! ------------------------------
-
-!FV3 Layout files (npx,npy,npz,layout,layout_io,hydrostatic)
+! User input constructing the grid
+! --------------------------------
 self%nml_file = config_get_string(c_conf,len(self%nml_file),"nml_file")
-self%trc_file = config_get_string(c_conf,len(self%trc_file),"trc_file")
 
 !Halo
 self%halo = config_get_int(c_conf,"halo")
 
-!State wind D or A grid
-self%wind_type = config_get_string(c_conf,len(self%nml_file),"wind_type")
-if (trim(self%wind_type) /= 'A-grid' .and. trim(self%wind_type) /= 'D-grid') then
-   call abor1_ftn("fv3-jedi geometry: wind_type must be either A-grid or D-grid")
-endif
-
-
-! Get number of tracers from field_table
-! --------------------------------------
-call get_number_tracers(MODEL_ATMOS, num_tracers=self%ntracers)
 
 ! Set filenames for ak and bk
 ! ---------------------------
@@ -185,14 +160,14 @@ endif
 call fv_init(FV_Atm, 300.0_kind_real, grids_on_this_pe, p_split)
 deallocate(pelist_all)
 
-self%bd%isd = FV_Atm(1)%bd%isd
-self%bd%ied = FV_Atm(1)%bd%ied
-self%bd%jsd = FV_Atm(1)%bd%jsd
-self%bd%jed = FV_Atm(1)%bd%jed
-self%bd%isc = FV_Atm(1)%bd%isc
-self%bd%iec = FV_Atm(1)%bd%iec
-self%bd%jsc = FV_Atm(1)%bd%jsc
-self%bd%jec = FV_Atm(1)%bd%jec
+self%isd = FV_Atm(1)%bd%isd
+self%ied = FV_Atm(1)%bd%ied
+self%jsd = FV_Atm(1)%bd%jsd
+self%jed = FV_Atm(1)%bd%jed
+self%isc = FV_Atm(1)%bd%isc
+self%iec = FV_Atm(1)%bd%iec
+self%jsc = FV_Atm(1)%bd%jsc
+self%jec = FV_Atm(1)%bd%jec
 self%ntile  = FV_Atm(1)%tile
 
 self%npx = FV_Atm(1)%npx
@@ -202,14 +177,13 @@ self%layout(1) = FV_Atm(1)%layout(1)
 self%layout(2) = FV_Atm(1)%layout(2)
 self%io_layout(1) = FV_Atm(1)%io_layout(1)
 self%io_layout(2) = FV_Atm(1)%io_layout(2)
-self%hydrostatic = FV_Atm(1)%flagstruct%hydrostatic
 
 !Lat,lon and area from
-allocate ( self%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
-allocate ( self%grid_lon(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
-allocate ( self%grid_lat(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed) )
-allocate ( self%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
-allocate ( self%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
+allocate ( self%area(self%isd:self%ied, self%jsd:self%jed) )
+allocate ( self%grid_lon(self%isd:self%ied, self%jsd:self%jed) )
+allocate ( self%grid_lat(self%isd:self%ied, self%jsd:self%jed) )
+allocate ( self%egrid_lon(self%isd:self%ied+1, self%jsd:self%jed+1) )
+allocate ( self%egrid_lat(self%isd:self%ied+1, self%jsd:self%jed+1) )
 
 self%area = FV_Atm(1)%gridstruct%area_64
 self%grid_lon = real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
@@ -217,28 +191,28 @@ self%grid_lat = real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
 self%egrid_lon = real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
 self%egrid_lat = real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
 
-allocate( self%sin_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
-allocate( self%cos_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
-allocate( self%cosa_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate( self%cosa_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate( self%cosa_s(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate( self%rsin_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate( self%rsin_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate(  self%rsin2(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(    self%dxa(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(    self%dya(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(     self%dx(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate(     self%dy(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate(    self%dxc(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed ))
-allocate(    self%dyc(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate(  self%rarea(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(self%rarea_c(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed+1))
+allocate( self%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
+allocate( self%cos_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
+allocate( self%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate( self%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate( self%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate( self%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate( self%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(  self%rsin2(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(    self%dxa(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(    self%dya(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(     self%dx(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(     self%dy(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(    self%dxc(self%isd:self%ied+1,self%jsd:self%jed ))
+allocate(    self%dyc(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(  self%rarea(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(self%rarea_c(self%isd:self%ied+1,self%jsd:self%jed+1))
 allocate(self%edge_s(self%npx))
 allocate(self%edge_n(self%npx))
 allocate(self%edge_w(self%npy))
 allocate(self%edge_e(self%npy))
-allocate(self%grid (self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed+1,1:2))
-allocate(self%agrid(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,1:2))
+allocate(self%grid (self%isd:self%ied+1,self%jsd:self%jed+1,1:2))
+allocate(self%agrid(self%isd:self%ied  ,self%jsd:self%jed  ,1:2))
 
 self%sin_sg = Fv_Atm(1)%gridstruct%sin_sg
 self%cos_sg = Fv_Atm(1)%gridstruct%cos_sg
@@ -344,58 +318,53 @@ call fv3jedi_geom_registry%add(c_key_other)
 call fv3jedi_geom_registry%get(c_key_other, other)
 call fv3jedi_geom_registry%get(c_key_self, self)
 
-allocate(other%grid_lon(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
-allocate(other%grid_lat(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
-allocate(other%egrid_lon(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
-allocate(other%egrid_lat(self%bd%isd:self%bd%ied+1, self%bd%jsd:self%bd%jed+1) )
-allocate(other%area(self%bd%isd:self%bd%ied, self%bd%jsd:self%bd%jed))
+allocate(other%grid_lon(self%isd:self%ied, self%jsd:self%jed))
+allocate(other%grid_lat(self%isd:self%ied, self%jsd:self%jed))
+allocate(other%egrid_lon(self%isd:self%ied+1, self%jsd:self%jed+1) )
+allocate(other%egrid_lat(self%isd:self%ied+1, self%jsd:self%jed+1) )
+allocate(other%area(self%isd:self%ied, self%jsd:self%jed))
 allocate(other%ak(self%npz+1))
 allocate(other%bk(self%npz+1))
 
-allocate( other%sin_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
-allocate( other%cos_sg(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,9))
-allocate( other%cosa_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate( other%cosa_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate( other%cosa_s(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate( other%rsin_u(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate( other%rsin_v(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate(  other%rsin2(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(    other%dxa(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(    other%dya(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(     other%dx(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate(     other%dy(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate(    other%dxc(self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed  ))
-allocate(    other%dyc(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed+1))
-allocate(  other%rarea(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
-allocate(other%rarea_c(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ))
+allocate( other%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
+allocate( other%cos_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
+allocate( other%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate( other%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate( other%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate( other%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate( other%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(  other%rsin2(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(    other%dxa(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(    other%dya(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(     other%dx(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(     other%dy(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(    other%dxc(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(    other%dyc(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(  other%rarea(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(other%rarea_c(self%isd:self%ied  ,self%jsd:self%jed  ))
 allocate(other%edge_s(self%npx))
 allocate(other%edge_n(self%npx))
 allocate(other%edge_w(self%npy))
 allocate(other%edge_e(self%npy))
-allocate(other%grid (self%bd%isd:self%bd%ied+1,self%bd%jsd:self%bd%jed+1,1:2))
-allocate(other%agrid(self%bd%isd:self%bd%ied  ,self%bd%jsd:self%bd%jed  ,1:2))
+allocate(other%grid (self%isd:self%ied+1,self%jsd:self%jed+1,1:2))
+allocate(other%agrid(self%isd:self%ied  ,self%jsd:self%jed  ,1:2))
 
 other%npx             = self%npx
 other%npy             = self%npy
 other%npz             = self%npz
-other%hydrostatic     = self%hydrostatic
 other%layout          = self%layout
 other%io_layout       = self%io_layout
 other%halo            = self%halo
-other%ntracers        = self%ntracers
 other%nml_file        = self%nml_file
-other%trc_file        = self%trc_file
-other%wind_type       = self%wind_type
 other%size_cubic_grid = self%size_cubic_grid
-other%ntracers        = self%ntracers
-other%bd%isc          = self%bd%isc
-other%bd%isd          = self%bd%isd
-other%bd%iec          = self%bd%iec
-other%bd%ied          = self%bd%ied
-other%bd%jsc          = self%bd%jsc
-other%bd%jsd          = self%bd%jsd
-other%bd%jec          = self%bd%jec
-other%bd%jed          = self%bd%jed
+other%isc             = self%isc
+other%isd             = self%isd
+other%iec             = self%iec
+other%ied             = self%ied
+other%jsc             = self%jsc
+other%jsd             = self%jsd
+other%jec             = self%jec
+other%jed             = self%jed
 other%ntile           = self%ntile
 other%ntiles          = self%ntiles
 other%stackmax        = self%stackmax

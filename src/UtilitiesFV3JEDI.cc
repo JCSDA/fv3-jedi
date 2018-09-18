@@ -63,6 +63,32 @@ void stageFv3Files(const eckit::Configuration &conf) {
 
 // -----------------------------------------------------------------------------
 
+void stageFv3Input(const eckit::Configuration &conf) {
+  oops::Log::trace() << "Staging fv3 input.nml" << std::endl;
+
+  // Get processor ID
+  int world_rank = oops::mpi::comm().rank();
+
+  // Only one processor needs to move the files
+  if (world_rank == 0) {
+    // Remove anything currently present
+    std::remove("input.nml");
+
+    // User provided input files for this geom/state/model etc
+    if (conf.has("nml_file")) {
+      std::string nml_file = conf.getString("nml_file");
+      symlink(nml_file.c_str(), "./input.nml");
+    } else {
+      ABORT("input.nml not in configuration");
+    }
+  }
+
+  // Nobody moves until files are in place
+  oops::mpi::comm().barrier();
+}
+
+// -----------------------------------------------------------------------------
+
 void removeFv3Files() {
   oops::Log::trace() << "Removing fv3 input.nml and field_table" << std::endl;
 
@@ -79,6 +105,23 @@ void removeFv3Files() {
 
     // And inputpert if it is there
     std::remove("inputpert.nml");
+  }
+}
+
+// -----------------------------------------------------------------------------
+
+void removeFv3Input() {
+  oops::Log::trace() << "Removing fv3 input.nml" << std::endl;
+
+  // Get processor ID
+  int world_rank = oops::mpi::comm().rank();
+
+  // No file deletion until everyone catches up
+  oops::mpi::comm().barrier();
+
+  // Only one processor needs to move the files
+  if (world_rank == 0) {
+    std::remove("input.nml");
   }
 }
 

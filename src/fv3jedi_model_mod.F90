@@ -20,6 +20,8 @@ use mpp_domains_mod, only: mpp_update_domains, mpp_get_boundary, DGRID_NE
 use pressure_vt_mod, only: compute_fv3_pressures, compute_fv3_pressures_tlm, compute_fv3_pressures_bwd
 use fms_mod, only: set_domain, nullify_domain
 
+use field_manager_mod,  only: MODEL_ATMOS
+use tracer_manager_mod, only: get_tracer_index
 
 #ifdef TLADPRES
 use fv_arrays_nlm_mod, only: fv_atmos_pert_type
@@ -58,6 +60,10 @@ type :: fv3jedi_model
   integer                                      :: update_pressures=1  !<Update the fv3 pressures each time step
   integer                                      :: init_tlmadm         !<Is the TLM/ADM needed in this instance
   integer                                      :: linmodtest          !<Testing the linear model
+  integer                                      :: ti_q                !<Tracer index for specific humidity
+  integer                                      :: ti_qi               !<Tracer index for cloud ice water
+  integer                                      :: ti_ql               !<Tracer index for cloud liquid water
+  integer                                      :: ti_o3               !<Tracer index for ozone
 end type fv3jedi_model
 
 #define LISTED_TYPE fv3jedi_model
@@ -107,8 +113,8 @@ call fv_init(model%FV_Atm, model%DT, model%grids_on_this_pe, model%p_split)
 deallocate(pelist_all)
 
 !Compute grid must be same as geometry
-if ( (geom%bd%isc .ne. model%FV_Atm(1)%bd%isc) .or. (geom%bd%iec .ne. model%FV_Atm(1)%bd%iec) .or. &
-     (geom%bd%jsc .ne. model%FV_Atm(1)%bd%jsc) .or. (geom%bd%jec .ne. model%FV_Atm(1)%bd%jec) .or. &
+if ( (geom%isc .ne. model%FV_Atm(1)%bd%isc) .or. (geom%iec .ne. model%FV_Atm(1)%bd%iec) .or. &
+     (geom%jsc .ne. model%FV_Atm(1)%bd%jsc) .or. (geom%jec .ne. model%FV_Atm(1)%bd%jec) .or. &
      (geom%npz .ne. model%FV_Atm(1)%npz) ) then
    call abor1_ftn("fv3jedi model: compute areas for geometry and model do not agree")
 endif
@@ -135,6 +141,12 @@ allocate(model%nbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_A
 model%FV_Atm(1)%ak = geom%ak
 model%FV_Atm(1)%bk = geom%bk
 model%FV_Atm(1)%ptop = geom%ptop
+
+!Tracer indexes
+model%ti_q  = 1 !get_tracer_index (MODEL_ATMOS, 'sphum')
+model%ti_ql = 2 !get_tracer_index (MODEL_ATMOS, 'liq_wat')
+model%ti_qi = 3 !get_tracer_index (MODEL_ATMOS, 'ice_wat')
+model%ti_o3 = 4 !get_tracer_index (MODEL_ATMOS, 'o3mr')
 
 !Always allocate w, delz, q_con for now
 deallocate(model%FV_Atm(1)%w)
@@ -492,9 +504,11 @@ FV_AtmP => self%FV_AtmP
 call get_traj( traj, &
                self%isc,self%iec,self%jsc,self%jec, &
                self%isd,self%ied,self%jsd,self%jed, &
-               self%npz, self%FV_Atm(1)%ncnst, self%hydrostatic, &
+               self%npz, self%hydrostatic, &
                self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
-               self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis )
+               self%FV_Atm(1)%q(:,:,:,self%ti_q ),self%FV_Atm(1)%q(:,:,:,self%ti_qi),&
+               self%FV_Atm(1)%q(:,:,:,self%ti_ql),self%FV_Atm(1)%q(:,:,:,self%ti_o3),&
+               self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis )
 
 
 ! Fill phi halos
@@ -797,9 +811,11 @@ FV_AtmP => self%FV_AtmP
 call get_traj( traj, &
                self%isc,self%iec,self%jsc,self%jec, &
                self%isd,self%ied,self%jsd,self%jed, &
-               self%npz, self%FV_Atm(1)%ncnst, self%hydrostatic, &
+               self%npz, self%hydrostatic, &
                self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
-               self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis )
+               self%FV_Atm(1)%q(:,:,:,self%ti_q ),self%FV_Atm(1)%q(:,:,:,self%ti_qi),&
+               self%FV_Atm(1)%q(:,:,:,self%ti_ql),self%FV_Atm(1)%q(:,:,:,self%ti_o3),&
+               self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis )
 
 
 ! Fill phi halos
@@ -943,14 +959,16 @@ type(fv3jedi_trajectory) :: traj
 call fields_to_model(flds,self)
 
 self%FV_Atm(1)%phis = 0.0
-self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
+self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%phis(self%isc:self%iec,self%jsc:self%jec)
 
 call set_traj( traj, &
                self%isc,self%iec,self%jsc,self%jec, &
                self%isd,self%ied,self%jsd,self%jed, &
-               self%npz, self%FV_Atm(1)%ncnst, self%hydrostatic, &
+               self%npz, self%hydrostatic, &
                self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
-               self%FV_Atm(1)%q,self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis)
+               self%FV_Atm(1)%q(:,:,:,self%ti_q ),self%FV_Atm(1)%q(:,:,:,self%ti_qi),&
+               self%FV_Atm(1)%q(:,:,:,self%ti_ql),self%FV_Atm(1)%q(:,:,:,self%ti_o3),&
+               self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis)
 
 end subroutine model_prop_traj
 
@@ -979,6 +997,8 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
+!NOTE: while the variable name is pt, FV3 expects dry temperature
+
 !To zero the halos
 self%FV_Atm(1)%u    = 0.0
 self%FV_Atm(1)%v    = 0.0
@@ -989,14 +1009,17 @@ self%FV_Atm(1)%w    = 0.0
 self%FV_Atm(1)%delz = 0.0
 
 !Only copy compute grid incase of halo differences
-self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  ) = flds%Atm%u   (isc:iec  ,jsc:jec+1,:  )
-self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  ) = flds%Atm%v   (isc:iec+1,jsc:jec  ,:  )
-self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  )
-self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delp(isc:iec  ,jsc:jec  ,:  )
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,:) = flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%Atm%hydrostatic) then
-   self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delz(isc:iec  ,jsc:jec  ,:  )
-   self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%w   (isc:iec  ,jsc:jec  ,:  )
+self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:)            = flds%ud  (isc:iec  ,jsc:jec+1,:)
+self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:)            = flds%vd  (isc:iec+1,jsc:jec  ,:)
+self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:)            = flds%t   (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:)            = flds%delp(isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q ) = flds%q   (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi) = flds%qi  (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql) = flds%ql  (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3) = flds%o3  (isc:iec  ,jsc:jec  ,:)
+if (.not. flds%hydrostatic) then
+   self%FV_Atm(1)%delz(isc:iec,jsc:jec,:) = flds%delz(isc:iec,jsc:jec,:)
+   self%FV_Atm(1)%w   (isc:iec,jsc:jec,:) = flds%w   (isc:iec,jsc:jec,:)
 endif
 
 end subroutine fields_to_model
@@ -1016,31 +1039,36 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
+!NOTE: while the variable name is pt, FV3 expects dry temperature
+
 !To zero the halos
-flds%Atm%u    = 0.0
-flds%Atm%v    = 0.0
-flds%Atm%pt   = 0.0
-flds%Atm%delp = 0.0
-flds%Atm%q    = 0.0
-if (.not. flds%Atm%hydrostatic) then
-   flds%Atm%delz = 0.0
-   flds%Atm%w    = 0.0
+flds%ud   = 0.0
+flds%vd   = 0.0
+flds%t    = 0.0
+flds%delp = 0.0
+flds%q    = 0.0
+if (.not. flds%hydrostatic) then
+   flds%delz = 0.0
+   flds%w    = 0.0
 endif
-flds%Atm%ua    = 0.0
-flds%Atm%va    = 0.0
+flds%ua    = 0.0
+flds%va    = 0.0
 
 !Only copy compute grid incase of halo differences
-flds%Atm%u   (isc:iec  ,jsc:jec+1,:  ) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
-flds%Atm%v   (isc:iec+1,jsc:jec  ,:  ) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
-flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
-flds%Atm%delp(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
-flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%Atm%hydrostatic) then
-  flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%delz(isc:iec  ,jsc:jec  ,:  )
-  flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%w   (isc:iec  ,jsc:jec  ,:  )
+flds%ud  (isc:iec  ,jsc:jec+1,:) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
+flds%vd  (isc:iec+1,jsc:jec  ,:) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
+flds%t   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
+flds%delp(isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
+flds%q   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q)
+flds%qi  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi)
+flds%ql  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql)
+flds%o3  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3)
+if (.not. flds%hydrostatic) then
+  flds%delz(isc:iec,jsc:jec,:) = self%FV_Atm(1)%delz(isc:iec,jsc:jec,:)
+  flds%w   (isc:iec,jsc:jec,:) = self%FV_Atm(1)%w   (isc:iec,jsc:jec,:)
 endif
-flds%Atm%ua(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%ua(isc:iec  ,jsc:jec  ,:  )
-flds%Atm%va(isc:iec  ,jsc:jec  ,:  ) = self%FV_Atm(1)%va(isc:iec  ,jsc:jec  ,:  )
+flds%ua(isc:iec,jsc:jec,:) = self%FV_Atm(1)%ua(isc:iec,jsc:jec,:)
+flds%va(isc:iec,jsc:jec,:) = self%FV_Atm(1)%va(isc:iec,jsc:jec,:)
 
 
 end subroutine model_to_fields
@@ -1060,24 +1088,29 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
+!NOTE: while the variable name is pt, FV3 expects dry temperature
+
 !To zero the halos
 self%FV_AtmP(1)%up    = 0.0
 self%FV_AtmP(1)%vp    = 0.0
 self%FV_AtmP(1)%ptp   = 0.0
 self%FV_AtmP(1)%delpp = 0.0
 self%FV_AtmP(1)%qp    = 0.0
-self%FV_AtmP(1)%wp   = 0.0
+self%FV_AtmP(1)%wp    = 0.0
 self%FV_AtmP(1)%delzp = 0.0
 
 !Only copy compute grid incase of halo differences
-self%FV_AtmP(1)%up   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%u   (isc:iec  ,jsc:jec  ,:  )
-self%FV_AtmP(1)%vp   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%v   (isc:iec  ,jsc:jec  ,:  )
-self%FV_AtmP(1)%ptp  (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  )
-self%FV_AtmP(1)%delpp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delp(isc:iec  ,jsc:jec  ,:  )
-self%FV_AtmP(1)%qp   (isc:iec  ,jsc:jec  ,:,:) = flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%Atm%hydrostatic) then
-   self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  ) = flds%Atm%delz(isc:iec  ,jsc:jec  ,:  )
-   self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  ) = flds%Atm%w   (isc:iec  ,jsc:jec  ,:  )
+self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)            = flds%ud  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)            = flds%vd  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = flds%t   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = flds%delp(isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = flds%q   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi) = flds%qi  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql) = flds%ql  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3) = flds%o3  (isc:iec,jsc:jec,:)
+if (.not. flds%hydrostatic) then
+   self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:) = flds%delz(isc:iec,jsc:jec,:)
+   self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = flds%w   (isc:iec,jsc:jec,:)
 endif
 
 end subroutine fields_to_model_pert
@@ -1097,26 +1130,34 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
+!NOTE: while the variable name is pt, FV3 expects dry temperature
+
 !To zero the halos
-flds%Atm%u    = 0.0
-flds%Atm%v    = 0.0
-flds%Atm%pt   = 0.0
-flds%Atm%delp = 0.0
-flds%Atm%q    = 0.0
-if (.not. flds%Atm%hydrostatic) then
-   flds%Atm%delz = 0.0
-   flds%Atm%w    = 0.0
+flds%ud   = 0.0
+flds%vd   = 0.0
+flds%t    = 0.0
+flds%delp = 0.0
+flds%q    = 0.0
+flds%qi   = 0.0
+flds%ql   = 0.0
+flds%o3   = 0.0
+if (.not. flds%hydrostatic) then
+   flds%delz = 0.0
+   flds%w    = 0.0
 endif
 
 !Only copy compute grid incase of halo differences
-flds%Atm%u   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%up   (isc:iec  ,jsc:jec  ,:  )
-flds%Atm%v   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%vp   (isc:iec  ,jsc:jec  ,:  )
-flds%Atm%pt  (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%ptp  (isc:iec  ,jsc:jec  ,:  )
-flds%Atm%delp(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delpp(isc:iec  ,jsc:jec  ,:  )
-flds%Atm%q   (isc:iec  ,jsc:jec  ,:,:) = self%FV_AtmP(1)%qp   (isc:iec  ,jsc:jec  ,:,:)
-if (.not. flds%Atm%hydrostatic) then
-  flds%Atm%delz(isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%delzp(isc:iec  ,jsc:jec  ,:  )
-  flds%Atm%w   (isc:iec  ,jsc:jec  ,:  ) = self%FV_AtmP(1)%wp   (isc:iec  ,jsc:jec  ,:  )
+flds%ud  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)
+flds%vd  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)
+flds%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
+flds%delp(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)
+flds%q   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q )
+flds%qi  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi)
+flds%ql  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql)
+flds%o3  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3)
+if (.not. flds%hydrostatic) then
+  flds%delz(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:)
+  flds%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
 endif
 
 end subroutine model_to_fields_pert
@@ -1133,7 +1174,7 @@ type(fv3jedi_model) :: self
 self%FV_Atm(1)%phis = 0.0
 
 !Get compute domain from fields
-self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%Atm%phis(self%isc:self%iec,self%jsc:self%jec)
+self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%phis(self%isc:self%iec,self%jsc:self%jec)
 
 !Fill halos
 call mpp_update_domains(self%FV_Atm(1)%phis, self%FV_Atm(1)%domain, complete=.true.)

@@ -24,6 +24,7 @@
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
 #include "GetValuesTrajFV3JEDI.h"
+#include "oops/util/abor1_cpp.h"
 
 namespace fv3jedi {
 
@@ -48,7 +49,7 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
   if (file.has("variables"))
     vv = new std::vector<std::string>(file.getStringVector("variables"));
   else
-    vv = new std::vector<std::string>({"u", "v", "pt", "delp", "q"});
+    ABORT("variables not found in configuration");
 
   oops::Variables vars(*vv);
 

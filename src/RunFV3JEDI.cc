@@ -22,9 +22,9 @@ RunFV3JEDI::RunFV3JEDI(int argc, char ** argv) : oops::Run(argc, argv) {
   oops::Log::trace() << "Creating RunFV3JEDI" << std::endl;
   const eckit::Configuration * conf = &config();
 
-  stageFv3Files(config());
+  stageFv3Input(config());
   fv3jedi_setup_f(&conf);
-  removeFv3Files();
+  removeFv3Input();
 
   oops::Log::trace() << "RunFV3JEDI created" << std::endl;
 }

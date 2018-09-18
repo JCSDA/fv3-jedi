@@ -25,16 +25,16 @@ subroutine T_to_Tv(geom,T,q,Tv)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: T (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Virtual temperature (K)
+ real(kind=kind_real), intent(in ) :: T (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: Tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Virtual temperature (K)
 
  integer :: isc,iec,jsc,jec
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  Tv(isc:iec,jsc:jec,:) = T(isc:iec,jsc:jec,:)*(1.0 + epsilon*q(isc:iec,jsc:jec,:))
 
@@ -44,19 +44,19 @@ subroutine T_to_Tv_tl(geom,T,T_tl,q,q_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom
- real(kind=kind_real), intent(in   ) :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: T   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
- real(kind=kind_real) :: Tv_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real) :: Tv_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
  integer :: isc,iec,jsc,jec
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  Tv_tl(isc:iec,jsc:jec,:) = T_tl(isc:iec,jsc:jec,:)*(1.0 + epsilon*q(isc:iec,jsc:jec,:)) + T(isc:iec,jsc:jec,:)*epsilon*q_tl(isc:iec,jsc:jec,:)
 
@@ -69,19 +69,19 @@ subroutine T_to_Tv_ad(geom,T,T_ad,q,q_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in )   :: geom 
- real(kind=kind_real), intent(in )   :: T   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in )   :: q   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: q_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in )   :: T   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in )   :: q   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: q_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
- real(kind=kind_real) :: TV_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real) :: TV_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
  integer :: isc,iec,jsc,jec
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  Tv_ad(isc:iec,jsc:jec,:) = T_ad(isc:iec,jsc:jec,:)
  T_ad(isc:iec,jsc:jec,:)  =                    (1.0 + epsilon*q(isc:iec,jsc:jec,:))*Tv_ad(isc:iec,jsc:jec,:)
@@ -97,16 +97,16 @@ subroutine Tv_to_T(geom,Tv,q,T)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: T (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)  !Virtual temperature (K)
+ real(kind=kind_real), intent(in ) :: Tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: T (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Virtual temperature (K)
 
  integer :: isc,iec,jsc,jec, i, j, k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
 
  do k = 1,geom%npz
    do j = jsc,jec
@@ -124,18 +124,18 @@ subroutine Tv_to_T_tl(geom,Tv,Tv_tl,q,q_tl,T_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom
- real(kind=kind_real), intent(in   ) :: Tv   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: Tv_tl(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q    (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q_tl (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_tl (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: Tv   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: Tv_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q    (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q_tl (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_tl (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: isc,iec,jsc,jec,npz,i,j,k
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
  npz = geom%npz
 
  t_tl = 0.0
@@ -153,19 +153,19 @@ subroutine Tv_to_T_ad(geom,Tv,Tv_ad,q,q_ad,T_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom
- real(kind=kind_real), intent(in   ) :: Tv   (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: Tv_ad(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q    (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: q_ad (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_ad (geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: Tv   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: Tv_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q    (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: q_ad (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_ad (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  
  integer :: isc,iec,jsc,jec,npz,i,j,k
  real(kind=kind_real) :: temp
 
- isc = geom%bd%isc
- iec = geom%bd%iec
- jsc = geom%bd%jsc
- jec = geom%bd%jec
+ isc = geom%isc
+ iec = geom%iec
+ jsc = geom%jsc
+ jec = geom%jec
  npz = geom%npz
 
  do k=npz,1,-1
