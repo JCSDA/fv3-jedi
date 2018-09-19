@@ -60,6 +60,8 @@ cost_function:
   variables:
   - ud
   - vd
+  - ua
+  - va
   - t
   - delp
   - q

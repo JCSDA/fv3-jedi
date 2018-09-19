@@ -77,6 +77,8 @@ Variables:
   variables:
   - ud
   - vd
+  - ua
+  - va
   - t
   - delp
   - q

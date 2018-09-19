@@ -43,7 +43,6 @@ IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & geom,
 // -----------------------------------------------------------------------------
 IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & geom,
                                    const IncrementFV3JEDI & other)
-                                   
   : geom_(new GeometryFV3JEDI(geom)), vars_(other.vars_), time_(other.time_)
 {
   const eckit::Configuration * conf = &vars_.toFortran();
@@ -152,8 +151,12 @@ void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
                                    ufo::GeoVaLs & gom,
                                    const GetValuesTrajFV3JEDI & traj) const {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_increment_getvalues_tl_f90(geom_->toFortran(), keyInc_, locs.toFortran(),
-                                 &conf, gom.toFortran(), traj.toFortran());
+  fv3jedi_increment_getvalues_tl_f90(geom_->toFortran(),
+                                     keyInc_,
+                                     locs.toFortran(),
+                                     &conf,
+                                     gom.toFortran(),
+                                     traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
@@ -161,8 +164,11 @@ void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
                              const ufo::GeoVaLs & gom,
                              const GetValuesTrajFV3JEDI & traj) {
   const eckit::Configuration * conf = &vars.toFortran();
-  fv3jedi_increment_getvalues_ad_f90(geom_->toFortran(), keyInc_, locs.toFortran(),
-                                 &conf, gom.toFortran(), traj.toFortran());
+  fv3jedi_increment_getvalues_ad_f90(geom_->toFortran(),
+                                     keyInc_, locs.toFortran(),
+                                     &conf,
+                                     gom.toFortran(),
+                                     traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::ug_coord(oops::UnstructuredGrid & ug,
