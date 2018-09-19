@@ -20,7 +20,7 @@
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
-#include "Fortran.h"
+#include "LocalizationMatrixFV3JEDIFortran.h"
 
 // Forward declarations
 namespace fv3jedi {

@@ -8,7 +8,7 @@
 #include <mpi.h>
 #include "src/GeometryFV3JEDI.h"
 #include "oops/util/Logger.h"
-#include "Fortran.h"
+#include "GeometryFV3JEDIFortran.h"
 #include "eckit/config/Configuration.h"
 #include "UtilitiesFV3JEDI.h"
 

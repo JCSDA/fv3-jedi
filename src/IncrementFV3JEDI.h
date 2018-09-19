@@ -14,14 +14,16 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "FieldsFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
+#include "StateFV3JEDI.h"
+#include "IncrementFV3JEDIFortran.h"
 #include "oops/base/GeneralizedDepartures.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 #include "oops/util/dot_product.h"
+#include "oops/base/Variables.h"
 
 namespace eckit {
   class Configuration;
@@ -46,12 +48,7 @@ namespace fv3jedi {
   class StateFV3JEDI;
   class GetValuesTrajFV3JEDI;
 
-/// Increment Class: Difference between two states
-/*!
- *  Some fields that are present in a State may not be present in
- *  an Increment. The Increment contains everything that is needed by
- *  the tangent-linear and adjoint models.
- */
+// FV3JEDI increment
 
 // -----------------------------------------------------------------------------
 
@@ -97,26 +94,31 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 /// I/O and diagnostics
   void read(const eckit::Configuration &);
   void write(const eckit::Configuration &) const;
-  double norm() const {return fields_->norm();}
-  const util::DateTime & validTime() const {return fields_->time();}
-  util::DateTime & validTime() {return fields_->time();}
-  void updateTime(const util::Duration & dt) {fields_->time() += dt;}
+  double norm() const;
 
-/// Access to fields
-  FieldsFV3JEDI & fields() {return *fields_;}
-  const FieldsFV3JEDI & fields() const {return *fields_;}
-
-  boost::shared_ptr<const GeometryFV3JEDI> geometry() const {
-    return fields_->geometry();
-  }
+  void updateTime(const util::Duration & dt) {time_ += dt;}
 
 /// Other
   void accumul(const double &, const StateFV3JEDI &);
 
-/// Data
+// Utilities
+  boost::shared_ptr<const GeometryFV3JEDI> geometry() const {return geom_;}
+
+  const util::DateTime & time() const {return time_;}
+  util::DateTime & time() {return time_;}
+  const util::DateTime & validTime() const {return time_;}
+  util::DateTime & validTime() {return time_;}
+
+  int & toFortran() {return keyInc_;}
+  const int & toFortran() const {return keyInc_;}
+
+// Private methods and variables
  private:
   void print(std::ostream &) const;
-  boost::scoped_ptr<FieldsFV3JEDI> fields_;
+  F90inc keyInc_;
+  boost::shared_ptr<const GeometryFV3JEDI> geom_;
+  oops::Variables vars_;
+  util::DateTime time_;
 };
 // -----------------------------------------------------------------------------
 

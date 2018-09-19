@@ -12,8 +12,7 @@
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
 
-#include "FieldsFV3JEDI.h"
-#include "Fortran.h"
+#include "ModelFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 #include "ModelBiasFV3JEDI.h"
 #include "src/ModelFV3JEDI.h"
@@ -45,33 +44,25 @@ ModelFV3JEDI::~ModelFV3JEDI() {
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::initialize(StateFV3JEDI & xx) const {
-  fv3jedi_model_prepare_integration_f90(keyConfig_, xx.fields().toFortran());
-  oops::Log::debug() << "ModelFV3JEDI::initialize" << xx.fields() << std::endl;
+  fv3jedi_model_prepare_integration_f90(keyConfig_, xx.toFortran());
+  oops::Log::debug() << "ModelFV3JEDI::initialize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
-  oops::Log::debug() << "ModelFV3JEDI::step fields in"
-                     << xx.fields() << std::endl;
   fv3jedi_model_propagate_f90(geom_.toFortran(),
-                              keyConfig_, xx.fields().toFortran());
+                              keyConfig_, xx.toFortran());
   xx.validTime() += tstep_;
-  oops::Log::debug() << "ModelFV3JEDI::step fields out"
-                     << xx.fields() << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::finalize(StateFV3JEDI & xx) const {
-  oops::Log::debug() << "ModelFV3JEDI::finalize" << xx.fields() << std::endl;
+  oops::Log::debug() << "ModelFV3JEDI::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 int ModelFV3JEDI::saveTrajectory(StateFV3JEDI & xx,
                                  const ModelBiasFV3JEDI &) const {
   int ftraj = 0;
-  oops::Log::debug() << "ModelFV3JEDI::saveTrajectory fields in"
-                     << xx.fields() << std::endl;
-  fv3jedi_model_prop_traj_f90(keyConfig_, xx.fields().toFortran(), ftraj);
+  fv3jedi_model_prop_traj_f90(keyConfig_, xx.toFortran(), ftraj);
   ASSERT(ftraj != 0);
-  oops::Log::debug() << "ModelFV3JEDI::saveTrajectory fields out"
-                     << xx.fields() << std::endl;
   return ftraj;
 }
 // -----------------------------------------------------------------------------

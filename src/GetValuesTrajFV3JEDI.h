@@ -11,7 +11,7 @@
 #include <ostream>
 
 #include "oops/util/Printable.h"
-#include "Fortran.h"
+#include "GetValuesTrajFV3JEDIFortran.h"
 
 namespace fv3jedi {
 

@@ -10,7 +10,6 @@ module wind_vt_mod
 
 use fv3jedi_constants, only: pi, rad2deg
 use fv3jedi_geom_mod,  only: fv3jedi_geom
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
 use kinds, only: kind_real
 
 implicit none
@@ -185,14 +184,13 @@ endsubroutine uv_to_vortdivg
 
 !----------------------------------------------------------------------------
 
-subroutine vortdivg_to_psichi(geom,fld,vort,divg,psi,chi)
+subroutine vortdivg_to_psichi(geom,vort,divg,psi,chi)
 
  use mpi
  use mpp_domains_mod, only: mpp_update_domains
 
  implicit none
  type(fv3jedi_geom),   intent(inout) :: geom
- type(fv3jedi_field),  intent(in)    :: fld 
  real(kind=kind_real), intent(in)    :: vort(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Vorticity
  real(kind=kind_real), intent(in)    :: divg(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Divergence
  real(kind=kind_real), intent(out)   :: psi (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
@@ -214,21 +212,20 @@ subroutine vortdivg_to_psichi(geom,fld,vort,divg,psi,chi)
  !       |                 |
  !       x-----------------x
 
- call gauss_seidel(geom,fld,psi,-vort) 
- call gauss_seidel(geom,fld,chi,-divg) 
+ call gauss_seidel(geom,psi,-vort) 
+ call gauss_seidel(geom,chi,-divg) 
 
 endsubroutine vortdivg_to_psichi
 
 !----------------------------------------------------------------------------
 
-subroutine gauss_seidel(geom,fld,x,b)
+subroutine gauss_seidel(geom,x,b)
  
  use mpi
  use mpp_domains_mod, only: mpp_update_domains
 
  implicit none
  type(fv3jedi_geom),   intent(inout) :: geom
- type(fv3jedi_field),  intent(in   ) :: fld
  real(kind=kind_real), intent(inout) :: x(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
  real(kind=kind_real), intent(in   ) :: b(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
@@ -273,7 +270,7 @@ subroutine gauss_seidel(geom,fld,x,b)
    call mpi_allreduce(converged,convergedg,1,mpi_real8,mpi_max,mpi_comm_world,ierr)
 
    !Print info
-   if (fld%am_i_root_pe) print*, 'Gauss-Seidel iteration number and max difference, ', iter, convergedg
+   !print*, 'Gauss-Seidel iteration number and max difference, ', iter, convergedg
 
    !Update guess
    x = xnew

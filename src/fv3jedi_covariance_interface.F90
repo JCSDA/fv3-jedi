@@ -53,7 +53,7 @@ subroutine c_fv3jedi_b_inv_mult(c_key_self, c_key_in, c_key_out) bind(c,name='fv
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
 use kinds
 
 implicit none
@@ -61,12 +61,12 @@ integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_in
 integer(c_int), intent(in) :: c_key_out
 type(fv3jedi_covar), pointer :: self
-type(fv3jedi_field), pointer :: xin
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xin
+type(fv3jedi_increment), pointer :: xout
 
 call fv3jedi_covar_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_in,xin)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_in,xin)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 
 !call fv3jedi_covar_sqrt_inv_mult(self%nx,self%ny,xctl,xin,self)
 !call zeros(xout)
@@ -82,7 +82,7 @@ subroutine c_fv3jedi_b_mult(c_key_self, c_key_in, c_key_out) bind(c,name='fv3jed
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
 use kinds
 
 implicit none
@@ -90,12 +90,12 @@ integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_in
 integer(c_int), intent(in) :: c_key_out
 type(fv3jedi_covar), pointer :: self
-type(fv3jedi_field), pointer :: xin
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xin
+type(fv3jedi_increment), pointer :: xout
 
 call fv3jedi_covar_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_in,xin)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_in,xin)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 
 !call fv3jedi_covar_sqrt_mult_ad(self%nx,self%ny,xin,xctl,self)
 !call zeros(xout)
@@ -111,17 +111,17 @@ subroutine c_fv3jedi_b_randomize(c_key_self, c_key_out) bind(c,name='fv3jedi_b_r
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, random, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, random, fv3jedi_increment
 use kinds
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_out
 type(fv3jedi_covar), pointer :: self
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xout
 
 call fv3jedi_covar_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 
 call random(xout)
 

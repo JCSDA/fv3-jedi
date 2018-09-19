@@ -10,8 +10,7 @@
 #include <cmath>
 #include "src/ErrorCovarianceFV3JEDI.h"
 #include "oops/util/Logger.h"
-#include "FieldsFV3JEDI.h"
-#include "Fortran.h"
+#include "ErrorCovarianceFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "StateFV3JEDI.h"
@@ -52,8 +51,8 @@ void ErrorCovarianceFV3JEDI::linearize(const StateFV3JEDI &,
 void ErrorCovarianceFV3JEDI::multiply(const IncrementFV3JEDI & dxin,
                                       IncrementFV3JEDI & dxout) const {
     dxout = dxin;
-//  fv3jedi_b_mult_f90(keyFtnConfig_, dxin.fields().toFortran(),
-//                            dxout.fields().toFortran());
+//  fv3jedi_b_mult_f90(keyFtnConfig_, dxin.toFortran(),
+//                            dxout.toFortran());
 }
 
 // -----------------------------------------------------------------------------
@@ -61,14 +60,14 @@ void ErrorCovarianceFV3JEDI::multiply(const IncrementFV3JEDI & dxin,
 void ErrorCovarianceFV3JEDI::inverseMultiply(const IncrementFV3JEDI & dxin,
                                            IncrementFV3JEDI & dxout) const {
     dxout = dxin;
-//  fv3jedi_b_invmult_f90(keyFtnConfig_, dxin.fields().toFortran(),
-//                               dxout.fields().toFortran());
+//  fv3jedi_b_invmult_f90(keyFtnConfig_, dxin.toFortran(),
+//                               dxout.toFortran());
 }
 
 // -----------------------------------------------------------------------------
 
 void ErrorCovarianceFV3JEDI::randomize(IncrementFV3JEDI & dx) const {
-  fv3jedi_b_randomize_f90(keyFtnConfig_, dx.fields().toFortran());
+  fv3jedi_b_randomize_f90(keyFtnConfig_, dx.toFortran());
 }
 
 // -----------------------------------------------------------------------------

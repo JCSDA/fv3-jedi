@@ -11,7 +11,7 @@
 #include <ostream>
 #include <string>
 
-#include "Fortran.h"
+#include "VarChaC2MFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 #include "eckit/config/Configuration.h"
 #include "oops/util/Printable.h"

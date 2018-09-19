@@ -15,6 +15,7 @@
 #include "src/IncrementFV3JEDI.h"
 #include "src/StateFV3JEDI.h"
 #include "oops/util/Logger.h"
+#include "VarChaC2MFV3JEDIFortran.h"
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
@@ -26,8 +27,8 @@ VarChaC2MFV3JEDI::VarChaC2MFV3JEDI(const StateFV3JEDI & bg,
 {
     const eckit::Configuration * configc = &conf;
     fv3jedi_varcha_c2m_setup_f90(keyFtnConfig_, geom_->toFortran(),
-                                 bg.fields().toFortran(),
-                                 fg.fields().toFortran(),
+                                 bg.toFortran(),
+                                 fg.toFortran(),
                                  &configc);
     oops::Log::trace() << "VarChaC2MFV3JEDI created" << std::endl;
 }
@@ -40,22 +41,22 @@ VarChaC2MFV3JEDI::~VarChaC2MFV3JEDI() {
 void VarChaC2MFV3JEDI::multiply(const IncrementFV3JEDI & dxa,
                                 IncrementFV3JEDI & dxm) const {
   fv3jedi_varcha_c2m_multiply_f90(keyFtnConfig_, geom_->toFortran(),
-                                  dxa.fields().toFortran(),
-                                  dxm.fields().toFortran());
+                                  dxa.toFortran(),
+                                  dxm.toFortran());
 }
 // -----------------------------------------------------------------------------
 void VarChaC2MFV3JEDI::multiplyInverse(const IncrementFV3JEDI & dxm,
                                        IncrementFV3JEDI & dxa) const {
   fv3jedi_varcha_c2m_multiplyinverse_f90(keyFtnConfig_, geom_->toFortran(),
-                                         dxm.fields().toFortran(),
-                                         dxa.fields().toFortran());
+                                         dxm.toFortran(),
+                                         dxa.toFortran());
 }
 // -----------------------------------------------------------------------------
 void VarChaC2MFV3JEDI::multiplyAD(const IncrementFV3JEDI & dxm,
                                        IncrementFV3JEDI & dxa) const {
   fv3jedi_varcha_c2m_multiplyadjoint_f90(keyFtnConfig_, geom_->toFortran(),
-                                         dxm.fields().toFortran(),
-                                         dxa.fields().toFortran());
+                                         dxm.toFortran(),
+                                         dxa.toFortran());
 }
 // -----------------------------------------------------------------------------
 void VarChaC2MFV3JEDI::multiplyInverseAD(const IncrementFV3JEDI & dxa,

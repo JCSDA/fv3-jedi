@@ -8,7 +8,7 @@
 #include <fstream>
 
 #include "src/RunFV3JEDI.h"
-#include "Fortran.h"
+#include "RunFV3JEDIFortran.h"
 #include "oops/util/Logger.h"
 #include "oops/runs/Run.h"
 #include "eckit/config/Configuration.h"

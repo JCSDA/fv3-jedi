@@ -11,7 +11,7 @@
 #include <ostream>
 #include <string>
 
-#include "Fortran.h"
+#include "GeometryFV3JEDIFortran.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 

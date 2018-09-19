@@ -9,6 +9,7 @@
 #define SRC_RUNFV3JEDI_H_
 
 #include "oops/runs/Run.h"
+#include "RunFV3JEDIFortran.h"
 
 namespace fv3jedi {
 

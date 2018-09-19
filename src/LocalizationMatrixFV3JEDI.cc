@@ -10,6 +10,7 @@
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "eckit/config/Configuration.h"
+#include "LocalizationMatrixFV3JEDIFortran.h"
 
 // -----------------------------------------------------------------------------
 namespace fv3jedi {

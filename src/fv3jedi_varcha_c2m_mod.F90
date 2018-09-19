@@ -5,8 +5,9 @@
 
 module fv3jedi_varcha_c2m_mod
 
-use fv3jedi_fields_mod, only: fv3jedi_field
-use fv3jedi_geom_mod,   only: fv3jedi_geom
+use fv3jedi_state_mod, only: fv3jedi_state
+use fv3jedi_increment_mod, only: fv3jedi_increment
+use fv3jedi_geom_mod, only: fv3jedi_geom
 use iso_c_binding
 use config_mod
 use kinds
@@ -49,8 +50,8 @@ use pressure_vt_mod, only: delp_to_pe_p_logp
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self    !< Change variable structure
-type(fv3jedi_field), target, intent(in) :: bg
-type(fv3jedi_field), target, intent(in) :: fg
+type(fv3jedi_state), target, intent(in) :: bg
+type(fv3jedi_state), target, intent(in) :: fg
 type(fv3jedi_geom), target,  intent(in) :: geom
 type(c_ptr),                 intent(in) :: c_conf  !< Configuration
 
@@ -114,8 +115,8 @@ subroutine fv3jedi_varcha_c2m_multiply(self,geom,xctl,xmod)
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(inout)  :: geom
-type(fv3jedi_field), intent(inout) :: xctl
-type(fv3jedi_field), intent(inout) :: xmod
+type(fv3jedi_increment), intent(inout) :: xctl
+type(fv3jedi_increment), intent(inout) :: xmod
 
 !Tangent linear of analysis (control) to model variables
 call control_to_model_tlm(geom,xctl%psi,xctl%chi,xctl%tv,xctl%ps  ,xctl%qc, &
@@ -131,8 +132,8 @@ subroutine fv3jedi_varcha_c2m_multiplyadjoint(self,geom,xmod,xctl)
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(inout)  :: geom
-type(fv3jedi_field), intent(inout) :: xmod
-type(fv3jedi_field), intent(inout) :: xctl
+type(fv3jedi_increment), intent(inout) :: xmod
+type(fv3jedi_increment), intent(inout) :: xctl
 
 !Adjoint of analysis (control) to model variables
 call control_to_model_adm(geom,xctl%psi,xctl%chi,xctl%tv,xctl%ps  ,xctl%qc, &
@@ -152,8 +153,8 @@ use moisture_vt_mod, only: q_to_rh_tl
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(inout)  :: geom
-type(fv3jedi_field), intent(inout) :: xmod
-type(fv3jedi_field), intent(inout) :: xctr
+type(fv3jedi_increment), intent(inout) :: xmod
+type(fv3jedi_increment), intent(inout) :: xctr
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
@@ -186,7 +187,7 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 !call uv_to_vortdivg(geom,xmod%ud,xmod%vd,ua,va,vort,divg)
 !
 !!> Poisson solver for vorticity and divergence to psi and chi
-!call vortdivg_to_psichi(geom,xctr,vort,divg,xctr%psi,xctr%chi)
+!call vortdivg_to_psichi(geom,vort,divg,xctr%psi,xctr%chi)
 !
 !!> T to Tv
 !call t_to_tv_tl(geom,self%ttraj,xmod%t,self%qtraj,xmod%q)
@@ -207,8 +208,8 @@ subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint(self,geom,xctr,xmod)
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(inout)  :: geom
-type(fv3jedi_field), intent(inout) :: xctr
-type(fv3jedi_field), intent(inout) :: xmod
+type(fv3jedi_increment), intent(inout) :: xctr
+type(fv3jedi_increment), intent(inout) :: xmod
 
 !> Not implemented
 

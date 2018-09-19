@@ -9,7 +9,8 @@ use iso_c_binding
 use config_mod
 use duration_mod
 use fv3jedi_geom_mod
-use fv3jedi_fields_mod, only: fv3jedi_field 
+use fv3jedi_state_mod, only: fv3jedi_state
+use fv3jedi_increment_mod, only: fv3jedi_increment 
 use fv3jedi_trajectories
 use fv3jedi_constants
 use kinds
@@ -302,37 +303,37 @@ end subroutine model_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prepare_integration(self, flds)
+subroutine model_prepare_integration(self, state)
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_field)         :: flds
+type(fv3jedi_state)         :: state
 
 end subroutine model_prepare_integration
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prepare_integration_ad(self, flds)
+subroutine model_prepare_integration_ad(self, inc)
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_field)         :: flds
+type(fv3jedi_increment)         :: inc
 
 end subroutine model_prepare_integration_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prepare_integration_tl(self, flds)
+subroutine model_prepare_integration_tl(self, inc)
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_field)         :: flds
+type(fv3jedi_increment)         :: inc
 
 end subroutine model_prepare_integration_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate(geom, self, flds)
+subroutine model_propagate(geom, self, state)
 
 use fv_dynamics_mod, only: fv_dynamics
 use fv_dynamics_tlm_mod, only: fv_dynamics_nlm => fv_dynamics
@@ -340,7 +341,7 @@ use fv_sg_mod, only: fv_subgrid_z
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_field)         :: flds
+type(fv3jedi_state)         :: state
 type(fv3jedi_geom)          :: geom
 
 type(fv_atmos_type), pointer :: FV_Atm(:)
@@ -357,12 +358,12 @@ FV_Atm => self%FV_Atm
 
 !Copy to model variables
 !-----------------------
-call fields_to_model(flds,self)
+call state_to_model(state,self)
 
 
-!Get phis from fields, fixed for integration
+!Get phis from state, fixed for integration
 !-------------------------------------------
-call get_phi_from_flds(flds,self)
+call get_phi_from_state(state,self)
 
 
 ! Zero local variables
@@ -461,16 +462,16 @@ endif
 call nullify_domain()
 
 
-!Copy back to fields
-!-------------------
-call model_to_fields(self,flds)
+!Copy back to state
+!------------------
+call model_to_state(self,state)
 
 
 end subroutine model_propagate
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate_ad(geom, self, flds, traj)
+subroutine model_propagate_ad(geom, self, inc, traj)
 
 #ifdef TLADPRES
 use fv_dynamics_adm_mod, only: fv_dynamics_fwd, fv_dynamics_bwd
@@ -481,7 +482,7 @@ use tapenade_iter,   only: cp_iter_controls, cp_mod_ini, cp_mod_mid, cp_mod_end,
 implicit none
 
 type(fv3jedi_model), target :: self
-type(fv3jedi_field)         :: flds
+type(fv3jedi_increment)         :: inc
 type(fv3jedi_trajectory)    :: traj
 type(fv3jedi_geom)          :: geom
 
@@ -691,7 +692,7 @@ call zero_pert_vars(FV_AtmP(1))
 
 ! Copy to model variables
 ! -----------------------
-call fields_to_model_pert(flds,self)
+call inc_to_model(inc,self)
 
 
 ! Backward adjoint sweep of the dynamics
@@ -756,9 +757,9 @@ call mpp_get_boundary_ad( FV_AtmP(1)%up, FV_AtmP(1)%vp, FV_Atm(1)%domain, &
 call nullify_domain()
 
 
-! Copy back to fields 
-! -------------------
-call model_to_fields_pert(self,flds)
+! Copy back to increment 
+! ----------------------
+call model_to_inc(self,inc)
 
 
 ! Make sure everything is zero
@@ -779,7 +780,7 @@ end subroutine model_propagate_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate_tl(geom, self, flds, traj)
+subroutine model_propagate_tl(geom, self, inc, traj)
 
 #ifdef TLADPRES
 use fv_dynamics_tlm_mod, only: fv_dynamics_tlm
@@ -787,7 +788,7 @@ use fv_dynamics_tlm_mod, only: fv_dynamics_tlm
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_field)         :: flds
+type(fv3jedi_increment)         :: inc
 type(fv3jedi_trajectory)    :: traj
 type(fv3jedi_geom)          :: geom
 
@@ -867,7 +868,7 @@ call zero_pert_vars(FV_AtmP(1))
 
 !Copy to model variables
 !-----------------------
-call fields_to_model_pert(flds,self)
+call inc_to_model(inc,self)
 
 
 !Edge of pert always needs to be filled
@@ -934,9 +935,9 @@ call fv_dynamics_tlm(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncns
 call nullify_domain()
 
 
-! Copy back to fields
-! -------------------
-call model_to_fields_pert(self,flds)
+! Copy back to increment
+! ----------------------
+call model_to_inc(self,inc)
 
 
 ! Make sure everything is zero
@@ -949,17 +950,17 @@ end subroutine model_propagate_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prop_traj(self, flds, traj)
+subroutine model_prop_traj(self, state, traj)
 
 implicit none
 type(fv3jedi_model)      :: self
-type(fv3jedi_field)      :: flds
+type(fv3jedi_state)      :: state
 type(fv3jedi_trajectory) :: traj
 
-call fields_to_model(flds,self)
+call state_to_model(state,self)
 
 self%FV_Atm(1)%phis = 0.0
-self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%phis(self%isc:self%iec,self%jsc:self%jec)
+self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = state%phis(self%isc:self%iec,self%jsc:self%jec)
 
 call set_traj( traj, &
                self%isc,self%iec,self%jsc,self%jec, &
@@ -984,10 +985,10 @@ end subroutine model_wipe_traj
 
 ! ------------------------------------------------------------------------------
 
-subroutine fields_to_model(flds,self)
+subroutine state_to_model(state,self)
 
 implicit none
-type(fv3jedi_field), intent(in)    :: flds
+type(fv3jedi_state), intent(in)    :: state
 type(fv3jedi_model), intent(inout) :: self
 
 integer :: isc,iec,jsc,jec
@@ -1009,28 +1010,28 @@ self%FV_Atm(1)%w    = 0.0
 self%FV_Atm(1)%delz = 0.0
 
 !Only copy compute grid incase of halo differences
-self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:)            = flds%ud  (isc:iec  ,jsc:jec+1,:)
-self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:)            = flds%vd  (isc:iec+1,jsc:jec  ,:)
-self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:)            = flds%t   (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:)            = flds%delp(isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q ) = flds%q   (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi) = flds%qi  (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql) = flds%ql  (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3) = flds%o3  (isc:iec  ,jsc:jec  ,:)
-if (.not. flds%hydrostatic) then
-   self%FV_Atm(1)%delz(isc:iec,jsc:jec,:) = flds%delz(isc:iec,jsc:jec,:)
-   self%FV_Atm(1)%w   (isc:iec,jsc:jec,:) = flds%w   (isc:iec,jsc:jec,:)
+self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:)            = state%ud  (isc:iec  ,jsc:jec+1,:)
+self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:)            = state%vd  (isc:iec+1,jsc:jec  ,:)
+self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:)            = state%t   (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:)            = state%delp(isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q ) = state%q   (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi) = state%qi  (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql) = state%ql  (isc:iec  ,jsc:jec  ,:)
+self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3) = state%o3  (isc:iec  ,jsc:jec  ,:)
+if (.not. state%hydrostatic) then
+   self%FV_Atm(1)%delz(isc:iec,jsc:jec,:) = state%delz(isc:iec,jsc:jec,:)
+   self%FV_Atm(1)%w   (isc:iec,jsc:jec,:) = state%w   (isc:iec,jsc:jec,:)
 endif
 
-end subroutine fields_to_model
+end subroutine state_to_model
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_fields(self,flds)
+subroutine model_to_state(self,state)
 
 implicit none
 type(fv3jedi_model), intent(in   ) :: self
-type(fv3jedi_field), intent(inout) :: flds
+type(fv3jedi_state), intent(inout) :: state
 
 integer :: isc,iec,jsc,jec
 
@@ -1042,43 +1043,43 @@ jec = self%FV_Atm(1)%bd%jec
 !NOTE: while the variable name is pt, FV3 expects dry temperature
 
 !To zero the halos
-flds%ud   = 0.0
-flds%vd   = 0.0
-flds%t    = 0.0
-flds%delp = 0.0
-flds%q    = 0.0
-if (.not. flds%hydrostatic) then
-   flds%delz = 0.0
-   flds%w    = 0.0
+state%ud   = 0.0
+state%vd   = 0.0
+state%t    = 0.0
+state%delp = 0.0
+state%q    = 0.0
+if (.not. state%hydrostatic) then
+   state%delz = 0.0
+   state%w    = 0.0
 endif
-flds%ua    = 0.0
-flds%va    = 0.0
+state%ua    = 0.0
+state%va    = 0.0
 
 !Only copy compute grid incase of halo differences
-flds%ud  (isc:iec  ,jsc:jec+1,:) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
-flds%vd  (isc:iec+1,jsc:jec  ,:) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
-flds%t   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
-flds%delp(isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
-flds%q   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q)
-flds%qi  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi)
-flds%ql  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql)
-flds%o3  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3)
-if (.not. flds%hydrostatic) then
-  flds%delz(isc:iec,jsc:jec,:) = self%FV_Atm(1)%delz(isc:iec,jsc:jec,:)
-  flds%w   (isc:iec,jsc:jec,:) = self%FV_Atm(1)%w   (isc:iec,jsc:jec,:)
+state%ud  (isc:iec  ,jsc:jec+1,:) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
+state%vd  (isc:iec+1,jsc:jec  ,:) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
+state%t   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
+state%delp(isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
+state%q   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q)
+state%qi  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi)
+state%ql  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql)
+state%o3  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3)
+if (.not. state%hydrostatic) then
+  state%delz(isc:iec,jsc:jec,:) = self%FV_Atm(1)%delz(isc:iec,jsc:jec,:)
+  state%w   (isc:iec,jsc:jec,:) = self%FV_Atm(1)%w   (isc:iec,jsc:jec,:)
 endif
-flds%ua(isc:iec,jsc:jec,:) = self%FV_Atm(1)%ua(isc:iec,jsc:jec,:)
-flds%va(isc:iec,jsc:jec,:) = self%FV_Atm(1)%va(isc:iec,jsc:jec,:)
+state%ua(isc:iec,jsc:jec,:) = self%FV_Atm(1)%ua(isc:iec,jsc:jec,:)
+state%va(isc:iec,jsc:jec,:) = self%FV_Atm(1)%va(isc:iec,jsc:jec,:)
 
 
-end subroutine model_to_fields
+end subroutine model_to_state
 
 ! ------------------------------------------------------------------------------
 
-subroutine fields_to_model_pert(flds,self)
+subroutine inc_to_model(inc,self)
 
 implicit none
-type(fv3jedi_field), intent(in)    :: flds
+type(fv3jedi_increment), intent(in)    :: inc
 type(fv3jedi_model), intent(inout) :: self
 
 integer :: isc,iec,jsc,jec
@@ -1100,28 +1101,28 @@ self%FV_AtmP(1)%wp    = 0.0
 self%FV_AtmP(1)%delzp = 0.0
 
 !Only copy compute grid incase of halo differences
-self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)            = flds%ud  (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)            = flds%vd  (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = flds%t   (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = flds%delp(isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = flds%q   (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi) = flds%qi  (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql) = flds%ql  (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3) = flds%o3  (isc:iec,jsc:jec,:)
-if (.not. flds%hydrostatic) then
-   self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:) = flds%delz(isc:iec,jsc:jec,:)
-   self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = flds%w   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)            = inc%ud  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)            = inc%vd  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = inc%t   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = inc%delp(isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = inc%q   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi) = inc%qi  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql) = inc%ql  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3) = inc%o3  (isc:iec,jsc:jec,:)
+if (.not. inc%hydrostatic) then
+   self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:) = inc%delz(isc:iec,jsc:jec,:)
+   self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = inc%w   (isc:iec,jsc:jec,:)
 endif
 
-end subroutine fields_to_model_pert
+end subroutine inc_to_model
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_fields_pert(self,flds)
+subroutine model_to_inc(self,inc)
 
 implicit none
 type(fv3jedi_model), intent(in   ) :: self
-type(fv3jedi_field), intent(inout) :: flds
+type(fv3jedi_increment), intent(inout) :: inc
 
 integer :: isc,iec,jsc,jec
 
@@ -1133,53 +1134,53 @@ jec = self%FV_Atm(1)%bd%jec
 !NOTE: while the variable name is pt, FV3 expects dry temperature
 
 !To zero the halos
-flds%ud   = 0.0
-flds%vd   = 0.0
-flds%t    = 0.0
-flds%delp = 0.0
-flds%q    = 0.0
-flds%qi   = 0.0
-flds%ql   = 0.0
-flds%o3   = 0.0
-if (.not. flds%hydrostatic) then
-   flds%delz = 0.0
-   flds%w    = 0.0
+inc%ud   = 0.0
+inc%vd   = 0.0
+inc%t    = 0.0
+inc%delp = 0.0
+inc%q    = 0.0
+inc%qi   = 0.0
+inc%ql   = 0.0
+inc%o3   = 0.0
+if (.not. inc%hydrostatic) then
+   inc%delz = 0.0
+   inc%w    = 0.0
 endif
 
 !Only copy compute grid incase of halo differences
-flds%ud  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)
-flds%vd  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)
-flds%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
-flds%delp(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)
-flds%q   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q )
-flds%qi  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi)
-flds%ql  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql)
-flds%o3  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3)
-if (.not. flds%hydrostatic) then
-  flds%delz(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:)
-  flds%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
+inc%ud  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)
+inc%vd  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)
+inc%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
+inc%delp(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)
+inc%q   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q )
+inc%qi  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi)
+inc%ql  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql)
+inc%o3  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3)
+if (.not. inc%hydrostatic) then
+  inc%delz(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:)
+  inc%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
 endif
 
-end subroutine model_to_fields_pert
+end subroutine model_to_inc
 
 ! ------------------------------------------------------------------------------
 
-subroutine get_phi_from_flds(flds, self)
+subroutine get_phi_from_state(state, self)
 
 implicit none
-type(fv3jedi_field) :: flds
+type(fv3jedi_state) :: state
 type(fv3jedi_model) :: self
 
 !To zero halo
 self%FV_Atm(1)%phis = 0.0
 
-!Get compute domain from fields
-self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = flds%phis(self%isc:self%iec,self%jsc:self%jec)
+!Get compute domain from state
+self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = state%phis(self%isc:self%iec,self%jsc:self%jec)
 
 !Fill halos
 call mpp_update_domains(self%FV_Atm(1)%phis, self%FV_Atm(1)%domain, complete=.true.)
 
-end subroutine get_phi_from_flds
+end subroutine get_phi_from_state
 
 ! ------------------------------------------------------------------------------
 

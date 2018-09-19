@@ -8,7 +8,7 @@
 #include <mpi.h>
 #include "src/GetValuesTrajFV3JEDI.h"
 #include "oops/util/Logger.h"
-#include "Fortran.h"
+#include "GetValuesTrajFV3JEDIFortran.h"
 #include "eckit/config/Configuration.h"
 
 // -----------------------------------------------------------------------------

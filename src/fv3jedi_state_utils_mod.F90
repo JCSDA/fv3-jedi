@@ -3,19 +3,19 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Utilities for fields for the FV3JEDI model
+!> Utilities for state for the FV3JEDI model
 
-module fv3jedi_fields_utils_mod
+module fv3jedi_state_utils_mod
 
 use kinds
 use fv3jedi_vars_mod, only: fv3jedi_vars 
 
 implicit none
 private
-public fv3jedi_field
+public fv3jedi_state
 
-!> Fortran derived type to hold FV3JEDI fields
-type :: fv3jedi_field
+!> Fortran derived type to hold FV3JEDI state
+type :: fv3jedi_state
 
   type(fv3jedi_vars) :: vars 
 
@@ -57,7 +57,7 @@ type :: fv3jedi_field
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qlc    ! cloud liquid water control variable
   real(kind=kind_real), allocatable, dimension(:,:,:) :: o3c    ! ozone control variable
 
-  !2D Fields for CRTM
+  !2D State for CRTM
   integer             , allocatable, dimension(:,:)   :: slmsk
   real(kind=kind_real), allocatable, dimension(:,:)   :: sheleg
   real(kind=kind_real), allocatable, dimension(:,:)   :: tsea
@@ -71,6 +71,6 @@ type :: fv3jedi_field
   real(kind=kind_real), allocatable, dimension(:,:)   :: v_srf
   real(kind=kind_real), allocatable, dimension(:,:)   :: f10m
 
-end type fv3jedi_field
+end type fv3jedi_state
 
-end module fv3jedi_fields_utils_mod
+end module fv3jedi_state_utils_mod

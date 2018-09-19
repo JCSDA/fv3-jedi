@@ -21,7 +21,7 @@
 #include "oops/util/Printable.h"
 
 #include "FV3JEDITraits.h"
-#include "Fortran.h"
+#include "ModelFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 
 // Forward declarations
@@ -31,7 +31,7 @@ namespace eckit {
 
 namespace fv3jedi {
   class ModelBiasFV3JEDI;
-  class FieldsFV3JEDI;
+  class IncrementFV3JEDI;
   class StateFV3JEDI;
 
 // -----------------------------------------------------------------------------

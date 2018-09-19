@@ -1,4 +1,4 @@
-module fv3jedi_fields_io_mod
+module fv3jedi_state_io_mod
 
 use config_mod
 use iso_c_binding
@@ -6,7 +6,7 @@ use datetime_mod
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds, only: kind_real
-use fv3jedi_fields_utils_mod, only: fv3jedi_field
+use fv3jedi_state_utils_mod, only: fv3jedi_state
 
 !For FMS like restarts
 use mpp_domains_mod,   only: EAST, NORTH
@@ -38,7 +38,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_field), intent(inout) :: fld      !< Fields
+type(fv3jedi_state), intent(inout) :: fld      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -151,7 +151,7 @@ integer :: read_crtm_surface
  call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
  call free_restart_type(Tr_restart)
 
- !Register and read surface fields needed for crtm calculation
+ !Register and read surface state needed for crtm calculation
  !------------------------------------------------------------
  read_crtm_surface = 0
  if (config_element_exists(c_conf,"read_crtm_surface")) then
@@ -236,7 +236,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_field), intent(in)    :: fld      !< Fields
+type(fv3jedi_state), intent(in)    :: fld      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -327,7 +327,7 @@ character(len=255) :: datapath_out
  id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', fld%delp, &
                                       domain=geom%domain )
 
- !Nonhydrostatic fields
+ !Nonhydrostatic state
  if (.not. fld%hydrostatic) then
      id_restart =  register_restart_field( Fv_restart, filename_core, 'W', fld%w, &
                                            domain=geom%domain )
@@ -396,7 +396,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_field), intent(inout) :: fld      !< Fields
+type(fv3jedi_state), intent(inout) :: fld      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -415,7 +415,7 @@ character(len=6) :: ctime
 integer(kind=c_int) :: idate, isecs
 character(len=20) :: sdate, validitydate
 
-real(kind=kind_real), allocatable :: field2d_global(:,:)
+real(kind=kind_real), allocatable :: state2d_global(:,:)
 
 integer, allocatable :: istart(:), icount(:)
 
@@ -535,7 +535,7 @@ integer :: isc,iec,jsc,jec
 
  !> Read the state level by level
  !> -----------------------------
- allocate(field2d_global(im,jm))
+ allocate(state2d_global(im,jm))
 
  !> starts and counts
  deallocate(istart,icount)
@@ -555,72 +555,72 @@ integer :: isc,iec,jsc,jec
    !fld%ud (D-Grid winds, nonlinear model only)
    ncstat = nf90_inq_varid (ncid, 'u', varid)
    if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   fld%ud(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%ud(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%vd (D-Grid winds, nonlinear model only)
    ncstat = nf90_inq_varid (ncid, 'v', varid)
    if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   fld%vd(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%vd(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%ua (A-Grid winds, increment)
    ncstat = nf90_inq_varid (ncid, 'ua', varid)
    if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
-   fld%ua(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%ua(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%va (A-Grid winds, increment)
    ncstat = nf90_inq_varid (ncid, 'va', varid)
    if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
-   fld%va(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%va(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%t
    ncstat = nf90_inq_varid (ncid, 'T', varid)
    if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
-   fld%t(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%t(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%delp
    ncstat = nf90_inq_varid (ncid, 'delp', varid)
    if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
-   fld%delp(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%delp(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%q (sphum)
    ncstat = nf90_inq_varid (ncid, 'sphum', varid)
    if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
-   fld%q(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%q(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%qi (liq_wat)
    ncstat = nf90_inq_varid (ncid, 'liq_wat', varid)
    if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
-   fld%qi(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%qi(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%ql (ice_wat)
    ncstat = nf90_inq_varid (ncid, 'ice_wat', varid)
    if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
-   fld%ql(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%ql(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
    !fld%o3 (o3mr)
    ncstat = nf90_inq_varid (ncid, 'o3mr', varid)
    if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
-   fld%o3(isc:iec,jsc:jec,l) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   fld%o3(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
  enddo
 
@@ -639,9 +639,9 @@ integer :: isc,iec,jsc,jec
  !fld%phis
  ncstat = nf90_inq_varid (ncid, 'phis', varid)
  if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- ncstat = nf90_get_var(ncid, varid, field2d_global, istart, icount)
+ ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
  if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- fld%phis(isc:iec,jsc:jec) = field2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+ fld%phis(isc:iec,jsc:jec) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
  !Close this file
  ncstat = nf90_close(ncid)
@@ -651,7 +651,7 @@ integer :: isc,iec,jsc,jec
  !TODO: ADD THE SURFACE VARIABLES AND TRANSFORM THEM TO FV3FGFS STYLE
 
 
- deallocate(field2d_global)
+ deallocate(state2d_global)
  deallocate(istart,icount)
 
 
@@ -665,7 +665,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_field), intent(in)    :: fld      !< Fields
+type(fv3jedi_state), intent(in)    :: fld      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -674,4 +674,4 @@ end subroutine write_geos_restart
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_fields_io_mod
+end module fv3jedi_state_io_mod

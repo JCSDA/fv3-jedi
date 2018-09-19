@@ -5,7 +5,7 @@
 
 module fv3jedi_covariance_mod
 
-use fv3jedi_fields_mod, only: fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use iso_c_binding
 use config_mod
@@ -68,7 +68,7 @@ subroutine fv3jedi_covar_sqrt_inv_mult(self, xctl, xincr)
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
 real, intent(inout) :: xctl
-type(fv3jedi_field), intent(in)    :: xincr
+type(fv3jedi_increment), intent(in)    :: xincr
 
 end subroutine fv3jedi_covar_sqrt_inv_mult
 
@@ -80,7 +80,7 @@ subroutine fv3jedi_covar_sqrt_inv_mult_ad(self, xctl, xincr)
 
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
-type(fv3jedi_field), intent(inout) :: xincr
+type(fv3jedi_increment), intent(inout) :: xincr
 real, intent(in) :: xctl
 
 end subroutine fv3jedi_covar_sqrt_inv_mult_ad
@@ -93,7 +93,7 @@ subroutine fv3jedi_covar_sqrt_mult(self, xincr, xctl)
 
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
-type(fv3jedi_field), intent(inout) :: xincr
+type(fv3jedi_increment), intent(inout) :: xincr
 real, intent(in) :: xctl
 
 end subroutine fv3jedi_covar_sqrt_mult
@@ -107,7 +107,7 @@ subroutine fv3jedi_covar_sqrt_mult_ad(self, xincr, xctl)
 implicit none
 type(fv3jedi_covar), intent(in)    :: self
 real, intent(inout) :: xctl
-type(fv3jedi_field), intent(in)    :: xincr
+type(fv3jedi_increment), intent(in)    :: xincr
 
 end subroutine fv3jedi_covar_sqrt_mult_ad
 

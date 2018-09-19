@@ -11,7 +11,6 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "oops/util/Logger.h"
-#include "Fortran.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "FV3JEDITraits.h"
@@ -19,6 +18,7 @@
 #include "oops/util/DateTime.h"
 #include "oops/util/abor1_cpp.h"
 #include "UtilitiesFV3JEDI.h"
+#include "ModelFV3JEDIFortran.h"
 
 namespace fv3jedi {
 
@@ -51,8 +51,8 @@ void TlmIdFV3JEDI::setTrajectory(const StateFV3JEDI &, StateFV3JEDI &,
                                  const ModelBiasFV3JEDI &) {}
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
-  fv3jedi_model_prepare_integration_tl_f90(keyConfig_, dx.fields().toFortran());
-  oops::Log::debug() << "TlmIdFV3JEDI::initializTL" << dx.fields() << std::endl;
+  fv3jedi_model_prepare_integration_tl_f90(keyConfig_, dx.toFortran());
+  oops::Log::debug() << "TlmIdFV3JEDI::initializTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::stepTL(IncrementFV3JEDI & dx,
@@ -61,11 +61,11 @@ void TlmIdFV3JEDI::stepTL(IncrementFV3JEDI & dx,
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::finalizeTL(IncrementFV3JEDI & dx) const {
-  oops::Log::debug() << "TlmIdFV3JEDI::finalizeTL" << dx.fields() << std::endl;
+  oops::Log::debug() << "TlmIdFV3JEDI::finalizeTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::initializeAD(IncrementFV3JEDI & dx) const {
-  oops::Log::debug() << "TlmIdFV3JEDI::initializAD" << dx.fields() << std::endl;
+  oops::Log::debug() << "TlmIdFV3JEDI::initializAD" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::stepAD(IncrementFV3JEDI & dx,
@@ -74,8 +74,8 @@ void TlmIdFV3JEDI::stepAD(IncrementFV3JEDI & dx,
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::finalizeAD(IncrementFV3JEDI & dx) const {
-  fv3jedi_model_prepare_integration_ad_f90(keyConfig_, dx.fields().toFortran());
-  oops::Log::debug() << "TlmIdFV3JEDI::finalizeAD" << dx.fields() << std::endl;
+  fv3jedi_model_prepare_integration_ad_f90(keyConfig_, dx.toFortran());
+  oops::Log::debug() << "TlmIdFV3JEDI::finalizeAD" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::print(std::ostream & os) const {

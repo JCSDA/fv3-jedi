@@ -10,7 +10,7 @@ subroutine c_fv3jedi_varcha_c2m_setup(c_key_self, c_key_geom, c_key_state_bg, c_
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
-use fv3jedi_fields_mod
+use fv3jedi_state_mod
 use fv3jedi_geom_mod
 
 implicit none
@@ -21,16 +21,16 @@ integer(c_int), intent(in)    :: c_key_geom     !< Geom key
 type(c_ptr),    intent(in)    :: c_conf         !< Configuration
 
 type(fv3jedi_varcha_c2m), pointer :: self
-type(fv3jedi_field), pointer :: bg
-type(fv3jedi_field), pointer :: fg
+type(fv3jedi_state), pointer :: bg
+type(fv3jedi_state), pointer :: fg
 type(fv3jedi_geom), pointer :: geom
 
 call fv3jedi_varcha_c2m_registry%init()
 call fv3jedi_varcha_c2m_registry%add(c_key_self)
 call fv3jedi_varcha_c2m_registry%get(c_key_self, self)
 
-call fv3jedi_field_registry%get(c_key_state_bg,bg)
-call fv3jedi_field_registry%get(c_key_state_fg,fg)
+call fv3jedi_state_registry%get(c_key_state_bg,bg)
+call fv3jedi_state_registry%get(c_key_state_fg,fg)
 
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
@@ -64,7 +64,7 @@ subroutine c_fv3jedi_varcha_c2m_multiply(c_key_self, c_key_geom, c_key_in, c_key
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
 use kinds
 use fv3jedi_geom_mod
 
@@ -75,13 +75,13 @@ integer(c_int), intent(in) :: c_key_in
 integer(c_int), intent(in) :: c_key_out
 
 type(fv3jedi_varcha_c2m), pointer :: self
-type(fv3jedi_field), pointer :: xin
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xin
+type(fv3jedi_increment), pointer :: xout
 type(fv3jedi_geom), pointer :: geom
 
 call fv3jedi_varcha_c2m_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_in,xin)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_in,xin)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
 call fv3jedi_varcha_c2m_multiply(self,geom,xin,xout)
@@ -95,7 +95,7 @@ subroutine c_fv3jedi_varcha_c2m_multiplyadjoint(c_key_self, c_key_geom, c_key_in
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
 use kinds
 use fv3jedi_geom_mod
 
@@ -106,13 +106,13 @@ integer(c_int), intent(in) :: c_key_in
 integer(c_int), intent(in) :: c_key_out
 
 type(fv3jedi_varcha_c2m), pointer :: self
-type(fv3jedi_field), pointer :: xin
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xin
+type(fv3jedi_increment), pointer :: xout
 type(fv3jedi_geom), pointer :: geom
 
 call fv3jedi_varcha_c2m_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_in,xin)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_in,xin)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
 call fv3jedi_varcha_c2m_multiplyadjoint(self,geom,xin,xout)
@@ -128,7 +128,7 @@ subroutine c_fv3jedi_varcha_c2m_multiplyinverse(c_key_self, c_key_geom, c_key_in
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
 use kinds
 use fv3jedi_geom_mod
 
@@ -139,13 +139,13 @@ integer(c_int), intent(in) :: c_key_in
 integer(c_int), intent(in) :: c_key_out
 
 type(fv3jedi_varcha_c2m), pointer :: self
-type(fv3jedi_field), pointer :: xin
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xin
+type(fv3jedi_increment), pointer :: xout
 type(fv3jedi_geom), pointer :: geom
 
 call fv3jedi_varcha_c2m_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_in,xin)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_in,xin)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
 call fv3jedi_varcha_c2m_multiplyinverse(self,geom,xin,xout)
@@ -159,7 +159,7 @@ subroutine c_fv3jedi_varcha_c2m_multiplyinverseadjoint(c_key_self, c_key_geom, c
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
-use fv3jedi_fields_mod, only: fv3jedi_field_registry, fv3jedi_field
+use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
 use kinds
 use fv3jedi_geom_mod
 
@@ -170,13 +170,13 @@ integer(c_int), intent(in) :: c_key_in
 integer(c_int), intent(in) :: c_key_out
 
 type(fv3jedi_varcha_c2m), pointer :: self
-type(fv3jedi_field), pointer :: xin
-type(fv3jedi_field), pointer :: xout
+type(fv3jedi_increment), pointer :: xin
+type(fv3jedi_increment), pointer :: xout
 type(fv3jedi_geom), pointer :: geom
 
 call fv3jedi_varcha_c2m_registry%get(c_key_self,self)
-call fv3jedi_field_registry%get(c_key_in,xin)
-call fv3jedi_field_registry%get(c_key_out,xout)
+call fv3jedi_increment_registry%get(c_key_in,xin)
+call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
 call fv3jedi_varcha_c2m_multiplyinverseadjoint(self,geom,xin,xout)
