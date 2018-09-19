@@ -45,7 +45,7 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
                            const oops::Variables & varsin,
                            const eckit::Configuration & file):
-  vars_(varsin) {
+  geom_(new GeometryFV3JEDI(geom)), vars_(varsin) {
   const std::vector<std::string> *vv;
 
   if (file.has("variables"))
@@ -55,7 +55,8 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
 
   oops::Variables vars(*vv);
 
-  new StateFV3JEDI(geom, vars, util::DateTime());
+  const eckit::Configuration * cvars = &vars_.toFortran();
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &cvars);
 
   const eckit::Configuration * conf = &file;
   util::DateTime * dtp = &time_;
@@ -64,8 +65,7 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
     stageFv3Files(file);
     fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), &conf, &dtp);
     removeFv3Files();
-  }
-  else {
+  } else {
     fv3jedi_state_read_file_f90(geom_->toFortran(), keyState_, &conf, &dtp);
   }
 

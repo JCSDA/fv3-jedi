@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "src/IncrementFV3JEDI.h"
 #include "IncrementFV3JEDIFortran.h"
@@ -90,6 +91,7 @@ void IncrementFV3JEDI::diff(const StateFV3JEDI & x1, const StateFV3JEDI & x2) {
 IncrementFV3JEDI & IncrementFV3JEDI::operator=(const IncrementFV3JEDI & rhs) {
   fv3jedi_increment_copy_f90(keyInc_, rhs.keyInc_);
   time_ = rhs.time_;
+  return *this;
 }
 // -----------------------------------------------------------------------------
 IncrementFV3JEDI & IncrementFV3JEDI::operator+=(const IncrementFV3JEDI & dx) {
