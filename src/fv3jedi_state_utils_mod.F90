@@ -19,7 +19,7 @@ type :: fv3jedi_state
 
   type(fv3jedi_vars) :: vars 
 
-  !Local copies of grid
+  !Local copies of grid for convenience
   integer :: isc, iec, jsc, jec
   integer :: isd, ied, jsd, jed
   integer :: npx, npy, npz
@@ -28,7 +28,6 @@ type :: fv3jedi_state
   integer :: calendar_type
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
-  logical :: am_i_root_pe 
 
   !State/increment variables
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ud     ! D-grid (grid tangential) zonal wind (m/s)
@@ -45,19 +44,7 @@ type :: fv3jedi_state
   real(kind=kind_real), allocatable, dimension(:,:,:) :: delz   ! layer thickness (meters)
   real(kind=kind_real), allocatable, dimension(:,:)   :: phis   ! Surface geopotential (g*Z_surf)
 
-  !Control/analysis variables
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: vort   ! Vorticity
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: divg   ! Divergence
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: psi    ! Stream function
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: chi    ! Velocity potential
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: tv     ! Virtual temperature
-  real(kind=kind_real), allocatable, dimension(:,:)   :: ps     ! Surface temperature
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qc     ! humidity control variable 
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qic    ! cloud liquid ice control variable
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qlc    ! cloud liquid water control variable
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: o3c    ! ozone control variable
-
-  !2D State for CRTM
+  !2D state for CRTM
   integer             , allocatable, dimension(:,:)   :: slmsk
   real(kind=kind_real), allocatable, dimension(:,:)   :: sheleg
   real(kind=kind_real), allocatable, dimension(:,:)   :: tsea

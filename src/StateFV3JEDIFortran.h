@@ -42,7 +42,8 @@ extern "C" {
                               const double &,
                               const F90state &);
 
-  void fv3jedi_state_add_incr_f90(const F90state &,
+  void fv3jedi_state_add_incr_f90(const F90geom &,
+                                  const F90state &,
                                   const F90inc &);
 
   void fv3jedi_state_change_resol_f90(const F90state &,

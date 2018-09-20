@@ -3,6 +3,7 @@ module fv3jedi_increment_io_mod
 use config_mod
 use iso_c_binding
 use datetime_mod
+use fckit_log_module, only : log
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds, only: kind_real
@@ -25,7 +26,7 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_fms_restart(geom, fld, c_conf, vdate)
+subroutine read_fms_restart(geom, inc, c_conf, vdate)
 
 use iso_c_binding
 use datetime_mod
@@ -38,7 +39,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_increment), intent(inout) :: fld  !< Increment
+type(fv3jedi_increment), intent(inout) :: inc  !< Increment
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -99,35 +100,25 @@ integer :: read_crtm_surface
 
  ! Register the variables that should be read
  ! ------------------------------------------
- !D-Grid winds, nonlinear model only
- id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%ud, &
-              domain=geom%domain, position=NORTH)
- id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%vd, &
-              domain=geom%domain, position=EAST)
-
- !A-Grid winds, increment
- id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%ua, &
+ !A-Grid winds
+ id_restart = register_restart_field(Fv_restart, filename_core, 'ua', inc%ua, &
                                      domain=geom%domain)
- id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%va, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'va', inc%va, &
                                      domain=geom%domain)
-
- !phis
- id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%phis, &
-              domain=geom%domain)
 
  !Temperature
- id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%t, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'T', inc%t, &
               domain=geom%domain)
 
  !Pressure thickness
- id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%delp, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', inc%delp, &
               domain=geom%domain)
 
  !Nonhydrostatic variables
- if (.not. fld%hydrostatic) then
-    id_restart =  register_restart_field(Fv_restart, filename_core, 'W', fld%w, &
+ if (.not. inc%hydrostatic) then
+    id_restart =  register_restart_field(Fv_restart, filename_core, 'W', inc%w, &
                   domain=geom%domain)
-    id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%delz, &
+    id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', inc%delz, &
                   domain=geom%domain)
  endif
 
@@ -139,61 +130,18 @@ integer :: read_crtm_surface
 
  !Register and read tracers
  !-------------------------
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'sphum'  , fld%q , &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'sphum'  , inc%q , &
                                      domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'ice_wat', fld%qi, &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'ice_wat', inc%qi, &
                                      domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'liq_wat', fld%ql, &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'liq_wat', inc%ql, &
                                      domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'o3mr'   , fld%o3, &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'o3mr'   , inc%o3, &
                                      domain=geom%domain)
 
  call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
  call free_restart_type(Tr_restart)
 
- !Register and read surface fields needed for crtm calculation
- !------------------------------------------------------------
- read_crtm_surface = 0
- if (config_element_exists(c_conf,"read_crtm_surface")) then
-   read_crtm_surface = config_get_int(c_conf,"read_crtm_surface")
- endif
-
- if (read_crtm_surface == 1) then
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%slmsk , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%sheleg, domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%tsea  , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%vtype , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%stype , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%vfrac , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%stc   , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%smc   , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%snwdph, domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%f10m  , domain=geom%domain)
-
-   call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
-   call free_restart_type(Sf_restart)
-
-   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%u_srf , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%v_srf , domain=geom%domain)
-
-   call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
-   call free_restart_type(Sf_restart)
-   fld%havecrtmfields = .true.
- else
-   fld%havecrtmfields = .false.
-   fld%slmsk  = 0.0_kind_real
-   fld%sheleg = 0.0_kind_real
-   fld%tsea   = 0.0_kind_real
-   fld%vtype  = 0.0_kind_real
-   fld%stype  = 0.0_kind_real
-   fld%vfrac  = 0.0_kind_real
-   fld%stc    = 0.0_kind_real
-   fld%smc    = 0.0_kind_real
-   fld%u_srf  = 0.0_kind_real
-   fld%u_srf  = 0.0_kind_real
-   fld%v_srf  = 0.0_kind_real
-   fld%f10m   = 0.0_kind_real
- endif
 
  ! Get dates from file
  !--------------------
@@ -206,23 +154,17 @@ integer :: read_crtm_surface
  read(iounit, '(6i6)') date_init
  read(iounit, '(6i6)') date
  close(iounit)
- fld%date = date
- fld%date_init = date_init
- fld%calendar_type = calendar_type
+ inc%date = date
+ inc%date_init = date_init
+ inc%calendar_type = calendar_type
  idate=date(1)*10000+date(2)*100+date(3)
  isecs=date(4)*3600+date(5)*60+date(6)
-
- if (geom%am_i_root_pe .and. print_read_info == 1 ) then
-    print *,'read_file: integer time from coupler.res: ',date,idate,isecs
- endif
 
  call datetime_from_ifs(vdate, idate, isecs)
  call datetime_to_string(vdate, validitydate)
 
- if (geom%am_i_root_pe .and. print_read_info == 1 ) then
-    print *,'read_file: validity date: ',trim(validitydate)
-    print *,'read_file: expected validity date: ',trim(sdate)
- endif
+ call log%info("read_file: validity date: "//trim(validitydate)) 
+ call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  return
 
@@ -230,13 +172,15 @@ end subroutine read_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_fms_restart(geom, fld, c_conf, vdate)
+subroutine write_fms_restart(geom, inc, c_conf, vdate)
+
+use mpp_mod, only: mpp_pe, mpp_root_pe
 
 implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)   :: geom
-type(fv3jedi_increment), intent(in) :: fld      !< Increment
+type(fv3jedi_increment), intent(in) :: inc      !< Increment
 type(c_ptr), intent(in)             :: c_conf   !< Configuration
 type(datetime), intent(inout)       :: vdate    !< DateTime
 
@@ -303,35 +247,25 @@ character(len=255) :: datapath_out
 
  ! Register the variables that should be written
  ! ---------------------------------------------
- !D-Grid winds, nonlinear model only
- id_restart = register_restart_field( Fv_restart, filename_core, 'u', fld%ud, &
-                                      domain=geom%domain,position=NORTH )
- id_restart = register_restart_field( Fv_restart, filename_core, 'v', fld%vd, &
-                                      domain=geom%domain,position=EAST )
-
- !A-Grid winds, increment
- id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', fld%ua, &
+ !A-Grid winds
+ id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', inc%ua, &
                                       domain=geom%domain )
- id_restart =  register_restart_field(Fv_restart, filename_core, 'va', fld%va, &
-                                      domain=geom%domain )
-
- !phis
- id_restart = register_restart_field( Fv_restart, filename_core, 'phis', fld%phis, &
+ id_restart =  register_restart_field(Fv_restart, filename_core, 'va', inc%va, &
                                       domain=geom%domain )
 
  !Temperature
- id_restart = register_restart_field( Fv_restart, filename_core, 'T', fld%t, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'T', inc%t, &
                                       domain=geom%domain )
 
  !Pressure thickness
- id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', fld%delp, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', inc%delp, &
                                       domain=geom%domain )
 
  !Nonhydrostatic increment
- if (.not. fld%hydrostatic) then
-     id_restart =  register_restart_field( Fv_restart, filename_core, 'W', fld%w, &
+ if (.not. inc%hydrostatic) then
+     id_restart =  register_restart_field( Fv_restart, filename_core, 'W', inc%w, &
                                            domain=geom%domain )
-     id_restart =  register_restart_field( Fv_restart, filename_core, 'DZ', fld%delz, &
+     id_restart =  register_restart_field( Fv_restart, filename_core, 'DZ', inc%delz, &
                                            domain=geom%domain )
  endif
 
@@ -341,9 +275,9 @@ character(len=255) :: datapath_out
  id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', geom%grid_lon, &
                                       domain=geom%domain )
 
- id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', fld%ua, &
+ id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', inc%ua, &
                                        domain=geom%domain )
- id_restart =  register_restart_field( Fv_restart, filename_core, 'va', fld%va, &
+ id_restart =  register_restart_field( Fv_restart, filename_core, 'va', inc%va, &
                                        domain=geom%domain )
 
  ! Write variables to file
@@ -354,13 +288,13 @@ character(len=255) :: datapath_out
 
  !Write tracers to file
  !---------------------
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'sphum'  , fld%q, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'sphum'  , inc%q, &
                                        domain=geom%domain )
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'ice_wat', fld%qi, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'ice_wat', inc%qi, &
                                        domain=geom%domain )
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'liq_wat', fld%ql, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'liq_wat', inc%ql, &
                                        domain=geom%domain )
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'o3mr'   , fld%o3, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'o3mr'   , inc%o3, &
                                        domain=geom%domain )
 
  call save_restart(Tr_restart, directory=trim(adjustl(datapath_out))//'RESTART')
@@ -370,12 +304,12 @@ character(len=255) :: datapath_out
  !Write date/time info in coupler.res
  !-----------------------------------
  iounit = 101
- if (geom%am_i_root_pe) then
-    print *,'write_file: date model init = ',fld%date_init
-    print *,'write_file: date model now  = ',fld%date
+ if (mpp_pe() == mpp_root_pe()) then
+    print *,'write_file: date model init = ',inc%date_init
+    print *,'write_file: date model now  = ',inc%date
     print *,'write_file: date vdate      = ',date
     open(iounit, file=trim(adjustl(datapath_out))//'RESTART/'//trim(adjustl(filename_cplr)), form='formatted')
-    write( iounit, '(i6,8x,a)' ) fld%calendar_type, &
+    write( iounit, '(i6,8x,a)' ) inc%calendar_type, &
          '(Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)'
     write( iounit, '(6i6,8x,a)' )date, &
           'Model start time:   year, month, day, hour, minute, second'
@@ -390,13 +324,13 @@ end subroutine write_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_geos_restart(geom, fld, c_conf, vdate)
+subroutine read_geos_restart(geom, inc, c_conf, vdate)
 
 implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_increment), intent(inout) :: fld  !< Increment
+type(fv3jedi_increment), intent(inout) :: inc  !< Increment
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -512,10 +446,8 @@ integer :: isc,iec,jsc,jec
 
  !> Print info to user
  sdate = config_get_string(c_conf,len(sdate),"date")
- if (geom%am_i_root_pe) then
-    print *,'read_file: validity date: ',trim(validitydate)
-    print *,'read_file: expected validity date: ',trim(sdate)
- endif
+ call log%info("read_file: validity date: "//trim(validitydate)) 
+ call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  !> Make sure file dimensions equal to geometry
  if ( im /= geom%npx-1 .or. lm /= geom%npz) then
@@ -552,123 +484,82 @@ integer :: isc,iec,jsc,jec
 
    istart(3) = l
 
-   !fld%ud (D-Grid winds, nonlinear model only)
-   ncstat = nf90_inq_varid (ncid, 'u', varid)
-   if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   fld%ud(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !fld%vd (D-Grid winds, nonlinear model only)
-   ncstat = nf90_inq_varid (ncid, 'v', varid)
-   if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   fld%vd(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !fld%ua (A-Grid winds, increment)
+   !inc%ua (A-Grid winds)
    ncstat = nf90_inq_varid (ncid, 'ua', varid)
    if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
-   fld%ua(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%ua(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%va (A-Grid winds, increment)
+   !inc%va (A-Grid winds)
    ncstat = nf90_inq_varid (ncid, 'va', varid)
    if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
-   fld%va(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%va(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%t
+   !inc%t
    ncstat = nf90_inq_varid (ncid, 'T', varid)
    if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
-   fld%t(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%t(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%delp
+   !inc%delp
    ncstat = nf90_inq_varid (ncid, 'delp', varid)
    if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
-   fld%delp(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%delp(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%q (sphum)
+   !inc%q (sphum)
    ncstat = nf90_inq_varid (ncid, 'sphum', varid)
    if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
-   fld%q(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%q(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%qi (liq_wat)
+   !inc%qi (liq_wat)
    ncstat = nf90_inq_varid (ncid, 'liq_wat', varid)
    if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
-   fld%qi(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%qi(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%ql (ice_wat)
+   !inc%ql (ice_wat)
    ncstat = nf90_inq_varid (ncid, 'ice_wat', varid)
    if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
-   fld%ql(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%ql(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%o3 (o3mr)
+   !inc%o3 (o3mr)
    ncstat = nf90_inq_varid (ncid, 'o3mr', varid)
    if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
-   fld%o3(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   inc%o3(isc:iec,jsc:jec,l) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
  enddo
 
  deallocate(istart,icount)
-
- !Two dimensional variables
- 
- allocate(istart(3))
- allocate(icount(3))
- 
- istart = 1
- icount(1) = im
- icount(2) = jm
- icount(3) = 1
- 
- !fld%phis
- ncstat = nf90_inq_varid (ncid, 'phis', varid)
- if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- ncstat = nf90_get_var(ncid, varid, increment2d_global, istart, icount)
- if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- fld%phis(isc:iec,jsc:jec) = increment2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
- !Close this file
- ncstat = nf90_close(ncid)
- if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-
-
- !TODO: ADD THE SURFACE VARIABLES AND TRANSFORM THEM TO FV3FGFS STYLE
-
-
  deallocate(increment2d_global)
- deallocate(istart,icount)
-
 
 end subroutine read_geos_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_geos_restart(geom, fld, c_conf, vdate)
+subroutine write_geos_restart(geom, inc, c_conf, vdate)
 
 implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)   :: geom
-type(fv3jedi_increment), intent(in) :: fld      !< Increment
+type(fv3jedi_increment), intent(in) :: inc      !< Increment
 type(c_ptr), intent(in)             :: c_conf   !< Configuration
 type(datetime), intent(inout)       :: vdate    !< DateTime
 
+!To do
 
 end subroutine write_geos_restart
 

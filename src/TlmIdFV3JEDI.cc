@@ -29,7 +29,7 @@ static oops::LinearModelMaker<FV3JEDITraits, TlmIdFV3JEDI>
 TlmIdFV3JEDI::TlmIdFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & tlConf)
   : keyConfig_(0), tstep_(), resol_(resol),
-     linvars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
+     linvars_(std::vector<std::string>{"ua", "va", "t", "delp",
                                        "q", "qi", "ql", "o3"})
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));

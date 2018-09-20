@@ -23,16 +23,15 @@ type :: fv3jedi_increment
   integer :: isc, iec, jsc, jec
   integer :: isd, ied, jsd, jed
   integer :: npx, npy, npz
-  logical :: havecrtmfields = .false.
   logical :: hydrostatic = .false.
   integer :: calendar_type
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
-  logical :: am_i_root_pe 
 
-  !State/increment variables
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ud     ! D-grid (grid tangential) zonal wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: vd     ! D-grid (grid tangential) meridional wind (m/s)
+  !Note: for simplicity in transforming variables the increment is A-Grid winds.
+  !This means all variables are co-located at cell centers.
+
+  !Increment variables
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ua     ! A-grid zonal wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: va     ! A-grid meridional wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: t      ! dry temperature (K)
@@ -41,13 +40,12 @@ type :: fv3jedi_increment
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qi     ! cloud liquid ice (kg/kg)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ql     ! cloud liquid water (kg/kg)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: o3     ! ozone (kg/kg)
+
+  !Nonhydrostatic increment (not using for now)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: w      ! cell center vertical wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: delz   ! layer thickness (meters)
-  real(kind=kind_real), allocatable, dimension(:,:)   :: phis   ! Surface geopotential (g*Z_surf)
 
-  !Control/analysis variables
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: vort   ! Vorticity
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: divg   ! Divergence
+  !Control variables (used for the B-Matrix/Jb)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: psi    ! Stream function
   real(kind=kind_real), allocatable, dimension(:,:,:) :: chi    ! Velocity potential
   real(kind=kind_real), allocatable, dimension(:,:,:) :: tv     ! Virtual temperature
@@ -56,20 +54,6 @@ type :: fv3jedi_increment
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qic    ! cloud liquid ice control variable
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qlc    ! cloud liquid water control variable
   real(kind=kind_real), allocatable, dimension(:,:,:) :: o3c    ! ozone control variable
-
-  !2D Fields for CRTM
-  integer             , allocatable, dimension(:,:)   :: slmsk
-  real(kind=kind_real), allocatable, dimension(:,:)   :: sheleg
-  real(kind=kind_real), allocatable, dimension(:,:)   :: tsea
-  integer             , allocatable, dimension(:,:)   :: vtype
-  integer             , allocatable, dimension(:,:)   :: stype
-  real(kind=kind_real), allocatable, dimension(:,:)   :: vfrac
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: stc
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: smc
-  real(kind=kind_real), allocatable, dimension(:,:)   :: snwdph
-  real(kind=kind_real), allocatable, dimension(:,:)   :: u_srf
-  real(kind=kind_real), allocatable, dimension(:,:)   :: v_srf
-  real(kind=kind_real), allocatable, dimension(:,:)   :: f10m
 
 end type fv3jedi_increment
 

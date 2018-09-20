@@ -143,7 +143,7 @@ void StateFV3JEDI::changeResolution(const StateFV3JEDI & other) {
 StateFV3JEDI & StateFV3JEDI::operator+=(const IncrementFV3JEDI & dx) {
   oops::Log::trace() << "StateFV3JEDI add increment starting" << std::endl;
   ASSERT(this->validTime() == dx.validTime());
-  fv3jedi_state_add_incr_f90(keyState_, dx.toFortran());
+  fv3jedi_state_add_incr_f90(geom_->toFortran(), keyState_, dx.toFortran());
   oops::Log::trace() << "StateFV3JEDI add increment done" << std::endl;
   return *this;
 }

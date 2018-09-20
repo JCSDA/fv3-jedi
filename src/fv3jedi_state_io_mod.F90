@@ -3,6 +3,7 @@ module fv3jedi_state_io_mod
 use config_mod
 use iso_c_binding
 use datetime_mod
+use fckit_log_module, only : log
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds, only: kind_real
@@ -212,17 +213,11 @@ integer :: read_crtm_surface
  idate=date(1)*10000+date(2)*100+date(3)
  isecs=date(4)*3600+date(5)*60+date(6)
 
- if (geom%am_i_root_pe .and. print_read_info == 1 ) then
-    print *,'read_file: integer time from coupler.res: ',date,idate,isecs
- endif
-
  call datetime_from_ifs(vdate, idate, isecs)
  call datetime_to_string(vdate, validitydate)
 
- if (geom%am_i_root_pe .and. print_read_info == 1 ) then
-    print *,'read_file: validity date: ',trim(validitydate)
-    print *,'read_file: expected validity date: ',trim(sdate)
- endif
+ call log%info("read_file: validity date: "//trim(validitydate)) 
+ call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  return
 
@@ -231,6 +226,8 @@ end subroutine read_fms_restart
 ! ------------------------------------------------------------------------------
 
 subroutine write_fms_restart(geom, fld, c_conf, vdate)
+
+use mpp_mod, only: mpp_pe, mpp_root_pe
 
 implicit none
 
@@ -370,7 +367,7 @@ character(len=255) :: datapath_out
  !Write date/time info in coupler.res
  !-----------------------------------
  iounit = 101
- if (geom%am_i_root_pe) then
+ if (mpp_pe() == mpp_root_pe()) then
     print *,'write_file: date model init = ',fld%date_init
     print *,'write_file: date model now  = ',fld%date
     print *,'write_file: date vdate      = ',date
@@ -512,10 +509,8 @@ integer :: isc,iec,jsc,jec
 
  !> Print info to user
  sdate = config_get_string(c_conf,len(sdate),"date")
- if (geom%am_i_root_pe) then
-    print *,'read_file: validity date: ',trim(validitydate)
-    print *,'read_file: expected validity date: ',trim(sdate)
- endif
+ call log%info("read_file: validity date: "//trim(validitydate)) 
+ call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  !> Make sure file dimensions equal to geometry
  if ( im /= geom%npx-1 .or. lm /= geom%npz) then

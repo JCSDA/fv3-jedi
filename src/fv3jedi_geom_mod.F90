@@ -9,14 +9,10 @@ use iso_c_binding
 use config_mod
 use netcdf
 
-!Uses for setting up tracer numbers from field_table
-use tracer_manager_mod, only: get_number_tracers
-use field_manager_mod,  only: MODEL_ATMOS
-
 !FMS/MPP uses
 use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
 use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
-use mpp_mod,            only: mpp_pe, mpp_root_pe, mpp_npes, mpp_error, FATAL, NOTE
+use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 
 !Uses for generating geometry using FV3 routines
 use fv_arrays_mod,      only: fv_atmos_type, deallocate_fv_atmos_type
@@ -39,7 +35,6 @@ type :: fv3jedi_geom
   integer :: io_layout(2)                                 !Processor layout for read/write
   integer :: halo                                         !Number of halo points, normally 3
   character(len=255) :: nml_file                          !FV3 nml file associated with this geom
-  logical :: am_i_root_pe = .false.                       !Is this the root process 
   integer :: size_cubic_grid                              !Size of cubed sphere grid (cell center)
   type(domain2D) :: domain                                !MPP domain
   integer :: ntile                                        !Tile ID
@@ -75,7 +70,14 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable :: grid(:,:,:)
   real(kind=kind_real), allocatable :: agrid(:,:,:)
   logical :: sw_corner, se_corner, ne_corner, nw_corner
-
+  real(kind=kind_real), allocatable :: vlon(:,:,:)
+  real(kind=kind_real), allocatable :: vlat(:,:,:)
+  real(kind=kind_real), allocatable :: edge_vect_n(:)
+  real(kind=kind_real), allocatable :: edge_vect_e(:)
+  real(kind=kind_real), allocatable :: edge_vect_s(:)
+  real(kind=kind_real), allocatable :: edge_vect_w(:)
+  real(kind=kind_real), allocatable :: es(:,:,:,:)
+  real(kind=kind_real), allocatable :: ew(:,:,:,:)
 end type fv3jedi_geom
 
 #define LISTED_TYPE fv3jedi_geom
@@ -103,26 +105,22 @@ integer(c_int), intent(inout) :: c_key_self
 type(c_ptr), intent(in)       :: c_conf
 
 !Locals
-type(fv3jedi_geom), pointer       :: self
-character(len=256)                :: filename_akbk
-character(len=256)                :: filepath_akbk
-character(len=256)                :: ak_var
-character(len=256)                :: bk_var
-type(fv_atmos_type), allocatable  :: FV_Atm(:)
-logical, allocatable              :: grids_on_this_pe(:)
-integer                           :: p_split = 1, fail
-integer                           :: ncstat, ncid, dimid, varid, i, readdim, dcount
+type(fv3jedi_geom), pointer           :: self
+character(len=256)                    :: filename_akbk
+character(len=256)                    :: filepath_akbk
+character(len=256)                    :: ak_var
+character(len=256)                    :: bk_var
+type(fv_atmos_type), allocatable      :: FV_Atm(:)
+logical, allocatable                  :: grids_on_this_pe(:)
+integer                               :: p_split = 1
+integer                               :: ncstat, ncid, varid, i, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
-integer, allocatable              :: istart(:), icount(:)
 
 ! Init, add and get key
 ! ---------------------
 call fv3jedi_geom_registry%init()
 call fv3jedi_geom_registry%add(c_key_self)
 call fv3jedi_geom_registry%get(c_key_self,self)
-
-! Is this the root
-if (mpp_pe() == mpp_root_pe()) self%am_i_root_pe = .true.
 
 ! User input constructing the grid
 ! --------------------------------
@@ -213,6 +211,14 @@ allocate(self%edge_w(self%npy))
 allocate(self%edge_e(self%npy))
 allocate(self%grid (self%isd:self%ied+1,self%jsd:self%jed+1,1:2))
 allocate(self%agrid(self%isd:self%ied  ,self%jsd:self%jed  ,1:2))
+allocate(self%vlon(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(self%vlat(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(self%edge_vect_n(self%isd:self%ied))
+allocate(self%edge_vect_e(self%isd:self%ied))
+allocate(self%edge_vect_s(self%isd:self%ied))
+allocate(self%edge_vect_w(self%isd:self%ied))
+allocate(self%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
+allocate(self%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
 
 self%sin_sg = Fv_Atm(1)%gridstruct%sin_sg
 self%cos_sg = Fv_Atm(1)%gridstruct%cos_sg
@@ -240,6 +246,14 @@ self%edge_w = FV_Atm(1)%gridstruct%edge_w
 self%edge_e = FV_Atm(1)%gridstruct%edge_e
 self%grid = FV_Atm(1)%gridstruct%grid
 self%agrid = FV_Atm(1)%gridstruct%agrid
+self%vlon = Fv_Atm(1)%gridstruct%vlon
+self%vlat = Fv_Atm(1)%gridstruct%vlat
+self%edge_vect_n = Fv_Atm(1)%gridstruct%edge_vect_n
+self%edge_vect_e = Fv_Atm(1)%gridstruct%edge_vect_e
+self%edge_vect_s = Fv_Atm(1)%gridstruct%edge_vect_s
+self%edge_vect_w = Fv_Atm(1)%gridstruct%edge_vect_w
+self%es = Fv_Atm(1)%gridstruct%es
+self%ew = Fv_Atm(1)%gridstruct%ew
 
 !ak and bk are read from file
 allocate ( self%ak(self%npz+1) )
@@ -269,13 +283,6 @@ do i = 1,nf90_max_var_dims
 enddo
 
 if (readdim == -1) call abor1_ftn("fv3-jedi geometry: ak/bk in file does not match dimension of npz from input.nml")
-
-allocate(istart(dcount))
-allocate(icount(dcount))
-
-istart = 1
-icount = 1
-icount(readdim) = self%npz+1
 
 ncstat = nf90_get_var(ncid, varid, self%ak)
 if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
@@ -348,6 +355,14 @@ allocate(other%edge_w(self%npy))
 allocate(other%edge_e(self%npy))
 allocate(other%grid (self%isd:self%ied+1,self%jsd:self%jed+1,1:2))
 allocate(other%agrid(self%isd:self%ied  ,self%jsd:self%jed  ,1:2))
+allocate(other%vlon(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(other%vlat(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(other%edge_vect_n(self%isd:self%ied))
+allocate(other%edge_vect_e(self%isd:self%ied))
+allocate(other%edge_vect_s(self%isd:self%ied))
+allocate(other%edge_vect_w(self%isd:self%ied))
+allocate(other%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
+allocate(other%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
 
 other%npx             = self%npx
 other%npy             = self%npy
@@ -376,7 +391,6 @@ other%area            = self%area
 other%ak              = self%ak
 other%bk              = self%bk
 other%ptop            = self%ptop
-other%am_i_root_pe    = self%am_i_root_pe
 
 other%sin_sg = self%sin_sg
 other%cos_sg = self%cos_sg
@@ -404,6 +418,14 @@ other%edge_w = self%edge_w
 other%edge_e = self%edge_e
 other%grid   = self%grid
 other%agrid  = self%agrid
+other%vlon = self%vlon
+other%vlat = self%vlat
+other%edge_vect_n = self%edge_vect_n
+other%edge_vect_e = self%edge_vect_e
+other%edge_vect_s = self%edge_vect_s
+other%edge_vect_w = self%edge_vect_w
+other%es = self%es
+other%ew = self%ew
 
 call setup_domain( other%domain, other%size_cubic_grid, other%size_cubic_grid, &
                    other%ntiles, other%layout, other%io_layout, other%halo)
@@ -453,6 +475,14 @@ deallocate(self%edge_w)
 deallocate(self%edge_e)
 deallocate(self%grid)
 deallocate(self%agrid)
+deallocate(self%vlon)
+deallocate(self%vlat)
+deallocate(self%edge_vect_n)
+deallocate(self%edge_vect_e)
+deallocate(self%edge_vect_s)
+deallocate(self%edge_vect_w)
+deallocate(self%es)
+deallocate(self%ew)
 
 call mpp_deallocate_domain(self%domain)
 

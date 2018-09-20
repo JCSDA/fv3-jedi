@@ -81,10 +81,6 @@ do var = 1, self%vars%nv
 
    select case (trim(self%vars%fldnames(var)))
 
-     case("ud")
-       if (.not.allocated(  self%ud)) allocate (  self%ud(isd:ied,  jsd:jed+1, npz))
-     case("vd")
-       if (.not.allocated(  self%vd)) allocate (  self%vd(isd:ied+1,jsd:jed  , npz))
      case("ua")
        if (.not.allocated(  self%ua)) allocate (  self%ua(isd:ied,  jsd:jed  , npz))
      case("va")
@@ -131,29 +127,8 @@ enddo
 self%hydrostatic = .true.
 if (allocated(self%w).and.allocated(self%delz)) self%hydrostatic = .false.
 
-!Extra dynamical variables
-if (.not.allocated(self%phis)) allocate(self%phis(isd:ied,jsd:jed    ))
-
-if (.not.allocated(self%vort)) allocate(self%vort(isd:ied,jsd:jed,npz))
-if (.not.allocated(self%divg)) allocate(self%divg(isd:ied,jsd:jed,npz))
-
-!CRTM surface variables
-if (.not.allocated(self%slmsk )) allocate(self%slmsk (isd:ied,jsd:jed))
-if (.not.allocated(self%sheleg)) allocate(self%sheleg(isd:ied,jsd:jed))
-if (.not.allocated(self%tsea  )) allocate(self%tsea  (isd:ied,jsd:jed))
-if (.not.allocated(self%vtype )) allocate(self%vtype (isd:ied,jsd:jed))
-if (.not.allocated(self%stype )) allocate(self%stype (isd:ied,jsd:jed))
-if (.not.allocated(self%vfrac )) allocate(self%vfrac (isd:ied,jsd:jed))
-if (.not.allocated(self%stc   )) allocate(self%stc   (isd:ied,jsd:jed,4))
-if (.not.allocated(self%smc   )) allocate(self%smc   (isd:ied,jsd:jed,4))
-if (.not.allocated(self%snwdph)) allocate(self%snwdph(isd:ied,jsd:jed))
-if (.not.allocated(self%u_srf )) allocate(self%u_srf (isd:ied,jsd:jed))
-if (.not.allocated(self%v_srf )) allocate(self%v_srf (isd:ied,jsd:jed))
-if (.not.allocated(self%f10m  )) allocate(self%f10m  (isd:ied,jsd:jed))
-
 ! Initialize all domain arrays to zero
 call zeros(self)
-self%phis   = 0.0_kind_real
 
 ! For convenience
 self%isc = geom%isc
@@ -167,7 +142,6 @@ self%jed = geom%jed
 self%npx = geom%npx
 self%npy = geom%npy
 self%npz = geom%npz
-self%am_i_root_pe = geom%am_i_root_pe
 
 end subroutine create
 
@@ -177,8 +151,6 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 
-if (allocated(self%ud  )) deallocate (self%ud  )
-if (allocated(self%vd  )) deallocate (self%vd  )
 if (allocated(self%ua  )) deallocate (self%ua  )
 if (allocated(self%va  )) deallocate (self%va  )
 if (allocated(self%t   )) deallocate (self%t   )
@@ -187,25 +159,7 @@ if (allocated(self%q   )) deallocate (self%q   )
 if (allocated(self%qi  )) deallocate (self%qi  )
 if (allocated(self%ql  )) deallocate (self%ql  )
 if (allocated(self%o3  )) deallocate (self%o3  )
-if (allocated(self%phis)) deallocate (self%phis)
-if (allocated(self%w   )) deallocate (self%w   )
-if (allocated(self%delz)) deallocate (self%delz)
 
-if (allocated(self%slmsk )) deallocate(self%slmsk )
-if (allocated(self%sheleg)) deallocate(self%sheleg)
-if (allocated(self%tsea  )) deallocate(self%tsea  )
-if (allocated(self%vtype )) deallocate(self%vtype )
-if (allocated(self%stype )) deallocate(self%stype )
-if (allocated(self%vfrac )) deallocate(self%vfrac )
-if (allocated(self%stc   )) deallocate(self%stc   )
-if (allocated(self%smc   )) deallocate(self%smc   )
-if (allocated(self%snwdph)) deallocate(self%snwdph)
-if (allocated(self%u_srf )) deallocate(self%u_srf )
-if (allocated(self%v_srf )) deallocate(self%v_srf )
-if (allocated(self%f10m  )) deallocate(self%f10m  )
-
-if (allocated(self%vort)) deallocate(self%vort)
-if (allocated(self%divg)) deallocate(self%divg)
 if (allocated(self%psi )) deallocate(self%psi )
 if (allocated(self%chi )) deallocate(self%chi )
 if (allocated(self%tv  )) deallocate(self%tv  )
@@ -214,6 +168,9 @@ if (allocated(self%qc  )) deallocate(self%qc  )
 if (allocated(self%qic )) deallocate(self%qic )
 if (allocated(self%qlc )) deallocate(self%qlc )
 if (allocated(self%o3c )) deallocate(self%o3c )
+
+if (allocated(self%w   )) deallocate (self%w   )
+if (allocated(self%delz)) deallocate (self%delz)
 
 end subroutine delete
 
@@ -225,9 +182,6 @@ type(fv3jedi_increment), intent(inout) :: self
 
 !Zero out the entire domain
 
-!Model
-if(allocated(self%ud  )) self%ud   = 0.0_kind_real
-if(allocated(self%vd  )) self%vd   = 0.0_kind_real
 if(allocated(self%ua  )) self%ua   = 0.0_kind_real
 if(allocated(self%va  )) self%va   = 0.0_kind_real
 if(allocated(self%t   )) self%t    = 0.0_kind_real
@@ -236,18 +190,18 @@ if(allocated(self%q   )) self%q    = 0.0_kind_real
 if(allocated(self%qi  )) self%qi   = 0.0_kind_real
 if(allocated(self%ql  )) self%ql   = 0.0_kind_real
 if(allocated(self%o3  )) self%o3   = 0.0_kind_real
+
+if(allocated(self%psi)) self%psi   = 0.0_kind_real
+if(allocated(self%chi)) self%chi   = 0.0_kind_real
+if(allocated(self%tv )) self%tv    = 0.0_kind_real
+if(allocated(self%ps )) self%ps    = 0.0_kind_real
+if(allocated(self%qc )) self%qc    = 0.0_kind_real
+if(allocated(self%qic)) self%qic   = 0.0_kind_real
+if(allocated(self%qlc)) self%qlc   = 0.0_kind_real
+if(allocated(self%o3c)) self%o3c   = 0.0_kind_real
+
 if(allocated(self%w   )) self%w    = 0.0_kind_real
 if(allocated(self%delz)) self%delz = 0.0_kind_real
-
-!Control
-if(allocated(self%psi)) self%psi = 0.0_kind_real
-if(allocated(self%chi)) self%chi = 0.0_kind_real
-if(allocated(self%tv )) self%tv  = 0.0_kind_real
-if(allocated(self%ps )) self%ps  = 0.0_kind_real
-if(allocated(self%qc )) self%qc  = 0.0_kind_real
-if(allocated(self%qic)) self%qic = 0.0_kind_real
-if(allocated(self%qlc)) self%qlc = 0.0_kind_real
-if(allocated(self%o3c)) self%o3c = 0.0_kind_real
 
 end subroutine zeros
 
@@ -259,9 +213,6 @@ type(fv3jedi_increment), intent(inout) :: self
 
 call zeros(self)
 
-!Model
-if(allocated(self%ud  )) self%ud   = 1.0_kind_real
-if(allocated(self%vd  )) self%vd   = 1.0_kind_real
 if(allocated(self%ua  )) self%ua   = 1.0_kind_real
 if(allocated(self%va  )) self%va   = 1.0_kind_real
 if(allocated(self%t   )) self%t    = 1.0_kind_real
@@ -270,19 +221,18 @@ if(allocated(self%q   )) self%q    = 1.0_kind_real
 if(allocated(self%qi  )) self%qi   = 1.0_kind_real
 if(allocated(self%ql  )) self%ql   = 1.0_kind_real
 if(allocated(self%o3  )) self%o3   = 1.0_kind_real
+
+if(allocated(self%psi)) self%psi   = 1.0_kind_real
+if(allocated(self%chi)) self%chi   = 1.0_kind_real
+if(allocated(self%tv )) self%tv    = 1.0_kind_real
+if(allocated(self%ps )) self%ps    = 1.0_kind_real
+if(allocated(self%qc )) self%qc    = 1.0_kind_real
+if(allocated(self%qic)) self%qic   = 1.0_kind_real
+if(allocated(self%qlc)) self%qlc   = 1.0_kind_real
+if(allocated(self%o3c)) self%o3c   = 1.0_kind_real
+
 if(allocated(self%w   )) self%w    = 1.0_kind_real
 if(allocated(self%delz)) self%delz = 1.0_kind_real
-
-!Control
-if(allocated(self%psi)) self%psi = 1.0_kind_real
-if(allocated(self%chi)) self%chi = 1.0_kind_real
-if(allocated(self%tv )) self%tv  = 1.0_kind_real
-if(allocated(self%ps )) self%ps  = 1.0_kind_real
-if(allocated(self%qc )) self%qc  = 1.0_kind_real
-if(allocated(self%qic)) self%qic = 1.0_kind_real
-if(allocated(self%qlc)) self%qlc = 1.0_kind_real
-if(allocated(self%o3c)) self%o3c = 1.0_kind_real
-
 
 end subroutine ones
 
@@ -294,8 +244,6 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 integer :: nq
 
-if(allocated(self%ud  )) call random_vector(self%ud  )
-if(allocated(self%vd  )) call random_vector(self%vd  )
 if(allocated(self%ua  )) call random_vector(self%ua  )
 if(allocated(self%va  )) call random_vector(self%va  )
 if(allocated(self%t   )) call random_vector(self%t   )
@@ -305,9 +253,6 @@ if(allocated(self%qi  )) call random_vector(self%qi  )
 if(allocated(self%ql  )) call random_vector(self%ql  )
 if(allocated(self%o3  )) call random_vector(self%o3  )
 
-if(allocated(self%w   )) call random_vector(self%w   )
-if(allocated(self%delz)) call random_vector(self%delz)
-
 if(allocated(self%psi )) call random_vector(self%psi )
 if(allocated(self%chi )) call random_vector(self%chi )
 if(allocated(self%tv  )) call random_vector(self%tv  )
@@ -316,6 +261,9 @@ if(allocated(self%qc  )) call random_vector(self%qc  )
 if(allocated(self%qic )) call random_vector(self%qic )
 if(allocated(self%qlc )) call random_vector(self%qlc )
 if(allocated(self%o3c )) call random_vector(self%o3c )
+
+if(allocated(self%w   )) call random_vector(self%w   )
+if(allocated(self%delz)) call random_vector(self%delz)
 
 end subroutine random
 
@@ -337,50 +285,31 @@ self%jed            = rhs%jed
 self%npx            = rhs%npx           
 self%npy            = rhs%npy           
 self%npz            = rhs%npz           
-self%havecrtmfields = rhs%havecrtmfields
 self%hydrostatic    = rhs%hydrostatic   
 self%calendar_type  = rhs%calendar_type 
 self%date           = rhs%date          
 self%date_init      = rhs%date_init     
 
-if(allocated(self%ud  )) self%ud   = rhs%ud  
-if(allocated(self%vd  )) self%vd   = rhs%vd  
-if(allocated(self%ua  )) self%ua   = rhs%ua  
-if(allocated(self%va  )) self%va   = rhs%va  
-if(allocated(self%t   )) self%t    = rhs%t   
+if(allocated(self%ua  )) self%ua   = rhs%ua
+if(allocated(self%va  )) self%va   = rhs%va
+if(allocated(self%t   )) self%t    = rhs%t
 if(allocated(self%delp)) self%delp = rhs%delp
-if(allocated(self%q   )) self%q    = rhs%q   
-if(allocated(self%qi  )) self%qi   = rhs%qi  
-if(allocated(self%ql  )) self%ql   = rhs%ql  
-if(allocated(self%o3  )) self%o3   = rhs%o3  
-if(allocated(self%w   )) self%w    = rhs%w   
-if(allocated(self%delz)) self%delz = rhs%delz
+if(allocated(self%q   )) self%q    = rhs%q
+if(allocated(self%qi  )) self%qi   = rhs%qi
+if(allocated(self%ql  )) self%ql   = rhs%ql
+if(allocated(self%o3  )) self%o3   = rhs%o3
 
 if(allocated(self%psi )) self%psi  = rhs%psi
 if(allocated(self%chi )) self%chi  = rhs%chi
-if(allocated(self%tv  )) self%tv   = rhs%tv 
-if(allocated(self%ps  )) self%ps   = rhs%ps 
-if(allocated(self%qc  )) self%qc   = rhs%qc 
+if(allocated(self%tv  )) self%tv   = rhs%tv
+if(allocated(self%ps  )) self%ps   = rhs%ps
+if(allocated(self%qc  )) self%qc   = rhs%qc
 if(allocated(self%qic )) self%qic  = rhs%qic
 if(allocated(self%qlc )) self%qlc  = rhs%qlc
 if(allocated(self%o3c )) self%o3c  = rhs%o3c
 
-self%phis   = rhs%phis
-self%slmsk  = rhs%slmsk
-self%sheleg = rhs%sheleg
-self%tsea   = rhs%tsea
-self%vtype  = rhs%vtype
-self%stype  = rhs%stype
-self%vfrac  = rhs%vfrac
-self%stc    = rhs%stc
-self%smc    = rhs%smc
-self%snwdph = rhs%snwdph
-self%u_srf  = rhs%u_srf
-self%v_srf  = rhs%v_srf
-self%f10m   = rhs%f10m
-
-self%vort = rhs%vort
-self%divg = rhs%divg
+if(allocated(self%w   )) self%w    = rhs%w
+if(allocated(self%delz)) self%delz = rhs%delz
 
 return
 end subroutine copy
@@ -392,8 +321,6 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ud  )) self%ud   = self%ud   + rhs%ud  
-if(allocated(self%vd  )) self%vd   = self%vd   + rhs%vd  
 if(allocated(self%ua  )) self%ua   = self%ua   + rhs%ua  
 if(allocated(self%va  )) self%va   = self%va   + rhs%va  
 if(allocated(self%t   )) self%t    = self%t    + rhs%t   
@@ -402,8 +329,6 @@ if(allocated(self%q   )) self%q    = self%q    + rhs%q
 if(allocated(self%qi  )) self%qi   = self%qi   + rhs%qi  
 if(allocated(self%ql  )) self%ql   = self%ql   + rhs%ql  
 if(allocated(self%o3  )) self%o3   = self%o3   + rhs%o3  
-if(allocated(self%w   )) self%w    = self%w    + rhs%w   
-if(allocated(self%delz)) self%delz = self%delz + rhs%delz
 
 if(allocated(self%psi )) self%psi  = self%psi  + rhs%psi
 if(allocated(self%chi )) self%chi  = self%chi  + rhs%chi
@@ -413,6 +338,9 @@ if(allocated(self%qc  )) self%qc   = self%qc   + rhs%qc
 if(allocated(self%qic )) self%qic  = self%qic  + rhs%qic
 if(allocated(self%qlc )) self%qlc  = self%qlc  + rhs%qlc
 if(allocated(self%o3c )) self%o3c  = self%o3c  + rhs%o3c
+
+if(allocated(self%w   )) self%w    = self%w    + rhs%w   
+if(allocated(self%delz)) self%delz = self%delz + rhs%delz
 
 return
 end subroutine self_add
@@ -424,8 +352,6 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ud  )) self%ud   = self%ud   * rhs%ud  
-if(allocated(self%vd  )) self%vd   = self%vd   * rhs%vd  
 if(allocated(self%ua  )) self%ua   = self%ua   * rhs%ua  
 if(allocated(self%va  )) self%va   = self%va   * rhs%va  
 if(allocated(self%t   )) self%t    = self%t    * rhs%t   
@@ -434,8 +360,6 @@ if(allocated(self%q   )) self%q    = self%q    * rhs%q
 if(allocated(self%qi  )) self%qi   = self%qi   * rhs%qi  
 if(allocated(self%ql  )) self%ql   = self%ql   * rhs%ql  
 if(allocated(self%o3  )) self%o3   = self%o3   * rhs%o3  
-if(allocated(self%w   )) self%w    = self%w    * rhs%w   
-if(allocated(self%delz)) self%delz = self%delz * rhs%delz
 
 if(allocated(self%psi )) self%psi  = self%psi  * rhs%psi
 if(allocated(self%chi )) self%chi  = self%chi  * rhs%chi
@@ -445,6 +369,9 @@ if(allocated(self%qc  )) self%qc   = self%qc   * rhs%qc
 if(allocated(self%qic )) self%qic  = self%qic  * rhs%qic
 if(allocated(self%qlc )) self%qlc  = self%qlc  * rhs%qlc
 if(allocated(self%o3c )) self%o3c  = self%o3c  * rhs%o3c
+
+if(allocated(self%w   )) self%w    = self%w    * rhs%w   
+if(allocated(self%delz)) self%delz = self%delz * rhs%delz
 
 return
 end subroutine self_schur
@@ -456,8 +383,6 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ud  )) self%ud   = self%ud   - rhs%ud  
-if(allocated(self%vd  )) self%vd   = self%vd   - rhs%vd  
 if(allocated(self%ua  )) self%ua   = self%ua   - rhs%ua  
 if(allocated(self%va  )) self%va   = self%va   - rhs%va  
 if(allocated(self%t   )) self%t    = self%t    - rhs%t   
@@ -466,8 +391,6 @@ if(allocated(self%q   )) self%q    = self%q    - rhs%q
 if(allocated(self%qi  )) self%qi   = self%qi   - rhs%qi  
 if(allocated(self%ql  )) self%ql   = self%ql   - rhs%ql  
 if(allocated(self%o3  )) self%o3   = self%o3   - rhs%o3  
-if(allocated(self%w   )) self%w    = self%w    - rhs%w   
-if(allocated(self%delz)) self%delz = self%delz - rhs%delz
 
 if(allocated(self%psi )) self%psi  = self%psi  - rhs%psi
 if(allocated(self%chi )) self%chi  = self%chi  - rhs%chi
@@ -477,6 +400,9 @@ if(allocated(self%qc  )) self%qc   = self%qc   - rhs%qc
 if(allocated(self%qic )) self%qic  = self%qic  - rhs%qic
 if(allocated(self%qlc )) self%qlc  = self%qlc  - rhs%qlc
 if(allocated(self%o3c )) self%o3c  = self%o3c  - rhs%o3c
+
+if(allocated(self%w   )) self%w    = self%w    - rhs%w   
+if(allocated(self%delz)) self%delz = self%delz - rhs%delz
 
 return
 end subroutine self_sub
@@ -488,8 +414,6 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 real(kind=kind_real), intent(in) :: zz
 
-if(allocated(self%ud  )) self%ud   = zz * self%ud  
-if(allocated(self%vd  )) self%vd   = zz * self%vd  
 if(allocated(self%ua  )) self%ua   = zz * self%ua  
 if(allocated(self%va  )) self%va   = zz * self%va  
 if(allocated(self%t   )) self%t    = zz * self%t   
@@ -498,8 +422,6 @@ if(allocated(self%q   )) self%q    = zz * self%q
 if(allocated(self%qi  )) self%qi   = zz * self%qi  
 if(allocated(self%ql  )) self%ql   = zz * self%ql  
 if(allocated(self%o3  )) self%o3   = zz * self%o3  
-if(allocated(self%w   )) self%w    = zz * self%w   
-if(allocated(self%delz)) self%delz = zz * self%delz
 
 if(allocated(self%psi )) self%psi  = zz * self%psi
 if(allocated(self%chi )) self%chi  = zz * self%chi
@@ -509,6 +431,9 @@ if(allocated(self%qc  )) self%qc   = zz * self%qc
 if(allocated(self%qic )) self%qic  = zz * self%qic
 if(allocated(self%qlc )) self%qlc  = zz * self%qlc
 if(allocated(self%o3c )) self%o3c  = zz * self%o3c
+
+if(allocated(self%w   )) self%w    = zz * self%w   
+if(allocated(self%delz)) self%delz = zz * self%delz
 
 return
 end subroutine self_mul
@@ -521,8 +446,6 @@ type(fv3jedi_increment), intent(inout) :: self
 real(kind=kind_real), intent(in) :: zz
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ud  )) self%ud   = self%ud   + zz * rhs%ud  
-if(allocated(self%vd  )) self%vd   = self%vd   + zz * rhs%vd  
 if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%ua  
 if(allocated(self%va  )) self%va   = self%va   + zz * rhs%va  
 if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t   
@@ -531,8 +454,6 @@ if(allocated(self%q   )) self%q    = self%q    + zz * rhs%q
 if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%qi  
 if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%ql  
 if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%o3  
-if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
-if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
 
 if(allocated(self%psi )) self%psi  = self%psi  + zz * rhs%psi
 if(allocated(self%chi )) self%chi  = self%chi  + zz * rhs%chi
@@ -542,6 +463,9 @@ if(allocated(self%qc  )) self%qc   = self%qc   + zz * rhs%qc
 if(allocated(self%qic )) self%qic  = self%qic  + zz * rhs%qic
 if(allocated(self%qlc )) self%qlc  = self%qlc  + zz * rhs%qlc
 if(allocated(self%o3c )) self%o3c  = self%o3c  + zz * rhs%o3c
+
+if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
+if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
 
 return
 end subroutine axpy_inc
@@ -554,8 +478,6 @@ type(fv3jedi_increment), intent(inout) :: self
 real(kind=kind_real), intent(in) :: zz
 type(fv3jedi_state), intent(in)    :: rhs
 
-if(allocated(self%ud  )) self%ud   = self%ud   + zz * rhs%ud  
-if(allocated(self%vd  )) self%vd   = self%vd   + zz * rhs%vd  
 if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%ua  
 if(allocated(self%va  )) self%va   = self%va   + zz * rhs%va  
 if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t   
@@ -564,17 +486,9 @@ if(allocated(self%q   )) self%q    = self%q    + zz * rhs%q
 if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%qi  
 if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%ql  
 if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%o3  
+
 if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
 if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
-
-if(allocated(self%psi )) self%psi  = self%psi  + zz * rhs%psi
-if(allocated(self%chi )) self%chi  = self%chi  + zz * rhs%chi
-if(allocated(self%tv  )) self%tv   = self%tv   + zz * rhs%tv 
-if(allocated(self%ps  )) self%ps   = self%ps   + zz * rhs%ps 
-if(allocated(self%qc  )) self%qc   = self%qc   + zz * rhs%qc 
-if(allocated(self%qic )) self%qic  = self%qic  + zz * rhs%qic
-if(allocated(self%qlc )) self%qlc  = self%qlc  + zz * rhs%qlc
-if(allocated(self%o3c )) self%o3c  = self%o3c  + zz * rhs%o3c
 
 return
 end subroutine axpy_state
@@ -596,28 +510,6 @@ type(fckit_mpi_comm) :: f_comm
 f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
-
-!ud
-if (allocated(inc1%ud)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%ud(i,j,k) * inc2%ud(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!vd
-if (allocated(inc1%vd)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%vd(i,j,k) * inc2%vd(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
 
 !ua
 if (allocated(inc1%ua)) then
@@ -793,11 +685,33 @@ if (allocated(inc1%o3c)) then
   enddo
 endif
 
+!delz
+if (allocated(inc1%delz)) then
+  do k = 1,inc1%npz
+    do j = inc1%jsc,inc1%jec
+      do i = inc1%isc,inc1%iec
+        zp = zp + inc1%delz(i,j,k) * inc2%delz(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
+!w
+if (allocated(inc1%w)) then
+  do k = 1,inc1%npz
+    do j = inc1%jsc,inc1%jec
+      do i = inc1%isc,inc1%iec
+        zp = zp + inc1%w(i,j,k) * inc2%w(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
 !Get global dot product
 call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 
 !For debugging print result:
-if (inc1%am_i_root_pe) print*, "Dot product test result: ", zprod
+if (f_comm%rank() == 0) print*, "Dot product test result: ", zprod
 
 return
 end subroutine dot_prod
@@ -813,8 +727,6 @@ integer :: check
 check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 
 if (check==0) then
-  if(allocated(rhs%ud  )) self%ud   = self%ud   + rhs%ud  
-  if(allocated(rhs%vd  )) self%vd   = self%vd   + rhs%vd  
   if(allocated(rhs%ua  )) self%ua   = self%ua   + rhs%ua  
   if(allocated(rhs%va  )) self%va   = self%va   + rhs%va  
   if(allocated(rhs%t   )) self%t    = self%t    + rhs%t   
@@ -823,8 +735,7 @@ if (check==0) then
   if(allocated(rhs%qi  )) self%qi   = self%qi   + rhs%qi  
   if(allocated(rhs%ql  )) self%ql   = self%ql   + rhs%ql  
   if(allocated(rhs%o3  )) self%o3   = self%o3   + rhs%o3  
-  if(allocated(rhs%w   )) self%w    = self%w    + rhs%w   
-  if(allocated(rhs%delz)) self%delz = self%delz + rhs%delz 
+
   if(allocated(rhs%psi )) self%psi  = self%psi  + rhs%psi
   if(allocated(rhs%chi )) self%chi  = self%chi  + rhs%chi
   if(allocated(rhs%tv  )) self%tv   = self%tv   + rhs%tv 
@@ -833,6 +744,9 @@ if (check==0) then
   if(allocated(rhs%qic )) self%qic  = self%qic  + rhs%qic
   if(allocated(rhs%qlc )) self%qlc  = self%qlc  + rhs%qlc
   if(allocated(rhs%o3c )) self%o3c  = self%o3c  + rhs%o3c
+
+  if(allocated(rhs%w   )) self%w    = self%w    + rhs%w   
+  if(allocated(rhs%delz)) self%delz = self%delz + rhs%delz 
 else
    call abor1_ftn("fv3jedi increment:  add_incr not implemented for low res increment yet")
 endif
@@ -854,8 +768,6 @@ check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 call zeros(lhs)
 if (check==0) then
 
-  if(allocated(lhs%ud  )) lhs%ud   = x1%ud   - x2%ud  
-  if(allocated(lhs%vd  )) lhs%vd   = x1%vd   - x2%vd  
   if(allocated(lhs%ua  )) lhs%ua   = x1%ua   - x2%ua  
   if(allocated(lhs%va  )) lhs%va   = x1%va   - x2%va  
   if(allocated(lhs%t   )) lhs%t    = x1%t    - x2%t   
@@ -864,17 +776,9 @@ if (check==0) then
   if(allocated(lhs%qi  )) lhs%qi   = x1%qi   - x2%qi  
   if(allocated(lhs%ql  )) lhs%ql   = x1%ql   - x2%ql  
   if(allocated(lhs%o3  )) lhs%o3   = x1%o3   - x2%o3  
+
   if(allocated(lhs%w   )) lhs%w    = x1%w    - x2%w   
   if(allocated(lhs%delz)) lhs%delz = x1%delz - x2%delz
-
-  if(allocated(lhs%psi )) lhs%psi  = x1%psi  - x2%psi
-  if(allocated(lhs%chi )) lhs%chi  = x1%chi  - x2%chi
-  if(allocated(lhs%tv  )) lhs%tv   = x1%tv   - x2%tv 
-  if(allocated(lhs%ps  )) lhs%ps   = x1%ps   - x2%ps 
-  if(allocated(lhs%qc  )) lhs%qc   = x1%qc   - x2%qc 
-  if(allocated(lhs%qic )) lhs%qic  = x1%qic  - x2%qic
-  if(allocated(lhs%qlc )) lhs%qlc  = x1%qlc  - x2%qlc
-  if(allocated(lhs%o3c )) lhs%o3c  = x1%o3c  - x2%o3c
 
 else
 
@@ -979,30 +883,40 @@ jec = inc%jec
 
 gs = (iec-isc+1)*(jec-jsc+1)*inc%npz
 
-!u
-pstat(1,1) = minval(inc%ud(isc:iec,jsc:jec,:))
-pstat(2,1) = maxval(inc%ud(isc:iec,jsc:jec,:))
-pstat(3,1) = sqrt((sum(inc%ud(isc:iec,jsc:jec,:))/gs)**2)
+!ua
+if (allocated(inc%ua)) then
+  pstat(1,1) = minval(inc%ua(isc:iec,jsc:jec,:))
+  pstat(2,1) = maxval(inc%ua(isc:iec,jsc:jec,:))
+  pstat(3,1) = sqrt((sum(inc%ua(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
-!v
-pstat(1,2) = minval(inc%vd(isc:iec,jsc:jec,:))
-pstat(2,2) = maxval(inc%vd(isc:iec,jsc:jec,:))
-pstat(3,2) = sqrt((sum(inc%vd(isc:iec,jsc:jec,:))/gs)**2)
-
-!pt
-pstat(1,3) = minval(inc%t(isc:iec,jsc:jec,:))
-pstat(2,3) = maxval(inc%t(isc:iec,jsc:jec,:))
-pstat(3,3) = sqrt((sum(inc%t(isc:iec,jsc:jec,:))/gs)**2)
-
+!va
+if (allocated(inc%va)) then
+  pstat(1,2) = minval(inc%va(isc:iec,jsc:jec,:))
+  pstat(2,2) = maxval(inc%va(isc:iec,jsc:jec,:))
+  pstat(3,2) = sqrt((sum(inc%va(isc:iec,jsc:jec,:))/gs)**2)
+endif
+  
+!t
+if (allocated(inc%t)) then
+  pstat(1,3) = minval(inc%t(isc:iec,jsc:jec,:))
+  pstat(2,3) = maxval(inc%t(isc:iec,jsc:jec,:))
+  pstat(3,3) = sqrt((sum(inc%t(isc:iec,jsc:jec,:))/gs)**2)
+endif
+  
 !delp
-pstat(1,4) = minval(inc%delp(isc:iec,jsc:jec,:))
-pstat(2,4) = maxval(inc%delp(isc:iec,jsc:jec,:))
-pstat(3,4) = sqrt((sum(inc%delp(isc:iec,jsc:jec,:))/gs)**2)
-
+if (allocated(inc%delp)) then
+  pstat(1,4) = minval(inc%delp(isc:iec,jsc:jec,:))
+  pstat(2,4) = maxval(inc%delp(isc:iec,jsc:jec,:))
+  pstat(3,4) = sqrt((sum(inc%delp(isc:iec,jsc:jec,:))/gs)**2)
+endif
+  
 !q
-pstat(1,5) = minval(inc%q(isc:iec,jsc:jec,:))
-pstat(2,5) = maxval(inc%q(isc:iec,jsc:jec,:))
-pstat(3,5) = sqrt((sum(inc%q(isc:iec,jsc:jec,:))/gs)**2)
+if (allocated(inc%q)) then
+  pstat(1,5) = minval(inc%q(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%q(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%q(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
 return
 
@@ -1033,24 +947,24 @@ zz = 0.0_kind_real
 prms = 0.0_kind_real
 ii = 0
 
-!ud
-if (allocated(inc%ud)) then
+!ua
+if (allocated(inc%ua)) then
   do k = 1,npz
     do j = jsc,jec
       do i = isc,iec
-        zz = zz + inc%ud(i,j,k)**2
+        zz = zz + inc%ua(i,j,k)**2
         ii = ii + 1
       enddo
     enddo
   enddo
 endif
 
-!vd
-if (allocated(inc%vd)) then
+!va
+if (allocated(inc%va)) then
   do k = 1,npz
     do j = jsc,jec
       do i = isc,iec
-        zz = zz + inc%vd(i,j,k)**2
+        zz = zz + inc%va(i,j,k)**2
         ii = ii + 1
       enddo
     enddo
@@ -1223,6 +1137,30 @@ if (allocated(inc%o3c)) then
   enddo
 endif
 
+!w
+if (allocated(inc%w)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + inc%w(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!delz
+if (allocated(inc%delz)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + inc%delz(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
 !Get global values
 call f_comm%allreduce(zz,prms,fckit_mpi_sum())
 call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
@@ -1231,10 +1169,6 @@ call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
 !   print *,'error in incrms/mpi_allreduce, error code=',ierr
 !endif
 prms = sqrt(prms/real(iisum,kind_real))
-
-!Print for debugging
-if (inc%am_i_root_pe) print *,'incrms: prms = ', prms
-if (inc%am_i_root_pe) print *,'incrms: iisum = ', iisum
 
 end subroutine incrms
 
@@ -1297,9 +1231,9 @@ do idir=1,ndir
        iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
        ! If so, perturb desired increment and level
        if (ifdir == 1) then
-          self%ud  (ixdir(idir),iydir(idir),ildir) = 1.0
+          self%ua  (ixdir(idir),iydir(idir),ildir) = 1.0
        else if (ifdir == 2) then
-          self%vd  (ixdir(idir),iydir(idir),ildir) = 1.0
+          self%va  (ixdir(idir),iydir(idir),ildir) = 1.0
        else if (ifdir == 3) then
           self%t   (ixdir(idir),iydir(idir),ildir) = 1.0
        else if (ifdir == 4) then
@@ -1462,15 +1396,15 @@ call allocate_unstructured_grid_field(ug)
 
 if (ug%colocated==1) then
 
-if (allocated(self%ud)) then
+if (allocated(self%ua)) then
 
   imga = 0
   do jy=self%jsc,self%jec
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          ug%grid(1)%fld(imga,jl,1,1) = self%ud  (jx,jy,jl)
-          ug%grid(1)%fld(imga,jl,2,1) = self%vd  (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,1,1) = self%ua  (jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,2,1) = self%va  (jx,jy,jl)
           ug%grid(1)%fld(imga,jl,3,1) = self%t   (jx,jy,jl)
           ug%grid(1)%fld(imga,jl,4,1) = self%delp(jx,jy,jl)
           ug%grid(1)%fld(imga,jl,5,1) = self%q   (jx,jy,jl)
@@ -1512,15 +1446,15 @@ else
 
 do igrid=1,ug%ngrid
 
-if (allocated(self%ud)) then
+if (allocated(self%ua)) then
 
   imga = 0
   do jy=self%jsc,self%jec
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          ug%grid(igrid)%fld(imga,jl,1,1) = self%ud  (jx,jy,jl)
-          ug%grid(igrid)%fld(imga,jl,2,1) = self%vd  (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,1,1) = self%ua  (jx,jy,jl)
+          ug%grid(igrid)%fld(imga,jl,2,1) = self%va  (jx,jy,jl)
           ug%grid(igrid)%fld(imga,jl,3,1) = self%t   (jx,jy,jl)
           ug%grid(igrid)%fld(imga,jl,4,1) = self%delp(jx,jy,jl)
           ug%grid(igrid)%fld(imga,jl,5,1) = self%q   (jx,jy,jl)
@@ -1580,15 +1514,15 @@ integer :: igrid
 
 if (ug%colocated==1) then
 
-if (allocated(self%ud)) then
+if (allocated(self%ua)) then
 
   imga = 0
   do jy=self%jsc,self%jec
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%ud  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,1,1)
-          self%vd  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,2,1)
+          self%ua  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,1,1)
+          self%va  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,2,1)
           self%t   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,3,1)
           self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,4,1)
           self%q   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,5,1)
@@ -1630,15 +1564,15 @@ else
 
 do igrid=1,ug%ngrid
 
-if (allocated(self%ud)) then
+if (allocated(self%ua)) then
 
   imga = 0
   do jy=self%jsc,self%jec
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%ud  (jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,1,1)
-          self%vd  (jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,2,1)
+          self%ua  (jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,1,1)
+          self%va  (jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,2,1)
           self%t   (jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,3,1)
           self%delp(jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,4,1)
           self%q   (jx,jy,jl) = ug%grid(igrid)%fld(imga,jl,5,1)

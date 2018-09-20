@@ -98,22 +98,6 @@ do var = 1, self%vars%nv
        if (.not.allocated(  self%ql)) allocate (  self%ql(isd:ied,  jsd:jed  , npz))
      case("o3")
        if (.not.allocated(  self%o3)) allocate (  self%o3(isd:ied,  jsd:jed  , npz))
-     case("psi")
-       if (.not.allocated( self%psi)) allocate ( self%psi(isd:ied,  jsd:jed  , npz))
-     case("chi")
-       if (.not.allocated( self%chi)) allocate ( self%chi(isd:ied,  jsd:jed  , npz))
-     case("tv")
-       if (.not.allocated(  self%tv)) allocate (  self%tv(isd:ied,  jsd:jed  , npz))
-     case("ps")
-       if (.not.allocated(  self%ps)) allocate (  self%ps(isd:ied,  jsd:jed       ))
-     case("qc")
-       if (.not.allocated(  self%qc)) allocate (  self%qc(isd:ied,  jsd:jed  , npz))
-     case("qic")
-       if (.not.allocated( self%qic)) allocate ( self%qic(isd:ied,  jsd:jed  , npz))
-     case("qlc")
-       if (.not.allocated( self%qlc)) allocate ( self%qlc(isd:ied,  jsd:jed  , npz))
-     case("o3c")
-       if (.not.allocated( self%o3c)) allocate ( self%o3c(isd:ied,  jsd:jed  , npz))
      case("w")
        if (.not.allocated(   self%w)) allocate (   self%w(isd:ied,  jsd:jed  , npz))
      case("delz")
@@ -128,11 +112,7 @@ enddo
 self%hydrostatic = .true.
 if (allocated(self%w).and.allocated(self%delz)) self%hydrostatic = .false.
 
-!Extra dynamical variables
 if (.not.allocated(self%phis)) allocate(self%phis(isd:ied,jsd:jed    ))
-
-if (.not.allocated(self%vort)) allocate(self%vort(isd:ied,jsd:jed,npz))
-if (.not.allocated(self%divg)) allocate(self%divg(isd:ied,jsd:jed,npz))
 
 !CRTM surface variables
 if (.not.allocated(self%slmsk )) allocate(self%slmsk (isd:ied,jsd:jed))
@@ -164,7 +144,6 @@ self%jed = geom%jed
 self%npx = geom%npx
 self%npy = geom%npy
 self%npz = geom%npz
-self%am_i_root_pe = geom%am_i_root_pe
 
 end subroutine create
 
@@ -201,17 +180,6 @@ if (allocated(self%u_srf )) deallocate(self%u_srf )
 if (allocated(self%v_srf )) deallocate(self%v_srf )
 if (allocated(self%f10m  )) deallocate(self%f10m  )
 
-if (allocated(self%vort)) deallocate(self%vort)
-if (allocated(self%divg)) deallocate(self%divg)
-if (allocated(self%psi )) deallocate(self%psi )
-if (allocated(self%chi )) deallocate(self%chi )
-if (allocated(self%tv  )) deallocate(self%tv  )
-if (allocated(self%ps  )) deallocate(self%ps  )
-if (allocated(self%qc  )) deallocate(self%qc  )
-if (allocated(self%qic )) deallocate(self%qic )
-if (allocated(self%qlc )) deallocate(self%qlc )
-if (allocated(self%o3c )) deallocate(self%o3c )
-
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
@@ -235,16 +203,6 @@ if(allocated(self%ql  )) self%ql   = 0.0_kind_real
 if(allocated(self%o3  )) self%o3   = 0.0_kind_real
 if(allocated(self%w   )) self%w    = 0.0_kind_real
 if(allocated(self%delz)) self%delz = 0.0_kind_real
-
-!Control
-if(allocated(self%psi)) self%psi = 0.0_kind_real
-if(allocated(self%chi)) self%chi = 0.0_kind_real
-if(allocated(self%tv )) self%tv  = 0.0_kind_real
-if(allocated(self%ps )) self%ps  = 0.0_kind_real
-if(allocated(self%qc )) self%qc  = 0.0_kind_real
-if(allocated(self%qic)) self%qic = 0.0_kind_real
-if(allocated(self%qlc)) self%qlc = 0.0_kind_real
-if(allocated(self%o3c)) self%o3c = 0.0_kind_real
 
 end subroutine zeros
 
@@ -272,27 +230,18 @@ self%calendar_type  = rhs%calendar_type
 self%date           = rhs%date          
 self%date_init      = rhs%date_init     
 
-if(allocated(self%ud  )) self%ud   = rhs%ud  
-if(allocated(self%vd  )) self%vd   = rhs%vd  
-if(allocated(self%ua  )) self%ua   = rhs%ua  
-if(allocated(self%va  )) self%va   = rhs%va  
-if(allocated(self%t   )) self%t    = rhs%t   
-if(allocated(self%delp)) self%delp = rhs%delp
-if(allocated(self%q   )) self%q    = rhs%q   
-if(allocated(self%qi  )) self%qi   = rhs%qi  
-if(allocated(self%ql  )) self%ql   = rhs%ql  
-if(allocated(self%o3  )) self%o3   = rhs%o3  
-if(allocated(self%w   )) self%w    = rhs%w   
-if(allocated(self%delz)) self%delz = rhs%delz
-
-if(allocated(self%psi )) self%psi  = rhs%psi
-if(allocated(self%chi )) self%chi  = rhs%chi
-if(allocated(self%tv  )) self%tv   = rhs%tv 
-if(allocated(self%ps  )) self%ps   = rhs%ps 
-if(allocated(self%qc  )) self%qc   = rhs%qc 
-if(allocated(self%qic )) self%qic  = rhs%qic
-if(allocated(self%qlc )) self%qlc  = rhs%qlc
-if(allocated(self%o3c )) self%o3c  = rhs%o3c
+if(allocated(self%ud  ).and.allocated(rhs%ud  )) self%ud   = rhs%ud  
+if(allocated(self%vd  ).and.allocated(rhs%vd  )) self%vd   = rhs%vd  
+if(allocated(self%ua  ).and.allocated(rhs%ua  )) self%ua   = rhs%ua  
+if(allocated(self%va  ).and.allocated(rhs%va  )) self%va   = rhs%va  
+if(allocated(self%t   ).and.allocated(rhs%t   )) self%t    = rhs%t   
+if(allocated(self%delp).and.allocated(rhs%delp)) self%delp = rhs%delp
+if(allocated(self%q   ).and.allocated(rhs%q   )) self%q    = rhs%q   
+if(allocated(self%qi  ).and.allocated(rhs%qi  )) self%qi   = rhs%qi  
+if(allocated(self%ql  ).and.allocated(rhs%ql  )) self%ql   = rhs%ql  
+if(allocated(self%o3  ).and.allocated(rhs%o3  )) self%o3   = rhs%o3  
+if(allocated(self%w   ).and.allocated(rhs%w   )) self%w    = rhs%w   
+if(allocated(self%delz).and.allocated(rhs%delz)) self%delz = rhs%delz
 
 self%phis   = rhs%phis
 self%slmsk  = rhs%slmsk
@@ -308,9 +257,6 @@ self%u_srf  = rhs%u_srf
 self%v_srf  = rhs%v_srf
 self%f10m   = rhs%f10m
 
-self%vort = rhs%vort
-self%divg = rhs%divg
-
 return
 end subroutine copy
 
@@ -322,44 +268,65 @@ type(fv3jedi_state), intent(inout) :: self
 real(kind=kind_real), intent(in) :: zz
 type(fv3jedi_state), intent(in)    :: rhs
 
-if(allocated(self%ud  )) self%ud   = self%ud   + zz * rhs%ud  
-if(allocated(self%vd  )) self%vd   = self%vd   + zz * rhs%vd  
-if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%ua  
-if(allocated(self%va  )) self%va   = self%va   + zz * rhs%va  
-if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t   
-if(allocated(self%delp)) self%delp = self%delp + zz * rhs%delp
-if(allocated(self%q   )) self%q    = self%q    + zz * rhs%q   
-if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%qi  
-if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%ql  
-if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%o3  
-if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
-if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
-
-if(allocated(self%psi )) self%psi  = self%psi  + zz * rhs%psi
-if(allocated(self%chi )) self%chi  = self%chi  + zz * rhs%chi
-if(allocated(self%tv  )) self%tv   = self%tv   + zz * rhs%tv 
-if(allocated(self%ps  )) self%ps   = self%ps   + zz * rhs%ps 
-if(allocated(self%qc  )) self%qc   = self%qc   + zz * rhs%qc 
-if(allocated(self%qic )) self%qic  = self%qic  + zz * rhs%qic
-if(allocated(self%qlc )) self%qlc  = self%qlc  + zz * rhs%qlc
-if(allocated(self%o3c )) self%o3c  = self%o3c  + zz * rhs%o3c
+if(allocated(self%ud  ).and.allocated(rhs%ud  )) self%ud   = self%ud   + zz * rhs%ud  
+if(allocated(self%vd  ).and.allocated(rhs%vd  )) self%vd   = self%vd   + zz * rhs%vd  
+if(allocated(self%ua  ).and.allocated(rhs%ua  )) self%ua   = self%ua   + zz * rhs%ua  
+if(allocated(self%va  ).and.allocated(rhs%va  )) self%va   = self%va   + zz * rhs%va  
+if(allocated(self%t   ).and.allocated(rhs%t   )) self%t    = self%t    + zz * rhs%t   
+if(allocated(self%delp).and.allocated(rhs%delp)) self%delp = self%delp + zz * rhs%delp
+if(allocated(self%q   ).and.allocated(rhs%q   )) self%q    = self%q    + zz * rhs%q   
+if(allocated(self%qi  ).and.allocated(rhs%qi  )) self%qi   = self%qi   + zz * rhs%qi  
+if(allocated(self%ql  ).and.allocated(rhs%ql  )) self%ql   = self%ql   + zz * rhs%ql  
+if(allocated(self%o3  ).and.allocated(rhs%o3  )) self%o3   = self%o3   + zz * rhs%o3  
+if(allocated(self%w   ).and.allocated(rhs%w   )) self%w    = self%w    + zz * rhs%w   
+if(allocated(self%delz).and.allocated(rhs%delz)) self%delz = self%delz + zz * rhs%delz
 
 return
 end subroutine axpy
 
 ! ------------------------------------------------------------------------------
 
-subroutine add_incr(self,rhs)
+subroutine add_incr(geom,self,rhs)
+
+use wind_vt_mod, only: a2d
+
 implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: check
-check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
+integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
-if (check==0) then
-  if(allocated(rhs%ud  )) self%ud   = self%ud   + rhs%ud  
-  if(allocated(rhs%vd  )) self%vd   = self%vd   + rhs%vd  
+!Check for matching resolution between state and increment
+if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
+
+  isc = rhs%isc
+  iec = rhs%iec
+  jsc = rhs%jsc
+  jec = rhs%jec
+  isd = rhs%isd
+  ied = rhs%ied
+  jsd = rhs%jsd
+  jed = rhs%jed
+  npz = rhs%npz
+
+  !If increment is A-Grid winds then interpolate to D-Grid
+  !if (allocated(rhs%ud) .and. allocated(rhs%vd)) then
+  !  self%ud   = self%ud   + rhs%ud
+  !  self%vd   = self%vd   + rhs%vd
+  if (allocated(rhs%ua) .and. allocated(rhs%va)) then
+    allocate(ud(isd:ied  ,jsd:jed+1,1:npz))
+    allocate(vd(isd:ied+1,jsd:jed  ,1:npz))
+    ud = 0.0_kind_real; vd = 0.0_kind_real
+    call a2d( geom, rhs%ua(isc:iec,jsc:jec,:), rhs%va(isc:iec,jsc:jec,:), &
+                        ud(isc:iec,jsc:jec+1,:),     vd(isc:iec+1,jsc:jec,:) )
+    self%ud   = self%ud   + ud
+    self%vd   = self%vd   + vd
+    deallocate(ud,vd)
+  else
+    call abor1_ftn("fv3jedi_state:add_incr: wind combination problem")
+  endif
   if(allocated(rhs%ua  )) self%ua   = self%ua   + rhs%ua  
   if(allocated(rhs%va  )) self%va   = self%va   + rhs%va  
   if(allocated(rhs%t   )) self%t    = self%t    + rhs%t   
@@ -370,14 +337,6 @@ if (check==0) then
   if(allocated(rhs%o3  )) self%o3   = self%o3   + rhs%o3  
   if(allocated(rhs%w   )) self%w    = self%w    + rhs%w   
   if(allocated(rhs%delz)) self%delz = self%delz + rhs%delz 
-  if(allocated(rhs%psi )) self%psi  = self%psi  + rhs%psi
-  if(allocated(rhs%chi )) self%chi  = self%chi  + rhs%chi
-  if(allocated(rhs%tv  )) self%tv   = self%tv   + rhs%tv 
-  if(allocated(rhs%ps  )) self%ps   = self%ps   + rhs%ps 
-  if(allocated(rhs%qc  )) self%qc   = self%qc   + rhs%qc 
-  if(allocated(rhs%qic )) self%qic  = self%qic  + rhs%qic
-  if(allocated(rhs%qlc )) self%qlc  = self%qlc  + rhs%qlc
-  if(allocated(rhs%o3c )) self%o3c  = self%o3c  + rhs%o3c
 else
    call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
 endif
@@ -702,6 +661,24 @@ type(fv3jedi_geom),  intent(in)    :: geom
 
 integer :: i,j,k
 
+!ud
+do k = 1,geom%npz
+  do j = geom%jsc,geom%jec
+    do i = geom%isc,geom%iec
+      state%ud(i,j,k) = cos(0.25*geom%grid_lon(i,j)) + cos(0.25*geom%grid_lat(i,j))
+    enddo
+  enddo
+enddo
+
+!vd
+do k = 1,geom%npz
+  do j = geom%jsc,geom%jec
+    do i = geom%isc,geom%iec
+      state%vd(i,j,k) = 1.0_kind_real
+    enddo
+  enddo
+enddo
+
 !ua
 do k = 1,geom%npz
   do j = geom%jsc,geom%jec
@@ -739,6 +716,33 @@ do k = 1,geom%npz
 enddo
 
 !q
+do k = 1,geom%npz
+  do j = geom%jsc,geom%jec
+    do i = geom%isc,geom%iec
+      state%q(i,j,k) = 0.0
+    enddo
+  enddo
+enddo
+
+!qi
+do k = 1,geom%npz
+  do j = geom%jsc,geom%jec
+    do i = geom%isc,geom%iec
+      state%q(i,j,k) = 0.0
+    enddo
+  enddo
+enddo
+
+!ql
+do k = 1,geom%npz
+  do j = geom%jsc,geom%jec
+    do i = geom%isc,geom%iec
+      state%q(i,j,k) = 0.0
+    enddo
+  enddo
+enddo
+
+!o3
 do k = 1,geom%npz
   do j = geom%jsc,geom%jec
     do i = geom%isc,geom%iec
@@ -825,30 +829,75 @@ jec = state%jec
 
 gs = (iec-isc+1)*(jec-jsc+1)*state%npz
 
-!u
-pstat(1,1) = minval(state%ud(isc:iec,jsc:jec,:))
-pstat(2,1) = maxval(state%ud(isc:iec,jsc:jec,:))
-pstat(3,1) = sqrt((sum(state%ud(isc:iec,jsc:jec,:))/gs)**2)
+!ud
+if (allocated(state%ud)) then
+  pstat(1,1) = minval(state%ud(isc:iec,jsc:jec,:))
+  pstat(2,1) = maxval(state%ud(isc:iec,jsc:jec,:))
+  pstat(3,1) = sqrt((sum(state%ud(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
-!v
-pstat(1,2) = minval(state%vd(isc:iec,jsc:jec,:))
-pstat(2,2) = maxval(state%vd(isc:iec,jsc:jec,:))
-pstat(3,2) = sqrt((sum(state%vd(isc:iec,jsc:jec,:))/gs)**2)
+!vd
+if (allocated(state%vd)) then
+  pstat(1,2) = minval(state%vd(isc:iec,jsc:jec,:))
+  pstat(2,2) = maxval(state%vd(isc:iec,jsc:jec,:))
+  pstat(3,2) = sqrt((sum(state%vd(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
-!pt
-pstat(1,3) = minval(state%t(isc:iec,jsc:jec,:))
-pstat(2,3) = maxval(state%t(isc:iec,jsc:jec,:))
-pstat(3,3) = sqrt((sum(state%t(isc:iec,jsc:jec,:))/gs)**2)
+!ua
+if (allocated(state%ua)) then
+  pstat(1,1) = minval(state%ua(isc:iec,jsc:jec,:))
+  pstat(2,1) = maxval(state%ua(isc:iec,jsc:jec,:))
+  pstat(3,1) = sqrt((sum(state%ua(isc:iec,jsc:jec,:))/gs)**2)
+endif
+
+!va
+if (allocated(state%va)) then
+  pstat(1,2) = minval(state%va(isc:iec,jsc:jec,:))
+  pstat(2,2) = maxval(state%va(isc:iec,jsc:jec,:))
+  pstat(3,2) = sqrt((sum(state%va(isc:iec,jsc:jec,:))/gs)**2)
+endif
+
+!t
+if (allocated(state%t)) then
+  pstat(1,3) = minval(state%t(isc:iec,jsc:jec,:))
+  pstat(2,3) = maxval(state%t(isc:iec,jsc:jec,:))
+  pstat(3,3) = sqrt((sum(state%t(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
 !delp
-pstat(1,4) = minval(state%delp(isc:iec,jsc:jec,:))
-pstat(2,4) = maxval(state%delp(isc:iec,jsc:jec,:))
-pstat(3,4) = sqrt((sum(state%delp(isc:iec,jsc:jec,:))/gs)**2)
+if (allocated(state%delp)) then
+  pstat(1,4) = minval(state%delp(isc:iec,jsc:jec,:))
+  pstat(2,4) = maxval(state%delp(isc:iec,jsc:jec,:))
+  pstat(3,4) = sqrt((sum(state%delp(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
 !q
-pstat(1,5) = minval(state%q(isc:iec,jsc:jec,:))
-pstat(2,5) = maxval(state%q(isc:iec,jsc:jec,:))
-pstat(3,5) = sqrt((sum(state%q(isc:iec,jsc:jec,:))/gs)**2)
+if (allocated(state%q)) then
+  pstat(1,5) = minval(state%q(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(state%q(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(state%q(isc:iec,jsc:jec,:))/gs)**2)
+endif
+
+!qi
+if (allocated(state%qi)) then
+  pstat(1,5) = minval(state%qi(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(state%qi(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(state%qi(isc:iec,jsc:jec,:))/gs)**2)
+endif
+
+!ql
+if (allocated(state%ql)) then
+  pstat(1,5) = minval(state%ql(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(state%ql(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(state%ql(isc:iec,jsc:jec,:))/gs)**2)
+endif
+
+!o3
+if (allocated(state%o3)) then
+  pstat(1,5) = minval(state%o3(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(state%o3(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(state%o3(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
 return
 
@@ -897,6 +946,30 @@ if (allocated(state%vd)) then
     do j = jsc,jec
       do i = isc,iec
         zz = zz + state%vd(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!ua
+if (allocated(state%ua)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + state%ua(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
+!va
+if (allocated(state%va)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + state%va(i,j,k)**2
         ii = ii + 1
       enddo
     enddo
@@ -975,100 +1048,6 @@ if (allocated(state%o3)) then
   enddo
 endif
 
-!psi
-if (allocated(state%psi)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%psi(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!chi
-if (allocated(state%chi)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%chi(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!tv
-if (allocated(state%tv)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%tv(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!ps
-if (allocated(state%ps)) then
-  do j = jsc,jec
-    do i = isc,iec
-      zz = zz + state%ps(i,j)**2
-      ii = ii + 1
-    enddo
-  enddo
-endif
-
-!qc
-if (allocated(state%qc)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%qc(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qic
-if (allocated(state%qic)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%qic(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qlc
-if (allocated(state%qlc)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%qlc(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!o3c
-if (allocated(state%o3c)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%o3c(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
 !Get global values
 call f_comm%allreduce(zz,prms,fckit_mpi_sum())
 call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
@@ -1077,10 +1056,6 @@ call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
 !   print *,'error in staterms/mpi_allreduce, error code=',ierr
 !endif
 prms = sqrt(prms/real(iisum,kind_real))
-
-!Print for debugging
-if (state%am_i_root_pe) print *,'staterms: prms = ', prms
-if (state%am_i_root_pe) print *,'staterms: iisum = ', iisum
 
 end subroutine staterms
 

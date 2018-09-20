@@ -120,7 +120,7 @@ type(fv3jedi_increment), intent(inout) :: xmod
 
 !Tangent linear of analysis (control) to model variables
 call control_to_model_tlm(geom,xctl%psi,xctl%chi,xctl%tv,xctl%ps  ,xctl%qc, &
-                                    xmod%ud  ,xmod%vd  ,xmod%t,xmod%delp,xmod%q, &
+                                    xmod%ua  ,xmod%va  ,xmod%t,xmod%delp,xmod%q, &
                                     self%tvtraj,self%qtraj,self%qsattraj)
 
 end subroutine fv3jedi_varcha_c2m_multiply
@@ -137,7 +137,7 @@ type(fv3jedi_increment), intent(inout) :: xctl
 
 !Adjoint of analysis (control) to model variables
 call control_to_model_adm(geom,xctl%psi,xctl%chi,xctl%tv,xctl%ps  ,xctl%qc, &
-                                    xmod%ud  ,xmod%vd  ,xmod%t,xmod%delp,xmod%q, &
+                                    xmod%ua  ,xmod%va  ,xmod%t,xmod%delp,xmod%q, &
                                     self%tvtraj,self%qtraj,self%qsattraj)
 
 end subroutine fv3jedi_varcha_c2m_multiplyadjoint
@@ -169,8 +169,8 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
  xctr%qlc = 0.0_kind_real
  xctr%o3c = 0.0_kind_real
 
- xctr%psi =  xmod%ud
- xctr%chi =  xmod%vd
+ xctr%psi =  xmod%ua
+ xctr%chi =  xmod%va
  xctr%tv  =  xmod%t
  xctr%ps  =  xmod%delp(:,:,geom%npz)
  xctr%qc  =  xmod%q
@@ -184,7 +184,7 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 !allocate (  va(geom%isd:geom%ied,geom%jsd:geom%jed,geom%npz))
 !
 !!> Convert u,v to vorticity and divergence
-!call uv_to_vortdivg(geom,xmod%ud,xmod%vd,ua,va,vort,divg)
+!call uv_to_vortdivg(geom,xmod%ua,xmod%va,ua,va,vort,divg)
 !
 !!> Poisson solver for vorticity and divergence to psi and chi
 !call vortdivg_to_psichi(geom,vort,divg,xctr%psi,xctr%chi)
@@ -217,9 +217,9 @@ end subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
+subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsat)
 
- use wind_vt_mod, only: psichi_to_udvd
+! use wind_vt_mod, only: psichi_to_udvd
  use tmprture_vt_mod, only: tv_to_t_tl
  use pressure_vt_mod, only: ps_to_delp_tl
  use moisture_vt_mod, only: rh_to_q_tl 
@@ -228,33 +228,33 @@ subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  type(fv3jedi_geom), intent(inout) :: geom
 
  !Input: control vector
- real(kind=kind_real), intent(inout) ::  psi(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) ::  chi(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(inout) ::   tv(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   ps(geom%isd:geom%ied  ,geom%jsd:geom%jed             ) !Surface pressure
- real(kind=kind_real), intent(inout) ::   qc(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Specific humidity
+ real(kind=kind_real), intent(inout) ::  psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
+ real(kind=kind_real), intent(inout) ::  chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
+ real(kind=kind_real), intent(inout) ::   tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Virtual temp
+ real(kind=kind_real), intent(inout) ::   ps(geom%isd:geom%ied,geom%jsd:geom%jed           ) !Surface pressure
+ real(kind=kind_real), intent(inout) ::   qc(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Specific humidity
 
  !Output: state/model vector
- real(kind=kind_real), intent(inout) ::    u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::    v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz) !Dgrid winds (v)
- real(kind=kind_real), intent(inout) ::    t(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) :: delp(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Pressure thickness
- real(kind=kind_real), intent(inout) ::   qs(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Specific humidity
+ real(kind=kind_real), intent(inout) ::   ua(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Dgrid winds (u)
+ real(kind=kind_real), intent(inout) ::   va(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Dgrid winds (v)
+ real(kind=kind_real), intent(inout) ::    t(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Dry temperature
+ real(kind=kind_real), intent(inout) :: delp(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Pressure thickness
+ real(kind=kind_real), intent(inout) ::   qs(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Specific humidity
  
  !Trajectory for virtual temperature to temperature
- real(kind=kind_real), intent(in   ) ::  tvt(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !VTemperature traj
- real(kind=kind_real), intent(in   ) ::   qt(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Specific humidity traj
- real(kind=kind_real), intent(in   ) :: qsat(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Sat spec hum
+ real(kind=kind_real), intent(in   ) ::  tvt(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !VTemperature traj
+ real(kind=kind_real), intent(in   ) ::   qt(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Specific humidity traj
+ real(kind=kind_real), intent(in   ) :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Sat spec hum
 
- u = 0.0_kind_real
- v = 0.0_kind_real
+ ua = 0.0_kind_real
+ va = 0.0_kind_real
  t = 0.0_kind_real
  delp = 0.0_kind_real
  qs = 0.0_kind_real
 
  !psi and chi to D-grid u and v 
  !-----------------------------
- call psichi_to_udvd(geom,psi,chi,u,v)
+! call psichi_to_udvd(geom,psi,chi,ua,va)
  
  !ps to delp
  !----------
@@ -274,9 +274,9 @@ endsubroutine control_to_model_tlm
 
 !> Control variables to state variables - Adjoint
 
-subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
+subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsat)
 
- use wind_vt_mod, only: psichi_to_udvd_adm
+! use wind_vt_mod, only: psichi_to_udvd_adm
  use tmprture_vt_mod, only: tv_to_t_ad
  use pressure_vt_mod, only: ps_to_delp_ad
  use moisture_vt_mod, only: rh_to_q_ad 
@@ -285,23 +285,23 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
  type(fv3jedi_geom), intent(inout) :: geom
 
  !Input: control vector
- real(kind=kind_real), intent(inout) ::  psi(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) ::  chi(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(inout) ::   tv(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   ps(geom%isd:geom%ied  ,geom%jsd:geom%jed             ) !Surface pressure
- real(kind=kind_real), intent(inout) ::   qc(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Specific humidity
+ real(kind=kind_real), intent(inout) ::  psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
+ real(kind=kind_real), intent(inout) ::  chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
+ real(kind=kind_real), intent(inout) ::   tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Virtual temp
+ real(kind=kind_real), intent(inout) ::   ps(geom%isd:geom%ied,geom%jsd:geom%jed           ) !Surface pressure
+ real(kind=kind_real), intent(inout) ::   qc(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Specific humidity
 
  !Output: state/model vector
- real(kind=kind_real), intent(inout) ::    u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::    v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz) !Dgrid winds (v)
- real(kind=kind_real), intent(inout) ::    t(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) :: delp(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Pressure thickness
- real(kind=kind_real), intent(inout) ::   qs(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Specific humidity
+ real(kind=kind_real), intent(inout) ::   ua(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Dgrid winds (u)
+ real(kind=kind_real), intent(inout) ::   va(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Dgrid winds (v)
+ real(kind=kind_real), intent(inout) ::    t(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Dry temperature
+ real(kind=kind_real), intent(inout) :: delp(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Pressure thickness
+ real(kind=kind_real), intent(inout) ::   qs(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Specific humidity
  
  !Trajectory for virtual temperature to temperature
- real(kind=kind_real), intent(in   ) ::  tvt(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !VTemperature traj
- real(kind=kind_real), intent(in   ) ::   qt(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Specific humidity traj
- real(kind=kind_real), intent(in   ) :: qsat(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz) !Sat spec hum
+ real(kind=kind_real), intent(in   ) ::  tvt(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !VTemperature traj
+ real(kind=kind_real), intent(in   ) ::   qt(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Specific humidity traj
+ real(kind=kind_real), intent(in   ) :: qsat(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Sat spec hum
 
  psi = 0.0_kind_real
  chi = 0.0_kind_real
@@ -323,7 +323,7 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,u,v,t,delp,qs,tvt,qt,qsat)
 
  !psi and chi to D-grid u and v 
  !-----------------------------
- call psichi_to_udvd_adm(geom,psi,chi,u,v)
+! call psichi_to_udvd_adm(geom,psi,chi,ua,va)
 
 endsubroutine control_to_model_adm
 

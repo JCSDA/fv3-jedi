@@ -94,7 +94,7 @@ use tapenade_iter, only: cp_iter, cp_iter_controls, initialize_cp_iter
 #endif
 
 implicit none
-type(c_ptr), intent(in)    :: c_conf !< pointer to object of class Config
+type(c_ptr), intent(in)     :: c_conf !< pointer to object of class Config
 type(fv3jedi_model), target :: model  ! should I put intent on these?
 type(fv3jedi_geom)          :: geom
 
@@ -317,7 +317,7 @@ subroutine model_prepare_integration_ad(self, inc)
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_increment)         :: inc
+type(fv3jedi_increment)     :: inc
 
 end subroutine model_prepare_integration_ad
 
@@ -327,7 +327,7 @@ subroutine model_prepare_integration_tl(self, inc)
 
 implicit none
 type(fv3jedi_model), target :: self
-type(fv3jedi_increment)         :: inc
+type(fv3jedi_increment)     :: inc
 
 end subroutine model_prepare_integration_tl
 
@@ -482,7 +482,7 @@ use tapenade_iter,   only: cp_iter_controls, cp_mod_ini, cp_mod_mid, cp_mod_end,
 implicit none
 
 type(fv3jedi_model), target :: self
-type(fv3jedi_increment)         :: inc
+type(fv3jedi_increment)     :: inc
 type(fv3jedi_trajectory)    :: traj
 type(fv3jedi_geom)          :: geom
 
@@ -692,7 +692,7 @@ call zero_pert_vars(FV_AtmP(1))
 
 ! Copy to model variables
 ! -----------------------
-call inc_to_model(inc,self)
+call model_to_inc_ad(geom,inc,self)
 
 
 ! Backward adjoint sweep of the dynamics
@@ -759,7 +759,7 @@ call nullify_domain()
 
 ! Copy back to increment 
 ! ----------------------
-call model_to_inc(self,inc)
+call inc_to_model_ad(geom,self,inc)
 
 
 ! Make sure everything is zero
@@ -868,7 +868,7 @@ call zero_pert_vars(FV_AtmP(1))
 
 !Copy to model variables
 !-----------------------
-call inc_to_model(inc,self)
+call inc_to_model_tl(geom,inc,self)
 
 
 !Edge of pert always needs to be filled
@@ -937,7 +937,7 @@ call nullify_domain()
 
 ! Copy back to increment
 ! ----------------------
-call model_to_inc(self,inc)
+call model_to_inc_tl(geom,self,inc)
 
 
 ! Make sure everything is zero
@@ -1071,16 +1071,18 @@ endif
 state%ua(isc:iec,jsc:jec,:) = self%FV_Atm(1)%ua(isc:iec,jsc:jec,:)
 state%va(isc:iec,jsc:jec,:) = self%FV_Atm(1)%va(isc:iec,jsc:jec,:)
 
-
 end subroutine model_to_state
 
 ! ------------------------------------------------------------------------------
 
-subroutine inc_to_model(inc,self)
+subroutine inc_to_model_tl(geom,inc,self)
+
+use wind_vt_mod, only: a2d
 
 implicit none
-type(fv3jedi_increment), intent(in)    :: inc
-type(fv3jedi_model), intent(inout) :: self
+type(fv3jedi_geom), intent(inout)   :: geom
+type(fv3jedi_increment), intent(in) :: inc
+type(fv3jedi_model), intent(inout)  :: self
 
 integer :: isc,iec,jsc,jec
 
@@ -1100,9 +1102,18 @@ self%FV_AtmP(1)%qp    = 0.0
 self%FV_AtmP(1)%wp    = 0.0
 self%FV_AtmP(1)%delzp = 0.0
 
-!Only copy compute grid incase of halo differences
-self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)            = inc%ud  (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)            = inc%vd  (isc:iec,jsc:jec,:)
+!If increment is A-Grid winds then interpolate to D-Grid
+!if (allocated(inc%ud) .and. allocated(inc%vd)) then
+!  self%FV_AtmP(1)%up(isc:iec,jsc:jec,:) = inc%ud(isc:iec,jsc:jec,:)
+!  self%FV_AtmP(1)%vp(isc:iec,jsc:jec,:) = inc%vd(isc:iec,jsc:jec,:)
+if (allocated(inc%ua) .and. allocated(inc%va)) then
+  call a2d(geom, inc%ua(isc:iec,jsc:jec,:), inc%va(isc:iec,jsc:jec,:), &
+                 self%FV_AtmP(1)%up(isc:iec,jsc:jec+1,:), self%FV_AtmP(1)%vp(isc:iec+1,jsc:jec,:))
+else
+  call abor1_ftn("fv3jedi_model:inc_to_model_tl: wind combination problem")
+endif
+
+!Rest of the variables
 self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = inc%t   (isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = inc%delp(isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = inc%q   (isc:iec,jsc:jec,:)
@@ -1114,14 +1125,15 @@ if (.not. inc%hydrostatic) then
    self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = inc%w   (isc:iec,jsc:jec,:)
 endif
 
-end subroutine inc_to_model
+end subroutine inc_to_model_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_inc(self,inc)
+subroutine model_to_inc_tl(geom,self,inc)
 
 implicit none
-type(fv3jedi_model), intent(in   ) :: self
+type(fv3jedi_geom),      intent(inout) :: geom
+type(fv3jedi_model),     intent(in)    :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
 integer :: isc,iec,jsc,jec
@@ -1134,8 +1146,8 @@ jec = self%FV_Atm(1)%bd%jec
 !NOTE: while the variable name is pt, FV3 expects dry temperature
 
 !To zero the halos
-inc%ud   = 0.0
-inc%vd   = 0.0
+inc%ua   = 0.0
+inc%va   = 0.0
 inc%t    = 0.0
 inc%delp = 0.0
 inc%q    = 0.0
@@ -1148,8 +1160,8 @@ if (.not. inc%hydrostatic) then
 endif
 
 !Only copy compute grid incase of halo differences
-inc%ud  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)
-inc%vd  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)
+inc%ua  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%uap  (isc:iec,jsc:jec,:)
+inc%va  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vap  (isc:iec,jsc:jec,:)
 inc%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
 inc%delp(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)
 inc%q   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q )
@@ -1161,7 +1173,127 @@ if (.not. inc%hydrostatic) then
   inc%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
 endif
 
-end subroutine model_to_inc
+end subroutine model_to_inc_tl
+
+! ------------------------------------------------------------------------------
+
+subroutine model_to_inc_ad(geom,inc,self)
+
+implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
+type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_model),     intent(inout) :: self
+
+integer :: isc,iec,jsc,jec
+
+isc = self%FV_Atm(1)%bd%isc
+iec = self%FV_Atm(1)%bd%iec
+jsc = self%FV_Atm(1)%bd%jsc
+jec = self%FV_Atm(1)%bd%jec
+
+!NOTE: while the variable name is pt, FV3 expects dry temperature
+
+!D-Grid winds are not an output
+self%FV_AtmP(1)%up    = 0.0
+self%FV_AtmP(1)%vp    = 0.0
+
+!To zero the halos
+self%FV_AtmP(1)%uap   = 0.0
+self%FV_AtmP(1)%vap   = 0.0
+self%FV_AtmP(1)%ptp   = 0.0
+self%FV_AtmP(1)%delpp = 0.0
+self%FV_AtmP(1)%qp    = 0.0
+self%FV_AtmP(1)%wp    = 0.0
+self%FV_AtmP(1)%delzp = 0.0
+
+!Only copy compute grid incase of halo differences
+self%FV_AtmP(1)%uap  (isc:iec,jsc:jec,:)            = inc%ua  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%vap  (isc:iec,jsc:jec,:)            = inc%va  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = inc%t   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = inc%delp(isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = inc%q   (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi) = inc%qi  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql) = inc%ql  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3) = inc%o3  (isc:iec,jsc:jec,:)
+if (.not. inc%hydrostatic) then
+   self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:) = inc%delz(isc:iec,jsc:jec,:)
+   self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = inc%w   (isc:iec,jsc:jec,:)
+endif
+
+end subroutine model_to_inc_ad
+
+! ------------------------------------------------------------------------------
+
+subroutine inc_to_model_ad(geom,self,inc)
+
+use wind_vt_mod, only: a2d_ad
+
+implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
+type(fv3jedi_increment), intent(inout) :: inc
+type(fv3jedi_model),     intent(inout) :: self
+
+integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
+
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va
+
+isc = self%FV_Atm(1)%bd%isc
+iec = self%FV_Atm(1)%bd%iec
+jsc = self%FV_Atm(1)%bd%jsc
+jec = self%FV_Atm(1)%bd%jec
+isd = self%FV_Atm(1)%bd%isd
+ied = self%FV_Atm(1)%bd%ied
+jsd = self%FV_Atm(1)%bd%jsd
+jed = self%FV_Atm(1)%bd%jed
+npz = self%FV_Atm(1)%npz
+
+allocate(ua(isd:ied,jsd:jed,1:npz))
+allocate(va(isd:ied,jsd:jed,1:npz))
+
+!NOTE: while the variable name is pt, FV3 expects dry temperature
+
+!To zero the halos
+inc%ua   = 0.0
+inc%va   = 0.0
+inc%t    = 0.0
+inc%delp = 0.0
+inc%q    = 0.0
+inc%qi   = 0.0
+inc%ql   = 0.0
+inc%o3   = 0.0
+if (.not. inc%hydrostatic) then
+   inc%delz = 0.0
+   inc%w    = 0.0
+endif
+
+!If increment is A-Grid winds then interpolate to D-Grid
+!if (allocated(inc%ud) .and. allocated(inc%vd)) then
+!  inc%ud(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up(isc:iec,jsc:jec,:)
+!  inc%vd(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp(isc:iec,jsc:jec,:)
+if (allocated(inc%ua) .and. allocated(inc%va)) then
+  call a2d_ad(geom, inc%ua(isc:iec,jsc:jec,:), inc%va(isc:iec,jsc:jec,:), &
+                    self%FV_AtmP(1)%up(isc:iec,jsc:jec+1,:), self%FV_AtmP(1)%vp(isc:iec+1,jsc:jec,:))
+else
+  call abor1_ftn("fv3jedi_model:inc_to_model_tl: wind combination problem")
+endif
+
+!Only copy compute grid incase of halo differences
+inc%ua  (isc:iec,jsc:jec,:) = ua                   (isc:iec,jsc:jec,:)
+inc%va  (isc:iec,jsc:jec,:) = va                   (isc:iec,jsc:jec,:)
+inc%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
+inc%delp(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)
+inc%q   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q )
+inc%qi  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_qi)
+inc%ql  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_ql)
+inc%o3  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_o3)
+if (.not. inc%hydrostatic) then
+  inc%delz(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:)
+  inc%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
+endif
+
+deallocate(ua,va)
+
+end subroutine inc_to_model_ad
 
 ! ------------------------------------------------------------------------------
 

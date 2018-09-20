@@ -12,8 +12,8 @@ Geometry:
 TestDate: '2018-04-14T21:00:00Z'
 Variables:
   variables:
-  - ud
-  - vd
+  - ua
+  - va
   - t
   - delp
   - q

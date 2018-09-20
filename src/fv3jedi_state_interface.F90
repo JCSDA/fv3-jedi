@@ -104,20 +104,24 @@ end subroutine fv3jedi_state_axpy_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_add_incr_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_state_add_incr_f90')
+subroutine fv3jedi_state_add_incr_c(c_key_geom,c_key_self,c_key_rhs) bind(c,name='fv3jedi_state_add_incr_f90')
 use iso_c_binding
 use fv3jedi_state_mod
+use fv3jedi_geom_mod
 use fv3jedi_increment_mod, only: fv3jedi_increment, fv3jedi_increment_registry
 implicit none
+integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
+type(fv3jedi_geom), pointer :: geom
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_increment), pointer :: rhs
 
 call fv3jedi_state_registry%get(c_key_self,self)
 call fv3jedi_increment_registry%get(c_key_rhs,rhs)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call add_incr(self,rhs)
+call add_incr(geom,self,rhs)
 
 end subroutine fv3jedi_state_add_incr_c
 
