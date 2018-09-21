@@ -43,18 +43,18 @@ subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
  integer             , intent(in)  :: ngrid
  real(kind=kind_real), intent(in)  :: lats_ob(nobs)
  real(kind=kind_real), intent(in)  :: lons_ob(nobs)
- integer             , intent(in)  :: fld_slmsk (geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_sheleg(geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_tsea  (geom%isd:geom%ied,geom%jsd:geom%jed)
- integer             , intent(in)  :: fld_vtype (geom%isd:geom%ied,geom%jsd:geom%jed)
- integer             , intent(in)  :: fld_stype (geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_vfrac (geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_stc   (geom%isd:geom%ied,geom%jsd:geom%jed,4)
- real(kind=kind_real), intent(in)  :: fld_smc   (geom%isd:geom%ied,geom%jsd:geom%jed,4)
- real(kind=kind_real), intent(in)  :: fld_snwdph(geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_u_srf (geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_v_srf (geom%isd:geom%ied,geom%jsd:geom%jed)
- real(kind=kind_real), intent(in)  :: fld_f10m  (geom%isd:geom%ied,geom%jsd:geom%jed)
+ integer             , intent(in)  :: fld_slmsk (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_sheleg(geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_tsea  (geom%isc:geom%iec,geom%jsc:geom%jec)
+ integer             , intent(in)  :: fld_vtype (geom%isc:geom%iec,geom%jsc:geom%jec)
+ integer             , intent(in)  :: fld_stype (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_vfrac (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_stc   (geom%isc:geom%iec,geom%jsc:geom%jec,4)
+ real(kind=kind_real), intent(in)  :: fld_smc   (geom%isc:geom%iec,geom%jsc:geom%jec,4)
+ real(kind=kind_real), intent(in)  :: fld_snwdph(geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_u_srf (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_v_srf (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_f10m  (geom%isc:geom%iec,geom%jsc:geom%jec)
  integer             , intent(out) :: vegetation_type(nobs)
  integer             , intent(out) :: land_type(nobs)
  integer             , intent(out) :: soil_type(nobs)
@@ -691,7 +691,7 @@ integer             , intent(in)  :: ngrid              !Number of grid points o
 integer             , intent(in)  :: nn                 !Number of neighbours
 integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
 
-integer             , intent(in)  :: field_in(geom%isd:geom%ied,geom%jsd:geom%jed) !Fields in
+integer             , intent(in)  :: field_in(geom%isc:geom%iec,geom%jsc:geom%jec) !Fields in
 integer             , intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
 
 !Locals
@@ -776,7 +776,7 @@ integer             , intent(in)  :: ngrid              !Number of grid points o
 integer             , intent(in)  :: nn                 !Number of neighbours
 integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
 
-real(kind=kind_real), intent(in)  :: field_in(geom%isd:geom%ied,geom%jsd:geom%jed) !Fields in
+real(kind=kind_real), intent(in)  :: field_in(geom%isc:geom%iec,geom%jsc:geom%jec) !Fields in
 real(kind=kind_real), intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
 
 !Locals

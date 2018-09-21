@@ -27,11 +27,11 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
 
  !Arguments
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: usrf(geom%isd:geom%ied,geom%jsd:geom%jed) !Lowest model level u m/s
- real(kind=kind_real), intent(in ) :: vsrf(geom%isd:geom%ied,geom%jsd:geom%jed) !Lowest model level v m/s
- real(kind=kind_real), intent(in ) :: f10r(geom%isd:geom%ied,geom%jsd:geom%jed) !Ratio of lowest level to 10m
- real(kind=kind_real), intent(out) :: spd10m(geom%isd:geom%ied,geom%jsd:geom%jed) !10m wind speed u m/s
- real(kind=kind_real), intent(out) :: dir10m(geom%isd:geom%ied,geom%jsd:geom%jed) !10m model wind direction
+ real(kind=kind_real), intent(in ) ::   usrf(geom%isc:geom%iec,geom%jsc:geom%jec) !Lowest model level u m/s
+ real(kind=kind_real), intent(in ) ::   vsrf(geom%isc:geom%iec,geom%jsc:geom%jec) !Lowest model level v m/s
+ real(kind=kind_real), intent(in ) ::   f10r(geom%isc:geom%iec,geom%jsc:geom%jec) !Ratio of lowest level to 10m
+ real(kind=kind_real), intent(out) :: spd10m(geom%isc:geom%iec,geom%jsc:geom%jec) !10m wind speed u m/s
+ real(kind=kind_real), intent(out) :: dir10m(geom%isc:geom%iec,geom%jsc:geom%jec) !10m model wind direction
 
  !Locals
  integer :: isc,iec,jsc,jec,i,j
@@ -1878,8 +1878,8 @@ use mpp_domains_mod, only: mpp_update_domains
  implicit none
 
  type(fv3jedi_geom),   intent(inout) :: geom
- real(kind=kind_real), intent(in)    :: ua(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
- real(kind=kind_real), intent(in)    :: va(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
+ real(kind=kind_real), intent(in)    :: ua(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz)
+ real(kind=kind_real), intent(in)    :: va(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz)
  real(kind=kind_real), intent(inout) :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz)
  real(kind=kind_real), intent(inout) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz)
 
@@ -2052,8 +2052,8 @@ implicit none
 type(fv3jedi_geom), intent(inout) :: geom
 real(kind=kind_real), intent(inout) :: ua_ad(geom%isc:geom%iec, geom%jsc:geom%jec, geom%npz)
 real(kind=kind_real), intent(inout) :: va_ad(geom%isc:geom%iec, geom%jsc:geom%jec, geom%npz)
-real(kind=kind_real), intent(inout) :: ud_ad(geom%isc:geom%iec, geom%jsc:geom%jec+1, geom%npz)
-real(kind=kind_real), intent(inout) :: vd_ad(geom%isc:geom%iec+1, geom%jsc:geom%jec, geom%npz)
+real(kind=kind_real), intent(inout) :: ud_ad(geom%isc:geom%iec  , geom%jsc:geom%jec+1, geom%npz)
+real(kind=kind_real), intent(inout) :: vd_ad(geom%isc:geom%iec+1, geom%jsc:geom%jec  , geom%npz)
 
 integer :: is, ie, js, je
 integer :: npx, npy, npz
@@ -2312,16 +2312,18 @@ end subroutine a2d_ad
 
  !c2l_ord4
 
+ !Called using model fields so defined on isd:ied,jsd:jed 
+
  use mpp_domains_mod, only: mpp_update_domains, DGRID_NE
 
  implicit none
 
  type(fv3jedi_geom), intent(inout) :: geom
 
-  real(kind=kind_real), intent(inout):: u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,geom%npz)
-  real(kind=kind_real), intent(inout):: v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,geom%npz)
-  real(kind=kind_real), intent(inout)::  ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,geom%npz)
-  real(kind=kind_real), intent(inout)::  va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,geom%npz)
+  real(kind=kind_real), intent(inout)::  u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,geom%npz)
+  real(kind=kind_real), intent(inout)::  v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,geom%npz)
+  real(kind=kind_real), intent(inout):: ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,geom%npz)
+  real(kind=kind_real), intent(inout):: va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,geom%npz)
 
 ! Local 
 ! 4-pt Lagrange interpolation

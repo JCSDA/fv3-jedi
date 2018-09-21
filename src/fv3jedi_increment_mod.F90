@@ -61,15 +61,7 @@ type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
 type(fv3jedi_vars),  intent(in)    :: vars
 
-integer :: isd,ied,jsd,jed,npz,hydroi
 integer :: var
-
-! Grid convenience
-isd = geom%isd
-ied = geom%ied
-jsd = geom%jsd
-jed = geom%jed
-npz = geom%npz
 
 ! Copy the variable names
 self%vars%nv = vars%nv
@@ -82,45 +74,45 @@ do var = 1, self%vars%nv
    select case (trim(self%vars%fldnames(var)))
 
      case("ud")
-       !if (.not.allocated(  self%ud)) allocate (  self%ud(isd:ied,  jsd:jed+1, npz))
+      !if (.not.allocated(  self%ud)) allocate (  self%ud(geom%isc:geom%iec,  geom%jsc:geom%jec+1, geom%npz))
      case("vd")
-       !if (.not.allocated(  self%vd)) allocate (  self%vd(isd:ied+1,jsd:jed  , npz))
+      !if (.not.allocated(  self%vd)) allocate (  self%vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  , geom%npz))
      case("ua")
-       if (.not.allocated(  self%ua)) allocate (  self%ua(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%ua)) allocate (  self%ua(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("va")
-       if (.not.allocated(  self%va)) allocate (  self%va(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%va)) allocate (  self%va(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("t")
-       if (.not.allocated(   self%t)) allocate (   self%t(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(   self%t)) allocate (   self%t(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("delp")
-       if (.not.allocated(self%delp)) allocate (self%delp(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(self%delp)) allocate (self%delp(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("q")
-       if (.not.allocated(   self%q)) allocate (   self%q(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(   self%q)) allocate (   self%q(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("qi")
-       if (.not.allocated(  self%qi)) allocate (  self%qi(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%qi)) allocate (  self%qi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("ql")
-       if (.not.allocated(  self%ql)) allocate (  self%ql(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%ql)) allocate (  self%ql(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("o3")
-       if (.not.allocated(  self%o3)) allocate (  self%o3(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%o3)) allocate (  self%o3(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("psi")
-       if (.not.allocated( self%psi)) allocate ( self%psi(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated( self%psi)) allocate ( self%psi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("chi")
-       if (.not.allocated( self%chi)) allocate ( self%chi(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated( self%chi)) allocate ( self%chi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("tv")
-       if (.not.allocated(  self%tv)) allocate (  self%tv(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%tv)) allocate (  self%tv(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("ps")
-       if (.not.allocated(  self%ps)) allocate (  self%ps(isd:ied,  jsd:jed       ))
+       if (.not.allocated(  self%ps)) allocate (  self%ps(geom%isc:geom%iec,  geom%jsc:geom%jec            ))
      case("qc")
-       if (.not.allocated(  self%qc)) allocate (  self%qc(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%qc)) allocate (  self%qc(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("qic")
-       if (.not.allocated( self%qic)) allocate ( self%qic(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated( self%qic)) allocate ( self%qic(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("qlc")
-       if (.not.allocated( self%qlc)) allocate ( self%qlc(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated( self%qlc)) allocate ( self%qlc(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("o3c")
-       if (.not.allocated( self%o3c)) allocate ( self%o3c(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated( self%o3c)) allocate ( self%o3c(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("w")
-       if (.not.allocated(   self%w)) allocate (   self%w(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(   self%w)) allocate (   self%w(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("delz")
-       if (.not.allocated(self%delz)) allocate (self%delz(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(self%delz)) allocate (self%delz(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case default 
        call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
 
@@ -1698,8 +1690,8 @@ allocate(obs_increment(traj%nobs,1))
 
 ! Local GeoVals
 ! -------------
-allocate(geovale(isd:ied,jsd:jed,npz+1))
-allocate(geovalm(isd:ied,jsd:jed,npz))
+allocate(geovale(isc:iec,jsc:jec,npz+1))
+allocate(geovalm(isc:iec,jsc:jec,npz))
 
 
 ! Interpolate increment to obs locations using pre-calculated weights
@@ -1919,8 +1911,8 @@ allocate(obs_increment(traj%nobs,1))
 
 ! Local GeoVals
 ! -------------
-allocate(geovale(isd:ied,jsd:jed,npz+1))
-allocate(geovalm(isd:ied,jsd:jed,npz))
+allocate(geovale(isc:iec,jsc:jec,npz+1))
+allocate(geovalm(isc:iec,jsc:jec,npz))
 
 geovale = 0.0_kind_real
 geovalm = 0.0_kind_real

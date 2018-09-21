@@ -25,9 +25,9 @@ subroutine T_to_Tv(geom,T,q,Tv)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: T (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: Tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Virtual temperature (K)
+ real(kind=kind_real), intent(in ) :: T (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: Tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Virtual temperature (K)
 
  integer :: isc,iec,jsc,jec
 
@@ -44,12 +44,12 @@ subroutine T_to_Tv_tl(geom,T,T_tl,q,q_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom
- real(kind=kind_real), intent(in   ) :: T   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: T   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_tl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q_tl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
- real(kind=kind_real) :: Tv_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real) :: Tv_tl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
  integer :: isc,iec,jsc,jec
 
@@ -69,12 +69,12 @@ subroutine T_to_Tv_ad(geom,T,T_ad,q,q_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in )   :: geom 
- real(kind=kind_real), intent(in )   :: T   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in )   :: q   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: q_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in )   :: T   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in )   :: q   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: q_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
- real(kind=kind_real) :: TV_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real) :: TV_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
  integer :: isc,iec,jsc,jec
 
@@ -97,9 +97,9 @@ subroutine Tv_to_T(geom,Tv,q,T)
 
  implicit none
  type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: Tv(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: T (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)  !Virtual temperature (K)
+ real(kind=kind_real), intent(in ) :: Tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Temperature (K)
+ real(kind=kind_real), intent(in ) :: q (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Specific humidity (kg/kg)
+ real(kind=kind_real), intent(out) :: T (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Virtual temperature (K)
 
  integer :: isc,iec,jsc,jec, i, j, k
 
@@ -124,11 +124,11 @@ subroutine Tv_to_T_tl(geom,Tv,Tv_tl,q,q_tl,T_tl)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom
- real(kind=kind_real), intent(in   ) :: Tv   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: Tv_tl(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q    (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q_tl (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_tl (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: Tv   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: Tv_tl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q    (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q_tl (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_tl (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
  integer :: isc,iec,jsc,jec,npz,i,j,k
 
@@ -153,11 +153,11 @@ subroutine Tv_to_T_ad(geom,Tv,Tv_ad,q,q_ad,T_ad)
 
  implicit none
  type(fv3jedi_geom)  , intent(in   ) :: geom
- real(kind=kind_real), intent(in   ) :: Tv   (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: Tv_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(in   ) :: q    (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: q_ad (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
- real(kind=kind_real), intent(inout) :: T_ad (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: Tv   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: Tv_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in   ) :: q    (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: q_ad (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(inout) :: T_ad (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
  integer :: isc,iec,jsc,jec,npz,i,j,k
  real(kind=kind_real) :: temp

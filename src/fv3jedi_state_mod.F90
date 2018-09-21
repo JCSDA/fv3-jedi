@@ -58,15 +58,7 @@ type(fv3jedi_state), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
 type(fv3jedi_vars),  intent(in)    :: vars
 
-integer :: isd,ied,jsd,jed,npz,hydroi
 integer :: var
-
-! Grid convenience
-isd = geom%isd
-ied = geom%ied
-jsd = geom%jsd
-jed = geom%jed
-npz = geom%npz
 
 ! Copy the variable names
 self%vars%nv = vars%nv
@@ -79,29 +71,29 @@ do var = 1, self%vars%nv
    select case (trim(self%vars%fldnames(var)))
 
      case("ud")
-       if (.not.allocated(  self%ud)) allocate (  self%ud(isd:ied,  jsd:jed+1, npz))
+       if (.not.allocated(  self%ud)) allocate (  self%ud(geom%isc:geom%iec,  geom%jsc:geom%jec+1, geom%npz))
      case("vd")
-       if (.not.allocated(  self%vd)) allocate (  self%vd(isd:ied+1,jsd:jed  , npz))
+       if (.not.allocated(  self%vd)) allocate (  self%vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  , geom%npz))
      case("ua")
-       if (.not.allocated(  self%ua)) allocate (  self%ua(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%ua)) allocate (  self%ua(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("va")
-       if (.not.allocated(  self%va)) allocate (  self%va(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%va)) allocate (  self%va(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("t")
-       if (.not.allocated(   self%t)) allocate (   self%t(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(   self%t)) allocate (   self%t(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("delp")
-       if (.not.allocated(self%delp)) allocate (self%delp(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(self%delp)) allocate (self%delp(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("q")
-       if (.not.allocated(   self%q)) allocate (   self%q(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(   self%q)) allocate (   self%q(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("qi")
-       if (.not.allocated(  self%qi)) allocate (  self%qi(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%qi)) allocate (  self%qi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("ql")
-       if (.not.allocated(  self%ql)) allocate (  self%ql(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%ql)) allocate (  self%ql(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("o3")
-       if (.not.allocated(  self%o3)) allocate (  self%o3(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(  self%o3)) allocate (  self%o3(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("w")
-       if (.not.allocated(   self%w)) allocate (   self%w(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(   self%w)) allocate (   self%w(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("delz")
-       if (.not.allocated(self%delz)) allocate (self%delz(isd:ied,  jsd:jed  , npz))
+       if (.not.allocated(self%delz)) allocate (self%delz(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case default 
        call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
 
@@ -112,21 +104,21 @@ enddo
 self%hydrostatic = .true.
 if (allocated(self%w).and.allocated(self%delz)) self%hydrostatic = .false.
 
-if (.not.allocated(self%phis)) allocate(self%phis(isd:ied,jsd:jed    ))
+if (.not.allocated(self%phis)) allocate(self%phis(geom%isc:geom%iec,geom%jsc:geom%jec))
 
 !CRTM surface variables
-if (.not.allocated(self%slmsk )) allocate(self%slmsk (isd:ied,jsd:jed))
-if (.not.allocated(self%sheleg)) allocate(self%sheleg(isd:ied,jsd:jed))
-if (.not.allocated(self%tsea  )) allocate(self%tsea  (isd:ied,jsd:jed))
-if (.not.allocated(self%vtype )) allocate(self%vtype (isd:ied,jsd:jed))
-if (.not.allocated(self%stype )) allocate(self%stype (isd:ied,jsd:jed))
-if (.not.allocated(self%vfrac )) allocate(self%vfrac (isd:ied,jsd:jed))
-if (.not.allocated(self%stc   )) allocate(self%stc   (isd:ied,jsd:jed,4))
-if (.not.allocated(self%smc   )) allocate(self%smc   (isd:ied,jsd:jed,4))
-if (.not.allocated(self%snwdph)) allocate(self%snwdph(isd:ied,jsd:jed))
-if (.not.allocated(self%u_srf )) allocate(self%u_srf (isd:ied,jsd:jed))
-if (.not.allocated(self%v_srf )) allocate(self%v_srf (isd:ied,jsd:jed))
-if (.not.allocated(self%f10m  )) allocate(self%f10m  (isd:ied,jsd:jed))
+if (.not.allocated(self%slmsk )) allocate(self%slmsk (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%sheleg)) allocate(self%sheleg(geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%tsea  )) allocate(self%tsea  (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%vtype )) allocate(self%vtype (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%stype )) allocate(self%stype (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%vfrac )) allocate(self%vfrac (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%stc   )) allocate(self%stc   (geom%isc:geom%iec,geom%jsc:geom%jec,4))
+if (.not.allocated(self%smc   )) allocate(self%smc   (geom%isc:geom%iec,geom%jsc:geom%jec,4))
+if (.not.allocated(self%snwdph)) allocate(self%snwdph(geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%u_srf )) allocate(self%u_srf (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%v_srf )) allocate(self%v_srf (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%f10m  )) allocate(self%f10m  (geom%isc:geom%iec,geom%jsc:geom%jec))
 
 ! Initialize all domain arrays to zero
 call zeros(self)
@@ -1065,7 +1057,6 @@ use surface_vt_mod
 use pressure_vt_mod
 use tmprture_vt_mod
 use moisture_vt_mod, only: crtm_ade_efr, crtm_mixratio
-use wind_vt_mod
 use height_vt_mod,   only: geop_height
 use type_bump, only: bump_type
 
@@ -1158,8 +1149,8 @@ if (present(traj)) then
      traj%ngrid = ngrid
      traj%nobs = nobs
    
-     if (.not.allocated(traj%t)) allocate(traj%t(isd:ied,jsd:jed,1:npz))
-     if (.not.allocated(traj%q)) allocate(traj%q(isd:ied,jsd:jed,1:npz))
+     if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
+     if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
   
      traj%t = state%t
      traj%q = state%q
@@ -1189,14 +1180,14 @@ allocate(obs_state(nobs,1))
 
 ! Local GeoVals
 ! -------------
-allocate(geovale(isd:ied,jsd:jed,npz+1))
-allocate(geovalm(isd:ied,jsd:jed,npz))
+allocate(geovale(isc:iec,jsc:jec,npz+1))
+allocate(geovalm(isc:iec,jsc:jec,npz))
 
 ! Get pressures at edge, center & log center
 ! ------------------------------------------
-allocate(prsi(isd:ied,jsd:jed,npz+1))
-allocate(prs (isd:ied,jsd:jed,npz  ))
-allocate(logp(isd:ied,jsd:jed,npz  ))
+allocate(prsi(isc:iec,jsc:jec,npz+1))
+allocate(prs (isc:iec,jsc:jec,npz  ))
+allocate(logp(isc:iec,jsc:jec,npz  ))
 
 call delp_to_pe_p_logp(geom,state%delp,prsi,prs,logp)
 
@@ -1255,12 +1246,12 @@ endif
 
 ! Get CRTM moisture variables
 ! ---------------------------
-allocate(ql_ade(isd:ied,jsd:jed,npz))
-allocate(qi_ade(isd:ied,jsd:jed,npz))
-allocate(ql_efr(isd:ied,jsd:jed,npz))
-allocate(qi_efr(isd:ied,jsd:jed,npz))
-allocate(qmr(isd:ied,jsd:jed,npz))
-allocate(water_coverage_m(isd:ied,jsd:jed))
+allocate(ql_ade(isc:iec,jsc:jec,npz))
+allocate(qi_ade(isc:iec,jsc:jec,npz))
+allocate(ql_efr(isc:iec,jsc:jec,npz))
+allocate(qi_efr(isc:iec,jsc:jec,npz))
+allocate(qmr(isc:iec,jsc:jec,npz))
+allocate(water_coverage_m(isc:iec,jsc:jec))
 
 ql_ade = 0.0_kind_real
 qi_ade = 0.0_kind_real
