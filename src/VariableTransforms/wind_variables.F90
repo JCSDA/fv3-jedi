@@ -1875,28 +1875,26 @@ subroutine a2d(geom, ua, va, ud, vd)
 
 use mpp_domains_mod, only: mpp_update_domains
 
-implicit none
+ implicit none
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(in)    :: ua(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz) ! U-Wind
-real(kind=kind_real), intent(in)    :: va(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz) ! V-Wind
-real(kind=kind_real), intent(inout) :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz) ! U-Wind
-real(kind=kind_real), intent(inout) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz) ! V-Wind
+ type(fv3jedi_geom),   intent(inout) :: geom
+ real(kind=kind_real), intent(in)    :: ua(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
+ real(kind=kind_real), intent(in)    :: va(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
+ real(kind=kind_real), intent(inout) :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz)
+ real(kind=kind_real), intent(inout) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz)
 
-integer :: is ,ie , js ,je 
-integer :: npx, npy, npz
-integer :: i,j,k, im2,jm2
+ integer :: is ,ie , js ,je 
+ integer :: npx, npy, npz
+ integer :: i,j,k, im2,jm2
 
-real(kind=kind_real), allocatable :: uatemp(:, :, :)
-real(kind=kind_real), allocatable :: vatemp(:, :, :)
-real(kind=kind_real), allocatable :: v3(:,:,:)
-real(kind=kind_real), allocatable :: ue(:,:,:)
-real(kind=kind_real), allocatable :: ve(:,:,:)
-real(kind=kind_real), dimension(:), allocatable :: ut1, ut2, ut3
-real(kind=kind_real), dimension(:), allocatable :: vt1, vt2, vt3
+ real(kind=kind_real) :: uatemp(geom%isd:geom%ied,geom%jsd:geom%jed,geom%npz)
+ real(kind=kind_real) :: vatemp(geom%isd:geom%ied,geom%jsd:geom%jed,geom%npz)
 
-integer :: ism1, iep1, jsm1, jep1
-integer :: i1, j1
+ real(kind=kind_real) :: v3(geom%isc-1:geom%iec+1,geom%jsc-1:geom%jec+1,3)
+ real(kind=kind_real) :: ue(geom%isc-1:geom%iec+1,geom%jsc  :geom%jec+1,3)    ! 3D winds at edges
+ real(kind=kind_real) :: ve(geom%isc  :geom%iec+1,geom%jsc-1:geom%jec+1,3)    ! 3D winds at edges
+ real(kind=kind_real), dimension(geom%isc:geom%iec):: ut1, ut2, ut3
+ real(kind=kind_real), dimension(geom%jsc:geom%jec):: vt1, vt2, vt3
 
  npx = geom%npx
  npy = geom%npy
@@ -1909,142 +1907,121 @@ integer :: i1, j1
  im2 = (npx-1)/2
  jm2 = (npy-1)/2
 
- ism1 = ie-1
- iep1 = ie+1
- jsm1 = js-1
- jep1 = je+1
-
- allocate( uatemp(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz))
- allocate( vatemp(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz))
- allocate( v3(geom%isc-1:geom%iec+1, geom%jsc-1:geom%jec+1, 3))
- allocate( ue(geom%isc-1:geom%iec+1, geom%jsc:geom%jec+1, 3))
- allocate( ve(geom%isc:geom%iec+1, geom%jsc-1:geom%jec+1, 3))
- allocate(ut1(geom%isc:geom%iec), ut2(geom%isc:geom%iec), ut3(geom%isc:geom%iec))
- allocate(vt1(geom%isc:geom%iec), vt2(geom%isc:geom%iec), vt3(geom%isc:geom%iec))
-
  uatemp(:,:,:) = 0.0
  vatemp(:,:,:) = 0.0
 
  uatemp(is:ie,js:je,:) = ua
  vatemp(is:ie,js:je,:) = va
 
- call mpp_update_domains(uatemp, geom%domain, complete=.false.)
+ call mpp_update_domains(uatemp, geom%domain, complete=.true.)
  call mpp_update_domains(vatemp, geom%domain, complete=.true.)
 
  do k=1, npz
 
-   !Compute 3D wind tendency on A grid
-   i=0;j=0
-   do j=jsm1,jep1
-     do i=ism1,iep1
+   do j=js-1,je+1
+     do i=is-1,ie+1
        v3(i,j,1) = uatemp(i,j,k)*geom%vlon(i,j,1) + vatemp(i,j,k)*geom%vlat(i,j,1)
        v3(i,j,2) = uatemp(i,j,k)*geom%vlon(i,j,2) + vatemp(i,j,k)*geom%vlat(i,j,2)
        v3(i,j,3) = uatemp(i,j,k)*geom%vlon(i,j,3) + vatemp(i,j,k)*geom%vlat(i,j,3)
      enddo
    enddo
 
-   ! A --> D, interpolate to cell edges
-   i=0;j=0
-   do j=js,jep1
-     do i=ism1,iep1
+   do j=js,je+1
+     do i=is-1,ie+1
        ue(i,j,1) = v3(i,j-1,1) + v3(i,j,1)
        ue(i,j,2) = v3(i,j-1,2) + v3(i,j,2)
        ue(i,j,3) = v3(i,j-1,3) + v3(i,j,3)
      enddo
    enddo
 
-   i=0;j=0
-   do j=jsm1,jep1
-     do i=is,iep1
+   do j=js-1,je+1
+     do i=is,ie+1
        ve(i,j,1) = v3(i-1,j,1) + v3(i,j,1)
        ve(i,j,2) = v3(i-1,j,2) + v3(i,j,2)
-       ve(ie,j,3) = v3(i-1,j,3) + v3(i,j,3)
+       ve(i,j,3) = v3(i-1,j,3) + v3(i,j,3)
      enddo
    enddo
 
-   !E_W edges (for v-wind):
    if ( is==1 ) then
-     !i = 1
+     i = 1
      do j=js,je
        if ( j>jm2 ) then
-         vt1(j) = geom%edge_vect_w(j)*ve(1,j-1,1)+(1.-geom%edge_vect_w(j))*ve(1,j,1)
-         vt2(j) = geom%edge_vect_w(j)*ve(1,j-1,2)+(1.-geom%edge_vect_w(j))*ve(1,j,2)
-         vt3(j) = geom%edge_vect_w(j)*ve(1,j-1,3)+(1.-geom%edge_vect_w(j))*ve(1,j,3)
+         vt1(j) = geom%edge_vect_w(j)*ve(i,j-1,1)+(1.-geom%edge_vect_w(j))*ve(i,j,1)
+         vt2(j) = geom%edge_vect_w(j)*ve(i,j-1,2)+(1.-geom%edge_vect_w(j))*ve(i,j,2)
+         vt3(j) = geom%edge_vect_w(j)*ve(i,j-1,3)+(1.-geom%edge_vect_w(j))*ve(i,j,3)
        else
-         vt1(j) = geom%edge_vect_w(j)*ve(1,j+1,1)+(1.-geom%edge_vect_w(j))*ve(1,j,1)
-         vt2(j) = geom%edge_vect_w(j)*ve(1,j+1,2)+(1.-geom%edge_vect_w(j))*ve(1,j,2)
-         vt3(j) = geom%edge_vect_w(j)*ve(1,j+1,3)+(1.-geom%edge_vect_w(j))*ve(1,j,3)
+         vt1(j) = geom%edge_vect_w(j)*ve(i,j+1,1)+(1.-geom%edge_vect_w(j))*ve(i,j,1)
+         vt2(j) = geom%edge_vect_w(j)*ve(i,j+1,2)+(1.-geom%edge_vect_w(j))*ve(i,j,2)
+         vt3(j) = geom%edge_vect_w(j)*ve(i,j+1,3)+(1.-geom%edge_vect_w(j))*ve(i,j,3)
        endif
      enddo
      do j=js,je
-       ve(1,j,1) = vt1(j)
-       ve(1,j,2) = vt2(j)
-       ve(1,j,3) = vt3(j)
+       ve(i,j,1) = vt1(j)
+       ve(i,j,2) = vt2(j)
+       ve(i,j,3) = vt3(j)
      enddo
    endif
 
    if ( (ie+1)==npx ) then
-     !i = npx
+     i = npx
      do j=js,je
        if ( j>jm2 ) then
-         vt1(j) = geom%edge_vect_e(j)*ve(npx,j-1,1)+(1.-geom%edge_vect_e(j))*ve(npx,j,1)
-         vt2(j) = geom%edge_vect_e(j)*ve(npx,j-1,2)+(1.-geom%edge_vect_e(j))*ve(npx,j,2)
-         vt3(j) = geom%edge_vect_e(j)*ve(npx,j-1,3)+(1.-geom%edge_vect_e(j))*ve(npx,j,3)
+         vt1(j) = geom%edge_vect_e(j)*ve(i,j-1,1)+(1.-geom%edge_vect_e(j))*ve(i,j,1)
+         vt2(j) = geom%edge_vect_e(j)*ve(i,j-1,2)+(1.-geom%edge_vect_e(j))*ve(i,j,2)
+         vt3(j) = geom%edge_vect_e(j)*ve(i,j-1,3)+(1.-geom%edge_vect_e(j))*ve(i,j,3)
        else
-         vt1(j) = geom%edge_vect_e(j)*ve(npx,j+1,1)+(1.-geom%edge_vect_e(j))*ve(npx,j,1)
-         vt2(j) = geom%edge_vect_e(j)*ve(npx,j+1,2)+(1.-geom%edge_vect_e(j))*ve(npx,j,2)
-         vt3(j) = geom%edge_vect_e(j)*ve(npx,j+1,3)+(1.-geom%edge_vect_e(j))*ve(npx,j,3)
+         vt1(j) = geom%edge_vect_e(j)*ve(i,j+1,1)+(1.-geom%edge_vect_e(j))*ve(i,j,1)
+         vt2(j) = geom%edge_vect_e(j)*ve(i,j+1,2)+(1.-geom%edge_vect_e(j))*ve(i,j,2)
+         vt3(j) = geom%edge_vect_e(j)*ve(i,j+1,3)+(1.-geom%edge_vect_e(j))*ve(i,j,3)
        endif
      enddo
      do j=js,je
-       ve(npx,j,1) = vt1(j)
-       ve(npx,j,2) = vt2(j)
-       ve(npx,j,3) = vt3(j)
+       ve(i,j,1) = vt1(j)
+       ve(i,j,2) = vt2(j)
+       ve(i,j,3) = vt3(j)
      enddo
    endif
 
-   !N-S edges (for u-wind):
    if ( js==1 ) then
-     !j = 1
+     j = 1
      do i=is,ie
        if ( i>im2 ) then
-         ut1(i) = geom%edge_vect_s(i)*ue(i-1,1,1)+(1.-geom%edge_vect_s(i))*ue(i,1,1)
-         ut2(i) = geom%edge_vect_s(i)*ue(i-1,1,2)+(1.-geom%edge_vect_s(i))*ue(i,1,2)
-         ut3(i) = geom%edge_vect_s(i)*ue(i-1,1,3)+(1.-geom%edge_vect_s(i))*ue(i,1,3)
+         ut1(i) = geom%edge_vect_s(i)*ue(i-1,j,1)+(1.-geom%edge_vect_s(i))*ue(i,j,1)
+         ut2(i) = geom%edge_vect_s(i)*ue(i-1,j,2)+(1.-geom%edge_vect_s(i))*ue(i,j,2)
+         ut3(i) = geom%edge_vect_s(i)*ue(i-1,j,3)+(1.-geom%edge_vect_s(i))*ue(i,j,3)
        else
-         ut1(i) = geom%edge_vect_s(i)*ue(i+1,1,1)+(1.-geom%edge_vect_s(i))*ue(i,1,1)
-         ut2(i) = geom%edge_vect_s(i)*ue(i+1,1,2)+(1.-geom%edge_vect_s(i))*ue(i,1,2)
-         ut3(i) = geom%edge_vect_s(i)*ue(i+1,1,3)+(1.-geom%edge_vect_s(i))*ue(i,1,3)
+         ut1(i) = geom%edge_vect_s(i)*ue(i+1,j,1)+(1.-geom%edge_vect_s(i))*ue(i,j,1)
+         ut2(i) = geom%edge_vect_s(i)*ue(i+1,j,2)+(1.-geom%edge_vect_s(i))*ue(i,j,2)
+         ut3(i) = geom%edge_vect_s(i)*ue(i+1,j,3)+(1.-geom%edge_vect_s(i))*ue(i,j,3)
        endif
      enddo
      do i=is,ie
-       ue(i,1,1) = ut1(i)
-       ue(i,1,2) = ut2(i)
-       ue(i,1,3) = ut3(i)
+       ue(i,j,1) = ut1(i)
+       ue(i,j,2) = ut2(i)
+       ue(i,j,3) = ut3(i)
      enddo
    endif
 
    if ( (je+1)==npy ) then
-     !j = npy
+     j = npy
      do i=is,ie
        if ( i>im2 ) then
-         ut1(i) = geom%edge_vect_n(i)*ue(i-1,npy,1)+(1.-geom%edge_vect_n(i))*ue(i,npy,1)
-         ut2(i) = geom%edge_vect_n(i)*ue(i-1,npy,2)+(1.-geom%edge_vect_n(i))*ue(i,npy,2)
-         ut3(i) = geom%edge_vect_n(i)*ue(i-1,npy,3)+(1.-geom%edge_vect_n(i))*ue(i,npy,3)
+         ut1(i) = geom%edge_vect_n(i)*ue(i-1,j,1)+(1.-geom%edge_vect_n(i))*ue(i,j,1)
+         ut2(i) = geom%edge_vect_n(i)*ue(i-1,j,2)+(1.-geom%edge_vect_n(i))*ue(i,j,2)
+         ut3(i) = geom%edge_vect_n(i)*ue(i-1,j,3)+(1.-geom%edge_vect_n(i))*ue(i,j,3)
        else
-         ut1(i) = geom%edge_vect_n(i)*ue(i+1,npy,1)+(1.-geom%edge_vect_n(i))*ue(i,npy,1)
-         ut2(i) = geom%edge_vect_n(i)*ue(i+1,npy,2)+(1.-geom%edge_vect_n(i))*ue(i,npy,2)
-         ut3(i) = geom%edge_vect_n(i)*ue(i+1,npy,3)+(1.-geom%edge_vect_n(i))*ue(i,npy,3)
+         ut1(i) = geom%edge_vect_n(i)*ue(i+1,j,1)+(1.-geom%edge_vect_n(i))*ue(i,j,1)
+         ut2(i) = geom%edge_vect_n(i)*ue(i+1,j,2)+(1.-geom%edge_vect_n(i))*ue(i,j,2)
+         ut3(i) = geom%edge_vect_n(i)*ue(i+1,j,3)+(1.-geom%edge_vect_n(i))*ue(i,j,3)
        endif
      enddo
      do i=is,ie
-        ue(i,npy,1) = ut1(i)
-        ue(i,npy,2) = ut2(i)
-        ue(i,npy,3) = ut3(i)
+       ue(i,j,1) = ut1(i)
+       ue(i,j,2) = ut2(i)
+       ue(i,j,3) = ut3(i)
      enddo
    endif
 
-   !Update:
    do j=js,je+1
      do i=is,ie
        ud(i,j,k) = 0.5*( ue(i,j,1)*geom%es(1,i,j,1) +  &
@@ -2052,6 +2029,7 @@ integer :: i1, j1
                          ue(i,j,3)*geom%es(3,i,j,1) )
      enddo
    enddo
+
    do j=js,je
      do i=is,ie+1
        vd(i,j,k) = 0.5*( ve(i,j,1)*geom%ew(1,i,j,2) +  &
@@ -2062,14 +2040,6 @@ integer :: i1, j1
 
  enddo
 
- deallocate(uatemp)
- deallocate(vatemp)
- deallocate(v3)
- deallocate(ue)
- deallocate(ve)
- deallocate(ut1)
- deallocate(vt1)
-
 end subroutine a2d
 
 ! ------------------------------------------------------------------------------
@@ -2079,33 +2049,28 @@ subroutine a2d_ad(geom, ua_ad, va_ad, ud_ad, vd_ad)
 use fv_mp_adm_mod, only: mpp_update_domains_adm
 
 implicit none
-
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(inout) :: ua_ad(geom%isc:geom%iec,   geom%jsc:geom%jec  , geom%npz)
-real(kind=kind_real), intent(inout) :: va_ad(geom%isc:geom%iec,   geom%jsc:geom%jec  , geom%npz)
-real(kind=kind_real), intent(inout) :: ud_ad(geom%isc:geom%iec,   geom%jsc:geom%jec+1, geom%npz)
-real(kind=kind_real), intent(inout) :: vd_ad(geom%isc:geom%iec+1, geom%jsc:geom%jec  , geom%npz)
-
-real(kind=kind_real), allocatable :: uatemp_ad(:, :, :)
-real(kind=kind_real), allocatable :: uatemp(:, :, :)
-real(kind=kind_real), allocatable :: vatemp_ad(:, :, :)
-real(kind=kind_real), allocatable :: vatemp(:, :, :)
-
-real(kind=kind_real), allocatable :: v3_ad(:,:,:)
-real(kind=kind_real), allocatable :: ue_ad(:,:,:)
-real(kind=kind_real), allocatable :: ve_ad(:,:,:)
-
-real(kind=kind_real), dimension(:), allocatable :: ut1_ad, ut2_ad, ut3_ad
-real(kind=kind_real), dimension(:), allocatable :: vt1_ad, vt2_ad, vt3_ad
+type(fv3jedi_geom), intent(inout) :: geom
+real(kind=kind_real), intent(inout) :: ua_ad(geom%isc:geom%iec, geom%jsc:geom%jec, geom%npz)
+real(kind=kind_real), intent(inout) :: va_ad(geom%isc:geom%iec, geom%jsc:geom%jec, geom%npz)
+real(kind=kind_real), intent(inout) :: ud_ad(geom%isc:geom%iec, geom%jsc:geom%jec+1, geom%npz)
+real(kind=kind_real), intent(inout) :: vd_ad(geom%isc:geom%iec+1, geom%jsc:geom%jec, geom%npz)
 
 integer :: is, ie, js, je
 integer :: npx, npy, npz
 integer :: i, j, k, im2, jm2
-integer :: ism1, iep1, jsm1, jep1
-integer :: i1, j1
+
+real(kind=kind_real) :: uatemp(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz)
+real(kind=kind_real) :: vatemp(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz)
+
+real(kind=kind_real) :: uatemp_ad(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz)
+real(kind=kind_real) :: vatemp_ad(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz)
+real(kind=kind_real) :: v3_ad(geom%isc-1:geom%iec+1, geom%jsc-1:geom%jec+1, 3)
+real(kind=kind_real) :: ue_ad(geom%isc-1:geom%iec+1, geom%jsc:geom%jec+1, 3)
+real(kind=kind_real) :: ve_ad(geom%isc:geom%iec+1, geom%jsc-1:geom%jec+1, 3)
+real(kind=kind_real), dimension(geom%isc:geom%iec) :: ut1_ad, ut2_ad, ut3_ad
+real(kind=kind_real), dimension(geom%jsc:geom%jec) :: vt1_ad, vt2_ad, vt3_ad
 real(kind=kind_real) :: temp_ad
 real(kind=kind_real) :: temp_ad0
-integer :: branch
 
  npx = geom%npx
  npy = geom%npy
@@ -2116,20 +2081,9 @@ integer :: branch
  je = geom%jec
  im2 = (npx-1)/2
  jm2 = (npy-1)/2
- ism1 = ie - 1
- iep1 = ie + 1
- jsm1 = js - 1
- jep1 = je + 1
 
-allocate( uatemp_ad(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz))
-allocate( uatemp(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz))
-allocate( vatemp_ad(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz))
-allocate( vatemp(geom%isd:geom%ied, geom%jsd:geom%jed, geom%npz))
-allocate( v3_ad(geom%isc-1:geom%iec+1, geom%jsc-1:geom%jec+1, 3))
-allocate( ue_ad(geom%isc-1:geom%iec+1, geom%jsc:geom%jec+1, 3))
-allocate( ve_ad(geom%isc:geom%iec+1, geom%jsc-1:geom%jec+1, 3))
-allocate(ut1_ad(geom%isc:geom%iec), ut2_ad(geom%isc:geom%iec), ut3_ad(geom%isc:geom%iec))
-allocate(vt1_ad(geom%isc:geom%iec), vt2_ad(geom%isc:geom%iec), vt3_ad(geom%isc:geom%iec))
+ uatemp(:, :, :) = 0.0
+ vatemp(:, :, :) = 0.0
 
  v3_ad = 0.0_8
  uatemp_ad = 0.0_8
@@ -2277,7 +2231,7 @@ allocate(vt1_ad(geom%isc:geom%iec), vt2_ad(geom%isc:geom%iec), vt3_ad(geom%isc:g
        ve_ad(1, j, 1) = 0.0_8
      end do
      do j=je,js,-1
-       if (j .gt. jm2) then
+       if (j .le. jm2) then
          ve_ad(1, j+1, 3) = ve_ad(1, j+1, 3) + geom%edge_vect_w(j)*vt3_ad(j)
          ve_ad(1, j, 3) = ve_ad(1, j, 3) + (1.-geom%edge_vect_w(j))*vt3_ad(j)
          vt3_ad(j) = 0.0_8
@@ -2301,11 +2255,11 @@ allocate(vt1_ad(geom%isc:geom%iec), vt2_ad(geom%isc:geom%iec), vt3_ad(geom%isc:g
      end do
    end if
 
-   do j=jep1,jsm1,-1
-     do i=iep1,is,-1
-       v3_ad(i-1, j, 3) = v3_ad(i-1, j, 3) + ve_ad(ie, j, 3)
-       v3_ad(i, j, 3) = v3_ad(i, j, 3) + ve_ad(ie, j, 3)
-       ve_ad(ie, j, 3) = 0.0_8
+   do j=je+1,js-1,-1
+     do i=ie+1,is,-1
+       v3_ad(i-1, j, 3) = v3_ad(i-1, j, 3) + ve_ad(i, j, 3)
+       v3_ad(i, j, 3) = v3_ad(i, j, 3) + ve_ad(i, j, 3)
+       ve_ad(i, j, 3) = 0.0_8
        v3_ad(i-1, j, 2) = v3_ad(i-1, j, 2) + ve_ad(i, j, 2)
        v3_ad(i, j, 2) = v3_ad(i, j, 2) + ve_ad(i, j, 2)
        ve_ad(i, j, 2) = 0.0_8
@@ -2315,8 +2269,8 @@ allocate(vt1_ad(geom%isc:geom%iec), vt2_ad(geom%isc:geom%iec), vt3_ad(geom%isc:g
      end do
    end do
 
-   do j=jep1,js,-1
-     do i=iep1,ism1,-1
+   do j=je+1,js,-1
+     do i=ie+1,is-1,-1
        v3_ad(i, j-1, 3) = v3_ad(i, j-1, 3) + ue_ad(i, j, 3)
        v3_ad(i, j, 3) = v3_ad(i, j, 3) + ue_ad(i, j, 3)
        ue_ad(i, j, 3) = 0.0_8
@@ -2329,8 +2283,8 @@ allocate(vt1_ad(geom%isc:geom%iec), vt2_ad(geom%isc:geom%iec), vt3_ad(geom%isc:g
      end do
    end do
 
-   do j=jep1,jsm1,-1
-     do i=iep1,ism1,-1
+   do j=je+1,js-1,-1
+     do i=ie+1,is-1,-1
        uatemp_ad(i, j, k) = uatemp_ad(i, j, k) + geom%vlon(i, j, 3)*v3_ad(i, j, 3)
        vatemp_ad(i, j, k) = vatemp_ad(i, j, k) + geom%vlat(i, j, 3)*v3_ad(i, j, 3)
        v3_ad(i, j, 3) = 0.0_8
@@ -2342,26 +2296,397 @@ allocate(vt1_ad(geom%isc:geom%iec), vt2_ad(geom%isc:geom%iec), vt3_ad(geom%isc:g
        v3_ad(i, j, 1) = 0.0_8
      end do
    end do
-
  end do
 
  call mpp_update_domains_adm(vatemp, vatemp_ad, geom%domain, complete=.true.)
- call mpp_update_domains_adm(uatemp, uatemp_ad, geom%domain, complete=.false.)
+ call mpp_update_domains_adm(uatemp, uatemp_ad, geom%domain, complete=.true.)
 
  va_ad = va_ad + vatemp_ad(is:ie, js:je, :)
  ua_ad = ua_ad + uatemp_ad(is:ie, js:je, :)
 
- deallocate(uatemp_ad)
- deallocate(uatemp)
- deallocate(vatemp_ad)
- deallocate(vatemp)
- deallocate(v3_ad)
- deallocate(ue_ad)
- deallocate(ve_ad)
- deallocate(ut1_ad)
- deallocate(vt1_ad)
-
 end subroutine a2d_ad
+
+! ------------------------------------------------------------------------------
+
+ subroutine d2a(geom, u, v, ua, va)
+
+ !c2l_ord4
+
+ use mpp_domains_mod, only: mpp_update_domains, DGRID_NE
+
+ implicit none
+
+ type(fv3jedi_geom), intent(inout) :: geom
+
+  real(kind=kind_real), intent(inout):: u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,geom%npz)
+  real(kind=kind_real), intent(inout):: v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,geom%npz)
+  real(kind=kind_real), intent(inout)::  ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,geom%npz)
+  real(kind=kind_real), intent(inout)::  va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,geom%npz)
+
+! Local 
+! 4-pt Lagrange interpolation
+  real(kind=kind_real) :: c1 =  1.125
+  real(kind=kind_real) :: c2 = -0.125
+  real(kind=kind_real) :: utmp(geom%isc:geom%iec,  geom%jsc:geom%jec+1)
+  real(kind=kind_real) :: vtmp(geom%isc:geom%iec+1,geom%jsc:geom%jec)
+  real(kind=kind_real) :: wu(geom%isc:geom%iec,  geom%jsc:geom%jec+1)
+  real(kind=kind_real) :: wv(geom%isc:geom%iec+1,geom%jsc:geom%jec)
+
+  integer i, j, k
+  integer :: is,  ie,  js,  je, npx, npy, npz
+
+  is  = geom%isc
+  ie  = geom%iec
+  js  = geom%jsc
+  je  = geom%jec
+  npx = geom%npx
+  npy = geom%npy
+  npz = geom%npz
+
+       call mpp_update_domains(u, v, geom%domain, gridtype=DGRID_NE)
+
+!$OMP parallel do default(none) shared(is,ie,js,je,npz,npx,npy,c2,c1, &
+!$OMP                                  u,v,ua,va)         &
+!$OMP                          private(utmp, vtmp, wu, wv)
+ do k=1,npz
+
+   do j=max(2,js),min(npy-2,je)
+     do i=max(2,is),min(npx-2,ie)
+       utmp(i,j) = c2*(u(i,j-1,k)+u(i,j+2,k)) + c1*(u(i,j,k)+u(i,j+1,k))
+       vtmp(i,j) = c2*(v(i-1,j,k)+v(i+2,j,k)) + c1*(v(i,j,k)+v(i+1,j,k))
+     enddo
+   enddo
+
+   if ( js==1  ) then
+     do i=is,ie+1
+       wv(i,1) = v(i,1,k)*geom%dy(i,1)
+     enddo
+     do i=is,ie
+       vtmp(i,1) = 2.*(wv(i,1) + wv(i+1,1)) / (geom%dy(i,1)+geom%dy(i+1,1))
+       utmp(i,1) = 2.*(u(i,1,k)*geom%dx(i,1) + u(i,2,k)*geom%dx(i,2))   &
+                    / (         geom%dx(i,1) +          geom%dx(i,2))
+     enddo
+   endif
+
+   if ( (je+1)==npy   ) then
+     j = npy-1
+     do i=is,ie+1
+       wv(i,j) = v(i,j,k)*geom%dy(i,j)
+     enddo
+     do i=is,ie
+       vtmp(i,j) = 2.*(wv(i,j) + wv(i+1,j)) / (geom%dy(i,j)+geom%dy(i+1,j))
+       utmp(i,j) = 2.*(u(i,j,k)*geom%dx(i,j) + u(i,j+1,k)*geom%dx(i,j+1))   &
+                   / (         geom%dx(i,j) +            geom%dx(i,j+1))
+     enddo
+   endif
+
+   if ( is==1 ) then
+     i = 1
+     do j=js,je
+       wv(1,j) = v(1,j,k)*geom%dy(1,j)
+       wv(2,j) = v(2,j,k)*geom%dy(2,j)
+     enddo
+     do j=js,je+1
+       wu(i,j) = u(i,j,k)*geom%dx(i,j)
+     enddo
+     do j=js,je
+       utmp(i,j) = 2.*(wu(i,j) + wu(i,j+1))/(geom%dx(i,j)+geom%dx(i,j+1))
+       vtmp(i,j) = 2.*(wv(1,j) + wv(2,j  ))/(geom%dy(1,j)+geom%dy(2,j))
+     enddo
+   endif
+
+   if ( (ie+1)==npx) then
+     i = npx-1
+     do j=js,je
+       wv(i,  j) = v(i,  j,k)*geom%dy(i,  j)
+       wv(i+1,j) = v(i+1,j,k)*geom%dy(i+1,j)
+     enddo
+     do j=js,je+1
+       wu(i,j) = u(i,j,k)*geom%dx(i,j)
+     enddo
+     do j=js,je
+       utmp(i,j) = 2.*(wu(i,j) + wu(i,  j+1))/(geom%dx(i,j)+geom%dx(i,j+1))
+       vtmp(i,j) = 2.*(wv(i,j) + wv(i+1,j  ))/(geom%dy(i,j)+geom%dy(i+1,j))
+     enddo
+   endif
+
+   !Transform local a-grid winds into latitude-longitude coordinates
+   do j=js,je
+     do i=is,ie
+       ua(i,j,k) = geom%a11(i,j)*utmp(i,j) + geom%a12(i,j)*vtmp(i,j)
+       va(i,j,k) = geom%a21(i,j)*utmp(i,j) + geom%a22(i,j)*vtmp(i,j)
+     enddo
+   enddo
+
+ enddo
+
+end subroutine d2a
+
+! ------------------------------------------------------------------------------
+
+  SUBROUTINE D2A_AD(geom, u_ad, v_ad, ua_ad, va_ad)
+
+   use fv_mp_adm_mod, only: mpp_update_domains_adm
+   use mpp_domains_mod, only: DGRID_NE
+
+    IMPLICIT NONE
+    TYPE(FV3JEDI_GEOM), INTENT(INOUT) :: geom
+    REAL(kind=kind_real) :: u(geom%isd:geom%ied, geom%jsd&
+&   :geom%jed+1, geom%npz)
+    REAL(kind=kind_real), INTENT(INOUT) :: u_ad(geom%isd:geom%ied, geom%&
+&   jsd:geom%jed+1, geom%npz)
+    REAL(kind=kind_real) :: v(geom%isd:geom%ied+1, geom%&
+&   jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real), INTENT(INOUT) :: v_ad(geom%isd:geom%ied+1, &
+&   geom%jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real) :: ua(geom%isd:geom%ied, geom%&
+&   jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real), INTENT(INOUT) :: ua_ad(geom%isd:geom%ied, geom&
+&   %jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real) :: va(geom%isd:geom%ied, geom%&
+&   jsd:geom%jed, geom%npz)
+    REAL(kind=kind_real), INTENT(INOUT) :: va_ad(geom%isd:geom%ied, geom&
+&   %jsd:geom%jed, geom%npz)
+! Local 
+! 4-pt Lagrange interpolation
+    REAL(kind=kind_real), SAVE :: c1=1.125
+    REAL(kind=kind_real), SAVE :: c2=-0.125
+    REAL(kind=kind_real) :: utmp(geom%isc:geom%iec, geom%jsc:geom%jec+1)
+    REAL(kind=kind_real) :: utmp_ad(geom%isc:geom%iec, geom%jsc:geom%jec&
+&   +1)
+    REAL(kind=kind_real) :: vtmp(geom%isc:geom%iec+1, geom%jsc:geom%jec)
+    REAL(kind=kind_real) :: vtmp_ad(geom%isc:geom%iec+1, geom%jsc:geom%&
+&   jec)
+    REAL(kind=kind_real) :: wu(geom%isc:geom%iec, geom%jsc:geom%jec+1)
+    REAL(kind=kind_real) :: wu_ad(geom%isc:geom%iec, geom%jsc:geom%jec+1&
+&   )
+    REAL(kind=kind_real) :: wv(geom%isc:geom%iec+1, geom%jsc:geom%jec)
+    REAL(kind=kind_real) :: wv_ad(geom%isc:geom%iec+1, geom%jsc:geom%jec&
+&   )
+    INTEGER :: i, j, k
+    INTEGER :: is, ie, js, je, npx, npy, npz
+    INTRINSIC MAX
+    INTRINSIC MIN
+    INTEGER :: max1
+    INTEGER :: max2
+    INTEGER :: min1
+    INTEGER :: min2
+    REAL(kind=kind_real) :: temp_ad
+    REAL(kind=kind_real) :: temp_ad0
+    REAL(kind=kind_real) :: temp_ad1
+    REAL(kind=kind_real) :: temp_ad2
+    REAL(kind=kind_real) :: temp_ad3
+    REAL(kind=kind_real) :: temp_ad4
+    REAL(kind=kind_real) :: temp_ad5
+    REAL(kind=kind_real) :: temp_ad6
+    INTEGER :: ad_from
+    INTEGER :: ad_to
+    INTEGER :: ad_from0
+    INTEGER :: ad_to0
+    INTEGER :: branch
+    is = geom%isc
+    ie = geom%iec
+    js = geom%jsc
+    je = geom%jec
+    npx = geom%npx
+    npy = geom%npy
+    npz = geom%npz
+!$OMP parallel do default(none) shared(is,ie,js,je,npz,npx,npy,c2,c1, &
+!$OMP                                  u,v,ua,va)         &
+!$OMP                          private(utmp, vtmp, wu, wv)
+    DO k=1,npz
+      IF (2 .LT. js) THEN
+        max1 = js
+      ELSE
+        max1 = 2
+      END IF
+      IF (npy - 2 .GT. je) THEN
+        min1 = je
+      ELSE
+        min1 = npy - 2
+      END IF
+      ad_from0 = max1
+      DO j=ad_from0,min1
+        IF (2 .LT. is) THEN
+          max2 = is
+        ELSE
+          max2 = 2
+        END IF
+        IF (npx - 2 .GT. ie) THEN
+          min2 = ie
+        ELSE
+          min2 = npx - 2
+        END IF
+        ad_from = max2
+        CALL PUSHINTEGER4(i)
+        i = min2 + 1
+        CALL PUSHINTEGER4(i - 1)
+        CALL PUSHINTEGER4(ad_from)
+      END DO
+      CALL PUSHINTEGER4(j - 1)
+      CALL PUSHINTEGER4(ad_from0)
+      IF (js .EQ. 1) THEN
+        CALL PUSHINTEGER4(i)
+        CALL PUSHCONTROL1B(0)
+      ELSE
+        CALL PUSHCONTROL1B(1)
+      END IF
+      IF (je + 1 .EQ. npy) THEN
+        j = npy - 1
+        CALL PUSHINTEGER4(i)
+        CALL PUSHCONTROL1B(0)
+      ELSE
+        CALL PUSHCONTROL1B(1)
+      END IF
+      IF (is .EQ. 1) THEN
+        CALL PUSHINTEGER4(i)
+        i = 1
+        CALL PUSHINTEGER4(j)
+        CALL PUSHCONTROL1B(0)
+      ELSE
+        CALL PUSHCONTROL1B(1)
+      END IF
+      IF (ie + 1 .EQ. npx) THEN
+        CALL PUSHINTEGER4(i)
+        i = npx - 1
+        CALL PUSHINTEGER4(j)
+        CALL PUSHCONTROL1B(1)
+      ELSE
+        CALL PUSHCONTROL1B(0)
+      END IF
+      CALL PUSHINTEGER4(j)
+!Transform local a-grid winds into latitude-longitude coordinates
+      DO j=js,je
+        CALL PUSHINTEGER4(i)
+      END DO
+    END DO
+    vtmp_ad = 0.0_8
+    wu_ad = 0.0_8
+    wv_ad = 0.0_8
+    utmp_ad = 0.0_8
+    DO k=npz,1,-1
+      DO j=je,js,-1
+        DO i=ie,is,-1
+          utmp_ad(i, j) = utmp_ad(i, j) + geom%a11(i, j)*ua_ad(i, j, k) &
+&           + geom%a21(i, j)*va_ad(i, j, k)
+          vtmp_ad(i, j) = vtmp_ad(i, j) + geom%a12(i, j)*ua_ad(i, j, k) &
+&           + geom%a22(i, j)*va_ad(i, j, k)
+          va_ad(i, j, k) = 0.0_8
+          ua_ad(i, j, k) = 0.0_8
+        END DO
+        CALL POPINTEGER4(i)
+      END DO
+      CALL POPINTEGER4(j)
+      CALL POPCONTROL1B(branch)
+      IF (branch .NE. 0) THEN
+        DO j=je,js,-1
+          temp_ad5 = 2.*vtmp_ad(i, j)/(geom%dy(i, j)+geom%dy(i+1, j))
+          wv_ad(i, j) = wv_ad(i, j) + temp_ad5
+          wv_ad(i+1, j) = wv_ad(i+1, j) + temp_ad5
+          vtmp_ad(i, j) = 0.0_8
+          temp_ad6 = 2.*utmp_ad(i, j)/(geom%dx(i, j)+geom%dx(i, j+1))
+          wu_ad(i, j) = wu_ad(i, j) + temp_ad6
+          wu_ad(i, j+1) = wu_ad(i, j+1) + temp_ad6
+          utmp_ad(i, j) = 0.0_8
+        END DO
+        DO j=je+1,js,-1
+          u_ad(i, j, k) = u_ad(i, j, k) + geom%dx(i, j)*wu_ad(i, j)
+          wu_ad(i, j) = 0.0_8
+        END DO
+        DO j=je,js,-1
+          v_ad(i+1, j, k) = v_ad(i+1, j, k) + geom%dy(i+1, j)*wv_ad(i+1&
+&           , j)
+          wv_ad(i+1, j) = 0.0_8
+          v_ad(i, j, k) = v_ad(i, j, k) + geom%dy(i, j)*wv_ad(i, j)
+          wv_ad(i, j) = 0.0_8
+        END DO
+        CALL POPINTEGER4(j)
+        CALL POPINTEGER4(i)
+      END IF
+      CALL POPCONTROL1B(branch)
+      IF (branch .EQ. 0) THEN
+        DO j=je,js,-1
+          temp_ad3 = 2.*vtmp_ad(i, j)/(geom%dy(1, j)+geom%dy(2, j))
+          wv_ad(1, j) = wv_ad(1, j) + temp_ad3
+          wv_ad(2, j) = wv_ad(2, j) + temp_ad3
+          vtmp_ad(i, j) = 0.0_8
+          temp_ad4 = 2.*utmp_ad(i, j)/(geom%dx(i, j)+geom%dx(i, j+1))
+          wu_ad(i, j) = wu_ad(i, j) + temp_ad4
+          wu_ad(i, j+1) = wu_ad(i, j+1) + temp_ad4
+          utmp_ad(i, j) = 0.0_8
+        END DO
+        DO j=je+1,js,-1
+          u_ad(i, j, k) = u_ad(i, j, k) + geom%dx(i, j)*wu_ad(i, j)
+          wu_ad(i, j) = 0.0_8
+        END DO
+        DO j=je,js,-1
+          v_ad(2, j, k) = v_ad(2, j, k) + geom%dy(2, j)*wv_ad(2, j)
+          wv_ad(2, j) = 0.0_8
+          v_ad(1, j, k) = v_ad(1, j, k) + geom%dy(1, j)*wv_ad(1, j)
+          wv_ad(1, j) = 0.0_8
+        END DO
+        CALL POPINTEGER4(j)
+        CALL POPINTEGER4(i)
+      END IF
+      CALL POPCONTROL1B(branch)
+      IF (branch .EQ. 0) THEN
+        DO i=ie,is,-1
+          temp_ad1 = 2.*utmp_ad(i, j)/(geom%dx(i, j)+geom%dx(i, j+1))
+          u_ad(i, j, k) = u_ad(i, j, k) + geom%dx(i, j)*temp_ad1
+          u_ad(i, j+1, k) = u_ad(i, j+1, k) + geom%dx(i, j+1)*temp_ad1
+          utmp_ad(i, j) = 0.0_8
+          temp_ad2 = 2.*vtmp_ad(i, j)/(geom%dy(i, j)+geom%dy(i+1, j))
+          wv_ad(i, j) = wv_ad(i, j) + temp_ad2
+          wv_ad(i+1, j) = wv_ad(i+1, j) + temp_ad2
+          vtmp_ad(i, j) = 0.0_8
+        END DO
+        DO i=ie+1,is,-1
+          v_ad(i, j, k) = v_ad(i, j, k) + geom%dy(i, j)*wv_ad(i, j)
+          wv_ad(i, j) = 0.0_8
+        END DO
+        CALL POPINTEGER4(i)
+      END IF
+      CALL POPCONTROL1B(branch)
+      IF (branch .EQ. 0) THEN
+        DO i=ie,is,-1
+          temp_ad = 2.*utmp_ad(i, 1)/(geom%dx(i, 1)+geom%dx(i, 2))
+          u_ad(i, 1, k) = u_ad(i, 1, k) + geom%dx(i, 1)*temp_ad
+          u_ad(i, 2, k) = u_ad(i, 2, k) + geom%dx(i, 2)*temp_ad
+          utmp_ad(i, 1) = 0.0_8
+          temp_ad0 = 2.*vtmp_ad(i, 1)/(geom%dy(i, 1)+geom%dy(i+1, 1))
+          wv_ad(i, 1) = wv_ad(i, 1) + temp_ad0
+          wv_ad(i+1, 1) = wv_ad(i+1, 1) + temp_ad0
+          vtmp_ad(i, 1) = 0.0_8
+        END DO
+        DO i=ie+1,is,-1
+          v_ad(i, 1, k) = v_ad(i, 1, k) + geom%dy(i, 1)*wv_ad(i, 1)
+          wv_ad(i, 1) = 0.0_8
+        END DO
+        CALL POPINTEGER4(i)
+      END IF
+      CALL POPINTEGER4(ad_from0)
+      CALL POPINTEGER4(ad_to0)
+      DO j=ad_to0,ad_from0,-1
+        CALL POPINTEGER4(ad_from)
+        CALL POPINTEGER4(ad_to)
+        DO i=ad_to,ad_from,-1
+          v_ad(i-1, j, k) = v_ad(i-1, j, k) + c2*vtmp_ad(i, j)
+          v_ad(i+2, j, k) = v_ad(i+2, j, k) + c2*vtmp_ad(i, j)
+          v_ad(i, j, k) = v_ad(i, j, k) + c1*vtmp_ad(i, j)
+          v_ad(i+1, j, k) = v_ad(i+1, j, k) + c1*vtmp_ad(i, j)
+          vtmp_ad(i, j) = 0.0_8
+          u_ad(i, j-1, k) = u_ad(i, j-1, k) + c2*utmp_ad(i, j)
+          u_ad(i, j+2, k) = u_ad(i, j+2, k) + c2*utmp_ad(i, j)
+          u_ad(i, j, k) = u_ad(i, j, k) + c1*utmp_ad(i, j)
+          u_ad(i, j+1, k) = u_ad(i, j+1, k) + c1*utmp_ad(i, j)
+          utmp_ad(i, j) = 0.0_8
+        END DO
+        CALL POPINTEGER4(i)
+      END DO
+    END DO
+    CALL MPP_UPDATE_DOMAINS_ADM(u, u_ad, v, v_ad, geom%domain, gridtype=&
+&                         dgrid_ne)
+  END SUBROUTINE D2A_AD
 
 ! ------------------------------------------------------------------------------
 

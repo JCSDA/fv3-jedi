@@ -1040,9 +1040,6 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
-!NOTE: while the variable name is pt, FV3 expects dry temperature
-
-!To zero the halos
 state%ud   = 0.0
 state%vd   = 0.0
 state%t    = 0.0
@@ -1055,7 +1052,6 @@ endif
 state%ua    = 0.0
 state%va    = 0.0
 
-!Only copy compute grid incase of halo differences
 state%ud  (isc:iec  ,jsc:jec+1,:) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
 state%vd  (isc:iec+1,jsc:jec  ,:) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
 state%t   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
@@ -1085,15 +1081,18 @@ type(fv3jedi_increment), intent(in) :: inc
 type(fv3jedi_model), intent(inout)  :: self
 
 integer :: isc,iec,jsc,jec
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
 isc = self%FV_Atm(1)%bd%isc
 iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
-!NOTE: while the variable name is pt, FV3 expects dry temperature
+allocate(ud(isc:iec  ,jsc:jec+1,1:geom%npz))
+allocate(vd(isc:iec+1,jsc:jec  ,1:geom%npz))
+ud = 0.0_kind_real
+vd = 0.0_kind_real
 
-!To zero the halos
 self%FV_AtmP(1)%up    = 0.0
 self%FV_AtmP(1)%vp    = 0.0
 self%FV_AtmP(1)%ptp   = 0.0
@@ -1102,18 +1101,11 @@ self%FV_AtmP(1)%qp    = 0.0
 self%FV_AtmP(1)%wp    = 0.0
 self%FV_AtmP(1)%delzp = 0.0
 
-!If increment is A-Grid winds then interpolate to D-Grid
-!if (allocated(inc%ud) .and. allocated(inc%vd)) then
-!  self%FV_AtmP(1)%up(isc:iec,jsc:jec,:) = inc%ud(isc:iec,jsc:jec,:)
-!  self%FV_AtmP(1)%vp(isc:iec,jsc:jec,:) = inc%vd(isc:iec,jsc:jec,:)
-if (allocated(inc%ua) .and. allocated(inc%va)) then
-  call a2d(geom, inc%ua(isc:iec,jsc:jec,:), inc%va(isc:iec,jsc:jec,:), &
-                 self%FV_AtmP(1)%up(isc:iec,jsc:jec+1,:), self%FV_AtmP(1)%vp(isc:iec+1,jsc:jec,:))
-else
-  call abor1_ftn("fv3jedi_model:inc_to_model_tl: wind combination problem")
-endif
+call a2d(geom, inc%ua(isc:iec,jsc:jec  ,:), inc%va(isc:iec  ,jsc:jec,:), &
+                   ud(isc:iec,jsc:jec+1,:),     vd(isc:iec+1,jsc:jec,:))
 
-!Rest of the variables
+self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)            = ud      (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)            = vd      (isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = inc%t   (isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = inc%delp(isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = inc%q   (isc:iec,jsc:jec,:)
@@ -1125,15 +1117,19 @@ if (.not. inc%hydrostatic) then
    self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = inc%w   (isc:iec,jsc:jec,:)
 endif
 
+deallocate(ud,vd)
+
 end subroutine inc_to_model_tl
 
 ! ------------------------------------------------------------------------------
 
 subroutine model_to_inc_tl(geom,self,inc)
 
+use wind_vt_mod, only: d2a
+
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_model),     intent(in)    :: self
+type(fv3jedi_model),     intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
 integer :: isc,iec,jsc,jec
@@ -1143,9 +1139,6 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
-!NOTE: while the variable name is pt, FV3 expects dry temperature
-
-!To zero the halos
 inc%ua   = 0.0
 inc%va   = 0.0
 inc%t    = 0.0
@@ -1159,7 +1152,8 @@ if (.not. inc%hydrostatic) then
    inc%w    = 0.0
 endif
 
-!Only copy compute grid incase of halo differences
+call d2a(geom, self%FV_AtmP(1)%up, self%FV_AtmP(1)%vp, self%FV_AtmP(1)%uap, self%FV_AtmP(1)%vap)
+
 inc%ua  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%uap  (isc:iec,jsc:jec,:)
 inc%va  (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vap  (isc:iec,jsc:jec,:)
 inc%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
@@ -1179,6 +1173,8 @@ end subroutine model_to_inc_tl
 
 subroutine model_to_inc_ad(geom,inc,self)
 
+use wind_vt_mod, only: d2a_ad
+
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: inc
@@ -1191,13 +1187,8 @@ iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
 
-!NOTE: while the variable name is pt, FV3 expects dry temperature
-
-!D-Grid winds are not an output
 self%FV_AtmP(1)%up    = 0.0
 self%FV_AtmP(1)%vp    = 0.0
-
-!To zero the halos
 self%FV_AtmP(1)%uap   = 0.0
 self%FV_AtmP(1)%vap   = 0.0
 self%FV_AtmP(1)%ptp   = 0.0
@@ -1206,9 +1197,8 @@ self%FV_AtmP(1)%qp    = 0.0
 self%FV_AtmP(1)%wp    = 0.0
 self%FV_AtmP(1)%delzp = 0.0
 
-!Only copy compute grid incase of halo differences
-self%FV_AtmP(1)%uap  (isc:iec,jsc:jec,:)            = inc%ua  (isc:iec,jsc:jec,:)
-self%FV_AtmP(1)%vap  (isc:iec,jsc:jec,:)            = inc%va  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%uap   (isc:iec,jsc:jec,:)            = inc%ua  (isc:iec,jsc:jec,:)
+self%FV_AtmP(1)%vap   (isc:iec,jsc:jec,:)            = inc%va  (isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)            = inc%t   (isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)            = inc%delp(isc:iec,jsc:jec,:)
 self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q ) = inc%q   (isc:iec,jsc:jec,:)
@@ -1219,6 +1209,11 @@ if (.not. inc%hydrostatic) then
    self%FV_AtmP(1)%delzp(isc:iec,jsc:jec,:) = inc%delz(isc:iec,jsc:jec,:)
    self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:) = inc%w   (isc:iec,jsc:jec,:)
 endif
+
+call d2a_ad(geom, self%FV_AtmP(1)%up, self%FV_AtmP(1)%vp, self%FV_AtmP(1)%uap, self%FV_AtmP(1)%vap)
+
+self%FV_AtmP(1)%uap(isc:iec,jsc:jec,:) = 0.0
+self%FV_AtmP(1)%vap(isc:iec,jsc:jec,:) = 0.0
 
 end subroutine model_to_inc_ad
 
@@ -1233,26 +1228,19 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_model),     intent(inout) :: self
 
-integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
-
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va
+integer :: isc,iec,jsc,jec
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
 isc = self%FV_Atm(1)%bd%isc
 iec = self%FV_Atm(1)%bd%iec
 jsc = self%FV_Atm(1)%bd%jsc
 jec = self%FV_Atm(1)%bd%jec
-isd = self%FV_Atm(1)%bd%isd
-ied = self%FV_Atm(1)%bd%ied
-jsd = self%FV_Atm(1)%bd%jsd
-jed = self%FV_Atm(1)%bd%jed
-npz = self%FV_Atm(1)%npz
 
-allocate(ua(isd:ied,jsd:jed,1:npz))
-allocate(va(isd:ied,jsd:jed,1:npz))
+allocate(ud(isc:iec  ,jsc:jec+1,1:geom%npz))
+allocate(vd(isc:iec+1,jsc:jec  ,1:geom%npz))
+ud = 0.0_kind_real
+vd = 0.0_kind_real
 
-!NOTE: while the variable name is pt, FV3 expects dry temperature
-
-!To zero the halos
 inc%ua   = 0.0
 inc%va   = 0.0
 inc%t    = 0.0
@@ -1266,20 +1254,8 @@ if (.not. inc%hydrostatic) then
    inc%w    = 0.0
 endif
 
-!If increment is A-Grid winds then interpolate to D-Grid
-!if (allocated(inc%ud) .and. allocated(inc%vd)) then
-!  inc%ud(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up(isc:iec,jsc:jec,:)
-!  inc%vd(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp(isc:iec,jsc:jec,:)
-if (allocated(inc%ua) .and. allocated(inc%va)) then
-  call a2d_ad(geom, inc%ua(isc:iec,jsc:jec,:), inc%va(isc:iec,jsc:jec,:), &
-                    self%FV_AtmP(1)%up(isc:iec,jsc:jec+1,:), self%FV_AtmP(1)%vp(isc:iec+1,jsc:jec,:))
-else
-  call abor1_ftn("fv3jedi_model:inc_to_model_tl: wind combination problem")
-endif
-
-!Only copy compute grid incase of halo differences
-inc%ua  (isc:iec,jsc:jec,:) = ua                   (isc:iec,jsc:jec,:)
-inc%va  (isc:iec,jsc:jec,:) = va                   (isc:iec,jsc:jec,:)
+ud      (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%up   (isc:iec,jsc:jec,:)
+vd      (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%vp   (isc:iec,jsc:jec,:)
 inc%t   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%ptp  (isc:iec,jsc:jec,:)
 inc%delp(isc:iec,jsc:jec,:) = self%FV_AtmP(1)%delpp(isc:iec,jsc:jec,:)
 inc%q   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%qp   (isc:iec,jsc:jec,:,self%ti_q )
@@ -1291,7 +1267,11 @@ if (.not. inc%hydrostatic) then
   inc%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
 endif
 
-deallocate(ua,va)
+!Convert A to D
+call a2d_ad(geom, inc%ua(isc:iec,jsc:jec  ,:), inc%va(isc:iec  ,jsc:jec,:), &
+                      ud(isc:iec,jsc:jec+1,:),     vd(isc:iec+1,jsc:jec,:))
+
+deallocate(ud,vd)
 
 end subroutine inc_to_model_ad
 

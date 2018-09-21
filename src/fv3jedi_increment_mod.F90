@@ -81,6 +81,10 @@ do var = 1, self%vars%nv
 
    select case (trim(self%vars%fldnames(var)))
 
+     case("ud")
+       !if (.not.allocated(  self%ud)) allocate (  self%ud(isd:ied,  jsd:jed+1, npz))
+     case("vd")
+       !if (.not.allocated(  self%vd)) allocate (  self%vd(isd:ied+1,jsd:jed  , npz))
      case("ua")
        if (.not.allocated(  self%ua)) allocate (  self%ua(isd:ied,  jsd:jed  , npz))
      case("va")
@@ -917,6 +921,27 @@ if (allocated(inc%q)) then
   pstat(2,5) = maxval(inc%q(isc:iec,jsc:jec,:))
   pstat(3,5) = sqrt((sum(inc%q(isc:iec,jsc:jec,:))/gs)**2)
 endif
+  
+!qi
+if (allocated(inc%qi)) then
+  pstat(1,5) = minval(inc%qi(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%qi(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%qi(isc:iec,jsc:jec,:))/gs)**2)
+endif
+
+!ql
+if (allocated(inc%ql)) then
+  pstat(1,5) = minval(inc%ql(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%ql(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%ql(isc:iec,jsc:jec,:))/gs)**2)
+endif
+  
+!o3
+if (allocated(inc%o3)) then
+  pstat(1,5) = minval(inc%o3(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%o3(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%o3(isc:iec,jsc:jec,:))/gs)**2)
+endif
 
 return
 
@@ -1688,6 +1713,20 @@ do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
    
+  case ("upper_air_u_component")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ua
+    geoval => geovalm
+
+  case ("upper_air_v_component")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%va
+    geoval => geovalm
+
   case ("temperature")
   
     nvl = npz
@@ -1896,6 +1935,18 @@ do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
    
+  case ("upper_air_u_component")
+  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("upper_air_v_component")
+  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case ("temperature")
   
     nvl = npz
@@ -2010,10 +2061,20 @@ do jvar = 1, vars%nv
  
   select case (trim(vars%fldnames(jvar)))
  
+  case ("upper_air_u_component")
+
+    inc%ua = geovalm
+
+  case ("upper_air_v_component")
+
+    inc%va = geovalm
+
   case ("temperature")
+
     inc%t = geovalm
 
   case ("specific_humidity")
+
     inc%q = geovalm
 
   case ("virtual_temperature")

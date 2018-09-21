@@ -78,6 +78,10 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable :: edge_vect_w(:)
   real(kind=kind_real), allocatable :: es(:,:,:,:)
   real(kind=kind_real), allocatable :: ew(:,:,:,:)
+  real(kind=kind_real), allocatable :: a11(:,:)
+  real(kind=kind_real), allocatable :: a12(:,:)
+  real(kind=kind_real), allocatable :: a21(:,:)
+  real(kind=kind_real), allocatable :: a22(:,:)
 end type fv3jedi_geom
 
 #define LISTED_TYPE fv3jedi_geom
@@ -219,6 +223,10 @@ allocate(self%edge_vect_s(self%isd:self%ied))
 allocate(self%edge_vect_w(self%isd:self%ied))
 allocate(self%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
 allocate(self%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
+allocate(self%a11(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(self%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(self%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(self%a22(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 
 self%sin_sg = Fv_Atm(1)%gridstruct%sin_sg
 self%cos_sg = Fv_Atm(1)%gridstruct%cos_sg
@@ -254,6 +262,10 @@ self%edge_vect_s = Fv_Atm(1)%gridstruct%edge_vect_s
 self%edge_vect_w = Fv_Atm(1)%gridstruct%edge_vect_w
 self%es = Fv_Atm(1)%gridstruct%es
 self%ew = Fv_Atm(1)%gridstruct%ew
+self%a11 = Fv_Atm(1)%gridstruct%a11
+self%a12 = Fv_Atm(1)%gridstruct%a12
+self%a21 = Fv_Atm(1)%gridstruct%a21
+self%a22 = Fv_Atm(1)%gridstruct%a22
 
 !ak and bk are read from file
 allocate ( self%ak(self%npz+1) )
@@ -363,6 +375,10 @@ allocate(other%edge_vect_s(self%isd:self%ied))
 allocate(other%edge_vect_w(self%isd:self%ied))
 allocate(other%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
 allocate(other%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
+allocate(other%a11(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(other%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(other%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(other%a22(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 
 other%npx             = self%npx
 other%npy             = self%npy
@@ -426,6 +442,10 @@ other%edge_vect_s = self%edge_vect_s
 other%edge_vect_w = self%edge_vect_w
 other%es = self%es
 other%ew = self%ew
+other%a11 = self%a11
+other%a12 = self%a12
+other%a21 = self%a21
+other%a22 = self%a22
 
 call setup_domain( other%domain, other%size_cubic_grid, other%size_cubic_grid, &
                    other%ntiles, other%layout, other%io_layout, other%halo)
@@ -483,6 +503,10 @@ deallocate(self%edge_vect_s)
 deallocate(self%edge_vect_w)
 deallocate(self%es)
 deallocate(self%ew)
+deallocate(self%a11)
+deallocate(self%a12)
+deallocate(self%a21)
+deallocate(self%a22)
 
 call mpp_deallocate_domain(self%domain)
 

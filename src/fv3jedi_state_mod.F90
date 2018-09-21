@@ -296,7 +296,8 @@ type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
 integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
+
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ud, vd
 
 !Check for matching resolution between state and increment
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
@@ -311,32 +312,29 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   jed = rhs%jed
   npz = rhs%npz
 
-  !If increment is A-Grid winds then interpolate to D-Grid
-  !if (allocated(rhs%ud) .and. allocated(rhs%vd)) then
-  !  self%ud   = self%ud   + rhs%ud
-  !  self%vd   = self%vd   + rhs%vd
-  if (allocated(rhs%ua) .and. allocated(rhs%va)) then
-    allocate(ud(isd:ied  ,jsd:jed+1,1:npz))
-    allocate(vd(isd:ied+1,jsd:jed  ,1:npz))
-    ud = 0.0_kind_real; vd = 0.0_kind_real
-    call a2d( geom, rhs%ua(isc:iec,jsc:jec,:), rhs%va(isc:iec,jsc:jec,:), &
-                        ud(isc:iec,jsc:jec+1,:),     vd(isc:iec+1,jsc:jec,:) )
-    self%ud   = self%ud   + ud
-    self%vd   = self%vd   + vd
-    deallocate(ud,vd)
-  else
-    call abor1_ftn("fv3jedi_state:add_incr: wind combination problem")
-  endif
-  if(allocated(rhs%ua  )) self%ua   = self%ua   + rhs%ua  
-  if(allocated(rhs%va  )) self%va   = self%va   + rhs%va  
-  if(allocated(rhs%t   )) self%t    = self%t    + rhs%t   
-  if(allocated(rhs%delp)) self%delp = self%delp + rhs%delp
-  if(allocated(rhs%q   )) self%q    = self%q    + rhs%q   
-  if(allocated(rhs%qi  )) self%qi   = self%qi   + rhs%qi  
-  if(allocated(rhs%ql  )) self%ql   = self%ql   + rhs%ql  
-  if(allocated(rhs%o3  )) self%o3   = self%o3   + rhs%o3  
-  if(allocated(rhs%w   )) self%w    = self%w    + rhs%w   
-  if(allocated(rhs%delz)) self%delz = self%delz + rhs%delz 
+  !Convert A-Grid increment to D-Grid
+  allocate(ud(isc:iec  ,jsc:jec+1,1:npz))
+  allocate(vd(isc:iec+1,jsc:jec  ,1:npz))
+  ud = 0.0_kind_real
+  vd = 0.0_kind_real
+
+  call a2d(geom, rhs%ua(isc:iec,jsc:jec,1:npz), rhs%va(isc:iec,jsc:jec,1:npz), ud, vd)
+
+  if(allocated(self%ud  )) self%ud(isc:iec  ,jsc:jec+1,:)   = self%ud(isc:iec  ,jsc:jec+1,:)   + ud  (isc:iec  ,jsc:jec+1,:)
+  if(allocated(self%vd  )) self%vd(isc:iec+1,jsc:jec  ,:)   = self%vd(isc:iec+1,jsc:jec  ,:)   + vd  (isc:iec+1,jsc:jec  ,:)
+
+  deallocate(ud,vd)
+
+  if(allocated(self%ua  )) self%ua   = self%ua   + rhs%ua  
+  if(allocated(self%va  )) self%va   = self%va   + rhs%va  
+  if(allocated(self%t   )) self%t    = self%t    + rhs%t   
+  if(allocated(self%delp)) self%delp = self%delp + rhs%delp
+  if(allocated(self%q   )) self%q    = self%q    + rhs%q   
+  if(allocated(self%qi  )) self%qi   = self%qi   + rhs%qi  
+  if(allocated(self%ql  )) self%ql   = self%ql   + rhs%ql  
+  if(allocated(self%o3  )) self%o3   = self%o3   + rhs%o3  
+  if(allocated(self%w   )) self%w    = self%w    + rhs%w   
+  if(allocated(self%delz)) self%delz = self%delz + rhs%delz 
 else
    call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
 endif
@@ -1303,6 +1301,20 @@ do jvar = 1, vars%nv
   ! Convert to observation variables/units
   ! --------------------------------------
   select case (trim(vars%fldnames(jvar)))
+
+  case ("upper_air_u_component")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ua
+    geoval => geovalm
+
+  case ("upper_air_v_component")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%va
+    geoval => geovalm
 
   case ("temperature")
 

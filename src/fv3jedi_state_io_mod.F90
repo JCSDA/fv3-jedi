@@ -26,7 +26,7 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_fms_restart(geom, fld, c_conf, vdate)
+subroutine read_fms_restart(geom, state, c_conf, vdate)
 
 use iso_c_binding
 use datetime_mod
@@ -39,7 +39,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_state), intent(inout) :: fld      !< State
+type(fv3jedi_state), intent(inout) :: state      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -101,34 +101,34 @@ integer :: read_crtm_surface
  ! Register the variables that should be read
  ! ------------------------------------------
  !D-Grid winds, nonlinear model only
- id_restart = register_restart_field(Fv_restart, filename_core, 'u', fld%ud, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'u', state%ud, &
               domain=geom%domain, position=NORTH)
- id_restart = register_restart_field(Fv_restart, filename_core, 'v', fld%vd, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'v', state%vd, &
               domain=geom%domain, position=EAST)
 
  !A-Grid winds, increment
- id_restart = register_restart_field(Fv_restart, filename_core, 'ua', fld%ua, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'ua', state%ua, &
                                      domain=geom%domain)
- id_restart = register_restart_field(Fv_restart, filename_core, 'va', fld%va, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'va', state%va, &
                                      domain=geom%domain)
 
  !phis
- id_restart = register_restart_field(Fv_restart, filename_core, 'phis', fld%phis, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'phis', state%phis, &
               domain=geom%domain)
 
  !Temperature
- id_restart = register_restart_field(Fv_restart, filename_core, 'T', fld%t, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'T', state%t, &
               domain=geom%domain)
 
  !Pressure thickness
- id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', fld%delp, &
+ id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', state%delp, &
               domain=geom%domain)
 
  !Nonhydrostatic variables
- if (.not. fld%hydrostatic) then
-    id_restart =  register_restart_field(Fv_restart, filename_core, 'W', fld%w, &
+ if (.not. state%hydrostatic) then
+    id_restart =  register_restart_field(Fv_restart, filename_core, 'W', state%w, &
                   domain=geom%domain)
-    id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', fld%delz, &
+    id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', state%delz, &
                   domain=geom%domain)
  endif
 
@@ -140,13 +140,13 @@ integer :: read_crtm_surface
 
  !Register and read tracers
  !-------------------------
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'sphum'  , fld%q , &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'sphum'  , state%q , &
                                      domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'ice_wat', fld%qi, &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'ice_wat', state%qi, &
                                      domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'liq_wat', fld%ql, &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'liq_wat', state%ql, &
                                      domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'o3mr'   , fld%o3, &
+ id_restart = register_restart_field(Tr_restart, filename_trcr, 'o3mr'   , state%o3, &
                                      domain=geom%domain)
 
  call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
@@ -160,40 +160,40 @@ integer :: read_crtm_surface
  endif
 
  if (read_crtm_surface == 1) then
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , fld%slmsk , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', fld%sheleg, domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , fld%tsea  , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , fld%vtype , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , fld%stype , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , fld%vfrac , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , fld%stc   , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , fld%smc   , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', fld%snwdph, domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , fld%f10m  , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'slmsk' , state%slmsk , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'sheleg', state%sheleg, domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'tsea'  , state%tsea  , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vtype' , state%vtype , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stype' , state%stype , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'vfrac' , state%vfrac , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'stc'   , state%stc   , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'smc'   , state%smc   , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'snwdph', state%snwdph, domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcd, 'f10m'  , state%f10m  , domain=geom%domain)
 
    call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
    call free_restart_type(Sf_restart)
 
-   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , fld%u_srf , domain=geom%domain)
-   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , fld%v_srf , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'u_srf' , state%u_srf , domain=geom%domain)
+   id_restart = register_restart_field( Sf_restart, filename_sfcw, 'v_srf' , state%v_srf , domain=geom%domain)
 
    call restore_state(Sf_restart, directory=trim(adjustl(datapath_ti)))
    call free_restart_type(Sf_restart)
-   fld%havecrtmfields = .true.
+   state%havecrtmfields = .true.
  else
-   fld%havecrtmfields = .false.
-   fld%slmsk  = 0.0_kind_real
-   fld%sheleg = 0.0_kind_real
-   fld%tsea   = 0.0_kind_real
-   fld%vtype  = 0.0_kind_real
-   fld%stype  = 0.0_kind_real
-   fld%vfrac  = 0.0_kind_real
-   fld%stc    = 0.0_kind_real
-   fld%smc    = 0.0_kind_real
-   fld%u_srf  = 0.0_kind_real
-   fld%u_srf  = 0.0_kind_real
-   fld%v_srf  = 0.0_kind_real
-   fld%f10m   = 0.0_kind_real
+   state%havecrtmfields = .false.
+   state%slmsk  = 0.0_kind_real
+   state%sheleg = 0.0_kind_real
+   state%tsea   = 0.0_kind_real
+   state%vtype  = 0.0_kind_real
+   state%stype  = 0.0_kind_real
+   state%vfrac  = 0.0_kind_real
+   state%stc    = 0.0_kind_real
+   state%smc    = 0.0_kind_real
+   state%u_srf  = 0.0_kind_real
+   state%u_srf  = 0.0_kind_real
+   state%v_srf  = 0.0_kind_real
+   state%f10m   = 0.0_kind_real
  endif
 
  ! Get dates from file
@@ -207,9 +207,9 @@ integer :: read_crtm_surface
  read(iounit, '(6i6)') date_init
  read(iounit, '(6i6)') date
  close(iounit)
- fld%date = date
- fld%date_init = date_init
- fld%calendar_type = calendar_type
+ state%date = date
+ state%date_init = date_init
+ state%calendar_type = calendar_type
  idate=date(1)*10000+date(2)*100+date(3)
  isecs=date(4)*3600+date(5)*60+date(6)
 
@@ -225,7 +225,7 @@ end subroutine read_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_fms_restart(geom, fld, c_conf, vdate)
+subroutine write_fms_restart(geom, state, c_conf, vdate)
 
 use mpp_mod, only: mpp_pe, mpp_root_pe
 
@@ -233,7 +233,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_state), intent(in)    :: fld      !< State
+type(fv3jedi_state), intent(in)    :: state      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -301,34 +301,34 @@ character(len=255) :: datapath_out
  ! Register the variables that should be written
  ! ---------------------------------------------
  !D-Grid winds, nonlinear model only
- id_restart = register_restart_field( Fv_restart, filename_core, 'u', fld%ud, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'u', state%ud, &
                                       domain=geom%domain,position=NORTH )
- id_restart = register_restart_field( Fv_restart, filename_core, 'v', fld%vd, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'v', state%vd, &
                                       domain=geom%domain,position=EAST )
 
  !A-Grid winds, increment
- id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', fld%ua, &
+ id_restart =  register_restart_field(Fv_restart, filename_core, 'ua', state%ua, &
                                       domain=geom%domain )
- id_restart =  register_restart_field(Fv_restart, filename_core, 'va', fld%va, &
+ id_restart =  register_restart_field(Fv_restart, filename_core, 'va', state%va, &
                                       domain=geom%domain )
 
  !phis
- id_restart = register_restart_field( Fv_restart, filename_core, 'phis', fld%phis, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'phis', state%phis, &
                                       domain=geom%domain )
 
  !Temperature
- id_restart = register_restart_field( Fv_restart, filename_core, 'T', fld%t, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'T', state%t, &
                                       domain=geom%domain )
 
  !Pressure thickness
- id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', fld%delp, &
+ id_restart = register_restart_field( Fv_restart, filename_core, 'DELP', state%delp, &
                                       domain=geom%domain )
 
  !Nonhydrostatic state
- if (.not. fld%hydrostatic) then
-     id_restart =  register_restart_field( Fv_restart, filename_core, 'W', fld%w, &
+ if (.not. state%hydrostatic) then
+     id_restart =  register_restart_field( Fv_restart, filename_core, 'W', state%w, &
                                            domain=geom%domain )
-     id_restart =  register_restart_field( Fv_restart, filename_core, 'DZ', fld%delz, &
+     id_restart =  register_restart_field( Fv_restart, filename_core, 'DZ', state%delz, &
                                            domain=geom%domain )
  endif
 
@@ -338,9 +338,9 @@ character(len=255) :: datapath_out
  id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', geom%grid_lon, &
                                       domain=geom%domain )
 
- id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', fld%ua, &
+ id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', state%ua, &
                                        domain=geom%domain )
- id_restart =  register_restart_field( Fv_restart, filename_core, 'va', fld%va, &
+ id_restart =  register_restart_field( Fv_restart, filename_core, 'va', state%va, &
                                        domain=geom%domain )
 
  ! Write variables to file
@@ -351,13 +351,13 @@ character(len=255) :: datapath_out
 
  !Write tracers to file
  !---------------------
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'sphum'  , fld%q, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'sphum'  , state%q, &
                                        domain=geom%domain )
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'ice_wat', fld%qi, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'ice_wat', state%qi, &
                                        domain=geom%domain )
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'liq_wat', fld%ql, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'liq_wat', state%ql, &
                                        domain=geom%domain )
-  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'o3mr'   , fld%o3, &
+  id_restart =  register_restart_field( Tr_restart, filename_trcr, 'o3mr'   , state%o3, &
                                        domain=geom%domain )
 
  call save_restart(Tr_restart, directory=trim(adjustl(datapath_out))//'RESTART')
@@ -368,11 +368,11 @@ character(len=255) :: datapath_out
  !-----------------------------------
  iounit = 101
  if (mpp_pe() == mpp_root_pe()) then
-    print *,'write_file: date model init = ',fld%date_init
-    print *,'write_file: date model now  = ',fld%date
+    print *,'write_file: date model init = ',state%date_init
+    print *,'write_file: date model now  = ',state%date
     print *,'write_file: date vdate      = ',date
     open(iounit, file=trim(adjustl(datapath_out))//'RESTART/'//trim(adjustl(filename_cplr)), form='formatted')
-    write( iounit, '(i6,8x,a)' ) fld%calendar_type, &
+    write( iounit, '(i6,8x,a)' ) state%calendar_type, &
          '(Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)'
     write( iounit, '(6i6,8x,a)' )date, &
           'Model start time:   year, month, day, hour, minute, second'
@@ -387,13 +387,13 @@ end subroutine write_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_geos_restart(geom, fld, c_conf, vdate)
+subroutine read_geos_restart(geom, state, c_conf, vdate)
 
 implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_state), intent(inout) :: fld      !< State
+type(fv3jedi_state), intent(inout) :: state      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
@@ -547,75 +547,75 @@ integer :: isc,iec,jsc,jec
 
    istart(3) = l
 
-   !fld%ud (D-Grid winds, nonlinear model only)
+   !state%ud (D-Grid winds, nonlinear model only)
    ncstat = nf90_inq_varid (ncid, 'u', varid)
    if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   fld%ud(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%ud(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%vd (D-Grid winds, nonlinear model only)
+   !state%vd (D-Grid winds, nonlinear model only)
    ncstat = nf90_inq_varid (ncid, 'v', varid)
    if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   fld%vd(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%vd(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%ua (A-Grid winds, increment)
+   !state%ua (A-Grid winds, increment)
    ncstat = nf90_inq_varid (ncid, 'ua', varid)
    if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
-   fld%ua(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%ua(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%va (A-Grid winds, increment)
+   !state%va (A-Grid winds, increment)
    ncstat = nf90_inq_varid (ncid, 'va', varid)
    if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
-   fld%va(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%va(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%t
+   !state%t
    ncstat = nf90_inq_varid (ncid, 'T', varid)
    if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
-   fld%t(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%t(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%delp
+   !state%delp
    ncstat = nf90_inq_varid (ncid, 'delp', varid)
    if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
-   fld%delp(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%delp(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%q (sphum)
+   !state%q (sphum)
    ncstat = nf90_inq_varid (ncid, 'sphum', varid)
    if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
-   fld%q(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%q(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%qi (liq_wat)
+   !state%qi (liq_wat)
    ncstat = nf90_inq_varid (ncid, 'liq_wat', varid)
    if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
-   fld%qi(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%qi(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%ql (ice_wat)
+   !state%ql (ice_wat)
    ncstat = nf90_inq_varid (ncid, 'ice_wat', varid)
    if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
-   fld%ql(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%ql(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
-   !fld%o3 (o3mr)
+   !state%o3 (o3mr)
    ncstat = nf90_inq_varid (ncid, 'o3mr', varid)
    if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
    ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
    if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
-   fld%o3(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+   state%o3(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
  enddo
 
@@ -631,12 +631,12 @@ integer :: isc,iec,jsc,jec
  icount(2) = jm
  icount(3) = 1
  
- !fld%phis
+ !state%phis
  ncstat = nf90_inq_varid (ncid, 'phis', varid)
  if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
  ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
  if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- fld%phis(isc:iec,jsc:jec) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+ state%phis(isc:iec,jsc:jec) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
 
  !Close this file
  ncstat = nf90_close(ncid)
@@ -654,13 +654,13 @@ end subroutine read_geos_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_geos_restart(geom, fld, c_conf, vdate)
+subroutine write_geos_restart(geom, state, c_conf, vdate)
 
 implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_state), intent(in)    :: fld      !< State
+type(fv3jedi_state), intent(in)    :: state      !< State
 type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
