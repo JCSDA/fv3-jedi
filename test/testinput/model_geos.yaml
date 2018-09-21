@@ -5,7 +5,6 @@ Geometry:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  wind_type: D-grid
   filepath_akbk: Data/INPUTS/GEOS_c48/
   filename_akbk: akbk72.nc4
   ak_var: AK
@@ -22,7 +21,7 @@ ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
-  finalnorm: '695.90657798593088'
+  finalnorm: '622.47733204645419'
   tolerance: '1.0e-4'
 State:
   restart_type: geos
@@ -34,3 +33,14 @@ State:
   filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
+  variables:
+  - ud
+  - vd
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3
