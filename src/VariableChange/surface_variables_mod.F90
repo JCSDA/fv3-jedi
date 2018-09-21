@@ -14,7 +14,11 @@ use crtm_module, only: crtm_irlandcoeff_classification
 use fv3jedi_constants, only: rad2deg, deg2rad, pi
 
 implicit none
+private
+
 public crtm_surface
+public crtm_surface_kdtree_getfieldneighbours
+public crtm_surface_kdtree_setup
 
 interface crtm_surface_kdtree_getfieldneighbours
  module procedure crtm_surface_kdtree_getfieldneighbours_int

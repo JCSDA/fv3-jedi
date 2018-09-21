@@ -13,7 +13,20 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_constants, only: rdry,grav,tice,zvir
 
 implicit none
-public
+private
+
+public crtm_ade_efr
+public crtm_mixratio
+public crtm_mixratio_tl
+public crtm_mixratio_ad
+public rh_to_q
+public rh_to_q_tl
+public rh_to_q_ad
+public q_to_rh
+public q_to_rh_tl
+public q_to_rh_ad
+public ESINIT
+public dqsat
 
 contains
 

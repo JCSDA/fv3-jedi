@@ -13,7 +13,25 @@ use fv3jedi_geom_mod,  only: fv3jedi_geom
 use kinds, only: kind_real
 
 implicit none
-public
+private
+
+public sfc_10m_winds
+public uv_to_vortdivg
+public vortdivg_to_psichi
+public gauss_seidel
+public psichi_to_uava
+public psichi_to_udvd
+public d_to_ac
+public d2a2c_vect
+public divergence_corner
+public a2b_ord4
+public PSICHI_TO_UDVD_ADM
+public A2B_ORD4_ADM
+public EXTRAP_CORNER_ADM
+public a2d
+public a2d_ad
+public d2a
+public D2A_AD
 
 contains
 

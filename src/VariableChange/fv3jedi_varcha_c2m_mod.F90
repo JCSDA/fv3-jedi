@@ -12,7 +12,9 @@ use iso_c_binding
 use config_mod
 use kinds
 
-use moisture_vt_mod, only: esinit, dqsat
+use pressure_vt_mod
+use temperature_vt_mod
+use moisture_vt_mod
 
 implicit none
 
@@ -44,9 +46,6 @@ contains
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_varcha_c2m_setup(self, bg, fg, geom, c_conf)
-
-use tmprture_vt_mod, only: T_to_Tv
-use pressure_vt_mod, only: delp_to_pe_p_logp
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self    !< Change variable structure
@@ -146,10 +145,6 @@ end subroutine fv3jedi_varcha_c2m_multiplyadjoint
 
 subroutine fv3jedi_varcha_c2m_multiplyinverse(self,geom,xmod,xctr)
 
-!use wind_vt_mod, only: uv_to_vortdivg, vortdivg_to_psichi
-use tmprture_vt_mod, only: t_to_tv_tl
-use moisture_vt_mod, only: q_to_rh_tl
-
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(inout)  :: geom
@@ -219,11 +214,6 @@ end subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint
 
 subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsat)
 
-! use wind_vt_mod, only: psichi_to_udvd
- use tmprture_vt_mod, only: tv_to_t_tl
- use pressure_vt_mod, only: ps_to_delp_tl
- use moisture_vt_mod, only: rh_to_q_tl 
-
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
 
@@ -275,11 +265,6 @@ endsubroutine control_to_model_tlm
 !> Control variables to state variables - Adjoint
 
 subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsat)
-
-! use wind_vt_mod, only: psichi_to_udvd_adm
- use tmprture_vt_mod, only: tv_to_t_ad
- use pressure_vt_mod, only: ps_to_delp_ad
- use moisture_vt_mod, only: rh_to_q_ad 
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom

@@ -6,14 +6,21 @@
 !> Variable transforms on temperature variables for fv3-jedi 
 !> Daniel Holdaway, NASA/JCSDA
 
-module tmprture_vt_mod
+module temperature_vt_mod
 
 use fv3jedi_constants, only: kappa, epsilon
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use kinds, only: kind_real
 
 implicit none
-public
+private
+
+public T_to_Tv
+public T_to_Tv_tl
+public T_to_Tv_ad
+public Tv_to_T
+public Tv_to_T_tl
+public Tv_to_T_ad
 
 contains
 
@@ -181,4 +188,4 @@ subroutine Tv_to_T_ad(geom,Tv,Tv_ad,q,q_ad,T_ad)
 
 end subroutine Tv_to_T_ad
 
-end module tmprture_vt_mod
+end module temperature_vt_mod

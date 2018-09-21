@@ -9,6 +9,7 @@ Geometry/GeometryFV3JEDI.cc
 Geometry/GeometryFV3JEDIFortran.h
 Geometry/GeometryFV3JEDI.h
 GetValues/fv3jedi_getvaltraj_mod.F90
+GetValues/fv3jedi_getvalues_mod.F90
 GetValues/GetValuesTrajFV3JEDI.cc
 GetValues/GetValuesTrajFV3JEDIFortran.h
 GetValues/GetValuesTrajFV3JEDI.h
@@ -57,16 +58,16 @@ Utilities/UtilitiesFV3JEDI.cc
 Utilities/UtilitiesFV3JEDI.h
 VariableChange/fv3jedi_varcha_c2m_interface.F90
 VariableChange/fv3jedi_varcha_c2m_mod.F90
-VariableChange/height_variables.F90
+VariableChange/height_variables_mod.F90
 VariableChange/instantiateFV3JEDIVarChangeFactory.h
-VariableChange/moisture_variables.F90
-VariableChange/pressure_variables.F90
-VariableChange/surface_variables.F90
-VariableChange/temperture_variables.F90
+VariableChange/moisture_variables_mod.F90
+VariableChange/pressure_variables_mod.F90
+VariableChange/surface_variables_mod.F90
+VariableChange/temperature_variables_mod.F90
 VariableChange/VarChaC2MFV3JEDI.cc
 VariableChange/VarChaC2MFV3JEDIFortran.h
 VariableChange/VarChaC2MFV3JEDI.h
-VariableChange/wind_variables.F90
+VariableChange/wind_variables_mod.F90
 )
 
 set ( FMS_LIBRARIES $ENV{FMS_LIBRARIES} )

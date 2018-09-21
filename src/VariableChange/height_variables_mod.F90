@@ -5,9 +5,12 @@ use fv3jedi_geom_mod,  only: fv3jedi_geom
 use kinds,             only: kind_real
 
 implicit none
-public
+private
+
+public geop_height
 
 contains
+
 subroutine geop_height(geom,prs,prsi,T,q,phis,use_compress,gph)
 
 implicit none

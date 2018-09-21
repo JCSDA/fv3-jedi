@@ -13,7 +13,17 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use kinds, only: kind_real
 
 implicit none
-public
+private
+
+public compute_fv3_pressures
+public compute_fv3_pressures_tlm
+public compute_fv3_pressures_bwd
+public delp_to_pe_p_logp
+public delp_to_p_tl
+public delp_to_p_ad
+public ps_to_delp
+public ps_to_delp_tl
+public ps_to_delp_ad
 
 contains
 
