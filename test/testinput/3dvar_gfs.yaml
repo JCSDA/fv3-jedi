@@ -59,6 +59,8 @@ cost_function:
       ObsType: Radiosonde
   cost_type: 3D-Var
   variables:
+  - ud
+  - vd
   - ua
   - va
   - t

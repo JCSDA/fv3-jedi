@@ -41,8 +41,8 @@ LinearVariableChangeTests:
   toleranceInverse: -0.1
   inputVariables:
     variables:
-    - ud
-    - vd
+    - ua
+    - va
     - t
     - delp
     - q
@@ -93,6 +93,8 @@ Variables:
   variables:
   - ud
   - vd
+  - ua
+  - va
   - t
   - delp
   - q

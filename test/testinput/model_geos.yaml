@@ -21,7 +21,7 @@ ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
-  finalnorm: '695.90657798593088'
+  finalnorm: '622.47733204645419'
   tolerance: '1.0e-4'
 State:
   restart_type: geos

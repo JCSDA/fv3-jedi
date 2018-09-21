@@ -21,7 +21,7 @@ ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
-  finalnorm: '690.34530360994256'
+  finalnorm: '617.49036896130644'
   tolerance: '1.0e-4'
 State:
   restart_type: gfs
