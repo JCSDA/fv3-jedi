@@ -29,11 +29,11 @@ cost_function:
         covariance: diagonal
         obserror: REFOE_GSI
       ObsData:
-        ObsDataIn: 
-          obsfile: Data/gdas.gpsro.2018041500.bufr2nc_qced.nc4
+        ObsDataIn:
+          obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
         obsvalue: REF
         ObsDataOut:
-          obsfile: fv3jedi.3dvar.obt  
+          obsfile: fv3jedi.3dvar.nc4
         obsvalue: REF
       ObsType: GnssroRef
   cost_type: 3D-Var
@@ -43,7 +43,7 @@ cost_function:
   - pt
   - delp
   - q
-  window_begin: '2017-07-31T21:00:00Z'
+  window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
 final:
   diagnostics:
@@ -51,6 +51,7 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
+  name: 'FV3JEDI'
   init_tlmadm: '0'
   nml_file: Data/fv3files/input_fv3gfs_c48.nml
   trc_file: Data/fv3files/field_table
@@ -90,9 +91,10 @@ variational:
         tstep: PT30M
       trc_file: Data/fv3files/field_table
       tstep: PT30M
-      update_dgridwind: '1'
+      update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '2'
     resolution:
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
@@ -116,9 +118,10 @@ variational:
         tstep: PT30M
       trc_file: Data/fv3files/field_table
       tstep: PT30M
-      update_dgridwind: '1'
+      update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_fv3gfs_c48.nml
