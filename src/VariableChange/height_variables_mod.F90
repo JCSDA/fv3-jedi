@@ -16,7 +16,7 @@ subroutine geop_height(geom,prs,prsi,T,q,phis,use_compress,gph)
 implicit none
 type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
 real(kind_real), intent(in ) :: prs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)    !mid layerpressure
-real(kind_real), intent(in ) :: prsi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) ! interface pressure
+real(kind_real), intent(in ) :: prsi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !interface pressure
 real(kind_real), intent(in ) :: phis(geom%isc:geom%iec,geom%jsc:geom%jec)              !Surface geopotential (grav*Z_sfc)
 real(kind_real), intent(in ) :: T(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)            
 real(kind_real), intent(in ) :: q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)     ! specific humidity
@@ -128,17 +128,19 @@ subroutine geop_height_levels(geom,prs,prsi,T,q,phis,use_compress,gphi)
 
 implicit none
 type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
-real(kind_real), intent(in ) :: prs(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)    !mid layerpressure
-real(kind_real), intent(in ) :: prsi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1) ! interface pressure
-real(kind_real), intent(in ) :: phis(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed)              !Surface geopotential (grav*Z_sfc)
-real(kind_real), intent(in ) :: T(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)      
-real(kind_real), intent(in ) :: q(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)     ! specific humidity
-real(kind_real), intent(out) :: gphi(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz+1)   !geopotential height (meters)
+
+real(kind_real), intent(in ) :: prs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)    !mid layerpressure
+real(kind_real), intent(in ) :: prsi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !interface pressure
+real(kind_real), intent(in ) :: phis(geom%isc:geom%iec,geom%jsc:geom%jec)              !Surface geopotential (grav*Z_sfc)
+real(kind_real), intent(in ) :: T(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+real(kind_real), intent(in ) :: q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)      !specific humidity
+real(kind_real), intent(out) :: gphi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !geopotential height at interface levels (m)
 
 !locals
-real(kind_real)       :: Tv(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz)
-real(kind_real)       :: qmr(geom%bd%isd:geom%bd%ied,geom%bd%jsd:geom%bd%jed,1:geom%npz) ! mixing ratio|kg/kg
+real(kind_real)       :: Tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+real(kind_real)       :: qmr(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! mixing ratio|kg/kg
 logical               :: use_compress
+
 integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
 real(kind=kind_real)  :: prs_sv, prs_v
@@ -164,13 +166,13 @@ real(kind_real),parameter ::  ef_alpha = 1.00062_kind_real           !
 real(kind_real),parameter ::  ef_beta  = 3.14e-8_kind_real           !  (1/Pa)
 real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real            !  (1/K2)
 
-isc = geom%bd%isc
-iec = geom%bd%iec
-jsc = geom%bd%jsc
-jec = geom%bd%jec
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
 npz = geom%npz
 !get qmr--mixing ratio and virtual temeprature
-qmr(isc:iec,jsc:jec,:) = q(isc:iec,jsc:jec,:)/(1-q(isc:iec,jsc:jec,:))
+qmr(isc:iec,jsc:jec,:) = q(isc:iec,jsc:jec,:)/(1.0 - q(isc:iec,jsc:jec,:))
 Tv(isc:iec,jsc:jec,:)  = T(isc:iec,jsc:jec,:)*(1.0 + zvir*qmr(isc:iec,jsc:jec,:))
 
 if (use_compress) then
@@ -206,9 +208,6 @@ if (use_compress) then
                     + (Pak**2/Tkk**2) * (cpf_d + cpf_e*x_v**2)
         dz      = rdry/grav * Tvk * cmpr * log(dpk)
         gphi(i,j,k) = gphi(i,j,k+1) + dz
-!    if(gphi(i,j,k) <= 0.5) then
-!    print*, "height", i,j,k, gphi(i,j,k) , dz
-!    endif
       end do ! end k loop
 
   end do ! end i loop
