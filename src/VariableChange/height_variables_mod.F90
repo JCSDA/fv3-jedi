@@ -8,6 +8,7 @@ implicit none
 private
 
 public geop_height
+public geop_height_levels
 
 contains
 
@@ -223,7 +224,6 @@ else  ! not use compressivity
           dz         = rdry/grav * Tv(i,j,k) * log(prsi(i,j,k+1)/prsi(i,j,k))
         end if
         gphi(i,j,k) = gphi(i,j,k+1) + dz
-        end if
      end do
 
    end do
