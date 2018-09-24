@@ -334,6 +334,12 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
+  case ("geopotential_height_levels")
+    call geop_height_levels(geom,prs,prsi,state%t,state%q,state%phis,use_compress,geovalm)
+    nvl = npz + 1
+    do_interp = .true.
+    geoval => geovalm
+
   case ("mass_concentration_of_ozone_in_air")
 
    nvl = npz
@@ -691,6 +697,8 @@ do jvar = 1, vars%nv
  
   case ("geopotential_height")
 
+  case ("geopotential_height_levels")
+
   case ("mass_concentration_of_ozone_in_air")
 
   case ("mass_concentration_of_carbon_dioxide_in_air")
@@ -901,6 +909,8 @@ do jvar = 1, vars%nv
 
   case ("geopotential_height")
 
+  case ("geopotential_height_levels")
+
   case ("mass_concentration_of_ozone_in_air")
 
   case ("mass_concentration_of_carbon_dioxide_in_air")
@@ -1014,6 +1024,8 @@ do jvar = 1, vars%nv
   case ("air_pressure_levels")
  
   case ("geopotential_height")
+
+  case ("geopotential_height_levels")
 
   case ("mass_concentration_of_ozone_in_air")
 
