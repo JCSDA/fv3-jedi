@@ -184,17 +184,14 @@ if (use_compress) then
      gphi(i,j,geom%npz+1) = phis(i,j)/grav !phis is gh? or gopoential
      do k = geom%npz, 1, -1
         if ( k == 1) then
-           Tkk  = T(i,j,k)
-           Tvk  = Tv(i,j,k)
            Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1))+log(prs(i,j,k))))
            dpk  = prsi(i,j,k+1)/prs(i,j,k)
         else
-           Tkk  = 0.5_kind_real * ( T(i,j,k+1) +  T(i,j,k) )
-           Tvk  = 0.5_kind_real * (Tv(i,j,k+1) + Tv(i,j,k) )
            Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1))+log(prsi(i,j,k))))
            dpk  = prsi(i,j,k+1)/prsi(i,j,k)
         end if
-
+        Tkk  = T(i,j,k)
+        Tvk  = Tv(i,j,k)
         Tc   = Tkk - tice
         qmk  = qmr(i,j,k)
         prs_sv  = exp(psv_a*Tkk**2 + psv_b*Tkk + psv_c + psv_d/Tkk ) ! Pvap sat, eq A1.1 (Pa)
@@ -221,11 +218,11 @@ else  ! not use compressivity
 
      do k = geom%npz, 1, -1
         if(k ==1) then
-          dz         = rdry/grav * 0.5_kind_real * (Tv(i,j,k+1)+Tv(i,j,k)) * log(prsi(i,j,k+1)/prs(i,j,k))
-          gphi(i,j,k) = gphi(i,j,k+1) + dz
+          dz         = rdry/grav * Tv(i,j,k) * log(prsi(i,j,k+1)/prs(i,j,k))
         else
-          dz         = rdry/grav * 0.5_kind_real * (Tv(i,j,k+1)+Tv(i,j,k)) * log(prsi(i,j,k+1)/prsi(i,j,k))
-          gphi(i,j,k) = gphi(i,j,k+1) + dz
+          dz         = rdry/grav * Tv(i,j,k) * log(prsi(i,j,k+1)/prsi(i,j,k))
+        end if
+        gphi(i,j,k) = gphi(i,j,k+1) + dz
         end if
      end do
 
