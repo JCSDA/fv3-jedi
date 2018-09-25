@@ -74,7 +74,8 @@ add_definitions( ${COMPDEFS} )
 list( APPEND FV3JEDI_TPLS ufo oops )
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src
-                        ${CMAKE_Fortran_MODULE_DIRECTORY} )
+                        ${CMAKE_Fortran_MODULE_DIRECTORY}
+                        ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities )
 set( FV3JEDI_LIBRARIES fv3jedi )
 
 get_directory_property( FV3JEDI_DEFINITIONS COMPILE_DEFINITIONS )
@@ -93,7 +94,17 @@ endforeach()
 include( fv3jedi_compiler_flags )
 include_directories( ${FV3JEDI_INCLUDE_DIRS} ${FV3JEDI_EXTRA_INCLUDE_DIRS}
                      ${CMAKE_CURRENT_SOURCE_DIR}
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src )
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/ErrorCovariance
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Localization
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Run
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/State
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange)
 
 add_subdirectory( mains )
 add_subdirectory( src )

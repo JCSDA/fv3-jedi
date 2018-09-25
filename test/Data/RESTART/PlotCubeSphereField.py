@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 #User input required for the follwing:
 plot_diff = 1         #Plot path1/file - path2/file
-model = 'fv3gfs'
+model = 'gfs'
 cube = 48
 filetype = 'png'
 
@@ -19,8 +19,8 @@ if (cube == 48):
     if (model == 'geos'):
         path2  = '../INPUTS/GEOS_c48/'
         file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
-    elif (model == 'fv3gfs'):
-        path2  = '../INPUTS/FV3GFS_c48/ENSEMBLE/mem001/RESTART/'
+    elif (model == 'gfs'):
+        path2  = '../INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/'
         file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
 elif (cube == 96):
     path2  = ''

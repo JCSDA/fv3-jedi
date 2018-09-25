@@ -19,7 +19,7 @@ model:
   update_dgridwind: '1'
   update_pressures: '1'
 output:
-  restart_type: fv3gfs
+  restart_type: gfs
   datapath_write: Data/
 resolution:
   filename_akbk: akbk72.nc4
@@ -29,4 +29,3 @@ resolution:
   halo: '3'
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
-  wind_type: D-grid

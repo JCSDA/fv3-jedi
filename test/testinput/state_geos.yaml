@@ -5,7 +5,6 @@ Geometry:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  wind_type: D-grid
   filepath_akbk: Data/INPUTS/GEOS_c48/
   filename_akbk: akbk72.nc4 
   ak_var: AK
@@ -30,7 +29,17 @@ StateTest:
     filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
     filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
     nml_file: Data/fv3files/input_geos_c48.nml
-    trc_file: Data/fv3files/field_table
+    variables:
+    - ud
+    - vd
+    - ua
+    - va
+    - t
+    - delp
+    - q
+    - qi
+    - ql
+    - o3
   StateGenerate:
     analytic_init: dcmip-test-4-0
     restart_type: geos
@@ -43,19 +52,24 @@ StateTest:
     nml_file: Data/fv3files/input_geos_c48.nml
     trc_file: Data/fv3files/field_table
     variables:
-    - u
-    - v
+    - ud
+    - vd
+    - ua
+    - va
     - t
     - delp
     - q
+    - qi
+    - ql
+    - o3
   InterpTest:
     variables:
     - virtual_temperature
     - atmosphere_ln_pressure_coordinate
   date: '2018-04-14T21:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '695.89583707270776'
-  norm-gen: '703.95332523260913'
+  norm-file: '622.46710233481781'
+  norm-gen: '629.63499528285274'
   tolerance: 1.0e-08
   values:
   - 2806.686940093405
