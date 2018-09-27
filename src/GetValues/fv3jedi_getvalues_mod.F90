@@ -6,7 +6,7 @@ use ioda_locs_mod, only: ioda_locs
 use ufo_vars_mod, only: ufo_vars
 use ufo_geovals_mod, only: ufo_geovals
 
-use fv3jedi_constants, only: rad2deg, constoz
+use fv3jedi_constants, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_kinds, only: kind_real
@@ -338,6 +338,13 @@ do jvar = 1, vars%nv
     call geop_height_levels(geom,prs,prsi,state%t,state%q,state%phis,use_compress,geovalm)
     nvl = npz + 1
     do_interp = .true.
+    geoval => geovalm
+
+  case ("sfc_geopotential_height")
+
+    nvl = 1
+    do_interp = .true.
+    geovalm(:,:,1) = state%phis / grav
     geoval => geovalm
 
   case ("mass_concentration_of_ozone_in_air")
