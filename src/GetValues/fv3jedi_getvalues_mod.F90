@@ -1149,13 +1149,10 @@ mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
 
 !Important namelist options
 call bump%nam%init
-
-bump%nam%prefix = bump_nam_prefix   ! Prefix for files output
-bump%nam%nobs = locs%nlocs          ! Number of observations (local)
 bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
-bump%nam%diag_interp = 'bilin'
 
 !Less important namelist options (should not be changed)
+bump%nam%prefix = bump_nam_prefix   ! Prefix for files output
 bump%nam%default_seed = .true.
 bump%nam%new_obsop = .true.
 
