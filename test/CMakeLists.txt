@@ -701,6 +701,8 @@ testinput/parametersbump_gfs.cov.yaml
 testinput/parametersbump_gfs.loc.yaml
 testinput/parametersbump_gfs.lct.yaml
 testinput/3dvar_gfs_GnssroRef.yaml
+testinput/hofx_gfs_GnssroRef.yaml
+testinput/hofx_gfs_GnssroBndGSI.yaml
 compare.sh
 )
 
