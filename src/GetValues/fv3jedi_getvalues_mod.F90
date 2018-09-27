@@ -335,10 +335,10 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("geopotential_height_levels")
-    call geop_height_levels(geom,prs,prsi,state%t,state%q,state%phis,use_compress,geovalm)
+    call geop_height_levels(geom,prs,prsi,state%t,state%q,state%phis,use_compress,geovale)
     nvl = npz + 1
     do_interp = .true.
-    geoval => geovalm
+    geoval => geovale
 
   case ("mass_concentration_of_ozone_in_air")
 
