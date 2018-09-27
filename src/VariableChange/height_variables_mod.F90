@@ -6,6 +6,26 @@ use kinds,             only: kind_real
 
 implicit none
 private
+! Constants from GSI
+! Constants for compressibility factor (Davis et al 1992)
+real(kind_real),parameter ::  cpf_a0 =  1.58123e-6_kind_real ! K/Pa
+real(kind_real),parameter ::  cpf_a1 = -2.9331e-8_kind_real  ! 1/Pa
+real(kind_real),parameter ::  cpf_a2 =  1.1043e-10_kind_real ! 1/K 1/Pa
+real(kind_real),parameter ::  cpf_b0 =  5.707e-6_kind_real   ! K/Pa
+real(kind_real),parameter ::  cpf_b1 = -2.051e-8_kind_real   ! 1/Pa
+real(kind_real),parameter ::  cpf_c0 =  1.9898e-4_kind_real  ! K/Pa
+real(kind_real),parameter ::  cpf_c1 = -2.376e-6_kind_real   ! 1/Pa
+real(kind_real),parameter ::  cpf_d  =  1.83e-11_kind_real   ! K2/Pa2
+real(kind_real),parameter ::  cpf_e  = -0.765e-8_kind_real   ! K2/Pa2
+
+real(kind_real),parameter ::  psv_a =  1.2378847e-5_kind_real       !  (1/K2)
+real(kind_real),parameter ::  psv_b = -1.9121316e-2_kind_real       !  (1/K)
+real(kind_real),parameter ::  psv_c = 33.93711047_kind_real         !
+real(kind_real),parameter ::  psv_d = -6.3431645e+3_kind_real       !  (K)
+! Constants for enhancement factor to calculating the mole fraction of water vapor
+real(kind_real),parameter ::  ef_alpha = 1.00062_kind_real           !
+real(kind_real),parameter ::  ef_beta  = 3.14e-8_kind_real           !  (1/Pa)
+real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real   
 
 public geop_height
 public geop_height_levels
@@ -31,27 +51,6 @@ integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
 real(kind=kind_real)  :: prs_sv, prs_v           
 real(kind=kind_real)  :: ehn_fct,x_v,cmpr
-
-! Constants  from GSI
-! Constants for compressibility factor (Davis et al 1992)
-real(kind_real),parameter ::  cpf_a0 =  1.58123e-6_kind_real ! K/Pa
-real(kind_real),parameter ::  cpf_a1 = -2.9331e-8_kind_real  ! 1/Pa
-real(kind_real),parameter ::  cpf_a2 =  1.1043e-10_kind_real ! 1/K 1/Pa
-real(kind_real),parameter ::  cpf_b0 =  5.707e-6_kind_real   ! K/Pa
-real(kind_real),parameter ::  cpf_b1 = -2.051e-8_kind_real   ! 1/Pa
-real(kind_real),parameter ::  cpf_c0 =  1.9898e-4_kind_real  ! K/Pa
-real(kind_real),parameter ::  cpf_c1 = -2.376e-6_kind_real   ! 1/Pa
-real(kind_real),parameter ::  cpf_d  =  1.83e-11_kind_real   ! K2/Pa2
-real(kind_real),parameter ::  cpf_e  = -0.765e-8_kind_real   ! K2/Pa2
-
-real(kind_real),parameter ::  psv_a =  1.2378847e-5_kind_real       !  (1/K2)
-real(kind_real),parameter ::  psv_b = -1.9121316e-2_kind_real       !  (1/K)
-real(kind_real),parameter ::  psv_c = 33.93711047_kind_real         !
-real(kind_real),parameter ::  psv_d = -6.3431645e+3_kind_real       !  (K)
-! Constants for enhancement factor to calculating the mole fraction of water vapor
-real(kind_real),parameter ::  ef_alpha = 1.00062_kind_real           !
-real(kind_real),parameter ::  ef_beta  = 3.14e-8_kind_real           !  (1/Pa)
-real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real            !  (1/K2)
 
 isc = geom%isc
 iec = geom%iec
@@ -146,26 +145,6 @@ integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
 real(kind=kind_real)  :: prs_sv, prs_v
 real(kind=kind_real)  :: ehn_fct,x_v,cmpr
-! Constants  from GSI
-! Constants for compressibility factor (Davis et al 1992)
-real(kind_real),parameter ::  cpf_a0 =  1.58123e-6_kind_real ! K/Pa
-real(kind_real),parameter ::  cpf_a1 = -2.9331e-8_kind_real  ! 1/Pa
-real(kind_real),parameter ::  cpf_a2 =  1.1043e-10_kind_real ! 1/K 1/Pa
-real(kind_real),parameter ::  cpf_b0 =  5.707e-6_kind_real   ! K/Pa
-real(kind_real),parameter ::  cpf_b1 = -2.051e-8_kind_real   ! 1/Pa
-real(kind_real),parameter ::  cpf_c0 =  1.9898e-4_kind_real  ! K/Pa
-real(kind_real),parameter ::  cpf_c1 = -2.376e-6_kind_real   ! 1/Pa
-real(kind_real),parameter ::  cpf_d  =  1.83e-11_kind_real   ! K2/Pa2
-real(kind_real),parameter ::  cpf_e  = -0.765e-8_kind_real   ! K2/Pa2
-
-real(kind_real),parameter ::  psv_a =  1.2378847e-5_kind_real       !  (1/K2)
-real(kind_real),parameter ::  psv_b = -1.9121316e-2_kind_real       !  (1/K)
-real(kind_real),parameter ::  psv_c = 33.93711047_kind_real         !
-real(kind_real),parameter ::  psv_d = -6.3431645e+3_kind_real       !  (K)
-! Constants for enhancement factor to calculating the mole fraction of water vapor
-real(kind_real),parameter ::  ef_alpha = 1.00062_kind_real           !
-real(kind_real),parameter ::  ef_beta  = 3.14e-8_kind_real           !  (1/Pa)
-real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real            !  (1/K2)
 
 isc = geom%isc
 iec = geom%iec
