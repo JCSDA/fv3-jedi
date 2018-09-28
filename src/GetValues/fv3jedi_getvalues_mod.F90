@@ -6,7 +6,7 @@ use ioda_locs_mod, only: ioda_locs
 use ufo_vars_mod, only: ufo_vars
 use ufo_geovals_mod, only: ufo_geovals
 
-use fv3jedi_constants, only: rad2deg, constoz
+use fv3jedi_constants, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_kinds, only: kind_real
@@ -329,9 +329,24 @@ do jvar = 1, vars%nv
     geoval => geovale
 
   case ("geopotential_height")
+
     call geop_height(geom,prs,prsi,state%t,state%q,state%phis,use_compress,geovalm)
     nvl = npz
     do_interp = .true.
+    geoval => geovalm
+
+  case ("geopotential_height_levels")
+
+    call geop_height_levels(geom,prs,prsi,state%t,state%q,state%phis,use_compress,geovale)
+    nvl = npz + 1
+    do_interp = .true.
+    geoval => geovale
+
+  case ("sfc_geopotential_height")
+
+    nvl = 1
+    do_interp = .true.
+    geovalm(:,:,1) = state%phis / grav
     geoval => geovalm
 
   case ("mass_concentration_of_ozone_in_air")
@@ -691,6 +706,10 @@ do jvar = 1, vars%nv
  
   case ("geopotential_height")
 
+  case ("geopotential_height_levels")
+
+  case ("sfc_geopotential_height")
+
   case ("mass_concentration_of_ozone_in_air")
 
   case ("mass_concentration_of_carbon_dioxide_in_air")
@@ -901,6 +920,10 @@ do jvar = 1, vars%nv
 
   case ("geopotential_height")
 
+  case ("geopotential_height_levels")
+
+  case ("sfc_geopotential_height")
+
   case ("mass_concentration_of_ozone_in_air")
 
   case ("mass_concentration_of_carbon_dioxide_in_air")
@@ -1014,6 +1037,10 @@ do jvar = 1, vars%nv
   case ("air_pressure_levels")
  
   case ("geopotential_height")
+
+  case ("geopotential_height_levels")
+
+  case ("sfc_geopotential_height")
 
   case ("mass_concentration_of_ozone_in_air")
 
