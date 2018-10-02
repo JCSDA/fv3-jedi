@@ -18,6 +18,17 @@ cost_function:
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -29,22 +40,35 @@ cost_function:
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserror: Inverse_Observation_Error
+        obserror: brightness_temperature_err_1_
       ObsData:
         ObsDataIn:
-          obsfile: Data/amsua_n19_obs.nc4
+          obsfile: Data/amsua_obs_n19_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.3dvar.obt
-        obsvalue: Observation
+        obsvalue: brightness_temperature_1_
       ObsType: Radiance
+      ObsOptions:
+        n_Layers: 64
+        n_Absorbers: 3
+        n_Clouds: 2
+        n_Aerosols: 0
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/
   cost_type: 3D-Var
   variables:
-  - u
-  - v
-  - pt
+  - ud
+  - vd
+  - ua
+  - va
+  - t
   - delp
   - q
-  window_begin: '2017-07-31T21:00:00Z'
+  - qi
+  - ql
+  - o3
+  window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
 final:
   diagnostics:
@@ -52,6 +76,7 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
+  name: 'FV3JEDI'
   init_tlmadm: '0'
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
@@ -93,6 +118,7 @@ variational:
       update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
@@ -118,6 +144,7 @@ variational:
       update_dgridwind: '0'
       update_pressures: '1'
       version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
