@@ -29,7 +29,7 @@ type :: fv3jedi_state
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
 
-  !State/increment variables
+  !State variables
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ud     ! D-grid (grid tangential) zonal wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: vd     ! D-grid (grid tangential) meridional wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ua     ! A-grid zonal wind (m/s)
@@ -57,6 +57,13 @@ type :: fv3jedi_state
   real(kind=kind_real), allocatable, dimension(:,:)   :: u_srf
   real(kind=kind_real), allocatable, dimension(:,:)   :: v_srf
   real(kind=kind_real), allocatable, dimension(:,:)   :: f10m
+
+  !Linearized model trajectory
+  real(kind_real), allocatable, dimension(:,:,:) :: qls, qcn, cfcn
+  real(kind_real), allocatable, dimension(:,:)   :: frocean, frland
+  real(kind_real), allocatable, dimension(:,:)   :: varflt, ustar, bstar
+  real(kind_real), allocatable, dimension(:,:)   :: zpbl, cm, ct, cq
+  real(kind_real), allocatable, dimension(:,:)   :: kcbl, ts, khl, khu
 
 end type fv3jedi_state
 
