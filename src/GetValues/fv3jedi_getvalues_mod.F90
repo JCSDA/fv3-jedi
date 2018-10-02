@@ -697,11 +697,6 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
-    nvl = geom%npz
-    do_interp = .true.
-    call delp_to_p_tl(geom,inc%delp,geovalm)
-    geoval => geovalm
-
   case ("air_pressure_levels")
  
   case ("geopotential_height")
@@ -912,9 +907,6 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("air_pressure")
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
 
   case ("air_pressure_levels")
 
@@ -1031,8 +1023,6 @@ do jvar = 1, vars%nv
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
   case ("air_pressure")
-
-    call delp_to_p_ad(geom,inc%delp,geovalm)
 
   case ("air_pressure_levels")
  
