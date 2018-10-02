@@ -38,14 +38,14 @@ cost_function:
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserror: REFOE_GSI
+        obserror: BNAOE_GSI
       ObsData:
         ObsDataIn:
           obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
         ObsDataOut:
-          obsfile: fv3jedi.3dvar.GnssroRef.nc4
-        obsvalue: REF
-      ObsType: GnssroRef
+          obsfile: fv3jedi.3dvar.GnssroBndGSI.nc4
+        obsvalue: BNA
+      ObsType: GnssroBndGSI
   cost_type: 3D-Var
   variables:
   - ud
