@@ -338,11 +338,6 @@ character(len=255) :: datapath_out
  id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', geom%grid_lon, &
                                       domain=geom%domain )
 
- id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', state%ua, &
-                                       domain=geom%domain )
- id_restart =  register_restart_field( Fv_restart, filename_core, 'va', state%va, &
-                                       domain=geom%domain )
-
  ! Write variables to file
  ! -----------------------`/
  call save_restart(Fv_restart, directory=trim(adjustl(datapath_out))//'RESTART')

@@ -79,6 +79,7 @@ endif
 self%fv3jedi_lm%conf%do_dyn     = config_get_int(c_conf,"lm_do_dyn")
 self%fv3jedi_lm%conf%do_phy_trb = config_get_int(c_conf,"lm_do_trb")
 self%fv3jedi_lm%conf%do_phy_mst = config_get_int(c_conf,"lm_do_mst")
+
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
 
 
@@ -173,8 +174,8 @@ lm%traj%va      = state%va
 lm%traj%t       = state%t
 lm%traj%delp    = state%delp
 lm%traj%qv      = state%q
-lm%traj%ql      = state%qi
-lm%traj%qi      = state%ql
+lm%traj%qi      = state%qi
+lm%traj%ql      = state%ql
 lm%traj%o3      = state%o3
 
 if (.not. lm%conf%hydrostatic) then
@@ -201,8 +202,8 @@ state%va      = lm%traj%va
 state%t       = lm%traj%t
 state%delp    = lm%traj%delp
 state%q       = lm%traj%qv
-state%ql      = lm%traj%qi
-state%qi      = lm%traj%ql
+state%qi      = lm%traj%qi
+state%ql      = lm%traj%ql
 state%o3      = lm%traj%o3
 
 if (.not. lm%conf%hydrostatic) then
