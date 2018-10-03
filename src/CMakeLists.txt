@@ -24,9 +24,12 @@ Localization/instantiateLocalizationFactory.h
 Localization/LocalizationMatrixFV3JEDI.cc
 Localization/LocalizationMatrixFV3JEDIFortran.h
 Localization/LocalizationMatrixFV3JEDI.h
-Model/fv3jedi_model_interface.F90
-Model/fv3jedi_model_mod.F90
-Model/fv3jedi_trajectories.F90
+Model/fv3jedi_model_interface_mod.F90
+Model/fv3jedi_tlm_interface_mod.F90
+Model/fv3jedi_traj_interface_mod.F90
+Model/fv3/fv3jedi_model_mod.F90
+Model/fv3jedi_tlm_mod.F90
+Model/fv3jedi_traj_mod.F90
 Model/ModelBiasCovarianceFV3JEDI.h
 Model/ModelBiasFV3JEDI.h
 Model/ModelBiasIncrementFV3JEDI.h
@@ -34,6 +37,7 @@ Model/ModelFV3JEDI.cc
 Model/ModelFV3JEDIFortran.h
 Model/ModelFV3JEDI.h
 Model/TlmFV3JEDI.cc
+Model/TlmFV3JEDIFortran.h
 Model/TlmFV3JEDI.h
 Model/TlmIdFV3JEDI.cc
 Model/TlmIdFV3JEDI.h

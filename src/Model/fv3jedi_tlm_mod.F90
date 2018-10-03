@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-module fv3jedi_model_mod
+module fv3jedi_tlm_mod
 
 use iso_c_binding
 use config_mod
@@ -11,7 +11,7 @@ use duration_mod
 use fv3jedi_geom_mod
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment 
-use fv3jedi_trajectories
+use fv3jedi_traj_mod
 use fv3jedi_constants
 use kinds
 
@@ -24,32 +24,32 @@ use fms_mod, only: set_domain, nullify_domain
 use field_manager_mod,  only: MODEL_ATMOS
 use tracer_manager_mod, only: get_tracer_index
 
-#ifdef TLADPRES
 use fv_arrays_nlm_mod, only: fv_atmos_pert_type
-#endif
 
 implicit none
 private
-public :: fv3jedi_model, & 
-        & model_setup, model_delete, &
-        & model_prepare_integration, model_prepare_integration_tl, model_prepare_integration_ad, &
-        & model_propagate, model_propagate_tl, model_propagate_ad, &
-        & model_prop_traj, model_wipe_traj, &
-        & fv3jedi_model_registry
+
+public :: fv3jedi_tlm 
+public :: tlm_create
+public :: tlm_delete
+public :: tlm_initialize_tl
+public :: tlm_initialize_ad
+public :: tlm_step_tl
+public :: tlm_step_ad
+public :: tlm_finalize_tl
+public :: tlm_finalize_ad
 
 ! ------------------------------------------------------------------------------
 
-!> Fortran derived type to hold model definition
-type :: fv3jedi_model
-  real(kind=kind_real)                         :: DT                  !<Model big timestep
+!> Fortran derived type to hold tlm definition
+type:: fv3jedi_tlm
+  real(kind=kind_real)                         :: DT                  !<TLM big timestep
   real(kind_real), allocatable, dimension(:,:) :: ebuffery            !<Halo holder
   real(kind_real), allocatable, dimension(:,:) :: nbufferx            !<Halo holder
   real(kind_real), allocatable, dimension(:,:) :: wbuffery            !<Halo holder
   real(kind_real), allocatable, dimension(:,:) :: sbufferx            !<Halo holder
   type(fv_atmos_type), allocatable             :: FV_Atm(:)           !<Main FV3 construct 
-#ifdef TLADPRES
   type(fv_atmos_pert_type), allocatable        :: FV_AtmP(:)          !<Main FV3 construct perturbation variables
-#endif
   logical, allocatable                         :: grids_on_this_pe(:) !<FV3 record
   integer                                      :: p_split = 1         !<FV3 record
   integer                                      :: isc,iec,jsc,jec     !<Convenience pointer to grid
@@ -65,37 +65,24 @@ type :: fv3jedi_model
   integer                                      :: ti_qi               !<Tracer index for cloud ice water
   integer                                      :: ti_ql               !<Tracer index for cloud liquid water
   integer                                      :: ti_o3               !<Tracer index for ozone
-end type fv3jedi_model
-
-#define LISTED_TYPE fv3jedi_model
-
-!> Linked list interface - defines registry_t type
-#include "linkedList_i.f"
-
-!> Global registry
-type(registry_t) :: fv3jedi_model_registry
+end type fv3jedi_tlm
 
 ! ------------------------------------------------------------------------------
+
 contains
-! ------------------------------------------------------------------------------
-
-!> Linked list implementation
-#include "linkedList_c.f"
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_setup(model, geom, c_conf)
+subroutine tlm_create(tlm, geom, c_conf)
 
 use fv_control_mod, only: fv_init, pelist_all
 
-#ifdef TLADPRES
 use fv_control_nlm_mod, only: fv_init_pert
 use tapenade_iter, only: cp_iter, cp_iter_controls, initialize_cp_iter
-#endif
 
 implicit none
 type(c_ptr), intent(in)     :: c_conf !< pointer to object of class Config
-type(fv3jedi_model), target :: model  ! should I put intent on these?
+type(fv3jedi_tlm), target :: tlm  ! should I put intent on these?
 type(fv3jedi_geom)          :: geom
 
 character(len=20) :: ststep
@@ -104,121 +91,119 @@ type(duration) :: dtstep
 integer :: i,j
 integer :: tmp
 
-!Model time step
+!TLM time step
 ststep = config_get_string(c_conf,len(ststep),"tstep")
 dtstep = trim(ststep)
-model%DT = real(duration_seconds(dtstep),kind_real)
+tlm%DT = real(duration_seconds(dtstep),kind_real)
 
 !Call to fv_init
-call fv_init(model%FV_Atm, model%DT, model%grids_on_this_pe, model%p_split)
+call fv_init(tlm%FV_Atm, tlm%DT, tlm%grids_on_this_pe, tlm%p_split)
 deallocate(pelist_all)
 
 !Compute grid must be same as geometry
-if ( (geom%isc .ne. model%FV_Atm(1)%bd%isc) .or. (geom%iec .ne. model%FV_Atm(1)%bd%iec) .or. &
-     (geom%jsc .ne. model%FV_Atm(1)%bd%jsc) .or. (geom%jec .ne. model%FV_Atm(1)%bd%jec) .or. &
-     (geom%npz .ne. model%FV_Atm(1)%npz) ) then
-   call abor1_ftn("fv3jedi model: compute areas for geometry and model do not agree")
+if ( (geom%isc .ne. tlm%FV_Atm(1)%bd%isc) .or. (geom%iec .ne. tlm%FV_Atm(1)%bd%iec) .or. &
+     (geom%jsc .ne. tlm%FV_Atm(1)%bd%jsc) .or. (geom%jec .ne. tlm%FV_Atm(1)%bd%jec) .or. &
+     (geom%npz .ne. tlm%FV_Atm(1)%npz) ) then
+   call abor1_ftn("fv3jedi tlm: compute areas for geometry and tlm do not agree")
 endif
 
 !Copy of grid info for convenience
-model%isc = model%FV_Atm(1)%bd%isc
-model%iec = model%FV_Atm(1)%bd%iec
-model%jsc = model%FV_Atm(1)%bd%jsc
-model%jec = model%FV_Atm(1)%bd%jec
-model%isd = model%FV_Atm(1)%bd%isd
-model%ied = model%FV_Atm(1)%bd%ied
-model%jsd = model%FV_Atm(1)%bd%jsd
-model%jed = model%FV_Atm(1)%bd%jed
-model%npz = model%FV_Atm(1)%npz
-model%hydrostatic = model%FV_Atm(1)%flagstruct%hydrostatic
+tlm%isc = tlm%FV_Atm(1)%bd%isc
+tlm%iec = tlm%FV_Atm(1)%bd%iec
+tlm%jsc = tlm%FV_Atm(1)%bd%jsc
+tlm%jec = tlm%FV_Atm(1)%bd%jec
+tlm%isd = tlm%FV_Atm(1)%bd%isd
+tlm%ied = tlm%FV_Atm(1)%bd%ied
+tlm%jsd = tlm%FV_Atm(1)%bd%jsd
+tlm%jed = tlm%FV_Atm(1)%bd%jed
+tlm%npz = tlm%FV_Atm(1)%npz
+tlm%hydrostatic = tlm%FV_Atm(1)%flagstruct%hydrostatic
 
 !Halo holders for domain grid
-allocate(model%wbuffery(model%FV_Atm(1)%bd%jsc:model%FV_Atm(1)%bd%jec,model%FV_Atm(1)%npz))
-allocate(model%sbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_Atm(1)%npz))
-allocate(model%ebuffery(model%FV_Atm(1)%bd%jsc:model%FV_Atm(1)%bd%jec,model%FV_Atm(1)%npz))
-allocate(model%nbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_Atm(1)%npz))
+allocate(tlm%wbuffery(tlm%FV_Atm(1)%bd%jsc:tlm%FV_Atm(1)%bd%jec,tlm%FV_Atm(1)%npz))
+allocate(tlm%sbufferx(tlm%FV_Atm(1)%bd%isc:tlm%FV_Atm(1)%bd%iec,tlm%FV_Atm(1)%npz))
+allocate(tlm%ebuffery(tlm%FV_Atm(1)%bd%jsc:tlm%FV_Atm(1)%bd%jec,tlm%FV_Atm(1)%npz))
+allocate(tlm%nbufferx(tlm%FV_Atm(1)%bd%isc:tlm%FV_Atm(1)%bd%iec,tlm%FV_Atm(1)%npz))
 
 !Set ptop, ak, bk to be same as geometry
-model%FV_Atm(1)%ak = geom%ak
-model%FV_Atm(1)%bk = geom%bk
-model%FV_Atm(1)%ptop = geom%ptop
+tlm%FV_Atm(1)%ak = geom%ak
+tlm%FV_Atm(1)%bk = geom%bk
+tlm%FV_Atm(1)%ptop = geom%ptop
 
 !Tracer indexes
-model%ti_q  = 1 !get_tracer_index (MODEL_ATMOS, 'sphum')
-model%ti_ql = 2 !get_tracer_index (MODEL_ATMOS, 'liq_wat')
-model%ti_qi = 3 !get_tracer_index (MODEL_ATMOS, 'ice_wat')
-model%ti_o3 = 4 !get_tracer_index (MODEL_ATMOS, 'o3mr')
+tlm%ti_q  = 1 !get_tracer_index (MODEL_ATMOS, 'sphum')
+tlm%ti_ql = 2 !get_tracer_index (MODEL_ATMOS, 'liq_wat')
+tlm%ti_qi = 3 !get_tracer_index (MODEL_ATMOS, 'ice_wat')
+tlm%ti_o3 = 4 !get_tracer_index (MODEL_ATMOS, 'o3mr')
 
 !Always allocate w, delz, q_con for now
-deallocate(model%FV_Atm(1)%w)
-deallocate(model%FV_Atm(1)%delz)
-deallocate(model%FV_Atm(1)%q_con)
-allocate  ( model%FV_Atm(1)%w (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
-                               model%FV_Atm(1)%flagstruct%npz) )
-allocate  ( model%FV_Atm(1)%delz (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
-                               model%FV_Atm(1)%flagstruct%npz) )
-allocate  ( model%FV_Atm(1)%q_con(model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
-                               model%FV_Atm(1)%flagstruct%npz) )
-model%FV_Atm(1)%w = 0.0
-model%FV_Atm(1)%delz = 0.0
-model%FV_Atm(1)%q_con = 0.0
+deallocate(tlm%FV_Atm(1)%w)
+deallocate(tlm%FV_Atm(1)%delz)
+deallocate(tlm%FV_Atm(1)%q_con)
+allocate  ( tlm%FV_Atm(1)%w (tlm%FV_Atm(1)%bd%isd:tlm%FV_Atm(1)%bd%ied,tlm%FV_Atm(1)%bd%jsd:tlm%FV_Atm(1)%bd%jed,&
+                               tlm%FV_Atm(1)%flagstruct%npz) )
+allocate  ( tlm%FV_Atm(1)%delz (tlm%FV_Atm(1)%bd%isd:tlm%FV_Atm(1)%bd%ied,tlm%FV_Atm(1)%bd%jsd:tlm%FV_Atm(1)%bd%jed,&
+                               tlm%FV_Atm(1)%flagstruct%npz) )
+allocate  ( tlm%FV_Atm(1)%q_con(tlm%FV_Atm(1)%bd%isd:tlm%FV_Atm(1)%bd%ied,tlm%FV_Atm(1)%bd%jsd:tlm%FV_Atm(1)%bd%jed,&
+                               tlm%FV_Atm(1)%flagstruct%npz) )
+tlm%FV_Atm(1)%w = 0.0
+tlm%FV_Atm(1)%delz = 0.0
+tlm%FV_Atm(1)%q_con = 0.0
 
 !fC and f0
-if (model%FV_Atm(1)%flagstruct%grid_type == 4) then
-   model%FV_Atm(1)%gridstruct%fC(:,:) = 2.*omega*sin(model%FV_Atm(1)%flagstruct%deglat/180.*pi)
-   model%FV_Atm(1)%gridstruct%f0(:,:) = 2.*omega*sin(model%FV_Atm(1)%flagstruct%deglat/180.*pi)
+if (tlm%FV_Atm(1)%flagstruct%grid_type == 4) then
+   tlm%FV_Atm(1)%gridstruct%fC(:,:) = 2.*omega*sin(tlm%FV_Atm(1)%flagstruct%deglat/180.*pi)
+   tlm%FV_Atm(1)%gridstruct%f0(:,:) = 2.*omega*sin(tlm%FV_Atm(1)%flagstruct%deglat/180.*pi)
 else
    if (f_coriolis_angle == -999) then
-      model%FV_Atm(1)%gridstruct%fC(:,:) = 0.0
-      model%FV_Atm(1)%gridstruct%f0(:,:) = 0.0
+      tlm%FV_Atm(1)%gridstruct%fC(:,:) = 0.0
+      tlm%FV_Atm(1)%gridstruct%f0(:,:) = 0.0
    else
-      do j=model%FV_Atm(1)%bd%jsd,model%FV_Atm(1)%bd%jed+1
-         do i=model%FV_Atm(1)%bd%isd,model%FV_Atm(1)%bd%ied+1
-            model%FV_Atm(1)%gridstruct%fC(i,j) = 2.*omega*( -COS(model%FV_Atm(1)%gridstruct%grid(i,j,1))*&
-                                           COS(model%FV_Atm(1)%gridstruct%grid(i,j,2))*SIN(f_coriolis_angle) + &
-                                           SIN(model%FV_Atm(1)%gridstruct%grid(i,j,2))*COS(f_coriolis_angle) )
+      do j=tlm%FV_Atm(1)%bd%jsd,tlm%FV_Atm(1)%bd%jed+1
+         do i=tlm%FV_Atm(1)%bd%isd,tlm%FV_Atm(1)%bd%ied+1
+            tlm%FV_Atm(1)%gridstruct%fC(i,j) = 2.*omega*( -COS(tlm%FV_Atm(1)%gridstruct%grid(i,j,1))*&
+                                           COS(tlm%FV_Atm(1)%gridstruct%grid(i,j,2))*SIN(f_coriolis_angle) + &
+                                           SIN(tlm%FV_Atm(1)%gridstruct%grid(i,j,2))*COS(f_coriolis_angle) )
          enddo
       enddo
-      do j=model%FV_Atm(1)%bd%jsd,model%FV_Atm(1)%bd%jed
-         do i=model%FV_Atm(1)%bd%isd,model%FV_Atm(1)%bd%ied
-            model%FV_Atm(1)%gridstruct%f0(i,j) = 2.*omega*( -COS(model%FV_Atm(1)%gridstruct%agrid(i,j,1))*&
-                                           COS(model%FV_Atm(1)%gridstruct%agrid(i,j,2))*SIN(f_coriolis_angle) + &
-                                           SIN(model%FV_Atm(1)%gridstruct%agrid(i,j,2))*COS(f_coriolis_angle) )
+      do j=tlm%FV_Atm(1)%bd%jsd,tlm%FV_Atm(1)%bd%jed
+         do i=tlm%FV_Atm(1)%bd%isd,tlm%FV_Atm(1)%bd%ied
+            tlm%FV_Atm(1)%gridstruct%f0(i,j) = 2.*omega*( -COS(tlm%FV_Atm(1)%gridstruct%agrid(i,j,1))*&
+                                           COS(tlm%FV_Atm(1)%gridstruct%agrid(i,j,2))*SIN(f_coriolis_angle) + &
+                                           SIN(tlm%FV_Atm(1)%gridstruct%agrid(i,j,2))*COS(f_coriolis_angle) )
          enddo
       enddo
    endif
 endif
 
-if (config_element_exists(c_conf,"update_dgridwind")) model%update_dgridwind = config_get_int(c_conf,"update_dgridwind")
-if (config_element_exists(c_conf,"update_pressures")) model%update_pressures = config_get_int(c_conf,"update_pressures")
+if (config_element_exists(c_conf,"update_dgridwind")) tlm%update_dgridwind = config_get_int(c_conf,"update_dgridwind")
+if (config_element_exists(c_conf,"update_pressures")) tlm%update_pressures = config_get_int(c_conf,"update_pressures")
 
 !Pointer to self when not nested
-if (.not. model%FV_Atm(1)%gridstruct%nested) model%FV_Atm(1)%parent_grid => model%FV_Atm(1)
+if (.not. tlm%FV_Atm(1)%gridstruct%nested) tlm%FV_Atm(1)%parent_grid => tlm%FV_Atm(1)
 
 !Harwire some flags
-model%FV_Atm(1)%flagstruct%reproduce_sum = .false.
-model%FV_Atm(1)%flagstruct%fill = .false.
-model%FV_Atm(1)%flagstruct%fv_debug = .false.
-model%FV_Atm(1)%flagstruct%adiabatic = .false.
-model%FV_Atm(1)%flagstruct%do_sat_adj = .false.
-model%FV_Atm(1)%flagstruct%breed_vortex_inline = .false.
+tlm%FV_Atm(1)%flagstruct%reproduce_sum = .false.
+tlm%FV_Atm(1)%flagstruct%fill = .false.
+tlm%FV_Atm(1)%flagstruct%fv_debug = .false.
+tlm%FV_Atm(1)%flagstruct%adiabatic = .false.
+tlm%FV_Atm(1)%flagstruct%do_sat_adj = .false.
+tlm%FV_Atm(1)%flagstruct%breed_vortex_inline = .false.
 
-#ifdef TLADPRES
-
-model%init_tlmadm = 0
+tlm%init_tlmadm = 0
 if (config_element_exists(c_conf,"init_tlmadm")) &
-  model%init_tlmadm = config_get_int(c_conf,"init_tlmadm")
+  tlm%init_tlmadm = config_get_int(c_conf,"init_tlmadm")
 
-model%linmodtest = 0
+tlm%linmodtest = 0
 if (config_element_exists(c_conf,"linmodtest")) &
-  model%linmodtest = config_get_int(c_conf,"linmodtest")
+  tlm%linmodtest = config_get_int(c_conf,"linmodtest")
 
-if (model%linmodtest == 1) model%init_tlmadm = 1
+if (tlm%linmodtest == 1) tlm%init_tlmadm = 1
 
-if (model%init_tlmadm == 1) then
+if (tlm%init_tlmadm == 1) then
 
    !Initialize perturbation variables and read config
-   call fv_init_pert(model%FV_Atm,model%FV_AtmP)
+   call fv_init_pert(tlm%FV_Atm,tlm%FV_AtmP)
       
    !Set up controls for iterative checkpointing
    !-------------------------------------------
@@ -233,54 +218,50 @@ if (model%init_tlmadm == 1) then
    if (cp_iter_controls%cp_i .ne. 0) then
    
       !Dynamics
-      model%cp_dyn_ind = config_get_int (c_conf,"CP_dyn_ind")
-      cp_iter(model%cp_dyn_ind)%my_name(1:3) = 'dyn'
+      tlm%cp_dyn_ind = config_get_int (c_conf,"CP_dyn_ind")
+      cp_iter(tlm%cp_dyn_ind)%my_name(1:3) = 'dyn'
       
-      cp_iter(model%cp_dyn_ind)%cp_test = .false.
+      cp_iter(tlm%cp_dyn_ind)%cp_test = .false.
       tmp = config_get_int (c_conf,"CP_dyn_test")
-      if (tmp==1) cp_iter(model%cp_dyn_ind)%cp_test = .true.
+      if (tmp==1) cp_iter(tlm%cp_dyn_ind)%cp_test = .true.
       
-      cp_iter(model%cp_dyn_ind)%cp_rep = .false.
+      cp_iter(tlm%cp_dyn_ind)%cp_rep = .false.
       tmp = config_get_int (c_conf,"CP_dyn_rep")
-      if (tmp==1) cp_iter(model%cp_dyn_ind)%cp_test = .true.
+      if (tmp==1) cp_iter(tlm%cp_dyn_ind)%cp_test = .true.
       
       !Hardwire these for now
-      cp_iter(model%cp_dyn_ind)%check_st_control = .false.
-      cp_iter(model%cp_dyn_ind)%check_st_integer = .false.
-      cp_iter(model%cp_dyn_ind)%check_st_real_r4 = .false.
-      cp_iter(model%cp_dyn_ind)%check_st_real_r8 = .false.
+      cp_iter(tlm%cp_dyn_ind)%check_st_control = .false.
+      cp_iter(tlm%cp_dyn_ind)%check_st_integer = .false.
+      cp_iter(tlm%cp_dyn_ind)%check_st_real_r4 = .false.
+      cp_iter(tlm%cp_dyn_ind)%check_st_real_r8 = .false.
       
-      cp_iter(model%cp_dyn_ind)%test_dim_st_control = 0
-      cp_iter(model%cp_dyn_ind)%test_dim_st_integer = 0
-      cp_iter(model%cp_dyn_ind)%test_dim_st_real_r4 = 0
-      cp_iter(model%cp_dyn_ind)%test_dim_st_real_r8 = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_st_control = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_st_integer = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_st_real_r4 = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_st_real_r8 = 0
       
-      cp_iter(model%cp_dyn_ind)%test_dim_cp_control = 0
-      cp_iter(model%cp_dyn_ind)%test_dim_cp_integer = 0
-      cp_iter(model%cp_dyn_ind)%test_dim_cp_real_r4 = 0
-      cp_iter(model%cp_dyn_ind)%test_dim_cp_real_r8 = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_cp_control = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_cp_integer = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_cp_real_r4 = 0
+      cp_iter(tlm%cp_dyn_ind)%test_dim_cp_real_r8 = 0
    
    endif
 
 endif
 
-#endif
-
-end subroutine model_setup
+end subroutine tlm_create
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_delete(self)
+subroutine tlm_delete(self)
 
 use fv_arrays_mod, only: deallocate_fv_atmos_type
 
-#ifdef TLADPRES
 use fv_arrays_nlm_mod, only: deallocate_fv_atmos_pert_type
 use tapenade_iter, only: cp_iter_controls, finalize_cp_iter
-#endif
 
 implicit none
-type(fv3jedi_model) :: self
+type(fv3jedi_tlm) :: self
 
 deallocate(self%ebuffery)
 deallocate(self%wbuffery)
@@ -290,209 +271,56 @@ deallocate(self%sbufferx)
 call deallocate_fv_atmos_type(self%FV_Atm(1))
 deallocate(self%FV_Atm)
 
-#ifdef TLADPRES
 if (self%init_tlmadm == 1) then
    call deallocate_fv_atmos_pert_type(self%FV_AtmP(1))
    deallocate(self%FV_AtmP)
    
    if (cp_iter_controls%cp_i .ne. 0) call finalize_cp_iter
 endif
-#endif
 
-end subroutine model_delete
-
-! ------------------------------------------------------------------------------
-
-subroutine model_prepare_integration(self, state)
-
-implicit none
-type(fv3jedi_model), target :: self
-type(fv3jedi_state)         :: state
-
-end subroutine model_prepare_integration
+end subroutine tlm_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prepare_integration_ad(self, inc)
+subroutine tlm_initialize_ad(self, inc)
 
 implicit none
-type(fv3jedi_model), target :: self
+type(fv3jedi_tlm), target :: self
 type(fv3jedi_increment)     :: inc
 
-end subroutine model_prepare_integration_ad
+end subroutine tlm_initialize_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prepare_integration_tl(self, inc)
+subroutine tlm_initialize_tl(self, inc)
 
 implicit none
-type(fv3jedi_model), target :: self
+type(fv3jedi_tlm), target :: self
 type(fv3jedi_increment)     :: inc
 
-end subroutine model_prepare_integration_tl
+end subroutine tlm_initialize_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate(geom, self, state)
+subroutine tlm_step_ad(geom, self, inc, traj)
 
-use fv_dynamics_mod, only: fv_dynamics
-use fv_dynamics_tlm_mod, only: fv_dynamics_nlm => fv_dynamics
-use fv_sg_mod, only: fv_subgrid_z
-
-implicit none
-type(fv3jedi_model), target :: self
-type(fv3jedi_state)         :: state
-type(fv3jedi_geom)          :: geom
-
-type(fv_atmos_type), pointer :: FV_Atm(:)
-integer :: i,j,k
-
-
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
-
-
-!Convenience pointer to the main FV_Atm structure
-!------------------------------------------------
-FV_Atm => self%FV_Atm
-
-
-!Copy to model variables
-!-----------------------
-call state_to_model(state,self)
-
-
-!Get phis from state, fixed for integration
-!-------------------------------------------
-call get_phi_from_state(state,self)
-
-
-! Zero local variables
-! --------------------
-FV_Atm(1)%pe    = 0.0
-FV_Atm(1)%peln  = 0.0
-FV_Atm(1)%pk    = 0.0
-FV_Atm(1)%pkz   = 0.0
-FV_Atm(1)%ua    = 0.0
-FV_Atm(1)%va    = 0.0
-FV_Atm(1)%uc    = 0.0
-FV_Atm(1)%vc    = 0.0
-FV_Atm(1)%omga  = 0.0
-FV_Atm(1)%mfx   = 0.0
-FV_Atm(1)%mfy   = 0.0
-FV_Atm(1)%cx    = 0.0
-FV_Atm(1)%cy    = 0.0
-FV_Atm(1)%ze0   = 0.0
-FV_Atm(1)%q_con = 0.0
-
-
-!Update edges of d-grid winds
-!----------------------------
-if (self%update_dgridwind == 1) then
-
-   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, geom%domain, &
-                         wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                         sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                         gridtype=DGRID_NE, complete=.true. )
-   do k=1,self%npz
-      do i=self%isc,self%iec
-         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
-      enddo
-   enddo
-   do k=1,self%npz
-      do j=self%jsc,self%jec
-         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
-      enddo
-   enddo
-
-endif
-
-!Compute the other pressure variables needed by FV3
-!--------------------------------------------------
-if (self%update_pressures == 1) then
-   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
-                               self%npz, kappa, FV_Atm(1)%ptop, &
-                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
-endif
-
-
-! MPP set domain
-! --------------
-call set_domain(FV_Atm(1)%domain)
-
-
-!Propagate FV3 one time step
-!---------------------------
-if (self%linmodtest == 0) then
-   call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,  &
-                     self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,           &
-                     FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                   &
-                     cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,          &
-                     FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                  &
-                     FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w, FV_Atm(1)%delz,                       &
-                     FV_Atm(1)%flagstruct%hydrostatic, FV_Atm(1)%pt, FV_Atm(1)%delp, FV_Atm(1)%q, &
-                     FV_Atm(1)%ps, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,     &
-                     FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                             &
-                     FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%uc, FV_Atm(1)%vc,                      &
-                     FV_Atm(1)%ak, FV_Atm(1)%bk,                                                  &
-                     FV_Atm(1)%mfx, FV_Atm(1)%mfy, FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,     &
-                     FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,   &
-                     FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
-                     FV_Atm(1)%domain )
-else
-   call fv_dynamics_nlm( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,  &
-                         self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,           &
-                         FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                   &
-                         cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,          &
-                         FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                  &
-                         FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w, FV_Atm(1)%delz,                       &
-                         FV_Atm(1)%flagstruct%hydrostatic, FV_Atm(1)%pt, FV_Atm(1)%delp, FV_Atm(1)%q, &
-                         FV_Atm(1)%ps, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,     &
-                         FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                             &
-                         FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%uc, FV_Atm(1)%vc,                      &
-                         FV_Atm(1)%ak, FV_Atm(1)%bk,                                                  &
-                         FV_Atm(1)%mfx, FV_Atm(1)%mfy, FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,     &
-                         FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,   &
-                         self%FV_AtmP(1)%flagstruct,                                                       &
-                         FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
-                         FV_Atm(1)%domain )
-endif
-
-! MPP nulify
-! ----------
-call nullify_domain()
-
-
-!Copy back to state
-!------------------
-call model_to_state(self,state)
-
-
-end subroutine model_propagate
-
-! ------------------------------------------------------------------------------
-
-subroutine model_propagate_ad(geom, self, inc, traj)
-
-#ifdef TLADPRES
 use fv_dynamics_adm_mod, only: fv_dynamics_fwd, fv_dynamics_bwd
 use mpp_domains_mod, only: mpp_get_boundary_ad
 use tapenade_iter,   only: cp_iter_controls, cp_mod_ini, cp_mod_mid, cp_mod_end, pushrealarray, poprealarray
-#endif
 
 implicit none
 
-type(fv3jedi_model), target :: self
+type(fv3jedi_tlm), target :: self
 type(fv3jedi_increment)     :: inc
-type(fv3jedi_trajectory)    :: traj
+type(fv3jedi_traj)    :: traj
 type(fv3jedi_geom)          :: geom
 
-#ifdef TLADPRES
 type(fv_atmos_type), pointer :: FV_Atm(:)
 type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
 integer :: i,j,k
 
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate model adjoint'
+if (mpp_pe() == mpp_root_pe()) print*, 'Step adjoint'
 
 ! Convenience pointer to the main FV_Atm structure
 ! ------------------------------------------------
@@ -502,7 +330,7 @@ FV_AtmP => self%FV_AtmP
 
 ! Get up the trajectory for this time step 
 ! ----------------------------------------
-call get_traj( traj, &
+call traj_get( traj, &
                self%isc,self%iec,self%jsc,self%jec, &
                self%isd,self%ied,self%jsd,self%jed, &
                self%npz, self%hydrostatic, &
@@ -690,9 +518,9 @@ endif
 call zero_pert_vars(FV_AtmP(1))
 
 
-! Copy to model variables
-! -----------------------
-call model_to_inc_ad(geom,inc,self)
+! Copy to increment variables
+! ---------------------------
+call tlm_to_inc_ad(geom,inc,self)
 
 
 ! Backward adjoint sweep of the dynamics
@@ -759,7 +587,7 @@ call nullify_domain()
 
 ! Copy back to increment 
 ! ----------------------
-call inc_to_model_ad(geom,self,inc)
+call inc_to_tlm_ad(geom,self,inc)
 
 
 ! Make sure everything is zero
@@ -773,32 +601,26 @@ if (cp_iter_controls%cp_i .ne. 0) then
    call cp_mod_end
 endif
 
-
-#endif
-
-end subroutine model_propagate_ad
+end subroutine tlm_step_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_propagate_tl(geom, self, inc, traj)
+subroutine tlm_step_tl(geom, self, inc, traj)
 
-#ifdef TLADPRES
 use fv_dynamics_tlm_mod, only: fv_dynamics_tlm
-#endif
 
 implicit none
-type(fv3jedi_model), target :: self
+type(fv3jedi_tlm), target :: self
 type(fv3jedi_increment)         :: inc
-type(fv3jedi_trajectory)    :: traj
+type(fv3jedi_traj)    :: traj
 type(fv3jedi_geom)          :: geom
 
-#ifdef TLADPRES
 type(fv_atmos_type), pointer :: FV_Atm(:)
 type(fv_atmos_pert_type), pointer :: FV_AtmP(:)
 integer :: i,j,k
 
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate tangent linear model'
+if (mpp_pe() == mpp_root_pe()) print*, 'Step tangent linear model'
 
 
 !Convenience pointer to the main FV_Atm structure
@@ -809,7 +631,7 @@ FV_AtmP => self%FV_AtmP
 
 !Get up the trajectory for this time step 
 !----------------------------------------
-call get_traj( traj, &
+call traj_get( traj, &
                self%isc,self%iec,self%jsc,self%jec, &
                self%isd,self%ied,self%jsd,self%jed, &
                self%npz, self%hydrostatic, &
@@ -866,9 +688,9 @@ enddo
 call zero_pert_vars(FV_AtmP(1))
 
 
-!Copy to model variables
-!-----------------------
-call inc_to_model_tl(geom,inc,self)
+!Copy to tlm variables
+!---------------------
+call inc_to_tlm_tl(geom,inc,self)
 
 
 !Edge of pert always needs to be filled
@@ -908,8 +730,8 @@ endif
 call set_domain(FV_Atm(1)%domain)
 
 
-!Propagate TLM one time step
-!---------------------------
+!Step TLM one time step
+!----------------------
 call fv_dynamics_tlm(FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,                      &
                      self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,                               &
                      FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                                       &
@@ -937,148 +759,45 @@ call nullify_domain()
 
 ! Copy back to increment
 ! ----------------------
-call model_to_inc_tl(geom,self,inc)
+call tlm_to_inc_tl(geom,self,inc)
 
 
 ! Make sure everything is zero
 ! ----------------------------
 call zero_pert_vars(FV_AtmP(1))
 
-#endif
-
-end subroutine model_propagate_tl
+end subroutine tlm_step_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_prop_traj(self, state, traj)
+subroutine tlm_finalize_ad(self, inc)
 
 implicit none
-type(fv3jedi_model)      :: self
-type(fv3jedi_state)      :: state
-type(fv3jedi_trajectory) :: traj
+type(fv3jedi_tlm), target :: self
+type(fv3jedi_increment)     :: inc
 
-call state_to_model(state,self)
-
-self%FV_Atm(1)%phis = 0.0
-self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = state%phis(self%isc:self%iec,self%jsc:self%jec)
-
-call set_traj( traj, &
-               self%isc,self%iec,self%jsc,self%jec, &
-               self%isd,self%ied,self%jsd,self%jed, &
-               self%npz, self%hydrostatic, &
-               self%FV_Atm(1)%u,self%FV_Atm(1)%v,self%FV_Atm(1)%pt,self%FV_Atm(1)%delp,&
-               self%FV_Atm(1)%q(:,:,:,self%ti_q ),self%FV_Atm(1)%q(:,:,:,self%ti_qi),&
-               self%FV_Atm(1)%q(:,:,:,self%ti_ql),self%FV_Atm(1)%q(:,:,:,self%ti_o3),&
-               self%FV_Atm(1)%w,self%FV_Atm(1)%delz,self%FV_Atm(1)%phis)
-
-end subroutine model_prop_traj
+end subroutine tlm_finalize_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_wipe_traj(traj)
-implicit none
-type(fv3jedi_trajectory), pointer :: traj
-
-call delete_traj(traj)
-
-end subroutine model_wipe_traj
-
-! ------------------------------------------------------------------------------
-
-subroutine state_to_model(state,self)
+subroutine tlm_finalize_tl(self, inc)
 
 implicit none
-type(fv3jedi_state), intent(in)    :: state
-type(fv3jedi_model), intent(inout) :: self
+type(fv3jedi_tlm), target :: self
+type(fv3jedi_increment)     :: inc
 
-integer :: isc,iec,jsc,jec
-
-isc = self%FV_Atm(1)%bd%isc
-iec = self%FV_Atm(1)%bd%iec
-jsc = self%FV_Atm(1)%bd%jsc
-jec = self%FV_Atm(1)%bd%jec
-
-!NOTE: while the variable name is pt, FV3 expects dry temperature
-
-!To zero the halos
-self%FV_Atm(1)%u    = 0.0
-self%FV_Atm(1)%v    = 0.0
-self%FV_Atm(1)%pt   = 0.0
-self%FV_Atm(1)%delp = 0.0
-self%FV_Atm(1)%q    = 0.0
-self%FV_Atm(1)%w    = 0.0
-self%FV_Atm(1)%delz = 0.0
-
-!Only copy compute grid incase of halo differences
-self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:)            = state%ud  (isc:iec  ,jsc:jec+1,:)
-self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:)            = state%vd  (isc:iec+1,jsc:jec  ,:)
-self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:)            = state%t   (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:)            = state%delp(isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q ) = state%q   (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi) = state%qi  (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql) = state%ql  (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3) = state%o3  (isc:iec  ,jsc:jec  ,:)
-if (.not. state%hydrostatic) then
-   self%FV_Atm(1)%delz(isc:iec,jsc:jec,:) = state%delz(isc:iec,jsc:jec,:)
-   self%FV_Atm(1)%w   (isc:iec,jsc:jec,:) = state%w   (isc:iec,jsc:jec,:)
-endif
-
-end subroutine state_to_model
+end subroutine tlm_finalize_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_state(self,state)
-
-implicit none
-type(fv3jedi_model), intent(in   ) :: self
-type(fv3jedi_state), intent(inout) :: state
-
-integer :: isc,iec,jsc,jec
-
-isc = self%FV_Atm(1)%bd%isc
-iec = self%FV_Atm(1)%bd%iec
-jsc = self%FV_Atm(1)%bd%jsc
-jec = self%FV_Atm(1)%bd%jec
-
-state%ud   = 0.0
-state%vd   = 0.0
-state%t    = 0.0
-state%delp = 0.0
-state%q    = 0.0
-if (.not. state%hydrostatic) then
-   state%delz = 0.0
-   state%w    = 0.0
-endif
-state%ua    = 0.0
-state%va    = 0.0
-
-state%ud  (isc:iec  ,jsc:jec+1,:) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
-state%vd  (isc:iec+1,jsc:jec  ,:) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
-state%t   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
-state%delp(isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
-state%q   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q)
-state%qi  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi)
-state%ql  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql)
-state%o3  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3)
-if (.not. state%hydrostatic) then
-  state%delz(isc:iec,jsc:jec,:) = self%FV_Atm(1)%delz(isc:iec,jsc:jec,:)
-  state%w   (isc:iec,jsc:jec,:) = self%FV_Atm(1)%w   (isc:iec,jsc:jec,:)
-endif
-state%ua(isc:iec,jsc:jec,:) = self%FV_Atm(1)%ua(isc:iec,jsc:jec,:)
-state%va(isc:iec,jsc:jec,:) = self%FV_Atm(1)%va(isc:iec,jsc:jec,:)
-
-end subroutine model_to_state
-
-! ------------------------------------------------------------------------------
-
-subroutine inc_to_model_tl(geom,inc,self)
+subroutine inc_to_tlm_tl(geom,inc,self)
 
 use wind_vt_mod, only: a2d
 
 implicit none
 type(fv3jedi_geom), intent(inout)   :: geom
 type(fv3jedi_increment), intent(in) :: inc
-type(fv3jedi_model), intent(inout)  :: self
+type(fv3jedi_tlm), intent(inout)  :: self
 
 integer :: isc,iec,jsc,jec
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
@@ -1119,17 +838,17 @@ endif
 
 deallocate(ud,vd)
 
-end subroutine inc_to_model_tl
+end subroutine inc_to_tlm_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_inc_tl(geom,self,inc)
+subroutine tlm_to_inc_tl(geom,self,inc)
 
 use wind_vt_mod, only: d2a
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_model),     intent(inout) :: self
+type(fv3jedi_tlm),     intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
 integer :: isc,iec,jsc,jec
@@ -1167,18 +886,18 @@ if (.not. inc%hydrostatic) then
   inc%w   (isc:iec,jsc:jec,:) = self%FV_AtmP(1)%wp   (isc:iec,jsc:jec,:)
 endif
 
-end subroutine model_to_inc_tl
+end subroutine tlm_to_inc_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_inc_ad(geom,inc,self)
+subroutine tlm_to_inc_ad(geom,inc,self)
 
 use wind_vt_mod, only: d2a_ad
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: inc
-type(fv3jedi_model),     intent(inout) :: self
+type(fv3jedi_tlm),     intent(inout) :: self
 
 integer :: isc,iec,jsc,jec
 
@@ -1215,18 +934,18 @@ call d2a_ad(geom, self%FV_AtmP(1)%up, self%FV_AtmP(1)%vp, self%FV_AtmP(1)%uap, s
 self%FV_AtmP(1)%uap(isc:iec,jsc:jec,:) = 0.0
 self%FV_AtmP(1)%vap(isc:iec,jsc:jec,:) = 0.0
 
-end subroutine model_to_inc_ad
+end subroutine tlm_to_inc_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine inc_to_model_ad(geom,self,inc)
+subroutine inc_to_tlm_ad(geom,self,inc)
 
 use wind_vt_mod, only: a2d_ad
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(inout) :: inc
-type(fv3jedi_model),     intent(inout) :: self
+type(fv3jedi_tlm),     intent(inout) :: self
 
 integer :: isc,iec,jsc,jec
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
@@ -1273,7 +992,7 @@ call a2d_ad(geom, inc%ua(isc:iec,jsc:jec  ,:), inc%va(isc:iec  ,jsc:jec,:), &
 
 deallocate(ud,vd)
 
-end subroutine inc_to_model_ad
+end subroutine inc_to_tlm_ad
 
 ! ------------------------------------------------------------------------------
 
@@ -1281,7 +1000,7 @@ subroutine get_phi_from_state(state, self)
 
 implicit none
 type(fv3jedi_state) :: state
-type(fv3jedi_model) :: self
+type(fv3jedi_tlm) :: self
 
 !To zero halo
 self%FV_Atm(1)%phis = 0.0
@@ -1332,4 +1051,4 @@ end subroutine zero_pert_vars
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_model_mod
+end module fv3jedi_tlm_mod
