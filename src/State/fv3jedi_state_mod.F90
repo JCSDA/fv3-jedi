@@ -156,6 +156,9 @@ self%npx = geom%npx
 self%npy = geom%npy
 self%npz = geom%npz
 
+self%ntile = geom%ntile
+self%ntiles = geom%ntiles
+
 end subroutine create
 
 ! ------------------------------------------------------------------------------
@@ -257,6 +260,8 @@ self%hydrostatic    = rhs%hydrostatic
 self%calendar_type  = rhs%calendar_type 
 self%date           = rhs%date          
 self%date_init      = rhs%date_init     
+self%ntile          = rhs%ntile
+self%ntiles         = rhs%ntiles
 
 if(allocated(self%ud  ).and.allocated(rhs%ud  )) self%ud   = rhs%ud  
 if(allocated(self%vd  ).and.allocated(rhs%vd  )) self%vd   = rhs%vd  

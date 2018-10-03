@@ -73,12 +73,12 @@ end subroutine model_initialize
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_step(geom, self, state)
+subroutine model_step(self, state, vdate)
 
 implicit none
-type(fv3jedi_geom),  intent(in)    :: geom    !Geometry
 type(fv3jedi_model), intent(inout) :: self    !Model type
 type(fv3jedi_state), intent(inout) :: state   !JEDI state fields
+type(datetime),      intent(in)    :: vdate   !Current time
 
 call state_to_gfs(state,self)
 

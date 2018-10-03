@@ -7,21 +7,17 @@ module fv3jedi_model_mod
 
 use iso_c_binding
 use config_mod
+use datetime_mod
 use duration_mod
-use fv3jedi_geom_mod
+use netcdf
+
+use kinds
+use fv3jedi_constants
+use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment 
-use fv3jedi_constants
-use kinds
 
-use fv_arrays_mod,  only: fv_atmos_type
-use mpp_mod,        only: mpp_pe, mpp_root_pe 
-use mpp_domains_mod, only: mpp_update_domains, mpp_get_boundary, DGRID_NE
-use pressure_vt_mod, only: compute_fv3_pressures, compute_fv3_pressures_tlm, compute_fv3_pressures_bwd
-use fms_mod, only: set_domain, nullify_domain
-
-use field_manager_mod,  only: MODEL_ATMOS
-use tracer_manager_mod, only: get_tracer_index
+use fv3jedi_lm_mod, only: fv3jedi_lm_type
 
 implicit none
 private
@@ -37,27 +33,10 @@ public :: model_finalize
 
 !> Fortran derived type to hold model definition
 type :: fv3jedi_model
-  real(kind=kind_real)                         :: DT                  !<Model big timestep
-  real(kind_real), allocatable, dimension(:,:) :: ebuffery            !<Halo holder
-  real(kind_real), allocatable, dimension(:,:) :: nbufferx            !<Halo holder
-  real(kind_real), allocatable, dimension(:,:) :: wbuffery            !<Halo holder
-  real(kind_real), allocatable, dimension(:,:) :: sbufferx            !<Halo holder
-  type(fv_atmos_type), allocatable             :: FV_Atm(:)           !<Main FV3 construct 
-  logical, allocatable                         :: grids_on_this_pe(:) !<FV3 record
-  integer                                      :: p_split = 1         !<FV3 record
-  integer                                      :: isc,iec,jsc,jec     !<Convenience pointer to grid
-  integer                                      :: isd,ied,jsd,jed     !<Convenience pointer to grid
-  integer                                      :: npz                 !<Convenience
-  logical                                      :: hydrostatic         !<Convenience
-  integer                                      :: cp_dyn_ind          !<Module index for checkpointing
-  integer                                      :: update_dgridwind=1  !<Update the fv3 pressures each time step
-  integer                                      :: update_pressures=1  !<Update the fv3 pressures each time step
-  integer                                      :: init_tlmadm         !<Is the TLM/ADM needed in this instance
-  integer                                      :: linmodtest          !<Testing the linear model
-  integer                                      :: ti_q                !<Tracer index for specific humidity
-  integer                                      :: ti_qi               !<Tracer index for cloud ice water
-  integer                                      :: ti_ql               !<Tracer index for cloud liquid water
-  integer                                      :: ti_o3               !<Tracer index for ozone
+  type(fv3jedi_lm_type)                        :: fv3jedi_lm          !<Linearized model object
+  integer                                      :: readtraj            !<Read trajectory from file
+  character(len=255)                           :: trajpath            !<User specified path to traj files
+  character(len=255)                           :: trajfile            !<User specified path to traj files
 end type fv3jedi_model
 
 ! ------------------------------------------------------------------------------
@@ -66,119 +45,53 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_create(model, geom, c_conf)
-
-use fv_control_mod, only: fv_init, pelist_all
+subroutine model_create(self, geom, c_conf)
 
 implicit none
-type(c_ptr), intent(in)     :: c_conf !< pointer to object of class Config
-type(fv3jedi_model), target :: model  ! should I put intent on these?
-type(fv3jedi_geom)          :: geom
+type(c_ptr),         intent(in)    :: c_conf
+type(fv3jedi_model), intent(inout) :: self
+type(fv3jedi_geom),  intent(in)    :: geom
 
+!Locals
 character(len=20) :: ststep
 type(duration) :: dtstep
+real(kind=kind_real) :: dt
 
-integer :: i,j
-integer :: tmp
 
-!Model time step
+! Model time step
+! ---------------
 ststep = config_get_string(c_conf,len(ststep),"tstep")
 dtstep = trim(ststep)
-model%DT = real(duration_seconds(dtstep),kind_real)
+dt = real(duration_seconds(dtstep),kind_real)
 
-!Call to fv_init
-call fv_init(model%FV_Atm, model%DT, model%grids_on_this_pe, model%p_split)
-deallocate(pelist_all)
 
-!Compute grid must be same as geometry
-if ( (geom%isc .ne. model%FV_Atm(1)%bd%isc) .or. (geom%iec .ne. model%FV_Atm(1)%bd%iec) .or. &
-     (geom%jsc .ne. model%FV_Atm(1)%bd%jsc) .or. (geom%jec .ne. model%FV_Atm(1)%bd%jec) .or. &
-     (geom%npz .ne. model%FV_Atm(1)%npz) ) then
-   call abor1_ftn("fv3jedi model: compute areas for geometry and model do not agree")
+! Option to read traj from file instead of propagating model
+! ----------------------------------------------------------
+self%readtraj = config_get_int(c_conf,"readtraj")
+if (self%readtraj == 1) then
+  self%trajpath = config_get_string(c_conf,len(self%trajpath),"trajpath")
+  self%trajfile = config_get_string(c_conf,len(self%trajfile),"trajfile")
 endif
 
-!Copy of grid info for convenience
-model%isc = model%FV_Atm(1)%bd%isc
-model%iec = model%FV_Atm(1)%bd%iec
-model%jsc = model%FV_Atm(1)%bd%jsc
-model%jec = model%FV_Atm(1)%bd%jec
-model%isd = model%FV_Atm(1)%bd%isd
-model%ied = model%FV_Atm(1)%bd%ied
-model%jsd = model%FV_Atm(1)%bd%jsd
-model%jed = model%FV_Atm(1)%bd%jed
-model%npz = model%FV_Atm(1)%npz
-model%hydrostatic = model%FV_Atm(1)%flagstruct%hydrostatic
 
-!Halo holders for domain grid
-allocate(model%wbuffery(model%FV_Atm(1)%bd%jsc:model%FV_Atm(1)%bd%jec,model%FV_Atm(1)%npz))
-allocate(model%sbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_Atm(1)%npz))
-allocate(model%ebuffery(model%FV_Atm(1)%bd%jsc:model%FV_Atm(1)%bd%jec,model%FV_Atm(1)%npz))
-allocate(model%nbufferx(model%FV_Atm(1)%bd%isc:model%FV_Atm(1)%bd%iec,model%FV_Atm(1)%npz))
+! Model configuration and creation
+! --------------------------------
+self%fv3jedi_lm%conf%do_dyn     = config_get_int(c_conf,"lm_do_dyn")
+self%fv3jedi_lm%conf%do_phy_trb = config_get_int(c_conf,"lm_do_trb")
+self%fv3jedi_lm%conf%do_phy_mst = config_get_int(c_conf,"lm_do_mst")
+call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
 
-!Set ptop, ak, bk to be same as geometry
-model%FV_Atm(1)%ak = geom%ak
-model%FV_Atm(1)%bk = geom%bk
-model%FV_Atm(1)%ptop = geom%ptop
 
-!Tracer indexes
-model%ti_q  = 1 !get_tracer_index (MODEL_ATMOS, 'sphum')
-model%ti_ql = 2 !get_tracer_index (MODEL_ATMOS, 'liq_wat')
-model%ti_qi = 3 !get_tracer_index (MODEL_ATMOS, 'ice_wat')
-model%ti_o3 = 4 !get_tracer_index (MODEL_ATMOS, 'o3mr')
+! Safety checks
+! -------------
 
-!Always allocate w, delz, q_con for now
-deallocate(model%FV_Atm(1)%w)
-deallocate(model%FV_Atm(1)%delz)
-deallocate(model%FV_Atm(1)%q_con)
-allocate  ( model%FV_Atm(1)%w (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
-                               model%FV_Atm(1)%flagstruct%npz) )
-allocate  ( model%FV_Atm(1)%delz (model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
-                               model%FV_Atm(1)%flagstruct%npz) )
-allocate  ( model%FV_Atm(1)%q_con(model%FV_Atm(1)%bd%isd:model%FV_Atm(1)%bd%ied,model%FV_Atm(1)%bd%jsd:model%FV_Atm(1)%bd%jed,&
-                               model%FV_Atm(1)%flagstruct%npz) )
-model%FV_Atm(1)%w = 0.0
-model%FV_Atm(1)%delz = 0.0
-model%FV_Atm(1)%q_con = 0.0
-
-!fC and f0
-if (model%FV_Atm(1)%flagstruct%grid_type == 4) then
-   model%FV_Atm(1)%gridstruct%fC(:,:) = 2.*omega*sin(model%FV_Atm(1)%flagstruct%deglat/180.*pi)
-   model%FV_Atm(1)%gridstruct%f0(:,:) = 2.*omega*sin(model%FV_Atm(1)%flagstruct%deglat/180.*pi)
-else
-   if (f_coriolis_angle == -999) then
-      model%FV_Atm(1)%gridstruct%fC(:,:) = 0.0
-      model%FV_Atm(1)%gridstruct%f0(:,:) = 0.0
-   else
-      do j=model%FV_Atm(1)%bd%jsd,model%FV_Atm(1)%bd%jed+1
-         do i=model%FV_Atm(1)%bd%isd,model%FV_Atm(1)%bd%ied+1
-            model%FV_Atm(1)%gridstruct%fC(i,j) = 2.*omega*( -COS(model%FV_Atm(1)%gridstruct%grid(i,j,1))*&
-                                           COS(model%FV_Atm(1)%gridstruct%grid(i,j,2))*SIN(f_coriolis_angle) + &
-                                           SIN(model%FV_Atm(1)%gridstruct%grid(i,j,2))*COS(f_coriolis_angle) )
-         enddo
-      enddo
-      do j=model%FV_Atm(1)%bd%jsd,model%FV_Atm(1)%bd%jed
-         do i=model%FV_Atm(1)%bd%isd,model%FV_Atm(1)%bd%ied
-            model%FV_Atm(1)%gridstruct%f0(i,j) = 2.*omega*( -COS(model%FV_Atm(1)%gridstruct%agrid(i,j,1))*&
-                                           COS(model%FV_Atm(1)%gridstruct%agrid(i,j,2))*SIN(f_coriolis_angle) + &
-                                           SIN(model%FV_Atm(1)%gridstruct%agrid(i,j,2))*COS(f_coriolis_angle) )
-         enddo
-      enddo
-   endif
+!The full trajecotory of the tlm/adm is not output by this simplified model
+!so if being used to generate the trajectry with physics the traj must be read
+!from file or obtained by running GEOS or GFS. 
+if ((self%fv3jedi_lm%conf%do_phy_trb .ne. 0 .and. self%readtraj == 0) .or. &
+    (self%fv3jedi_lm%conf%do_phy_mst .ne. 0 .and. self%readtraj == 0) ) then
+   call abor1_ftn("fv3jedi_model | FV3 : unless reading the trajecotory physics should be off")
 endif
-
-if (config_element_exists(c_conf,"update_dgridwind")) model%update_dgridwind = config_get_int(c_conf,"update_dgridwind")
-if (config_element_exists(c_conf,"update_pressures")) model%update_pressures = config_get_int(c_conf,"update_pressures")
-
-!Pointer to self when not nested
-if (.not. model%FV_Atm(1)%gridstruct%nested) model%FV_Atm(1)%parent_grid => model%FV_Atm(1)
-
-!Harwire some flags
-model%FV_Atm(1)%flagstruct%reproduce_sum = .false.
-model%FV_Atm(1)%flagstruct%fill = .false.
-model%FV_Atm(1)%flagstruct%fv_debug = .false.
-model%FV_Atm(1)%flagstruct%adiabatic = .false.
-model%FV_Atm(1)%flagstruct%do_sat_adj = .false.
-model%FV_Atm(1)%flagstruct%breed_vortex_inline = .false.
 
 end subroutine model_create
 
@@ -186,18 +99,12 @@ end subroutine model_create
 
 subroutine model_delete(self)
 
-use fv_arrays_mod, only: deallocate_fv_atmos_type
-
 implicit none
-type(fv3jedi_model) :: self
+type(fv3jedi_model), intent(inout) :: self
 
-deallocate(self%ebuffery)
-deallocate(self%wbuffery)
-deallocate(self%nbufferx)
-deallocate(self%sbufferx)
-
-call deallocate_fv_atmos_type(self%FV_Atm(1))
-deallocate(self%FV_Atm)
+!Delete the model
+!----------------
+call self%fv3jedi_lm%delete()
 
 end subroutine model_delete
 
@@ -206,126 +113,36 @@ end subroutine model_delete
 subroutine model_initialize(self, state)
 
 implicit none
-type(fv3jedi_model), target :: self
-type(fv3jedi_state)         :: state
+type(fv3jedi_model), intent(inout) :: self
+type(fv3jedi_state), intent(in)    :: state
+
+call self%fv3jedi_lm%init_nl()
 
 end subroutine model_initialize
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_step(geom, self, state)
-
-use fv_dynamics_mod, only: fv_dynamics
-use fv_sg_mod, only: fv_subgrid_z
+subroutine model_step(self, state, vdate)
 
 implicit none
-type(fv3jedi_model), target :: self
-type(fv3jedi_state)         :: state
-type(fv3jedi_geom)          :: geom
+type(fv3jedi_model), intent(inout) :: self
+type(fv3jedi_state), intent(inout) :: state
+type(datetime),      intent(in)    :: vdate
 
-type(fv_atmos_type), pointer :: FV_Atm(:)
-integer :: i,j,k
+character(len=20) :: vdatec
 
+if (self%readtraj == 0) then
 
-if (mpp_pe() == mpp_root_pe()) print*, 'Propagate nonlinear model'
+  call state_to_lm(state,self%fv3jedi_lm)
+  call self%fv3jedi_lm%step_nl()
+  call lm_to_state(self%fv3jedi_lm,state)
 
+else
 
-!Convenience pointer to the main FV_Atm structure
-!------------------------------------------------
-FV_Atm => self%FV_Atm
-
-
-!Copy to model variables
-!-----------------------
-call state_to_model(state,self)
-
-
-!Get phis from state, fixed for integration
-!-------------------------------------------
-call get_phi_from_state(state,self)
-
-
-! Zero local variables
-! --------------------
-FV_Atm(1)%pe    = 0.0
-FV_Atm(1)%peln  = 0.0
-FV_Atm(1)%pk    = 0.0
-FV_Atm(1)%pkz   = 0.0
-FV_Atm(1)%ua    = 0.0
-FV_Atm(1)%va    = 0.0
-FV_Atm(1)%uc    = 0.0
-FV_Atm(1)%vc    = 0.0
-FV_Atm(1)%omga  = 0.0
-FV_Atm(1)%mfx   = 0.0
-FV_Atm(1)%mfy   = 0.0
-FV_Atm(1)%cx    = 0.0
-FV_Atm(1)%cy    = 0.0
-FV_Atm(1)%ze0   = 0.0
-FV_Atm(1)%q_con = 0.0
-
-
-!Update edges of d-grid winds
-!----------------------------
-if (self%update_dgridwind == 1) then
-
-   call mpp_get_boundary(FV_Atm(1)%u, FV_Atm(1)%v, geom%domain, &
-                         wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                         sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                         gridtype=DGRID_NE, complete=.true. )
-   do k=1,self%npz
-      do i=self%isc,self%iec
-         FV_Atm(1)%u(i,self%jec+1,k) = self%nbufferx(i,k)
-      enddo
-   enddo
-   do k=1,self%npz
-      do j=self%jsc,self%jec
-         FV_Atm(1)%v(self%iec+1,j,k) = self%ebuffery(j,k)
-      enddo
-   enddo
+  call datetime_to_string(vdate, vdatec)
+  call read_state( self, state, vdatec)
 
 endif
-
-!Compute the other pressure variables needed by FV3
-!--------------------------------------------------
-if (self%update_pressures == 1) then
-   call compute_fv3_pressures( self%isc, self%iec, self%jsc, self%jec, self%isd, self%ied, self%jsd, self%jed, &
-                               self%npz, kappa, FV_Atm(1)%ptop, &
-                               FV_Atm(1)%delp, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%pkz, FV_Atm(1)%peln )
-endif
-
-
-! MPP set domain
-! --------------
-call set_domain(FV_Atm(1)%domain)
-
-
-!Propagate FV3 one time step
-!---------------------------
-call fv_dynamics( FV_Atm(1)%npx, FV_Atm(1)%npy, FV_Atm(1)%npz, FV_Atm(1)%ncnst, FV_Atm(1)%ng,  &
-                  self%DT, FV_Atm(1)%flagstruct%consv_te, FV_Atm(1)%flagstruct%fill,           &
-                  FV_Atm(1)%flagstruct%reproduce_sum, kappa,                                   &
-                  cp, zvir, FV_Atm(1)%ptop, FV_Atm(1)%ks, FV_Atm(1)%flagstruct%ncnst,          &
-                  FV_Atm(1)%flagstruct%n_split, FV_Atm(1)%flagstruct%q_split,                  &
-                  FV_Atm(1)%u, FV_Atm(1)%v, FV_Atm(1)%w, FV_Atm(1)%delz,                       &
-                  FV_Atm(1)%flagstruct%hydrostatic, FV_Atm(1)%pt, FV_Atm(1)%delp, FV_Atm(1)%q, &
-                  FV_Atm(1)%ps, FV_Atm(1)%pe, FV_Atm(1)%pk, FV_Atm(1)%peln, FV_Atm(1)%pkz,     &
-                  FV_Atm(1)%phis, FV_Atm(1)%q_con, FV_Atm(1)%omga,                             &
-                  FV_Atm(1)%ua, FV_Atm(1)%va, FV_Atm(1)%uc, FV_Atm(1)%vc,                      &
-                  FV_Atm(1)%ak, FV_Atm(1)%bk,                                                  &
-                  FV_Atm(1)%mfx, FV_Atm(1)%mfy, FV_Atm(1)%cx, FV_Atm(1)%cy, FV_Atm(1)%ze0,     &
-                  FV_Atm(1)%flagstruct%hybrid_z, FV_Atm(1)%gridstruct, FV_Atm(1)%flagstruct,   &
-                  FV_Atm(1)%neststruct, FV_Atm(1)%idiag, FV_Atm(1)%bd, FV_Atm(1)%parent_grid,  &
-                  FV_Atm(1)%domain )
-
-! MPP nulify
-! ----------
-call nullify_domain()
-
-
-!Copy back to state
-!------------------
-call model_to_state(self,state)
-
 
 end subroutine model_step
 
@@ -337,112 +154,349 @@ implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_state)         :: state
 
+call self%fv3jedi_lm%final_ad()
+
 end subroutine model_finalize
 
 ! ------------------------------------------------------------------------------
 
-subroutine state_to_model(state,self)
+subroutine state_to_lm( state, lm )
 
 implicit none
-type(fv3jedi_state), intent(in)    :: state
-type(fv3jedi_model), intent(inout) :: self
+type(fv3jedi_state),   intent(in)    :: state
+type(fv3jedi_lm_type), intent(inout) :: lm
+ 
+lm%traj%u       = state%ud
+lm%traj%v       = state%vd
+lm%traj%ua      = state%ua
+lm%traj%va      = state%va
+lm%traj%t       = state%t
+lm%traj%delp    = state%delp
+lm%traj%qv      = state%q
+lm%traj%ql      = state%qi
+lm%traj%qi      = state%ql
+lm%traj%o3      = state%o3
 
-integer :: isc,iec,jsc,jec
-
-isc = self%FV_Atm(1)%bd%isc
-iec = self%FV_Atm(1)%bd%iec
-jsc = self%FV_Atm(1)%bd%jsc
-jec = self%FV_Atm(1)%bd%jec
-
-!NOTE: while the variable name is pt, FV3 expects dry temperature
-
-!To zero the halos
-self%FV_Atm(1)%u    = 0.0
-self%FV_Atm(1)%v    = 0.0
-self%FV_Atm(1)%pt   = 0.0
-self%FV_Atm(1)%delp = 0.0
-self%FV_Atm(1)%q    = 0.0
-self%FV_Atm(1)%w    = 0.0
-self%FV_Atm(1)%delz = 0.0
-
-!Only copy compute grid incase of halo differences
-self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:)            = state%ud  (isc:iec  ,jsc:jec+1,:)
-self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:)            = state%vd  (isc:iec+1,jsc:jec  ,:)
-self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:)            = state%t   (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:)            = state%delp(isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q ) = state%q   (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi) = state%qi  (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql) = state%ql  (isc:iec  ,jsc:jec  ,:)
-self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3) = state%o3  (isc:iec  ,jsc:jec  ,:)
-if (.not. state%hydrostatic) then
-   self%FV_Atm(1)%delz(isc:iec,jsc:jec,:) = state%delz(isc:iec,jsc:jec,:)
-   self%FV_Atm(1)%w   (isc:iec,jsc:jec,:) = state%w   (isc:iec,jsc:jec,:)
+if (.not. lm%conf%hydrostatic) then
+lm%traj%w       = state%w
+lm%traj%delz    = state%delz
 endif
 
-end subroutine state_to_model
+lm%traj%phis = state%phis
+
+end subroutine state_to_lm
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_to_state(self,state)
+subroutine lm_to_state( lm, state )
 
 implicit none
-type(fv3jedi_model), intent(in   ) :: self
+type(fv3jedi_lm_type), intent(in)    :: lm
+type(fv3jedi_state),   intent(inout) :: state
+ 
+state%ud      = lm%traj%u
+state%vd      = lm%traj%v
+state%ua      = lm%traj%ua
+state%va      = lm%traj%va
+state%t       = lm%traj%t
+state%delp    = lm%traj%delp
+state%q       = lm%traj%qv
+state%ql      = lm%traj%qi
+state%qi      = lm%traj%ql
+state%o3      = lm%traj%o3
+
+if (.not. lm%conf%hydrostatic) then
+state%w       = lm%traj%w
+state%delz    = lm%traj%delz
+endif
+
+state%phis    = lm%traj%phis
+
+end subroutine lm_to_state
+
+! ------------------------------------------------------------------------------
+
+subroutine read_state( self, state, vdatec)
+
+implicit none
+type(fv3jedi_model), intent(in)    :: self
 type(fv3jedi_state), intent(inout) :: state
+character(len=20),   intent(in)    :: vdatec
+
+character(len=255) :: date, path, fname1, fname2, filename
+character(len=4)   :: yyyy,mm,dd,hh,mn
+character(len=20)  :: var
+integer, allocatable :: istart(:), icount(:)
+integer :: ncid, ncstat, dimid, varid
+integer :: im, jm
+
+integer :: tileoff
+logical :: tiledimension = .false.
 
 integer :: isc,iec,jsc,jec
 
-isc = self%FV_Atm(1)%bd%isc
-iec = self%FV_Atm(1)%bd%iec
-jsc = self%FV_Atm(1)%bd%jsc
-jec = self%FV_Atm(1)%bd%jec
+write(date,*) vdatec(1:4),vdatec(6:7),vdatec(9:10),'_',vdatec(12:13),vdatec(15:16),'z.nc4'
 
-state%ud   = 0.0
-state%vd   = 0.0
-state%t    = 0.0
-state%delp = 0.0
-state%q    = 0.0
-if (.not. state%hydrostatic) then
-   state%delz = 0.0
-   state%w    = 0.0
+isc = state%isc
+iec = state%iec
+jsc = state%jsc
+jec = state%jec
+
+path = self%trajpath
+fname1 = self%trajfile
+
+!> Build filename
+yyyy = vdatec(1 :4 )
+mm   = vdatec(6 :7 )
+dd   = vdatec(9 :10)
+hh   = vdatec(12:13)
+mn   = vdatec(15:16)
+fname2 = 'z.nc4'
+
+filename = trim(path)//trim(fname1)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//trim(fname2)
+
+if (self%fv3jedi_lm%conf%rpe) print*, ' '
+if (self%fv3jedi_lm%conf%rpe) print*, 'Reading trajectory: ', trim(filename)
+if (self%fv3jedi_lm%conf%rpe) print*, ' '
+
+!> Open the file
+ncstat = nf90_open(trim(filename), NF90_NOWRITE, ncid)
+if(ncstat /= nf90_noerr) print *, "OPEN: "//trim(nf90_strerror(ncstat))
+
+!> Get dimensions, lon,lat,lev,time
+ncstat = nf90_inq_dimid(ncid, "lon", dimid)
+if(ncstat /= nf90_noerr) print *, "lon: "//trim(nf90_strerror(ncstat))
+ncstat = nf90_inquire_dimension(ncid, dimid, len = im)
+if(ncstat /= nf90_noerr) print *, "lon:"//trim(nf90_strerror(ncstat))
+
+ncstat = nf90_inq_dimid(ncid, "lat", dimid)
+if(ncstat /= nf90_noerr) print *, "lat: "//trim(nf90_strerror(ncstat))
+ncstat = nf90_inquire_dimension(ncid, dimid, len = jm)
+if(ncstat /= nf90_noerr) print *, "lat: "//trim(nf90_strerror(ncstat))
+
+!> GEOS can use concatenated tiles or tile as a dimension
+if ( (im == state%npx-1) .and. (jm == 6*(state%npy-1) ) ) then
+  tiledimension = .false.
+  tileoff = (state%ntile-1)*(jm/state%ntiles)
+else
+  tiledimension = .true.
+  tileoff = 0
+  call abor1_ftn("Trajectory GEOS: tile dimension in file not done yet")
 endif
-state%ua    = 0.0
-state%va    = 0.0
 
-state%ud  (isc:iec  ,jsc:jec+1,:) = self%FV_Atm(1)%u   (isc:iec  ,jsc:jec+1,:  )
-state%vd  (isc:iec+1,jsc:jec  ,:) = self%FV_Atm(1)%v   (isc:iec+1,jsc:jec  ,:  )
-state%t   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%pt  (isc:iec  ,jsc:jec  ,:  )
-state%delp(isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%delp(isc:iec  ,jsc:jec  ,:  )
-state%q   (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_q)
-state%qi  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_qi)
-state%ql  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_ql)
-state%o3  (isc:iec  ,jsc:jec  ,:) = self%FV_Atm(1)%q   (isc:iec  ,jsc:jec  ,:,self%ti_o3)
-if (.not. state%hydrostatic) then
-  state%delz(isc:iec,jsc:jec,:) = self%FV_Atm(1)%delz(isc:iec,jsc:jec,:)
-  state%w   (isc:iec,jsc:jec,:) = self%FV_Atm(1)%w   (isc:iec,jsc:jec,:)
+allocate(istart(4))
+allocate(icount(4))
+istart(1) = isc
+istart(2) = tileoff + jsc
+istart(3) = 1
+istart(4) = 1
+
+icount(1) = iec-isc+1
+icount(2) = jec-jsc+1
+icount(3) = 72
+icount(4) = 1
+
+var = 'ud'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%ud(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'vd'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%vd(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'ua'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%ua(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'va'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%va(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 't'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%t(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'delp'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%delp(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'q'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%q(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'qi'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%qi(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'ql'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%ql(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'o3'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%o3(isc:iec,jsc:jec,:), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+if (.not.self%fv3jedi_lm%conf%hydrostatic) then
+
+  var = 'w'
+  ncstat = nf90_inq_varid (ncid, trim(var), varid)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+  ncstat = nf90_get_var(ncid, varid, state%w(isc:iec,jsc:jec,:), istart, icount)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ 
+  var = 'delz'
+  ncstat = nf90_inq_varid (ncid, trim(var), varid)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+  ncstat = nf90_get_var(ncid, varid, state%delz(isc:iec,jsc:jec,:), istart, icount)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
 endif
-state%ua(isc:iec,jsc:jec,:) = self%FV_Atm(1)%ua(isc:iec,jsc:jec,:)
-state%va(isc:iec,jsc:jec,:) = self%FV_Atm(1)%va(isc:iec,jsc:jec,:)
 
-end subroutine model_to_state
+if (self%fv3jedi_lm%conf%do_phy_mst .ne. 0) then
 
-! ------------------------------------------------------------------------------
+  var = 'qls'
+  ncstat = nf90_inq_varid (ncid, trim(var), varid)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+  ncstat = nf90_get_var(ncid, varid, state%qls(isc:iec,jsc:jec,:), istart, icount)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ 
+  var = 'qcn'
+  ncstat = nf90_inq_varid (ncid, trim(var), varid)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+  ncstat = nf90_get_var(ncid, varid, state%qcn(isc:iec,jsc:jec,:), istart, icount)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ 
+  var = 'cfcn'
+  ncstat = nf90_inq_varid (ncid, trim(var), varid)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+  ncstat = nf90_get_var(ncid, varid, state%cfcn(isc:iec,jsc:jec,:), istart, icount)
+  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
-subroutine get_phi_from_state(state, self)
+endif
 
-implicit none
-type(fv3jedi_state) :: state
-type(fv3jedi_model) :: self
+deallocate(istart,icount)
 
-!To zero halo
-self%FV_Atm(1)%phis = 0.0
+allocate(istart(3))
+allocate(icount(3))
+istart(1) = isc
+istart(2) = tileoff + jsc
+istart(3) = 1
 
-!Get compute domain from state
-self%FV_Atm(1)%phis(self%isc:self%iec,self%jsc:self%jec) = state%phis(self%isc:self%iec,self%jsc:self%jec)
+icount(1) = iec-isc+1
+icount(2) = jec-jsc+1
+icount(3) = 1
 
-!Fill halos
-call mpp_update_domains(self%FV_Atm(1)%phis, self%FV_Atm(1)%domain, complete=.true.)
+var = 'phis'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%phis(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
-end subroutine get_phi_from_state
+var = 'frocean'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%frocean(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'frland'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%frland(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'varflt'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%varflt(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'ustar'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%ustar(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'bstar'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%bstar(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'zpbl'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%zpbl(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'cm'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%cm(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'ct'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%ct(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'cq'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%cq(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'kcbl'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%kcbl(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'ts'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%ts(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'khl'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%khl(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+var = 'khu'
+ncstat = nf90_inq_varid (ncid, trim(var), varid)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ncstat = nf90_get_var(ncid, varid, state%khu(isc:iec,jsc:jec), istart, icount)
+if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+!Close this file
+ncstat = nf90_close(ncid)
+if(ncstat /= nf90_noerr) print *, "CLOSE: "//trim(nf90_strerror(ncstat))
+
+deallocate(istart,icount)
+
+end subroutine read_state
 
 ! ------------------------------------------------------------------------------
 

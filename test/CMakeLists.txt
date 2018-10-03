@@ -700,6 +700,7 @@ testinput/state_gfs.yaml
 testinput/state_geos.yaml
 testinput/model_gfs.yaml
 testinput/model_geos.yaml
+testinput/modelread_geos.yaml
 testinput/linearmodel_gfs.yaml
 testinput/linearmodel_geos.yaml
 testinput/3dvar_gfs.yaml
@@ -888,6 +889,13 @@ ecbuild_add_test( TARGET  test_fv3jedi_model_geos
                   BOOST
                   SOURCES executables/TestModel.cc
                   ARGS    "testinput/model_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_modelread_geos
+                  BOOST
+                  SOURCES executables/TestModel.cc
+                  ARGS    "testinput/modelread_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

@@ -7,6 +7,7 @@ module fv3jedi_model_interface_mod
 
 use kinds
 use config_mod
+use datetime_mod
 use duration_mod
 use iso_c_binding
 
@@ -90,22 +91,24 @@ end subroutine c_fv3jedi_model_initialize
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_model_step(c_key_geom, c_key_self, c_key_state) bind(c,name='fv3jedi_model_step_f90')
+subroutine c_fv3jedi_model_step(c_key_self, c_key_state, c_dt) bind(c,name='fv3jedi_model_step_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_self  !< Model
-integer(c_int), intent(in) :: c_key_state !< Model state
-integer(c_int), intent(in)    :: c_key_geom  !< Geometry
+integer(c_int), intent(in)    :: c_key_self  !< Model
+integer(c_int), intent(in)    :: c_key_state !< Model state
+type(c_ptr),    intent(inout) :: c_dt        !< DateTime
 
-type(fv3jedi_geom), pointer :: geom
 type(fv3jedi_model), pointer :: self
 type(fv3jedi_state), pointer :: state
 
-call fv3jedi_geom_registry%get(c_key_geom, geom)
+type(datetime) :: fdate
+
 call fv3jedi_model_registry%get(c_key_self, self)
 call fv3jedi_state_registry%get(c_key_state,state)
 
-call model_step(geom, self, state)
+call c_f_datetime(c_dt, fdate)
+
+call model_step(self, state, fdate)
 
 end subroutine c_fv3jedi_model_step
 

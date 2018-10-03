@@ -2,38 +2,40 @@ test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 Geometry:
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_c48/
+  filepath_akbk: Data/INPUTS/GEOS_c24/
   filename_akbk: akbk72.nc4
   ak_var: AK
   bk_var: BK
 Model:
   name: 'FV3JEDI'
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  readtraj: 0
+  readtraj: 1
+  trajpath: 'Data/INPUTS/GEOS_c24/traj/'
+  trajfile: 'GEOS.traj.c24.eta.'
   lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
+  lm_do_trb: 1
+  lm_do_mst: 1
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
-  fclength: PT1H
-  finalnorm: '622.47733204645419'
+  fclength: PT6H
+  finalnorm: '622.41731685069578'
   tolerance: '1.0e-4'
 State:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c48/
+  datapath_read: Data/INPUTS/GEOS_c24/
   datapath_write: 'Data/'
   date: '2018-04-14T21:00:00Z'
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c48.nml
+  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
+  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
+  nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   variables:
   - ud

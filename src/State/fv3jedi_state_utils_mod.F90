@@ -23,6 +23,7 @@ type :: fv3jedi_state
   integer :: isc, iec, jsc, jec
   integer :: isd, ied, jsd, jed
   integer :: npx, npy, npz
+  integer :: ntiles, ntile
   logical :: havecrtmfields = .false.
   logical :: hydrostatic = .false.
   integer :: calendar_type
