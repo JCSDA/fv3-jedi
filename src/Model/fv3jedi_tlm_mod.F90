@@ -35,9 +35,6 @@ public :: tlm_finalize_ad
 !> Fortran derived type to hold tlm definition
 type:: fv3jedi_tlm
   type(fv3jedi_lm_type) :: fv3jedi_lm  !<Linearized model object
-  integer               :: readtraj    !<Read trajectory from file
-  character(len=255)    :: trajpath    !<User specified path to traj files
-  character(len=255)    :: trajfile    !<User specified path to traj files
 end type fv3jedi_tlm
 
 ! ------------------------------------------------------------------------------
@@ -64,15 +61,6 @@ real(kind=kind_real) :: dt
 ststep = config_get_string(c_conf,len(ststep),"tstep")
 dtstep = trim(ststep)
 dt = real(duration_seconds(dtstep),kind_real)
-
-
-! Option to read traj from file instead of propagating model
-! ----------------------------------------------------------
-self%readtraj = config_get_int(c_conf,"readtraj")
-if (self%readtraj == 1) then
-  self%trajpath = config_get_string(c_conf,len(self%trajpath),"trajpath")
-  self%trajfile = config_get_string(c_conf,len(self%trajfile),"trajfile")
-endif
 
 
 ! Model configuration and creation

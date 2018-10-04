@@ -79,8 +79,8 @@ set ( FMS_INCLUDES $ENV{FMS_INCLUDES} )
 
 ecbuild_add_library( TARGET   fv3jedi
                      SOURCES  ${fv3jedi_src_files}
-                     LIBS     oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FV3_LIBRARIES} ${FMS_LIBRARIES}
-                     INCLUDES ${FV3_INCLUDES} ${FMS_INCLUDES}
+                     LIBS     oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FV3JEDILM_LIBRARIES} ${FMS_LIBRARIES}
+                     INCLUDES ${FV3JEDILM_INCLUDES} ${FMS_INCLUDES}
                      INSTALL_HEADERS LISTED
                      LINKER_LANGUAGE ${OOPS_LINKER_LANGUAGE}
                     )
