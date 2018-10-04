@@ -350,7 +350,7 @@ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 ncstat = nf90_get_var(ncid, varid, state%ql(isc:iec,jsc:jec,:), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
-var = 'o3'
+var = 'o3mr'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 ncstat = nf90_get_var(ncid, varid, state%o3(isc:iec,jsc:jec,:), istart, icount)

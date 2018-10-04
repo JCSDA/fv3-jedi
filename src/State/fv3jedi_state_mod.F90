@@ -820,7 +820,7 @@ subroutine read_file(geom, state, c_conf, vdate)
   if (trim(restart_type) == 'gfs') then
      call read_fms_restart(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call read_geos_restart(geom, state, c_conf, vdate)
+     call read_geos_restart(state, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state read: restart type not supported")
   endif
