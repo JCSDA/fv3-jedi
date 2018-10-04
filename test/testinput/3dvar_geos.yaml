@@ -114,7 +114,6 @@ variational:
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
-      readtraj: 0
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -147,7 +146,6 @@ variational:
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
-      readtraj: 0
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0

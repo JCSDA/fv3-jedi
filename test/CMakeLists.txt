@@ -703,6 +703,7 @@ testinput/model_geos.yaml
 testinput/modelread_geos.yaml
 testinput/linearmodel_gfs.yaml
 testinput/linearmodel_geos.yaml
+testinput/linearmodelread_geos.yaml
 testinput/3dvar_gfs.yaml
 testinput/3dvar_sbb_gfs.yaml
 testinput/3dvar_amsua_gfs.yaml
