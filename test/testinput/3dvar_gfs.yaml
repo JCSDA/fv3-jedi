@@ -78,12 +78,14 @@ minimizer:
   algorithm: DRIPCG
 model:
   name: 'FV3JEDI'
-  init_tlmadm: '0'
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
 output:
   restart_type: gfs
   datapath_write: Data/
@@ -106,20 +108,27 @@ variational:
       departures: ombg
     gradient_norm_reduction: 1e-10
     linearmodel:
-      init_tlmadm: '1'
+      varchange: 'Identity'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
+      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT15M
+      readtraj: 0
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
       trajectory:
-        init_tlmadm: '0'
+        name: 'FV3JEDI'
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
-      trc_file: Data/fv3files/field_table
-      tstep: PT15M
-      update_dgridwind: '0'
-      update_pressures: '1'
-      version: FV3JEDIIdTLM
-      varchange: 'Identity'
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
@@ -132,20 +141,27 @@ variational:
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
-      init_tlmadm: '1'
+      varchange: 'Identity'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
+      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT15M
+      readtraj: 0
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
       trajectory:
-        init_tlmadm: '0'
+        name: 'FV3JEDI'
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
-      trc_file: Data/fv3files/field_table
-      tstep: PT15M
-      update_dgridwind: '0'
-      update_pressures: '1'
-      version: FV3JEDIIdTLM
-      varchange: 'Identity'
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml

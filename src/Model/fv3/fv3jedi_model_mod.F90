@@ -12,7 +12,6 @@ use duration_mod
 use netcdf
 
 use kinds
-use fv3jedi_constants
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment 
@@ -155,7 +154,7 @@ implicit none
 type(fv3jedi_model), target :: self
 type(fv3jedi_state)         :: state
 
-call self%fv3jedi_lm%final_ad()
+call self%fv3jedi_lm%final_nl()
 
 end subroutine model_finalize
 
@@ -264,7 +263,7 @@ if (self%fv3jedi_lm%conf%rpe) print*, ' '
 ncstat = nf90_open(trim(filename), NF90_NOWRITE, ncid)
 if(ncstat /= nf90_noerr) print *, "OPEN: "//trim(nf90_strerror(ncstat))
 
-!> Get dimensions, lon,lat,lev,time
+!> Get dimensions, lon,lat
 ncstat = nf90_inq_dimid(ncid, "lon", dimid)
 if(ncstat /= nf90_noerr) print *, "lon: "//trim(nf90_strerror(ncstat))
 ncstat = nf90_inquire_dimension(ncid, dimid, len = im)
