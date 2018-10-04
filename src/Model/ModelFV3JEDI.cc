@@ -33,7 +33,7 @@ ModelFV3JEDI::ModelFV3JEDI(const GeometryFV3JEDI & resol,
   tstep_ = util::Duration(model.getString("tstep"));
   const eckit::Configuration * configc = &model;
   stageFv3Files(model);
-  fv3jedi_model_setup_f90(&configc, geom_.toFortran(), keyConfig_);
+  fv3jedi_model_create_f90(&configc, geom_.toFortran(), keyConfig_);
   removeFv3Files();
   oops::Log::trace() << "ModelFV3JEDI created" << std::endl;
 }
@@ -44,24 +44,26 @@ ModelFV3JEDI::~ModelFV3JEDI() {
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::initialize(StateFV3JEDI & xx) const {
-  fv3jedi_model_prepare_integration_f90(keyConfig_, xx.toFortran());
+  fv3jedi_model_initialize_f90(keyConfig_, xx.toFortran());
   oops::Log::debug() << "ModelFV3JEDI::initialize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
-  fv3jedi_model_propagate_f90(geom_.toFortran(),
-                              keyConfig_, xx.toFortran());
+  util::DateTime * dtp = &xx.validTime();
+  fv3jedi_model_step_f90(keyConfig_, xx.toFortran(), &dtp);
   xx.validTime() += tstep_;
+  oops::Log::debug() << "ModelFV3JEDI::step" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::finalize(StateFV3JEDI & xx) const {
+  fv3jedi_model_finalize_f90(keyConfig_, xx.toFortran());
   oops::Log::debug() << "ModelFV3JEDI::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 int ModelFV3JEDI::saveTrajectory(StateFV3JEDI & xx,
                                  const ModelBiasFV3JEDI &) const {
   int ftraj = 0;
-  fv3jedi_model_prop_traj_f90(keyConfig_, xx.toFortran(), ftraj);
+  fv3jedi_traj_prop_f90(keyConfig_, xx.toFortran(), ftraj);
   ASSERT(ftraj != 0);
   return ftraj;
 }

@@ -47,9 +47,9 @@ include_directories( ${Boost_INCLUDE_DIR} )
 ecbuild_use_package( PROJECT fms REQUIRED )
 include_directories( ${FMS_INCLUDE_DIRS} )
 
-# fv3
-ecbuild_use_package( PROJECT fv3 REQUIRED )
-include_directories( ${FV3_INCLUDE_DIRS} )
+# fv3-jedi-lm
+ecbuild_use_package( PROJECT fv3-jedi-lm REQUIRED )
+include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
 
 # oops
 ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )

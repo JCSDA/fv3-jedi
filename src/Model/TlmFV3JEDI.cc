@@ -14,7 +14,7 @@
 #include "oops/util/Logger.h"
 
 #include "FV3JEDITraits.h"
-#include "ModelFV3JEDIFortran.h"
+#include "TlmFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
 #include "ModelFV3JEDI.h"
@@ -39,15 +39,15 @@ TlmFV3JEDI::TlmFV3JEDI(const GeometryFV3JEDI & resol,
 
   const eckit::Configuration * configc = &tlConf;
   stageFv3Files(tlConf);
-  fv3jedi_model_setup_f90(&configc, resol_.toFortran(), keyConfig_);
+  fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_);
   removeFv3Files();
   oops::Log::trace() << "TlmFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------
 TlmFV3JEDI::~TlmFV3JEDI() {
-  fv3jedi_model_delete_f90(keyConfig_);
+  fv3jedi_tlm_delete_f90(keyConfig_);
   for (trajIter jtra = traj_.begin(); jtra != traj_.end(); ++jtra) {
-    fv3jedi_model_wipe_traj_f90(jtra->second);
+    fv3jedi_traj_wipe_f90(jtra->second);
   }
   oops::Log::trace() << "TlmFV3JEDI destructed" << std::endl;
 }
@@ -72,7 +72,7 @@ void TlmFV3JEDI::setTrajectory(const StateFV3JEDI & xx, StateFV3JEDI & xlr,
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
-  fv3jedi_model_prepare_integration_tl_f90(keyConfig_, dx.toFortran());
+  fv3jedi_tlm_initialize_tl_f90(keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::initializeTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -84,17 +84,19 @@ void TlmFV3JEDI::stepTL(IncrementFV3JEDI & dx,
                        << dx.validTime() << std::endl;
     ABORT("TlmFV3JEDI: trajectory not available");
   }
-  fv3jedi_model_propagate_tl_f90(resol_.toFortran(), keyConfig_,
+  fv3jedi_tlm_step_tl_f90(resol_.toFortran(), keyConfig_,
                                  dx.toFortran(),
                                   itra->second);
   dx.validTime() += tstep_;
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::finalizeTL(IncrementFV3JEDI & dx) const {
+  fv3jedi_tlm_finalize_tl_f90(keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::finalizeTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::initializeAD(IncrementFV3JEDI & dx) const {
+  fv3jedi_tlm_initialize_ad_f90(keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::initializeAD" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -107,13 +109,13 @@ void TlmFV3JEDI::stepAD(IncrementFV3JEDI & dx, ModelBiasIncrementFV3JEDI &)
                        << dx.validTime() << std::endl;
     ABORT("TlmFV3JEDI: trajectory not available");
   }
-  fv3jedi_model_propagate_ad_f90(resol_.toFortran(), keyConfig_,
+  fv3jedi_tlm_step_ad_f90(resol_.toFortran(), keyConfig_,
                                  dx.toFortran(),
                                   itra->second);
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::finalizeAD(IncrementFV3JEDI & dx) const {
-  fv3jedi_model_prepare_integration_ad_f90(keyConfig_, dx.toFortran());
+  fv3jedi_tlm_finalize_ad_f90(keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::finalizeAD" << std::endl;
 }
 // -----------------------------------------------------------------------------

@@ -24,33 +24,26 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_model_setup_f90(const eckit::Configuration * const *,
-                               const F90geom &, F90model &);
+  void fv3jedi_model_create_f90(const eckit::Configuration * const *,
+                                const F90geom &,
+                                F90model &);
   void fv3jedi_model_delete_f90(F90model &);
 
-  void fv3jedi_model_prepare_integration_f90(const F90model &,
-                                             const F90state &);
-  void fv3jedi_model_prepare_integration_tl_f90(const F90model &,
-                                                const F90inc &);
-  void fv3jedi_model_prepare_integration_ad_f90(const F90model &,
-                                                const F90inc &);
 
-  void fv3jedi_model_propagate_f90(const F90geom &,
-                                   const F90model &,
-                                   const F90state &);
-  void fv3jedi_model_prop_traj_f90(const F90model &,
-                                   const F90state &,
-                                   F90traj &);
-  void fv3jedi_model_propagate_tl_f90(const F90geom &,
-                                      const F90model &,
-                                      const F90inc &,
-                                      const F90traj &);
-  void fv3jedi_model_propagate_ad_f90(const F90geom &,
-                                      const F90model &,
-                                      const F90inc &,
-                                      const F90traj &);
+  void fv3jedi_model_initialize_f90(const F90model &,
+                                    const F90state &);
 
-  void fv3jedi_model_wipe_traj_f90(F90traj &);
+  void fv3jedi_model_step_f90(const F90model &,
+                              const F90state &,
+                              util::DateTime * const *);
+
+  void fv3jedi_model_finalize_f90(const F90model &,
+                                  const F90inc &);
+
+  void fv3jedi_traj_prop_f90(const F90model &,
+                             const F90state &,
+                             F90traj &);
+
   void fv3jedi_traj_minmaxrms_f90(const F90traj &,
                                   double &);
 

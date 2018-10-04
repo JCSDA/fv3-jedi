@@ -642,6 +642,31 @@ Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART/20180415.000000.sfc_data.tile6.nc
 Data/INPUTS/GEOS_c24/akbk72.nc4
 Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180415_00z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2100z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2115z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2130z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2145z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2200z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2215z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2230z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2245z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2300z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2315z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2330z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2345z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0000z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0015z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0030z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0045z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0100z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0115z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0130z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0145z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0200z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0215z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0230z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0245z.nc4
+Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0300z.nc4
 Data/INPUTS/GEOS_c48/akbk72.nc4
 Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
@@ -675,8 +700,10 @@ testinput/state_gfs.yaml
 testinput/state_geos.yaml
 testinput/model_gfs.yaml
 testinput/model_geos.yaml
+testinput/modelread_geos.yaml
 testinput/linearmodel_gfs.yaml
 testinput/linearmodel_geos.yaml
+testinput/linearmodelread_geos.yaml
 testinput/3dvar_gfs.yaml
 testinput/3dvar_sbb_gfs.yaml
 testinput/3dvar_amsua_gfs.yaml
@@ -739,6 +766,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem010)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c24)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c24/traj)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c48)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c90)
 
@@ -862,6 +890,13 @@ ecbuild_add_test( TARGET  test_fv3jedi_model_geos
                   BOOST
                   SOURCES executables/TestModel.cc
                   ARGS    "testinput/model_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_modelread_geos
+                  BOOST
+                  SOURCES executables/TestModel.cc
+                  ARGS    "testinput/modelread_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

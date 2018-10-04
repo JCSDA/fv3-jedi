@@ -24,6 +24,8 @@ namespace fv3jedi {
 typedef int F90geom;
 // Model key type
 typedef int F90model;
+// Tlm key type
+typedef int F90tlm;
 // Locations key type
 typedef int F90locs;
 // Goms key type
