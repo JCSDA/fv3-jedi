@@ -231,4 +231,13 @@ void IncrementFV3JEDI::dirac(const eckit::Configuration & config) {
   fv3jedi_increment_dirac_f90(keyInc_, &conf, geom_->toFortran());
 }
 // -----------------------------------------------------------------------------
+void IncrementFV3JEDI::svnorm(const StateFV3JEDI & xxf, 
+                              const eckit::Configuration & config) {
+  oops::Log::trace() << "IncrementFV3JEDI svnorm starting" << std::endl;
+  const eckit::Configuration * conf = &config;
+  fv3jedi_increment_svnorm_f90(keyInc_, geom_->toFortran(),
+                               xxf.toFortran(), &conf);
+  oops::Log::trace() << "IncrementFV3JEDI svnorm done" << std::endl;
+}
+// -----------------------------------------------------------------------------
 }  // namespace fv3jedi

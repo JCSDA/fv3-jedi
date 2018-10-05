@@ -577,4 +577,31 @@ ny = self%npy
 
 end subroutine fv3jedi_increment_sizes_c
 
-! ------------------------------------------------------------------------------   
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_svnorm_c(c_key_self,c_key_geom,c_key_state,c_conf) bind(c,name='fv3jedi_increment_svnorm_f90')
+
+use iso_c_binding
+use fv3jedi_state_mod
+use fv3jedi_geom_mod
+use fv3jedi_increment_mod
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+integer(c_int), intent(in) :: c_key_state
+type(c_ptr),    intent(in) :: c_conf
+
+type(fv3jedi_increment), pointer :: self
+type(fv3jedi_geom), pointer :: geom
+type(fv3jedi_state), pointer :: state
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+call fv3jedi_geom_registry%get(c_key_geom,geom)
+call fv3jedi_state_registry%get(c_key_state,state)
+
+call svnorm(self,geom,state,c_conf)
+
+end subroutine fv3jedi_increment_svnorm_c
+
+! ------------------------------------------------------------------------------  

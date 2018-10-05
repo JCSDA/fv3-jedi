@@ -2,25 +2,6 @@ test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 forecast_length: PT1H
-initial:
-  restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c24/
-  datapath_write: ''
-  date: '2018-04-14T21:00:00Z'
-  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4
-  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4
-  nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-model:
-  init_tlmadm: '0'
-  nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
-output:
-  restart_type: gfs
-  datapath_write: Data/
 resolution:
   filename_akbk: akbk72.nc4
   filepath_akbk: Data/INPUTS/GEOS_c24/
@@ -29,3 +10,37 @@ resolution:
   halo: '3'
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
+model:
+  name: 'FV3JEDI'
+  nml_file: Data/fv3files/input_geos_c24.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT15M
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+initial:
+  restart_type: geos
+  datapath_read: Data/INPUTS/GEOS_c24/
+  datapath_write: 'Data/'
+  date: '2018-04-14T21:00:00Z'
+  read_crtm_surface: 0
+  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
+  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
+  nml_file: Data/fv3files/input_geos_c48.nml
+  trc_file: Data/fv3files/field_table
+  variables:
+  - ud
+  - vd
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3
+output:
+  restart_type: gfs
+  datapath_write: Data/

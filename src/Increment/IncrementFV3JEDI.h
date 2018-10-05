@@ -100,6 +100,7 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
 
 /// Other
   void accumul(const double &, const StateFV3JEDI &);
+  void svnorm(const StateFV3JEDI &, const eckit::Configuration &);
 
 // Utilities
   boost::shared_ptr<const GeometryFV3JEDI> geometry() const {return geom_;}

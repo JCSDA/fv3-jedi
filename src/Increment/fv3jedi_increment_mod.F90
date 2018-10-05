@@ -33,7 +33,7 @@ public :: create, delete, zeros, random, copy, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, incrms, &
           change_resol, getvalues_tl, getvalues_ad, &
-          ug_coord, increment_to_ug, increment_from_ug, dirac
+          ug_coord, increment_to_ug, increment_from_ug, dirac, svnorm
 public :: fv3jedi_increment
 public :: fv3jedi_increment_registry
 
@@ -1664,6 +1664,38 @@ if (bad) then
 endif
 
 end subroutine check
+
+! ------------------------------------------------------------------------------
+
+subroutine svnorm(self,geom,ref,c_conf)
+
+implicit none
+type(fv3jedi_increment) :: self
+type(fv3jedi_geom)      :: geom
+type(fv3jedi_state)     :: ref !To linearize around if nl
+type(c_ptr)             :: c_conf
+
+integer :: i,j,k
+integer :: isc,iec,jsc,jec,npz
+real(kind=kind_real) :: psref
+
+!Code to compute a vector norm for an increment, e.g. the energy norm for FSOI
+
+isc = self%isc
+iec = self%iec
+jsc = self%isc
+jec = self%iec
+npz = self%npz
+
+allocate(ps_ref(isc:iec,jsc:jec))
+
+psref = sum(ref%delp,3)
+
+
+
+deallocate(psref)
+
+end subroutine svnorm
 
 ! ------------------------------------------------------------------------------
 
