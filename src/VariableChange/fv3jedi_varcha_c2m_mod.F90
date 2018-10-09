@@ -15,6 +15,7 @@ use kinds
 use pressure_vt_mod
 use temperature_vt_mod
 use moisture_vt_mod
+use wind_vt_mod
 
 implicit none
 
@@ -117,10 +118,16 @@ type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_increment), intent(inout) :: xctl
 type(fv3jedi_increment), intent(inout) :: xmod
 
+!Tracers
+xmod%qi = xctl%qi
+xmod%ql = xctl%ql
+xmod%o3 = xctl%o3
+
 !Tangent linear of analysis (control) to model variables
-call control_to_model_tlm(geom,xctl%psi,xctl%chi,xctl%tv,xctl%ps  ,xctl%qc, &
-                                    xmod%ua  ,xmod%va  ,xmod%t,xmod%delp,xmod%q, &
-                                    self%tvtraj,self%qtraj,self%qsattraj)
+!call control_to_model_tlm(geom,xctl%psi, xctl%chi, xctl%tv, xctl%ps  , xctl%qc, &
+call control_to_model_tlm(geom,xctl%ua,  xctl%va , xctl%t , xctl%delp, xctl%q , &
+                               xmod%ua , xmod%va , xmod%t , xmod%delp, xmod%q , &
+                          self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine fv3jedi_varcha_c2m_multiply
 
@@ -134,10 +141,16 @@ type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_increment), intent(inout) :: xmod
 type(fv3jedi_increment), intent(inout) :: xctl
 
+!Tracers
+xctl%qi = xmod%qi
+xctl%ql = xmod%ql
+xctl%o3 = xmod%o3
+
 !Adjoint of analysis (control) to model variables
-call control_to_model_adm(geom,xctl%psi,xctl%chi,xctl%tv,xctl%ps  ,xctl%qc, &
-                                    xmod%ua  ,xmod%va  ,xmod%t,xmod%delp,xmod%q, &
-                                    self%tvtraj,self%qtraj,self%qsattraj)
+!call control_to_model_adm(geom,xctl%psi, xctl%chi, xctl%tv, xctl%ps  , xctl%qc, &
+call control_to_model_adm(geom,xctl%ua,  xctl%va , xctl%t , xctl%delp, xctl%q , &
+                               xmod%ua , xmod%va , xmod%t , xmod%delp, xmod%q , &
+                          self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine fv3jedi_varcha_c2m_multiplyadjoint
 
@@ -155,23 +168,23 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
 !Tangent linear inverse (model to control)
 
- xctr%psi = 0.0_kind_real
- xctr%chi = 0.0_kind_real
- xctr%tv  = 0.0_kind_real
- xctr%ps  = 0.0_kind_real
- xctr%qc  = 0.0_kind_real
- xctr%qic = 0.0_kind_real
- xctr%qlc = 0.0_kind_real
- xctr%o3c = 0.0_kind_real
+ !xctr%psi = 0.0_kind_real
+ !xctr%chi = 0.0_kind_real
+ !xctr%tv  = 0.0_kind_real
+ !xctr%ps  = 0.0_kind_real
+ !xctr%qc  = 0.0_kind_real
+ !xctr%qic = 0.0_kind_real
+ !xctr%qlc = 0.0_kind_real
+ !xctr%o3c = 0.0_kind_real
 
- xctr%psi =  xmod%ua
- xctr%chi =  xmod%va
- xctr%tv  =  xmod%t
- xctr%ps  =  xmod%delp(:,:,geom%npz)
- xctr%qc  =  xmod%q
- xctr%qic =  xmod%qi
- xctr%qlc =  xmod%ql
- xctr%o3c =  xmod%o3
+ xctr%ua   =  xmod%ua
+ xctr%va   =  xmod%va
+ xctr%t    =  xmod%t
+ xctr%delp =  xmod%delp
+ xctr%q    =  xmod%q
+ xctr%qi   =  xmod%qi
+ xctr%ql   =  xmod%ql
+ xctr%o3   =  xmod%o3
 
 !allocate (vort(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
 !allocate (divg(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
@@ -221,12 +234,13 @@ subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
  real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec           ) !Surface pressure
+ !real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec           ) !Surface pressure
+ real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Surface pressure
  real(kind=kind_real), intent(inout) ::   qc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
 
  !Output: state/model vector
- real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (v)
+ real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (ua)
+ real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (va)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
  real(kind=kind_real), intent(inout) :: delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Pressure thickness
  real(kind=kind_real), intent(inout) ::   qs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
@@ -236,19 +250,32 @@ subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  real(kind=kind_real), intent(in   ) ::   qt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity traj
  real(kind=kind_real), intent(in   ) :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Sat spec hum
 
+ real(kind=kind_real), allocatable, dimension(:,:,:) :: psi_dom, chi_dom
+ 
  ua = 0.0_kind_real
  va = 0.0_kind_real
  t = 0.0_kind_real
  delp = 0.0_kind_real
  qs = 0.0_kind_real
 
- !psi and chi to D-grid u and v 
+ !psi and chi to A-grid u and v 
  !-----------------------------
-! call psichi_to_udvd(geom,psi,chi,ua,va)
+ allocate(psi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+ allocate(chi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+ psi_dom = 0.0_kind_real
+ chi_dom = 0.0_kind_real
+
+ psi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psi
+ chi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chi
+
+ call psichi_to_uava(geom,psi_dom,chi_dom,ua,va)
+
+ deallocate(psi_dom, chi_dom)
  
  !ps to delp
  !----------
- call ps_to_delp_tl(geom,ps,delp)
+ !call ps_to_delp_tl(geom,ps,delp)
+ delp = ps
 
  !Relative humidity to specific humidity
  !--------------------------------------
@@ -273,7 +300,8 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
  real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec           ) !Surface pressure
+ !real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec           ) !Surface pressure
+ real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Surface pressure
  real(kind=kind_real), intent(inout) ::   qc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
 
  !Output: state/model vector
@@ -287,6 +315,8 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  real(kind=kind_real), intent(in   ) ::  tvt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !VTemperature traj
  real(kind=kind_real), intent(in   ) ::   qt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity traj
  real(kind=kind_real), intent(in   ) :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Sat spec hum
+
+ real(kind=kind_real), allocatable, dimension(:,:,:) :: psi_dom, chi_dom
 
  psi = 0.0_kind_real
  chi = 0.0_kind_real
@@ -304,11 +334,22 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
 
  !Ps to delp
  !----------
- call ps_to_delp_ad(geom,ps,delp)
+ !call ps_to_delp_ad(geom,ps,delp)
+ ps = delp
 
  !psi and chi to D-grid u and v 
  !-----------------------------
-! call psichi_to_udvd_adm(geom,psi,chi,ua,va)
+ allocate(psi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+ allocate(chi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+ psi_dom = 0.0_kind_real
+ chi_dom = 0.0_kind_real
+
+ call psichi_to_uava_adm(geom,psi_dom,chi_dom,ua,va)
+
+ psi = psi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+ chi = chi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+
+ deallocate(psi_dom, chi_dom)
 
 endsubroutine control_to_model_adm
 

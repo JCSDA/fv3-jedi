@@ -20,6 +20,7 @@ public uv_to_vortdivg
 public vortdivg_to_psichi
 public gauss_seidel
 public psichi_to_uava
+public psichi_to_uava_adm
 public psichi_to_udvd
 public d_to_ac
 public d2a2c_vect
@@ -307,8 +308,8 @@ subroutine psichi_to_uava(geom,psi,chi,ua,va)
  type(fv3jedi_geom),   intent(inout) :: geom
  real(kind=kind_real), intent(inout) :: psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) :: chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(out)   ::  ua(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Agrid winds (u)
- real(kind=kind_real), intent(out)   ::  va(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Agrid winds (v)
+ real(kind=kind_real), intent(out)   ::  ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Agrid winds (u)
+ real(kind=kind_real), intent(out)   ::  va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Agrid winds (v)
 
  integer :: i,j,k
 
@@ -339,7 +340,66 @@ subroutine psichi_to_uava(geom,psi,chi,ua,va)
    enddo
  enddo 
 
-endsubroutine psichi_to_uava
+end subroutine psichi_to_uava
+
+!----------------------------------------------------------------------------
+
+subroutine psichi_to_uava_adm(geom,psi_ad,chi_ad,ua_ad,va_ad)
+
+ use fv_mp_adm_mod, only: mpp_update_domains_adm
+
+ implicit none
+ type(fv3jedi_geom),   intent(inout) :: geom
+ real(kind=kind_real), intent(inout) :: psi_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
+ real(kind=kind_real), intent(inout) :: chi_ad(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
+ real(kind=kind_real), intent(inout)   ::  ua_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Agrid winds (u)
+ real(kind=kind_real), intent(inout)   ::  va_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Agrid winds (v)
+
+ integer :: i,j,k
+ real(kind=kind_real) :: temp1
+ real(kind=kind_real) :: temp2
+ real(kind=kind_real) :: temp3
+ real(kind=kind_real) :: temp4
+
+ !       x-----------------x
+ !       |                 |
+ !       |                 |
+ !       |                 |
+ !       |        x        |
+ !       |     psi,chi     |
+ !       |      ua,va      |
+ !       |                 |
+ !       |                 |
+ !       x-----------------x
+
+ do k=geom%npz,1,-1
+   do j=geom%jec,geom%jsc,-1
+     do i=geom%iec,geom%isc,-1
+
+       temp1 =   va_ad(i,j,k)/(geom%dyc(i,j)+geom%dyc(i,j+1))
+       temp2 = -(va_ad(i,j,k)/(geom%dxc(i,j)+geom%dxc(i+1,j)))
+       chi_ad(i,j+1,k) = chi_ad(i,j+1,k) + temp1
+       chi_ad(i,j-1,k) = chi_ad(i,j-1,k) - temp1
+       psi_ad(i+1,j,k) = psi_ad(i+1,j,k) + temp2
+       psi_ad(i-1,j,k) = psi_ad(i-1,j,k) - temp2
+       va_ad(i,j,k) = 0.0_8
+
+       temp3 = ua_ad(i,j,k)/(geom%dyc(i,j)+geom%dyc(i,j+1))
+       temp4 = ua_ad(i,j,k)/(geom%dxc(i,j)+geom%dxc(i+1,j))
+       psi_ad(i,j+1,k) = psi_ad(i,j+1,k) + temp3
+       psi_ad(i,j-1,k) = psi_ad(i,j-1,k) - temp3
+       chi_ad(i+1,j,k) = chi_ad(i+1,j,k) + temp4
+       chi_ad(i-1,j,k) = chi_ad(i-1,j,k) - temp4
+       ua_ad(i,j,k) = 0.0_8
+
+     end do
+   end do
+ end do
+
+ call mpp_update_domains_adm(ua_ad, chi_ad, geom%domain, complete=.true.)
+ call mpp_update_domains_adm(va_ad, psi_ad, geom%domain, complete=.true.)
+
+end subroutine psichi_to_uava_adm
 
 !----------------------------------------------------------------------------
 
