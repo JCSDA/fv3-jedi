@@ -2,36 +2,35 @@ test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 forecast_mode: 3
-forecast_length: PT3H
+forecast_length: PT1H
 resolution:
   filename_akbk: akbk72.nc4
-  filepath_akbk: Data/INPUTS/GEOS_c24/
+  filepath_akbk: Data/INPUTS/GEOS_akbk/
   ak_var: AK
   bk_var: BK
   halo: '3'
-  nml_file: Data/fv3files/input_geos_c24.nml
+  nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
 model:
   name: 'FV3JEDI'
-  nml_file: Data/fv3files/input_geos_c24.nml
+  nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 1
-  trajpath: 'Data/INPUTS/GEOS_c24/traj/'
-  trajfile: 'GEOS.traj.c24.eta.'
+  trajpath: '/gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/'
+  trajfile: 'GEOS.traj.c180.eta.'
   lm_do_dyn: 1
   lm_do_trb: 1
   lm_do_mst: 1
 state:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c24/
-  datapath_write: 'Data/'
-  date: '2018-04-14T21:00:00Z'
+  datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/
+  date: '2018-10-03T23:00:00Z'
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c48.nml
+  filename_eta: GEOS.traj.c180.eta.20181003_2300z.nc4    
+  filename_sfc: GEOS.traj.c180.eta.20181003_2300z.nc4    
+  nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
   variables:
   - ud
@@ -47,13 +46,12 @@ state:
 increment:
   state:
   - restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c24/
-    datapath_write: 'Data/'
-    date: '2018-04-15T00:00:00Z'
+    datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/
+    date: '2018-10-04T00:00:00Z'
     read_crtm_surface: 0
-    filename_eta: GEOS.bkg.c24.eta.20180415_00z.nc4    
-    filename_sfc: GEOS.bkg.c24.eta.20180415_00z.nc4    
-    nml_file: Data/fv3files/input_geos_c48.nml
+    filename_eta: GEOS.traj.c180.eta.20181004_0000z.nc4    
+    filename_sfc: GEOS.traj.c180.eta.20181004_0000z.nc4    
+    nml_file: Data/fv3files/input_geos_c180.nml
     trc_file: Data/fv3files/field_table
     variables:
     - ud
@@ -67,13 +65,12 @@ increment:
     - ql
     - o3
   - restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c24/
-    datapath_write: 'Data/'
-    date: '2018-04-15T00:00:00Z'
+    datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/
+    date: '2018-10-04T00:00:00Z'
     read_crtm_surface: 0
-    filename_eta: GEOS.bkg.c24.eta.20180415_00z.nc4    
-    filename_sfc: GEOS.bkg.c24.eta.20180415_00z.nc4    
-    nml_file: Data/fv3files/input_geos_c48.nml
+    filename_eta: GEOS.vana.c180.eta.20181004_0000z.nc4    
+    filename_sfc: GEOS.vana.c180.eta.20181004_0000z.nc4    
+    nml_file: Data/fv3files/input_geos_c180.nml
     trc_file: Data/fv3files/field_table
     variables:
     - ud
@@ -86,12 +83,22 @@ increment:
     - qi
     - ql
     - o3
-adjointnorm:
-  nothing: 1
+Jnorm:
+  Tref: 280.0
+  pref: 100000.0
+  qepsilon: 0.3
+JnormOutput:
+  restart_type: gfs
+  datapath_write: Data/
+  filename_core: Jnorm.fv_core.res.nc
+  filename_cplr: Jnorm.coupler.res
+  filename_trcr: Jnorm.fv_tracer.res.nc
+  first: PT0H
+  frequency: PT01H
 linearmodel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
-  nml_file: Data/fv3files/input_geos_c24.nml
+  nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
@@ -100,13 +107,13 @@ linearmodel:
   lm_do_mst: 1
   trajectory:
     name: 'FV3JEDI'
-    nml_file: Data/fv3files/input_geos_c24.nml
+    nml_file: Data/fv3files/input_geos_c180.nml
     trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     tstep: PT15M
     readtraj: 1
-    trajpath: 'Data/INPUTS/GEOS_c24/traj/'
-    trajfile: 'GEOS.traj.c24.eta.'
+    trajpath: 'Data/INPUTS/GEOS_c180/traj/'
+    trajfile: 'GEOS.traj.c180.eta.'
     lm_do_dyn: 1
     lm_do_trb: 1
     lm_do_mst: 1

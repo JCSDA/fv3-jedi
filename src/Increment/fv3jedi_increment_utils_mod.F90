@@ -35,7 +35,7 @@ type :: fv3jedi_increment
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ua     ! A-grid zonal wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: va     ! A-grid meridional wind (m/s)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: t      ! dry temperature (K)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: delp   ! pressure thickness (pascal)
+  real(kind=kind_real), allocatable, dimension(:,:  ) :: ps     ! surface pressure (pascal)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: q      ! specific humidity (kg/kg)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qi     ! cloud liquid ice (kg/kg)
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ql     ! cloud liquid water (kg/kg)
@@ -49,7 +49,6 @@ type :: fv3jedi_increment
   real(kind=kind_real), allocatable, dimension(:,:,:) :: psi    ! Stream function
   real(kind=kind_real), allocatable, dimension(:,:,:) :: chi    ! Velocity potential
   real(kind=kind_real), allocatable, dimension(:,:,:) :: tv     ! Virtual temperature
-  real(kind=kind_real), allocatable, dimension(:,:)   :: ps     ! Surface temperature
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qc     ! humidity control variable 
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qic    ! cloud liquid ice control variable
   real(kind=kind_real), allocatable, dimension(:,:,:) :: qlc    ! cloud liquid water control variable

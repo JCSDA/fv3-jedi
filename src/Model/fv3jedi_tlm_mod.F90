@@ -181,6 +181,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: incr
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
+integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
 allocate(ud(incr%isc:incr%iec  ,incr%jsc:incr%jec+1,1:incr%npz))
@@ -198,7 +199,9 @@ lm%pert%v    = vd(incr%isc:incr%iec,incr%jsc:incr%jec,:)
 lm%pert%ua   = incr%ua
 lm%pert%va   = incr%va
 lm%pert%t    = incr%t
-lm%pert%delp = incr%delp
+do k = 1,geom%npz
+  lm%pert%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*incr%ps(:,:)
+enddo
 lm%pert%qv   = incr%q
 lm%pert%qi   = incr%qi
 lm%pert%ql   = incr%ql
@@ -244,7 +247,7 @@ call d2a(geom, ud, vd, ua, va)
 incr%ua   = ua(incr%isc:incr%iec,incr%jsc:incr%jec,:)
 incr%va   = va(incr%isc:incr%iec,incr%jsc:incr%jec,:)
 incr%t    = lm%pert%t
-incr%delp = lm%pert%delp
+incr%ps   = sum(lm%pert%delp,3)
 incr%q    = lm%pert%qv
 incr%qi   = lm%pert%qi
 incr%ql   = lm%pert%ql
@@ -269,6 +272,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: incr
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
+integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va,ud,vd
 
 allocate(ud(incr%isd:incr%ied  ,incr%jsd:incr%jed+1,1:incr%npz))
@@ -285,7 +289,9 @@ ua(incr%isc:incr%iec,incr%jsc:incr%jec,:) = incr%ua
 va(incr%isc:incr%iec,incr%jsc:incr%jec,:) = incr%va
 
 lm%pert%t    = incr%t
-lm%pert%delp = incr%delp
+do k = 1,geom%npz
+  lm%pert%delp(:,:,k) = incr%ps(:,:)
+enddo
 lm%pert%qv   = incr%q
 lm%pert%qi   = incr%qi
 lm%pert%ql   = incr%ql
@@ -318,6 +324,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(inout) :: incr
 type(fv3jedi_lm_type),   intent(in)    :: lm
 
+integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
 allocate(ud(incr%isc:incr%iec  ,incr%jsc:incr%jec+1,1:incr%npz))
@@ -328,7 +335,7 @@ vd = 0.0_kind_real
 incr%ua   = 0.0
 incr%va   = 0.0
 incr%t    = 0.0
-incr%delp = 0.0
+incr%ps   = 0.0
 incr%q    = 0.0
 incr%qi   = 0.0
 incr%ql   = 0.0
@@ -341,7 +348,10 @@ endif
 ud(incr%isc:incr%iec,incr%jsc:incr%jec,:) = lm%pert%u
 vd(incr%isc:incr%iec,incr%jsc:incr%jec,:) = lm%pert%v
 incr%t    = lm%pert%t
-incr%delp = lm%pert%delp
+incr%ps = 0.0_kind_real
+do k = 1,geom%npz
+  incr%ps(:,:) = incr%ps(:,:) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
+enddo
 incr%q    = lm%pert%qv
 incr%qi   = lm%pert%qi
 incr%ql   = lm%pert%ql

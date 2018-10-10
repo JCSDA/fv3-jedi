@@ -28,12 +28,58 @@ cost_function:
         - ql
         - o3
     Covariance:
-      covariance: FV3JEDIstatic
+      covariance: BUMP
+      default_seed: 1
+      prefix: fv3jedi_gfs
+      method: cor
+      strategy: specific_univariate
+      new_nicas: 1     # Recompute convolution parameters
+      load_nicas: 0    # Load precomputed convolution parameters
+      sam_read: 0
+      sam_write: 1  
+      mask_check: 0
+      draw_type: random_uniform
+      nc1: 100
+      ntry: 3
+      nrep:  2
+      nc3: 10
+      dc: 1000.0e3
+      nl0r: 1
+      minim_algo: "hooke"
+      rvflt: 0.0
+      lsqrt: 1  
+      resol: 10.0
+      nicas_interp: bilin
+      network: 0
+      mpicom: 2
+      forced_radii: 1
+      rh: 1000e3
+      rv: 100
+      advmode: 0
+      diag_interp: bilin
       date: '2018-04-15T00:00:00Z'
-      horizontal_length_scale: 1e6
-      maximum_condition_number: 1.0e6
-      standard_deviation: '0.8'
-      vertical_correlation: '0.2'
+      variable_changes:
+      - varchange: Control2Model
+        inputVariables:
+          variables:
+          - ua
+          - va
+          - t
+          - ps
+          - q
+          - qi
+          - ql
+          - o3
+        outputVariables:
+          variables:
+          - psi 
+          - chi
+          - tv
+          - ps
+          - qc
+          - qic
+          - qlc
+          - o3c
   Jo:
 #    ObsTypes:
 #    - Covariance:
@@ -43,7 +89,7 @@ cost_function:
 #        ObsDataIn:
 #          obsfile: Data/amsua_n19_obs.nc4
 #        ObsDataOut:
-#          obsfile: Data/fv3jedi.3dvar.obt
+#          obsfile: Data/fv3jedi.3DVar.obt
 #        obsvalue: Observation
 #      ObsType: Radiance
     ObsTypes:
@@ -54,7 +100,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/fv3jedi.3dvar.obt
+          obsfile: Data/fv3jedi.3DVar.obt
         obsvalue: air_temperature
       ObsType: Radiosonde
   cost_type: 3D-Var
@@ -65,6 +111,7 @@ cost_function:
   - va
   - t
   - delp
+  - ps
   - q
   - qi
   - ql
@@ -89,9 +136,9 @@ model:
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: 3D-Var.fv_core.res.nc
-  filename_cplr: 3D-Var.coupler.res
-  filename_trcr: 3D-Var.fv_tracer.res.nc
+  filename_core: 3DVar.fv_core.res.nc
+  filename_cplr: 3DVar.coupler.res
+  filename_trcr: 3DVar.fv_tracer.res.nc
   first: PT0H
   frequency: PT01H
 resolution:

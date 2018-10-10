@@ -127,7 +127,7 @@ subroutine model_step(self, state, vdate)
 implicit none
 type(fv3jedi_model), intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
-type(datetime),      intent(in)    :: vdate
+type(datetime),      intent(in)    :: vdate !< Valid datetime after step
 
 character(len=20) :: vdatec
 

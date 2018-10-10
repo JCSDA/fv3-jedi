@@ -579,7 +579,7 @@ end subroutine fv3jedi_increment_sizes_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_svnorm_c(c_key_self,c_key_geom,c_key_state,c_conf) bind(c,name='fv3jedi_increment_svnorm_f90')
+subroutine fv3jedi_increment_jnorm_c(c_key_self,c_key_geom,c_key_state,c_conf) bind(c,name='fv3jedi_increment_jnorm_f90')
 
 use iso_c_binding
 use fv3jedi_state_mod
@@ -600,8 +600,8 @@ call fv3jedi_increment_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 call fv3jedi_state_registry%get(c_key_state,state)
 
-call svnorm(self,geom,state,c_conf)
+call jnorm(self,geom,state,c_conf)
 
-end subroutine fv3jedi_increment_svnorm_c
+end subroutine fv3jedi_increment_jnorm_c
 
 ! ------------------------------------------------------------------------------  

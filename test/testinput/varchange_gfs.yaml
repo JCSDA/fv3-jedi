@@ -44,7 +44,7 @@ LinearVariableChangeTests:
     - ua
     - va
     - t
-    - delp
+    - ps
     - q
     - qi
     - ql
@@ -91,12 +91,10 @@ State:
   - o3
 Variables:
   variables:
-  - ud
-  - vd
   - ua
   - va
   - t
-  - delp
+  - ps
   - q
   - qi
   - ql

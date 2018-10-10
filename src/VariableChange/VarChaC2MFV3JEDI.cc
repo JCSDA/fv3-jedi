@@ -61,7 +61,10 @@ void VarChaC2MFV3JEDI::multiplyAD(const IncrementFV3JEDI & dxm,
 // -----------------------------------------------------------------------------
 void VarChaC2MFV3JEDI::multiplyInverseAD(const IncrementFV3JEDI & dxa,
                                               IncrementFV3JEDI & dxm) const {
-  dxm = dxa;
+  fv3jedi_varcha_c2m_multiplyinverseadjoint_f90(keyFtnConfig_,
+                                                geom_->toFortran(),
+                                                dxm.toFortran(),
+                                                dxa.toFortran());
 }
 // -----------------------------------------------------------------------------
 void VarChaC2MFV3JEDI::print(std::ostream & os) const {

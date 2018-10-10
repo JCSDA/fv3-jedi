@@ -95,6 +95,7 @@ do var = 1, self%vars%nv
        if (.not.allocated(   self%w)) allocate (   self%w(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("delz")
        if (.not.allocated(self%delz)) allocate (self%delz(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+     case("ps")
      case default 
        call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
 
@@ -345,7 +346,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz
+integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,k
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud, vd
 
@@ -377,8 +378,12 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
 
   if(allocated(self%ua  )) self%ua   = self%ua   + rhs%ua  
   if(allocated(self%va  )) self%va   = self%va   + rhs%va  
-  if(allocated(self%t   )) self%t    = self%t    + rhs%t   
-  if(allocated(self%delp)) self%delp = self%delp + rhs%delp
+  if(allocated(self%t   )) self%t    = self%t    + rhs%t
+  if(allocated(self%delp)) then
+    do k = 1,geom%npz
+      self%delp(:,:,k) = self%delp(:,:,k) + (geom%bk(k+1)-geom%bk(1))*rhs%ps
+    enddo
+  endif
   if(allocated(self%q   )) self%q    = self%q    + rhs%q   
   if(allocated(self%qi  )) self%qi   = self%qi   + rhs%qi  
   if(allocated(self%ql  )) self%ql   = self%ql   + rhs%ql  

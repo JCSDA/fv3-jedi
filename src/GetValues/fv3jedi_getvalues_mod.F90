@@ -249,9 +249,6 @@ if (state%havecrtmfields) then
 endif
 
 
-!write(*,*)'interp model    t min, max= ',minval(state%t),maxval(state%t)
-!write(*,*)'interp model delp min, max= ',minval(state%delp),maxval(state%delp)
-
 ! Variable transforms and interpolate to obs locations
 ! ----------------------------------------------------
 

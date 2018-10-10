@@ -118,16 +118,18 @@ type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_increment), intent(inout) :: xctl
 type(fv3jedi_increment), intent(inout) :: xmod
 
+!Ps
+xmod%ps = xctl%ps
+
 !Tracers
-xmod%qi = xctl%qi
-xmod%ql = xctl%ql
-xmod%o3 = xctl%o3
+xmod%qi = xctl%qic
+xmod%ql = xctl%qlc
+xmod%o3 = xctl%o3c
 
 !Tangent linear of analysis (control) to model variables
-!call control_to_model_tlm(geom,xctl%psi, xctl%chi, xctl%tv, xctl%ps  , xctl%qc, &
-call control_to_model_tlm(geom,xctl%ua,  xctl%va , xctl%t , xctl%delp, xctl%q , &
-                               xmod%ua , xmod%va , xmod%t , xmod%delp, xmod%q , &
-                          self%tvtraj,self%qtraj,self%qsattraj )
+call control_to_model_tlm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%qc, &
+                                xmod%ua , xmod%va , xmod%t , xmod%q , &
+                                self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine fv3jedi_varcha_c2m_multiply
 
@@ -141,16 +143,18 @@ type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_increment), intent(inout) :: xmod
 type(fv3jedi_increment), intent(inout) :: xctl
 
+!Ps
+xctl%ps = xmod%ps
+
 !Tracers
-xctl%qi = xmod%qi
-xctl%ql = xmod%ql
-xctl%o3 = xmod%o3
+xctl%qic = xmod%qi
+xctl%qlc = xmod%ql
+xctl%o3c = xmod%o3
 
 !Adjoint of analysis (control) to model variables
-!call control_to_model_adm(geom,xctl%psi, xctl%chi, xctl%tv, xctl%ps  , xctl%qc, &
-call control_to_model_adm(geom,xctl%ua,  xctl%va , xctl%t , xctl%delp, xctl%q , &
-                               xmod%ua , xmod%va , xmod%t , xmod%delp, xmod%q , &
-                          self%tvtraj,self%qtraj,self%qsattraj )
+call control_to_model_adm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%qc, &
+                                xmod%ua , xmod%va , xmod%t , xmod%q , &
+                                self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine fv3jedi_varcha_c2m_multiplyadjoint
 
@@ -168,23 +172,14 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
 !Tangent linear inverse (model to control)
 
- !xctr%psi = 0.0_kind_real
- !xctr%chi = 0.0_kind_real
- !xctr%tv  = 0.0_kind_real
- !xctr%ps  = 0.0_kind_real
- !xctr%qc  = 0.0_kind_real
- !xctr%qic = 0.0_kind_real
- !xctr%qlc = 0.0_kind_real
- !xctr%o3c = 0.0_kind_real
-
- xctr%ua   =  xmod%ua
- xctr%va   =  xmod%va
- xctr%t    =  xmod%t
- xctr%delp =  xmod%delp
- xctr%q    =  xmod%q
- xctr%qi   =  xmod%qi
- xctr%ql   =  xmod%ql
- xctr%o3   =  xmod%o3
+xctr%psi = xmod%ua
+xctr%chi = xmod%va
+xctr%tv  = xmod%t
+xctr%ps  = xmod%ps
+xctr%qc  = xmod%q
+xctr%qic = xmod%qi
+xctr%qlc = xmod%ql
+xctr%o3c = xmod%o3
 
 !allocate (vort(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
 !allocate (divg(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
@@ -219,13 +214,22 @@ type(fv3jedi_geom), target,  intent(inout)  :: geom
 type(fv3jedi_increment), intent(inout) :: xctr
 type(fv3jedi_increment), intent(inout) :: xmod
 
-!> Not implemented
+!xmod%ua = xctr%psi
+!xmod%va = xctr%chi
+!xmod%t  = xctr%tv
+!xmod%ps = xctr%ps
+!xmod%q  = xctr%qc
+!xmod%qi = xctr%qic
+!xmod%ql = xctr%qlc
+!xmod%o3 = xctr%o3c
 
 end subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsat)
+subroutine control_to_model_tlm(geom,psi, chi, tv, qc, &
+                                     ua , va , t , qs, &
+                                tvt, qt, qsat)
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
@@ -234,15 +238,12 @@ subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
  real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
- !real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec           ) !Surface pressure
- real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Surface pressure
  real(kind=kind_real), intent(inout) ::   qc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
 
  !Output: state/model vector
  real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (ua)
  real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (va)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) :: delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Pressure thickness
  real(kind=kind_real), intent(inout) ::   qs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
  
  !Trajectory for virtual temperature to temperature
@@ -255,7 +256,6 @@ subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  ua = 0.0_kind_real
  va = 0.0_kind_real
  t = 0.0_kind_real
- delp = 0.0_kind_real
  qs = 0.0_kind_real
 
  !psi and chi to A-grid u and v 
@@ -271,11 +271,6 @@ subroutine control_to_model_tlm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  call psichi_to_uava(geom,psi_dom,chi_dom,ua,va)
 
  deallocate(psi_dom, chi_dom)
- 
- !ps to delp
- !----------
- !call ps_to_delp_tl(geom,ps,delp)
- delp = ps
 
  !Relative humidity to specific humidity
  !--------------------------------------
@@ -291,7 +286,9 @@ endsubroutine control_to_model_tlm
 
 !> Control variables to state variables - Adjoint
 
-subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsat)
+subroutine control_to_model_adm(geom,psi, chi, tv, qc, &
+                                     ua , va , t , qs, &
+                                tvt, qt, qsat)
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
@@ -300,15 +297,12 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
  real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
- !real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec           ) !Surface pressure
- real(kind=kind_real), intent(inout) ::   ps(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Surface pressure
  real(kind=kind_real), intent(inout) ::   qc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
 
  !Output: state/model vector
  real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (u)
  real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (v)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) :: delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Pressure thickness
  real(kind=kind_real), intent(inout) ::   qs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
  
  !Trajectory for virtual temperature to temperaturc
@@ -321,7 +315,6 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  psi = 0.0_kind_real
  chi = 0.0_kind_real
  tv  = 0.0_kind_real
- ps  = 0.0_kind_real
  qc  = 0.0_kind_real
 
  !Virtual temperature to temperature
@@ -331,11 +324,6 @@ subroutine control_to_model_adm(geom,psi,chi,tv,ps,qc,ua,va,t,delp,qs,tvt,qt,qsa
  !Relative humidity to specific humidity
  !--------------------------------------
  call rh_to_q_ad(geom,qsat,qc,qs)
-
- !Ps to delp
- !----------
- !call ps_to_delp_ad(geom,ps,delp)
- ps = delp
 
  !psi and chi to D-grid u and v 
  !-----------------------------

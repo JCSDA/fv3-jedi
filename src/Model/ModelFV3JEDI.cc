@@ -49,9 +49,9 @@ void ModelFV3JEDI::initialize(StateFV3JEDI & xx) const {
 }
 // -----------------------------------------------------------------------------
 void ModelFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
+  xx.validTime() += tstep_;
   util::DateTime * dtp = &xx.validTime();
   fv3jedi_model_step_f90(keyConfig_, xx.toFortran(), &dtp);
-  xx.validTime() += tstep_;
   oops::Log::debug() << "ModelFV3JEDI::step" << std::endl;
 }
 // -----------------------------------------------------------------------------
