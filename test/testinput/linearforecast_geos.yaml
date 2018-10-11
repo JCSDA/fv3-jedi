@@ -1,8 +1,9 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
-forecast_mode: 3
-forecast_length: PT1H
+linearForecastMode: 1
+linearForecastLength: PT1H
+linearForecastApplyJnormGrad: 0
 resolution:
   filename_akbk: akbk72.nc4
   filepath_akbk: Data/INPUTS/GEOS_akbk/
@@ -18,14 +19,14 @@ model:
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 1
-  trajpath: '/gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/'
-  trajfile: 'GEOS.traj.c180.eta.'
+  trajpath: Data/INPUTS/GEOS_c180/
+  trajfile: GEOS.traj.c180.eta.
   lm_do_dyn: 1
   lm_do_trb: 1
   lm_do_mst: 1
 state:
   restart_type: geos
-  datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/
+  datapath_read: Data/INPUTS/GEOS_c180/
   date: '2018-10-03T23:00:00Z'
   read_crtm_surface: 0
   filename_eta: GEOS.traj.c180.eta.20181003_2300z.nc4    
@@ -46,7 +47,7 @@ state:
 increment:
   state:
   - restart_type: geos
-    datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/
+    datapath_read: Data/INPUTS/GEOS_c180/
     date: '2018-10-04T00:00:00Z'
     read_crtm_surface: 0
     filename_eta: GEOS.traj.c180.eta.20181004_0000z.nc4    
@@ -65,7 +66,7 @@ increment:
     - ql
     - o3
   - restart_type: geos
-    datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/JediFSOI/
+    datapath_read: Data/INPUTS/GEOS_c180/
     date: '2018-10-04T00:00:00Z'
     read_crtm_surface: 0
     filename_eta: GEOS.vana.c180.eta.20181004_0000z.nc4    
@@ -83,19 +84,26 @@ increment:
     - qi
     - ql
     - o3
-Jnorm:
+JnormGrad:
+  normkind: twe
   Tref: 280.0
   pref: 100000.0
   qepsilon: 0.3
-JnormOutput:
+incrementInitialOutput:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: Jnorm.fv_core.res.nc
-  filename_cplr: Jnorm.coupler.res
-  filename_trcr: Jnorm.fv_tracer.res.nc
+  filename_core: linearforecast.init.fv_core.res.nc
+  filename_cplr: linearforecast.init.coupler.res
+  filename_trcr: linearforecast.init.fv_tracer.res.nc
+incrementOutput:
+  restart_type: gfs
+  datapath_write: Data/
+  filename_core: linearforecast.final.fv_core.res.nc
+  filename_cplr: linearforecast.final.coupler.res
+  filename_trcr: linearforecast.final.fv_tracer.res.nc
   first: PT0H
-  frequency: PT01H
-linearmodel:
+  frequency: PT15M
+linearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
   nml_file: Data/fv3files/input_geos_c180.nml
@@ -112,7 +120,7 @@ linearmodel:
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     tstep: PT15M
     readtraj: 1
-    trajpath: 'Data/INPUTS/GEOS_c180/traj/'
+    trajpath: 'Data/INPUTS/GEOS_c180/'
     trajfile: 'GEOS.traj.c180.eta.'
     lm_do_dyn: 1
     lm_do_trb: 1
@@ -122,7 +130,7 @@ variables:
   - ua
   - va
   - t
-  - delp
+  - ps
   - q
   - qi
   - ql

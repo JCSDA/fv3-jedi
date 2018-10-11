@@ -69,7 +69,7 @@ resolution:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_c48/
+  filepath_akbk: Data/INPUTS/GEOS_akbk/
   filename_akbk: akbk72.nc4
   ak_var: AK
   bk_var: BK
@@ -97,7 +97,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c48.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      filepath_akbk: Data/INPUTS/GEOS_c48/
+      filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
       ak_var: AK
       bk_var: BK
@@ -122,7 +122,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c48.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      filepath_akbk: Data/INPUTS/GEOS_c48/
+      filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
       ak_var: AK
       bk_var: BK
