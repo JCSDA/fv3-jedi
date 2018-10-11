@@ -406,8 +406,6 @@ character(len=6) :: ctime
 integer(kind=c_int) :: idate, isecs
 character(len=20) :: sdate, validitydate
 
-real(kind=kind_real), allocatable :: state2d_global(:,:)
-
 integer, allocatable :: istart(:), icount(:)
 
 integer :: tileoff

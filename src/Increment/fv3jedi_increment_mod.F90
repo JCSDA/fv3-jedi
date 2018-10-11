@@ -33,7 +33,7 @@ public :: create, delete, zeros, random, copy, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, incrms, &
           change_resol, getvalues_tl, getvalues_ad, &
-          ug_coord, increment_to_ug, increment_from_ug, dirac, jnorm
+          ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad
 public :: fv3jedi_increment
 public :: fv3jedi_increment_registry
 
@@ -1770,7 +1770,7 @@ end subroutine check
 
 ! ------------------------------------------------------------------------------
 
-subroutine jnorm(self,geom,ref,c_conf)
+subroutine jnormgrad(self,geom,ref,c_conf)
 
 use mpp_domains_mod, only: mpp_global_sum, BITWISE_EFP_SUM
 
@@ -1796,8 +1796,8 @@ real(kind=kind_real) :: pfac, pref
 
 isc = self%isc
 iec = self%iec
-jsc = self%isc
-jec = self%iec
+jsc = self%jsc
+jec = self%jec
 npz = self%npz
 
 ! Constants
@@ -1876,7 +1876,7 @@ deallocate(cellweight)
 deallocate(ref_ps)
 
 
-end subroutine jnorm
+end subroutine jnormgrad
 
 ! ------------------------------------------------------------------------------
 
