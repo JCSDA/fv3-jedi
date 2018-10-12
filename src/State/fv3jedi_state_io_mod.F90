@@ -338,11 +338,6 @@ character(len=255) :: datapath_out
  id_restart = register_restart_field( Fv_restart, filename_core, 'grid_lon', geom%grid_lon, &
                                       domain=geom%domain )
 
- id_restart =  register_restart_field( Fv_restart, filename_core, 'ua', state%ua, &
-                                       domain=geom%domain )
- id_restart =  register_restart_field( Fv_restart, filename_core, 'va', state%va, &
-                                       domain=geom%domain )
-
  ! Write variables to file
  ! -----------------------`/
  call save_restart(Fv_restart, directory=trim(adjustl(datapath_out))//'RESTART')
@@ -387,15 +382,14 @@ end subroutine write_fms_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_geos_restart(geom, state, c_conf, vdate)
+subroutine read_geos_restart(state, c_conf, vdate)
 
 implicit none
 
 !Arguments
-type(fv3jedi_geom), intent(inout)  :: geom
-type(fv3jedi_state), intent(inout) :: state      !< State
-type(c_ptr), intent(in)            :: c_conf   !< Configuration
-type(datetime), intent(inout)      :: vdate    !< DateTime
+type(fv3jedi_state), intent(inout) :: state    !< State
+type(c_ptr),         intent(in)    :: c_conf   !< Configuration
+type(datetime),      intent(inout) :: vdate    !< DateTime
 
 character(len=255) :: datapath
 character(len=255) :: filename_eta
@@ -421,13 +415,14 @@ logical :: tiledimension = .false.
 
 integer :: isc,iec,jsc,jec
 
+character(len=20)  :: var
 
  !> Convenience
  !> -----------
- isc = geom%isc
- iec = geom%iec
- jsc = geom%jsc
- jec = geom%jec
+ isc = state%isc
+ iec = state%iec
+ jsc = state%jsc
+ jec = state%jec
 
 
  !> Set filenames
@@ -513,14 +508,14 @@ integer :: isc,iec,jsc,jec
  call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  !> Make sure file dimensions equal to geometry
- if ( im /= geom%npx-1 .or. lm /= geom%npz) then
+ if ( im /= state%npx-1 .or. lm /= state%npz) then
    call abor1_ftn("GEOS restarts: restart dimension not compatible with geometry")
  endif
 
  !> GEOS can use concatenated tiles or tile as a dimension
- if ( (im == geom%npx-1) .and. (jm == 6*(geom%npy-1) ) ) then
+ if ( (im == state%npx-1) .and. (jm == 6*(state%npy-1) ) ) then
    tiledimension = .false.
-   tileoff = (geom%ntile-1)*(jm/geom%ntiles)
+   tileoff = (state%ntile-1)*(jm/state%ntiles)
  else
    tiledimension = .true.
    tileoff = 0
@@ -528,125 +523,233 @@ integer :: isc,iec,jsc,jec
  endif
 
 
- !> Read the state level by level
- !> -----------------------------
- allocate(state2d_global(im,jm))
-
- !> starts and counts
- deallocate(istart,icount)
- allocate(istart(4))
- allocate(icount(4))
- istart = 1
- icount(1) = im
- icount(2) = jm
- icount(3) = 1
- icount(4) = 1
-
- !> Loop over levels
- do l = 1,lm
-
-   istart(3) = l
-
-   !state%ud (D-Grid winds, nonlinear model only)
-   ncstat = nf90_inq_varid (ncid, 'u', varid)
-   if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "u: "//trim(nf90_strerror(ncstat))
-   state%ud(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%vd (D-Grid winds, nonlinear model only)
-   ncstat = nf90_inq_varid (ncid, 'v', varid)
-   if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "v: "//trim(nf90_strerror(ncstat))
-   state%vd(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%ua (A-Grid winds, increment)
-   ncstat = nf90_inq_varid (ncid, 'ua', varid)
-   if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "ua: "//trim(nf90_strerror(ncstat))
-   state%ua(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%va (A-Grid winds, increment)
-   ncstat = nf90_inq_varid (ncid, 'va', varid)
-   if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "va: "//trim(nf90_strerror(ncstat))
-   state%va(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%t
-   ncstat = nf90_inq_varid (ncid, 'T', varid)
-   if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "T: "//trim(nf90_strerror(ncstat))
-   state%t(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%delp
-   ncstat = nf90_inq_varid (ncid, 'delp', varid)
-   if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "delp: "//trim(nf90_strerror(ncstat))
-   state%delp(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%q (sphum)
-   ncstat = nf90_inq_varid (ncid, 'sphum', varid)
-   if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "sphum: "//trim(nf90_strerror(ncstat))
-   state%q(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%qi (liq_wat)
-   ncstat = nf90_inq_varid (ncid, 'liq_wat', varid)
-   if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "liq_wat: "//trim(nf90_strerror(ncstat))
-   state%qi(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%ql (ice_wat)
-   ncstat = nf90_inq_varid (ncid, 'ice_wat', varid)
-   if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "ice_wat: "//trim(nf90_strerror(ncstat))
-   state%ql(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
-   !state%o3 (o3mr)
-   ncstat = nf90_inq_varid (ncid, 'o3mr', varid)
-   if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
-   ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
-   if(ncstat /= nf90_noerr) print *, "o3mr: "//trim(nf90_strerror(ncstat))
-   state%o3(isc:iec,jsc:jec,l) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
-
- enddo
-
+ !Rank three variables
+ !--------------------
  deallocate(istart,icount)
 
- !Two dimensional variables
- 
- allocate(istart(3))
- allocate(icount(3))
- 
- istart = 1
- icount(1) = im
- icount(2) = jm
- icount(3) = 1
- 
- !state%phis
- ncstat = nf90_inq_varid (ncid, 'phis', varid)
- if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- ncstat = nf90_get_var(ncid, varid, state2d_global, istart, icount)
- if(ncstat /= nf90_noerr) print *, "phis: "//trim(nf90_strerror(ncstat))
- state%phis(isc:iec,jsc:jec) = state2d_global(isc:iec,tileoff+jsc:tileoff+jec)
+ if (.not. tiledimension) then
+   allocate(istart(4))
+   allocate(icount(4))
+   istart(1) = isc
+   istart(2) = tileoff + jsc
+   istart(3) = 1
+   istart(4) = 1
+
+   icount(1) = iec-isc+1
+   icount(2) = jec-jsc+1
+   icount(3) = 72
+   icount(4) = 1
+ else
+   allocate(istart(5))
+   allocate(icount(5))
+   istart(1) = isc
+   istart(2) = jsc
+   istart(3) = state%ntile
+   istart(4) = 1
+   istart(5) = 1
+
+   icount(1) = iec-isc+1
+   icount(2) = jec-jsc+1
+   icount(3) = 1
+   icount(4) = 72
+   icount(5) = 1
+ endif
+
+ var = 'ud'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%ud(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'vd'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%vd(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'ua'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%ua(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'va'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%va(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 't'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%t(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'delp'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%delp(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'q'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%q(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'qi'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%qi(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'ql'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%ql(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'o3mr'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%o3(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'qls'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%qls(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'qcn'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%qcn(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'cfcn'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%cfcn(isc:iec,jsc:jec,:), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ !Rank two variables
+ !------------------
+ deallocate(istart,icount)
+
+ if (.not. tiledimension) then
+   allocate(istart(3))
+   allocate(icount(3))
+   istart(1) = isc
+   istart(2) = tileoff + jsc
+   istart(3) = 1
+
+   icount(1) = iec-isc+1
+   icount(2) = jec-jsc+1
+   icount(3) = 1
+ else
+   allocate(istart(4))
+   allocate(icount(4))
+   istart(1) = isc
+   istart(2) = jsc
+   istart(3) = state%ntile
+   istart(4) = 1
+
+   icount(1) = iec-isc+1
+   icount(2) = jec-jsc+1
+   icount(3) = 1
+   icount(4) = 1
+ endif
+
+ var = 'phis'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%phis(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'frland'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%frland(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'frocean'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%frocean(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'kcbl'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%kcbl(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'ts'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%ts(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'khl'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%khl(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'khu'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%khu(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'varflt'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%varflt(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'ustar'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%ustar(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'bstar'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%bstar(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'zpbl'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%zpbl(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'cm'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%cm(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'ct'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%ct(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
+ var = 'cq'
+ ncstat = nf90_inq_varid (ncid, trim(var), varid)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+ ncstat = nf90_get_var(ncid, varid, state%cq(isc:iec,jsc:jec), istart, icount)
+ if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+
 
  !Close this file
  ncstat = nf90_close(ncid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
-
- !TODO: ADD THE SURFACE VARIABLES AND TRANSFORM THEM TO FV3FGFS STYLE
-
-
- deallocate(state2d_global)
  deallocate(istart,icount)
 
 

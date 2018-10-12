@@ -16,7 +16,7 @@
 #include "GeometryFV3JEDI.h"
 #include "FV3JEDITraits.h"
 #include "IncrementFV3JEDI.h"
-#include "ModelFV3JEDIFortran.h"
+#include "TlmFV3JEDIFortran.h"
 #include "StateFV3JEDI.h"
 #include "UtilitiesFV3JEDI.h"
 
@@ -36,14 +36,14 @@ TlmIdFV3JEDI::TlmIdFV3JEDI(const GeometryFV3JEDI & resol,
 
   const eckit::Configuration * configc = &tlConf;
   stageFv3Files(tlConf);
-  fv3jedi_model_setup_f90(&configc, resol_.toFortran(), keyConfig_);
+  fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_);
   removeFv3Files();
 
   oops::Log::trace() << "TlmIdFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------
 TlmIdFV3JEDI::~TlmIdFV3JEDI() {
-  fv3jedi_model_delete_f90(keyConfig_);
+  fv3jedi_tlm_delete_f90(keyConfig_);
   oops::Log::trace() << "TlmIdFV3JEDI destructed" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -51,7 +51,6 @@ void TlmIdFV3JEDI::setTrajectory(const StateFV3JEDI &, StateFV3JEDI &,
                                  const ModelBiasFV3JEDI &) {}
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
-  fv3jedi_model_prepare_integration_tl_f90(keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmIdFV3JEDI::initializTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -74,7 +73,6 @@ void TlmIdFV3JEDI::stepAD(IncrementFV3JEDI & dx,
 }
 // -----------------------------------------------------------------------------
 void TlmIdFV3JEDI::finalizeAD(IncrementFV3JEDI & dx) const {
-  fv3jedi_model_prepare_integration_ad_f90(keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmIdFV3JEDI::finalizeAD" << std::endl;
 }
 // -----------------------------------------------------------------------------

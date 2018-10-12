@@ -121,6 +121,24 @@ if (.not.allocated(self%u_srf )) allocate(self%u_srf (geom%isc:geom%iec,geom%jsc
 if (.not.allocated(self%v_srf )) allocate(self%v_srf (geom%isc:geom%iec,geom%jsc:geom%jec))
 if (.not.allocated(self%f10m  )) allocate(self%f10m  (geom%isc:geom%iec,geom%jsc:geom%jec))
 
+!Linearized model trajectory
+if (.not.allocated(self%qls    )) allocate(self%qls    (geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+if (.not.allocated(self%qcn    )) allocate(self%qcn    (geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+if (.not.allocated(self%cfcn   )) allocate(self%cfcn   (geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+if (.not.allocated(self%frocean)) allocate(self%frocean(geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%frland )) allocate(self%frland (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%varflt )) allocate(self%varflt (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%ustar  )) allocate(self%ustar  (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%bstar  )) allocate(self%bstar  (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%zpbl   )) allocate(self%zpbl   (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%cm     )) allocate(self%cm     (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%ct     )) allocate(self%ct     (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%cq     )) allocate(self%cq     (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%kcbl   )) allocate(self%kcbl   (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%ts     )) allocate(self%ts     (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%khl    )) allocate(self%khl    (geom%isc:geom%iec,geom%jsc:geom%jec))
+if (.not.allocated(self%khu    )) allocate(self%khu    (geom%isc:geom%iec,geom%jsc:geom%jec))
+
 ! Initialize all domain arrays to zero
 call zeros(self)
 self%phis   = 0.0_kind_real
@@ -137,6 +155,9 @@ self%jed = geom%jed
 self%npx = geom%npx
 self%npy = geom%npy
 self%npz = geom%npz
+
+self%ntile = geom%ntile
+self%ntiles = geom%ntiles
 
 end subroutine create
 
@@ -172,6 +193,23 @@ if (allocated(self%snwdph)) deallocate(self%snwdph)
 if (allocated(self%u_srf )) deallocate(self%u_srf )
 if (allocated(self%v_srf )) deallocate(self%v_srf )
 if (allocated(self%f10m  )) deallocate(self%f10m  )
+
+if (allocated(self%qls    )) deallocate(self%qls    )
+if (allocated(self%qcn    )) deallocate(self%qcn    )
+if (allocated(self%cfcn   )) deallocate(self%cfcn   )
+if (allocated(self%frocean)) deallocate(self%frocean)
+if (allocated(self%frland )) deallocate(self%frland )
+if (allocated(self%varflt )) deallocate(self%varflt )
+if (allocated(self%ustar  )) deallocate(self%ustar  )
+if (allocated(self%bstar  )) deallocate(self%bstar  )
+if (allocated(self%zpbl   )) deallocate(self%zpbl   )
+if (allocated(self%cm     )) deallocate(self%cm     )
+if (allocated(self%ct     )) deallocate(self%ct     )
+if (allocated(self%cq     )) deallocate(self%cq     )
+if (allocated(self%kcbl   )) deallocate(self%kcbl   )
+if (allocated(self%ts     )) deallocate(self%ts     )
+if (allocated(self%khl    )) deallocate(self%khl    )
+if (allocated(self%khu    )) deallocate(self%khu    )
 
 end subroutine delete
 
@@ -222,6 +260,8 @@ self%hydrostatic    = rhs%hydrostatic
 self%calendar_type  = rhs%calendar_type 
 self%date           = rhs%date          
 self%date_init      = rhs%date_init     
+self%ntile          = rhs%ntile
+self%ntiles         = rhs%ntiles
 
 if(allocated(self%ud  ).and.allocated(rhs%ud  )) self%ud   = rhs%ud  
 if(allocated(self%vd  ).and.allocated(rhs%vd  )) self%vd   = rhs%vd  
@@ -249,6 +289,23 @@ self%snwdph = rhs%snwdph
 self%u_srf  = rhs%u_srf
 self%v_srf  = rhs%v_srf
 self%f10m   = rhs%f10m
+
+self%qls     = rhs%qls    
+self%qcn     = rhs%qcn    
+self%cfcn    = rhs%cfcn   
+self%frocean = rhs%frocean
+self%frland  = rhs%frland 
+self%varflt  = rhs%varflt 
+self%ustar   = rhs%ustar  
+self%bstar   = rhs%bstar  
+self%zpbl    = rhs%zpbl   
+self%cm      = rhs%cm     
+self%ct      = rhs%ct     
+self%cq      = rhs%cq     
+self%kcbl    = rhs%kcbl   
+self%ts      = rhs%ts     
+self%khl     = rhs%khl    
+self%khu     = rhs%khu    
 
 return
 end subroutine copy
@@ -763,7 +820,7 @@ subroutine read_file(geom, state, c_conf, vdate)
   if (trim(restart_type) == 'gfs') then
      call read_fms_restart(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call read_geos_restart(geom, state, c_conf, vdate)
+     call read_geos_restart(state, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state read: restart type not supported")
   endif

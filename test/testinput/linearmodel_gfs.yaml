@@ -18,23 +18,24 @@ Geometry:
   bk_var: bk
 LinearModel:
   name: 'FV3JEDITLM'
-  init_tlmadm: '1'
-  linmodtest: '1'
+  version: FV3JEDITLM
   nml_file: Data/fv3files/input_gfs_c48.nml
+  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT15M
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
   trajectory:
     name: 'FV3JEDI'
-    init_tlmadm: '1'
-    linmodtest: '1'
     nml_file: Data/fv3files/input_gfs_c48.nml
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     trc_file: Data/fv3files/field_table
+    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     tstep: PT15M
-  trc_file: Data/fv3files/field_table
-  tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
-  version: FV3JEDITLM
+    readtraj: 0
+    lm_do_dyn: 1
+    lm_do_trb: 0
+    lm_do_mst: 0
 LinearModelTest:
   fclength: PT30M
   firstmulTL: '0.01'
@@ -43,14 +44,14 @@ LinearModelTest:
   toleranceTL: '1.0'
 Model:
   name: 'FV3JEDI'
-  init_tlmadm: '1'
-  linmodtest: '1'
   nml_file: Data/fv3files/input_gfs_c48.nml
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
 ModelBias: null
 State:
   restart_type: gfs

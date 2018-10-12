@@ -18,7 +18,7 @@
 #include "oops/util/Printable.h"
 
 #include "FV3JEDITraits.h"
-#include "ModelFV3JEDIFortran.h"
+#include "TlmFV3JEDIFortran.h"
 
 // Forward declarations
 namespace eckit {

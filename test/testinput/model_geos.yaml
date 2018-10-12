@@ -11,17 +11,19 @@ Geometry:
   bk_var: BK
 Model:
   name: 'FV3JEDI'
-  init_tlmadm: '0'
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
-  finalnorm: '622.47733204645419'
+  finalnorm: '622.47866386234705'
   tolerance: '1.0e-4'
 State:
   restart_type: geos
