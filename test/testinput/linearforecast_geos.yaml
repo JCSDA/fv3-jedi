@@ -19,14 +19,14 @@ model:
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 1
-  trajpath: Data/INPUTS/GEOS_c180/
+  trajpath: Data/INPUTS/GEOS_c180/H21/
   trajfile: GEOS.traj.c180.eta.
   lm_do_dyn: 1
   lm_do_trb: 1
   lm_do_mst: 1
 state:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c180/
+  datapath_read: Data/INPUTS/GEOS_c180/H21/
   date: '2018-10-03T23:00:00Z'
   read_crtm_surface: 0
   filename_eta: GEOS.traj.c180.eta.20181003_2300z.nc4    
@@ -47,7 +47,7 @@ state:
 increment:
   state:
   - restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c180/
+    datapath_read: Data/INPUTS/GEOS_c180/H21/
     date: '2018-10-04T00:00:00Z'
     read_crtm_surface: 0
     filename_eta: GEOS.traj.c180.eta.20181004_0000z.nc4    
@@ -90,11 +90,10 @@ JnormGrad:
   pref: 100000.0
   qepsilon: 0.3
 incrementInitialOutput:
-  restart_type: gfs
-  datapath_write: Data/
-  filename_core: linearforecast.init.fv_core.res.nc
-  filename_cplr: linearforecast.init.coupler.res
-  filename_trcr: linearforecast.init.fv_tracer.res.nc
+  restart_type: geos
+  geos_tile_dim: 1
+  datapath: "Data/RESTART/"
+  filename: "JediGEOS.Jgradf_twe.eta."
 incrementOutput:
   restart_type: gfs
   datapath_write: Data/
@@ -120,7 +119,7 @@ linearModel:
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     tstep: PT15M
     readtraj: 1
-    trajpath: 'Data/INPUTS/GEOS_c180/'
+    trajpath: 'Data/INPUTS/GEOS_c180/H21/'
     trajfile: 'GEOS.traj.c180.eta.'
     lm_do_dyn: 1
     lm_do_trb: 1
