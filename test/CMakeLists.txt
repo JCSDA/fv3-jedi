@@ -688,6 +688,7 @@ Data/fv3files/inputpert_fsoi.nml
 
 list( APPEND fv3jedi_test_restart
 Data/RESTART/PlotCubeSphereField.py
+Data/RESTART/TLM_vs_NLM.py
 )
 
 list( APPEND fv3jedi_test_input
