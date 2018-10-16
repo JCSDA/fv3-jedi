@@ -17,6 +17,9 @@ use fms_io_mod,        only: restart_file_type, register_restart_field, &
 !For GEOS like restarts
 use netcdf
 
+!fckit mpi
+use fckit_mpi_module, only : fckit_mpi_comm
+
 implicit none
 private
 public read_fms_restart, write_fms_restart, &
@@ -298,34 +301,43 @@ type(fckit_mpi_comm) :: f_comm
    endif
    km = geom%npz
   
+   !Create file to write to
    call nccheck ( nf90_create(trim(filename), NF90_CLOBBER, ncid), "nf90_create" )
+
+   !Create dimensions
    call nccheck ( nf90_def_dim(ncid, "lon", im, x_dimid), "nf90_def_dim lon" )
    call nccheck ( nf90_def_dim(ncid, "lat", jm, y_dimid), "nf90_def_dim lat" )
    call nccheck ( nf90_def_dim(ncid, "lev", km, z_dimid), "nf90_def_dim lev" )
    call nccheck ( nf90_def_dim(ncid, "time", 1, t_dimid), "nf90_def_dim time" )
   
+   !Add further dimension for the tile number if requested and create dimids
    if (geostiledim == 1) then
   
      call nccheck ( nf90_def_dim(ncid, "tile", geom%ntiles, tile_dimid), "nf90_def_dim tile"  )
   
-     allocate(dimids2(5))
+     allocate(dimids2(4))
      dimids2 =  (/ x_dimid, y_dimid, t_dimid, tile_dimid /)
      allocate(dimids3(5))
      dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid, tile_dimid /)
   
    else
   
-     allocate(dimids2(4))
-     dimids2 =  (/ x_dimid, y_dimid, t_dimid /)
+     allocate(dimids2(2))
+     dimids2 =  (/ x_dimid, y_dimid /)
      allocate(dimids3(4))
      dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
   
    endif
   
+   !Define variables to be written (geom)
+print*, dimids2
    call nccheck( nf90_def_var(ncid, "lon", NF90_DOUBLE, dimids2, varid(1)), "nf90_def_var lon" )
-   call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, dimids2, varid(2)), "nf90_def_var lat"  )
+   call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, dimids2, varid(2)), "nf90_def_var lat" )
+
+   !Define variables to be written (increment)
    call nccheck( nf90_def_var(ncid, "ua" , writeprec  , dimids3, varid(3)), "nf90_def_var ua"  )
-  
+
+   !Close for this proc
    call nccheck( nf90_enddef(ncid), "nf90_enddef" )
    call nccheck( nf90_close(ncid), "nf90_close" )
   
@@ -333,9 +345,12 @@ type(fckit_mpi_comm) :: f_comm
 
  endif !Root process
 
- !Communicate the varids
- call f_comm%broadcast(varid,mpp_root_pe())
 
+ !Broadcast the varids
+ call f_comm%broadcast(varid,0)
+
+
+ !Create local to this proc start/count
  if (geostiledim == 1) then
 
    allocate(istart3(5),istart2(4))
@@ -363,8 +378,8 @@ type(fckit_mpi_comm) :: f_comm
 
  else
 
-   allocate(istart3(4),istart2(3))
-   allocate(icount3(4),icount2(3))
+   allocate(istart3(4),istart2(2))
+   allocate(icount3(4),icount2(2))
 
    istart3(1) = isc
    istart3(2) = (geom%ntile-1)*(jm/geom%ntiles) + jsc
@@ -377,15 +392,16 @@ type(fckit_mpi_comm) :: f_comm
 
    istart2(1) = isc
    istart2(2) = (geom%ntile-1)*(jm/geom%ntiles) + jsc
-   istart2(3) = 1
+!   istart2(3) = 1
    icount2(1) = iec-isc+1
    icount2(2) = jec-jsc+1
-   icount2(3) = 1
+!   icount2(3) = 1
 
  endif
 
  call nccheck( nf90_open(trim(filename), NF90_WRITE, ncid), "nf90_open" )
 
+print*, icount2
  call nccheck( nf90_put_var(ncid, varid(1), geom%grid_lon(isc:iec,jsc:jec), istart2, icount2), "nf90_put_var lon" )
 
 
@@ -411,15 +427,18 @@ character(len=*), optional :: iam
 
 character(len=255) :: error_descr
 
- error_descr = "fv3jedi_increment_io_mod: NetCDF error, aborting"
+ if(status /= nf90_noerr) then
 
- if (present(iam)) then
-   error_descr = error_descr//", "//trim(iam)
- endif
+   error_descr = "fv3jedi_increment_io_mod: NetCDF error, aborting"
 
- if(status /= nf90_noerr) then 
-   print *, trim(nf90_strerror(status))
-   call abor1_ftn(error_descr)
+   if (present(iam)) then
+     error_descr = trim(error_descr)//", "//trim(iam)
+   endif
+
+   error_descr = trim(error_descr)//". Error code: "//trim(nf90_strerror(status))
+
+   call abor1_ftn(trim(error_descr))
+
  end if
 
 end subroutine nccheck
