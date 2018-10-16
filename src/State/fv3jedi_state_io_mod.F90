@@ -393,7 +393,6 @@ type(datetime),      intent(inout) :: vdate    !< DateTime
 
 character(len=255) :: datapath
 character(len=255) :: filename_eta
-character(len=255) :: filename_sfc
 
 integer :: ncid, ncstat, dimid, varid
 
@@ -426,19 +425,14 @@ character(len=20)  :: var
  !> Set filenames
  !> -------------
  filename_eta = 'GEOS.bkg.eta.nc4'
- filename_sfc = 'GEOS.sfc.sfc.nc4'
 
  if (config_element_exists(c_conf,"filename_eta")) then
     filename_eta = config_get_string(c_conf,len(filename_eta),"filename_eta")
- endif
- if (config_element_exists(c_conf,"filename_sfc")) then
-    filename_sfc = config_get_string(c_conf,len(filename_sfc),"filename_sfc")
  endif
 
  datapath = config_get_string(c_conf,len(datapath),"datapath_read")
 
  filename_eta  = trim(datapath)//trim("/")//trim(filename_eta )
- filename_sfc = trim(datapath)//trim("/")//trim(filename_sfc)
 
  !> Open the file
  ncstat = nf90_open(filename_eta, NF90_NOWRITE, ncid)
@@ -535,7 +529,7 @@ character(len=20)  :: var
 
    icount(1) = iec-isc+1
    icount(2) = jec-jsc+1
-   icount(3) = 72
+   icount(3) = state%npz
    icount(4) = 1
  else
    allocate(istart(5))
@@ -549,7 +543,7 @@ character(len=20)  :: var
    icount(1) = iec-isc+1
    icount(2) = jec-jsc+1
    icount(3) = 1
-   icount(4) = 72
+   icount(4) = state%npz
    icount(5) = 1
  endif
 
