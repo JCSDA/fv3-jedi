@@ -222,7 +222,8 @@ character(len=64)  :: datefile
 
 integer :: geostiledim = 0
 
-integer :: ncid, varid(10)
+integer, parameter :: nvar = 10
+integer :: ncid, varid(nvar)
 
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
@@ -235,7 +236,7 @@ integer, allocatable :: istart2(:), icount2(:)
 integer, allocatable :: istart3(:), icount3(:)
 
 integer :: writeprec
-
+type(fckit_mpi_comm) :: f_comm
 
  !> Convenience
  !> -----------
@@ -244,6 +245,7 @@ integer :: writeprec
  jsc = incr%jsc
  jec = incr%jec
 
+ f_comm = fckit_mpi_comm()
 
  ! Place to save restarts
  ! ----------------------
@@ -282,29 +284,59 @@ integer :: writeprec
  write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2)') date(1),date(2),date(3),"_",date(4),date(5),date(6)
  filename = trim(datapath)//trim(filename)//trim(datefile)//trim("z.nc4")
 
- im = geom%npx - 1
- if (geostiledim == 0) then
-   jm = 6*(geom%npy - 1)
- else
-   jm = geom%npy - 1
- endif
- km = geom%npz
+ writeprec = NF90_FLOAT
 
- call nccheck ( nf90_create(filename, NF90_CLOBBER, ncid) )
+ varid = 0
 
- call nccheck ( nf90_def_dim(ncid, "lon", im, x_dimid) )
- call nccheck ( nf90_def_dim(ncid, "lat", jm, y_dimid) )
- call nccheck ( nf90_def_dim(ncid, "lev", km, z_dimid) )
- call nccheck ( nf90_def_dim(ncid, "time", 1, t_dimid) )
+ if (f_comm%rank() == 0) then
+
+   im = geom%npx - 1
+   if (geostiledim == 0) then
+     jm = 6*(geom%npy - 1)
+   else
+     jm = geom%npy - 1
+   endif
+   km = geom%npz
+  
+   call nccheck ( nf90_create(trim(filename), NF90_CLOBBER, ncid), "nf90_create" )
+   call nccheck ( nf90_def_dim(ncid, "lon", im, x_dimid), "nf90_def_dim lon" )
+   call nccheck ( nf90_def_dim(ncid, "lat", jm, y_dimid), "nf90_def_dim lat" )
+   call nccheck ( nf90_def_dim(ncid, "lev", km, z_dimid), "nf90_def_dim lev" )
+   call nccheck ( nf90_def_dim(ncid, "time", 1, t_dimid), "nf90_def_dim time" )
+  
+   if (geostiledim == 1) then
+  
+     call nccheck ( nf90_def_dim(ncid, "tile", geom%ntiles, tile_dimid), "nf90_def_dim tile"  )
+  
+     allocate(dimids2(5))
+     dimids2 =  (/ x_dimid, y_dimid, t_dimid, tile_dimid /)
+     allocate(dimids3(5))
+     dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid, tile_dimid /)
+  
+   else
+  
+     allocate(dimids2(4))
+     dimids2 =  (/ x_dimid, y_dimid, t_dimid /)
+     allocate(dimids3(4))
+     dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
+  
+   endif
+  
+   call nccheck( nf90_def_var(ncid, "lon", NF90_DOUBLE, dimids2, varid(1)), "nf90_def_var lon" )
+   call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, dimids2, varid(2)), "nf90_def_var lat"  )
+   call nccheck( nf90_def_var(ncid, "ua" , writeprec  , dimids3, varid(3)), "nf90_def_var ua"  )
+  
+   call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+   call nccheck( nf90_close(ncid), "nf90_close" )
+  
+   deallocate(dimids3,dimids2)
+
+ endif !Root process
+
+ !Communicate the varids
+ call f_comm%broadcast(varid,mpp_root_pe())
 
  if (geostiledim == 1) then
-
-   call nccheck ( nf90_def_dim(ncid, "tile", geom%ntiles, tile_dimid) )
-
-   allocate(dimids2(5))
-   dimids2 =  (/ x_dimid, y_dimid, t_dimid, tile_dimid /)
-   allocate(dimids3(5))
-   dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid, tile_dimid /)
 
    allocate(istart3(5),istart2(4))
    allocate(icount3(5),icount2(4))
@@ -331,11 +363,6 @@ integer :: writeprec
 
  else
 
-   allocate(dimids2(4))
-   dimids2 =  (/ x_dimid, y_dimid, t_dimid /)
-   allocate(dimids3(4))
-   dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
-
    allocate(istart3(4),istart2(3))
    allocate(icount3(4),icount2(3))
 
@@ -357,25 +384,16 @@ integer :: writeprec
 
  endif
 
-print*, 'dandan', (geom%ntile-1)*(jm/geom%ntiles)
+ call nccheck( nf90_open(trim(filename), NF90_WRITE, ncid), "nf90_open" )
 
-print*, 'start', istart2, icount2
+ call nccheck( nf90_put_var(ncid, varid(1), geom%grid_lon(isc:iec,jsc:jec), istart2, icount2), "nf90_put_var lon" )
 
- writeprec = NF90_FLOAT
 
- call nccheck( nf90_def_var(ncid, "lon", NF90_DOUBLE, dimids2, varid(1)) )
- call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, dimids2, varid(2)) )
- call nccheck( nf90_def_var(ncid, "ua" , writeprec  , dimids3, varid(3)) )
+! call nccheck( nf90_put_var(ncid, varid(2), geom%grid_lat(isc:iec,jsc:jec), istart2, icount2), "nf90_put_var lat"  )
+! call nccheck( nf90_put_var(ncid, varid(3), incr%ua(isc:iec,jsc:jec,:)    , istart3, icount3), "nf90_put_var ua"  )
 
- call nccheck( nf90_enddef(ncid) )
+ call nccheck( nf90_close(ncid), "nf90_close" )
 
-! call nccheck( nf90_put_var(ncid, varid(1), geom%grid_lon(isc:iec,jsc:jec), istart2, icount2) )
-! call nccheck( nf90_put_var(ncid, varid(2), geom%grid_lat(isc:iec,jsc:jec), istart2, icount2) )
-! call nccheck( nf90_put_var(ncid, varid(3), incr%ua(isc:iec,jsc:jec,:)    , istart3, icount3) )
-
- call nccheck( nf90_close(ncid) )
-
- deallocate(dimids3,dimids2)
  deallocate(istart2,istart3)
  deallocate(icount2,icount3)
 
@@ -385,19 +403,27 @@ end subroutine write_geos_restart
 
 ! ------------------------------------------------------------------------------
 
-subroutine nccheck(status)
+subroutine nccheck(status,iam)
 
 implicit none
 integer, intent ( in) :: status
-  
+character(len=*), optional :: iam 
+
+character(len=255) :: error_descr
+
+ error_descr = "fv3jedi_increment_io_mod: NetCDF error, aborting"
+
+ if (present(iam)) then
+   error_descr = error_descr//", "//trim(iam)
+ endif
+
  if(status /= nf90_noerr) then 
    print *, trim(nf90_strerror(status))
-   stop "fv3jedi_increment_io_mod: NetCDF error, aborting"
+   call abor1_ftn(error_descr)
  end if
 
 end subroutine nccheck
 
 ! ------------------------------------------------------------------------------
-
 
 end module fv3jedi_increment_io_mod
