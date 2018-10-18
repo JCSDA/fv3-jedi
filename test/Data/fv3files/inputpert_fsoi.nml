@@ -30,9 +30,9 @@
        dddmp_pert = 0.1
        do_vort_damp_pert = .T.
        vtdm4_pert = 0.06
-       d2_bg_k1_pert = 0.26
-       d2_bg_k2_pert = 0.27
-       d2_bg_ks_pert = 0.20
+       d2_bg_k1_pert = 0.24
+       d2_bg_k2_pert = 0.25
+       d2_bg_ks_pert = 0.19
        split_damp_tr = .T.
        nord_tr_pert = 0
        trdm2_pert = 0.0

@@ -35,6 +35,7 @@ public :: tlm_finalize_ad
 !> Fortran derived type to hold tlm definition
 type:: fv3jedi_tlm
   type(fv3jedi_lm_type) :: fv3jedi_lm  !<Linearized model object
+  logical :: fsoi_mode
 end type fv3jedi_tlm
 
 ! ------------------------------------------------------------------------------
@@ -54,7 +55,7 @@ type(c_ptr),        intent(in)    :: c_conf
 character(len=20) :: ststep
 type(duration) :: dtstep
 real(kind=kind_real) :: dt
-
+integer :: tmp
 
 ! Model time step
 ! ---------------
@@ -70,6 +71,12 @@ self%fv3jedi_lm%conf%do_phy_trb = config_get_int(c_conf,"lm_do_trb")
 self%fv3jedi_lm%conf%do_phy_mst = config_get_int(c_conf,"lm_do_mst")
 
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
+
+self%fsoi_mode = .false.
+if (config_element_exists(c_conf,"fsoi_mode")) then
+   tmp = config_get_int(c_conf,"fsoi_mode")
+   if (tmp==1) self%fsoi_mode = .true.
+endif
 
 end subroutine tlm_create
 
@@ -88,11 +95,12 @@ end subroutine tlm_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_initialize_ad(self, inc)
+subroutine tlm_initialize_ad(geom, self, incr)
 
 implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(in)    :: incr
 
 call self%fv3jedi_lm%init_ad()
 
@@ -100,11 +108,14 @@ end subroutine tlm_initialize_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_initialize_tl(self, inc)
+subroutine tlm_initialize_tl(geom, self, incr)
 
 implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(in)    :: incr
+
+if (self%fsoi_mode) call incr_to_lm_tl(geom,incr,self%fv3jedi_lm)
 
 call self%fv3jedi_lm%init_tl()
 
@@ -122,7 +133,7 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-call lm_to_incr_ad(geom,self%fv3jedi_lm,incr)
+if (.not. self%fsoi_mode) call lm_to_incr_ad(geom,self%fv3jedi_lm,incr)
 call self%fv3jedi_lm%step_ad()
 call incr_to_lm_ad(geom,incr,self%fv3jedi_lm)
 
@@ -140,7 +151,7 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-call incr_to_lm_tl(geom,incr,self%fv3jedi_lm)
+if (.not. self%fsoi_mode) call incr_to_lm_tl(geom,incr,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_tl()
 call lm_to_incr_tl(geom,self%fv3jedi_lm,incr)
 
@@ -148,23 +159,26 @@ end subroutine tlm_step_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_finalize_ad(self, inc)
+subroutine tlm_finalize_ad(geom, self, incr)
 
 implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(in)    :: incr
 
 call self%fv3jedi_lm%final_ad()
+if (.not. self%fsoi_mode) call lm_to_incr_ad(geom,self%fv3jedi_lm,incr)
 
 end subroutine tlm_finalize_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_finalize_tl(self, inc)
+subroutine tlm_finalize_tl(geom, self, incr)
 
 implicit none
+type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(in)    :: incr
 
 call self%fv3jedi_lm%final_tl()
 

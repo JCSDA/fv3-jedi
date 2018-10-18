@@ -72,7 +72,7 @@ void TlmFV3JEDI::setTrajectory(const StateFV3JEDI & xx, StateFV3JEDI & xlr,
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
-  fv3jedi_tlm_initialize_tl_f90(keyConfig_, dx.toFortran());
+  fv3jedi_tlm_initialize_tl_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::initializeTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -91,12 +91,12 @@ void TlmFV3JEDI::stepTL(IncrementFV3JEDI & dx,
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::finalizeTL(IncrementFV3JEDI & dx) const {
-  fv3jedi_tlm_finalize_tl_f90(keyConfig_, dx.toFortran());
+  fv3jedi_tlm_finalize_tl_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::finalizeTL" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::initializeAD(IncrementFV3JEDI & dx) const {
-  fv3jedi_tlm_initialize_ad_f90(keyConfig_, dx.toFortran());
+  fv3jedi_tlm_initialize_ad_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::initializeAD" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -115,7 +115,7 @@ void TlmFV3JEDI::stepAD(IncrementFV3JEDI & dx, ModelBiasIncrementFV3JEDI &)
 }
 // -----------------------------------------------------------------------------
 void TlmFV3JEDI::finalizeAD(IncrementFV3JEDI & dx) const {
-  fv3jedi_tlm_finalize_ad_f90(keyConfig_, dx.toFortran());
+  fv3jedi_tlm_finalize_ad_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
   oops::Log::debug() << "TlmFV3JEDI::finalizeAD" << std::endl;
 }
 // -----------------------------------------------------------------------------

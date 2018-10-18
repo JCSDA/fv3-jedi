@@ -3,79 +3,138 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import re
 
-fcst_nl_ana = 
+saveFigs = True
+
+date = '20181004'
+time = '000000'
+
+fields_geos = ['ua','va','t','delp','q','qi','ql','o3mr']
+fields_gfs  = ['ua','va','T','Ps','sphum','ice_wat','liq_wat','o3mr']
+
+kind_gfs = ['fv_core','fv_core','fv_core','fv_core','fv_tracer','fv_tracer','fv_tracer','fv_tracer']
+
+nm = len(fields_geos)
+
+nl_type = 'geos'
+nl1 = '../INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.'+date+'_'+time[0:4]+'z.nc4'
+nl2 = '../INPUTS/GEOS_c180/H15/GEOS.traj.c180.eta.'+date+'_'+time[0:4]+'z.nc4'
+   
+tlm_type = 'gfs'
+tlm = date+'.'+time+'.linearforecast.final.KIND.res.tileXX.nc'
 
 
-#User input required for the follwing:
-plot_diff = 0         #Plot path1/file - path2/file
-model = 'gfs'
-cube = 48
-filetype = 'png'
+if (nl_type == 'gfs'):
+    tmp = re.sub("XX", str(1), nl1)
+    fh_nl1 = Dataset(tmp, mode='r')
+elif (nl_type == 'geos'):
+    fh_nl1 = Dataset(nl1, mode='r')
 
-path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20181004.000000.Jnorm.fv_tracer.res.tile'  #Filename befor tile number
-file_tplt_aftr = '.nc'                #Filename after tile number
+# Read grid
+# ---------
+print('Reading grid')
 
-if (cube == 48):
-    if (model == 'geos'):
-        path2  = '../INPUTS/GEOS_c48/'
-        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
-    elif (model == 'gfs'):
-        path2  = '../INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/'
-        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
-elif (cube == 96):
-    path2  = ''
-    file_tplt_befr2 = 'fv_core.res.tile'
+if (nl_type == 'gfs'):
+    nl_xid = 'xaxis_1'
+    nl_yid = 'yaxis_1'
+    nl_zid = 'zaxis_1'
+elif (nl_type == 'geos'):
+    nl_xid = 'lon'
+    nl_yid = 'lat'
+    nl_zid = 'lev'
+ 
+im = len(fh_nl1.dimensions[nl_xid])
+jm = len(fh_nl1.dimensions[nl_yid])
+lm = len(fh_nl1.dimensions[nl_zid])
 
-xdimvar = 'xaxis_1'                  #What to read to get dimension
-ydimvar = 'yaxis_1'                  #What to read to get dimension
-zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'sphum'                    #Variable to plot
-Dim2dor3d = '3D'                     #Is this 2D or 3D field?
-plot_level = 50                      #If 3D plot this level
+if (nl_type == 'gfs'):
+    jm = jm * 6
 
-readvarlat = 'grid_lat'              #Variable to plot
-readvarlon = 'grid_lon'              #Variable to plot
+jm_gfs = jm/6
 
-#Tile 1 handle for getting dimension
-fh1 = Dataset(path1 + file_tplt_befr1 + str(1) + file_tplt_aftr, mode='r')
-fh2 = Dataset(path2 + file_tplt_befr2 + str(1) + file_tplt_aftr, mode='r')
+print('Reading variables')
 
-#Dimensions
-npx = len(fh1.dimensions[xdimvar])
-npy = len(fh1.dimensions[ydimvar])
-npz = 0
+x_nlm = np.zeros(im*jm*lm*nm).reshape(nm,lm,jm,im)
+x_tlm = np.zeros(im*jm*lm*nm).reshape(nm,lm,jm,im)
 
-npxr = npx
-npyr = npy
+if (nl_type == 'gfs'):
 
-if (readvar == 'u'):
-   npyr = npyr + 1
-if (readvar == 'v'):
-   npxr = npxr + 1
+    fields = fields_gfs
 
-if Dim2dor3d == '3D':
-   npz = len(fh1.dimensions[zdimvar])
-   fr = np.zeros(6*npz*npyr*npxr).reshape(6,npz,npyr,npxr)
 else:
-   fr = np.zeros(6*npyr*npxr).reshape(6,npyr,npxr)
 
-flat = np.zeros(6*npy*npx).reshape(6,npy,npx)
-flon = np.zeros(6*npy*npx).reshape(6,npy,npx)
+    fields = fields_geos
+    fh_nl2 = Dataset(nl2, mode='r')
 
-#Read file
-for tile in range(6):
-    file_tile1 = file_tplt_befr1 + str(tile+1) + file_tplt_aftr
-    file_tile2 = file_tplt_befr2 + str(tile+1) + file_tplt_aftr
-    pathfile1 = path1 + file_tile1
-    pathfile2 = path2 + file_tile2
-    print(pathfile1)
-    if plot_diff == 1:
-        print(' '+pathfile2)
-    fh1 = Dataset(pathfile1, mode='r')
-    fh2 = Dataset(pathfile2, mode='r')
-    if plot_diff == 1:
-        fr[tile,:,:,:] = fh1.variables[readvar][:] - fh2.variables[readvar][:]
-    else:
-        fr[tile,:,:,:] = fh1.variables[readvar][:]
+    for i in range(nm):
+        if (fields[i] != 'Ps'):
+            x_nlm[i,:,:,:] = fh_nl2.variables[fields[i]][:] - fh_nl1.variables[fields[i]][:]
+            if (fields[i] == 'delp'):
+                tmp = np.sum(x_nlm[i,:,:,:],axis=0)
+                for l in range(lm):
+                    x_nlm[i,l,:,:] = tmp
+        elif (fields[i] == 'Ps'):
+            for l in range(lm):
+                x_nlm[i,l,:,:] = fh_nl2.variables[fields[i]][:] - fh_nl1.variables[fields[i]][:]
+
+
+if (tlm_type == 'gfs'):
+
+    fields = fields_gfs
+
+    for i in range(nm):
+
+        for tile in range(6):
+
+            filetile1 = re.sub("XX", str(tile+1), tlm)
+            filetile = re.sub("KIND", kind_gfs[i], filetile1)
+
+            fh_tlm = Dataset(filetile, mode = 'r')
+
+            js = tile*jm_gfs
+            je = (tile+1)*jm_gfs
+
+            if (fields[i] != 'Ps'):
+                x_tlm[i,:,js:je,:] = fh_tlm.variables[fields[i]][:]
+                if (fields[i] == 'delp'):
+                    tmp = np.sum(x_nlm[i,:,js:je,:],axis=0)
+                    for l in range(lm):
+                        x_tlm[i,l,js:je,:] = tmp
+            elif (fields[i] == 'Ps'):
+                for l in range(lm):
+                    x_tlm[i,l,js:je,:] = fh_tlm.variables[fields[i]][:]
+
+
+# Compute and plot correlations
+# -----------------------------
+print('Computing Correlations')
+f, ax = plt.subplots(1, 8, figsize=(18, 6))
+
+corr_tlm = np.zeros(lm*nm).reshape(nm,lm)
+for i in range(nm):
+    for j in range(lm):
+        c1 = np.corrcoef(np.reshape(x_tlm[i,j,:,:],(im*jm,)),np.reshape(x_nlm[i,j,:,:],(im*jm,)))
+
+        corr_tlm[i,j] = c1[0,1]
+
+    rangeup1 = 0
+    rangeup2 = 0
+    for j in range(lm-1,-1,-1):
+        if np.isnan(corr_tlm[i,j]) == True:
+            rangeup1 = j+1
+            break
+
+    ax[i].plot(corr_tlm[i,rangeup1:lm],range(rangeup1+1,lm+1),color='b')
+    ax[i].set_xlim(0, 1)
+    ax[i].set_ylim(1, 72)
+    ax[i].invert_yaxis()
+    ax[i].set_title(fields_geos[i])
+    if (i==0):
+       ax[i].set_ylabel('Model Level')
+
+    print('Corelation:',fields_geos[i],np.mean(corr_tlm[i,rangeup1:lm]) )
+
+if saveFigs == True:
+    plt.savefig('Correlation.png')
+
