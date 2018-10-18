@@ -91,10 +91,10 @@ JnormGrad:
   pref: 100000.0
   qepsilon: 0.3
 incrementInitialOutput:
-  restart_type: geos
-  geos_tile_dim: 0
-  datapath: "Data/RESTART/"
-  filename: "JediGEOS.Jgradf_twe.eta."
+#  restart_type: geos
+#  geos_tile_dim: 0
+#  datapath: "Data/RESTART/"
+#  filename: "JediGEOS.Jgradf_twe.eta."
   restart_type: gfs
   datapath_write: Data/
   filename_core: initialcond.final.fv_core.res.nc
