@@ -5,12 +5,39 @@
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_b_setup(c_key_self, c_conf, c_key_geom) &
-          & bind (c,name='fv3jedi_b_setup_f90')
+module fv3jedi_errorcovariance_interface_mod
 
 use iso_c_binding
 use fv3jedi_covariance_mod
-use fv3jedi_geom_mod, only: fv3jedi_geom, fv3jedi_geom_registry
+use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
+use fv3jedi_increment_mod, only: fv3jedi_increment, random
+use fv3jedi_increment_interface_mod, only: fv3jedi_increment_registry
+
+private
+public :: fv3jedi_covar_registry
+! ------------------------------------------------------------------------------
+
+#define LISTED_TYPE fv3jedi_covar
+
+!> Linked list interface - defines registry_t type
+#include "linkedList_i.f"
+
+!> Global registry
+type(registry_t) :: fv3jedi_covar_registry
+
+! ------------------------------------------------------------------------------
+
+contains
+
+! ------------------------------------------------------------------------------
+
+!> Linked list implementation
+#include "linkedList_c.f"
+
+! ------------------------------------------------------------------------------
+subroutine c_fv3jedi_b_setup(c_key_self, c_conf, c_key_geom) &
+          & bind (c,name='fv3jedi_b_setup_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self  !< Background error covariance structure
@@ -32,9 +59,6 @@ end subroutine c_fv3jedi_b_setup
 
 subroutine c_fv3jedi_b_delete(c_key_self) bind (c,name='fv3jedi_b_delete_f90')
 
-use iso_c_binding
-use fv3jedi_covariance_mod
-
 implicit none
 integer(c_int), intent(inout) :: c_key_self  !< Background error covariance structure
 type(fv3jedi_covar), pointer :: self
@@ -50,11 +74,6 @@ end subroutine c_fv3jedi_b_delete
 !> Multiply streamfunction by inverse of covariance
 
 subroutine c_fv3jedi_b_inv_mult(c_key_self, c_key_in, c_key_out) bind(c,name='fv3jedi_b_invmult_f90')
-
-use iso_c_binding
-use fv3jedi_covariance_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
-use kinds
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
@@ -80,11 +99,6 @@ end subroutine c_fv3jedi_b_inv_mult
 
 subroutine c_fv3jedi_b_mult(c_key_self, c_key_in, c_key_out) bind(c,name='fv3jedi_b_mult_f90')
 
-use iso_c_binding
-use fv3jedi_covariance_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
-use kinds
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_in
@@ -109,11 +123,6 @@ end subroutine c_fv3jedi_b_mult
 
 subroutine c_fv3jedi_b_randomize(c_key_self, c_key_out) bind(c,name='fv3jedi_b_randomize_f90')
 
-use iso_c_binding
-use fv3jedi_covariance_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, random, fv3jedi_increment
-use kinds
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_out
@@ -128,3 +137,5 @@ call random(xout)
 end subroutine c_fv3jedi_b_randomize
 
 ! ------------------------------------------------------------------------------
+
+end module fv3jedi_errorcovariance_interface_mod

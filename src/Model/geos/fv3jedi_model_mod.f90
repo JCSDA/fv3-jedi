@@ -10,7 +10,6 @@ use iso_c_binding
 use config_mod
 use duration_mod
 
-use fv3jedi_constants
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 
@@ -28,7 +27,7 @@ public :: model_finalize
 
 !> Fortran derived type to hold model definition
 type :: fv3jedi_model
- integer :: gfs_gfs_here
+ integer :: geos_geos_here
 end type fv3jedi_model
 
 ! ------------------------------------------------------------------------------
@@ -44,7 +43,7 @@ type(fv3jedi_model), intent(inout) :: self    !Model type
 type(fv3jedi_geom)   intent(in)    :: geom    !Geometry
 type(c_ptr),         intent(in)    :: c_conf  !User configuration
 
-!Create the GFS model
+!Create the GEOS model
 
 end subroutine model_create
 
@@ -55,7 +54,7 @@ subroutine model_delete(self)
 implicit none
 type(fv3jedi_model), intent(inout) :: self    !Model type
 
-!Delete the GFS model
+!Delete the GEOS model
 
 end subroutine model_delete
 
@@ -67,7 +66,7 @@ implicit none
 type(fv3jedi_model), intent(inout) :: self    !Model type
 type(fv3jedi_state), intent(in)    :: state   !JEDI state fields
 
-!Initialize the GFS model
+!Initialize the GEOS model
 
 end subroutine model_initialize
 
@@ -80,11 +79,11 @@ type(fv3jedi_model), intent(inout) :: self    !Model type
 type(fv3jedi_state), intent(inout) :: state   !JEDI state fields
 type(datetime),      intent(in)    :: vdate   !Current time
 
-call state_to_gfs(state,self)
+call state_to_geos(state,self)
 
-!Propagate GFS model by one time step
+!Propagate GEOS model by one time step
 
-call gfs_to_state(state,self)
+call geos_to_state(state,self)
 
 end subroutine model_step
 
@@ -96,33 +95,33 @@ implicit none
 type(fv3jedi_model), intent(inout) :: self    !Model type
 type(fv3jedi_state), intent(in)    :: state   !JEDI state fields
 
-!Finalize GFS model
+!Finalize GEOS model
 
 end subroutine model_finalize
 
 ! ------------------------------------------------------------------------------
 
-subroutine state_to_gfs(state,self)
+subroutine state_to_geos(state,self)
 
 implicit none
 type(fv3jedi_state), intent(in)    :: state
 type(fv3jedi_model), intent(inout) :: self
 
-!Go from JEDI state to GFS fields
+!Go from JEDI state to GEOS fields
 
-end subroutine state_to_gfs
+end subroutine state_to_geos
 
 ! ------------------------------------------------------------------------------
 
-subroutine gfs_to_state(self,state)
+subroutine geos_to_state(self,state)
 
 implicit none
 type(fv3jedi_model), intent(in)    :: self
 type(fv3jedi_state), intent(inout) :: state
 
-!Go from GFS fields to JEDI state
+!Go from GEOS fields to JEDI state
 
-end subroutine gfs_to_state
+end subroutine geos_to_state
 
 ! ------------------------------------------------------------------------------
 

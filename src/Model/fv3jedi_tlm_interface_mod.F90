@@ -13,8 +13,10 @@ use iso_c_binding
 use fv3jedi_tlm_mod
 use fv3jedi_traj_mod, only: fv3jedi_traj
 use fv3jedi_traj_interface_mod, only: fv3jedi_traj_registry
-use fv3jedi_geom_mod, only: fv3jedi_geom, fv3jedi_geom_registry
-use fv3jedi_increment_mod, only: fv3jedi_increment, fv3jedi_increment_registry
+use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
+use fv3jedi_increment_mod, only: fv3jedi_increment
+use fv3jedi_increment_interface_mod, only: fv3jedi_increment_registry
 
 implicit none
 private

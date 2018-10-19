@@ -12,7 +12,7 @@ use fv3jedi_vars_mod, only: fv3jedi_vars
 
 implicit none
 private
-public fv3jedi_state
+public fv3jedi_state, fv3jedi_state_registry
 
 !> Fortran derived type to hold FV3JEDI state
 type :: fv3jedi_state
@@ -67,5 +67,26 @@ type :: fv3jedi_state
   real(kind_real), allocatable, dimension(:,:)   :: kcbl, ts, khl, khu
 
 end type fv3jedi_state
+
+! ------------------------------------------------------------------------------
+
+#define LISTED_TYPE fv3jedi_state
+
+!> Linked list interface - defines registry_t type
+#include "linkedList_i.f"
+
+!> Global registry
+type(registry_t) :: fv3jedi_state_registry
+
+! ------------------------------------------------------------------------------
+
+contains
+
+! ------------------------------------------------------------------------------
+
+!> Linked list implementation
+#include "linkedList_c.f"
+
+! ------------------------------------------------------------------------------
 
 end module fv3jedi_state_utils_mod

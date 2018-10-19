@@ -6,7 +6,7 @@ use ioda_locs_mod, only: ioda_locs
 use ufo_vars_mod, only: ufo_vars
 use ufo_geovals_mod, only: ufo_geovals
 
-use fv3jedi_constants, only: rad2deg, constoz, grav
+use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_kinds, only: kind_real

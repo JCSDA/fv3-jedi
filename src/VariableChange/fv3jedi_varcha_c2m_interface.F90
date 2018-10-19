@@ -5,13 +5,44 @@
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_c2m_setup(c_key_self, c_key_geom, c_key_state_bg, c_key_state_fg, &
-           c_conf) bind (c,name='fv3jedi_varcha_c2m_setup_f90')
+module fv3jedi_varcha_c2m_interface_mod
 
 use iso_c_binding
 use fv3jedi_varcha_c2m_mod
-use fv3jedi_state_mod
-use fv3jedi_geom_mod
+use fv3jedi_state_mod, only: fv3jedi_state
+use fv3jedi_state_interface_mod, only: fv3jedi_state_registry
+use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
+use fv3jedi_increment_interface_mod, only: fv3jedi_increment_registry
+use fv3jedi_increment_mod, only: fv3jedi_increment
+
+implicit none
+private
+public :: fv3jedi_varcha_c2m_registry
+
+! ------------------------------------------------------------------------------
+
+#define LISTED_TYPE fv3jedi_varcha_c2m
+
+!> Linked list interface - defines registry_t type
+#include "linkedList_i.f"
+
+!> Global registry
+type(registry_t) :: fv3jedi_varcha_c2m_registry
+
+! ------------------------------------------------------------------------------
+
+contains
+
+! ------------------------------------------------------------------------------
+
+!> Linked list implementation
+#include "linkedList_c.f"
+
+! ------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_varcha_c2m_setup(c_key_self, c_key_geom, c_key_state_bg, c_key_state_fg, &
+           c_conf) bind (c,name='fv3jedi_varcha_c2m_setup_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self     !< Change variable structure
@@ -34,7 +65,7 @@ call fv3jedi_state_registry%get(c_key_state_fg,fg)
 
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
-call fv3jedi_varcha_c2m_setup(self, bg, fg, geom, c_conf)
+call create(self, bg, fg, geom, c_conf)
 
 end subroutine c_fv3jedi_varcha_c2m_setup
 
@@ -43,16 +74,13 @@ end subroutine c_fv3jedi_varcha_c2m_setup
 subroutine c_fv3jedi_varcha_c2m_delete(c_key_self) &
            bind (c,name='fv3jedi_varcha_c2m_delete_f90')
 
-use iso_c_binding
-use fv3jedi_varcha_c2m_mod
-
 implicit none
 integer(c_int), intent(inout) :: c_key_self  !< Change variable structure
 
 type(fv3jedi_varcha_c2m), pointer :: self
 
 call fv3jedi_varcha_c2m_registry%get(c_key_self,self)
-call fv3jedi_varcha_c2m_delete(self)
+call delete(self)
 call fv3jedi_varcha_c2m_registry%remove(c_key_self)
 
 end subroutine c_fv3jedi_varcha_c2m_delete
@@ -62,12 +90,6 @@ end subroutine c_fv3jedi_varcha_c2m_delete
 subroutine c_fv3jedi_varcha_c2m_multiply(c_key_self, c_key_geom, c_key_in, c_key_out) &
            bind (c,name='fv3jedi_varcha_c2m_multiply_f90')
 
-use iso_c_binding
-use fv3jedi_varcha_c2m_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
-use kinds
-use fv3jedi_geom_mod
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom     !< Geom key
@@ -84,7 +106,7 @@ call fv3jedi_increment_registry%get(c_key_in,xin)
 call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
-call fv3jedi_varcha_c2m_multiply(self,geom,xin,xout)
+call multiply(self,geom,xin,xout)
 
 end subroutine c_fv3jedi_varcha_c2m_multiply
 
@@ -93,12 +115,6 @@ end subroutine c_fv3jedi_varcha_c2m_multiply
 subroutine c_fv3jedi_varcha_c2m_multiplyadjoint(c_key_self, c_key_geom, c_key_in, &
            c_key_out) bind (c,name='fv3jedi_varcha_c2m_multiplyadjoint_f90')
 
-use iso_c_binding
-use fv3jedi_varcha_c2m_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
-use kinds
-use fv3jedi_geom_mod
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom     !< Geom key
@@ -115,7 +131,7 @@ call fv3jedi_increment_registry%get(c_key_in,xin)
 call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
-call fv3jedi_varcha_c2m_multiplyadjoint(self,geom,xin,xout)
+call multiplyadjoint(self,geom,xin,xout)
 
 end subroutine c_fv3jedi_varcha_c2m_multiplyadjoint
 
@@ -126,12 +142,6 @@ end subroutine c_fv3jedi_varcha_c2m_multiplyadjoint
 subroutine c_fv3jedi_varcha_c2m_multiplyinverse(c_key_self, c_key_geom, c_key_in, c_key_out) &
            bind (c,name='fv3jedi_varcha_c2m_multiplyinverse_f90')
 
-use iso_c_binding
-use fv3jedi_varcha_c2m_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
-use kinds
-use fv3jedi_geom_mod
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom     !< Geom key
@@ -148,7 +158,7 @@ call fv3jedi_increment_registry%get(c_key_in,xin)
 call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
-call fv3jedi_varcha_c2m_multiplyinverse(self,geom,xin,xout)
+call multiplyinverse(self,geom,xin,xout)
 
 end subroutine c_fv3jedi_varcha_c2m_multiplyinverse
 
@@ -157,12 +167,6 @@ end subroutine c_fv3jedi_varcha_c2m_multiplyinverse
 subroutine c_fv3jedi_varcha_c2m_multiplyinverseadjoint(c_key_self, c_key_geom, c_key_in, &
       c_key_out) bind (c,name='fv3jedi_varcha_c2m_multiplyinverseadjoint_f90')
 
-use iso_c_binding
-use fv3jedi_varcha_c2m_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment_registry, fv3jedi_increment
-use kinds
-use fv3jedi_geom_mod
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom     !< Geom key
@@ -179,8 +183,10 @@ call fv3jedi_increment_registry%get(c_key_in,xin)
 call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 
-call fv3jedi_varcha_c2m_multiplyinverseadjoint(self,geom,xin,xout)
+call multiplyinverseadjoint(self,geom,xin,xout)
 
 end subroutine c_fv3jedi_varcha_c2m_multiplyinverseadjoint
 
 ! ----------------------------------------------------------------------------
+
+end module fv3jedi_varcha_c2m_interface_mod

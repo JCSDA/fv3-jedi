@@ -1,3 +1,7 @@
+! (C) Copyright 2017-2018 UCAR
+! 
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
 !> Fortran module handling geometry for the FV3 model
 
@@ -20,14 +24,14 @@ use fv_control_mod,     only: fv_init, pelist_all
 
 implicit none
 private
+
 public :: fv3jedi_geom
-public :: fv3jedi_geom_registry
+public :: create, clone, delete, info
 
 ! ------------------------------------------------------------------------------
 
 !> Fortran derived type to hold geometry data for the FV3JEDI model
 type :: fv3jedi_geom
-
   integer :: isd, ied, jsd, jed                           !data domain
   integer :: isc, iec, jsc, jec                           !compute domain
   integer :: npx,npy,npz                                  !x/y/z-dir grid edge points per tile
@@ -84,32 +88,21 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable :: a22(:,:)
 end type fv3jedi_geom
 
-#define LISTED_TYPE fv3jedi_geom
-
-!> Linked list interface - defines registry_t type
-#include "linkedList_i.f"
-
-!> Global registry
-type(registry_t) :: fv3jedi_geom_registry
-
 ! ------------------------------------------------------------------------------
+
 contains
-! ------------------------------------------------------------------------------
-!> Linked list implementation
-#include "linkedList_c.f"
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_setup(c_key_self, c_conf) bind(c,name='fv3jedi_geo_setup_f90')
+subroutine create(self, c_conf)
 
 implicit none
 
 !Arguments
-integer(c_int), intent(inout) :: c_key_self
-type(c_ptr), intent(in)       :: c_conf
+type(fv3jedi_geom), intent(inout) :: self
+type(c_ptr),        intent(in)    :: c_conf
 
 !Locals
-type(fv3jedi_geom), pointer           :: self
 character(len=256)                    :: filename_akbk
 character(len=256)                    :: filepath_akbk
 character(len=256)                    :: ak_var
@@ -119,12 +112,6 @@ logical, allocatable                  :: grids_on_this_pe(:)
 integer                               :: p_split = 1
 integer                               :: ncstat, ncid, varid, i, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
-
-! Init, add and get key
-! ---------------------
-call fv3jedi_geom_registry%init()
-call fv3jedi_geom_registry%add(c_key_self)
-call fv3jedi_geom_registry%get(c_key_self,self)
 
 ! User input constructing the grid
 ! --------------------------------
@@ -319,23 +306,16 @@ self%size_cubic_grid = self%npx-1
 call setup_domain( self%domain, self%size_cubic_grid, self%size_cubic_grid, &
                    self%ntiles, self%layout, self%io_layout, self%halo)
 
-end subroutine c_fv3jedi_geo_setup
+end subroutine create
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_clone(c_key_self, c_key_other) bind(c,name='fv3jedi_geo_clone_f90')
+subroutine clone(self, other)
 
 implicit none
 
-integer(c_int), intent(in   ) :: c_key_self
-integer(c_int), intent(inout) :: c_key_other
-
-type(fv3jedi_geom), pointer :: self, other
-
-!add, get, get key
-call fv3jedi_geom_registry%add(c_key_other)
-call fv3jedi_geom_registry%get(c_key_other, other)
-call fv3jedi_geom_registry%get(c_key_self, self)
+type(fv3jedi_geom), intent(in   ) :: self
+type(fv3jedi_geom), intent(inout) :: other
 
 allocate(other%grid_lon(self%isd:self%ied, self%jsd:self%jed))
 allocate(other%grid_lat(self%isd:self%ied, self%jsd:self%jed))
@@ -450,19 +430,15 @@ other%a22 = self%a22
 call setup_domain( other%domain, other%size_cubic_grid, other%size_cubic_grid, &
                    other%ntiles, other%layout, other%io_layout, other%halo)
 
-end subroutine c_fv3jedi_geo_clone
+end subroutine clone
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_delete(c_key_self) bind(c,name='fv3jedi_geo_delete_f90')
+subroutine delete(self)
 
 implicit none
 
-integer(c_int), intent(inout) :: c_key_self
-type(fv3jedi_geom), pointer :: self
-
-! Get key
-call fv3jedi_geom_registry%get(c_key_self, self)
+type(fv3jedi_geom), intent(inout) :: self
 
 ! Deallocate
 deallocate(self%grid_lon)
@@ -510,23 +486,17 @@ deallocate(self%a22)
 
 call mpp_deallocate_domain(self%domain)
 
-! Remove key
-call fv3jedi_geom_registry%remove(c_key_self)
-
-end subroutine c_fv3jedi_geo_delete
+end subroutine delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_info(c_key_self) bind(c,name='fv3jedi_geo_info_f90')
+subroutine info(self)
 
 implicit none
 
-integer(c_int), intent(in   ) :: c_key_self
-type(fv3jedi_geom), pointer :: self
+type(fv3jedi_geom), intent(in) :: self
 
-call fv3jedi_geom_registry%get(c_key_self, self)
-
-end subroutine c_fv3jedi_geo_info
+end subroutine info
 
 ! ------------------------------------------------------------------------------
 
@@ -655,5 +625,7 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
   deallocate(istart2, iend2, jstart2, jend2)
 
 end subroutine setup_domain
+
+! ------------------------------------------------------------------------------
 
 end module fv3jedi_geom_mod

@@ -5,11 +5,39 @@
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='fv3jedi_state_create_f90')
+module fv3jedi_state_interface_mod
+
+use kinds
+use config_mod
+use datetime_mod
+use duration_mod
 use iso_c_binding
+
 use fv3jedi_state_mod
-use fv3jedi_geom_mod
+use fv3jedi_state_utils_mod, only: fv3jedi_state_registry
+use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
 use fv3jedi_vars_mod
+use fv3jedi_increment_utils_mod, only: fv3jedi_increment, fv3jedi_increment_registry
+
+!GetValues
+use ioda_locs_mod
+use ioda_locs_mod_c, only: ioda_locs_registry
+use ufo_vars_mod
+use ufo_geovals_mod
+use ufo_geovals_mod_c, only: ufo_geovals_registry
+use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj, fv3jedi_getvaltraj_registry
+
+private
+public :: fv3jedi_state_registry
+
+! ------------------------------------------------------------------------------
+
+contains
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='fv3jedi_state_create_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self
@@ -33,8 +61,7 @@ end subroutine fv3jedi_state_create_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_delete_c(c_key_self) bind(c,name='fv3jedi_state_delete_f90')
-use iso_c_binding
-use fv3jedi_state_mod
+
 implicit none
 integer(c_int), intent(inout) :: c_key_self
 type(fv3jedi_state), pointer :: self
@@ -50,8 +77,7 @@ end subroutine fv3jedi_state_delete_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_zero_c(c_key_self) bind(c,name='fv3jedi_state_zero_f90')
-use iso_c_binding
-use fv3jedi_state_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_self
 type(fv3jedi_state), pointer :: self
@@ -64,8 +90,7 @@ end subroutine fv3jedi_state_zero_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_copy_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_state_copy_f90')
-use iso_c_binding
-use fv3jedi_state_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
@@ -82,9 +107,7 @@ end subroutine fv3jedi_state_copy_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_axpy_c(c_key_self,c_zz,c_key_rhs) bind(c,name='fv3jedi_state_axpy_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use kinds
+
 implicit none
 integer(c_int), intent(in) :: c_key_self
 real(c_double), intent(in) :: c_zz
@@ -105,10 +128,7 @@ end subroutine fv3jedi_state_axpy_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_add_incr_c(c_key_geom,c_key_self,c_key_rhs) bind(c,name='fv3jedi_state_add_incr_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use fv3jedi_geom_mod
-use fv3jedi_increment_mod, only: fv3jedi_increment, fv3jedi_increment_registry
+
 implicit none
 integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_self
@@ -128,8 +148,7 @@ end subroutine fv3jedi_state_add_incr_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_change_resol_c(c_key_state,c_key_rhs) bind(c,name='fv3jedi_state_change_resol_f90')
-use iso_c_binding
-use fv3jedi_state_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_state
 integer(c_int), intent(in) :: c_key_rhs
@@ -145,10 +164,6 @@ end subroutine fv3jedi_state_change_resol_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_read_file_c(c_key_geom, c_key_state, c_conf, c_dt) bind(c,name='fv3jedi_state_read_file_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use datetime_mod
-use fv3jedi_geom_mod
 
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State
@@ -170,10 +185,6 @@ end subroutine fv3jedi_state_read_file_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf, c_dt) bind(c,name='fv3jedi_state_analytic_init_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use fv3jedi_geom_mod
-use datetime_mod
 
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State
@@ -195,10 +206,6 @@ end subroutine fv3jedi_state_analytic_init_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_write_file_c(c_key_geom, c_key_state, c_conf, c_dt) bind(c,name='fv3jedi_state_write_file_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use datetime_mod
-use fv3jedi_geom_mod
 
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State
@@ -220,9 +227,7 @@ end subroutine fv3jedi_state_write_file_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_gpnorm_c(c_key_state, kf, pstat) bind(c,name='fv3jedi_state_gpnorm_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use kinds
+
 implicit none
 integer(c_int), intent(in) :: c_key_state
 integer(c_int), intent(in) :: kf
@@ -248,9 +253,7 @@ end subroutine fv3jedi_state_gpnorm_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_rms_c(c_key_state, prms) bind(c,name='fv3jedi_state_rms_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use kinds
+
 implicit none
 integer(c_int), intent(in) :: c_key_state
 real(c_double), intent(inout) :: prms
@@ -269,14 +272,7 @@ end subroutine fv3jedi_state_rms_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_getvalues_notraj_c(c_key_geom, c_key_state,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_state_getvalues_notraj_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use ioda_locs_mod
-use ioda_locs_mod_c, only: ioda_locs_registry
-use ufo_vars_mod
-use ufo_geovals_mod
-use ufo_geovals_mod_c, only: ufo_geovals_registry
-use fv3jedi_geom_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
@@ -303,15 +299,7 @@ end subroutine fv3jedi_state_getvalues_notraj_c
 ! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_getvalues_c(c_key_geom, c_key_state,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_state_getvalues_f90')
-use iso_c_binding
-use fv3jedi_state_mod
-use ioda_locs_mod
-use ioda_locs_mod_c, only: ioda_locs_registry
-use ufo_vars_mod
-use ufo_geovals_mod
-use ufo_geovals_mod_c, only: ufo_geovals_registry
-use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj, fv3jedi_getvaltraj_registry
-use fv3jedi_geom_mod
+
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
@@ -342,9 +330,6 @@ end subroutine fv3jedi_state_getvalues_c
 
 subroutine fv3jedi_state_sizes_c(c_key_self,nx,ny,nv) bind(c,name='fv3jedi_state_sizes_f90')
 
-use iso_c_binding
-use fv3jedi_state_mod
-
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(inout) :: nx,ny,nv
@@ -359,3 +344,5 @@ ny = self%npy
 end subroutine fv3jedi_state_sizes_c
 
 ! ------------------------------------------------------------------------------   
+
+end module fv3jedi_state_interface_mod

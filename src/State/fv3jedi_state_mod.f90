@@ -32,23 +32,10 @@ public :: create, delete, zeros, copy, axpy, add_incr, &
           read_file, write_file, gpnorm, staterms, &
           change_resol, getvalues, analytic_IC
 public :: fv3jedi_state
-public :: fv3jedi_state_registry
 
 ! ------------------------------------------------------------------------------
 
-#define LISTED_TYPE fv3jedi_state
-
-!> Linked list interface - defines registry_t type
-#include "linkedList_i.f"
-
-!> Global registry
-type(registry_t) :: fv3jedi_state_registry
-
-! ------------------------------------------------------------------------------
 contains
-! ------------------------------------------------------------------------------
-!> Linked list implementation
-#include "linkedList_c.f"
 
 ! ------------------------------------------------------------------------------
 
@@ -380,9 +367,13 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   if(allocated(self%va  )) self%va   = self%va   + rhs%va  
   if(allocated(self%t   )) self%t    = self%t    + rhs%t
   if(allocated(self%delp)) then
-    do k = 1,geom%npz
-      self%delp(:,:,k) = self%delp(:,:,k) + (geom%bk(k+1)-geom%bk(1))*rhs%ps
-    enddo
+    if (allocated(rhs%ps)) then
+      do k = 1,geom%npz
+        self%delp(:,:,k) = self%delp(:,:,k) + (geom%bk(k+1)-geom%bk(k))*rhs%ps
+      enddo
+    elseif (allocated(rhs%delp)) then
+      self%delp = self%delp + rhs%delp
+    endif
   endif
   if(allocated(self%q   )) self%q    = self%q    + rhs%q   
   if(allocated(self%qi  )) self%qi   = self%qi   + rhs%qi  

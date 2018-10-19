@@ -5,11 +5,10 @@
 
 module fv3jedi_covariance_mod
 
-use fv3jedi_increment_mod, only: fv3jedi_increment
-use fv3jedi_geom_mod,         only: fv3jedi_geom
 use iso_c_binding
 use config_mod
-
+use fv3jedi_increment_mod, only: fv3jedi_increment
+use fv3jedi_geom_mod, only: fv3jedi_geom
 
 implicit none
 
@@ -18,20 +17,8 @@ type :: fv3jedi_covar
   integer :: nothing_yet
 end type fv3jedi_covar
 
-#define LISTED_TYPE fv3jedi_covar
-
-!> Linked list interface - defines registry_t type
-#include "linkedList_i.f"
-
-!> Global registry
-type(registry_t) :: fv3jedi_covar_registry
-
 ! ------------------------------------------------------------------------------
 contains
-! ------------------------------------------------------------------------------
-!> Linked list implementation
-#include "linkedList_c.f"
-! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 

@@ -18,6 +18,15 @@ use moisture_vt_mod
 use wind_vt_mod
 
 implicit none
+private
+
+public :: fv3jedi_varcha_c2m
+public :: create
+public :: delete
+public :: multiply
+public :: multiplyadjoint
+public :: multiplyinverse
+public :: multiplyinverseadjoint
 
 !> Fortran derived type to hold configuration data for the B mat variable change
 type :: fv3jedi_varcha_c2m
@@ -31,22 +40,13 @@ type :: fv3jedi_varcha_c2m
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
 end type fv3jedi_varcha_c2m
 
-#define LISTED_TYPE fv3jedi_varcha_c2m
-
-!> Linked list interface - defines registry_t type
-#include "linkedList_i.f"
-
-!> Global registry
-type(registry_t) :: fv3jedi_varcha_c2m_registry
-
 ! ------------------------------------------------------------------------------
+
 contains
-! ------------------------------------------------------------------------------
-!> Linked list implementation
-#include "linkedList_c.f"
+
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_setup(self, bg, fg, geom, c_conf)
+subroutine create(self, bg, fg, geom, c_conf)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self    !< Change variable structure
@@ -91,11 +91,11 @@ deallocate(dqsatdt)
 deallocate(pm)
 deallocate(pe)
 
-end subroutine fv3jedi_varcha_c2m_setup
+end subroutine create
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_delete(self)
+subroutine delete(self)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
@@ -106,11 +106,11 @@ if (allocated(self%ttraj)) deallocate(self%ttraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
-end subroutine fv3jedi_varcha_c2m_delete
+end subroutine delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiply(self,geom,xctl,xmod)
+subroutine multiply(self,geom,xctl,xmod)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
@@ -131,11 +131,11 @@ call control_to_model_tlm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%qc, &
                                 xmod%ua , xmod%va , xmod%t , xmod%q , &
                                 self%tvtraj,self%qtraj,self%qsattraj )
 
-end subroutine fv3jedi_varcha_c2m_multiply
+end subroutine multiply
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiplyadjoint(self,geom,xmod,xctl)
+subroutine multiplyadjoint(self,geom,xmod,xctl)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
@@ -156,11 +156,11 @@ call control_to_model_adm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%qc, &
                                 xmod%ua , xmod%va , xmod%t , xmod%q , &
                                 self%tvtraj,self%qtraj,self%qsattraj )
 
-end subroutine fv3jedi_varcha_c2m_multiplyadjoint
+end subroutine multiplyadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiplyinverse(self,geom,xmod,xctr)
+subroutine multiplyinverse(self,geom,xmod,xctr)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
@@ -202,11 +202,11 @@ xctr%o3c = xmod%o3
 !!Deallocate
 !deallocate(vort,divg,ua,va)
 
-end subroutine fv3jedi_varcha_c2m_multiplyinverse
+end subroutine multiplyinverse
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint(self,geom,xctr,xmod)
+subroutine multiplyinverseadjoint(self,geom,xctr,xmod)
 
 implicit none
 type(fv3jedi_varcha_c2m), intent(inout) :: self
@@ -223,7 +223,7 @@ type(fv3jedi_increment), intent(inout) :: xmod
 !xmod%ql = xctr%qlc
 !xmod%o3 = xctr%o3c
 
-end subroutine fv3jedi_varcha_c2m_multiplyinverseadjoint
+end subroutine multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
 

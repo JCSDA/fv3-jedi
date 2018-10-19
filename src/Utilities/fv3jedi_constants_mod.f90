@@ -1,17 +1,17 @@
+! (C) Copyright 2017-2018 UCAR
+! 
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Constants for the FV3 model
-
-module fv3jedi_constants
+module fv3jedi_constants_mod
 
 use fv3jedi_kinds, only: kind_real
 
 implicit none
 private
 
-real(kind=kind_real), parameter, public :: rad2deg = 57.29577954572
-real(kind=kind_real), parameter, public :: deg2rad =  0.01745329251
-
-!--- Dimensional parameters
+real(kind=kind_real), parameter, public :: rad2deg = 57.29577954572_kind_real
+real(kind=kind_real), parameter, public :: deg2rad =  0.01745329251_kind_real
 real(kind=8)        , parameter, public :: pi_r8   = 3.14159265358979323846
 real(kind=kind_real), parameter, public :: pi      = real(pi_r8,kind_real)
 real(kind=kind_real), parameter, public :: grav    = 9.80665_kind_real
@@ -56,4 +56,4 @@ real(kind=kind_real), parameter, public :: rho_snow      = 330.0_kind_real
 real(kind=kind_real), parameter, public :: f_coriolis_angle = 0.0_kind_real
 real(kind=kind_real), parameter, public :: constoz = 604229.0_kind_real
 
-end module fv3jedi_constants
+end module fv3jedi_constants_mod

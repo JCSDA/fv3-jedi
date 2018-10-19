@@ -3,17 +3,13 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Handle increment for the FV3JEDI odel
+!> Handle increment for the FV3JEDI model
 
 module fv3jedi_increment_mod
 
 use iso_c_binding
 use config_mod
 use datetime_mod
-
-use ioda_locs_mod
-use ufo_vars_mod
-use ufo_geovals_mod
 
 use fv3jedi_constants, only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -28,30 +24,18 @@ use fv3jedi_getvalues_mod, only: getvalues_tl, getvalues_ad
 implicit none
 private
 
+public :: fv3jedi_increment
+
 public :: create, delete, zeros, random, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, incrms, &
           change_resol, getvalues_tl, getvalues_ad, &
           ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad
-public :: fv3jedi_increment
-public :: fv3jedi_increment_registry
 
 ! ------------------------------------------------------------------------------
 
-#define LISTED_TYPE fv3jedi_increment
-
-!> Linked list interface - defines registry_t type
-#include "linkedList_i.f"
-
-!> Global registry
-type(registry_t) :: fv3jedi_increment_registry
-
-! ------------------------------------------------------------------------------
 contains
-! ------------------------------------------------------------------------------
-!> Linked list implementation
-#include "linkedList_c.f"
 
 ! ------------------------------------------------------------------------------
 
@@ -112,14 +96,18 @@ do var = 1, self%vars%nv
      case("vd")
      case("delp")
      case default 
-       call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
+       call abor1_ftn("Increment: unknown variable "//trim(self%vars%fldnames(var)))
 
    end select
 
 enddo
 
 self%hydrostatic = .true.
-if (allocated(self%w).and.allocated(self%delz)) self%hydrostatic = .false.
+if (allocated(self%w).and.allocated(self%delz).and.allocated(self%delp)) self%hydrostatic = .false.
+
+if (allocated(self%ps) .and. allocated(self%delp)) then
+  call abor1_ftn("Increment: Ps and delp are both allocated, only one can be used")
+endif
 
 ! Initialize all domain arrays to zero
 call zeros(self)
@@ -164,6 +152,7 @@ if (allocated(self%o3c )) deallocate(self%o3c )
 
 if (allocated(self%w   )) deallocate (self%w   )
 if (allocated(self%delz)) deallocate (self%delz)
+if (allocated(self%delp)) deallocate (self%delp)
 
 end subroutine delete
 
@@ -194,6 +183,7 @@ if(allocated(self%o3c)) self%o3c   = 0.0_kind_real
 
 if(allocated(self%w   )) self%w    = 0.0_kind_real
 if(allocated(self%delz)) self%delz = 0.0_kind_real
+if(allocated(self%delp)) self%delp = 0.0_kind_real
 
 end subroutine zeros
 
@@ -224,6 +214,7 @@ if(allocated(self%o3c)) self%o3c   = 1.0_kind_real
 
 if(allocated(self%w   )) self%w    = 1.0_kind_real
 if(allocated(self%delz)) self%delz = 1.0_kind_real
+if(allocated(self%delp)) self%delp = 1.0_kind_real
 
 end subroutine ones
 
@@ -254,6 +245,7 @@ if(allocated(self%o3c )) call random_vector(self%o3c )
 
 if(allocated(self%w   )) call random_vector(self%w   )
 if(allocated(self%delz)) call random_vector(self%delz)
+if(allocated(self%delp)) call random_vector(self%delp)
 
 end subroutine random
 
@@ -299,6 +291,7 @@ if(allocated(self%o3c )) self%o3c  = rhs%o3c
 
 if(allocated(self%w   )) self%w    = rhs%w
 if(allocated(self%delz)) self%delz = rhs%delz
+if(allocated(self%delp)) self%delp = rhs%delp
 
 return
 end subroutine copy
@@ -329,6 +322,7 @@ if(allocated(self%o3c )) self%o3c  = self%o3c  + rhs%o3c
 
 if(allocated(self%w   )) self%w    = self%w    + rhs%w   
 if(allocated(self%delz)) self%delz = self%delz + rhs%delz
+if(allocated(self%delp)) self%delp = self%delp + rhs%delp
 
 return
 end subroutine self_add
@@ -359,6 +353,7 @@ if(allocated(self%o3c )) self%o3c  = self%o3c  * rhs%o3c
 
 if(allocated(self%w   )) self%w    = self%w    * rhs%w   
 if(allocated(self%delz)) self%delz = self%delz * rhs%delz
+if(allocated(self%delp)) self%delp = self%delp * rhs%delp
 
 return
 end subroutine self_schur
@@ -389,6 +384,7 @@ if(allocated(self%o3c )) self%o3c  = self%o3c  - rhs%o3c
 
 if(allocated(self%w   )) self%w    = self%w    - rhs%w   
 if(allocated(self%delz)) self%delz = self%delz - rhs%delz
+if(allocated(self%delp)) self%delp = self%delp - rhs%delp
 
 return
 end subroutine self_sub
@@ -419,6 +415,7 @@ if(allocated(self%o3c )) self%o3c  = zz * self%o3c
 
 if(allocated(self%w   )) self%w    = zz * self%w   
 if(allocated(self%delz)) self%delz = zz * self%delz
+if(allocated(self%delp)) self%delp = zz * self%delp
 
 return
 end subroutine self_mul
@@ -450,6 +447,7 @@ if(allocated(self%o3c )) self%o3c  = self%o3c  + zz * rhs%o3c
 
 if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
 if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
+if(allocated(self%delp)) self%delp = self%delp + zz * rhs%delp
 
 return
 end subroutine axpy_inc
@@ -464,14 +462,19 @@ type(fv3jedi_state), intent(in)  :: rhs
 
 real(kind=kind_real), allocatable :: rhs_ps(:,:)
 
-allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
-
-rhs_ps = sum(rhs%delp,3)
-
 if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%ua  
 if(allocated(self%va  )) self%va   = self%va   + zz * rhs%va  
-if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t   
-if(allocated(self%ps  )) self%ps   = self%ps   + zz * rhs_ps
+if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t
+
+if(allocated(self%ps))then
+  allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
+  rhs_ps = sum(rhs%delp,3)
+  self%ps   = self%ps   + zz * rhs_ps
+  deallocate(rhs_ps)
+endif
+
+if(allocated(self%delp)) self%delp = self%delp + zz * rhs%delp
+
 if(allocated(self%q   )) self%q    = self%q    + zz * rhs%q   
 if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%qi  
 if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%ql  
@@ -479,8 +482,6 @@ if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%o3
 
 if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
 if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
-
-deallocate(rhs_ps)
 
 return
 end subroutine axpy_state
@@ -677,6 +678,17 @@ if (allocated(inc1%delz)) then
   enddo
 endif
 
+!delp
+if (allocated(inc1%delp)) then
+  do k = 1,inc1%npz
+    do j = inc1%jsc,inc1%jec
+      do i = inc1%isc,inc1%iec
+        zp = zp + inc1%delp(i,j,k) * inc2%delp(i,j,k)
+      enddo
+    enddo
+  enddo
+endif
+
 !w
 if (allocated(inc1%w)) then
   do k = 1,inc1%npz
@@ -727,8 +739,9 @@ if (check==0) then
 
   if(allocated(rhs%w   )) self%w    = self%w    + rhs%w   
   if(allocated(rhs%delz)) self%delz = self%delz + rhs%delz 
+  if(allocated(rhs%delp)) self%delp = self%delp + rhs%delp
 else
-   call abor1_ftn("fv3jedi increment:  add_incr not implemented for low res increment yet")
+   call abor1_ftn("Increment:  add_incr not implemented for low res increment yet")
 endif
 
 return
@@ -750,16 +763,21 @@ check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 call zeros(lhs)
 if (check==0) then
 
-  allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
-  allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-
-  x1_ps = sum(x1%delp,3)
-  x2_ps = sum(x2%delp,3)
-
   if(allocated(lhs%ua  )) lhs%ua   = x1%ua   - x2%ua  
   if(allocated(lhs%va  )) lhs%va   = x1%va   - x2%va  
-  if(allocated(lhs%t   )) lhs%t    = x1%t    - x2%t   
-  if(allocated(lhs%ps  )) lhs%ps   = x1_ps   - x2_ps
+  if(allocated(lhs%t   )) lhs%t    = x1%t    - x2%t
+
+  if(allocated(lhs%ps)) then
+    allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
+    allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
+    x1_ps = sum(x1%delp,3)
+    x2_ps = sum(x2%delp,3)
+    lhs%ps   = x1_ps   - x2_ps
+    deallocate(x1_ps,x2_ps)
+  endif
+
+  if(allocated(lhs%delp)) lhs%delp = x1%delp - x2%delp
+
   if(allocated(lhs%q   )) lhs%q    = x1%q    - x2%q   
   if(allocated(lhs%qi  )) lhs%qi   = x1%qi   - x2%qi  
   if(allocated(lhs%ql  )) lhs%ql   = x1%ql   - x2%ql  
@@ -772,7 +790,7 @@ if (check==0) then
 
 else
 
-   call abor1_ftn("fv3jedi increment:  diff_incr not implemented for low res increment yet")
+   call abor1_ftn("Increment: diff_incr not implemented for low res increment yet")
 
 endif
 
@@ -792,7 +810,7 @@ check = (rhs%iec-rhs%isc+1) - (inc%iec-inc%isc+1)
 if (check==0) then
    call copy(inc, rhs)
 else
-   call abor1_ftn("fv3jedi_increment: change_resol not implmeneted yet")
+   call abor1_ftn("Increment: change_resol not implmeneted yet")
 endif
 
 return
@@ -818,7 +836,7 @@ subroutine read_file(geom, inc, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
      call read_geos_restart(geom, inc, c_conf, vdate)
   else
-     call abor1_ftn("fv3jedi_increment read: restart type not supported")
+     call abor1_ftn("Increment: read restart type not supported")
   endif
 
   return
@@ -845,7 +863,7 @@ subroutine write_file(geom, inc, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
      call write_geos_restart(geom, inc, c_conf, vdate)
   else
-     call abor1_ftn("fv3jedi_increment write: restart type not supported")
+     call abor1_ftn("Increment: write restart type not supported")
   endif
 
   return
@@ -928,6 +946,76 @@ if (allocated(inc%o3)) then
   pstat(1,5) = minval(inc%o3(isc:iec,jsc:jec,:))
   pstat(2,5) = maxval(inc%o3(isc:iec,jsc:jec,:))
   pstat(3,5) = sqrt((sum(inc%o3(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+
+!psi
+if (allocated(inc%psi)) then
+  pstat(1,1) = minval(inc%psi(isc:iec,jsc:jec,:))
+  pstat(2,1) = maxval(inc%psi(isc:iec,jsc:jec,:))
+  pstat(3,1) = sqrt((sum(inc%psi(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+
+!chi
+if (allocated(inc%chi)) then
+  pstat(1,2) = minval(inc%chi(isc:iec,jsc:jec,:))
+  pstat(2,2) = maxval(inc%chi(isc:iec,jsc:jec,:))
+  pstat(3,2) = sqrt((sum(inc%chi(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+  
+!tv
+if (allocated(inc%tv)) then
+  pstat(1,3) = minval(inc%tv(isc:iec,jsc:jec,:))
+  pstat(2,3) = maxval(inc%tv(isc:iec,jsc:jec,:))
+  pstat(3,3) = sqrt((sum(inc%tv(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+  
+!qc
+if (allocated(inc%qc)) then
+  pstat(1,5) = minval(inc%qc(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%qc(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%qc(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+  
+!qic
+if (allocated(inc%qic)) then
+  pstat(1,5) = minval(inc%qic(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%qic(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%qic(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+
+!qlc
+if (allocated(inc%qlc)) then
+  pstat(1,5) = minval(inc%qlc(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%qlc(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%qlc(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+  
+!o3c
+if (allocated(inc%o3c)) then
+  pstat(1,5) = minval(inc%o3c(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%o3c(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%o3c(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+  
+!w
+if (allocated(inc%w)) then
+  pstat(1,5) = minval(inc%w(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%w(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%w(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+
+!delz
+if (allocated(inc%delz)) then
+  pstat(1,5) = minval(inc%delz(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%delz(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%delz(isc:iec,jsc:jec,:))/gs3)**2)
+endif
+  
+!delp
+if (allocated(inc%delp)) then
+  pstat(1,5) = minval(inc%delp(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(inc%delp(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(inc%delp(isc:iec,jsc:jec,:))/gs3)**2)
 endif
 
 return
@@ -1161,6 +1249,18 @@ if (allocated(inc%delz)) then
   enddo
 endif
 
+!delp
+if (allocated(inc%delp)) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+        zz = zz + inc%delp(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+endif
+
 !Get global values
 call f_comm%allreduce(zz,prms,fckit_mpi_sum())
 call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
@@ -1202,21 +1302,21 @@ itiledir = config_get_int(c_conf,"itiledir")
 
 
 ! Check
-if (ndir<1) call abor1_ftn("fv3jedi_increment:dirac non-positive ndir")
+if (ndir<1) call abor1_ftn("Increment: dirac non-positive ndir")
 if (any(ixdir<1).or.any(ixdir>self%npx)) then
-   call abor1_ftn("fv3jedi_increment:dirac invalid ixdir")
+   call abor1_ftn("Increment: dirac invalid ixdir")
 endif
 if (any(iydir<1).or.any(iydir>geom%size_cubic_grid)) then
-   call abor1_ftn("fv3jedi_increment:dirac invalid iydir")
+   call abor1_ftn("Increment: dirac invalid iydir")
 endif
 if ((ildir<1).or.(ildir>self%npz)) then
-   call abor1_ftn("fv3jedi_increment:dirac invalid ildir")
+   call abor1_ftn("Increment: dirac invalid ildir")
 endif
 if ((ifdir<1).or.(ifdir>5)) then
-   call abor1_ftn("fv3jedi_increment:dirac invalid ifdir")
+   call abor1_ftn("Increment: dirac invalid ifdir")
 endif
 if ((itiledir<1).or.(itiledir>6)) then
-   call abor1_ftn("fv3jedi_increment:dirac invalid itiledir")
+   call abor1_ftn("Increment: dirac invalid itiledir")
 endif
 
 ! Setup Diracs
@@ -1269,7 +1369,7 @@ if (ug%colocated==1) then
 else
    ! Not colocated
    ug%ngrid = 1
-   call abor1_ftn("Uncolocated grids not coded yet, and not needed")
+   call abor1_ftn("Increment: Uncolocated grids not coded yet, and not needed")
 end if
 
 ! Allocate grid instances
@@ -1283,7 +1383,11 @@ ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
 ug%grid(1)%nl0 = self%npz
 
 ! Set number of variables
-ug%grid(1)%nv = 8 !self%vars%nv
+ug%grid(1)%nv = 8
+
+if (.not. self%hydrostatic) then
+  ug%grid(1)%nv = 10
+endif  
 
 ! Set number of timeslots
 ug%grid(1)%nts = 1
@@ -1540,6 +1644,42 @@ if (ug%colocated==1) then
     enddo
   endif
 
+  if (allocated(self%w)) then
+    imga = 0
+    do jy=self%jsc,self%jec
+      do jx=self%isc,self%iec
+        imga = imga+1
+        do jl=1,self%npz
+            ug%grid(1)%fld(imga,jl,8,1) = self%w (jx,jy,jl)
+        enddo
+      enddo
+    enddo
+  endif
+
+  if (allocated(self%delz)) then
+    imga = 0
+    do jy=self%jsc,self%jec
+      do jx=self%isc,self%iec
+        imga = imga+1
+        do jl=1,self%npz
+            ug%grid(1)%fld(imga,jl,8,1) = self%delz(jx,jy,jl)
+        enddo
+      enddo
+    enddo
+  endif
+
+  if (allocated(self%delp)) then
+    imga = 0
+    do jy=self%jsc,self%jec
+      do jx=self%isc,self%iec
+        imga = imga+1
+        do jl=1,self%npz
+            ug%grid(1)%fld(imga,jl,8,1) = self%delp(jx,jy,jl)
+        enddo
+      enddo
+    enddo
+  endif
+
 endif
 
 end subroutine increment_to_ug
@@ -1736,6 +1876,42 @@ if (allocated(self%o3c)) then
   enddo
 endif
 
+if (allocated(self%w)) then
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%w   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+      enddo
+    enddo
+  enddo
+endif
+
+if (allocated(self%delz)) then
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%delz(jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+      enddo
+    enddo
+  enddo
+endif
+
+if (allocated(self%delp)) then
+  imga = 0
+  do jy=self%jsc,self%jec
+    do jx=self%isc,self%iec
+      imga = imga+1
+      do jl=1,self%npz
+          self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+      enddo
+    enddo
+  enddo
+endif
+
 end subroutine increment_from_ug
 
 ! ------------------------------------------------------------------------------
@@ -1746,7 +1922,7 @@ implicit none
 type(fv3jedi_increment), intent(in) :: x1, x2
 
 if (x1%npx /= x2%npx .or.  x1%npz /= x2%npz) then
-  call abor1_ftn ("fv3jedi_increment: resolution error")
+  call abor1_ftn ("Increment: resolution error")
 endif
 call check(x1)
 call check(x2)
@@ -1763,7 +1939,7 @@ logical :: bad
 bad = .false.
 
 if (bad) then
-   call abor1_ftn ("fv3jedi_increment: increment not consistent")
+   call abor1_ftn ("Increment: increment not consistent")
 endif
 
 end subroutine check
@@ -1865,16 +2041,18 @@ do k = 1, npz
 enddo
 
 !ps
-do j = jsc,jec
-  do i = isc,iec
-    self%ps(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%delp(i,j,npz)/ref_ps(i,j))
+if (allocated(self%ps)) then
+  do j = jsc,jec
+    do i = isc,iec
+      self%ps(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%delp(i,j,npz)/ref_ps(i,j))
+    enddo
   enddo
-enddo
-
+else
+  call abor1_ftn("Increment: JGradNorm does not support not using Ps in the increment yet")
+endif
 
 deallocate(cellweight)
 deallocate(ref_ps)
-
 
 end subroutine jnormgrad
 
