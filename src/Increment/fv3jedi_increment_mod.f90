@@ -786,8 +786,6 @@ if (check==0) then
   if(allocated(lhs%w   )) lhs%w    = x1%w    - x2%w   
   if(allocated(lhs%delz)) lhs%delz = x1%delz - x2%delz
 
-  deallocate(x1_ps,x2_ps)
-
 else
 
    call abor1_ftn("Increment: diff_incr not implemented for low res increment yet")
