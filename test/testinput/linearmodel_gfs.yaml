@@ -26,6 +26,7 @@ LinearModel:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  fsoi_mode: 0
   trajectory:
     name: 'FV3JEDI'
     nml_file: Data/fv3files/input_gfs_c48.nml

@@ -730,7 +730,8 @@ testinput/parametersbump_gfs.lct.yaml
 testinput/3dvar_gfs_GnssroRef.yaml
 testinput/hofx_gfs_GnssroRef.yaml
 testinput/hofx_gfs_GnssroBndGSI.yaml
-testinput/linearforecast_geos.yaml
+testinput/tlmforecast_geos.yaml
+testinput/admforecast_geos.yaml
 compare.sh
 )
 
