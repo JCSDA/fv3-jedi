@@ -7,7 +7,7 @@
 
 module fv3jedi_geom_interface_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use iso_c_binding
 use fv3jedi_geom_mod
 

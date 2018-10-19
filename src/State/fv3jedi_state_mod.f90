@@ -19,7 +19,7 @@ use fv3jedi_constants, only: rad2deg, constoz
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_kinds, only: kind_real
+use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_io_mod 
 use fv3jedi_state_utils_mod, only: fv3jedi_state
 use fv3jedi_vars_mod, only: fv3jedi_vars
@@ -451,7 +451,7 @@ end subroutine change_resol
 !!
 subroutine analytic_IC(state, geom, c_conf, vdate)
 
-  use kinds
+  use fv3jedi_kinds_mod
   use iso_c_binding
   use datetime_mod
   use fckit_log_module, only : log
@@ -695,7 +695,7 @@ end subroutine analytic_IC
 ! ------------------------------------------------------------------------------
 subroutine invent_state(state,config,geom)
 
-use kinds
+use fv3jedi_kinds_mod
 
 implicit none
 

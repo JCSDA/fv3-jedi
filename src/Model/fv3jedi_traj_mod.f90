@@ -5,7 +5,7 @@
 
 module fv3jedi_traj_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use iso_c_binding
 use fv3jedi_model_mod, only: fv3jedi_model
 use fv3jedi_state_mod, only: fv3jedi_state

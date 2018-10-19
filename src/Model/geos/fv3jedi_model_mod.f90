@@ -5,7 +5,7 @@
 
 module fv3jedi_model_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use iso_c_binding
 use config_mod
 use duration_mod

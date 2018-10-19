@@ -5,7 +5,7 @@
 
 module fv3jedi_model_interface_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use config_mod
 use datetime_mod
 use duration_mod

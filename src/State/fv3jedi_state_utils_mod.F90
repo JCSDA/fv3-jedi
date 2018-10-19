@@ -7,7 +7,7 @@
 
 module fv3jedi_state_utils_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use fv3jedi_vars_mod, only: fv3jedi_vars 
 
 implicit none

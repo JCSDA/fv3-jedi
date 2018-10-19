@@ -10,7 +10,7 @@ use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use iso_c_binding
 use config_mod
-use kinds
+use fv3jedi_kinds_mod
 
 use pressure_vt_mod
 use temperature_vt_mod

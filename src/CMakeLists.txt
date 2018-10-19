@@ -60,12 +60,10 @@ Utilities/fv3jedi_constants_mod.f90
 Utilities/fv3jedi_kinds_mod.f90
 Utilities/FV3JEDITraits.h
 Utilities/fv3jedi_vars_mod.f90
-Utilities/linkedList_c.f
-Utilities/linkedList_i.f
 Utilities/random_vectors_mod.f90
 Utilities/UtilitiesFV3JEDI.cc
 Utilities/UtilitiesFV3JEDI.h
-VariableChange/fv3jedi_varcha_c2m_interface.F90
+VariableChange/fv3jedi_varcha_c2m_interface_mod.F90
 VariableChange/fv3jedi_varcha_c2m_mod.f90
 VariableChange/height_variables_mod.f90
 VariableChange/instantiateFV3JEDIVarChangeFactory.h

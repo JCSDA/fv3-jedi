@@ -4,7 +4,7 @@
 module fv3jedi_getvaltraj_mod
 
 !General JEDI uses
-use kinds
+use fv3jedi_kinds_mod
 use iso_c_binding
 use type_bump, only: bump_type
 

@@ -8,7 +8,7 @@
 
 module moisture_vt_mod
 
-use kinds, only: kind_real
+use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_constants, only: rdry,grav,tice,zvir
 

@@ -5,7 +5,7 @@
 
 module fv3jedi_tlm_interface_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use config_mod
 use duration_mod
 use iso_c_binding

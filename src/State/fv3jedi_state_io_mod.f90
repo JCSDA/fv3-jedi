@@ -6,7 +6,7 @@ use datetime_mod
 use fckit_log_module, only : log
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_kinds, only: kind_real
+use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_utils_mod, only: fv3jedi_state
 
 !For FMS like restarts

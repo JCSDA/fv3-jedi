@@ -5,7 +5,7 @@
 
 module fv3jedi_constants_mod
 
-use fv3jedi_kinds, only: kind_real
+use fv3jedi_kinds_mod, only: kind_real
 
 implicit none
 private

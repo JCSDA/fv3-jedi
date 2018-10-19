@@ -16,7 +16,7 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_increment_io_mod
-use fv3jedi_kinds, only: kind_real
+use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_utils_mod, only: fv3jedi_state
 use fv3jedi_vars_mod, only: fv3jedi_vars
 use fv3jedi_getvalues_mod, only: getvalues_tl, getvalues_ad

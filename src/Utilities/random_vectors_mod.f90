@@ -9,7 +9,7 @@
 module random_vectors_mod
 
 use, intrinsic :: iso_c_binding
-use kinds
+use fv3jedi_kinds_mod
 
 implicit none
 private
