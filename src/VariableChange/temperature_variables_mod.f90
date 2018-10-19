@@ -8,7 +8,7 @@
 
 module temperature_vt_mod
 
-use fv3jedi_constants, only: kappa, epsilon
+use fv3jedi_constants_mod, only: kappa, epsilon
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
 

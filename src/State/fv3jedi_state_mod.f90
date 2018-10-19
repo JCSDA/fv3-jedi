@@ -15,7 +15,7 @@ use ioda_locs_mod
 use ufo_vars_mod
 use ufo_geovals_mod
 
-use fv3jedi_constants, only: rad2deg, constoz
+use fv3jedi_constants_mod, only: rad2deg, constoz
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment

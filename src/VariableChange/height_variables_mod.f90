@@ -1,6 +1,6 @@
 module height_vt_mod
 
-use fv3jedi_constants, only: grav, rvap, tice,rdry, zvir 
+use fv3jedi_constants_mod, only: grav, rvap, tice,rdry, zvir 
 use fv3jedi_geom_mod,  only: fv3jedi_geom
 use fv3jedi_kinds_mod,             only: kind_real
 

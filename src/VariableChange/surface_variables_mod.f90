@@ -11,7 +11,7 @@ module surface_vt_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
 use crtm_module, only: crtm_irlandcoeff_classification
-use fv3jedi_constants, only: rad2deg, deg2rad, pi
+use fv3jedi_constants_mod, only: rad2deg, deg2rad, pi
 
 implicit none
 private

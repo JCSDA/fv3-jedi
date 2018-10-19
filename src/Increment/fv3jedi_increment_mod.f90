@@ -11,7 +11,7 @@ use iso_c_binding
 use config_mod
 use datetime_mod
 
-use fv3jedi_constants, only: rad2deg, constoz, cp, alhl, rgas
+use fv3jedi_constants_mod, only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment

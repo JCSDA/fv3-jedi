@@ -10,7 +10,7 @@ module moisture_vt_mod
 
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_constants, only: rdry,grav,tice,zvir
+use fv3jedi_constants_mod, only: rdry,grav,tice,zvir
 
 implicit none
 private
@@ -591,7 +591,7 @@ subroutine dqsat(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qs
 !inputs are temperature and plo (pressure at t-levels)
 !vales are computed from look-up talbe (piecewise linear)
 
- use fv3jedi_constants, only: h2omw, airmw
+ use fv3jedi_constants_mod, only: h2omw, airmw
 
  implicit none
 
