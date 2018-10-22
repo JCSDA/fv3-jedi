@@ -30,9 +30,11 @@ extern "C" {
   void fv3jedi_tlm_delete_f90(F90tlm &);
 
 
-  void fv3jedi_tlm_initialize_tl_f90(const F90tlm &,
+  void fv3jedi_tlm_initialize_tl_f90(const F90geom &,
+                                     const F90tlm &,
                                      const F90inc &);
-  void fv3jedi_tlm_initialize_ad_f90(const F90tlm &,
+  void fv3jedi_tlm_initialize_ad_f90(const F90geom &,
+                                     const F90tlm &,
                                      const F90inc &);
 
   void fv3jedi_tlm_step_tl_f90(const F90geom &,
@@ -44,9 +46,11 @@ extern "C" {
                                const F90inc &,
                                const F90traj &);
 
-  void fv3jedi_tlm_finalize_tl_f90(const F90tlm &,
+  void fv3jedi_tlm_finalize_tl_f90(const F90geom &,
+                                   const F90tlm &,
                                    const F90inc &);
-  void fv3jedi_tlm_finalize_ad_f90(const F90tlm &,
+  void fv3jedi_tlm_finalize_ad_f90(const F90geom &,
+                                   const F90tlm &,
                                    const F90inc &);
 
   void fv3jedi_traj_wipe_f90(F90traj &);

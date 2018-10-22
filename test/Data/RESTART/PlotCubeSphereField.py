@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.basemap import Basemap
 
 #User input required for the follwing:
-plot_diff = 1         #Plot path1/file - path2/file
+plot_diff = 0         #Plot path1/file - path2/file
 model = 'gfs'
 cube = 48
 filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20180415.000000.3D-Var.fv_core.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20181004.000000.Jnorm.fv_tracer.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
@@ -27,11 +27,11 @@ elif (cube == 96):
     file_tplt_befr2 = 'fv_core.res.tile'
 
 xdimvar = 'xaxis_1'                  #What to read to get dimension
-ydimvar = 'yaxis_2'                  #What to read to get dimension
+ydimvar = 'yaxis_1'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'T'                        #Variable to plot
+readvar = 'sphum'                    #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
-plot_level = 40                      #If 3D plot this level
+plot_level = 50                      #If 3D plot this level
 
 readvarlat = 'grid_lat'              #Variable to plot
 readvarlon = 'grid_lon'              #Variable to plot
@@ -73,8 +73,6 @@ for tile in range(6):
         print(' '+pathfile2)
     fh1 = Dataset(pathfile1, mode='r')
     fh2 = Dataset(pathfile2, mode='r')
-    flat[tile,:,:] = fh1.variables[readvarlat][:]
-    flon[tile,:,:] = fh1.variables[readvarlon][:]
     if plot_diff == 1:
         fr[tile,:,:,:] = fh1.variables[readvar][:] - fh2.variables[readvar][:]
     else:
@@ -91,35 +89,6 @@ else:
 #Initial arrays
 f12 = np.zeros(12*npy*npx).reshape(12,npy,npx)
 fp = np.zeros(12*npy*npx).reshape(4*npy,3*npx)
-f12lat = np.zeros(12*npy*npx).reshape(12,npy,npx)
-f12lon = np.zeros(12*npy*npx).reshape(12,npy,npx)
-
-#Transpose, rotate etc
-f12lat[0,:,:] = np.rot90(flat[2,:,:],2)
-f12lat[1,:,:] = np.rot90(flat[2,:,:],3)
-f12lat[2,:,:] = flat[2,:,:]
-f12lat[3,:,:] = np.rot90(flat[2,:,:],1)
-f12lat[4,:,:] = np.fliplr(np.transpose(flat[0,:,:]))
-f12lat[5,:,:] = np.fliplr(np.transpose(flat[1,:,:]))
-f12lat[6,:,:] = flat[3,:,:]
-f12lat[7,:,:] = flat[4,:,:]
-f12lat[8,:,:] = np.rot90(flat[5,:,:],3)
-f12lat[9,:,:] = np.rot90(flat[5,:,:],2)
-f12lat[10,:,:] = np.rot90(flat[5,:,:],1)
-f12lat[11,:,:] = flat[5,:,:]
-
-f12lon[0,:,:] = np.rot90(flon[2,:,:],2)
-f12lon[1,:,:] = np.rot90(flon[2,:,:],3)
-f12lon[2,:,:] = flon[2,:,:]
-f12lon[3,:,:] = np.rot90(flon[2,:,:],1)
-f12lon[4,:,:] = np.fliplr(np.transpose(flon[0,:,:]))
-f12lon[5,:,:] = np.fliplr(np.transpose(flon[1,:,:]))
-f12lon[6,:,:] = flon[3,:,:]
-f12lon[7,:,:] = flon[4,:,:]
-f12lon[8,:,:] = np.rot90(flon[5,:,:],3)
-f12lon[9,:,:] = np.rot90(flon[5,:,:],2)
-f12lon[10,:,:] = np.rot90(flon[5,:,:],1)
-f12lon[11,:,:] = flon[5,:,:]
 
 f12[0,:,:] = np.rot90(f[2,:,:],2)
 f12[1,:,:] = np.rot90(f[2,:,:],3)
@@ -161,6 +130,41 @@ if plot_diff == 1:
 
 
 # #Plot with coast lines
+# 
+# for tile in range(6):
+#     flat[tile,:,:] = fh1.variables[readvarlat][:]
+#     flon[tile,:,:] = fh1.variables[readvarlon][:]
+# 
+# f12lat = np.zeros(12*npy*npx).reshape(12,npy,npx)
+# f12lon = np.zeros(12*npy*npx).reshape(12,npy,npx)
+# 
+# #Transpose, rotate etc
+# f12lat[0,:,:] = np.rot90(flat[2,:,:],2)
+# f12lat[1,:,:] = np.rot90(flat[2,:,:],3)
+# f12lat[2,:,:] = flat[2,:,:]
+# f12lat[3,:,:] = np.rot90(flat[2,:,:],1)
+# f12lat[4,:,:] = np.fliplr(np.transpose(flat[0,:,:]))
+# f12lat[5,:,:] = np.fliplr(np.transpose(flat[1,:,:]))
+# f12lat[6,:,:] = flat[3,:,:]
+# f12lat[7,:,:] = flat[4,:,:]
+# f12lat[8,:,:] = np.rot90(flat[5,:,:],3)
+# f12lat[9,:,:] = np.rot90(flat[5,:,:],2)
+# f12lat[10,:,:] = np.rot90(flat[5,:,:],1)
+# f12lat[11,:,:] = flat[5,:,:]
+# 
+# f12lon[0,:,:] = np.rot90(flon[2,:,:],2)
+# f12lon[1,:,:] = np.rot90(flon[2,:,:],3)
+# f12lon[2,:,:] = flon[2,:,:]
+# f12lon[3,:,:] = np.rot90(flon[2,:,:],1)
+# f12lon[4,:,:] = np.fliplr(np.transpose(flon[0,:,:]))
+# f12lon[5,:,:] = np.fliplr(np.transpose(flon[1,:,:]))
+# f12lon[6,:,:] = flon[3,:,:]
+# f12lon[7,:,:] = flon[4,:,:]
+# f12lon[8,:,:] = np.rot90(flon[5,:,:],3)
+# f12lon[9,:,:] = np.rot90(flon[5,:,:],2)
+# f12lon[10,:,:] = np.rot90(flon[5,:,:],1)
+# f12lon[11,:,:] = flon[5,:,:]
+# 
 # 
 # fig = plt.figure(figsize=(14,8))
 # 

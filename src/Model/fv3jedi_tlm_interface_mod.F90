@@ -5,7 +5,7 @@
 
 module fv3jedi_tlm_interface_mod
 
-use kinds
+use fv3jedi_kinds_mod
 use config_mod
 use duration_mod
 use iso_c_binding
@@ -13,8 +13,10 @@ use iso_c_binding
 use fv3jedi_tlm_mod
 use fv3jedi_traj_mod, only: fv3jedi_traj
 use fv3jedi_traj_interface_mod, only: fv3jedi_traj_registry
-use fv3jedi_geom_mod, only: fv3jedi_geom, fv3jedi_geom_registry
-use fv3jedi_increment_mod, only: fv3jedi_increment, fv3jedi_increment_registry
+use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
+use fv3jedi_increment_mod, only: fv3jedi_increment
+use fv3jedi_increment_interface_mod, only: fv3jedi_increment_registry
 
 implicit none
 private
@@ -77,19 +79,22 @@ end subroutine c_fv3jedi_tlm_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_tlm_initialize_tl(c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_initialize_tl_f90')
+subroutine c_fv3jedi_tlm_initialize_tl(c_key_geom, c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_initialize_tl_f90')
 
 implicit none
+integer(c_int), intent(in) :: c_key_geom !< Geometry
 integer(c_int), intent(in) :: c_key_self !< TLM
 integer(c_int), intent(in) :: c_key_incr !< Increment
 
+type(fv3jedi_geom),      pointer :: geom
 type(fv3jedi_tlm),       pointer :: self
 type(fv3jedi_increment), pointer :: incr
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_incr,incr)
 call fv3jedi_tlm_registry%get(c_key_self, self)
 
-call tlm_initialize_tl(self, incr)
+call tlm_initialize_tl(geom, self, incr)
 
 end subroutine c_fv3jedi_tlm_initialize_tl
 
@@ -119,37 +124,43 @@ end subroutine c_fv3jedi_tlm_step_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_tlm_finalize_tl(c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_finalize_tl_f90')
+subroutine c_fv3jedi_tlm_finalize_tl(c_key_geom, c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_finalize_tl_f90')
 
 implicit none
+integer(c_int), intent(in) :: c_key_geom !< Geometry
 integer(c_int), intent(in) :: c_key_self !< TLM
 integer(c_int), intent(in) :: c_key_incr !< Increment
 
+type(fv3jedi_geom),      pointer :: geom
 type(fv3jedi_tlm),       pointer :: self
 type(fv3jedi_increment), pointer :: incr
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_incr,incr)
 call fv3jedi_tlm_registry%get(c_key_self, self)
 
-call tlm_finalize_tl(self, incr)
+call tlm_finalize_tl(geom, self, incr)
 
 end subroutine c_fv3jedi_tlm_finalize_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_tlm_initialize_ad(c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_initialize_ad_f90')
+subroutine c_fv3jedi_tlm_initialize_ad(c_key_geom, c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_initialize_ad_f90')
 
 implicit none
+integer(c_int), intent(in) :: c_key_geom !< Geometry
 integer(c_int), intent(in) :: c_key_self !< TLM
 integer(c_int), intent(in) :: c_key_incr !< Increment
 
+type(fv3jedi_geom),      pointer :: geom
 type(fv3jedi_tlm),       pointer :: self
 type(fv3jedi_increment), pointer :: incr
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_incr,incr)
 call fv3jedi_tlm_registry%get(c_key_self, self)
 
-call tlm_initialize_ad(self, incr)
+call tlm_initialize_ad(geom, self, incr)
 
 end subroutine c_fv3jedi_tlm_initialize_ad
 
@@ -179,19 +190,22 @@ end subroutine c_fv3jedi_tlm_step_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_tlm_finalize_ad(c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_finalize_ad_f90')
+subroutine c_fv3jedi_tlm_finalize_ad(c_key_geom, c_key_self, c_key_incr) bind(c,name='fv3jedi_tlm_finalize_ad_f90')
 
 implicit none
+integer(c_int), intent(in) :: c_key_geom !< Geometry
 integer(c_int), intent(in) :: c_key_self !< TLM
 integer(c_int), intent(in) :: c_key_incr !< Increment
 
+type(fv3jedi_geom),      pointer :: geom
 type(fv3jedi_tlm),       pointer :: self
 type(fv3jedi_increment), pointer :: incr
 
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_incr,incr)
 call fv3jedi_tlm_registry%get(c_key_self, self)
 
-call tlm_finalize_ad(self, incr)
+call tlm_finalize_ad(geom, self, incr)
 
 end subroutine c_fv3jedi_tlm_finalize_ad
 

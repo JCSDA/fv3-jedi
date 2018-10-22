@@ -639,7 +639,7 @@ Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART/20180415.000000.sfc_data.tile3.nc
 Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART/20180415.000000.sfc_data.tile4.nc
 Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART/20180415.000000.sfc_data.tile5.nc
 Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART/20180415.000000.sfc_data.tile6.nc
-Data/INPUTS/GEOS_c24/akbk72.nc4
+Data/INPUTS/GEOS_akbk/akbk72.nc4
 Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180415_00z.nc4
 Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180414_2100z.nc4
@@ -667,10 +667,8 @@ Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0215z.nc4
 Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0230z.nc4
 Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0245z.nc4
 Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0300z.nc4
-Data/INPUTS/GEOS_c48/akbk72.nc4
 Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
-Data/INPUTS/GEOS_c90/akbk72.nc4
 Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
 )
@@ -683,12 +681,14 @@ Data/fv3files/input_gfs_c96.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_geos_c48.nml
 Data/fv3files/input_geos_c90.nml
+Data/fv3files/input_geos_c180.nml
 Data/fv3files/inputpert_4dvar.nml
 Data/fv3files/inputpert_fsoi.nml
 )
 
 list( APPEND fv3jedi_test_restart
 Data/RESTART/PlotCubeSphereField.py
+Data/RESTART/TLM_vs_NLM.py
 )
 
 list( APPEND fv3jedi_test_input
@@ -730,6 +730,8 @@ testinput/parametersbump_gfs.lct.yaml
 testinput/3dvar_gfs_GnssroRef.yaml
 testinput/hofx_gfs_GnssroRef.yaml
 testinput/hofx_gfs_GnssroBndGSI.yaml
+testinput/tlmforecast_geos.yaml
+testinput/admforecast_geos.yaml
 compare.sh
 )
 
@@ -765,6 +767,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem009/RESTART)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem010)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_akbk)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c24)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c24/traj)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/INPUTS/GEOS_c48)
