@@ -1,6 +1,6 @@
 module fv3jedi_getvalues_mod
 
-use fckit_mpi_module, only: fckit_mpi_comm
+use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use type_bump, only: bump_type
 use ioda_locs_mod, only: ioda_locs
 use ufo_vars_mod, only: ufo_vars
@@ -34,21 +34,25 @@ contains
 subroutine getvalues(geom, state, locs, vars, gom, traj)
 
 implicit none
-type(fv3jedi_geom),                         intent(inout) :: geom 
-type(fv3jedi_state),                        intent(inout) :: state 
+
+type(fv3jedi_geom),                         intent(in)    :: geom 
+type(fv3jedi_state),                        intent(in)    :: state 
 type(ioda_locs),                            intent(in)    :: locs 
 type(ufo_vars),                             intent(in)    :: vars
 type(ufo_geovals),                          intent(inout) :: gom
 type(fv3jedi_getvaltraj), optional, target, intent(inout) :: traj
 
-character(len=*), parameter :: myname = 'interp'
+character(len=*), parameter :: myname = 'getvalues'
 
+type(fckit_mpi_comm) :: f_comm
 type(bump_type), target  :: bump
 type(bump_type), pointer :: pbump
 logical, target :: bump_alloc
 logical, pointer :: pbumpa
+integer, target, save :: bumpid = 0
+integer, pointer :: pbumpid
 
-integer :: ii, jj, ji, jvar, jlev, ngrid, nobs
+integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg
 real(kind=kind_real), allocatable :: mod_state(:,:)
 real(kind=kind_real), allocatable :: obs_state(:,:)
 real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
@@ -56,10 +60,7 @@ real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
 logical :: do_interp
 
-integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,i,j
-
-integer :: nt, trcount
-character(len=20) :: trname
+integer :: isc,iec,jsc,jec,npz,i,j
 
 !Local pressure variables
 real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
@@ -93,26 +94,30 @@ real(kind=kind_real), allocatable :: soil_moisture_content(:)    !Soil moisture 
 real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
-logical,  parameter                ::use_compress = .true.  !!could be a fv3 namelist option?
+logical,  parameter               :: use_compress = .true.       !Could be a fv3 namelist option?
 
 
 ! Grid convenience
 ! ----------------
-isc = state%isc
-iec = state%iec
-jsc = state%jsc
-jec = state%jec
-isd = state%isd
-ied = state%ied
-jsd = state%jsd
-jed = state%jed
-npz = state%npz
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
 
 ngrid = (iec-isc+1)*(jec-jsc+1)
-nobs = locs%nlocs 
+nlocs = locs%nlocs 
 
-! Initialize the interpolation
-! ----------------------------
+
+!If no observations can early exit
+!---------------------------------
+f_comm = fckit_mpi_comm()
+call f_comm%allreduce(nlocs,nlocsg,fckit_mpi_sum())
+if (nlocsg == 0) return
+
+
+! Initialize the interpolation trajectory
+! ---------------------------------------
 if (present(traj)) then
 
   pbump => traj%bump
@@ -120,7 +125,6 @@ if (present(traj)) then
   if (.not. traj%lalloc) then
   
      traj%ngrid = ngrid
-     traj%nobs = nobs
    
      if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
      if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
@@ -129,6 +133,7 @@ if (present(traj)) then
      traj%q = state%q
  
      pbumpa => traj%lalloc
+     pbumpid => traj%bumpid
 
   endif
 
@@ -137,11 +142,13 @@ else
   pbump => bump
   bump_alloc = .false.
   pbumpa => bump_alloc
+  bumpid = bumpid + 1
+  pbumpid => bumpid
 
 endif
 
 if (.not. pbumpa) then
-   call initialize_bump(geom, locs, pbump)
+   call initialize_bump(geom, locs, pbump, pbumpid)
    pbumpa = .true.
 endif
 
@@ -149,7 +156,8 @@ endif
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_state(ngrid,1))
-allocate(obs_state(nobs,1))
+allocate(obs_state(nlocs,1))
+
 
 ! Local GeoVals
 ! -------------
@@ -166,24 +174,24 @@ call delp_to_pe_p_logp(geom,state%delp,prsi,prs,logp)
 
 ! Get CRTM surface variables
 ! ----------------------
-allocate(wind_speed(nobs))
-allocate(wind_direction(nobs))
-allocate(land_type(nobs))
-allocate(vegetation_type(nobs))
-allocate(soil_type(nobs))
-allocate(water_coverage(nobs))
-allocate(land_coverage(nobs))
-allocate(ice_coverage(nobs))
-allocate(snow_coverage(nobs))
-allocate(lai(nobs))
-allocate(water_temperature(nobs))
-allocate(land_temperature(nobs))
-allocate(ice_temperature(nobs))
-allocate(snow_temperature(nobs))
-allocate(soil_moisture_content(nobs))
-allocate(vegetation_fraction(nobs))
-allocate(soil_temperature(nobs))
-allocate(snow_depth(nobs))
+allocate(wind_speed(nlocs))
+allocate(wind_direction(nlocs))
+allocate(land_type(nlocs))
+allocate(vegetation_type(nlocs))
+allocate(soil_type(nlocs))
+allocate(water_coverage(nlocs))
+allocate(land_coverage(nlocs))
+allocate(ice_coverage(nlocs))
+allocate(snow_coverage(nlocs))
+allocate(lai(nlocs))
+allocate(water_temperature(nlocs))
+allocate(land_temperature(nlocs))
+allocate(ice_temperature(nlocs))
+allocate(snow_temperature(nlocs))
+allocate(soil_moisture_content(nlocs))
+allocate(vegetation_fraction(nlocs))
+allocate(soil_temperature(nlocs))
+allocate(snow_depth(nlocs))
 
 wind_speed = 0.0_kind_real
 wind_direction = 0.0_kind_real
@@ -206,7 +214,7 @@ snow_depth = 0.0_kind_real
 
 if (state%havecrtmfields) then
   !TODO only if a radiance
-  call crtm_surface( geom, nobs, ngrid, locs%lat(:), locs%lon(:), &
+  call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
                      state%slmsk, state%sheleg, state%tsea, state%vtype, &
                      state%stype, state%vfrac, state%stc, state%smc, state%snwdph, &
                      state%u_srf,state%v_srf,state%f10m, &
@@ -502,15 +510,17 @@ do jvar = 1, vars%nv
 
   end select
 
-
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
-  call allocate_geovals_vals(gom,jvar,nobs,nvl)
+ print*, 'dan', gom%nobs
 
+  if (.not.allocated(gom%geovals(jvar)%vals)) then
+    call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
+  endif
 
   !Run some basic checks on the interpolation
   !------------------------------------------
-  call interp_checks(myname, locs, vars, gom, jvar)
+  call getvalues_checks(myname, locs, vars, gom, jvar)
 
 
   ! Find observation location equivlent
@@ -526,10 +536,14 @@ do jvar = 1, vars%nv
         enddo
       enddo
       call pbump%apply_obsop(mod_state,obs_state)
-      gom%geovals(jvar)%vals(jlev,:) = obs_state(:,1)
+      do jloc = 1,locs%nlocs
+        gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_state(jloc,1)
+      enddo
     enddo
   else
-    gom%geovals(jvar)%vals(nvl,:) = obs_state(:,1)
+    do jloc = 1,locs%nlocs
+      gom%geovals(jvar)%vals(nvl,locs%indx(jloc)) = obs_state(jloc,1)
+    enddo
   endif
 
   nullify(geoval)
@@ -542,40 +556,41 @@ endif
 
 nullify(pbump)
 
-deallocate(mod_state)
-deallocate(obs_state)
-deallocate(geovale)
-deallocate(geovalm)
-deallocate(prsi)
-deallocate(prs )
-deallocate(logp)
-deallocate(wind_speed)
-deallocate(wind_direction)
-deallocate(land_type)
-deallocate(vegetation_type)
-deallocate(soil_type)
-deallocate(water_coverage)
-deallocate(land_coverage)
-deallocate(ice_coverage)
-deallocate(snow_coverage)
-deallocate(lai)
-deallocate(water_temperature)
-deallocate(land_temperature)
-deallocate(ice_temperature)
-deallocate(snow_temperature)
-deallocate(soil_moisture_content)
-deallocate(vegetation_fraction)
-deallocate(soil_temperature)
-deallocate(snow_depth)
-deallocate(ql_ade)
-deallocate(qi_ade)
-deallocate(ql_efr)
-deallocate(qi_efr)
-deallocate(qmr)
-deallocate(water_coverage_m)
 
-!write(*,*)'interp geovals t min, max= ',minval(gom%geovals(1)%vals(:,:)),maxval(gom%geovals(1)%vals(:,:))
-!write(*,*)'interp geovals p min, max= ',minval(gom%geovals(2)%vals(:,:)),maxval(gom%geovals(2)%vals(:,:))
+! Deallocate local memory
+! -----------------------
+if (allocated(mod_state            )) deallocate(mod_state            )
+if (allocated(obs_state            )) deallocate(obs_state            )
+if (allocated(geovale              )) deallocate(geovale              )
+if (allocated(geovalm              )) deallocate(geovalm              )
+if (allocated(prsi                 )) deallocate(prsi                 )
+if (allocated(prs                  )) deallocate(prs                  )
+if (allocated(logp                 )) deallocate(logp                 )
+if (allocated(wind_speed           )) deallocate(wind_speed           )
+if (allocated(wind_direction       )) deallocate(wind_direction       )
+if (allocated(land_type            )) deallocate(land_type            )
+if (allocated(vegetation_type      )) deallocate(vegetation_type      )
+if (allocated(soil_type            )) deallocate(soil_type            )
+if (allocated(water_coverage       )) deallocate(water_coverage       )
+if (allocated(land_coverage        )) deallocate(land_coverage        )
+if (allocated(ice_coverage         )) deallocate(ice_coverage         )
+if (allocated(snow_coverage        )) deallocate(snow_coverage        )
+if (allocated(lai                  )) deallocate(lai                  )
+if (allocated(water_temperature    )) deallocate(water_temperature    )
+if (allocated(land_temperature     )) deallocate(land_temperature     )
+if (allocated(ice_temperature      )) deallocate(ice_temperature      )
+if (allocated(snow_temperature     )) deallocate(snow_temperature     )
+if (allocated(soil_moisture_content)) deallocate(soil_moisture_content)
+if (allocated(vegetation_fraction  )) deallocate(vegetation_fraction  )
+if (allocated(soil_temperature     )) deallocate(soil_temperature     )
+if (allocated(snow_depth           )) deallocate(snow_depth           )
+if (allocated(ql_ade               )) deallocate(ql_ade               )
+if (allocated(qi_ade               )) deallocate(qi_ade               )
+if (allocated(ql_efr               )) deallocate(ql_efr               )
+if (allocated(qi_efr               )) deallocate(qi_efr               )
+if (allocated(qmr                  )) deallocate(qmr                  )
+if (allocated(water_coverage_m     )) deallocate(water_coverage_m     )
+
 
 end subroutine getvalues
 
@@ -585,15 +600,15 @@ subroutine getvalues_tl(geom, inc, locs, vars, gom, traj)
 
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
-type(fv3jedi_increment),      intent(inout) :: inc 
+type(fv3jedi_increment),  intent(inout) :: inc 
 type(ioda_locs),          intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvaltraj), intent(in)    :: traj
 
-character(len=*), parameter :: myname = 'interp_tl'
+character(len=*), parameter :: myname = 'getvalues_tl'
 
-integer :: ii, jj, ji, jvar, jlev
+integer :: ii, jj, ji, jvar, jlev, jloc
 real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
@@ -602,7 +617,7 @@ real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
-integer :: isc, iec, jsc, jec, isd, ied, jsd, jed, npz
+integer :: isc, iec, jsc, jec, npz
 
 
 ! Check traj is implemented
@@ -617,17 +632,13 @@ isc = inc%isc
 iec = inc%iec
 jsc = inc%jsc
 jec = inc%jec
-isd = inc%isd
-ied = inc%ied
-jsd = inc%jsd
-jed = inc%jed
 npz = inc%npz
 
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_increment(traj%ngrid,1))
-allocate(obs_increment(traj%nobs,1))
+allocate(obs_increment(locs%nlocs,1))
 
 
 ! Local GeoVals
@@ -758,12 +769,14 @@ do jvar = 1, vars%nv
 
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
-  call allocate_geovals_vals(gom,jvar,traj%nobs,nvl)
+  if (.not.allocated(gom%geovals(jvar)%vals)) then
+    call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
+  endif
 
 
   !Run some basic checks on the interpolation
   !------------------------------------------
-  call interp_checks(myname, locs, vars, gom, jvar)
+  call getvalues_checks(myname, locs, vars, gom, jvar)
 
 
   ! Find observation location equivlent
@@ -779,10 +792,14 @@ do jvar = 1, vars%nv
         enddo
       enddo
       call traj%bump%apply_obsop(mod_increment,obs_increment)
-      gom%geovals(jvar)%vals(jlev,:) = obs_increment(:,1)
+      do jloc = 1,locs%nlocs
+        gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_increment(jloc,1)
+      enddo
     enddo
   else
-    gom%geovals(jvar)%vals(nvl,:) = obs_increment(:,1)
+    do jloc = 1,locs%nlocs
+      gom%geovals(jvar)%vals(nvl,locs%indx(jloc)) = obs_increment(jloc,1)
+    enddo
   endif
 
   nullify(geoval)
@@ -802,15 +819,15 @@ subroutine getvalues_ad(geom, inc, locs, vars, gom, traj)
 
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
-type(fv3jedi_increment),      intent(inout) :: inc 
-type(ioda_locs),           intent(in)   :: locs 
+type(fv3jedi_increment),  intent(inout) :: inc 
+type(ioda_locs),          intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvaltraj), intent(in)    :: traj
 
-character(len=*), parameter :: myname = 'interp_ad'
+character(len=*), parameter :: myname = 'getvalues_ad'
 
-integer :: ii, jj, ji, jvar, jlev
+integer :: ii, jj, ji, jvar, jlev, jloc
 real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
@@ -819,7 +836,7 @@ real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
-integer :: isc, iec, jsc, jec, isd, ied, jsd, jed, npz
+integer :: isc, iec, jsc, jec, npz
 
 
 ! Check traj is implemented
@@ -834,17 +851,13 @@ isc = inc%isc
 iec = inc%iec
 jsc = inc%jsc
 jec = inc%jec
-isd = inc%isd
-ied = inc%ied
-jsd = inc%jsd
-jed = inc%jed
 npz = inc%npz
 
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
 allocate(mod_increment(traj%ngrid,1))
-allocate(obs_increment(traj%nobs,1))
+allocate(obs_increment(locs%nlocs,1))
 
 
 ! Local GeoVals
@@ -972,8 +985,10 @@ do jvar = 1, vars%nv
   if (do_interp) then
     !Perform level-by-level interpolation using BUMP
     do jlev = nvl, 1, -1
-      obs_increment(:,1) = gom%geovals(jvar)%vals(jlev,:)
-      gom%geovals(jvar)%vals(jlev,:) = 0.0_kind_real
+      do jloc = 1,locs%nlocs
+        obs_increment(jloc,1) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
+        gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = 0.0_kind_real
+      enddo
       call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
       ii = 0
       do jj = jsc, jec
@@ -984,7 +999,9 @@ do jvar = 1, vars%nv
       enddo
     enddo
   else
-    obs_increment(:,1) = gom%geovals(jvar)%vals(nvl,:)
+    do jloc = 1,locs%nlocs
+      obs_increment(jloc,1) = gom%geovals(jvar)%vals(nvl,locs%indx(jloc))
+    enddo
   endif
 
   !Part 3, back to state variables
@@ -1095,28 +1112,29 @@ end subroutine getvalues_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine allocate_geovals_vals(gom,jvar,nobs,gvlev)
+subroutine allocate_geovals_vals(gom,jvar,gvlev,lastvar)
 
 implicit none
-integer, intent(in) :: jvar, nobs, gvlev
-type(ufo_geovals), intent(inout) :: gom
+type(ufo_geovals), intent(inout) :: gom     !GeoVaL
+integer,           intent(in)    :: jvar    !Current variable   
+integer,           intent(in)    :: gvlev   !Number of model levels
+logical,           intent(in)    :: lastvar !Logical true if on last var to go into gom
 
-! Allocate geovals for this jvar
-if (allocated(gom%geovals(jvar)%vals)) deallocate(gom%geovals(jvar)%vals)
-
-allocate(gom%geovals(jvar)%vals(gvlev,nobs))
-
+! Set number of levels, nobs already set from total locs
 gom%geovals(jvar)%nval = gvlev
-gom%geovals(jvar)%nobs = nobs
+
+! Allocate %vals
+allocate(gom%geovals(jvar)%vals(gom%geovals(jvar)%nval,gom%geovals(jvar)%nobs))
 gom%geovals(jvar)%vals = 0.0_kind_real
 
-gom%linit  = .true.
+! Set flag for internal data arrays having been set
+if (lastvar) gom%linit  = .true.
 
 end subroutine allocate_geovals_vals
 
 ! ------------------------------------------------------------------------------
 
-subroutine initialize_bump(geom, locs, bump)
+subroutine initialize_bump(geom, locs, bump, bumpid)
 
 implicit none
 
@@ -1124,6 +1142,7 @@ implicit none
 type(fv3jedi_geom), intent(in)    :: geom
 type(ioda_locs),    intent(in)    :: locs
 type(bump_type),    intent(inout) :: bump
+integer,            intent(in)    :: bumpid
 
 !Locals
 integer :: mod_num
@@ -1131,18 +1150,20 @@ real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:)
 real(kind=kind_real), allocatable :: area(:),vunit(:,:)
 logical, allocatable :: lmask(:,:)
 
-integer, save :: bumpcount = 0
-character(len=5) :: cbumpcount
-character(len=16) :: bump_nam_prefix
+character(len=5)   :: cbumpcount
+character(len=255) :: bump_nam_prefix
 
 type(fckit_mpi_comm) :: f_comm
 
+
+! Communicator from OOPS
+! ----------------------
 f_comm = fckit_mpi_comm()
+
 
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------
-bumpcount = bumpcount + 1
-write(cbumpcount,"(I0.5)") bumpcount
+write(cbumpcount,"(I0.5)") bumpid
 bump_nam_prefix = 'fv3jedi_bump_data_'//cbumpcount
 
 
@@ -1153,7 +1174,8 @@ mod_num = (geom%iec - geom%isc + 1) * (geom%jec - geom%jsc + 1)
 
 !Calculate interpolation weight using BUMP
 !-----------------------------------------
-allocate( mod_lat(mod_num), mod_lon(mod_num) )
+allocate(mod_lat(mod_num))
+allocate(mod_lon(mod_num))
 mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
                                         [mod_num] )  
@@ -1161,16 +1183,22 @@ mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
                                         [mod_num] ) - 180.0_kind_real
 
+
+! Namelist options
+! ----------------
+
 !Important namelist options
 call bump%nam%init
 bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
 
 !Less important namelist options (should not be changed)
-bump%nam%prefix = bump_nam_prefix   ! Prefix for files output
+bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
 bump%nam%default_seed = .true.
 bump%nam%new_obsop = .true.
 
-!Initialize geometry
+
+! Initialize geometry
+! -------------------
 allocate(area(mod_num))
 allocate(vunit(mod_num,1))
 allocate(lmask(mod_num,1))
@@ -1178,61 +1206,56 @@ area = 1.0           ! Dummy area
 vunit = 1.0          ! Dummy vertical unit
 lmask = .true.       ! Mask
 
-!Initialize BUMP
-call bump%setup_online( f_comm%communicator(),mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                                nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
 
-!Release memory
+! Initialize BUMP
+! ---------------
+call bump%setup_online( f_comm%communicator(),mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
+
+
+! Release memory
+! --------------
 deallocate(area)
 deallocate(vunit)
 deallocate(lmask)
-deallocate( mod_lat, mod_lon )
+deallocate(mod_lat)
+deallocate(mod_lon)
 
 end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 
-subroutine interp_checks(cop, locs, vars, gom, jvar)
+subroutine getvalues_checks(cop, locs, vars, gom, jvar)
 implicit none
-character(len=*), intent(in) :: cop
-type(ioda_locs), intent(in)     :: locs
-type(ufo_vars), intent(in)      :: vars
-type(ufo_geovals), intent(in)   :: gom
-integer, intent(in)             :: jvar
+character(len=*), intent(in)  :: cop
+type(ioda_locs), intent(in)   :: locs
+type(ufo_vars), intent(in)    :: vars
+type(ufo_geovals), intent(in) :: gom
+integer, intent(in)           :: jvar
 
 character(len=255) :: cinfo
 
-cinfo="fv3jedi_state:checks "//trim(cop)//" : "
+cinfo="fv3jedi_"//trim(cop)//" checks:"
 
 !Check things are the sizes we expect
 !------------------------------------
-if (gom%nobs /= locs%nlocs ) then
-   call abor1_ftn(trim(cinfo)//"geovals wrong size")
-endif
 if( gom%nvar .ne. vars%nv )then
-   call abor1_ftn(trim(cinfo)//"nvar wrong size")
+   call abor1_ftn(trim(cinfo)//" nvar wrong size")
 endif
 if( .not. allocated(gom%geovals) )then
-   call abor1_ftn(trim(cinfo)//"geovals not allocated")
+   call abor1_ftn(trim(cinfo)//" geovals not allocated")
 endif
 if( size(gom%geovals) .ne. vars%nv )then
-   call abor1_ftn(trim(cinfo)//"geovals wrong size")
+   call abor1_ftn(trim(cinfo)//" size geovals does not match number of vars from UFo")
 endif
 if (.not.gom%linit) then
-   call abor1_ftn(trim(cinfo)//"geovals not initialized")
+!   call abor1_ftn(trim(cinfo)//" geovals initialization flag not set")
 endif
-if (allocated(gom%geovals(jvar)%vals)) then  
-   if( gom%geovals(jvar)%nobs .ne. locs%nlocs )then
-      call abor1_ftn(trim(cinfo)//"nobs wrong size")
-   endif
-   if( size(gom%geovals(jvar)%vals, 2) .ne. locs%nlocs )then
-      call abor1_ftn(trim(cinfo)//"vals wrong size 2")
-   endif       
-else
-  call abor1_ftn(trim(cinfo)//"vals not allocated")
+if (.not. allocated(gom%geovals(jvar)%vals)) then  
+   call abor1_ftn(trim(cinfo)//"vals not allocated")
 endif 
 
-end subroutine interp_checks
+end subroutine getvalues_checks
 
 ! ------------------------------------------------------------------------------
 

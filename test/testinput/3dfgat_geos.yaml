@@ -88,7 +88,7 @@ cost_function:
 #        ObsDataIn:
 #          obsfile: Data/amsua_n19_obs.nc4
 #        ObsDataOut:
-#          obsfile: Data/fv3jedi.4DVar.obt
+#          obsfile: Data/fv3jedi.3DVar-FGAT.obt
 #        obsvalue: Observation
 #      ObsType: Radiance
     ObsTypes:
@@ -99,7 +99,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/fv3jedi.4DVar.obt
+          obsfile: Data/fv3jedi.3DVar-FGAT.obt
         obsvalue: air_temperature
       ObsType: Radiosonde
   cost_type: 4D-Var
@@ -110,6 +110,7 @@ cost_function:
   - va
   - t
   - delp
+  - ps
   - q
   - qi
   - ql
@@ -136,16 +137,16 @@ model:
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: 4DVar.fv_core.res.nc
-  filename_cplr: 4DVar.coupler.res
-  filename_trcr: 4DVar.fv_tracer.res.nc
+  filename_core: 3DVar-FGAT.fv_core.res.nc
+  filename_cplr: 3DVar-FGAT.coupler.res
+  filename_trcr: 3DVar-FGAT.fv_tracer.res.nc
   first: PT0H
   frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_c24/
+  filepath_akbk: Data/INPUTS/GEOS_akbk/
   filename_akbk: akbk72.nc4
   ak_var: AK
   bk_var: BK
@@ -157,7 +158,7 @@ variational:
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
-      version: FV3JEDITLM
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_geos_c24.nml
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -182,7 +183,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c24.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      filepath_akbk: Data/INPUTS/GEOS_c24/
+      filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
       ak_var: AK
       bk_var: BK

@@ -186,10 +186,10 @@ void StateFV3JEDI::print(std::ostream & os) const {
   os << std::endl << "  Valid time: " << validTime();
   int nx = 0;
   int ny = 0;
-  int nf = 5;
+  int nf = 8;
   fv3jedi_state_sizes_f90(keyState_, nx, ny, nf);
-  os << std::endl << "  Resolution = " << nx << ", " << ny
-     << ", State = " << nf;
+  os << std::endl << "Cube faces = " << nx << "x" << ny
+     << ", Number of state fields = " << nf;
   std::vector<double> zstat(3*nf);
   fv3jedi_state_gpnorm_f90(keyState_, nf, zstat[0]);
   for (int jj = 0; jj < nf; ++jj) {

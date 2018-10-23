@@ -16,7 +16,7 @@ public fv3jedi_getvaltraj_registry
 public c_fv3jedi_getvaltraj_setup, c_fv3jedi_getvaltraj_delete
 
 type :: fv3jedi_getvaltraj
- integer :: nobs, ngrid
+ integer :: bumpid, ngrid
  real(kind=kind_real), allocatable :: t(:,:,:)
  real(kind=kind_real), allocatable :: q(:,:,:)
  type(bump_type) :: bump
@@ -52,7 +52,7 @@ call fv3jedi_getvaltraj_registry%add(c_key_self)
 call fv3jedi_getvaltraj_registry%get(c_key_self,self)
 
 self%lalloc = .false.
-self%nobs = 0
+self%bumpid = c_key_self !Just use key for the BUMP identifier
 self%ngrid = 0
 
 end subroutine c_fv3jedi_getvaltraj_setup
@@ -69,7 +69,6 @@ type(fv3jedi_getvaltraj), pointer :: self
 call fv3jedi_getvaltraj_registry%get(c_key_self, self)
 
 if (self%lalloc) then
-  self%nobs = 0
   self%ngrid = 0
   if (allocated(self%t)) deallocate(self%t)
   if (allocated(self%q)) deallocate(self%q)
