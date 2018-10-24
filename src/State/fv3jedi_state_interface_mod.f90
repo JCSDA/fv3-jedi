@@ -305,8 +305,9 @@ integer(c_int), intent(in) :: c_key_state  !< State to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
 type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
-integer(c_int), intent(in), optional :: c_key_traj !< Trajectory for interpolation/transforms
+integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
+
 type(fv3jedi_state), pointer :: state
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom

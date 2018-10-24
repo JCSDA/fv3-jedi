@@ -2,7 +2,7 @@ nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 Assimilation Window:
   Begin: '2018-04-14T21:00:00Z'
-  Length: PT1H
+  Length: PT6H
 Geometry:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
@@ -45,15 +45,42 @@ Model:
   lm_do_mst: 0
 Observations:
   ObsTypes:
+  - ObsType: Aircraft
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/aircraft_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/gfs.hofx.obt
+    ObsBias: {}
+#  - ObsType: GnssroBndGSI
+#    ObsData:
+#      ObsDataIn:
+#        obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
+#      obsvalue: BNA
+#      ObsDataOut:
+#        obsfile: gnssroBndGSI_hofx_2018041500.nc4
+#      obsvalue: BNA
+#    ObsBias: {}
 #  - ObsType: Radiance
 #    ObsData:
 #      ObsDataIn:
 #        obsfile: Data/amsua_obs_n19_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/gfs.hofx.obt
 #    ObsBias: {}
+#    ObsOptions:
+#      n_Absorbers: 3
+#      n_Clouds: 2
+#      n_Aerosols: 0
+#      Sensor_ID: 'amsua_n19'
+#      EndianType: 'little_endian'
+#      CoefficientPath: 'Data/'
   - ObsType: Radiosonde
     ObsData:
       ObsDataIn:
         obsfile: Data/sondes_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/geos.hofx.obt
     ObsBias: {}
 Prints:
   frequency: PT3H

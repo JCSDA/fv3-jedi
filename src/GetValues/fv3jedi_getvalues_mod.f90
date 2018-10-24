@@ -46,11 +46,11 @@ character(len=*), parameter :: myname = 'getvalues'
 
 type(fckit_mpi_comm) :: f_comm
 type(bump_type), target  :: bump
-type(bump_type), pointer :: pbump
-logical, target :: bump_alloc
-logical, pointer :: pbumpa
+type(bump_type), pointer :: pbump => null()
+logical, target  :: bump_alloc = .false.
+logical, pointer :: pbump_alloc => null()
 integer, target, save :: bumpid = 0
-integer, pointer :: pbumpid
+integer, pointer      :: pbumpid => null()
 
 integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg
 real(kind=kind_real), allocatable :: mod_state(:,:)
@@ -113,8 +113,13 @@ nlocs = locs%nlocs
 !---------------------------------
 f_comm = fckit_mpi_comm()
 call f_comm%allreduce(nlocs,nlocsg,fckit_mpi_sum())
-if (nlocsg == 0) return
-
+if (nlocsg == 0) then
+  if (present(traj)) then
+     traj%lalloc = .true.
+     traj%noobs = .true.
+  endif
+  return
+endif
 
 ! Initialize the interpolation trajectory
 ! ---------------------------------------
@@ -132,7 +137,7 @@ if (present(traj)) then
      traj%t = state%t
      traj%q = state%q
  
-     pbumpa => traj%lalloc
+     pbump_alloc => traj%lalloc
      pbumpid => traj%bumpid
 
   endif
@@ -141,17 +146,16 @@ else
 
   pbump => bump
   bump_alloc = .false.
-  pbumpa => bump_alloc
+  pbump_alloc => bump_alloc
   bumpid = bumpid + 1
   pbumpid => bumpid
 
 endif
 
-if (.not. pbumpa) then
+if (.not. pbump_alloc) then
    call initialize_bump(geom, locs, pbump, pbumpid)
-   pbumpa = .true.
+   pbump_alloc = .true.
 endif
-
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
@@ -512,7 +516,6 @@ do jvar = 1, vars%nv
 
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
- print*, 'dan', gom%nobs
 
   if (.not.allocated(gom%geovals(jvar)%vals)) then
     call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
@@ -555,7 +558,8 @@ if (.not. present(traj)) then
 endif
 
 nullify(pbump)
-
+nullify(pbump_alloc)
+nullify(pbumpid)
 
 ! Deallocate local memory
 ! -----------------------
@@ -591,7 +595,6 @@ if (allocated(qi_efr               )) deallocate(qi_efr               )
 if (allocated(qmr                  )) deallocate(qmr                  )
 if (allocated(water_coverage_m     )) deallocate(water_coverage_m     )
 
-
 end subroutine getvalues
 
 ! ------------------------------------------------------------------------------
@@ -624,6 +627,11 @@ integer :: isc, iec, jsc, jec, npz
 ! -------------------------
 if (.not.traj%lalloc) &
 call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
+
+
+!If no observations can early exit
+!---------------------------------
+if (traj%noobs)  return
 
 
 ! Grid convenience
@@ -843,6 +851,11 @@ integer :: isc, iec, jsc, jec, npz
 ! -------------------------
 if (.not.traj%lalloc) &
 call abor1_ftn(trim(myname)//" trajectory for this obs op not found")
+
+
+!If no observations can early exit
+!---------------------------------
+if (traj%noobs)  return
 
 
 ! Grid convenience

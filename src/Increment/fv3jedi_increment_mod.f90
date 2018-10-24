@@ -1648,7 +1648,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%w (jx,jy,jl)
+            ug%grid(1)%fld(imga,jl,9,1) = self%w (jx,jy,jl)
         enddo
       enddo
     enddo
@@ -1660,7 +1660,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%delz(jx,jy,jl)
+            ug%grid(1)%fld(imga,jl,10,1) = self%delz(jx,jy,jl)
         enddo
       enddo
     enddo
@@ -1672,7 +1672,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%delp(jx,jy,jl)
+            ug%grid(1)%fld(imga,jl,4,1) = self%delp(jx,jy,jl)
         enddo
       enddo
     enddo
@@ -1880,7 +1880,7 @@ if (allocated(self%w)) then
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%w   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+          self%w   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,9,1)
       enddo
     enddo
   enddo
@@ -1892,7 +1892,7 @@ if (allocated(self%delz)) then
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%delz(jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+          self%delz(jx,jy,jl) = ug%grid(1)%fld(imga,jl,10,1)
       enddo
     enddo
   enddo
@@ -1904,7 +1904,7 @@ if (allocated(self%delp)) then
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+          self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,4,1)
       enddo
     enddo
   enddo
