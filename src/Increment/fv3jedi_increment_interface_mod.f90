@@ -27,7 +27,7 @@ use ioda_locs_mod_c, only: ioda_locs_registry
 use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
-use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj, fv3jedi_getvaltraj_registry
+use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj, fv3jedi_getvalues_traj_registry
 
 implicit none
 private
@@ -483,7 +483,7 @@ type(fv3jedi_increment), pointer :: inc
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
-type(fv3jedi_getvaltraj), pointer :: traj
+type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
 
 call ufo_vars_setup(vars, c_vars)
@@ -492,7 +492,7 @@ call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
 call ioda_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
-call fv3jedi_getvaltraj_registry%get(c_key_traj, traj)
+call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues_tl(geom, inc, locs, vars, gom, traj)
 
@@ -513,7 +513,7 @@ type(fv3jedi_increment), pointer :: inc
 type(ioda_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
-type(fv3jedi_getvaltraj), pointer :: traj
+type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
 
 call ufo_vars_setup(vars, c_vars)
@@ -522,7 +522,7 @@ call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
 call ioda_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
-call fv3jedi_getvaltraj_registry%get(c_key_traj, traj)
+call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues_ad(geom, inc, locs, vars, gom, traj)
 

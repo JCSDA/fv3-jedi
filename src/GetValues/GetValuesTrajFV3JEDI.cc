@@ -19,7 +19,7 @@ namespace fv3jedi {
 GetValuesTrajFV3JEDI::GetValuesTrajFV3JEDI() {
   oops::Log::trace() << "GetValuesTrajFV3JEDI constructor starting"
                      << std::endl;
-  fv3jedi_getvaltraj_setup_f90(keyGetValuesTraj_);
+  fv3jedi_getvalues_traj_setup_f90(keyGetValuesTraj_);
   oops::Log::trace() << "GetValuesTrajFV3JEDI constructor done"
                      << keyGetValuesTraj_ << std::endl;
 }
@@ -27,7 +27,7 @@ GetValuesTrajFV3JEDI::GetValuesTrajFV3JEDI() {
 GetValuesTrajFV3JEDI::~GetValuesTrajFV3JEDI() {
   oops::Log::trace() << "GetValuesTrajFV3JEDI destructor starting"
                      << std::endl;
-  fv3jedi_getvaltraj_delete_f90(keyGetValuesTraj_);
+  fv3jedi_getvalues_traj_delete_f90(keyGetValuesTraj_);
   oops::Log::trace() << "GetValuesTrajFV3JEDI destructor done" << std::endl;
 }
 // -----------------------------------------------------------------------------

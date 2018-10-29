@@ -24,8 +24,8 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_getvaltraj_setup_f90(const F90ootrj &);
-  void fv3jedi_getvaltraj_delete_f90(const F90ootrj &);
+  void fv3jedi_getvalues_traj_setup_f90(const F90ootrj &);
+  void fv3jedi_getvalues_traj_delete_f90(const F90ootrj &);
 
 };  // extern "C"
 // -----------------------------------------------------------------------------

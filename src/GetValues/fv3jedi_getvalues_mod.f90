@@ -8,7 +8,7 @@ use ufo_geovals_mod, only: ufo_geovals
 
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
+use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_utils_mod, only: fv3jedi_state
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -39,7 +39,7 @@ type(fv3jedi_state),                        intent(inout) :: state
 type(ioda_locs),                            intent(in)    :: locs 
 type(ufo_vars),                             intent(in)    :: vars
 type(ufo_geovals),                          intent(inout) :: gom
-type(fv3jedi_getvaltraj), optional, target, intent(inout) :: traj
+type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
 
 character(len=*), parameter :: myname = 'interp'
 
@@ -589,7 +589,7 @@ type(fv3jedi_increment),      intent(inout) :: inc
 type(ioda_locs),          intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_getvaltraj), intent(in)    :: traj
+type(fv3jedi_getvalues_traj), intent(in)    :: traj
 
 character(len=*), parameter :: myname = 'interp_tl'
 
@@ -806,7 +806,7 @@ type(fv3jedi_increment),      intent(inout) :: inc
 type(ioda_locs),           intent(in)   :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_getvaltraj), intent(in)    :: traj
+type(fv3jedi_getvalues_traj), intent(in)    :: traj
 
 character(len=*), parameter :: myname = 'interp_ad'
 
@@ -1180,7 +1180,7 @@ lmask = .true.       ! Mask
 
 !Initialize BUMP
 call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                                nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
+                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
 
 !Release memory
 deallocate(area)

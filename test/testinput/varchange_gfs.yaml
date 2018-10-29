@@ -39,6 +39,7 @@ LinearVariableChangeTests:
     - o3c
 - varchange: Control2Model
   toleranceInverse: -0.1
+  testinverse: 0
   inputVariables:
     variables:
     - ua
