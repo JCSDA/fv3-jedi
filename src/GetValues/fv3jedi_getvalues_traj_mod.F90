@@ -21,6 +21,8 @@ type :: fv3jedi_getvalues_traj
  real(kind=kind_real), allocatable :: q(:,:,:)
  type(bump_type) :: bump
  logical :: lalloc = .false.
+ contains
+  final :: dummy_final !Work around for gcc compiler bug
 end type fv3jedi_getvalues_traj
 
 #define LISTED_TYPE fv3jedi_getvalues_traj
@@ -81,6 +83,12 @@ endif
 call fv3jedi_getvalues_traj_registry%remove(c_key_self)
 
 end subroutine c_fv3jedi_getvalues_traj_delete
+
+! ------------------------------------------------------------------------------
+
+subroutine dummy_final(self)
+type(fv3jedi_getvalues_traj), intent(inout) :: self
+end subroutine dummy_final
 
 ! ------------------------------------------------------------------------------
 
