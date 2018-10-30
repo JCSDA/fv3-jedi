@@ -1133,7 +1133,7 @@ logical, allocatable :: lmask(:,:)
 
 integer, save :: bumpcount = 0
 character(len=5) :: cbumpcount
-character(len=16) :: bump_nam_prefix
+character(len=1024) :: bump_nam_prefix
 
 type(fckit_mpi_comm) :: f_comm
 
@@ -1144,7 +1144,6 @@ f_comm = fckit_mpi_comm()
 bumpcount = bumpcount + 1
 write(cbumpcount,"(I0.5)") bumpcount
 bump_nam_prefix = 'fv3jedi_bump_data_'//cbumpcount
-
 
 !Get the Solution dimensions
 !---------------------------
@@ -1181,6 +1180,9 @@ lmask = .true.       ! Mask
 !Initialize BUMP
 call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
                         nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
+
+!Run BUMP drivers
+call bump%run_drivers
 
 !Release memory
 deallocate(area)
