@@ -1,19 +1,19 @@
 
 !> Fortran module handling interpolation trajectory for the FV3 model
 
-module fv3jedi_getvaltraj_mod
+module fv3jedi_getvalues_traj_mod
 
 !General JEDI uses
-use fv3jedi_kinds_mod
+use fv3jedi_kinds_mod, only: kind_real
 use iso_c_binding
 use type_bump, only: bump_type
 
 implicit none
 private
 
-public fv3jedi_getvaltraj
-public fv3jedi_getvaltraj_registry
-public c_fv3jedi_getvaltraj_setup, c_fv3jedi_getvaltraj_delete
+public fv3jedi_getvalues_traj
+public fv3jedi_getvalues_traj_registry
+public c_fv3jedi_getvalues_traj_setup, c_fv3jedi_getvalues_traj_delete
 
 type :: fv3jedi_getvaltraj
  integer :: bumpid, ngrid
@@ -22,15 +22,15 @@ type :: fv3jedi_getvaltraj
  real(kind=kind_real), allocatable :: q(:,:,:)
  type(bump_type) :: bump
  logical :: lalloc = .false.
-end type fv3jedi_getvaltraj
+end type fv3jedi_getvalues_traj
 
-#define LISTED_TYPE fv3jedi_getvaltraj
+#define LISTED_TYPE fv3jedi_getvalues_traj
 
 !> Linked list interface - defines registry_t type
 #include "linkedList_i.f"
 
 !> Global registry
-type(registry_t) :: fv3jedi_getvaltraj_registry
+type(registry_t) :: fv3jedi_getvalues_traj_registry
 
 ! ------------------------------------------------------------------------------
 contains
@@ -40,35 +40,35 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_getvaltraj_setup(c_key_self) bind(c,name='fv3jedi_getvaltraj_setup_f90')
+subroutine c_fv3jedi_getvalues_traj_setup(c_key_self) bind(c,name='fv3jedi_getvalues_traj_setup_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self
-type(fv3jedi_getvaltraj), pointer :: self
+type(fv3jedi_getvalues_traj), pointer :: self
 
 ! Init, add and get key
 ! ---------------------
-call fv3jedi_getvaltraj_registry%init()
-call fv3jedi_getvaltraj_registry%add(c_key_self)
-call fv3jedi_getvaltraj_registry%get(c_key_self,self)
+call fv3jedi_getvalues_traj_registry%init()
+call fv3jedi_getvalues_traj_registry%add(c_key_self)
+call fv3jedi_getvalues_traj_registry%get(c_key_self,self)
 
 self%lalloc = .false.
 self%bumpid = c_key_self !Just use key for the BUMP identifier
 self%ngrid = 0
 self%noobs = .false.
 
-end subroutine c_fv3jedi_getvaltraj_setup
+end subroutine c_fv3jedi_getvalues_traj_setup
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_getvaltraj_delete(c_key_self) bind(c,name='fv3jedi_getvaltraj_delete_f90')
+subroutine c_fv3jedi_getvalues_traj_delete(c_key_self) bind(c,name='fv3jedi_getvalues_traj_delete_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self
-type(fv3jedi_getvaltraj), pointer :: self
+type(fv3jedi_getvalues_traj), pointer :: self
 
 ! Get key
-call fv3jedi_getvaltraj_registry%get(c_key_self, self)
+call fv3jedi_getvalues_traj_registry%get(c_key_self, self)
 
 if (self%lalloc) then
   if (allocated(self%t)) deallocate(self%t)
@@ -77,10 +77,10 @@ if (self%lalloc) then
 endif
 
 ! Remove key
-call fv3jedi_getvaltraj_registry%remove(c_key_self)
+call fv3jedi_getvalues_traj_registry%remove(c_key_self)
 
-end subroutine c_fv3jedi_getvaltraj_delete
+end subroutine c_fv3jedi_getvalues_traj_delete
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_getvaltraj_mod
+end module fv3jedi_getvalues_traj_mod

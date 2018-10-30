@@ -17,7 +17,6 @@ use ufo_geovals_mod
 
 use fv3jedi_constants_mod, only: rad2deg, constoz
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_io_mod 

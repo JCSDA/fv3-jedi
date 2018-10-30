@@ -34,9 +34,10 @@ cost_function:
       maximum_condition_number: 1.0e6
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
+#    Covariance:
 #      covariance: BUMP
 #      default_seed: 1
-#      prefix: fv3jedi_geos
+#      prefix: fv3jedi_gfs
 #      method: cor
 #      strategy: specific_univariate
 #      new_nicas: 1     # Recompute convolution parameters
@@ -86,7 +87,6 @@ cost_function:
 #          - qic
 #          - qlc
 #          - o3c
-  Jo:
   Jo:
     ObsTypes:
     - ObsType: Aircraft

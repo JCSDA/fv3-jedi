@@ -641,7 +641,7 @@ allocate(mask(ngrid_glo))
 mask = .true.
 
 !Initialize mpl
-call mpl%init(mpi_comm_world)
+call mpl%init()
 
 !Create kdtree
 call kdtree%create(mpl,ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
