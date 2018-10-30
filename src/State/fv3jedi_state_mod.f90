@@ -461,9 +461,9 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
   use dcmip_initial_conditions_test_4, only : test4_baroclinic_wave
 
   !FV3 Test Cases
-  use fv_arrays_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
-  use test_cases_mod, only: init_case, test_case
-  use fv_control_mod, only: fv_init, pelist_all
+  use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
+  use test_cases_nlm_mod, only: init_case, test_case
+  use fv_control_nlm_mod, only: fv_init, pelist_all
 
   implicit none
 

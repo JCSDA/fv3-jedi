@@ -104,7 +104,6 @@ end subroutine sfc_10m_winds
 subroutine uv_to_vortdivg(geom,u,v,ua,va,vort,divg)
 
  use mpp_domains_mod, only: mpp_update_domains, mpp_get_boundary, DGRID_NE, CGRID_NE
- use fv_arrays_mod, only: fv_atmos_type
 
  implicit none
  type(fv3jedi_geom),   intent(inout)  :: geom
@@ -127,8 +126,6 @@ subroutine uv_to_vortdivg(geom,u,v,ua,va,vort,divg)
 
  integer :: i,j,k,isc,iec,jsc,jec,npz
  real(kind=kind_real) :: dt
-
- type(fv_atmos_type) ::FV
 
  !       x-----------------x
  !       |                 |

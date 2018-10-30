@@ -19,8 +19,8 @@ use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_i
 use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 
 !Uses for generating geometry using FV3 routines
-use fv_arrays_mod,      only: fv_atmos_type, deallocate_fv_atmos_type
-use fv_control_mod,     only: fv_init, pelist_all
+use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
+use fv_control_nlm_mod, only: fv_init, pelist_all
 
 implicit none
 private
