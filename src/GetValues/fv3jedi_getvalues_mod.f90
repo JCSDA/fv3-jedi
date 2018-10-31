@@ -49,7 +49,7 @@ type(bump_type), target  :: bump
 type(bump_type), pointer :: pbump => null()
 logical, target  :: bump_alloc = .false.
 logical, pointer :: pbump_alloc => null()
-integer, target, save :: bumpid = 0
+integer, target, save :: bumpid = 1000
 integer, pointer      :: pbumpid => null()
 
 integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg

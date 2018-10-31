@@ -15,7 +15,7 @@ public fv3jedi_getvalues_traj
 public fv3jedi_getvalues_traj_registry
 public c_fv3jedi_getvalues_traj_setup, c_fv3jedi_getvalues_traj_delete
 
-type :: fv3jedi_getvaltraj
+type :: fv3jedi_getvalues_traj
  integer :: bumpid, ngrid
  logical :: noobs
  real(kind=kind_real), allocatable :: t(:,:,:)
