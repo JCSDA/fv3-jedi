@@ -708,6 +708,8 @@ testinput/3dvar_gfs.yaml
 testinput/3dvar_sbb_gfs.yaml
 testinput/3dvar_amsua_gfs.yaml
 testinput/3dvar_geos.yaml
+testinput/3dfgat_gfs.yaml
+testinput/3dfgat_geos.yaml
 testinput/4dvar.dripcg_gfs.yaml
 testinput/4dvar.dripcg_geos.yaml
 testinput/forecast_gfs.yaml
@@ -737,6 +739,7 @@ compare.sh
 
 list( APPEND fv3jedi_testoutput
 testoutput/hofx.test  
+testoutput/3dfgat.test
 testoutput/3dvar.test
 testoutput/4dvar.dripcg.test
 testoutput/4dvar.drplanczos.test
@@ -1025,6 +1028,21 @@ ecbuild_add_test( TARGET test_fv3jedi_3dvar_geos
                   ARGS "testinput/3dvar_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_3dfgat_gfs
+                  TYPE EXE
+                  SOURCES ../mains/fv3jedi4DVar.cc
+                  ARGS "testinput/3dfgat_gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_3dfgat_geos
+                  TYPE EXE
+                  SOURCES ../mains/fv3jedi4DVar.cc
+                  ARGS "testinput/3dfgat_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
 
 #ecbuild_add_test( TARGET test_fv3jedi_dirac_bump_gfs
 #                  TYPE SCRIPT

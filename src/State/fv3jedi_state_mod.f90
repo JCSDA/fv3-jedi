@@ -17,7 +17,6 @@ use ufo_geovals_mod
 
 use fv3jedi_constants_mod, only: rad2deg, constoz
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_io_mod 
@@ -461,9 +460,9 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
   use dcmip_initial_conditions_test_4, only : test4_baroclinic_wave
 
   !FV3 Test Cases
-  use fv_arrays_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
-  use test_cases_mod, only: init_case, test_case
-  use fv_control_mod, only: fv_init, pelist_all
+  use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
+  use test_cases_nlm_mod, only: init_case, test_case
+  use fv_control_nlm_mod, only: fv_init, pelist_all
 
   implicit none
 
@@ -873,6 +872,8 @@ jec = state%jec
 
 gs = (iec-isc+1)*(jec-jsc+1)*state%npz
 
+pstat = 0.0_kind_real
+
 !ud
 if (allocated(state%ud)) then
   pstat(1,1) = minval(state%ud(isc:iec,jsc:jec,:))
@@ -889,58 +890,58 @@ endif
 
 !ua
 if (allocated(state%ua)) then
-  pstat(1,1) = minval(state%ua(isc:iec,jsc:jec,:))
-  pstat(2,1) = maxval(state%ua(isc:iec,jsc:jec,:))
-  pstat(3,1) = sqrt((sum(state%ua(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,3) = minval(state%ua(isc:iec,jsc:jec,:))
+  pstat(2,3) = maxval(state%ua(isc:iec,jsc:jec,:))
+  pstat(3,3) = sqrt((sum(state%ua(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !va
 if (allocated(state%va)) then
-  pstat(1,2) = minval(state%va(isc:iec,jsc:jec,:))
-  pstat(2,2) = maxval(state%va(isc:iec,jsc:jec,:))
-  pstat(3,2) = sqrt((sum(state%va(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,4) = minval(state%va(isc:iec,jsc:jec,:))
+  pstat(2,4) = maxval(state%va(isc:iec,jsc:jec,:))
+  pstat(3,4) = sqrt((sum(state%va(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !t
 if (allocated(state%t)) then
-  pstat(1,3) = minval(state%t(isc:iec,jsc:jec,:))
-  pstat(2,3) = maxval(state%t(isc:iec,jsc:jec,:))
-  pstat(3,3) = sqrt((sum(state%t(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,5) = minval(state%t(isc:iec,jsc:jec,:))
+  pstat(2,5) = maxval(state%t(isc:iec,jsc:jec,:))
+  pstat(3,5) = sqrt((sum(state%t(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !delp
 if (allocated(state%delp)) then
-  pstat(1,4) = minval(state%delp(isc:iec,jsc:jec,:))
-  pstat(2,4) = maxval(state%delp(isc:iec,jsc:jec,:))
-  pstat(3,4) = sqrt((sum(state%delp(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,6) = minval(state%delp(isc:iec,jsc:jec,:))
+  pstat(2,6) = maxval(state%delp(isc:iec,jsc:jec,:))
+  pstat(3,6) = sqrt((sum(state%delp(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !q
 if (allocated(state%q)) then
-  pstat(1,5) = minval(state%q(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(state%q(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(state%q(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,7) = minval(state%q(isc:iec,jsc:jec,:))
+  pstat(2,7) = maxval(state%q(isc:iec,jsc:jec,:))
+  pstat(3,7) = sqrt((sum(state%q(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !qi
 if (allocated(state%qi)) then
-  pstat(1,5) = minval(state%qi(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(state%qi(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(state%qi(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,8) = minval(state%qi(isc:iec,jsc:jec,:))
+  pstat(2,8) = maxval(state%qi(isc:iec,jsc:jec,:))
+  pstat(3,8) = sqrt((sum(state%qi(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !ql
 if (allocated(state%ql)) then
-  pstat(1,5) = minval(state%ql(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(state%ql(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(state%ql(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,9) = minval(state%ql(isc:iec,jsc:jec,:))
+  pstat(2,9) = maxval(state%ql(isc:iec,jsc:jec,:))
+  pstat(3,9) = sqrt((sum(state%ql(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 !o3
 if (allocated(state%o3)) then
-  pstat(1,5) = minval(state%o3(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(state%o3(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(state%o3(isc:iec,jsc:jec,:))/gs)**2)
+  pstat(1,10) = minval(state%o3(isc:iec,jsc:jec,:))
+  pstat(2,10) = maxval(state%o3(isc:iec,jsc:jec,:))
+  pstat(3,10) = sqrt((sum(state%o3(isc:iec,jsc:jec,:))/gs)**2)
 endif
 
 return

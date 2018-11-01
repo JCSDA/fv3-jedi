@@ -13,7 +13,6 @@ use datetime_mod
 
 use fv3jedi_constants_mod, only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_getvaltraj_mod, only: fv3jedi_getvaltraj
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_increment_io_mod
 use fv3jedi_kinds_mod, only: kind_real
@@ -927,23 +926,23 @@ endif
   
 !qi
 if (allocated(inc%qi)) then
-  pstat(1,5) = minval(inc%qi(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%qi(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%qi(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,6) = minval(inc%qi(isc:iec,jsc:jec,:))
+  pstat(2,6) = maxval(inc%qi(isc:iec,jsc:jec,:))
+  pstat(3,6) = sqrt((sum(inc%qi(isc:iec,jsc:jec,:))/gs3)**2)
 endif
 
 !ql
 if (allocated(inc%ql)) then
-  pstat(1,5) = minval(inc%ql(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%ql(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%ql(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,7) = minval(inc%ql(isc:iec,jsc:jec,:))
+  pstat(2,7) = maxval(inc%ql(isc:iec,jsc:jec,:))
+  pstat(3,7) = sqrt((sum(inc%ql(isc:iec,jsc:jec,:))/gs3)**2)
 endif
   
 !o3
 if (allocated(inc%o3)) then
-  pstat(1,5) = minval(inc%o3(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%o3(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%o3(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,8) = minval(inc%o3(isc:iec,jsc:jec,:))
+  pstat(2,8) = maxval(inc%o3(isc:iec,jsc:jec,:))
+  pstat(3,8) = sqrt((sum(inc%o3(isc:iec,jsc:jec,:))/gs3)**2)
 endif
 
 !psi
@@ -976,44 +975,44 @@ endif
   
 !qic
 if (allocated(inc%qic)) then
-  pstat(1,5) = minval(inc%qic(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%qic(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%qic(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,6) = minval(inc%qic(isc:iec,jsc:jec,:))
+  pstat(2,6) = maxval(inc%qic(isc:iec,jsc:jec,:))
+  pstat(3,6) = sqrt((sum(inc%qic(isc:iec,jsc:jec,:))/gs3)**2)
 endif
 
 !qlc
 if (allocated(inc%qlc)) then
-  pstat(1,5) = minval(inc%qlc(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%qlc(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%qlc(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,7) = minval(inc%qlc(isc:iec,jsc:jec,:))
+  pstat(2,7) = maxval(inc%qlc(isc:iec,jsc:jec,:))
+  pstat(3,7) = sqrt((sum(inc%qlc(isc:iec,jsc:jec,:))/gs3)**2)
 endif
   
 !o3c
 if (allocated(inc%o3c)) then
-  pstat(1,5) = minval(inc%o3c(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%o3c(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%o3c(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,8) = minval(inc%o3c(isc:iec,jsc:jec,:))
+  pstat(2,8) = maxval(inc%o3c(isc:iec,jsc:jec,:))
+  pstat(3,8) = sqrt((sum(inc%o3c(isc:iec,jsc:jec,:))/gs3)**2)
 endif
   
 !w
 if (allocated(inc%w)) then
-  pstat(1,5) = minval(inc%w(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%w(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%w(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,9) = minval(inc%w(isc:iec,jsc:jec,:))
+  pstat(2,9) = maxval(inc%w(isc:iec,jsc:jec,:))
+  pstat(3,9) = sqrt((sum(inc%w(isc:iec,jsc:jec,:))/gs3)**2)
 endif
 
 !delz
 if (allocated(inc%delz)) then
-  pstat(1,5) = minval(inc%delz(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%delz(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%delz(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,10) = minval(inc%delz(isc:iec,jsc:jec,:))
+  pstat(2,10) = maxval(inc%delz(isc:iec,jsc:jec,:))
+  pstat(3,10) = sqrt((sum(inc%delz(isc:iec,jsc:jec,:))/gs3)**2)
 endif
   
 !delp
 if (allocated(inc%delp)) then
-  pstat(1,5) = minval(inc%delp(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%delp(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%delp(isc:iec,jsc:jec,:))/gs3)**2)
+  pstat(1,4) = minval(inc%delp(isc:iec,jsc:jec,:))
+  pstat(2,4) = maxval(inc%delp(isc:iec,jsc:jec,:))
+  pstat(3,4) = sqrt((sum(inc%delp(isc:iec,jsc:jec,:))/gs3)**2)
 endif
 
 return
@@ -1648,7 +1647,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%w (jx,jy,jl)
+            ug%grid(1)%fld(imga,jl,9,1) = self%w (jx,jy,jl)
         enddo
       enddo
     enddo
@@ -1660,7 +1659,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%delz(jx,jy,jl)
+            ug%grid(1)%fld(imga,jl,10,1) = self%delz(jx,jy,jl)
         enddo
       enddo
     enddo
@@ -1672,7 +1671,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%delp(jx,jy,jl)
+            ug%grid(1)%fld(imga,jl,4,1) = self%delp(jx,jy,jl)
         enddo
       enddo
     enddo
@@ -1880,7 +1879,7 @@ if (allocated(self%w)) then
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%w   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+          self%w   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,9,1)
       enddo
     enddo
   enddo
@@ -1892,7 +1891,7 @@ if (allocated(self%delz)) then
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%delz(jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+          self%delz(jx,jy,jl) = ug%grid(1)%fld(imga,jl,10,1)
       enddo
     enddo
   enddo
@@ -1904,7 +1903,7 @@ if (allocated(self%delp)) then
     do jx=self%isc,self%iec
       imga = imga+1
       do jl=1,self%npz
-          self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
+          self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,4,1)
       enddo
     enddo
   enddo
