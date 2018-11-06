@@ -43,6 +43,7 @@ State:
   - ql
   - o3
 InterpTest:
+  tolerance: 1.0e-10
   Locations:
     Rdist: '1'
     Nrandom: '100'
