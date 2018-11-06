@@ -716,12 +716,11 @@ testinput/forecast_gfs.yaml
 testinput/forecast_geos.yaml
 testinput/hofx_gfs.yaml
 testinput/hofx_geos.yaml
+testinput/hyb4densvar.yaml
 testinput/dirac.bump_gfs.yaml
 testinput/dirac.bump_geos.yaml
 testinput/increment_gfs.yaml
 testinput/increment_geos.yaml
-testinput/3denvar.bump_gfs.yaml
-testinput/3denvar.bump_geos.yaml
 testinput/errorcov_gfs.yaml
 testinput/errorcov_geos.yaml
 testinput/localization_gfs.yaml
