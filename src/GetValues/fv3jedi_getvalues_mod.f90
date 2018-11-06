@@ -516,10 +516,8 @@ do jvar = 1, vars%nv
 
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
+  call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
 
-  if (.not.allocated(gom%geovals(jvar)%vals)) then
-    call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
-  endif
 
   !Run some basic checks on the interpolation
   !------------------------------------------
@@ -603,7 +601,7 @@ subroutine getvalues_tl(geom, inc, locs, vars, gom, traj)
 
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
-type(fv3jedi_increment),  intent(inout) :: inc 
+type(fv3jedi_increment),  intent(in)    :: inc 
 type(ioda_locs),          intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
@@ -698,11 +696,8 @@ do jvar = 1, vars%nv
 
     nvl = inc%npz
     do_interp = .true.
-    call T_to_Tv_tl(geom, traj%t, inc%t, traj%q, inc%q )
-    geovalm = inc%t
+    call T_to_Tv_tl(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
     geoval => geovalm
-
-  case ("atmosphere_ln_pressure_coordinate")
 
   case ("humidity_mixing_ratio")
   
@@ -711,75 +706,16 @@ do jvar = 1, vars%nv
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm  
 
-  case ("air_pressure")
-
-  case ("air_pressure_levels")
- 
-  case ("geopotential_height")
-
-  case ("geopotential_height_levels")
-
-  case ("sfc_geopotential_height")
-
-  case ("mass_concentration_of_ozone_in_air")
-
-  case ("mass_concentration_of_carbon_dioxide_in_air")
-
-  case ("atmosphere_mass_content_of_cloud_liquid_water")
-
-  case ("atmosphere_mass_content_of_cloud_ice")
-
-  case ("effective_radius_of_cloud_liquid_water_particle")
-
-  case ("effective_radius_of_cloud_ice_particle")
-
-  case ("Water_Fraction")
-
-  case ("Land_Fraction")
- 
-  case ("Ice_Fraction")
- 
-  case ("Snow_Fraction")
- 
-  case ("Water_Temperature")
- 
-  case ("Land_Temperature")
- 
-  case ("Ice_Temperature")
-
-  case ("Snow_Temperature")
-
-  case ("Snow_Depth")
-
-  case ("Vegetation_Fraction")
-
-  case ("Sfc_Wind_Speed")
-
-  case ("Sfc_Wind_Direction")
-
-  case ("Lai")
-
-  case ("Soil_Moisture")
-
-  case ("Soil_Temperature")
-
-  case ("Land_Type_Index")
-
-  case ("Vegetation_Type")
-
-  case ("Soil_Type")
-
   case default
 
     call abor1_ftn(trim(myname)//"unknown variable")
 
   end select
 
+
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
-  if (.not.allocated(gom%geovals(jvar)%vals)) then
-    call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
-  endif
+  call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
 
 
   !Run some basic checks on the interpolation
@@ -881,6 +817,7 @@ allocate(geovalm(isc:iec,jsc:jec,npz))
 geovale = 0.0_kind_real
 geovalm = 0.0_kind_real
 
+
 ! Interpolate increment to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
@@ -921,72 +858,12 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
-  case ("atmosphere_ln_pressure_coordinate")
-
   case ("humidity_mixing_ratio")
   
     nvl = npz
     do_interp = .true.
     geoval => geovalm
-
-  case ("air_pressure")
-
-  case ("air_pressure_levels")
-
-  case ("geopotential_height")
-
-  case ("geopotential_height_levels")
-
-  case ("sfc_geopotential_height")
-
-  case ("mass_concentration_of_ozone_in_air")
-
-  case ("mass_concentration_of_carbon_dioxide_in_air")
-
-  case ("atmosphere_mass_content_of_cloud_liquid_water")
-
-  case ("atmosphere_mass_content_of_cloud_ice")
-
-  case ("effective_radius_of_cloud_liquid_water_particle")
-
-  case ("effective_radius_of_cloud_ice_particle")
-
-  case ("Water_Fraction")
-
-  case ("Land_Fraction")
  
-  case ("Ice_Fraction")
- 
-  case ("Snow_Fraction")
- 
-  case ("Water_Temperature")
- 
-  case ("Land_Temperature")
- 
-  case ("Ice_Temperature")
-
-  case ("Snow_Temperature")
-
-  case ("Snow_Depth")
-
-  case ("Vegetation_Fraction")
-
-  case ("Sfc_Wind_Speed")
-
-  case ("Sfc_Wind_Direction")
-
-  case ("Lai")
-
-  case ("Soil_Moisture")
-
-  case ("Soil_Temperature")
-
-  case ("Land_Type_Index")
-
-  case ("Vegetation_Type")
-
-  case ("Soil_Type")
-
   case default
 
     call abor1_ftn(trim(myname)//"unknown variable")
@@ -1000,7 +877,6 @@ do jvar = 1, vars%nv
     do jlev = nvl, 1, -1
       do jloc = 1,locs%nlocs
         obs_increment(jloc,1) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
-        gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = 0.0_kind_real
       enddo
       call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
       ii = 0
@@ -1017,8 +893,8 @@ do jvar = 1, vars%nv
     enddo
   endif
 
-  !Part 3, back to state variables
-  !-------------------------------
+  !Part 3, back to increment variables
+  !-----------------------------------
  
   select case (trim(vars%fldnames(jvar)))
  
@@ -1040,72 +916,11 @@ do jvar = 1, vars%nv
 
   case ("virtual_temperature")
     
-    inc%t = geovalm
-    call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q )
-
-  case ("atmosphere_ln_pressure_coordinate")
+    call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
 
   case ("humidity_mixing_ratio")
   
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
-
-  case ("air_pressure")
-
-  case ("air_pressure_levels")
- 
-  case ("geopotential_height")
-
-  case ("geopotential_height_levels")
-
-  case ("sfc_geopotential_height")
-
-  case ("mass_concentration_of_ozone_in_air")
-
-  case ("mass_concentration_of_carbon_dioxide_in_air")
-
-  case ("atmosphere_mass_content_of_cloud_liquid_water")
-
-  case ("atmosphere_mass_content_of_cloud_ice")
-
-  case ("effective_radius_of_cloud_liquid_water_particle")
-
-  case ("effective_radius_of_cloud_ice_particle")
-
-  case ("Water_Fraction")
-
-  case ("Land_Fraction")
- 
-  case ("Ice_Fraction")
- 
-  case ("Snow_Fraction")
- 
-  case ("Water_Temperature")
- 
-  case ("Land_Temperature")
- 
-  case ("Ice_Temperature")
-
-  case ("Snow_Temperature")
-
-  case ("Snow_Depth")
-
-  case ("Vegetation_Fraction")
-
-  case ("Sfc_Wind_Speed")
-
-  case ("Sfc_Wind_Direction")
-
-  case ("Lai")
-
-  case ("Soil_Moisture")
-
-  case ("Soil_Temperature")
-
-  case ("Land_Type_Index")
-
-  case ("Vegetation_Type")
-
-  case ("Soil_Type")
 
   case default
 
@@ -1133,15 +948,19 @@ integer,           intent(in)    :: jvar    !Current variable
 integer,           intent(in)    :: gvlev   !Number of model levels
 logical,           intent(in)    :: lastvar !Logical true if on last var to go into gom
 
-! Set number of levels, nobs already set from total locs
-gom%geovals(jvar)%nval = gvlev
+if (.not.allocated(gom%geovals(jvar)%vals)) then
 
-! Allocate %vals
-allocate(gom%geovals(jvar)%vals(gom%geovals(jvar)%nval,gom%geovals(jvar)%nobs))
-gom%geovals(jvar)%vals = 0.0_kind_real
+  ! Set number of levels, nobs already set from total locs
+  gom%geovals(jvar)%nval = gvlev
+  
+  ! Allocate %vals
+  allocate(gom%geovals(jvar)%vals(gom%geovals(jvar)%nval,gom%geovals(jvar)%nobs))
+  gom%geovals(jvar)%vals = 0.0_kind_real
+  
+  ! Set flag for internal data arrays having been set
+  if (lastvar) gom%linit  = .true.
 
-! Set flag for internal data arrays having been set
-if (lastvar) gom%linit  = .true.
+endif
 
 end subroutine allocate_geovals_vals
 

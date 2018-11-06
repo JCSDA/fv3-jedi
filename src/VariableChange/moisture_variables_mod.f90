@@ -176,33 +176,16 @@ real(kind=kind_real), intent(in ) :: q  (geom%isc:geom%iec,geom%jsc:geom%jec, 1:
 real(kind=kind_real), intent(out) :: qmr(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
-integer :: isc,iec,jsc,jec,npz
-integer :: i,j,k
-real(kind=kind_real) :: c3
-
-
-! Grid convenience
-! ----------------
-isc = geom%isc
-iec = geom%iec
-jsc = geom%jsc
-jec = geom%jec
-npz = geom%npz
-
+real(kind=kind_real) :: c3(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 
 ! Convert specific humidity
 ! -------------------------
-do k = 1,npz
-  do j = jsc,jec
-    do i = isc,iec
-       c3 = 1.0_kind_real / (1.0_kind_real - q(i,j,k))
-       qmr(i,j,k) = 1000.0_kind_real * q(i,j,k) * c3
-    enddo
-  enddo
-enddo 
-
+c3 = 1.0_kind_real / (1.0_kind_real - q)
+qmr = 1000.0_kind_real * q * c3
 
 end subroutine crtm_mixratio
+
+!----------------------------------------------------------------------------
 
 subroutine crtm_mixratio_tl(geom,q,q_tl,qmr_tl)
 
@@ -215,33 +198,18 @@ real(kind=kind_real), intent(in ) :: q_tl  (geom%isc:geom%iec,geom%jsc:geom%jec,
 real(kind=kind_real), intent(out) :: qmr_tl(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
-integer :: isc,iec,jsc,jec,npz
-integer :: i,j,k
-real(kind=kind_real) :: c3, c3_tl
-
-
-! Grid convenience
-! ----------------
-isc = geom%isc
-iec = geom%iec
-jsc = geom%jsc
-jec = geom%jec
-npz = geom%npz
-
+real(kind=kind_real) :: c3   (geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real) :: c3_tl(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 
 ! Convert specific humidity
 ! -------------------------
-do k = 1,npz
-  do j = jsc,jec
-    do i = isc,iec
-       c3_tl = -((-q_tl(i,j,k))/(1.0_kind_real-q(i,j,k))**2)
-       c3 = 1.0_kind_real / (1.0_kind_real - q(i,j,k))
-       qmr_tl(i,j,k) = 1000.0_kind_real*(q_tl(i,j,k)*c3+q(i,j,k)*c3_tl)
-    enddo
-  enddo
-enddo 
+c3 = 1.0_kind_real / (1.0_kind_real - q)
+c3_tl = -((-q_tl)/(1.0_kind_real-q)**2)
+qmr_tl = 1000.0_kind_real*(q_tl*c3+q*c3_tl)
 
 end subroutine crtm_mixratio_tl
+
+!----------------------------------------------------------------------------
 
 subroutine crtm_mixratio_ad(geom,q,q_ad,qmr_ad)
 
@@ -254,36 +222,21 @@ real(kind=kind_real), intent(inout) :: q_ad  (geom%isc:geom%iec,geom%jsc:geom%je
 real(kind=kind_real), intent(inout) :: qmr_ad(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
-integer :: isc,iec,jsc,jec,npz
-integer :: i,j,k
-real(kind=kind_real) :: c3, c3_ad
-
-
-! Grid convenience
-! ----------------
-isc = geom%isc
-iec = geom%iec
-jsc = geom%jsc
-jec = geom%jec
-npz = geom%npz
-
+real(kind=kind_real) :: c3   (geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real) :: c3_ad(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 
 ! Convert specific humidity
 ! -------------------------
-q_ad = 0.0_kind_real
-do k=npz,1,-1
-  do j=jec,jsc,-1
-    do i=iec,isc,-1
-     c3_ad = 1000.0_kind_real*q(i,j,k)*qmr_ad(i,j,k)
-     c3 = 1.0_kind_real / (1.0_kind_real - q(i,j,k))
-     q_ad(i,j,k) = q_ad(i,j,k) + c3_ad/(1.0_kind_real-q(i, j, k))**2 + 1000.0_kind_real*c3*qmr_ad(i,j,k)
-     qmr_ad(i, j, k) = 0.0_kind_real
-    end do
-  end do
-end do
+c3 = 1.0_kind_real/(1.0_kind_real-q)
+c3_ad = 1000.0_kind_real*q*qmr_ad
+q_ad = q_ad + c3_ad/(1.0_kind_real-q)**2 + 1000.0_kind_real*c3*qmr_ad
+qmr_ad = 0.0_8
 
 end subroutine crtm_mixratio_ad
 
+
+!----------------------------------------------------------------------------
+! Relative to specific humidity ---------------------------------------------
 !----------------------------------------------------------------------------
 
 subroutine rh_to_q(geom,qsat,rh,q)
@@ -294,15 +247,7 @@ subroutine rh_to_q(geom,qsat,rh,q)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
- integer :: i,j,k
- 
- do k=1,geom%npz
-   do j=geom%jsc,geom%jec
-     do i=geom%isc,geom%iec
-       q(i,j,k) = rh(i,j,k) * qsat(i,j,k)
-     end do
-   end do
- end do
+ q = rh * qsat
 
 end subroutine rh_to_q
 
@@ -316,15 +261,7 @@ subroutine rh_to_q_tl(geom,qsat,rh,q)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
- integer :: i,j,k
- 
- do k=1,geom%npz
-   do j=geom%jsc,geom%jec
-     do i=geom%isc,geom%iec
-       q(i,j,k) = rh(i,j,k) * qsat(i,j,k)
-     end do
-   end do
- end do
+ q = rh * qsat
 
 end subroutine rh_to_q_tl
 
@@ -338,19 +275,13 @@ subroutine rh_to_q_ad(geom,qsat,rh,q)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
- integer :: i,j,k
- 
- do k=geom%npz,1,-1
-   do j=geom%jec,geom%jsc,-1
-     do i=geom%iec,geom%isc,-1
-       rh(i,j,k) = rh(i,j,k) + q(i,j,k) * qsat(i,j,k)
-     end do
-   end do
- end do
+ rh = rh + q * qsat
 
 end subroutine rh_to_q_ad
 
+
 !----------------------------------------------------------------------------
+! Specific to relative humidity ---------------------------------------------
 !----------------------------------------------------------------------------
 
 subroutine q_to_rh(geom,qsat,q,rh)
@@ -361,15 +292,7 @@ subroutine q_to_rh(geom,qsat,q,rh)
  real(kind=kind_real), intent(in)    ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
- integer :: i,j,k
- 
- do k=1,geom%npz
-   do j=geom%jsc,geom%jec
-     do i=geom%isc,geom%iec
-       rh(i,j,k) = q(i,j,k) / qsat(i,j,k)
-     end do
-   end do
- end do
+ rh = q / qsat
 
 end subroutine q_to_rh
 
@@ -383,15 +306,7 @@ subroutine q_to_rh_tl(geom,qsat,q,rh)
  real(kind=kind_real), intent(in)    ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
- integer :: i,j,k
- 
- do k=1,geom%npz
-   do j=geom%jsc,geom%jec
-     do i=geom%isc,geom%iec
-       rh(i,j,k) = q(i,j,k) / qsat(i,j,k)
-     end do
-   end do
- end do
+ rh = q / qsat
 
 end subroutine q_to_rh_tl
 
@@ -405,18 +320,13 @@ subroutine q_to_rh_ad(geom,qsat,q,rh)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
- integer :: i,j,k
- 
- do k=geom%npz,1,-1
-   do j=geom%jec,geom%jsc,-1
-     do i=geom%iec,geom%isc,-1
-       q(i,j,k) = rh(i,j,k) / qsat(i,j,k)
-     end do
-   end do
- end do
+ q = rh / qsat
 
 end subroutine q_to_rh_ad
 
+
+!----------------------------------------------------------------------------
+! Utilities -----------------------------------------------------------------
 !----------------------------------------------------------------------------
 
 subroutine ESINIT(TABLESIZE,DEGSUBS,TMINTBL,TMAXTBL,ESTBLX)
@@ -462,6 +372,7 @@ subroutine ESINIT(TABLESIZE,DEGSUBS,TMINTBL,TMAXTBL,ESTBLX)
 
  end subroutine ESINIT
 
+!----------------------------------------------------------------------------
 
 subroutine QSATLQU0(QS,TL,TMAXTBL)
 !SUPERSATURATED AS LIQUID
@@ -508,6 +419,7 @@ subroutine QSATLQU0(QS,TL,TMAXTBL)
 
 end subroutine QSATLQU0
 
+!----------------------------------------------------------------------------
 
 subroutine QSATICE0(QS,TL)
 !SUPERSATURATED AS ICE
