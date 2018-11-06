@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.basemap import Basemap
 
 #User input required for the follwing:
-plot_diff = 0         #Plot path1/file - path2/file
+plot_diff = 1         #Plot path1/file - path2/file
 model = 'gfs'
 cube = 48
 filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20181004.000000.Jnorm.fv_tracer.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20180415.000000.3DVar.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
@@ -27,9 +27,9 @@ elif (cube == 96):
     file_tplt_befr2 = 'fv_core.res.tile'
 
 xdimvar = 'xaxis_1'                  #What to read to get dimension
-ydimvar = 'yaxis_1'                  #What to read to get dimension
+ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'sphum'                    #Variable to plot
+readvar = 'T'                    #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
 plot_level = 50                      #If 3D plot this level
 

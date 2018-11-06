@@ -21,16 +21,14 @@ StateTest:
     - '10.0'
     random_seed: '560921'
   StateFile:
-    restart_type: gfs
-    datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-    datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+    restart_type: geos
+    datapath_read: Data/INPUTS/GEOS_c48/
     datapath_write: 'Data/'
-    date: '2018-04-15T00:00:00Z'
+    date: '2018-04-14T21:00:00Z'
     read_crtm_surface: 0
-    filename_core: 20180415.000000.fv_core.res.nc
-    filename_cplr: 20180415.000000.coupler.res
-    filename_trcr: 20180415.000000.fv_tracer.res.nc
-    nml_file: Data/fv3files/input_gfs_c48.nml
+    filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
+    filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
+    nml_file: Data/fv3files/input_geos_c48.nml
     variables:
     - ud
     - vd
