@@ -56,8 +56,8 @@ InterpTest:
     random_seed: '560921'
   GeoVaLs:
     variables:
-    - upper_air_u_component
-    - upper_air_v_component
+    - eastward_wind
+    - northward_wind
     - temperature
     - specific_humidity
     - humidity_mixing_ratio
