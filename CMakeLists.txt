@@ -59,13 +59,19 @@ include_directories( ${OOPS_INCLUDE_DIRS} )
 ecbuild_use_package( PROJECT ufo )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
+# MPI
+ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
+ecbuild_include_mpi()
+link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+
 ################################################################################
 # Definitions
 ################################################################################
 
-#Uncomment to compile with TLM/ADM
-set(COMPDEFS "${COMPDEFS};-DTLADPRES")
-add_definitions( ${COMPDEFS} )
+# Additional user supplied compiler definitions
+set( COMPDEFS_ "${COMPDEFS}")
+add_definitions( ${COMPDEFS_} )
+include( fv3jedi_compiler_flags )
 
 ################################################################################
 # Export package info
@@ -91,7 +97,6 @@ endforeach()
 # Sources
 ################################################################################
 
-include( fv3jedi_compiler_flags )
 include_directories( ${FV3JEDI_INCLUDE_DIRS} ${FV3JEDI_EXTRA_INCLUDE_DIRS}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_SOURCE_DIR}/src
