@@ -23,7 +23,7 @@ cost_function:
  cost_type: 4D-Ens-Var
  window_begin: '2018-04-14T21:00:00Z'
  window_length: PT6H
- window_sub: PT2H
+ window_sub: PT6H
  variables:
  - ud
  - vd
@@ -65,50 +65,6 @@ cost_function:
      datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
      datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
      datapath_write: 'Data/'
-     date: '2018-04-14T23:00:00Z'
-     read_crtm_surface: 0
-     filename_core: 20180414.230000.fv_core.res.nc
-     filename_cplr: 20180414.230000.coupler.res
-     filename_trcr: 20180414.230000.fv_tracer.res.nc
-     nml_file: Data/fv3files/input_gfs_c48.nml
-     trc_file: Data/fv3files/field_table
-     variables:
-     - ud
-     - vd
-     - ua
-     - va
-     - t
-     - delp
-     - q
-     - qi
-     - ql
-     - o3
-   - restart_type: gfs
-     datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-     datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-     datapath_write: 'Data/'
-     date: '2018-04-15T01:00:00Z'
-     read_crtm_surface: 0
-     filename_core: 20180415.010000.fv_core.res.nc
-     filename_cplr: 20180415.010000.coupler.res
-     filename_trcr: 20180415.010000.fv_tracer.res.nc
-     nml_file: Data/fv3files/input_gfs_c48.nml
-     trc_file: Data/fv3files/field_table
-     variables:
-     - ud
-     - vd
-     - ua
-     - va
-     - t
-     - delp
-     - q
-     - qi
-     - ql
-     - o3
-   - restart_type: gfs
-     datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-     datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-     datapath_write: 'Data/'
      date: '2018-04-15T03:00:00Z'
      read_crtm_surface: 0
      filename_core: 20180415.030000.fv_core.res.nc
@@ -128,62 +84,8 @@ cost_function:
      - ql
      - o3
   Covariance:
-   covariance: hybrid
-   ensemble_weight: "0.3"
-   static: 
-    covariance: BUMP
-    default_seed: 1
-    prefix: fv3jedi_gfs_static
-    method: cor
-    strategy: specific_univariate
-    new_nicas: 1     # Recompute convolution parameters
-    load_nicas: 0    # Load precomputed convolution parameters
-    sam_read: 0
-    sam_write: 1
-    mask_check: 0
-    draw_type: random_uniform
-    nc1: 100
-    ntry: 3
-    nrep:  2
-    nc3: 10
-    dc: 1000.0e3
-    nl0r: 1
-    minim_algo: "hooke"
-    rvflt: 0.0
-    lsqrt: 1
-    resol: 10.0
-    nicas_interp: bilin
-    network: 0
-    mpicom: 2
-    forced_radii: 1
-    rh: 1000e3
-    rv: 100
-    advmode: 0
-    diag_interp: bilin
-    date: '2018-04-15T00:00:00Z'
-    variable_changes:
-    - varchange: Identity
-      inputVariables:
-        variables:
-        - ua
-        - va
-        - t
-        - ps
-        - q
-        - qi
-        - ql
-        - o3
-      outputVariables:
-        variables:
-        - ua
-        - va
-        - t
-        - ps
-        - q
-        - qi
-        - ql
-        - o3
    covariance_time:
+ # ----------------------
    - covariance: ensemble
      members: '4'
      variables:
@@ -201,7 +103,7 @@ cost_function:
       - o3
      date: '2018-04-14T21:00:00Z'
      localization:
-      localization: BUMP
+      localization: ID
       date: '2018-04-14T21:00:00Z'
       variables:
         variables:
@@ -216,140 +118,18 @@ cost_function:
         - qi
         - ql
         - o3
-      prefix: fv3jedi_gfs_ensemble
-      default_seed: 1
-      method: loc_norm
-      strategy: common
-      new_hdiag: 1
-      new_nicas: 1
-      mask_type: none
-      draw_type: random_uniform
-      nc1: 1024
-      ntry: 3
-      nrep: 2
-      nc3: 10
-      dc: 1000000
-      nl0r: 1
-      ne: 4
-      minim_algo: hooke
-      rvflt: 0
-      lsqrt: 1
-      resol: 4
-      nicas_interp: bilin
-      network: 0
-      mpicom: 2
-      advmode: 0
-      diag_interp: bilin
-      grid_output: 0
-     state:
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T21:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.210000.fv_core.res.nc
-       filename_cplr: 20180414.210000.coupler.res
-       filename_trcr: 20180414.210000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T21:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.210000.fv_core.res.nc
-       filename_cplr: 20180414.210000.coupler.res
-       filename_trcr: 20180414.210000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T21:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.210000.fv_core.res.nc
-       filename_cplr: 20180414.210000.coupler.res
-       filename_trcr: 20180414.210000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T21:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.210000.fv_core.res.nc
-       filename_cplr: 20180414.210000.coupler.res
-       filename_trcr: 20180414.210000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-   - covariance: ensemble
-     members: '4'
-     variables:
-      variables:
-      - ud
-      - vd
-      - ua
-      - va
-      - t
-      - delp
-      - ps
-      - q
-      - qi
-      - ql
-      - o3
-     date: '2018-04-14T23:00:00Z'
-     localization:
-      localization: BUMP
-      date: '2018-04-14T23:00:00Z'
-      variables:
+      bump_ensemble:
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-14T21:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
         variables:
         - ud
         - vd
@@ -357,145 +137,21 @@ cost_function:
         - va
         - t
         - delp
-        - ps
         - q
         - qi
         - ql
         - o3
-      prefix: fv3jedi_gfs_ensemble
-      default_seed: 1
-      method: loc_norm
-      strategy: common
-      new_hdiag: 1
-      new_nicas: 1
-      mask_type: none
-      draw_type: random_uniform
-      nc1: 1024
-      ntry: 3
-      nrep: 2
-      nc3: 10
-      dc: 1000000
-      nl0r: 1
-      ne: 4
-      minim_algo: hooke
-      rvflt: 0
-      lsqrt: 1
-      resol: 4
-      nicas_interp: bilin
-      network: 0
-      mpicom: 2
-      advmode: 0
-      diag_interp: bilin
-      grid_output: 0
-     state:
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T23:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.230000.fv_core.res.nc
-       filename_cplr: 20180414.230000.coupler.res
-       filename_trcr: 20180414.230000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T23:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.230000.fv_core.res.nc
-       filename_cplr: 20180414.230000.coupler.res
-       filename_trcr: 20180414.230000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T23:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.230000.fv_core.res.nc
-       filename_cplr: 20180414.230000.coupler.res
-       filename_trcr: 20180414.230000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-     - restart_type: gfs
-       datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
-       datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
-       datapath_write: 'Data/'
-       date: '2018-04-14T23:00:00Z'
-       read_crtm_surface: 0
-       filename_core: 20180414.230000.fv_core.res.nc
-       filename_cplr: 20180414.230000.coupler.res
-       filename_trcr: 20180414.230000.fv_tracer.res.nc
-       nml_file: Data/fv3files/input_gfs_c48.nml
-       trc_file: Data/fv3files/field_table
-       variables:
-       - ud
-       - vd
-       - ua
-       - va
-       - t
-       - delp
-       - q
-       - qi
-       - ql
-       - o3
-   - covariance: ensemble
-     members: '4'
-     variables:
-      variables:
-      - ud
-      - vd
-      - ua
-      - va
-      - t
-      - delp
-      - ps
-      - q
-      - qi
-      - ql
-      - o3
-     date: '2018-04-15T01:00:00Z'
-     localization:
-      localization: BUMP
-      date: '2018-04-15T01:00:00Z'
-      variables:
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-14T21:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
         variables:
         - ud
         - vd
@@ -503,26 +159,79 @@ cost_function:
         - va
         - t
         - delp
-        - ps
         - q
         - qi
         - ql
         - o3
-      prefix: fv3jedi_gfs_ensemble
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-14T21:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-14T21:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
+      standard_deviation: '1.0'
+      vertical_correlation: '0.4'
+      horizontal_length_scale: 2e6
+      maximum_condition_number: 1.0e6
+      datadir: "."
+      prefix: fv3jedi_gfs
       default_seed: 1
-      method: loc_norm
+      method: cor
       strategy: common
+      _strategy: specific_univariate
       new_hdiag: 1
-      new_nicas: 1
+      load_hdiag: 0
+      new_nicas: 0
+      load_nicas: 1
+      timeslot: 1
       mask_type: none
       draw_type: random_uniform
-      nc1: 1024
+      nc1: 864
       ntry: 3
       nrep: 2
       nc3: 10
       dc: 1000000
       nl0r: 1
-      ne: 4
+      _nl0r: 15
+      ne: 5
       minim_algo: hooke
       rvflt: 0
       lsqrt: 1
@@ -538,11 +247,11 @@ cost_function:
        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
        datapath_write: 'Data/'
-       date: '2018-04-15T01:00:00Z'
+       date: '2018-04-14T21:00:00Z'
        read_crtm_surface: 0
-       filename_core: 20180415.010000.fv_core.res.nc
-       filename_cplr: 20180415.010000.coupler.res
-       filename_trcr: 20180415.010000.fv_tracer.res.nc
+       filename_core: 20180414.210000.fv_core.res.nc
+       filename_cplr: 20180414.210000.coupler.res
+       filename_trcr: 20180414.210000.fv_tracer.res.nc
        nml_file: Data/fv3files/input_gfs_c48.nml
        trc_file: Data/fv3files/field_table
        variables:
@@ -560,11 +269,11 @@ cost_function:
        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
        datapath_write: 'Data/'
-       date: '2018-04-15T01:00:00Z'
+       date: '2018-04-14T21:00:00Z'
        read_crtm_surface: 0
-       filename_core: 20180415.010000.fv_core.res.nc
-       filename_cplr: 20180415.010000.coupler.res
-       filename_trcr: 20180415.010000.fv_tracer.res.nc
+       filename_core: 20180414.210000.fv_core.res.nc
+       filename_cplr: 20180414.210000.coupler.res
+       filename_trcr: 20180414.210000.fv_tracer.res.nc
        nml_file: Data/fv3files/input_gfs_c48.nml
        trc_file: Data/fv3files/field_table
        variables:
@@ -582,11 +291,11 @@ cost_function:
        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
        datapath_write: 'Data/'
-       date: '2018-04-15T01:00:00Z'
+       date: '2018-04-14T21:00:00Z'
        read_crtm_surface: 0
-       filename_core: 20180415.010000.fv_core.res.nc
-       filename_cplr: 20180415.010000.coupler.res
-       filename_trcr: 20180415.010000.fv_tracer.res.nc
+       filename_core: 20180414.210000.fv_core.res.nc
+       filename_cplr: 20180414.210000.coupler.res
+       filename_trcr: 20180414.210000.fv_tracer.res.nc
        nml_file: Data/fv3files/input_gfs_c48.nml
        trc_file: Data/fv3files/field_table
        variables:
@@ -604,11 +313,11 @@ cost_function:
        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
        datapath_write: 'Data/'
-       date: '2018-04-15T01:00:00Z'
+       date: '2018-04-14T21:00:00Z'
        read_crtm_surface: 0
-       filename_core: 20180415.010000.fv_core.res.nc
-       filename_cplr: 20180415.010000.coupler.res
-       filename_trcr: 20180415.010000.fv_tracer.res.nc
+       filename_core: 20180414.210000.fv_core.res.nc
+       filename_cplr: 20180414.210000.coupler.res
+       filename_trcr: 20180414.210000.fv_tracer.res.nc
        nml_file: Data/fv3files/input_gfs_c48.nml
        trc_file: Data/fv3files/field_table
        variables:
@@ -622,6 +331,7 @@ cost_function:
        - qi
        - ql
        - o3
+ # ----------------------
    - covariance: ensemble
      members: '4'
      variables:
@@ -639,7 +349,7 @@ cost_function:
       - o3
      date: '2018-04-15T03:00:00Z'
      localization:
-      localization: BUMP
+      localization: ID
       date: '2018-04-15T03:00:00Z'
       variables:
         variables:
@@ -654,21 +364,120 @@ cost_function:
         - qi
         - ql
         - o3
-      prefix: fv3jedi_gfs_ensemble
+      bump_ensemble:
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-15T03:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180415.030000.fv_core.res.nc
+        filename_cplr: 20180415.030000.coupler.res
+        filename_trcr: 20180415.030000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-15T03:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180415.030000.fv_core.res.nc
+        filename_cplr: 20180415.030000.coupler.res
+        filename_trcr: 20180415.030000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-15T03:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180415.030000.fv_core.res.nc
+        filename_cplr: 20180415.030000.coupler.res
+        filename_trcr: 20180415.030000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
+      - restart_type: gfs
+        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+        datapath_write: 'Data/'
+        date: '2018-04-15T03:00:00Z'
+        read_crtm_surface: 0
+        filename_core: 20180415.030000.fv_core.res.nc
+        filename_cplr: 20180415.030000.coupler.res
+        filename_trcr: 20180415.030000.fv_tracer.res.nc
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        trc_file: Data/fv3files/field_table
+        variables:
+        - ud
+        - vd
+        - ua
+        - va
+        - t
+        - delp
+        - q
+        - qi
+        - ql
+        - o3
+      standard_deviation: '1.0'
+      vertical_correlation: '0.4'
+      horizontal_length_scale: 2e6
+      maximum_condition_number: 1.0e6
+      datadir: "."
+      prefix: fv3jedi_gfs
       default_seed: 1
-      method: loc_norm
+      method: cor
       strategy: common
+      _strategy: specific_univariate
       new_hdiag: 1
-      new_nicas: 1
+      load_hdiag: 0
+      new_nicas: 0
+      load_nicas: 1
+      timeslot: 1
       mask_type: none
       draw_type: random_uniform
-      nc1: 1024
+      nc1: 864
       ntry: 3
       nrep: 2
       nc3: 10
       dc: 1000000
       nl0r: 1
-      ne: 4
+      _nl0r: 15
+      ne: 5
       minim_algo: hooke
       rvflt: 0
       lsqrt: 1
@@ -770,16 +579,16 @@ cost_function:
        - o3
  Jo:
    ObsTypes:
-   - ObsType: Aircraft
-     ObsData:
-       ObsDataIn:
-         obsfile: Data/aircraft_obs_2018041500_m.nc4
-       ObsDataOut:
-         obsfile: Data/gfs.3dfgat.obt
-       obsvalue: air_temperature
-     Covariance:
-       covariance: diagonal
-       obserror: air_temperature_err
+#   - ObsType: Aircraft
+#     ObsData:
+#       ObsDataIn:
+#         obsfile: Data/aircraft_obs_2018041500_m.nc4
+#       ObsDataOut:
+#         obsfile: Data/gfs.3dfgat.obt
+#       obsvalue: air_temperature
+#     Covariance:
+#       covariance: diagonal
+#       obserror: air_temperature_err
    - ObsType: Radiosonde
      ObsData:
        ObsDataIn:
@@ -799,7 +608,7 @@ output:
   filename_cplr: Hybrid-4DEnsVar.coupler.res
   filename_trcr: Hybrid-4DEnsVar.fv_tracer.res.nc
   first: PT0H
-  frequency: PT02H
+  frequency: PT06H
 variational:
   iteration:
   - ninner: '10'
