@@ -996,7 +996,7 @@ f_comm = fckit_mpi_comm()
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------
 write(cbumpcount,"(I0.5)") bumpid
-bump_nam_prefix = 'fv3jedi_bump_data_'//cbumpcount
+bump_nam_prefix = 'fv3jedi_bumpobsop_data_'//cbumpcount
 
 !Get the Solution dimensions
 !---------------------------
