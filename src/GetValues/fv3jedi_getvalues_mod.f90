@@ -510,7 +510,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
@@ -708,7 +708,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
@@ -924,7 +924,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
@@ -996,7 +996,7 @@ f_comm = fckit_mpi_comm()
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------
 write(cbumpcount,"(I0.5)") bumpid
-bump_nam_prefix = 'fv3jedi_bump_data_'//cbumpcount
+bump_nam_prefix = 'fv3jedi_bumpobsop_data_'//cbumpcount
 
 !Get the Solution dimensions
 !---------------------------
