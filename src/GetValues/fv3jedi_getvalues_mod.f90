@@ -275,14 +275,14 @@ do jvar = 1, vars%nv
   ! --------------------------------------
   select case (trim(vars%fldnames(jvar)))
 
-  case ("upper_air_u_component")
+  case ("eastward_wind")
 
     nvl = npz
     do_interp = .true.
     geovalm = state%ua
     geoval => geovalm
 
-  case ("upper_air_v_component")
+  case ("northward_wind")
 
     nvl = npz
     do_interp = .true.
@@ -510,7 +510,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
@@ -664,14 +664,14 @@ do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
    
-  case ("upper_air_u_component")
+  case ("eastward_wind")
   
     nvl = npz
     do_interp = .true.
     geovalm = inc%ua
     geoval => geovalm
 
-  case ("upper_air_v_component")
+  case ("northward_wind")
   
     nvl = npz
     do_interp = .true.
@@ -708,7 +708,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
@@ -828,13 +828,13 @@ do jvar = 1, vars%nv
 
   select case (trim(vars%fldnames(jvar)))
    
-  case ("upper_air_u_component")
+  case ("eastward_wind")
   
     nvl = npz
     do_interp = .true.
     geoval => geovalm
 
-  case ("upper_air_v_component")
+  case ("northward_wind")
   
     nvl = npz
     do_interp = .true.
@@ -898,11 +898,11 @@ do jvar = 1, vars%nv
  
   select case (trim(vars%fldnames(jvar)))
  
-  case ("upper_air_u_component")
+  case ("eastward_wind")
 
     inc%ua = geovalm
 
-  case ("upper_air_v_component")
+  case ("northward_wind")
 
     inc%va = geovalm
 
@@ -924,7 +924,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
@@ -996,7 +996,7 @@ f_comm = fckit_mpi_comm()
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------
 write(cbumpcount,"(I0.5)") bumpid
-bump_nam_prefix = 'fv3jedi_bump_data_'//cbumpcount
+bump_nam_prefix = 'fv3jedi_bumpobsop_data_'//cbumpcount
 
 !Get the Solution dimensions
 !---------------------------
