@@ -401,20 +401,20 @@ cost_function:
          obsfile: Data/aircraft_obs_2018041500_m.nc4
        ObsDataOut:
          obsfile: Data/gfs.3dfgat.obt
-       obsvalue: air_temperature
+       obsvalue: ObsValue
      Covariance:
        covariance: diagonal
-       obserror: air_temperature_err
+       obserror: ObsError
    - ObsType: Radiosonde
      ObsData:
        ObsDataIn:
          obsfile: Data/sondes_obs_2018041500_m.nc4
        ObsDataOut:
          obsfile: Data/gfs.3dfgat.obt
-       obsvalue: air_temperature
+       obsvalue: ObsValue
      Covariance:
        covariance: diagonal
-       obserror: air_temperature_err
+       obserror: ObsError
 minimizer:
   algorithm: DRIPCG
 output:

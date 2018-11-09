@@ -12,7 +12,7 @@ cube = 48
 filetype = 'png'
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20180415.000000.3DVar.fv_core.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20180415.000000.3DVar.gfs.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
 if (cube == 48):
