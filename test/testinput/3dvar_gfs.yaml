@@ -88,20 +88,20 @@ cost_function:
           obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/gfs.3dfgat.obt
-        obsvalue: air_temperature
+        obsvalue: ObsValue
       Covariance:
         covariance: diagonal
-        obserror: air_temperature_err
+        obserror: ObsError
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/gfs.3dfgat.obt
-        obsvalue: air_temperature
+        obsvalue: ObsValue
       Covariance:
         covariance: diagonal
-        obserror: air_temperature_err
+        obserror: ObsError
   cost_type: 3D-Var
   variables:
   - ud
@@ -135,9 +135,9 @@ model:
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: 3DVar.fv_core.res.nc
-  filename_cplr: 3DVar.coupler.res
-  filename_trcr: 3DVar.fv_tracer.res.nc
+  filename_core: 3DVar.gfs.fv_core.res.nc
+  filename_cplr: 3DVar.gfs.coupler.res
+  filename_trcr: 3DVar.gfs.fv_tracer.res.nc
   first: PT0H
   frequency: PT01H
 resolution:

@@ -94,13 +94,13 @@ cost_function:
     ObsTypes:
     - Covariance:
         covariance: diagonal
-        obserror: air_temperature_err
+        obserror: ObsError
       ObsData:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/fv3jedi.4DVar.obt
-        obsvalue: air_temperature
+        obsvalue: ObsValue
       ObsType: Radiosonde
   cost_type: 4D-Var
   variables:
