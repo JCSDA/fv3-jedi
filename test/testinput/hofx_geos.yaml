@@ -86,7 +86,7 @@ Observations:
         - air_temperature
         - eastward_wind
         - northward_wind
-        - specific_humidity
+#        - specific_humidity
       ObsDataOut:
         obsfile: Data/geos.hofx.obt
     ObsBias: {}

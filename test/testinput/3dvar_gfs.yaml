@@ -97,7 +97,7 @@ cost_function:
           - air_temperature
           - eastward_wind
           - northward_wind
-          - specific_humidity
+#          - specific_humidity
         ObsDataOut:
           obsfile: Data/gfs.3dfgat.obt
         obsvalue: ObsValue
@@ -112,7 +112,7 @@ cost_function:
           - air_temperature
           - eastward_wind
           - northward_wind
-          - specific_humidity
+#          - specific_humidity
         ObsDataOut:
           obsfile: Data/gfs.3dfgat.obt
         obsvalue: ObsValue
