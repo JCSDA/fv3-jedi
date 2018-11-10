@@ -103,7 +103,6 @@ cost_function:
 #     - specific_humidity
       Covariance:
         covariance: diagonal
-        obserror: ObsError
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
@@ -118,7 +117,10 @@ cost_function:
 #     - specific_humidity
       Covariance:
         covariance: diagonal
-        obserror: ObsError
+      ObsFilters:
+      - Filter: Background Check
+        variable: air_temperature
+        threshold: 3.0
   cost_type: 3D-Var
   variables:
   - ud
