@@ -75,6 +75,7 @@ VariableChange/VarChaC2MFV3JEDI.cc
 VariableChange/VarChaC2MFV3JEDIFortran.h
 VariableChange/VarChaC2MFV3JEDI.h
 VariableChange/wind_variables_mod.f90
+instantiateObsFilterFactory.h
 )
 
 set ( FMS_LIBRARIES $ENV{FMS_LIBRARIES} )
