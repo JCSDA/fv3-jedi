@@ -112,9 +112,6 @@ cost_function:
         obsvalue: ObsValue
       variables:
       - air_temperature
-      - eastward_wind
-      - northward_wind
-#     - specific_humidity
       Covariance:
         covariance: diagonal
       ObsFilters:
