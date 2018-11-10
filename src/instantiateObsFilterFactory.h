@@ -18,7 +18,9 @@ namespace fv3jedi {
 
 void instantiateObsFilterFactory() {
   oops::instantiateObsFilterFactory<FV3JEDITraits>();
-  static oops::FilterMaker<FV3JEDITraits, oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck> >
+  static oops::FilterMaker<FV3JEDITraits,
+                           oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck>
+                          >
     makerBkgChk_("Background Check");
 }
 
