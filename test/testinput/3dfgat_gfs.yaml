@@ -96,6 +96,8 @@ cost_function:
         ObsDataOut:
           obsfile: Data/gfs.3dfgat.obt
         obsvalue: ObsValue
+      variables:
+      - air_temperature
       Covariance:
         covariance: diagonal
         obserror: ObsError
@@ -106,6 +108,8 @@ cost_function:
         ObsDataOut:
           obsfile: Data/gfs.3dfgat.obt
         obsvalue: ObsValue
+      variables:
+      - air_temperature
       Covariance:
         covariance: diagonal
         obserror: ObsError

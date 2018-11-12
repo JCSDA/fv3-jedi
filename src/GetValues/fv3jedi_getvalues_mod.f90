@@ -866,7 +866,7 @@ do jvar = 1, vars%nv
  
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable")
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
 
   end select
 
