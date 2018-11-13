@@ -37,7 +37,7 @@ cost_function:
 #    Covariance:
 #      covariance: BUMP
 #      default_seed: 1
-#      prefix: fv3jedi
+#      prefix: fv3jedi_gfs_fgat
 #      method: cor
 #      strategy: specific_univariate
 #      new_nicas: 1     # Recompute convolution parameters
@@ -58,7 +58,7 @@ cost_function:
 #      resol: 10.0
 #      nicas_interp: bilin
 #      network: 0
-#      mpicom: 2 
+#      mpicom: 2
 #      forced_radii: 1
 #      rh: 1000e3
 #      rv: 100
@@ -72,21 +72,21 @@ cost_function:
 #          - ua
 #          - va
 #          - t
-#          - delp
+#          - ps
 #          - q
 #          - qi
 #          - ql
 #          - o3
 #        outputVariables:
 #          variables:
-#          - ua
-#          - va
-#          - t
-#          - delp
-#          - q
-#          - qi
-#          - ql
-#          - o3
+#          - psi 
+#          - chi
+#          - tv
+#          - ps
+#          - qc
+#          - qic
+#          - qlc
+#          - o3c
   Jo:
     ObsTypes:
     - ObsType: Aircraft
@@ -94,25 +94,30 @@ cost_function:
         ObsDataIn:
           obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dfgat.obt
+          obsfile: Data/gfs.fgat.3dvar.air.out.nc4
         obsvalue: ObsValue
       variables:
       - air_temperature
+      - eastward_wind
+      - northward_wind
+#     - specific_humidity
       Covariance:
         covariance: diagonal
-        obserror: ObsError
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dfgat.obt
+          obsfile: Data/gfs.fgat.3dvar.rs.out.nc4
         obsvalue: ObsValue
       variables:
       - air_temperature
       Covariance:
         covariance: diagonal
-        obserror: ObsError
+      ObsFilters:
+      - Filter: Background Check
+        variable: air_temperature
+        threshold: 3.0
   cost_type: 4D-Var
   variables:
   - ud

@@ -14,7 +14,6 @@ cost_function:
         filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
         nml_file: Data/fv3files/input_geos_c24.nml
         trc_file: Data/fv3files/field_table
-        read_crtm_surface: 0
         variables:
         - ud
         - vd
@@ -27,81 +26,96 @@ cost_function:
         - ql
         - o3
     Covariance:
-      covariance: BUMP
-      default_seed: 1
-      prefix: fv3jedi
-      method: cor
-      strategy: specific_univariate
-      new_nicas: 1     # Recompute convolution parameters
-      load_nicas: 0    # Load precomputed convolution parameters
-      sam_read: 0
-      sam_write: 1  
-      mask_check: 0
-      draw_type: random_uniform
-      nc1: 100
-      ntry: 3
-      nrep:  2
-      nc3: 10
-      dc: 1000.0e3
-      nl0r: 1
-      minim_algo: "hooke"
-      rvflt: 0.0
-      lsqrt: 1  
-      resol: 10.0
-      nicas_interp: bilin
-      network: 0
-      mpicom: 2 
-      forced_radii: 1
-      rh: 1000e3
-      rv: 100
-      advmode: 0
-      diag_interp: bilin
+      covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
-      variable_changes:
-      - varchange: Control2Model
-        inputVariables:
-          variables:
-          - ua
-          - va
-          - t
-          - delp
-          - q
-          - qi
-          - ql
-          - o3
-        outputVariables:
-          variables:
-          - ua
-          - va
-          - t
-          - delp
-          - q
-          - qi
-          - ql
-          - o3
+      horizontal_length_scale: 1e6
+      maximum_condition_number: 1.0e6
+      standard_deviation: '0.8'
+      vertical_correlation: '0.2'
+#    Covariance:
+#      covariance: BUMP
+#      default_seed: 1
+#      prefix: fv3jedi_geos_4dvar 
+#      method: cor
+#      strategy: specific_univariate
+#      new_nicas: 1     # Recompute convolution parameters
+#      load_nicas: 0    # Load precomputed convolution parameters
+#      sam_read: 0
+#      sam_write: 1  
+#      mask_check: 0
+#      draw_type: random_uniform
+#      nc1: 100
+#      ntry: 3
+#      nrep:  2
+#      nc3: 10
+#      dc: 1000.0e3
+#      nl0r: 1
+#      minim_algo: "hooke"
+#      rvflt: 0.0
+#      lsqrt: 1  
+#      resol: 10.0
+#      nicas_interp: bilin
+#      network: 0
+#      mpicom: 2
+#      forced_radii: 1
+#      rh: 1000e3
+#      rv: 100
+#      advmode: 0
+#      diag_interp: bilin
+#      date: '2018-04-15T00:00:00Z'
+#      variable_changes:
+#      - varchange: Control2Model
+#        inputVariables:
+#          variables:
+#          - ua
+#          - va
+#          - t
+#          - ps
+#          - q
+#          - qi
+#          - ql
+#          - o3
+#        outputVariables:
+#          variables:
+#          - psi 
+#          - chi
+#          - tv
+#          - ps
+#          - qc
+#          - qic
+#          - qlc
+#          - o3c
   Jo:
-#    ObsTypes:
-#    - Covariance:
-#        covariance: diagonal
-#        obserror: Inverse_Observation_Error
-#      ObsData:
-#        ObsDataIn:
-#          obsfile: Data/amsua_n19_obs.nc4
-#        ObsDataOut:
-#          obsfile: Data/fv3jedi.4DVar.obt
-#        obsvalue: Observation
-#      ObsType: Radiance
     ObsTypes:
-    - Covariance:
+    - ObsType: Aircraft
+      ObsData:
+        ObsDataIn:
+          obsfile: Data/aircraft_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/geos.4DVar.air.out.nc4
+        obsvalue: ObsValue
+      variables:
+      - air_temperature
+      - eastward_wind
+      - northward_wind
+#     - specific_humidity
+      Covariance:
         covariance: diagonal
-        obserror: ObsError
+    - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/fv3jedi.4DVar.obt
+          obsfile: Data/geos.4DVar.rs.out.nc4
         obsvalue: ObsValue
-      ObsType: Radiosonde
+      variables:
+      - air_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variable: air_temperature
+        threshold: 3.0
   cost_type: 4D-Var
   variables:
   - ud
@@ -110,6 +124,7 @@ cost_function:
   - va
   - t
   - delp
+  - ps
   - q
   - qi
   - ql
@@ -128,32 +143,38 @@ model:
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0
-  trajpath: 'Data/INPUTS/GEOS_c24/traj/'
-  trajfile: 'GEOS.traj.c24.eta.'
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: 4DVar.fv_core.res.nc
-  filename_cplr: 4DVar.coupler.res
-  filename_trcr: 4DVar.fv_tracer.res.nc
+  filename_core: 4DVar.geos.fv_core.res.nc
+  filename_cplr: 4DVar.geos.coupler.res
+  filename_trcr: 4DVar.geos.fv_tracer.res.nc
   first: PT0H
   frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_c24/
+  filepath_akbk: Data/INPUTS/GEOS_akbk/
   filename_akbk: akbk72.nc4
   ak_var: AK
   bk_var: BK
 variational:
   iteration:
-  - diagnostics:
-      departures: ombg
+  - ninner: '10'
     gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c24.nml
+      trc_file: Data/fv3files/field_table
+      halo: '3'
+      filepath_akbk: Data/INPUTS/GEOS_akbk/
+      filename_akbk: akbk72.nc4
+      ak_var: AK
+      bk_var: BK
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
@@ -163,27 +184,51 @@ variational:
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
-      lm_do_trb: 1
-      lm_do_mst: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
       trajectory:
         name: 'FV3JEDI'
         nml_file: Data/fv3files/input_geos_c24.nml
         trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
-        readtraj: 1
-        trajpath: 'Data/INPUTS/GEOS_c24/traj/'
-        trajfile: 'GEOS.traj.c24.eta.'
+        readtraj: 0
         lm_do_dyn: 1
-        lm_do_trb: 1
-        lm_do_mst: 1
-    ninner: '10'
+        lm_do_trb: 0
+        lm_do_mst: 0
+    diagnostics:
+      departures: ombg
+  - ninner: '5'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml
       trc_file: Data/fv3files/field_table
       halo: '3'
-      filepath_akbk: Data/INPUTS/GEOS_c24/
+      filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
       ak_var: AK
       bk_var: BK
-    test: 'on'
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
+      nml_file: Data/fv3files/input_geos_c24.nml
+      trc_file: Data/fv3files/field_table
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT15M
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      trajectory:
+        name: 'FV3JEDI'
+        nml_file: Data/fv3files/input_geos_c24.nml
+        trc_file: Data/fv3files/field_table
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT15M
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+    diagnostics:
+      departures: ombg
