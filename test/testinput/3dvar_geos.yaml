@@ -92,25 +92,30 @@ cost_function:
         ObsDataIn:
           obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dfgat.obt
+          obsfile: Data/geos.3dvar.air.out.nc4
         obsvalue: ObsValue
       variables:
       - air_temperature
+      - eastward_wind
+      - northward_wind
+#     - specific_humidity
       Covariance:
         covariance: diagonal
-        obserror: ObsError
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dfgat.obt
+          obsfile: Data/geos.3dvar.rs.out.nc4
         obsvalue: ObsValue
       variables:
       - air_temperature
       Covariance:
         covariance: diagonal
-        obserror: ObsError
+      ObsFilters:
+      - Filter: Background Check
+        variable: air_temperature
+        threshold: 3.0
   cost_type: 3D-Var
   variables:
   - ud
@@ -136,7 +141,7 @@ model:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-  tstep: PT15M
+  tstep: PT3H
   readtraj: 0
   lm_do_dyn: 1
   lm_do_trb: 0
@@ -148,7 +153,7 @@ output:
   filename_cplr: 3DVar.geos.coupler.res
   filename_trcr: 3DVar.geos.fv_tracer.res.nc
   first: PT0H
-  frequency: PT01H
+  frequency: PT1H
 resolution:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
@@ -169,7 +174,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c48.nml
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT15M
+      tstep: PT3H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -178,7 +183,7 @@ variational:
         nml_file: Data/fv3files/input_geos_c48.nml
         trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT15M
+        tstep: PT3H
         readtraj: 0
         lm_do_dyn: 1
         lm_do_trb: 0
@@ -201,7 +206,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c48.nml
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT15M
+      tstep: PT3H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -210,7 +215,7 @@ variational:
         nml_file: Data/fv3files/input_geos_c48.nml
         trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT15M
+        tstep: PT3H
         readtraj: 0
         lm_do_dyn: 1
         lm_do_trb: 0
