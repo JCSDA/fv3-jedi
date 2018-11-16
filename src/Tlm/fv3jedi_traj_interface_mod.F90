@@ -7,10 +7,8 @@ module fv3jedi_traj_interface_mod
 
 use iso_c_binding
 use fv3jedi_traj_mod
-use fv3jedi_model_mod, only: fv3jedi_model
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_state_interface_mod, only: fv3jedi_state_registry
-use fv3jedi_model_interface_mod, only: fv3jedi_model_registry
 
 implicit none
 private
@@ -36,22 +34,20 @@ contains
 subroutine c_fv3jedi_traj_prop(c_key_model, c_key_state, c_key_self) bind(c,name='fv3jedi_traj_prop_f90')
 
 implicit none
-integer(c_int), intent(in)    :: c_key_model !< Model
+integer(c_int), intent(in)    :: c_key_model !< Model (not actually used at the moment)
 integer(c_int), intent(in)    :: c_key_state !< State
 integer(c_int), intent(inout) :: c_key_self  !< traj
 
-type(fv3jedi_model), pointer :: model
 type(fv3jedi_state), pointer :: state
 type(fv3jedi_traj),  pointer :: self
 
-call fv3jedi_model_registry%get(c_key_model,model)
 call fv3jedi_state_registry%get(c_key_state,state)
 
 call fv3jedi_traj_registry%init()            
 call fv3jedi_traj_registry%add(c_key_self)
 call fv3jedi_traj_registry%get(c_key_self,self)
 
-call traj_prop(model, state, self)
+call traj_prop(state, self)
 
 end subroutine c_fv3jedi_traj_prop
 

@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_MODEL_MODELFV3JEDIFORTRAN_H_
-#define SRC_MODEL_MODELFV3JEDIFORTRAN_H_
+#ifndef SRC_TLM_TRAJFV3JEDIFORTRAN_H_
+#define SRC_TLM_TRAJFV3JEDIFORTRAN_H_
 
 #include "Fortran.h"
 
@@ -24,22 +24,6 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_model_create_f90(const eckit::Configuration * const *,
-                                const F90geom &,
-                                F90model &);
-  void fv3jedi_model_delete_f90(F90model &);
-
-
-  void fv3jedi_model_initialize_f90(const F90model &,
-                                    const F90state &);
-
-  void fv3jedi_model_step_f90(const F90model &,
-                              const F90state &,
-                              util::DateTime * const *);
-
-  void fv3jedi_model_finalize_f90(const F90model &,
-                                  const F90inc &);
-
   void fv3jedi_traj_prop_f90(const F90model &,
                              const F90state &,
                              F90traj &);
@@ -51,4 +35,5 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // SRC_MODEL_MODELFV3JEDIFORTRAN_H_
+#endif  // SRC_TLM_TRAJFV3JEDIFORTRAN_H_
+

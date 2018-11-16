@@ -29,6 +29,7 @@ type :: fv3jedi_state
   integer :: calendar_type
   integer, dimension(6) :: date
   integer, dimension(6) :: date_init
+  integer :: do_tlad_phymst = 0
 
   !State variables
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ud     ! D-grid (grid tangential) zonal wind (m/s)

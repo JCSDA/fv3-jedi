@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_MODEL_TLMIDFV3JEDI_H_
-#define SRC_MODEL_TLMIDFV3JEDI_H_
+#ifndef SRC_TLM_TLMIDFV3JEDI_H_
+#define SRC_TLM_TLMIDFV3JEDI_H_
 
 #include <string>
 
@@ -73,4 +73,4 @@ class TlmIdFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // SRC_MODEL_TLMIDFV3JEDI_H_
+#endif  // SRC_TLM_TLMIDFV3JEDI_H_

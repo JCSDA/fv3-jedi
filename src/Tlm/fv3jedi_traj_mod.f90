@@ -7,7 +7,6 @@ module fv3jedi_traj_mod
 
 use fv3jedi_kinds_mod
 use iso_c_binding
-use fv3jedi_model_mod, only: fv3jedi_model
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_lm_utils_mod, only: fv3jedi_traj => fv3jedi_lm_traj, &
                                 allocate_traj, deallocate_traj
@@ -26,15 +25,14 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine traj_prop(model, state, self)
+subroutine traj_prop(state, self)
 
 implicit none
-type(fv3jedi_model) :: model
 type(fv3jedi_state) :: state
 type(fv3jedi_traj)  :: self
 
 call allocate_traj(self,state%isc,state%iec,state%jsc,state%jec,state%npz,&
-                   model%fv3jedi_lm%conf%hydrostatic,model%fv3jedi_lm%conf%do_phy_mst)
+                   state%hydrostatic,state%do_tlad_phymst)
 
 self%u       = state%ud
 self%v       = state%vd
@@ -47,12 +45,12 @@ self%ql      = state%qi
 self%qi      = state%ql
 self%o3      = state%o3
 
-if (.not. model%fv3jedi_lm%conf%hydrostatic) then
+if (.not. state%hydrostatic) then
 self%w       = state%w
 self%delz    = state%delz
 endif
 
-if (model%fv3jedi_lm%conf%do_phy_mst /= 0) then
+if (state%do_tlad_phymst /= 0) then
 self%qls     = state%qls
 self%qcn     = state%qcn
 self%cfcn    = state%cfcn

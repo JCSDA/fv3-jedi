@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_MODEL_MODELBIASINCREMENTFV3JEDI_H_
-#define SRC_MODEL_MODELBIASINCREMENTFV3JEDI_H_
+#ifndef SRC_MODELBIAS_MODELBIASINCREMENTFV3JEDI_H_
+#define SRC_MODELBIAS_MODELBIASINCREMENTFV3JEDI_H_
 
 #include <iostream>
 
@@ -62,4 +62,4 @@ class ModelBiasIncrementFV3JEDI : public util::Printable {
 
 }  // namespace fv3jedi
 
-#endif  // SRC_MODEL_MODELBIASINCREMENTFV3JEDI_H_
+#endif  // SRC_MODELBIAS_MODELBIASINCREMENTFV3JEDI_H_

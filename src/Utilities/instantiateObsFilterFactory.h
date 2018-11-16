@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_INSTANTIATEOBSFILTERFACTORY_H_
-#define SRC_INSTANTIATEOBSFILTERFACTORY_H_
+#ifndef SRC_UTILITIES_INSTANTIATEOBSFILTERFACTORY_H_
+#define SRC_UTILITIES_INSTANTIATEOBSFILTERFACTORY_H_
 
 #include "FV3JEDITraits.h"
 #include "oops/base/instantiateObsFilterFactory.h"
@@ -26,4 +26,4 @@ void instantiateObsFilterFactory() {
 
 }  // namespace fv3jedi
 
-#endif  // SRC_INSTANTIATEOBSFILTERFACTORY_H_
+#endif  // SRC_UTILITIES_INSTANTIATEOBSFILTERFACTORY_H_

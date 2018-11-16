@@ -101,15 +101,22 @@ include_directories( ${FV3JEDI_INCLUDE_DIRS} ${FV3JEDI_EXTRA_INCLUDE_DIRS}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_SOURCE_DIR}/src
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/ErrorCovariance
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/ControlToModel
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Localization
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Model
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/fv3
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/geos
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/gfs
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/sar
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/ModelBias
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Run
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/State
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange)
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Tlm )
 
 add_subdirectory( mains )
 add_subdirectory( src )

@@ -5,7 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "src/VariableChange/VarChaC2MFV3JEDI.h"
+#include "src/ControlToModel/VarChaC2MFV3JEDI.h"
 
 #include <ostream>
 #include <string>

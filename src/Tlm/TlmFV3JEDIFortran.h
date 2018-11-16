@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_MODEL_TLMFV3JEDIFORTRAN_H_
-#define SRC_MODEL_TLMFV3JEDIFORTRAN_H_
+#ifndef SRC_TLM_TLMFV3JEDIFORTRAN_H_
+#define SRC_TLM_TLMFV3JEDIFORTRAN_H_
 
 #include "Fortran.h"
 
@@ -59,4 +59,4 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // SRC_MODEL_TLMFV3JEDIFORTRAN_H_
+#endif  // SRC_TLM_TLMFV3JEDIFORTRAN_H_

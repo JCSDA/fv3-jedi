@@ -12,7 +12,7 @@
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
 
-#include "src/Model/TlmIdFV3JEDI.h"
+#include "src/Tlm/TlmIdFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
 #include "FV3JEDITraits.h"
 #include "IncrementFV3JEDI.h"

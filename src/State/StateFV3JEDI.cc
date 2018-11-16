@@ -26,8 +26,6 @@
 #include "GeometryFV3JEDI.h"
 #include "GetValuesTrajFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
-#include "ModelBiasFV3JEDI.h"
-#include "ModelFV3JEDI.h"
 #include "StateFV3JEDIFortran.h"
 #include "UtilitiesFV3JEDI.h"
 

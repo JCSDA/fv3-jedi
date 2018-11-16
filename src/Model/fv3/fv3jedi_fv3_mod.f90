@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-module fv3jedi_model_mod
+module fv3jedi_fv3_mod
 
 use iso_c_binding
 use config_mod
@@ -21,22 +21,22 @@ use fv3jedi_lm_mod, only: fv3jedi_lm_type
 implicit none
 private
 
-public :: fv3jedi_model
-public :: model_create
-public :: model_delete
-public :: model_initialize
-public :: model_step
-public :: model_finalize
+public :: fv3_model
+public :: fv3_create
+public :: fv3_delete
+public :: fv3_initialize
+public :: fv3_step
+public :: fv3_finalize
 
 ! ------------------------------------------------------------------------------
 
 !> Fortran derived type to hold model definition
-type :: fv3jedi_model
+type :: fv3_model
   type(fv3jedi_lm_type)                        :: fv3jedi_lm          !<Linearized model object
   integer                                      :: readtraj            !<Read trajectory from file
   character(len=255)                           :: trajpath            !<User specified path to traj files
   character(len=255)                           :: trajfile            !<User specified path to traj files
-end type fv3jedi_model
+end type fv3_model
 
 ! ------------------------------------------------------------------------------
 
@@ -44,11 +44,11 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_create(self, geom, c_conf)
+subroutine fv3_create(self, geom, c_conf)
 
 implicit none
 type(c_ptr),         intent(in)    :: c_conf
-type(fv3jedi_model), intent(inout) :: self
+type(fv3_model), intent(inout) :: self
 type(fv3jedi_geom),  intent(in)    :: geom
 
 !Locals
@@ -90,42 +90,42 @@ call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom
 !from file or obtained by running GEOS or GFS. 
 if ((self%fv3jedi_lm%conf%do_phy_trb .ne. 0 .and. self%readtraj == 0) .or. &
     (self%fv3jedi_lm%conf%do_phy_mst .ne. 0 .and. self%readtraj == 0) ) then
-   call abor1_ftn("fv3jedi_model | FV3 : unless reading the trajecotory physics should be off")
+   call abor1_ftn("fv3_model | FV3 : unless reading the trajecotory physics should be off")
 endif
 
-end subroutine model_create
+end subroutine fv3_create
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_delete(self)
+subroutine fv3_delete(self)
 
 implicit none
-type(fv3jedi_model), intent(inout) :: self
+type(fv3_model), intent(inout) :: self
 
 !Delete the model
 !----------------
 call self%fv3jedi_lm%delete()
 
-end subroutine model_delete
+end subroutine fv3_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_initialize(self, state)
+subroutine fv3_initialize(self, state)
 
 implicit none
-type(fv3jedi_model), intent(inout) :: self
+type(fv3_model), intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: state
 
 call self%fv3jedi_lm%init_nl()
 
-end subroutine model_initialize
+end subroutine fv3_initialize
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_step(self, state, vdate)
+subroutine fv3_step(self, state, vdate)
 
 implicit none
-type(fv3jedi_model), intent(inout) :: self
+type(fv3_model), intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
 type(datetime),      intent(in)    :: vdate !< Valid datetime after step
 
@@ -144,19 +144,19 @@ else
 
 endif
 
-end subroutine model_step
+end subroutine fv3_step
 
 ! ------------------------------------------------------------------------------
 
-subroutine model_finalize(self, state)
+subroutine fv3_finalize(self, state)
 
 implicit none
-type(fv3jedi_model), target :: self
+type(fv3_model), target :: self
 type(fv3jedi_state)         :: state
 
 call self%fv3jedi_lm%final_nl()
 
-end subroutine model_finalize
+end subroutine fv3_finalize
 
 ! ------------------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ end subroutine lm_to_state
 subroutine read_state( self, state, vdatec)
 
 implicit none
-type(fv3jedi_model), intent(in)    :: self
+type(fv3_model), intent(in)    :: self
 type(fv3jedi_state), intent(inout) :: state
 character(len=20),   intent(in)    :: vdatec
 
@@ -500,4 +500,4 @@ end subroutine read_state
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_model_mod
+end module fv3jedi_fv3_mod
