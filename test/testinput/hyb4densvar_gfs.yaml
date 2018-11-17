@@ -10,7 +10,7 @@ resolution:
   ak_var: ak
   bk_var: bk
 model:
-  name: 'FV3JEDI'
+  name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -636,7 +636,7 @@ variational:
       lm_do_trb: 0
       lm_do_mst: 0
       trajectory:
-        name: 'FV3JEDI'
+        name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -670,7 +670,7 @@ variational:
       lm_do_trb: 0
       lm_do_mst: 0
       trajectory:
-        name: 'FV3JEDI'
+        name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml

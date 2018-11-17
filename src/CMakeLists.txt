@@ -40,6 +40,11 @@ Model/geos/fv3jedi_geos_mod.f90
 Model/geos/ModelGEOSFV3JEDI.cc
 Model/geos/ModelGEOSFV3JEDI.h
 Model/geos/ModelGEOSFV3JEDIFortran.h
+Model/gfs/fv3jedi_gfs_interface_mod.F90
+Model/gfs/fv3jedi_gfs_mod.f90
+Model/gfs/ModelGFSFV3JEDI.cc
+Model/gfs/ModelGFSFV3JEDI.h
+Model/gfs/ModelGFSFV3JEDIFortran.h
 ModelBias/ModelBiasCovarianceFV3JEDI.h
 ModelBias/ModelBiasFV3JEDI.h
 ModelBias/ModelBiasIncrementFV3JEDI.h

@@ -13,7 +13,7 @@ resolution:
   nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
 model:
-  name: 'FV3JEDI'
+  name: 'FV3'
   nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_fsoi.nml
@@ -100,7 +100,7 @@ linearModel:
   lm_do_mst: 1
   fsoi_mode: 1
   trajectory:
-    name: 'FV3JEDI'
+    name: 'FV3'
     nml_file: Data/fv3files/input_geos_c180.nml
     trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_fsoi.nml
