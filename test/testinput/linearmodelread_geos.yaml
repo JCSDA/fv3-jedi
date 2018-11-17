@@ -27,7 +27,7 @@ LinearModel:
   lm_do_trb: 1
   lm_do_mst: 1
   trajectory:
-    name: 'FV3JEDI'
+    name: 'FV3'
     nml_file: Data/fv3files/input_geos_c24.nml
     trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -45,7 +45,7 @@ LinearModelTest:
   toleranceAD: '1.0e-10'
   toleranceTL: '1.0'
 Model:
-  name: 'FV3JEDI'
+  name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml

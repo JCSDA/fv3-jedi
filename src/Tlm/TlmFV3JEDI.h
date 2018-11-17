@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_MODEL_TLMFV3JEDI_H_
-#define SRC_MODEL_TLMFV3JEDI_H_
+#ifndef SRC_TLM_TLMFV3JEDI_H_
+#define SRC_TLM_TLMFV3JEDI_H_
 
 #include <map>
 #include <ostream>
@@ -73,10 +73,10 @@ class TlmFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
   util::Duration tstep_;
   const GeometryFV3JEDI resol_;
   std::map< util::DateTime, F90traj> traj_;
-  const ModelFV3JEDI lrmodel_;
+  const ModelFV3FV3JEDI lrmodel_;
   const oops::Variables linvars_;
 };
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // SRC_MODEL_TLMFV3JEDI_H_
+#endif  // SRC_TLM_TLMFV3JEDI_H_

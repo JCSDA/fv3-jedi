@@ -101,7 +101,7 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
-  name: 'FV3JEDI'
+  name: 'FV3'
   init_tlmadm: '0'
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table

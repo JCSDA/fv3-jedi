@@ -28,7 +28,7 @@ LinearModel:
   lm_do_mst: 0
   fsoi_mode: 0
   trajectory:
-    name: 'FV3JEDI'
+    name: 'FV3'
     nml_file: Data/fv3files/input_gfs_c48.nml
     trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -44,7 +44,7 @@ LinearModelTest:
   toleranceAD: '1.0e-10'
   toleranceTL: '1.0'
 Model:
-  name: 'FV3JEDI'
+  name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml

@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_VARIABLECHANGE_VARCHAC2MFV3JEDI_H_
-#define SRC_VARIABLECHANGE_VARCHAC2MFV3JEDI_H_
+#ifndef SRC_CONTROLTOMODEL_VARCHAC2MFV3JEDI_H_
+#define SRC_CONTROLTOMODEL_VARCHAC2MFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -51,4 +51,4 @@ class VarChaC2MFV3JEDI: public util::Printable {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // SRC_VARIABLECHANGE_VARCHAC2MFV3JEDI_H_
+#endif  // SRC_CONTROLTOMODEL_VARCHAC2MFV3JEDI_H_

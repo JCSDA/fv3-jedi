@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef SRC_MODEL_MODELFV3JEDI_H_
-#define SRC_MODEL_MODELFV3JEDI_H_
+#ifndef SRC_MODEL_GEOS_MODELGEOSFV3JEDI_H_
+#define SRC_MODEL_GEOS_MODELGEOSFV3JEDI_H_
 
 #include <ostream>
 #include <string>
@@ -21,7 +21,7 @@
 #include "oops/util/Printable.h"
 
 #include "FV3JEDITraits.h"
-#include "ModelFV3JEDIFortran.h"
+#include "ModelGEOSFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 
 // Forward declarations
@@ -40,13 +40,13 @@ namespace fv3jedi {
  *  FV3JEDI nonlinear model definition and configuration parameters.
  */
 
-class ModelFV3JEDI: public oops::ModelBase<FV3JEDITraits>,
-                    private util::ObjectCounter<ModelFV3JEDI> {
+class ModelGEOSFV3JEDI: public oops::ModelBase<FV3JEDITraits>,
+                        private util::ObjectCounter<ModelGEOSFV3JEDI> {
  public:
-  static const std::string classname() {return "fv3jedi::ModelFV3JEDI";}
+  static const std::string classname() {return "fv3jedi::ModelGEOSFV3JEDI";}
 
-  ModelFV3JEDI(const GeometryFV3JEDI &, const eckit::Configuration &);
-  ~ModelFV3JEDI();
+  ModelGEOSFV3JEDI(const GeometryFV3JEDI &, const eckit::Configuration &);
+  ~ModelGEOSFV3JEDI();
 
 /// Prepare model integration
   void initialize(StateFV3JEDI &) const;
@@ -72,4 +72,4 @@ class ModelFV3JEDI: public oops::ModelBase<FV3JEDITraits>,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // SRC_MODEL_MODELFV3JEDI_H_
+#endif  // SRC_MODEL_GEOS_MODELGEOSFV3JEDI_H_
