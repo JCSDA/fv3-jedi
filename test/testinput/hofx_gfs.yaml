@@ -77,6 +77,7 @@ Observations:
       obsvalue: REF
     ObsBias: {}
   - ObsType: Radiance
+    channels: "1-15"
     ObsData:
       ObsDataIn:
         obsfile: Data/amsua_obs_n19_2018041500_m.nc4
