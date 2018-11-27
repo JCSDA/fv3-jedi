@@ -67,6 +67,15 @@ Observations:
 #        obsfile: gnssroBndGSI_hofx_2018041500.nc4
 #      obsvalue: BNA
 #    ObsBias: {}
+  - ObsType: GnssroRef
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/gnssro_obs_2018041500_m.nc4
+      obsvalue: REF
+      ObsDataOut:
+        obsfile: Data/gnssroRef_hofx_2018041500.nc4
+      obsvalue: REF
+    ObsBias: {}
   - ObsType: Radiance
     ObsData:
       ObsDataIn:
