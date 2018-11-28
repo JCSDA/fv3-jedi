@@ -66,6 +66,7 @@ if( ${FV3BASEDMODEL_FOUND} )
       message("GEOS FOUND: Including GEOS interface")
     endif()   
     include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
+    include_directories( ${ESMF_INCLUDE_DIRS} )    
 else
    message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface")
 endif()
