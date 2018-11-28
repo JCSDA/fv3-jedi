@@ -44,7 +44,6 @@ find_package( Boost ${Boost_MINIMUM_VERSION} REQUIRED
 include_directories( ${Boost_INCLUDE_DIR} )
 
 # fms
-ecbuild_use_package( PROJECT fms REQUIRED )
 include_directories( ${FMS_INCLUDE_DIRS} )
 
 # fv3-jedi-lm
@@ -58,6 +57,18 @@ include_directories( ${OOPS_INCLUDE_DIRS} )
 # ufo
 ecbuild_use_package( PROJECT ufo )
 include_directories( ${UFO_INCLUDE_DIRS} )
+
+#gfs or geos
+if( ${FV3BASEDMODEL_FOUND} )
+    if ( ${GFS_FOUND} )
+      message("GFS FOUND: Including GFS interface")
+    elseif( ${GEOS_FOUND} )
+      message("GEOS FOUND: Including GEOS interface")
+    endif()   
+    include_directories( ${FV3BASEDMODEL_FOUND} )
+else
+   message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface")
+endif()
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
