@@ -16,6 +16,8 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment 
 
+use fv3gfs_cap_mod, only: FV3SS => SetServices
+
 implicit none
 private
 
