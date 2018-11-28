@@ -71,10 +71,10 @@ Observations:
     ObsData:
       ObsDataIn:
         obsfile: Data/gnssro_obs_2018041500_m.nc4
-      obsvalue: REF
+      obsvalue: refractivity
       ObsDataOut:
         obsfile: Data/gnssroRef_hofx_2018041500.nc4
-      obsvalue: REF
+      obsvalue: refractivity
     ObsBias: {}
   - ObsType: Radiance
     channels: "1-15"
