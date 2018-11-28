@@ -67,7 +67,17 @@ Observations:
 #        obsfile: gnssroBndGSI_hofx_2018041500.nc4
 #      obsvalue: BNA
 #    ObsBias: {}
+  - ObsType: GnssroRef
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/gnssro_obs_2018041500_m.nc4
+      obsvalue: refractivity
+      ObsDataOut:
+        obsfile: Data/gnssroRef_hofx_2018041500.nc4
+      obsvalue: refractivity
+    ObsBias: {}
   - ObsType: Radiance
+    channels: "1-15"
     ObsData:
       ObsDataIn:
         obsfile: Data/amsua_obs_n19_2018041500_m.nc4
