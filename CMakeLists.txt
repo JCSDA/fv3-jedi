@@ -55,9 +55,6 @@ include_directories( ${OOPS_INCLUDE_DIRS} )
 ecbuild_use_package( PROJECT ufo )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
-# fms
-include_directories( ${FMS_INCLUDE_DIRS} )
-
 #gfs or geos
 if( ${FV3BASEDMODEL_FOUND} )
     if ( ${GFS_FOUND} )
@@ -66,8 +63,11 @@ if( ${FV3BASEDMODEL_FOUND} )
       message("GEOS FOUND: Including GEOS interface")
     endif()   
     include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
+    include_directories( ${FMS_INCLUDE_DIRS} )
 else()
-   message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface")
+   message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface and using local FMS")
+   ecbuild_use_package( PROJECT fms REQUIRED )
+   include_directories( ${FMS_INCLUDE_DIRS} )
 endif()
 
 # MPI
