@@ -58,16 +58,15 @@ include_directories( ${UFO_INCLUDE_DIRS} )
 # fms
 include_directories( ${FMS_INCLUDE_DIRS} )
 
-#gfs or geo
+#gfs or geos
 if( ${FV3BASEDMODEL_FOUND} )
     if ( ${GFS_FOUND} )
-      message("GFS FOUND: Including GFS interface")
+      message("GFS FOUND: Including GFS interface ${FV3BASEDMODEL_INCLUDE_DIRS}")
     elseif( ${GEOS_FOUND} )
       message("GEOS FOUND: Including GEOS interface")
     endif()   
     include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
-    include_directories( ${ESMF_INCLUDE_DIRS} )    
-else
+else()
    message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface")
 endif()
 
@@ -89,7 +88,7 @@ include( fv3jedi_compiler_flags )
 # Export package info
 ################################################################################
 
-list( APPEND FV3JEDI_TPLS ufo oops fv3-jedi-lm)
+list( APPEND FV3JEDI_TPLS ufo oops)
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} 
                           ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -129,7 +128,8 @@ include_directories( ${FV3JEDI_INCLUDE_DIRS}
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/State
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Tlm )
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Tlm 
+                     ${FV3BASEDMODEL_INCLUDE_DIRS} )
 
 add_subdirectory( mains )
 add_subdirectory( src )

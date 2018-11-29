@@ -95,11 +95,11 @@ Model/gfs/ModelGFSFV3JEDIFortran.h
 
 #Append includes and libraries with particular model 
 list (APPEND FV3JEDI_INC_DEP ${FMS_INCLUDE_DIRS} )
-list (APPEND FV3JEDI_LIB_DEP oops ufo fv3-jedi-lm ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES})
+list (APPEND FV3JEDI_LIB_DEP oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES})
 
 if( ${FV3BASEDMODEL_FOUND} )
-    list( APPEND FV3JEDI_INC_DEP ${FV3BASEDMODEL_INCLUDE_DIRS} ${ESMF_INCLUDE_DIRS})
-    list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES} ${ESMF_LIBRARIES})
+    list( APPEND FV3JEDI_INC_DEP ${FV3BASEDMODEL_INCLUDE_DIRS})
+    list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES} ${FV3JEDILM_LIBRARIES})
 endif()
 
 #Append src with particular model 
@@ -119,5 +119,3 @@ ecbuild_add_library( TARGET          fv3jedi
                      INSTALL_HEADERS LISTED
                      LINKER_LANGUAGE ${OOPS_LINKER_LANGUAGE}
                    )
-
-
