@@ -34,18 +34,107 @@ cost_function:
       maximum_condition_number: 1.0e6
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
+#    Covariance:
+#      covariance: BUMP
+#      default_seed: 1
+#      prefix: fv3jedi_gfs
+#      method: cor
+#      strategy: specific_univariate
+#      new_nicas: 1     # Recompute convolution parameters
+#      load_nicas: 0    # Load precomputed convolution parameters
+#      sam_read: 0
+#      sam_write: 1  
+#      mask_check: 0
+#      draw_type: random_uniform
+#      nc1: 100
+#      ntry: 3
+#      nrep:  2
+#      nc3: 10
+#      dc: 1000.0e3
+#      nl0r: 1
+#      minim_algo: "hooke"
+#      rvflt: 0.0
+#      lsqrt: 1  
+#      resol: 10.0
+#      nicas_interp: bilin
+#      network: 0
+#      mpicom: 2
+#      forced_radii: 1
+#      rh: 1000e3
+#      rv: 100
+#      advmode: 0
+#      diag_interp: bilin
+#      date: '2018-04-15T00:00:00Z'
+#      variable_changes:
+#      - varchange: Control2Model
+#        inputVariables:
+#          variables:
+#          - ua
+#          - va
+#          - t
+#          - ps
+#          - q
+#          - qi
+#          - ql
+#          - o3
+#        outputVariables:
+#          variables:
+#          - psi 
+#          - chi
+#          - tv
+#          - ps
+#          - qc
+#          - qic
+#          - qlc
+#          - o3c
   Jo:
     ObsTypes:
-    - Covariance:
-        covariance: diagonal
-        obserror: REFOE_GSI
+    - ObsType: Aircraft
       ObsData:
         ObsDataIn:
-          obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
+          obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: fv3jedi.3dvar.GnssroRef.nc4
-        obsvalue: REF
-      ObsType: GnssroRef
+          obsfile: Data/gfs.3dvar.air.out.nc4
+        obsvalue: ObsValue
+      variables:
+      - air_temperature
+      - eastward_wind
+      - northward_wind
+#     - specific_humidity
+      Covariance:
+        covariance: diagonal
+    - ObsType: Radiosonde
+      ObsData:
+        ObsDataIn:
+          obsfile: Data/sondes_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/gfs.3dvar.rs.out.nc4
+        obsvalue: ObsValue
+      variables:
+      - air_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variable: air_temperature
+        threshold: 3.0
+    - ObsType: GnssroRef
+      ObsOptions:
+        ro_top_meter: 30000
+        obs_error: RefGSI
+        use_compress: 1
+      ObsData:
+        ObsDataIn:
+          obsfile: Data/gnssro_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: gfs.3dvar.ref.out.nc4
+        obsvalue: refractivity
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variable: refractivity
+        threshold: 3.0
   cost_type: 3D-Var
   variables:
   - ud
@@ -54,6 +143,7 @@ cost_function:
   - va
   - t
   - delp
+  - ps
   - q
   - qi
   - ql
@@ -67,20 +157,22 @@ minimizer:
   algorithm: DRIPCG
 model:
   name: 'FV3'
-  init_tlmadm: '0'
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  tstep: PT15M
-  update_dgridwind: '1'
-  update_pressures: '1'
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: 3D-Var.fv_core.res.nc
-  filename_cplr: 3D-Var.coupler.res
-  filename_trcr: 3D-Var.fv_tracer.res.nc
+  filename_core: 3DVar.gfs.fv_core.res.nc
+  filename_cplr: 3DVar.gfs.coupler.res
+  filename_trcr: 3DVar.gfs.fv_tracer.res.nc
   first: PT0H
-  frequency: PT01H
+  frequency: PT1H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
@@ -95,20 +187,26 @@ variational:
       departures: ombg
     gradient_norm_reduction: 1e-10
     linearmodel:
-      init_tlmadm: '1'
+      varchange: 'Identity'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
+      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT3H
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
       trajectory:
-        init_tlmadm: '0'
+        name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
-        tstep: PT15M
-      trc_file: Data/fv3files/field_table
-      tstep: PT15M
-      update_dgridwind: '0'
-      update_pressures: '1'
-      version: FV3JEDIIdTLM
-      varchange: 'Identity'
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT3H
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
@@ -121,20 +219,26 @@ variational:
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
-      init_tlmadm: '1'
+      varchange: 'Identity'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
+      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT3H
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
       trajectory:
-        init_tlmadm: '0'
+        name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
-        tstep: PT15M
-      trc_file: Data/fv3files/field_table
-      tstep: PT15M
-      update_dgridwind: '0'
-      update_pressures: '1'
-      version: FV3JEDIIdTLM
-      varchange: 'Identity'
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT3H
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
