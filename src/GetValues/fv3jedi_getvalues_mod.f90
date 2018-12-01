@@ -706,6 +706,11 @@ do jvar = 1, vars%nv
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm  
 
+  case ("air_pressure")
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case default
 
     call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
@@ -863,6 +868,12 @@ do jvar = 1, vars%nv
     nvl = npz
     do_interp = .true.
     geoval => geovalm
+
+  case ("air_pressure")
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
  
   case default
 
@@ -921,6 +932,8 @@ do jvar = 1, vars%nv
   case ("humidity_mixing_ratio")
   
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
+
+  case ("air_pressure")
 
   case default
 
