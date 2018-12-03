@@ -121,7 +121,7 @@ cost_function:
     - ObsType: GnssroRef
       ObsOptions:
         ro_top_meter: 30000
-        obs_error: RefGSI
+        obserr_method: RefGSI
         use_compress: 1
       ObsData:
         ObsDataIn:
