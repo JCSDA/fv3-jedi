@@ -118,6 +118,23 @@ cost_function:
       - Filter: Background Check
         variable: air_temperature
         threshold: 3.0
+    - ObsType: GnssroRef
+      ObsOptions:
+        ro_top_meter: 30000
+        obserr_method: RefGSI
+        use_compress: 1
+      ObsData:
+        ObsDataIn:
+          obsfile: Data/gnssro_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/gfs.3dvar.ref.out.nc4
+        obsvalue: refractivity
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variable: refractivity
+        threshold: 3.0
   cost_type: 3D-Var
   variables:
   - ud
