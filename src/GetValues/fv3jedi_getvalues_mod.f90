@@ -707,9 +707,6 @@ do jvar = 1, vars%nv
     geoval => geovalm  
 
   case ("air_pressure")
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
 
   case default
 
@@ -870,10 +867,6 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("air_pressure")
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
-
  
   case default
 
