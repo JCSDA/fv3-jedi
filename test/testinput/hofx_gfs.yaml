@@ -68,6 +68,10 @@ Observations:
 #      obsvalue: BNA
 #    ObsBias: {}
   - ObsType: GnssroRef
+    ObsOptions:
+      ro_top_meter: 30000
+      obserr_method: RefGSI
+      use_compress: 1
     ObsData:
       ObsDataIn:
         obsfile: Data/gnssro_obs_2018041500_m.nc4

@@ -731,9 +731,6 @@ testinput/localization_geos.yaml
 testinput/parametersbump_gfs.cov.yaml
 testinput/parametersbump_gfs.loc.yaml
 testinput/parametersbump_gfs.lct.yaml
-testinput/3dvar_gfs_GnssroRef.yaml
-testinput/hofx_gfs_GnssroRef.yaml
-testinput/hofx_gfs_GnssroBndGSI.yaml
 testinput/tlmforecast_geos.yaml
 testinput/admforecast_geos.yaml
 compare.sh
