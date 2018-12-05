@@ -1,8 +1,3 @@
-! (C) Copyright 2017-2018 UCAR
-! 
-! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-
 module ESM
 
   !-----------------------------------------------------------------------------
@@ -73,17 +68,32 @@ module ESM
     type(ESMF_Time)               :: stopTime
     type(ESMF_TimeInterval)       :: timeStep
     type(ESMF_Clock)              :: internalClock
+    integer                       :: petCount, i
+    integer, allocatable          :: petList(:)
     type(ESMF_GridComp)           :: child
     type(ESMF_CplComp)            :: connector
 
     rc = ESMF_SUCCESS
     
-    ! SetServices for ATM
-    call NUOPC_DriverAddComp(driver, "ATM", atmSS, comp=child, rc=rc)
+    ! get the petCount
+    call ESMF_GridCompGet(driver, petCount=petCount, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
+    
+    ! SetServices for ATM
+    allocate(petList(petCount))
+    do i=1, petCount
+      petList(i) = i-1 ! PET labeling goes from 0 to petCount-1
+    enddo !0,1,2
+    call NUOPC_DriverAddComp(driver, "ATM", atmSS, petList=petList, &
+      comp=child, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    deallocate(petList)
     call NUOPC_CompAttributeSet(child, name="Verbosity", value="high", rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
@@ -91,11 +101,17 @@ module ESM
       return  ! bail out
     
     ! SetServices for OCN
-    call NUOPC_DriverAddComp(driver, "OCN", ocnSS, comp=child, rc=rc)
+    allocate(petList(petCount))
+    do i=1, petCount
+      petList(i) = i-1 ! PET labeling goes from 0 to petCount-1
+    enddo !3,4,5
+    call NUOPC_DriverAddComp(driver, "OCN", ocnSS, petList=petList, &
+      comp=child, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
+    deallocate(petList)
     call NUOPC_CompAttributeSet(child, name="Verbosity", value="high", rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
@@ -103,11 +119,24 @@ module ESM
       return  ! bail out
 
     ! SetServices for MED
-    call NUOPC_DriverAddComp(driver, "MED", medSS, comp=child, rc=rc)
+    ! set petList for MED
+    ! There are no restrictions that NUOPC places on the mediator petList,
+    ! neither in size, nor the PETs that are included.
+    ! In this example the petList for MED is set to some crazy combination,
+    ! just to show that it can basically be set to anything:
+    !   -> first PET of each ATM and OCN and the two missed PETs 
+    !   -> kind of strange, but hey this is just a feature demo
+    allocate(petList(petCount)) ! makes 4 total PETs in the petList
+    do i=1, petCount
+      petList(i) = i-1 ! PET labeling goes from 0 to petCount-1
+    enddo !0,1,2,3,4,5
+    call NUOPC_DriverAddComp(driver, "MED", medSS, petList=petList, &
+      comp=child, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
+    deallocate(petList)
     call NUOPC_CompAttributeSet(child, name="Verbosity", value="high", rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
@@ -210,7 +239,15 @@ module ESM
     integer                       :: localrc
 
     rc = ESMF_SUCCESS
-    
+   
+!ATM->MED
+!OCN->MED
+!MED
+!MED->ATM
+!MED->OCN
+!ATM
+!OCN
+ 
     ! Replace the default RunSequence with a customized sequence, one time slot
     call NUOPC_DriverNewRunSequence(driver, slotCount=1, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &

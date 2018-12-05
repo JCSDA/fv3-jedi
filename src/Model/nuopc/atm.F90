@@ -175,6 +175,7 @@ module ATM
     type(ESMF_FieldStatus_Flag) :: fieldStatus
     real(8), pointer :: sst(:,:)
     real(8), pointer :: pmsl(:,:)
+    integer :: LB(2), UB(2)
 
     integer, save :: init = 0
 
@@ -218,43 +219,37 @@ module ATM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
     call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-
-    call ESMF_FieldGet(field, 0, sst, rc=rc)
+    call ESMF_FieldGet(field, 0, sst, computationalLBound=LB, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
 
-    !prsl
+    !pmsl
     call ESMF_StateGet(exportState, "pmsl", field, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
     call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-
-    call ESMF_FieldGet(field, 0, pmsl, rc=rc)
+    call ESMF_FieldGet(field, 0, pmsl, computationalLBound=LB, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
 
-    sst = -sst
     pmsl = sst
 
-    print*, "NUOPCDATA sst", maxval(sst)    
-    print*, "NUOPCDATA pmsl", maxval(pmsl)    
+    print*, "ATM-DATA sst", sst(LB(1),LB(2)), pmsl(LB(1),LB(2))
 
     nullify(sst,pmsl)
 

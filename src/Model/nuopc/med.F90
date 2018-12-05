@@ -133,7 +133,7 @@ module MED
     rc = ESMF_SUCCESS
     
     ! create a Grid object for Fields
-    gridIn = ESMF_GridCreateNoPeriDimUfrm(maxIndex=(/20, 200/), &
+    gridIn = ESMF_GridCreateNoPeriDimUfrm(maxIndex=(/20, 100/), &
       minCornerCoord=(/10._ESMF_KIND_R8, 20._ESMF_KIND_R8/), &
       maxCornerCoord=(/100._ESMF_KIND_R8, 200._ESMF_KIND_R8/), &
       coordSys=ESMF_COORDSYS_CART, staggerLocList=(/ESMF_STAGGERLOC_CENTER/), &
@@ -234,6 +234,14 @@ module MED
     type(ESMF_Clock)              :: clock
     type(ESMF_State)              :: importState, exportState
 
+    type (ESMF_Field) :: field
+    type(ESMF_FieldStatus_Flag) :: fieldStatus
+    real(8), pointer :: sst_im(:,:), pmsl_im(:,:)
+    real(8), pointer :: sst_ex(:,:), pmsl_ex(:,:)
+    integer :: LB(2), UB(2)
+
+    logical, save :: first = .true.
+
     rc = ESMF_SUCCESS
     
     ! query the Component for its clock, importState and exportState
@@ -272,6 +280,87 @@ module MED
       file=__FILE__)) &
       return  ! bail out
      
+    !sst_im
+    call ESMF_StateGet(importState, "sst", field, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, 0, sst_im, computationalLBound=LB, computationalUBound=UB, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    !pmsl_im
+    call ESMF_StateGet(importState, "pmsl", field, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, 0, pmsl_im, computationalLBound=LB, computationalUBound=UB, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+
+    !sst_ex
+    call ESMF_StateGet(exportState, "sst", field, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, 0, sst_ex, computationalLBound=LB, computationalUBound=UB, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    !pmsl_ex
+    call ESMF_StateGet(exportState, "pmsl", field, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+    call ESMF_FieldGet(field, 0, pmsl_ex, computationalLBound=LB, computationalUBound=UB, rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, &
+      file=__FILE__)) &
+      return  ! bail out
+
+    if (first) then
+      pmsl_im = 10.0
+      sst_im = 10.0
+      first = .false.
+    else
+      pmsl_im = pmsl_im + 0.1
+      sst_im = sst_im + 0.1
+    endif
+
+    !Straight copy for now
+    sst_ex  = sst_im
+    pmsl_ex = pmsl_im
+
+    print*, "MED-DATA sst", sst_ex(LB(1),LB(2)), pmsl_ex(LB(1),LB(2))
+
   end subroutine
 
 end module

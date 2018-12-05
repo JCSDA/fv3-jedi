@@ -138,7 +138,7 @@ if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 ! Finalize ESMF
-!*STILL NEED MPI* call ESMF_Finalize()
+call ESMF_Finalize(endflag=ESMF_END_KEEPMPI,rc=rc)
 
 end subroutine model_nuopc_delete
 
@@ -244,8 +244,10 @@ integer :: rc
 type (ESMF_FieldBundle) :: bundle
 type (ESMF_Field) :: field
 
-real(kind_real), pointer :: sst(:,:)
+real(kind_real), pointer :: sst(:,:), pmsl(:,:)
 type(ESMF_FieldStatus_Flag) :: fieldStatus
+
+integer :: LB(2), UB(2)
 
 integer, save :: init = 0
 
@@ -260,31 +262,26 @@ call ESMF_StateGet(importState, "sst", field, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 !Get pointer to the air_pressure_at_sea_level field
 call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
-call ESMF_FieldGet(field, 0, sst, rc=rc)
+call ESMF_FieldGet(field, 0, sst, computationalLBound=LB, computationalUBound=UB, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
-if (init == 0) then
- sst = 1.0
- init = 1
-else
- sst = sst*2
-endif
+print*, "JED-DATA sst", sst(LB(1),LB(2))
 
-print*, "JEDIDATA sst", maxval(sst)
+if (associated(sst)) nullify(sst)
+if (associated(pmsl)) nullify(pmsl)
 
-nullify(sst)
 
 end subroutine state_to_nuopc
 
@@ -303,7 +300,6 @@ integer :: rc
 
 !Get the atmosphere child component
 call NUOPC_DriverGetComp(self%esmComp, "ATM", comp=atmComp, rc=rc)
-
 
 end subroutine nuopc_to_state
 
@@ -343,32 +339,32 @@ call ESMF_TimeIntervalSet(timeStep, s=dt, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 call ESMF_TimeSet(startTime, yy=yy1, mm=mm1, dd=dd1, h=hh1, m=mn1, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 call ESMF_TimeSet(stopTime, yy=yy2, mm=mm2, dd=dd2, h=hh2, m=mn2, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 externalClock = ESMF_ClockCreate(name="Application Clock", &
   timeStep=timeStep, startTime=startTime, stopTime=stopTime, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 call NUOPC_CompSetClock(driver, externalClock=externalClock, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
-  return  ! bail out
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 end subroutine nuopc_reset_clock
 

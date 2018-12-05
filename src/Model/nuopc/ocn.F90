@@ -117,7 +117,7 @@ module OCN
     rc = ESMF_SUCCESS
     
     ! create a Grid object for Fields
-    gridIn = ESMF_GridCreateNoPeriDimUfrm(maxIndex=(/100, 20/), &
+    gridIn = ESMF_GridCreateNoPeriDimUfrm(maxIndex=(/20, 100/), &
       minCornerCoord=(/10._ESMF_KIND_R8, 20._ESMF_KIND_R8/), &
       maxCornerCoord=(/100._ESMF_KIND_R8, 200._ESMF_KIND_R8/), &
       coordSys=ESMF_COORDSYS_CART, staggerLocList=(/ESMF_STAGGERLOC_CENTER/), &
@@ -223,6 +223,7 @@ module OCN
     real(8), pointer :: pmsl(:,:)
 
     integer, save :: init = 0
+    integer :: LB(2), UB(2)
 
     rc = ESMF_SUCCESS
     
@@ -263,20 +264,21 @@ module OCN
       file=__FILE__)) &
       return  ! bail out
 
-    !prsl
+    !Psuedo operations on sst for testing purposes
+    !---------------------------------------------
+
+    !pmsl
     call ESMF_StateGet(importState, "pmsl", field, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
     call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-
-    call ESMF_FieldGet(field, 0, pmsl, rc=rc)
+    call ESMF_FieldGet(field, 0, pmsl, computationalLBound=LB, computationalUBound=UB, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
@@ -288,25 +290,22 @@ module OCN
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
     call ESMF_FieldGet(field, status=fieldStatus, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-
-    call ESMF_FieldGet(field, 0, sst, rc=rc)
+    call ESMF_FieldGet(field, 0, sst, computationalLBound=LB, computationalUBound=UB, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
 
-
     sst = pmsl
 
+    print*, "OCN-DATA sst", sst(LB(1),LB(2)), pmsl(LB(1),LB(2))
 
     nullify(sst,pmsl)
-
 
   end subroutine
 
