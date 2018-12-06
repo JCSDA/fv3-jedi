@@ -11,7 +11,7 @@ resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
 model:
-  name: 'FV3'
+  name: 'NUOPC'
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
