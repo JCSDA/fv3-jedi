@@ -122,8 +122,6 @@ elseif( ${GFS_FOUND} )
     list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_gfs_src_files} )
 endif()
 
-message("DANDAN FV3JEDI_LIB_DEP ${FV3JEDI_LIB_DEP}")
-
 #Add the library
 ecbuild_add_library( TARGET          fv3jedi
                      SOURCES         ${FV3JEDI_SRC_DEP}
