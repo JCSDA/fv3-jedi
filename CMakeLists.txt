@@ -43,10 +43,6 @@ find_package( Boost ${Boost_MINIMUM_VERSION} REQUIRED
               COMPONENTS unit_test_framework )
 include_directories( ${Boost_INCLUDE_DIR} )
 
-# fms
-ecbuild_use_package( PROJECT fms REQUIRED )
-include_directories( ${FMS_INCLUDE_DIRS} )
-
 # fv3-jedi-lm
 ecbuild_use_package( PROJECT fv3-jedi-lm REQUIRED )
 include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
@@ -58,6 +54,21 @@ include_directories( ${OOPS_INCLUDE_DIRS} )
 # ufo
 ecbuild_use_package( PROJECT ufo )
 include_directories( ${UFO_INCLUDE_DIRS} )
+
+#gfs or geos
+if( ${FV3BASEDMODEL_FOUND} )
+    if ( ${GFS_FOUND} )
+      message("GFS FOUND: Including GFS interface")
+    elseif( ${GEOS_FOUND} )
+      message("GEOS FOUND: Including GEOS interface")
+    endif()   
+    include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
+else()
+   message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface and using local FMS")
+   ecbuild_use_package( PROJECT fms REQUIRED )
+endif()
+
+include_directories( ${FMS_INCLUDE_DIRS} )
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
@@ -77,11 +88,29 @@ include( fv3jedi_compiler_flags )
 # Export package info
 ################################################################################
 
-list( APPEND FV3JEDI_TPLS ufo oops )
+list( APPEND FV3JEDI_TPLS ufo oops)
 
-set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src
-                        ${CMAKE_Fortran_MODULE_DIRECTORY}
-                        ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities )
+set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} 
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/ErrorCovariance
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/ControlToModel
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Localization
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/fv3
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/geos
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/gfs
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/sar
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/ModelBias
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Run
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/State
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Tlm
+                          ${CMAKE_Fortran_MODULE_DIRECTORY})
+
 set( FV3JEDI_LIBRARIES fv3jedi )
 
 get_directory_property( FV3JEDI_DEFINITIONS COMPILE_DEFINITIONS )
@@ -97,26 +126,8 @@ endforeach()
 # Sources
 ################################################################################
 
-include_directories( ${FV3JEDI_INCLUDE_DIRS} ${FV3JEDI_EXTRA_INCLUDE_DIRS}
-                     ${CMAKE_CURRENT_SOURCE_DIR}
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/ErrorCovariance
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/ControlToModel
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Localization
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/fv3
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/geos
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/gfs
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/sar
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/ModelBias
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Run
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/State
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/Tlm )
+include_directories( ${FV3JEDI_INCLUDE_DIRS}
+                     ${FV3JEDI_EXTRA_INCLUDE_DIRS} )
 
 add_subdirectory( mains )
 add_subdirectory( src )

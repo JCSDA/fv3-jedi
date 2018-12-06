@@ -35,16 +35,6 @@ Model/fv3/fv3jedi_fv3_mod.f90
 Model/fv3/ModelFV3FV3JEDI.cc
 Model/fv3/ModelFV3FV3JEDI.h
 Model/fv3/ModelFV3FV3JEDIFortran.h
-Model/geos/fv3jedi_geos_interface_mod.F90
-Model/geos/fv3jedi_geos_mod.f90
-Model/geos/ModelGEOSFV3JEDI.cc
-Model/geos/ModelGEOSFV3JEDI.h
-Model/geos/ModelGEOSFV3JEDIFortran.h
-Model/gfs/fv3jedi_gfs_interface_mod.F90
-Model/gfs/fv3jedi_gfs_mod.f90
-Model/gfs/ModelGFSFV3JEDI.cc
-Model/gfs/ModelGFSFV3JEDI.h
-Model/gfs/ModelGFSFV3JEDIFortran.h
 ModelBias/ModelBiasCovarianceFV3JEDI.h
 ModelBias/ModelBiasFV3JEDI.h
 ModelBias/ModelBiasIncrementFV3JEDI.h
@@ -87,14 +77,55 @@ Tlm/fv3jedi_traj_mod.f90
 Tlm/TrajFV3JEDIFortran.h
 )
 
-set ( FMS_LIBRARIES $ENV{FMS_LIBRARIES} )
-set ( FMS_INCLUDES $ENV{FMS_INCLUDES} )
+list( APPEND fv3jedi_geos_src_files
+Model/geos/fv3jedi_geos_interface_mod.F90
+Model/geos/fv3jedi_geos_mod.f90
+Model/geos/ModelGEOSFV3JEDI.cc
+Model/geos/ModelGEOSFV3JEDI.h
+Model/geos/ModelGEOSFV3JEDIFortran.h
+)
 
-ecbuild_add_library( TARGET   fv3jedi
-                     SOURCES  ${fv3jedi_src_files}
-                     LIBS     oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FV3JEDILM_LIBRARIES} ${FMS_LIBRARIES}
-                     INCLUDES ${FV3JEDILM_INCLUDES} ${FMS_INCLUDES}
+list( APPEND fv3jedi_gfs_src_files
+Model/gfs/fv3jedi_gfs_interface_mod.F90
+Model/gfs/fv3jedi_gfs_mod.f90
+Model/gfs/ModelGFSFV3JEDI.cc
+Model/gfs/ModelGFSFV3JEDI.h
+Model/gfs/ModelGFSFV3JEDIFortran.h
+)
+
+list( APPEND fv3jedi_nuopc_src_files
+Model/nuopc/fv3jedi_nuopc_interface_mod.F90
+Model/nuopc/fv3jedi_nuopc_mod.F90
+Model/nuopc/ModelNUOPCFV3JEDI.cc
+Model/nuopc/ModelNUOPCFV3JEDI.h
+Model/nuopc/ModelNUOPCFV3JEDIFortran.h
+Model/nuopc/esm.F90
+Model/nuopc/atm.F90
+Model/nuopc/ocn.F90
+Model/nuopc/med.F90
+)
+
+#Append includes and libraries with particular model 
+list (APPEND FV3JEDI_LIB_DEP oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
+
+if( ${FV3BASEDMODEL_FOUND} )
+    list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES})
+endif()
+
+#Append src with particular model 
+list (APPEND FV3JEDI_SRC_DEP ${fv3jedi_src_files} )
+
+if( ${GEOS_FOUND} )
+    list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_geos_src_files} )
+    list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_nuopc_src_files} )
+elseif( ${GFS_FOUND} )
+    list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_gfs_src_files} )
+endif()
+
+#Add the library
+ecbuild_add_library( TARGET          fv3jedi
+                     SOURCES         ${FV3JEDI_SRC_DEP}
+                     LIBS            ${FV3JEDI_LIB_DEP}
                      INSTALL_HEADERS LISTED
                      LINKER_LANGUAGE ${OOPS_LINKER_LANGUAGE}
-                    )
-
+                   )
