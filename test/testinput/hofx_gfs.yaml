@@ -80,7 +80,7 @@ Observations:
         obsfile: Data/gnssroRef_hofx_2018041500.nc4
       obsvalue: refractivity
     ObsBias: {}
-  - ObsType: Radiance
+  - ObsType: AMSU-A
     channels: "1-15"
     ObsData:
       ObsDataIn:
