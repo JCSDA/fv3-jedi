@@ -74,7 +74,7 @@ cost_function:
 #        ObsDataOut:
 #          obsfile: Data/fv3jedi.3dvar.obt
 #        obsvalue: Observation
-#      ObsType: Radiance
+#      ObsType: AMSU-A
     ObsTypes:
     - Covariance:
         covariance: diagonal
