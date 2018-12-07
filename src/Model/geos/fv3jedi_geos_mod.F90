@@ -16,8 +16,12 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment 
 
+use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
+
 use MAPL_Mod
 use ESMF
+use MAPL_CapMod, only: MAPL_Cap
+use MAPL_NUOPCWrapperMod, only: cap_parameters, get_cap_parameters_from_gc
 
 implicit none
 private
@@ -33,7 +37,7 @@ public :: geos_finalize
 
 !> Fortran derived type to hold model definition
 type :: geos_model
-  integer :: geos_goes_here
+  type(MAPL_Cap), pointer :: cap
 end type geos_model
 
 ! ------------------------------------------------------------------------------
@@ -49,6 +53,27 @@ type(c_ptr),        intent(in)    :: c_conf
 type(geos_model),   intent(inout) :: self
 type(fv3jedi_geom), intent(in)    :: geom
 
+type(fckit_mpi_comm) :: f_comm
+integer :: rc
+
+! FCKIT MPI wrapper for global communicator
+f_comm = fckit_mpi_comm()
+
+! Initialize ESMF
+call ESMF_Initialize(logkindflag=ESMF_LOGKIND_MULTI, &
+  defaultCalkind=ESMF_CALKIND_GREGORIAN, mpiCommunicator=f_comm%communicator(), rc=rc)
+if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+  line=__LINE__, &
+  file=__FILE__)) &
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
+
+! Create the MAPL_Cap object
+allocate(self%Cap)
+!self%Cap = MAPL_Cap(name = cap_params%name, set_services = cap_params%set_services, &
+!                    comm = dup_comm, cap_rc_file = cap_params%cap_rc_file)
+
+
+
 end subroutine geos_create
 
 ! ------------------------------------------------------------------------------
@@ -57,6 +82,8 @@ subroutine geos_delete(self)
 
 implicit none
 type(geos_model), intent(inout) :: self
+
+deallocate(self%cap)
 
 end subroutine geos_delete
 
@@ -79,9 +106,11 @@ type(geos_model),    intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
 type(datetime),      intent(in)    :: vdate !< Valid datetime after step
 
+integer :: rc
+
 call state_to_geos( state, self )
 
-!call advance geos
+call self%cap%step_model(rc = rc)
 
 call geos_to_state( self, state )
 

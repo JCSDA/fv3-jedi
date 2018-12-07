@@ -79,7 +79,7 @@ Tlm/TrajFV3JEDIFortran.h
 
 list( APPEND fv3jedi_geos_src_files
 Model/geos/fv3jedi_geos_interface_mod.F90
-Model/geos/fv3jedi_geos_mod.f90
+Model/geos/fv3jedi_geos_mod.F90
 Model/geos/ModelGEOSFV3JEDI.cc
 Model/geos/ModelGEOSFV3JEDI.h
 Model/geos/ModelGEOSFV3JEDIFortran.h
