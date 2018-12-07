@@ -47,7 +47,7 @@ cost_function:
         ObsDataOut:
           obsfile: Data/fv3jedi.3dvar.obt
         obsvalue: brightness_temperature_1_
-      ObsType: Radiance
+      ObsType: AMSU-A
       ObsOptions:
         n_Layers: 64
         n_Absorbers: 3
