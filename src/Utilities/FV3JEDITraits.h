@@ -20,12 +20,12 @@
 #include "ModelBiasCovarianceFV3JEDI.h"
 #include "StateFV3JEDI.h"
 
-#include "ioda/Locations.h"
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
 
 #include "ufo/GeoVaLs.h"
 #include "ufo/LinearObsOperator.h"
+#include "ufo/Locations.h"
 #include "ufo/ObsBias.h"
 #include "ufo/ObsBiasCovariance.h"
 #include "ufo/ObsBiasIncrement.h"
@@ -37,31 +37,26 @@ struct FV3JEDITraits {
   static std::string name() {return "FV3JEDI";}
   static std::string nameCovar() {return "FV3JEDIstatic";}
 
-  typedef fv3jedi::GeometryFV3JEDI             Geometry;
-
-  typedef fv3jedi::StateFV3JEDI                State;
-  typedef fv3jedi::IncrementFV3JEDI            Increment;
   typedef fv3jedi::ErrorCovarianceFV3JEDI      Covariance;
-
+  typedef fv3jedi::IncrementFV3JEDI            Increment;
+  typedef fv3jedi::GeometryFV3JEDI             Geometry;
+  typedef fv3jedi::GetValuesTrajFV3JEDI        InterpolatorTraj;
+  typedef fv3jedi::LocalizationMatrixFV3JEDI   LocalizationMatrix;
   typedef fv3jedi::ModelBiasFV3JEDI            ModelAuxControl;
   typedef fv3jedi::ModelBiasIncrementFV3JEDI   ModelAuxIncrement;
   typedef fv3jedi::ModelBiasCovarianceFV3JEDI  ModelAuxCovariance;
-
-  typedef fv3jedi::LocalizationMatrixFV3JEDI   LocalizationMatrix;
-
-  typedef fv3jedi::GetValuesTrajFV3JEDI        InterpolatorTraj;
-
-  typedef ufo::ObsOperator                     ObsOperator;
-  typedef ufo::LinearObsOperator               LinearObsOperator;
-  typedef ioda::ObsSpace                       ObsSpace;
-  typedef ioda::ObsVector                      ObsVector;
-
-  typedef ufo::ObsBias                         ObsAuxControl;
-  typedef ufo::ObsBiasIncrement                ObsAuxIncrement;
-  typedef ufo::ObsBiasCovariance               ObsAuxCovariance;
+  typedef fv3jedi::StateFV3JEDI                State;
 
   typedef ufo::GeoVaLs                         GeoVaLs;
-  typedef ioda::Locations                      Locations;
+  typedef ufo::LinearObsOperator               LinearObsOperator;
+  typedef ufo::Locations                       Locations;
+  typedef ufo::ObsBias                         ObsAuxControl;
+  typedef ufo::ObsBiasCovariance               ObsAuxCovariance;
+  typedef ufo::ObsBiasIncrement                ObsAuxIncrement;
+  typedef ufo::ObsOperator                     ObsOperator;
+
+  typedef ioda::ObsSpace                       ObsSpace;
+  typedef ioda::ObsVector                      ObsVector;
 };
 
 }  // namespace fv3jedi
