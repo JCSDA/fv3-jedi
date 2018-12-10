@@ -11,8 +11,7 @@ resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
 model:
-  name: 'GEOS'
-  GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason_jedi/scratch #Path with GEOS setup
+  name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml

@@ -5,7 +5,10 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <string>
 #include <vector>
+
+#include <unistd.h>
 
 #include "eckit/config/Configuration.h"
 
@@ -32,31 +35,50 @@ ModelGEOSFV3JEDI::ModelGEOSFV3JEDI(const GeometryFV3JEDI & resol,
   oops::Log::trace() << "ModelGEOSFV3JEDI::ModelGEOSFV3JEDI" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));
   const eckit::Configuration * configc = &model;
-  stageFv3Files(model);
+
+  // JEDI to GEOS directory
+  getcwd(jedidir_, 10000);
+
+  std::string sGEOSSCRDIR = model.getString("GEOSSCRDIR");
+  geosscrdir_ = sGEOSSCRDIR.c_str();
+  chdir(geosscrdir_);
+
+  // Create the model
   fv3jedi_geos_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  removeFv3Files();
+
+  // GEOS to JEDI directory
+  chdir(jedidir_);
+
   oops::Log::trace() << "ModelGEOSFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------
 ModelGEOSFV3JEDI::~ModelGEOSFV3JEDI() {
+  chdir(geosscrdir_);
   fv3jedi_geos_delete_f90(keyConfig_);
+  chdir(jedidir_);
   oops::Log::trace() << "ModelGEOSFV3JEDI destructed" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelGEOSFV3JEDI::initialize(StateFV3JEDI & xx) const {
+  chdir(geosscrdir_);
   fv3jedi_geos_initialize_f90(keyConfig_, xx.toFortran());
+  chdir(jedidir_);
   oops::Log::debug() << "ModelGEOSFV3JEDI::initialize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelGEOSFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
   xx.validTime() += tstep_;
   util::DateTime * dtp = &xx.validTime();
+  chdir(geosscrdir_);
   fv3jedi_geos_step_f90(keyConfig_, xx.toFortran(), &dtp);
+  chdir(jedidir_);
   oops::Log::debug() << "ModelGEOSFV3JEDI::step" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelGEOSFV3JEDI::finalize(StateFV3JEDI & xx) const {
+  chdir(geosscrdir_);
   fv3jedi_geos_finalize_f90(keyConfig_, xx.toFortran());
+  chdir(jedidir_);
   oops::Log::debug() << "ModelGEOSFV3JEDI::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------

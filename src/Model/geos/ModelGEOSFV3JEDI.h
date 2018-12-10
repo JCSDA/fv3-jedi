@@ -68,6 +68,8 @@ class ModelGEOSFV3JEDI: public oops::ModelBase<FV3JEDITraits>,
   util::Duration tstep_;
   const GeometryFV3JEDI geom_;
   const oops::Variables vars_;
+  char jedidir_[10000];
+  const char * geosscrdir_;
 };
 // -----------------------------------------------------------------------------
 

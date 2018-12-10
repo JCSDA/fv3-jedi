@@ -3,6 +3,8 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
+#include "MAPL_Generic.h"
+
 module fv3jedi_geos_mod
 
 use iso_c_binding
@@ -18,10 +20,10 @@ use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 
-use MAPL_Mod
 use ESMF
+use MAPL_Mod
 use MAPL_CapMod, only: MAPL_Cap
-use MAPL_NUOPCWrapperMod, only: cap_parameters, get_cap_parameters_from_gc
+use GEOS_GcsGridCompMod, only: GEOS_GcsSS => SetServices
 
 implicit none
 private
@@ -55,6 +57,7 @@ type(fv3jedi_geom), intent(in)    :: geom
 
 type(fckit_mpi_comm) :: f_comm
 integer :: rc
+integer :: subcommunicator
 
 ! FCKIT MPI wrapper for global communicator
 f_comm = fckit_mpi_comm()
@@ -69,10 +72,30 @@ if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
 
 ! Create the MAPL_Cap object
 allocate(self%Cap)
-!self%Cap = MAPL_Cap(name = cap_params%name, set_services = cap_params%set_services, &
-!                    comm = dup_comm, cap_rc_file = cap_params%cap_rc_file)
 
+!Create CAP
+self%Cap = MAPL_Cap(name='GEOS', set_services=GEOS_GcsSS, &
+                    comm=f_comm%communicator(), cap_rc_file='CAP.rc')
 
+!MPI
+call self%cap%initialize_mpi(rc = rc); _VERIFY(rc)
+
+!IO Server commincator (not on by default)
+!subcommunicator = self%cap%create_member_subcommunicator(self%cap%get_comm_world(), rc=rc); _VERIFY(rc)
+!call self%cap%initialize_io_servers(subcommunicator, rc = rc); _VERIFY(rc)
+
+call self%cap%initialize_cap_gc(self%cap%get_mapl_comm())
+
+print*, 'fv3jedi_geos_mod: CAP created'
+
+!GEOS GCS SetServices
+call self%cap%cap_gc%set_services(rc = rc); _VERIFY(rc)
+
+print*, 'fv3jedi_geos_mod: SetServices complete'
+
+call self%cap%cap_gc%initialize(rc = rc); _VERIFY(rc)
+
+print*, 'fv3jedi_geos_mod: Initialize complete'
 
 end subroutine geos_create
 
@@ -83,6 +106,9 @@ subroutine geos_delete(self)
 implicit none
 type(geos_model), intent(inout) :: self
 
+integer :: rc
+
+call self%cap%cap_gc%finalize(rc = rc); _VERIFY(rc)
 deallocate(self%cap)
 
 end subroutine geos_delete
@@ -94,6 +120,8 @@ subroutine geos_initialize(self, state)
 implicit none
 type(geos_model), target :: self
 type(fv3jedi_state)      :: state
+
+!There is no GEOS equivalent to JEDI initialize
 
 end subroutine geos_initialize
 
@@ -124,6 +152,8 @@ implicit none
 type(geos_model), target :: self
 type(fv3jedi_state)      :: state
 
+!There is no GEOS equivalent to JEDI finalize
+
 end subroutine geos_finalize
 
 ! ------------------------------------------------------------------------------
@@ -134,7 +164,19 @@ implicit none
 type(fv3jedi_state), intent(in)    :: state
 type(geos_model),    intent(inout) :: self
  
+
 end subroutine state_to_geos
+
+
+!CAP_EXPORTS:
+!	U,DYN
+!	V,DYN
+!::
+!
+!CAP_IMPORTS:
+!	U
+!	V
+!::
 
 ! ------------------------------------------------------------------------------
 
