@@ -109,7 +109,8 @@ cost_function:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
-        variable: air_temperature
+        variables:
+        - air_temperature
         threshold: 3.0
   cost_type: 3D-Var
   variables:

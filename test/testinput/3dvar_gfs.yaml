@@ -103,6 +103,13 @@ cost_function:
 #     - specific_humidity
       Covariance:
         covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variables:
+        - air_temperature
+        - eastward_wind
+        - northward_wind
+        threshold: 6.0
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
@@ -116,7 +123,8 @@ cost_function:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
-        variable: air_temperature
+        variables:
+        - air_temperature
         threshold: 3.0
     - ObsType: GnssroRef
       ObsOptions:
@@ -133,7 +141,8 @@ cost_function:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
-        variable: refractivity
+        variables:
+        - refractivity
         threshold: 3.0
   cost_type: 3D-Var
   variables:
