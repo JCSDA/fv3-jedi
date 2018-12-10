@@ -22,8 +22,8 @@ use fv3jedi_vars_mod
 use unstructured_grid_mod, only: unstructured_grid, unstructured_grid_registry
 
 !GetValues
-use ioda_locs_mod
-use ioda_locs_mod_c, only: ioda_locs_registry
+use ufo_locs_mod
+use ufo_locs_mod_c, only: ufo_locs_registry
 use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
@@ -480,7 +480,7 @@ integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_increment), pointer :: inc
-type(ioda_locs),  pointer :: locs
+type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
@@ -490,7 +490,7 @@ call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
-call ioda_locs_registry%get(c_key_loc, locs)
+call ufo_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
@@ -510,7 +510,7 @@ integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_increment), pointer :: inc
-type(ioda_locs),  pointer :: locs
+type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
 type(ufo_vars) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
@@ -520,7 +520,7 @@ call ufo_vars_setup(vars, c_vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
-call ioda_locs_registry%get(c_key_loc, locs)
+call ufo_locs_registry%get(c_key_loc, locs)
 call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
