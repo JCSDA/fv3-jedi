@@ -40,7 +40,7 @@ ModelGEOSFV3JEDI::ModelGEOSFV3JEDI(const GeometryFV3JEDI & resol,
   getcwd(jedidir_, 10000);
 
   std::string sGEOSSCRDIR = model.getString("GEOSSCRDIR");
-  geosscrdir_ = sGEOSSCRDIR.c_str();
+  strcpy(geosscrdir_,sGEOSSCRDIR.c_str());
   chdir(geosscrdir_);
 
   // Create the model

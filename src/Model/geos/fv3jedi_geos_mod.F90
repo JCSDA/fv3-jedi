@@ -20,6 +20,7 @@ use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 
+use MPI
 use ESMF
 use MAPL_Mod
 use MAPL_CapMod, only: MAPL_Cap
@@ -40,6 +41,7 @@ public :: geos_finalize
 !> Fortran derived type to hold model definition
 type :: geos_model
   type(MAPL_Cap), pointer :: cap
+  integer :: GEOSsubsteps
 end type geos_model
 
 ! ------------------------------------------------------------------------------
@@ -58,11 +60,20 @@ type(fv3jedi_geom), intent(in)    :: geom
 type(fckit_mpi_comm) :: f_comm
 integer :: rc
 integer :: subcommunicator
+integer :: geos_dt
 
-! FCKIT MPI wrapper for global communicator
+character(len=20) :: ststep
+type(duration) :: dtstep
+integer :: jedi_dt
+
+
+! FCKIT MPI wrapper for communicator
+! ----------------------------------
 f_comm = fckit_mpi_comm()
 
+
 ! Initialize ESMF
+! ---------------
 call ESMF_Initialize(logkindflag=ESMF_LOGKIND_MULTI, &
   defaultCalkind=ESMF_CALKIND_GREGORIAN, mpiCommunicator=f_comm%communicator(), rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
@@ -70,32 +81,70 @@ if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   file=__FILE__)) &
   call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
-! Create the MAPL_Cap object
-allocate(self%Cap)
 
-!Create CAP
+! Create the MAPL_Cap object
+! --------------------------
+allocate(self%Cap)
 self%Cap = MAPL_Cap(name='GEOS', set_services=GEOS_GcsSS, &
                     comm=f_comm%communicator(), cap_rc_file='CAP.rc')
 
-!MPI
-call self%cap%initialize_mpi(rc = rc); _VERIFY(rc)
 
-!IO Server commincator (not on by default)
-!subcommunicator = self%cap%create_member_subcommunicator(self%cap%get_comm_world(), rc=rc); _VERIFY(rc)
-!call self%cap%initialize_io_servers(subcommunicator, rc = rc); _VERIFY(rc)
+! Cap default values
+! ------------------
+call self%cap%set_n_members(1)
+call self%cap%set_npes_input_server(0)
+call self%cap%set_npes_output_server(0)
+call self%cap%set_npes_model(f_comm%size())
+call self%cap%set_npes_member(self%cap%get_npes_model() / self%cap%get_n_members())
+call self%cap%set_ensemble_subdir_prefix("mem")
 
+
+! MPI
+! ---
+call self%cap%set_comm_world(f_comm%communicator())
+call self%cap%set_rank(f_comm%rank())
+
+
+! IO Server commincator (not on by default)
+! -----------------------------------------
+subcommunicator = self%cap%create_member_subcommunicator(self%cap%get_comm_world(), rc=rc); _VERIFY(rc)
+call self%cap%initialize_io_servers(subcommunicator, rc = rc); _VERIFY(rc)
+
+
+! Intialize the Cap GridComp
+! --------------------------
 call self%cap%initialize_cap_gc(self%cap%get_mapl_comm())
 
-print*, 'fv3jedi_geos_mod: CAP created'
 
-!GEOS GCS SetServices
+! GEOS SetServices
+! ----------------
 call self%cap%cap_gc%set_services(rc = rc); _VERIFY(rc)
 
-print*, 'fv3jedi_geos_mod: SetServices complete'
 
+! GEOS Initialize
+! ---------------
 call self%cap%cap_gc%initialize(rc = rc); _VERIFY(rc)
 
-print*, 'fv3jedi_geos_mod: Initialize complete'
+
+! Time step checks and get number of GEOSsubsteps if any
+! ------------------------------------------------------
+ststep = config_get_string(c_conf,len(ststep),"tstep")
+dtstep = trim(ststep)
+jedi_dt = int(duration_seconds(dtstep))
+
+geos_dt = self%cap%cap_gc%get_heartbeat_dt(rc = rc)
+
+if (jedi_dt < geos_dt) then
+  call abor1_ftn("JEDI model time step should not be less than GEOS time step")
+elseif (mod(jedi_dt,geos_dt) .ne. 0) then
+  call abor1_ftn("JEDI time step needs to be divisible by GEOS time step")
+endif
+
+self%GEOSsubsteps = jedi_dt/geos_dt
+
+if (f_comm%rank() == 0) then
+   print*, "There are ", int(self%GEOSsubsteps,2), " time steps of GEOS for each time step of JEDI"
+endif
 
 end subroutine geos_create
 
@@ -108,8 +157,12 @@ type(geos_model), intent(inout) :: self
 
 integer :: rc
 
+! Finalize GEOS
 call self%cap%cap_gc%finalize(rc = rc); _VERIFY(rc)
 deallocate(self%cap)
+
+! Finalize ESMF
+call ESMF_Finalize(endflag=ESMF_END_KEEPMPI,rc=rc)
 
 end subroutine geos_delete
 
@@ -134,12 +187,18 @@ type(geos_model),    intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
 type(datetime),      intent(in)    :: vdate !< Valid datetime after step
 
-integer :: rc
+integer :: n, rc
 
+!Convert JEDI state to GEOS state
 call state_to_geos( state, self )
 
-call self%cap%step_model(rc = rc)
+!Cycle GEOS through this time step of JEDI
+do n = 1,self%GEOSsubsteps
+  rc = ESMF_SUCCESS
+  call self%cap%step_model(rc = rc)
+enddo
 
+!Retrieve GEOS state and put into JEDI state
 call geos_to_state( self, state )
 
 end subroutine geos_step
