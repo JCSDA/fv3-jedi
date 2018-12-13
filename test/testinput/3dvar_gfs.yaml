@@ -128,8 +128,6 @@ cost_function:
         threshold: 3.0
     - ObsType: GnssroRef
       ObsOptions:
-        ro_top_meter: 30000
-        obserr_method: RefGSI
         use_compress: 1
       ObsData:
         ObsDataIn:
@@ -144,6 +142,9 @@ cost_function:
         variables:
         - refractivity
         threshold: 3.0
+      - Filter: GEOreality Check
+        variable: refractivity
+        ro_top_meter: 20000
   cost_type: 3D-Var
   variables:
   - ud
