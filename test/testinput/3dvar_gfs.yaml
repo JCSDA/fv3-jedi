@@ -142,7 +142,7 @@ cost_function:
         variables:
         - refractivity
         threshold: 3.0
-      - Filter: REgeoreality Check
+      - Filter: ROgeoreality Check
         variable: refractivity
         ro_top_meter: 20000
   cost_type: 3D-Var
