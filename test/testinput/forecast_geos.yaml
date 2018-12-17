@@ -1,35 +1,28 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
-forecast_length: PT1H
+forecast_length: PT6H
 resolution:
   filename_akbk: akbk72.nc4
   filepath_akbk: Data/INPUTS/GEOS_akbk/
   ak_var: AK
   bk_var: BK
   halo: '3'
-  nml_file: Data/fv3files/input_geos_c24.nml
+  nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
 model:
   name: 'GEOS'
   GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason_jedi/scratch #Path with GEOS setup
-  nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  readtraj: 0
-  lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
 initial:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c24/
+  datapath_read: Data/INPUTS/GEOS_c48/
   datapath_write: 'Data/'
   date: '2018-04-14T21:00:00Z'
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c24.nml
+  filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
+  filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
+  nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   variables:
   - ud
@@ -43,5 +36,7 @@ initial:
   - ql
   - o3
 output:
-  restart_type: gfs
-  datapath_write: Data/
+  restart_type: geos
+  datapath: Data/RESTART/
+  filename: jason-jedi.eta.
+  geos_tile_dim: 1

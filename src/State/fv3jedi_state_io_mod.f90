@@ -16,6 +16,8 @@ use fms_io_mod,        only: restart_file_type, register_restart_field, &
 
 !For GEOS like restarts
 use netcdf
+use mpi
+use fckit_mpi_module, only: fckit_mpi_comm
 
 implicit none
 private
@@ -760,7 +762,236 @@ type(c_ptr), intent(in)            :: c_conf   !< Configuration
 type(datetime), intent(inout)      :: vdate    !< DateTime
 
 
+character(len=255) :: datapath
+character(len=255) :: filename
+character(len=64)  :: datefile
+
+integer :: geostiledim = 0
+
+integer :: ncid, varid(1000), vc = 0
+
+integer :: date(6)
+integer(kind=c_int) :: idate, isecs
+
+integer :: isc,iec,jsc,jec,im,jm,km
+integer :: x_dimid, y_dimid, z_dimid
+integer :: t_dimid, tile_dimid
+integer, allocatable :: dimids2(:), dimids3(:)
+integer, allocatable :: istart2(:), icount2(:)
+integer, allocatable :: istart3(:), icount3(:)
+
+integer :: writeprec
+type(fckit_mpi_comm) :: f_comm
+
+!> Convenience
+!> -----------
+isc = state%isc
+iec = state%iec
+jsc = state%jsc
+jec = state%jec
+
+f_comm = fckit_mpi_comm()
+
+! Place to save restarts
+! ----------------------
+datapath = "Data/"
+if (config_element_exists(c_conf,"datapath")) then
+   datapath = config_get_string(c_conf,len(datapath),"datapath")
+endif
+
+! Current date
+! ------------
+call datetime_to_ifs(vdate, idate, isecs)
+
+date(1) = idate/10000
+date(2) = idate/100 - date(1)*100
+date(3) = idate - (date(1)*10000 + date(2)*100)
+date(4) = isecs/3600
+date(5) = (isecs - date(4)*3600)/60
+date(6) = isecs - (date(4)*3600 + date(5)*60)
+
+!Using tile as a dimension in the file?
+if (config_element_exists(c_conf,"geos_tile_dim")) then
+   geostiledim = config_get_int(c_conf,"geos_tile_dim")
+endif
+
+!File total dims
+im = geom%npx-1
+jm = geom%npy-1
+km = state%npz
+if (geostiledim == 0) then
+  jm = 6*jm
+endif
+
+! Naming convection for the file
+! ------------------------------
+filename = 'GEOS.eta.'
+
+if (config_element_exists(c_conf,"filename")) then
+   filename = config_get_string(c_conf,len(filename),"filename")
+endif
+
+!Append with the date
+write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2)') date(1),date(2),date(3),"_",date(4),date(5),date(6)
+filename = trim(datapath)//trim(filename)//trim(datefile)//trim("z.nc4")
+
+call nccheck( nf90_create( filename, ior(NF90_NETCDF4, NF90_MPIIO), ncid, &
+                           comm = f_comm%communicator(), info = MPI_INFO_NULL) )
+
+
+!Create dimensions
+call nccheck ( nf90_def_dim(ncid, "lon",  im, x_dimid), "nf90_def_dim lon" )
+call nccheck ( nf90_def_dim(ncid, "lat",  jm, y_dimid), "nf90_def_dim lat" )
+call nccheck ( nf90_def_dim(ncid, "lev",  km, z_dimid), "nf90_def_dim lev" )
+call nccheck ( nf90_def_dim(ncid, "time", 1,  t_dimid), "nf90_def_dim time" )
+
+
+!Add further dimension for the tile number if requested and create dimids
+if (geostiledim == 1) then
+
+  call nccheck ( nf90_def_dim(ncid, "tile", geom%ntiles, tile_dimid), "nf90_def_dim tile"  )
+
+  allocate(dimids2(3))
+  dimids2 =  (/ x_dimid, y_dimid, tile_dimid, t_dimid /)
+  allocate(dimids3(4))
+  dimids3 =  (/ x_dimid, y_dimid, z_dimid, tile_dimid, t_dimid /)
+
+else
+
+  allocate(dimids2(2))
+  dimids2 =  (/ x_dimid, y_dimid, t_dimid /)
+  allocate(dimids3(3))
+  dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
+
+endif
+
+!Define fields to be written (geom)
+vc=vc+1;call nccheck( nf90_def_var(ncid, "lon", NF90_DOUBLE, dimids2, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, dimids2, varid(vc)), "nf90_def_var lat" )
+
+!Define fields to be written (state)
+vc=vc+1;call nccheck( nf90_def_var(ncid, "ud",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "vd",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "ua",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "va",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "t",    NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "delp", NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "q",    NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "qi",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "ql",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+vc=vc+1;call nccheck( nf90_def_var(ncid, "o3",   NF90_DOUBLE, dimids3, varid(vc)), "nf90_def_var lon" )
+
+!End define mode
+vc=0
+call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+
+!Create local to this proc start/count
+if (geostiledim == 1) then
+
+  allocate(istart3(5),istart2(4))
+  allocate(icount3(5),icount2(4))
+
+  istart3(1) = isc
+  istart3(2) = jsc
+  istart3(3) = 1
+  istart3(4) = geom%ntile
+  istart3(5) = 1
+  icount3(1) = iec-isc+1
+  icount3(2) = jec-jsc+1
+  icount3(3) = geom%npz
+  icount3(4) = 1
+  icount3(5) = 1
+
+  istart2(1) = isc
+  istart2(2) = jsc
+  istart2(3) = geom%ntile
+  istart2(4) = 1
+  icount2(1) = iec-isc+1
+  icount2(2) = jec-jsc+1
+  icount2(3) = 1
+  icount2(4) = 1
+
+else
+
+  allocate(istart3(4),istart2(3))
+  allocate(icount3(4),icount2(3))
+
+  istart3(1) = isc
+  istart3(2) = (geom%ntile-1)*(jm/geom%ntiles) + jsc
+  istart3(3) = 1
+  istart3(4) = 1
+  icount3(1) = iec-isc+1
+  icount3(2) = jec-jsc+1
+  icount3(3) = geom%npz
+  icount3(4) = 1
+
+  istart2(1) = isc
+  istart2(2) = (geom%ntile-1)*(jm/geom%ntiles) + jsc
+  istart2(3) = 1
+  icount2(1) = iec-isc+1
+  icount2(2) = jec-jsc+1
+  icount2(3) = 1
+
+endif
+
+!Write fields (geom)
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), geom%grid_lon(isc:iec,jsc:jec), &
+                                    start = istart2, count = icount2 ), "nf90_put_var lon" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), geom%grid_lat(isc:iec,jsc:jec), &
+                                    start = istart2, count = icount2 ), "nf90_put_var lat" )
+
+!Write fields (state)
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%ud  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%vd  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%ua  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%va  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%t   (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%delp(isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%q   (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%qi  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%ql  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%o3  (isc:iec,jsc:jec,1:geom%npz), &
+                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+
+!Close file
+call nccheck( nf90_close(ncid), "nf90_close" )
+
 end subroutine write_geos_restart
+
+! ------------------------------------------------------------------------------
+
+subroutine nccheck(status,iam)
+
+implicit none
+integer, intent ( in) :: status
+character(len=*), optional :: iam 
+
+character(len=1024) :: error_descr
+
+ if(status /= nf90_noerr) then
+
+   error_descr = "fv3jedi_increment_io_mod: NetCDF error, aborting"
+
+   if (present(iam)) then
+     error_descr = trim(error_descr)//", "//trim(iam)
+   endif
+
+   error_descr = trim(error_descr)//". Error code: "//trim(nf90_strerror(status))
+
+   call abor1_ftn(trim(error_descr))
+
+ end if
+
+end subroutine nccheck
 
 ! ------------------------------------------------------------------------------
 

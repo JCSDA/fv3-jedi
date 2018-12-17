@@ -80,7 +80,7 @@ link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 ################################################################################
 
 # Additional user supplied compiler definitions
-set( COMPDEFS_ "${COMPDEFS}")
+set( COMPDEFS_ "-DsysLinux -DESMA64 -DHAS_NETCDF4 -DHAS_NETCDF3 -DH5_HAVE_PARALLEL -DNETCDF_NEED_NF_MPIIO -DMAPL -DDO_COMMAS -DTWO_SIDED_COMM -D__ifort_18 -D__ifort_18 -DHAVE_SHMEM")
 add_definitions( ${COMPDEFS_} )
 include( fv3jedi_compiler_flags )
 
