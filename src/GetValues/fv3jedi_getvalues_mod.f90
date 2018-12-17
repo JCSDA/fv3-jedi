@@ -2,9 +2,9 @@ module fv3jedi_getvalues_mod
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use type_bump, only: bump_type
-use ioda_locs_mod, only: ioda_locs
-use ufo_vars_mod, only: ufo_vars
 use ufo_geovals_mod, only: ufo_geovals
+use ufo_locs_mod, only: ufo_locs
+use ufo_vars_mod, only: ufo_vars
 
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -37,7 +37,7 @@ implicit none
 
 type(fv3jedi_geom),                         intent(in)    :: geom 
 type(fv3jedi_state),                        intent(in)    :: state 
-type(ioda_locs),                            intent(in)    :: locs 
+type(ufo_locs),                             intent(in)    :: locs 
 type(ufo_vars),                             intent(in)    :: vars
 type(ufo_geovals),                          intent(inout) :: gom
 type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
@@ -602,7 +602,7 @@ subroutine getvalues_tl(geom, inc, locs, vars, gom, traj)
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_increment),  intent(in)    :: inc 
-type(ioda_locs),          intent(in)    :: locs 
+type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(in)    :: traj
@@ -766,7 +766,7 @@ subroutine getvalues_ad(geom, inc, locs, vars, gom, traj)
 implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_increment),  intent(inout) :: inc 
-type(ioda_locs),          intent(in)    :: locs 
+type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(in)    :: traj
@@ -978,7 +978,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom), intent(in)    :: geom
-type(ioda_locs),    intent(in)    :: locs
+type(ufo_locs),     intent(in)    :: locs
 type(bump_type),    intent(inout) :: bump
 integer,            intent(in)    :: bumpid
 
@@ -1065,9 +1065,9 @@ end subroutine initialize_bump
 
 subroutine getvalues_checks(cop, locs, vars, gom, jvar)
 implicit none
-character(len=*), intent(in)  :: cop
-type(ioda_locs), intent(in)   :: locs
-type(ufo_vars), intent(in)    :: vars
+character(len=*),  intent(in) :: cop
+type(ufo_locs),    intent(in) :: locs
+type(ufo_vars),    intent(in) :: vars
 type(ufo_geovals), intent(in) :: gom
 integer, intent(in)           :: jvar
 

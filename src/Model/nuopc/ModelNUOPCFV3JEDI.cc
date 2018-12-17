@@ -49,7 +49,8 @@ void ModelNUOPCFV3JEDI::initialize(StateFV3JEDI & xx) const {
   oops::Log::debug() << "ModelNUOPCFV3JEDI::initialize" << std::endl;
 }
 // -----------------------------------------------------------------------------
-void ModelNUOPCFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const {
+void ModelNUOPCFV3JEDI::step(StateFV3JEDI & xx, const ModelBiasFV3JEDI &) const
+{
   util::DateTime start = xx.validTime();
   util::DateTime * dtp1 = &start;
   xx.validTime() += tstep_;

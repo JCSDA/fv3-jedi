@@ -11,9 +11,9 @@ use iso_c_binding
 use config_mod
 use datetime_mod
 
-use ioda_locs_mod
-use ufo_vars_mod
 use ufo_geovals_mod
+use ufo_locs_mod
+use ufo_vars_mod
 
 use fv3jedi_constants_mod, only: rad2deg, constoz
 use fv3jedi_geom_mod, only: fv3jedi_geom

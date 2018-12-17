@@ -19,8 +19,8 @@
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
 
-#include "ioda/Locations.h"
 #include "ufo/GeoVaLs.h"
+#include "ufo/Locations.h"
 
 #include "src/State/StateFV3JEDI.h"
 #include "GeometryFV3JEDI.h"
@@ -110,7 +110,7 @@ StateFV3JEDI & StateFV3JEDI::operator=(const StateFV3JEDI & rhs) {
 // -----------------------------------------------------------------------------
 /// Get state values at observation locations
 // -----------------------------------------------------------------------------
-void StateFV3JEDI::getValues(const ioda::Locations & locs,
+void StateFV3JEDI::getValues(const ufo::Locations & locs,
                              const oops::Variables & vars,
                              ufo::GeoVaLs & gom) const {
   oops::Log::trace() << "StateFV3JEDI::getValues starting." << std::endl;
@@ -121,7 +121,7 @@ void StateFV3JEDI::getValues(const ioda::Locations & locs,
   oops::Log::trace() << "StateFV3JEDI::getValues done." << std::endl;
 }
 // -----------------------------------------------------------------------------
-void StateFV3JEDI::getValues(const ioda::Locations & locs,
+void StateFV3JEDI::getValues(const ufo::Locations & locs,
                              const oops::Variables & vars,
                              ufo::GeoVaLs & gom,
                              const GetValuesTrajFV3JEDI & traj) const {

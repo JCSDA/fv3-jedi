@@ -17,8 +17,8 @@
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
 
-#include "ioda/Locations.h"
 #include "ufo/GeoVaLs.h"
+#include "ufo/Locations.h"
 
 #include "src/Increment/IncrementFV3JEDI.h"
 #include "ErrorCovarianceFV3JEDI.h"
@@ -148,7 +148,7 @@ void IncrementFV3JEDI::random() {
 // -----------------------------------------------------------------------------
 /// Get increment values at observation locations
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
+void IncrementFV3JEDI::getValuesTL(const ufo::Locations & locs,
                                    const oops::Variables & vars,
                                    ufo::GeoVaLs & gom,
                                    const GetValuesTrajFV3JEDI & traj) const {
@@ -161,7 +161,7 @@ void IncrementFV3JEDI::getValuesTL(const ioda::Locations & locs,
                                      traj.toFortran());
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::getValuesAD(const ioda::Locations & locs,
+void IncrementFV3JEDI::getValuesAD(const ufo::Locations & locs,
                              const oops::Variables & vars,
                              const ufo::GeoVaLs & gom,
                              const GetValuesTrajFV3JEDI & traj) {
