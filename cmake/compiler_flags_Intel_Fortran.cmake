@@ -20,19 +20,19 @@ endif( )
 # RELEASE FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -ip -unroll -inline -no-heap-arrays -traceback" )
+set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -ip -unroll -inline -no-heap-arrays ${EXTRA_COMPFLAGS_FV3JEDI}" )
 
 ####################################################################
 # DEBUG FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -ftz -align all -fno-alias -traceback -debug -nolib-inline -fno-inline-functions -assume protect_parens,minus0 -prec-div -prec-sqrt -check bounds -check uninit -fp-stack-check -warn unused  -init=snan,arrays -traceback -assume realloc_lhs -DUSE_CUBEDSPHERE -fPIC -fpe0 -fp-model source -heap-arrays 32 -assume noold_maxminloc  -align dcommons")
+set( CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -check bounds -traceback -warn -heap-arrays -fpe-all=0 -fpe:0 ${EXTRA_COMPFLAGS_FV3JEDI}")
 
 ####################################################################
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_FLAGS_BIT     "-O2 -ip -ipo -unroll -inline -no-heap-arrays" )
+set( CMAKE_Fortran_FLAGS_BIT     "-O2 -ip -ipo -unroll -inline -no-heap-arrays "${EXTRA_COMPFLAGS_FV3JEDI}"" )
 
 ####################################################################
 # LINK FLAGS
