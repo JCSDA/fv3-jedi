@@ -12,6 +12,7 @@
 #include "oops/base/instantiateObsFilterFactory.h"
 #include "oops/base/ObsFilterBase.h"
 #include "oops/interface/ObsFilter.h"
+#include "ufo/atmosphere/gnssro/QC/ROgeorealityCheck.h"
 #include "ufo/BackgroundCheck.h"
 
 namespace fv3jedi {
@@ -19,9 +20,13 @@ namespace fv3jedi {
 void instantiateObsFilterFactory() {
   oops::instantiateObsFilterFactory<FV3JEDITraits>();
   static oops::FilterMaker<FV3JEDITraits,
-                           oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck>
+                       oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck>
                           >
-    makerBkgChk_("Background Check");
+     makerBkgChk_("Background Check");
+  static oops::FilterMaker<FV3JEDITraits,
+                       oops::ObsFilter<FV3JEDITraits, ufo::ROgeorealityCheck>
+                          >
+     makerROgeorealityChk_("ROgeoreality Check");
 }
 
 }  // namespace fv3jedi
