@@ -813,9 +813,9 @@ subroutine read_file(geom, state, c_conf, vdate)
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
   if (trim(restart_type) == 'gfs') then
-     call read_fms_restart(geom, state, c_conf, vdate)
+     call read_fms_state(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call read_geos_restart(state, c_conf, vdate)
+     call read_geos_state(state, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state read: restart type not supported")
   endif
@@ -840,9 +840,9 @@ subroutine write_file(geom, state, c_conf, vdate)
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
   if (trim(restart_type) == 'gfs') then
-     call write_fms_restart(geom, state, c_conf, vdate)
+     call write_fms_state(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call write_geos_restart(geom, state, c_conf, vdate)
+     call write_geos_state(geom, state, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state write: restart type not supported")
   endif
