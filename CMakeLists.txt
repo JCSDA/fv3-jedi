@@ -80,9 +80,11 @@ link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 ################################################################################
 
 # Additional user supplied compiler definitions
-set( COMPDEFS_ "${COMPDEFS}")
+set( COMPDEFS_ ${COMPDEFS_FV3JEDI})
 add_definitions( ${COMPDEFS_} )
 include( fv3jedi_compiler_flags )
+
+message("Compiler definitions for fv3-jedi are: ${COMPDEFS_}")
 
 ################################################################################
 # Export package info

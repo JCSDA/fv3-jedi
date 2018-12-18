@@ -10,39 +10,34 @@
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
 
-if( HAVE_OMP )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qopenmp")
-else( )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qopenmp-stubs")
-endif( )
+set( CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} -Wall -Wno-c++11-extensions")
 
 ####################################################################
 # RELEASE FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -ip -unroll -inline -no-heap-arrays ${EXTRA_COMPFLAGS_FV3JEDI}" )
+set( CMAKE_CXX_FLAGS_RELEASE     "-O3" )
 
 ####################################################################
 # DEBUG FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -check bounds -traceback -warn -heap-arrays -fpe-all=0 -fpe:0 ${EXTRA_COMPFLAGS_FV3JEDI}")
+set( CMAKE_CXX_FLAGS_DEBUG       "-O0 -g" )
 
 ####################################################################
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_FLAGS_BIT     "-O2 -ip -ipo -unroll -inline -no-heap-arrays "${EXTRA_COMPFLAGS_FV3JEDI}"" )
+set( CMAKE_CXX_FLAGS_BIT         "-O2" )
 
 ####################################################################
 # LINK FLAGS
 ####################################################################
 
-set( CMAKE_Fortran_LINK_FLAGS    "" )
+set( CMAKE_CXX_LINK_FLAGS        "" )
 
 ####################################################################
 
 # Meaning of flags
 # ----------------
-# todo
-  
+# todo 
