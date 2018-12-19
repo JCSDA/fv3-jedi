@@ -714,6 +714,8 @@ testinput/3dfgat_gfs.yaml
 testinput/3dfgat_geos.yaml
 testinput/4dvar.dripcg_gfs.yaml
 testinput/4dvar.dripcg_geos.yaml
+testinput/hyb-4DVar.dripcg.geos.yaml
+testinput/hyb-4DVar.dripcg.gfs.yaml
 testinput/forecast_geos.yaml
 testinput/forecast_gfs.yaml
 testinput/forecast_fv3.yaml

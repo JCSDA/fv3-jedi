@@ -394,7 +394,7 @@ type(c_ptr),         intent(in)    :: c_conf   !< Configuration
 type(datetime),      intent(inout) :: vdate    !< DateTime
 
 character(len=255) :: datapath
-character(len=255) :: filename_eta
+character(len=255) :: filename
 
 integer :: ncid, ncstat, dimid, varid
 
@@ -426,18 +426,18 @@ character(len=20)  :: var
 
  !> Set filenames
  !> -------------
- filename_eta = 'GEOS.bkg.eta.nc4'
+ filename = 'GEOS.bkg.eta.nc4'
 
- if (config_element_exists(c_conf,"filename_eta")) then
-    filename_eta = config_get_string(c_conf,len(filename_eta),"filename_eta")
+ if (config_element_exists(c_conf,"filename")) then
+    filename = config_get_string(c_conf,len(filename),"filename")
  endif
 
  datapath = config_get_string(c_conf,len(datapath),"datapath_read")
 
- filename_eta  = trim(datapath)//trim("/")//trim(filename_eta )
+ filename  = trim(datapath)//trim("/")//trim(filename )
 
  !> Open the file
- ncstat = nf90_open(filename_eta, NF90_NOWRITE, ncid)
+ ncstat = nf90_open(filename, NF90_NOWRITE, ncid)
  if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
 
  !> Get dimensions, lon,lat,lev,time
