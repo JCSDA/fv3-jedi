@@ -12,21 +12,31 @@
 #include "oops/base/instantiateObsFilterFactory.h"
 #include "oops/base/ObsFilterBase.h"
 #include "oops/interface/ObsFilter.h"
-#include "ufo/atmosphere/gnssro/QC/ROgeorealityCheck.h"
 #include "ufo/BackgroundCheck.h"
+#include "ufo/BlackList.h"
+#include "ufo/ObsBoundsCheck.h"
+#include "ufo/ObsDomainCheck.h"
+#include "ufo/ObsPreQC.h"
 
 namespace fv3jedi {
 
 void instantiateObsFilterFactory() {
   oops::instantiateObsFilterFactory<FV3JEDITraits>();
   static oops::FilterMaker<FV3JEDITraits,
-                       oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck>
-                          >
-     makerBkgChk_("Background Check");
+                 oops::ObsFilter<FV3JEDITraits, ufo::ObsPreQC>
+                          > makerChk1_("PreQC");
   static oops::FilterMaker<FV3JEDITraits,
-                       oops::ObsFilter<FV3JEDITraits, ufo::ROgeorealityCheck>
-                          >
-     makerROgeorealityChk_("ROgeoreality Check");
+                 oops::ObsFilter<FV3JEDITraits, ufo::ObsDomainCheck>
+                          > makerChk2_("Domain Check");
+  static oops::FilterMaker<FV3JEDITraits,
+                 oops::ObsFilter<FV3JEDITraits, ufo::ObsBoundsCheck>
+                          > makerChk3_("Bounds Check");
+  static oops::FilterMaker<FV3JEDITraits,
+                 oops::ObsFilter<FV3JEDITraits, ufo::BlackList>
+                          > makerChk4_("BlackList");
+  static oops::FilterMaker<FV3JEDITraits,
+                 oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck>
+                          > makerChk5_("Background Check");
 }
 
 }  // namespace fv3jedi

@@ -138,13 +138,21 @@ cost_function:
       Covariance:
         covariance: diagonal
       ObsFilters:
+      - Filter: Domain Check
+        where:
+        - variable: altitude
+          minvalue: 0
+          maxvalue: 20000
+        - variable: earth_radius_of_curvature
+          minvalue: 6250000
+          maxvalue: 6450000
+        - variable: geoid_height_above_reference_ellipsoid
+          minvalue: -200
+          maxvalue: 200
       - Filter: Background Check
         variables:
         - refractivity
         threshold: 3.0
-      - Filter: ROgeoreality Check
-        variable: refractivity
-        ro_top_meter: 20000
   cost_type: 3D-Var
   variables:
   - ud

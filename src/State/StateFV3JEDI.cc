@@ -46,16 +46,13 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
 // -----------------------------------------------------------------------------
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
                            const oops::Variables & varsin,
-                           const eckit::Configuration & file):
-  geom_(new GeometryFV3JEDI(geom)), vars_(varsin), time_(util::DateTime()) {
-  const std::vector<std::string> *vv;
-
-  if (file.has("variables"))
-    vv = new std::vector<std::string>(file.getStringVector("variables"));
-  else
-    ABORT("State variables not found in configuration");
-
-  oops::Variables vars(*vv);
+                           const eckit::Configuration & file)
+  : geom_(new GeometryFV3JEDI(geom)), vars_(varsin), time_(util::DateTime())
+{
+  std::vector<std::string> vv;
+  file.get("variables", vv);
+  ASSERT(vv.size() > 0);
+  oops::Variables vars(vv);
 
   const eckit::Configuration * cvars = &vars.toFortran();
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &cvars);
