@@ -42,5 +42,5 @@ initial:
   - ql
   - o3
 output:
-  restart_type: fv3
+  restart_type: gfs
   datapath: Data/RESTART/

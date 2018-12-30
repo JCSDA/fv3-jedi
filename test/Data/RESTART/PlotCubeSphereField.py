@@ -8,23 +8,18 @@ import matplotlib.pyplot as plt
 #User input required for the follwing:
 plot_diff = 1         #Plot path1/file - path2/file
 model = 'gfs'
-cube = 48
+cube = 180
 filetype = 'png'
 
-path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20180415.000000.3DVar.gfs.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
-if (cube == 48):
-    if (model == 'geos'):
-        path2  = '../INPUTS/GEOS_c48/'
-        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
-    elif (model == 'gfs'):
-        path2  = '../INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/'
-        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
-elif (cube == 96):
-    path2  = ''
-    file_tplt_befr2 = 'fv_core.res.tile'
+
+path1  = './'                         #Path of first/only file
+file_tplt_befr1 = '20180414.210000.3DVar-FGAT.geos.fv_core.res.tile'  #Filename befor tile number
+
+path2  = './'
+file_tplt_befr2 = '20180414.210000.Forecast.fv_core.res.tile'
+
 
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension

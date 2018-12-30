@@ -605,7 +605,7 @@ type(fv3jedi_increment),  intent(in)    :: inc
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_getvalues_traj), intent(in)    :: traj
+type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
 character(len=*), parameter :: myname = 'getvalues_tl'
 
@@ -769,7 +769,7 @@ type(fv3jedi_increment),  intent(inout) :: inc
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_getvalues_traj), intent(in)    :: traj
+type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
 character(len=*), parameter :: myname = 'getvalues_ad'
 
@@ -1046,7 +1046,7 @@ lmask = .true.       ! Mask
 ! Initialize BUMP
 ! ---------------
 call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
+                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:),verbosity="none" )
 
 !Run BUMP drivers
 call bump%run_drivers

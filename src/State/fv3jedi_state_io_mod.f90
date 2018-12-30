@@ -442,7 +442,7 @@ character(len=20)  :: var
  !> Open the file
  call nccheck ( nf90_open(filename, NF90_NOWRITE, ncid), "nf90_open" )
 
- print*, 'Filesname: ', filename
+ !print*, 'Filesname: ', filename
 
  !> Get dimensions, XDim,YDim,lev,time
  call nccheck ( nf90_inq_dimid(ncid, "Xdim", dimid), "nf90_inq_dimid Xdim" )

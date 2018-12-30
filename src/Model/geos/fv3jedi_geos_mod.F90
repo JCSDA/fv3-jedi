@@ -177,11 +177,11 @@ type(geos_model), intent(inout) :: self
 integer :: rc
 
 ! Finalize GEOS
-call self%cap%cap_gc%finalize(rc = rc);
-if (rc.ne.0) call abor1_ftn("geos_mod: finalize failed")
+!call self%cap%cap_gc%finalize(rc = rc);
+!if (rc.ne.0) call abor1_ftn("geos_mod: finalize failed")
 
 ! Finalize ESMF
-call ESMF_Finalize(endflag=ESMF_END_KEEPMPI,rc=rc)
+!call ESMF_Finalize(endflag=ESMF_END_KEEPMPI,rc=rc)
 
 end subroutine geos_delete
 
