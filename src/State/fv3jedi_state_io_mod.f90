@@ -218,8 +218,8 @@ integer :: read_crtm_surface
  call datetime_from_ifs(vdate, idate, isecs)
  call datetime_to_string(vdate, validitydate)
 
- call log%info("read_file: validity date: "//trim(validitydate)) 
- call log%info("read_file: expected validity date: "//trim(sdate)) 
+! call log%info("read_file: validity date: "//trim(validitydate)) 
+! call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  return
 
