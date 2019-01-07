@@ -289,7 +289,7 @@ do jvar = 1, vars%nv
     geovalm = state%va
     geoval => geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
 
     nvl = npz
     do_interp = .true.
@@ -678,7 +678,7 @@ do jvar = 1, vars%nv
     geovalm = inc%va
     geoval => geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
   
     nvl = npz
     do_interp = .true.
@@ -842,7 +842,7 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
   
     nvl = npz
     do_interp = .true.
@@ -910,7 +910,7 @@ do jvar = 1, vars%nv
 
     inc%va = geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
 
     inc%t = geovalm
 
@@ -1033,6 +1033,7 @@ bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
 bump%nam%default_seed = .true.
 bump%nam%new_obsop = .true.
 
+bump%nam%write_obsop = .false.
 
 ! Initialize geometry
 ! -------------------
@@ -1050,6 +1051,9 @@ call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
 
 !Run BUMP drivers
 call bump%run_drivers
+
+!Partial deallocate option
+call bump%partial_dealloc
 
 ! Release memory
 ! --------------

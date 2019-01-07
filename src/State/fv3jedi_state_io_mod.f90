@@ -102,36 +102,59 @@ integer :: read_crtm_surface
 
  ! Register the variables that should be read
  ! ------------------------------------------
- !D-Grid winds, nonlinear model only
- id_restart = register_restart_field(Fv_restart, filename_core, 'u', state%ud, &
-              domain=geom%domain, position=NORTH)
- id_restart = register_restart_field(Fv_restart, filename_core, 'v', state%vd, &
-              domain=geom%domain, position=EAST)
 
- !A-Grid winds, increment
- id_restart = register_restart_field(Fv_restart, filename_core, 'ua', state%ua, &
-                                     domain=geom%domain)
- id_restart = register_restart_field(Fv_restart, filename_core, 'va', state%va, &
-                                     domain=geom%domain)
+ !u on D-Grid
+ if (allocated(state%ud)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'u', state%ud, &
+                domain=geom%domain, position=NORTH)
+ endif
+
+ !v on D-Grid
+ if (allocated(state%vd)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'v', state%vd, &
+                domain=geom%domain, position=EAST)
+ endif
+
+ !u on A-Grid
+ if (allocated(state%ua)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'ua', state%ua, &
+                                       domain=geom%domain)
+ endif
+
+ !v on A-Grid
+ if (allocated(state%va)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'va', state%va, &
+                                       domain=geom%domain)
+ endif
 
  !phis
- id_restart = register_restart_field(Fv_restart, filename_core, 'phis', state%phis, &
-              domain=geom%domain)
+ if (allocated(state%phis)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'phis', state%phis, &
+                domain=geom%domain)
+ endif
 
  !Temperature
- id_restart = register_restart_field(Fv_restart, filename_core, 'T', state%t, &
-              domain=geom%domain)
+ if (allocated(state%t)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'T', state%t, &
+                domain=geom%domain)
+ endif
 
  !Pressure thickness
- id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', state%delp, &
-              domain=geom%domain)
+ if (allocated(state%delp)) then
+   id_restart = register_restart_field(Fv_restart, filename_core, 'DELP', state%delp, &
+                domain=geom%domain)
+ endif
 
- !Nonhydrostatic variables
- if (.not. state%hydrostatic) then
-    id_restart =  register_restart_field(Fv_restart, filename_core, 'W', state%w, &
-                  domain=geom%domain)
-    id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', state%delz, &
-                  domain=geom%domain)
+ !Nonhydrostatic variables - w
+ if (allocated(state%w)) then
+   id_restart =  register_restart_field(Fv_restart, filename_core, 'W', state%w, &
+                 domain=geom%domain)
+ endif
+
+ !Nonhydrostatic variables - delz
+ if (allocated(state%delz)) then
+   id_restart =  register_restart_field(Fv_restart, filename_core, 'DZ', state%delz, &
+                 domain=geom%domain)
  endif
 
  ! Read file and fill variables
@@ -142,14 +165,22 @@ integer :: read_crtm_surface
 
  !Register and read tracers
  !-------------------------
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'sphum'  , state%q , &
-                                     domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'ice_wat', state%qi, &
-                                     domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'liq_wat', state%ql, &
-                                     domain=geom%domain)
- id_restart = register_restart_field(Tr_restart, filename_trcr, 'o3mr'   , state%o3, &
-                                     domain=geom%domain)
+ if (allocated(state%q)) then
+   id_restart = register_restart_field(Tr_restart, filename_trcr, 'sphum'  , state%q , &
+                                       domain=geom%domain)
+ endif
+ if (allocated(state%qi)) then
+   id_restart = register_restart_field(Tr_restart, filename_trcr, 'ice_wat', state%qi, &
+                                       domain=geom%domain)
+ endif
+ if (allocated(state%ql)) then
+   id_restart = register_restart_field(Tr_restart, filename_trcr, 'liq_wat', state%ql, &
+                                       domain=geom%domain)
+ endif
+ if (allocated(state%o3)) then
+   id_restart = register_restart_field(Tr_restart, filename_trcr, 'o3mr'   , state%o3, &
+                                       domain=geom%domain)
+ endif
 
  call restore_state(Tr_restart, directory=trim(adjustl(datapath_ti)))
  call free_restart_type(Tr_restart)
@@ -484,8 +515,8 @@ character(len=20)  :: var
 
  !> Print info to user
  sdate = config_get_string(c_conf,len(sdate),"date")
- call log%info("read_file: validity date: "//trim(validitydate)) 
- call log%info("read_file: expected validity date: "//trim(sdate)) 
+! call log%info("read_file: validity date: "//trim(validitydate)) 
+! call log%info("read_file: expected validity date: "//trim(sdate)) 
 
  !> Make sure file dimensions equal to geometry
  if ( im /= state%npx-1 .or. lm /= state%npz) then

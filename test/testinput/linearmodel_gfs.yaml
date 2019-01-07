@@ -17,6 +17,7 @@ Geometry:
   ak_var: ak
   bk_var: bk
 LinearModel:
+  varchange: 'Identity'  
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
   nml_file: Data/fv3files/input_gfs_c48.nml

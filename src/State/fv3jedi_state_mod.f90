@@ -828,6 +828,8 @@ end subroutine read_file
 
 subroutine write_file(geom, state, c_conf, vdate)
 
+  use fv3jedi_io_latlon_mod
+
   implicit none
 
   type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
@@ -836,6 +838,7 @@ subroutine write_file(geom, state, c_conf, vdate)
   type(datetime), intent(inout)      :: vdate    !< DateTime
 
   character(len=10) :: restart_type
+  type(fv3jedi_llgeom) :: llgeom
 
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
@@ -843,6 +846,23 @@ subroutine write_file(geom, state, c_conf, vdate)
      call write_fms_state(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
      call write_geos_state(geom, state, c_conf, vdate)
+  elseif (trim(restart_type) == 'latlon') then
+
+     call create_latlon(geom, llgeom)
+
+     call write_latlon_metadata(geom, llgeom, c_conf, vdate)
+     if (allocated(state%ud))   call write_latlon_field(geom, llgeom, state%ud,   "ud",   c_conf, vdate)
+     if (allocated(state%vd))   call write_latlon_field(geom, llgeom, state%ud,   "vd",   c_conf, vdate)
+     if (allocated(state%ua))   call write_latlon_field(geom, llgeom, state%ua,   "ua",   c_conf, vdate)
+     if (allocated(state%va))   call write_latlon_field(geom, llgeom, state%va,   "va",   c_conf, vdate)
+     if (allocated(state%t))    call write_latlon_field(geom, llgeom, state%t,    "t",    c_conf, vdate)
+     if (allocated(state%delp)) call write_latlon_field(geom, llgeom, state%delp, "delp", c_conf, vdate)
+     if (allocated(state%q))    call write_latlon_field(geom, llgeom, state%q,    "q",    c_conf, vdate)
+     if (allocated(state%qi))   call write_latlon_field(geom, llgeom, state%qi,   "qi",   c_conf, vdate)
+     if (allocated(state%ql))   call write_latlon_field(geom, llgeom, state%ql,   "ql",   c_conf, vdate)
+     if (allocated(state%o3))   call write_latlon_field(geom, llgeom, state%o3,   "o3",   c_conf, vdate)
+
+     call delete_latlon(llgeom)
   else
      call abor1_ftn("fv3jedi_state write: restart type not supported")
   endif

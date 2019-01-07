@@ -9,11 +9,11 @@ cost_function:
         datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_write: 'Data/'
-        date: '2018-04-15T00:00:00Z'
+        date: '2018-04-14T21:00:00Z'
         read_crtm_surface: 0
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
         variables:
@@ -34,126 +34,39 @@ cost_function:
       maximum_condition_number: 1.0e6
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
-#    Covariance:
-#      covariance: BUMP
-#      default_seed: 1
-#      prefix: fv3jedi_gfs
-#      method: cor
-#      strategy: specific_univariate
-#      new_nicas: 1     # Recompute convolution parameters
-#      load_nicas: 0    # Load precomputed convolution parameters
-#      sam_read: 0
-#      sam_write: 1  
-#      mask_check: 0
-#      draw_type: random_uniform
-#      nc1: 100
-#      ntry: 3
-#      nrep:  2
-#      nc3: 10
-#      dc: 1000.0e3
-#      nl0r: 1
-#      minim_algo: "hooke"
-#      rvflt: 0.0
-#      lsqrt: 1  
-#      resol: 10.0
-#      nicas_interp: bilin
-#      network: 0
-#      mpicom: 2
-#      forced_radii: 1
-#      rh: 1000e3
-#      rv: 100
-#      advmode: 0
-#      diag_interp: bilin
-#      date: '2018-04-15T00:00:00Z'
-#      variable_changes:
-#      - varchange: Control2Model
-#        inputVariables:
-#          variables:
-#          - ua
-#          - va
-#          - t
-#          - ps
-#          - q
-#          - qi
-#          - ql
-#          - o3
-#        outputVariables:
-#          variables:
-#          - psi 
-#          - chi
-#          - tv
-#          - ps
-#          - qc
-#          - qic
-#          - qlc
-#          - o3c
   Jo:
     ObsTypes:
-    - ObsType: Aircraft
-      ObsData:
-        ObsDataIn:
-          obsfile: Data/aircraft_obs_2018041500_m.nc4
-        ObsDataOut:
-          obsfile: Data/gfs.3dvar.air.out.nc4
-        obsvalue: ObsValue
-      variables:
-      - air_temperature
-      - eastward_wind
-      - northward_wind
-#     - specific_humidity
-      Covariance:
-        covariance: diagonal
-      ObsFilters:
-      - Filter: Background Check
-        variables:
-        - air_temperature
-        - eastward_wind
-        - northward_wind
-        threshold: 6.0
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
-          obsfile: Data/sondes_obs_2018041500_m.nc4
+          obsfile: Data/diag_conv_sond_tv.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dvar.rs.out.nc4
-        obsvalue: ObsValue
+          obsfile: Data/diag_conv_sond_tv_out.nc4
       variables:
-      - air_temperature
+      - virtual_temperature
       Covariance:
         covariance: diagonal
-      ObsFilters:
-      - Filter: Background Check
-        variables:
-        - air_temperature
-        threshold: 3.0
-    - ObsType: GnssroRef
-      ObsOptions:
-        use_compress: 1
+    - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
-          obsfile: Data/gnssro_obs_2018041500_m.nc4
+          obsfile: Data/diag_conv_sond_uv.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dvar.ref.out.nc4
-        obsvalue: refractivity
+          obsfile: Data/diag_conv_sond_uv_out.nc4
+      variables:
+      - eastward_wind
+      - northward_wind
+      ObsFilters:
+      - Filter: BlackList
+        where:
+        - variable: gsi_wind_red_factor
+          maxvalue: 0.999
+      - Filter: BlackList
+        where:
+        - variable: gsi_wind_red_factor
+          minvalue: 1.001
       Covariance:
         covariance: diagonal
-      ObsFilters:
-      - Filter: Domain Check
-        where:
-        - variable: altitude
-          minvalue: 0
-          maxvalue: 20000
-        - variable: earth_radius_of_curvature
-          minvalue: 6250000
-          maxvalue: 6450000
-        - variable: geoid_height_above_reference_ellipsoid
-          minvalue: -200
-          maxvalue: 200
-      - Filter: Background Check
-        variables:
-        - refractivity
-        threshold: 3.0
-  cost_type: 3D-Var
+  cost_type: 4D-Var
   variables:
   - ud
   - vd
@@ -178,7 +91,7 @@ model:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-  tstep: PT3H
+  tstep: PT15M
   readtraj: 0
   lm_do_dyn: 1
   lm_do_trb: 0
@@ -186,17 +99,17 @@ model:
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: 3DVar.gfs.fv_core.res.nc
-  filename_cplr: 3DVar.gfs.coupler.res
-  filename_trcr: 3DVar.gfs.fv_tracer.res.nc
+  filename_core: 3DVar-FGAT.gfs.fv_core.res.nc
+  filename_cplr: 3DVar-FGAT.gfs.coupler.res
+  filename_trcr: 3DVar-FGAT.gfs.fv_tracer.res.nc
   first: PT0H
-  frequency: PT1H
+  frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
   filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20180415.000000.fv_core.res.nc
+  filename_akbk: 20180414.210000.fv_core.res.nc
   ak_var: ak
   bk_var: bk
 variational:
@@ -207,11 +120,11 @@ variational:
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
-      version: FV3JEDITLM
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT3H
+      tstep: PT15M
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -220,7 +133,7 @@ variational:
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
+        tstep: PT15M
         readtraj: 0
         lm_do_dyn: 1
         lm_do_trb: 0
@@ -231,39 +144,7 @@ variational:
       trc_file: Data/fv3files/field_table
       halo: '3'
       filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
-    test: 'on'
-  - gradient_norm_reduction: 1e-10
-    linearmodel:
-      varchange: 'Identity'
-      name: 'FV3JEDITLM'
-      version: FV3JEDITLM
-      nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT3H
-      lm_do_dyn: 1
-      lm_do_trb: 0
-      lm_do_mst: 0
-      trajectory:
-        name: 'FV3'
-        nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
-        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
-        readtraj: 0
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
-    ninner: '10'
-    resolution:
-      nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
-      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20180415.000000.fv_core.res.nc
+      filename_akbk: 20180414.210000.fv_core.res.nc
       ak_var: ak
       bk_var: bk
     test: 'on'

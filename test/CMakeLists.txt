@@ -714,6 +714,7 @@ testinput/3dfgat_gfs.yaml
 testinput/3dfgat_geos.yaml
 testinput/4dvar.dripcg_gfs.yaml
 testinput/4dvar.dripcg_geos.yaml
+testinput/hyb-3DVar-fgat.c48.gfs.yaml
 testinput/hyb-3DVar.dripcg.geos.yaml
 testinput/hyb-3DVar.dripcg.gfs.yaml
 testinput/hyb-4DVar.dripcg.geos.yaml

@@ -26,6 +26,7 @@ Increment/fv3jedi_increment_interface_mod.f90
 Increment/fv3jedi_increment_io_mod.f90
 Increment/fv3jedi_increment_mod.f90
 Increment/fv3jedi_increment_utils_mod.F90
+IO/fv3jedi_io_latlon_mod.f90
 Localization/LocalizationMatrixFV3JEDI.cc
 Localization/LocalizationMatrixFV3JEDI.h
 Localization/LocalizationMatrixFV3JEDIFortran.h
