@@ -1033,7 +1033,7 @@ bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
 bump%nam%default_seed = .true.
 bump%nam%new_obsop = .true.
 
-bump%nam%write_obsop = .false.
+!bump%nam%write_obsop = .false.
 
 ! Initialize geometry
 ! -------------------
@@ -1047,13 +1047,13 @@ lmask = .true.       ! Mask
 ! Initialize BUMP
 ! ---------------
 call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:),verbosity="none" )
+                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:))!,verbosity="none" )
 
 !Run BUMP drivers
 call bump%run_drivers
 
 !Partial deallocate option
-call bump%partial_dealloc
+!call bump%partial_dealloc
 
 ! Release memory
 ! --------------

@@ -691,7 +691,7 @@ Data/RESTART/PlotCubeSphereField.py
 Data/RESTART/TLM_vs_NLM.py
 )
 
-list( APPEND fv3jedi_test_input
+list( APPEND fv3jedi_config_input
 configinput/hyb-3DVar.dripcg.geos.yaml
 configinput/hyb-3DVar.dripcg.gfs.yaml
 configinput/hyb-3DVar-fgat.c48.gfs.yaml
@@ -699,6 +699,9 @@ configinput/hyb3dvar_gfs.yaml
 configinput/hyb4densvar_gfs.yaml
 configinput/hyb-4DVar.dripcg.geos.yaml
 configinput/hyb-4DVar.dripcg.gfs.yaml
+)
+
+list( APPEND fv3jedi_test_input
 compare.sh
 testinput/3dfgat_geos.yaml
 testinput/3dfgat_gfs.yaml
@@ -808,6 +811,14 @@ endforeach(FILENAME)
 # Create Data directory for test input and symlink all files
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
 foreach(FILENAME ${fv3jedi_test_input})
+    execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+           ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}
+           ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME} )
+endforeach(FILENAME)
+
+# Create Data directory for run input and symlink all files
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/configinput)
+foreach(FILENAME ${fv3jedi_config_input})
     execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
            ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}
            ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME} )
