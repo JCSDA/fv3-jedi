@@ -15,10 +15,10 @@ file_tplt_aftr = '.nc'                #Filename after tile number
 
 
 path1  = './'                         #Path of first/only file
-file_tplt_befr1 = 'hyb-3DVar-fgat.c48.gfs/aircraft/20180414.210000.hyb-3DVar-fgat.c48.gfs.fv_core.res.tile'  #Filename befor tile number
+file_tplt_befr1 = '20180414.210000.4DVar.geos.fv_core.res.tile'  #Filename befor tile number
 
 path2  = './'
-file_tplt_befr2 = '20180414.210000.Forecast_FV3.gfs.fv_core.res.tile'
+file_tplt_befr2 = '20180414.210000.Forecast.c180.fv_core.res.tile'
 
 
 xdimvar = 'xaxis_1'                  #What to read to get dimension

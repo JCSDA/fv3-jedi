@@ -1,7 +1,7 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
-forecast_length: PT6H
+forecast_length: PT1H
 resolution:
   nml_file: Data/fv3files/input_geos_c180.nml
   trc_file: Data/fv3files/field_table
@@ -11,9 +11,18 @@ resolution:
   ak_var: AK
   bk_var: BK
 model:
-  name: 'GEOS'
-  GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason-jedi-c180/scratch #Path with GEOS setup
+  name: 'FV3'
+  nml_file: Data/fv3files/input_geos_c180.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+#  name: 'GEOS'
+#  GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason-jedi-c180/scratch #Path with GEOS setup
+#  tstep: PT15M
 initial:
   restart_type: geos
   datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
@@ -25,8 +34,8 @@ initial:
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: Forecast.fv_core.res.nc
-  filename_cplr: Forecast.coupler.res
-  filename_trcr: Forecast.fv_tracer.res.nc
+  filename_core: Forecast.c180.fv_core.res.nc
+  filename_cplr: Forecast.c180.coupler.res
+  filename_trcr: Forecast.c180.fv_tracer.res.nc
   first: PT0H
   frequency: PT15M
