@@ -1,0 +1,456 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+trc_file: Data/fv3files/field_table
+cost_function:
+  Jb:
+    Background:
+      state:
+      - restart_type: geos
+        datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180/
+        date: '2018-04-14T21:00:00Z'
+        filename: 'jason-jedi-c180.bkg.c180.eta.20180414_21z.nc4'
+        variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
+        read_tlad_traj: 1
+        read_crtm_surface: 0
+    Covariance:
+# ----------
+# Identity B
+# ----------
+#    Covariance:
+#      covariance: FV3JEDIstatic
+#      date: '2018-04-21T00:00:00Z'
+# ----------------------------------
+# Hybrid B, BUMP loc and BUMP static
+# ----------------------------------
+    Covariance:
+      covariance: hybrid
+      ensemble:
+        date: '2018-04-14T21:00:00Z'
+        localization:
+#          localization: ID
+          localization: BUMP
+          advmode: 0
+          date: '2018-04-14T21:00:00Z'
+          dc: 1000000.0
+          default_seed: 1
+          diag_interp: bilin
+          draw_type: random_uniform
+          lsqrt: 1
+          mask_type: none
+          method: loc_norm
+          minim_algo: hooke
+          mpicom: 2
+          nc1: 400
+          nc3: 10
+          ne: 5
+          network: 0
+          new_hdiag: 0
+          load_hdiag: 1
+          new_nicas: 0
+          load_nicas: 1
+          nicas_interp: bilin
+          nl0r: 1
+          nrep: 2
+          ntry: 3
+          prefix: bump_loc_geos_c180/fv3jedi_geos
+          resol: 10.0
+          rvflt: 0.0
+          strategy: common
+          variables:
+            variables: ['ua','va','t','ps','q','qi','ql','o3']
+        members: '10'
+        state:
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem001.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem002.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem003.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem004.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem005.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem006.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem007.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem008.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem009.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+        - restart_type: geos
+          date: '2018-04-14T21:00:00Z'
+          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+          filename: 'jason-jedi-c180.mem010.eta.20180414_210000z.nc4'
+          variables: ['ua','va','t','delp','q','qi','ql','o3']
+          read_tlad_traj: 0
+          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem011.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem012.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem013.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem014.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem015.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem016.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem017.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem018.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem019.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem020.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem021.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem022.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem023.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem024.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem025.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem026.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem027.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem028.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem029.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem030.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem031.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+#        - restart_type: geos
+#          date: '2018-04-14T21:00:00Z'
+#          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
+#          filename: 'jason-jedi-c180.mem032.eta.20180414_210000z.nc4'
+#          variables: ['ua','va','t','delp','q','qi','ql','o3']
+#          read_tlad_traj: 0
+#          read_crtm_surface: 0
+        variables:
+          variables: ['ua','va','t','ps','q','qi','ql','o3']
+      ensemble_weight: '0.9'
+      static:
+         covariance: FV3JEDIstatic
+         date: '2018-04-21T00:00:00Z'
+#        covariance: BUMP
+#        default_seed: 1
+#        prefix: bump_sta_geos_c180/fv3jedi_geos
+#        method: cor
+#        strategy: common
+#        new_nicas: 1     # Recompute convolution parameters
+#        load_nicas: 0    # Load precomputed convolution parameters
+#        sam_read: 0
+#        sam_write: 1  
+#        mask_check: 0
+#        draw_type: random_uniform
+#        nc1: 100
+#        ntry: 3
+#        nrep:  2
+#        nc3: 10
+#        dc: 1000.0e3
+#        nl0r: 1
+#        minim_algo: "hooke"
+#        rvflt: 0.0
+#        lsqrt: 1  
+#        resol: 10.0
+#        nicas_interp: bilin
+#        network: 0
+#        mpicom: 2
+#        forced_radii: 1
+#        rh: 3000e3
+#        rv: 100
+#        advmode: 0
+#        diag_interp: bilin
+#        date: '2018-04-14T21:00:00Z'
+#        variable_changes:
+#        - varchange: Control2Model
+#          inputVariables:
+#            variables: ['ua','va','t','ps','q','qi','ql','o3']
+#          outputVariables:
+#            variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+  Jo:
+    ObsTypes:
+    - ObsType: Radiosonde
+      ObsData:
+        ObsDataIn:
+          obsfile: Data/diag_conv_sond_tv.nc4
+        ObsDataOut:
+          obsfile: Data/diag_conv_sond_tv_out.nc4
+      variables:
+      - virtual_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variables:
+        - virtual_temperature
+        threshold: 3.0
+#    - ObsType: GnssroRef
+#      ObsOptions:
+#        use_compress: 1
+#      ObsData:
+#        ObsDataIn:
+#          obsfile: Data/gnssro_obs_2018041500_m.nc4
+#        ObsDataOut:
+#          obsfile: Data/gnssro_obs_2018041500_m_out.nc4
+#        obsvalue: refractivity
+#      Covariance:
+#        covariance: diagonal
+#      ObsFilters:
+#      - Filter: Domain Check
+#        where:
+#        - variable: altitude
+#          minvalue: 0
+#          maxvalue: 20000
+#        - variable: earth_radius_of_curvature
+#          minvalue: 6250000
+#          maxvalue: 6450000
+#        - variable: geoid_height_above_reference_ellipsoid
+#          minvalue: -200
+#          maxvalue: 200
+#      - Filter: Background Check
+#        variables:
+#        - refractivity
+#        threshold: 3.0
+#    - ObsType: Aircraft
+#      ObsData:
+#        ObsDataIn:
+#          obsfile: Data/diag_conv_acft_tsen.nc4
+#        ObsDataOut:
+#          obsfile: Data/diag_conv_acft_tsen_out.nc4
+#      variables:
+#      - air_temperature
+#      Covariance:
+#        covariance: diagonal
+#      ObsFilters:
+#      - Filter: Background Check
+#        variables:
+#        - air_temperature
+#        threshold: 6.0
+  cost_type: 4D-Var
+  variables: ['ud','vd','ua','va','t','delp','ps','q','qi','ql','o3']
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+#model:
+#  name: 'FV3'
+#  nml_file: Data/fv3files/input_geos_c180.nml
+#  trc_file: Data/fv3files/field_table
+#  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+#  tstep: PT3H
+#  readtraj: 0
+#  lm_do_dyn: 1
+#  lm_do_trb: 0
+#  lm_do_mst: 0
+model:
+  name: 'GEOS'
+  GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason-jedi-c180/scratch #Path with GEOS setup
+  tstep: PT15M
+output:
+  restart_type: gfs
+  datapath_write: Data/
+  filename_core: 4DVar.geos.fv_core.res.nc
+  filename_cplr: 4DVar.geos.coupler.res
+  filename_trcr: 4DVar.geos.fv_tracer.res.nc
+  first: PT0H
+  frequency: PT01H
+resolution:
+  nml_file: Data/fv3files/input_geos_c180.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
+  filepath_akbk: Data/INPUTS/GEOS_akbk/
+  filename_akbk: akbk72.nc4
+  ak_var: AK
+  bk_var: BK
+variational:
+  iteration:
+  - diagnostics:
+      departures: ombg
+    gradient_norm_reduction: 1e-10
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
+      nml_file: Data/fv3files/input_geos_c180.nml
+      trc_file: Data/fv3files/field_table
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT15M
+      lm_do_dyn: 1
+      lm_do_trb: 1
+      lm_do_mst: 1
+      trajectory:
+        name: 'GEOS'
+        GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason_jedi/scratch #Path with GEOS setup
+        tstep: PT15M
+    ninner: '5'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c180.nml
+      trc_file: Data/fv3files/field_table
+      halo: '3'
+      filepath_akbk: Data/INPUTS/GEOS_akbk/
+      filename_akbk: akbk72.nc4
+      ak_var: AK
+      bk_var: BK
+    test: 'on'

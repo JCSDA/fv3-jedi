@@ -289,7 +289,7 @@ do jvar = 1, vars%nv
     geovalm = state%va
     geoval => geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
 
     nvl = npz
     do_interp = .true.
@@ -605,7 +605,7 @@ type(fv3jedi_increment),  intent(in)    :: inc
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_getvalues_traj), intent(in)    :: traj
+type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
 character(len=*), parameter :: myname = 'getvalues_tl'
 
@@ -678,7 +678,7 @@ do jvar = 1, vars%nv
     geovalm = inc%va
     geoval => geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
   
     nvl = npz
     do_interp = .true.
@@ -769,7 +769,7 @@ type(fv3jedi_increment),  intent(inout) :: inc
 type(ufo_locs),           intent(in)    :: locs 
 type(ufo_vars),           intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
-type(fv3jedi_getvalues_traj), intent(in)    :: traj
+type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
 character(len=*), parameter :: myname = 'getvalues_ad'
 
@@ -842,7 +842,7 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
   
     nvl = npz
     do_interp = .true.
@@ -910,7 +910,7 @@ do jvar = 1, vars%nv
 
     inc%va = geovalm
 
-  case ("temperature")
+  case ("air_temperature","temperature")
 
     inc%t = geovalm
 
@@ -1033,6 +1033,7 @@ bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
 bump%nam%default_seed = .true.
 bump%nam%new_obsop = .true.
 
+!bump%nam%write_obsop = .false.
 
 ! Initialize geometry
 ! -------------------
@@ -1046,10 +1047,13 @@ lmask = .true.       ! Mask
 ! Initialize BUMP
 ! ---------------
 call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:) )
+                        nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:))!,verbosity="none" )
 
 !Run BUMP drivers
 call bump%run_drivers
+
+!Partial deallocate option
+!call bump%partial_dealloc
 
 ! Release memory
 ! --------------

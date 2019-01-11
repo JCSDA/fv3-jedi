@@ -15,6 +15,8 @@ use ufo_geovals_mod
 use ufo_locs_mod
 use ufo_vars_mod
 
+use fckit_mpi_module
+
 use fv3jedi_constants_mod, only: rad2deg, constoz
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -29,7 +31,7 @@ implicit none
 private
 public :: create, delete, zeros, copy, axpy, add_incr, &
           read_file, write_file, gpnorm, staterms, &
-          change_resol, getvalues, analytic_IC
+          change_resol, getvalues, analytic_IC, state_print
 public :: fv3jedi_state
 
 ! ------------------------------------------------------------------------------
@@ -815,7 +817,7 @@ subroutine read_file(geom, state, c_conf, vdate)
   if (trim(restart_type) == 'gfs') then
      call read_fms_state(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
-     call read_geos_state(state, c_conf, vdate)
+     call read_geos_state(geom, state, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state read: restart type not supported")
   endif
@@ -828,6 +830,8 @@ end subroutine read_file
 
 subroutine write_file(geom, state, c_conf, vdate)
 
+  use fv3jedi_io_latlon_mod
+
   implicit none
 
   type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
@@ -836,6 +840,7 @@ subroutine write_file(geom, state, c_conf, vdate)
   type(datetime), intent(inout)      :: vdate    !< DateTime
 
   character(len=10) :: restart_type
+  type(fv3jedi_llgeom) :: llgeom
 
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
@@ -843,6 +848,23 @@ subroutine write_file(geom, state, c_conf, vdate)
      call write_fms_state(geom, state, c_conf, vdate)
   elseif (trim(restart_type) == 'geos') then
      call write_geos_state(geom, state, c_conf, vdate)
+  elseif (trim(restart_type) == 'latlon') then
+
+     call create_latlon(geom, llgeom)
+
+     call write_latlon_metadata(geom, llgeom, c_conf, vdate)
+     if (allocated(state%ud))   call write_latlon_field(geom, llgeom, state%ud,   "ud",   c_conf, vdate)
+     if (allocated(state%vd))   call write_latlon_field(geom, llgeom, state%ud,   "vd",   c_conf, vdate)
+     if (allocated(state%ua))   call write_latlon_field(geom, llgeom, state%ua,   "ua",   c_conf, vdate)
+     if (allocated(state%va))   call write_latlon_field(geom, llgeom, state%va,   "va",   c_conf, vdate)
+     if (allocated(state%t))    call write_latlon_field(geom, llgeom, state%t,    "t",    c_conf, vdate)
+     if (allocated(state%delp)) call write_latlon_field(geom, llgeom, state%delp, "delp", c_conf, vdate)
+     if (allocated(state%q))    call write_latlon_field(geom, llgeom, state%q,    "q",    c_conf, vdate)
+     if (allocated(state%qi))   call write_latlon_field(geom, llgeom, state%qi,   "qi",   c_conf, vdate)
+     if (allocated(state%ql))   call write_latlon_field(geom, llgeom, state%ql,   "ql",   c_conf, vdate)
+     if (allocated(state%o3))   call write_latlon_field(geom, llgeom, state%o3,   "o3",   c_conf, vdate)
+
+     call delete_latlon(llgeom)
   else
      call abor1_ftn("fv3jedi_state write: restart type not supported")
   endif
@@ -850,6 +872,212 @@ subroutine write_file(geom, state, c_conf, vdate)
   return
 
 end subroutine write_file
+
+! ------------------------------------------------------------------------------
+
+subroutine state_print(state)
+
+implicit none
+type(fv3jedi_state), intent(in) :: state
+
+real(kind=kind_real) :: pstat(3)
+real(kind=kind_real) :: tmp1, tmp2, tmp3
+integer :: isc, iec, jsc, jec
+real(kind=kind_real) :: gs3, gs3g
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
+
+if (f_comm%rank() == 0) then
+  print*, "-----------"
+  print*, "State print"
+  print*, "-----------"
+endif
+
+!1. Min
+!2. Max
+!3. RMS
+
+isc = state%isc
+iec = state%iec
+jsc = state%jsc
+jec = state%jec
+
+gs3 = real((iec-isc+1)*(jec-jsc+1)*state%npz,kind_real)
+call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+
+!ud
+if (allocated(state%ud)) then
+  tmp1 = minval(state%ud(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%ud(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%ud(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state ud   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!vd
+if (allocated(state%vd)) then
+  tmp1 = minval(state%vd(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%vd(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%vd(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state vd   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+
+!ua
+if (allocated(state%ua)) then
+  tmp1 = minval(state%ua(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%ua(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%ua(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state ua   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!va
+if (allocated(state%va)) then
+  tmp1 = minval(state%va(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%va(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%va(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state va   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!t
+if (allocated(state%t)) then
+  tmp1 = minval(state%t(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%t(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%t(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state t    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!delp
+if (allocated(state%delp)) then
+  tmp1 = minval(state%delp(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%delp(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%delp(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state delp | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!q
+if (allocated(state%q)) then
+  tmp1 = minval(state%q(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%q(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%q(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state q    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!qi
+if (allocated(state%qi)) then
+  tmp1 = minval(state%qi(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%qi(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%qi(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state qi   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!ql
+if (allocated(state%ql)) then
+  tmp1 = minval(state%ql(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%ql(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%ql(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state ql   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!o3
+if (allocated(state%o3)) then
+  tmp1 = minval(state%o3(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%o3(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%o3(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state o3   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!w
+if (allocated(state%w)) then
+  tmp1 = minval(state%w(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%w(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%w(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state w    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!delz
+if (allocated(state%delz)) then
+  tmp1 = minval(state%delz(isc:iec,jsc:jec,:))
+  tmp2 = maxval(state%delz(isc:iec,jsc:jec,:))
+  tmp3 =    sum(state%delz(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "state delz | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+if (f_comm%rank() == 0) print*, "-----------"
+
+end subroutine state_print
 
 ! ------------------------------------------------------------------------------
 

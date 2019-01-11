@@ -210,19 +210,20 @@ double IncrementFV3JEDI::norm() const {
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::print(std::ostream & os) const {
   oops::Log::trace() << "IncrementFV3JEDI print starting" << std::endl;
-  os << std::endl << "  Valid time: " << validTime();
-  int nx = 0;
-  int ny = 0;
-  int nf = 8;
-  fv3jedi_increment_sizes_f90(keyInc_, nx, ny, nf);
-  os << std::endl << "Cube faces = "<< nx << "x" << ny
-     << ", Number of increment fields = " << nf;
-  std::vector<double> zstat(3*nf);
-  fv3jedi_increment_gpnorm_f90(keyInc_, nf, zstat[0]);
-  for (int jj = 0; jj < nf; ++jj) {
-    os << std::endl <<"Increment=" << jj+1 <<"  Min=" << zstat[3*jj]
-       << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2];
-  }
+  fv3jedi_increment_print_f90(keyInc_);
+//  os << std::endl << "  Valid time: " << validTime();
+//  int nx = 0;
+//  int ny = 0;
+//  int nf = 8;
+//  fv3jedi_increment_sizes_f90(keyInc_, nx, ny, nf);
+//  os << std::endl << "Cube faces = "<< nx << "x" << ny
+//     << ", Number of increment fields = " << nf;
+//  std::vector<double> zstat(3*nf);
+//  fv3jedi_increment_gpnorm_f90(keyInc_, nf, zstat[0]);
+//  for (int jj = 0; jj < nf; ++jj) {
+//    os << std::endl <<"Increment=" << jj+1 <<"  Min=" << zstat[3*jj]
+//       << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2];
+//  }
   oops::Log::trace() << "IncrementFV3JEDI print done" << std::endl;
 }
 // -----------------------------------------------------------------------------

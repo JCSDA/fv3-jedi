@@ -26,65 +26,23 @@ model:
   lm_do_mst: 1
 state:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c180/H21/
   date: '2018-10-03T00:00:00Z'
   read_crtm_surface: 0
-  filename_eta: GEOS.traj.c180.eta.20181003_0000z.nc4    
-  filename_sfc: GEOS.traj.c180.eta.20181003_0000z.nc4    
-  nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4    
+  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 increment:
   state:
   - from_forecast: 0
     restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c180/H15/
     date: '2018-10-03T00:00:00Z'
     read_crtm_surface: 0
-    filename_eta: GEOS.traj.c180.eta.20181003_0000z.nc4    
-    filename_sfc: GEOS.traj.c180.eta.20181003_0000z.nc4    
-    nml_file: Data/fv3files/input_geos_c180.nml
-    trc_file: Data/fv3files/field_table
-    variables:
-    - ud
-    - vd
-    - ua
-    - va
-    - t
-    - delp
-    - q
-    - qi
-    - ql
-    - o3
+    filename: Data/INPUTS/GEOS_c180/H15/GEOS.traj.c180.eta.20181003_0000z.nc4    
+    variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
   - restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c180/H21/
     date: '2018-10-03T00:00:00Z'
     read_crtm_surface: 0
-    filename_eta: GEOS.traj.c180.eta.20181003_0000z.nc4    
-    filename_sfc: GEOS.traj.c180.eta.20181003_0000z.nc4    
-    nml_file: Data/fv3files/input_geos_c180.nml
-    trc_file: Data/fv3files/field_table
-    variables:
-    - ud
-    - vd
-    - ua
-    - va
-    - t
-    - delp
-    - q
-    - qi
-    - ql
-    - o3
+    filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4    
+    variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 JnormGrad:
   normkind: twe
   Tref: 280.0

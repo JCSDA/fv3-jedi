@@ -14,8 +14,6 @@ cost_function:
         filename_core: 20180415.000000.fv_core.res.nc
         filename_cplr: 20180415.000000.coupler.res
         filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
         variables:

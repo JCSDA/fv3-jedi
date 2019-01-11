@@ -11,6 +11,8 @@ use iso_c_binding
 use config_mod
 use datetime_mod
 
+use fckit_mpi_module
+
 use fv3jedi_constants_mod, only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -30,7 +32,8 @@ public :: create, delete, zeros, random, copy, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, incrms, &
           change_resol, getvalues_tl, getvalues_ad, &
-          ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad
+          ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad, &
+          increment_print
 
 ! ------------------------------------------------------------------------------
 
@@ -123,6 +126,9 @@ self%jed = geom%jed
 self%npx = geom%npx
 self%npy = geom%npy
 self%npz = geom%npz
+
+!Hard wired to 8 increment variables at the moment
+self%vars%nv = 8
 
 end subroutine create
 
@@ -488,8 +494,6 @@ end subroutine axpy_state
 ! ------------------------------------------------------------------------------
 
 subroutine dot_prod(inc1,inc2,zprod)
-
-use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 
 implicit none
 type(fv3jedi_increment), intent(in) :: inc1, inc2
@@ -869,6 +873,157 @@ end subroutine write_file
 
 ! ------------------------------------------------------------------------------
 
+subroutine increment_print(inc)
+
+implicit none
+type(fv3jedi_increment), intent(in) :: inc
+
+real(kind=kind_real) :: pstat(3)
+real(kind=kind_real) :: tmp1, tmp2, tmp3
+integer :: isc, iec, jsc, jec
+real(kind=kind_real) :: gs2, gs2g, gs3, gs3g
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
+
+if (f_comm%rank() == 0) then
+  print*, "---------------"
+  print*, "Increment print"
+  print*, "---------------"
+endif
+
+!1. Min
+!2. Max
+!3. RMS
+
+isc = inc%isc
+iec = inc%iec
+jsc = inc%jsc
+jec = inc%jec
+
+gs2 = real((iec-isc+1)*(jec-jsc+1),kind_real)
+call f_comm%allreduce(gs2,gs2g,fckit_mpi_sum())
+gs3 = gs2*real(inc%npz,kind_real)
+call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+
+!ua
+if (allocated(inc%ua)) then
+  tmp1 = minval(inc%ua(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%ua(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%ua(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc ua   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!va
+if (allocated(inc%va)) then
+  tmp1 = minval(inc%va(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%va(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%va(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc va   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!t
+if (allocated(inc%t)) then
+  tmp1 = minval(inc%t(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%t(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%t(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc t    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!ps
+if (allocated(inc%ps)) then
+  tmp1 = minval(inc%ps(isc:iec,jsc:jec))
+  tmp2 = maxval(inc%ps(isc:iec,jsc:jec))
+  tmp3 =    sum(inc%ps(isc:iec,jsc:jec)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs2g)
+
+  if (f_comm%rank() == 0) print*, "Inc ps   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!q
+if (allocated(inc%q)) then
+  tmp1 = minval(inc%q(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%q(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%q(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc q    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!qi
+if (allocated(inc%qi)) then
+  tmp1 = minval(inc%qi(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%qi(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%qi(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc qi   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!ql
+if (allocated(inc%ql)) then
+  tmp1 = minval(inc%ql(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%ql(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%ql(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc ql   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+!o3
+if (allocated(inc%o3)) then
+  tmp1 = minval(inc%o3(isc:iec,jsc:jec,:))
+  tmp2 = maxval(inc%o3(isc:iec,jsc:jec,:))
+  tmp3 =    sum(inc%o3(isc:iec,jsc:jec,:)**2)
+
+  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) print*, "Inc o3   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
+endif
+
+if (f_comm%rank() == 0) print*, "---------------"
+
+end subroutine increment_print
+
+! ------------------------------------------------------------------------------
+
 subroutine gpnorm(inc, nf, pstat)
 implicit none
 type(fv3jedi_increment), intent(in) :: inc
@@ -1022,7 +1177,6 @@ end subroutine gpnorm
 ! ------------------------------------------------------------------------------
 
 subroutine incrms(inc, prms)
-use fckit_mpi_module, only : fckit_mpi_comm, fckit_mpi_sum
 implicit none
 type(fv3jedi_increment), intent(in) :: inc
 real(kind=kind_real), intent(out) :: prms

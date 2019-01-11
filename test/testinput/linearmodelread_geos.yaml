@@ -3,11 +3,7 @@ nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 Covariance:
   covariance: FV3JEDIstatic
-  date: '2018-04-15T00:00:00Z'
-  horizontal_length_scale: 1e6
-  maximum_condition_number: 1.0e6
-  standard_deviation: '0.8'
-  vertical_correlation: '0.2'
+  date: '2018-04-14T21:00:00Z'
 Geometry:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
@@ -59,34 +55,9 @@ Model:
 ModelBias: null
 State:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c24/
-  datapath_write: 'Data/'
   date: '2018-04-14T21:00:00Z'
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 Variables:
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ['ua','va','t','ps','q','qi','ql','o3']

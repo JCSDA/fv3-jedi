@@ -4,7 +4,7 @@ trc_file: Data/fv3files/field_table
 Covariance:
   covariance: BUMP
   default_seed: 1
-  prefix: fv3jedi_gfs
+  prefix: fv3jedi_errorcov_gfs
   method: cor
   strategy: specific_univariate
   new_nicas: 1     # Recompute convolution parameters
