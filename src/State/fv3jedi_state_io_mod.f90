@@ -559,8 +559,6 @@ character(len=20)  :: var
  
  endif
 
- !Mandatory variables
-
  var = 'ud'
  call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
  call nccheck ( nf90_get_var(ncid, varid, state%ud(isc:iec,jsc:jec,:), istart3, icount3), "nf90_get_var"//trim(var) )
@@ -601,9 +599,13 @@ character(len=20)  :: var
  call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
  call nccheck ( nf90_get_var(ncid, varid, state%o3(isc:iec,jsc:jec,:), istart3, icount3), "nf90_get_var"//trim(var) )
 
+ var = 'phis'
+ call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
+ call nccheck ( nf90_get_var(ncid, varid, state%phis(isc:iec,jsc:jec), istart2, icount2), "nf90_get_var"//trim(var) )
+
  if (read_tlad_traj == 1) then
 
-   !Optional 3D TLM/ADM trajectory variables
+   !Optional TLM/ADM trajectory variables
   
    var = 'qls'
    call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
@@ -616,13 +618,7 @@ character(len=20)  :: var
    var = 'cfcn'
    call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
    call nccheck ( nf90_get_var(ncid, varid, state%cfcn(isc:iec,jsc:jec,:), istart3, icount3), "nf90_get_var"//trim(var) )
-  
-   !Optional 2D TLM/ADM trajectory variables
-  
-   var = 'phis'
-   call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
-   call nccheck ( nf90_get_var(ncid, varid, state%phis(isc:iec,jsc:jec), istart2, icount2), "nf90_get_var"//trim(var) )
-  
+   
    var = 'frland'
    call nccheck ( nf90_inq_varid (ncid, trim(var), varid), "nf90_inq_varid"//trim(var) )
    call nccheck ( nf90_get_var(ncid, varid, state%frland(isc:iec,jsc:jec), istart2, icount2), "nf90_get_var"//trim(var) )
