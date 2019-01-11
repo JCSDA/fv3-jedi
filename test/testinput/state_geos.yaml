@@ -22,13 +22,9 @@ StateTest:
     random_seed: '560921'
   StateFile:
     restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c48/
-    datapath_write: 'Data/'
     date: '2018-04-14T21:00:00Z'
+    filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4        
     read_crtm_surface: 0
-    filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
-    filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
-    nml_file: Data/fv3files/input_geos_c48.nml
     variables:
     - ud
     - vd
@@ -43,12 +39,8 @@ StateTest:
   StateGenerate:
     analytic_init: dcmip-test-4-0
     restart_type: geos
-    datapath_read: Data/INPUTS/GEOS_c48/
-    datapath_write: 'Data/'
     read_crtm_surface: 0
-    date: '2018-04-14T21:00:00Z'
-    filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
-    filename_sfc: GEOS.sfc.c48.eta.20180414_21z.nc4    
+    date: '2018-04-14T21:00:00Z'   
     nml_file: Data/fv3files/input_geos_c48.nml
     trc_file: Data/fv3files/field_table
     variables:

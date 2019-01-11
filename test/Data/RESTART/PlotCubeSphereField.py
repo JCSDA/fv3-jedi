@@ -6,40 +6,39 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.basemap import Basemap
 
 #User input required for the follwing:
-plot_diff = 1         #Plot path1/file - path2/file
+plot_diff = 0         #Plot path1/file - path2/file
 model = 'gfs'
-cube = 180
+cube = 48
 filetype = 'png'
 
+path1  = './'                         #Path of first/only file
+file_tplt_befr1 = '20180415.030000.forecast.geos.fv_core.res.tile'  #Filename befor tile number
 file_tplt_aftr = '.nc'                #Filename after tile number
 
-
-path1  = './'                         #Path of first/only file
-file_tplt_befr1 = '20180414.210000.4DVar.geos.fv_core.res.tile'  #Filename befor tile number
-
-path2  = './'
-file_tplt_befr2 = '20180414.210000.Forecast.c180.fv_core.res.tile'
-
+if (cube == 48):
+    if (model == 'geos'):
+        path2  = '../INPUTS/GEOS_c48/'
+        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
+    elif (model == 'gfs'):
+        path2  = '../INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/'
+        file_tplt_befr2 = '20180415.000000.fv_core.res.tile'
+elif (cube == 96):
+    path2  = ''
+    file_tplt_befr2 = 'fv_core.res.tile'
 
 xdimvar = 'xaxis_1'                  #What to read to get dimension
 ydimvar = 'yaxis_2'                  #What to read to get dimension
 zdimvar = 'zaxis_1'                  #What to read to get dimension
-readvar = 'T'                    #Variable to plot
+readvar = 'u'                    #Variable to plot
 Dim2dor3d = '3D'                     #Is this 2D or 3D field?
-plot_level = 50                      #If 3D plot this level
+plot_level = 5                      #If 3D plot this level
 
 readvarlat = 'grid_lat'              #Variable to plot
 readvarlon = 'grid_lon'              #Variable to plot
 
 #Tile 1 handle for getting dimension
-file1 = path1 + file_tplt_befr1 + str(1) + file_tplt_aftr
-file2 = path2 + file_tplt_befr2 + str(1) + file_tplt_aftr
-
-print(file1)
-print(file2)
-
-fh1 = Dataset(file1, mode='r')
-fh2 = Dataset(file2, mode='r')
+fh1 = Dataset(path1 + file_tplt_befr1 + str(1) + file_tplt_aftr, mode='r')
+fh2 = Dataset(path2 + file_tplt_befr2 + str(1) + file_tplt_aftr, mode='r')
 
 #Dimensions
 npx = len(fh1.dimensions[xdimvar])
@@ -79,8 +78,6 @@ for tile in range(6):
     else:
         fr[tile,:,:,:] = fh1.variables[readvar][:]
 
-#print(np.max(np.abs(fr)))
-#print(fr)
 
 #Get level to plot
 f = np.zeros(6*npy*npx).reshape(6,npy,npx)
@@ -115,8 +112,6 @@ fp = np.flipud(np.transpose(fp))
 #Contour levels
 maxf = np.nanmax(np.abs(fp))
 minf = np.nanmin(fp)
-
-print(maxf,minf)
 
 if minf < 0:
     minf = -maxf
@@ -284,7 +279,6 @@ fp[:,1*npx:2*npx] = np.concatenate([f12[4,:,:], f12[5,:,:], f12[6 ,:,:], f12[7 ,
 fp[:,2*npx:3*npx] = np.concatenate([f12[8,:,:], f12[9,:,:], f12[10,:,:], f12[11,:,:]])
 fp = np.flipud(np.transpose(fp))
 
-print(np.max(np.abs(fp)))
 
 #Plot
 fig = plt.figure(figsize=(14,8))

@@ -466,14 +466,8 @@ character(len=20)  :: var
    read_tlad_traj = config_get_int(c_conf,"read_tlad_traj")
  endif
 
- datapath = config_get_string(c_conf,len(datapath),"datapath_read")
-
- filename  = trim(datapath)//trim("/")//trim(filename )
-
  !> Open the file
- call nccheck ( nf90_open(filename, NF90_NOWRITE, ncid), "nf90_open" )
-
- !print*, 'Filesname: ', filename
+ call nccheck ( nf90_open(trim(filename), NF90_NOWRITE, ncid), "nf90_open"//trim(filename) )
 
  !> Get dimensions, XDim,YDim,lev,time
  call nccheck ( nf90_inq_dimid(ncid, "Xdim", dimid), "nf90_inq_dimid Xdim" )
@@ -876,9 +870,9 @@ vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), geom%grid_lat(isc:iec,jsc:j
 
 ! Write fields (state)
 vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%ud  (isc:iec,jsc:jec,1:geom%npz), &
-                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+                                    start = istart3, count = icount3 ), "nf90_put_var ud" )
 vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%vd  (isc:iec,jsc:jec,1:geom%npz), &
-                                    start = istart3, count = icount3 ), "nf90_put_var ua" )
+                                    start = istart3, count = icount3 ), "nf90_put_var vd" )
 vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%ua  (isc:iec,jsc:jec,1:geom%npz), &
                                     start = istart3, count = icount3 ), "nf90_put_var ua" )
 vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), state%va  (isc:iec,jsc:jec,1:geom%npz), &

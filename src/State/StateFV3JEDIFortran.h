@@ -89,6 +89,8 @@ extern "C" {
   void fv3jedi_state_rms_f90(const F90state &,
                              double &);
 
+  void fv3jedi_state_print_f90(const F90state &);
+
 };  // extern "C"
 // -----------------------------------------------------------------------------
 

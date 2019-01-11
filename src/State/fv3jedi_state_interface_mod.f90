@@ -252,6 +252,20 @@ end subroutine fv3jedi_state_gpnorm_c
 
 ! ------------------------------------------------------------------------------
 
+subroutine fv3jedi_state_print_c(c_key_self) bind(c,name='fv3jedi_state_print_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+type(fv3jedi_state), pointer :: self
+
+call fv3jedi_state_registry%get(c_key_self,self)
+
+call state_print(self)
+
+end subroutine fv3jedi_state_print_c
+
+! ------------------------------------------------------------------------------
+
 subroutine fv3jedi_state_rms_c(c_key_state, prms) bind(c,name='fv3jedi_state_rms_f90')
 
 implicit none

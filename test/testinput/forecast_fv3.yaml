@@ -1,7 +1,7 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
-forecast_length: PT30M
+forecast_length: PT6H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
@@ -32,15 +32,11 @@ initial:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
-#output:
-#  restart_type: latlon
-#  filename: "Data/RESTART/forecast.fv3.c48.latlon."
-#  first: PT0H
-#  frequency: PT01H
 output:
-  restart_type: geos
-  datapath: "Data/RESTART/"
-  filename: "forecast.c48.geos."
-  geos_tile_dim: 1
+  restart_type: gfs
+  datapath_write: Data/
+  filename_core: forecast.fv3.fv_core.res.nc
+  filename_cplr: forecast.fv3.coupler.res
+  filename_trcr: forecast.fv3.fv_tracer.res.nc
   first: PT0H
-  frequency: PT01H
+  frequency: PT15M

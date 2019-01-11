@@ -13,26 +13,10 @@ Geometry:
   bk_var: BK
 Initial Condition:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c24/
-  datapath_write: 'Data/'
   date: '2018-04-14T21:00:00Z'
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c24.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  read_crtm_surface: 0
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 Model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml

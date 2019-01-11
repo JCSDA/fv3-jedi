@@ -1,9 +1,9 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
-forecast_length: PT1H
+forecast_length: PT6H
 resolution:
-  nml_file: Data/fv3files/input_geos_c180.nml
+  nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
   filepath_akbk: Data/INPUTS/GEOS_akbk/
@@ -12,7 +12,7 @@ resolution:
   bk_var: BK
 model:
   name: 'FV3'
-  nml_file: Data/fv3files/input_geos_c180.nml
+  nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
@@ -20,22 +20,24 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-#  name: 'GEOS'
-#  GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason-jedi-c180/scratch #Path with GEOS setup
-#  tstep: PT15M
 initial:
   restart_type: geos
-  datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GEOS_C180
   date: '2018-04-14T21:00:00Z'
-  filename: 'jason-jedi-c180.bkg.c180.eta.20180414_21z.nc4'
-  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
-  read_tlad_traj: 1
+  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4    
   read_crtm_surface: 0
+  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 output:
   restart_type: gfs
   datapath_write: Data/
-  filename_core: Forecast.c180.fv_core.res.nc
-  filename_cplr: Forecast.c180.coupler.res
-  filename_trcr: Forecast.c180.fv_tracer.res.nc
+  filename_core: forecast.geos.fv_core.res.nc
+  filename_cplr: forecast.geos.coupler.res
+  filename_trcr: forecast.geos.fv_tracer.res.nc
   first: PT0H
   frequency: PT15M
+#  restart_type: geos
+#  datapath_write: Data/
+#  filename_core: Forecast.c180.fv_core.res.nc
+#  filename_cplr: Forecast.c180.coupler.res
+#  filename_trcr: Forecast.c180.fv_tracer.res.nc
+#  first: PT0H
+#  frequency: PT15M

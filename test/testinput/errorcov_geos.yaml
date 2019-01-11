@@ -4,7 +4,7 @@ trc_file: Data/fv3files/field_table
 Covariance:
   covariance: BUMP
   default_seed: 1
-  prefix: fv3jedi_geos
+  prefix: fv3jedi_errorcov_geos
   method: cor
   strategy: specific_univariate
   new_nicas: 1     # Recompute convolution parameters
@@ -36,7 +36,7 @@ CovarianceTest:
   testinverse: false
   tolerance: '1.0e-10'
 Geometry:
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   halo: '3'
   filepath_akbk: Data/INPUTS/GEOS_akbk/
@@ -45,25 +45,10 @@ Geometry:
   bk_var: BK
 State:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c48/
-  datapath_write: 'Data/'
   date: '2018-04-15T00:00:00Z'
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180415_00z.nc4    
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c48.nml
-  trc_file: Data/fv3files/field_table
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 Variables:
   variables:
   - ua

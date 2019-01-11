@@ -211,7 +211,7 @@ double IncrementFV3JEDI::norm() const {
 void IncrementFV3JEDI::print(std::ostream & os) const {
   oops::Log::trace() << "IncrementFV3JEDI print starting" << std::endl;
   fv3jedi_increment_print_f90(keyInc_);
-//  os << std::endl << "  Valid time: " << validTime();  
+//  os << std::endl << "  Valid time: " << validTime();
 //  int nx = 0;
 //  int ny = 0;
 //  int nf = 8;
