@@ -19,7 +19,6 @@ LocalizationMatrixFV3JEDI::LocalizationMatrixFV3JEDI(const GeometryFV3JEDI &
                                                  resol,
                                                  const eckit::Configuration &
                                                  config) {
-  const eckit::Configuration * configc = &config;
 }
 // -----------------------------------------------------------------------------
 LocalizationMatrixFV3JEDI::~LocalizationMatrixFV3JEDI() {
