@@ -334,7 +334,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,k
+integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,i,j,k
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud, vd
 
@@ -382,6 +382,27 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   if(allocated(self%o3  )) self%o3   = self%o3   + rhs%o3  
   if(allocated(self%w   )) self%w    = self%w    + rhs%w   
   if(allocated(self%delz)) self%delz = self%delz + rhs%delz 
+
+  !Check for negative tracers and increase to 0.0
+  do k = 1,geom%npz
+    do j = geom%jsc,geom%jec
+      do i = geom%isc,geom%iec
+        if (self%q(i,j,k) < 0.0_kind_real) then
+          self%q(i,j,k) = 0.0_kind_real
+        endif
+        if (self%qi(i,j,k) < 0.0_kind_real) then
+          self%qi(i,j,k) = 0.0_kind_real
+        endif
+        if (self%ql(i,j,k) < 0.0_kind_real) then
+          self%ql(i,j,k) = 0.0_kind_real
+        endif
+        if (self%o3(i,j,k) < 0.0_kind_real) then
+          self%o3(i,j,k) = 0.0_kind_real
+        endif
+      enddo
+    enddo
+  enddo
+
 else
    call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
 endif
