@@ -10,10 +10,12 @@ cost_function:
         datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_write: 'Data/'
         date: '2018-04-15T00:00:00Z'
-        read_crtm_surface: 0
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        read_crtm_surface: 1
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
+        filename_sfcd: 20180414.210000.sfc_data.nc
+        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
         nml_file: Data/fv3files/input_gfs_c48.nml
         trc_file: Data/fv3files/field_table
         variables:
@@ -102,7 +104,7 @@ cost_function:
        ObsDataIn: 
         obsfile: "Data/amsua_obs_n19_2018041500_m.nc4"
        ObsDataOut: 
-        obsfile: "Data/amsua_obs_n19_2018041500_m_out.nc4"
+        obsfile: "Data/amsua_fmo.nc4"
       Covariance:
         covariance: diagonal
   cost_type: 3D-Var

@@ -17,7 +17,7 @@ Initial Condition:
   datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   datapath_write: 'Data/'
   date: '2018-04-14T21:00:00Z'
-  read_crtm_surface: 0
+  read_crtm_surface: 1
   filename_core: 20180414.210000.fv_core.res.nc
   filename_cplr: 20180414.210000.coupler.res
   filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -25,7 +25,6 @@ Initial Condition:
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  read_crtm_surface: 1
   variables:
   - ud
   - vd
@@ -54,7 +53,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/gfs.hofx.nc4
+        obsfile: Data/aircraft_hofx.nc4
     variables:
     - air_temperature
     ObsBias: {}
@@ -64,7 +63,7 @@ Observations:
 #        obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
 #      obsvalue: BNA
 #      ObsDataOut:
-#        obsfile: gnssroBndGSI_hofx_2018041500.nc4
+#        obsfile: Data/gnssro_hofx.nc4
 #      obsvalue: BNA
 #    ObsBias: {}
   - ObsType: GnssroRef
@@ -77,7 +76,7 @@ Observations:
         obsfile: Data/gnssro_obs_2018041500_m.nc4
       obsvalue: refractivity
       ObsDataOut:
-        obsfile: Data/gnssroRef_hofx_2018041500.nc4
+        obsfile: Data/gnssro_hofx.nc4
       obsvalue: refractivity
     ObsBias: {}
   - ObsType: AMSU-A
@@ -86,7 +85,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/amsua_obs_n19_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/gfs.hofx.nc4
+        obsfile: Data/amsua_hofx.nc4
     ObsBias: {}
     ObsOptions:
       n_Absorbers: 3
@@ -100,7 +99,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/sondes_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/gfs.hofx.nc4
+        obsfile: Data/sondes_hofx.nc4
     variables:
     - air_temperature
     ObsBias: {}
