@@ -471,6 +471,12 @@ end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 
+subroutine dummy_final(self)
+type(fv3jedi_llgeom), intent(inout) :: self
+end subroutine dummy_final
+
+! ------------------------------------------------------------------------------
+
 subroutine nccheck(status,iam)
 
 implicit none
