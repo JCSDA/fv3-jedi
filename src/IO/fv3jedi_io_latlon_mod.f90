@@ -45,6 +45,8 @@ type fv3jedi_llgeom
  character(len=1024) :: filename
  integer, allocatable :: istart2(:), icount2(:)
  integer, allocatable :: istart3(:), icount3(:)
+ contains
+  final :: dummy_final
 end type fv3jedi_llgeom
 
 contains
