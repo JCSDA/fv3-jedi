@@ -3,40 +3,41 @@ nml_file: Data/fv3files/fmsmpp.nml
 trc_file: Data/fv3files/field_table
 forecast_length: PT6H
 resolution:
-  filename_akbk: akbk72.nc4
+  nml_file: Data/fv3files/input_geos_c48.nml
+  trc_file: Data/fv3files/field_table
+  halo: '3'
   filepath_akbk: Data/INPUTS/GEOS_akbk/
+  filename_akbk: akbk72.nc4
   ak_var: AK
   bk_var: BK
-  halo: '3'
+model:
+  name: 'FV3'
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
-model:
-  name: 'GEOS'
-  GEOSSCRDIR: /gpfsm/dnb31/drholdaw/jason_jedi/scratch #Path with GEOS setup
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
 initial:
   restart_type: geos
-  datapath_read: Data/INPUTS/GEOS_c48/
-  datapath_write: 'Data/'
   date: '2018-04-14T21:00:00Z'
+  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4    
   read_crtm_surface: 0
-  filename_eta: GEOS.bkg.c48.eta.20180414_21z.nc4    
-  filename_sfc: GEOS.bkg.c48.eta.20180414_21z.nc4    
-  nml_file: Data/fv3files/input_geos_c48.nml
-  trc_file: Data/fv3files/field_table
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 output:
-  restart_type: geos
-  datapath: Data/RESTART/
-  filename: jason-jedi.eta.
-  geos_tile_dim: 1
+  restart_type: gfs
+  datapath_write: Data/
+  filename_core: forecast.geos.fv_core.res.nc
+  filename_cplr: forecast.geos.coupler.res
+  filename_trcr: forecast.geos.fv_tracer.res.nc
+  first: PT0H
+  frequency: PT15M
+#  restart_type: geos
+#  datapath_write: Data/
+#  filename_core: Forecast.c180.fv_core.res.nc
+#  filename_cplr: Forecast.c180.coupler.res
+#  filename_trcr: Forecast.c180.fv_tracer.res.nc
+#  first: PT0H
+#  frequency: PT15M

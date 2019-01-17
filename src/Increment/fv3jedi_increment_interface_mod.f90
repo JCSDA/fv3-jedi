@@ -451,6 +451,20 @@ end subroutine fv3jedi_increment_gpnorm_c
 
 ! ------------------------------------------------------------------------------
 
+subroutine fv3jedi_increment_print_c(c_key_self) bind(c,name='fv3jedi_increment_print_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+type(fv3jedi_increment), pointer :: self
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+
+call increment_print(self)
+
+end subroutine fv3jedi_increment_print_c
+
+! ------------------------------------------------------------------------------
+
 subroutine fv3jedi_increment_rms_c(c_key_inc, prms) bind(c,name='fv3jedi_increment_rms_f90')
 
 implicit none

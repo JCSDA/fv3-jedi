@@ -178,19 +178,20 @@ void StateFV3JEDI::write(const eckit::Configuration & config) const {
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::print(std::ostream & os) const {
   oops::Log::trace() << "StateFV3JEDI print starting" << std::endl;
-  oops::Log::debug() << "  Valid time: " << validTime() << std::endl;
-  int nx = 0;
-  int ny = 0;
-  int nf = 8;
-  fv3jedi_state_sizes_f90(keyState_, nx, ny, nf);
-  oops::Log::debug() << "Cube faces = " << nx << "x" << ny
-     << ", Number of state fields = " << nf << std::endl;
-  std::vector<double> zstat(3*nf);
-  fv3jedi_state_gpnorm_f90(keyState_, nf, zstat[0]);
-  for (int jj = 0; jj < nf; ++jj) {
-    oops::Log::debug() << "State=" << jj+1 <<"  Min=" << zstat[3*jj]
-       << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2] << std::endl;
-  }
+  fv3jedi_state_print_f90(keyState_);
+//  oops::Log::debug() << "  Valid time: " << validTime() << std::endl;
+//  int nx = 0;
+//  int ny = 0;
+//  int nf = 8;
+//  fv3jedi_state_sizes_f90(keyState_, nx, ny, nf);
+//  oops::Log::debug() << "Cube faces = " << nx << "x" << ny
+//     << ", Number of state fields = " << nf << std::endl;
+//  std::vector<double> zstat(3*nf);
+//  fv3jedi_state_gpnorm_f90(keyState_, nf, zstat[0]);
+//  for (int jj = 0; jj < nf; ++jj) {
+//    oops::Log::debug() << "State=" << jj+1 <<"  Min=" << zstat[3*jj]
+//       << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2] << std::endl;
+//  }
   oops::Log::trace() << "StateFV3JEDI print done" << std::endl;
 }
 // -----------------------------------------------------------------------------

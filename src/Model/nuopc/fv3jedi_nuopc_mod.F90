@@ -113,6 +113,18 @@ cdate_final = '2018-04-15T03:00:00Z'
 
 call nuopc_reset_clock(self%esmComp, self%dt, cdate_start, cdate_final)
 
+
+! Call Initialize for the Earth system Component
+call ESMF_GridCompInitialize(self%esmComp, userRc=self%urc, rc=rc)
+if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+  line=__LINE__, &
+  file=__FILE__)) &
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
+if (ESMF_LogFoundError(rcToCheck=self%urc, msg=ESMF_LOGERR_PASSTHRU, &
+  line=__LINE__, &
+  file=__FILE__)) &
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
+
 end subroutine model_nuopc_create
 
 ! ------------------------------------------------------------------------------
@@ -123,6 +135,17 @@ implicit none
 type(model_nuopc_type), intent(inout) :: self
 
 integer :: rc
+
+! Call Finalize for the Earth system Component
+call ESMF_GridCompFinalize(self%esmComp, userRc=self%urc, rc=rc)
+if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+  line=__LINE__, &
+  file=__FILE__)) &
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
+if (ESMF_LogFoundError(rcToCheck=self%urc, msg=ESMF_LOGERR_PASSTHRU, &
+  line=__LINE__, &
+  file=__FILE__)) &
+  call ESMF_Finalize(endflag=ESMF_END_ABORT)
 
 ! Destroy the Earth system Component
 call ESMF_GridCompDestroy(self%esmComp, rc=rc)
@@ -151,18 +174,10 @@ type(model_nuopc_type), intent(inout) :: self
 type(fv3jedi_state),    intent(in)    :: state
 type(datetime),         intent(in)    :: vdate !< Valid datetime after step
 
-integer :: rc
-
-! Call Initialize for the Earth system Component
-call ESMF_GridCompInitialize(self%esmComp, userRc=self%urc, rc=rc)
-if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
-  line=__LINE__, &
-  file=__FILE__)) &
-  call ESMF_Finalize(endflag=ESMF_END_ABORT)
-if (ESMF_LogFoundError(rcToCheck=self%urc, msg=ESMF_LOGERR_PASSTHRU, &
-  line=__LINE__, &
-  file=__FILE__)) &
-  call ESMF_Finalize(endflag=ESMF_END_ABORT)
+! Note that calling ESMF initialize here is likely not safe since finalize
+! is not the mirror image of finalize. E.g. there is nothing in ESMF to prevent
+! a user for allocating a module level array in SetServices and deallocating it
+! in finalize.
 
 end subroutine model_nuopc_initialize
 
@@ -214,18 +229,10 @@ type(model_nuopc_type), intent(inout) :: self
 type(fv3jedi_state),    intent(in)    :: state
 type(datetime),         intent(in)    :: vdate !< Valid datetime after step
 
-integer :: rc
-
-! Call Finalize for the Earth system Component
-call ESMF_GridCompFinalize(self%esmComp, userRc=self%urc, rc=rc)
-if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
-  line=__LINE__, &
-  file=__FILE__)) &
-  call ESMF_Finalize(endflag=ESMF_END_ABORT)
-if (ESMF_LogFoundError(rcToCheck=self%urc, msg=ESMF_LOGERR_PASSTHRU, &
-  line=__LINE__, &
-  file=__FILE__)) &
-  call ESMF_Finalize(endflag=ESMF_END_ABORT)
+! Note that calling ESMF initialize here is likely not safe since finalize
+! is not the mirror image of finalize. E.g. there is nothing in ESMF to prevent
+! a user for allocating a module level array in SetServices and deallocating it
+! in finalize.
 
 end subroutine model_nuopc_finalize
 
