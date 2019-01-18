@@ -45,6 +45,8 @@ type fv3jedi_llgeom
  character(len=1024) :: filename
  integer, allocatable :: istart2(:), icount2(:)
  integer, allocatable :: istart3(:), icount3(:)
+ contains
+  final :: dummy_final
 end type fv3jedi_llgeom
 
 contains
@@ -466,6 +468,12 @@ deallocate(mod_lat)
 deallocate(mod_lon)
 
 end subroutine initialize_bump
+
+! ------------------------------------------------------------------------------
+
+subroutine dummy_final(self)
+type(fv3jedi_llgeom), intent(inout) :: self
+end subroutine dummy_final
 
 ! ------------------------------------------------------------------------------
 
