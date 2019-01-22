@@ -64,17 +64,17 @@ do var = 1, self%vars%nv
        if (.not.allocated(  self%ua)) allocate (  self%ua(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("va")
        if (.not.allocated(  self%va)) allocate (  self%va(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("t")
+     case("t","T")
        if (.not.allocated(   self%t)) allocate (   self%t(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("ps")
        if (.not.allocated(  self%ps)) allocate (  self%ps(geom%isc:geom%iec,  geom%jsc:geom%jec            ))
-     case("q")
+     case("q","sphum")
        if (.not.allocated(   self%q)) allocate (   self%q(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("qi")
+     case("qi","ice_wat")
        if (.not.allocated(  self%qi)) allocate (  self%qi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("ql")
+     case("ql","liq_wat")
        if (.not.allocated(  self%ql)) allocate (  self%ql(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("o3")
+     case("o3","o3mr")
        if (.not.allocated(  self%o3)) allocate (  self%o3(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("psi")
        if (.not.allocated( self%psi)) allocate ( self%psi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
@@ -94,9 +94,10 @@ do var = 1, self%vars%nv
        if (.not.allocated(   self%w)) allocate (   self%w(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
      case("delz")
        if (.not.allocated(self%delz)) allocate (self%delz(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("ud")
-     case("vd")
-     case("delp")
+     case("u","v","ud","vd","delp","DELP","phis","qls","qcn","cfcn", &
+          "frocean","frland","varflt","ustar","bstar", &
+          "zpbl","cm","ct","cq","kcbl","ts","khl","khu")
+       !Potential state variables not part of the increment
      case default 
        call abor1_ftn("Increment: unknown variable "//trim(self%vars%fldnames(var)))
 
@@ -467,26 +468,26 @@ type(fv3jedi_state), intent(in)  :: rhs
 
 real(kind=kind_real), allocatable :: rhs_ps(:,:)
 
-if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%ua  
-if(allocated(self%va  )) self%va   = self%va   + zz * rhs%va  
-if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t
+if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%fields(rhs%ua)%field
+if(allocated(self%va  )) self%va   = self%va   + zz * rhs%fields(rhs%va)%field
+if(allocated(self%t   )) self%t    = self%t    + zz * rhs%fields(rhs%t)%field
 
 if(allocated(self%ps))then
   allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
-  rhs_ps = sum(rhs%delp,3)
+  rhs_ps = sum(rhs%fields(rhs%delp)%field,3)
   self%ps   = self%ps   + zz * rhs_ps
   deallocate(rhs_ps)
 endif
 
-if(allocated(self%delp)) self%delp = self%delp + zz * rhs%delp
+if(allocated(self%delp)) self%delp = self%delp + zz * rhs%fields(rhs%delp)%field
 
-if(allocated(self%q   )) self%q    = self%q    + zz * rhs%q   
-if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%qi  
-if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%ql  
-if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%o3  
+if(allocated(self%q   )) self%q    = self%q    + zz * rhs%fields(rhs%q )%field 
+if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%fields(rhs%qi)%field 
+if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%fields(rhs%ql)%field 
+if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%fields(rhs%o3)%field 
 
-if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
-if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
+if(allocated(self%w   )) self%w    = self%w    + zz * rhs%fields(rhs%w)%field   
+if(allocated(self%delz)) self%delz = self%delz + zz * rhs%fields(rhs%delz)%field
 
 return
 end subroutine axpy_state
@@ -766,28 +767,28 @@ check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 call zeros(lhs)
 if (check==0) then
 
-  if(allocated(lhs%ua  )) lhs%ua   = x1%ua   - x2%ua  
-  if(allocated(lhs%va  )) lhs%va   = x1%va   - x2%va  
-  if(allocated(lhs%t   )) lhs%t    = x1%t    - x2%t
+  if(allocated(lhs%ua  )) lhs%ua   = x1%fields(x1%ua)%field   - x2%fields(x2%ua)%field
+  if(allocated(lhs%va  )) lhs%va   = x1%fields(x1%va)%field   - x2%fields(x2%va)%field
+  if(allocated(lhs%t   )) lhs%t    = x1%fields(x1%t)%field    - x2%fields(x2%t)%field
 
   if(allocated(lhs%ps)) then
     allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
     allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-    x1_ps = sum(x1%delp,3)
-    x2_ps = sum(x2%delp,3)
+    x1_ps = sum(x1%fields(x1%delp)%field,3)
+    x2_ps = sum(x2%fields(x2%delp)%field,3)
     lhs%ps   = x1_ps   - x2_ps
     deallocate(x1_ps,x2_ps)
   endif
 
-  if(allocated(lhs%delp)) lhs%delp = x1%delp - x2%delp
+  if(allocated(lhs%delp)) lhs%delp = x1%fields(x1%delp)%field - x2%fields(x2%delp)%field
 
-  if(allocated(lhs%q   )) lhs%q    = x1%q    - x2%q   
-  if(allocated(lhs%qi  )) lhs%qi   = x1%qi   - x2%qi  
-  if(allocated(lhs%ql  )) lhs%ql   = x1%ql   - x2%ql  
-  if(allocated(lhs%o3  )) lhs%o3   = x1%o3   - x2%o3  
+  if(allocated(lhs%q   )) lhs%q    = x1%fields(x1%q)%field    - x2%fields(x2%q)%field
+  if(allocated(lhs%qi  )) lhs%qi   = x1%fields(x1%qi)%field   - x2%fields(x2%qi)%field
+  if(allocated(lhs%ql  )) lhs%ql   = x1%fields(x1%ql)%field   - x2%fields(x2%ql)%field
+  if(allocated(lhs%o3  )) lhs%o3   = x1%fields(x1%o3)%field   - x2%fields(x2%o3)%field
 
-  if(allocated(lhs%w   )) lhs%w    = x1%w    - x2%w   
-  if(allocated(lhs%delz)) lhs%delz = x1%delz - x2%delz
+  if(allocated(lhs%w   )) lhs%w    = x1%fields(x1%w)%field    - x2%fields(x2%w)%field
+  if(allocated(lhs%delz)) lhs%delz = x1%fields(x1%delz)%field - x2%fields(x2%delz)%field
 
 else
 
@@ -2144,13 +2145,13 @@ pfac = 0.5_kind_real*Rgas*tref/pref**2
 global_area = mpp_global_sum(geom%domain, geom%area, flags=BITWISE_EFP_SUM)
 
 allocate(ref_ps(isc:iec,jsc:jec))
-ref_ps = sum(ref%delp,3)
+ref_ps = sum(ref%fields(ref%delp)%field,3)
 
 allocate(cellweight(isc:iec,jsc:jec,1:npz))
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      cellweight(i,j,k) = (ref%delp(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
+      cellweight(i,j,k) = (ref%fields(ref%delp)%field(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
     enddo
   enddo
 enddo
@@ -2159,7 +2160,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%ua(i,j,k) = Ufac * 2.0_kind_real * ref%ua(i,j,k) * cellweight(i,j,k)
+      self%ua(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%ua)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2168,7 +2169,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%va(i,j,k) = Ufac * 2.0_kind_real * ref%va(i,j,k) * cellweight(i,j,k)
+      self%va(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%va)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2177,7 +2178,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%t(i,j,k) = Tfac * 2.0_kind_real * ref%T(i,j,k) * cellweight(i,j,k)
+      self%t(i,j,k) = Tfac * 2.0_kind_real * ref%fields(ref%t)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2186,7 +2187,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%q(i,j,k) = qfac * 2.0_kind_real * ref%q (i,j,k) * cellweight(i,j,k)
+      self%q(i,j,k) = qfac * 2.0_kind_real * ref%fields(ref%q)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2195,7 +2196,7 @@ enddo
 if (allocated(self%ps)) then
   do j = jsc,jec
     do i = isc,iec
-      self%ps(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%delp(i,j,npz)/ref_ps(i,j))
+      self%ps(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%fields(ref%delp)%field(i,j,npz)/ref_ps(i,j))
     enddo
   enddo
 else

@@ -174,7 +174,7 @@ implicit none
 !Arguments
 type(fv3jedi_llgeom), intent(inout) :: llgeom  !< LatLon Geometry
 
-if (llgeom%thispe == .true.) then
+if (llgeom%thispe) then
   deallocate(llgeom%lons)
   deallocate(llgeom%lats)
 
@@ -282,7 +282,7 @@ integer :: x_dimid, y_dimid, z_dimid, t_dimid, dimids(4)
 ! Interpolate the field to the lat-lon grid
 ! -----------------------------------------
 
-if (llgeom%thispe == .true.) then
+if (llgeom%thispe) then
   allocate(llfield(1:llgeom%nx,1:llgeom%ny,1:geom%npz))
 else
   allocate(llfield(0,0,0))
@@ -311,7 +311,7 @@ do jk = 1, geom%npz
   call llgeom%bump%apply_obsop(csfield_bump,llfield_bump)
  
   !Unpack BUMP latlon field
-  if (llgeom%thispe == .true.) then
+  if (llgeom%thispe) then
     ii = 0
     do jj = 1,llgeom%ny
       do ji = 1,llgeom%nx
@@ -338,7 +338,7 @@ dimids =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
 call nccheck( nf90_def_var( ncid, trim(fieldname), NF90_DOUBLE, dimids, varid), "nf90_def_var"//trim(fieldname)   )
 call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
-if (llgeom%thispe == .true.) then
+if (llgeom%thispe) then
   call nccheck( nf90_put_var( ncid, varid, llfield, start = llgeom%istart3, count = llgeom%icount3 ), "nf90_put_var"//trim(fieldname) )
 endif
 
@@ -366,7 +366,7 @@ real(kind=kind_real), intent(in)    :: field(:,:)   !< Field to write
 type(c_ptr),          intent(in)    :: c_conf       !< Configuration
 type(datetime),       intent(in)    :: vdate        !< DateTime
 
-if (llgeom%thispe == .true.) then
+if (llgeom%thispe) then
 endif
 
 end subroutine write_latlon_field_r2

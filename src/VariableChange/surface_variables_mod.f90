@@ -47,18 +47,18 @@ subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
  integer             , intent(in)  :: ngrid
  real(kind=kind_real), intent(in)  :: lats_ob(nobs)
  real(kind=kind_real), intent(in)  :: lons_ob(nobs)
- integer             , intent(in)  :: fld_slmsk (geom%isc:geom%iec,geom%jsc:geom%jec)
- real(kind=kind_real), intent(in)  :: fld_sheleg(geom%isc:geom%iec,geom%jsc:geom%jec)
- real(kind=kind_real), intent(in)  :: fld_tsea  (geom%isc:geom%iec,geom%jsc:geom%jec)
- integer             , intent(in)  :: fld_vtype (geom%isc:geom%iec,geom%jsc:geom%jec)
- integer             , intent(in)  :: fld_stype (geom%isc:geom%iec,geom%jsc:geom%jec)
- real(kind=kind_real), intent(in)  :: fld_vfrac (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_slmsk (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_sheleg(geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_tsea  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_vtype (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_stype (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_vfrac (geom%isc:geom%iec,geom%jsc:geom%jec,1)
  real(kind=kind_real), intent(in)  :: fld_stc   (geom%isc:geom%iec,geom%jsc:geom%jec,4)
  real(kind=kind_real), intent(in)  :: fld_smc   (geom%isc:geom%iec,geom%jsc:geom%jec,4)
- real(kind=kind_real), intent(in)  :: fld_snwdph(geom%isc:geom%iec,geom%jsc:geom%jec)
- real(kind=kind_real), intent(in)  :: fld_u_srf (geom%isc:geom%iec,geom%jsc:geom%jec)
- real(kind=kind_real), intent(in)  :: fld_v_srf (geom%isc:geom%iec,geom%jsc:geom%jec)
- real(kind=kind_real), intent(in)  :: fld_f10m  (geom%isc:geom%iec,geom%jsc:geom%jec)
+ real(kind=kind_real), intent(in)  :: fld_snwdph(geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_u_srf (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_v_srf (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+ real(kind=kind_real), intent(in)  :: fld_f10m  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
  integer             , intent(out) :: vegetation_type(nobs)
  integer             , intent(out) :: land_type(nobs)
  integer             , intent(out) :: soil_type(nobs)
@@ -216,18 +216,18 @@ allocate(f10mp(nobs,nn))
  call crtm_surface_kdtree_setup( geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i ) 
 
  !Get field at nn neighbours
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_slmsk     , slmsk  )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_sheleg    , sheleg )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_tsea      , tsea   )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_vtype     , vtype  )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_stype     , stype  )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_vfrac     , vfrac  )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_stc(:,:,1), stc    )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_smc(:,:,1), smc    )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_snwdph    , snwdph )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_u_srf     , u_srf  )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_v_srf     , v_srf  )
- call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_f10m      , f10m   )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_slmsk(:,:,1) , slmsk  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_sheleg(:,:,1), sheleg )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_tsea(:,:,1)  , tsea   )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_vtype(:,:,1) , vtype  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_stype(:,:,1) , stype  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_vfrac(:,:,1) , vfrac  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_stc(:,:,1)   , stc    )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_smc(:,:,1)   , smc    )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_snwdph(:,:,1), snwdph )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_u_srf(:,:,1) , u_srf  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_v_srf(:,:,1) , v_srf  )
+ call crtm_surface_kdtree_getfieldneighbours( geom, nobs, ngrid, nn, interp_i, fld_f10m(:,:,1)  , f10m   )
 
  dtsfc  = 1.0_kind_real
  dtsfcp = 0.0_kind_real
@@ -681,7 +681,7 @@ end subroutine crtm_surface_kdtree_setup
 !----------------------------------------------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine crtm_surface_kdtree_getfieldneighbours_int( geom, nobs, ngrid, nn, interp_i, field_in, field_out )
+subroutine crtm_surface_kdtree_getfieldneighbours_int( geom, nobs, ngrid, nn, interp_i, rfield_in, field_out )
 
 use mpp_mod, only: mpp_npes, mpp_pe
 use mpi
@@ -695,7 +695,7 @@ integer             , intent(in)  :: ngrid              !Number of grid points o
 integer             , intent(in)  :: nn                 !Number of neighbours
 integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
 
-integer             , intent(in)  :: field_in(geom%isc:geom%iec,geom%jsc:geom%jec) !Fields in
+real(kind=kind_real), intent(in)  :: rfield_in(geom%isc:geom%iec,geom%jsc:geom%jec) !Fields in
 integer             , intent(out) :: field_out(nobs,nn)                                        !Field nearest neighbours
 
 !Locals
@@ -703,7 +703,12 @@ integer :: npes, peid, ierr
 integer :: i, j, k, l, n, jj, lowerb, upperb, ngrid_glo
 integer, allocatable :: field_loc(:), field_glo(:)
 integer, allocatable :: ngridv(:), displs(:), rcvcnt(:)
+integer :: field_in(geom%isc:geom%iec,geom%jsc:geom%jec)
 
+
+! Convert real to integer
+! -----------------------
+field_in = int(rfield_in)
 
 ! Gather the model grid to all processors
 ! ---------------------------------------

@@ -1,47 +1,21 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 Geometry:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20180415.000000.fv_core.res.nc
-  ak_var: ak
-  bk_var: bk
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 TestDate: '2018-04-15T00:00:00Z'
 Variables:
-  variables:
-  - ua
-  - va
-  - t
-  - ps
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ["ua","va","t","ps","q","qi","ql","o3"]
 State:
   restart_type: gfs
-  datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  datapath_write: 'Data/'
-  date: '2018-04-15T00:00:00Z'
-  read_crtm_surface: 0
   filename_core: 20180415.000000.fv_core.res.nc
-  filename_cplr: 20180415.000000.coupler.res
   filename_trcr: 20180415.000000.fv_tracer.res.nc
-  nml_file: Data/fv3files/input_gfs_c48.nml
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 InterpTest:
   tolerance: 1.0e-10
   Locations:

@@ -1,21 +1,15 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 linearForecastMode: 2
 linearForecastLength: PT1H
 linearForecastApplyJnormGrad: 1
 resolution:
   filename_akbk: akbk72.nc4
   filepath_akbk: Data/INPUTS/GEOS_akbk/
-  ak_var: AK
-  bk_var: BK
-  halo: '3'
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_fsoi.nml
   tstep: PT15M
   readtraj: 1
@@ -65,7 +59,6 @@ linearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_fsoi.nml
   tstep: PT15M
   lm_do_dyn: 1
@@ -75,7 +68,6 @@ linearModel:
   trajectory:
     name: 'FV3'
     nml_file: Data/fv3files/input_geos_c180.nml
-    trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_fsoi.nml
     tstep: PT15M
     readtraj: 1

@@ -1,39 +1,22 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
       state:
       - restart_type: gfs
-        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-        datapath_write: 'Data/'
-        date: '2018-04-15T00:00:00Z'
-        read_crtm_surface: 0
         filename_core: 20180415.000000.fv_core.res.nc
-        filename_cplr: 20180415.000000.coupler.res
         filename_trcr: 20180415.000000.fv_tracer.res.nc
-        nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
-        variables:
-        - ud
-        - vd
-        - ua
-        - va
-        - t
-        - delp
-        - q
-        - qi
-        - ql
-        - o3
+        filename_sfcd: 20180415.000000.sfc_data.nc
+        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+        variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+                    "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+                    "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
-      horizontal_length_scale: 1e6
-      maximum_condition_number: 1.0e6
-      standard_deviation: '0.8'
-      vertical_correlation: '0.2'
 #    Covariance:
 #      covariance: BUMP
 #      default_seed: 1
@@ -154,18 +137,9 @@ cost_function:
         - refractivity
         threshold: 3.0
   cost_type: 3D-Var
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - ps
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ["u","v","ua","va","T","ps","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
 final:
@@ -176,7 +150,6 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT3H
   readtraj: 0
@@ -185,20 +158,18 @@ model:
   lm_do_mst: 0
 output:
   restart_type: gfs
-  datapath_write: Data/
-  filename_core: 3DVar.gfs.fv_core.res.nc
-  filename_cplr: 3DVar.gfs.coupler.res
-  filename_trcr: 3DVar.gfs.fv_tracer.res.nc
+  datapath_tile: Data/
+  filename_core: 3dvar_gfs.fv_core.res.nc
+  filename_trcr: 3dvar_gfs.fv_tracer.res.nc
+  filename_sfcd: 3dvar_gfs.sfc_data.nc
+  filename_sfcw: 3dvar_gfs.fv_srf_wnd.res.nc
+  filename_cplr: 3dvar_gfs.coupler.res
   first: PT0H
   frequency: PT1H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20180415.000000.fv_core.res.nc
-  ak_var: ak
-  bk_var: bk
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 variational:
   iteration:
   - diagnostics:
@@ -209,7 +180,6 @@ variational:
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       lm_do_dyn: 1
@@ -218,7 +188,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT3H
         readtraj: 0
@@ -229,11 +198,7 @@ variational:
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
       trc_file: Data/fv3files/field_table
-      halo: '3'
-      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
+      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
@@ -241,7 +206,6 @@ variational:
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       lm_do_dyn: 1
@@ -250,7 +214,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT3H
         readtraj: 0
@@ -261,9 +224,5 @@ variational:
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
       trc_file: Data/fv3files/field_table
-      halo: '3'
-      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
+      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
     test: 'on'

@@ -1,17 +1,12 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 Covariance:
   covariance: FV3JEDIstatic
   date: '2018-04-14T21:00:00Z'
 Geometry:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_akbk/
-  filename_akbk: akbk72.nc4 
-  ak_var: AK
-  bk_var: BK
+  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 LinearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
@@ -51,9 +46,9 @@ Model:
 ModelBias: null
 State:
   restart_type: geos
-  date: '2018-04-14T21:00:00Z'
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
-  read_crtm_surface: 0
-  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 Variables:
   variables: ['ua','va','t','ps','q','qi','ql','o3']

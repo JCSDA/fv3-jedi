@@ -1,6 +1,5 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
@@ -14,7 +13,6 @@ cost_function:
         filename_cplr: 20180414.210000.coupler.res
         filename_trcr: 20180414.210000.fv_tracer.res.nc
         nml_file: Data/fv3files/input_gfs_c384.nml
-        trc_file: Data/fv3files/field_table
         variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 # ----------
 # Identity B
@@ -71,7 +69,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem002/
@@ -82,7 +79,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem003/
@@ -93,7 +89,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem004/
@@ -104,7 +99,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem005/
@@ -115,7 +109,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem006/
@@ -126,7 +119,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem007/
@@ -137,7 +129,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem008/
@@ -148,7 +139,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem009/
@@ -159,7 +149,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 #        - restart_type: gfs
 #          datapath_read: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/mem010/
@@ -170,7 +159,6 @@ cost_function:
 #          filename_cplr: 20180414.210000.coupler.res
 #          filename_trcr: 20180414.210000.fv_tracer.res.nc
 #          nml_file: Data/fv3files/input_gfs_c384.nml
-#          trc_file: Data/fv3files/field_table
 #          variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 #        variables:
 #          variables: ['ua','va','t','ps','q','qi','ql','o3']
@@ -241,7 +229,6 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c384.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0
@@ -263,12 +250,8 @@ output:
   frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_gfs_c384.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/bkg384/
   filename_akbk: 20180414.210000.fv_core.res.nc
-  ak_var: ak
-  bk_var: bk
 variational:
   iteration:
   - diagnostics:
@@ -279,7 +262,6 @@ variational:
       name: 'FV3JEDITLM'
       version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c384.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -289,7 +271,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c384.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0
@@ -299,10 +280,6 @@ variational:
     ninner: '5'
     resolution:
       nml_file: Data/fv3files/input_gfs_c384.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/bkg384
       filename_akbk: 20180414.210000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
     test: 'on'

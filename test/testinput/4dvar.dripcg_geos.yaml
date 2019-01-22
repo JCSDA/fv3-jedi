@@ -1,6 +1,5 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
@@ -125,7 +124,6 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0
@@ -142,12 +140,8 @@ output:
   frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: Data/INPUTS/GEOS_akbk/
   filename_akbk: akbk72.nc4
-  ak_var: AK
-  bk_var: BK
 variational:
   iteration:
   - ninner: '10'
@@ -155,18 +149,13 @@ variational:
     test: 'on'
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
-      ak_var: AK
-      bk_var: BK
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -175,7 +164,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_geos_c24.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0
@@ -189,18 +177,13 @@ variational:
     test: 'on'
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
-      ak_var: AK
-      bk_var: BK
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -209,7 +192,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_geos_c24.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0

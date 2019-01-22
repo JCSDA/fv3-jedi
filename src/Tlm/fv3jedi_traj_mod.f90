@@ -31,45 +31,132 @@ implicit none
 type(fv3jedi_state) :: state
 type(fv3jedi_traj)  :: self
 
-call allocate_traj(self,state%isc,state%iec,state%jsc,state%jec,state%npz,&
-                   state%hydrostatic,state%do_tlad_phymst)
+integer :: isc,iec,jsc,jec,npz
 
-self%u       = state%ud
-self%v       = state%vd
-self%ua      = state%ua
-self%va      = state%va
-self%t       = state%t
-self%delp    = state%delp
-self%qv      = state%q
-self%ql      = state%qi
-self%qi      = state%ql
-self%o3      = state%o3
+isc = state%isc
+iec = state%iec
+jsc = state%jsc
+jec = state%jsc
+npz = state%npz 
 
-if (.not. state%hydrostatic) then
-self%w       = state%w
-self%delz    = state%delz
+!Allocate trajectory field only if corresponding state field exists
+
+if (state%ud > 0) then
+  allocate(self%u      (isc:iec, jsc:jec, npz))
+  self%u       = state%fields(state%ud     )%field
 endif
-
-if (state%do_tlad_phymst /= 0) then
-self%qls     = state%qls
-self%qcn     = state%qcn
-self%cfcn    = state%cfcn
+if (state%vd > 0) then
+  allocate(self%v      (isc:iec, jsc:jec, npz))
+  self%v       = state%fields(state%vd     )%field
 endif
-
-self%phis    = state%phis
-self%frocean = state%frocean
-self%frland  = state%frland
-self%varflt  = state%varflt
-self%ustar   = state%ustar
-self%bstar   = state%bstar
-self%zpbl    = state%zpbl
-self%cm      = state%cm
-self%ct      = state%ct
-self%cq      = state%cq
-self%kcbl    = state%kcbl
-self%ts      = state%ts
-self%khl     = state%khl
-self%khu     = state%khu
+if (state%ua > 0) then
+  allocate(self%ua     (isc:iec, jsc:jec, npz))
+  self%ua      = state%fields(state%ua     )%field
+endif
+if (state%va > 0) then
+  allocate(self%va     (isc:iec, jsc:jec, npz))
+  self%va      = state%fields(state%va     )%field
+endif
+if (state%t > 0) then
+  allocate(self%t      (isc:iec, jsc:jec, npz))
+  self%t       = state%fields(state%t      )%field
+endif
+if (state%delp > 0) then
+  allocate(self%delp   (isc:iec, jsc:jec, npz))
+  self%delp    = state%fields(state%delp   )%field
+endif
+if (state%q > 0) then
+  allocate(self%qv     (isc:iec, jsc:jec, npz))
+  self%qv      = state%fields(state%q      )%field
+endif
+if (state%qi > 0) then
+  allocate(self%qi     (isc:iec, jsc:jec, npz))
+  self%qi      = state%fields(state%qi     )%field
+endif
+if (state%ql > 0) then
+  allocate(self%ql     (isc:iec, jsc:jec, npz))
+  self%ql      = state%fields(state%ql     )%field
+endif
+if (state%o3 > 0) then
+  allocate(self%o3     (isc:iec, jsc:jec, npz))
+  self%o3      = state%fields(state%o3     )%field
+endif
+if (state%w > 0) then
+  allocate(self%w      (isc:iec, jsc:jec, npz))
+  self%w       = state%fields(state%w      )%field
+endif
+if (state%delz > 0) then
+  allocate(self%delz   (isc:iec, jsc:jec, npz))
+  self%delz    = state%fields(state%delz   )%field
+endif
+if (state%qls > 0) then
+  allocate(self%qls    (isc:iec, jsc:jec, npz))
+  self%qls     = state%fields(state%qls    )%field
+endif
+if (state%qcn > 0) then
+  allocate(self%qcn    (isc:iec, jsc:jec, npz))
+  self%qcn     = state%fields(state%qcn    )%field
+endif
+if (state%cfcn > 0) then
+  allocate(self%cfcn   (isc:iec, jsc:jec, npz)) 
+  self%cfcn    = state%fields(state%cfcn   )%field
+endif
+if (state%phis > 0) then
+  allocate(self%phis   (isc:iec, jsc:jec))
+  self%phis    = state%fields(state%phis   )%field(:,:,1)
+endif
+if (state%frocean > 0) then
+  allocate(self%frocean(isc:iec, jsc:jec))
+  self%frocean = state%fields(state%frocean)%field(:,:,1)
+endif
+if (state%frland > 0) then
+  allocate(self%frland (isc:iec, jsc:jec))
+  self%frland  = state%fields(state%frland )%field(:,:,1)
+endif
+if (state%varflt > 0) then
+  allocate(self%varflt (isc:iec, jsc:jec))
+  self%varflt  = state%fields(state%varflt )%field(:,:,1)
+endif
+if (state%ustar > 0) then
+  allocate(self%ustar  (isc:iec, jsc:jec))
+  self%ustar   = state%fields(state%ustar  )%field(:,:,1)
+endif
+if (state%bstar > 0) then
+  allocate(self%bstar  (isc:iec, jsc:jec))
+  self%bstar   = state%fields(state%bstar  )%field(:,:,1)
+endif
+if (state%zpbl > 0) then
+  allocate(self%zpbl   (isc:iec, jsc:jec))
+  self%zpbl    = state%fields(state%zpbl   )%field(:,:,1)
+endif
+if (state%cm > 0) then
+  allocate(self%cm     (isc:iec, jsc:jec))
+  self%cm      = state%fields(state%cm     )%field(:,:,1)
+endif
+if (state%ct > 0) then
+  allocate(self%ct     (isc:iec, jsc:jec))
+  self%ct      = state%fields(state%ct     )%field(:,:,1)
+endif
+if (state%cq > 0) then
+  allocate(self%cq     (isc:iec, jsc:jec))
+  self%cq      = state%fields(state%cq     )%field(:,:,1)
+endif
+if (state%kcbl > 0) then
+  allocate(self%kcbl   (isc:iec, jsc:jec))
+  self%kcbl    = state%fields(state%kcbl   )%field(:,:,1)
+endif
+if (state%ts > 0) then
+  allocate(self%ts     (isc:iec, jsc:jec))
+  self%ts      = state%fields(state%ts     )%field(:,:,1)
+endif
+if (state%khl > 0) then
+  allocate(self%khl    (isc:iec, jsc:jec))
+  self%khl     = state%fields(state%khl    )%field(:,:,1)
+endif
+if (state%khu > 0) then
+  allocate(self%khu    (isc:iec, jsc:jec))
+  self%khu     = state%fields(state%khu    )%field(:,:,1)
+endif
 
 end subroutine traj_prop
 

@@ -66,15 +66,15 @@ call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-call T_to_Tv(geom,bg%t,bg%q,self%tvtraj)
+call T_to_Tv(geom,bg%fields(bg%t)%field,bg%fields(bg%q)%field,self%tvtraj)
 
 !> Temperature trajectory
 allocate(self%ttraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-self%ttraj = bg%t
+self%ttraj = bg%fields(bg%t)%field
 
 !> Specific humidity trajecotory
 allocate(self%qtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-self%qtraj = bg%q
+self%qtraj = bg%fields(bg%q)%field
 
 !> Compute saturation specific humidity for q to RH transform
 allocate(self%qsattraj(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -83,8 +83,8 @@ allocate(pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
 allocate(pm(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 allocate(dqsatdt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 
-call delp_to_pe_p_logp(geom,bg%delp,pe,pm)
-call dqsat( geom,bg%t,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
+call delp_to_pe_p_logp(geom,bg%fields(bg%delp)%field,pe,pm)
+call dqsat( geom,bg%fields(bg%t)%field,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
             self%tablesize,self%estblx,dqsatdt,self%qsattraj)
 
 deallocate(dqsatdt)

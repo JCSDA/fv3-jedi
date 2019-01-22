@@ -3,36 +3,31 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Handle state for the FV3JEDI odel
-
 module fv3jedi_state_mod
 
 use iso_c_binding
 use config_mod
 use datetime_mod
-
-use ufo_geovals_mod
-use ufo_locs_mod
-use ufo_vars_mod
-
 use fckit_mpi_module
 
-use fv3jedi_constants_mod, only: rad2deg, constoz
-use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_field_mod,           only: fv3jedi_field
+use fv3jedi_constants_mod,       only: rad2deg, constoz
+use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_kinds_mod, only: kind_real
-use fv3jedi_state_io_mod 
-use fv3jedi_state_utils_mod, only: fv3jedi_state
-use fv3jedi_vars_mod, only: fv3jedi_vars
-use fv3jedi_getvalues_mod, only: getvalues
+use fv3jedi_kinds_mod,           only: kind_real
+use fv3jedi_io_gfs_mod,          only: write_gfs, read_gfs 
+use fv3jedi_io_geos_mod,         only: write_geos, read_geos 
+use fv3jedi_state_utils_mod,     only: fv3jedi_state
+use fv3jedi_vars_mod,            only: fv3jedi_vars
+use fv3jedi_getvalues_mod,       only: getvalues
+
+use mpp_domains_mod,             only: east, north, center
 
 implicit none
-
 private
-public :: create, delete, zeros, copy, axpy, add_incr, &
-          read_file, write_file, gpnorm, staterms, &
+public :: fv3jedi_state, create, delete, zeros, copy, axpy, add_incr, &
+          read_file, write_file, gpnorm, rms, &
           change_resol, getvalues, analytic_IC, state_print
-public :: fv3jedi_state
 
 ! ------------------------------------------------------------------------------
 
@@ -44,108 +39,265 @@ subroutine create(self, geom, vars)
 
 implicit none
 type(fv3jedi_state), intent(inout) :: self
-type(fv3jedi_geom), target,  intent(in)    :: geom
+type(fv3jedi_geom),  intent(in)    :: geom
 type(fv3jedi_vars),  intent(in)    :: vars
 
-integer :: var
+integer :: var, vcount
 
-! Copy the variable names
-self%vars%nv = vars%nv
-allocate(self%vars%fldnames(self%vars%nv))
-self%vars%fldnames = vars%fldnames
+! Total fields
+! ------------
+self%nf = vars%nv
 
-! Allocate variables based on names
-do var = 1, self%vars%nv
-
-   select case (trim(self%vars%fldnames(var)))
-
-     case("ud")
-       if (.not.allocated(  self%ud)) allocate (  self%ud(geom%isc:geom%iec,  geom%jsc:geom%jec+1, geom%npz))
-     case("vd")
-       if (.not.allocated(  self%vd)) allocate (  self%vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  , geom%npz))
-     case("ua")
-       if (.not.allocated(  self%ua)) allocate (  self%ua(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("va")
-       if (.not.allocated(  self%va)) allocate (  self%va(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("t")
-       if (.not.allocated(   self%t)) allocate (   self%t(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("delp")
-       if (.not.allocated(self%delp)) allocate (self%delp(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("q")
-       if (.not.allocated(   self%q)) allocate (   self%q(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("qi")
-       if (.not.allocated(  self%qi)) allocate (  self%qi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("ql")
-       if (.not.allocated(  self%ql)) allocate (  self%ql(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("o3")
-       if (.not.allocated(  self%o3)) allocate (  self%o3(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("w")
-       if (.not.allocated(   self%w)) allocate (   self%w(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("delz")
-       if (.not.allocated(self%delz)) allocate (self%delz(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("ps")
-     case default 
-       call abor1_ftn("Create: unknown variable "//trim(self%vars%fldnames(var)))
-
+! Reduce count for variables not in state
+! ---------------------------------------
+do var = 1, vars%nv
+   select case (trim(vars%fldnames(var)))
+   case("ps")
+     self%nf = self%nf - 1
    end select
+enddo
 
+! Allocate fields structure
+! -------------------------
+allocate(self%fields(self%nf))
+
+! Loop through and allocate main state fields
+! -------------------------------------------
+vcount = 0
+do var = 1, vars%nv
+   select case (trim(vars%fldnames(var)))
+     case("ud","u")
+       vcount = vcount + 1; self%ud = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec+1,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'eastward_wind_on_native_D-Grid', &
+            fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north )
+     case("vd","v")
+       vcount = vcount + 1; self%vd = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec+1,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'northward_wind_on_native_D-Grid', &
+            fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east )
+     case("ua")
+       vcount = vcount + 1; self%ua = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'eastward_wind', &
+            fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center )
+     case("va")
+       vcount = vcount + 1; self%va = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'northward_wind', &
+            fv3jedi_name = 'va', units = 'm s-1', staggerloc = center )
+     case("t","T")
+       vcount = vcount + 1; self%t = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'air_temperature', &
+            fv3jedi_name = 't', units = 'K', staggerloc = center )
+     case("delp","DELP")
+       vcount = vcount + 1; self%delp = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'pressure_thickness', &
+            fv3jedi_name = 'delp', units = 'Pa', staggerloc = center )
+     case("q","sphum")
+       vcount = vcount + 1; self%q = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'specific_humidity', &
+            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center )
+     case("qi","ice_wat")
+       vcount = vcount + 1; self%qi = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice', &
+            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center )
+     case("ql","liq_wat")
+       vcount = vcount + 1; self%ql = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice_water', &
+            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center )
+     case("o3","o3mr")
+       vcount = vcount + 1; self%o3 = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'ozone_mass_mixing_ratio', &
+            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center )
+     case("w","W")
+       vcount = vcount + 1; self%w = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'vertical_wind', &
+            fv3jedi_name = 'w', units = 'm s-1', staggerloc = center )
+     case("delz","DZ")
+       vcount = vcount + 1; self%delz = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'layer_thickness', &
+            fv3jedi_name = 'delz', units = 'm', staggerloc = center )
+     case("phis")
+       vcount = vcount + 1; self%phis = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_geopotential_height', &
+            fv3jedi_name = 'phis', units = 'm', staggerloc = center )
+     !CRTM
+     case("slmsk")
+       vcount = vcount + 1; self%slmsk = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'slmsk', &
+            fv3jedi_name = 'slmsk', units = 'none', staggerloc = center )
+     case("sheleg")
+       vcount = vcount + 1; self%sheleg = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'sheleg', &
+            fv3jedi_name = 'sheleg', units = 'none', staggerloc = center )
+     case("tsea")
+       vcount = vcount + 1; self%tsea = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'tsea', &
+            fv3jedi_name = 'tsea', units = 'none', staggerloc = center )
+     case("vtype")
+       vcount = vcount + 1; self%vtype = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'vtype', &
+            fv3jedi_name = 'vtype', units = 'none', staggerloc = center )
+     case("stype")
+       vcount = vcount + 1; self%stype = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'stype', &
+            fv3jedi_name = 'stype', units = 'none', staggerloc = center )
+     case("vfrac")
+       vcount = vcount + 1; self%vfrac = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'vfrac', &
+            fv3jedi_name = 'vfrac', units = 'none', staggerloc = center )
+     case("stc")
+       vcount = vcount + 1; self%stc = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
+            short_name = vars%fldnames(var), long_name = 'stc', &
+            fv3jedi_name = 'stc', units = 'none', staggerloc = center )
+     case("smc")
+       vcount = vcount + 1; self%smc = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
+            short_name = vars%fldnames(var), long_name = 'smc', &
+            fv3jedi_name = 'smc', units = 'none', staggerloc = center )
+     case("snwdph")
+       vcount = vcount + 1; self%snwdph = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'snwdph', &
+            fv3jedi_name = 'snwdph', units = 'none', staggerloc = center )
+     case("u_srf")
+       vcount = vcount + 1; self%u_srf = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'u_srf', &
+            fv3jedi_name = 'u_srf', units = 'none', staggerloc = center )
+     case("v_srf")
+       vcount = vcount + 1; self%v_srf = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'v_srf', &
+            fv3jedi_name = 'v_srf', units = 'none', staggerloc = center )
+     case("f10m")
+       vcount = vcount + 1; self%f10m = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'f10m', &
+            fv3jedi_name = 'f10m', units = 'none', staggerloc = center )
+     !TL/AD trajectory
+     case("qls")
+       vcount = vcount + 1; self%qls = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'initial_mass_fraction_of_large_scale_cloud_condensate', &
+            fv3jedi_name = 'qls', units = 'kg kg-1', staggerloc = center )
+     case("qcn")
+       vcount = vcount + 1; self%qcn = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'initial_mass_fraction_of_convective_cloud_condensate', &
+            fv3jedi_name = 'qcn', units = 'kg kg-1', staggerloc = center )
+     case("cfcn")
+       vcount = vcount + 1; self%cfcn = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'convective_cloud_area_fraction', &
+            fv3jedi_name = 'cfcn', units = '1', staggerloc = center )
+     case("frocean")
+       vcount = vcount + 1; self%frocean = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'fraction_of_ocean', &
+            fv3jedi_name = 'frocean', units = '1', staggerloc = center )
+     case("frland")
+       vcount = vcount + 1; self%frland = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'fraction_of_land', &
+            fv3jedi_name = 'frland', units = '1', staggerloc = center )
+     case("varflt")
+       vcount = vcount + 1; self%varflt = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'isotropic_variance_of_filtered_topography', &
+            fv3jedi_name = 'varflt', units = 'm+2', staggerloc = center )
+     case("ustar")
+       vcount = vcount + 1; self%ustar = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_velocity_scale', &
+            fv3jedi_name = 'ustar', units = 'm s-1', staggerloc = center )
+     case("bstar")
+       vcount = vcount + 1; self%bstar = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_bouyancy_scale', &
+            fv3jedi_name = 'bstar', units = 'm s-2', staggerloc = center )
+     case("zpbl")
+       vcount = vcount + 1; self%zpbl = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'planetary_boundary_layer_height', &
+            fv3jedi_name = 'zpbl', units = 'm', staggerloc = center )
+     case("cm")
+       vcount = vcount + 1; self%cm = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_momentum', &
+            fv3jedi_name = 'cm', units = 'kg m-2 s-1', staggerloc = center )
+     case("ct")
+       vcount = vcount + 1; self%ct = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_heat', &
+            fv3jedi_name = 'ct', units = 'kg m-2 s-1', staggerloc = center )
+     case("cq")
+       vcount = vcount + 1; self%cq = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_moisture', &
+            fv3jedi_name = 'cq', units = 'kg m-2 s-1', staggerloc = center )
+     case("kcbl")
+       vcount = vcount + 1; self%kcbl = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'KCBL_before_moist', &
+            fv3jedi_name = 'kcbl', units = '1', staggerloc = center )
+     case("ts")
+       vcount = vcount + 1; self%ts = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_temp_before_moist', &
+            fv3jedi_name = 'ts', units = 'K', staggerloc = center )
+     case("khl")
+       vcount = vcount + 1; self%khl = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'lower_index_where_Kh_greater_than_2', &
+            fv3jedi_name = 'khl', units = '1', staggerloc = center )
+     case("khu")
+       vcount = vcount + 1; self%khu = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'upper_index_where_Kh_greater_than_2', &
+            fv3jedi_name = 'khu', units = '1', staggerloc = center )
+     case("ps")
+       !Not part of the state
+     case default 
+       call abor1_ftn("Create: unknown variable "//trim(vars%fldnames(var)))
+   end select
 enddo
 
 self%hydrostatic = .true.
-if (allocated(self%w).and.allocated(self%delz)) self%hydrostatic = .false.
+if (self%w > 0 .and. self%delz > 0) self%hydrostatic = .false.
 
-if (.not.allocated(self%phis)) allocate(self%phis(geom%isc:geom%iec,geom%jsc:geom%jec))
+self%tladphystrj = .false.
+if (self%khu > 0) self%tladphystrj = .true.
 
-!CRTM surface variables
-if (.not.allocated(self%slmsk )) allocate(self%slmsk (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%sheleg)) allocate(self%sheleg(geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%tsea  )) allocate(self%tsea  (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%vtype )) allocate(self%vtype (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%stype )) allocate(self%stype (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%vfrac )) allocate(self%vfrac (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%stc   )) allocate(self%stc   (geom%isc:geom%iec,geom%jsc:geom%jec,4))
-if (.not.allocated(self%smc   )) allocate(self%smc   (geom%isc:geom%iec,geom%jsc:geom%jec,4))
-if (.not.allocated(self%snwdph)) allocate(self%snwdph(geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%u_srf )) allocate(self%u_srf (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%v_srf )) allocate(self%v_srf (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%f10m  )) allocate(self%f10m  (geom%isc:geom%iec,geom%jsc:geom%jec))
-
-!Linearized model trajectory
-if (.not.allocated(self%qls    )) allocate(self%qls    (geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-if (.not.allocated(self%qcn    )) allocate(self%qcn    (geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-if (.not.allocated(self%cfcn   )) allocate(self%cfcn   (geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-if (.not.allocated(self%frocean)) allocate(self%frocean(geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%frland )) allocate(self%frland (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%varflt )) allocate(self%varflt (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%ustar  )) allocate(self%ustar  (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%bstar  )) allocate(self%bstar  (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%zpbl   )) allocate(self%zpbl   (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%cm     )) allocate(self%cm     (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%ct     )) allocate(self%ct     (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%cq     )) allocate(self%cq     (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%kcbl   )) allocate(self%kcbl   (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%ts     )) allocate(self%ts     (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%khl    )) allocate(self%khl    (geom%isc:geom%iec,geom%jsc:geom%jec))
-if (.not.allocated(self%khu    )) allocate(self%khu    (geom%isc:geom%iec,geom%jsc:geom%jec))
-
-! Initialize all domain arrays to zero
+! Initialize all arrays to zero
 call zeros(self)
-self%phis   = 0.0_kind_real
 
-! For convenience
-self%isc = geom%isc
-self%iec = geom%iec
-self%jsc = geom%jsc
-self%jec = geom%jec
-self%isd = geom%isd
-self%ied = geom%ied
-self%jsd = geom%jsd
-self%jed = geom%jed
-self%npx = geom%npx
-self%npy = geom%npy
-self%npz = geom%npz
-
-self%ntile = geom%ntile
+! Copy some geometry for convenience
+self%isc    = geom%isc
+self%iec    = geom%iec
+self%jsc    = geom%jsc
+self%jec    = geom%jec
+self%npx    = geom%npx
+self%npy    = geom%npy
+self%npz    = geom%npz
+self%ntile  = geom%ntile
 self%ntiles = geom%ntiles
 
 end subroutine create
@@ -153,174 +305,147 @@ end subroutine create
 ! ------------------------------------------------------------------------------
 
 subroutine delete(self)
+
 implicit none
 type(fv3jedi_state), intent(inout) :: self
+integer :: var
 
-if (allocated(self%ud  )) deallocate (self%ud  )
-if (allocated(self%vd  )) deallocate (self%vd  )
-if (allocated(self%ua  )) deallocate (self%ua  )
-if (allocated(self%va  )) deallocate (self%va  )
-if (allocated(self%t   )) deallocate (self%t   )
-if (allocated(self%delp)) deallocate (self%delp)
-if (allocated(self%q   )) deallocate (self%q   )
-if (allocated(self%qi  )) deallocate (self%qi  )
-if (allocated(self%ql  )) deallocate (self%ql  )
-if (allocated(self%o3  )) deallocate (self%o3  )
-if (allocated(self%phis)) deallocate (self%phis)
-if (allocated(self%w   )) deallocate (self%w   )
-if (allocated(self%delz)) deallocate (self%delz)
-
-if (allocated(self%slmsk )) deallocate(self%slmsk )
-if (allocated(self%sheleg)) deallocate(self%sheleg)
-if (allocated(self%tsea  )) deallocate(self%tsea  )
-if (allocated(self%vtype )) deallocate(self%vtype )
-if (allocated(self%stype )) deallocate(self%stype )
-if (allocated(self%vfrac )) deallocate(self%vfrac )
-if (allocated(self%stc   )) deallocate(self%stc   )
-if (allocated(self%smc   )) deallocate(self%smc   )
-if (allocated(self%snwdph)) deallocate(self%snwdph)
-if (allocated(self%u_srf )) deallocate(self%u_srf )
-if (allocated(self%v_srf )) deallocate(self%v_srf )
-if (allocated(self%f10m  )) deallocate(self%f10m  )
-
-if (allocated(self%qls    )) deallocate(self%qls    )
-if (allocated(self%qcn    )) deallocate(self%qcn    )
-if (allocated(self%cfcn   )) deallocate(self%cfcn   )
-if (allocated(self%frocean)) deallocate(self%frocean)
-if (allocated(self%frland )) deallocate(self%frland )
-if (allocated(self%varflt )) deallocate(self%varflt )
-if (allocated(self%ustar  )) deallocate(self%ustar  )
-if (allocated(self%bstar  )) deallocate(self%bstar  )
-if (allocated(self%zpbl   )) deallocate(self%zpbl   )
-if (allocated(self%cm     )) deallocate(self%cm     )
-if (allocated(self%ct     )) deallocate(self%ct     )
-if (allocated(self%cq     )) deallocate(self%cq     )
-if (allocated(self%kcbl   )) deallocate(self%kcbl   )
-if (allocated(self%ts     )) deallocate(self%ts     )
-if (allocated(self%khl    )) deallocate(self%khl    )
-if (allocated(self%khu    )) deallocate(self%khu    )
+do var = 1, self%nf
+  call self%fields(var)%deallocate_field()
+enddo
+deallocate(self%fields)
 
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
 
 subroutine zeros(self)
+
 implicit none
 type(fv3jedi_state), intent(inout) :: self
+integer :: var
 
-!Zero out the entire domain
-
-!Model
-if(allocated(self%ud  )) self%ud   = 0.0_kind_real
-if(allocated(self%vd  )) self%vd   = 0.0_kind_real
-if(allocated(self%ua  )) self%ua   = 0.0_kind_real
-if(allocated(self%va  )) self%va   = 0.0_kind_real
-if(allocated(self%t   )) self%t    = 0.0_kind_real
-if(allocated(self%delp)) self%delp = 0.0_kind_real
-if(allocated(self%q   )) self%q    = 0.0_kind_real
-if(allocated(self%qi  )) self%qi   = 0.0_kind_real
-if(allocated(self%ql  )) self%ql   = 0.0_kind_real
-if(allocated(self%o3  )) self%o3   = 0.0_kind_real
-if(allocated(self%w   )) self%w    = 0.0_kind_real
-if(allocated(self%delz)) self%delz = 0.0_kind_real
+do var = 1, self%nf
+  self%fields(var)%field = 0.0_kind_real
+enddo
 
 end subroutine zeros
 
 ! ------------------------------------------------------------------------------
 
 subroutine copy(self,rhs)
+
 implicit none
 type(fv3jedi_state), intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: rhs
 
-self%isc            = rhs%isc           
-self%iec            = rhs%iec           
-self%jsc            = rhs%jsc           
-self%jec            = rhs%jec           
-self%isd            = rhs%isd           
-self%ied            = rhs%ied           
-self%jsd            = rhs%jsd           
-self%jed            = rhs%jed           
-self%npx            = rhs%npx           
-self%npy            = rhs%npy           
-self%npz            = rhs%npz           
-self%havecrtmfields = rhs%havecrtmfields
-self%hydrostatic    = rhs%hydrostatic   
-self%calendar_type  = rhs%calendar_type 
-self%date           = rhs%date          
-self%date_init      = rhs%date_init     
-self%ntile          = rhs%ntile
+character(len=32) :: short_name
+logical :: found
+integer :: self_var, rhs_var
+
+self%isc            = rhs%isc
+self%iec            = rhs%iec
+self%jsc            = rhs%jsc
+self%jec            = rhs%jec
+self%npx            = rhs%npx
+self%npy            = rhs%npy
+self%npz            = rhs%npz
 self%ntiles         = rhs%ntiles
+self%ntile          = rhs%ntile
+self%hydrostatic    = rhs%hydrostatic
+self%tladphystrj    = rhs%tladphystrj
+self%calendar_type  = rhs%calendar_type
+self%date_init      = rhs%date_init
 
-if(allocated(self%ud  ).and.allocated(rhs%ud  )) self%ud   = rhs%ud  
-if(allocated(self%vd  ).and.allocated(rhs%vd  )) self%vd   = rhs%vd  
-if(allocated(self%ua  ).and.allocated(rhs%ua  )) self%ua   = rhs%ua  
-if(allocated(self%va  ).and.allocated(rhs%va  )) self%va   = rhs%va  
-if(allocated(self%t   ).and.allocated(rhs%t   )) self%t    = rhs%t   
-if(allocated(self%delp).and.allocated(rhs%delp)) self%delp = rhs%delp
-if(allocated(self%q   ).and.allocated(rhs%q   )) self%q    = rhs%q   
-if(allocated(self%qi  ).and.allocated(rhs%qi  )) self%qi   = rhs%qi  
-if(allocated(self%ql  ).and.allocated(rhs%ql  )) self%ql   = rhs%ql  
-if(allocated(self%o3  ).and.allocated(rhs%o3  )) self%o3   = rhs%o3  
-if(allocated(self%w   ).and.allocated(rhs%w   )) self%w    = rhs%w   
-if(allocated(self%delz).and.allocated(rhs%delz)) self%delz = rhs%delz
+!Copy the individual fields
+if (.not.allocated(self%fields)) then
 
-self%phis   = rhs%phis
-self%slmsk  = rhs%slmsk
-self%sheleg = rhs%sheleg
-self%tsea   = rhs%tsea
-self%vtype  = rhs%vtype
-self%stype  = rhs%stype
-self%vfrac  = rhs%vfrac
-self%stc    = rhs%stc
-self%smc    = rhs%smc
-self%snwdph = rhs%snwdph
-self%u_srf  = rhs%u_srf
-self%v_srf  = rhs%v_srf
-self%f10m   = rhs%f10m
+  !Direct copy of one state to another
+  self%nf = rhs%nf
+  allocate(self%fields(self%nf))
+  do self_var = 1, self%nf
+    self%fields(self_var) = rhs%fields(self_var)
+  enddo
 
-self%qls     = rhs%qls    
-self%qcn     = rhs%qcn    
-self%cfcn    = rhs%cfcn   
-self%frocean = rhs%frocean
-self%frland  = rhs%frland 
-self%varflt  = rhs%varflt 
-self%ustar   = rhs%ustar  
-self%bstar   = rhs%bstar  
-self%zpbl    = rhs%zpbl   
-self%cm      = rhs%cm     
-self%ct      = rhs%ct     
-self%cq      = rhs%cq     
-self%kcbl    = rhs%kcbl   
-self%ts      = rhs%ts     
-self%khl     = rhs%khl    
-self%khu     = rhs%khu    
+  self%ud      = rhs%ud     
+  self%vd      = rhs%vd     
+  self%ua      = rhs%ua     
+  self%va      = rhs%va     
+  self%t       = rhs%t      
+  self%delp    = rhs%delp   
+  self%q       = rhs%q      
+  self%qi      = rhs%qi     
+  self%ql      = rhs%ql     
+  self%o3      = rhs%o3     
+  self%w       = rhs%w      
+  self%delz    = rhs%delz   
+  self%phis    = rhs%phis   
+  self%slmsk   = rhs%slmsk  
+  self%sheleg  = rhs%sheleg 
+  self%tsea    = rhs%tsea   
+  self%vtype   = rhs%vtype  
+  self%stype   = rhs%stype  
+  self%vfrac   = rhs%vfrac  
+  self%stc     = rhs%stc    
+  self%smc     = rhs%smc    
+  self%snwdph  = rhs%snwdph 
+  self%u_srf   = rhs%u_srf  
+  self%v_srf   = rhs%v_srf  
+  self%f10m    = rhs%f10m   
+  self%qls     = rhs%qls    
+  self%qcn     = rhs%qcn    
+  self%cfcn    = rhs%cfcn   
+  self%frocean = rhs%frocean
+  self%frland  = rhs%frland 
+  self%varflt  = rhs%varflt 
+  self%ustar   = rhs%ustar  
+  self%bstar   = rhs%bstar  
+  self%zpbl    = rhs%zpbl   
+  self%cm      = rhs%cm     
+  self%ct      = rhs%ct     
+  self%cq      = rhs%cq     
+  self%kcbl    = rhs%kcbl   
+  self%ts      = rhs%ts     
+  self%khl     = rhs%khl    
+  self%khu     = rhs%khu  
 
-return
+else
+
+  !State copy, potentialy with differnt fields
+  do self_var = 1, self%nf
+    found = .false.
+    !short_name = self%fields(self_var)%short_name
+    do rhs_var = 1, rhs%nf
+      if (trim(self%fields(self_var)%fv3jedi_name) == trim(rhs%fields(rhs_var)%fv3jedi_name)) then
+        self%fields(self_var) = rhs%fields(rhs_var)
+        found = .true.
+        exit
+      endif
+    enddo
+    if (.not.found) call abor1_ftn("fv3jedi_state: Error in state copy, field "//&
+                    trim(self%fields(self_var)%fv3jedi_name)//" not found in state being copied from." )
+    !self%fields(self_var)%short_name = trim(short_name) !Keep original short name
+  enddo
+
+endif  
+
 end subroutine copy
 
 ! ------------------------------------------------------------------------------
 
 subroutine axpy(self,zz,rhs)
+
 implicit none
-type(fv3jedi_state), intent(inout) :: self
-real(kind=kind_real), intent(in) :: zz
-type(fv3jedi_state), intent(in)    :: rhs
+type(fv3jedi_state),  intent(inout) :: self
+real(kind=kind_real), intent(in)    :: zz
+type(fv3jedi_state),  intent(in)    :: rhs
 
-if(allocated(self%ud  ).and.allocated(rhs%ud  )) self%ud   = self%ud   + zz * rhs%ud  
-if(allocated(self%vd  ).and.allocated(rhs%vd  )) self%vd   = self%vd   + zz * rhs%vd  
-if(allocated(self%ua  ).and.allocated(rhs%ua  )) self%ua   = self%ua   + zz * rhs%ua  
-if(allocated(self%va  ).and.allocated(rhs%va  )) self%va   = self%va   + zz * rhs%va  
-if(allocated(self%t   ).and.allocated(rhs%t   )) self%t    = self%t    + zz * rhs%t   
-if(allocated(self%delp).and.allocated(rhs%delp)) self%delp = self%delp + zz * rhs%delp
-if(allocated(self%q   ).and.allocated(rhs%q   )) self%q    = self%q    + zz * rhs%q   
-if(allocated(self%qi  ).and.allocated(rhs%qi  )) self%qi   = self%qi   + zz * rhs%qi  
-if(allocated(self%ql  ).and.allocated(rhs%ql  )) self%ql   = self%ql   + zz * rhs%ql  
-if(allocated(self%o3  ).and.allocated(rhs%o3  )) self%o3   = self%o3   + zz * rhs%o3  
-if(allocated(self%w   ).and.allocated(rhs%w   )) self%w    = self%w    + zz * rhs%w   
-if(allocated(self%delz).and.allocated(rhs%delz)) self%delz = self%delz + zz * rhs%delz
+integer :: var
 
-return
+do var = 1, self%nf
+  self%fields(var)%field = self%fields(var)%field + zz * rhs%fields(var)%field
+enddo
+
 end subroutine axpy
 
 ! ------------------------------------------------------------------------------
@@ -334,78 +459,65 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: isc,iec,jsc,jec,isd,ied,jsd,jed,npz,k
-
+integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud, vd
 
 !Check for matching resolution between state and increment
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
 
-  isc = rhs%isc
-  iec = rhs%iec
-  jsc = rhs%jsc
-  jec = rhs%jec
-  isd = rhs%isd
-  ied = rhs%ied
-  jsd = rhs%jsd
-  jed = rhs%jed
-  npz = rhs%npz
-
   !Convert A-Grid increment to D-Grid
-  allocate(ud(isc:iec  ,jsc:jec+1,1:npz))
-  allocate(vd(isc:iec+1,jsc:jec  ,1:npz))
+  allocate(ud(rhs%isc:rhs%iec  ,rhs%jsc:rhs%jec+1,1:rhs%npz))
+  allocate(vd(rhs%isc:rhs%iec+1,rhs%jsc:rhs%jec  ,1:rhs%npz))
   ud = 0.0_kind_real
   vd = 0.0_kind_real
 
-  call a2d(geom, rhs%ua(isc:iec,jsc:jec,1:npz), rhs%va(isc:iec,jsc:jec,1:npz), ud, vd)
+  call a2d(geom, rhs%ua, rhs%va, ud, vd)
 
-  if(allocated(self%ud  )) self%ud(isc:iec  ,jsc:jec+1,:)   = self%ud(isc:iec  ,jsc:jec+1,:)   + ud  (isc:iec  ,jsc:jec+1,:)
-  if(allocated(self%vd  )) self%vd(isc:iec+1,jsc:jec  ,:)   = self%vd(isc:iec+1,jsc:jec  ,:)   + vd  (isc:iec+1,jsc:jec  ,:)
+  if(self%ud > 0) self%fields(self%ud)%field = self%fields(self%ud)%field + ud
+  if(self%vd > 0) self%fields(self%vd)%field = self%fields(self%vd)%field + vd
 
   deallocate(ud,vd)
 
-  if(allocated(self%ua  )) self%ua   = self%ua   + rhs%ua  
-  if(allocated(self%va  )) self%va   = self%va   + rhs%va  
-  if(allocated(self%t   )) self%t    = self%t    + rhs%t
-  if(allocated(self%delp)) then
+  if(self%ua > 0) self%fields(self%ua)%field = self%fields(self%ua)%field + rhs%ua  
+  if(self%va > 0) self%fields(self%va)%field = self%fields(self%va)%field + rhs%va  
+  if(self%t  > 0) self%fields(self%t )%field = self%fields(self%t )%field + rhs%t
+  if(self%delp > 0) then
     if (allocated(rhs%ps)) then
       do k = 1,geom%npz
-        self%delp(:,:,k) = self%delp(:,:,k) + (geom%bk(k+1)-geom%bk(k))*rhs%ps
+        self%fields(self%delp)%field(:,:,k) = self%fields(self%delp)%field(:,:,k) + (geom%bk(k+1)-geom%bk(k))*rhs%ps
       enddo
     elseif (allocated(rhs%delp)) then
-      self%delp = self%delp + rhs%delp
+      self%fields(self%delp)%field = self%fields(self%delp)%field + rhs%delp
     endif
   endif
-  if(allocated(self%q   )) self%q    = self%q    + rhs%q   
-  if(allocated(self%qi  )) self%qi   = self%qi   + rhs%qi  
-  if(allocated(self%ql  )) self%ql   = self%ql   + rhs%ql  
-  if(allocated(self%o3  )) self%o3   = self%o3   + rhs%o3  
-  if(allocated(self%w   )) self%w    = self%w    + rhs%w   
-  if(allocated(self%delz)) self%delz = self%delz + rhs%delz 
+  if(   self%q > 0) self%fields(   self%q)%field = self%fields(   self%q)%field + rhs%q   
+  if(  self%qi > 0) self%fields(  self%qi)%field = self%fields(  self%qi)%field + rhs%qi  
+  if(  self%ql > 0) self%fields(  self%ql)%field = self%fields(  self%ql)%field + rhs%ql  
+  if(  self%o3 > 0) self%fields(  self%o3)%field = self%fields(  self%o3)%field + rhs%o3  
+  if(   self%w > 0) self%fields(   self%w)%field = self%fields(   self%w)%field + rhs%w   
+  if(self%delz > 0) self%fields(self%delz)%field = self%fields(self%delz)%field + rhs%delz 
 else
    call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
 endif
 
-return
 end subroutine add_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine change_resol(state,rhs)
+subroutine change_resol(self,rhs)
 implicit none
-type(fv3jedi_state), intent(inout) :: state
+type(fv3jedi_state), intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: rhs
 
 integer :: check
-check = (rhs%iec-rhs%isc+1) - (state%iec-state%isc+1)
+check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 
 if (check==0) then
-   call copy(state, rhs)
+   call copy(self, rhs)
 else
    call abor1_ftn("fv3jedi_state: change_resol not implmeneted yet")
 endif
 
-return
 end subroutine change_resol
 
 ! ------------------------------------------------------------------------------
@@ -422,7 +534,6 @@ end subroutine change_resol
 !! and the associated Summer School, sponsored by NOAA, NSF, DOE, NCAR, and the University of Michigan.
 !!
 !! Currently implemented options for analytic_init include:
-!! * invent-state: Backward compatibility with original analytic init option
 !! * dcmip-test-1-1: 3D deformational flow
 !! * dcmip-test-1-2: 3D Hadley-like meridional circulation
 !! * dcmip-test-3-1: Non-hydrostatic gravity wave
@@ -450,7 +561,7 @@ end subroutine change_resol
 !! or temperature.  This routine assumes the latter.  If this is not correct, then we will need to
 !! implement a conversion
 !!
-subroutine analytic_IC(state, geom, c_conf, vdate)
+subroutine analytic_IC(self, geom, c_conf, vdate)
 
   use fv3jedi_kinds_mod
   use iso_c_binding
@@ -468,16 +579,16 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
 
   implicit none
 
-  type(fv3jedi_state), intent(inout) :: state !< State
+  type(fv3jedi_state), intent(inout) :: self    !< State
   type(fv3jedi_geom),  intent(inout) :: geom    !< Geometry 
-  type(c_ptr), intent(in)            :: c_conf   !< Configuration
-  type(datetime), intent(inout)      :: vdate    !< DateTime
+  type(c_ptr), intent(in)            :: c_conf  !< Configuration
+  type(datetime), intent(inout)      :: vdate   !< DateTime
 
   character(len=30) :: IC
   character(len=20) :: sdate
   character(len=1024) :: buf
   Integer :: i,j,k
-  real(kind=kind_real) :: rlat, rlon, z
+  real(kind=kind_real) :: rlat, rlon
   real(kind=kind_real) :: pk,pe1,pe2,ps
   real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
 
@@ -488,9 +599,6 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
 
   If (config_element_exists(c_conf,"analytic_init")) Then
      IC = Trim(config_get_string(c_conf,len(IC),"analytic_init"))
-  Else
-     ! This default value is for backward compatibility
-     IC = "invent-state"
   EndIf
 
   call log%warning("fv3jedi_state:analytic_init: "//IC)
@@ -501,10 +609,6 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
 
   !===================================================================
   int_option: Select Case (IC)
-
-     Case("invent-state")
-
-        call invent_state(state,c_conf,geom)
 
      Case("fv3_init_case")
 
@@ -530,18 +634,18 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
                         FV_AtmIC(1)%ptop, FV_AtmIC(1)%domain, FV_AtmIC(1)%tile, FV_AtmIC(1)%bd )
 
         !Copy from temporary structure into state
-        state%ud = FV_AtmIC(1)%u
-        state%vd = FV_AtmIC(1)%v
-        state%t = FV_AtmIC(1)%pt
-        state%delp = FV_AtmIC(1)%delp
-        state%q = FV_AtmIC(1)%q(:,:,:,1)
-        state%phis = FV_AtmIC(1)%phis
+        self%fields(self%ud)%field = FV_AtmIC(1)%u
+        self%fields(self%vd)%field = FV_AtmIC(1)%v
+        self%fields(self%t)%field = FV_AtmIC(1)%pt
+        self%fields(self%delp)%field = FV_AtmIC(1)%delp
+        self%fields(self%q)%field = FV_AtmIC(1)%q(:,:,:,1)
+        self%fields(self%phis)%field(:,:,1) = FV_AtmIC(1)%phis
         geom%ak = FV_AtmIC(1)%ak
         geom%ak = FV_AtmIC(1)%ak
         geom%ptop = FV_AtmIC(1)%ptop
-        if (.not. state%hydrostatic) then
-           state%w = FV_AtmIC(1)%w
-           state%delz = FV_AtmIC(1)%delz
+        if (.not. self%hydrostatic) then
+           self%fields(self%w)%field = FV_AtmIC(1)%w
+           self%fields(self%delz)%field = FV_AtmIC(1)%delz
         endif
 
         !Deallocate temporary FV_Atm fv3 structure
@@ -560,7 +664,7 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
               Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
                                                phis0,ps,rho0,hum0,q1,q2,q3,q4)
 
-              state%phis(i,j) = phis0
+              self%fields(self%phis)%field(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -571,15 +675,15 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
                  Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
                                                   phis0,ps0,rho0,hum0,q1,q2,q3,q4)
 
-                 state%ud(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
-                 state%vd(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
-                 If (.not.state%hydrostatic) state%w(i,j,k) = w0
-                 state%t(i,j,k) = t0
-                 state%delp(i,j,k) = pe2-pe1
-                 state%q (i,j,k) = hum0
-                 state%qi(i,j,k) = q1
-                 state%ql(i,j,k) = q2
-                 state%o3(i,j,k) = q3
+                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
+                 self%fields(self%vd)%field(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
+                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
+                 self%fields(self%t)%field(i,j,k) = t0
+                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
+                 self%fields(self%q)%field (i,j,k) = hum0
+                 self%fields(self%qi)%field(i,j,k) = q1
+                 self%fields(self%ql)%field(i,j,k) = q2
+                 self%fields(self%o3)%field(i,j,k) = q3
                  
               enddo
            enddo
@@ -596,7 +700,7 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
               Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                           t0,phis0,ps,rho0,hum0,q1)
 
-              state%phis(i,j) = phis0
+              self%fields(self%phis)%field(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -607,13 +711,13 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
                  Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                              t0,phis0,ps,rho0,hum0,q1)
 
-                 state%ud(i,j,k) = u0 !ATTN comment above
-                 state%vd(i,j,k) = v0
-                 If (.not.state%hydrostatic) state%w(i,j,k) = w0
-                 state%t(i,j,k) = t0
-                 state%delp(i,j,k) = pe2-pe1
-                 state%q (i,j,k) = hum0
-                 state%qi(i,j,k) = q1
+                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN comment above
+                 self%fields(self%vd)%field(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
+                 self%fields(self%t)%field(i,j,k) = t0
+                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
+                 self%fields(self%q)%field(i,j,k) = hum0
+                 self%fields(self%qi)%field(i,j,k) = q1
                  
               enddo
            enddo
@@ -630,7 +734,7 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
               Call test3_gravity_wave(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                       t0,phis0,ps,rho0,hum0)
 
-              state%phis(i,j) = phis0
+              self%fields(self%phis)%field(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -641,12 +745,12 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
                  Call test3_gravity_wave(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0)
 
-                 state%ud(i,j,k) = u0 !ATTN comment above
-                 state%vd(i,j,k) = v0
-                 If (.not.state%hydrostatic) state%w(i,j,k) = w0
-                 state%t(i,j,k) = t0
-                 state%delp(i,j,k) = pe2-pe1
-                 state%q(i,j,k) = hum0
+                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN comment above
+                 self%fields(self%vd)%field(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
+                 self%fields(self%t)%field(i,j,k) = t0
+                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
+                 self%fields(self%q)%field(i,j,k) = hum0
                  
               enddo
            enddo
@@ -663,7 +767,7 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
               Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0,q1,q2)
 
-              state%phis(i,j) = phis0
+              self%fields(self%phis)%field(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -674,12 +778,12 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
                  Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0,q1,q2)
 
-                 state%ud(i,j,k) = u0 !ATTN comment above
-                 state%vd(i,j,k) = v0
-                 If (.not.state%hydrostatic) state%w(i,j,k) = w0
-                 state%t(i,j,k) = t0
-                 state%delp(i,j,k) = pe2-pe1
-                 state%q(i,j,k) = hum0
+                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN comment above
+                 self%fields(self%vd)%field(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
+                 self%fields(self%t)%field(i,j,k) = t0
+                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
+                 self%fields(self%q)%field(i,j,k) = hum0
                  
               enddo
            enddo
@@ -687,650 +791,204 @@ subroutine analytic_IC(state, geom, c_conf, vdate)
 
      Case Default
 
-        call invent_state(state,c_conf,geom)
+        call abor1_ftn("fv3jedi_state analytic_IC: provide analytic_init")
 
      End Select int_option
         
 end subroutine analytic_IC
   
 ! ------------------------------------------------------------------------------
-subroutine invent_state(state,config,geom)
 
-use fv3jedi_kinds_mod
-
-implicit none
-
-type(fv3jedi_state), intent(inout) :: state    !< Model state
-type(c_ptr), intent(in)            :: config  !< Configuration structure
-type(fv3jedi_geom),  intent(in)    :: geom
-
-integer :: i,j,k
-
-!ud
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%ud(i,j,k) = cos(0.25*geom%grid_lon(i,j)) + cos(0.25*geom%grid_lat(i,j))
-    enddo
-  enddo
-enddo
-
-!vd
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%vd(i,j,k) = 1.0_kind_real
-    enddo
-  enddo
-enddo
-
-!ua
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%ua(i,j,k) = cos(0.25*geom%grid_lon(i,j)) + cos(0.25*geom%grid_lat(i,j))
-    enddo
-  enddo
-enddo
-
-!va
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%va(i,j,k) = 1.0_kind_real
-    enddo
-  enddo
-enddo
-
-!t
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%t(i,j,k) = cos(0.25*geom%grid_lon(i,j)) + cos(0.25*geom%grid_lat(i,j))
-    enddo
-  enddo
-enddo
-
-!delp
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%delp(i,j,k) = k
-    enddo
-  enddo
-enddo
-
-!q
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%q(i,j,k) = 0.0
-    enddo
-  enddo
-enddo
-
-!qi
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%q(i,j,k) = 0.0
-    enddo
-  enddo
-enddo
-
-!ql
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%q(i,j,k) = 0.0
-    enddo
-  enddo
-enddo
-
-!o3
-do k = 1,geom%npz
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      state%q(i,j,k) = 0.0
-    enddo
-  enddo
-enddo
-
-return
-end subroutine invent_state
-
-! ------------------------------------------------------------------------------
-
-subroutine read_file(geom, state, c_conf, vdate)
+subroutine read_file(geom, self, c_conf, vdate)
 
   implicit none
 
-  type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
-  type(fv3jedi_state), intent(inout) :: state      !< State
-  type(c_ptr), intent(in)            :: c_conf   !< Configuration
-  type(datetime), intent(inout)      :: vdate    !< DateTime
+  type(fv3jedi_geom),  intent(inout) :: geom     !< Geometry
+  type(fv3jedi_state), intent(inout) :: self     !< State
+  type(c_ptr),         intent(in)    :: c_conf   !< Configuration
+  type(datetime),      intent(inout) :: vdate    !< DateTime
 
   character(len=10) :: restart_type
 
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
   if (trim(restart_type) == 'gfs') then
-     call read_fms_state(geom, state, c_conf, vdate)
+     call read_gfs (geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
   elseif (trim(restart_type) == 'geos') then
-     call read_geos_state(geom, state, c_conf, vdate)
+     call read_geos(geom, self%fields, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state read: restart type not supported")
   endif
-
-  return
 
 end subroutine read_file
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_file(geom, state, c_conf, vdate)
+subroutine write_file(geom, self, c_conf, vdate)
 
   use fv3jedi_io_latlon_mod
 
   implicit none
 
-  type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
-  type(fv3jedi_state), intent(in)    :: state      !< State
-  type(c_ptr), intent(in)            :: c_conf   !< Configuration
-  type(datetime), intent(inout)      :: vdate    !< DateTime
+  type(fv3jedi_geom),  intent(inout) :: geom     !< Geometry
+  type(fv3jedi_state), intent(in)    :: self     !< State
+  type(c_ptr),         intent(in)    :: c_conf   !< Configuration
+  type(datetime),      intent(inout) :: vdate    !< DateTime
 
   character(len=10) :: restart_type
+  integer :: var
   type(fv3jedi_llgeom) :: llgeom
 
   restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
 
   if (trim(restart_type) == 'gfs') then
-     call write_fms_state(geom, state, c_conf, vdate)
+
+     call write_gfs (geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
+
   elseif (trim(restart_type) == 'geos') then
-     call write_geos_state(geom, state, c_conf, vdate)
+
+     call write_geos(geom, self%fields, c_conf, vdate)
+
   elseif (trim(restart_type) == 'latlon') then
 
      call create_latlon(geom, llgeom)
-
      call write_latlon_metadata(geom, llgeom, c_conf, vdate)
-     if (allocated(state%ud))   call write_latlon_field(geom, llgeom, state%ud,   "ud",   c_conf, vdate)
-     if (allocated(state%vd))   call write_latlon_field(geom, llgeom, state%ud,   "vd",   c_conf, vdate)
-     if (allocated(state%ua))   call write_latlon_field(geom, llgeom, state%ua,   "ua",   c_conf, vdate)
-     if (allocated(state%va))   call write_latlon_field(geom, llgeom, state%va,   "va",   c_conf, vdate)
-     if (allocated(state%t))    call write_latlon_field(geom, llgeom, state%t,    "t",    c_conf, vdate)
-     if (allocated(state%delp)) call write_latlon_field(geom, llgeom, state%delp, "delp", c_conf, vdate)
-     if (allocated(state%q))    call write_latlon_field(geom, llgeom, state%q,    "q",    c_conf, vdate)
-     if (allocated(state%qi))   call write_latlon_field(geom, llgeom, state%qi,   "qi",   c_conf, vdate)
-     if (allocated(state%ql))   call write_latlon_field(geom, llgeom, state%ql,   "ql",   c_conf, vdate)
-     if (allocated(state%o3))   call write_latlon_field(geom, llgeom, state%o3,   "o3",   c_conf, vdate)
-
+     do var = 1,self%nf
+       call write_latlon_field(geom, llgeom, self%fields(var)%field, self%fields(var)%short_name, c_conf, vdate)
+     enddo
      call delete_latlon(llgeom)
-  else
-     call abor1_ftn("fv3jedi_state write: restart type not supported")
-  endif
 
-  return
+  else
+
+     call abor1_ftn("fv3jedi_state write: restart type not supported")
+
+  endif
 
 end subroutine write_file
 
 ! ------------------------------------------------------------------------------
 
-subroutine state_print(state)
+subroutine state_print(self)
 
 implicit none
-type(fv3jedi_state), intent(in) :: state
+type(fv3jedi_state), intent(in) :: self
 
-real(kind=kind_real) :: pstat(3)
-real(kind=kind_real) :: tmp1, tmp2, tmp3
-integer :: isc, iec, jsc, jec
-real(kind=kind_real) :: gs3, gs3g
+integer :: var
+real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
 type(fckit_mpi_comm) :: f_comm
 
 f_comm = fckit_mpi_comm()
 
 if (f_comm%rank() == 0) then
-  print*, "-----------"
-  print*, "State print"
-  print*, "-----------"
+  write(*,"(A34)") "---------------------------------"
+  write(*,"(A34)") "      State print                "
+  write(*,"(A34)") "---------------------------------"
 endif
 
-!1. Min
-!2. Max
-!3. RMS
-
-isc = state%isc
-iec = state%iec
-jsc = state%jsc
-jec = state%jec
-
-gs3 = real((iec-isc+1)*(jec-jsc+1)*state%npz,kind_real)
+gs3 = real((self%iec-self%isc+1)*(self%jec-self%jsc+1), kind_real)
 call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
-!ud
-if (allocated(state%ud)) then
-  tmp1 = minval(state%ud(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%ud(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%ud(isc:iec,jsc:jec,:)**2)
+do var = 1,self%nf
 
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
+  gs3 = gs3g * real(self%fields(var)%npz,kind_real)
 
-  if (f_comm%rank() == 0) print*, "state ud   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
+  tmp(1) = minval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
+  tmp(2) = maxval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
+  tmp(3) =    sum(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz)**2)
 
-!vd
-if (allocated(state%vd)) then
-  tmp1 = minval(state%vd(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%vd(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%vd(isc:iec,jsc:jec,:)**2)
+  call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3)
 
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
+  if (f_comm%rank() == 0) write(*,"(A10,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &
+                                   trim(self%fields(var)%short_name),&
+                                   "| Min=",real(pstat(1),4),&
+                                   ", Max=",real(pstat(2),4),&
+                                   ", RMS=",real(pstat(3),4)
 
-  if (f_comm%rank() == 0) print*, "state vd   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
+enddo
 
-
-!ua
-if (allocated(state%ua)) then
-  tmp1 = minval(state%ua(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%ua(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%ua(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state ua   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!va
-if (allocated(state%va)) then
-  tmp1 = minval(state%va(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%va(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%va(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state va   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!t
-if (allocated(state%t)) then
-  tmp1 = minval(state%t(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%t(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%t(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state t    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!delp
-if (allocated(state%delp)) then
-  tmp1 = minval(state%delp(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%delp(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%delp(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state delp | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!q
-if (allocated(state%q)) then
-  tmp1 = minval(state%q(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%q(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%q(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state q    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!qi
-if (allocated(state%qi)) then
-  tmp1 = minval(state%qi(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%qi(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%qi(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state qi   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!ql
-if (allocated(state%ql)) then
-  tmp1 = minval(state%ql(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%ql(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%ql(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state ql   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!o3
-if (allocated(state%o3)) then
-  tmp1 = minval(state%o3(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%o3(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%o3(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state o3   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!w
-if (allocated(state%w)) then
-  tmp1 = minval(state%w(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%w(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%w(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state w    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!delz
-if (allocated(state%delz)) then
-  tmp1 = minval(state%delz(isc:iec,jsc:jec,:))
-  tmp2 = maxval(state%delz(isc:iec,jsc:jec,:))
-  tmp3 =    sum(state%delz(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "state delz | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-if (f_comm%rank() == 0) print*, "-----------"
+if (f_comm%rank() == 0) write(*,"(A34)") "---------------------------------"
 
 end subroutine state_print
 
 ! ------------------------------------------------------------------------------
 
-subroutine gpnorm(state, nf, pstat)
+subroutine gpnorm(self, nf, pstat)
+
 implicit none
-type(fv3jedi_state), intent(in) :: state
-integer, intent(in) :: nf
+type(fv3jedi_state),  intent(in)    :: self
+integer,              intent(in)    :: nf
 real(kind=kind_real), intent(inout) :: pstat(3, nf)
 
-integer :: isc, iec, jsc, jec, gs
+integer :: var
+real(kind=kind_real) :: tmp(3),  gs3, gs3g
+type(fckit_mpi_comm) :: f_comm
 
-!1. Min
-!2. Max
-!3. RMS
+f_comm = fckit_mpi_comm()
 
-isc = state%isc
-iec = state%iec
-jsc = state%jsc
-jec = state%jec
-
-gs = (iec-isc+1)*(jec-jsc+1)*state%npz
-
-pstat = 0.0_kind_real
-
-!ud
-if (allocated(state%ud)) then
-  pstat(1,1) = minval(state%ud(isc:iec,jsc:jec,:))
-  pstat(2,1) = maxval(state%ud(isc:iec,jsc:jec,:))
-  pstat(3,1) = sqrt((sum(state%ud(isc:iec,jsc:jec,:))/gs)**2)
+if (nf .ne. self%nf) then
+  call abor1_ftn("fv3jedi_state: gpnorm | nf passed in does not match expeted nf")
 endif
 
-!vd
-if (allocated(state%vd)) then
-  pstat(1,2) = minval(state%vd(isc:iec,jsc:jec,:))
-  pstat(2,2) = maxval(state%vd(isc:iec,jsc:jec,:))
-  pstat(3,2) = sqrt((sum(state%vd(isc:iec,jsc:jec,:))/gs)**2)
-endif
+gs3 = real((self%iec-self%isc+1)*(self%jec-self%jsc+1), kind_real)
+call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
-!ua
-if (allocated(state%ua)) then
-  pstat(1,3) = minval(state%ua(isc:iec,jsc:jec,:))
-  pstat(2,3) = maxval(state%ua(isc:iec,jsc:jec,:))
-  pstat(3,3) = sqrt((sum(state%ua(isc:iec,jsc:jec,:))/gs)**2)
-endif
+do var = 1,nf
+ 
+  gs3 = gs3g * real(self%fields(var)%npz,kind_real)
 
-!va
-if (allocated(state%va)) then
-  pstat(1,4) = minval(state%va(isc:iec,jsc:jec,:))
-  pstat(2,4) = maxval(state%va(isc:iec,jsc:jec,:))
-  pstat(3,4) = sqrt((sum(state%va(isc:iec,jsc:jec,:))/gs)**2)
-endif
+  tmp(1) = minval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
+  tmp(2) = maxval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
+  tmp(3) =    sum(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz)**2)
 
-!t
-if (allocated(state%t)) then
-  pstat(1,5) = minval(state%t(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(state%t(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(state%t(isc:iec,jsc:jec,:))/gs)**2)
-endif
+  call f_comm%allreduce(tmp(1),pstat(1,var),fckit_mpi_min())
+  call f_comm%allreduce(tmp(2),pstat(2,var),fckit_mpi_max())
+  call f_comm%allreduce(tmp(3),pstat(3,var),fckit_mpi_sum())
+  pstat(3,var) = sqrt(pstat(3,var)/gs3)
 
-!delp
-if (allocated(state%delp)) then
-  pstat(1,6) = minval(state%delp(isc:iec,jsc:jec,:))
-  pstat(2,6) = maxval(state%delp(isc:iec,jsc:jec,:))
-  pstat(3,6) = sqrt((sum(state%delp(isc:iec,jsc:jec,:))/gs)**2)
-endif
-
-!q
-if (allocated(state%q)) then
-  pstat(1,7) = minval(state%q(isc:iec,jsc:jec,:))
-  pstat(2,7) = maxval(state%q(isc:iec,jsc:jec,:))
-  pstat(3,7) = sqrt((sum(state%q(isc:iec,jsc:jec,:))/gs)**2)
-endif
-
-!qi
-if (allocated(state%qi)) then
-  pstat(1,8) = minval(state%qi(isc:iec,jsc:jec,:))
-  pstat(2,8) = maxval(state%qi(isc:iec,jsc:jec,:))
-  pstat(3,8) = sqrt((sum(state%qi(isc:iec,jsc:jec,:))/gs)**2)
-endif
-
-!ql
-if (allocated(state%ql)) then
-  pstat(1,9) = minval(state%ql(isc:iec,jsc:jec,:))
-  pstat(2,9) = maxval(state%ql(isc:iec,jsc:jec,:))
-  pstat(3,9) = sqrt((sum(state%ql(isc:iec,jsc:jec,:))/gs)**2)
-endif
-
-!o3
-if (allocated(state%o3)) then
-  pstat(1,10) = minval(state%o3(isc:iec,jsc:jec,:))
-  pstat(2,10) = maxval(state%o3(isc:iec,jsc:jec,:))
-  pstat(3,10) = sqrt((sum(state%o3(isc:iec,jsc:jec,:))/gs)**2)
-endif
-
-return
+enddo
 
 end subroutine gpnorm
 
 ! ------------------------------------------------------------------------------
 
-subroutine staterms(state, prms)
-use fckit_mpi_module, only : fckit_mpi_comm, fckit_mpi_sum
+subroutine rms(self, prms)
+
 implicit none
-type(fv3jedi_state), intent(in) :: state
+type(fv3jedi_state),  intent(in)  :: self
 real(kind=kind_real), intent(out) :: prms
 
 real(kind=kind_real) :: zz
-integer i,j,k,ii,nt,ierr,npes,iisum
-integer :: isc,iec,jsc,jec,npz
+integer i,j,k,ii,iisum,var
 type(fckit_mpi_comm) :: f_comm
-
-isc = state%isc
-iec = state%iec
-jsc = state%jsc
-jec = state%jec
-npz = state%npz
 
 f_comm = fckit_mpi_comm()
 
 zz = 0.0_kind_real
-prms = 0.0_kind_real
 ii = 0
 
-!ud
-if (allocated(state%ud)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%ud(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
+do var = 1,self%nf
 
-!vd
-if (allocated(state%vd)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%vd(i,j,k)**2
+  do k = 1,self%fields(var)%npz
+    do j = self%jsc,self%jec
+      do i = self%isc,self%iec
+        zz = zz + self%fields(var)%field(i,j,k)**2
         ii = ii + 1
       enddo
     enddo
   enddo
-endif
 
-!ua
-if (allocated(state%ua)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%ua(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!va
-if (allocated(state%va)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%va(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!t
-if (allocated(state%t)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%t(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!delp
-if (allocated(state%delp)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%delp(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!q
-if (allocated(state%q)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%q(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qi
-if (allocated(state%qi)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%qi(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!ql
-if (allocated(state%ql)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%ql(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!o3
-if (allocated(state%o3)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + state%o3(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
+enddo
 
 !Get global values
 call f_comm%allreduce(zz,prms,fckit_mpi_sum())
 call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
 
-!if (ierr .ne. 0) then
-!   print *,'error in staterms/mpi_allreduce, error code=',ierr
-!endif
 prms = sqrt(prms/real(iisum,kind_real))
 
-end subroutine staterms
+end subroutine rms
 
 ! ------------------------------------------------------------------------------
 
