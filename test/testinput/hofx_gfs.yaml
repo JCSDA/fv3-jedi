@@ -35,7 +35,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/gfs.hofx.nc4
+        obsfile: Data/aircraft_hofx.nc4
     variables:
     - air_temperature
     ObsBias: {}
@@ -45,7 +45,7 @@ Observations:
 #        obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
 #      obsvalue: BNA
 #      ObsDataOut:
-#        obsfile: gnssroBndGSI_hofx_2018041500.nc4
+#        obsfile: Data/gnssro_hofx.nc4
 #      obsvalue: BNA
 #    ObsBias: {}
   - ObsType: GnssroRef
@@ -58,7 +58,7 @@ Observations:
         obsfile: Data/gnssro_obs_2018041500_m.nc4
       obsvalue: refractivity
       ObsDataOut:
-        obsfile: Data/gnssroRef_hofx_2018041500.nc4
+        obsfile: Data/gnssro_hofx.nc4
       obsvalue: refractivity
     ObsBias: {}
   - ObsType: AMSU-A
@@ -67,7 +67,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/amsua_obs_n19_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/gfs.hofx.nc4
+        obsfile: Data/amsua_hofx.nc4
     ObsBias: {}
     ObsOptions:
       n_Absorbers: 3
@@ -81,7 +81,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/sondes_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/gfs.hofx.nc4
+        obsfile: Data/sondes_hofx.nc4
     variables:
     - air_temperature
     ObsBias: {}

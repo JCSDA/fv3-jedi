@@ -459,7 +459,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: k
+integer :: i,j,k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud, vd
 
 !Check for matching resolution between state and increment
@@ -490,12 +490,34 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
       self%fields(self%delp)%field = self%fields(self%delp)%field + rhs%delp
     endif
   endif
+  
   if(   self%q > 0) self%fields(   self%q)%field = self%fields(   self%q)%field + rhs%q   
   if(  self%qi > 0) self%fields(  self%qi)%field = self%fields(  self%qi)%field + rhs%qi  
   if(  self%ql > 0) self%fields(  self%ql)%field = self%fields(  self%ql)%field + rhs%ql  
   if(  self%o3 > 0) self%fields(  self%o3)%field = self%fields(  self%o3)%field + rhs%o3  
   if(   self%w > 0) self%fields(   self%w)%field = self%fields(   self%w)%field + rhs%w   
   if(self%delz > 0) self%fields(self%delz)%field = self%fields(self%delz)%field + rhs%delz 
+
+  !Check for negative tracers and increase to 0.0
+  do k = 1,geom%npz
+    do j = geom%jsc,geom%jec
+      do i = geom%isc,geom%iec
+        if (self%fields(self%q)%field(i,j,k) < 0.0_kind_real) then
+          self%fields(self%q)%field(i,j,k) = 0.0_kind_real
+        endif
+        if (self%fields(self%qi)%field(i,j,k) < 0.0_kind_real) then
+          self%fields(self%qi)%field(i,j,k) = 0.0_kind_real
+        endif
+        if (self%fields(self%ql)%field(i,j,k) < 0.0_kind_real) then
+          self%fields(self%ql)%field(i,j,k) = 0.0_kind_real
+        endif
+        if (self%fields(self%o3)%field(i,j,k) < 0.0_kind_real) then
+          self%fields(self%o3)%field(i,j,k) = 0.0_kind_real
+        endif
+      enddo
+    enddo
+  enddo
+
 else
    call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
 endif
