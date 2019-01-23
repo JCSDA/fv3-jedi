@@ -56,7 +56,7 @@ StateTest:
     - o3
   InterpTest:
     variables:
-    - virtual_temperature
+    - air_temperature
     - atmosphere_ln_pressure_coordinate
   date: '2018-04-14T21:00:00Z'
   interp_tolerance: 6.0e-5

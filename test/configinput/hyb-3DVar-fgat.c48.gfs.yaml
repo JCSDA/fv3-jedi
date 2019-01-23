@@ -212,13 +212,13 @@ cost_function:
         ObsDataOut:
           obsfile: Data/diag_conv_sond_tv_out.nc4
       variables:
-      - virtual_temperature
+      - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
         variables:
-        - virtual_temperature
+        - air_temperature
         threshold: 3.0
 #    - ObsType: GnssroRef
 #      ObsOptions:
