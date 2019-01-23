@@ -579,26 +579,69 @@ cost_function:
        - o3
  Jo:
    ObsTypes:
-#   - ObsType: Aircraft
-#     ObsData:
-#       ObsDataIn:
-#         obsfile: Data/aircraft_obs_2018041500_m.nc4
-#       ObsDataOut:
-#         obsfile: Data/gfs.3dfgat.obt
-#       obsvalue: ObsValue
-#     Covariance:
-#       covariance: diagonal
-#       obserror: ObsError
+   - ObsType: Aircraft
+     ObsData:
+       ObsDataIn:
+         obsfile: Data/aircraft_obs_2018041500_m.nc4
+       ObsDataOut:
+         obsfile: Data/gfs.3dvar.air.out.nc4
+       obsvalue: ObsValue
+     variables:
+     - air_temperature
+     - eastward_wind
+     - northward_wind
+     Covariance:
+       covariance: diagonal
+     ObsFilters:
+     - Filter: Background Check
+       variables:
+       - air_temperature
+       - eastward_wind
+       - northward_wind
+       threshold: 6.0
    - ObsType: Radiosonde
      ObsData:
        ObsDataIn:
          obsfile: Data/sondes_obs_2018041500_m.nc4
        ObsDataOut:
-         obsfile: Data/gfs.3dfgat.obt
+         obsfile: Data/gfs.3dvar.rs.out.nc4
        obsvalue: ObsValue
+     variables:
+     - air_temperature
      Covariance:
        covariance: diagonal
-       obserror: ObsError
+     ObsFilters:
+     - Filter: Background Check
+       variables:
+       - air_temperature
+       threshold: 3.0
+   - ObsType: GnssroRef
+     ObsOptions:
+       use_compress: 1
+     ObsData:
+       ObsDataIn:
+         obsfile: Data/gnssro_obs_2018041500_m.nc4
+       ObsDataOut:
+         obsfile: Data/gfs.3dvar.ref.out.nc4
+       obsvalue: refractivity
+     Covariance:
+       covariance: diagonal
+     ObsFilters:
+     - Filter: Domain Check
+       where:
+       - variable: altitude
+         minvalue: 0
+         maxvalue: 20000
+       - variable: earth_radius_of_curvature
+         minvalue: 6250000
+         maxvalue: 6450000
+       - variable: geoid_height_above_reference_ellipsoid
+         minvalue: -200
+         maxvalue: 200
+     - Filter: Background Check
+       variables:
+       - refractivity
+       threshold: 3.0
 minimizer:
   algorithm: DRIPCG
 output:
