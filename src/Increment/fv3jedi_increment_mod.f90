@@ -11,6 +11,8 @@ use iso_c_binding
 use config_mod
 use datetime_mod
 
+use random_mod
+
 use fckit_mpi_module
 
 use fv3jedi_constants_mod, only: rad2deg, constoz, cp, alhl, rgas
@@ -226,31 +228,32 @@ end subroutine ones
 ! ------------------------------------------------------------------------------
 
 subroutine random(self)
-use random_vectors_mod
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 integer :: nq
+integer, parameter :: rseed = 7
 
-if(allocated(self%ua  )) call random_vector(self%ua  )
-if(allocated(self%va  )) call random_vector(self%va  )
-if(allocated(self%t   )) call random_vector(self%t   )
-if(allocated(self%ps  )) call random_vector(self%ps  )
-if(allocated(self%q   )) call random_vector(self%q   )
-if(allocated(self%qi  )) call random_vector(self%qi  )
-if(allocated(self%ql  )) call random_vector(self%ql  )
-if(allocated(self%o3  )) call random_vector(self%o3  )
+if(allocated(self%ua  )) call normal_distribution(self%ua  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%va  )) call normal_distribution(self%va  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%t   )) call normal_distribution(self%t   , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%ps  )) call normal_distribution(self%ps  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%q   )) call normal_distribution(self%q   , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%qi  )) call normal_distribution(self%qi  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%ql  )) call normal_distribution(self%ql  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%o3  )) call normal_distribution(self%o3  , 0.0_kind_real, 1.0_kind_real, rseed)
 
-if(allocated(self%psi )) call random_vector(self%psi )
-if(allocated(self%chi )) call random_vector(self%chi )
-if(allocated(self%tv  )) call random_vector(self%tv  )
-if(allocated(self%qc  )) call random_vector(self%qc  )
-if(allocated(self%qic )) call random_vector(self%qic )
-if(allocated(self%qlc )) call random_vector(self%qlc )
-if(allocated(self%o3c )) call random_vector(self%o3c )
+if(allocated(self%psi )) call normal_distribution(self%psi , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%chi )) call normal_distribution(self%chi , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%tv  )) call normal_distribution(self%tv  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%qc  )) call normal_distribution(self%qc  , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%qic )) call normal_distribution(self%qic , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%qlc )) call normal_distribution(self%qlc , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%o3c )) call normal_distribution(self%o3c , 0.0_kind_real, 1.0_kind_real, rseed)
 
-if(allocated(self%w   )) call random_vector(self%w   )
-if(allocated(self%delz)) call random_vector(self%delz)
-if(allocated(self%delp)) call random_vector(self%delp)
+if(allocated(self%w   )) call normal_distribution(self%w   , 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%delz)) call normal_distribution(self%delz, 0.0_kind_real, 1.0_kind_real, rseed)
+if(allocated(self%delp)) call normal_distribution(self%delp, 0.0_kind_real, 1.0_kind_real, rseed)
 
 end subroutine random
 
