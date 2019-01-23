@@ -644,7 +644,8 @@ mask = .true.
 call mpl%init()
 
 !Create kdtree
-call kdtree%create(mpl,ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
+call kdtree%alloc(mpl,ngrid_glo,mask)
+call kdtree%init(mpl,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo)
 
 
 allocate(nn_index(nobs,nn))
