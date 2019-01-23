@@ -32,6 +32,7 @@ Covariance:
   advmode: 0
   diag_interp: bilin
   date: '2018-04-15T00:00:00Z'
+  verbosity: 'none'
 CovarianceTest:
   testinverse: false
   tolerance: '1.0e-10'
