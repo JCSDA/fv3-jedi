@@ -121,6 +121,7 @@ cost_function:
   - o3
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
+  varchange: Identity
 final:
   diagnostics:
     departures: oman
