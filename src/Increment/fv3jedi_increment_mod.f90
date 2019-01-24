@@ -8,10 +8,10 @@ module fv3jedi_increment_mod
 use iso_c_binding
 use config_mod
 use datetime_mod
+
+use random_mod
 use fckit_mpi_module
 use unstructured_grid_mod
-
-use random_vectors_mod, only: random_vector
 
 use fv3jedi_field_mod,           only: fv3jedi_field, get_field
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
@@ -245,7 +245,7 @@ type(fv3jedi_increment), intent(inout) :: self
 integer :: var
 
 do var = 1,self%nf
-  call random_vector(self%fields(var)%field)
+  call normal_distribution(self%fields(var)%field, 0.0_kind_real, 1.0_kind_real, rseed)
 enddo
 
 end subroutine random

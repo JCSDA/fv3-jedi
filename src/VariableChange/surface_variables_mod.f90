@@ -644,7 +644,8 @@ mask = .true.
 call mpl%init()
 
 !Create kdtree
-call kdtree%create(mpl,ngrid_glo,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo,mask)
+call kdtree%alloc(mpl,ngrid_glo,mask)
+call kdtree%init(mpl,deg2rad*grid_lon_glo,deg2rad*grid_lat_glo)
 
 
 allocate(nn_index(nobs,nn))
@@ -655,7 +656,7 @@ do k = 1,nobs
   tmplon(1) = deg2rad*lons_ob(k)
   tmplat(1) = deg2rad*lats_ob(k)
 
-  call kdtree%find_nearest_neighbors(tmplon(1),tmplat(1),nn,nn_index(k,:),nn_dist(k,:))
+  call kdtree%find_nearest_neighbors(mpl,tmplon(1),tmplat(1),nn,nn_index(k,:),nn_dist(k,:))
 
   dist=sum(nn_dist(k,:))
 

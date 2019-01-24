@@ -33,7 +33,7 @@ StateTest:
     variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
   InterpTest:
     variables:
-    - virtual_temperature
+    - air_temperature
     - atmosphere_ln_pressure_coordinate
   date: '2018-04-15T00:00:00Z'
   interp_tolerance: 6.0e-5
