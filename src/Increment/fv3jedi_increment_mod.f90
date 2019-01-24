@@ -223,7 +223,7 @@ type(fv3jedi_increment), intent(inout) :: self
 integer :: var
 
 do var = 1,self%nf
-  self%fields(var)%field = 0.0_kind_real
+  self%fields(var)%array = 0.0_kind_real
 enddo
 
 end subroutine zeros
@@ -238,7 +238,7 @@ type(fv3jedi_increment), intent(inout) :: self
 integer :: var
 
 do var = 1,self%nf
-  self%fields(var)%field = 1.0_kind_real
+  self%fields(var)%array = 1.0_kind_real
 enddo
 
 end subroutine ones
@@ -254,7 +254,7 @@ integer :: var
 integer, parameter :: rseed = 7
 
 do var = 1,self%nf
-  call normal_distribution(self%fields(var)%field, 0.0_kind_real, 1.0_kind_real, rseed)
+  call normal_distribution(self%fields(var)%array, 0.0_kind_real, 1.0_kind_real, rseed)
 enddo
 
 end subroutine random
@@ -347,7 +347,7 @@ integer :: var
 call checksame(self,rhs)
 
 do var = 1,self%nf
-  self%fields(var)%field = self%fields(var)%field + rhs%fields(var)%field
+  self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
 enddo
 
 end subroutine self_add
@@ -365,7 +365,7 @@ integer :: var
 call checksame(self,rhs)
 
 do var = 1,self%nf
-  self%fields(var)%field = self%fields(var)%field * rhs%fields(var)%field
+  self%fields(var)%array = self%fields(var)%array * rhs%fields(var)%array
 enddo
 
 end subroutine self_schur
@@ -383,7 +383,7 @@ integer :: var
 call checksame(self,rhs)
 
 do var = 1,self%nf
-  self%fields(var)%field = self%fields(var)%field - rhs%fields(var)%field
+  self%fields(var)%array = self%fields(var)%array - rhs%fields(var)%array
 enddo
 
 end subroutine self_sub
@@ -399,7 +399,7 @@ real(kind=kind_real),    intent(in)    :: zz
 integer :: var
 
 do var = 1,self%nf
-  self%fields(var)%field = zz * self%fields(var)%field
+  self%fields(var)%array = zz * self%fields(var)%array
 enddo
 
 end subroutine self_mul
@@ -418,7 +418,7 @@ integer :: var
 call checksame(self,rhs)
 
 do var = 1,self%nf
-  self%fields(var)%field = self%fields(var)%field + zz * rhs%fields(var)%field
+  self%fields(var)%array = self%fields(var)%array + zz * rhs%fields(var)%array
 enddo
 
 end subroutine axpy_inc
@@ -441,13 +441,13 @@ do var = 1,self%nf
   if (trim(self%fields(var)%fv3jedi_name) .ne. "ps") then
 
     call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,rhs_p)
-    self%fields(var)%field = self%fields(var)%field + zz * rhs_p%field
+    self%fields(var)%array = self%fields(var)%array + zz * rhs_p%array
 
   else
 
     allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
-    rhs_ps = sum(rhs%fields(rhs%delp)%field,3)
-    self%fields(var)%field(:,:,1) = self%fields(var)%field(:,:,1) + zz * rhs_ps
+    rhs_ps = sum(rhs%fields(rhs%delp)%array,3)
+    self%fields(var)%array(:,:,1) = self%fields(var)%array(:,:,1) + zz * rhs_ps
     deallocate(rhs_ps)
 
   endif
@@ -483,7 +483,7 @@ if (f_comm%rank() == 0) print*, "Dot product test var: ", trim(self%fields(var)%
   do k = 1,self%fields(var)%npz
     do j = self%jsc,self%jec
       do i = self%isc,self%iec
-        zp = zp + self%fields(var)%field(i,j,k) * other%fields(var)%field(i,j,k)
+        zp = zp + self%fields(var)%array(i,j,k) * other%fields(var)%array(i,j,k)
       enddo
     enddo
   enddo
@@ -512,7 +512,7 @@ check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 if (check==0) then
   call checksame(self,rhs)
   do var = 1,self%nf
-    self%fields(var)%field = self%fields(var)%field + rhs%fields(var)%field
+    self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
   enddo
 else
    call abor1_ftn("Increment:  add_incr not implemented for low res increment yet")
@@ -545,15 +545,15 @@ if (check==0) then
       call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
       call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
 
-      self%fields(var)%field = x1p%field - x2p%field
+      self%fields(var)%array = x1p%array - x2p%array
   
     else
   
       allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
       allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-      x1_ps = sum(x1%fields(x1%delp)%field,3)
-      x2_ps = sum(x2%fields(x2%delp)%field,3)
-      self%fields(var)%field(:,:,1) = x1_ps   - x2_ps
+      x1_ps = sum(x1%fields(x1%delp)%array,3)
+      x2_ps = sum(x2%fields(x2%delp)%array,3)
+      self%fields(var)%array(:,:,1) = x1_ps   - x2_ps
       deallocate(x1_ps,x2_ps)
   
     endif
@@ -736,7 +736,7 @@ do idir=1,ndir
        do var = 1,self%nf
          if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir)) then
            found = .true.
-           self%fields(var)%field(ixdir(idir),iydir(idir),ildir) = 1.0
+           self%fields(var)%array(ixdir(idir),iydir(idir),ildir) = 1.0
          endif
        enddo
        if (.not.found) call abor1_ftn("fv3jedi_increment, dirac error: field "&
@@ -855,7 +855,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%fields(var)%npz
-          ug%grid(1)%fld(imga,jl,var,1) = self%fields(var)%field(jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,var,1) = self%fields(var)%array(jx,jy,jl)
         enddo
       enddo
     enddo
@@ -885,7 +885,7 @@ if (ug%colocated==1) then
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%fields(var)%npz
-          self%fields(var)%field(jx,jy,jl) = ug%grid(1)%fld(imga,jl,var,1)
+          self%fields(var)%array(jx,jy,jl) = ug%grid(1)%fld(imga,jl,var,1)
         enddo
       enddo
     enddo
@@ -942,13 +942,13 @@ pfac = 0.5_kind_real*Rgas*tref/pref**2
 global_area = mpp_global_sum(geom%domain, geom%area, flags=bitwise_efp_sum)
 
 allocate(ref_ps(isc:iec,jsc:jec))
-ref_ps = sum(ref%fields(ref%delp)%field,3)
+ref_ps = sum(ref%fields(ref%delp)%array,3)
 
 allocate(cellweight(isc:iec,jsc:jec,1:npz))
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      cellweight(i,j,k) = (ref%fields(ref%delp)%field(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
+      cellweight(i,j,k) = (ref%fields(ref%delp)%array(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
     enddo
   enddo
 enddo
@@ -957,7 +957,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%ua)%field(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%ua)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%ua)%array(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%ua)%array(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -966,7 +966,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%va)%field(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%va)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%va)%array(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%va)%array(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -975,7 +975,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%t)%field(i,j,k) = Tfac * 2.0_kind_real * ref%fields(ref%t)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%t)%array(i,j,k) = Tfac * 2.0_kind_real * ref%fields(ref%t)%array(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -984,7 +984,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%q)%field(i,j,k) = qfac * 2.0_kind_real * ref%fields(ref%q)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%q)%array(i,j,k) = qfac * 2.0_kind_real * ref%fields(ref%q)%array(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -993,8 +993,8 @@ enddo
 if (self%ps>0) then
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%ps)%field(i,j,1) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) &
-                                          / (ref%fields(ref%delp)%field(i,j,npz)/ref_ps(i,j))
+      self%fields(self%ps)%array(i,j,1) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) &
+                                          / (ref%fields(ref%delp)%array(i,j,npz)/ref_ps(i,j))
     enddo
   enddo
 else

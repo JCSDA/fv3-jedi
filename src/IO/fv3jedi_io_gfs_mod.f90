@@ -141,7 +141,7 @@ do var = 1,size(fields)
 
   if (register) &
   id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
-                                       fields(var)%field, domain=geom%domain, &
+                                       fields(var)%array, domain=geom%domain, &
                                        position=fields(var)%staggerloc )
 
 enddo
@@ -286,7 +286,7 @@ do var = 1,size(fields)
   end select
 
   if (register) &
-  id_restart = register_restart_field( restart, filename, fields(var)%short_name, fields(var)%field, &
+  id_restart = register_restart_field( restart, filename, fields(var)%short_name, fields(var)%array, &
                                        domain=geom%domain, position=fields(var)%staggerloc, &
                                        longname = trim(fields(var)%long_name), units = trim(fields(var)%units) )
 

@@ -329,7 +329,7 @@ type(fv3jedi_state), intent(inout) :: self
 integer :: var
 
 do var = 1, self%nf
-  self%fields(var)%field = 0.0_kind_real
+  self%fields(var)%array = 0.0_kind_real
 enddo
 
 end subroutine zeros
@@ -443,7 +443,7 @@ type(fv3jedi_state),  intent(in)    :: rhs
 integer :: var
 
 do var = 1, self%nf
-  self%fields(var)%field = self%fields(var)%field + zz * rhs%fields(var)%field
+  self%fields(var)%array = self%fields(var)%array + zz * rhs%fields(var)%array
 enddo
 
 end subroutine axpy
@@ -471,49 +471,49 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   ud = 0.0_kind_real
   vd = 0.0_kind_real
 
-  call a2d(geom, rhs%fields(rhs%ua)%field, rhs%fields(rhs%va)%field, ud, vd)
+  call a2d(geom, rhs%fields(rhs%ua)%array, rhs%fields(rhs%va)%array, ud, vd)
 
-  if(self%ud > 0) self%fields(self%ud)%field = self%fields(self%ud)%field + ud
-  if(self%vd > 0) self%fields(self%vd)%field = self%fields(self%vd)%field + vd
+  if(self%ud > 0) self%fields(self%ud)%array = self%fields(self%ud)%array + ud
+  if(self%vd > 0) self%fields(self%vd)%array = self%fields(self%vd)%array + vd
 
   deallocate(ud,vd)
 
-  if(self%ua > 0) self%fields(self%ua)%field = self%fields(self%ua)%field + rhs%fields(rhs%ua)%field  
-  if(self%va > 0) self%fields(self%va)%field = self%fields(self%va)%field + rhs%fields(rhs%va)%field  
-  if(self%t  > 0) self%fields(self%t )%field = self%fields(self%t )%field + rhs%fields(rhs%t)%field
+  if(self%ua > 0) self%fields(self%ua)%array = self%fields(self%ua)%array + rhs%fields(rhs%ua)%array  
+  if(self%va > 0) self%fields(self%va)%array = self%fields(self%va)%array + rhs%fields(rhs%va)%array  
+  if(self%t  > 0) self%fields(self%t )%array = self%fields(self%t )%array + rhs%fields(rhs%t)%array
   if(self%delp > 0) then
     if (rhs%ps>0) then
       do k = 1,geom%npz
-        self%fields(self%delp)%field(:,:,k) = self%fields(self%delp)%field(:,:,k) + &
-                                              (geom%bk(k+1)-geom%bk(k))*rhs%fields(rhs%ps)%field(:,:,1)
+        self%fields(self%delp)%array(:,:,k) = self%fields(self%delp)%array(:,:,k) + &
+                                              (geom%bk(k+1)-geom%bk(k))*rhs%fields(rhs%ps)%array(:,:,1)
       enddo
     elseif (rhs%delp>0) then
-      self%fields(self%delp)%field = self%fields(self%delp)%field + rhs%fields(rhs%delp)%field
+      self%fields(self%delp)%array = self%fields(self%delp)%array + rhs%fields(rhs%delp)%array
     endif
   endif
   
-  if(   self%q > 0) self%fields(   self%q)%field = self%fields(   self%q)%field + rhs%fields(   rhs%q)%field   
-  if(  self%qi > 0) self%fields(  self%qi)%field = self%fields(  self%qi)%field + rhs%fields(  rhs%qi)%field  
-  if(  self%ql > 0) self%fields(  self%ql)%field = self%fields(  self%ql)%field + rhs%fields(  rhs%ql)%field  
-  if(  self%o3 > 0) self%fields(  self%o3)%field = self%fields(  self%o3)%field + rhs%fields(  rhs%o3)%field  
-  if(   self%w > 0) self%fields(   self%w)%field = self%fields(   self%w)%field + rhs%fields(   rhs%w)%field   
-  if(self%delz > 0) self%fields(self%delz)%field = self%fields(self%delz)%field + rhs%fields(rhs%delz)%field 
+  if(   self%q > 0) self%fields(   self%q)%array = self%fields(   self%q)%array + rhs%fields(   rhs%q)%array   
+  if(  self%qi > 0) self%fields(  self%qi)%array = self%fields(  self%qi)%array + rhs%fields(  rhs%qi)%array  
+  if(  self%ql > 0) self%fields(  self%ql)%array = self%fields(  self%ql)%array + rhs%fields(  rhs%ql)%array  
+  if(  self%o3 > 0) self%fields(  self%o3)%array = self%fields(  self%o3)%array + rhs%fields(  rhs%o3)%array  
+  if(   self%w > 0) self%fields(   self%w)%array = self%fields(   self%w)%array + rhs%fields(   rhs%w)%array   
+  if(self%delz > 0) self%fields(self%delz)%array = self%fields(self%delz)%array + rhs%fields(rhs%delz)%array 
 
   !Check for negative tracers and increase to 0.0
   do k = 1,geom%npz
     do j = geom%jsc,geom%jec
       do i = geom%isc,geom%iec
-        if (self%fields(self%q)%field(i,j,k) < 0.0_kind_real) then
-          self%fields(self%q)%field(i,j,k) = 0.0_kind_real
+        if (self%fields(self%q)%array(i,j,k) < 0.0_kind_real) then
+          self%fields(self%q)%array(i,j,k) = 0.0_kind_real
         endif
-        if (self%fields(self%qi)%field(i,j,k) < 0.0_kind_real) then
-          self%fields(self%qi)%field(i,j,k) = 0.0_kind_real
+        if (self%fields(self%qi)%array(i,j,k) < 0.0_kind_real) then
+          self%fields(self%qi)%array(i,j,k) = 0.0_kind_real
         endif
-        if (self%fields(self%ql)%field(i,j,k) < 0.0_kind_real) then
-          self%fields(self%ql)%field(i,j,k) = 0.0_kind_real
+        if (self%fields(self%ql)%array(i,j,k) < 0.0_kind_real) then
+          self%fields(self%ql)%array(i,j,k) = 0.0_kind_real
         endif
-        if (self%fields(self%o3)%field(i,j,k) < 0.0_kind_real) then
-          self%fields(self%o3)%field(i,j,k) = 0.0_kind_real
+        if (self%fields(self%o3)%array(i,j,k) < 0.0_kind_real) then
+          self%fields(self%o3)%array(i,j,k) = 0.0_kind_real
         endif
       enddo
     enddo
@@ -657,18 +657,18 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                         FV_AtmIC(1)%ptop, FV_AtmIC(1)%domain, FV_AtmIC(1)%tile, FV_AtmIC(1)%bd )
 
         !Copy from temporary structure into state
-        self%fields(self%ud)%field = FV_AtmIC(1)%u
-        self%fields(self%vd)%field = FV_AtmIC(1)%v
-        self%fields(self%t)%field = FV_AtmIC(1)%pt
-        self%fields(self%delp)%field = FV_AtmIC(1)%delp
-        self%fields(self%q)%field = FV_AtmIC(1)%q(:,:,:,1)
-        self%fields(self%phis)%field(:,:,1) = FV_AtmIC(1)%phis
+        self%fields(self%ud)%array = FV_AtmIC(1)%u
+        self%fields(self%vd)%array = FV_AtmIC(1)%v
+        self%fields(self%t)%array = FV_AtmIC(1)%pt
+        self%fields(self%delp)%array = FV_AtmIC(1)%delp
+        self%fields(self%q)%array = FV_AtmIC(1)%q(:,:,:,1)
+        self%fields(self%phis)%array(:,:,1) = FV_AtmIC(1)%phis
         geom%ak = FV_AtmIC(1)%ak
         geom%ak = FV_AtmIC(1)%ak
         geom%ptop = FV_AtmIC(1)%ptop
         if (.not. self%hydrostatic) then
-           self%fields(self%w)%field = FV_AtmIC(1)%w
-           self%fields(self%delz)%field = FV_AtmIC(1)%delz
+           self%fields(self%w)%array = FV_AtmIC(1)%w
+           self%fields(self%delz)%array = FV_AtmIC(1)%delz
         endif
 
         !Deallocate temporary FV_Atm fv3 structure
@@ -687,7 +687,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
                                                phis0,ps,rho0,hum0,q1,q2,q3,q4)
 
-              self%fields(self%phis)%field(i,j,1) = phis0
+              self%fields(self%phis)%array(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -698,15 +698,15 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
                                                   phis0,ps0,rho0,hum0,q1,q2,q3,q4)
 
-                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
-                 self%fields(self%vd)%field(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
-                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
-                 self%fields(self%t)%field(i,j,k) = t0
-                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
-                 self%fields(self%q)%field (i,j,k) = hum0
-                 self%fields(self%qi)%field(i,j,k) = q1
-                 self%fields(self%ql)%field(i,j,k) = q2
-                 self%fields(self%o3)%field(i,j,k) = q3
+                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
+                 self%fields(self%vd)%array(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
+                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
+                 self%fields(self%t)%array(i,j,k) = t0
+                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
+                 self%fields(self%q)%array (i,j,k) = hum0
+                 self%fields(self%qi)%array(i,j,k) = q1
+                 self%fields(self%ql)%array(i,j,k) = q2
+                 self%fields(self%o3)%array(i,j,k) = q3
                  
               enddo
            enddo
@@ -723,7 +723,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                           t0,phis0,ps,rho0,hum0,q1)
 
-              self%fields(self%phis)%field(i,j,1) = phis0
+              self%fields(self%phis)%array(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -734,13 +734,13 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                              t0,phis0,ps,rho0,hum0,q1)
 
-                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN comment above
-                 self%fields(self%vd)%field(i,j,k) = v0
-                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
-                 self%fields(self%t)%field(i,j,k) = t0
-                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
-                 self%fields(self%q)%field(i,j,k) = hum0
-                 self%fields(self%qi)%field(i,j,k) = q1
+                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN comment above
+                 self%fields(self%vd)%array(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
+                 self%fields(self%t)%array(i,j,k) = t0
+                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
+                 self%fields(self%q)%array(i,j,k) = hum0
+                 self%fields(self%qi)%array(i,j,k) = q1
                  
               enddo
            enddo
@@ -757,7 +757,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test3_gravity_wave(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                       t0,phis0,ps,rho0,hum0)
 
-              self%fields(self%phis)%field(i,j,1) = phis0
+              self%fields(self%phis)%array(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -768,12 +768,12 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test3_gravity_wave(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0)
 
-                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN comment above
-                 self%fields(self%vd)%field(i,j,k) = v0
-                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
-                 self%fields(self%t)%field(i,j,k) = t0
-                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
-                 self%fields(self%q)%field(i,j,k) = hum0
+                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN comment above
+                 self%fields(self%vd)%array(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
+                 self%fields(self%t)%array(i,j,k) = t0
+                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
+                 self%fields(self%q)%array(i,j,k) = hum0
                  
               enddo
            enddo
@@ -790,7 +790,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0,q1,q2)
 
-              self%fields(self%phis)%field(i,j,1) = phis0
+              self%fields(self%phis)%array(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -801,12 +801,12 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0,q1,q2)
 
-                 self%fields(self%ud)%field(i,j,k) = u0 !ATTN comment above
-                 self%fields(self%vd)%field(i,j,k) = v0
-                 If (.not.self%hydrostatic) self%fields(self%w)%field(i,j,k) = w0
-                 self%fields(self%t)%field(i,j,k) = t0
-                 self%fields(self%delp)%field(i,j,k) = pe2-pe1
-                 self%fields(self%q)%field(i,j,k) = hum0
+                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN comment above
+                 self%fields(self%vd)%array(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
+                 self%fields(self%t)%array(i,j,k) = t0
+                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
+                 self%fields(self%q)%array(i,j,k) = hum0
                  
               enddo
            enddo
@@ -877,7 +877,7 @@ subroutine write_file(geom, self, c_conf, vdate)
      call create_latlon(geom, llgeom)
      call write_latlon_metadata(geom, llgeom, c_conf, vdate)
      do var = 1,self%nf
-       call write_latlon_field(geom, llgeom, self%fields(var)%field, self%fields(var)%short_name, c_conf, vdate)
+       call write_latlon_field(geom, llgeom, self%fields(var)%array, self%fields(var)%short_name, c_conf, vdate)
      enddo
      call delete_latlon(llgeom)
 

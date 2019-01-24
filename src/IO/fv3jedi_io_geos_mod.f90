@@ -164,7 +164,7 @@ do n = 1,size(fields)
 
   call nccheck ( nf90_inq_varid (ncid, trim(fields(n)%short_name), varid), "nf90_inq_varid"//trim(fields(n)%short_name) )
   call nccheck ( nf90_get_var( ncid, varid, &
-                               fields(n)%field(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(n)%npz), &
+                               fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(n)%npz), &
                                istart, icount), "nf90_get_var "//trim(fields(n)%short_name) )
 
   nullify(istart,icount)
@@ -386,7 +386,7 @@ do n = 1,size(fields)
 
   vc=vc+1;
   call nccheck( nf90_put_var( ncid, varid(vc), &
-                              fields(n)%field(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(n)%npz), &
+                              fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(n)%npz), &
                               start = istart, count = icount ), "nf90_put_var "//trim(fields(n)%short_name) )
 
   nullify(istart,icount)

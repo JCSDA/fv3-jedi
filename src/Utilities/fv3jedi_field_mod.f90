@@ -25,7 +25,7 @@ type :: fv3jedi_field
  character(len=32) :: units = "null"        !Units for the field
  integer :: staggerloc   !Middle, corners, east, south, etc
  integer :: isc, iec, jsc, jec, npz
- real(kind=kind_real), allocatable :: field(:,:,:)
+ real(kind=kind_real), allocatable :: array(:,:,:)
  contains
   procedure :: allocate_field
   procedure :: equals
@@ -60,11 +60,11 @@ self%npz = npz
 if(.not.self%lalloc) then
 
   if (staggerloc == center) then
-    allocate(self%field(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+    allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
   elseif (staggerloc == north) then
-    allocate(self%field(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
+    allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
   elseif (staggerloc == east) then
-    allocate(self%field(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
+    allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
   endif
 
 endif
@@ -86,7 +86,7 @@ subroutine deallocate_field(self)
 implicit none
 class(fv3jedi_field), intent(inout) :: self
 
-if(self%lalloc) deallocate(self%field)
+if(self%lalloc) deallocate(self%array)
 self%lalloc = .false.
 
 end subroutine deallocate_field
@@ -106,7 +106,7 @@ call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
                           units=rhs%units, &
                           staggerloc=rhs%staggerloc)
 
-self%field = rhs%field
+self%array = rhs%array
 
 end subroutine equals
 
@@ -159,7 +159,7 @@ do var = 1,nf
   do k = 1,fields(var)%npz
     do j = fields(var)%jsc,fields(var)%jec
       do i = fields(var)%isc,fields(var)%iec
-        zz = zz + fields(var)%field(i,j,k)**2
+        zz = zz + fields(var)%array(i,j,k)**2
         ii = ii + 1
       enddo
     enddo
@@ -195,9 +195,9 @@ do var = 1,nf
   gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
   call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
-  tmp(1) = minval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(2) = maxval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(3) =    sum(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
+  tmp(1) = minval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(2) = maxval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(3) =    sum(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
 
   call f_comm%allreduce(tmp(1),pstat(1,var),fckit_mpi_min())
   call f_comm%allreduce(tmp(2),pstat(2,var),fckit_mpi_max())
@@ -237,9 +237,9 @@ do var = 1,nf
   gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
   call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
-  tmp(1) = minval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(2) = maxval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(3) =    sum(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
+  tmp(1) = minval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(2) = maxval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(3) =    sum(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
 
   call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
   call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
