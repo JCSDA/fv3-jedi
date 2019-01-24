@@ -4,7 +4,7 @@ cost_function:
   Jb:
     Background:
       state:
-      - restart_type: geos
+      - filetype: geos
         filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
         variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
                     "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
@@ -126,7 +126,7 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
 output:
-  restart_type: geos
+  filetype: geos
   datapath: Data/
   filename: 3dfgat_geos_ana.
   first: PT0H

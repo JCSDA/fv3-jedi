@@ -8,7 +8,7 @@ resolution:
 model:
   name: 'GFS'
 initial:
-  restart_type: gfs
+  filetype: gfs
   datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -17,7 +17,7 @@ initial:
   filename_cplr: 20180414.210000.coupler.res
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 output:
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/forecast_gfs/
   filename_core: fv_core.res.nc
   filename_trcr: fv_tracer.res.nc

@@ -3,31 +3,32 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Handle increment for the FV3JEDI model
-
 module fv3jedi_increment_mod
 
 use iso_c_binding
 use config_mod
 use datetime_mod
-
 use fckit_mpi_module
+use unstructured_grid_mod
 
-use fv3jedi_constants_mod, only: rad2deg, constoz, cp, alhl, rgas
-use fv3jedi_geom_mod, only: fv3jedi_geom
+use random_vectors_mod, only: random_vector
+
+use fv3jedi_field_mod,           only: fv3jedi_field, get_field
+use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
+use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_increment_io_mod
-use fv3jedi_kinds_mod, only: kind_real
-use fv3jedi_state_utils_mod, only: fv3jedi_state
-use fv3jedi_vars_mod, only: fv3jedi_vars
-use fv3jedi_getvalues_mod, only: getvalues_tl, getvalues_ad
+use fv3jedi_io_gfs_mod,          only: read_gfs, write_gfs
+use fv3jedi_io_geos_mod,         only: read_geos, write_geos
+use fv3jedi_kinds_mod,           only: kind_real
+use fv3jedi_state_utils_mod,     only: fv3jedi_state
+use fv3jedi_vars_mod,            only: fv3jedi_vars
+use fv3jedi_getvalues_mod,       only: getvalues_tl, getvalues_ad
+
+use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center
 
 implicit none
 private
-
-public :: fv3jedi_increment
-
-public :: create, delete, zeros, random, copy, &
+public :: fv3jedi_increment, create, delete, zeros, random, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
           dot_prod, add_incr, diff_incr, &
           read_file, write_file, gpnorm, incrms, &
@@ -45,70 +46,130 @@ subroutine create(self, geom, vars)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_geom), target,  intent(in)    :: geom
-type(fv3jedi_vars),  intent(in)    :: vars
+type(fv3jedi_geom),      intent(in)    :: geom
+type(fv3jedi_vars),      intent(in)    :: vars
 
-integer :: var
+integer :: var, vcount
 
-! Copy the variable names
-self%vars%nv = vars%nv
-allocate(self%vars%fldnames(self%vars%nv))
-self%vars%fldnames = vars%fldnames
+! Total fields
+! ------------
+self%nf = vars%nv
 
-! Allocate variables based on names
-do var = 1, self%vars%nv
+! Reduce count for variables not in increment
+! -------------------------------------------
+do var = 1, vars%nv
+   select case (trim(vars%fldnames(var)))
+   case("delp","delz","w","DELP","DZ","W")
+     self%nf = self%nf - 1
+   case("u","v","ud","vd","phis",&
+        "slmsk","sheleg","tsea","vtype","stype","vfrac",&
+        "stc","smc","snwdph","u_srf","v_srf","f10m", &
+        "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
+        "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
+   end select
+enddo
 
-   select case (trim(self%vars%fldnames(var)))
+! Allocate fields structure
+! -------------------------
+allocate(self%fields(self%nf))
 
+! Loop through and allocate main increment fields
+! -----------------------------------------------
+vcount = 0
+do var = 1, vars%nv
+   select case (trim(vars%fldnames(var)))
      case("ua")
-       if (.not.allocated(  self%ua)) allocate (  self%ua(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%ua = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_eastward_wind', &
+            fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center )
      case("va")
-       if (.not.allocated(  self%va)) allocate (  self%va(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%va = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_northward_wind', &
+            fv3jedi_name = 'va', units = 'm s-1', staggerloc = center )
      case("t","T")
-       if (.not.allocated(   self%t)) allocate (   self%t(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%t = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_air_temperature', &
+            fv3jedi_name = 't', units = 'K', staggerloc = center )
      case("ps")
-       if (.not.allocated(  self%ps)) allocate (  self%ps(geom%isc:geom%iec,  geom%jsc:geom%jec            ))
+       vcount = vcount + 1; self%ua = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_surface_pressure', &
+            fv3jedi_name = 'ps', units = 'Pa', staggerloc = center )
      case("q","sphum")
-       if (.not.allocated(   self%q)) allocate (   self%q(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%q = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_specific_humidity', &
+            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center )
      case("qi","ice_wat")
-       if (.not.allocated(  self%qi)) allocate (  self%qi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%qi = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice', &
+            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center )
      case("ql","liq_wat")
-       if (.not.allocated(  self%ql)) allocate (  self%ql(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%ql = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice_water', &
+            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center )
      case("o3","o3mr")
-       if (.not.allocated(  self%o3)) allocate (  self%o3(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%o3 = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_ozone_mass_mixing_ratio', &
+            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center )
      case("psi")
-       if (.not.allocated( self%psi)) allocate ( self%psi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%ua = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_stream_function', &
+            fv3jedi_name = 'psi', units = 'm+2 s', staggerloc = center )
      case("chi")
-       if (.not.allocated( self%chi)) allocate ( self%chi(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
+       vcount = vcount + 1; self%va = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_velocity_potential', &
+            fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center )
      case("tv")
-       if (.not.allocated(  self%tv)) allocate (  self%tv(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("qc")
-       if (.not.allocated(  self%qc)) allocate (  self%qc(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("qic")
-       if (.not.allocated( self%qic)) allocate ( self%qic(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("qlc")
-       if (.not.allocated( self%qlc)) allocate ( self%qlc(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("o3c")
-       if (.not.allocated( self%o3c)) allocate ( self%o3c(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("w")
-       if (.not.allocated(   self%w)) allocate (   self%w(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("delz")
-       if (.not.allocated(self%delz)) allocate (self%delz(geom%isc:geom%iec,  geom%jsc:geom%jec  , geom%npz))
-     case("u","v","ud","vd","delp","DELP","phis","qls","qcn","cfcn", &
-          "frocean","frland","varflt","ustar","bstar", &
-          "zpbl","cm","ct","cq","kcbl","ts","khl","khu")
-       !Potential state variables not part of the increment
+       vcount = vcount + 1; self%t = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_virtual_temperature', &
+            fv3jedi_name = 'tv', units = 'K', staggerloc = center )
+     case("rh")
+       vcount = vcount + 1; self%rh = vcound
+       call self%fields(self%nf)%allocatefield(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz,&
+            short_name = trim(var), long_name = "increment_of_relative_humidity", &
+            fv3jedi_name = 'rh', units = '1', staggerloc = CENTER)
+     case("delp","DELP")
+       !vcount = vcount + 1; self%delp = vcount
+       !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+       !     short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
+       !     fv3jedi_name = 'delp', units = 'Pa', staggerloc = center )
+     case("w","W")
+       !vcount = vcount + 1; self%w = vcount
+       !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+       !     short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
+       !     fv3jedi_name = 'w', units = 'm s-1', staggerloc = center )
+     case("delz","DZ")
+       !vcount = vcount + 1; self%delz = vcount
+       !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+       !     short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
+       !     fv3jedi_name = 'delz', units = 'm', staggerloc = center )
+     case("u","v","ud","vd","phis",&
+          "slmsk","sheleg","tsea","vtype","stype","vfrac",&
+          "stc","smc","snwdph","u_srf","v_srf","f10m", &
+          "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
+          "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
+       !State fields not in increment
      case default 
-       call abor1_ftn("Increment: unknown variable "//trim(self%vars%fldnames(var)))
+       call abor1_ftn("Increment: unknown variable "//trim(vars%fldnames(var)))
 
    end select
 
 enddo
 
 self%hydrostatic = .true.
-if (allocated(self%w).and.allocated(self%delz).and.allocated(self%delp)) self%hydrostatic = .false.
+if (self%w > 0 .and. self%delz > 0) self%hydrostatic = .false.
 
-if (allocated(self%ps) .and. allocated(self%delp)) then
+if ((self%ps > 0) .and. (self%delp > 0)) then
   call abor1_ftn("Increment: Ps and delp are both allocated, only one can be used")
 endif
 
@@ -116,593 +177,298 @@ endif
 call zeros(self)
 
 ! For convenience
-self%isc = geom%isc
-self%iec = geom%iec
-self%jsc = geom%jsc
-self%jec = geom%jec
-self%isd = geom%isd
-self%ied = geom%ied
-self%jsd = geom%jsd
-self%jed = geom%jed
-self%npx = geom%npx
-self%npy = geom%npy
-self%npz = geom%npz
-
-!Hard wired to 8 increment variables at the moment
-self%vars%nv = 8
+self%isc    = geom%isc
+self%iec    = geom%iec
+self%jsc    = geom%jsc
+self%jec    = geom%jec
+self%npx    = geom%npx
+self%npy    = geom%npy
+self%npz    = geom%npz
+self%ntile  = geom%ntile
+self%ntiles = geom%ntiles
 
 end subroutine create
 
 ! ------------------------------------------------------------------------------
 
 subroutine delete(self)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 
-if (allocated(self%ua  )) deallocate (self%ua  )
-if (allocated(self%va  )) deallocate (self%va  )
-if (allocated(self%t   )) deallocate (self%t   )
-if (allocated(self%ps  )) deallocate (self%ps  )
-if (allocated(self%q   )) deallocate (self%q   )
-if (allocated(self%qi  )) deallocate (self%qi  )
-if (allocated(self%ql  )) deallocate (self%ql  )
-if (allocated(self%o3  )) deallocate (self%o3  )
+integer :: var
 
-if (allocated(self%psi )) deallocate(self%psi )
-if (allocated(self%chi )) deallocate(self%chi )
-if (allocated(self%tv  )) deallocate(self%tv  )
-if (allocated(self%qc  )) deallocate(self%qc  )
-if (allocated(self%qic )) deallocate(self%qic )
-if (allocated(self%qlc )) deallocate(self%qlc )
-if (allocated(self%o3c )) deallocate(self%o3c )
-
-if (allocated(self%w   )) deallocate (self%w   )
-if (allocated(self%delz)) deallocate (self%delz)
-if (allocated(self%delp)) deallocate (self%delp)
+do var = 1,self%nf
+  call self%fields(var)%deallocatefield()
+enddo
+deallocate(self%fields)
 
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
 
 subroutine zeros(self)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 
-!Zero out the entire domain
+integer :: var
 
-if(allocated(self%ua  )) self%ua   = 0.0_kind_real
-if(allocated(self%va  )) self%va   = 0.0_kind_real
-if(allocated(self%t   )) self%t    = 0.0_kind_real
-if(allocated(self%ps  )) self%ps   = 0.0_kind_real
-if(allocated(self%q   )) self%q    = 0.0_kind_real
-if(allocated(self%qi  )) self%qi   = 0.0_kind_real
-if(allocated(self%ql  )) self%ql   = 0.0_kind_real
-if(allocated(self%o3  )) self%o3   = 0.0_kind_real
-
-if(allocated(self%psi)) self%psi   = 0.0_kind_real
-if(allocated(self%chi)) self%chi   = 0.0_kind_real
-if(allocated(self%tv )) self%tv    = 0.0_kind_real
-if(allocated(self%qc )) self%qc    = 0.0_kind_real
-if(allocated(self%qic)) self%qic   = 0.0_kind_real
-if(allocated(self%qlc)) self%qlc   = 0.0_kind_real
-if(allocated(self%o3c)) self%o3c   = 0.0_kind_real
-
-if(allocated(self%w   )) self%w    = 0.0_kind_real
-if(allocated(self%delz)) self%delz = 0.0_kind_real
-if(allocated(self%delp)) self%delp = 0.0_kind_real
+do var = 1,self%nf
+  call self%fields(var)%field = 0.0_kind_real
+enddo
 
 end subroutine zeros
 
 ! ------------------------------------------------------------------------------
 
 subroutine ones(self)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 
-call zeros(self)
+integer :: var
 
-if(allocated(self%ua  )) self%ua   = 1.0_kind_real
-if(allocated(self%va  )) self%va   = 1.0_kind_real
-if(allocated(self%t   )) self%t    = 1.0_kind_real
-if(allocated(self%ps  )) self%ps   = 1.0_kind_real
-if(allocated(self%q   )) self%q    = 1.0_kind_real
-if(allocated(self%qi  )) self%qi   = 1.0_kind_real
-if(allocated(self%ql  )) self%ql   = 1.0_kind_real
-if(allocated(self%o3  )) self%o3   = 1.0_kind_real
-
-if(allocated(self%psi)) self%psi   = 1.0_kind_real
-if(allocated(self%chi)) self%chi   = 1.0_kind_real
-if(allocated(self%tv )) self%tv    = 1.0_kind_real
-if(allocated(self%qc )) self%qc    = 1.0_kind_real
-if(allocated(self%qic)) self%qic   = 1.0_kind_real
-if(allocated(self%qlc)) self%qlc   = 1.0_kind_real
-if(allocated(self%o3c)) self%o3c   = 1.0_kind_real
-
-if(allocated(self%w   )) self%w    = 1.0_kind_real
-if(allocated(self%delz)) self%delz = 1.0_kind_real
-if(allocated(self%delp)) self%delp = 1.0_kind_real
+do var = 1,self%nf
+  call self%fields(var)%field = 1.0_kind_real
+enddo
 
 end subroutine ones
 
 ! ------------------------------------------------------------------------------
 
 subroutine random(self)
-use random_vectors_mod
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-integer :: nq
 
-if(allocated(self%ua  )) call random_vector(self%ua  )
-if(allocated(self%va  )) call random_vector(self%va  )
-if(allocated(self%t   )) call random_vector(self%t   )
-if(allocated(self%ps  )) call random_vector(self%ps  )
-if(allocated(self%q   )) call random_vector(self%q   )
-if(allocated(self%qi  )) call random_vector(self%qi  )
-if(allocated(self%ql  )) call random_vector(self%ql  )
-if(allocated(self%o3  )) call random_vector(self%o3  )
+integer :: var
 
-if(allocated(self%psi )) call random_vector(self%psi )
-if(allocated(self%chi )) call random_vector(self%chi )
-if(allocated(self%tv  )) call random_vector(self%tv  )
-if(allocated(self%qc  )) call random_vector(self%qc  )
-if(allocated(self%qic )) call random_vector(self%qic )
-if(allocated(self%qlc )) call random_vector(self%qlc )
-if(allocated(self%o3c )) call random_vector(self%o3c )
-
-if(allocated(self%w   )) call random_vector(self%w   )
-if(allocated(self%delz)) call random_vector(self%delz)
-if(allocated(self%delp)) call random_vector(self%delp)
+do var = 1,self%nf
+  call random_vector(self%fields(var)%field)
+enddo
 
 end subroutine random
 
 ! ------------------------------------------------------------------------------
 
 subroutine copy(self,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-self%isc            = rhs%isc           
-self%iec            = rhs%iec           
-self%jsc            = rhs%jsc           
-self%jec            = rhs%jec           
-self%isd            = rhs%isd           
-self%ied            = rhs%ied           
-self%jsd            = rhs%jsd           
-self%jed            = rhs%jed           
-self%npx            = rhs%npx           
-self%npy            = rhs%npy           
-self%npz            = rhs%npz           
-self%hydrostatic    = rhs%hydrostatic   
-self%calendar_type  = rhs%calendar_type 
-self%date           = rhs%date          
-self%date_init      = rhs%date_init     
+self%isc            = rhs%isc
+self%iec            = rhs%iec
+self%jsc            = rhs%jsc
+self%jec            = rhs%jec
+self%npx            = rhs%npx
+self%npy            = rhs%npy
+self%npz            = rhs%npz
+self%ntiles         = rhs%ntiles
+self%ntile          = rhs%ntile
+self%hydrostatic    = rhs%hydrostatic
+self%tladphystrj    = rhs%tladphystrj
+self%calendar_type  = rhs%calendar_type
+self%date_init      = rhs%date_init   
 
-if(allocated(self%ua  )) self%ua   = rhs%ua
-if(allocated(self%va  )) self%va   = rhs%va
-if(allocated(self%t   )) self%t    = rhs%t
-if(allocated(self%ps  )) self%ps   = rhs%ps
-if(allocated(self%q   )) self%q    = rhs%q
-if(allocated(self%qi  )) self%qi   = rhs%qi
-if(allocated(self%ql  )) self%ql   = rhs%ql
-if(allocated(self%o3  )) self%o3   = rhs%o3
+!Copy the individual fields
+if (.not.allocated(self%fields)) then
 
-if(allocated(self%psi )) self%psi  = rhs%psi
-if(allocated(self%chi )) self%chi  = rhs%chi
-if(allocated(self%tv  )) self%tv   = rhs%tv
-if(allocated(self%qc  )) self%qc   = rhs%qc
-if(allocated(self%qic )) self%qic  = rhs%qic
-if(allocated(self%qlc )) self%qlc  = rhs%qlc
-if(allocated(self%o3c )) self%o3c  = rhs%o3c
+  !Direct copy of one increment to another
+  self%nf = rhs%nf
+  allocate(self%fields(self%nf))
+  do self_var = 1, self%nf
+    self%fields(self_var) = rhs%fields(self_var)
+  enddo
+  
+  self%ua   = rhs%ua  
+  self%va   = rhs%va  
+  self%t    = rhs%t   
+  self%ps   = rhs%ps  
+  self%q    = rhs%q   
+  self%qi   = rhs%qi  
+  self%ql   = rhs%ql  
+  self%o3   = rhs%o3  
+  self%psi  = rhs%psi 
+  self%chi  = rhs%chi 
+  self%tv   = rhs%tv  
+  self%rh   = rhs%rh  
+  self%w    = rhs%w   
+  self%delz = rhs%delz
+  self%delp = rhs%delp
 
-if(allocated(self%w   )) self%w    = rhs%w
-if(allocated(self%delz)) self%delz = rhs%delz
-if(allocated(self%delp)) self%delp = rhs%delp
+else
 
-return
+  !Increment copy, potentialy with differnt fields
+  do self_var = 1, self%nf
+    found = .false.
+    do rhs_var = 1, rhs%nf
+      if (trim(self%fields(self_var)%fv3jedi_name) == trim(rhs%fields(rhs_var)%fv3jedi_name)) then
+        self%fields(self_var) = rhs%fields(rhs_var)
+        found = .true.
+        exit
+      endif
+    enddo
+    if (.not.found) call abor1_ftn("fv3jedi_state: Error in increment copy, field "//&
+                    trim(self%fields(self_var)%fv3jedi_name)//" not found in increment being copied from." )
+  enddo
+
+endif
+
 end subroutine copy
 
 ! ------------------------------------------------------------------------------
 
 subroutine self_add(self,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ua  )) self%ua   = self%ua   + rhs%ua  
-if(allocated(self%va  )) self%va   = self%va   + rhs%va  
-if(allocated(self%t   )) self%t    = self%t    + rhs%t   
-if(allocated(self%q   )) self%q    = self%q    + rhs%q   
-if(allocated(self%ps  )) self%ps   = self%ps   + rhs%ps 
-if(allocated(self%qi  )) self%qi   = self%qi   + rhs%qi  
-if(allocated(self%ql  )) self%ql   = self%ql   + rhs%ql  
-if(allocated(self%o3  )) self%o3   = self%o3   + rhs%o3  
+integer :: var
 
-if(allocated(self%psi )) self%psi  = self%psi  + rhs%psi
-if(allocated(self%chi )) self%chi  = self%chi  + rhs%chi
-if(allocated(self%tv  )) self%tv   = self%tv   + rhs%tv 
-if(allocated(self%qc  )) self%qc   = self%qc   + rhs%qc 
-if(allocated(self%qic )) self%qic  = self%qic  + rhs%qic
-if(allocated(self%qlc )) self%qlc  = self%qlc  + rhs%qlc
-if(allocated(self%o3c )) self%o3c  = self%o3c  + rhs%o3c
+call checksame(self,rhs)
 
-if(allocated(self%w   )) self%w    = self%w    + rhs%w   
-if(allocated(self%delz)) self%delz = self%delz + rhs%delz
-if(allocated(self%delp)) self%delp = self%delp + rhs%delp
+do var = 1,self%nf
+  self%fields(var)%field = self%fields(var)%field + rhs%fields(var)%field
+enddo
 
-return
 end subroutine self_add
 
 ! ------------------------------------------------------------------------------
 
 subroutine self_schur(self,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ua  )) self%ua   = self%ua   * rhs%ua  
-if(allocated(self%va  )) self%va   = self%va   * rhs%va  
-if(allocated(self%t   )) self%t    = self%t    * rhs%t   
-if(allocated(self%ps  )) self%ps   = self%ps   * rhs%ps 
-if(allocated(self%q   )) self%q    = self%q    * rhs%q   
-if(allocated(self%qi  )) self%qi   = self%qi   * rhs%qi  
-if(allocated(self%ql  )) self%ql   = self%ql   * rhs%ql  
-if(allocated(self%o3  )) self%o3   = self%o3   * rhs%o3  
+integer :: var
 
-if(allocated(self%psi )) self%psi  = self%psi  * rhs%psi
-if(allocated(self%chi )) self%chi  = self%chi  * rhs%chi
-if(allocated(self%tv  )) self%tv   = self%tv   * rhs%tv 
-if(allocated(self%qc  )) self%qc   = self%qc   * rhs%qc 
-if(allocated(self%qic )) self%qic  = self%qic  * rhs%qic
-if(allocated(self%qlc )) self%qlc  = self%qlc  * rhs%qlc
-if(allocated(self%o3c )) self%o3c  = self%o3c  * rhs%o3c
+call checksame(self,rhs)
 
-if(allocated(self%w   )) self%w    = self%w    * rhs%w   
-if(allocated(self%delz)) self%delz = self%delz * rhs%delz
-if(allocated(self%delp)) self%delp = self%delp * rhs%delp
+do var = 1,self%nf
+  self%fields(var)%field = self%fields(var)%field * rhs%fields(var)%field
+enddo
 
-return
 end subroutine self_schur
 
 ! ------------------------------------------------------------------------------
 
 subroutine self_sub(self,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ua  )) self%ua   = self%ua   - rhs%ua  
-if(allocated(self%va  )) self%va   = self%va   - rhs%va  
-if(allocated(self%t   )) self%t    = self%t    - rhs%t   
-if(allocated(self%ps  )) self%ps   = self%ps   - rhs%ps 
-if(allocated(self%q   )) self%q    = self%q    - rhs%q   
-if(allocated(self%qi  )) self%qi   = self%qi   - rhs%qi  
-if(allocated(self%ql  )) self%ql   = self%ql   - rhs%ql  
-if(allocated(self%o3  )) self%o3   = self%o3   - rhs%o3  
+integer :: var
 
-if(allocated(self%psi )) self%psi  = self%psi  - rhs%psi
-if(allocated(self%chi )) self%chi  = self%chi  - rhs%chi
-if(allocated(self%tv  )) self%tv   = self%tv   - rhs%tv 
-if(allocated(self%qc  )) self%qc   = self%qc   - rhs%qc 
-if(allocated(self%qic )) self%qic  = self%qic  - rhs%qic
-if(allocated(self%qlc )) self%qlc  = self%qlc  - rhs%qlc
-if(allocated(self%o3c )) self%o3c  = self%o3c  - rhs%o3c
+call checksame(self,rhs)
 
-if(allocated(self%w   )) self%w    = self%w    - rhs%w   
-if(allocated(self%delz)) self%delz = self%delz - rhs%delz
-if(allocated(self%delp)) self%delp = self%delp - rhs%delp
+do var = 1,self%nf
+  self%fields(var)%field = self%fields(var)%field - rhs%fields(var)%field
+enddo
 
-return
 end subroutine self_sub
 
 ! ------------------------------------------------------------------------------
 
 subroutine self_mul(self,zz)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-real(kind=kind_real), intent(in) :: zz
+real(kind=kind_real),    intent(in)    :: zz
 
-if(allocated(self%ua  )) self%ua   = zz * self%ua  
-if(allocated(self%va  )) self%va   = zz * self%va  
-if(allocated(self%t   )) self%t    = zz * self%t   
-if(allocated(self%ps  )) self%ps   = zz * self%ps 
-if(allocated(self%q   )) self%q    = zz * self%q   
-if(allocated(self%qi  )) self%qi   = zz * self%qi  
-if(allocated(self%ql  )) self%ql   = zz * self%ql  
-if(allocated(self%o3  )) self%o3   = zz * self%o3  
+integer :: var
 
-if(allocated(self%psi )) self%psi  = zz * self%psi
-if(allocated(self%chi )) self%chi  = zz * self%chi
-if(allocated(self%tv  )) self%tv   = zz * self%tv 
-if(allocated(self%qc  )) self%qc   = zz * self%qc 
-if(allocated(self%qic )) self%qic  = zz * self%qic
-if(allocated(self%qlc )) self%qlc  = zz * self%qlc
-if(allocated(self%o3c )) self%o3c  = zz * self%o3c
+do var = 1,self%nf
+  self%fields(var)%field = zz * self%fields(var)%field
+enddo
 
-if(allocated(self%w   )) self%w    = zz * self%w   
-if(allocated(self%delz)) self%delz = zz * self%delz
-if(allocated(self%delp)) self%delp = zz * self%delp
-
-return
 end subroutine self_mul
 
 ! ------------------------------------------------------------------------------
 
 subroutine axpy_inc(self,zz,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-real(kind=kind_real), intent(in) :: zz
+real(kind=kind_real),    intent(in)    :: zz
 type(fv3jedi_increment), intent(in)    :: rhs
 
-if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%ua  
-if(allocated(self%va  )) self%va   = self%va   + zz * rhs%va  
-if(allocated(self%t   )) self%t    = self%t    + zz * rhs%t   
-if(allocated(self%ps  )) self%ps   = self%ps   + zz * rhs%ps 
-if(allocated(self%q   )) self%q    = self%q    + zz * rhs%q   
-if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%qi  
-if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%ql  
-if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%o3  
+integer :: var
 
-if(allocated(self%psi )) self%psi  = self%psi  + zz * rhs%psi
-if(allocated(self%chi )) self%chi  = self%chi  + zz * rhs%chi
-if(allocated(self%tv  )) self%tv   = self%tv   + zz * rhs%tv 
-if(allocated(self%qc  )) self%qc   = self%qc   + zz * rhs%qc 
-if(allocated(self%qic )) self%qic  = self%qic  + zz * rhs%qic
-if(allocated(self%qlc )) self%qlc  = self%qlc  + zz * rhs%qlc
-if(allocated(self%o3c )) self%o3c  = self%o3c  + zz * rhs%o3c
+call checksame(self,rhs)
 
-if(allocated(self%w   )) self%w    = self%w    + zz * rhs%w   
-if(allocated(self%delz)) self%delz = self%delz + zz * rhs%delz
-if(allocated(self%delp)) self%delp = self%delp + zz * rhs%delp
+do var = 1,self%nf
+  self%fields(var)%field = self%fields(var)%field + zz * rhs%fields(var)%field
+enddo
 
-return
 end subroutine axpy_inc
 
 ! ------------------------------------------------------------------------------
 
 subroutine axpy_state(self,zz,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-real(kind=kind_real), intent(in) :: zz
-type(fv3jedi_state), intent(in)  :: rhs
+real(kind=kind_real),    intent(in)    :: zz
+type(fv3jedi_state),     intent(in)    :: rhs
 
+integer :: var
 real(kind=kind_real), allocatable :: rhs_ps(:,:)
+type(fv3jedi_field), pointer :: rhs_p
 
-if(allocated(self%ua  )) self%ua   = self%ua   + zz * rhs%fields(rhs%ua)%field
-if(allocated(self%va  )) self%va   = self%va   + zz * rhs%fields(rhs%va)%field
-if(allocated(self%t   )) self%t    = self%t    + zz * rhs%fields(rhs%t)%field
+do var = 1,self%nf
 
-if(allocated(self%ps))then
-  allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
-  rhs_ps = sum(rhs%fields(rhs%delp)%field,3)
-  self%ps   = self%ps   + zz * rhs_ps
-  deallocate(rhs_ps)
-endif
+  if (trim(self%fields(var)%fv3jedi_name .ne. "ps")) then
 
-if(allocated(self%delp)) self%delp = self%delp + zz * rhs%fields(rhs%delp)%field
+    rhs_p = get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name)
+    self%fields(var)%field = self%fields(var)%field + zz * rhs_p
 
-if(allocated(self%q   )) self%q    = self%q    + zz * rhs%fields(rhs%q )%field 
-if(allocated(self%qi  )) self%qi   = self%qi   + zz * rhs%fields(rhs%qi)%field 
-if(allocated(self%ql  )) self%ql   = self%ql   + zz * rhs%fields(rhs%ql)%field 
-if(allocated(self%o3  )) self%o3   = self%o3   + zz * rhs%fields(rhs%o3)%field 
+  else
 
-if(allocated(self%w   )) self%w    = self%w    + zz * rhs%fields(rhs%w)%field   
-if(allocated(self%delz)) self%delz = self%delz + zz * rhs%fields(rhs%delz)%field
+    allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
+    rhs_ps = sum(rhs%fields(rhs%delp)%field,3)
+    self%fields(var)%field = self%fields(var)%field + zz * rhs_ps
+    deallocate(rhs_ps)
 
-return
+  endif
+
+enddo
+
 end subroutine axpy_state
 
 ! ------------------------------------------------------------------------------
 
-subroutine dot_prod(inc1,inc2,zprod)
+subroutine dot_prod(self,other,zprod)
 
 implicit none
-type(fv3jedi_increment), intent(in) :: inc1, inc2
-real(kind=kind_real), intent(inout) :: zprod
+type(fv3jedi_increment), intent(in)    :: self
+type(fv3jedi_increment), intent(in)    :: other
+real(kind=kind_real),    intent(inout) :: zprod
+
 real(kind=kind_real) :: zp
 integer :: i,j,k
 integer :: ierr
 type(fckit_mpi_comm) :: f_comm
+integer :: var
+
+call checksame(self,other)
 
 f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
-
-!ua
-if (allocated(inc1%ua)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%ua(i,j,k) * inc2%ua(i,j,k)
+do var = 1,self%nf
+  do k = 1,self%fields(var)%npz
+    do j = self%jsc,self%jec
+      do i = self%isc,self%iec
+        zp = zp + self%fields(var)%field(i,j,k) * other%fields(var)%field(i,j,k)
       enddo
     enddo
   enddo
-endif
-
-!va
-if (allocated(inc1%va)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%va(i,j,k) * inc2%va(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!t
-if (allocated(inc1%t)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%t(i,j,k) * inc2%t(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!ps
-if (allocated(inc1%ps)) then
-  do j = inc1%jsc,inc1%jec
-    do i = inc1%isc,inc1%iec
-      zp = zp + inc1%ps(i,j) * inc2%ps(i,j)
-    enddo
-  enddo
-endif
-
-!q
-if (allocated(inc1%q)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%q(i,j,k) * inc2%q(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!qi
-if (allocated(inc1%qi)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%qi(i,j,k) * inc2%qi(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!ql
-if (allocated(inc1%ql)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%ql(i,j,k) * inc2%ql(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!o3
-if (allocated(inc1%o3)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%o3(i,j,k) * inc2%o3(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!psi
-if (allocated(inc1%psi)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%psi(i,j,k) * inc2%psi(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!chi
-if (allocated(inc1%chi)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%chi(i,j,k) * inc2%chi(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!tv
-if (allocated(inc1%tv)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%tv(i,j,k) * inc2%tv(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!qc
-if (allocated(inc1%qc)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%qc(i,j,k) * inc2%qc(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!qic
-if (allocated(inc1%qic)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%qic(i,j,k) * inc2%qic(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!qlc
-if (allocated(inc1%qlc)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%qlc(i,j,k) * inc2%qlc(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!o3c
-if (allocated(inc1%o3c)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%o3c(i,j,k) * inc2%o3c(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!delz
-if (allocated(inc1%delz)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%delz(i,j,k) * inc2%delz(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!delp
-if (allocated(inc1%delp)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%delp(i,j,k) * inc2%delp(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
-
-!w
-if (allocated(inc1%w)) then
-  do k = 1,inc1%npz
-    do j = inc1%jsc,inc1%jec
-      do i = inc1%isc,inc1%iec
-        zp = zp + inc1%w(i,j,k) * inc2%w(i,j,k)
-      enddo
-    enddo
-  enddo
-endif
+enddo
 
 !Get global dot product
 call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
@@ -710,85 +476,70 @@ call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 !For debugging print result:
 if (f_comm%rank() == 0) print*, "Dot product test result: ", zprod
 
-return
 end subroutine dot_prod
 
 ! ------------------------------------------------------------------------------
 
 subroutine add_incr(self,rhs)
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: check
+integer :: check, var
+
 check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 
 if (check==0) then
-  if(allocated(rhs%ua  )) self%ua   = self%ua   + rhs%ua  
-  if(allocated(rhs%va  )) self%va   = self%va   + rhs%va  
-  if(allocated(rhs%t   )) self%t    = self%t    + rhs%t   
-  if(allocated(rhs%ps  )) self%ps   = self%ps   + rhs%ps 
-  if(allocated(rhs%q   )) self%q    = self%q    + rhs%q   
-  if(allocated(rhs%qi  )) self%qi   = self%qi   + rhs%qi  
-  if(allocated(rhs%ql  )) self%ql   = self%ql   + rhs%ql  
-  if(allocated(rhs%o3  )) self%o3   = self%o3   + rhs%o3  
-
-  if(allocated(rhs%psi )) self%psi  = self%psi  + rhs%psi
-  if(allocated(rhs%chi )) self%chi  = self%chi  + rhs%chi
-  if(allocated(rhs%tv  )) self%tv   = self%tv   + rhs%tv 
-  if(allocated(rhs%qc  )) self%qc   = self%qc   + rhs%qc 
-  if(allocated(rhs%qic )) self%qic  = self%qic  + rhs%qic
-  if(allocated(rhs%qlc )) self%qlc  = self%qlc  + rhs%qlc
-  if(allocated(rhs%o3c )) self%o3c  = self%o3c  + rhs%o3c
-
-  if(allocated(rhs%w   )) self%w    = self%w    + rhs%w   
-  if(allocated(rhs%delz)) self%delz = self%delz + rhs%delz 
-  if(allocated(rhs%delp)) self%delp = self%delp + rhs%delp
+  call checksame(self,rhs)
+  do var = 1,self%nf
+    self%fields(var)%field = self%fields(var)%field + rhs%fields(var)%field
+  enddo
 else
    call abor1_ftn("Increment:  add_incr not implemented for low res increment yet")
 endif
 
-return
 end subroutine add_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine diff_incr(lhs,x1,x2)
+subroutine diff_incr(self,x1,x2)
+
 implicit none
-type(fv3jedi_increment), intent(inout) :: lhs
-type(fv3jedi_state), intent(in)    :: x1
-type(fv3jedi_state), intent(in)    :: x2
+type(fv3jedi_increment), intent(inout) :: self
+type(fv3jedi_state),     intent(in)    :: x1
+type(fv3jedi_state),     intent(in)    :: x2
 
 real(kind=kind_real), allocatable :: x1_ps(:,:), x2_ps(:,:)
-integer :: check
+integer :: var, check
+type(fv3jedi_field), pointer :: x1p, x2p
 
 check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 
-call zeros(lhs)
+call zeros(self)
 if (check==0) then
 
-  if(allocated(lhs%ua  )) lhs%ua   = x1%fields(x1%ua)%field   - x2%fields(x2%ua)%field
-  if(allocated(lhs%va  )) lhs%va   = x1%fields(x1%va)%field   - x2%fields(x2%va)%field
-  if(allocated(lhs%t   )) lhs%t    = x1%fields(x1%t)%field    - x2%fields(x2%t)%field
+  do var = 1,self%nf
+  
+    if (trim(self%fields(var)%fv3jedi_name .ne. "ps")) then
+  
+      x1p = get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name)
+      x2p = get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name)
 
-  if(allocated(lhs%ps)) then
-    allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
-    allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-    x1_ps = sum(x1%fields(x1%delp)%field,3)
-    x2_ps = sum(x2%fields(x2%delp)%field,3)
-    lhs%ps   = x1_ps   - x2_ps
-    deallocate(x1_ps,x2_ps)
-  endif
-
-  if(allocated(lhs%delp)) lhs%delp = x1%fields(x1%delp)%field - x2%fields(x2%delp)%field
-
-  if(allocated(lhs%q   )) lhs%q    = x1%fields(x1%q)%field    - x2%fields(x2%q)%field
-  if(allocated(lhs%qi  )) lhs%qi   = x1%fields(x1%qi)%field   - x2%fields(x2%qi)%field
-  if(allocated(lhs%ql  )) lhs%ql   = x1%fields(x1%ql)%field   - x2%fields(x2%ql)%field
-  if(allocated(lhs%o3  )) lhs%o3   = x1%fields(x1%o3)%field   - x2%fields(x2%o3)%field
-
-  if(allocated(lhs%w   )) lhs%w    = x1%fields(x1%w)%field    - x2%fields(x2%w)%field
-  if(allocated(lhs%delz)) lhs%delz = x1%fields(x1%delz)%field - x2%fields(x2%delz)%field
+      self%fields(var)%field = x1p - x2p
+  
+    else
+  
+      allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
+      allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
+      x1_ps = sum(rhs%fields(x1%delp)%field,3)
+      x2_ps = sum(rhs%fields(x2%delp)%field,3)
+      self%fields(var)%field = x1_ps   - x2_ps
+      deallocate(x1_ps,x2_ps)
+  
+    endif
+  
+  enddo
 
 else
 
@@ -796,647 +547,131 @@ else
 
 endif
 
-return
 end subroutine diff_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine change_resol(inc,rhs)
+subroutine change_resol(self,rhs)
+
 implicit none
-type(fv3jedi_increment), intent(inout) :: inc
+type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
 integer :: check
-check = (rhs%iec-rhs%isc+1) - (inc%iec-inc%isc+1)
+
+check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 
 if (check==0) then
-   call copy(inc, rhs)
+   call copy(self, rhs)
 else
    call abor1_ftn("Increment: change_resol not implmeneted yet")
 endif
 
-return
 end subroutine change_resol
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_file(geom, inc, c_conf, vdate)
+subroutine read_file(geom, self, c_conf, vdate)
 
   implicit none
+  type(fv3jedi_geom),      intent(inout) :: geom     !< Geometry
+  type(fv3jedi_increment), intent(inout) :: self     !< Increment
+  type(c_ptr),             intent(in)    :: c_conf   !< Configuration
+  type(datetime),          intent(inout) :: vdate    !< DateTime
 
-  type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
-  type(fv3jedi_increment), intent(inout) :: inc      !< Increment
-  type(c_ptr), intent(in)            :: c_conf   !< Configuration
-  type(datetime), intent(inout)      :: vdate    !< DateTime
+  character(len=10) :: filetype
 
-  character(len=10) :: restart_type
+  filetype = config_get_string(c_conf,len(filetype),"filetype")
 
-  restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
-
-  if (trim(restart_type) == 'gfs') then
-     call read_fms_restart(geom, inc, c_conf, vdate)
-  elseif (trim(restart_type) == 'geos') then
-     call read_geos_restart(geom, inc, c_conf, vdate)
+  if (trim(filetype) == 'gfs') then
+     call read_gfs(geom, self%fields, c_conf, vdate)
+  elseif (trim(filetype) == 'geos') then
+     call read_geos(geom, self%fields, c_conf, vdate)
   else
      call abor1_ftn("Increment: read restart type not supported")
   endif
-
-  return
 
 end subroutine read_file
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_file(geom, inc, c_conf, vdate)
+subroutine write_file(geom, self, c_conf, vdate)
 
   implicit none
 
-  type(fv3jedi_geom), intent(inout)  :: geom     !< Geometry
-  type(fv3jedi_increment), intent(in)    :: inc      !< Increment
-  type(c_ptr), intent(in)            :: c_conf   !< Configuration
-  type(datetime), intent(inout)      :: vdate    !< DateTime
+  type(fv3jedi_geom),      intent(inout) :: geom     !< Geometry
+  type(fv3jedi_increment), intent(in)    :: self     !< Increment
+  type(c_ptr),             intent(in)    :: c_conf   !< Configuration
+  type(datetime),          intent(inout) :: vdate    !< DateTime
 
-  character(len=10) :: restart_type
+  character(len=10) :: filetype
 
-  restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
+  filetype = config_get_string(c_conf,len(filetype),"filetype")
 
-  if (trim(restart_type) == 'gfs') then
-     call write_fms_restart(geom, inc, c_conf, vdate)
-  elseif (trim(restart_type) == 'geos') then
-     call write_geos_restart(geom, inc, c_conf, vdate)
+  if (trim(filetype) == 'gfs') then
+     call write_gfs(geom, self%fields, c_conf, vdate)
+  elseif (trim(filetype) == 'geos') then
+     call write_geos(geom, self%fields, c_conf, vdate)
   else
      call abor1_ftn("Increment: write restart type not supported")
   endif
-
-  return
 
 end subroutine write_file
 
 ! ------------------------------------------------------------------------------
 
-subroutine increment_print(inc)
+subroutine increment_print(self)
 
 implicit none
-type(fv3jedi_increment), intent(in) :: inc
+type(fv3jedi_increment), intent(in) :: self
 
-real(kind=kind_real) :: pstat(3)
-real(kind=kind_real) :: tmp1, tmp2, tmp3
-integer :: isc, iec, jsc, jec
-real(kind=kind_real) :: gs2, gs2g, gs3, gs3g
-type(fckit_mpi_comm) :: f_comm
-
-f_comm = fckit_mpi_comm()
-
-if (f_comm%rank() == 0) then
-  print*, "---------------"
-  print*, "Increment print"
-  print*, "---------------"
-endif
-
-!1. Min
-!2. Max
-!3. RMS
-
-isc = inc%isc
-iec = inc%iec
-jsc = inc%jsc
-jec = inc%jec
-
-gs2 = real((iec-isc+1)*(jec-jsc+1),kind_real)
-call f_comm%allreduce(gs2,gs2g,fckit_mpi_sum())
-gs3 = gs2*real(inc%npz,kind_real)
-call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
-
-!ua
-if (allocated(inc%ua)) then
-  tmp1 = minval(inc%ua(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%ua(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%ua(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc ua   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!va
-if (allocated(inc%va)) then
-  tmp1 = minval(inc%va(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%va(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%va(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc va   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!t
-if (allocated(inc%t)) then
-  tmp1 = minval(inc%t(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%t(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%t(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc t    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!ps
-if (allocated(inc%ps)) then
-  tmp1 = minval(inc%ps(isc:iec,jsc:jec))
-  tmp2 = maxval(inc%ps(isc:iec,jsc:jec))
-  tmp3 =    sum(inc%ps(isc:iec,jsc:jec)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs2g)
-
-  if (f_comm%rank() == 0) print*, "Inc ps   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!q
-if (allocated(inc%q)) then
-  tmp1 = minval(inc%q(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%q(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%q(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc q    | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!qi
-if (allocated(inc%qi)) then
-  tmp1 = minval(inc%qi(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%qi(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%qi(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc qi   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!ql
-if (allocated(inc%ql)) then
-  tmp1 = minval(inc%ql(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%ql(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%ql(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc ql   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-!o3
-if (allocated(inc%o3)) then
-  tmp1 = minval(inc%o3(isc:iec,jsc:jec,:))
-  tmp2 = maxval(inc%o3(isc:iec,jsc:jec,:))
-  tmp3 =    sum(inc%o3(isc:iec,jsc:jec,:)**2)
-
-  call f_comm%allreduce(tmp1,pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp2,pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp3,pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) print*, "Inc o3   | Min=",real(pstat(1),4),", Max=",real(pstat(2),4),", RMS=",real(pstat(3),4)
-endif
-
-if (f_comm%rank() == 0) print*, "---------------"
+call fields_print(self%nf, self%fields, "Incmt")
 
 end subroutine increment_print
 
 ! ------------------------------------------------------------------------------
 
-subroutine gpnorm(inc, nf, pstat)
+subroutine gpnorm(self, nf, pstat)
+
 implicit none
-type(fv3jedi_increment), intent(in) :: inc
-integer, intent(in) :: nf
-real(kind=kind_real), intent(inout) :: pstat(3, nf)
+type(fv3jedi_increment), intent(in)    :: self
+integer,                 intent(in)    :: nf
+real(kind=kind_real),    intent(inout) :: pstat(3, nf)
 
-integer :: isc, iec, jsc, jec, gs2, gs3
-
-!1. Min
-!2. Max
-!3. RMS
-
-isc = inc%isc
-iec = inc%iec
-jsc = inc%jsc
-jec = inc%jec
-
-gs2 = (iec-isc+1)*(jec-jsc+1)
-gs3 = gs2*inc%npz
-
-!ua
-if (allocated(inc%ua)) then
-  pstat(1,1) = minval(inc%ua(isc:iec,jsc:jec,:))
-  pstat(2,1) = maxval(inc%ua(isc:iec,jsc:jec,:))
-  pstat(3,1) = sqrt((sum(inc%ua(isc:iec,jsc:jec,:))/gs3)**2)
+if (nf .ne. self%nf) then
+  call abor1_ftn("fv3jedi_increment: gpnorm | nf passed in does not match expeted nf")
 endif
 
-!va
-if (allocated(inc%va)) then
-  pstat(1,2) = minval(inc%va(isc:iec,jsc:jec,:))
-  pstat(2,2) = maxval(inc%va(isc:iec,jsc:jec,:))
-  pstat(3,2) = sqrt((sum(inc%va(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!t
-if (allocated(inc%t)) then
-  pstat(1,3) = minval(inc%t(isc:iec,jsc:jec,:))
-  pstat(2,3) = maxval(inc%t(isc:iec,jsc:jec,:))
-  pstat(3,3) = sqrt((sum(inc%t(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!ps
-if (allocated(inc%ps)) then
-  pstat(1,4) = minval(inc%ps(isc:iec,jsc:jec))
-  pstat(2,4) = maxval(inc%ps(isc:iec,jsc:jec))
-  pstat(3,4) = sqrt((sum(inc%ps(isc:iec,jsc:jec))/gs2)**2)
-endif
-  
-!q
-if (allocated(inc%q)) then
-  pstat(1,5) = minval(inc%q(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%q(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%q(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!qi
-if (allocated(inc%qi)) then
-  pstat(1,6) = minval(inc%qi(isc:iec,jsc:jec,:))
-  pstat(2,6) = maxval(inc%qi(isc:iec,jsc:jec,:))
-  pstat(3,6) = sqrt((sum(inc%qi(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-
-!ql
-if (allocated(inc%ql)) then
-  pstat(1,7) = minval(inc%ql(isc:iec,jsc:jec,:))
-  pstat(2,7) = maxval(inc%ql(isc:iec,jsc:jec,:))
-  pstat(3,7) = sqrt((sum(inc%ql(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!o3
-if (allocated(inc%o3)) then
-  pstat(1,8) = minval(inc%o3(isc:iec,jsc:jec,:))
-  pstat(2,8) = maxval(inc%o3(isc:iec,jsc:jec,:))
-  pstat(3,8) = sqrt((sum(inc%o3(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-
-!psi
-if (allocated(inc%psi)) then
-  pstat(1,1) = minval(inc%psi(isc:iec,jsc:jec,:))
-  pstat(2,1) = maxval(inc%psi(isc:iec,jsc:jec,:))
-  pstat(3,1) = sqrt((sum(inc%psi(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-
-!chi
-if (allocated(inc%chi)) then
-  pstat(1,2) = minval(inc%chi(isc:iec,jsc:jec,:))
-  pstat(2,2) = maxval(inc%chi(isc:iec,jsc:jec,:))
-  pstat(3,2) = sqrt((sum(inc%chi(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!tv
-if (allocated(inc%tv)) then
-  pstat(1,3) = minval(inc%tv(isc:iec,jsc:jec,:))
-  pstat(2,3) = maxval(inc%tv(isc:iec,jsc:jec,:))
-  pstat(3,3) = sqrt((sum(inc%tv(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!qc
-if (allocated(inc%qc)) then
-  pstat(1,5) = minval(inc%qc(isc:iec,jsc:jec,:))
-  pstat(2,5) = maxval(inc%qc(isc:iec,jsc:jec,:))
-  pstat(3,5) = sqrt((sum(inc%qc(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!qic
-if (allocated(inc%qic)) then
-  pstat(1,6) = minval(inc%qic(isc:iec,jsc:jec,:))
-  pstat(2,6) = maxval(inc%qic(isc:iec,jsc:jec,:))
-  pstat(3,6) = sqrt((sum(inc%qic(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-
-!qlc
-if (allocated(inc%qlc)) then
-  pstat(1,7) = minval(inc%qlc(isc:iec,jsc:jec,:))
-  pstat(2,7) = maxval(inc%qlc(isc:iec,jsc:jec,:))
-  pstat(3,7) = sqrt((sum(inc%qlc(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!o3c
-if (allocated(inc%o3c)) then
-  pstat(1,8) = minval(inc%o3c(isc:iec,jsc:jec,:))
-  pstat(2,8) = maxval(inc%o3c(isc:iec,jsc:jec,:))
-  pstat(3,8) = sqrt((sum(inc%o3c(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!w
-if (allocated(inc%w)) then
-  pstat(1,9) = minval(inc%w(isc:iec,jsc:jec,:))
-  pstat(2,9) = maxval(inc%w(isc:iec,jsc:jec,:))
-  pstat(3,9) = sqrt((sum(inc%w(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-
-!delz
-if (allocated(inc%delz)) then
-  pstat(1,10) = minval(inc%delz(isc:iec,jsc:jec,:))
-  pstat(2,10) = maxval(inc%delz(isc:iec,jsc:jec,:))
-  pstat(3,10) = sqrt((sum(inc%delz(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-  
-!delp
-if (allocated(inc%delp)) then
-  pstat(1,4) = minval(inc%delp(isc:iec,jsc:jec,:))
-  pstat(2,4) = maxval(inc%delp(isc:iec,jsc:jec,:))
-  pstat(3,4) = sqrt((sum(inc%delp(isc:iec,jsc:jec,:))/gs3)**2)
-endif
-
-return
+call fields_gpnorm(nf, self%fields, pstat)
 
 end subroutine gpnorm
 
 ! ------------------------------------------------------------------------------
 
-subroutine incrms(inc, prms)
+subroutine rms(self, prms)
+
 implicit none
-type(fv3jedi_increment), intent(in) :: inc
-real(kind=kind_real), intent(out) :: prms
+type(fv3jedi_increment), intent(in)  :: self
+real(kind=kind_real),    intent(out) :: prms
 
-real(kind=kind_real) :: zz
-integer i,j,k,ii,nt,ierr,npes,iisum
-integer :: isc,iec,jsc,jec,npz
-type(fckit_mpi_comm) :: f_comm
+call fields_rms(self%nf,self%fields,rms)
 
-isc = inc%isc
-iec = inc%iec
-jsc = inc%jsc
-jec = inc%jec
-npz = inc%npz
-
-f_comm = fckit_mpi_comm()
-
-zz = 0.0_kind_real
-prms = 0.0_kind_real
-ii = 0
-
-!ua
-if (allocated(inc%ua)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%ua(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!va
-if (allocated(inc%va)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%va(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!t
-if (allocated(inc%t)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%t(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!ps
-if (allocated(inc%ps)) then
-  do j = jsc,jec
-    do i = isc,iec
-      zz = zz + inc%ps(i,j)**2
-      ii = ii + 1
-    enddo
-  enddo
-endif
-
-!q
-if (allocated(inc%q)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%q(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qi
-if (allocated(inc%qi)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%qi(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!ql
-if (allocated(inc%ql)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%ql(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!o3
-if (allocated(inc%o3)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%o3(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!psi
-if (allocated(inc%psi)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%psi(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!chi
-if (allocated(inc%chi)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%chi(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!tv
-if (allocated(inc%tv)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%tv(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qc
-if (allocated(inc%qc)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%qc(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qic
-if (allocated(inc%qic)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%qic(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!qlc
-if (allocated(inc%qlc)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%qlc(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!o3c
-if (allocated(inc%o3c)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%o3c(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!w
-if (allocated(inc%w)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%w(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!delz
-if (allocated(inc%delz)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%delz(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!delp
-if (allocated(inc%delp)) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-        zz = zz + inc%delp(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-endif
-
-!Get global values
-call f_comm%allreduce(zz,prms,fckit_mpi_sum())
-call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
-
-!if (ierr .ne. 0) then
-!   print *,'error in incrms/mpi_allreduce, error code=',ierr
-!endif
-prms = sqrt(prms/real(iisum,kind_real))
-
-end subroutine incrms
+end subroutine rms
 
 ! ------------------------------------------------------------------------------
 
 subroutine dirac(self, c_conf, geom)
 
-use iso_c_binding
-
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-type(c_ptr), intent(in)       :: c_conf   !< Configuration
-type(fv3jedi_geom), intent(in) :: geom
-integer :: ndir,idir,ildir,ifdir,itiledir
+type(c_ptr),             intent(in)    :: c_conf
+type(fv3jedi_geom),      intent(in)    :: geom
+
+integer :: ndir,idir,ildir,itiledir
 integer,allocatable :: ixdir(:),iydir(:)
 character(len=3) :: idirchar
+character(len=32) :: ifdir
+logical found = .false.
 
 ! Get Diracs positions
 ndir = config_get_int(c_conf,"ndir")
@@ -1449,9 +684,8 @@ do idir=1,ndir
    iydir(idir) = config_get_int(c_conf,"iydir("//trim(adjustl(idirchar))//")")
 end do
 ildir = config_get_int(c_conf,"ildir")
-ifdir = config_get_int(c_conf,"ifdir")
+ifdir = config_get_string(c_conf,len(ifdir),"ifdir")
 itiledir = config_get_int(c_conf,"itiledir")
-
 
 ! Check
 if (ndir<1) call abor1_ftn("Increment: dirac non-positive ndir")
@@ -1463,9 +697,6 @@ if (any(iydir<1).or.any(iydir>geom%size_cubic_grid)) then
 endif
 if ((ildir<1).or.(ildir>self%npz)) then
    call abor1_ftn("Increment: dirac invalid ildir")
-endif
-if ((ifdir<1).or.(ifdir>5)) then
-   call abor1_ftn("Increment: dirac invalid ifdir")
 endif
 if ((itiledir<1).or.(itiledir>6)) then
    call abor1_ftn("Increment: dirac invalid itiledir")
@@ -1482,23 +713,14 @@ do idir=1,ndir
        ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
        iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
        ! If so, perturb desired increment and level
-       if (ifdir == 1) then
-          self%ua  (ixdir(idir),iydir(idir),ildir) = 1.0
-       else if (ifdir == 2) then
-          self%va  (ixdir(idir),iydir(idir),ildir) = 1.0
-       else if (ifdir == 3) then
-          self%t   (ixdir(idir),iydir(idir),ildir) = 1.0
-       else if (ifdir == 4) then
-          self%ps  (ixdir(idir),iydir(idir)      ) = 1.0
-       else if (ifdir == 5) then
-          self%q   (ixdir(idir),iydir(idir),ildir) = 1.0
-       else if (ifdir == 6) then
-          self%qi  (ixdir(idir),iydir(idir),ildir) = 1.0
-       else if (ifdir == 7) then
-          self%ql  (ixdir(idir),iydir(idir),ildir) = 1.0
-       else if (ifdir == 8) then
-          self%o3  (ixdir(idir),iydir(idir),ildir) = 1.0
-       endif
+       do var = 1,self%nf
+         if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir)) then
+           found = .true.
+           self%fields(var)%field(ixdir(idir),iydir(idir),ildir) = 1.0
+         endif
+       enddo
+       if (.not.found) call abort1_ftn("fv3jedi_increment, dirac error: field "&
+                                       //trim(ifdir)//" not found")
    endif
 end do
 
@@ -1507,9 +729,9 @@ end subroutine dirac
 ! ------------------------------------------------------------------------------
 
 subroutine ug_size(self, ug)
-use unstructured_grid_mod
+
 implicit none
-type(fv3jedi_increment), intent(in) :: self
+type(fv3jedi_increment), intent(in)    :: self
 type(unstructured_grid), intent(inout) :: ug
 
 integer :: igrid
@@ -1527,7 +749,6 @@ end if
 ! Allocate grid instances
 if (.not.allocated(ug%grid)) allocate(ug%grid(ug%ngrid))
 
-
 ! Set local number of points
 ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1) 
 
@@ -1535,11 +756,7 @@ ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
 ug%grid(1)%nl0 = self%npz
 
 ! Set number of variables
-ug%grid(1)%nv = 8
-
-if (.not. self%hydrostatic) then
-  ug%grid(1)%nv = 10
-endif  
+ug%grid(1)%nv = self%nf 
 
 ! Set number of timeslots
 ug%grid(1)%nts = 1
@@ -1549,12 +766,12 @@ end subroutine ug_size
 ! ------------------------------------------------------------------------------
 
 subroutine ug_coord(self, ug, colocated, geom)
-use unstructured_grid_mod
+
 implicit none
-type(fv3jedi_increment), intent(in) :: self
+type(fv3jedi_increment), intent(in)    :: self
 type(unstructured_grid), intent(inout) :: ug
-integer, intent(in) :: colocated
-type(fv3jedi_geom), intent(in) :: geom
+integer,                 intent(in)    :: colocated
+type(fv3jedi_geom),      intent(in)    :: geom
 
 integer :: imga,jx,jy,jl
 real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:)
@@ -1593,13 +810,13 @@ end subroutine ug_coord
 ! ------------------------------------------------------------------------------
 
 subroutine increment_to_ug(self, ug, colocated)
-use unstructured_grid_mod
-implicit none
-type(fv3jedi_increment), intent(in) :: self
-type(unstructured_grid), intent(inout) :: ug
-integer, intent(in) :: colocated
 
-integer :: imga,jx,jy,jl
+implicit none
+type(fv3jedi_increment), intent(in)    :: self
+type(unstructured_grid), intent(inout) :: ug
+integer,                 intent(in)    :: colocated
+
+integer :: var,imga,jx,jy,jl
 real(kind=kind_real),allocatable :: ptmp(:,:,:)
 integer :: igrid
 
@@ -1618,219 +835,17 @@ ug%grid(1)%fld = 0.0_kind_real
 
 if (ug%colocated==1) then
 
-  if (allocated(self%ua)) then
+  do var = 1,self%nf
     imga = 0
     do jy=self%jsc,self%jec
       do jx=self%isc,self%iec
         imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,1,1) = self%ua  (jx,jy,jl)
+        do jl=1,self%fields(var)%npz
+          ug%grid(1)%fld(imga,jl,var,1) = self%fields(var)%field(jx,jy,jl)
         enddo
       enddo
     enddo
-  endif
-
-  if (allocated(self%va)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,2,1) = self%va  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%t)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,3,1) = self%t  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%ps)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-            ug%grid(1)%fld(imga,self%npz,4,1) = self%ps  (jx,jy)
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%q)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,5,1) = self%q   (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%qi)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,6,1) = self%qi  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%ql)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,7,1) = self%ql  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%o3)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%o3  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%psi)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,1,1) = self%psi (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%chi)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,2,1) = self%chi (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%tv)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,3,1) = self%tv  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%qc)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,5,1) = self%qc  (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%qic)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,6,1) = self%qic (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%qlc)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,7,1) = self%qlc (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%o3c)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,8,1) = self%o3c (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%w)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,9,1) = self%w (jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%delz)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,10,1) = self%delz(jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
-
-  if (allocated(self%delp)) then
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%npz
-            ug%grid(1)%fld(imga,jl,4,1) = self%delp(jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  endif
+  enddo
 
 endif
 
@@ -1839,10 +854,10 @@ end subroutine increment_to_ug
 ! -----------------------------------------------------------------------------
 
 subroutine increment_from_ug(self, ug)
-use unstructured_grid_mod
+
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-type(unstructured_grid), intent(in) :: ug
+type(unstructured_grid), intent(in)    :: ug
 
 integer :: imga,jx,jy,jl
 real(kind=kind_real),allocatable :: ptmp(:,:,:)
@@ -1850,218 +865,20 @@ integer :: igrid
 
 ! Copy increment
 
-if (allocated(self%ua)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%ua  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,1,1)
+if (ug%colocated==1) then
+
+  do var = 1,self%nf
+    imga = 0
+    do jy=self%jsc,self%jec
+      do jx=self%isc,self%iec
+        imga = imga+1
+        do jl=1,self%fields(var)%npz
+          self%fields(var)%field(jx,jy,jl) = ug%grid(1)%fld(imga,jl,var,1)
+        enddo
       enddo
     enddo
   enddo
-endif
 
-if (allocated(self%va)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%va  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,2,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%t)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%t  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,3,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%ps)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      self%ps  (jx,jy) = ug%grid(1)%fld(imga,self%npz,4,1)
-    enddo
-  enddo
-endif
-
-if (allocated(self%q)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%q  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,5,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%qi)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%qi  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,6,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%ql)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%ql  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,7,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%o3)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%o3  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%psi)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%psi  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,1,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%chi)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%chi (jx,jy,jl) = ug%grid(1)%fld(imga,jl,2,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%tv)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%tv  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,3,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%qc)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%qc  (jx,jy,jl) = ug%grid(1)%fld(imga,jl,5,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%qic)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%qic (jx,jy,jl) = ug%grid(1)%fld(imga,jl,6,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%qlc)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%qlc (jx,jy,jl) = ug%grid(1)%fld(imga,jl,7,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%o3c)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%o3c (jx,jy,jl) = ug%grid(1)%fld(imga,jl,8,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%w)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%w   (jx,jy,jl) = ug%grid(1)%fld(imga,jl,9,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%delz)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%delz(jx,jy,jl) = ug%grid(1)%fld(imga,jl,10,1)
-      enddo
-    enddo
-  enddo
-endif
-
-if (allocated(self%delp)) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      do jl=1,self%npz
-          self%delp(jx,jy,jl) = ug%grid(1)%fld(imga,jl,4,1)
-      enddo
-    enddo
-  enddo
 endif
 
 end subroutine increment_from_ug
@@ -2100,13 +917,11 @@ end subroutine check
 
 subroutine jnormgrad(self,geom,ref,c_conf)
 
-use mpp_domains_mod, only: mpp_global_sum, BITWISE_EFP_SUM
-
 implicit none
-type(fv3jedi_increment) :: self
-type(fv3jedi_geom)      :: geom
-type(fv3jedi_state)     :: ref !To linearize around if nl
-type(c_ptr)             :: c_conf
+type(fv3jedi_increment), intent(inout) :: self
+type(fv3jedi_geom),      intent(in)    :: geom
+type(fv3jedi_state),     intent(in)    :: ref !To linearize around if nl
+type(c_ptr),             intent(in)    :: c_conf
 
 integer :: i,j,k
 integer :: isc,iec,jsc,jec,npz
@@ -2142,16 +957,16 @@ pfac = 0.5_kind_real*Rgas*tref/pref**2
 ! Compute grid weighting based on volume
 ! --------------------------------------
 
-global_area = mpp_global_sum(geom%domain, geom%area, flags=BITWISE_EFP_SUM)
+global_area = mpp_global_sum(geom%domain, geom%area, flags=bitwise_efp_sum)
 
 allocate(ref_ps(isc:iec,jsc:jec))
-ref_ps = sum(ref%fields(ref%delp)%field,3)
+ref_ps = sum(ref%delp,3)
 
 allocate(cellweight(isc:iec,jsc:jec,1:npz))
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      cellweight(i,j,k) = (ref%fields(ref%delp)%field(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
+      cellweight(i,j,k) = (ref%delp(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
     enddo
   enddo
 enddo
@@ -2160,7 +975,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%ua(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%ua)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%ua)%field(i,j,k) = Ufac * 2.0_kind_real * ref%ua(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2169,7 +984,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%va(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%va)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%va)%field(i,j,k) = Ufac * 2.0_kind_real * ref%va(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2178,7 +993,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%t(i,j,k) = Tfac * 2.0_kind_real * ref%fields(ref%t)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%t)%field(i,j,k) = Tfac * 2.0_kind_real * ref%T(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2187,7 +1002,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%q(i,j,k) = qfac * 2.0_kind_real * ref%fields(ref%q)%field(i,j,k) * cellweight(i,j,k)
+      self%fields(self%q)%field(i,j,k) = qfac * 2.0_kind_real * ref%q (i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -2196,7 +1011,7 @@ enddo
 if (allocated(self%ps)) then
   do j = jsc,jec
     do i = isc,iec
-      self%ps(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%fields(ref%delp)%field(i,j,npz)/ref_ps(i,j))
+      self%fields(self%ps)%field(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%delp(i,j,npz)/ref_ps(i,j))
     enddo
   enddo
 else
@@ -2207,6 +1022,31 @@ deallocate(cellweight)
 deallocate(ref_ps)
 
 end subroutine jnormgrad
+
+! ------------------------------------------------------------------------------
+
+subroutine checksame(self,other)
+
+implicit none
+type(fv3jedi_increment), intent(inout) :: self
+type(fv3jedi_increment), intent(in)    :: other
+
+integer :: var
+
+if (self%nf .ne. other%nf) then
+  call abor1_ftn("fv3jedi_increment check increments have same fields failed: &
+                  different number of fields")
+endif
+
+do var = 1,self%nf
+  if (self%fields(var)%fv3jedi_name .ne. other%fields(var)%fv3jedi_name) then
+      call abor1_ftn("fv3jedi_increment check increments have same fields failed: &
+                  field "//self%fields(var)%fv3jedi_name//" not in the equivalent position &
+                  in the right hand side")
+  endif
+endif
+
+end subroutine checksame
 
 ! ------------------------------------------------------------------------------
 

@@ -26,7 +26,7 @@ ModelTest:
   finalnorm: '706.51262656722145'
   tolerance: '1.0e-4'
 State:
-  restart_type: geos
+  filetype: geos
   filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",

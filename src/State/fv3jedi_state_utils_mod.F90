@@ -8,7 +8,6 @@
 module fv3jedi_state_utils_mod
 
 use fv3jedi_kinds_mod
-use fv3jedi_vars_mod, only: fv3jedi_vars 
 use fv3jedi_field_mod, only: fv3jedi_field
 
 implicit none

@@ -16,12 +16,12 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
 initial:
-  restart_type: geos
+  filetype: geos
   filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4        
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
 output:
   geos_tile_dim: 1
-  restart_type: geos
+  filetype: geos
   datapath: Data/
   filename: forecast_geos_ana.
   first: PT0H

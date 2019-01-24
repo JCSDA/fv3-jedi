@@ -5,12 +5,14 @@
 
 module fv3jedi_field_mod
 
+use fckit_mpi_module
 use fv3jedi_kinds_mod, only: kind_real
+use mpp_domains_mod,   only: east, north, center
 
 implicit none
 
 private
-public :: fv3jedi_field
+public :: fv3jedi_field, get_field
 
 !Field type
 type :: fv3jedi_field
@@ -54,7 +56,15 @@ self%jec = jec
 self%npz = npz
 
 if(.not.self%lalloc) &
-allocate(self%field(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+
+if (staggerloc == center) then
+  allocate(self%field(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+elseif (staggerloc == north) then
+  allocate(self%field(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
+elseif (staggerloc == east) then
+  allocate(self%field(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
+endif
+
 self%lalloc = .true.
 
 if (present(short_name)) self%short_name = trim(short_name)
@@ -95,6 +105,151 @@ call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
 self%field = rhs%field
 
 end subroutine equals
+
+! ------------------------------------------------------------------------------
+
+function get_field(nf,fields,fv3jedi_name) result(field_pointer)
+
+integer,                     intent(in) :: nf
+type(fv3jedi_field), target, intent(in) :: fields(nf)
+character(len=32),           intent(in) :: fv3jedi_name
+type(fv3jedi_field), pointer            :: field_pointer
+
+integer :: var
+logical :: found
+
+found = .false.
+do var = 1,nf
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    field_pointer => fields(var)%field
+    found = .true.
+    exit
+  endif
+enddo
+
+if (.not.found) call abor1_ftn("fv3jedi_field function get_field. Field "&
+                                //fv3jedi_name//" not found in field array")
+
+end function get_field
+
+! ------------------------------------------------------------------------------
+
+subroutine fields_rms(nf,fields,rms)
+
+implicit none
+integer,              intent(in)    :: nf
+type(fv3jedi_field),  intent(in)    :: fields(nf)
+real(kind=kind_real), intent(inout) :: rms
+
+integer :: i, j, k, ii, iisum, var
+real(kind=kind_real) :: zz
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
+
+zz = 0.0_kind_real
+ii = 0
+
+do var = 1,nf
+
+  do k = 1,fields(var)%npz
+    do j = fields(var)%jsc,fields(var)%jec
+      do i = fields(var)%isc,fields(var)%iec
+        zz = zz + fields(var)%field(i,j,k)**2
+        ii = ii + 1
+      enddo
+    enddo
+  enddo
+
+enddo
+
+!Get global values
+call f_comm%allreduce(zz,rms,fckit_mpi_sum())
+call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
+
+rms = sqrt(rms/real(iisum,kind_real))
+
+end subroutine fields_rms
+
+! ------------------------------------------------------------------------------
+
+subroutine fields_gpnorm(nf, fields, pstat)
+
+implicit none
+integer,              intent(in)    :: nf
+type(fv3jedi_field),  intent(in)    :: fields(nf)
+real(kind=kind_real), intent(inout) :: pstat(3, nf)
+
+integer :: var
+real(kind=kind_real) :: tmp(3),  gs3, gs3g
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
+
+do var = 1,nf
+ 
+  gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
+  call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+
+  tmp(1) = minval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(2) = maxval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(3) =    sum(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
+
+  call f_comm%allreduce(tmp(1),pstat(1,var),fckit_mpi_min())
+  call f_comm%allreduce(tmp(2),pstat(2,var),fckit_mpi_max())
+  call f_comm%allreduce(tmp(3),pstat(3,var),fckit_mpi_sum())
+  pstat(3,var) = sqrt(pstat(3,var)/gs3g)
+
+enddo
+
+end subroutine fields_gpnorm
+
+! ------------------------------------------------------------------------------
+
+subroutine fields_print(nf, fields, name)
+
+implicit none
+integer,              intent(in)    :: nf
+type(fv3jedi_field),  intent(in)    :: fields(nf)
+character(len=5),     intent(in)    :: name
+
+integer :: var
+real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
+type(fckit_mpi_comm) :: f_comm
+
+f_comm = fckit_mpi_comm()
+
+if (f_comm%rank() == 0) then
+  write(*,"(A34)") "---------------------------------"
+  write(*,"(A34)") "      ",name," print                "
+  write(*,"(A34)") "---------------------------------"
+endif
+
+do var = 1,nf
+
+  gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
+  call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+
+  tmp(1) = minval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(2) = maxval(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
+  tmp(3) =    sum(fields(var)%field(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
+
+  call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
+  call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
+  call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
+  pstat(3) = sqrt(pstat(3)/gs3g)
+
+  if (f_comm%rank() == 0) write(*,"(A10,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &
+                                   trim(fields(var)%short_name),&
+                                   "| Min=",real(pstat(1),4),&
+                                   ", Max=",real(pstat(2),4),&
+                                   ", RMS=",real(pstat(3),4)
+
+enddo
+
+if (f_comm%rank() == 0) write(*,"(A34)") "---------------------------------"
+
+end subroutine fields_print
 
 ! ------------------------------------------------------------------------------
 

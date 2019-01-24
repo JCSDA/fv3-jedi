@@ -16,7 +16,7 @@ StateTest:
     - '10.0'
     random_seed: '560921'
   StateFile:
-    restart_type: gfs
+    filetype: gfs
     datapath_spec: Data/INPUTS/GFS_c48/    
     datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
     filename_spec: C48_grid_spec.nc

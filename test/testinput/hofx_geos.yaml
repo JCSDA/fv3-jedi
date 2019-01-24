@@ -7,7 +7,7 @@ Geometry:
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 Initial Condition:
-  restart_type: geos
+  filetype: geos
   filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",

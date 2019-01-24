@@ -4,7 +4,7 @@ cost_function:
   Jb:
     Background:
       state:
-      - restart_type: geos
+      - filetype: geos
         date: '2018-04-14T21:00:00Z'
         filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
         read_crtm_surface: 0
@@ -131,7 +131,7 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
 output:
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/
   filename_core: 4DVar.geos.fv_core.res.nc
   filename_cplr: 4DVar.geos.coupler.res

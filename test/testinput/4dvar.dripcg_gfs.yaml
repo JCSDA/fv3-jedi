@@ -4,7 +4,7 @@ cost_function:
   Jb:
     Background:
       state:
-      - restart_type: gfs
+      - filetype: gfs
         datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         filename_core: 20180414.210000.fv_core.res.nc
         filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -123,7 +123,7 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
 output:
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/
   filename_core: 4DVar.gfs.fv_core.res.nc
   filename_cplr: 4DVar.gfs.coupler.res

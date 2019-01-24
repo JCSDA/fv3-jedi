@@ -10,7 +10,7 @@ use config_mod
 use datetime_mod
 use fckit_mpi_module
 
-use fv3jedi_field_mod,           only: fv3jedi_field
+use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -68,12 +68,12 @@ do var = 1, vars%nv
    select case (trim(vars%fldnames(var)))
      case("ud","u")
        vcount = vcount + 1; self%ud = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec+1,geom%npz, &
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'eastward_wind_on_native_D-Grid', &
             fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north )
      case("vd","v")
        vcount = vcount + 1; self%vd = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec+1,geom%jsc,geom%jec,geom%npz, &
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'northward_wind_on_native_D-Grid', &
             fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east )
      case("ua")
@@ -414,7 +414,6 @@ else
   !State copy, potentialy with differnt fields
   do self_var = 1, self%nf
     found = .false.
-    !short_name = self%fields(self_var)%short_name
     do rhs_var = 1, rhs%nf
       if (trim(self%fields(self_var)%fv3jedi_name) == trim(rhs%fields(rhs_var)%fv3jedi_name)) then
         self%fields(self_var) = rhs%fields(rhs_var)
@@ -424,7 +423,6 @@ else
     enddo
     if (.not.found) call abor1_ftn("fv3jedi_state: Error in state copy, field "//&
                     trim(self%fields(self_var)%fv3jedi_name)//" not found in state being copied from." )
-    !self%fields(self_var)%short_name = trim(short_name) !Keep original short name
   enddo
 
 endif  
@@ -830,13 +828,13 @@ subroutine read_file(geom, self, c_conf, vdate)
   type(c_ptr),         intent(in)    :: c_conf   !< Configuration
   type(datetime),      intent(inout) :: vdate    !< DateTime
 
-  character(len=10) :: restart_type
+  character(len=10) :: filetype 
 
-  restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
+  filetype = config_get_string(c_conf,len(filetype),"filetype")
 
-  if (trim(restart_type) == 'gfs') then
+  if (trim(filetype) == 'gfs') then
      call read_gfs (geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
-  elseif (trim(restart_type) == 'geos') then
+  elseif (trim(filetype) == 'geos') then
      call read_geos(geom, self%fields, c_conf, vdate)
   else
      call abor1_ftn("fv3jedi_state read: restart type not supported")
@@ -895,43 +893,7 @@ subroutine state_print(self)
 implicit none
 type(fv3jedi_state), intent(in) :: self
 
-integer :: var
-real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
-type(fckit_mpi_comm) :: f_comm
-
-f_comm = fckit_mpi_comm()
-
-if (f_comm%rank() == 0) then
-  write(*,"(A34)") "---------------------------------"
-  write(*,"(A34)") "      State print                "
-  write(*,"(A34)") "---------------------------------"
-endif
-
-gs3 = real((self%iec-self%isc+1)*(self%jec-self%jsc+1), kind_real)
-call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
-
-do var = 1,self%nf
-
-  gs3 = gs3g * real(self%fields(var)%npz,kind_real)
-
-  tmp(1) = minval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
-  tmp(2) = maxval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
-  tmp(3) =    sum(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz)**2)
-
-  call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3)
-
-  if (f_comm%rank() == 0) write(*,"(A10,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &
-                                   trim(self%fields(var)%short_name),&
-                                   "| Min=",real(pstat(1),4),&
-                                   ", Max=",real(pstat(2),4),&
-                                   ", RMS=",real(pstat(3),4)
-
-enddo
-
-if (f_comm%rank() == 0) write(*,"(A34)") "---------------------------------"
+call fields_print(self%nf, self%fields, "State")
 
 end subroutine state_print
 
@@ -944,71 +906,23 @@ type(fv3jedi_state),  intent(in)    :: self
 integer,              intent(in)    :: nf
 real(kind=kind_real), intent(inout) :: pstat(3, nf)
 
-integer :: var
-real(kind=kind_real) :: tmp(3),  gs3, gs3g
-type(fckit_mpi_comm) :: f_comm
-
-f_comm = fckit_mpi_comm()
-
 if (nf .ne. self%nf) then
   call abor1_ftn("fv3jedi_state: gpnorm | nf passed in does not match expeted nf")
 endif
 
-gs3 = real((self%iec-self%isc+1)*(self%jec-self%jsc+1), kind_real)
-call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
-
-do var = 1,nf
- 
-  gs3 = gs3g * real(self%fields(var)%npz,kind_real)
-
-  tmp(1) = minval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
-  tmp(2) = maxval(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz))
-  tmp(3) =    sum(self%fields(var)%field(self%isc:self%iec,self%jsc:self%jec,1:self%fields(var)%npz)**2)
-
-  call f_comm%allreduce(tmp(1),pstat(1,var),fckit_mpi_min())
-  call f_comm%allreduce(tmp(2),pstat(2,var),fckit_mpi_max())
-  call f_comm%allreduce(tmp(3),pstat(3,var),fckit_mpi_sum())
-  pstat(3,var) = sqrt(pstat(3,var)/gs3)
-
-enddo
+call fields_gpnorm(nf, self%fields, pstat)
 
 end subroutine gpnorm
 
 ! ------------------------------------------------------------------------------
 
-subroutine rms(self, prms)
+subroutine rms(self, rms)
 
 implicit none
 type(fv3jedi_state),  intent(in)  :: self
-real(kind=kind_real), intent(out) :: prms
+real(kind=kind_real), intent(out) :: rms
 
-real(kind=kind_real) :: zz
-integer i,j,k,ii,iisum,var
-type(fckit_mpi_comm) :: f_comm
-
-f_comm = fckit_mpi_comm()
-
-zz = 0.0_kind_real
-ii = 0
-
-do var = 1,self%nf
-
-  do k = 1,self%fields(var)%npz
-    do j = self%jsc,self%jec
-      do i = self%isc,self%iec
-        zz = zz + self%fields(var)%field(i,j,k)**2
-        ii = ii + 1
-      enddo
-    enddo
-  enddo
-
-enddo
-
-!Get global values
-call f_comm%allreduce(zz,prms,fckit_mpi_sum())
-call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
-
-prms = sqrt(prms/real(iisum,kind_real))
+call fields_rms(self%nf,self%fields,rms)
 
 end subroutine rms
 
