@@ -324,7 +324,7 @@ cost_function:
 #          inputVariables:
 #            variables: ['ua','va','t','ps','q','qi','ql','o3']
 #          outputVariables:
-#            variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+#            variables: ['psi','chi','tv','ps','rh','qi','ql','o3']
   Jo:
     ObsTypes:
     - ObsType: Radiosonde

@@ -68,25 +68,9 @@ cost_function:
 #      variable_changes:
 #      - varchange: Control2Model
 #        inputVariables:
-#          variables:
-#          - ua
-#          - va
-#          - t
-#          - ps
-#          - q
-#          - qi
-#          - ql
-#          - o3
+#          variables: ["ua","va","t","ps","q","qi","ql","o3"]
 #        outputVariables:
-#          variables:
-#          - psi 
-#          - chi
-#          - tv
-#          - ps
-#          - qc
-#          - qic
-#          - qlc
-#          - o3c
+#          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: "AMSU-A"

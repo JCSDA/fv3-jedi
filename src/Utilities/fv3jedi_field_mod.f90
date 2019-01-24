@@ -5,6 +5,7 @@
 
 module fv3jedi_field_mod
 
+use config_mod
 use fckit_mpi_module
 use fv3jedi_kinds_mod, only: kind_real
 use mpp_domains_mod,   only: east, north, center
@@ -12,7 +13,8 @@ use mpp_domains_mod,   only: east, north, center
 implicit none
 
 private
-public :: fv3jedi_field, get_field
+public :: fv3jedi_field, get_field, &
+          fields_rms, fields_gpnorm, fields_print
 
 !Field type
 type :: fv3jedi_field
@@ -41,13 +43,13 @@ subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
                           fv3jedi_name,units,staggerloc)
 
 implicit none
-class(fv3jedi_field), intent(inout) :: self
-integer, intent(in) :: isc,iec,jsc,jec,npz
-character(len=*), optional, intent(in) :: short_name
-character(len=*), optional, intent(in) :: long_name
-character(len=*), optional, intent(in) :: fv3jedi_name
-character(len=*), optional, intent(in) :: units
-integer, optional, intent(in) :: staggerloc 
+class(fv3jedi_field),       intent(inout) :: self
+integer,                    intent(in)    :: isc,iec,jsc,jec,npz
+character(len=*), optional, intent(in)    :: short_name
+character(len=*), optional, intent(in)    :: long_name
+character(len=*), optional, intent(in)    :: fv3jedi_name
+character(len=*), optional, intent(in)    :: units
+integer,          optional, intent(in)    :: staggerloc 
 
 self%isc = isc
 self%iec = iec
@@ -55,14 +57,16 @@ self%jsc = jsc
 self%jec = jec
 self%npz = npz
 
-if(.not.self%lalloc) &
+if(.not.self%lalloc) then
 
-if (staggerloc == center) then
-  allocate(self%field(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
-elseif (staggerloc == north) then
-  allocate(self%field(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
-elseif (staggerloc == east) then
-  allocate(self%field(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
+  if (staggerloc == center) then
+    allocate(self%field(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+  elseif (staggerloc == north) then
+    allocate(self%field(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
+  elseif (staggerloc == east) then
+    allocate(self%field(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
+  endif
+
 endif
 
 self%lalloc = .true.
@@ -108,12 +112,12 @@ end subroutine equals
 
 ! ------------------------------------------------------------------------------
 
-function get_field(nf,fields,fv3jedi_name) result(field_pointer)
+subroutine get_field(nf,fields,fv3jedi_name,field_pointer)
 
-integer,                     intent(in) :: nf
-type(fv3jedi_field), target, intent(in) :: fields(nf)
-character(len=32),           intent(in) :: fv3jedi_name
-type(fv3jedi_field), pointer            :: field_pointer
+integer,                      intent(in)  :: nf
+type(fv3jedi_field), target,  intent(in)  :: fields(nf)
+character(len=32),            intent(in)  :: fv3jedi_name
+type(fv3jedi_field), pointer, intent(out) :: field_pointer
 
 integer :: var
 logical :: found
@@ -121,16 +125,16 @@ logical :: found
 found = .false.
 do var = 1,nf
   if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
-    field_pointer => fields(var)%field
+    field_pointer => fields(var)
     found = .true.
     exit
   endif
 enddo
 
-if (.not.found) call abor1_ftn("fv3jedi_field function get_field. Field "&
+if (.not.found) call abor1_ftn("fv3jedi_field get_field. Field "&
                                 //fv3jedi_name//" not found in field array")
 
-end function get_field
+end subroutine get_field
 
 ! ------------------------------------------------------------------------------
 
@@ -211,18 +215,21 @@ subroutine fields_print(nf, fields, name)
 implicit none
 integer,              intent(in)    :: nf
 type(fv3jedi_field),  intent(in)    :: fields(nf)
-character(len=5),     intent(in)    :: name
+character(len=*),     intent(in)    :: name
 
 integer :: var
 real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
 type(fckit_mpi_comm) :: f_comm
+character(len=34) :: printname
 
 f_comm = fckit_mpi_comm()
 
+printname = "|     "//trim(name)//" print"
+
 if (f_comm%rank() == 0) then
-  write(*,"(A34)") "---------------------------------"
-  write(*,"(A34)") "      ",name," print                "
-  write(*,"(A34)") "---------------------------------"
+  write(*,"(A70)") "----------------------------------------------------------------------"
+  write(*,"(A34)") printname
+  write(*,"(A70)") "----------------------------------------------------------------------"
 endif
 
 do var = 1,nf
@@ -247,7 +254,8 @@ do var = 1,nf
 
 enddo
 
-if (f_comm%rank() == 0) write(*,"(A34)") "---------------------------------"
+if (f_comm%rank() == 0) &
+  write(*,"(A70)") "---------------------------------------------------------------------"
 
 end subroutine fields_print
 

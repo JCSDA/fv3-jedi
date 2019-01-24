@@ -13,7 +13,7 @@ use random_mod
 use fckit_mpi_module
 use unstructured_grid_mod
 
-use fv3jedi_field_mod,           only: fv3jedi_field, get_field
+use fv3jedi_field_mod,           only: fv3jedi_field, get_field, fields_rms, fields_print, fields_gpnorm
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -31,7 +31,7 @@ private
 public :: fv3jedi_increment, create, delete, zeros, random, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
           dot_prod, add_incr, diff_incr, &
-          read_file, write_file, gpnorm, incrms, &
+          read_file, write_file, gpnorm, rms, &
           change_resol, getvalues_tl, getvalues_ad, &
           ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad, &
           increment_print
@@ -66,6 +66,7 @@ do var = 1, vars%nv
         "stc","smc","snwdph","u_srf","v_srf","f10m", &
         "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
         "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
+     self%nf = self%nf - 1
    end select
 enddo
 
@@ -94,7 +95,7 @@ do var = 1, vars%nv
             short_name = vars%fldnames(var), long_name = 'increment_of_air_temperature', &
             fv3jedi_name = 't', units = 'K', staggerloc = center )
      case("ps")
-       vcount = vcount + 1; self%ua = vcount
+       vcount = vcount + 1; self%ps = vcount
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'increment_of_surface_pressure', &
             fv3jedi_name = 'ps', units = 'Pa', staggerloc = center )
@@ -119,25 +120,25 @@ do var = 1, vars%nv
             short_name = vars%fldnames(var), long_name = 'increment_of_ozone_mass_mixing_ratio', &
             fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center )
      case("psi")
-       vcount = vcount + 1; self%ua = vcount
+       vcount = vcount + 1; self%psi = vcount
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'increment_of_stream_function', &
             fv3jedi_name = 'psi', units = 'm+2 s', staggerloc = center )
      case("chi")
-       vcount = vcount + 1; self%va = vcount
+       vcount = vcount + 1; self%chi = vcount
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'increment_of_velocity_potential', &
             fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center )
      case("tv")
-       vcount = vcount + 1; self%t = vcount
+       vcount = vcount + 1; self%tv = vcount
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'increment_of_virtual_temperature', &
             fv3jedi_name = 'tv', units = 'K', staggerloc = center )
      case("rh")
-       vcount = vcount + 1; self%rh = vcound
-       call self%fields(self%nf)%allocatefield(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz,&
-            short_name = trim(var), long_name = "increment_of_relative_humidity", &
-            fv3jedi_name = 'rh', units = '1', staggerloc = CENTER)
+       vcount = vcount + 1; self%rh = vcount
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'increment_of_relative_humidity', &
+            fv3jedi_name = 'rh', units = '1', staggerloc = center )
      case("delp","DELP")
        !vcount = vcount + 1; self%delp = vcount
        !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -166,6 +167,9 @@ do var = 1, vars%nv
 
 enddo
 
+if (vcount .ne. self%nf) &
+call abor1_ftn("fv3jedi_increment_mod create: vcount does not equal self%nf")
+
 self%hydrostatic = .true.
 if (self%w > 0 .and. self%delz > 0) self%hydrostatic = .false.
 
@@ -181,6 +185,10 @@ self%isc    = geom%isc
 self%iec    = geom%iec
 self%jsc    = geom%jsc
 self%jec    = geom%jec
+self%isd    = geom%isd
+self%ied    = geom%ied
+self%jsd    = geom%jsd
+self%jed    = geom%jed
 self%npx    = geom%npx
 self%npy    = geom%npy
 self%npz    = geom%npz
@@ -198,8 +206,8 @@ type(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
 
-do var = 1,self%nf
-  call self%fields(var)%deallocatefield()
+do var = 1, self%nf
+  call self%fields(var)%deallocate_field()
 enddo
 deallocate(self%fields)
 
@@ -215,7 +223,7 @@ type(fv3jedi_increment), intent(inout) :: self
 integer :: var
 
 do var = 1,self%nf
-  call self%fields(var)%field = 0.0_kind_real
+  self%fields(var)%field = 0.0_kind_real
 enddo
 
 end subroutine zeros
@@ -230,7 +238,7 @@ type(fv3jedi_increment), intent(inout) :: self
 integer :: var
 
 do var = 1,self%nf
-  call self%fields(var)%field = 1.0_kind_real
+  self%fields(var)%field = 1.0_kind_real
 enddo
 
 end subroutine ones
@@ -243,6 +251,7 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
+integer, parameter :: rseed = 7
 
 do var = 1,self%nf
   call normal_distribution(self%fields(var)%field, 0.0_kind_real, 1.0_kind_real, rseed)
@@ -258,10 +267,17 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
+logical :: found
+integer :: self_var, rhs_var
+
 self%isc            = rhs%isc
 self%iec            = rhs%iec
 self%jsc            = rhs%jsc
 self%jec            = rhs%jec
+self%isd            = rhs%isd
+self%ied            = rhs%ied
+self%jsd            = rhs%jsd
+self%jed            = rhs%jed
 self%npx            = rhs%npx
 self%npy            = rhs%npy
 self%npz            = rhs%npz
@@ -422,16 +438,16 @@ type(fv3jedi_field), pointer :: rhs_p
 
 do var = 1,self%nf
 
-  if (trim(self%fields(var)%fv3jedi_name .ne. "ps")) then
+  if (trim(self%fields(var)%fv3jedi_name) .ne. "ps") then
 
-    rhs_p = get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name)
-    self%fields(var)%field = self%fields(var)%field + zz * rhs_p
+    call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,rhs_p)
+    self%fields(var)%field = self%fields(var)%field + zz * rhs_p%field
 
   else
 
     allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
     rhs_ps = sum(rhs%fields(rhs%delp)%field,3)
-    self%fields(var)%field = self%fields(var)%field + zz * rhs_ps
+    self%fields(var)%field(:,:,1) = self%fields(var)%field(:,:,1) + zz * rhs_ps
     deallocate(rhs_ps)
 
   endif
@@ -451,7 +467,6 @@ real(kind=kind_real),    intent(inout) :: zprod
 
 real(kind=kind_real) :: zp
 integer :: i,j,k
-integer :: ierr
 type(fckit_mpi_comm) :: f_comm
 integer :: var
 
@@ -461,6 +476,10 @@ f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
 do var = 1,self%nf
+
+if (f_comm%rank() == 0) print*, "Dot product test var: ", trim(self%fields(var)%fv3jedi_name) 
+
+
   do k = 1,self%fields(var)%npz
     do j = self%jsc,self%jec
       do i = self%isc,self%iec
@@ -521,20 +540,20 @@ if (check==0) then
 
   do var = 1,self%nf
   
-    if (trim(self%fields(var)%fv3jedi_name .ne. "ps")) then
+    if (trim(self%fields(var)%fv3jedi_name) .ne. "ps") then
   
-      x1p = get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name)
-      x2p = get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name)
+      call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
+      call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
 
-      self%fields(var)%field = x1p - x2p
+      self%fields(var)%field = x1p%field - x2p%field
   
     else
   
       allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
       allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-      x1_ps = sum(rhs%fields(x1%delp)%field,3)
-      x2_ps = sum(rhs%fields(x2%delp)%field,3)
-      self%fields(var)%field = x1_ps   - x2_ps
+      x1_ps = sum(x1%fields(x1%delp)%field,3)
+      x2_ps = sum(x2%fields(x2%delp)%field,3)
+      self%fields(var)%field(:,:,1) = x1_ps   - x2_ps
       deallocate(x1_ps,x2_ps)
   
     endif
@@ -584,7 +603,7 @@ subroutine read_file(geom, self, c_conf, vdate)
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-     call read_gfs(geom, self%fields, c_conf, vdate)
+     call read_gfs(geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos') then
      call read_geos(geom, self%fields, c_conf, vdate)
   else
@@ -609,7 +628,7 @@ subroutine write_file(geom, self, c_conf, vdate)
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-     call write_gfs(geom, self%fields, c_conf, vdate)
+     call write_gfs(geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos') then
      call write_geos(geom, self%fields, c_conf, vdate)
   else
@@ -625,7 +644,7 @@ subroutine increment_print(self)
 implicit none
 type(fv3jedi_increment), intent(in) :: self
 
-call fields_print(self%nf, self%fields, "Incmt")
+call fields_print(self%nf, self%fields, "Increment")
 
 end subroutine increment_print
 
@@ -654,7 +673,7 @@ implicit none
 type(fv3jedi_increment), intent(in)  :: self
 real(kind=kind_real),    intent(out) :: prms
 
-call fields_rms(self%nf,self%fields,rms)
+call fields_rms(self%nf,self%fields,prms)
 
 end subroutine rms
 
@@ -667,11 +686,11 @@ type(fv3jedi_increment), intent(inout) :: self
 type(c_ptr),             intent(in)    :: c_conf
 type(fv3jedi_geom),      intent(in)    :: geom
 
-integer :: ndir,idir,ildir,itiledir
+integer :: ndir,idir,ildir,itiledir,var
 integer,allocatable :: ixdir(:),iydir(:)
 character(len=3) :: idirchar
 character(len=32) :: ifdir
-logical found = .false.
+logical :: found
 
 ! Get Diracs positions
 ndir = config_get_int(c_conf,"ndir")
@@ -713,13 +732,14 @@ do idir=1,ndir
        ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
        iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
        ! If so, perturb desired increment and level
+       found = .false.
        do var = 1,self%nf
          if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir)) then
            found = .true.
            self%fields(var)%field(ixdir(idir),iydir(idir),ildir) = 1.0
          endif
        enddo
-       if (.not.found) call abort1_ftn("fv3jedi_increment, dirac error: field "&
+       if (.not.found) call abor1_ftn("fv3jedi_increment, dirac error: field "&
                                        //trim(ifdir)//" not found")
    endif
 end do
@@ -733,8 +753,6 @@ subroutine ug_size(self, ug)
 implicit none
 type(fv3jedi_increment), intent(in)    :: self
 type(unstructured_grid), intent(inout) :: ug
-
-integer :: igrid
 
 ! Set number of grids
 if (ug%colocated==1) then
@@ -774,9 +792,7 @@ integer,                 intent(in)    :: colocated
 type(fv3jedi_geom),      intent(in)    :: geom
 
 integer :: imga,jx,jy,jl
-real(kind=kind_real),allocatable :: lon(:),lat(:),area(:),vunit(:,:)
 real(kind=kind_real) :: sigmaup,sigmadn
-integer :: igrid
 
 ! Copy colocated
 ug%colocated = colocated
@@ -817,8 +833,6 @@ type(unstructured_grid), intent(inout) :: ug
 integer,                 intent(in)    :: colocated
 
 integer :: var,imga,jx,jy,jl
-real(kind=kind_real),allocatable :: ptmp(:,:,:)
-integer :: igrid
 
 ! Copy colocated
 ug%colocated = colocated
@@ -859,9 +873,7 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(unstructured_grid), intent(in)    :: ug
 
-integer :: imga,jx,jy,jl
-real(kind=kind_real),allocatable :: ptmp(:,:,:)
-integer :: igrid
+integer :: imga,jx,jy,jl,var
 
 ! Copy increment
 
@@ -882,36 +894,6 @@ if (ug%colocated==1) then
 endif
 
 end subroutine increment_from_ug
-
-! ------------------------------------------------------------------------------
-
-subroutine check_resolution(x1, x2)
-
-implicit none
-type(fv3jedi_increment), intent(in) :: x1, x2
-
-if (x1%npx /= x2%npx .or.  x1%npz /= x2%npz) then
-  call abor1_ftn ("Increment: resolution error")
-endif
-call check(x1)
-call check(x2)
-
-end subroutine check_resolution
-
-! ------------------------------------------------------------------------------
-
-subroutine check(self)
-implicit none
-type(fv3jedi_increment), intent(in) :: self
-logical :: bad
-
-bad = .false.
-
-if (bad) then
-   call abor1_ftn ("Increment: increment not consistent")
-endif
-
-end subroutine check
 
 ! ------------------------------------------------------------------------------
 
@@ -960,13 +942,13 @@ pfac = 0.5_kind_real*Rgas*tref/pref**2
 global_area = mpp_global_sum(geom%domain, geom%area, flags=bitwise_efp_sum)
 
 allocate(ref_ps(isc:iec,jsc:jec))
-ref_ps = sum(ref%delp,3)
+ref_ps = sum(ref%fields(ref%delp)%field,3)
 
 allocate(cellweight(isc:iec,jsc:jec,1:npz))
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      cellweight(i,j,k) = (ref%delp(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
+      cellweight(i,j,k) = (ref%fields(ref%delp)%field(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
     enddo
   enddo
 enddo
@@ -975,7 +957,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%ua)%field(i,j,k) = Ufac * 2.0_kind_real * ref%ua(i,j,k) * cellweight(i,j,k)
+      self%fields(self%ua)%field(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%ua)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -984,7 +966,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%va)%field(i,j,k) = Ufac * 2.0_kind_real * ref%va(i,j,k) * cellweight(i,j,k)
+      self%fields(self%va)%field(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%va)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -993,7 +975,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%t)%field(i,j,k) = Tfac * 2.0_kind_real * ref%T(i,j,k) * cellweight(i,j,k)
+      self%fields(self%t)%field(i,j,k) = Tfac * 2.0_kind_real * ref%fields(ref%t)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -1002,16 +984,17 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%q)%field(i,j,k) = qfac * 2.0_kind_real * ref%q (i,j,k) * cellweight(i,j,k)
+      self%fields(self%q)%field(i,j,k) = qfac * 2.0_kind_real * ref%fields(ref%q)%field(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
 
 !ps
-if (allocated(self%ps)) then
+if (self%ps>0) then
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%ps)%field(i,j) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) / (ref%delp(i,j,npz)/ref_ps(i,j))
+      self%fields(self%ps)%field(i,j,1) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) &
+                                          / (ref%fields(ref%delp)%field(i,j,npz)/ref_ps(i,j))
     enddo
   enddo
 else
@@ -1028,8 +1011,8 @@ end subroutine jnormgrad
 subroutine checksame(self,other)
 
 implicit none
-type(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: other
+type(fv3jedi_increment), intent(in) :: self
+type(fv3jedi_increment), intent(in) :: other
 
 integer :: var
 
@@ -1044,7 +1027,7 @@ do var = 1,self%nf
                   field "//self%fields(var)%fv3jedi_name//" not in the equivalent position &
                   in the right hand side")
   endif
-endif
+enddo
 
 end subroutine checksame
 

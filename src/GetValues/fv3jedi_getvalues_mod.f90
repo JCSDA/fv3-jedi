@@ -675,42 +675,42 @@ do jvar = 1, vars%nv
   
     nvl = npz
     do_interp = .true.
-    geovalm = inc%ua
+    geovalm = inc%fields(inc%ua)%field
     geoval => geovalm
 
   case ("northward_wind")
   
     nvl = npz
     do_interp = .true.
-    geovalm = inc%va
+    geovalm = inc%fields(inc%va)%field
     geoval => geovalm
 
   case ("air_temperature","temperature")
   
     nvl = npz
     do_interp = .true.
-    geovalm = inc%t
+    geovalm = inc%fields(inc%t)%field
     geoval => geovalm
 
   case ("specific_humidity")
 
     nvl = npz
     do_interp = .true.
-    geovalm = inc%q
+    geovalm = inc%fields(inc%q)%field
     geoval => geovalm
 
   case ("virtual_temperature")
 
     nvl = inc%npz
     do_interp = .true.
-    call T_to_Tv_tl(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
+    call T_to_Tv_tl(geom, traj%t, inc%fields(inc%t)%field, traj%q, inc%fields(inc%q)%field, geovalm )
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
   
     nvl = inc%npz
     do_interp = .true.
-    call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
+    call crtm_mixratio_tl(geom, traj%q, inc%fields(inc%q)%field, geovalm)
     geoval => geovalm  
 
   case ("air_pressure")
@@ -911,27 +911,27 @@ do jvar = 1, vars%nv
  
   case ("eastward_wind")
 
-    inc%ua = geovalm
+    inc%fields(inc%ua)%field = geovalm
 
   case ("northward_wind")
 
-    inc%va = geovalm
+    inc%fields(inc%va)%field = geovalm
 
   case ("air_temperature","temperature")
 
-    inc%t = geovalm
+    inc%fields(inc%t)%field = geovalm
 
   case ("specific_humidity")
 
-    inc%q = geovalm
+    inc%fields(inc%q)%field = geovalm
 
   case ("virtual_temperature")
     
-    call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
+    call T_to_Tv_ad(geom, traj%t, inc%fields(inc%t)%field, traj%q, inc%fields(inc%q)%field, geovalm )
 
   case ("humidity_mixing_ratio")
   
-    call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
+    call crtm_mixratio_ad(geom, traj%q, inc%fields(inc%q)%field, geovalm)
 
   case ("air_pressure")
 

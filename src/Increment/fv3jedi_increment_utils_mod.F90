@@ -18,6 +18,7 @@ public fv3jedi_increment, fv3jedi_increment_registry
 type :: fv3jedi_increment
 
   integer :: isc, iec, jsc, jec
+  integer :: isd, ied, jsd, jed
   integer :: npx, npy, npz
   integer :: ntiles, ntile
   logical :: hydrostatic = .true.

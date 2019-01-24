@@ -23,7 +23,6 @@ Increment/IncrementFV3JEDI.cc
 Increment/IncrementFV3JEDI.h
 Increment/IncrementFV3JEDIFortran.h
 Increment/fv3jedi_increment_interface_mod.f90
-Increment/fv3jedi_increment_io_mod.f90
 Increment/fv3jedi_increment_mod.f90
 Increment/fv3jedi_increment_utils_mod.F90
 IO/fv3jedi_io_geos_mod.f90

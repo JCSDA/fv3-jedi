@@ -10,7 +10,7 @@ use config_mod
 use datetime_mod
 use fckit_mpi_module
 
-use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms
+use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms, fields_rms, fields_gpnorm, fields_print
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -280,6 +280,9 @@ do var = 1, vars%nv
    end select
 enddo
 
+if (vcount .ne. self%nf) &
+call abor1_ftn("fv3jedi_state_mod create: vcount does not equal self%nf")
+
 self%hydrostatic = .true.
 if (self%w > 0 .and. self%delz > 0) self%hydrostatic = .false.
 
@@ -339,7 +342,6 @@ implicit none
 type(fv3jedi_state), intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: rhs
 
-character(len=32) :: short_name
 logical :: found
 integer :: self_var, rhs_var
 
@@ -469,32 +471,33 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   ud = 0.0_kind_real
   vd = 0.0_kind_real
 
-  call a2d(geom, rhs%ua, rhs%va, ud, vd)
+  call a2d(geom, rhs%fields(rhs%ua)%field, rhs%fields(rhs%va)%field, ud, vd)
 
   if(self%ud > 0) self%fields(self%ud)%field = self%fields(self%ud)%field + ud
   if(self%vd > 0) self%fields(self%vd)%field = self%fields(self%vd)%field + vd
 
   deallocate(ud,vd)
 
-  if(self%ua > 0) self%fields(self%ua)%field = self%fields(self%ua)%field + rhs%ua  
-  if(self%va > 0) self%fields(self%va)%field = self%fields(self%va)%field + rhs%va  
-  if(self%t  > 0) self%fields(self%t )%field = self%fields(self%t )%field + rhs%t
+  if(self%ua > 0) self%fields(self%ua)%field = self%fields(self%ua)%field + rhs%fields(rhs%ua)%field  
+  if(self%va > 0) self%fields(self%va)%field = self%fields(self%va)%field + rhs%fields(rhs%va)%field  
+  if(self%t  > 0) self%fields(self%t )%field = self%fields(self%t )%field + rhs%fields(rhs%t)%field
   if(self%delp > 0) then
-    if (allocated(rhs%ps)) then
+    if (rhs%ps>0) then
       do k = 1,geom%npz
-        self%fields(self%delp)%field(:,:,k) = self%fields(self%delp)%field(:,:,k) + (geom%bk(k+1)-geom%bk(k))*rhs%ps
+        self%fields(self%delp)%field(:,:,k) = self%fields(self%delp)%field(:,:,k) + &
+                                              (geom%bk(k+1)-geom%bk(k))*rhs%fields(rhs%ps)%field(:,:,1)
       enddo
-    elseif (allocated(rhs%delp)) then
-      self%fields(self%delp)%field = self%fields(self%delp)%field + rhs%delp
+    elseif (rhs%delp>0) then
+      self%fields(self%delp)%field = self%fields(self%delp)%field + rhs%fields(rhs%delp)%field
     endif
   endif
   
-  if(   self%q > 0) self%fields(   self%q)%field = self%fields(   self%q)%field + rhs%q   
-  if(  self%qi > 0) self%fields(  self%qi)%field = self%fields(  self%qi)%field + rhs%qi  
-  if(  self%ql > 0) self%fields(  self%ql)%field = self%fields(  self%ql)%field + rhs%ql  
-  if(  self%o3 > 0) self%fields(  self%o3)%field = self%fields(  self%o3)%field + rhs%o3  
-  if(   self%w > 0) self%fields(   self%w)%field = self%fields(   self%w)%field + rhs%w   
-  if(self%delz > 0) self%fields(self%delz)%field = self%fields(self%delz)%field + rhs%delz 
+  if(   self%q > 0) self%fields(   self%q)%field = self%fields(   self%q)%field + rhs%fields(   rhs%q)%field   
+  if(  self%qi > 0) self%fields(  self%qi)%field = self%fields(  self%qi)%field + rhs%fields(  rhs%qi)%field  
+  if(  self%ql > 0) self%fields(  self%ql)%field = self%fields(  self%ql)%field + rhs%fields(  rhs%ql)%field  
+  if(  self%o3 > 0) self%fields(  self%o3)%field = self%fields(  self%o3)%field + rhs%fields(  rhs%o3)%field  
+  if(   self%w > 0) self%fields(   self%w)%field = self%fields(   self%w)%field + rhs%fields(   rhs%w)%field   
+  if(self%delz > 0) self%fields(self%delz)%field = self%fields(self%delz)%field + rhs%fields(rhs%delz)%field 
 
   !Check for negative tracers and increase to 0.0
   do k = 1,geom%npz
@@ -855,21 +858,21 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(c_ptr),         intent(in)    :: c_conf   !< Configuration
   type(datetime),      intent(inout) :: vdate    !< DateTime
 
-  character(len=10) :: restart_type
+  character(len=10) :: filetype 
   integer :: var
   type(fv3jedi_llgeom) :: llgeom
 
-  restart_type = config_get_string(c_conf,len(restart_type),"restart_type")
+  filetype = config_get_string(c_conf,len(filetype),"filetype")
 
-  if (trim(restart_type) == 'gfs') then
+  if (trim(filetype) == 'gfs') then
 
      call write_gfs (geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
 
-  elseif (trim(restart_type) == 'geos') then
+  elseif (trim(filetype) == 'geos') then
 
      call write_geos(geom, self%fields, c_conf, vdate)
 
-  elseif (trim(restart_type) == 'latlon') then
+  elseif (trim(filetype) == 'latlon') then
 
      call create_latlon(geom, llgeom)
      call write_latlon_metadata(geom, llgeom, c_conf, vdate)
@@ -916,13 +919,13 @@ end subroutine gpnorm
 
 ! ------------------------------------------------------------------------------
 
-subroutine rms(self, rms)
+subroutine rms(self, prms)
 
 implicit none
 type(fv3jedi_state),  intent(in)  :: self
-real(kind=kind_real), intent(out) :: rms
+real(kind=kind_real), intent(out) :: prms
 
-call fields_rms(self%nf,self%fields,rms)
+call fields_rms(self%nf,self%fields,prms)
 
 end subroutine rms
 
