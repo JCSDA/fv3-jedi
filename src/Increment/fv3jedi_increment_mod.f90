@@ -476,10 +476,6 @@ f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
 do var = 1,self%nf
-
-if (f_comm%rank() == 0) print*, "Dot product test var: ", trim(self%fields(var)%fv3jedi_name) 
-
-
   do k = 1,self%fields(var)%npz
     do j = self%jsc,self%jec
       do i = self%isc,self%iec
