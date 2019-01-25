@@ -8,7 +8,7 @@
 module fv3jedi_state_utils_mod
 
 use fv3jedi_kinds_mod
-use fv3jedi_vars_mod, only: fv3jedi_vars 
+use fv3jedi_field_mod, only: fv3jedi_field
 
 implicit none
 private
@@ -17,55 +17,63 @@ public fv3jedi_state, fv3jedi_state_registry
 !> Fortran derived type to hold FV3JEDI state
 type :: fv3jedi_state
 
-  type(fv3jedi_vars) :: vars 
-
   !Local copies of grid for convenience
   integer :: isc, iec, jsc, jec
-  integer :: isd, ied, jsd, jed
   integer :: npx, npy, npz
   integer :: ntiles, ntile
-  logical :: havecrtmfields = .false.
-  logical :: hydrostatic = .false.
-  integer :: calendar_type
-  integer, dimension(6) :: date
-  integer, dimension(6) :: date_init
-  integer :: do_tlad_phymst = 0
+  logical :: hydrostatic = .true.
+  logical :: tladphystrj = .false.
+  integer :: calendar_type, date_init(6) !Read/write for GFS
+  integer :: nf
 
-  !State variables
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ud     ! D-grid (grid tangential) zonal wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: vd     ! D-grid (grid tangential) meridional wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ua     ! A-grid zonal wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: va     ! A-grid meridional wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: t      ! dry temperature (K)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: delp   ! pressure thickness (pascal)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: q      ! specific humidity (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qi     ! cloud liquid ice (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ql     ! cloud liquid water (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: o3     ! ozone (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: w      ! cell center vertical wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: delz   ! layer thickness (meters)
-  real(kind=kind_real), allocatable, dimension(:,:)   :: phis   ! Surface geopotential (g*Z_surf)
+  type(fv3jedi_field), allocatable :: fields(:)
 
-  !2D state for CRTM
-  integer             , allocatable, dimension(:,:)   :: slmsk
-  real(kind=kind_real), allocatable, dimension(:,:)   :: sheleg
-  real(kind=kind_real), allocatable, dimension(:,:)   :: tsea
-  integer             , allocatable, dimension(:,:)   :: vtype
-  integer             , allocatable, dimension(:,:)   :: stype
-  real(kind=kind_real), allocatable, dimension(:,:)   :: vfrac
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: stc
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: smc
-  real(kind=kind_real), allocatable, dimension(:,:)   :: snwdph
-  real(kind=kind_real), allocatable, dimension(:,:)   :: u_srf
-  real(kind=kind_real), allocatable, dimension(:,:)   :: v_srf
-  real(kind=kind_real), allocatable, dimension(:,:)   :: f10m
+  !State variables (index in array for later access)
+  integer :: ud   = 0
+  integer :: vd   = 0
+  integer :: ua   = 0
+  integer :: va   = 0
+  integer :: t    = 0
+  integer :: delp = 0
+  integer :: q    = 0
+  integer :: qi   = 0
+  integer :: ql   = 0
+  integer :: o3   = 0
+  integer :: w    = 0
+  integer :: delz = 0
+  integer :: phis = 0
+
+  !CRTM state
+  integer :: slmsk  = 0
+  integer :: sheleg = 0
+  integer :: tsea   = 0
+  integer :: vtype  = 0
+  integer :: stype  = 0
+  integer :: vfrac  = 0
+  integer :: stc    = 0
+  integer :: smc    = 0
+  integer :: snwdph = 0
+  integer :: u_srf  = 0
+  integer :: v_srf  = 0
+  integer :: f10m   = 0
 
   !Linearized model trajectory
-  real(kind_real), allocatable, dimension(:,:,:) :: qls, qcn, cfcn
-  real(kind_real), allocatable, dimension(:,:)   :: frocean, frland
-  real(kind_real), allocatable, dimension(:,:)   :: varflt, ustar, bstar
-  real(kind_real), allocatable, dimension(:,:)   :: zpbl, cm, ct, cq
-  real(kind_real), allocatable, dimension(:,:)   :: kcbl, ts, khl, khu
+  integer :: qls     = 0
+  integer :: qcn     = 0
+  integer :: cfcn    = 0
+  integer :: frocean = 0
+  integer :: frland  = 0
+  integer :: varflt  = 0
+  integer :: ustar   = 0
+  integer :: bstar   = 0
+  integer :: zpbl    = 0
+  integer :: cm      = 0
+  integer :: ct      = 0
+  integer :: cq      = 0
+  integer :: kcbl    = 0
+  integer :: ts      = 0
+  integer :: khl     = 0
+  integer :: khu     = 0
 
 end type fv3jedi_state
 

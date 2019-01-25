@@ -1,6 +1,5 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
@@ -57,7 +56,7 @@ cost_function:
 #          inputVariables:
 #            variables: ['ua','va','t','ps','q','qi','ql','o3']
 #          outputVariables:
-#            variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+#            variables: ['psi','chi','tv','ps','rh','qi','ql','o3']
       ensemble:
         members: '32'
         variables:
@@ -362,7 +361,6 @@ minimizer:
 #model:
 #  name: 'FV3'
 #  nml_file: Data/fv3files/input_geos_c180.nml
-#  trc_file: Data/fv3files/field_table
 #  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
 #  tstep: PT3H
 #  readtraj: 0
@@ -383,12 +381,8 @@ output:
   frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: Data/INPUTS/GEOS_akbk/
   filename_akbk: akbk72.nc4
-  ak_var: AK
-  bk_var: BK
 variational:
   iteration:
   - diagnostics:
@@ -399,7 +393,6 @@ variational:
       name: 'FV3JEDITLM'
       version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_geos_c180.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -412,10 +405,6 @@ variational:
     ninner: '5'
     resolution:
       nml_file: Data/fv3files/input_geos_c180.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
-      ak_var: AK
-      bk_var: BK
     test: 'on'

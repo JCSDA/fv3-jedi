@@ -1,38 +1,31 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 LinearVariableChangeTests:
 - varchange: StatsVariableChange
   toleranceInverse: 1.0e-10
   variables:
-    variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   prefix: bump
   strategy: common
   check_vbal: 1
   inputVariables:
-    variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   outputVariables:
-    variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
 - varchange: Control2Model
   toleranceInverse: -0.1
   testinverse: 0
   inputVariables:
-    variables: ['ua','va','t','ps','q','qi','ql','o3']
+    variables: ["ua","va","t","ps","q","qi","ql","o3"]
   outputVariables:
-    variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
 Geometry:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_akbk/
-  filename_akbk: akbk72.nc4
-  ak_var: AK
-  bk_var: BK
+  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 State:
-  restart_type: geos
-  date: '2018-04-14T21:00:00Z'
-  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4    
-  read_crtm_surface: 0
-  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
+  filetype: geos
+  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4        
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
 Variables:
-  variables: ['ua','va','t','ps','q','qi','ql','o3']
+  variables: ["ua","va","t","ps","q","qi","ql","o3"]

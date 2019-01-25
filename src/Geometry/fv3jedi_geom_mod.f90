@@ -18,6 +18,8 @@ use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
 use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
 use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 
+use fv3jedi_netcdf_utils_mod, only: nccheck
+
 !Uses for generating geometry using FV3 routines
 use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
 use fv_control_nlm_mod, only: fv_init, pelist_all
@@ -103,14 +105,11 @@ type(fv3jedi_geom), intent(inout) :: self
 type(c_ptr),        intent(in)    :: c_conf
 
 !Locals
-character(len=256)                    :: filename_akbk
-character(len=256)                    :: filepath_akbk
-character(len=256)                    :: ak_var
-character(len=256)                    :: bk_var
+character(len=256)                    :: pathfile_akbk
 type(fv_atmos_type), allocatable      :: FV_Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
 integer                               :: p_split = 1
-integer                               :: ncstat, ncid, varid, i, readdim, dcount
+integer                               :: ncstat, ncid, akvarid, bkvarid, i, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
 ! User input constructing the grid
@@ -118,32 +117,13 @@ integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 self%nml_file = config_get_string(c_conf,len(self%nml_file),"nml_file")
 
 !Halo
-self%halo = config_get_int(c_conf,"halo")
+self%halo = 3
 
 
-! Set filenames for ak and bk
-! ---------------------------
-filepath_akbk = "Data/"
-filename_akbk = 'grid_spec.nc'
+! Set path/filename for ak and bk
+! -------------------------------
+pathfile_akbk = config_get_string(c_conf,len(pathfile_akbk),"pathfile_akbk")
 
-if (config_element_exists(c_conf,"filepath_akbk")) then
-   filepath_akbk = config_get_string(c_conf,len(filepath_akbk),"filepath_akbk")
-endif
-
-if (config_element_exists(c_conf,"filename_akbk")) then
-   filename_akbk = config_get_string(c_conf,len(filename_akbk),"filename_akbk")
-endif
-
-filename_akbk = trim(filepath_akbk)//"/"//trim(filename_akbk)
-
-ak_var = "AK"
-bk_var = "BK"
-if (config_element_exists(c_conf,"ak_var")) then
-   ak_var = config_get_string(c_conf,len(ak_var),"ak_var")
-endif
-if (config_element_exists(c_conf,"bk_var")) then
-   bk_var = config_get_string(c_conf,len(bk_var),"bk_var")
-endif
 
 !Intialize using the model setup routine
 call fv_init(FV_Atm, 300.0_kind_real, grids_on_this_pe, p_split)
@@ -258,22 +238,35 @@ self%a22 = Fv_Atm(1)%gridstruct%a22
 allocate ( self%ak(self%npz+1) )
 allocate ( self%bk(self%npz+1) )
 
-ncstat = nf90_open(filename_akbk, nf90_nowrite, ncid)
-if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+!Open file
+call nccheck ( nf90_open(pathfile_akbk, nf90_nowrite, ncid), "fv3jedi_geom, nf90_open" )
 
-ncstat = nf90_inq_varid(ncid, ak_var, varid)
-if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+!Search for ak in the file
+ncstat = nf90_inq_varid(ncid, "AK", akvarid)
+if(ncstat /= nf90_noerr) &
+ncstat = nf90_inq_varid(ncid, "ak", akvarid)
+if(ncstat /= nf90_noerr) &
+ncstat = nf90_inq_varid(ncid, "Ak", akvarid)
+if(ncstat /= nf90_noerr) &
+call abor1_ftn("Failed to find ak in file "//pathfile_akbk//", tried AK, ak, Ak")
+
+!Search for bk in the file
+ncstat = nf90_inq_varid(ncid, "BK", bkvarid)
+if(ncstat /= nf90_noerr) &
+ncstat = nf90_inq_varid(ncid, "bk", bkvarid)
+if(ncstat /= nf90_noerr) &
+ncstat = nf90_inq_varid(ncid, "Bk", bkvarid)
+if(ncstat /= nf90_noerr) &
+call abor1_ftn("Failed to find bk in file "//pathfile_akbk//", tried BK, bk, Bk")
 
 dimids = 0
-ncstat = nf90_inquire_variable(ncid, varid, dimids = dimids)
-if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+call nccheck ( nf90_inquire_variable(ncid, akvarid, dimids = dimids), "fv3jedi_geom, nf90_inquire_variable ak" )
 
 readdim = -1
 dcount = 0
 do i = 1,nf90_max_var_dims
   if (dimIDs(i) > 0) then
-     ncstat = nf90_inquire_dimension(ncid, dimIDs(i), len = dimlens(i))
-     if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+     call nccheck( nf90_inquire_dimension(ncid, dimIDs(i), len = dimlens(i)), "fv3jedi_geom, nf90_inquire_dimension" )
      if (dimlens(i) == self%npz+1) then
         readdim = i
      endif
@@ -283,14 +276,11 @@ enddo
 
 if (readdim == -1) call abor1_ftn("fv3-jedi geometry: ak/bk in file does not match dimension of npz from input.nml")
 
-ncstat = nf90_get_var(ncid, varid, self%ak)
-if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
+!Read ak and bk from the file
+call nccheck( nf90_get_var(ncid, akvarid, self%ak), "fv3jedi_geom, nf90_get_var ak" )
+call nccheck( nf90_get_var(ncid, bkvarid, self%bk), "fv3jedi_geom, nf90_get_var bk" )
 
-ncstat = nf90_inq_varid(ncid, bk_var, varid)
-if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, self%bk)
-if(ncstat /= nf90_noerr) print *, trim(nf90_strerror(ncstat))
-
+!Set Ptop
 self%ptop = self%ak(1)
 
 !Done with the FV_Atm stucture here

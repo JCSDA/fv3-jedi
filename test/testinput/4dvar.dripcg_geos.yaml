@@ -1,11 +1,10 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
       state:
-      - restart_type: geos
+      - filetype: geos
         date: '2018-04-14T21:00:00Z'
         filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
         read_crtm_surface: 0
@@ -51,25 +50,9 @@ cost_function:
 #      variable_changes:
 #      - varchange: Control2Model
 #        inputVariables:
-#          variables:
-#          - ua
-#          - va
-#          - t
-#          - ps
-#          - q
-#          - qi
-#          - ql
-#          - o3
+#          variables: ["ua","va","t","ps","q","qi","ql","o3"]
 #        outputVariables:
-#          variables:
-#          - psi 
-#          - chi
-#          - tv
-#          - ps
-#          - qc
-#          - qic
-#          - qlc
-#          - o3c
+#          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: Aircraft
@@ -125,7 +108,6 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0
@@ -133,7 +115,7 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
 output:
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/
   filename_core: 4DVar.geos.fv_core.res.nc
   filename_cplr: 4DVar.geos.coupler.res
@@ -142,12 +124,8 @@ output:
   frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: Data/INPUTS/GEOS_akbk/
   filename_akbk: akbk72.nc4
-  ak_var: AK
-  bk_var: BK
 variational:
   iteration:
   - ninner: '10'
@@ -155,18 +133,13 @@ variational:
     test: 'on'
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
-      ak_var: AK
-      bk_var: BK
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -175,7 +148,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_geos_c24.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0
@@ -189,18 +161,13 @@ variational:
     test: 'on'
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GEOS_akbk/
       filename_akbk: akbk72.nc4
-      ak_var: AK
-      bk_var: BK
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_geos_c24.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -209,7 +176,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_geos_c24.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0

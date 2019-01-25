@@ -32,9 +32,7 @@ ModelNUOPCFV3JEDI::ModelNUOPCFV3JEDI(const GeometryFV3JEDI & resol,
   oops::Log::trace() << "ModelNUOPCFV3JEDI::ModelNUOPCFV3JEDI" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));
   const eckit::Configuration * configc = &model;
-  stageFv3Files(model);
   fv3jedi_nuopc_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  removeFv3Files();
   oops::Log::trace() << "ModelNUOPCFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------

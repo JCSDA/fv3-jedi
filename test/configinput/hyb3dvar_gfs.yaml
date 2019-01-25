@@ -1,18 +1,12 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   filename_akbk: 20180415.000000.fv_core.res.nc
-  ak_var: ak
-  bk_var: bk
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0
@@ -48,7 +42,6 @@ cost_function:
      filename_cplr: 20180415.000000.coupler.res
      filename_trcr: 20180415.000000.fv_tracer.res.nc
      nml_file: Data/fv3files/input_gfs_c48.nml
-     trc_file: Data/fv3files/field_table
      variables:
      - ud
      - vd
@@ -183,7 +176,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -205,7 +197,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -227,7 +218,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -249,7 +239,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -271,7 +260,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -293,7 +281,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -315,7 +302,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -337,7 +323,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -359,7 +344,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -381,7 +365,6 @@ cost_function:
       filename_cplr: 20180415.000000.coupler.res
       filename_trcr: 20180415.000000.fv_tracer.res.nc
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       variables:
       - ud
       - vd
@@ -434,18 +417,13 @@ variational:
       departures: ombg
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -454,7 +432,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0
@@ -468,18 +445,13 @@ variational:
       departures: ombg
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDITLM'
       version: FV3JEDITLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -488,7 +460,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0

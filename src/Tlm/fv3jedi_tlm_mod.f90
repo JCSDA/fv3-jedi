@@ -95,12 +95,12 @@ end subroutine tlm_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_initialize_ad(geom, self, incr)
+subroutine tlm_initialize_ad(geom, self, inc)
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: incr
+type(fv3jedi_increment), intent(in)    :: inc
 
 call self%fv3jedi_lm%init_ad()
 
@@ -108,14 +108,14 @@ end subroutine tlm_initialize_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_initialize_tl(geom, self, incr)
+subroutine tlm_initialize_tl(geom, self, inc)
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: incr
+type(fv3jedi_increment), intent(in)    :: inc
 
-if (self%fsoi_mode) call incr_to_lm_tl(geom,incr,self%fv3jedi_lm)
+if (self%fsoi_mode) call inc_to_lm_tl(geom,inc,self%fv3jedi_lm)
 
 call self%fv3jedi_lm%init_tl()
 
@@ -123,62 +123,62 @@ end subroutine tlm_initialize_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_step_ad(geom, self, incr, traj)
+subroutine tlm_step_ad(geom, self, inc, traj)
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(inout) :: incr
+type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-if (.not. self%fsoi_mode) call lm_to_incr_ad(geom,self%fv3jedi_lm,incr)
+if (.not. self%fsoi_mode) call lm_to_inc_ad(geom,self%fv3jedi_lm,inc)
 call self%fv3jedi_lm%step_ad()
-call incr_to_lm_ad(geom,incr,self%fv3jedi_lm)
+call inc_to_lm_ad(geom,inc,self%fv3jedi_lm)
 
 end subroutine tlm_step_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_step_tl(geom, self, incr, traj)
+subroutine tlm_step_tl(geom, self, inc, traj)
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(inout) :: incr
+type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-if (.not. self%fsoi_mode) call incr_to_lm_tl(geom,incr,self%fv3jedi_lm)
+if (.not. self%fsoi_mode) call inc_to_lm_tl(geom,inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_tl()
-call lm_to_incr_tl(geom,self%fv3jedi_lm,incr)
+call lm_to_inc_tl(geom,self%fv3jedi_lm,inc)
 
 end subroutine tlm_step_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_finalize_ad(geom, self, incr)
+subroutine tlm_finalize_ad(geom, self, inc)
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: incr
+type(fv3jedi_increment), intent(in)    :: inc
 
 call self%fv3jedi_lm%final_ad()
-if (.not. self%fsoi_mode) call lm_to_incr_ad(geom,self%fv3jedi_lm,incr)
+if (.not. self%fsoi_mode) call lm_to_inc_ad(geom,self%fv3jedi_lm,inc)
 
 end subroutine tlm_finalize_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_finalize_tl(geom, self, incr)
+subroutine tlm_finalize_tl(geom, self, inc)
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: incr
+type(fv3jedi_increment), intent(in)    :: inc
 
 call self%fv3jedi_lm%final_tl()
 
@@ -186,201 +186,202 @@ end subroutine tlm_finalize_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine incr_to_lm_tl(geom, incr, lm)
+subroutine inc_to_lm_tl(geom, inc, lm)
 
 use wind_vt_mod, only: a2d
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(in)    :: incr
+type(fv3jedi_increment), intent(in)    :: inc
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
 integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
-allocate(ud(incr%isc:incr%iec  ,incr%jsc:incr%jec+1,1:incr%npz))
-allocate(vd(incr%isc:incr%iec+1,incr%jsc:incr%jec  ,1:incr%npz))
+allocate(ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,1:inc%npz))
+allocate(vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,1:inc%npz))
 ud = 0.0_kind_real
 vd = 0.0_kind_real
 
-call a2d(geom, incr%ua(incr%isc:incr%iec,incr%jsc:incr%jec,:), &
-               incr%va(incr%isc:incr%iec,incr%jsc:incr%jec,:), &
-                    ud(incr%isc:incr%iec  ,incr%jsc:incr%jec+1,:), &
-                    vd(incr%isc:incr%iec+1,incr%jsc:incr%jec  ,:))
+call a2d(geom, inc%fields(inc%ua)%array(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
+               inc%fields(inc%va)%array(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
+                    ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,:), &
+                    vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,:))
 
-lm%pert%u    = ud(incr%isc:incr%iec,incr%jsc:incr%jec,:)
-lm%pert%v    = vd(incr%isc:incr%iec,incr%jsc:incr%jec,:)
-lm%pert%ua   = incr%ua
-lm%pert%va   = incr%va
-lm%pert%t    = incr%t
+lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+lm%pert%ua   = inc%fields(inc%ua)%array
+lm%pert%va   = inc%fields(inc%va)%array
+lm%pert%t    = inc%fields(inc%t)%array
 do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*incr%ps(:,:)
+  lm%pert%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*inc%fields(inc%ps)%array(:,:,1)
 enddo
-lm%pert%qv   = incr%q
-lm%pert%qi   = incr%qi
-lm%pert%ql   = incr%ql
-lm%pert%o3   = incr%o3
+lm%pert%qv   = inc%fields(inc%q)%array
+lm%pert%qi   = inc%fields(inc%qi)%array
+lm%pert%ql   = inc%fields(inc%ql)%array
+lm%pert%o3   = inc%fields(inc%o3)%array
 
-if (.not. incr%hydrostatic) then
-   lm%pert%delz = incr%delz
-   lm%pert%w    = incr%w
+if (.not. inc%hydrostatic) then
+   lm%pert%delz = inc%fields(inc%delz)%array
+   lm%pert%w    = inc%fields(inc%w)%array
 endif
 
 deallocate(ud,vd)
 
-end subroutine incr_to_lm_tl
+end subroutine inc_to_lm_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine lm_to_incr_tl(geom,lm,incr)
+subroutine lm_to_inc_tl(geom,lm,inc)
 
 use wind_vt_mod, only: d2a
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(inout) :: incr
+type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_lm_type),   intent(in)    :: lm
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va,ud,vd
 
-allocate(ud(incr%isd:incr%ied  ,incr%jsd:incr%jed+1,1:incr%npz))
-allocate(vd(incr%isd:incr%ied+1,incr%jsd:incr%jed  ,1:incr%npz))
+allocate(ud(inc%isd:inc%ied  ,inc%jsd:inc%jed+1,1:inc%npz))
+allocate(vd(inc%isd:inc%ied+1,inc%jsd:inc%jed  ,1:inc%npz))
 ud = 0.0_kind_real
 vd = 0.0_kind_real
 
-allocate(ua(incr%isd:incr%ied  ,incr%jsd:incr%jed  ,1:incr%npz))
-allocate(va(incr%isd:incr%ied  ,incr%jsd:incr%jed  ,1:incr%npz))
+allocate(ua(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
+allocate(va(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
 ua = 0.0_kind_real
 va = 0.0_kind_real
 
-ud(incr%isc:incr%iec,incr%jsc:incr%jec,:) = lm%pert%u
-vd(incr%isc:incr%iec,incr%jsc:incr%jec,:) = lm%pert%v
+ud(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%u
+vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
 
 call d2a(geom, ud, vd, ua, va)
 
-incr%ua   = ua(incr%isc:incr%iec,incr%jsc:incr%jec,:)
-incr%va   = va(incr%isc:incr%iec,incr%jsc:incr%jec,:)
-incr%t    = lm%pert%t
-incr%ps   = sum(lm%pert%delp,3)
-incr%q    = lm%pert%qv
-incr%qi   = lm%pert%qi
-incr%ql   = lm%pert%ql
-incr%o3   = lm%pert%o3
-if (.not. incr%hydrostatic) then
-  incr%delz = lm%pert%delz
-  incr%w    = lm%pert%w
+inc%fields(inc%ua)%array   = ua(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+inc%fields(inc%va)%array   = va(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+inc%fields(inc%t)%array    = lm%pert%t
+inc%fields(inc%ps)%array(:,:,1)   = sum(lm%pert%delp,3)
+inc%fields(inc%q)%array    = lm%pert%qv
+inc%fields(inc%qi)%array   = lm%pert%qi
+inc%fields(inc%ql)%array   = lm%pert%ql
+inc%fields(inc%o3)%array   = lm%pert%o3
+if (.not. inc%hydrostatic) then
+  inc%fields(inc%delz)%array = lm%pert%delz
+  inc%fields(inc%w)%array    = lm%pert%w
 endif
 
 deallocate(ud,vd,ua,va)
 
-end subroutine lm_to_incr_tl
+end subroutine lm_to_inc_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine lm_to_incr_ad(geom,lm,incr)
+subroutine lm_to_inc_ad(geom,lm,inc)
 
 use wind_vt_mod, only: d2a_ad
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(in)    :: incr
+type(fv3jedi_increment), intent(in)    :: inc
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
 integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va,ud,vd
 
-allocate(ud(incr%isd:incr%ied  ,incr%jsd:incr%jed+1,1:incr%npz))
-allocate(vd(incr%isd:incr%ied+1,incr%jsd:incr%jed  ,1:incr%npz))
+allocate(ud(inc%isd:inc%ied  ,inc%jsd:inc%jed+1,1:inc%npz))
+allocate(vd(inc%isd:inc%ied+1,inc%jsd:inc%jed  ,1:inc%npz))
 ud = 0.0_kind_real
 vd = 0.0_kind_real
 
-allocate(ua(incr%isd:incr%ied  ,incr%jsd:incr%jed  ,1:incr%npz))
-allocate(va(incr%isd:incr%ied  ,incr%jsd:incr%jed  ,1:incr%npz))
+allocate(ua(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
+allocate(va(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
 ua = 0.0_kind_real
 va = 0.0_kind_real
 
-ua(incr%isc:incr%iec,incr%jsc:incr%jec,:) = incr%ua
-va(incr%isc:incr%iec,incr%jsc:incr%jec,:) = incr%va
+ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%fields(inc%ua)%array
+va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%fields(inc%va)%array
 
-lm%pert%t    = incr%t
+lm%pert%t    = inc%fields(inc%t)%array
 do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = incr%ps(:,:)
+  lm%pert%delp(:,:,k) = inc%fields(inc%ps)%array(:,:,1)
 enddo
-lm%pert%qv   = incr%q
-lm%pert%qi   = incr%qi
-lm%pert%ql   = incr%ql
-lm%pert%o3   = incr%o3
-if (.not. incr%hydrostatic) then
-   lm%pert%delz = incr%delz
-   lm%pert%w    = incr%w
+lm%pert%qv   = inc%fields(inc%q)%array
+lm%pert%qi   = inc%fields(inc%qi)%array
+lm%pert%ql   = inc%fields(inc%ql)%array
+lm%pert%o3   = inc%fields(inc%o3)%array
+if (.not. inc%hydrostatic) then
+   lm%pert%delz = inc%fields(inc%delz)%array
+   lm%pert%w    = inc%fields(inc%w)%array
 endif
 
 call d2a_ad(geom, ud, vd, ua, va)
 
-lm%pert%u = ud(incr%isc:incr%iec,incr%jsc:incr%jec,:)
-lm%pert%v = vd(incr%isc:incr%iec,incr%jsc:incr%jec,:)
+lm%pert%u = ud(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+lm%pert%v = vd(inc%isc:inc%iec,inc%jsc:inc%jec,:)
 
-lm%pert%ua(incr%isc:incr%iec,incr%jsc:incr%jec,:) = 0.0
-lm%pert%va(incr%isc:incr%iec,incr%jsc:incr%jec,:) = 0.0
+lm%pert%ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = 0.0
+lm%pert%va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = 0.0
 
 deallocate(ud,vd,ua,va)
 
-end subroutine lm_to_incr_ad
+end subroutine lm_to_inc_ad
 
 ! ------------------------------------------------------------------------------
 
-subroutine incr_to_lm_ad(geom,incr,lm)
+subroutine inc_to_lm_ad(geom,inc,lm)
 
 use wind_vt_mod, only: a2d_ad
 
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(inout) :: incr
+type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_lm_type),   intent(in)    :: lm
 
 integer :: k
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
 
-allocate(ud(incr%isc:incr%iec  ,incr%jsc:incr%jec+1,1:incr%npz))
-allocate(vd(incr%isc:incr%iec+1,incr%jsc:incr%jec  ,1:incr%npz))
+allocate(ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,1:inc%npz))
+allocate(vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,1:inc%npz))
 ud = 0.0_kind_real
 vd = 0.0_kind_real
 
-incr%ua   = 0.0
-incr%va   = 0.0
-incr%t    = 0.0
-incr%ps   = 0.0
-incr%q    = 0.0
-incr%qi   = 0.0
-incr%ql   = 0.0
-incr%o3   = 0.0
-if (.not. incr%hydrostatic) then
-   incr%delz = 0.0
-   incr%w    = 0.0
+inc%fields(inc%ua)%array   = 0.0
+inc%fields(inc%va)%array   = 0.0
+inc%fields(inc%t )%array   = 0.0
+inc%fields(inc%ps)%array   = 0.0
+inc%fields(inc%q )%array   = 0.0
+inc%fields(inc%qi)%array   = 0.0
+inc%fields(inc%ql)%array   = 0.0
+inc%fields(inc%o3)%array   = 0.0
+
+if (.not. inc%hydrostatic) then
+   inc%fields(inc%delz)%array = 0.0
+   inc%fields(inc%w)%array    = 0.0
 endif
 
-ud(incr%isc:incr%iec,incr%jsc:incr%jec,:) = lm%pert%u
-vd(incr%isc:incr%iec,incr%jsc:incr%jec,:) = lm%pert%v
-incr%t    = lm%pert%t
-incr%ps = 0.0_kind_real
+ud(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%u
+vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
+inc%fields(inc%t)%array    = lm%pert%t
+inc%fields(inc%ps)%array = 0.0_kind_real
 do k = 1,geom%npz
-  incr%ps(:,:) = incr%ps(:,:) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
+  inc%fields(inc%ps)%array(:,:,1) = inc%fields(inc%ps)%array(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
 enddo
-incr%q    = lm%pert%qv
-incr%qi   = lm%pert%qi
-incr%ql   = lm%pert%ql
-incr%o3   = lm%pert%o3
-if (.not. incr%hydrostatic) then
-  incr%delz = lm%pert%delz
-  incr%w    = lm%pert%w
+inc%fields(inc%q)%array    = lm%pert%qv
+inc%fields(inc%qi)%array   = lm%pert%qi
+inc%fields(inc%ql)%array   = lm%pert%ql
+inc%fields(inc%o3)%array   = lm%pert%o3
+if (.not. inc%hydrostatic) then
+  inc%fields(inc%delz)%array = lm%pert%delz
+  inc%fields(inc%q)%array    = lm%pert%w
 endif
 
 !Convert A to D
-call a2d_ad(geom, incr%ua, incr%va, ud, vd)
+call a2d_ad(geom, inc%fields(inc%ua)%array, inc%fields(inc%va)%array, ud, vd)
 
 deallocate(ud,vd)
 
-end subroutine incr_to_lm_ad
+end subroutine inc_to_lm_ad
 
 ! ------------------------------------------------------------------------------
 

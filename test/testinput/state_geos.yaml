@@ -1,14 +1,9 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 Geometry:
   nml_file: Data/fv3files/input_geos_c48.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_akbk/
-  filename_akbk: akbk72.nc4 
-  ak_var: AK
-  bk_var: BK
+  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 StateTest:
   Locations:
     Rdist: '1'
@@ -21,47 +16,22 @@ StateTest:
     - '10.0'
     random_seed: '560921'
   StateFile:
-    restart_type: geos
-    date: '2018-04-14T21:00:00Z'
+    filetype: geos
     filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4        
-    read_crtm_surface: 0
-    variables:
-    - ud
-    - vd
-    - ua
-    - va
-    - t
-    - delp
-    - q
-    - qi
-    - ql
-    - o3
+    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   StateGenerate:
     analytic_init: dcmip-test-4-0
-    restart_type: geos
-    read_crtm_surface: 0
     date: '2018-04-14T21:00:00Z'   
     nml_file: Data/fv3files/input_geos_c48.nml
-    trc_file: Data/fv3files/field_table
-    variables:
-    - ud
-    - vd
-    - ua
-    - va
-    - t
-    - delp
-    - q
-    - qi
-    - ql
-    - o3
+    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   InterpTest:
     variables:
     - air_temperature
     - atmosphere_ln_pressure_coordinate
   date: '2018-04-14T21:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '622.46712500703575'
-  norm-gen: '629.63499528285274'
+  norm-file: '664.99989769030628'
+  norm-gen: '630.85087311152995'
   tolerance: 1.0e-08
   values:
   - 2806.686940093405

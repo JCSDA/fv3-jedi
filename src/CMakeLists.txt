@@ -23,9 +23,10 @@ Increment/IncrementFV3JEDI.cc
 Increment/IncrementFV3JEDI.h
 Increment/IncrementFV3JEDIFortran.h
 Increment/fv3jedi_increment_interface_mod.f90
-Increment/fv3jedi_increment_io_mod.f90
 Increment/fv3jedi_increment_mod.f90
 Increment/fv3jedi_increment_utils_mod.F90
+IO/fv3jedi_io_geos_mod.f90
+IO/fv3jedi_io_gfs_mod.f90
 IO/fv3jedi_io_latlon_mod.f90
 Localization/LocalizationMatrixFV3JEDI.cc
 Localization/LocalizationMatrixFV3JEDI.h
@@ -47,7 +48,6 @@ State/StateFV3JEDI.cc
 State/StateFV3JEDI.h
 State/StateFV3JEDIFortran.h
 State/fv3jedi_state_interface_mod.f90
-State/fv3jedi_state_io_mod.f90
 State/fv3jedi_state_mod.f90
 State/fv3jedi_state_utils_mod.F90
 Utilities/FV3JEDITraits.h
@@ -55,7 +55,9 @@ Utilities/Fortran.h
 Utilities/UtilitiesFV3JEDI.cc
 Utilities/UtilitiesFV3JEDI.h
 Utilities/fv3jedi_constants_mod.f90
+Utilities/fv3jedi_field_mod.f90
 Utilities/fv3jedi_kinds_mod.f90
+Utilities/fv3jedi_netcdf_utils_mod.F90
 Utilities/fv3jedi_vars_mod.f90
 Utilities/instantiateFV3JEDIVarChangeFactory.h
 Utilities/instantiateObsFilterFactory.h
