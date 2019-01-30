@@ -24,11 +24,6 @@ ecbuild_add_executable( TARGET  fv3jedi_parameters.x
                         LIBS    fv3jedi
                       )
 
-#ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
-#                        SOURCES fv3jediConvertState.cc
-#                        LIBS    fv3jedi
-#                       )
-
 #ecbuild_add_executable( TARGET  fv3jedi_linearforecast.x
 #                        SOURCES fv3jediLinearForecast.cc
 #                        LIBS    fv3jedi
