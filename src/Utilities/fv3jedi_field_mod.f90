@@ -212,13 +212,16 @@ end subroutine fields_gpnorm
 
 subroutine fields_print(nf, fields, name)
 
+use mpi
+
 implicit none
 integer,              intent(in)    :: nf
 type(fv3jedi_field),  intent(in)    :: fields(nf)
 character(len=*),     intent(in)    :: name
 
-integer :: var
+integer :: var, ierr
 real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
+real(kind=kind_real) :: rin, rout
 type(fckit_mpi_comm) :: f_comm
 character(len=34) :: printname
 
@@ -235,15 +238,25 @@ endif
 do var = 1,nf
 
   gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
-  call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+  !call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+  call MPI_ALLREDUCE( gs3, gs3g, 1, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr )
 
   tmp(1) = minval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
   tmp(2) = maxval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
   tmp(3) =    sum(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
 
-  call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
+  !call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
+  rin = tmp(1)
+  call MPI_ALLREDUCE( rin, rout, 1, MPI_DOUBLE_PRECISION, MPI_MIN, MPI_COMM_WORLD, ierr )
+  pstat(1) = rout
+  !call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
+  rin = tmp(2)
+  call MPI_ALLREDUCE( rin, rout, 1, MPI_DOUBLE_PRECISION, MPI_MAX, MPI_COMM_WORLD, ierr )
+  pstat(2) = rout
+  !call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
+  rin = tmp(3)
+  call MPI_ALLREDUCE( rin, rout, 1, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierr )
+  pstat(3) = rout
   pstat(3) = sqrt(pstat(3)/gs3g)
 
   if (f_comm%rank() == 0) write(*,"(A10,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &

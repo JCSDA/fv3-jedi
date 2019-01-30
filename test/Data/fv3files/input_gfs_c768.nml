@@ -1,9 +1,9 @@
 &fv_core_nml
        layout = 12,12
        io_layout = 1,1
-       npx = 181
-       npy = 181
-       npz = 72
+       npx = 769
+       npy = 769
+       npz = 64
        ntiles = 6
        fv_debug = .F.
        n_sponge = 9
@@ -12,8 +12,8 @@
        rf_cutoff = 7.5e2
        d2_bg_k1 = 0.20
        d2_bg_k2 = 0.06
-       fv_sg_adj = 0
-       remap_option = 0
+       fv_sg_adj = -1
+       remap_option = 2
        kord_tm =  9
        kord_mt =  9
        kord_wz =  9
@@ -23,7 +23,7 @@
        beta = 0.
        a_imp = 1.
        p_fac = 0.1 
-       k_split = 4
+       k_split = 2
        n_split = 0 
        nwat = 1 
        nord = 2

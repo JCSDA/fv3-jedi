@@ -93,24 +93,25 @@ end subroutine c_fv3jedi_fv3_initialize
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_fv3_step(c_key_self, c_key_state, c_dt) bind(c,name='fv3jedi_fv3_step_f90')
+subroutine c_fv3jedi_fv3_step(c_key_self, c_key_state, c_key_geom, c_dt) bind(c,name='fv3jedi_fv3_step_f90')
 
 implicit none
 integer(c_int), intent(in)    :: c_key_self  !< Model
 integer(c_int), intent(in)    :: c_key_state !< Model state
+integer(c_int), intent(in)    :: c_key_geom  !< Geometry
 type(c_ptr),    intent(inout) :: c_dt        !< DateTime
 
-type(fv3_model), pointer :: self
+type(fv3_model),     pointer :: self
 type(fv3jedi_state), pointer :: state
-
-type(datetime) :: fdate
+type(fv3jedi_geom),  pointer :: geom
+type(datetime)               :: fdate
 
 call fv3jedi_fv3_registry%get(c_key_self, self)
 call fv3jedi_state_registry%get(c_key_state,state)
-
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call c_f_datetime(c_dt, fdate)
 
-call fv3_step(self, state, fdate)
+call fv3_step(self, state, geom, fdate)
 
 end subroutine c_fv3jedi_fv3_step
 

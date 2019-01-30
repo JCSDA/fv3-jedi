@@ -36,6 +36,7 @@ extern "C" {
 
   void fv3jedi_fv3_step_f90(const F90model &,
                             const F90state &,
+                            const F90geom &,
                             util::DateTime * const *);
 
   void fv3jedi_fv3_finalize_f90(const F90model &,
