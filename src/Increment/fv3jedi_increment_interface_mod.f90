@@ -476,7 +476,7 @@ real(kind=kind_real) :: zz
 
 call fv3jedi_increment_registry%get(c_key_inc,inc)
 
-call incrms(inc, zz)
+call rms(inc, zz)
 
 prms = zz
 
@@ -553,7 +553,7 @@ type(fv3jedi_increment), pointer :: self
 
 call fv3jedi_increment_registry%get(c_key_self,self)
 
-nv = self%vars%nv
+nv = self%nf
 nx = self%npx
 ny = self%npy
 

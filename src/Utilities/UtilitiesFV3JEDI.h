@@ -16,10 +16,10 @@ namespace eckit {
 
 namespace fv3jedi {
 
-  void stageFv3Files(const eckit::Configuration &conf);
-  void stageFv3Input(const eckit::Configuration &conf);
+  void stageFv3Files(const eckit::Configuration &);
   void removeFv3Files();
-  void removeFv3Input();
+
+  void delete_file(const char *);
 
 }  // namespace fv3jedi
 

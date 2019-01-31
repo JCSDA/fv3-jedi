@@ -1,11 +1,10 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
       state:
-      - restart_type: gfs
+      - filetype: gfs
         datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_write: 'Data/'
@@ -17,7 +16,6 @@ cost_function:
         filename_sfcd: 20180415.000000.sfc_data.nc
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         variables:
         - ud
         - vd
@@ -70,25 +68,9 @@ cost_function:
 #      variable_changes:
 #      - varchange: Control2Model
 #        inputVariables:
-#          variables:
-#          - ua
-#          - va
-#          - t
-#          - ps
-#          - q
-#          - qi
-#          - ql
-#          - o3
+#          variables: ["ua","va","t","ps","q","qi","ql","o3"]
 #        outputVariables:
-#          variables:
-#          - psi 
-#          - chi
-#          - tv
-#          - ps
-#          - qc
-#          - qic
-#          - qlc
-#          - o3c
+#          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: "AMSU-A"
@@ -130,15 +112,9 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-  tstep: PT3H
-  readtraj: 0
-  lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
+  tstep: PT15M
 output:
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/
   filename_core: 3DVar.gfs.fv_core.res.nc
   filename_cplr: 3DVar.gfs.coupler.res
@@ -147,12 +123,8 @@ output:
   frequency: PT1H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   filename_akbk: 20180415.000000.fv_core.res.nc
-  ak_var: ak
-  bk_var: bk
 variational:
   iteration:
   - diagnostics:
@@ -172,22 +144,15 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
-        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
-        readtraj: 0
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
+        tstep: PT15M
+      tstep: PT15M
+      version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
@@ -204,20 +169,15 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
-        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
-        readtraj: 0
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
+        tstep: PT15M
+      tstep: PT15M
+      update_dgridwind: '0'
+      update_pressures: '1'
+      version: FV3JEDIIdTLM
+      varchange: 'Identity'
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180415.000000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
     test: 'on'

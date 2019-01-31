@@ -8,7 +8,7 @@
 module fv3jedi_increment_utils_mod
 
 use fv3jedi_kinds_mod
-use fv3jedi_vars_mod, only: fv3jedi_vars 
+use fv3jedi_field_mod, only: fv3jedi_field
 
 implicit none
 private
@@ -17,43 +17,32 @@ public fv3jedi_increment, fv3jedi_increment_registry
 !> Fortran derived type to hold FV3JEDI increment
 type :: fv3jedi_increment
 
-  type(fv3jedi_vars) :: vars 
-
-  !Local copies of grid
   integer :: isc, iec, jsc, jec
   integer :: isd, ied, jsd, jed
   integer :: npx, npy, npz
-  logical :: hydrostatic = .false.
-  integer :: calendar_type
-  integer, dimension(6) :: date
-  integer, dimension(6) :: date_init
+  integer :: ntiles, ntile
+  logical :: hydrostatic = .true.
+  logical :: tladphystrj = .false.
+  integer :: calendar_type, date_init(6) !Read/write for GFS
+  integer :: nf
 
-  !Note: for simplicity in transforming variables the increment is A-Grid winds.
-  !This means all variables are co-located at cell centers.
+  type(fv3jedi_field), allocatable :: fields(:)
 
-  !Increment variables
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ua     ! A-grid zonal wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: va     ! A-grid meridional wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: t      ! dry temperature (K)
-  real(kind=kind_real), allocatable, dimension(:,:  ) :: ps     ! surface pressure (Pa)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: q      ! specific humidity (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qi     ! cloud liquid ice (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ql     ! cloud liquid water (kg/kg)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: o3     ! ozone (kg/kg)
-
-  !Nonhydrostatic increment (not using for now)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: w      ! cell center vertical wind (m/s)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: delz   ! layer thickness (meters)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: delp   ! pressure thickness (Pa)
-
-  !Control variables (used for the B-Matrix/Jb)
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: psi    ! Stream function
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: chi    ! Velocity potential
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: tv     ! Virtual temperature
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qc     ! humidity control variable 
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qic    ! cloud liquid ice control variable
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: qlc    ! cloud liquid water control variable
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: o3c    ! ozone control variable
+  integer :: ua   = 0
+  integer :: va   = 0
+  integer :: t    = 0
+  integer :: ps   = 0
+  integer :: q    = 0
+  integer :: qi   = 0
+  integer :: ql   = 0
+  integer :: o3   = 0
+  integer :: psi  = 0
+  integer :: chi  = 0
+  integer :: tv   = 0
+  integer :: rh   = 0
+  integer :: w    = 0
+  integer :: delz = 0
+  integer :: delp = 0
 
 end type fv3jedi_increment
 

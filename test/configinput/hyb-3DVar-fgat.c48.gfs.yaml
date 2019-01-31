@@ -1,6 +1,5 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
@@ -14,7 +13,6 @@ cost_function:
         filename_cplr: 20180414.210000.coupler.res
         filename_trcr: 20180414.210000.fv_tracer.res.nc
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 # ----------
 # Identity B
@@ -71,7 +69,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
@@ -82,7 +79,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
@@ -93,7 +89,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
@@ -104,7 +99,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem006/RESTART/
@@ -115,7 +109,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem007/RESTART/
@@ -126,7 +119,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem008/RESTART/
@@ -137,7 +129,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem009/RESTART/
@@ -148,7 +139,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ua','va','t','delp','q','qi','ql','o3']
         - restart_type: gfs
           datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem010/RESTART/
@@ -159,7 +149,6 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           nml_file: Data/fv3files/input_gfs_c48.nml
-          trc_file: Data/fv3files/field_table
           variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
         variables:
           variables: ['ua','va','t','ps','q','qi','ql','o3']
@@ -202,7 +191,7 @@ cost_function:
        #   inputVariables:
        #     variables: ['ua','va','t','ps','q','qi','ql','o3']
        #   outputVariables:
-       #     variables: ['psi','chi','tv','ps','qc','qic','qlc','o3c']
+       #     variables: ['psi','chi','tv','ps','rh','qi','ql','o3']
   Jo:
     ObsTypes:
     - ObsType: Radiosonde
@@ -285,7 +274,6 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0
@@ -314,12 +302,8 @@ output:
 #  frequency: PT01H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
-  trc_file: Data/fv3files/field_table
-  halo: '3'
   filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
   filename_akbk: 20180414.210000.fv_core.res.nc
-  ak_var: ak
-  bk_var: bk
 variational:
   iteration:
   - diagnostics:
@@ -330,7 +314,6 @@ variational:
       name: 'FV3JEDITLM'
       version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       lm_do_dyn: 1
@@ -339,7 +322,6 @@ variational:
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        trc_file: Data/fv3files/field_table
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT15M
         readtraj: 0
@@ -349,10 +331,6 @@ variational:
     ninner: '8'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      halo: '3'
       filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
       filename_akbk: 20180414.210000.fv_core.res.nc
-      ak_var: ak
-      bk_var: bk
     test: 'on'

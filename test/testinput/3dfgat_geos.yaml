@@ -1,22 +1,17 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 cost_function:
   Jb:
     Background:
       state:
-      - restart_type: geos
-        date: '2018-04-14T21:00:00Z'
-        filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
-        read_crtm_surface: 0
-        variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
+      - filetype: geos
+        filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
+        variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+                    "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+                    "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
     Covariance:
       covariance: FV3JEDIstatic
-      date: '2018-04-15T00:00:00Z'
-      horizontal_length_scale: 1e6
-      maximum_condition_number: 1.0e6
-      standard_deviation: '0.8'
-      vertical_correlation: '0.2'
+      date: '2018-04-14T21:00:00Z'
 #    Covariance:
 #      covariance: BUMP
 #      default_seed: 1
@@ -51,25 +46,9 @@ cost_function:
 #      variable_changes:
 #      - varchange: Control2Model
 #        inputVariables:
-#          variables:
-#          - ua
-#          - va
-#          - t
-#          - ps
-#          - q
-#          - qi
-#          - ql
-#          - o3
+#          variables: ["ua","va","t","ps","q","qi","ql","o3"]
 #        outputVariables:
-#          variables:
-#          - psi 
-#          - chi
-#          - tv
-#          - ps
-#          - qc
-#          - qic
-#          - qlc
-#          - o3c
+#          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: Aircraft
@@ -77,7 +56,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/geos.3dvar.fgat.air.out.nc4
+          obsfile: Data/3dfgat_geos.aircraft.nc4
         obsvalue: ObsValue
       variables:
       - air_temperature
@@ -86,12 +65,19 @@ cost_function:
 #     - specific_humidity
       Covariance:
         covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variables:
+        - air_temperature
+        - eastward_wind
+        - northward_wind
+        threshold: 6.0
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/geos.3dvar.fgat.rs.out.nc4
+          obsfile: Data/3dfgat_geos.radiosonde.nc4
         obsvalue: ObsValue
       variables:
       - air_temperature
@@ -101,20 +87,11 @@ cost_function:
       - Filter: Background Check
         variables:
         - air_temperature
-        threshold: 3.0
+        threshold: 4.0
   cost_type: 4D-Var
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - ps
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ["ud","vd","ua","va","t","delp","ps","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
 final:
@@ -133,21 +110,15 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
 output:
-  restart_type: gfs
-  datapath_write: Data/
-  filename_core: 3DVar-FGAT.geos.fv_core.res.nc
-  filename_cplr: 3DVar-FGAT.geos.coupler.res
-  filename_trcr: 3DVar-FGAT.geos.fv_tracer.res.nc
+  filetype: geos
+  datapath: Data/
+  filename: 3dfgat_geos_ana.
   first: PT0H
-  frequency: PT01H
+  frequency: PT1H
 resolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_akbk/
-  filename_akbk: akbk72.nc4
-  ak_var: AK
-  bk_var: BK
+  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 variational:
   iteration:
   - diagnostics:
@@ -178,9 +149,5 @@ variational:
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml
       trc_file: Data/fv3files/field_table
-      halo: '3'
-      filepath_akbk: Data/INPUTS/GEOS_akbk/
-      filename_akbk: akbk72.nc4
-      ak_var: AK
-      bk_var: BK
+      pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
     test: 'on'

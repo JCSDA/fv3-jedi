@@ -1,26 +1,20 @@
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 Assimilation Window:
   Begin: '2018-04-14T21:00:00Z'
   Length: PT6H
 Geometry:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
-  halo: '3'
-  filepath_akbk: Data/INPUTS/GEOS_akbk/
-  filename_akbk: akbk72.nc4
-  ak_var: AK
-  bk_var: BK
+  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 Initial Condition:
-  restart_type: geos
-  date: '2018-04-14T21:00:00Z'
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
-  read_crtm_surface: 0
-  variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
+  filetype: geos
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 Model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   readtraj: 0

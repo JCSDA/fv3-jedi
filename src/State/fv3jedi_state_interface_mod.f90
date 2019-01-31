@@ -277,7 +277,7 @@ real(kind=kind_real) :: zz
 
 call fv3jedi_state_registry%get(c_key_state,state)
 
-call staterms(state, zz)
+call rms(state, zz)
 
 prms = zz
 
@@ -343,16 +343,16 @@ end subroutine fv3jedi_state_getvalues_c
 
 ! ------------------------------------------------------------------------------   
 
-subroutine fv3jedi_state_sizes_c(c_key_self,nx,ny,nv) bind(c,name='fv3jedi_state_sizes_f90')
+subroutine fv3jedi_state_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_state_sizes_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(inout) :: nx,ny,nv
+integer(c_int), intent(inout) :: nx,ny,nf
 type(fv3jedi_state), pointer :: self
 
 call fv3jedi_state_registry%get(c_key_self,self)
 
-nv = self%vars%nv
+nf = self%nf
 nx = self%npx
 ny = self%npy
 

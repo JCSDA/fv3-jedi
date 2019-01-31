@@ -1,21 +1,15 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-trc_file: Data/fv3files/field_table
 linearForecastMode: 1
 linearForecastLength: PT1H
 linearForecastApplyJnormGrad: 0
 resolution:
   filename_akbk: akbk72.nc4
   filepath_akbk: Data/INPUTS/GEOS_akbk/
-  ak_var: AK
-  bk_var: BK
-  halo: '3'
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
 model:
   name: 'FV3JEDI'
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_fsoi.nml
   tstep: PT15M
   readtraj: 1
@@ -25,7 +19,7 @@ model:
   lm_do_trb: 1
   lm_do_mst: 1
 state:
-  restart_type: geos
+  filetype: geos
   date: '2018-10-03T00:00:00Z'
   read_crtm_surface: 0
   filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4    
@@ -33,12 +27,12 @@ state:
 increment:
   state:
   - from_forecast: 0
-    restart_type: geos
+    filetype: geos
     date: '2018-10-03T00:00:00Z'
     read_crtm_surface: 0
     filename: Data/INPUTS/GEOS_c180/H15/GEOS.traj.c180.eta.20181003_0000z.nc4    
     variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
-  - restart_type: geos
+  - filetype: geos
     date: '2018-10-03T00:00:00Z'
     read_crtm_surface: 0
     filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4    
@@ -49,17 +43,17 @@ JnormGrad:
   pref: 100000.0
   qepsilon: 0.3
 incrementInitialOutput:
-#  restart_type: geos
+#  filetype: geos
 #  geos_tile_dim: 0
 #  datapath: "Data/RESTART/"
 #  filename: "JediGEOS.Jgradf_twe.eta."
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/
   filename_core: initialcond.final.fv_core.res.nc
   filename_cplr: initialcond.final.coupler.res
   filename_trcr: initialcond.final.fv_tracer.res.nc
 incrementOutput:
-  restart_type: gfs
+  filetype: gfs
   datapath_write: Data/
   filename_core: linearforecast.final.fv_core.res.nc
   filename_cplr: linearforecast.final.coupler.res
@@ -70,7 +64,6 @@ linearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
   nml_file: Data/fv3files/input_geos_c180.nml
-  trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_fsoi.nml
   tstep: PT15M
   lm_do_dyn: 1
@@ -80,7 +73,6 @@ linearModel:
   trajectory:
     name: 'FV3JEDI'
     nml_file: Data/fv3files/input_geos_c180.nml
-    trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_fsoi.nml
     tstep: PT15M
     readtraj: 1

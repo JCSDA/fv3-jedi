@@ -166,23 +166,23 @@ implicit none
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
  
-lm%traj%u       = state%ud
-lm%traj%v       = state%vd
-lm%traj%ua      = state%ua
-lm%traj%va      = state%va
-lm%traj%t       = state%t
-lm%traj%delp    = state%delp
-lm%traj%qv      = state%q
-lm%traj%qi      = state%qi
-lm%traj%ql      = state%ql
-lm%traj%o3      = state%o3
+lm%traj%u       = state%fields(state%ud)%array
+lm%traj%v       = state%fields(state%vd)%array
+lm%traj%ua      = state%fields(state%ua)%array
+lm%traj%va      = state%fields(state%va)%array
+lm%traj%t       = state%fields(state%t)%array
+lm%traj%delp    = state%fields(state%delp)%array
+lm%traj%qv      = state%fields(state%q)%array
+lm%traj%qi      = state%fields(state%qi)%array
+lm%traj%ql      = state%fields(state%ql)%array
+lm%traj%o3      = state%fields(state%o3)%array
 
 if (.not. lm%conf%hydrostatic) then
-lm%traj%w       = state%w
-lm%traj%delz    = state%delz
+lm%traj%w       = state%fields(state%w)%array
+lm%traj%delz    = state%fields(state%delz)%array
 endif
 
-lm%traj%phis = state%phis
+lm%traj%phis = state%fields(state%phis)%array(:,:,1)
 
 end subroutine state_to_lm
 
@@ -194,23 +194,23 @@ implicit none
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
  
-state%ud      = lm%traj%u
-state%vd      = lm%traj%v
-state%ua      = lm%traj%ua
-state%va      = lm%traj%va
-state%t       = lm%traj%t
-state%delp    = lm%traj%delp
-state%q       = lm%traj%qv
-state%qi      = lm%traj%qi
-state%ql      = lm%traj%ql
-state%o3      = lm%traj%o3
+state%fields(state%ud)%array      = lm%traj%u
+state%fields(state%vd)%array      = lm%traj%v
+state%fields(state%ua)%array      = lm%traj%ua
+state%fields(state%va)%array      = lm%traj%va
+state%fields(state%t)%array       = lm%traj%t
+state%fields(state%delp)%array    = lm%traj%delp
+state%fields(state%q)%array       = lm%traj%qv
+state%fields(state%qi)%array      = lm%traj%qi
+state%fields(state%ql)%array      = lm%traj%ql
+state%fields(state%o3)%array      = lm%traj%o3
 
 if (.not. lm%conf%hydrostatic) then
-state%w       = lm%traj%w
-state%delz    = lm%traj%delz
+state%fields(state%w)%array       = lm%traj%w
+state%fields(state%delz)%array    = lm%traj%delz
 endif
 
-state%phis    = lm%traj%phis
+state%fields(state%phis)%array(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state
 
@@ -299,61 +299,61 @@ icount(4) = 1
 var = 'ud'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%ud(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%ud)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'vd'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%vd(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%vd)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'ua'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%ua(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%ua)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'va'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%va(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%va)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 't'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%t(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%t)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'delp'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%delp(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%delp)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'q'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%q(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%q)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'qi'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%qi(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%qi)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'ql'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%ql(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%ql)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'o3mr'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%o3(isc:iec,jsc:jec,:), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%o3)%array, istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 if (.not.self%fv3jedi_lm%conf%hydrostatic) then
@@ -361,13 +361,13 @@ if (.not.self%fv3jedi_lm%conf%hydrostatic) then
   var = 'w'
   ncstat = nf90_inq_varid (ncid, trim(var), varid)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%w(isc:iec,jsc:jec,:), istart, icount)
+  ncstat = nf90_get_var(ncid, varid, state%fields(state%w)%array, istart, icount)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
  
   var = 'delz'
   ncstat = nf90_inq_varid (ncid, trim(var), varid)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%delz(isc:iec,jsc:jec,:), istart, icount)
+  ncstat = nf90_get_var(ncid, varid, state%fields(state%delz)%array, istart, icount)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 endif
@@ -377,19 +377,19 @@ if (self%fv3jedi_lm%conf%do_phy_mst .ne. 0) then
   var = 'qls'
   ncstat = nf90_inq_varid (ncid, trim(var), varid)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%qls(isc:iec,jsc:jec,:), istart, icount)
+  ncstat = nf90_get_var(ncid, varid, state%fields(state%qls)%array, istart, icount)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
  
   var = 'qcn'
   ncstat = nf90_inq_varid (ncid, trim(var), varid)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%qcn(isc:iec,jsc:jec,:), istart, icount)
+  ncstat = nf90_get_var(ncid, varid, state%fields(state%qcn)%array, istart, icount)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
  
   var = 'cfcn'
   ncstat = nf90_inq_varid (ncid, trim(var), varid)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%cfcn(isc:iec,jsc:jec,:), istart, icount)
+  ncstat = nf90_get_var(ncid, varid, state%fields(state%cfcn)%array, istart, icount)
   if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 endif
@@ -409,85 +409,85 @@ icount(3) = 1
 var = 'phis'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%phis(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%phis)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'frocean'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%frocean(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%frocean)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'frland'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%frland(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%frland)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'varflt'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%varflt(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%varflt)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'ustar'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%ustar(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%ustar)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'bstar'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%bstar(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%bstar)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'zpbl'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%zpbl(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%zpbl)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'cm'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%cm(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%cm)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'ct'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%ct(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%ct)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'cq'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%cq(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%cq)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'kcbl'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%kcbl(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%kcbl)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'ts'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%ts(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%ts)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'khl'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%khl(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%khl)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 var = 'khu'
 ncstat = nf90_inq_varid (ncid, trim(var), varid)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%khu(isc:iec,jsc:jec), istart, icount)
+ncstat = nf90_get_var(ncid, varid, state%fields(state%khu)%array(:,:,1), istart, icount)
 if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
 
 !Close this file

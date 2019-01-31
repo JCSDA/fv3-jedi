@@ -99,6 +99,7 @@ set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Localization
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Model
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/fv3
