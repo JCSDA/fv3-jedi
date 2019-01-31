@@ -34,10 +34,10 @@ Assimilation Window:
 Geometry:
   nml_file: Data/fv3files/input_gfs_c768.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/bkg768/20180415.000000.fv_core.res.nc
+  pathfile_akbk: /gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/20180415.000000.fv_core.res.nc
 Initial Condition:
   filetype: gfs
-  datapath_tile: /gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/bkg768/
+  datapath_tile: /gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
@@ -55,7 +55,7 @@ Initial Condition:
 #  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
 #  readtraj: 1
 #  trajmodel: 'gfs'
-#  trajpath: '/gpfsm/dnb31/drholdaw/JediScratch/HighResTests/GFS_C384/bkg768/'
+#  trajpath: '/gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/'
 #  trajfile: 'fv_core.res.nc'
 #  lm_do_dyn: 1
 #  lm_do_trb: 0

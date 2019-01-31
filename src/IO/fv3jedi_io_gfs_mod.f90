@@ -90,11 +90,13 @@ do var = 1,size(fields)
   register = .true.
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
+!  case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
+  case("u","v","ud","vd","phis","T","DELP","W","DZ")
     filename = filename_core
     restart => restart_core
     read_core = .true.
-  case("sphum","ice_wat","liq_wat","o3mr")
+  !case("sphum","ice_wat","liq_wat","o3mr")
+  case("sphum","liq_wat","o3mr")
     filename = filename_trcr
     restart => restart_trcr
     read_trcr = .true.
@@ -108,7 +110,8 @@ do var = 1,size(fields)
     read_sfcw = .true.
   case("qls","qcn","cfcn","frocean","frland", &
        "varflt","ustar","bstar","zpbl","cm", &
-       "ct","cq","kcbl","ts","khl","khu")
+       "ct","cq","kcbl","ts","khl","khu",&
+       "ua","va","ice_wat")
     register = .false. !Not currently available from GFS, do nothing
   case default
     call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
