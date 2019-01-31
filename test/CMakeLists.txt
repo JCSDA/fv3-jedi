@@ -1019,6 +1019,7 @@ Data/RESTART/TLM_vs_NLM.py
 )
 
 list( APPEND fv3jedi_config_input
+configinput/convert_gfs2geos.yaml
 configinput/hofx_geos16.yaml
 configinput/hyb-3DVar.dripcg.geos.yaml
 configinput/hyb-3DVar.dripcg.gfs.yaml
