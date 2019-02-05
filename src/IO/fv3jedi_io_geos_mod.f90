@@ -191,9 +191,7 @@ do n = 1,size(fields)
     endif
 
     if (f_comm%size() > 6) then
-      call f_comm_tile%broadcast(arrayg,0)
-      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
-      !call scatter_tile(geom, f_comm_tile, arrayg, fields(n)%array(:,:,lev))
+      call scatter_tile(geom, f_comm_tile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
     else
       fields(n)%array(:,:,lev) = arrayg !1 proc per tile already
     endif
@@ -246,6 +244,9 @@ logical :: iam_io_proc
 
 character(len=255) :: datapath, filename
 character(len=64)  :: datefile
+character(len=8)   :: date8s
+character(len=6)   :: time6s
+integer :: date8, time6
 integer :: ncid, varid(1000), vc
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
@@ -309,6 +310,10 @@ if (iam_io_proc) then
   write(datefile,'(I4,A1,I0.2,A1,I0.2,A1,I0.2,A1,I0.2,A1,I0.2)') date(1),"-",date(2),"-",date(3)," "&
                                                     ,date(4),":",date(5),":",date(6)
   
+  write(date8s,'(I4,I0.2,I0.2)')   date(1),date(2),date(3)
+  write(time6s,'(I0.2,I0.2,I0.2)') date(4),date(5),date(6)
+  read(date8s,*)  date8
+  read(time6s,*)  time6
   
   ! Create the file
   call nccheck( nf90_create( filename, ior(NF90_NETCDF4, NF90_MPIIO), ncid, &
@@ -373,8 +378,10 @@ if (iam_io_proc) then
 
   vc=vc+1;
   call nccheck( nf90_def_var(ncid, "time", NF90_INT, t_dimid, varid(vc)), "nf90_def_var time" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "time") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "units", "minutes since "//trim(datefile)) )
+  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "time"), "nf90_def_var time long_name" )
+  call nccheck( nf90_put_att(ncid, varid(vc), "begin_date", date8), "nf90_def_var time begin_date" )
+  call nccheck( nf90_put_att(ncid, varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
+  
 
   ! Define fields to be written
   do n = 1,size(fields)
@@ -505,7 +512,7 @@ do n = 1,size(fields)
   do lev = 1,fields(n)%npz
 
     if (f_comm%size() > 6) then
-      call gather_tile(geom, f_comm_tile, fields(n)%array(:,:,lev), arrayg)
+      call gather_tile(geom, f_comm_tile, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
     else
       arrayg = fields(n)%array(:,:,lev)
     endif
