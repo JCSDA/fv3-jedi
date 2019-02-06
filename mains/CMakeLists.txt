@@ -14,10 +14,10 @@ ecbuild_add_executable( TARGET  fv3jedi_hofx.x
                         LIBS    fv3jedi
                       )
 
-ecbuild_add_executable( TARGET  fv3jedi_hofx3D.x
-                        SOURCES fv3jediHofX3D.cc
-                        LIBS    fv3jedi
-                      )
+#ecbuild_add_executable( TARGET  fv3jedi_hofx3D.x
+#                        SOURCES fv3jediHofX3D.cc
+#                        LIBS    fv3jedi
+#                      )
 
 ecbuild_add_executable( TARGET  fv3jedi_4dvar.x
                         SOURCES fv3jedi4DVar.cc

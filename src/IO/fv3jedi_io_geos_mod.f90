@@ -193,7 +193,7 @@ do n = 1,size(fields)
     if (f_comm%size() > 6) then
       call scatter_tile(geom, f_comm_tile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
     else
-      fields(n)%array(:,:,lev) = arrayg !1 proc per tile already
+      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec) !1 proc per tile already
     endif
   enddo
 

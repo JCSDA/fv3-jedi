@@ -285,18 +285,18 @@ if (self%fv3jedi_lm%conf%rpe) print*, 'Psuedo model from file: ', trim(filename)
 if (self%fv3jedi_lm%conf%rpe) print*, ' '
 
 ! Read state from file
-!if (trim(self%trajmodel) == "gfs") then
-!
-!  call read_gfs ( geom, state%fields, vdate, state%calendar_type, state%date_init, &
-!                  datapath_ti, datapath_sp, &
-!                  filename_spec, filename_core, filename_trcr, &
-!                  filename_sfcd, filename_sfcw, filename_cplr )
-!
-!elseif (trim(self%trajmodel) == "geos") then
-!
-!  call read_geos(geom, state%fields, vdate, filename)
-!
-!endif
+if (trim(self%trajmodel) == "gfs") then
+
+  call read_gfs ( geom, state%fields, vdate, state%calendar_type, state%date_init, &
+                  datapath_ti, datapath_sp, &
+                  filename_spec, filename_core, filename_trcr, &
+                  filename_sfcd, filename_sfcw, filename_cplr )
+
+elseif (trim(self%trajmodel) == "geos") then
+
+  call read_geos(geom, state%fields, vdate, filename)
+
+endif
 
 end subroutine psuedo_model
 

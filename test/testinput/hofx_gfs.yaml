@@ -33,7 +33,7 @@ Observations:
   - ObsType: Aircraft
     ObsData:
       ObsDataIn:
-        obsfile: Data/aircraft_obs_2018041500_s.nc4
+        obsfile: Data/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/aircraft_hofx.nc4
     variables:
@@ -48,42 +48,42 @@ Observations:
 #        obsfile: Data/gnssro_hofx.nc4
 #      obsvalue: BNA
 #    ObsBias: {}
-#  - ObsType: GnssroRef
-#    ObsOptions:
-#      ro_top_meter: 30000
-#      obserr_method: RefGSI
-#      use_compress: 1
-#    ObsData:
-#      ObsDataIn:
-#        obsfile: Data/gnssro_obs_2018041500_m.nc4
-#      obsvalue: refractivity
-#      ObsDataOut:
-#        obsfile: Data/gnssro_hofx.nc4
-#      obsvalue: refractivity
-#    ObsBias: {}
-#  - ObsType: AMSU-A
-#    channels: "1-15"
-#    ObsData:
-#      ObsDataIn:
-#        obsfile: Data/amsua_obs_n19_2018041500_m.nc4
-#      ObsDataOut:
-#        obsfile: Data/amsua_hofx.nc4
-#    ObsBias: {}
-#    ObsOptions:
-#      n_Absorbers: 3
-#      n_Clouds: 2
-#      n_Aerosols: 0
-#      Sensor_ID: 'amsua_n19'
-#      EndianType: 'little_endian'
-#      CoefficientPath: 'Data/'
-#  - ObsType: Radiosonde
-#    ObsData:
-#      ObsDataIn:
-#        obsfile: Data/sondes_obs_2018041500_m.nc4
-#      ObsDataOut:
-#        obsfile: Data/sondes_hofx.nc4
-#    variables:
-#    - air_temperature
-#    ObsBias: {}
+  - ObsType: GnssroRef
+    ObsOptions:
+      ro_top_meter: 30000
+      obserr_method: RefGSI
+      use_compress: 1
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/gnssro_obs_2018041500_m.nc4
+      obsvalue: refractivity
+      ObsDataOut:
+        obsfile: Data/gnssro_hofx.nc4
+      obsvalue: refractivity
+    ObsBias: {}
+  - ObsType: AMSU-A
+    channels: "1-15"
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/amsua_obs_n19_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/amsua_hofx.nc4
+    ObsBias: {}
+    ObsOptions:
+      n_Absorbers: 3
+      n_Clouds: 2
+      n_Aerosols: 0
+      Sensor_ID: 'amsua_n19'
+      EndianType: 'little_endian'
+      CoefficientPath: 'Data/'
+  - ObsType: Radiosonde
+    ObsData:
+      ObsDataIn:
+        obsfile: Data/sondes_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/sondes_hofx.nc4
+    variables:
+    - air_temperature
+    ObsBias: {}
 Prints:
   frequency: PT3H
