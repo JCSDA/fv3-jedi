@@ -56,19 +56,23 @@ integer, pointer :: istart(:), icount(:)
 integer :: n, geostiledim, tileoff
 real(kind=kind_real), allocatable :: arrayg(:,:)
 type(fckit_mpi_comm) :: f_comm
-type(fckit_mpi_comm) :: f_comm_tile
-integer :: commtile, ierr
+integer :: commtile, ranktile, ierr
 
 ! Processors that will handle IO
 f_comm = fckit_mpi_comm()
 
-! Split the comm, one per tile
-call mpi_comm_split(f_comm%communicator(), geom%ntile, f_comm%rank(), commtile, ierr)
-f_comm_tile = fckit_mpi_comm(commtile)
+! Split comm and set flag for IO procs
+iam_io_proc = .true.
 
-! Determine if this is IO proc
-iam_io_proc = .false.
-if (f_comm_tile%rank() == 0) iam_io_proc = .true.
+if (f_comm%size() > 6) then
+
+  call mpi_comm_split(f_comm%communicator(), geom%ntile, f_comm%rank(), commtile, ierr)
+
+  call mpi_comm_rank(commtile, ranktile, ierr);
+  if (ranktile .ne. 0) iam_io_proc = .false.
+
+endif
+
 
 idate = 0
 isecs = 0
@@ -191,7 +195,7 @@ do n = 1,size(fields)
     endif
 
     if (f_comm%size() > 6) then
-      call scatter_tile(geom, f_comm_tile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+      call scatter_tile(geom, commtile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
     else
       fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec) !1 proc per tile already
     endif
@@ -215,15 +219,16 @@ endif
 deallocate(arrayg)
 
 ! Set the object date from the date of the file
-call f_comm_tile%broadcast(idate,0)
-call f_comm_tile%broadcast(isecs,0)
+call f_comm%broadcast(idate,0)
+call f_comm%broadcast(isecs,0)
 cidate = idate
 cisecs = isecs
 call datetime_from_ifs(vdate, cidate, cisecs)
 
 ! Release split comms
-call f_comm_tile%delete()
-call MPI_Comm_free(commtile, ierr)
+if (f_comm%size() > 6) then
+  call MPI_Comm_free(commtile, ierr)
+endif
 
 end subroutine read_geos
 
@@ -260,24 +265,28 @@ integer, allocatable :: istart3(:), icount3(:)
 integer, allocatable :: istart(:), icount(:), dimids(:), intarray(:)
 real(kind=kind_real), allocatable :: arrayg(:,:), realarray(:)
 type(fckit_mpi_comm) :: f_comm
-type(fckit_mpi_comm) :: f_comm_tile
-type(fckit_mpi_comm) :: f_comm_write
-integer :: lev, commtile, commwrite, ierr
+integer :: lev, commtile, ranktile, commwrite, ierr
 
 ! Processors that will handle IO
 f_comm = fckit_mpi_comm()
 
+iam_io_proc = .true.
+
 ! Split the comm, one per tile
-call mpi_comm_split(f_comm%communicator(), geom%ntile, f_comm%rank(), commtile, ierr)
-f_comm_tile = fckit_mpi_comm(commtile)
+if (f_comm%size() > 6) then
+  call mpi_comm_split(f_comm%communicator(), geom%ntile, f_comm%rank(), commtile, ierr)
+  call mpi_comm_rank(commtile, ranktile, ierr);
 
-! Write communicator
-call mpi_comm_split(f_comm%communicator(), f_comm_tile%rank(), f_comm%rank(), commwrite, ierr)
-f_comm_write = fckit_mpi_comm(commwrite)
+  ! Write communicator
+  call mpi_comm_split(f_comm%communicator(), ranktile, geom%ntile, commwrite, ierr)
 
-! Determine if this is IO proc
-iam_io_proc = .false.
-if (f_comm_tile%rank() == 0) iam_io_proc = .true.
+  if (ranktile .ne. 0) iam_io_proc = .false.
+
+else
+
+  call mpi_comm_dup(f_comm%communicator(), commwrite, ierr)
+
+endif
 
 ! Arrays to write from
 allocate(arrayg(1:geom%npx-1,1:geom%npy-1)) !Whole tile array
@@ -317,7 +326,7 @@ if (iam_io_proc) then
   
   ! Create the file
   call nccheck( nf90_create( filename, ior(NF90_NETCDF4, NF90_MPIIO), ncid, &
-                             comm = f_comm_write%communicator(), info = MPI_INFO_NULL), "nf90_create" )
+                             comm = commwrite, info = MPI_INFO_NULL), "nf90_create" )
  
   ! Create dimensions
   call nccheck ( nf90_def_dim(ncid, "Xdim", geom%npx-1,  x_dimid), "nf90_def_dim Xdim" )
@@ -453,7 +462,7 @@ endif
 
 ! Gather longitudes to write
 if (f_comm%size() > 6) then
-  call gather_tile(geom, f_comm_tile, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
+  call gather_tile(geom, commtile, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
 else
   arrayg = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
 endif
@@ -467,7 +476,7 @@ endif
 
 ! Gather latitudes to write
 if (f_comm%size() > 6) then
-  call gather_tile(geom, f_comm_tile, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
+  call gather_tile(geom, commtile, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
 else
   arrayg = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
 endif
@@ -512,7 +521,7 @@ do n = 1,size(fields)
   do lev = 1,fields(n)%npz
 
     if (f_comm%size() > 6) then
-      call gather_tile(geom, f_comm_tile, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
+      call gather_tile(geom, commtile, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
     else
       arrayg = fields(n)%array(:,:,lev)
     endif
@@ -547,28 +556,31 @@ endif
 deallocate(arrayg)
 
 ! Release split comms
-call f_comm_tile%delete()
-call MPI_Comm_free(commtile, ierr)
+if (f_comm%size() > 6) then
+  call MPI_Comm_free(commtile, ierr)
+endif
 
-call f_comm_write%delete()
 call MPI_Comm_free(commwrite, ierr)
 
 end subroutine write_geos
 
 ! ------------------------------------------------------------------------------
 
-subroutine gather_tile(geom, f_comm, array_l, array_g)
+subroutine gather_tile(geom, comm, array_l, array_g)
 
 type(fv3jedi_geom),   intent(in)    :: geom
-type(fckit_mpi_comm), intent(in)    :: f_comm
+integer,              intent(in)    :: comm
 real(kind=kind_real), intent(in)    :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec)  ! Local array
 real(kind=kind_real), intent(inout) :: array_g(1:geom%npx-1,1:geom%npy-1)            ! Gathered array (only valid on root)
 
+integer :: comm_size
 integer :: n, ierr, npx_l, npy_l, subarray, resized_subarray
 integer :: sizes_g(2), sizes_l(2), start_l(2), arraydispls_me
 integer, allocatable :: counts(:), displs(:), arraydispls(:)
 integer(kind=MPI_ADDRESS_KIND) :: extent, lb
 real(kind=kind_real) :: forsize
+
+call mpi_comm_size(comm, comm_size, ierr)
 
 npx_l = geom%iec-geom%isc+1
 npy_l = geom%jec-geom%jsc+1
@@ -588,21 +600,21 @@ call mpi_type_create_resized(subarray, lb, extent, resized_subarray, ierr)
 call mpi_type_commit(resized_subarray,ierr)
 
 ! Set counts and displacement and gather
-allocate(counts(f_comm%size()), arraydispls(f_comm%size()), displs(f_comm%size()))
+allocate(counts(comm_size), arraydispls(comm_size), displs(comm_size))
 
-do n = 1,f_comm%size()
+do n = 1,comm_size
    displs(n) = n-1
    counts(n) = 1
 enddo
 
 arraydispls = 0
 arraydispls_me = (geom%isc - 1) + (geom%jsc - 1) * (geom%npy-1)
-call mpi_allgatherv(arraydispls_me, 1, mpi_int, arraydispls, counts, displs, mpi_int, f_comm%communicator(), ierr)
+call mpi_allgatherv(arraydispls_me, 1, mpi_int, arraydispls, counts, displs, mpi_int, comm, ierr)
 
 ! Gather the full field
 call mpi_gatherv( array_l, npx_l*npy_l, mpi_double_precision, &
                   array_g, counts, arraydispls, resized_subarray, &
-                  0, f_comm%communicator(), ierr)
+                  0, comm, ierr)
 
 ! Deallocate
 deallocate(counts,displs,arraydispls)
@@ -611,18 +623,21 @@ end subroutine gather_tile
 
 ! ------------------------------------------------------------------------------
 
-subroutine scatter_tile(geom, f_comm, array_g, array_l)
+subroutine scatter_tile(geom, comm, array_g, array_l)
 
 type(fv3jedi_geom),   intent(in)    :: geom
-type(fckit_mpi_comm), intent(in)    :: f_comm
+integer,              intent(in)    :: comm
 real(kind=kind_real), intent(in)    :: array_g(1:geom%npx-1,1:geom%npy-1)            ! Gathered array (only valid on root)
 real(kind=kind_real), intent(inout) :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec)  ! Local array
 
+integer :: comm_size
 integer :: n, ierr, npx_l, npy_l, subarray, resized_subarray
 integer :: sizes_g(2), sizes_l(2), start_l(2), arraydispls_me
 integer, allocatable :: counts(:), displs(:), arraydispls(:)
 integer(kind=MPI_ADDRESS_KIND) :: extent, lb
 real(kind=kind_real) :: forsize
+
+call mpi_comm_size(comm, comm_size, ierr)
 
 npx_l = geom%iec-geom%isc+1
 npy_l = geom%jec-geom%jsc+1
@@ -642,21 +657,21 @@ call mpi_type_create_resized(subarray, lb, extent, resized_subarray, ierr)
 call mpi_type_commit(resized_subarray,ierr)
 
 ! Set counts and displacement and gather
-allocate(counts(f_comm%size()), arraydispls(f_comm%size()), displs(f_comm%size()))
+allocate(counts(comm_size), arraydispls(comm_size), displs(comm_size))
 
-do n = 1,f_comm%size()
+do n = 1,comm_size
    displs(n) = n-1
    counts(n) = 1
 enddo
 
 arraydispls = 0
 arraydispls_me = (geom%isc - 1) + (geom%jsc - 1) * (geom%npy-1)
-call mpi_allgatherv(arraydispls_me, 1, mpi_int, arraydispls, counts, displs, mpi_int, f_comm%communicator(), ierr)
+call mpi_allgatherv(arraydispls_me, 1, mpi_int, arraydispls, counts, displs, mpi_int, comm, ierr)
 
 ! Scatter the full field
 call mpi_scatterv( array_g, counts, arraydispls, resized_subarray, &
                    array_l, npx_l*npy_l, mpi_double_precision, &
-                   0, f_comm%communicator(), ierr )
+                   0, comm, ierr )
 
 ! Deallocate
 deallocate(counts,displs,arraydispls)
