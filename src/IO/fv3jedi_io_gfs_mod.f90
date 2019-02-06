@@ -21,15 +21,25 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_gfs(geom, fields, c_conf, vdate, calendar_type, date_init)
+subroutine read_gfs(geom, fields, vdate, calendar_type, date_init, &
+                    datapath_ti, datapath_sp, &
+                    filename_spec, filename_core, filename_trcr, &
+                    filename_sfcd, filename_sfcw, filename_cplr )
 
 implicit none
 type(fv3jedi_geom),  intent(inout) :: geom          !< Geometry
 type(fv3jedi_field), intent(inout) :: fields(:)     !< Fields to be written
-type(c_ptr),         intent(in)    :: c_conf        !< Configuration
 type(datetime),      intent(inout) :: vdate         !< DateTime
 integer,             intent(inout) :: calendar_type !< GFS calendar type
 integer,             intent(inout) :: date_init(6)  !< GFS date intialized
+character(len=*),    intent(in)    :: datapath_ti
+character(len=*),    intent(in)    :: datapath_sp
+character(len=*),    intent(in)    :: filename_spec
+character(len=*),    intent(in)    :: filename_core
+character(len=*),    intent(in)    :: filename_trcr
+character(len=*),    intent(in)    :: filename_sfcd
+character(len=*),    intent(in)    :: filename_sfcw
+character(len=*),    intent(in)    :: filename_cplr
 
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
@@ -41,48 +51,13 @@ type(restart_file_type), target  :: restart_sfcw
 type(restart_file_type)  :: restart_spec
 logical :: read_core, read_trcr, read_sfcd, read_sfcw, register
 integer :: var, id_restart
-character(len=255) :: datapath_ti, datapath_sp
 character(len=255) :: filename
-character(len=255) :: filename_spec
-character(len=255) :: filename_core
-character(len=255) :: filename_trcr
-character(len=255) :: filename_sfcd
-character(len=255) :: filename_sfcw
-character(len=255) :: filename_cplr
 real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
 
-!Set filenames
-!--------------
-filename_core = 'fv_core.res.nc'
-filename_trcr = 'fv_tracer.res.nc'
-filename_sfcd = 'sfc_data.nc'
-filename_sfcw = 'srf_wnd.nc'
-filename_cplr = 'coupler.res'
-
-datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
-
-if (config_element_exists(c_conf,"filename_core")) then
-   filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
-endif
-if (config_element_exists(c_conf,"filename_trcr")) then
-   filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
-endif
-if (config_element_exists(c_conf,"filename_sfcd")) then
-   filename_sfcd = config_get_string(c_conf,len(filename_sfcd),"filename_sfcd")
-endif
-if (config_element_exists(c_conf,"filename_sfcw")) then
-   filename_sfcw = config_get_string(c_conf,len(filename_sfcw),"filename_sfcw")
-endif
-if (config_element_exists(c_conf,"filename_cplr")) then
-   filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
-endif
 
 ! Read Lat-Lon and check consitency with geom
 ! -------------------------------------------
-if (config_element_exists(c_conf,"filename_spec")) then
-   filename_spec = config_get_string(c_conf,len(filename_spec),"filename_spec")
-
-  datapath_sp = config_get_string(c_conf,len(datapath_sp),"datapath_spec")  
+if (trim(filename_spec) .ne. "null" .and. trim(datapath_sp) .ne. "null") then
 
   allocate(grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec))
   allocate(grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec))
@@ -282,7 +257,7 @@ do var = 1,size(fields)
        "ct","cq","kcbl","ts","khl","khu")
     register = .false. !Not currently available from GFS, do nothing
   case default
-    call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
+    call abor1_ftn("write_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
 
   if (register) &

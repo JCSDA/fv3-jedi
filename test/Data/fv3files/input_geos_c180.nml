@@ -1,5 +1,5 @@
 &fv_core_nml
-       layout = 8,8
+       layout = 12,12
        io_layout = 1,1
        npx = 181
        npy = 181
