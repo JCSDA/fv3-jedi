@@ -1,0 +1,82 @@
+nml_file: Data/fv3files/fmsmpp.nml
+Assimilation Window:
+  Begin: '2018-04-14T21:00:00Z'
+  Length: PT6H
+Geometry:
+  nml_file: Data/fv3files/input_gfs_c768.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: /gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/20180415.000000.fv_core.res.nc
+Initial Condition:
+  filetype: gfs
+  datapath_tile: /gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
+Model:
+  fclength: PT0H
+  tstep: PT6H
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c768.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  readtraj: 1
+  trajmodel: 'gfs'
+  trajpath: '/gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/'
+  trajfile: 'fv_core.res.nc'
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+##4D H(x) only
+#Model:
+#  fclength: PT0H
+#  tstep: PT15M
+#  name: 'FV3'
+#  nml_file: Data/fv3files/input_gfs_c768.nml
+#  trc_file: Data/fv3files/field_table
+#  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+#  readtraj: 1
+#  trajmodel: 'gfs'
+#  trajpath: '/gpfsm/dnb31/drholdaw/JediScratch/AWS/bkg768/'
+#  trajfile: 'fv_core.res.nc'
+#  lm_do_dyn: 1
+#  lm_do_trb: 0
+#  lm_do_mst: 0
+Observations:
+  ObsTypes:
+  - ObsType: AMSU-A
+    channels: "1,5,12-15"
+    ObsData:
+      ObsDataIn:
+        obsfile: /gpfsm/dnb31/drholdaw/JediScratch/AWS/obs/amsua_n19_obs_2018041500.nc4
+      ObsDataOut:
+        obsfile: Data/amsua_n19_obs_2018041500_hofx.nc4
+    ObsBias: {}
+    ObsOptions:
+      n_Absorbers: 3
+      n_Clouds: 2
+      n_Aerosols: 0
+      Sensor_ID: 'amsua_n19'
+      EndianType: 'little_endian'
+      CoefficientPath: 'Data/'
+  - ObsType: GOES-16
+    channels: "10"
+    ObsData:
+      ObsDataIn:
+        obsfile: /gpfsm/dnb31/drholdaw/JediScratch/AWS/obs/goes16_ch10_meso_2018041500.nc4
+      ObsDataOut:
+        obsfile: Data/goes16_ch10_disk_2018041500.nc4
+    ObsBias: {}
+    ObsOptions:
+      n_Absorbers: 3
+      n_Clouds: 2
+      n_Aerosols: 0
+      Sensor_ID: 'abi_gr'
+      EndianType: 'little_endian'
+      CoefficientPath: 'Data/'
+Prints:
+  frequency: PT1H

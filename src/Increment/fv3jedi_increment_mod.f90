@@ -595,13 +595,67 @@ subroutine read_file(geom, self, c_conf, vdate)
   type(datetime),          intent(inout) :: vdate    !< DateTime
 
   character(len=10) :: filetype
+  character(len=255) :: filename
+  character(len=255) :: datapath_ti
+  character(len=255) :: datapath_sp
+  character(len=255) :: filename_spec
+  character(len=255) :: filename_core
+  character(len=255) :: filename_trcr
+  character(len=255) :: filename_sfcd
+  character(len=255) :: filename_sfcw
+  character(len=255) :: filename_cplr
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-     call read_gfs(geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
+
+    !Set filenames
+    !--------------
+    filename_core = 'fv_core.res.nc'
+    filename_trcr = 'fv_tracer.res.nc'
+    filename_sfcd = 'sfc_data.nc'
+    filename_sfcw = 'srf_wnd.nc'
+    filename_cplr = 'coupler.res'
+    
+    datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
+    
+    if (config_element_exists(c_conf,"filename_core")) then
+       filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
+    endif
+    if (config_element_exists(c_conf,"filename_trcr")) then
+       filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
+    endif
+    if (config_element_exists(c_conf,"filename_sfcd")) then
+       filename_sfcd = config_get_string(c_conf,len(filename_sfcd),"filename_sfcd")
+    endif
+    if (config_element_exists(c_conf,"filename_sfcw")) then
+       filename_sfcw = config_get_string(c_conf,len(filename_sfcw),"filename_sfcw")
+    endif
+    if (config_element_exists(c_conf,"filename_cplr")) then
+       filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
+    endif
+    if (config_element_exists(c_conf,"filename_spec")) then
+       filename_spec = config_get_string(c_conf,len(filename_spec),"filename_spec")
+       datapath_sp = config_get_string(c_conf,len(datapath_sp),"datapath_spec")  
+    else
+       filename_spec = "null"
+       datapath_sp = "null"
+    endif
+
+    call read_gfs ( geom, self%fields, vdate, self%calendar_type, self%date_init, &
+                    datapath_ti, datapath_sp, &
+                    filename_spec, filename_core, filename_trcr, &
+                    filename_sfcd, filename_sfcw, filename_cplr )
+
   elseif (trim(filetype) == 'geos') then
-     call read_geos(geom, self%fields, c_conf, vdate)
+
+    if (config_element_exists(c_conf,"filename")) then
+       filename = config_get_string(c_conf,len(filename),"filename")
+       call read_geos(geom, self%fields, vdate, filename)
+    else
+       call read_geos(geom, self%fields, vdate) 
+    endif
+
   else
      call abor1_ftn("Increment: read restart type not supported")
   endif

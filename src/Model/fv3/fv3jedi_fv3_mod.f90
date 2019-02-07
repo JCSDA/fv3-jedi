@@ -14,6 +14,8 @@ use netcdf
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
+use fv3jedi_io_gfs_mod, only: read_gfs
+use fv3jedi_io_geos_mod, only: read_geos
 use fv3jedi_increment_mod, only: fv3jedi_increment 
 
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
@@ -34,6 +36,7 @@ public :: fv3_finalize
 type :: fv3_model
   type(fv3jedi_lm_type)                        :: fv3jedi_lm          !<Linearized model object
   integer                                      :: readtraj            !<Read trajectory from file
+  character(len=255)                           :: trajmodel           !<User specified model type for traj
   character(len=255)                           :: trajpath            !<User specified path to traj files
   character(len=255)                           :: trajfile            !<User specified path to traj files
 end type fv3_model
@@ -47,9 +50,9 @@ contains
 subroutine fv3_create(self, geom, c_conf)
 
 implicit none
-type(c_ptr),         intent(in)    :: c_conf
-type(fv3_model), intent(inout) :: self
-type(fv3jedi_geom),  intent(in)    :: geom
+type(c_ptr),         intent(in)  :: c_conf
+type(fv3_model), intent(inout)   :: self
+type(fv3jedi_geom),  intent(in)  :: geom
 
 !Locals
 character(len=20) :: ststep
@@ -68,8 +71,9 @@ dt = real(duration_seconds(dtstep),kind_real)
 ! ----------------------------------------------------------
 self%readtraj = config_get_int(c_conf,"readtraj")
 if (self%readtraj == 1) then
-  self%trajpath = config_get_string(c_conf,len(self%trajpath),"trajpath")
-  self%trajfile = config_get_string(c_conf,len(self%trajfile),"trajfile")
+  self%trajmodel = config_get_string(c_conf,len(self%trajmodel),"trajmodel")
+  self%trajpath  = config_get_string(c_conf,len(self%trajpath ),"trajpath")
+  self%trajfile  = config_get_string(c_conf,len(self%trajfile ),"trajfile")
 endif
 
 
@@ -122,14 +126,13 @@ end subroutine fv3_initialize
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3_step(self, state, vdate)
+subroutine fv3_step(self, state, geom, vdate)
 
 implicit none
-type(fv3_model), intent(inout) :: self
+type(fv3_model),     intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
-type(datetime),      intent(in)    :: vdate !< Valid datetime after step
-
-character(len=20) :: vdatec
+type(fv3jedi_geom),  intent(inout) :: geom
+type(datetime),      intent(inout) :: vdate !< Valid datetime after step
 
 if (self%readtraj == 0) then
 
@@ -139,8 +142,7 @@ if (self%readtraj == 0) then
 
 else
 
-  call datetime_to_string(vdate, vdatec)
-  call read_state( self, state, vdatec)
+  call psuedo_model( geom, self, state, vdate)
 
 endif
 
@@ -216,287 +218,87 @@ end subroutine lm_to_state
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_state( self, state, vdatec)
+subroutine psuedo_model( geom, self, state, vdate)
 
 implicit none
-type(fv3_model), intent(in)    :: self
+type(fv3jedi_geom),  intent(inout) :: geom
+type(fv3_model),     intent(in)    :: self
 type(fv3jedi_state), intent(inout) :: state
-character(len=20),   intent(in)    :: vdatec
+type(datetime),      intent(inout) :: vdate !< Valid datetime after step
 
-character(len=255) :: date, path, fname1, fname2, filename
-character(len=4)   :: yyyy,mm,dd,hh,mn
-character(len=20)  :: var
-integer, allocatable :: istart(:), icount(:)
-integer :: ncid, ncstat, dimid, varid
-integer :: im, jm
+character(len=20)  :: vdatec
+character(len=255) :: date, filename
+character(len=4)   :: yyyy
+character(len=2)   :: mm,dd,hh,mn,ss
 
-integer :: tileoff
-logical :: tiledimension = .false.
+character(len=255) :: datapath_ti
+character(len=255) :: datapath_sp
+character(len=255) :: filename_spec
+character(len=255) :: filename_core
+character(len=255) :: filename_trcr
+character(len=255) :: filename_sfcd
+character(len=255) :: filename_sfcw
+character(len=255) :: filename_cplr
 
-integer :: isc,iec,jsc,jec
+! Convert datetime to string
+call datetime_to_string(vdate, vdatec)
 
+! Write character form of date
 write(date,*) vdatec(1:4),vdatec(6:7),vdatec(9:10),'_',vdatec(12:13),vdatec(15:16),'z.nc4'
 
-isc = state%isc
-iec = state%iec
-jsc = state%jsc
-jec = state%jec
-
-path = self%trajpath
-fname1 = self%trajfile
-
-!> Build filename
+! Date part of the filename
 yyyy = vdatec(1 :4 )
 mm   = vdatec(6 :7 )
 dd   = vdatec(9 :10)
 hh   = vdatec(12:13)
 mn   = vdatec(15:16)
-fname2 = 'z.nc4'
+ss   = vdatec(18:19)
 
-filename = trim(path)//trim(fname1)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//trim(fname2)
+! File path/filename
+if (trim(self%trajmodel) == "gfs") then
 
-if (self%fv3jedi_lm%conf%rpe) print*, ' '
-if (self%fv3jedi_lm%conf%rpe) print*, 'Reading trajectory: ', trim(filename)
-if (self%fv3jedi_lm%conf%rpe) print*, ' '
+  datapath_ti = trim(self%trajpath)
+  filename_core = yyyy//mm//dd//"."//hh//mn//ss//'.fv_core.res.nc'
+  filename_trcr = yyyy//mm//dd//"."//hh//mn//ss//'.fv_tracer.res.nc'
+  filename_sfcd = yyyy//mm//dd//"."//hh//mn//ss//'.sfc_data.nc'
+  filename_sfcw = yyyy//mm//dd//"."//hh//mn//ss//'.srf_wnd.nc'
+  filename_cplr = yyyy//mm//dd//"."//hh//mn//ss//'.coupler.res'
 
-!> Open the file
-ncstat = nf90_open(trim(filename), NF90_NOWRITE, ncid)
-if(ncstat /= nf90_noerr) print *, "OPEN: "//trim(nf90_strerror(ncstat))
+  datapath_sp = 'null'
+  datapath_sp = 'null'
 
-!> Get dimensions, lon,lat
-ncstat = nf90_inq_dimid(ncid, "lon", dimid)
-if(ncstat /= nf90_noerr) print *, "lon: "//trim(nf90_strerror(ncstat))
-ncstat = nf90_inquire_dimension(ncid, dimid, len = im)
-if(ncstat /= nf90_noerr) print *, "lon:"//trim(nf90_strerror(ncstat))
+  filename = filename_core
 
-ncstat = nf90_inq_dimid(ncid, "lat", dimid)
-if(ncstat /= nf90_noerr) print *, "lat: "//trim(nf90_strerror(ncstat))
-ncstat = nf90_inquire_dimension(ncid, dimid, len = jm)
-if(ncstat /= nf90_noerr) print *, "lat: "//trim(nf90_strerror(ncstat))
+elseif (trim(self%trajmodel) == "geos") then
 
-!> GEOS can use concatenated tiles or tile as a dimension
-if ( (im == state%npx-1) .and. (jm == 6*(state%npy-1) ) ) then
-  tiledimension = .false.
-  tileoff = (state%ntile-1)*(jm/state%ntiles)
+  filename = trim(self%trajpath)//trim(self%trajfile)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//'z.nc4'
+
 else
-  tiledimension = .true.
-  tileoff = 0
-  call abor1_ftn("Trajectory GEOS: tile dimension in file not done yet")
-endif
 
-allocate(istart(4))
-allocate(icount(4))
-istart(1) = isc
-istart(2) = tileoff + jsc
-istart(3) = 1
-istart(4) = 1
-
-icount(1) = iec-isc+1
-icount(2) = jec-jsc+1
-icount(3) = 72
-icount(4) = 1
-
-var = 'ud'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%ud)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'vd'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%vd)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'ua'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%ua)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'va'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%va)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 't'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%t)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'delp'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%delp)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'q'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%q)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'qi'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%qi)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'ql'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%ql)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'o3mr'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%o3)%array, istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-if (.not.self%fv3jedi_lm%conf%hydrostatic) then
-
-  var = 'w'
-  ncstat = nf90_inq_varid (ncid, trim(var), varid)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%fields(state%w)%array, istart, icount)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
- 
-  var = 'delz'
-  ncstat = nf90_inq_varid (ncid, trim(var), varid)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%fields(state%delz)%array, istart, icount)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+  call abor1_ftn("fv3jedi_fv3_mod: psuedo_model, model choice must be geos or gfs")
 
 endif
 
-if (self%fv3jedi_lm%conf%do_phy_mst .ne. 0) then
+! Print filename to the user
+if (self%fv3jedi_lm%conf%rpe) print*, ' '
+if (self%fv3jedi_lm%conf%rpe) print*, 'Psuedo model from file: ', trim(filename)
+if (self%fv3jedi_lm%conf%rpe) print*, ' '
 
-  var = 'qls'
-  ncstat = nf90_inq_varid (ncid, trim(var), varid)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%fields(state%qls)%array, istart, icount)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
- 
-  var = 'qcn'
-  ncstat = nf90_inq_varid (ncid, trim(var), varid)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%fields(state%qcn)%array, istart, icount)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
- 
-  var = 'cfcn'
-  ncstat = nf90_inq_varid (ncid, trim(var), varid)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-  ncstat = nf90_get_var(ncid, varid, state%fields(state%cfcn)%array, istart, icount)
-  if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
+! Read state from file
+if (trim(self%trajmodel) == "gfs") then
+
+  call read_gfs ( geom, state%fields, vdate, state%calendar_type, state%date_init, &
+                  datapath_ti, datapath_sp, &
+                  filename_spec, filename_core, filename_trcr, &
+                  filename_sfcd, filename_sfcw, filename_cplr )
+
+elseif (trim(self%trajmodel) == "geos") then
+
+  call read_geos(geom, state%fields, vdate, filename)
 
 endif
 
-deallocate(istart,icount)
-
-allocate(istart(3))
-allocate(icount(3))
-istart(1) = isc
-istart(2) = tileoff + jsc
-istart(3) = 1
-
-icount(1) = iec-isc+1
-icount(2) = jec-jsc+1
-icount(3) = 1
-
-var = 'phis'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%phis)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'frocean'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%frocean)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'frland'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%frland)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'varflt'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%varflt)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'ustar'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%ustar)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'bstar'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%bstar)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'zpbl'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%zpbl)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'cm'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%cm)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'ct'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%ct)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'cq'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%cq)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'kcbl'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%kcbl)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'ts'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%ts)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'khl'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%khl)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-var = 'khu'
-ncstat = nf90_inq_varid (ncid, trim(var), varid)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-ncstat = nf90_get_var(ncid, varid, state%fields(state%khu)%array(:,:,1), istart, icount)
-if(ncstat /= nf90_noerr) print *, trim(var)//trim(nf90_strerror(ncstat))
-
-!Close this file
-ncstat = nf90_close(ncid)
-if(ncstat /= nf90_noerr) print *, "CLOSE: "//trim(nf90_strerror(ncstat))
-
-deallocate(istart,icount)
-
-end subroutine read_state
+end subroutine psuedo_model
 
 ! ------------------------------------------------------------------------------
 

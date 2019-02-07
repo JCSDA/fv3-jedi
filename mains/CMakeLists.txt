@@ -14,6 +14,11 @@ ecbuild_add_executable( TARGET  fv3jedi_hofx.x
                         LIBS    fv3jedi
                       )
 
+#ecbuild_add_executable( TARGET  fv3jedi_hofx3D.x
+#                        SOURCES fv3jediHofX3D.cc
+#                        LIBS    fv3jedi
+#                      )
+
 ecbuild_add_executable( TARGET  fv3jedi_4dvar.x
                         SOURCES fv3jedi4DVar.cc
                         LIBS    fv3jedi
@@ -23,6 +28,11 @@ ecbuild_add_executable( TARGET  fv3jedi_parameters.x
                         SOURCES fv3jediEstimateParams.cc
                         LIBS    fv3jedi
                       )
+
+ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
+                        SOURCES fv3jediConvertState.cc
+                        LIBS    fv3jedi
+                       )
 
 #ecbuild_add_executable( TARGET  fv3jedi_linearforecast.x
 #                        SOURCES fv3jediLinearForecast.cc

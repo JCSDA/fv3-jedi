@@ -1004,6 +1004,7 @@ Data/fv3files/field_table
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_gfs_c48.nml
 Data/fv3files/input_gfs_c96.nml
+Data/fv3files/input_gfs_c768.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_geos_c48.nml
 Data/fv3files/input_geos_c90.nml
@@ -1018,6 +1019,8 @@ Data/RESTART/TLM_vs_NLM.py
 )
 
 list( APPEND fv3jedi_config_input
+configinput/convert_gfs2geos.yaml
+configinput/hofx_geos16.yaml
 configinput/hyb-3DVar.dripcg.geos.yaml
 configinput/hyb-3DVar.dripcg.gfs.yaml
 configinput/hyb-3DVar-fgat.c48.gfs.yaml
