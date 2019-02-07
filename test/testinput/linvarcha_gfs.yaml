@@ -12,7 +12,7 @@ LinearVariableChangeTests:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   outputVariables:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
-- varchange: Control2Model
+- varchange: Control2Analysis
   toleranceInverse: -0.1
   testinverse: 0
   inputVariables:
@@ -20,12 +20,17 @@ LinearVariableChangeTests:
   outputVariables:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
 Geometry:
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 State:
-  filetype: geos
-  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4        
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  filetype: gfs
+  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 Variables:
   variables: ["ua","va","t","ps","q","qi","ql","o3"]

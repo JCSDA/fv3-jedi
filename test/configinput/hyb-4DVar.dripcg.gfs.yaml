@@ -195,7 +195,7 @@ cost_function:
 #        diag_interp: bilin
 #        date: '2018-04-14T21:00:00Z'
 #        variable_changes:
-#        - varchange: Control2Model
+#        - varchange: Control2Analysis
 #          inputVariables:
 #            variables: ['ua','va','t','ps','q','qi','ql','o3']
 #          outputVariables:

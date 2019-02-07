@@ -1060,8 +1060,8 @@ testinput/modelread_geos.yaml
 testinput/state_geos.yaml
 testinput/state_gfs.yaml
 testinput/tlmforecast_geos.yaml
-testinput/varchange_geos.yaml
-testinput/varchange_gfs.yaml
+testinput/linvarcha_geos.yaml
+testinput/linvarcha_gfs.yaml
 )
 
 list( APPEND fv3jedi_testoutput
@@ -1283,17 +1283,17 @@ ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_variablechange_gfs
+ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_gfs
                   BOOST
-                  SOURCES executables/TestVariableChange.cc
-                  ARGS    "testinput/varchange_gfs.yaml"
+                  SOURCES executables/TestLinVarCha.cc
+                  ARGS    "testinput/linvarcha_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_variablechange_geos
+ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_geos
                   BOOST
-                  SOURCES executables/TestVariableChange.cc
-                  ARGS    "testinput/varchange_geos.yaml"
+                  SOURCES executables/TestLinVarCha.cc
+                  ARGS    "testinput/linvarcha_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
@@ -1352,28 +1352,28 @@ ecbuild_add_test( TARGET test_fv3jedi_hofx_geos
 
 ecbuild_add_test( TARGET test_fv3jedi_3dvar_gfs
                   TYPE EXE
-                  SOURCES ../mains/fv3jedi4DVar.cc
+                  SOURCES ../mains/fv3jediVar.cc
                   ARGS "testinput/3dvar_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET test_fv3jedi_3dvar_geos
                   TYPE EXE
-                  SOURCES ../mains/fv3jedi4DVar.cc
+                  SOURCES ../mains/fv3jediVar.cc
                   ARGS "testinput/3dvar_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET test_fv3jedi_3dfgat_gfs
                   TYPE EXE
-                  SOURCES ../mains/fv3jedi4DVar.cc
+                  SOURCES ../mains/fv3jediVar.cc
                   ARGS "testinput/3dfgat_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET test_fv3jedi_3dfgat_geos
                   TYPE EXE
-                  SOURCES ../mains/fv3jedi4DVar.cc
+                  SOURCES ../mains/fv3jediVar.cc
                   ARGS "testinput/3dfgat_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
@@ -1390,7 +1390,7 @@ ecbuild_add_test( TARGET test_fv3jedi_3dfgat_geos
 #ecbuild_add_test( TARGET test_fv3jedi_3denvar
 #                  TYPE SCRIPT
 #                  COMMAND "compare.sh"
-#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_4dvar.x testinput/3dvar.yaml"
+#                  ARGS "${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x testinput/3dvar.yaml"
 #                       testoutput/3denvar_bump.test
-#                  DEPENDS fv3jedi_4dvar.x )
+#                  DEPENDS fv3jedi_var.x )
 #

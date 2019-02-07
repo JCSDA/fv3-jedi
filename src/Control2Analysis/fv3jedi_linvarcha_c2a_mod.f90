@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-module fv3jedi_varcha_c2m_mod
+module fv3jedi_linvarcha_c2a_mod
 
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
@@ -20,7 +20,7 @@ use wind_vt_mod
 implicit none
 private
 
-public :: fv3jedi_varcha_c2m
+public :: fv3jedi_linvarcha_c2a
 public :: create
 public :: delete
 public :: multiply
@@ -29,7 +29,7 @@ public :: multiplyinverse
 public :: multiplyinverseadjoint
 
 !> Fortran derived type to hold configuration data for the B mat variable change
-type :: fv3jedi_varcha_c2m
+type :: fv3jedi_linvarcha_c2a
  integer :: degsubs   = 100
  real(8) :: tmintbl   = 150.0_8, tmaxtbl = 333.0_8
  integer :: tablesize
@@ -38,7 +38,7 @@ type :: fv3jedi_varcha_c2m
  real(kind=kind_real), allocatable :: tvtraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
-end type fv3jedi_varcha_c2m
+end type fv3jedi_linvarcha_c2a
 
 ! ------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ contains
 subroutine create(self, bg, fg, geom, c_conf)
 
 implicit none
-type(fv3jedi_varcha_c2m), intent(inout) :: self    !< Change variable structure
+type(fv3jedi_linvarcha_c2a), intent(inout) :: self    !< Change variable structure
 type(fv3jedi_state), target, intent(in) :: bg
 type(fv3jedi_state), target, intent(in) :: fg
 type(fv3jedi_geom), target,  intent(in) :: geom
@@ -98,7 +98,7 @@ end subroutine create
 subroutine delete(self)
 
 implicit none
-type(fv3jedi_varcha_c2m), intent(inout) :: self
+type(fv3jedi_linvarcha_c2a), intent(inout) :: self
 
 if (allocated(self%estblx)) deallocate(self%estblx)
 if (allocated(self%tvtraj)) deallocate(self%tvtraj)
@@ -113,7 +113,7 @@ end subroutine delete
 subroutine multiply(self,geom,xctl,xmod)
 
 implicit none
-type(fv3jedi_varcha_c2m), intent(in)    :: self
+type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(inout) :: xctl
 type(fv3jedi_increment),  intent(inout) :: xmod
@@ -126,12 +126,12 @@ xmod%fields(xmod%qi)%array = xctl%fields(xctl%qi)%array
 xmod%fields(xmod%ql)%array = xctl%fields(xctl%ql)%array
 xmod%fields(xmod%o3)%array = xctl%fields(xctl%o3)%array
 
-!Tangent linear of analysis (control) to model variables
-call control_to_model_tlm(geom, xctl%fields(xctl%psi)%array, xctl%fields(xctl%chi)%array, &
-                                xctl%fields(xctl%tv )%array, xctl%fields(xctl%rh )%array, &
-                                xmod%fields(xmod%ua)%array, xmod%fields(xmod%va)%array, &
-                                xmod%fields(xmod%t )%array, xmod%fields(xmod%q )%array, &
-                                self%tvtraj,self%qtraj,self%qsattraj )
+!Tangent linear of control to analysis variables
+call control_to_analysis_tlm(geom, xctl%fields(xctl%psi)%array, xctl%fields(xctl%chi)%array, &
+                                   xctl%fields(xctl%tv )%array, xctl%fields(xctl%rh )%array, &
+                                   xmod%fields(xmod%ua)%array, xmod%fields(xmod%va)%array, &
+                                   xmod%fields(xmod%t )%array, xmod%fields(xmod%q )%array, &
+                                   self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine multiply
 
@@ -140,7 +140,7 @@ end subroutine multiply
 subroutine multiplyadjoint(self,geom,xmod,xctl)
 
 implicit none
-type(fv3jedi_varcha_c2m), intent(in)    :: self
+type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(inout) :: xmod
 type(fv3jedi_increment),  intent(inout) :: xctl
@@ -153,12 +153,12 @@ xctl%fields(xctl%qi)%array = xmod%fields(xmod%qi)%array
 xctl%fields(xctl%ql)%array = xmod%fields(xmod%ql)%array
 xctl%fields(xctl%o3)%array = xmod%fields(xmod%o3)%array
 
-!Adjoint of analysis (control) to model variables
-call control_to_model_adm(geom, xctl%fields(xctl%psi)%array, xctl%fields(xctl%chi)%array, &
-                                xctl%fields(xctl%tv )%array, xctl%fields(xctl%rh )%array, &
-                                xmod%fields(xmod%ua)%array, xmod%fields(xmod%va)%array, &
-                                xmod%fields(xmod%t )%array, xmod%fields(xmod%q )%array, &
-                                self%tvtraj,self%qtraj,self%qsattraj )
+!Adjoint of control to analysis variables
+call control_to_analysis_adm(geom, xctl%fields(xctl%psi)%array, xctl%fields(xctl%chi)%array, &
+                                   xctl%fields(xctl%tv )%array, xctl%fields(xctl%rh )%array, &
+                                   xmod%fields(xmod%ua)%array, xmod%fields(xmod%va)%array, &
+                                   xmod%fields(xmod%t )%array, xmod%fields(xmod%q )%array, &
+                                   self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine multiplyadjoint
 
@@ -167,14 +167,14 @@ end subroutine multiplyadjoint
 subroutine multiplyinverse(self,geom,xmod,xctl)
 
 implicit none
-type(fv3jedi_varcha_c2m), intent(in)    :: self
+type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(inout) :: xmod
 type(fv3jedi_increment),  intent(inout) :: xctl
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
-!Tangent linear inverse (model to control)
+!Tangent linear inverse (analysis to control)
 
 xctl%fields(xctl%psi)%array = xmod%fields(xmod%ua)%array
 xctl%fields(xctl%chi)%array = xmod%fields(xmod%va)%array
@@ -213,7 +213,7 @@ end subroutine multiplyinverse
 subroutine multiplyinverseadjoint(self,geom,xctl,xmod)
 
 implicit none
-type(fv3jedi_varcha_c2m), intent(in)    :: self
+type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(inout) :: xctl
 type(fv3jedi_increment),  intent(inout) :: xmod
@@ -231,20 +231,20 @@ end subroutine multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
 
-subroutine control_to_model_tlm(geom,psi, chi, tv, rh, &
-                                     ua , va , t , q, &
-                                tvt, qt, qsat)
+subroutine control_to_analysis_tlm(geom,psi, chi, tv, rh, &
+                                        ua , va , t , q, &
+                                   tvt, qt, qsat)
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
 
- !Input: control vector
+ !Input: control variables
  real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
  real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
 
- !Output: state/model vector
+ !Output: analysis variables
  real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (ua)
  real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (va)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
@@ -284,26 +284,26 @@ subroutine control_to_model_tlm(geom,psi, chi, tv, rh, &
  !----------------------------------
  call Tv_to_T_tl(geom,Tvt,Tv,qt,q,T)
 
-endsubroutine control_to_model_tlm
+endsubroutine control_to_analysis_tlm
 
 ! ------------------------------------------------------------------------------
 
 !> Control variables to state variables - Adjoint
 
-subroutine control_to_model_adm(geom,psi, chi, tv, rh, &
-                                     ua , va , t , q, &
-                                tvt, qt, qsat)
+subroutine control_to_analysis_adm(geom,psi, chi, tv, rh, &
+                                        ua , va , t , q, &
+                                   tvt, qt, qsat)
 
  implicit none
  type(fv3jedi_geom), intent(inout) :: geom
 
- !Input: control vector
+ !Output: control variables
  real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
  real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
 
- !Output: state/model vector
+ !Input: analysis variables
  real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (u)
  real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (v)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
@@ -343,8 +343,8 @@ subroutine control_to_model_adm(geom,psi, chi, tv, rh, &
 
  deallocate(psi_dom, chi_dom)
 
-endsubroutine control_to_model_adm
+endsubroutine control_to_analysis_adm
 
 ! ------------------------------------------------------------------------------
 
-end module fv3jedi_varcha_c2m_mod
+end module fv3jedi_linvarcha_c2a_mod

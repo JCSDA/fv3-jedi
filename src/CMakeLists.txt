@@ -1,9 +1,14 @@
 list( APPEND fv3jedi_src_files
-ControlToModel/fv3jedi_varcha_c2m_interface_mod.F90
-ControlToModel/fv3jedi_varcha_c2m_mod.f90
-ControlToModel/VarChaC2MFV3JEDI.cc
-ControlToModel/VarChaC2MFV3JEDIFortran.h
-ControlToModel/VarChaC2MFV3JEDI.h
+Analysis2Model/LinVarChaA2MFV3JEDI.cc
+Analysis2Model/LinVarChaA2MFV3JEDI.h
+Analysis2Model/LinVarChaA2MFV3JEDI.interface.h
+Analysis2Model/fv3jedi_linvarcha_a2m.interface.F90
+Analysis2Model/fv3jedi_linvarcha_a2m_mod.f90
+Control2Analysis/LinVarChaC2AFV3JEDI.cc
+Control2Analysis/LinVarChaC2AFV3JEDI.h
+Control2Analysis/LinVarChaC2AFV3JEDI.interface.h
+Control2Analysis/fv3jedi_linvarcha_c2a.interface.F90
+Control2Analysis/fv3jedi_linvarcha_c2a_mod.f90
 ErrorCovariance/ErrorCovarianceFV3JEDI.cc
 ErrorCovariance/ErrorCovarianceFV3JEDI.h
 ErrorCovariance/ErrorCovarianceFV3JEDIFortran.h
@@ -59,7 +64,7 @@ Utilities/fv3jedi_field_mod.f90
 Utilities/fv3jedi_kinds_mod.f90
 Utilities/fv3jedi_netcdf_utils_mod.F90
 Utilities/fv3jedi_vars_mod.f90
-Utilities/instantiateFV3JEDIVarChangeFactory.h
+Utilities/instantiateFV3JEDIVarChangeFactories.h
 Utilities/instantiateObsFilterFactory.h
 VariableChange/height_variables_mod.f90
 VariableChange/moisture_variables_mod.f90
