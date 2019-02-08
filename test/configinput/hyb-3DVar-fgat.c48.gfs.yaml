@@ -159,7 +159,7 @@ cost_function:
        # covariance: BUMP
        # default_seed: 1
        # prefix: bump_static_c48/fv3jedi_gfs
-       # method: cor
+       # method: cov
        # strategy: common
        # new_nicas: 0     # Recompute convolution parameters
        # load_nicas: 1    # Load precomputed convolution parameters
