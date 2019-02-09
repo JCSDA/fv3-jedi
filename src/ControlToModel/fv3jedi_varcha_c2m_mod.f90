@@ -66,15 +66,15 @@ call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-call T_to_Tv(geom,bg%fields(bg%t)%array,bg%fields(bg%q)%array,self%tvtraj)
+call T_to_Tv(geom,bg%t,bg%q,self%tvtraj)
 
 !> Temperature trajectory
 allocate(self%ttraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-self%ttraj = bg%fields(bg%t)%array
+self%ttraj = bg%t
 
 !> Specific humidity trajecotory
 allocate(self%qtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-self%qtraj = bg%fields(bg%q)%array
+self%qtraj = bg%q
 
 !> Compute saturation specific humidity for q to RH transform
 allocate(self%qsattraj(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -83,8 +83,8 @@ allocate(pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
 allocate(pm(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 allocate(dqsatdt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 
-call delp_to_pe_p_logp(geom,bg%fields(bg%delp)%array,pe,pm)
-call dqsat( geom,bg%fields(bg%t)%array,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
+call delp_to_pe_p_logp(geom,bg%delp,pe,pm)
+call dqsat( geom,bg%t,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
             self%tablesize,self%estblx,dqsatdt,self%qsattraj)
 
 deallocate(dqsatdt)
@@ -119,18 +119,16 @@ type(fv3jedi_increment),  intent(inout) :: xctl
 type(fv3jedi_increment),  intent(inout) :: xmod
 
 !Ps (identity)
-xmod%fields(xmod%ps)%array = xctl%fields(xctl%ps)%array
+xmod%ps = xctl%ps
 
 !Tracers (identity)
-xmod%fields(xmod%qi)%array = xctl%fields(xctl%qi)%array
-xmod%fields(xmod%ql)%array = xctl%fields(xctl%ql)%array
-xmod%fields(xmod%o3)%array = xctl%fields(xctl%o3)%array
+xmod%qi = xctl%qi
+xmod%ql = xctl%ql
+xmod%o3 = xctl%o3
 
 !Tangent linear of analysis (control) to model variables
-call control_to_model_tlm(geom, xctl%fields(xctl%psi)%array, xctl%fields(xctl%chi)%array, &
-                                xctl%fields(xctl%tv )%array, xctl%fields(xctl%rh )%array, &
-                                xmod%fields(xmod%ua)%array, xmod%fields(xmod%va)%array, &
-                                xmod%fields(xmod%t )%array, xmod%fields(xmod%q )%array, &
+call control_to_model_tlm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%rh, &
+                                xmod%ua,  xmod%va,  xmod%t,  xmod%q,  &
                                 self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine multiply
@@ -146,18 +144,16 @@ type(fv3jedi_increment),  intent(inout) :: xmod
 type(fv3jedi_increment),  intent(inout) :: xctl
 
 !Ps (identity)
-xctl%fields(xctl%ps)%array = xmod%fields(xmod%ps)%array
+xctl%ps = xmod%ps
 
 !Tracers (identity)
-xctl%fields(xctl%qi)%array = xmod%fields(xmod%qi)%array
-xctl%fields(xctl%ql)%array = xmod%fields(xmod%ql)%array
-xctl%fields(xctl%o3)%array = xmod%fields(xmod%o3)%array
+xctl%qi = xmod%qi
+xctl%ql = xmod%ql
+xctl%o3 = xmod%o3
 
 !Adjoint of analysis (control) to model variables
-call control_to_model_adm(geom, xctl%fields(xctl%psi)%array, xctl%fields(xctl%chi)%array, &
-                                xctl%fields(xctl%tv )%array, xctl%fields(xctl%rh )%array, &
-                                xmod%fields(xmod%ua)%array, xmod%fields(xmod%va)%array, &
-                                xmod%fields(xmod%t )%array, xmod%fields(xmod%q )%array, &
+call control_to_model_adm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%rh, &
+                                xmod%ua,  xmod%va,  xmod%t,  xmod%q,  &
                                 self%tvtraj,self%qtraj,self%qsattraj )
 
 end subroutine multiplyadjoint
@@ -176,14 +172,14 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
 !Tangent linear inverse (model to control)
 
-xctl%fields(xctl%psi)%array = xmod%fields(xmod%ua)%array
-xctl%fields(xctl%chi)%array = xmod%fields(xmod%va)%array
-xctl%fields(xctl%tv )%array = xmod%fields(xmod%t )%array
-xctl%fields(xctl%ps )%array = xmod%fields(xmod%ps)%array
-xctl%fields(xctl%rh )%array = xmod%fields(xmod%q )%array
-xctl%fields(xctl%qi )%array = xmod%fields(xmod%qi)%array
-xctl%fields(xctl%ql )%array = xmod%fields(xmod%ql)%array
-xctl%fields(xctl%o3 )%array = xmod%fields(xmod%o3)%array
+xctl%psi = xmod%ua
+xctl%chi = xmod%va
+xctl%tv  = xmod%t 
+xctl%ps  = xmod%ps
+xctl%rh  = xmod%q 
+xctl%qi  = xmod%qi
+xctl%ql  = xmod%ql
+xctl%o3  = xmod%o3
 
 !allocate (vort(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
 !allocate (divg(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
@@ -191,17 +187,17 @@ xctl%fields(xctl%o3 )%array = xmod%fields(xmod%o3)%array
 !allocate (  va(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
 !
 !!> Convert u,v to vorticity and divergence
-!call uv_to_vortdivg(geom,xmod%fields(xmod%ua)%array,xmod%fields(xmod%va)%array,ua,va,vort,divg)
+!call uv_to_vortdivg(geom,xmod%ua,xmod%va,ua,va,vort,divg)
 !
 !!> Poisson solver for vorticity and divergence to psi and chi
-!call vortdivg_to_psichi(geom,vort,divg,xctl%fields(xctl%psi)%array,xctl%fields(xctl%chi)%array)
+!call vortdivg_to_psichi(geom,vort,divg,xctl%psi,xctl%chi)
 !
 !!> T to Tv
-!call t_to_tv_tl(geom,self%ttraj,xmod%fields(xmod%t)%array,self%qtraj,xmod%fields(xmod%q)%array)
-!xctl%fields(xctl%tv)%array = xmod%fields(xmod%t)%array
+!call t_to_tv_tl(geom,self%ttraj,xmod%t,self%qtraj,xmod%q)
+!xctl%tv = xmod%t
 !
 !!> q to RH
-!call q_to_rh_tl(geom,self%qsattraj,xmod%fields(xmod%q)%array,xctl%fields(xctl%rh)%array)
+!call q_to_rh_tl(geom,self%qsattraj,xmod%q,xctl%rh)
 !
 !!Deallocate
 !deallocate(vort,divg,ua,va)
@@ -218,14 +214,14 @@ type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(inout) :: xctl
 type(fv3jedi_increment),  intent(inout) :: xmod
 
-xmod%fields(xmod%ua)%array = xctl%fields(xctl%psi)%array
-xmod%fields(xmod%va)%array = xctl%fields(xctl%chi)%array
-xmod%fields(xmod%t )%array = xctl%fields(xctl%tv )%array
-xmod%fields(xmod%ps)%array = xctl%fields(xctl%ps )%array
-xmod%fields(xmod%q )%array = xctl%fields(xctl%rh )%array
-xmod%fields(xmod%qi)%array = xctl%fields(xctl%qi )%array
-xmod%fields(xmod%ql)%array = xctl%fields(xctl%ql )%array
-xmod%fields(xmod%o3)%array = xctl%fields(xctl%o3 )%array
+xmod%ua = xctl%psi
+xmod%va = xctl%chi
+xmod%t  = xctl%tv 
+xmod%ps = xctl%ps 
+xmod%q  = xctl%rh 
+xmod%qi = xctl%qi 
+xmod%ql = xctl%ql 
+xmod%o3 = xctl%o3 
 
 end subroutine multiplyinverseadjoint
 

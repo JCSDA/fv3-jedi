@@ -28,6 +28,7 @@ type :: fv3jedi_field
  real(kind=kind_real), allocatable :: array(:,:,:)
  contains
   procedure :: allocate_field
+  procedure :: array_pointer
   procedure :: equals
   generic :: assignment(=) => equals
   procedure :: deallocate_field
@@ -40,16 +41,17 @@ contains
 ! ------------------------------------------------------------------------------
 
 subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
-                          fv3jedi_name,units,staggerloc)
+                          fv3jedi_name,units,staggerloc,arraypointer)
 
 implicit none
-class(fv3jedi_field),       intent(inout) :: self
-integer,                    intent(in)    :: isc,iec,jsc,jec,npz
-character(len=*), optional, intent(in)    :: short_name
-character(len=*), optional, intent(in)    :: long_name
-character(len=*), optional, intent(in)    :: fv3jedi_name
-character(len=*), optional, intent(in)    :: units
-integer,          optional, intent(in)    :: staggerloc 
+class(fv3jedi_field), target,  intent(inout) :: self
+integer,                       intent(in)    :: isc,iec,jsc,jec,npz
+character(len=*),              intent(in)    :: short_name
+character(len=*),              intent(in)    :: long_name
+character(len=*),              intent(in)    :: fv3jedi_name
+character(len=*),              intent(in)    :: units
+integer,                       intent(in)    :: staggerloc 
+real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
 
 self%isc = isc
 self%iec = iec
@@ -61,23 +63,48 @@ if(.not.self%lalloc) then
 
   if (staggerloc == center) then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+    allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))    
   elseif (staggerloc == north) then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
+    allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
   elseif (staggerloc == east) then
     allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
+    allocate(arraypointer(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
   endif
 
 endif
 
 self%lalloc = .true.
 
-if (present(short_name)) self%short_name = trim(short_name)
-if (present(long_name)) self%long_name = trim(long_name)
-if (present(fv3jedi_name)) self%fv3jedi_name = trim(fv3jedi_name)
-if (present(units)) self%units = trim(units)
-if (present(staggerloc)) self%staggerloc = staggerloc
+self%short_name   = trim(short_name)
+self%long_name    = trim(long_name)
+self%fv3jedi_name = trim(fv3jedi_name)
+self%units        = trim(units)
+self%staggerloc   = staggerloc
+
+arraypointer => self%array
 
 end subroutine allocate_field
+
+! ------------------------------------------------------------------------------
+
+subroutine array_pointer(self,arraypointer)
+
+implicit none
+class(fv3jedi_field), target,  intent(in)    :: self
+real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
+
+if (self%staggerloc == center) then
+  allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))    
+elseif (self%staggerloc == north) then
+  allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
+elseif (self%staggerloc == east) then
+  allocate(arraypointer(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
+endif
+
+arraypointer => self%array
+
+end subroutine array_pointer
 
 ! ------------------------------------------------------------------------------
 
@@ -99,14 +126,19 @@ implicit none
 class(fv3jedi_field), intent(inout) :: self
 type (fv3jedi_field), intent(in)    :: rhs
 
+real(kind=kind_real), pointer :: dummy_pointer(:,:,:) => null()
+
 call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
                           short_name=rhs%short_name, &
                           long_name=rhs%long_name, &
                           fv3jedi_name=rhs%fv3jedi_name, &
                           units=rhs%units, &
-                          staggerloc=rhs%staggerloc)
+                          staggerloc=rhs%staggerloc, &
+                          arraypointer = dummy_pointer)
 
 self%array = rhs%array
+
+nullify(dummy_pointer)
 
 end subroutine equals
 
