@@ -162,7 +162,7 @@ cost_function:
 #        covariance: BUMP
 #        default_seed: 1
 #        prefix: bump_sta_geos_c180_np864/fv3jedi_geos
-#        method: cor
+#        method: cov
 #        strategy: common
 #        new_nicas: 1     # Recompute convolution parameters
 #        load_nicas: 0    # Load precomputed convolution parameters

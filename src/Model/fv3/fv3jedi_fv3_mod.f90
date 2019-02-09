@@ -168,23 +168,23 @@ implicit none
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
  
-lm%traj%u       = state%fields(state%ud)%array
-lm%traj%v       = state%fields(state%vd)%array
-lm%traj%ua      = state%fields(state%ua)%array
-lm%traj%va      = state%fields(state%va)%array
-lm%traj%t       = state%fields(state%t)%array
-lm%traj%delp    = state%fields(state%delp)%array
-lm%traj%qv      = state%fields(state%q)%array
-lm%traj%qi      = state%fields(state%qi)%array
-lm%traj%ql      = state%fields(state%ql)%array
-lm%traj%o3      = state%fields(state%o3)%array
+lm%traj%u       = state%ud
+lm%traj%v       = state%vd
+lm%traj%ua      = state%ua
+lm%traj%va      = state%va
+lm%traj%t       = state%t
+lm%traj%delp    = state%delp
+lm%traj%qv      = state%q
+lm%traj%qi      = state%qi
+lm%traj%ql      = state%ql
+lm%traj%o3      = state%o3
 
 if (.not. lm%conf%hydrostatic) then
-lm%traj%w       = state%fields(state%w)%array
-lm%traj%delz    = state%fields(state%delz)%array
+lm%traj%w       = state%w
+lm%traj%delz    = state%delz
 endif
 
-lm%traj%phis = state%fields(state%phis)%array(:,:,1)
+lm%traj%phis = state%phis(:,:,1)
 
 end subroutine state_to_lm
 
@@ -196,23 +196,23 @@ implicit none
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
  
-state%fields(state%ud)%array      = lm%traj%u
-state%fields(state%vd)%array      = lm%traj%v
-state%fields(state%ua)%array      = lm%traj%ua
-state%fields(state%va)%array      = lm%traj%va
-state%fields(state%t)%array       = lm%traj%t
-state%fields(state%delp)%array    = lm%traj%delp
-state%fields(state%q)%array       = lm%traj%qv
-state%fields(state%qi)%array      = lm%traj%qi
-state%fields(state%ql)%array      = lm%traj%ql
-state%fields(state%o3)%array      = lm%traj%o3
+state%ud      = lm%traj%u
+state%vd      = lm%traj%v
+state%ua      = lm%traj%ua
+state%va      = lm%traj%va
+state%t       = lm%traj%t
+state%delp    = lm%traj%delp
+state%q       = lm%traj%qv
+state%qi      = lm%traj%qi
+state%ql      = lm%traj%ql
+state%o3      = lm%traj%o3
 
 if (.not. lm%conf%hydrostatic) then
-state%fields(state%w)%array       = lm%traj%w
-state%fields(state%delz)%array    = lm%traj%delz
+state%w       = lm%traj%w
+state%delz    = lm%traj%delz
 endif
 
-state%fields(state%phis)%array(:,:,1)    = lm%traj%phis
+state%phis(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state
 

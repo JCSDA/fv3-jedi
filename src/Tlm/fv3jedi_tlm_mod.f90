@@ -203,27 +203,27 @@ allocate(vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,1:inc%npz))
 ud = 0.0_kind_real
 vd = 0.0_kind_real
 
-call a2d(geom, inc%fields(inc%ua)%array(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
-               inc%fields(inc%va)%array(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
+call a2d(geom, inc%ua(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
+               inc%va(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
                     ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,:), &
                     vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,:))
 
 lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,:)
 lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-lm%pert%ua   = inc%fields(inc%ua)%array
-lm%pert%va   = inc%fields(inc%va)%array
-lm%pert%t    = inc%fields(inc%t)%array
+lm%pert%ua   = inc%ua
+lm%pert%va   = inc%va
+lm%pert%t    = inc%t
 do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*inc%fields(inc%ps)%array(:,:,1)
+  lm%pert%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*inc%ps(:,:,1)
 enddo
-lm%pert%qv   = inc%fields(inc%q)%array
-lm%pert%qi   = inc%fields(inc%qi)%array
-lm%pert%ql   = inc%fields(inc%ql)%array
-lm%pert%o3   = inc%fields(inc%o3)%array
+lm%pert%qv   = inc%q
+lm%pert%qi   = inc%qi
+lm%pert%ql   = inc%ql
+lm%pert%o3   = inc%o3
 
 if (.not. inc%hydrostatic) then
-   lm%pert%delz = inc%fields(inc%delz)%array
-   lm%pert%w    = inc%fields(inc%w)%array
+   lm%pert%delz = inc%delz
+   lm%pert%w    = inc%w
 endif
 
 deallocate(ud,vd)
@@ -258,17 +258,17 @@ vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
 
 call d2a(geom, ud, vd, ua, va)
 
-inc%fields(inc%ua)%array   = ua(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-inc%fields(inc%va)%array   = va(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-inc%fields(inc%t)%array    = lm%pert%t
-inc%fields(inc%ps)%array(:,:,1)   = sum(lm%pert%delp,3)
-inc%fields(inc%q)%array    = lm%pert%qv
-inc%fields(inc%qi)%array   = lm%pert%qi
-inc%fields(inc%ql)%array   = lm%pert%ql
-inc%fields(inc%o3)%array   = lm%pert%o3
+inc%ua   = ua(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+inc%va   = va(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+inc%t    = lm%pert%t
+inc%ps(:,:,1)   = sum(lm%pert%delp,3)
+inc%q    = lm%pert%qv
+inc%qi   = lm%pert%qi
+inc%ql   = lm%pert%ql
+inc%o3   = lm%pert%o3
 if (.not. inc%hydrostatic) then
-  inc%fields(inc%delz)%array = lm%pert%delz
-  inc%fields(inc%w)%array    = lm%pert%w
+  inc%delz = lm%pert%delz
+  inc%w    = lm%pert%w
 endif
 
 deallocate(ud,vd,ua,va)
@@ -299,20 +299,20 @@ allocate(va(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
 ua = 0.0_kind_real
 va = 0.0_kind_real
 
-ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%fields(inc%ua)%array
-va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%fields(inc%va)%array
+ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%ua
+va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%va
 
-lm%pert%t    = inc%fields(inc%t)%array
+lm%pert%t    = inc%t
 do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = inc%fields(inc%ps)%array(:,:,1)
+  lm%pert%delp(:,:,k) = inc%ps(:,:,1)
 enddo
-lm%pert%qv   = inc%fields(inc%q)%array
-lm%pert%qi   = inc%fields(inc%qi)%array
-lm%pert%ql   = inc%fields(inc%ql)%array
-lm%pert%o3   = inc%fields(inc%o3)%array
+lm%pert%qv   = inc%q
+lm%pert%qi   = inc%qi
+lm%pert%ql   = inc%ql
+lm%pert%o3   = inc%o3
 if (.not. inc%hydrostatic) then
-   lm%pert%delz = inc%fields(inc%delz)%array
-   lm%pert%w    = inc%fields(inc%w)%array
+   lm%pert%delz = inc%delz
+   lm%pert%w    = inc%w
 endif
 
 call d2a_ad(geom, ud, vd, ua, va)
@@ -346,38 +346,38 @@ allocate(vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,1:inc%npz))
 ud = 0.0_kind_real
 vd = 0.0_kind_real
 
-inc%fields(inc%ua)%array   = 0.0
-inc%fields(inc%va)%array   = 0.0
-inc%fields(inc%t )%array   = 0.0
-inc%fields(inc%ps)%array   = 0.0
-inc%fields(inc%q )%array   = 0.0
-inc%fields(inc%qi)%array   = 0.0
-inc%fields(inc%ql)%array   = 0.0
-inc%fields(inc%o3)%array   = 0.0
+inc%ua   = 0.0
+inc%va   = 0.0
+inc%t    = 0.0
+inc%ps   = 0.0
+inc%q    = 0.0
+inc%qi   = 0.0
+inc%ql   = 0.0
+inc%o3   = 0.0
 
 if (.not. inc%hydrostatic) then
-   inc%fields(inc%delz)%array = 0.0
-   inc%fields(inc%w)%array    = 0.0
+   inc%delz = 0.0
+   inc%w    = 0.0
 endif
 
 ud(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%u
 vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
-inc%fields(inc%t)%array    = lm%pert%t
-inc%fields(inc%ps)%array = 0.0_kind_real
+inc%t    = lm%pert%t
+inc%ps = 0.0_kind_real
 do k = 1,geom%npz
-  inc%fields(inc%ps)%array(:,:,1) = inc%fields(inc%ps)%array(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
+  inc%ps(:,:,1) = inc%ps(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
 enddo
-inc%fields(inc%q)%array    = lm%pert%qv
-inc%fields(inc%qi)%array   = lm%pert%qi
-inc%fields(inc%ql)%array   = lm%pert%ql
-inc%fields(inc%o3)%array   = lm%pert%o3
+inc%q    = lm%pert%qv
+inc%qi   = lm%pert%qi
+inc%ql   = lm%pert%ql
+inc%o3   = lm%pert%o3
 if (.not. inc%hydrostatic) then
-  inc%fields(inc%delz)%array = lm%pert%delz
-  inc%fields(inc%q)%array    = lm%pert%w
+  inc%delz = lm%pert%delz
+  inc%q    = lm%pert%w
 endif
 
 !Convert A to D
-call a2d_ad(geom, inc%fields(inc%ua)%array, inc%fields(inc%va)%array, ud, vd)
+call a2d_ad(geom, inc%ua, inc%va, ud, vd)
 
 deallocate(ud,vd)
 

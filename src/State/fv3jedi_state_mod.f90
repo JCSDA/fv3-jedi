@@ -67,212 +67,212 @@ vcount = 0
 do var = 1, vars%nv
    select case (trim(vars%fldnames(var)))
      case("ud","u")
-       vcount = vcount + 1; self%ud = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'eastward_wind_on_native_D-Grid', &
-            fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north )
+            fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north, arraypointer = self%ud )
      case("vd","v")
-       vcount = vcount + 1; self%vd = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'northward_wind_on_native_D-Grid', &
-            fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east )
+            fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east, arraypointer = self%vd )
      case("ua")
-       vcount = vcount + 1; self%ua = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'eastward_wind', &
-            fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center )
+            fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center, arraypointer = self%ua)
      case("va")
-       vcount = vcount + 1; self%va = vcount
+       vcount=vcount+1; 
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'northward_wind', &
-            fv3jedi_name = 'va', units = 'm s-1', staggerloc = center )
+            fv3jedi_name = 'va', units = 'm s-1', staggerloc = center, arraypointer = self%va )
      case("t","T")
-       vcount = vcount + 1; self%t = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'air_temperature', &
-            fv3jedi_name = 't', units = 'K', staggerloc = center )
+            fv3jedi_name = 't', units = 'K', staggerloc = center, arraypointer = self%t)
      case("delp","DELP")
-       vcount = vcount + 1; self%delp = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'pressure_thickness', &
-            fv3jedi_name = 'delp', units = 'Pa', staggerloc = center )
+            fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
      case("q","sphum")
-       vcount = vcount + 1; self%q = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'specific_humidity', &
-            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center )
+            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center, arraypointer = self%q)
      case("qi","ice_wat")
-       vcount = vcount + 1; self%qi = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice', &
-            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center )
+            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center, arraypointer = self%qi)
      case("ql","liq_wat")
-       vcount = vcount + 1; self%ql = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice_water', &
-            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center )
+            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center, arraypointer = self%ql)
      case("o3","o3mr")
-       vcount = vcount + 1; self%o3 = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'ozone_mass_mixing_ratio', &
-            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center )
+            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center, arraypointer = self%o3)
      case("w","W")
-       vcount = vcount + 1; self%w = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'vertical_wind', &
-            fv3jedi_name = 'w', units = 'm s-1', staggerloc = center )
+            fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
      case("delz","DZ")
-       vcount = vcount + 1; self%delz = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'layer_thickness', &
-            fv3jedi_name = 'delz', units = 'm', staggerloc = center )
+            fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
      case("phis")
-       vcount = vcount + 1; self%phis = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_geopotential_height', &
-            fv3jedi_name = 'phis', units = 'm', staggerloc = center )
+            fv3jedi_name = 'phis', units = 'm', staggerloc = center, arraypointer = self%phis)
      !CRTM
      case("slmsk")
-       vcount = vcount + 1; self%slmsk = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'slmsk', &
-            fv3jedi_name = 'slmsk', units = 'none', staggerloc = center )
+            fv3jedi_name = 'slmsk', units = 'none', staggerloc = center, arraypointer = self%slmsk)
      case("sheleg")
-       vcount = vcount + 1; self%sheleg = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'sheleg', &
-            fv3jedi_name = 'sheleg', units = 'none', staggerloc = center )
+            fv3jedi_name = 'sheleg', units = 'none', staggerloc = center, arraypointer = self%sheleg)
      case("tsea")
-       vcount = vcount + 1; self%tsea = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'tsea', &
-            fv3jedi_name = 'tsea', units = 'none', staggerloc = center )
+            fv3jedi_name = 'tsea', units = 'none', staggerloc = center, arraypointer = self%tsea)
      case("vtype")
-       vcount = vcount + 1; self%vtype = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'vtype', &
-            fv3jedi_name = 'vtype', units = 'none', staggerloc = center )
+            fv3jedi_name = 'vtype', units = 'none', staggerloc = center, arraypointer = self%vtype)
      case("stype")
-       vcount = vcount + 1; self%stype = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'stype', &
-            fv3jedi_name = 'stype', units = 'none', staggerloc = center )
+            fv3jedi_name = 'stype', units = 'none', staggerloc = center, arraypointer = self%stype)
      case("vfrac")
-       vcount = vcount + 1; self%vfrac = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'vfrac', &
-            fv3jedi_name = 'vfrac', units = 'none', staggerloc = center )
+            fv3jedi_name = 'vfrac', units = 'none', staggerloc = center, arraypointer = self%vfrac)
      case("stc")
-       vcount = vcount + 1; self%stc = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
             short_name = vars%fldnames(var), long_name = 'stc', &
-            fv3jedi_name = 'stc', units = 'none', staggerloc = center )
+            fv3jedi_name = 'stc', units = 'none', staggerloc = center, arraypointer = self%stc)
      case("smc")
-       vcount = vcount + 1; self%smc = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
             short_name = vars%fldnames(var), long_name = 'smc', &
-            fv3jedi_name = 'smc', units = 'none', staggerloc = center )
+            fv3jedi_name = 'smc', units = 'none', staggerloc = center, arraypointer = self%smc)
      case("snwdph")
-       vcount = vcount + 1; self%snwdph = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'snwdph', &
-            fv3jedi_name = 'snwdph', units = 'none', staggerloc = center )
+            fv3jedi_name = 'snwdph', units = 'none', staggerloc = center, arraypointer = self%snwdph)
      case("u_srf")
-       vcount = vcount + 1; self%u_srf = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'u_srf', &
-            fv3jedi_name = 'u_srf', units = 'none', staggerloc = center )
+            fv3jedi_name = 'u_srf', units = 'none', staggerloc = center, arraypointer = self%u_srf)
      case("v_srf")
-       vcount = vcount + 1; self%v_srf = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'v_srf', &
-            fv3jedi_name = 'v_srf', units = 'none', staggerloc = center )
+            fv3jedi_name = 'v_srf', units = 'none', staggerloc = center, arraypointer = self%v_srf)
      case("f10m")
-       vcount = vcount + 1; self%f10m = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'f10m', &
-            fv3jedi_name = 'f10m', units = 'none', staggerloc = center )
+            fv3jedi_name = 'f10m', units = 'none', staggerloc = center, arraypointer = self%f10m)
      !TL/AD trajectory
      case("qls")
-       vcount = vcount + 1; self%qls = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'initial_mass_fraction_of_large_scale_cloud_condensate', &
-            fv3jedi_name = 'qls', units = 'kg kg-1', staggerloc = center )
+            fv3jedi_name = 'qls', units = 'kg kg-1', staggerloc = center, arraypointer = self%qls)
      case("qcn")
-       vcount = vcount + 1; self%qcn = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'initial_mass_fraction_of_convective_cloud_condensate', &
-            fv3jedi_name = 'qcn', units = 'kg kg-1', staggerloc = center )
+            fv3jedi_name = 'qcn', units = 'kg kg-1', staggerloc = center, arraypointer = self%qcn)
      case("cfcn")
-       vcount = vcount + 1; self%cfcn = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'convective_cloud_area_fraction', &
-            fv3jedi_name = 'cfcn', units = '1', staggerloc = center )
+            fv3jedi_name = 'cfcn', units = '1', staggerloc = center, arraypointer = self%cfcn)
      case("frocean")
-       vcount = vcount + 1; self%frocean = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'fraction_of_ocean', &
-            fv3jedi_name = 'frocean', units = '1', staggerloc = center )
+            fv3jedi_name = 'frocean', units = '1', staggerloc = center, arraypointer = self%frocean)
      case("frland")
-       vcount = vcount + 1; self%frland = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'fraction_of_land', &
-            fv3jedi_name = 'frland', units = '1', staggerloc = center )
+            fv3jedi_name = 'frland', units = '1', staggerloc = center, arraypointer = self%frland)
      case("varflt")
-       vcount = vcount + 1; self%varflt = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'isotropic_variance_of_filtered_topography', &
-            fv3jedi_name = 'varflt', units = 'm+2', staggerloc = center )
+            fv3jedi_name = 'varflt', units = 'm+2', staggerloc = center, arraypointer = self%varflt)
      case("ustar")
-       vcount = vcount + 1; self%ustar = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_velocity_scale', &
-            fv3jedi_name = 'ustar', units = 'm s-1', staggerloc = center )
+            fv3jedi_name = 'ustar', units = 'm s-1', staggerloc = center, arraypointer = self%ustar)
      case("bstar")
-       vcount = vcount + 1; self%bstar = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_bouyancy_scale', &
-            fv3jedi_name = 'bstar', units = 'm s-2', staggerloc = center )
+            fv3jedi_name = 'bstar', units = 'm s-2', staggerloc = center, arraypointer = self%bstar)
      case("zpbl")
-       vcount = vcount + 1; self%zpbl = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'planetary_boundary_layer_height', &
-            fv3jedi_name = 'zpbl', units = 'm', staggerloc = center )
+            fv3jedi_name = 'zpbl', units = 'm', staggerloc = center, arraypointer = self%zpbl)
      case("cm")
-       vcount = vcount + 1; self%cm = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_momentum', &
-            fv3jedi_name = 'cm', units = 'kg m-2 s-1', staggerloc = center )
+            fv3jedi_name = 'cm', units = 'kg m-2 s-1', staggerloc = center, arraypointer = self%cm)
      case("ct")
-       vcount = vcount + 1; self%ct = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_heat', &
-            fv3jedi_name = 'ct', units = 'kg m-2 s-1', staggerloc = center )
+            fv3jedi_name = 'ct', units = 'kg m-2 s-1', staggerloc = center, arraypointer = self%ct)
      case("cq")
-       vcount = vcount + 1; self%cq = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_moisture', &
-            fv3jedi_name = 'cq', units = 'kg m-2 s-1', staggerloc = center )
+            fv3jedi_name = 'cq', units = 'kg m-2 s-1', staggerloc = center, arraypointer = self%cq)
      case("kcbl")
-       vcount = vcount + 1; self%kcbl = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'KCBL_before_moist', &
-            fv3jedi_name = 'kcbl', units = '1', staggerloc = center )
+            fv3jedi_name = 'kcbl', units = '1', staggerloc = center, arraypointer = self%kcbl)
      case("ts")
-       vcount = vcount + 1; self%ts = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_temp_before_moist', &
-            fv3jedi_name = 'ts', units = 'K', staggerloc = center )
+            fv3jedi_name = 'ts', units = 'K', staggerloc = center, arraypointer = self%ts)
      case("khl")
-       vcount = vcount + 1; self%khl = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'lower_index_where_Kh_greater_than_2', &
-            fv3jedi_name = 'khl', units = '1', staggerloc = center )
+            fv3jedi_name = 'khl', units = '1', staggerloc = center, arraypointer = self%khl)
      case("khu")
-       vcount = vcount + 1; self%khu = vcount
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'upper_index_where_Kh_greater_than_2', &
-            fv3jedi_name = 'khu', units = '1', staggerloc = center )
+            fv3jedi_name = 'khu', units = '1', staggerloc = center, arraypointer = self%khu)
      case("ps")
        !Not part of the state
      case default 
@@ -284,10 +284,10 @@ if (vcount .ne. self%nf) &
 call abor1_ftn("fv3jedi_state_mod create: vcount does not equal self%nf")
 
 self%hydrostatic = .true.
-if (self%w > 0 .and. self%delz > 0) self%hydrostatic = .false.
+if (associated(self%w) .and. associated(self%delz)) self%hydrostatic = .false.
 
 self%tladphystrj = .false.
-if (self%khu > 0) self%tladphystrj = .true.
+if (associated(self%khu)) self%tladphystrj = .true.
 
 ! Initialize all arrays to zero
 call zeros(self)
@@ -369,48 +369,6 @@ if (.not.allocated(self%fields)) then
     self%fields(self_var) = rhs%fields(self_var)
   enddo
 
-  self%ud      = rhs%ud     
-  self%vd      = rhs%vd     
-  self%ua      = rhs%ua     
-  self%va      = rhs%va     
-  self%t       = rhs%t      
-  self%delp    = rhs%delp   
-  self%q       = rhs%q      
-  self%qi      = rhs%qi     
-  self%ql      = rhs%ql     
-  self%o3      = rhs%o3     
-  self%w       = rhs%w      
-  self%delz    = rhs%delz   
-  self%phis    = rhs%phis   
-  self%slmsk   = rhs%slmsk  
-  self%sheleg  = rhs%sheleg 
-  self%tsea    = rhs%tsea   
-  self%vtype   = rhs%vtype  
-  self%stype   = rhs%stype  
-  self%vfrac   = rhs%vfrac  
-  self%stc     = rhs%stc    
-  self%smc     = rhs%smc    
-  self%snwdph  = rhs%snwdph 
-  self%u_srf   = rhs%u_srf  
-  self%v_srf   = rhs%v_srf  
-  self%f10m    = rhs%f10m   
-  self%qls     = rhs%qls    
-  self%qcn     = rhs%qcn    
-  self%cfcn    = rhs%cfcn   
-  self%frocean = rhs%frocean
-  self%frland  = rhs%frland 
-  self%varflt  = rhs%varflt 
-  self%ustar   = rhs%ustar  
-  self%bstar   = rhs%bstar  
-  self%zpbl    = rhs%zpbl   
-  self%cm      = rhs%cm     
-  self%ct      = rhs%ct     
-  self%cq      = rhs%cq     
-  self%kcbl    = rhs%kcbl   
-  self%ts      = rhs%ts     
-  self%khl     = rhs%khl    
-  self%khu     = rhs%khu  
-
 else
 
   !State copy, potentialy with differnt fields
@@ -428,6 +386,98 @@ else
   enddo
 
 endif  
+
+! Set pointers
+do self_var = 1, self%nf
+  select case (trim(self%fields(self_var)%fv3jedi_name))
+    case("ud","u")
+      call self%fields(self_var)%array_pointer(self%ud)
+    case("vd","v")
+      call self%fields(self_var)%array_pointer(self%vd)
+    case("ua")
+      call self%fields(self_var)%array_pointer(self%ua)
+    case("va")
+      call self%fields(self_var)%array_pointer(self%va)
+    case("t","T")
+      call self%fields(self_var)%array_pointer(self%t)
+    case("delp","DELP")
+      call self%fields(self_var)%array_pointer(self%delp)
+    case("q","sphum")
+      call self%fields(self_var)%array_pointer(self%q)
+    case("qi","ice_wat")
+      call self%fields(self_var)%array_pointer(self%qi)
+    case("ql","liq_wat")
+      call self%fields(self_var)%array_pointer(self%ql)
+    case("o3","o3mr")
+      call self%fields(self_var)%array_pointer(self%o3)
+    case("w","W")
+      call self%fields(self_var)%array_pointer(self%w)
+    case("delz","DZ")
+      call self%fields(self_var)%array_pointer(self%delz)
+    case("phis")
+      call self%fields(self_var)%array_pointer(self%phis)
+    case("slmsk")
+      call self%fields(self_var)%array_pointer(self%slmsk)
+    case("sheleg")
+      call self%fields(self_var)%array_pointer(self%sheleg)
+    case("tsea")
+      call self%fields(self_var)%array_pointer(self%tsea)
+    case("vtype")
+      call self%fields(self_var)%array_pointer(self%vtype)
+    case("stype")
+      call self%fields(self_var)%array_pointer(self%stype)
+    case("vfrac")
+      call self%fields(self_var)%array_pointer(self%vfrac)
+    case("stc")
+      call self%fields(self_var)%array_pointer(self%stc)
+    case("smc")
+      call self%fields(self_var)%array_pointer(self%smc)
+    case("snwdph")
+      call self%fields(self_var)%array_pointer(self%snwdph)
+    case("u_srf")
+      call self%fields(self_var)%array_pointer(self%u_srf)
+    case("v_srf")
+      call self%fields(self_var)%array_pointer(self%v_srf)
+    case("f10m")
+      call self%fields(self_var)%array_pointer(self%f10m)
+    case("qls")
+      call self%fields(self_var)%array_pointer(self%qls)
+    case("qcn")
+      call self%fields(self_var)%array_pointer(self%qcn)
+    case("cfcn")
+      call self%fields(self_var)%array_pointer(self%cfcn)
+    case("frocean")
+      call self%fields(self_var)%array_pointer(self%frocean)
+    case("frland")
+      call self%fields(self_var)%array_pointer(self%frland)
+    case("varflt")
+      call self%fields(self_var)%array_pointer(self%varflt)
+    case("ustar")
+      call self%fields(self_var)%array_pointer(self%ustar)
+    case("bstar")
+      call self%fields(self_var)%array_pointer(self%bstar)
+    case("zpbl")
+      call self%fields(self_var)%array_pointer(self%zpbl)
+    case("cm")
+      call self%fields(self_var)%array_pointer(self%cm)
+    case("ct")
+      call self%fields(self_var)%array_pointer(self%ct)
+    case("cq")
+      call self%fields(self_var)%array_pointer(self%cq)
+    case("kcbl")
+      call self%fields(self_var)%array_pointer(self%kcbl)
+    case("ts")
+      call self%fields(self_var)%array_pointer(self%ts)
+    case("khl")
+      call self%fields(self_var)%array_pointer(self%khl)
+    case("khu")
+      call self%fields(self_var)%array_pointer(self%khu)
+    case("ps")
+      !Not part of the state
+    case default 
+      call abor1_ftn("Create: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
+  end select
+enddo
 
 end subroutine copy
 
@@ -471,49 +521,49 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   ud = 0.0_kind_real
   vd = 0.0_kind_real
 
-  call a2d(geom, rhs%fields(rhs%ua)%array, rhs%fields(rhs%va)%array, ud, vd)
+  call a2d(geom, rhs%ua, rhs%va, ud, vd)
 
-  if(self%ud > 0) self%fields(self%ud)%array = self%fields(self%ud)%array + ud
-  if(self%vd > 0) self%fields(self%vd)%array = self%fields(self%vd)%array + vd
+  if(associated(self%ud)) self%ud = self%ud + ud
+  if(associated(self%vd)) self%vd = self%vd + vd
 
   deallocate(ud,vd)
 
-  if(self%ua > 0) self%fields(self%ua)%array = self%fields(self%ua)%array + rhs%fields(rhs%ua)%array  
-  if(self%va > 0) self%fields(self%va)%array = self%fields(self%va)%array + rhs%fields(rhs%va)%array  
-  if(self%t  > 0) self%fields(self%t )%array = self%fields(self%t )%array + rhs%fields(rhs%t)%array
-  if(self%delp > 0) then
-    if (rhs%ps>0) then
+  if(associated(self%ua)) self%ua = self%ua + rhs%ua  
+  if(associated(self%va)) self%va = self%va + rhs%va  
+  if(associated(self%t )) self%t  = self%t  + rhs%t
+  if(associated(self%delp)) then
+    if (associated(rhs%ps)) then
       do k = 1,geom%npz
-        self%fields(self%delp)%array(:,:,k) = self%fields(self%delp)%array(:,:,k) + &
-                                              (geom%bk(k+1)-geom%bk(k))*rhs%fields(rhs%ps)%array(:,:,1)
+        self%delp(:,:,k) = self%delp(:,:,k) + &
+                                              (geom%bk(k+1)-geom%bk(k))*rhs%ps(:,:,1)
       enddo
-    elseif (rhs%delp>0) then
-      self%fields(self%delp)%array = self%fields(self%delp)%array + rhs%fields(rhs%delp)%array
+    elseif (associated(rhs%delp)) then
+      self%delp = self%delp + rhs%delp
     endif
   endif
   
-  if(   self%q > 0) self%fields(   self%q)%array = self%fields(   self%q)%array + rhs%fields(   rhs%q)%array   
-  if(  self%qi > 0) self%fields(  self%qi)%array = self%fields(  self%qi)%array + rhs%fields(  rhs%qi)%array  
-  if(  self%ql > 0) self%fields(  self%ql)%array = self%fields(  self%ql)%array + rhs%fields(  rhs%ql)%array  
-  if(  self%o3 > 0) self%fields(  self%o3)%array = self%fields(  self%o3)%array + rhs%fields(  rhs%o3)%array  
-  if(   self%w > 0) self%fields(   self%w)%array = self%fields(   self%w)%array + rhs%fields(   rhs%w)%array   
-  if(self%delz > 0) self%fields(self%delz)%array = self%fields(self%delz)%array + rhs%fields(rhs%delz)%array 
+  if(associated(   self%q)) self%q    = self%q    + rhs%q   
+  if(associated(  self%qi)) self%qi   = self%qi   + rhs%qi  
+  if(associated(  self%ql)) self%ql   = self%ql   + rhs%ql  
+  if(associated(  self%o3)) self%o3   = self%o3   + rhs%o3  
+  if(associated(   self%w)) self%w    = self%w    + rhs%w   
+  if(associated(self%delz)) self%delz = self%delz + rhs%delz 
 
   !Check for negative tracers and increase to 0.0
   do k = 1,geom%npz
     do j = geom%jsc,geom%jec
       do i = geom%isc,geom%iec
-        if (self%fields(self%q)%array(i,j,k) < 0.0_kind_real) then
-          self%fields(self%q)%array(i,j,k) = 0.0_kind_real
+        if (self%q(i,j,k) < 0.0_kind_real) then
+          self%q(i,j,k) = 0.0_kind_real
         endif
-        if (self%fields(self%qi)%array(i,j,k) < 0.0_kind_real) then
-          self%fields(self%qi)%array(i,j,k) = 0.0_kind_real
+        if (self%qi(i,j,k) < 0.0_kind_real) then
+          self%qi(i,j,k) = 0.0_kind_real
         endif
-        if (self%fields(self%ql)%array(i,j,k) < 0.0_kind_real) then
-          self%fields(self%ql)%array(i,j,k) = 0.0_kind_real
+        if (self%ql(i,j,k) < 0.0_kind_real) then
+          self%ql(i,j,k) = 0.0_kind_real
         endif
-        if (self%fields(self%o3)%array(i,j,k) < 0.0_kind_real) then
-          self%fields(self%o3)%array(i,j,k) = 0.0_kind_real
+        if (self%o3(i,j,k) < 0.0_kind_real) then
+          self%o3(i,j,k) = 0.0_kind_real
         endif
       enddo
     enddo
@@ -657,18 +707,18 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                         FV_AtmIC(1)%ptop, FV_AtmIC(1)%domain, FV_AtmIC(1)%tile, FV_AtmIC(1)%bd )
 
         !Copy from temporary structure into state
-        self%fields(self%ud)%array = FV_AtmIC(1)%u
-        self%fields(self%vd)%array = FV_AtmIC(1)%v
-        self%fields(self%t)%array = FV_AtmIC(1)%pt
-        self%fields(self%delp)%array = FV_AtmIC(1)%delp
-        self%fields(self%q)%array = FV_AtmIC(1)%q(:,:,:,1)
-        self%fields(self%phis)%array(:,:,1) = FV_AtmIC(1)%phis
+        self%ud = FV_AtmIC(1)%u
+        self%vd = FV_AtmIC(1)%v
+        self%t = FV_AtmIC(1)%pt
+        self%delp = FV_AtmIC(1)%delp
+        self%q = FV_AtmIC(1)%q(:,:,:,1)
+        self%phis(:,:,1) = FV_AtmIC(1)%phis
         geom%ak = FV_AtmIC(1)%ak
         geom%ak = FV_AtmIC(1)%ak
         geom%ptop = FV_AtmIC(1)%ptop
         if (.not. self%hydrostatic) then
-           self%fields(self%w)%array = FV_AtmIC(1)%w
-           self%fields(self%delz)%array = FV_AtmIC(1)%delz
+           self%w = FV_AtmIC(1)%w
+           self%delz = FV_AtmIC(1)%delz
         endif
 
         !Deallocate temporary FV_Atm fv3 structure
@@ -687,7 +737,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test1_advection_deformation(rlon,rlat,pk,0.d0,1,u0,v0,w0,t0,&
                                                phis0,ps,rho0,hum0,q1,q2,q3,q4)
 
-              self%fields(self%phis)%array(i,j,1) = phis0
+              self%phis(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -698,15 +748,15 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,&
                                                   phis0,ps0,rho0,hum0,q1,q2,q3,q4)
 
-                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
-                 self%fields(self%vd)%array(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
-                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
-                 self%fields(self%t)%array(i,j,k) = t0
-                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
-                 self%fields(self%q)%array (i,j,k) = hum0
-                 self%fields(self%qi)%array(i,j,k) = q1
-                 self%fields(self%ql)%array(i,j,k) = q2
-                 self%fields(self%o3)%array(i,j,k) = q3
+                 self%ud(i,j,k) = u0 !ATTN Not going to necessary keep a-grid winds, u can be either a or d grid
+                 self%vd(i,j,k) = v0 !so this needs to be generic. You cannot drive the model with A grid winds
+                 If (.not.self%hydrostatic) self%w(i,j,k) = w0
+                 self%t(i,j,k) = t0
+                 self%delp(i,j,k) = pe2-pe1
+                 self%q (i,j,k) = hum0
+                 self%qi(i,j,k) = q1
+                 self%ql(i,j,k) = q2
+                 self%o3(i,j,k) = q3
                  
               enddo
            enddo
@@ -723,7 +773,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test1_advection_hadley(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                           t0,phis0,ps,rho0,hum0,q1)
 
-              self%fields(self%phis)%array(i,j,1) = phis0
+              self%phis(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -734,13 +784,13 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                              t0,phis0,ps,rho0,hum0,q1)
 
-                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN comment above
-                 self%fields(self%vd)%array(i,j,k) = v0
-                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
-                 self%fields(self%t)%array(i,j,k) = t0
-                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
-                 self%fields(self%q)%array(i,j,k) = hum0
-                 self%fields(self%qi)%array(i,j,k) = q1
+                 self%ud(i,j,k) = u0 !ATTN comment above
+                 self%vd(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%w(i,j,k) = w0
+                 self%t(i,j,k) = t0
+                 self%delp(i,j,k) = pe2-pe1
+                 self%q(i,j,k) = hum0
+                 self%qi(i,j,k) = q1
                  
               enddo
            enddo
@@ -757,7 +807,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test3_gravity_wave(rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                       t0,phis0,ps,rho0,hum0)
 
-              self%fields(self%phis)%array(i,j,1) = phis0
+              self%phis(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -768,12 +818,12 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test3_gravity_wave(rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0)
 
-                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN comment above
-                 self%fields(self%vd)%array(i,j,k) = v0
-                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
-                 self%fields(self%t)%array(i,j,k) = t0
-                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
-                 self%fields(self%q)%array(i,j,k) = hum0
+                 self%ud(i,j,k) = u0 !ATTN comment above
+                 self%vd(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%w(i,j,k) = w0
+                 self%t(i,j,k) = t0
+                 self%delp(i,j,k) = pe2-pe1
+                 self%q(i,j,k) = hum0
                  
               enddo
            enddo
@@ -790,7 +840,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
               Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,1,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0,q1,q2)
 
-              self%fields(self%phis)%array(i,j,1) = phis0
+              self%phis(i,j,1) = phis0
 
               ! Now loop over all levels
               do k = 1, geom%npz
@@ -801,12 +851,12 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  Call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,0,u0,v0,w0,&
                                          t0,phis0,ps,rho0,hum0,q1,q2)
 
-                 self%fields(self%ud)%array(i,j,k) = u0 !ATTN comment above
-                 self%fields(self%vd)%array(i,j,k) = v0
-                 If (.not.self%hydrostatic) self%fields(self%w)%array(i,j,k) = w0
-                 self%fields(self%t)%array(i,j,k) = t0
-                 self%fields(self%delp)%array(i,j,k) = pe2-pe1
-                 self%fields(self%q)%array(i,j,k) = hum0
+                 self%ud(i,j,k) = u0 !ATTN comment above
+                 self%vd(i,j,k) = v0
+                 If (.not.self%hydrostatic) self%w(i,j,k) = w0
+                 self%t(i,j,k) = t0
+                 self%delp(i,j,k) = pe2-pe1
+                 self%q(i,j,k) = hum0
                  
               enddo
            enddo
