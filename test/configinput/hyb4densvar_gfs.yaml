@@ -202,7 +202,7 @@ cost_function:
       datadir: "."
       prefix: fv3jedi_gfs
       default_seed: 1
-      method: cor
+      method: cov
       strategy: common
       _strategy: specific_univariate
       new_hdiag: 1
@@ -440,7 +440,7 @@ cost_function:
       datadir: "."
       prefix: fv3jedi_gfs
       default_seed: 1
-      method: cor
+      method: cov
       strategy: common
       _strategy: specific_univariate
       new_hdiag: 1
