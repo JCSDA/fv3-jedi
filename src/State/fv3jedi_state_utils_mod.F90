@@ -29,51 +29,51 @@ type :: fv3jedi_state
   type(fv3jedi_field), allocatable :: fields(:)
 
   !State variables (index in array for later access)
-  integer :: ud   = 0
-  integer :: vd   = 0
-  integer :: ua   = 0
-  integer :: va   = 0
-  integer :: t    = 0
-  integer :: delp = 0
-  integer :: q    = 0
-  integer :: qi   = 0
-  integer :: ql   = 0
-  integer :: o3   = 0
-  integer :: w    = 0
-  integer :: delz = 0
-  integer :: phis = 0
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ud      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: vd      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ua      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: va      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: t       => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: delp    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: q       => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qi      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ql      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: o3      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: w       => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: delz    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: phis    => null()
 
   !CRTM state
-  integer :: slmsk  = 0
-  integer :: sheleg = 0
-  integer :: tsea   = 0
-  integer :: vtype  = 0
-  integer :: stype  = 0
-  integer :: vfrac  = 0
-  integer :: stc    = 0
-  integer :: smc    = 0
-  integer :: snwdph = 0
-  integer :: u_srf  = 0
-  integer :: v_srf  = 0
-  integer :: f10m   = 0
+  real(kind=kind_real), pointer, dimension(:,:,:) :: slmsk   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: sheleg  => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: tsea    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: vtype   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: stype   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: vfrac   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: stc     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: smc     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: snwdph  => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: u_srf   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: v_srf   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: f10m    => null()
 
   !Linearized model trajectory
-  integer :: qls     = 0
-  integer :: qcn     = 0
-  integer :: cfcn    = 0
-  integer :: frocean = 0
-  integer :: frland  = 0
-  integer :: varflt  = 0
-  integer :: ustar   = 0
-  integer :: bstar   = 0
-  integer :: zpbl    = 0
-  integer :: cm      = 0
-  integer :: ct      = 0
-  integer :: cq      = 0
-  integer :: kcbl    = 0
-  integer :: ts      = 0
-  integer :: khl     = 0
-  integer :: khu     = 0
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qls     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qcn     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: cfcn    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: frocean => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: frland  => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: varflt  => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ustar   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: bstar   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: zpbl    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: cm      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ct      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: cq      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: kcbl    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ts      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: khl     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: khu     => null()
 
 end type fv3jedi_state
 

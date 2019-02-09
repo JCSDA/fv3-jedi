@@ -134,8 +134,8 @@ if (present(traj)) then
      if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
      if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
   
-     traj%t = state%fields(state%t)%array
-     traj%q = state%fields(state%q)%array
+     traj%t = state%t
+     traj%q = state%q
  
      pbump_alloc => traj%lalloc
      pbumpid => traj%bumpid
@@ -174,7 +174,7 @@ allocate(prsi(isc:iec,jsc:jec,npz+1))
 allocate(prs (isc:iec,jsc:jec,npz  ))
 allocate(logp(isc:iec,jsc:jec,npz  ))
 
-call delp_to_pe_p_logp(geom,state%fields(state%delp)%array,prsi,prs,logp)
+call delp_to_pe_p_logp(geom,state%delp,prsi,prs,logp)
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -216,15 +216,15 @@ vegetation_fraction = 0.0_kind_real
 soil_temperature = 0.0_kind_real
 snow_depth = 0.0_kind_real
 
-if (state%slmsk > 0) then
+if (associated(state%slmsk)) then
   !TODO only if a radiance
   call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
-                     state%fields(state%slmsk)%array,  state%fields(state%sheleg)%array, &
-                     state%fields(state%tsea)%array,   state%fields(state%vtype)%array, &
-                     state%fields(state%stype)%array,  state%fields(state%vfrac)%array, &
-                     state%fields(state%stc)%array,    state%fields(state%smc)%array, &
-                     state%fields(state%snwdph)%array, state%fields(state%u_srf)%array, &
-                     state%fields(state%v_srf)%array,  state%fields(state%f10m)%array, &
+                     state%slmsk,  state%sheleg, &
+                     state%tsea,   state%vtype, &
+                     state%stype,  state%vfrac, &
+                     state%stc,    state%smc, &
+                     state%snwdph, state%u_srf, &
+                     state%v_srf,  state%f10m, &
                      land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
                      snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                      snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
@@ -246,22 +246,22 @@ qi_ade = 0.0_kind_real
 ql_efr = 0.0_kind_real
 qi_efr = 0.0_kind_real
 
-if (state%slmsk > 0) then
+if (associated(state%slmsk)) then
 
   !TODO Is it water_coverage or sea_coverage fed in here?
   water_coverage_m = 0.0_kind_real
   do j = jsc,jec
     do i = isc,iec
-      if (state%fields(state%slmsk)%array(i,j,1) == 0) water_coverage_m(i,j) = 1.0_kind_real
+      if (state%slmsk(i,j,1) == 0) water_coverage_m(i,j) = 1.0_kind_real
     enddo
   enddo
   
-  call crtm_ade_efr( geom,prsi,state%fields(state%t)%array,state%fields(state%delp)%array, &
-                     water_coverage_m,state%fields(state%q)%array, &
-                     state%fields(state%ql)%array,state%fields(state%qi)%array, &
+  call crtm_ade_efr( geom,prsi,state%t,state%delp, &
+                     water_coverage_m,state%q, &
+                     state%ql,state%qi, &
                      ql_ade,qi_ade,ql_efr,qi_efr )
   
-  call crtm_mixratio(geom,state%fields(state%q)%array,qmr)
+  call crtm_mixratio(geom,state%q,qmr)
 
 endif
 
@@ -284,35 +284,35 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%fields(state%ua)%array
+    geovalm = state%ua
     geoval => geovalm
 
   case ("northward_wind")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%fields(state%va)%array
+    geovalm = state%va
     geoval => geovalm
 
   case ("air_temperature","temperature")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%fields(state%t)%array
+    geovalm = state%t
     geoval => geovalm
 
   case ("specific_humidity")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%fields(state%q)%array
+    geovalm = state%q
     geoval => geovalm
 
   case ("virtual_temperature")
 
     nvl = npz
     do_interp = .true.
-    call T_to_Tv(geom,state%fields(state%t)%array,state%fields(state%q)%array,geovalm)
+    call T_to_Tv(geom,state%t,state%q,geovalm)
     geoval => geovalm
 
   case ("atmosphere_ln_pressure_coordinate")
@@ -344,16 +344,16 @@ do jvar = 1, vars%nv
 
   case ("geopotential_height")
 
-    call geop_height(geom,prs,prsi,state%fields(state%t)%array,state%fields(state%q)%array,&
-                     state%fields(state%phis)%array(:,:,1),use_compress,geovalm)
+    call geop_height(geom,prs,prsi,state%t,state%q,&
+                     state%phis(:,:,1),use_compress,geovalm)
     nvl = npz
     do_interp = .true.
     geoval => geovalm
 
   case ("geopotential_height_levels")
 
-    call geop_height_levels(geom,prs,prsi,state%fields(state%t)%array,state%fields(state%q)%array,&
-                            state%fields(state%phis)%array(:,:,1),use_compress,geovale)
+    call geop_height_levels(geom,prs,prsi,state%t,state%q,&
+                            state%phis(:,:,1),use_compress,geovale)
     nvl = npz + 1
     do_interp = .true.
     geoval => geovale
@@ -362,14 +362,14 @@ do jvar = 1, vars%nv
 
     nvl = 1
     do_interp = .true.
-    geovalm(:,:,1) = state%fields(state%phis)%array(:,:,1) / grav
+    geovalm(:,:,1) = state%phis(:,:,1) / grav
     geoval => geovalm
 
   case ("mass_concentration_of_ozone_in_air")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%fields(state%o3)%array * constoz
+   geovalm = state%o3 * constoz
    geoval => geovalm
 
   case ("mass_concentration_of_carbon_dioxide_in_air")
@@ -675,42 +675,42 @@ do jvar = 1, vars%nv
   
     nvl = npz
     do_interp = .true.
-    geovalm = inc%fields(inc%ua)%array
+    geovalm = inc%ua
     geoval => geovalm
 
   case ("northward_wind")
   
     nvl = npz
     do_interp = .true.
-    geovalm = inc%fields(inc%va)%array
+    geovalm = inc%va
     geoval => geovalm
 
   case ("air_temperature","temperature")
   
     nvl = npz
     do_interp = .true.
-    geovalm = inc%fields(inc%t)%array
+    geovalm = inc%t
     geoval => geovalm
 
   case ("specific_humidity")
 
     nvl = npz
     do_interp = .true.
-    geovalm = inc%fields(inc%q)%array
+    geovalm = inc%q
     geoval => geovalm
 
   case ("virtual_temperature")
 
     nvl = inc%npz
     do_interp = .true.
-    call T_to_Tv_tl(geom, traj%t, inc%fields(inc%t)%array, traj%q, inc%fields(inc%q)%array, geovalm )
+    call T_to_Tv_tl(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
   
     nvl = inc%npz
     do_interp = .true.
-    call crtm_mixratio_tl(geom, traj%q, inc%fields(inc%q)%array, geovalm)
+    call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm  
 
   case ("air_pressure")
@@ -911,27 +911,27 @@ do jvar = 1, vars%nv
  
   case ("eastward_wind")
 
-    inc%fields(inc%ua)%array = geovalm
+    inc%ua = geovalm
 
   case ("northward_wind")
 
-    inc%fields(inc%va)%array = geovalm
+    inc%va = geovalm
 
   case ("air_temperature","temperature")
 
-    inc%fields(inc%t)%array = geovalm
+    inc%t = geovalm
 
   case ("specific_humidity")
 
-    inc%fields(inc%q)%array = geovalm
+    inc%q = geovalm
 
   case ("virtual_temperature")
     
-    call T_to_Tv_ad(geom, traj%t, inc%fields(inc%t)%array, traj%q, inc%fields(inc%q)%array, geovalm )
+    call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
 
   case ("humidity_mixing_ratio")
   
-    call crtm_mixratio_ad(geom, traj%q, inc%fields(inc%q)%array, geovalm)
+    call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
   case ("air_pressure")
 

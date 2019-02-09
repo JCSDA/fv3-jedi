@@ -78,92 +78,92 @@ allocate(self%fields(self%nf))
 ! -----------------------------------------------
 vcount = 0
 do var = 1, vars%nv
-   select case (trim(vars%fldnames(var)))
-     case("ua")
-       vcount = vcount + 1; self%ua = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_eastward_wind', &
-            fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center )
-     case("va")
-       vcount = vcount + 1; self%va = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_northward_wind', &
-            fv3jedi_name = 'va', units = 'm s-1', staggerloc = center )
-     case("t","T")
-       vcount = vcount + 1; self%t = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_air_temperature', &
-            fv3jedi_name = 't', units = 'K', staggerloc = center )
-     case("ps")
-       vcount = vcount + 1; self%ps = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_surface_pressure', &
-            fv3jedi_name = 'ps', units = 'Pa', staggerloc = center )
-     case("q","sphum")
-       vcount = vcount + 1; self%q = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_specific_humidity', &
-            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center )
-     case("qi","ice_wat")
-       vcount = vcount + 1; self%qi = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice', &
-            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center )
-     case("ql","liq_wat")
-       vcount = vcount + 1; self%ql = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice_water', &
-            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center )
-     case("o3","o3mr")
-       vcount = vcount + 1; self%o3 = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_ozone_mass_mixing_ratio', &
-            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center )
-     case("psi")
-       vcount = vcount + 1; self%psi = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_stream_function', &
-            fv3jedi_name = 'psi', units = 'm+2 s', staggerloc = center )
-     case("chi")
-       vcount = vcount + 1; self%chi = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_velocity_potential', &
-            fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center )
-     case("tv")
-       vcount = vcount + 1; self%tv = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_virtual_temperature', &
-            fv3jedi_name = 'tv', units = 'K', staggerloc = center )
-     case("rh")
-       vcount = vcount + 1; self%rh = vcount
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'increment_of_relative_humidity', &
-            fv3jedi_name = 'rh', units = '1', staggerloc = center )
-     case("delp","DELP")
-       !vcount = vcount + 1; self%delp = vcount
-       !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-       !     short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
-       !     fv3jedi_name = 'delp', units = 'Pa', staggerloc = center )
-     case("w","W")
-       !vcount = vcount + 1; self%w = vcount
-       !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-       !     short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
-       !     fv3jedi_name = 'w', units = 'm s-1', staggerloc = center )
-     case("delz","DZ")
-       !vcount = vcount + 1; self%delz = vcount
-       !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-       !     short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
-       !     fv3jedi_name = 'delz', units = 'm', staggerloc = center )
-     case("u","v","ud","vd","phis",&
-          "slmsk","sheleg","tsea","vtype","stype","vfrac",&
-          "stc","smc","snwdph","u_srf","v_srf","f10m", &
-          "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
-          "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
-       !State fields not in increment
-     case default 
-       call abor1_ftn("Increment: unknown variable "//trim(vars%fldnames(var)))
+  select case (trim(vars%fldnames(var)))
+    case("ua")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_eastward_wind', &
+           fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center, arraypointer = self%ua)
+    case("va")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_northward_wind', &
+           fv3jedi_name = 'va', units = 'm s-1', staggerloc = center, arraypointer = self%va)
+    case("t","T")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_air_temperature', &
+           fv3jedi_name = 't', units = 'K', staggerloc = center, arraypointer = self%t)
+    case("ps")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_surface_pressure', &
+           fv3jedi_name = 'ps', units = 'Pa', staggerloc = center, arraypointer = self%ps)
+    case("q","sphum")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_specific_humidity', &
+           fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center, arraypointer = self%q)
+    case("qi","ice_wat")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice', &
+           fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center, arraypointer = self%qi)
+    case("ql","liq_wat")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice_water', &
+           fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center, arraypointer = self%ql)
+    case("o3","o3mr")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_ozone_mass_mixing_ratio', &
+           fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center, arraypointer = self%o3)
+    case("psi")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_stream_function', &
+           fv3jedi_name = 'psi', units = 'm+2 s', staggerloc = center, arraypointer = self%psi)
+    case("chi")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_velocity_potential', &
+           fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center, arraypointer = self%chi)
+    case("tv")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_virtual_temperature', &
+           fv3jedi_name = 'tv', units = 'K', staggerloc = center, arraypointer = self%tv)
+    case("rh")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_relative_humidity', &
+           fv3jedi_name = 'rh', units = '1', staggerloc = center, arraypointer = self%rh)
+    case("delp","DELP")
+      !vcount=vcount+1;
+      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+      !     short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
+      !     fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
+    case("w","W")
+      !vcount=vcount+1;
+      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+      !     short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
+      !     fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
+    case("delz","DZ")
+      !vcount=vcount+1;
+      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+      !     short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
+      !     fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
+    case("u","v","ud","vd","phis",&
+         "slmsk","sheleg","tsea","vtype","stype","vfrac",&
+         "stc","smc","snwdph","u_srf","v_srf","f10m", &
+         "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
+         "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
+      !State fields not in increment
+    case default 
+      call abor1_ftn("Increment: unknown variable "//trim(vars%fldnames(var)))
 
-   end select
+  end select
 
 enddo
 
@@ -171,9 +171,9 @@ if (vcount .ne. self%nf) &
 call abor1_ftn("fv3jedi_increment_mod create: vcount does not equal self%nf")
 
 self%hydrostatic = .true.
-if (self%w > 0 .and. self%delz > 0) self%hydrostatic = .false.
+if (associated(self%w) .and. associated(self%delz)) self%hydrostatic = .false.
 
-if ((self%ps > 0) .and. (self%delp > 0)) then
+if (associated(self%ps) .and. associated(self%delp)) then
   call abor1_ftn("Increment: Ps and delp are both allocated, only one can be used")
 endif
 
@@ -294,26 +294,14 @@ if (.not.allocated(self%fields)) then
   !Direct copy of one increment to another
   self%nf = rhs%nf
   allocate(self%fields(self%nf))
+
   do self_var = 1, self%nf
+
+    !Field copy
     self%fields(self_var) = rhs%fields(self_var)
+
   enddo
   
-  self%ua   = rhs%ua  
-  self%va   = rhs%va  
-  self%t    = rhs%t   
-  self%ps   = rhs%ps  
-  self%q    = rhs%q   
-  self%qi   = rhs%qi  
-  self%ql   = rhs%ql  
-  self%o3   = rhs%o3  
-  self%psi  = rhs%psi 
-  self%chi  = rhs%chi 
-  self%tv   = rhs%tv  
-  self%rh   = rhs%rh  
-  self%w    = rhs%w   
-  self%delz = rhs%delz
-  self%delp = rhs%delp
-
 else
 
   !Increment copy, potentialy with differnt fields
@@ -328,9 +316,54 @@ else
     enddo
     if (.not.found) call abor1_ftn("fv3jedi_state: Error in increment copy, field "//&
                     trim(self%fields(self_var)%fv3jedi_name)//" not found in increment being copied from." )
+
   enddo
 
 endif
+
+!Set pointers
+do self_var = 1, self%nf
+  select case (trim(self%fields(self_var)%fv3jedi_name))
+    case("ua")
+      call self%fields(self_var)%array_pointer(self%ua)
+    case("va")
+      call self%fields(self_var)%array_pointer(self%va)
+    case("t","T")
+      call self%fields(self_var)%array_pointer(self%t)
+    case("ps")
+      call self%fields(self_var)%array_pointer(self%ps)
+    case("q","sphum")
+      call self%fields(self_var)%array_pointer(self%q)
+    case("qi","ice_wat")
+      call self%fields(self_var)%array_pointer(self%qi)
+    case("ql","liq_wat")
+      call self%fields(self_var)%array_pointer(self%ql)
+    case("o3","o3mr")
+      call self%fields(self_var)%array_pointer(self%o3)
+    case("psi")
+      call self%fields(self_var)%array_pointer(self%psi)
+    case("chi")
+      call self%fields(self_var)%array_pointer(self%chi)
+    case("tv")
+      call self%fields(self_var)%array_pointer(self%tv)
+    case("rh")
+      call self%fields(self_var)%array_pointer(self%rh)
+    case("delp","DELP")
+      !call self%fields(self_var)%array_pointer(self%delp)
+    case("w","W")
+      !call self%fields(self_var)%array_pointer(self%w)
+    case("delz","DZ")
+      !call self%fields(self_var)%array_pointer(self%delz)
+    case("u","v","ud","vd","phis",&
+         "slmsk","sheleg","tsea","vtype","stype","vfrac",&
+         "stc","smc","snwdph","u_srf","v_srf","f10m", &
+         "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
+         "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
+      !State fields not in increment
+    case default 
+      call abor1_ftn("Increment: copy unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
+  end select
+enddo
 
 end subroutine copy
 
@@ -446,7 +479,7 @@ do var = 1,self%nf
   else
 
     allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
-    rhs_ps = sum(rhs%fields(rhs%delp)%array,3)
+    rhs_ps = sum(rhs%delp,3)
     self%fields(var)%array(:,:,1) = self%fields(var)%array(:,:,1) + zz * rhs_ps
     deallocate(rhs_ps)
 
@@ -547,8 +580,8 @@ if (check==0) then
   
       allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
       allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-      x1_ps = sum(x1%fields(x1%delp)%array,3)
-      x2_ps = sum(x2%fields(x2%delp)%array,3)
+      x1_ps = sum(x1%delp,3)
+      x2_ps = sum(x2%delp,3)
       self%fields(var)%array(:,:,1) = x1_ps   - x2_ps
       deallocate(x1_ps,x2_ps)
   
@@ -992,13 +1025,13 @@ pfac = 0.5_kind_real*Rgas*tref/pref**2
 global_area = mpp_global_sum(geom%domain, geom%area, flags=bitwise_efp_sum)
 
 allocate(ref_ps(isc:iec,jsc:jec))
-ref_ps = sum(ref%fields(ref%delp)%array,3)
+ref_ps = sum(ref%delp,3)
 
 allocate(cellweight(isc:iec,jsc:jec,1:npz))
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      cellweight(i,j,k) = (ref%fields(ref%delp)%array(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
+      cellweight(i,j,k) = (ref%delp(i,j,k)/ref_ps(i,j)) * geom%area(i,j)/global_area
     enddo
   enddo
 enddo
@@ -1007,7 +1040,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%ua)%array(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%ua)%array(i,j,k) * cellweight(i,j,k)
+      self%ua(i,j,k) = Ufac * 2.0_kind_real * ref%ua(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -1016,7 +1049,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%va)%array(i,j,k) = Ufac * 2.0_kind_real * ref%fields(ref%va)%array(i,j,k) * cellweight(i,j,k)
+      self%va(i,j,k) = Ufac * 2.0_kind_real * ref%va(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -1025,7 +1058,7 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%t)%array(i,j,k) = Tfac * 2.0_kind_real * ref%fields(ref%t)%array(i,j,k) * cellweight(i,j,k)
+      self%t(i,j,k) = Tfac * 2.0_kind_real * ref%t(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
@@ -1034,17 +1067,17 @@ enddo
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%q)%array(i,j,k) = qfac * 2.0_kind_real * ref%fields(ref%q)%array(i,j,k) * cellweight(i,j,k)
+      self%q(i,j,k) = qfac * 2.0_kind_real * ref%q(i,j,k) * cellweight(i,j,k)
     enddo
   enddo
 enddo
 
 !ps
-if (self%ps>0) then
+if (associated(self%ps)) then
   do j = jsc,jec
     do i = isc,iec
-      self%fields(self%ps)%array(i,j,1) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) &
-                                          / (ref%fields(ref%delp)%array(i,j,npz)/ref_ps(i,j))
+      self%ps(i,j,1) = pfac * 2.0_kind_real * ref_ps (i,j) * cellweight(i,j,npz) &
+                                          / (ref%delp(i,j,npz)/ref_ps(i,j))
     enddo
   enddo
 else

@@ -41,121 +41,121 @@ npz = state%npz
 
 !Allocate trajectory field only if corresponding state field exists
 
-if (state%ud > 0) then
+if (associated(state%ud)) then
   allocate(self%u      (isc:iec, jsc:jec, npz))
-  self%u       = state%fields(state%ud     )%array
+  self%u       = state%ud
 endif
-if (state%vd > 0) then
+if (associated(state%vd)) then
   allocate(self%v      (isc:iec, jsc:jec, npz))
-  self%v       = state%fields(state%vd     )%array
+  self%v       = state%vd
 endif
-if (state%ua > 0) then
+if (associated(state%ua)) then
   allocate(self%ua     (isc:iec, jsc:jec, npz))
-  self%ua      = state%fields(state%ua     )%array
+  self%ua      = state%ua
 endif
-if (state%va > 0) then
+if (associated(state%va)) then
   allocate(self%va     (isc:iec, jsc:jec, npz))
-  self%va      = state%fields(state%va     )%array
+  self%va      = state%va
 endif
-if (state%t > 0) then
+if (associated(state%t)) then
   allocate(self%t      (isc:iec, jsc:jec, npz))
-  self%t       = state%fields(state%t      )%array
+  self%t       = state%t
 endif
-if (state%delp > 0) then
+if (associated(state%delp)) then
   allocate(self%delp   (isc:iec, jsc:jec, npz))
-  self%delp    = state%fields(state%delp   )%array
+  self%delp    = state%delp
 endif
-if (state%q > 0) then
+if (associated(state%q)) then
   allocate(self%qv     (isc:iec, jsc:jec, npz))
-  self%qv      = state%fields(state%q      )%array
+  self%qv      = state%q
 endif
-if (state%qi > 0) then
+if (associated(state%qi)) then
   allocate(self%qi     (isc:iec, jsc:jec, npz))
-  self%qi      = state%fields(state%qi     )%array
+  self%qi      = state%qi
 endif
-if (state%ql > 0) then
+if (associated(state%ql)) then
   allocate(self%ql     (isc:iec, jsc:jec, npz))
-  self%ql      = state%fields(state%ql     )%array
+  self%ql      = state%ql
 endif
-if (state%o3 > 0) then
+if (associated(state%o3)) then
   allocate(self%o3     (isc:iec, jsc:jec, npz))
-  self%o3      = state%fields(state%o3     )%array
+  self%o3      = state%o3
 endif
-if (state%w > 0) then
+if (associated(state%w)) then
   allocate(self%w      (isc:iec, jsc:jec, npz))
-  self%w       = state%fields(state%w      )%array
+  self%w       = state%w
 endif
-if (state%delz > 0) then
+if (associated(state%delz)) then
   allocate(self%delz   (isc:iec, jsc:jec, npz))
-  self%delz    = state%fields(state%delz   )%array
+  self%delz    = state%delz
 endif
-if (state%qls > 0) then
+if (associated(state%qls)) then
   allocate(self%qls    (isc:iec, jsc:jec, npz))
-  self%qls     = state%fields(state%qls    )%array
+  self%qls     = state%qls
 endif
-if (state%qcn > 0) then
+if (associated(state%qcn)) then
   allocate(self%qcn    (isc:iec, jsc:jec, npz))
-  self%qcn     = state%fields(state%qcn    )%array
+  self%qcn     = state%qcn
 endif
-if (state%cfcn > 0) then
+if (associated(state%cfcn)) then
   allocate(self%cfcn   (isc:iec, jsc:jec, npz)) 
-  self%cfcn    = state%fields(state%cfcn   )%array
+  self%cfcn    = state%cfcn
 endif
-if (state%phis > 0) then
+if (associated(state%phis)) then
   allocate(self%phis   (isc:iec, jsc:jec))
-  self%phis    = state%fields(state%phis   )%array(:,:,1)
+  self%phis    = state%phis(:,:,1)
 endif
-if (state%frocean > 0) then
+if (associated(state%frocean)) then
   allocate(self%frocean(isc:iec, jsc:jec))
-  self%frocean = state%fields(state%frocean)%array(:,:,1)
+  self%frocean = state%frocean(:,:,1)
 endif
-if (state%frland > 0) then
+if (associated(state%frland)) then
   allocate(self%frland (isc:iec, jsc:jec))
-  self%frland  = state%fields(state%frland )%array(:,:,1)
+  self%frland  = state%frland(:,:,1)
 endif
-if (state%varflt > 0) then
+if (associated(state%varflt)) then
   allocate(self%varflt (isc:iec, jsc:jec))
-  self%varflt  = state%fields(state%varflt )%array(:,:,1)
+  self%varflt  = state%varflt(:,:,1)
 endif
-if (state%ustar > 0) then
+if (associated(state%ustar)) then
   allocate(self%ustar  (isc:iec, jsc:jec))
-  self%ustar   = state%fields(state%ustar  )%array(:,:,1)
+  self%ustar   = state%ustar(:,:,1)
 endif
-if (state%bstar > 0) then
+if (associated(state%bstar)) then
   allocate(self%bstar  (isc:iec, jsc:jec))
-  self%bstar   = state%fields(state%bstar  )%array(:,:,1)
+  self%bstar   = state%bstar(:,:,1)
 endif
-if (state%zpbl > 0) then
+if (associated(state%zpbl)) then
   allocate(self%zpbl   (isc:iec, jsc:jec))
-  self%zpbl    = state%fields(state%zpbl   )%array(:,:,1)
+  self%zpbl    = state%zpbl(:,:,1)
 endif
-if (state%cm > 0) then
+if (associated(state%cm)) then
   allocate(self%cm     (isc:iec, jsc:jec))
-  self%cm      = state%fields(state%cm     )%array(:,:,1)
+  self%cm      = state%cm(:,:,1)
 endif
-if (state%ct > 0) then
+if (associated(state%ct)) then
   allocate(self%ct     (isc:iec, jsc:jec))
-  self%ct      = state%fields(state%ct     )%array(:,:,1)
+  self%ct      = state%ct(:,:,1)
 endif
-if (state%cq > 0) then
+if (associated(state%cq)) then
   allocate(self%cq     (isc:iec, jsc:jec))
-  self%cq      = state%fields(state%cq     )%array(:,:,1)
+  self%cq      = state%cq(:,:,1)
 endif
-if (state%kcbl > 0) then
+if (associated(state%kcbl)) then
   allocate(self%kcbl   (isc:iec, jsc:jec))
-  self%kcbl    = state%fields(state%kcbl   )%array(:,:,1)
+  self%kcbl    = state%kcbl(:,:,1)
 endif
-if (state%ts > 0) then
+if (associated(state%ts)) then
   allocate(self%ts     (isc:iec, jsc:jec))
-  self%ts      = state%fields(state%ts     )%array(:,:,1)
+  self%ts      = state%ts(:,:,1)
 endif
-if (state%khl > 0) then
+if (associated(state%khl)) then
   allocate(self%khl    (isc:iec, jsc:jec))
-  self%khl     = state%fields(state%khl    )%array(:,:,1)
+  self%khl     = state%khl(:,:,1)
 endif
-if (state%khu > 0) then
+if (associated(state%khu)) then
   allocate(self%khu    (isc:iec, jsc:jec))
-  self%khu     = state%fields(state%khu    )%array(:,:,1)
+  self%khu     = state%khu(:,:,1)
 endif
 
 end subroutine traj_prop

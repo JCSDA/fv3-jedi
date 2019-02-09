@@ -28,21 +28,21 @@ type :: fv3jedi_increment
 
   type(fv3jedi_field), allocatable :: fields(:)
 
-  integer :: ua   = 0
-  integer :: va   = 0
-  integer :: t    = 0
-  integer :: ps   = 0
-  integer :: q    = 0
-  integer :: qi   = 0
-  integer :: ql   = 0
-  integer :: o3   = 0
-  integer :: psi  = 0
-  integer :: chi  = 0
-  integer :: tv   = 0
-  integer :: rh   = 0
-  integer :: w    = 0
-  integer :: delz = 0
-  integer :: delp = 0
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ua   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: va   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: t    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ps   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: q    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qi   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ql   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: o3   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: psi  => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: chi  => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: tv   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: rh   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: w    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: delz => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: delp => null()
 
 end type fv3jedi_increment
 
