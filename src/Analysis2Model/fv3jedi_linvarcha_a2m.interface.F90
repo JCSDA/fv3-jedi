@@ -41,31 +41,30 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_a2m_setup(c_key_self, c_key_geom, c_key_state_bg, c_key_state_fg, &
-           c_conf) bind (c,name='fv3jedi_linvarcha_a2m_setup_f90')
+subroutine c_fv3jedi_linvarcha_a2m_setup(c_key_self,c_key_geom,c_key_bg,c_key_fg,c_conf) &
+           bind (c,name='fv3jedi_linvarcha_a2m_setup_f90')
 
 implicit none
-integer(c_int), intent(inout) :: c_key_self     !< Change variable structure
-integer(c_int), intent(in)    :: c_key_state_bg !< Background key
-integer(c_int), intent(in)    :: c_key_state_fg !< First guess key
-integer(c_int), intent(in)    :: c_key_geom     !< Geom key
-type(c_ptr),    intent(in)    :: c_conf         !< Configuration
+integer(c_int), intent(inout) :: c_key_self
+integer(c_int), intent(in)    :: c_key_geom
+integer(c_int), intent(in)    :: c_key_bg
+integer(c_int), intent(in)    :: c_key_fg
+type(c_ptr),    intent(in)    :: c_conf
 
 type(fv3jedi_linvarcha_a2m), pointer :: self
-type(fv3jedi_state), pointer :: bg
-type(fv3jedi_state), pointer :: fg
-type(fv3jedi_geom), pointer :: geom
+type(fv3jedi_geom),          pointer :: geom
+type(fv3jedi_state),         pointer :: bg
+type(fv3jedi_state),         pointer :: fg
 
 call fv3jedi_linvarcha_a2m_registry%init()
 call fv3jedi_linvarcha_a2m_registry%add(c_key_self)
 call fv3jedi_linvarcha_a2m_registry%get(c_key_self, self)
 
-call fv3jedi_state_registry%get(c_key_state_bg,bg)
-call fv3jedi_state_registry%get(c_key_state_fg,fg)
-
 call fv3jedi_geom_registry%get(c_key_geom,geom)
+call fv3jedi_state_registry%get(c_key_bg,bg)
+call fv3jedi_state_registry%get(c_key_fg,fg)
 
-call create(self, bg, fg, geom, c_conf)
+call create(self,geom,bg,fg,c_conf)
 
 end subroutine c_fv3jedi_linvarcha_a2m_setup
 
@@ -87,103 +86,101 @@ end subroutine c_fv3jedi_linvarcha_a2m_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_a2m_multiply(c_key_self, c_key_geom, c_key_in, c_key_out) &
+subroutine c_fv3jedi_linvarcha_a2m_multiply(c_key_self,c_key_geom,c_key_xana,c_key_xmod) &
            bind (c,name='fv3jedi_linvarcha_a2m_multiply_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom     !< Geom key
-integer(c_int), intent(in) :: c_key_in
-integer(c_int), intent(in) :: c_key_out
+integer(c_int), intent(in) :: c_key_geom
+integer(c_int), intent(in) :: c_key_xana
+integer(c_int), intent(in) :: c_key_xmod
 
 type(fv3jedi_linvarcha_a2m), pointer :: self
-type(fv3jedi_increment), pointer :: xin
-type(fv3jedi_increment), pointer :: xout
-type(fv3jedi_geom), pointer :: geom
+type(fv3jedi_geom),          pointer :: geom
+type(fv3jedi_increment),     pointer :: xana
+type(fv3jedi_increment),     pointer :: xmod
 
 call fv3jedi_linvarcha_a2m_registry%get(c_key_self,self)
-call fv3jedi_increment_registry%get(c_key_in,xin)
-call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
+call fv3jedi_increment_registry%get(c_key_xana,xana)
+call fv3jedi_increment_registry%get(c_key_xmod,xmod)
 
-call multiply(self,geom,xin,xout)
+call multiply(self,geom,xana,xmod)
 
 end subroutine c_fv3jedi_linvarcha_a2m_multiply
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_a2m_multiplyadjoint(c_key_self, c_key_geom, c_key_in, &
-           c_key_out) bind (c,name='fv3jedi_linvarcha_a2m_multiplyadjoint_f90')
+subroutine c_fv3jedi_linvarcha_a2m_multiplyadjoint(c_key_self,c_key_geom,c_key_xmod,c_key_xana) &
+           bind (c,name='fv3jedi_linvarcha_a2m_multiplyadjoint_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom     !< Geom key
-integer(c_int), intent(in) :: c_key_in
-integer(c_int), intent(in) :: c_key_out
+integer(c_int), intent(in) :: c_key_geom
+integer(c_int), intent(in) :: c_key_xmod
+integer(c_int), intent(in) :: c_key_xana
 
 type(fv3jedi_linvarcha_a2m), pointer :: self
-type(fv3jedi_increment), pointer :: xin
-type(fv3jedi_increment), pointer :: xout
-type(fv3jedi_geom), pointer :: geom
+type(fv3jedi_geom),          pointer :: geom
+type(fv3jedi_increment),     pointer :: xmod
+type(fv3jedi_increment),     pointer :: xana
 
 call fv3jedi_linvarcha_a2m_registry%get(c_key_self,self)
-call fv3jedi_increment_registry%get(c_key_in,xin)
-call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
+call fv3jedi_increment_registry%get(c_key_xmod,xmod)
+call fv3jedi_increment_registry%get(c_key_xana,xana)
 
-call multiplyadjoint(self,geom,xin,xout)
+call multiplyadjoint(self,geom,xmod,xana)
 
 end subroutine c_fv3jedi_linvarcha_a2m_multiplyadjoint
 
 ! ----------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine c_fv3jedi_linvarcha_a2m_multiplyinverse(c_key_self, c_key_geom, c_key_in, c_key_out) &
+subroutine c_fv3jedi_linvarcha_a2m_multiplyinverse(c_key_self,c_key_geom,c_key_xmod,c_key_xana) &
            bind (c,name='fv3jedi_linvarcha_a2m_multiplyinverse_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom     !< Geom key
-integer(c_int), intent(in) :: c_key_in
-integer(c_int), intent(in) :: c_key_out
+integer(c_int), intent(in) :: c_key_geom
+integer(c_int), intent(in) :: c_key_xmod
+integer(c_int), intent(in) :: c_key_xana
 
 type(fv3jedi_linvarcha_a2m), pointer :: self
-type(fv3jedi_increment), pointer :: xin
-type(fv3jedi_increment), pointer :: xout
-type(fv3jedi_geom), pointer :: geom
+type(fv3jedi_geom),          pointer :: geom
+type(fv3jedi_increment),     pointer :: xmod
+type(fv3jedi_increment),     pointer :: xana
 
 call fv3jedi_linvarcha_a2m_registry%get(c_key_self,self)
-call fv3jedi_increment_registry%get(c_key_in,xin)
-call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
+call fv3jedi_increment_registry%get(c_key_xmod,xmod)
+call fv3jedi_increment_registry%get(c_key_xana,xana)
 
-call multiplyinverse(self,geom,xin,xout)
+call multiplyinverse(self,geom,xmod,xana)
 
 end subroutine c_fv3jedi_linvarcha_a2m_multiplyinverse
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_a2m_multiplyinverseadjoint(c_key_self, c_key_geom, c_key_in, &
-      c_key_out) bind (c,name='fv3jedi_linvarcha_a2m_multiplyinverseadjoint_f90')
+subroutine c_fv3jedi_linvarcha_a2m_multiplyinverseadjoint(c_key_self,c_key_geom,c_key_xana,c_key_xmod) &
+           bind (c,name='fv3jedi_linvarcha_a2m_multiplyinverseadjoint_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom     !< Geom key
-integer(c_int), intent(in) :: c_key_in
-integer(c_int), intent(in) :: c_key_out
+integer(c_int), intent(in) :: c_key_geom
+integer(c_int), intent(in) :: c_key_xana
+integer(c_int), intent(in) :: c_key_xmod
 
 type(fv3jedi_linvarcha_a2m), pointer :: self
-type(fv3jedi_increment), pointer :: xin
-type(fv3jedi_increment), pointer :: xout
-type(fv3jedi_geom), pointer :: geom
+type(fv3jedi_geom),          pointer :: geom
+type(fv3jedi_increment),     pointer :: xana
+type(fv3jedi_increment),     pointer :: xmod
 
 call fv3jedi_linvarcha_a2m_registry%get(c_key_self,self)
-call fv3jedi_increment_registry%get(c_key_in,xin)
-call fv3jedi_increment_registry%get(c_key_out,xout)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
+call fv3jedi_increment_registry%get(c_key_xana,xana)
+call fv3jedi_increment_registry%get(c_key_xmod,xmod)
 
-call multiplyinverseadjoint(self,geom,xin,xout)
+call multiplyinverseadjoint(self,geom,xana,xmod)
 
 end subroutine c_fv3jedi_linvarcha_a2m_multiplyinverseadjoint
 

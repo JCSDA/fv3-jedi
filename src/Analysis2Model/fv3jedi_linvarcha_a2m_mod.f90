@@ -1,4 +1,4 @@
-! (C) Copyright 2018 UCAR
+! (C) Copyright 2018-2019 UCAR
 ! 
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -13,7 +13,8 @@ use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_state_mod,     only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
 
-use wind_vt_mod, only: a2d, d2a, d2a_ad, a2d_ad
+use wind_vt_mod,     only: a2d, d2a, d2a_ad, a2d_ad
+use mpp_domains_mod, only: mpp_get_boundary, DGRID_NE, mpp_get_boundary_ad
 
 implicit none
 private
@@ -29,6 +30,10 @@ public :: multiplyinverseadjoint
 type :: fv3jedi_linvarcha_a2m
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va
   real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
+  real(kind=kind_real), allocatable, dimension(:,:)   :: ebuffery
+  real(kind=kind_real), allocatable, dimension(:,:)   :: nbufferx
+  real(kind=kind_real), allocatable, dimension(:,:)   :: wbuffery
+  real(kind=kind_real), allocatable, dimension(:,:)   :: sbufferx
 end type fv3jedi_linvarcha_a2m
 
 ! ------------------------------------------------------------------------------
@@ -37,20 +42,26 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine create(self, bg, fg, geom, c_conf)
+subroutine create(self, geom, bg, fg, c_conf)
 
 implicit none
 type(fv3jedi_linvarcha_a2m), intent(inout) :: self
+type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_state),         intent(in)    :: bg
 type(fv3jedi_state),         intent(in)    :: fg
-type(fv3jedi_geom),          intent(in)    :: geom
 type(c_ptr),                 intent(in)    :: c_conf
 
-! Allocate temporary A- and D-Grid wind holders
+! Allocate A- and D-Grid wind holders
 allocate(self%ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz))
 allocate(self%va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz))
-allocate(self%ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
-allocate(self%vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
+allocate(self%ud(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz))
+allocate(self%vd(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz))
+
+! Allocate D-Grid wind halo holders
+allocate(self%wbuffery(geom%jsc:geom%jec,1:geom%npz))
+allocate(self%sbufferx(geom%isc:geom%iec,1:geom%npz))
+allocate(self%ebuffery(geom%jsc:geom%jec,1:geom%npz))
+allocate(self%nbufferx(geom%isc:geom%iec,1:geom%npz))
 
 end subroutine create
 
@@ -61,9 +72,12 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_linvarcha_a2m), intent(inout) :: self
 
-! Deallocate temporary A- and D-grid wind holders
+! Deallocate A- and D-grid wind holders
 deallocate(self%ua,self%va)
 deallocate(self%ud,self%vd)
+
+! Deallocate D-Grid wind halo holders
+deallocate(self%wbuffery,self%sbufferx,self%ebuffery,self%nbufferx)
 
 end subroutine delete
 
@@ -72,8 +86,8 @@ end subroutine delete
 subroutine multiply(self,geom,xana,xmod)
 
 implicit none
-type(fv3jedi_linvarcha_a2m), intent(in)    :: self
-type(fv3jedi_geom),          intent(in)    :: geom
+type(fv3jedi_linvarcha_a2m), intent(inout) :: self
+type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xana
 type(fv3jedi_increment),     intent(inout) :: xmod
 
@@ -82,31 +96,30 @@ integer :: k
 self%ud = 0.0_kind_real
 self%vd = 0.0_kind_real
 
-call a2d(geom, xana%fields(xana%ua)%array(xana%isc:xana%iec,xana%jsc:xana%jec,:), &
-               xana%fields(xana%va)%array(xana%isc:xana%iec,xana%jsc:xana%jec,:), &
-               ud(xana%isc:xana%iec  ,xana%jsc:xana%jec+1,:), &
-               vd(xana%isc:xana%iec+1,xana%jsc:xana%jec  ,:))
+call a2d(geom, xana%ua(xana%isc:xana%iec,xana%jsc:xana%jec,:), &
+               xana%va(xana%isc:xana%iec,xana%jsc:xana%jec,:), &
+               self%ud(xana%isc:xana%iec  ,xana%jsc:xana%jec+1,:), &
+               self%vd(xana%isc:xana%iec+1,xana%jsc:xana%jec  ,:))
 
-xmod%fields(xana%ud)%array(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-xmod%fields(xana%vd)%array(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
 
-xmod%fields(xana%ua)%array   = xana%fields(xana%ua)%array
-xmod%fields(xana%va)%array   = xana%fields(xana%va)%array
+xmod%ua = 0.0_kind_real
+xmod%va = 0.0_kind_real
 
-xmod%fields(xana%t)%array    = xana%fields(xana%t)%array
-
+xmod%t  = xana%t
 do k = 1,geom%npz
-  xmod%fields(xana%delp)%array(:,:,k) = (geom%bk(k+1)-geom%bk(k))*xana%fields(xana%ps)%array(:,:,1)
+  xmod%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
 enddo
 
-xmod%fields(xana%qv)%array   = xana%fields(xana%q)%array
-xmod%fields(xana%qi)%array   = xana%fields(xana%qi)%array
-xmod%fields(xana%ql)%array   = xana%fields(xana%ql)%array
-xmod%fields(xana%o3)%array   = xana%fields(xana%o3)%array
+xmod%q  = xana%q
+xmod%qi = xana%qi
+xmod%ql = xana%ql
+xmod%o3 = xana%o3
 
 if (.not. xana%hydrostatic) then
-   xmod%fields(xana%%delz)%array = xana%fields(xana%delz)%array
-   xmod%fields(xana%%w)%array    = xana%fields(xana%w)%array
+  xmod%delz = xana%delz
+  xmod%w    = xana%w
 endif
 
 end subroutine multiply
@@ -116,46 +129,38 @@ end subroutine multiply
 subroutine multiplyadjoint(self,geom,xmod,xana)
 
 implicit none
-type(fv3jedi_linvarcha_a2m), intent(in)    :: self
-type(fv3jedi_geom),          intent(in)    :: geom
+type(fv3jedi_linvarcha_a2m), intent(inout) :: self
+type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xmod
 type(fv3jedi_increment),     intent(inout) :: xana
+
+integer :: k
 
 self%ud = 0.0_kind_real
 self%vd = 0.0_kind_real
 
-xana%fields(xana%ua)%array   = 0.0
-xana%fields(xana%va)%array   = 0.0
-xana%fields(xana%t )%array   = 0.0
-xana%fields(xana%ps)%array   = 0.0
-xana%fields(xana%q )%array   = 0.0
-xana%fields(xana%qi)%array   = 0.0
-xana%fields(xana%ql)%array   = 0.0
-xana%fields(xana%o3)%array   = 0.0
+self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
 
-if (.not. xana%hydrostatic) then
-   xana%fields(xana%delz)%array = 0.0
-   xana%fields(xana%w)%array    = 0.0
-endif
+call a2d_ad(geom, xana%ua, xana%va, &
+            self%ud(xana%isc:xana%iec  ,xana%jsc:xana%jec+1,:),&
+            self%vd(xana%isc:xana%iec+1,xana%jsc:xana%jec  ,:))
 
-ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = lm%pert%u
-vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = lm%pert%v
-xana%fields(xana%t)%array    = lm%pert%t
-xana%fields(xana%ps)%array = 0.0_kind_real
+xana%t    = xmod%t
+xana%ps = 0.0_kind_real
 do k = 1,geom%npz
-  xana%fields(xana%ps)%array(:,:,1) = xana%fields(xana%ps)%array(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
+  xana%ps(:,:,1) = xana%ps(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*xmod%delp(:,:,k)
 enddo
-xana%fields(xana%q)%array    = lm%pert%qv
-xana%fields(xana%qi)%array   = lm%pert%qi
-xana%fields(xana%ql)%array   = lm%pert%ql
-xana%fields(xana%o3)%array   = lm%pert%o3
-if (.not. xana%hydrostatic) then
-  xana%fields(xana%delz)%array = lm%pert%delz
-  xana%fields(xana%q)%array    = lm%pert%w
-endif
 
-!Convert A to D
-call a2d_ad(geom, xana%fields(xana%ua)%array, xana%fields(xana%va)%array, self%ud, self%vd)
+xana%q    = xmod%q
+xana%qi   = xmod%qi
+xana%ql   = xmod%ql
+xana%o3   = xmod%o3
+
+if (.not. xana%hydrostatic) then
+  xana%delz = xmod%delz
+  xana%q    = xmod%w
+endif
 
 end subroutine multiplyadjoint
 
@@ -164,32 +169,50 @@ end subroutine multiplyadjoint
 subroutine multiplyinverse(self,geom,xmod,xana)
 
 implicit none
-type(fv3jedi_linvarcha_a2m), intent(in)    :: self
-type(fv3jedi_geom),          intent(in)    :: geom
+type(fv3jedi_linvarcha_a2m), intent(inout) :: self
+type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xmod
 type(fv3jedi_increment),     intent(inout) :: xana
 
-ud = 0.0_kind_real
-vd = 0.0_kind_real
-ua = 0.0_kind_real
-va = 0.0_kind_real
+integer :: i,j,k
 
-ud(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%u
-vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
+self%ud = 0.0_kind_real
+self%vd = 0.0_kind_real
+self%ua = 0.0_kind_real
+self%va = 0.0_kind_real
 
-call d2a(geom, ud, vd, ua, va)
+self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
 
-inc%fields(inc%ua)%array   = ua(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-inc%fields(inc%va)%array   = va(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-inc%fields(inc%t)%array    = lm%pert%t
-inc%fields(inc%ps)%array(:,:,1)   = sum(lm%pert%delp,3)
-inc%fields(inc%q)%array    = lm%pert%qv
-inc%fields(inc%qi)%array   = lm%pert%qi
-inc%fields(inc%ql)%array   = lm%pert%ql
-inc%fields(inc%o3)%array   = lm%pert%o3
-if (.not. inc%hydrostatic) then
-  inc%fields(inc%delz)%array = lm%pert%delz
-  inc%fields(inc%w)%array    = lm%pert%w
+call mpp_get_boundary( self%ud, self%vd, geom%domain, &
+                       wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
+                       sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
+                       gridtype=DGRID_NE, complete=.true. )
+do k=1,geom%npz
+   do i=geom%isc,geom%iec
+      self%ud(i,geom%jec+1,k) = self%nbufferx(i,k)
+   enddo
+enddo
+do k=1,geom%npz
+   do j=geom%jsc,geom%jec
+      self%vd(geom%iec+1,j,k) = self%ebuffery(j,k)
+   enddo
+enddo
+
+call d2a(geom, self%ud, self%vd, self%ua, self%va)
+
+xana%ua = self%ua(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+xana%va = self%va(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+
+xana%t    = xmod%t
+xana%ps(:,:,1)   = sum(xmod%delp,3)
+xana%q    = xmod%q
+xana%qi   = xmod%qi
+xana%ql   = xmod%ql
+xana%o3   = xmod%o3
+if (.not. xana%hydrostatic) then
+  xana%delz = xmod%delz
+  xana%w    = xmod%w
 endif
 
 end subroutine multiplyinverse
@@ -199,40 +222,59 @@ end subroutine multiplyinverse
 subroutine multiplyinverseadjoint(self,geom,xana,xmod)
 
 implicit none
-type(fv3jedi_linvarcha_a2m), intent(in)    :: self
-type(fv3jedi_geom),          intent(in)    :: geom
+type(fv3jedi_linvarcha_a2m), intent(inout) :: self
+type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xana
 type(fv3jedi_increment),     intent(inout) :: xmod
 
-ud = 0.0_kind_real
-vd = 0.0_kind_real
+integer :: i,j,k
 
-ua = 0.0_kind_real
-va = 0.0_kind_real
+self%ud = 0.0_kind_real
+self%vd = 0.0_kind_real
+self%ua = 0.0_kind_real
+self%va = 0.0_kind_real
 
-ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%fields(inc%ua)%array
-va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%fields(inc%va)%array
+self%ua(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xana%ua
+self%va(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xana%va
 
-lm%pert%t    = inc%fields(inc%t)%array
-do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = inc%fields(inc%ps)%array(:,:,1)
+call d2a_ad(geom, self%ud, self%vd, self%ua, self%va)
+
+self%nbufferx = 0.0_kind_real
+do k=1,geom%npz
+   do i=geom%isc,geom%iec
+      self%nbufferx(i,k) = self%ud(i,geom%jec+1,k)
+   enddo
 enddo
-lm%pert%qv   = inc%fields(inc%q)%array
-lm%pert%qi   = inc%fields(inc%qi)%array
-lm%pert%ql   = inc%fields(inc%ql)%array
-lm%pert%o3   = inc%fields(inc%o3)%array
-if (.not. inc%hydrostatic) then
-   lm%pert%delz = inc%fields(inc%delz)%array
-   lm%pert%w    = inc%fields(inc%w)%array
+self%ebuffery = 0.0_kind_real
+do k=1,geom%npz
+   do j=geom%jsc,geom%jec
+      self%ebuffery(j,k) = self%vd(geom%iec+1,j,k)
+   enddo
+enddo
+
+call mpp_get_boundary_ad( self%ud, self%vd, geom%domain, &
+                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
+                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
+                          gridtype=DGRID_NE, complete=.true. )
+
+xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+
+xmod%ua = 0.0_kind_real
+xmod%va = 0.0_kind_real
+
+xmod%t    = xana%t
+do k = 1,geom%npz
+  xmod%delp(:,:,k) = xana%ps(:,:,1)
+enddo
+xmod%q    = xana%q
+xmod%qi   = xana%qi
+xmod%ql   = xana%ql
+xmod%o3   = xana%o3
+if (.not. xana%hydrostatic) then
+   xmod%delz = xana%delz
+   xmod%w    = xana%w
 endif
-
-call d2a_ad(geom, ud, vd, ua, va)
-
-lm%pert%u = ud(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-lm%pert%v = vd(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-
-lm%pert%ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = 0.0
-lm%pert%va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = 0.0
 
 end subroutine multiplyinverseadjoint
 

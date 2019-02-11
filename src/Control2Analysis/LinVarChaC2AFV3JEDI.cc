@@ -38,33 +38,28 @@ LinVarChaC2AFV3JEDI::~LinVarChaC2AFV3JEDI() {
     oops::Log::trace() << "ChangeFV3JEDI destructed" << std::endl;
 }
 // -----------------------------------------------------------------------------
-void LinVarChaC2AFV3JEDI::multiply(const IncrementFV3JEDI & dxa,
-                                IncrementFV3JEDI & dxm) const {
+void LinVarChaC2AFV3JEDI::multiply(const IncrementFV3JEDI & dxc,
+                                         IncrementFV3JEDI & dxa) const {
   fv3jedi_linvarcha_c2a_multiply_f90(keyFtnConfig_, geom_->toFortran(),
-                                  dxa.toFortran(),
-                                  dxm.toFortran());
+                                     dxc.toFortran(), dxa.toFortran());
 }
 // -----------------------------------------------------------------------------
-void LinVarChaC2AFV3JEDI::multiplyInverse(const IncrementFV3JEDI & dxm,
-                                       IncrementFV3JEDI & dxa) const {
+void LinVarChaC2AFV3JEDI::multiplyInverse(const IncrementFV3JEDI & dxa,
+                                                IncrementFV3JEDI & dxc) const {
   fv3jedi_linvarcha_c2a_multiplyinverse_f90(keyFtnConfig_, geom_->toFortran(),
-                                         dxm.toFortran(),
-                                         dxa.toFortran());
+                                            dxa.toFortran(), dxc.toFortran());
 }
 // -----------------------------------------------------------------------------
-void LinVarChaC2AFV3JEDI::multiplyAD(const IncrementFV3JEDI & dxm,
-                                       IncrementFV3JEDI & dxa) const {
+void LinVarChaC2AFV3JEDI::multiplyAD(const IncrementFV3JEDI & dxa,
+                                           IncrementFV3JEDI & dxc) const {
   fv3jedi_linvarcha_c2a_multiplyadjoint_f90(keyFtnConfig_, geom_->toFortran(),
-                                         dxm.toFortran(),
-                                         dxa.toFortran());
+                                            dxa.toFortran(), dxc.toFortran());
 }
 // -----------------------------------------------------------------------------
-void LinVarChaC2AFV3JEDI::multiplyInverseAD(const IncrementFV3JEDI & dxa,
-                                              IncrementFV3JEDI & dxm) const {
-  fv3jedi_linvarcha_c2a_multiplyinverseadjoint_f90(keyFtnConfig_,
-                                                geom_->toFortran(),
-                                                dxm.toFortran(),
-                                                dxa.toFortran());
+void LinVarChaC2AFV3JEDI::multiplyInverseAD(const IncrementFV3JEDI & dxc,
+                                                  IncrementFV3JEDI & dxa) const {
+  fv3jedi_linvarcha_c2a_multiplyinverseadjoint_f90(keyFtnConfig_, geom_->toFortran(),
+                                                   dxc.toFortran(), dxa.toFortran());
 }
 // -----------------------------------------------------------------------------
 void LinVarChaC2AFV3JEDI::print(std::ostream & os) const {
@@ -72,4 +67,3 @@ void LinVarChaC2AFV3JEDI::print(std::ostream & os) const {
 }
 // -----------------------------------------------------------------------------
 }  // namespace fv3jedi
-

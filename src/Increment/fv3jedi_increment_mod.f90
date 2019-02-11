@@ -24,7 +24,7 @@ use fv3jedi_state_utils_mod,     only: fv3jedi_state
 use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues_tl, getvalues_ad
 
-use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center
+use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north, center
 
 implicit none
 private
@@ -59,10 +59,7 @@ self%nf = vars%nv
 ! -------------------------------------------
 do var = 1, vars%nv
    select case (trim(vars%fldnames(var)))
-   case("delp","delz","w","DELP","DZ","W")
-     self%nf = self%nf - 1
-   case("u","v","ud","vd","phis",&
-        "slmsk","sheleg","tsea","vtype","stype","vfrac",&
+   case("phis","slmsk","sheleg","tsea","vtype","stype","vfrac",&
         "stc","smc","snwdph","u_srf","v_srf","f10m", &
         "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
         "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
@@ -79,6 +76,16 @@ allocate(self%fields(self%nf))
 vcount = 0
 do var = 1, vars%nv
   select case (trim(vars%fldnames(var)))
+    case("u","ud")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_d_grid_u_wind', &
+           fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north, arraypointer = self%ud)
+    case("v","vd")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_d_grid_v_wind', &
+           fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east, arraypointer = self%vd)
     case("ua")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -140,22 +147,21 @@ do var = 1, vars%nv
            short_name = vars%fldnames(var), long_name = 'increment_of_relative_humidity', &
            fv3jedi_name = 'rh', units = '1', staggerloc = center, arraypointer = self%rh)
     case("delp","DELP")
-      !vcount=vcount+1;
-      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-      !     short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
-      !     fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
+           fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
     case("w","W")
-      !vcount=vcount+1;
-      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-      !     short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
-      !     fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
+           fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
     case("delz","DZ")
-      !vcount=vcount+1;
-      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-      !     short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
-      !     fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
-    case("u","v","ud","vd","phis",&
-         "slmsk","sheleg","tsea","vtype","stype","vfrac",&
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
+           fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
+    case("phis","slmsk","sheleg","tsea","vtype","stype","vfrac",&
          "stc","smc","snwdph","u_srf","v_srf","f10m", &
          "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
          "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")

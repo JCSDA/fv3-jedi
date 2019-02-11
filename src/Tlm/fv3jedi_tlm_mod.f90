@@ -100,9 +100,11 @@ subroutine tlm_initialize_ad(geom, self, inc)
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(inout) :: inc
 
+if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_ad()
+call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine tlm_initialize_ad
 
@@ -113,11 +115,11 @@ subroutine tlm_initialize_tl(geom, self, inc)
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(inout) :: inc
 
-if (self%fsoi_mode) call inc_to_lm_tl(geom,inc,self%fv3jedi_lm)
-
+if (self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_tl()
+call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine tlm_initialize_tl
 
@@ -133,9 +135,9 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-if (.not. self%fsoi_mode) call lm_to_inc_ad(geom,self%fv3jedi_lm,inc)
+if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_ad()
-call inc_to_lm_ad(geom,inc,self%fv3jedi_lm)
+call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine tlm_step_ad
 
@@ -151,9 +153,9 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-if (.not. self%fsoi_mode) call inc_to_lm_tl(geom,inc,self%fv3jedi_lm)
+if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_tl()
-call lm_to_inc_tl(geom,self%fv3jedi_lm,inc)
+call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine tlm_step_tl
 
@@ -164,10 +166,11 @@ subroutine tlm_finalize_ad(geom, self, inc)
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(inout) :: inc
 
+if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_ad()
-if (.not. self%fsoi_mode) call lm_to_inc_ad(geom,self%fv3jedi_lm,inc)
+call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine tlm_finalize_ad
 
@@ -178,90 +181,53 @@ subroutine tlm_finalize_tl(geom, self, inc)
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: inc
+type(fv3jedi_increment), intent(inout) :: inc
 
+if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_tl()
+call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine tlm_finalize_tl
 
 ! ------------------------------------------------------------------------------
 
-subroutine inc_to_lm_tl(geom, inc, lm)
-
-use wind_vt_mod, only: a2d
+subroutine inc_to_lm(inc, lm)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: inc
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
-integer :: k
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
-
-allocate(ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,1:inc%npz))
-allocate(vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,1:inc%npz))
-ud = 0.0_kind_real
-vd = 0.0_kind_real
-
-call a2d(geom, inc%ua(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
-               inc%va(inc%isc:inc%iec,inc%jsc:inc%jec,:), &
-                    ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,:), &
-                    vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,:))
-
-lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+lm%pert%u    = inc%ud
+lm%pert%v    = inc%vd
 lm%pert%ua   = inc%ua
 lm%pert%va   = inc%va
 lm%pert%t    = inc%t
-do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*inc%ps(:,:,1)
-enddo
+lm%pert%delp = inc%delp
 lm%pert%qv   = inc%q
 lm%pert%qi   = inc%qi
 lm%pert%ql   = inc%ql
 lm%pert%o3   = inc%o3
-
 if (.not. inc%hydrostatic) then
    lm%pert%delz = inc%delz
    lm%pert%w    = inc%w
 endif
 
-deallocate(ud,vd)
-
-end subroutine inc_to_lm_tl
+end subroutine inc_to_lm
 
 ! ------------------------------------------------------------------------------
 
-subroutine lm_to_inc_tl(geom,lm,inc)
-
-use wind_vt_mod, only: d2a
+subroutine lm_to_inc(lm, inc)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_lm_type),   intent(in)    :: lm
+type(fv3jedi_increment), intent(inout) :: inc
 
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va,ud,vd
-
-allocate(ud(inc%isd:inc%ied  ,inc%jsd:inc%jed+1,1:inc%npz))
-allocate(vd(inc%isd:inc%ied+1,inc%jsd:inc%jed  ,1:inc%npz))
-ud = 0.0_kind_real
-vd = 0.0_kind_real
-
-allocate(ua(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
-allocate(va(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
-ua = 0.0_kind_real
-va = 0.0_kind_real
-
-ud(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%u
-vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
-
-call d2a(geom, ud, vd, ua, va)
-
-inc%ua   = ua(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-inc%va   = va(inc%isc:inc%iec,inc%jsc:inc%jec,:)
+inc%ud   = lm%pert%u
+inc%vd   = lm%pert%v
+inc%ua   = lm%pert%ua
+inc%va   = lm%pert%va
 inc%t    = lm%pert%t
-inc%ps(:,:,1)   = sum(lm%pert%delp,3)
+inc%delp = lm%pert%delp
 inc%q    = lm%pert%qv
 inc%qi   = lm%pert%qi
 inc%ql   = lm%pert%ql
@@ -271,117 +237,7 @@ if (.not. inc%hydrostatic) then
   inc%w    = lm%pert%w
 endif
 
-deallocate(ud,vd,ua,va)
-
-end subroutine lm_to_inc_tl
-
-! ------------------------------------------------------------------------------
-
-subroutine lm_to_inc_ad(geom,lm,inc)
-
-use wind_vt_mod, only: d2a_ad
-
-implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(in)    :: inc
-type(fv3jedi_lm_type),   intent(inout) :: lm
-
-integer :: k
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va,ud,vd
-
-allocate(ud(inc%isd:inc%ied  ,inc%jsd:inc%jed+1,1:inc%npz))
-allocate(vd(inc%isd:inc%ied+1,inc%jsd:inc%jed  ,1:inc%npz))
-ud = 0.0_kind_real
-vd = 0.0_kind_real
-
-allocate(ua(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
-allocate(va(inc%isd:inc%ied  ,inc%jsd:inc%jed  ,1:inc%npz))
-ua = 0.0_kind_real
-va = 0.0_kind_real
-
-ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%ua
-va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = inc%va
-
-lm%pert%t    = inc%t
-do k = 1,geom%npz
-  lm%pert%delp(:,:,k) = inc%ps(:,:,1)
-enddo
-lm%pert%qv   = inc%q
-lm%pert%qi   = inc%qi
-lm%pert%ql   = inc%ql
-lm%pert%o3   = inc%o3
-if (.not. inc%hydrostatic) then
-   lm%pert%delz = inc%delz
-   lm%pert%w    = inc%w
-endif
-
-call d2a_ad(geom, ud, vd, ua, va)
-
-lm%pert%u = ud(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-lm%pert%v = vd(inc%isc:inc%iec,inc%jsc:inc%jec,:)
-
-lm%pert%ua(inc%isc:inc%iec,inc%jsc:inc%jec,:) = 0.0
-lm%pert%va(inc%isc:inc%iec,inc%jsc:inc%jec,:) = 0.0
-
-deallocate(ud,vd,ua,va)
-
-end subroutine lm_to_inc_ad
-
-! ------------------------------------------------------------------------------
-
-subroutine inc_to_lm_ad(geom,inc,lm)
-
-use wind_vt_mod, only: a2d_ad
-
-implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_increment), intent(inout) :: inc
-type(fv3jedi_lm_type),   intent(in)    :: lm
-
-integer :: k
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
-
-allocate(ud(inc%isc:inc%iec  ,inc%jsc:inc%jec+1,1:inc%npz))
-allocate(vd(inc%isc:inc%iec+1,inc%jsc:inc%jec  ,1:inc%npz))
-ud = 0.0_kind_real
-vd = 0.0_kind_real
-
-inc%ua   = 0.0
-inc%va   = 0.0
-inc%t    = 0.0
-inc%ps   = 0.0
-inc%q    = 0.0
-inc%qi   = 0.0
-inc%ql   = 0.0
-inc%o3   = 0.0
-
-if (.not. inc%hydrostatic) then
-   inc%delz = 0.0
-   inc%w    = 0.0
-endif
-
-ud(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%u
-vd(inc%isc:inc%iec,inc%jsc:inc%jec,:) = lm%pert%v
-inc%t    = lm%pert%t
-inc%ps = 0.0_kind_real
-do k = 1,geom%npz
-  inc%ps(:,:,1) = inc%ps(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*lm%pert%delp(:,:,k)
-enddo
-inc%q    = lm%pert%qv
-inc%qi   = lm%pert%qi
-inc%ql   = lm%pert%ql
-inc%o3   = lm%pert%o3
-if (.not. inc%hydrostatic) then
-  inc%delz = lm%pert%delz
-  inc%q    = lm%pert%w
-endif
-
-!Convert A to D
-call a2d_ad(geom, inc%ua, inc%va, ud, vd)
-
-deallocate(ud,vd)
-
-end subroutine inc_to_lm_ad
+end subroutine lm_to_inc
 
 ! ------------------------------------------------------------------------------
 
@@ -391,43 +247,43 @@ implicit none
 type(fv3jedi_traj),    intent(in)    :: traj
 type(fv3jedi_lm_type), intent(inout) :: lm
 
-lm%traj%u    = traj%u   
-lm%traj%v    = traj%v   
-lm%traj%ua   = traj%ua  
-lm%traj%va   = traj%va  
-lm%traj%t    = traj%t   
+lm%traj%u    = traj%u
+lm%traj%v    = traj%v
+lm%traj%ua   = traj%ua
+lm%traj%va   = traj%va
+lm%traj%t    = traj%t
 lm%traj%delp = traj%delp
-lm%traj%qv   = traj%qv  
-lm%traj%ql   = traj%ql  
-lm%traj%qi   = traj%qi  
-lm%traj%o3   = traj%o3  
+lm%traj%qv   = traj%qv
+lm%traj%ql   = traj%ql
+lm%traj%qi   = traj%qi
+lm%traj%o3   = traj%o3
                                         
 if (.not. lm%conf%hydrostatic) then
-  lm%traj%w    = traj%w   
+  lm%traj%w    = traj%w
   lm%traj%delz = traj%delz
 endif
                                         
 if (lm%conf%do_phy_mst .ne. 0) then
-  lm%traj%qls  = traj%qls 
-  lm%traj%qcn  = traj%qcn 
+  lm%traj%qls  = traj%qls
+  lm%traj%qcn  = traj%qcn
   lm%traj%cfcn = traj%cfcn
 endif
 
 !> Rank two
-lm%traj%phis    = traj%phis   
+lm%traj%phis    = traj%phis
 lm%traj%frocean = traj%frocean
-lm%traj%frland  = traj%frland 
-lm%traj%varflt  = traj%varflt 
-lm%traj%ustar   = traj%ustar  
-lm%traj%bstar   = traj%bstar  
-lm%traj%zpbl    = traj%zpbl   
-lm%traj%cm      = traj%cm     
-lm%traj%ct      = traj%ct     
-lm%traj%cq      = traj%cq     
-lm%traj%kcbl    = traj%kcbl   
-lm%traj%ts      = traj%ts     
-lm%traj%khl     = traj%khl    
-lm%traj%khu     = traj%khu    
+lm%traj%frland  = traj%frland
+lm%traj%varflt  = traj%varflt
+lm%traj%ustar   = traj%ustar
+lm%traj%bstar   = traj%bstar
+lm%traj%zpbl    = traj%zpbl
+lm%traj%cm      = traj%cm
+lm%traj%ct      = traj%ct
+lm%traj%cq      = traj%cq
+lm%traj%kcbl    = traj%kcbl
+lm%traj%ts      = traj%ts
+lm%traj%khl     = traj%khl
+lm%traj%khu     = traj%khu
 
 end subroutine traj_to_traj
 

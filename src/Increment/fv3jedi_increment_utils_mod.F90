@@ -28,6 +28,8 @@ type :: fv3jedi_increment
 
   type(fv3jedi_field), allocatable :: fields(:)
 
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ud   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: vd   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ua   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: va   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: t    => null()
