@@ -61,7 +61,7 @@ Observations:
         obsfile: Data/gnssro_hofx.nc4
       obsvalue: refractivity
     ObsBias: {}
-  - ObsType: AMSU-A
+  - ObsType: CRTM
     channels: "1-15"
     ObsData:
       ObsDataIn:
