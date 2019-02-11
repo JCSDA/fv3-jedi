@@ -4,6 +4,11 @@ Analysis2Model/LinVarChaA2MFV3JEDI.h
 Analysis2Model/LinVarChaA2MFV3JEDI.interface.h
 Analysis2Model/fv3jedi_linvarcha_a2m.interface.F90
 Analysis2Model/fv3jedi_linvarcha_a2m_mod.f90
+Analysis2Model/VarChaA2MFV3JEDI.cc
+Analysis2Model/VarChaA2MFV3JEDI.h
+Analysis2Model/VarChaA2MFV3JEDI.interface.h
+Analysis2Model/fv3jedi_varcha_a2m.interface.F90
+Analysis2Model/fv3jedi_varcha_a2m_mod.f90
 Control2Analysis/LinVarChaC2AFV3JEDI.cc
 Control2Analysis/LinVarChaC2AFV3JEDI.h
 Control2Analysis/LinVarChaC2AFV3JEDI.interface.h

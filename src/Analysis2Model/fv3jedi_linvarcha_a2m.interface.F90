@@ -1,4 +1,4 @@
-! (C) Copyright 2018 UCAR
+! (C) Copyright 2018-2019 UCAR
 ! 
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -41,8 +41,8 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_a2m_setup(c_key_self,c_key_geom,c_key_bg,c_key_fg,c_conf) &
-           bind (c,name='fv3jedi_linvarcha_a2m_setup_f90')
+subroutine c_fv3jedi_linvarcha_a2m_create(c_key_self,c_key_geom,c_key_bg,c_key_fg,c_conf) &
+           bind (c,name='fv3jedi_linvarcha_a2m_create_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self
@@ -66,7 +66,7 @@ call fv3jedi_state_registry%get(c_key_fg,fg)
 
 call create(self,geom,bg,fg,c_conf)
 
-end subroutine c_fv3jedi_linvarcha_a2m_setup
+end subroutine c_fv3jedi_linvarcha_a2m_create
 
 ! ------------------------------------------------------------------------------
 

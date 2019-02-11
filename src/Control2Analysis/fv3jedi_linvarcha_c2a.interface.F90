@@ -41,8 +41,8 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_c2a_setup(c_key_self,c_key_geom,c_key_bg,c_key_fg,c_conf) &
-           bind (c,name='fv3jedi_linvarcha_c2a_setup_f90')
+subroutine c_fv3jedi_linvarcha_c2a_create(c_key_self,c_key_geom,c_key_bg,c_key_fg,c_conf) &
+           bind (c,name='fv3jedi_linvarcha_c2a_create_f90')
 
 implicit none
 integer(c_int), intent(inout) :: c_key_self
@@ -66,7 +66,7 @@ call fv3jedi_state_registry%get(c_key_fg,fg)
 
 call create(self,geom,bg,fg,c_conf)
 
-end subroutine c_fv3jedi_linvarcha_c2a_setup
+end subroutine c_fv3jedi_linvarcha_c2a_create
 
 ! ------------------------------------------------------------------------------
 

@@ -24,11 +24,11 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_linvarcha_c2a_setup_f90(const F90lvcc2a &,
-                                       const F90geom &,
-                                       const F90state &,
-                                       const F90state &,
-                                       const eckit::Configuration * const *);
+  void fv3jedi_linvarcha_c2a_create_f90(const F90lvcc2a &,
+                                        const F90geom &,
+                                        const F90state &,
+                                        const F90state &,
+                                        const eckit::Configuration * const *);
   void fv3jedi_linvarcha_c2a_delete_f90(F90lvcc2a &);
   void fv3jedi_linvarcha_c2a_multiply_f90(const F90lvcc2a &,
                                           const F90geom &,
