@@ -42,7 +42,7 @@ Observations:
 #        obsfile: Data/gnssro_hofx.nc4
 #      obsvalue: BNA
 #    ObsBias: {}
-#  - ObsType: AMSU-A
+#  - ObsType: CRTM
 #    ObsData:
 #      ObsDataIn:
 #        obsfile: Data/amsua_obs_n19_2018041500_m.nc4
