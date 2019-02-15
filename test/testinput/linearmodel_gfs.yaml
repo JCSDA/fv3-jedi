@@ -14,6 +14,7 @@ Geometry:
 LinearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
+  variables: ["ud","vd","t","delp","q","qi","ql","o3"]
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml

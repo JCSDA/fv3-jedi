@@ -31,11 +31,13 @@ extern "C" {
   void fv3jedi_varcha_a2m_changevar_f90(const F90vca2m &,
                                         const F90geom &,
                                         const F90state &,
-                                        const F90state &);
+                                        const F90state &,
+                                        util::DateTime * const *);
   void fv3jedi_varcha_a2m_changevarinverse_f90(const F90vca2m &,
                                                const F90geom &,
                                                const F90state &,
-                                               const F90state &);
+                                               const F90state &,
+                                               util::DateTime * const *);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------

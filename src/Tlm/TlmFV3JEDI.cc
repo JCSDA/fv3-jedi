@@ -32,8 +32,7 @@ TlmFV3JEDI::TlmFV3JEDI(const GeometryFV3JEDI & resol,
                         const eckit::Configuration & tlConf)
   : keyConfig_(0), tstep_(), resol_(resol), traj_(),
     lrmodel_(resol_, eckit::LocalConfiguration(tlConf, "trajectory")),
-    linvars_(std::vector<std::string>{"ua", "va", "t", "ps",
-                                      "q", "qi", "ql", "o3"})
+    linvars_(tlConf)
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
 

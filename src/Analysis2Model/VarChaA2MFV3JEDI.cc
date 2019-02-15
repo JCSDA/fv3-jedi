@@ -34,15 +34,21 @@ VarChaA2MFV3JEDI::~VarChaA2MFV3JEDI() {
 // -----------------------------------------------------------------------------
 void VarChaA2MFV3JEDI::changeVar(const StateFV3JEDI & xa,
                                        StateFV3JEDI & xm) const {
+  util::DateTime * vtime = &xm.validTime();
   fv3jedi_varcha_a2m_changevar_f90(keyFtnConfig_, geom_->toFortran(),
-                                   xa.toFortran(), xm.toFortran());
+                                   xa.toFortran(), xm.toFortran(),
+                                   &vtime);
+  ASSERT(xa.validTime() == xm.validTime());  
   oops::Log::debug() << "VarChaA2MFV3JEDI::changeVar" << xm << std::endl;
 }
 // -----------------------------------------------------------------------------
 void VarChaA2MFV3JEDI::changeVarInverse(const StateFV3JEDI & xm,
                                               StateFV3JEDI & xa) const {
+  util::DateTime * vtime = &xa.validTime();
   fv3jedi_varcha_a2m_changevarinverse_f90(keyFtnConfig_, geom_->toFortran(),
-                                          xm.toFortran(), xa.toFortran());
+                                          xm.toFortran(), xa.toFortran(),
+                                          &vtime);
+  ASSERT(xa.validTime() == xm.validTime());
   oops::Log::debug() << "VarChaA2MFV3JEDI::changeVar" << xm << std::endl;
 }
 // -----------------------------------------------------------------------------

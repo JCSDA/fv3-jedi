@@ -9,6 +9,7 @@ module fv3jedi_state_utils_mod
 
 use fv3jedi_kinds_mod
 use fv3jedi_field_mod, only: fv3jedi_field
+use fckit_mpi_module, only: fckit_mpi_comm
 
 implicit none
 private
@@ -26,15 +27,18 @@ type :: fv3jedi_state
   integer :: calendar_type, date_init(6) !Read/write for GFS
   integer :: nf
 
+  type(fckit_mpi_comm) :: f_comm
+
   type(fv3jedi_field), allocatable :: fields(:)
 
-  !State variables (index in array for later access)
+  !Adding a new variable? Update create, delete and copy
   real(kind=kind_real), pointer, dimension(:,:,:) :: ud      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: vd      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ua      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: va      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: t       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: delp    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ps      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: q       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qi      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ql      => null()
@@ -42,8 +46,6 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: w       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: delz    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: phis    => null()
-
-  !CRTM state
   real(kind=kind_real), pointer, dimension(:,:,:) :: slmsk   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: sheleg  => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: tsea    => null()
@@ -56,8 +58,6 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: u_srf   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: v_srf   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: f10m    => null()
-
-  !Linearized model trajectory
   real(kind=kind_real), pointer, dimension(:,:,:) :: qls     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qcn     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: cfcn    => null()

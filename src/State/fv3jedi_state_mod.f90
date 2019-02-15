@@ -10,13 +10,13 @@ use config_mod
 use datetime_mod
 use fckit_mpi_module
 
-use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms, fields_rms, fields_gpnorm, fields_print
+use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms, fields_rms, fields_gpnorm, fields_print, get_field
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,           only: kind_real
-use fv3jedi_io_gfs_mod,          only: write_gfs, read_gfs 
-use fv3jedi_io_geos_mod,         only: write_geos, read_geos 
+use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs 
+use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos 
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
 use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues
@@ -47,15 +47,6 @@ integer :: var, vcount
 ! Total fields
 ! ------------
 self%nf = vars%nv
-
-! Reduce count for variables not in state
-! ---------------------------------------
-do var = 1, vars%nv
-   select case (trim(vars%fldnames(var)))
-   case("ps")
-     self%nf = self%nf - 1
-   end select
-enddo
 
 ! Allocate fields structure
 ! -------------------------
@@ -96,26 +87,35 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'pressure_thickness', &
             fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
+     case("ps")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%fldnames(var), long_name = 'surface_pressure', &
+            fv3jedi_name = 'ps', units = 'Pa', staggerloc = center, arraypointer = self%ps)
      case("q","sphum")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'specific_humidity', &
-            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center, arraypointer = self%q)
+            fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center, arraypointer = self%q, &
+            tracer = .true.)
      case("qi","ice_wat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice', &
-            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center, arraypointer = self%qi)
+            fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center, arraypointer = self%qi, &
+            tracer = .true.)
      case("ql","liq_wat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice_water', &
-            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center, arraypointer = self%ql)
+            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center, arraypointer = self%ql, &
+            tracer = .true.)
      case("o3","o3mr")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'ozone_mass_mixing_ratio', &
-            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center, arraypointer = self%o3)
+            fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center, arraypointer = self%o3, &
+            tracer = .true.)
      case("w","W")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -273,8 +273,6 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'upper_index_where_Kh_greater_than_2', &
             fv3jedi_name = 'khu', units = '1', staggerloc = center, arraypointer = self%khu)
-     case("ps")
-       !Not part of the state
      case default 
        call abor1_ftn("Create: unknown variable "//trim(vars%fldnames(var)))
    end select
@@ -303,6 +301,9 @@ self%npz    = geom%npz
 self%ntile  = geom%ntile
 self%ntiles = geom%ntiles
 
+! Pointer to fv3jedi communicator
+self%f_comm = fckit_mpi_comm()
+
 end subroutine create
 
 ! ------------------------------------------------------------------------------
@@ -317,6 +318,49 @@ do var = 1, self%nf
   call self%fields(var)%deallocate_field()
 enddo
 deallocate(self%fields)
+
+if (associated(self%ud     )) nullify(self%ud     )
+if (associated(self%vd     )) nullify(self%vd     )
+if (associated(self%ua     )) nullify(self%ua     )
+if (associated(self%va     )) nullify(self%va     )
+if (associated(self%t      )) nullify(self%t      )
+if (associated(self%delp   )) nullify(self%delp   )
+if (associated(self%ps     )) nullify(self%ps     )
+if (associated(self%q      )) nullify(self%q      )
+if (associated(self%qi     )) nullify(self%qi     )
+if (associated(self%ql     )) nullify(self%ql     )
+if (associated(self%o3     )) nullify(self%o3     )
+if (associated(self%w      )) nullify(self%w      )
+if (associated(self%delz   )) nullify(self%delz   )
+if (associated(self%phis   )) nullify(self%phis   )
+if (associated(self%slmsk  )) nullify(self%slmsk  )
+if (associated(self%sheleg )) nullify(self%sheleg )
+if (associated(self%tsea   )) nullify(self%tsea   )
+if (associated(self%vtype  )) nullify(self%vtype  )
+if (associated(self%stype  )) nullify(self%stype  )
+if (associated(self%vfrac  )) nullify(self%vfrac  )
+if (associated(self%stc    )) nullify(self%stc    )
+if (associated(self%smc    )) nullify(self%smc    )
+if (associated(self%snwdph )) nullify(self%snwdph )
+if (associated(self%u_srf  )) nullify(self%u_srf  )
+if (associated(self%v_srf  )) nullify(self%v_srf  )
+if (associated(self%f10m   )) nullify(self%f10m   )
+if (associated(self%qls    )) nullify(self%qls    )
+if (associated(self%qcn    )) nullify(self%qcn    )
+if (associated(self%cfcn   )) nullify(self%cfcn   )
+if (associated(self%frocean)) nullify(self%frocean)
+if (associated(self%frland )) nullify(self%frland )
+if (associated(self%varflt )) nullify(self%varflt )
+if (associated(self%ustar  )) nullify(self%ustar  )
+if (associated(self%bstar  )) nullify(self%bstar  )
+if (associated(self%zpbl   )) nullify(self%zpbl   )
+if (associated(self%cm     )) nullify(self%cm     )
+if (associated(self%ct     )) nullify(self%ct     )
+if (associated(self%cq     )) nullify(self%cq     )
+if (associated(self%kcbl   )) nullify(self%kcbl   )
+if (associated(self%ts     )) nullify(self%ts     )
+if (associated(self%khl    )) nullify(self%khl    )
+if (associated(self%khu    )) nullify(self%khu    )
 
 end subroutine delete
 
@@ -402,6 +446,8 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%t)
     case("delp","DELP")
       call self%fields(self_var)%array_pointer(self%delp)
+    case("ps")
+      call self%fields(self_var)%array_pointer(self%ps)
     case("q","sphum")
       call self%fields(self_var)%array_pointer(self%q)
     case("qi","ice_wat")
@@ -472,10 +518,8 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%khl)
     case("khu")
       call self%fields(self_var)%array_pointer(self%khu)
-    case("ps")
-      !Not part of the state
     case default 
-      call abor1_ftn("Create: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
+      call abor1_ftn("fv3jedi_state_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
   end select
 enddo
 
@@ -502,76 +546,63 @@ end subroutine axpy
 
 subroutine add_incr(geom,self,rhs)
 
-use wind_vt_mod, only: a2d
-
 implicit none
 type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_state),     intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: i,j,k
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ud, vd
+integer :: var,i,j,k
+logical :: found_neg
+type(fv3jedi_field), pointer :: field_pointer
 
 !Check for matching resolution between state and increment
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
 
-  !Convert A-Grid increment to D-Grid
-  allocate(ud(rhs%isc:rhs%iec  ,rhs%jsc:rhs%jec+1,1:rhs%npz))
-  allocate(vd(rhs%isc:rhs%iec+1,rhs%jsc:rhs%jec  ,1:rhs%npz))
-  ud = 0.0_kind_real
-  vd = 0.0_kind_real
-
-  call a2d(geom, rhs%ua, rhs%va, ud, vd)
-
-  if(associated(self%ud)) self%ud = self%ud + ud
-  if(associated(self%vd)) self%vd = self%vd + vd
-
-  deallocate(ud,vd)
-
-  if(associated(self%ua)) self%ua = self%ua + rhs%ua  
-  if(associated(self%va)) self%va = self%va + rhs%va  
-  if(associated(self%t )) self%t  = self%t  + rhs%t
-  if(associated(self%delp)) then
-    if (associated(rhs%ps)) then
-      do k = 1,geom%npz
-        self%delp(:,:,k) = self%delp(:,:,k) + &
-                                              (geom%bk(k+1)-geom%bk(k))*rhs%ps(:,:,1)
-      enddo
-    elseif (associated(rhs%delp)) then
-      self%delp = self%delp + rhs%delp
-    endif
-  endif
+  do var = 1,self%nf
   
-  if(associated(   self%q)) self%q    = self%q    + rhs%q   
-  if(associated(  self%qi)) self%qi   = self%qi   + rhs%qi  
-  if(associated(  self%ql)) self%ql   = self%ql   + rhs%ql  
-  if(associated(  self%o3)) self%o3   = self%o3   + rhs%o3  
-  if(associated(   self%w)) self%w    = self%w    + rhs%w   
-  if(associated(self%delz)) self%delz = self%delz + rhs%delz 
+    !Get pointer to increment
+    call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,field_pointer)
 
-  !Check for negative tracers and increase to 0.0
-  do k = 1,geom%npz
-    do j = geom%jsc,geom%jec
-      do i = geom%isc,geom%iec
-        if (self%q(i,j,k) < 0.0_kind_real) then
-          self%q(i,j,k) = 0.0_kind_real
-        endif
-        if (self%qi(i,j,k) < 0.0_kind_real) then
-          self%qi(i,j,k) = 0.0_kind_real
-        endif
-        if (self%ql(i,j,k) < 0.0_kind_real) then
-          self%ql(i,j,k) = 0.0_kind_real
-        endif
-        if (self%o3(i,j,k) < 0.0_kind_real) then
-          self%o3(i,j,k) = 0.0_kind_real
-        endif
-      enddo
-    enddo
+    !Add increment to state
+    self%fields(var)%array = self%fields(var)%array + field_pointer%array
+
+    !Nullify pointer
+    nullify(field_pointer)
+
   enddo
 
 else
+
    call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
+
 endif
+
+!Check for negative tracers and increase to 0.0
+do var = 1,self%nf
+
+  if (self%fields(var)%tracer) then
+
+    found_neg = .false.
+
+    do k = 1,self%fields(var)%npz
+      do j = geom%jsc,geom%jec
+        do i = geom%isc,geom%iec
+          if (self%fields(var)%array(i,j,k) < 0.0_kind_real) then
+            found_neg = .true.
+            self%fields(var)%array(i,j,k) = 0.0_kind_real
+          endif
+        enddo
+      enddo
+    enddo
+
+    !Print message warning about negative tracer removal
+    if (found_neg .and. self%f_comm%rank() == 0) print*, &
+             'fv3jedi_state_mod.add_incr: Removed negative values for '&
+             //trim(self%fields(var)%fv3jedi_name)
+
+  endif
+
+enddo
 
 end subroutine add_incr
 
@@ -881,72 +912,25 @@ subroutine read_file(geom, self, c_conf, vdate)
   type(c_ptr),         intent(in)    :: c_conf   !< Configuration
   type(datetime),      intent(inout) :: vdate    !< DateTime
 
-  character(len=10)  :: filetype 
+  type(fv3jedi_io_gfs)  :: gfs
+  type(fv3jedi_io_geos) :: geos
+
+  character(len=10) :: filetype
   character(len=255) :: filename
-  character(len=255) :: datapath_ti
-  character(len=255) :: datapath_sp
-  character(len=255) :: filename_spec
-  character(len=255) :: filename_core
-  character(len=255) :: filename_trcr
-  character(len=255) :: filename_sfcd
-  character(len=255) :: filename_sfcw
-  character(len=255) :: filename_cplr
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-
-    !Set filenames
-    !--------------
-    filename_core = 'fv_core.res.nc'
-    filename_trcr = 'fv_tracer.res.nc'
-    filename_sfcd = 'sfc_data.nc'
-    filename_sfcw = 'srf_wnd.nc'
-    filename_cplr = 'coupler.res'
-    
-    datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
-    
-    if (config_element_exists(c_conf,"filename_core")) then
-       filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
-    endif
-    if (config_element_exists(c_conf,"filename_trcr")) then
-       filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
-    endif
-    if (config_element_exists(c_conf,"filename_sfcd")) then
-       filename_sfcd = config_get_string(c_conf,len(filename_sfcd),"filename_sfcd")
-    endif
-    if (config_element_exists(c_conf,"filename_sfcw")) then
-       filename_sfcw = config_get_string(c_conf,len(filename_sfcw),"filename_sfcw")
-    endif
-    if (config_element_exists(c_conf,"filename_cplr")) then
-       filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
-    endif
-    if (config_element_exists(c_conf,"filename_spec")) then
-       filename_spec = config_get_string(c_conf,len(filename_spec),"filename_spec")
-       datapath_sp = config_get_string(c_conf,len(datapath_sp),"datapath_spec")  
-    else
-       filename_spec = "null"
-       datapath_sp = "null"
-    endif
-
-    call read_gfs ( geom, self%fields, vdate, self%calendar_type, self%date_init, &
-                    datapath_ti, datapath_sp, &
-                    filename_spec, filename_core, filename_trcr, &
-                    filename_sfcd, filename_sfcw, filename_cplr )
-
+    call gfs%setup(c_conf)
+    call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos') then
-
-    if (config_element_exists(c_conf,"filename")) then
-       filename = config_get_string(c_conf,len(filename),"filename")
-       call read_geos(geom, self%fields, vdate, filename)
-    else
-       call read_geos(geom, self%fields, vdate) 
-    endif
-
+    filename = config_get_string(c_conf,len(filename),"filename")
+    call geos%create(geom, 'read', filename)
+    call geos%read_time(vdate)
+    call geos%read_fields(geom, self%fields)
+    call geos%delete()
   else
-
-     call abor1_ftn("fv3jedi_state read: restart type not supported")
-
+     call abor1_ftn("fv3jedi_increment_mod.read: restart type not supported")
   endif
 
 end subroutine read_file
@@ -964,33 +948,22 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(c_ptr),         intent(in)    :: c_conf   !< Configuration
   type(datetime),      intent(inout) :: vdate    !< DateTime
 
-  character(len=10) :: filetype 
-  integer :: var
-  type(fv3jedi_llgeom) :: llgeom
+  type(fv3jedi_io_gfs)  :: gfs
+  type(fv3jedi_io_geos) :: geos
+
+  character(len=10) :: filetype
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-
-     call write_gfs (geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
-
+    call gfs%setup(c_conf)
+    call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos') then
-
-     call write_geos(geom, self%fields, c_conf, vdate)
-
-  elseif (trim(filetype) == 'latlon') then
-
-     call create_latlon(geom, llgeom)
-     call write_latlon_metadata(geom, llgeom, c_conf, vdate)
-     do var = 1,self%nf
-       call write_latlon_field(geom, llgeom, self%fields(var)%array, self%fields(var)%short_name, c_conf, vdate)
-     enddo
-     call delete_latlon(llgeom)
-
+    call geos%create(geom, 'write')
+    call geos%write_all(geom, self%fields, c_conf, vdate)
+    call geos%delete()
   else
-
-     call abor1_ftn("fv3jedi_state write: restart type not supported")
-
+     call abor1_ftn("fv3jedi_increment_mod.write: restart type not supported")
   endif
 
 end subroutine write_file
