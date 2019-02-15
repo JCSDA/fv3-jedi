@@ -13,8 +13,7 @@ use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_state_mod,     only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
 
-use wind_vt_mod,     only: a2d, d2a, d2a_ad, a2d_ad
-use mpp_domains_mod, only: mpp_get_boundary, DGRID_NE, mpp_get_boundary_ad
+use wind_vt_mod, only: a2d, d2a, d2a_ad, a2d_ad
 
 implicit none
 private
@@ -28,12 +27,7 @@ public :: multiplyinverse
 public :: multiplyinverseadjoint
 
 type :: fv3jedi_linvarcha_a2m
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ua,va
-  real(kind=kind_real), allocatable, dimension(:,:,:) :: ud,vd
-  real(kind=kind_real), allocatable, dimension(:,:)   :: ebuffery
-  real(kind=kind_real), allocatable, dimension(:,:)   :: nbufferx
-  real(kind=kind_real), allocatable, dimension(:,:)   :: wbuffery
-  real(kind=kind_real), allocatable, dimension(:,:)   :: sbufferx
+ integer :: dummy  
 end type fv3jedi_linvarcha_a2m
 
 ! ------------------------------------------------------------------------------
@@ -51,17 +45,7 @@ type(fv3jedi_state),         intent(in)    :: bg
 type(fv3jedi_state),         intent(in)    :: fg
 type(c_ptr),                 intent(in)    :: c_conf
 
-! Allocate A- and D-Grid wind holders
-allocate(self%ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz))
-allocate(self%va(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz))
-allocate(self%ud(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz))
-allocate(self%vd(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz))
-
-! Allocate D-Grid wind halo holders
-allocate(self%wbuffery(geom%jsc:geom%jec,1:geom%npz))
-allocate(self%sbufferx(geom%isc:geom%iec,1:geom%npz))
-allocate(self%ebuffery(geom%jsc:geom%jec,1:geom%npz))
-allocate(self%nbufferx(geom%isc:geom%iec,1:geom%npz))
+!Nothing yet as transforms are linear
 
 end subroutine create
 
@@ -71,13 +55,6 @@ subroutine delete(self)
 
 implicit none
 type(fv3jedi_linvarcha_a2m), intent(inout) :: self
-
-! Deallocate A- and D-grid wind holders
-deallocate(self%ua,self%va)
-deallocate(self%ud,self%vd)
-
-! Deallocate D-Grid wind halo holders
-deallocate(self%wbuffery,self%sbufferx,self%ebuffery,self%nbufferx)
 
 end subroutine delete
 
@@ -91,36 +68,72 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xana
 type(fv3jedi_increment),     intent(inout) :: xmod
 
+integer :: index_ana, index_mod, index_ana_found
 integer :: k
+logical :: failed
 
-self%ud = 0.0_kind_real
-self%vd = 0.0_kind_real
+do index_mod = 1, xmod%nf
 
-call a2d(geom, xana%ua(xana%isc:xana%iec,xana%jsc:xana%jec,:), &
-               xana%va(xana%isc:xana%iec,xana%jsc:xana%jec,:), &
-               self%ud(xana%isc:xana%iec  ,xana%jsc:xana%jec+1,:), &
-               self%vd(xana%isc:xana%iec+1,xana%jsc:xana%jec  ,:))
+  index_ana_found = -1
+  failed = .true.
 
-xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+  !Check analysis for presence of field
+  do index_ana = 1, xana%nf
+    if (xmod%fields(index_mod)%fv3jedi_name == xana%fields(index_ana)%fv3jedi_name) then
+      index_ana_found = index_ana
+      exit
+    endif
+  enddo
 
-xmod%ua = 0.0_kind_real
-xmod%va = 0.0_kind_real
+  if (index_ana_found >= 0) then
+ 
+    !OK, direct copy
+    xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
+    failed = .false.
+    if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
+        "A2M Multiply: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name&
+        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name
 
-xmod%t  = xana%t
-do k = 1,geom%npz
-  xmod%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
+  elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xana%ua) .and. associated(xana%va)) then
+      call a2d(geom, xana%ua, xana%va, xmod%ud, xmod%vd)
+      xmod%ud(:,geom%jec+1,:) = 0.0_kind_real
+      xmod%vd(geom%iec+1,:,:) = 0.0_kind_real
+      failed = .false.
+      if (xmod%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M Multiply: analysis increment ua         => linearized model ud"
+    endif
+
+  elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xana%ua) .and. associated(xana%va)) then
+      !Already done above
+      failed = .false.
+      if (xmod%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M Multiply: analysis increment va         => linearized model ud"
+    endif
+
+  elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
+
+    !Special case: ps in analysis, delp in model
+    if (associated(xana%ps)) then 
+      do k = 1,geom%npz
+        xmod%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
+      enddo
+      failed = .false.
+      if (xmod%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M Multiply: analysis increment ps         => linearized model ud"
+    endif
+
+  endif
+
+  if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiply: found no way of getting "//&
+                             xmod%fields(index_mod)%fv3jedi_name//" from the analysis increment" )
+
 enddo
-
-xmod%q  = xana%q
-xmod%qi = xana%qi
-xmod%ql = xana%ql
-xmod%o3 = xana%o3
-
-if (.not. xana%hydrostatic) then
-  xmod%delz = xana%delz
-  xmod%w    = xana%w
-endif
 
 end subroutine multiply
 
@@ -134,33 +147,73 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xmod
 type(fv3jedi_increment),     intent(inout) :: xana
 
+integer :: index_ana, index_mod, index_mod_found
 integer :: k
+logical :: failed
 
-self%ud = 0.0_kind_real
-self%vd = 0.0_kind_real
+do index_ana = 1, xana%nf
 
-self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+  index_mod_found = -1
+  failed = .true.
 
-call a2d_ad(geom, xana%ua, xana%va, &
-            self%ud(xana%isc:xana%iec  ,xana%jsc:xana%jec+1,:),&
-            self%vd(xana%isc:xana%iec+1,xana%jsc:xana%jec  ,:))
+  !Check analysis for presence of field
+  do index_mod = 1, xmod%nf
+    if (xana%fields(index_ana)%fv3jedi_name == xmod%fields(index_mod)%fv3jedi_name) then
+      index_mod_found = index_mod
+      exit
+    endif
+  enddo
 
-xana%t    = xmod%t
-xana%ps = 0.0_kind_real
-do k = 1,geom%npz
-  xana%ps(:,:,1) = xana%ps(:,:,1) +  (geom%bk(k+1)-geom%bk(k))*xmod%delp(:,:,k)
+  if (index_mod_found >= 0) then
+ 
+    !OK, direct copy
+    xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
+    failed = .false.
+    if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
+        "A2M MultiplyAdjoint: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name&
+        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name
+
+  elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xmod%ud) .and. associated(xmod%vd)) then
+      xmod%ud(:,geom%jec+1,:) = 0.0_kind_real
+      xmod%vd(geom%iec+1,:,:) = 0.0_kind_real
+      call a2d_ad(geom, xana%ua, xana%va, xmod%ud, xmod%vd)
+      failed = .false.
+      if (xana%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyAdjoint: linearized model ud         => analysis increment ua"
+    endif
+
+  elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xmod%ud) .and. associated(xmod%vd)) then
+      !Already done above
+      failed = .false.
+      if (xana%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyAdjoint: linearized model vd         => analysis increment va"
+    endif
+
+  elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
+
+    !Special case: ps in analysis, delp in model
+    if (associated(xmod%delp)) then 
+      xana%ps = 0.0_kind_real
+      do k = 1,geom%npz
+        xana%ps(:,:,1) = xana%ps(:,:,1) + (geom%bk(k+1)-geom%bk(k))*xmod%delp(:,:,k)
+      enddo
+      failed = .false.
+      if (xana%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyAdjoint: linearized model delp       => analysis increment ps"
+    endif
+
+  endif
+
+  if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyadjoint: found no way of getting "//&
+                             xana%fields(index_ana)%fv3jedi_name//" from the linearized model" )
+
 enddo
-
-xana%q    = xmod%q
-xana%qi   = xmod%qi
-xana%ql   = xmod%ql
-xana%o3   = xmod%o3
-
-if (.not. xana%hydrostatic) then
-  xana%delz = xmod%delz
-  xana%q    = xmod%w
-endif
 
 end subroutine multiplyadjoint
 
@@ -174,46 +227,69 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xmod
 type(fv3jedi_increment),     intent(inout) :: xana
 
-integer :: i,j,k
+integer :: index_ana, index_mod, index_mod_found
+logical :: failed
 
-self%ud = 0.0_kind_real
-self%vd = 0.0_kind_real
-self%ua = 0.0_kind_real
-self%va = 0.0_kind_real
+do index_ana = 1, xana%nf
 
-self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
+  index_mod_found = -1
+  failed = .true.
 
-call mpp_get_boundary( self%ud, self%vd, geom%domain, &
-                       wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                       sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                       gridtype=DGRID_NE, complete=.true. )
-do k=1,geom%npz
-   do i=geom%isc,geom%iec
-      self%ud(i,geom%jec+1,k) = self%nbufferx(i,k)
-   enddo
+  !Check analysis for presence of field
+  do index_mod = 1, xmod%nf
+    if (xana%fields(index_ana)%fv3jedi_name == xmod%fields(index_mod)%fv3jedi_name) then
+      index_mod_found = index_mod
+      exit
+    endif
+  enddo
+
+  if (index_mod_found >= 0) then
+ 
+    !OK, direct copy
+    failed = .false.
+    xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
+    if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
+        "A2M MultiplyInverse: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name&
+        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name
+
+  elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xmod%ud) .and. associated(xmod%vd)) then
+      xmod%ud(:,geom%jec+1,:) = 0.0_kind_real
+      xmod%vd(geom%iec+1,:,:) = 0.0_kind_real
+      call d2a(geom, xmod%ud, xmod%vd, xana%ua, xana%va)
+      failed = .false.
+      if (xana%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyInverse: linearized model ud         => analysis increment ua"
+    endif
+
+  elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xmod%ud) .and. associated(xmod%vd)) then
+      !Already done above
+      failed = .false.
+      if (xana%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyInverse: linearized model vd         => analysis increment va"
+    endif
+
+  elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
+
+    !Special case: ps in analysis, delp in model
+    if (associated(xmod%delp)) then 
+      xana%ps(:,:,1)   = sum(xmod%delp,3)
+      failed = .false.
+      if (xana%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyInverse: linearized model delp       => analysis increment ps"
+    endif
+
+  endif
+
+  if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyinverse: found no way of getting "//&
+                             xana%fields(index_ana)%fv3jedi_name//" from the linearized model" )
+
 enddo
-do k=1,geom%npz
-   do j=geom%jsc,geom%jec
-      self%vd(geom%iec+1,j,k) = self%ebuffery(j,k)
-   enddo
-enddo
-
-call d2a(geom, self%ud, self%vd, self%ua, self%va)
-
-xana%ua = self%ua(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-xana%va = self%va(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-
-xana%t    = xmod%t
-xana%ps(:,:,1)   = sum(xmod%delp,3)
-xana%q    = xmod%q
-xana%qi   = xmod%qi
-xana%ql   = xmod%ql
-xana%o3   = xmod%o3
-if (.not. xana%hydrostatic) then
-  xana%delz = xmod%delz
-  xana%w    = xmod%w
-endif
 
 end subroutine multiplyinverse
 
@@ -227,54 +303,72 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xana
 type(fv3jedi_increment),     intent(inout) :: xmod
 
-integer :: i,j,k
+integer :: index_ana, index_mod, index_ana_found
+integer :: k
+logical :: failed
 
-self%ud = 0.0_kind_real
-self%vd = 0.0_kind_real
-self%ua = 0.0_kind_real
-self%va = 0.0_kind_real
+do index_mod = 1, xmod%nf
 
-self%ua(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xana%ua
-self%va(xana%isc:xana%iec,xana%jsc:xana%jec,:) = xana%va
+  index_ana_found = -1
+  failed = .true.
 
-call d2a_ad(geom, self%ud, self%vd, self%ua, self%va)
+  !Check analysis for presence of field
+  do index_ana = 1, xana%nf
+    if (xmod%fields(index_mod)%fv3jedi_name == xana%fields(index_ana)%fv3jedi_name) then
+      index_ana_found = index_ana
+      exit
+    endif
+  enddo
 
-self%nbufferx = 0.0_kind_real
-do k=1,geom%npz
-   do i=geom%isc,geom%iec
-      self%nbufferx(i,k) = self%ud(i,geom%jec+1,k)
-   enddo
+  if (index_ana_found >= 0) then
+ 
+    !OK, direct copy
+    failed = .false.
+    xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
+    if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
+        "A2M MultiplyInverseAdjoint: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name&
+        //" => to the linearized model "//xmod%fields(index_mod)%fv3jedi_name
+
+  elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xana%ua) .and. associated(xana%va)) then
+      call d2a_ad(geom, xmod%ud, xmod%vd, xana%ua, xana%va)   
+      xmod%ud(:,geom%jec+1,:) = 0.0_kind_real
+      xmod%vd(geom%iec+1,:,:) = 0.0_kind_real
+      failed = .false.
+      if (xmod%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyInverseAdjoint: analysis increment ua         => linearized model ud"
+    endif
+
+  elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
+
+    !Special case: A-grid analysis, D-Grid model
+    if (associated(xana%ua) .and. associated(xana%va)) then
+      !Already done above
+      failed = .false.
+      if (xmod%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyInverseAdjoint: analysis increment va         => linearized model vd"
+    endif
+
+  elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
+
+    !Special case: ps in analysis, delp in model
+    if (associated(xana%ps)) then 
+      do k = 1,geom%npz
+        xmod%delp(:,:,k) = xana%ps(:,:,1)
+      enddo
+      failed = .false.
+      if (xmod%f_comm%rank() == 0) write(*,"(A)") &
+          "A2M MultiplyInverseAdjoint: analysis increment ps         => linearized model delp"
+    endif
+
+  endif
+
+  if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyinverseadjoint: found no way of getting "//&
+                             xmod%fields(index_mod)%fv3jedi_name//" from the analysis increment" )
+
 enddo
-self%ebuffery = 0.0_kind_real
-do k=1,geom%npz
-   do j=geom%jsc,geom%jec
-      self%ebuffery(j,k) = self%vd(geom%iec+1,j,k)
-   enddo
-enddo
-
-call mpp_get_boundary_ad( self%ud, self%vd, geom%domain, &
-                          wbuffery=self%wbuffery, ebuffery=self%ebuffery, &
-                          sbufferx=self%sbufferx, nbufferx=self%nbufferx, &
-                          gridtype=DGRID_NE, complete=.true. )
-
-xmod%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%ud(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-xmod%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:) = self%vd(xana%isc:xana%iec,xana%jsc:xana%jec,:)
-
-xmod%ua = 0.0_kind_real
-xmod%va = 0.0_kind_real
-
-xmod%t    = xana%t
-do k = 1,geom%npz
-  xmod%delp(:,:,k) = xana%ps(:,:,1)
-enddo
-xmod%q    = xana%q
-xmod%qi   = xana%qi
-xmod%ql   = xana%ql
-xmod%o3   = xana%o3
-if (.not. xana%hydrostatic) then
-   xmod%delz = xana%delz
-   xmod%w    = xana%w
-endif
 
 end subroutine multiplyinverseadjoint
 

@@ -23,7 +23,7 @@ LinearVariableChangeTests:
   toleranceInverse: 1000
   testinverse: 1
   inputVariables:
-    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3"]
+    variables: ["ud","vd","t","delp","q","qi","ql","o3"]
   outputVariables:
     variables: ["ua","va","t","ps","q","qi","ql","o3"]
 Geometry:
