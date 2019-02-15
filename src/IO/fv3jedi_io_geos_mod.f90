@@ -22,7 +22,27 @@ use netcdf
 
 implicit none
 private
-public read_geos, write_geos
+public fv3jedi_io_geos
+
+type fv3jedi_io_geos
+ logical :: iam_io_proc        !Flag for procs doing IO
+ type(fckit_mpi_comm) :: ccomm !Component communicator
+ integer :: tcomm, ocomm       !Communicator for each tile and for output
+ integer :: trank, tsize       !Tile come info
+ integer :: crank, csize       !Component comm info
+ integer :: orank, osize       !Output comm info
+ integer :: ncid, vindex
+ integer, allocatable :: istart3(:), icount3(:)
+ integer, allocatable :: istart2(:), icount2(:)
+ contains
+  procedure :: create
+  procedure :: delete
+  procedure :: read_time
+  procedure :: read_fields
+  procedure :: write_all
+  final     :: dummy_final
+end type fv3jedi_io_geos
+
 
 ! ------------------------------------------------------------------------------
 
@@ -30,82 +50,169 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_geos(geom, fields, vdate, filename_in)
+subroutine create(self, geom, accesstype, filename)
 
-implicit none
+class(fv3jedi_io_geos),     intent(inout) :: self
+type(fv3jedi_geom),         intent(in)    :: geom
+character(len=*),           intent(in)    :: accesstype
+character(len=*), optional, intent(in)    :: filename
 
-!Arguments
-type(fv3jedi_geom),         intent(in)    :: geom        !< Geom
-type(fv3jedi_field),        intent(inout) :: fields(:)   !< Fields
-type(datetime),             intent(inout) :: vdate       !< DateTime
-character(len=*), optional, intent(in)    :: filename_in !< Filename
+integer :: ierr
+integer :: im,jm,lm,nm,dimid
+integer :: tileoffset, ncdim3, ncdim2
 
-logical :: iam_io_proc
-character(len=255) :: filename
-integer :: ncid, dimid, varid
-integer :: im, jm, lm, nm
-integer :: date(6), intdate, inttime
-character(len=8) :: cdate
-character(len=6) :: ctime
-integer :: idate, isecs
-integer(kind=c_int) :: cidate, cisecs
-integer :: ncdim3, ncdim2, lev, vindex
-integer, target, allocatable :: istart3(:), icount3(:)
-integer, target, allocatable :: istart2(:), icount2(:)
-integer, pointer :: istart(:), icount(:)
-integer :: n, geostiledim, tileoff
-real(kind=kind_real), allocatable :: arrayg(:,:)
-type(fckit_mpi_comm) :: f_comm
-integer :: commtile, ranktile, ierr
-
-! Processors that will handle IO
-f_comm = fckit_mpi_comm()
+! Component communicator
+self%ccomm = fckit_mpi_comm()
+self%csize = self%ccomm%size()
+self%crank = self%ccomm%rank()
 
 ! Split comm and set flag for IO procs
-iam_io_proc = .true.
+self%iam_io_proc = .true.
 
-if (f_comm%size() > 6) then
+if (self%csize > 6) then
 
-  call mpi_comm_split(f_comm%communicator(), geom%ntile, f_comm%rank(), commtile, ierr)
+  ! Tile communicator
+  call mpi_comm_split(self%ccomm%communicator(), geom%ntile, self%ccomm%rank(), self%tcomm, ierr)
+  call mpi_comm_rank(self%tcomm, self%trank, ierr)
+  call mpi_comm_size(self%tcomm, self%tsize, ierr)
 
-  call mpi_comm_rank(commtile, ranktile, ierr);
-  if (ranktile .ne. 0) iam_io_proc = .false.
+  ! Write communicator
+  call mpi_comm_split(self%ccomm%communicator(), self%trank, geom%ntile, self%ocomm, ierr)
+  call mpi_comm_rank(self%ocomm, self%orank, ierr)
+  call mpi_comm_size(self%ocomm, self%osize, ierr)
+
+  if (self%trank .ne. 0) self%iam_io_proc = .false.
+
+else
+
+  ! For 6 cores output comm is componenent comm
+  call mpi_comm_dup(self%ccomm%communicator(), self%ocomm, ierr)
 
 endif
 
 
+! Prepare the file handle for later access
+if (self%iam_io_proc) then
+
+  if (trim(accesstype) == 'read') then
+
+    ! Open the file for reading
+    call nccheck ( nf90_open(trim(filename), NF90_NOWRITE, self%ncid), "nf90_open"//trim(filename) )
+
+    ! Get dimensions, XDim,YDim,lev,time
+    call nccheck ( nf90_inq_dimid(self%ncid, "Xdim", dimid), "nf90_inq_dimid Xdim" )
+    call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = im), "nf90_inquire_dimension Xdim" )
+    
+    call nccheck ( nf90_inq_dimid(self%ncid, "Ydim", dimid), "nf90_inq_dimid YDim" )
+    call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = jm), "nf90_inquire_dimension YDim" )
+    
+    call nccheck ( nf90_inq_dimid(self%ncid, "lev",  dimid), "nf90_inq_dimid lev" )
+    call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = lm), "nf90_inquire_dimension lev" )
+    
+    call nccheck ( nf90_inq_dimid(self%ncid, "time", dimid), "nf90_inq_dimid time" )
+    call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = nm), "nf90_inquire_dimension time" )
+
+    ! GEOS can use concatenated tiles or tile as a dimension
+    if ( (im == geom%npx-1) .and. (jm == 6*(geom%npy-1) ) ) then
+      tileoffset = (geom%ntile-1)*(jm/geom%ntiles)
+      ncdim3 = 4
+      ncdim2 = 3
+    elseif ( (im == geom%npx-1) .and. (jm == geom%npy-1 ) ) then
+      tileoffset = 0
+      ncdim3 = 5
+      ncdim2 = 4
+    else
+      call abor1_ftn("fv3jedi_io_geos_mod.create: dimension mismatch between geometry and file")
+    endif
+
+    if (geom%npz .ne. lm) &
+    call abor1_ftn("fv3jedi_io_geos_mod.create: level mismatch between geometry and file")
+
+  elseif (trim(accesstype) == 'write') then
+
+    ! Always write with tile dimension
+    tileoffset = 0
+    ncdim3 = 5
+    ncdim2 = 4
+
+  endif
+
+  allocate(self%istart3(ncdim3),self%icount3(ncdim3))
+  allocate(self%istart2(ncdim2),self%icount2(ncdim2))
+  
+  ! Create local to this proc start/count
+  if (tileoffset == 0) then
+    self%istart3(1) = 1;           self%icount3(1) = geom%npx-1  !X
+    self%istart3(2) = 1;           self%icount3(2) = geom%npy-1  !Y
+    self%istart3(3) = geom%ntile;  self%icount3(3) = 1           !Tile
+    self%istart3(4) = 1;           self%icount3(4) = 1           !Lev
+    self%istart3(5) = 1;           self%icount3(5) = 1           !Time
+    self%istart2(1) = 1;           self%icount2(1) = geom%npx-1
+    self%istart2(2) = 1;           self%icount2(2) = geom%npy-1
+    self%istart2(3) = geom%ntile;  self%icount2(3) = 1
+    self%istart2(4) = 1;           self%icount2(4) = 1
+    self%vindex = 4
+  else
+    self%istart3(1) = 1;              self%icount3(1) = geom%npx-1
+    self%istart3(2) = tileoffset+1;   self%icount3(2) = geom%npy-1
+    self%istart3(3) = 1;              self%icount3(3) = 1
+    self%istart3(4) = 1;              self%icount3(4) = 1
+    self%istart2(1) = 1;              self%icount2(1) = geom%npx-1
+    self%istart2(2) = tileoffset+1;   self%icount2(2) = geom%npy-1
+    self%istart2(3) = 1;              self%icount2(3) = 1
+    self%vindex = 3
+  endif
+  
+endif
+
+end subroutine create
+
+! ------------------------------------------------------------------------------
+
+subroutine delete(self)
+
+class(fv3jedi_io_geos), intent(inout) :: self
+
+integer :: ierr
+
+if (self%iam_io_proc) then
+  !Close the file
+  call nccheck ( nf90_close(self%ncid), "nf90_close" )
+endif
+
+! Release split comms
+if (self%csize > 6) call MPI_Comm_free(self%tcomm, ierr)
+call MPI_Comm_free(self%ocomm, ierr)
+
+! Deallocate start/count
+deallocate ( self%istart2, self%icount2 )
+deallocate ( self%istart3, self%icount3 )
+
+end subroutine delete
+
+! ------------------------------------------------------------------------------
+
+subroutine read_time(self, vdate)
+
+implicit none
+
+class(fv3jedi_io_geos), intent(in)    :: self
+type(datetime),         intent(inout) :: vdate
+
+integer :: varid, date(6), intdate, inttime, idate, isecs
+character(len=8) :: cdate
+character(len=6) :: ctime
+integer(kind=c_int) :: cidate, cisecs
+
 idate = 0
 isecs = 0
 
-if (iam_io_proc) then
-
-  ! Set filenames
-  if (.not.present(filename_in)) then
-     filename = 'Data/GEOS.bkg.eta.nc4'
-  else
-     filename = trim(filename_in)
-  endif
-  
-  ! Open the file
-  call nccheck ( nf90_open(trim(filename), NF90_NOWRITE, ncid), "nf90_open"//trim(filename) )
-  
-  ! Get dimensions, XDim,YDim,lev,time
-  call nccheck ( nf90_inq_dimid(ncid, "Xdim", dimid), "nf90_inq_dimid Xdim" )
-  call nccheck ( nf90_inquire_dimension(ncid, dimid, len = im), "nf90_inquire_dimension Xdim" )
-  
-  call nccheck ( nf90_inq_dimid(ncid, "Ydim", dimid), "nf90_inq_dimid YDim" )
-  call nccheck ( nf90_inquire_dimension(ncid, dimid, len = jm), "nf90_inquire_dimension YDim" )
-  
-  call nccheck ( nf90_inq_dimid(ncid, "lev",  dimid), "nf90_inq_dimid lev" )
-  call nccheck ( nf90_inquire_dimension(ncid, dimid, len = lm), "nf90_inquire_dimension lev" )
-  
-  call nccheck ( nf90_inq_dimid(ncid, "time", dimid), "nf90_inq_dimid time" )
-  call nccheck ( nf90_inquire_dimension(ncid, dimid, len = nm), "nf90_inquire_dimension time" )
+if (self%iam_io_proc) then
   
   ! Get time attributes
-  call nccheck ( nf90_inq_varid(ncid, "time", varid), "nf90_inq_varid time" )
-  call nccheck ( nf90_get_att(ncid, varid, "begin_date", intdate), "nf90_get_att begin_date" )
-  call nccheck ( nf90_get_att(ncid, varid, "begin_time", inttime), "nf90_get_att begin_time" )
+  call nccheck ( nf90_inq_varid(self%ncid, "time", varid), "nf90_inq_varid time" )
+  call nccheck ( nf90_get_att(self%ncid, varid, "begin_date", intdate), "nf90_get_att begin_date" )
+  call nccheck ( nf90_get_att(self%ncid, varid, "begin_time", inttime), "nf90_get_att begin_time" )
   
   ! Pad with leading zeros if need be
   write(cdate,"(I0.8)") intdate
@@ -123,175 +230,122 @@ if (iam_io_proc) then
   idate = date(1)*10000 + date(2)*100 + date(3)
   isecs = date(4)*3600  + date(5)*60  + date(6)
   
-  ! Make sure file dimensions equal to geometry
-  if ( im /= geom%npx-1 .or. lm /= geom%npz) then
-    call abor1_ftn("GEOS restarts: restart dimension not compatible with geometry")
-  endif
-  
-  ! GEOS can use concatenated tiles or tile as a dimension
-  if ( (im == geom%npx-1) .and. (jm == 6*(geom%npy-1) ) ) then
-    geostiledim = 0
-    tileoff = (geom%ntile-1)*(jm/geom%ntiles)
-    ncdim3 = 4
-    ncdim2 = 3
-  else
-    geostiledim = 1
-    tileoff = 0
-    ncdim3 = 5
-    ncdim2 = 4
-  endif
-  
-  allocate(istart3(ncdim3),icount3(ncdim3))
-  allocate(istart2(ncdim2),icount2(ncdim2))
-  
-  ! Create local to this proc start/count
-  if (geostiledim == 1) then
-    istart3(1) = 1;           icount3(1) = geom%npx-1  !X
-    istart3(2) = 1;           icount3(2) = geom%npy-1  !Y
-    istart3(3) = geom%ntile;  icount3(3) = 1           !Tile
-    istart3(4) = 1;           icount3(4) = 1           !Lev
-    istart3(5) = 1;           icount3(5) = 1           !Time
-    istart2(1) = 1;           icount2(1) = geom%npx-1
-    istart2(2) = 1;           icount2(2) = geom%npy-1
-    istart2(3) = geom%ntile;  icount2(3) = 1
-    istart2(4) = 1;           icount2(4) = 1
-    vindex = 4
-  else
-    istart3(1) = 1;           icount3(1) = geom%npx-1
-    istart3(2) = tileoff+1;   icount3(2) = geom%npy-1
-    istart3(3) = 1;           icount3(3) = 1
-    istart3(4) = 1;           icount3(4) = 1
-    istart2(1) = 1;           icount2(1) = geom%npx-1
-    istart2(2) = tileoff+1;   icount2(2) = geom%npy-1
-    istart2(3) = 1;           icount2(3) = 1
-    vindex = 3
-  endif
-  
 endif
-
-allocate(arrayg(1:geom%npx-1,1:geom%npy-1)) !Whole tile array
-
-do n = 1,size(fields)
-
-  if (iam_io_proc) then
-    if (fields(n)%npz == 1) then
-      istart => istart2; icount => icount2
-    elseif (fields(n)%npz == geom%npz) then
-      istart => istart3; icount => icount3
-    else
-      call abor1_ftn("read_geos: vertical dimension not supported")
-    endif
-  endif
-
-  do lev = 1,fields(n)%npz
-
-    arrayg = 0.0_kind_real    
-    if (iam_io_proc) then
-      istart3(vindex) = lev
-      call nccheck ( nf90_inq_varid (ncid, trim(fields(n)%short_name), varid), &
-                    "nf90_inq_varid "//trim(fields(n)%short_name) )
-      call nccheck ( nf90_get_var( ncid, varid, arrayg, istart, icount), &
-                    "nf90_get_var "//trim(fields(n)%short_name) )
-    endif
-
-    if (f_comm%size() > 6) then
-      call scatter_tile(geom, commtile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
-    else
-      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec) !1 proc per tile already
-    endif
-  enddo
-
-  if (iam_io_proc) then
-    nullify(istart,icount)
-  endif
-
-enddo
-  
-if (iam_io_proc) then
-  !Close this file
-  call nccheck ( nf90_close(ncid), "nf90_close" )
-  
-  ! Deallocate
-  deallocate ( istart2, icount2 )
-  deallocate ( istart3, icount3 )
-endif
-
-deallocate(arrayg)
 
 ! Set the object date from the date of the file
-call f_comm%broadcast(idate,0)
-call f_comm%broadcast(isecs,0)
+call self%ccomm%broadcast(idate,0)
+call self%ccomm%broadcast(isecs,0)
 cidate = idate
 cisecs = isecs
 call datetime_from_ifs(vdate, cidate, cisecs)
 
-! Release split comms
-if (f_comm%size() > 6) then
-  call MPI_Comm_free(commtile, ierr)
-endif
-
-end subroutine read_geos
+end subroutine read_time
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_geos(geom, fields, c_conf, vdate)
+subroutine read_fields(self, geom, fields)
 
 implicit none
 
-! Arguments
-type(fv3jedi_geom),  intent(in)    :: geom       !< Geom
-type(fv3jedi_field), intent(in)    :: fields(:)  !< Fields
-type(c_ptr),         intent(in)    :: c_conf     !< Configuration
-type(datetime),      intent(in)    :: vdate      !< DateTime
+class(fv3jedi_io_geos), target, intent(in)    :: self
+type(fv3jedi_geom),             intent(in)    :: geom
+type(fv3jedi_field),            intent(inout) :: fields(:)
+
+integer :: varid, n, lev
+integer, pointer :: istart(:), icount(:)
+integer, allocatable, target :: istart3(:)
+real(kind=kind_real), allocatable :: arrayg(:,:)
+
+! Array for level of whole tile
+allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
+
+do n = 1,size(fields)
+
+  if (self%iam_io_proc) then
+
+    ! Local counts for 3 to allow changing start point
+    if (.not.allocated(istart3)) then
+      allocate(istart3(size(self%istart3)))
+      istart3 = self%istart3
+    endif
+
+    if (fields(n)%npz == 1) then
+      istart => self%istart2; icount => self%icount2
+    elseif (fields(n)%npz > 1) then
+      istart => istart3; icount => self%icount3
+    endif
+
+  endif
+
+  do lev = 1,fields(n)%npz
+
+    arrayg = 0.0_kind_real
+ 
+    if (self%iam_io_proc) then
+
+      !Set counter to current level
+      istart3(self%vindex) = lev
+
+      call nccheck ( nf90_inq_varid (self%ncid, trim(fields(n)%short_name), varid), &
+                    "nf90_inq_varid "//trim(fields(n)%short_name) )
+      call nccheck ( nf90_get_var( self%ncid, varid, arrayg, istart, icount), &
+                    "nf90_get_var "//trim(fields(n)%short_name) )
+
+    endif
+
+    if (self%csize > 6) then
+      call scatter_tile(geom, self%tcomm, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+    else
+      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+    endif
+
+  enddo
+
+  if (self%iam_io_proc) then
+    nullify(istart,icount)
+    if (n == size(fields)) deallocate(istart3)    
+  endif
+
+enddo
+  
+deallocate(arrayg)
+
+end subroutine read_fields
+
+! ------------------------------------------------------------------------------
+
+subroutine write_all(self, geom, fields, c_conf, vdate)
+
+implicit none
+
+class(fv3jedi_io_geos), target, intent(inout) :: self
+type(fv3jedi_geom),             intent(in)    :: geom
+type(fv3jedi_field),            intent(in)    :: fields(:)
+type(c_ptr),                    intent(in)    :: c_conf
+type(datetime),                 intent(in)    :: vdate
 
 ! Locals
-logical :: iam_io_proc
-
 character(len=255) :: datapath, filename
 character(len=64)  :: datefile
 character(len=8)   :: date8s
 character(len=6)   :: time6s
-integer :: date8, time6
-integer :: ncid, varid(1000), vc
-integer :: date(6)
+integer :: n, lev, date8, time6
+integer :: varid(1000), date(6), vc
 integer(kind=c_int) :: idate, isecs
-integer :: n
 integer :: x_dimid, y_dimid, n_dimid, z_dimid, t_dimid
-integer :: ncdim3, ncdim2
 integer :: ndimidsv, ndimidsg, ndimids2, ndimids3
 integer, allocatable :: dimidsv(:), dimidsg(:), dimids2(:), dimids3(:)
-integer, allocatable :: istart2(:), icount2(:)
-integer, allocatable :: istart3(:), icount3(:)
-integer, allocatable :: istart(:), icount(:), dimids(:), intarray(:)
+integer, target, allocatable :: istart3(:)
+integer, allocatable :: dimids(:), intarray(:)
 real(kind=kind_real), allocatable :: arrayg(:,:), realarray(:)
-type(fckit_mpi_comm) :: f_comm
-integer :: lev, commtile, ranktile, commwrite, ierr
+integer, pointer :: istart(:), icount(:)
 
-! Processors that will handle IO
-f_comm = fckit_mpi_comm()
+! Whole level of tile array
+allocate(arrayg(1:geom%npx-1,1:geom%npy-1)) 
 
-iam_io_proc = .true.
-
-! Split the comm, one per tile
-if (f_comm%size() > 6) then
-  call mpi_comm_split(f_comm%communicator(), geom%ntile, f_comm%rank(), commtile, ierr)
-  call mpi_comm_rank(commtile, ranktile, ierr);
-
-  ! Write communicator
-  call mpi_comm_split(f_comm%communicator(), ranktile, geom%ntile, commwrite, ierr)
-
-  if (ranktile .ne. 0) iam_io_proc = .false.
-
-else
-
-  call mpi_comm_dup(f_comm%communicator(), commwrite, ierr)
-
-endif
-
-! Arrays to write from
-allocate(arrayg(1:geom%npx-1,1:geom%npy-1)) !Whole tile array
-
-if (iam_io_proc) then
+! Define all the variables and meta data to be written
+! ----------------------------------------------------
+if (self%iam_io_proc) then
   
   ! Place to save restarts
   datapath = "Data/"
@@ -323,17 +377,17 @@ if (iam_io_proc) then
   write(time6s,'(I0.2,I0.2,I0.2)') date(4),date(5),date(6)
   read(date8s,*)  date8
   read(time6s,*)  time6
-  
-  ! Create the file
-  call nccheck( nf90_create( filename, ior(NF90_NETCDF4, NF90_MPIIO), ncid, &
-                             comm = commwrite, info = MPI_INFO_NULL), "nf90_create" )
- 
+   
+  ! Create and open the file for parallel write
+  call nccheck( nf90_create( trim(filename), ior(NF90_NETCDF4, NF90_MPIIO), self%ncid, &
+                             comm = self%ocomm, info = MPI_INFO_NULL), "nf90_create" )
+
   ! Create dimensions
-  call nccheck ( nf90_def_dim(ncid, "Xdim", geom%npx-1,  x_dimid), "nf90_def_dim Xdim" )
-  call nccheck ( nf90_def_dim(ncid, "Ydim", geom%npy-1,  y_dimid), "nf90_def_dim Ydim" )
-  call nccheck ( nf90_def_dim(ncid, "nf",   geom%ntiles, n_dimid), "nf90_def_dim nf"   )
-  call nccheck ( nf90_def_dim(ncid, "lev",  geom%npz,    z_dimid), "nf90_def_dim lev"  )
-  call nccheck ( nf90_def_dim(ncid, "time", 1,           t_dimid), "nf90_def_dim time" )
+  call nccheck ( nf90_def_dim(self%ncid, "Xdim", geom%npx-1,  x_dimid), "nf90_def_dim Xdim" )
+  call nccheck ( nf90_def_dim(self%ncid, "Ydim", geom%npy-1,  y_dimid), "nf90_def_dim Ydim" )
+  call nccheck ( nf90_def_dim(self%ncid, "nf",   geom%ntiles, n_dimid), "nf90_def_dim nf"   )
+  call nccheck ( nf90_def_dim(self%ncid, "lev",  geom%npz,    z_dimid), "nf90_def_dim lev"  )
+  call nccheck ( nf90_def_dim(self%ncid, "time", 1,           t_dimid), "nf90_def_dim time" )
   
   ! DimId arrays
   ndimidsv = 1
@@ -352,46 +406,45 @@ if (iam_io_proc) then
   
   ! Define fields to be written (geom) 
   vc=1;
-  call nccheck( nf90_def_var(ncid, "nf", NF90_INT, n_dimid, varid(vc)), "nf90_def_var nf" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "cubed-sphere face") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "axis", "e") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "grads_dim", "e") )
+  call nccheck( nf90_def_var(self%ncid, "nf", NF90_INT, n_dimid, varid(vc)), "nf90_def_var nf" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "cubed-sphere face") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "axis", "e") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "grads_dim", "e") )
 
   vc=vc+1;
-  call nccheck( nf90_def_var(ncid, "Xdim", NF90_DOUBLE, x_dimid, varid(vc)), "nf90_def_var Xdim" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "Fake Longitude for GrADS Compatibility") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "units", "degrees_east") )
+  call nccheck( nf90_def_var(self%ncid, "Xdim", NF90_DOUBLE, x_dimid, varid(vc)), "nf90_def_var Xdim" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "Fake Longitude for GrADS Compatibility") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "degrees_east") )
 
   vc=vc+1;
-  call nccheck( nf90_def_var(ncid, "Ydim", NF90_DOUBLE, y_dimid, varid(vc)), "nf90_def_var Ydim" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "Fake Latitude for GrADS Compatibility") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "units", "degrees_north") )
+  call nccheck( nf90_def_var(self%ncid, "Ydim", NF90_DOUBLE, y_dimid, varid(vc)), "nf90_def_var Ydim" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "Fake Latitude for GrADS Compatibility") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "degrees_north") )
 
   vc=vc+1;
-  call nccheck( nf90_def_var(ncid, "lons", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lons" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "longitude") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "units", "degrees_east") )
+  call nccheck( nf90_def_var(self%ncid, "lons", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lons" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "longitude") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "degrees_east") )
   
   vc=vc+1;
-  call nccheck( nf90_def_var(ncid, "lats", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lats" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "latitude") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "units", "degrees_north") )
+  call nccheck( nf90_def_var(self%ncid, "lats", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lats" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "latitude") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "degrees_north") )
   
   vc=vc+1;
-  call nccheck( nf90_def_var(ncid, "lev", NF90_DOUBLE, z_dimid, varid(vc)), "nf90_def_var lev" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "vertical level") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "units", "layer") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "positive", "down") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "coordinate", "eta") )
-  call nccheck( nf90_put_att(ncid, varid(vc), "standard_name", "model_layers") )
+  call nccheck( nf90_def_var(self%ncid, "lev", NF90_DOUBLE, z_dimid, varid(vc)), "nf90_def_var lev" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "vertical level") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "layer") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "positive", "down") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "coordinate", "eta") )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "standard_name", "model_layers") )
 
   vc=vc+1;
-  call nccheck( nf90_def_var(ncid, "time", NF90_INT, t_dimid, varid(vc)), "nf90_def_var time" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "long_name", "time"), "nf90_def_var time long_name" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "begin_date", date8), "nf90_def_var time begin_date" )
-  call nccheck( nf90_put_att(ncid, varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
+  call nccheck( nf90_def_var(self%ncid, "time", NF90_INT, t_dimid, varid(vc)), "nf90_def_var time" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "time"), "nf90_def_var time long_name" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "begin_date", date8), "nf90_def_var time begin_date" )
+  call nccheck( nf90_put_att(self%ncid, varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
   
-
   ! Define fields to be written
   do n = 1,size(fields)
   
@@ -406,46 +459,35 @@ if (iam_io_proc) then
     endif
   
     vc=vc+1
-    call nccheck( nf90_def_var(ncid, trim(fields(n)%short_name), NF90_DOUBLE, dimids, varid(vc)), &
+    call nccheck( nf90_def_var(self%ncid, trim(fields(n)%short_name), NF90_DOUBLE, dimids, varid(vc)), &
                   "nf90_def_var"//trim(fields(n)%short_name)   )
-    call nccheck( nf90_put_att(ncid, varid(vc), "long_name"    , trim(fields(n)%long_name) ), "nf90_put_att" )
-    call nccheck( nf90_put_att(ncid, varid(vc), "units"        , trim(fields(n)%units)     ), "nf90_put_att" )
-    call nccheck( nf90_put_att(ncid, varid(vc), "standard_name", trim(fields(n)%long_name) ), "nf90_put_att" )
-    call nccheck( nf90_put_att(ncid, varid(vc), "coordinates"  , "lons lats"               ), "nf90_put_att" )
-    call nccheck( nf90_put_att(ncid, varid(vc), "grid_mapping" , "cubed_sphere"            ), "nf90_put_att" )
+    call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name"    , trim(fields(n)%long_name) ), "nf90_put_att" )
+    call nccheck( nf90_put_att(self%ncid, varid(vc), "units"        , trim(fields(n)%units)     ), "nf90_put_att" )
+    call nccheck( nf90_put_att(self%ncid, varid(vc), "standard_name", trim(fields(n)%long_name) ), "nf90_put_att" )
+    call nccheck( nf90_put_att(self%ncid, varid(vc), "coordinates"  , "lons lats"               ), "nf90_put_att" )
+    call nccheck( nf90_put_att(self%ncid, varid(vc), "grid_mapping" , "cubed_sphere"            ), "nf90_put_att" )
   
     deallocate(dimids)
   
   enddo
   
   ! End define mode
-  call nccheck( nf90_enddef(ncid), "nf90_enddef" )
-  
-  ncdim3 = 5
-  ncdim2 = 4
+  call nccheck( nf90_enddef(self%ncid), "nf90_enddef" )
+   
+endif
 
-  allocate(istart3(ncdim3),icount3(ncdim3))
-  allocate(istart2(ncdim2),icount2(ncdim2))
-  
-  ! Create local to this proc start/count
-  istart3(1) = 1;           icount3(1) = geom%npx-1  !X
-  istart3(2) = 1;           icount3(2) = geom%npy-1  !Y
-  istart3(3) = geom%ntile;  icount3(3) = 1           !Tile
-  istart3(4) = 1;           icount3(4) = 1           !Lev
-  istart3(5) = 1;           icount3(5) = 1           !Time
 
-  istart2(1) = 1;           icount2(1) = geom%npx-1
-  istart2(2) = 1;           icount2(2) = geom%npy-1
-  istart2(3) = geom%ntile;  icount2(3) = 1
-  istart2(4) = 1;           icount2(4) = 1
- 
+! Write Xdim, YDim, and nf (tile) 
+! -------------------------------
+if (self%iam_io_proc) then
+
   vc=0
 
   allocate(intarray(6))
   do n = 1,6
     intarray(n) = n
   enddo
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), intarray ), "nf90_put_var nf" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), intarray ), "nf90_put_var nf" )  
   deallocate(intarray)
 
   allocate(realarray(geom%npx-1))
@@ -453,116 +495,108 @@ if (iam_io_proc) then
     realarray(n) = real(n,kind_real)
   enddo
 
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), realarray ), "nf90_put_var Xdim" )  
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), realarray ), "nf90_put_var Ydim" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), realarray ), "nf90_put_var Xdim" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), realarray ), "nf90_put_var Ydim" )  
 
   deallocate(realarray)
 
 endif
 
+
 ! Gather longitudes to write
-if (f_comm%size() > 6) then
-  call gather_tile(geom, commtile, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
+! --------------------------
+if (self%csize > 6) then
+  call gather_tile(geom, self%tcomm, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
 else
   arrayg = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
 endif
 
-if (iam_io_proc) then
-
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), arrayg, &
-                                      start = istart2(1:3), count = icount2(1:3) ), "nf90_put_var lons" )
-
+if (self%iam_io_proc) then
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), arrayg, &
+                                      start = self%istart2(1:3), count = self%icount2(1:3) ), "nf90_put_var lons" )
 endif
 
-! Gather latitudes to write
-if (f_comm%size() > 6) then
-  call gather_tile(geom, commtile, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
+
+! Gather latitudes and write
+! --------------------------
+if (self%csize > 6) then
+  call gather_tile(geom, self%tcomm, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
 else
   arrayg = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
 endif
 
-if (iam_io_proc) then
+if (self%iam_io_proc) then
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), arrayg, &
+                                      start = self%istart2(1:3), count = self%icount2(1:3) ), "nf90_put_var lats" )
+endif
 
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), arrayg, &
-                                      start = istart2(1:3), count = icount2(1:3) ), "nf90_put_var lats" )
 
+! Write model levels
+! ------------------
+if (self%iam_io_proc) then
   allocate(intarray(geom%npz))
   do n = 1,geom%npz
     intarray(n) = n
   enddo
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), intarray ), "nf90_put_var lev" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), intarray ), "nf90_put_var lev" )  
   deallocate(intarray)
 
-  vc=vc+1;call nccheck( nf90_put_var( ncid, varid(vc), 0 ), "nf90_put_var time" )  
-
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), 0 ), "nf90_put_var time" )  
 endif
 
 
-! Write fields 
+! Loop over fields and levels and write fields to file
+! ----------------------------------------------------
 do n = 1,size(fields)
   
-  if (iam_io_proc) then
-    if (fields(n)%npz == 1) then
-      allocate(istart(ncdim2))
-      allocate(icount(ncdim2))
-      istart = istart2
-      icount = icount2
-    elseif (fields(n)%npz == geom%npz) then
-      allocate(istart(ncdim3))
-      allocate(icount(ncdim3))
-      istart = istart3
-      icount = icount3
-    else
-      call abor1_ftn("read_geos: vertical dimension not supported")
+  if (self%iam_io_proc) then
+
+    ! Local counts for 3 to allow changing start point
+    if (.not.allocated(istart3)) then
+      allocate(istart3(size(self%istart3)))
+      istart3 = self%istart3
     endif
+
+    if (fields(n)%npz == 1) then
+      istart => self%istart2; icount => self%icount2
+    elseif (fields(n)%npz > 1) then
+      istart => istart3; icount => self%icount3
+    endif
+
+    !Up field counter outside of level loop
     vc = vc + 1
+
   endif 
  
   do lev = 1,fields(n)%npz
 
-    if (f_comm%size() > 6) then
-      call gather_tile(geom, commtile, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
+    if (self%csize > 6) then
+      call gather_tile(geom, self%tcomm, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
     else
       arrayg = fields(n)%array(:,:,lev)
     endif
 
-    if (iam_io_proc) then
+    if (self%iam_io_proc) then
 
-      if (fields(n)%npz == geom%npz) istart(4) = lev
+      istart3(self%vindex) = lev
 
-      call nccheck( nf90_put_var( ncid, varid(vc), arrayg, start = istart, count = icount ), &
+      call nccheck( nf90_put_var( self%ncid, varid(vc), arrayg, start = istart, count = icount ), &
                                   "nf90_put_var "//trim(fields(n)%short_name) )
  
     endif
 
   enddo
 
-  if (iam_io_proc) deallocate(istart,icount)
+  if (self%iam_io_proc .and. n==size(fields)) deallocate(istart3)
 
 enddo
 
-if (iam_io_proc) then
-
-  ! Close file
-  call nccheck( nf90_close(ncid), "nf90_close" )
-
-  ! Deallocate
-  deallocate ( dimidsv, dimidsg, dimids2, dimids3 )
-  deallocate ( istart2, icount2 )
-  deallocate ( istart3, icount3 )
-
-endif
+if (self%iam_io_proc) &
+deallocate ( dimidsv, dimidsg, dimids2, dimids3 )
 
 deallocate(arrayg)
 
-! Release split comms
-if (f_comm%size() > 6) then
-  call MPI_Comm_free(commtile, ierr)
-endif
-
-call MPI_Comm_free(commwrite, ierr)
-
-end subroutine write_geos
+end subroutine write_all
 
 ! ------------------------------------------------------------------------------
 
@@ -677,6 +711,12 @@ call mpi_scatterv( array_g, counts, arraydispls, resized_subarray, &
 deallocate(counts,displs,arraydispls)
 
 end subroutine scatter_tile
+
+! ------------------------------------------------------------------------------
+
+subroutine dummy_final(self)
+type(fv3jedi_io_geos), intent(inout) :: self
+end subroutine dummy_final
 
 ! ------------------------------------------------------------------------------
 

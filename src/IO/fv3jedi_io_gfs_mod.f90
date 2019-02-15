@@ -13,7 +13,24 @@ use fms_io_mod,              only: restart_file_type, register_restart_field, &
 
 implicit none
 private
-public read_gfs, write_gfs
+public fv3jedi_io_gfs
+
+type fv3jedi_io_gfs
+ character(len=255) :: datapath_ti
+ character(len=255) :: datapath_sp
+ character(len=255) :: filename_spec
+ character(len=255) :: filename_core
+ character(len=255) :: filename_trcr
+ character(len=255) :: filename_sfcd
+ character(len=255) :: filename_sfcw
+ character(len=255) :: filename_cplr
+ contains
+  procedure :: setup
+  procedure :: read_meta
+  procedure :: read_fields
+  procedure :: write
+  final     :: dummy_final
+end type fv3jedi_io_gfs
 
 ! ------------------------------------------------------------------------------
 
@@ -21,53 +38,79 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_gfs(geom, fields, vdate, calendar_type, date_init, &
-                    datapath_ti, datapath_sp, &
-                    filename_spec, filename_core, filename_trcr, &
-                    filename_sfcd, filename_sfcw, filename_cplr )
+subroutine setup(self,c_conf)
+
+class(fv3jedi_io_gfs), intent(inout) :: self
+type(c_ptr),           intent(in)    :: c_conf
+
+!Set filenames
+!--------------
+self%filename_core = 'fv_core.res.nc'
+self%filename_trcr = 'fv_tracer.res.nc'
+self%filename_sfcd = 'sfc_data.nc'
+self%filename_sfcw = 'srf_wnd.nc'
+self%filename_cplr = 'coupler.res'
+
+self%datapath_ti = config_get_string(c_conf,len(self%datapath_ti),"datapath_tile")
+
+if (config_element_exists(c_conf,"filename_core")) then
+   self%filename_core = config_get_string(c_conf,len(self%filename_core),"filename_core")
+endif
+if (config_element_exists(c_conf,"filename_trcr")) then
+   self%filename_trcr = config_get_string(c_conf,len(self%filename_trcr),"filename_trcr")
+endif
+if (config_element_exists(c_conf,"filename_sfcd")) then
+   self%filename_sfcd = config_get_string(c_conf,len(self%filename_sfcd),"filename_sfcd")
+endif
+if (config_element_exists(c_conf,"filename_sfcw")) then
+   self%filename_sfcw = config_get_string(c_conf,len(self%filename_sfcw),"filename_sfcw")
+endif
+if (config_element_exists(c_conf,"filename_cplr")) then
+   self%filename_cplr = config_get_string(c_conf,len(self%filename_cplr),"filename_cplr")
+endif
+
+if (config_element_exists(c_conf,"filename_spec")) then
+   self%filename_spec = config_get_string(c_conf,len(self%filename_spec),"filename_spec")
+   self%datapath_sp   = config_get_string(c_conf,len(self%datapath_sp),"datapath_spec")  
+else
+   self%filename_spec = "null"
+   self%datapath_sp = "null"
+endif
+
+end subroutine setup
+
+! ------------------------------------------------------------------------------
+
+subroutine read_meta(self, geom, vdate, calendar_type, date_init)
 
 implicit none
-type(fv3jedi_geom),  intent(inout) :: geom          !< Geometry
-type(fv3jedi_field), intent(inout) :: fields(:)     !< Fields to be written
-type(datetime),      intent(inout) :: vdate         !< DateTime
-integer,             intent(inout) :: calendar_type !< GFS calendar type
-integer,             intent(inout) :: date_init(6)  !< GFS date intialized
-character(len=*),    intent(in)    :: datapath_ti
-character(len=*),    intent(in)    :: datapath_sp
-character(len=*),    intent(in)    :: filename_spec
-character(len=*),    intent(in)    :: filename_core
-character(len=*),    intent(in)    :: filename_trcr
-character(len=*),    intent(in)    :: filename_sfcd
-character(len=*),    intent(in)    :: filename_sfcw
-character(len=*),    intent(in)    :: filename_cplr
+class(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_geom),    intent(inout) :: geom          !< Geometry
+type(datetime),        intent(inout) :: vdate         !< DateTime
+integer,               intent(inout) :: calendar_type !< GFS calendar type
+integer,               intent(inout) :: date_init(6)  !< GFS date intialized
 
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
-type(restart_file_type), pointer :: restart
-type(restart_file_type), target  :: restart_core
-type(restart_file_type), target  :: restart_trcr
-type(restart_file_type), target  :: restart_sfcd
-type(restart_file_type), target  :: restart_sfcw
+
 type(restart_file_type)  :: restart_spec
-logical :: read_core, read_trcr, read_sfcd, read_sfcw, register
-integer :: var, id_restart
-character(len=255) :: filename
+integer :: id_restart
 real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
 
 
 ! Read Lat-Lon and check consitency with geom
 ! -------------------------------------------
-if (trim(filename_spec) .ne. "null" .and. trim(datapath_sp) .ne. "null") then
+if (trim(self%filename_spec) .ne. "null" .and. trim(self%datapath_sp) .ne. "null") then
 
   allocate(grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec))
   allocate(grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec))
 
-  id_restart = register_restart_field( restart_spec, trim(filename_spec), "grid_latt", grid_lat, &
+  id_restart = register_restart_field( restart_spec, trim(self%filename_spec), "grid_latt", grid_lat, &
                                        domain=geom%domain )
-  id_restart = register_restart_field( restart_spec, trim(filename_spec), "grid_lont", grid_lon, &
+  id_restart = register_restart_field( restart_spec, trim(self%filename_spec), "grid_lont", grid_lon, &
                                        domain=geom%domain )
 
-  call restore_state(restart_spec, directory=trim(adjustl(datapath_sp)))
+  call restore_state(restart_spec, directory=trim(adjustl(self%datapath_sp)))
   call free_restart_type(restart_spec)
 
   if ( (maxval(abs(grid_lat-rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec))) > 1.0e-4) &
@@ -79,68 +122,9 @@ if (trim(filename_spec) .ne. "null" .and. trim(datapath_sp) .ne. "null") then
   deallocate(grid_lon)
 endif
 
-! Register and read fields
-! ------------------------
-read_core = .false.
-read_trcr = .false.
-read_sfcd = .false.
-read_sfcw = .false.
-do var = 1,size(fields)
-
-  register = .true.
-
-  select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
-    filename = filename_core
-    restart => restart_core
-    read_core = .true.
-  case("sphum","ice_wat","liq_wat","o3mr")
-    filename = filename_trcr
-    restart => restart_trcr
-    read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
-    filename = filename_sfcd
-    restart => restart_sfcd
-    read_sfcd = .true.
-  case("u_srf","v_srf")
-    filename = filename_sfcw
-    restart => restart_sfcw
-    read_sfcw = .true.
-  case("qls","qcn","cfcn","frocean","frland", &
-       "varflt","ustar","bstar","zpbl","cm", &
-       "ct","cq","kcbl","ts","khl","khu")
-    register = .false. !Not currently available from GFS, do nothing
-  case default
-    call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
-  end select
-
-  if (register) &
-  id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
-                                       fields(var)%array, domain=geom%domain, &
-                                       position=fields(var)%staggerloc )
-
-enddo
-
-if (read_core) then
-  call restore_state(restart_core, directory=trim(adjustl(datapath_ti)))
-  call free_restart_type(restart_core)
-endif
-if (read_trcr) then
-  call restore_state(restart_trcr, directory=trim(adjustl(datapath_ti)))
-  call free_restart_type(restart_trcr)
-endif
-if (read_sfcd) then
-  call restore_state(restart_sfcd, directory=trim(adjustl(datapath_ti)))
-  call free_restart_type(restart_sfcd)
-endif
-if (read_sfcw) then
-  call restore_state(restart_sfcw, directory=trim(adjustl(datapath_ti)))
-  call free_restart_type(restart_sfcw)
-endif
-
 ! Get dates from coupler.res
 !---------------------------
-open(101, file=trim(adjustl(datapath_ti))//filename_cplr, form='formatted')
+open(101, file=trim(adjustl(self%datapath_ti))//self%filename_cplr, form='formatted')
 read(101, '(i6)')  calendar_type
 read(101, '(6i6)') date_init
 read(101, '(6i6)') date
@@ -149,19 +133,92 @@ idate=date(1)*10000+date(2)*100+date(3)
 isecs=date(4)*3600+date(5)*60+date(6)
 call datetime_from_ifs(vdate, idate, isecs)
 
-end subroutine read_gfs
+end subroutine read_meta
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_gfs(geom, fields, c_conf, vdate, calendar_type, date_init)
+subroutine read_fields(self, geom, fields)
 
 implicit none
-type(fv3jedi_geom),  intent(inout) :: geom          !< Geom
-type(fv3jedi_field), intent(in)    :: fields(:)     !< Fields to be written
-type(c_ptr),         intent(in)    :: c_conf        !< Configuration
-type(datetime),      intent(in)    :: vdate         !< DateTime
-integer,             intent(in)    :: calendar_type !< GFS calendar type
-integer,             intent(in)    :: date_init(6)  !< GFS date intialized
+class(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_geom),    intent(inout) :: geom
+type(fv3jedi_field),   intent(inout) :: fields(:)
+
+type(restart_file_type), pointer :: restart
+type(restart_file_type), target  :: restart_core
+type(restart_file_type), target  :: restart_trcr
+type(restart_file_type), target  :: restart_sfcd
+type(restart_file_type), target  :: restart_sfcw
+type(restart_file_type)  :: restart_spec
+logical :: read_core, read_trcr, read_sfcd, read_sfcw
+integer :: var, id_restart
+character(len=255) :: filename
+
+! Register and read fields
+! ------------------------
+read_core = .false.
+read_trcr = .false.
+read_sfcd = .false.
+read_sfcw = .false.
+do var = 1,size(fields)
+
+  select case (trim(fields(var)%short_name))
+  case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
+    filename = self%filename_core
+    restart => restart_core
+    read_core = .true.
+  case("sphum","ice_wat","liq_wat","o3mr")
+    filename = self%filename_trcr
+    restart => restart_trcr
+    read_trcr = .true.
+  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
+    filename = self%filename_sfcd
+    restart => restart_sfcd
+    read_sfcd = .true.
+  case("u_srf","v_srf")
+    filename = self%filename_sfcw
+    restart => restart_sfcw
+    read_sfcw = .true.
+  case default
+    call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
+  end select
+
+  id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
+                                       fields(var)%array, domain=geom%domain, &
+                                       position=fields(var)%staggerloc )
+
+enddo
+
+if (read_core) then
+  call restore_state(restart_core, directory=trim(adjustl(self%datapath_ti)))
+  call free_restart_type(restart_core)
+endif
+if (read_trcr) then
+  call restore_state(restart_trcr, directory=trim(adjustl(self%datapath_ti)))
+  call free_restart_type(restart_trcr)
+endif
+if (read_sfcd) then
+  call restore_state(restart_sfcd, directory=trim(adjustl(self%datapath_ti)))
+  call free_restart_type(restart_sfcd)
+endif
+if (read_sfcw) then
+  call restore_state(restart_sfcw, directory=trim(adjustl(self%datapath_ti)))
+  call free_restart_type(restart_sfcw)
+endif
+
+end subroutine read_fields
+
+! ------------------------------------------------------------------------------
+
+subroutine write(self, geom, fields, vdate, calendar_type, date_init)
+
+implicit none
+class(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_geom),    intent(inout) :: geom          !< Geom
+type(fv3jedi_field),   intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),        intent(in)    :: vdate         !< DateTime
+integer,               intent(in)    :: calendar_type !< GFS calendar type
+integer,               intent(in)    :: date_init(6)  !< GFS date intialized
 
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
@@ -172,41 +229,8 @@ type(restart_file_type), target  :: restart_sfcd
 type(restart_file_type), target  :: restart_sfcw
 integer :: var, id_restart
 logical :: read_core, read_trcr, read_sfcd, read_sfcw, register
-character(len=255) :: datapath_ti
 character(len=255) :: filename
-character(len=255) :: filename_core
-character(len=255) :: filename_trcr
-character(len=255) :: filename_sfcd
-character(len=255) :: filename_sfcw
-character(len=255) :: filename_cplr
 character(len=64)  :: datefile
-
-!Set filenames
-!--------------
-filename_core = 'fv_core.res.nc'
-filename_trcr = 'fv_tracer.res.nc'
-filename_sfcd = 'sfc_data.nc'
-filename_sfcw = 'srf_wnd.nc'
-filename_cplr = 'coupler.res'
-
-datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
-
-if (config_element_exists(c_conf,"filename_core")) then
-   filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
-endif
-if (config_element_exists(c_conf,"filename_trcr")) then
-   filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
-endif
-if (config_element_exists(c_conf,"filename_sfcd")) then
-   filename_sfcd = config_get_string(c_conf,len(filename_sfcd),"filename_sfcd")
-endif
-if (config_element_exists(c_conf,"filename_sfcw")) then
-   filename_sfcw = config_get_string(c_conf,len(filename_sfcw),"filename_sfcw")
-endif
-
-if (config_element_exists(c_conf,"filename_cplr")) then
-   filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
-endif
 
 ! Append file start with the datetime
 ! -----------------------------------
@@ -219,11 +243,11 @@ date(5) = (isecs - date(4)*3600)/60
 date(6) = isecs - (date(4)*3600 + date(5)*60)
 
 write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2,A1)') date(1),date(2),date(3),".",date(4),date(5),date(6),"."
-filename_core = trim(datefile)//trim(filename_core)
-filename_trcr = trim(datefile)//trim(filename_trcr)
-filename_sfcd = trim(datefile)//trim(filename_sfcd)
-filename_sfcw = trim(datefile)//trim(filename_sfcw)
-filename_cplr = trim(datefile)//trim(filename_cplr)
+self%filename_core = trim(datefile)//trim(self%filename_core)
+self%filename_trcr = trim(datefile)//trim(self%filename_trcr)
+self%filename_sfcd = trim(datefile)//trim(self%filename_sfcd)
+self%filename_sfcw = trim(datefile)//trim(self%filename_sfcw)
+self%filename_cplr = trim(datefile)//trim(self%filename_cplr)
 
 ! Register and write fields
 ! -------------------------
@@ -237,19 +261,19 @@ do var = 1,size(fields)
 
   select case (trim(fields(var)%short_name))
   case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
-    filename = filename_core
+    filename = self%filename_core
     restart => restart_core
     read_core = .true.
   case("sphum","ice_wat","liq_wat","o3mr")
-    filename = filename_trcr
+    filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.
   case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
-    filename = filename_sfcd
+    filename = self%filename_sfcd
     restart => restart_sfcd
     read_sfcd = .true.
   case("u_srf","v_srf")
-    filename = filename_sfcw
+    filename = self%filename_sfcw
     restart => restart_sfcw
     read_sfcw = .true.
   case("qls","qcn","cfcn","frocean","frland", &
@@ -268,19 +292,19 @@ do var = 1,size(fields)
 enddo
 
 if (read_core) then
-  call save_restart(restart_core, directory=trim(adjustl(datapath_ti)))
+  call save_restart(restart_core, directory=trim(adjustl(self%datapath_ti)))
   call free_restart_type(restart_core)
 endif
 if (read_trcr) then
-  call save_restart(restart_trcr, directory=trim(adjustl(datapath_ti)))
+  call save_restart(restart_trcr, directory=trim(adjustl(self%datapath_ti)))
   call free_restart_type(restart_trcr)
 endif
 if (read_sfcd) then
-  call save_restart(restart_sfcd, directory=trim(adjustl(datapath_ti)))
+  call save_restart(restart_sfcd, directory=trim(adjustl(self%datapath_ti)))
   call free_restart_type(restart_sfcd)
 endif
 if (read_sfcw) then
-  call save_restart(restart_sfcw, directory=trim(adjustl(datapath_ti)))
+  call save_restart(restart_sfcw, directory=trim(adjustl(self%datapath_ti)))
   call free_restart_type(restart_sfcw)
 endif
 
@@ -288,7 +312,7 @@ endif
 !Write date/time info in coupler.res
 !-----------------------------------
 if (mpp_pe() == mpp_root_pe()) then
-   open(101, file=trim(adjustl(datapath_ti))//trim(adjustl(filename_cplr)), form='formatted')
+   open(101, file=trim(adjustl(self%datapath_ti))//trim(adjustl(self%filename_cplr)), form='formatted')
    write( 101, '(i6,8x,a)' ) calendar_type, &
         '(Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)'
    write( 101, '(6i6,8x,a)') date_init, 'Model start time:   year, month, day, hour, minute, second'
@@ -296,7 +320,13 @@ if (mpp_pe() == mpp_root_pe()) then
    close(101)
 endif
 
-end subroutine write_gfs
+end subroutine write
+
+! ------------------------------------------------------------------------------
+
+subroutine dummy_final(self)
+type(fv3jedi_io_gfs), intent(inout) :: self
+end subroutine dummy_final
 
 ! ------------------------------------------------------------------------------
 
