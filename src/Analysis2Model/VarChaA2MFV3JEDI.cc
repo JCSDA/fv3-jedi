@@ -38,7 +38,7 @@ void VarChaA2MFV3JEDI::changeVar(const StateFV3JEDI & xa,
   fv3jedi_varcha_a2m_changevar_f90(keyFtnConfig_, geom_->toFortran(),
                                    xa.toFortran(), xm.toFortran(),
                                    &vtime);
-  ASSERT(xa.validTime() == xm.validTime());  
+  ASSERT(xa.validTime() == xm.validTime());
   oops::Log::debug() << "VarChaA2MFV3JEDI::changeVar" << xm << std::endl;
 }
 // -----------------------------------------------------------------------------

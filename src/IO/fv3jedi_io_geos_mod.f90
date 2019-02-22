@@ -52,6 +52,8 @@ contains
 
 subroutine create(self, geom, accesstype, filename)
 
+implicit none
+
 class(fv3jedi_io_geos),     intent(inout) :: self
 type(fv3jedi_geom),         intent(in)    :: geom
 character(len=*),           intent(in)    :: accesstype
@@ -141,7 +143,7 @@ if (self%iam_io_proc) then
   allocate(self%istart2(ncdim2),self%icount2(ncdim2))
   
   ! Create local to this proc start/count
-  if (tileoffset == 0) then
+  if (ncdim3 == 5) then
     self%istart3(1) = 1;           self%icount3(1) = geom%npx-1  !X
     self%istart3(2) = 1;           self%icount3(2) = geom%npy-1  !Y
     self%istart3(3) = geom%ntile;  self%icount3(3) = 1           !Tile
@@ -152,7 +154,7 @@ if (self%iam_io_proc) then
     self%istart2(3) = geom%ntile;  self%icount2(3) = 1
     self%istart2(4) = 1;           self%icount2(4) = 1
     self%vindex = 4
-  else
+  elseif (ncdim3 == 4) then
     self%istart3(1) = 1;              self%icount3(1) = geom%npx-1
     self%istart3(2) = tileoffset+1;   self%icount3(2) = geom%npy-1
     self%istart3(3) = 1;              self%icount3(3) = 1
@@ -161,6 +163,8 @@ if (self%iam_io_proc) then
     self%istart2(2) = tileoffset+1;   self%icount2(2) = geom%npy-1
     self%istart2(3) = 1;              self%icount2(3) = 1
     self%vindex = 3
+  else
+    call abor1_ftn("fv3jedi_io_geos_mod.create: ncdim3 set incorrectly")
   endif
   
 endif
@@ -170,6 +174,8 @@ end subroutine create
 ! ------------------------------------------------------------------------------
 
 subroutine delete(self)
+
+implicit none
 
 class(fv3jedi_io_geos), intent(inout) :: self
 
@@ -254,7 +260,7 @@ type(fv3jedi_field),            intent(inout) :: fields(:)
 integer :: varid, n, lev
 integer, pointer :: istart(:), icount(:)
 integer, allocatable, target :: istart3(:)
-real(kind=kind_real), allocatable :: arrayg(:,:)
+real(kind=kind_real), allocatable :: arrayg(:,:), delp(:,:,:)
 
 ! Array for level of whole tile
 allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
@@ -277,6 +283,17 @@ do n = 1,size(fields)
 
   endif
 
+  !If ps then switch to delp
+  if (trim(fields(n)%fv3jedi_name) == 'ps') then
+    fields(n)%short_name = 'delp'
+    fields(n)%npz = geom%npz
+    if (self%iam_io_proc) then
+      istart => istart3; icount => self%icount3
+    endif
+    allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  endif
+
+
   do lev = 1,fields(n)%npz
 
     arrayg = 0.0_kind_real
@@ -293,10 +310,18 @@ do n = 1,size(fields)
 
     endif
 
-    if (self%csize > 6) then
-      call scatter_tile(geom, self%tcomm, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+    if (trim(fields(n)%fv3jedi_name) .ne. 'ps') then
+      if (self%csize > 6) then
+        call scatter_tile(geom, self%tcomm, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+      else
+        fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+      endif
     else
-      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+      if (self%csize > 6) then
+        call scatter_tile(geom, self%tcomm, arrayg, delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+      else
+        delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+      endif
     endif
 
   enddo
@@ -304,6 +329,13 @@ do n = 1,size(fields)
   if (self%iam_io_proc) then
     nullify(istart,icount)
     if (n == size(fields)) deallocate(istart3)    
+  endif
+
+  if (trim(fields(n)%fv3jedi_name) == 'ps') then
+    fields(n)%short_name = 'ps'
+    fields(n)%npz = 1
+    fields(n)%array(:,:,1) = sum(delp,3)
+    deallocate(delp)
   endif
 
 enddo
@@ -602,6 +634,8 @@ end subroutine write_all
 
 subroutine gather_tile(geom, comm, array_l, array_g)
 
+implicit none
+
 type(fv3jedi_geom),   intent(in)    :: geom
 integer,              intent(in)    :: comm
 real(kind=kind_real), intent(in)    :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec)  ! Local array
@@ -659,6 +693,8 @@ end subroutine gather_tile
 
 subroutine scatter_tile(geom, comm, array_g, array_l)
 
+implicit none
+
 type(fv3jedi_geom),   intent(in)    :: geom
 integer,              intent(in)    :: comm
 real(kind=kind_real), intent(in)    :: array_g(1:geom%npx-1,1:geom%npy-1)            ! Gathered array (only valid on root)
@@ -715,6 +751,7 @@ end subroutine scatter_tile
 ! ------------------------------------------------------------------------------
 
 subroutine dummy_final(self)
+implicit none
 type(fv3jedi_io_geos), intent(inout) :: self
 end subroutine dummy_final
 

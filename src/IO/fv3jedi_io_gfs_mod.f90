@@ -28,7 +28,7 @@ type fv3jedi_io_gfs
   procedure :: setup
   procedure :: read_meta
   procedure :: read_fields
-  procedure :: write
+  procedure :: write_all
   final     :: dummy_final
 end type fv3jedi_io_gfs
 
@@ -153,6 +153,9 @@ type(restart_file_type)  :: restart_spec
 logical :: read_core, read_trcr, read_sfcd, read_sfcw
 integer :: var, id_restart
 character(len=255) :: filename
+logical :: compute_ps
+integer :: indexof_ps
+real(kind=kind_real), allocatable :: delp(:,:,:)
 
 ! Register and read fields
 ! ------------------------
@@ -161,6 +164,8 @@ read_trcr = .false.
 read_sfcd = .false.
 read_sfcw = .false.
 do var = 1,size(fields)
+
+  compute_ps = .false.
 
   select case (trim(fields(var)%short_name))
   case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
@@ -179,13 +184,26 @@ do var = 1,size(fields)
     filename = self%filename_sfcw
     restart => restart_sfcw
     read_sfcw = .true.
+  case("ps")
+    filename = self%filename_core
+    restart => restart_core
+    read_core = .true.
+    compute_ps = .true.
+    indexof_ps = var
+    allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   case default
     call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
 
-  id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
-                                       fields(var)%array, domain=geom%domain, &
-                                       position=fields(var)%staggerloc )
+  if (.not.compute_ps) then
+    id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
+                                         fields(var)%array, domain=geom%domain, &
+                                         position=fields(var)%staggerloc )
+  else
+    id_restart = register_restart_field( restart, trim(filename), "DELP", &
+                                         delp, domain=geom%domain, &
+                                         position=fields(var)%staggerloc )
+  endif
 
 enddo
 
@@ -206,11 +224,17 @@ if (read_sfcw) then
   call free_restart_type(restart_sfcw)
 endif
 
+!Compute ps from DELP
+if (allocated(delp)) then
+  fields(indexof_ps)%array(:,:,1) = sum(delp,3)
+  deallocate(delp)
+endif
+
 end subroutine read_fields
 
 ! ------------------------------------------------------------------------------
 
-subroutine write(self, geom, fields, vdate, calendar_type, date_init)
+subroutine write_all(self, geom, fields, vdate, calendar_type, date_init)
 
 implicit none
 class(fv3jedi_io_gfs), intent(inout) :: self
@@ -320,7 +344,7 @@ if (mpp_pe() == mpp_root_pe()) then
    close(101)
 endif
 
-end subroutine write
+end subroutine write_all
 
 ! ------------------------------------------------------------------------------
 

@@ -922,7 +922,8 @@ subroutine read_file(geom, self, c_conf, vdate)
 
   if (trim(filetype) == 'gfs') then
     call gfs%setup(c_conf)
-    call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
+    call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
+    call gfs%read_fields(geom, self%fields)
   elseif (trim(filetype) == 'geos') then
     filename = config_get_string(c_conf,len(filename),"filename")
     call geos%create(geom, 'read', filename)
@@ -957,7 +958,7 @@ subroutine write_file(geom, self, c_conf, vdate)
 
   if (trim(filetype) == 'gfs') then
     call gfs%setup(c_conf)
-    call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
+    call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos') then
     call geos%create(geom, 'write')
     call geos%write_all(geom, self%fields, c_conf, vdate)

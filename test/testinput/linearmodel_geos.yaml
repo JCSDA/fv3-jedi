@@ -10,7 +10,6 @@ Geometry:
 LinearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
-  variables: ["ud","vd","t","delp","q","qi","ql","o3"]
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -18,6 +17,7 @@ LinearModel:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
   trajectory:
     name: 'FV3'
     nml_file: Data/fv3files/input_geos_c24.nml
@@ -28,6 +28,9 @@ LinearModel:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
+    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+                "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+                "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 LinearModelTest:
   fclength: PT30M
   firstmulTL: '0.01'
@@ -44,12 +47,12 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 ModelBias: null
 State:
   filetype: geos
   filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 Variables:
-  variables: ['ua','va','t','ps','q','qi','ql','o3']
+  variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]

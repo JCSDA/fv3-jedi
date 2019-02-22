@@ -14,11 +14,12 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT1H
-  finalnorm: '577.82643390935334'
+  finalnorm: '663.82495156916821'
   tolerance: '1.0e-4'
 State:
   filetype: gfs
@@ -28,6 +29,3 @@ State:
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]

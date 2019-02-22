@@ -14,7 +14,6 @@ Geometry:
 LinearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
-  variables: ["ud","vd","t","delp","q","qi","ql","o3"]
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -23,6 +22,7 @@ LinearModel:
   lm_do_trb: 0
   lm_do_mst: 0
   fsoi_mode: 0
+  variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
   trajectory:
     name: 'FV3'
     nml_file: Data/fv3files/input_gfs_c48.nml
@@ -33,6 +33,7 @@ LinearModel:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
+    variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 LinearModelTest:
   fclength: PT30M
   firstmulTL: '0.01'
@@ -49,6 +50,7 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 ModelBias: null
 State:
   filetype: gfs
@@ -58,8 +60,5 @@ State:
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 Variables:
-  variables: ["ua","va","t","ps","q","qi","ql","o3"]
+  variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]

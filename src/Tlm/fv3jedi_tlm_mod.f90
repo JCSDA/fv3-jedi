@@ -35,7 +35,6 @@ public :: tlm_finalize_ad
 !> Fortran derived type to hold tlm definition
 type:: fv3jedi_tlm
   type(fv3jedi_lm_type) :: fv3jedi_lm  !<Linearized model object
-  logical :: fsoi_mode
 end type fv3jedi_tlm
 
 ! ------------------------------------------------------------------------------
@@ -72,12 +71,6 @@ self%fv3jedi_lm%conf%do_phy_mst = config_get_int(c_conf,"lm_do_mst")
 
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
 
-self%fsoi_mode = .false.
-if (config_element_exists(c_conf,"fsoi_mode")) then
-   tmp = config_get_int(c_conf,"fsoi_mode")
-   if (tmp==1) self%fsoi_mode = .true.
-endif
-
 end subroutine tlm_create
 
 ! ------------------------------------------------------------------------------
@@ -102,7 +95,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
-if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
+call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
@@ -117,7 +110,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
-if (self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
+call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
@@ -135,7 +128,7 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
+call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
@@ -153,7 +146,7 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
+call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
@@ -168,7 +161,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
-if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
+call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
@@ -183,7 +176,7 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
-if (.not. self%fsoi_mode) call inc_to_lm(inc,self%fv3jedi_lm)
+call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
@@ -197,10 +190,10 @@ implicit none
 type(fv3jedi_increment), intent(in)    :: inc
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
-lm%pert%u    = inc%ud
-lm%pert%v    = inc%vd
-lm%pert%ua   = inc%ua
-lm%pert%va   = inc%va
+lm%pert%u    = inc%ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
+lm%pert%v    = inc%vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
+lm%pert%ua   = 0.0_kind_real
+lm%pert%va   = 0.0_kind_real
 lm%pert%t    = inc%t
 lm%pert%delp = inc%delp
 lm%pert%qv   = inc%q
@@ -222,10 +215,8 @@ implicit none
 type(fv3jedi_lm_type),   intent(in)    :: lm
 type(fv3jedi_increment), intent(inout) :: inc
 
-inc%ud   = lm%pert%u
-inc%vd   = lm%pert%v
-inc%ua   = lm%pert%ua
-inc%va   = lm%pert%va
+inc%ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%u
+inc%vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%v
 inc%t    = lm%pert%t
 inc%delp = lm%pert%delp
 inc%q    = lm%pert%qv

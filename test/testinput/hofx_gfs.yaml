@@ -14,11 +14,6 @@ Initial Condition:
   filename_sfcd: 20180414.210000.sfc_data.nc
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
-              "u_srf","v_srf","f10m",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 Model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
@@ -28,6 +23,9 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
 Observations:
   ObsTypes:
   - ObsType: Aircraft

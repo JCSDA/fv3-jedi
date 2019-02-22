@@ -52,10 +52,14 @@ endif
 if (associated(state%ua)) then
   allocate(self%ua     (isc:iec, jsc:jec, npz))
   self%ua      = state%ua
+else
+  self%ua = 0.0_kind_real
 endif
 if (associated(state%va)) then
   allocate(self%va     (isc:iec, jsc:jec, npz))
   self%va      = state%va
+else
+  self%va = 0.0_kind_real
 endif
 if (associated(state%t)) then
   allocate(self%t      (isc:iec, jsc:jec, npz))

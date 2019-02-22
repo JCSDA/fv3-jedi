@@ -9,9 +9,6 @@ Geometry:
 Initial Condition:
   filetype: geos
   filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 Model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
@@ -21,6 +18,7 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
 Observations:
   ObsTypes:
   - ObsType: Aircraft

@@ -39,27 +39,24 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
                            const util::DateTime & time):
   geom_(new GeometryFV3JEDI(geom)), vars_(vars), time_(time)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &conf);
+  const eckit::Configuration * confvars = &vars_.toFortran();
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &confvars);
   oops::Log::trace() << "StateFV3JEDI::StateFV3JEDI created." << std::endl;
 }
 // -----------------------------------------------------------------------------
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
-                           const oops::Variables & varsin,
+                           const oops::Variables & vars,
                            const eckit::Configuration & file)
-  : geom_(new GeometryFV3JEDI(geom)), vars_(varsin), time_(util::DateTime())
+  : geom_(new GeometryFV3JEDI(geom)), vars_(vars), time_(util::DateTime())
 {
-  std::vector<std::string> vv;
-  file.get("variables", vv);
-  ASSERT(vv.size() > 0);
-  oops::Variables vars(vv);
+  oops::Log::trace() << "StateFV3JEDI::StateFV3JEDI create from analytical or"
+                        " from file." << std::endl;
 
-  const eckit::Configuration * cvars = &vars.toFortran();
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &cvars);
+  const eckit::Configuration * confvars = &vars_.toFortran();
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &confvars);
 
   const eckit::Configuration * conf = &file;
   util::DateTime * dtp = &time_;
-
   if (file.has("analytic_init")) {
     stageFv3Files(file);
     fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), &conf, &dtp);
@@ -68,8 +65,8 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
     fv3jedi_state_read_file_f90(geom_->toFortran(), keyState_, &conf, &dtp);
   }
 
-  oops::Log::trace() << "StateFV3JEDI::StateFV3JEDI created and read in."
-                     << std::endl;
+  oops::Log::trace() << "StateFV3JEDI::StateFV3JEDI create from analytical or"
+                        " from file done." << std::endl;
 }
 // -----------------------------------------------------------------------------
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
