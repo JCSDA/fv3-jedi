@@ -48,7 +48,7 @@ Model:
 #  lm_do_mst: 0
 Observations:
   ObsTypes:
-  - ObsType: AMSU-A
+  - ObsType: CRTM
     channels: "1,5,12-15"
     ObsData:
       ObsDataIn:
@@ -63,7 +63,7 @@ Observations:
       Sensor_ID: 'amsua_n19'
       EndianType: 'little_endian'
       CoefficientPath: 'Data/'
-  - ObsType: GOES-16
+  - ObsType: CRTM
     channels: "10"
     ObsData:
       ObsDataIn:

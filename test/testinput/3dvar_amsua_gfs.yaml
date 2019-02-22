@@ -73,7 +73,7 @@ cost_function:
 #          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
-    - ObsType: "AMSU-A"
+    - ObsType: "CRTM"
       channels: "1-15"
       ObsOptions: 
        n_Absorbers: 3
