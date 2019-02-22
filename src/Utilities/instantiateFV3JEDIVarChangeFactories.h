@@ -10,6 +10,7 @@
 
 #include "LinVarChaC2AFV3JEDI.h"
 #include "LinVarChaA2MFV3JEDI.h"
+#include "VarChaA2MFV3JEDI.h"
 
 #include "FV3JEDITraits.h"
 #include "oops/interface/LinearVariableChange.h"
@@ -22,6 +23,10 @@ void instantiateFV3JEDIVarChangeFactories() {
                oops::LinearVariableChange<fv3jedi::FV3JEDITraits,
                fv3jedi::LinVarChaC2AFV3JEDI> >
                    makerLinVarChaC2AV3JEDI_("Control2Analysis");
+  static oops::VariableChangeMaker<fv3jedi::FV3JEDITraits,
+               oops::VariableChange<fv3jedi::FV3JEDITraits,
+               fv3jedi::VarChaA2MFV3JEDI> >
+                   makerVarChaA2MV3JEDI_("Analysis2Model");
   static oops::LinearVariableChangeMaker<fv3jedi::FV3JEDITraits,
                oops::LinearVariableChange<fv3jedi::FV3JEDITraits,
                fv3jedi::LinVarChaA2MFV3JEDI> >

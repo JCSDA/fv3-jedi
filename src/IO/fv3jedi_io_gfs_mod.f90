@@ -251,7 +251,7 @@ type(restart_file_type), target  :: restart_core
 type(restart_file_type), target  :: restart_trcr
 type(restart_file_type), target  :: restart_sfcd
 type(restart_file_type), target  :: restart_sfcw
-integer :: var, id_restart
+integer :: var, id_restart, jlev
 logical :: read_core, read_trcr, read_sfcd, read_sfcw, register
 character(len=255) :: filename
 character(len=64)  :: datefile
@@ -281,10 +281,8 @@ read_sfcd = .false.
 read_sfcw = .false.
 do var = 1,size(fields)
 
-  register = .true.
-
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
+  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","W","DZ")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
@@ -300,18 +298,13 @@ do var = 1,size(fields)
     filename = self%filename_sfcw
     restart => restart_sfcw
     read_sfcw = .true.
-  case("qls","qcn","cfcn","frocean","frland", &
-       "varflt","ustar","bstar","zpbl","cm", &
-       "ct","cq","kcbl","ts","khl","khu")
-    register = .false. !Not currently available from GFS, do nothing
   case default
     call abor1_ftn("write_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
 
-  if (register) &
   id_restart = register_restart_field( restart, filename, fields(var)%short_name, fields(var)%array, &
-                                       domain=geom%domain, position=fields(var)%staggerloc, &
-                                       longname = trim(fields(var)%long_name), units = trim(fields(var)%units) )
+                                         domain=geom%domain, position=fields(var)%staggerloc, &
+                                         longname = trim(fields(var)%long_name), units = trim(fields(var)%units) )
 
 enddo
 

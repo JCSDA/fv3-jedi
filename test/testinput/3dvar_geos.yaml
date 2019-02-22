@@ -89,7 +89,9 @@ cost_function:
   variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
-  varchange: Identity
+  varchange: Analysis2Model
+  filetype: 'geos'
+  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
 final:
   diagnostics:
     departures: oman
@@ -104,7 +106,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  variables: ["ua","va","t","delp","q","qi","ql","o3mr","phis"]
 output:
   filetype: geos
   datapath: Data/
@@ -123,7 +125,7 @@ variational:
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
-      version: FV3JEDITLM
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_geos_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
@@ -151,7 +153,7 @@ variational:
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
-      version: FV3JEDITLM
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_geos_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H

@@ -39,128 +39,120 @@ jsc = state%jsc
 jec = state%jsc
 npz = state%npz 
 
-!Allocate trajectory field only if corresponding state field exists
+! Allocate traj
+allocate(self%u      (isc:iec, jsc:jec, npz))
+allocate(self%v      (isc:iec, jsc:jec, npz))
+allocate(self%ua     (isc:iec, jsc:jec, npz))
+allocate(self%va     (isc:iec, jsc:jec, npz))
+allocate(self%t      (isc:iec, jsc:jec, npz))
+allocate(self%delp   (isc:iec, jsc:jec, npz))
+allocate(self%qv     (isc:iec, jsc:jec, npz))
+allocate(self%qi     (isc:iec, jsc:jec, npz))
+allocate(self%ql     (isc:iec, jsc:jec, npz))
+allocate(self%o3     (isc:iec, jsc:jec, npz))
+allocate(self%w      (isc:iec, jsc:jec, npz))
+allocate(self%delz   (isc:iec, jsc:jec, npz))
+allocate(self%qls    (isc:iec, jsc:jec, npz))
+allocate(self%qcn    (isc:iec, jsc:jec, npz))
+allocate(self%cfcn   (isc:iec, jsc:jec, npz)) 
+allocate(self%phis   (isc:iec, jsc:jec))
+allocate(self%frocean(isc:iec, jsc:jec))
+allocate(self%frland (isc:iec, jsc:jec))
+allocate(self%varflt (isc:iec, jsc:jec))
+allocate(self%ustar  (isc:iec, jsc:jec))
+allocate(self%bstar  (isc:iec, jsc:jec))
+allocate(self%zpbl   (isc:iec, jsc:jec))
+allocate(self%cm     (isc:iec, jsc:jec))
+allocate(self%ct     (isc:iec, jsc:jec))
+allocate(self%cq     (isc:iec, jsc:jec))
+allocate(self%kcbl   (isc:iec, jsc:jec))
+allocate(self%ts     (isc:iec, jsc:jec))
+allocate(self%khl    (isc:iec, jsc:jec))
+allocate(self%khu    (isc:iec, jsc:jec))
 
+!Initialize all to zero incase not in state
+self%u       = 0.0_kind_real
+self%v       = 0.0_kind_real
+self%ua      = 0.0_kind_real
+self%va      = 0.0_kind_real
+self%t       = 0.0_kind_real
+self%delp    = 0.0_kind_real
+self%qv      = 0.0_kind_real
+self%qi      = 0.0_kind_real
+self%ql      = 0.0_kind_real
+self%o3      = 0.0_kind_real
+self%w       = 0.0_kind_real
+self%delz    = 0.0_kind_real
+self%qls     = 0.0_kind_real
+self%qcn     = 0.0_kind_real
+self%cfcn    = 0.0_kind_real
+self%phis    = 0.0_kind_real
+self%frocean = 0.0_kind_real
+self%frland  = 0.0_kind_real
+self%varflt  = 0.0_kind_real
+self%ustar   = 0.0_kind_real
+self%bstar   = 0.0_kind_real
+self%zpbl    = 0.0_kind_real
+self%cm      = 0.0_kind_real
+self%ct      = 0.0_kind_real
+self%cq      = 0.0_kind_real
+self%kcbl    = 0.0_kind_real
+self%ts      = 0.0_kind_real
+self%khl     = 0.0_kind_real
+self%khu     = 0.0_kind_real
+
+! Copy mandatory parts of the trajecotry
 if (associated(state%ud)) then
-  allocate(self%u      (isc:iec, jsc:jec, npz))
-  self%u       = state%ud
+  self%u = state%ud
+else
+  call abor1_ftn("fv3jedi_traj_mod.traj_prop: ud not found in state, minimally needed for TL/AD")
 endif
 if (associated(state%vd)) then
-  allocate(self%v      (isc:iec, jsc:jec, npz))
-  self%v       = state%vd
-endif
-if (associated(state%ua)) then
-  allocate(self%ua     (isc:iec, jsc:jec, npz))
-  self%ua      = state%ua
+  self%v = state%vd
 else
-  self%ua = 0.0_kind_real
-endif
-if (associated(state%va)) then
-  allocate(self%va     (isc:iec, jsc:jec, npz))
-  self%va      = state%va
-else
-  self%va = 0.0_kind_real
+  call abor1_ftn("fv3jedi_traj_mod.traj_prop: vd not found in state, minimally needed for TL/AD")
 endif
 if (associated(state%t)) then
-  allocate(self%t      (isc:iec, jsc:jec, npz))
-  self%t       = state%t
+  self%t = state%t
+else
+  call abor1_ftn("fv3jedi_traj_mod.traj_prop: t not found in state, minimally needed for TL/AD")
 endif
 if (associated(state%delp)) then
-  allocate(self%delp   (isc:iec, jsc:jec, npz))
-  self%delp    = state%delp
+  self%delp = state%delp
+else
+  call abor1_ftn("fv3jedi_traj_mod.traj_prop: delp not found in state, minimally needed for TL/AD")
 endif
 if (associated(state%q)) then
-  allocate(self%qv     (isc:iec, jsc:jec, npz))
-  self%qv      = state%q
+  self%qv = state%q
+else
+  call abor1_ftn("fv3jedi_traj_mod.traj_prop: q not found in state, minimally needed for TL/AD")
 endif
-if (associated(state%qi)) then
-  allocate(self%qi     (isc:iec, jsc:jec, npz))
-  self%qi      = state%qi
-endif
-if (associated(state%ql)) then
-  allocate(self%ql     (isc:iec, jsc:jec, npz))
-  self%ql      = state%ql
-endif
-if (associated(state%o3)) then
-  allocate(self%o3     (isc:iec, jsc:jec, npz))
-  self%o3      = state%o3
-endif
-if (associated(state%w)) then
-  allocate(self%w      (isc:iec, jsc:jec, npz))
-  self%w       = state%w
-endif
-if (associated(state%delz)) then
-  allocate(self%delz   (isc:iec, jsc:jec, npz))
-  self%delz    = state%delz
-endif
-if (associated(state%qls)) then
-  allocate(self%qls    (isc:iec, jsc:jec, npz))
-  self%qls     = state%qls
-endif
-if (associated(state%qcn)) then
-  allocate(self%qcn    (isc:iec, jsc:jec, npz))
-  self%qcn     = state%qcn
-endif
-if (associated(state%cfcn)) then
-  allocate(self%cfcn   (isc:iec, jsc:jec, npz)) 
-  self%cfcn    = state%cfcn
-endif
-if (associated(state%phis)) then
-  allocate(self%phis   (isc:iec, jsc:jec))
-  self%phis    = state%phis(:,:,1)
-endif
-if (associated(state%frocean)) then
-  allocate(self%frocean(isc:iec, jsc:jec))
-  self%frocean = state%frocean(:,:,1)
-endif
-if (associated(state%frland)) then
-  allocate(self%frland (isc:iec, jsc:jec))
-  self%frland  = state%frland(:,:,1)
-endif
-if (associated(state%varflt)) then
-  allocate(self%varflt (isc:iec, jsc:jec))
-  self%varflt  = state%varflt(:,:,1)
-endif
-if (associated(state%ustar)) then
-  allocate(self%ustar  (isc:iec, jsc:jec))
-  self%ustar   = state%ustar(:,:,1)
-endif
-if (associated(state%bstar)) then
-  allocate(self%bstar  (isc:iec, jsc:jec))
-  self%bstar   = state%bstar(:,:,1)
-endif
-if (associated(state%zpbl)) then
-  allocate(self%zpbl   (isc:iec, jsc:jec))
-  self%zpbl    = state%zpbl(:,:,1)
-endif
-if (associated(state%cm)) then
-  allocate(self%cm     (isc:iec, jsc:jec))
-  self%cm      = state%cm(:,:,1)
-endif
-if (associated(state%ct)) then
-  allocate(self%ct     (isc:iec, jsc:jec))
-  self%ct      = state%ct(:,:,1)
-endif
-if (associated(state%cq)) then
-  allocate(self%cq     (isc:iec, jsc:jec))
-  self%cq      = state%cq(:,:,1)
-endif
-if (associated(state%kcbl)) then
-  allocate(self%kcbl   (isc:iec, jsc:jec))
-  self%kcbl    = state%kcbl(:,:,1)
-endif
-if (associated(state%ts)) then
-  allocate(self%ts     (isc:iec, jsc:jec))
-  self%ts      = state%ts(:,:,1)
-endif
-if (associated(state%khl)) then
-  allocate(self%khl    (isc:iec, jsc:jec))
-  self%khl     = state%khl(:,:,1)
-endif
-if (associated(state%khu)) then
-  allocate(self%khu    (isc:iec, jsc:jec))
-  self%khu     = state%khu(:,:,1)
-endif
+
+! Copy optional parts of the trajecotry
+if (associated(state%ua))      self%ua      = state%ua
+if (associated(state%va))      self%va      = state%va
+if (associated(state%qi))      self%qi      = state%qi
+if (associated(state%ql))      self%ql      = state%ql
+if (associated(state%o3))      self%o3      = state%o3
+if (associated(state%w))       self%w       = state%w
+if (associated(state%delz))    self%delz    = state%delz
+if (associated(state%qls))     self%qls     = state%qls
+if (associated(state%qcn))     self%qcn     = state%qcn
+if (associated(state%cfcn))    self%cfcn    = state%cfcn
+if (associated(state%phis))    self%phis    = state%phis(:,:,1)
+if (associated(state%frocean)) self%frocean = state%frocean(:,:,1)
+if (associated(state%frland))  self%frland  = state%frland(:,:,1)
+if (associated(state%varflt))  self%varflt  = state%varflt(:,:,1)
+if (associated(state%ustar))   self%ustar   = state%ustar(:,:,1)
+if (associated(state%bstar))   self%bstar   = state%bstar(:,:,1)
+if (associated(state%zpbl))    self%zpbl    = state%zpbl(:,:,1)
+if (associated(state%cm))      self%cm      = state%cm(:,:,1)
+if (associated(state%ct))      self%ct      = state%ct(:,:,1)
+if (associated(state%cq))      self%cq      = state%cq(:,:,1)
+if (associated(state%kcbl))    self%kcbl    = state%kcbl(:,:,1)
+if (associated(state%ts))      self%ts      = state%ts(:,:,1)
+if (associated(state%khl))     self%khl     = state%khl(:,:,1)
+if (associated(state%khu))     self%khu     = state%khu(:,:,1)
 
 end subroutine traj_prop
 

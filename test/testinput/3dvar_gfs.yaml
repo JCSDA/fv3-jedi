@@ -11,9 +11,6 @@ cost_function:
         filename_sfcd: 20180415.000000.sfc_data.nc
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
-        variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-                    "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-                    "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -92,12 +89,17 @@ cost_function:
         - refractivity
         threshold: 3.0
   cost_type: 3D-Var
-  variables: ["u","v","ua","va","T","ps","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
-  varchange: Identity
+  varchange: Analysis2Model
+  filetype: 'gfs'
+  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
 final:
   diagnostics:
     departures: oman
@@ -112,6 +114,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr","phis"]
 output:
   filetype: gfs
   datapath_tile: Data/
@@ -133,14 +136,15 @@ variational:
     gradient_norm_reduction: 1e-10
     linearmodel:
       varchange: 'Identity'
-      name: 'FV3JEDITLM'
-      version: FV3JEDITLM
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
@@ -150,6 +154,7 @@ variational:
         lm_do_dyn: 1
         lm_do_trb: 0
         lm_do_mst: 0
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
@@ -159,14 +164,15 @@ variational:
   - gradient_norm_reduction: 1e-10
     linearmodel:
       varchange: 'Identity'
-      name: 'FV3JEDITLM'
-      version: FV3JEDITLM
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
@@ -176,6 +182,7 @@ variational:
         lm_do_dyn: 1
         lm_do_trb: 0
         lm_do_mst: 0
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
