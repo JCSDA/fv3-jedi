@@ -28,9 +28,7 @@ LinearModel:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
-    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
-                "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-                "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+    variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
 LinearModelTest:
   fclength: PT30M
   firstmulTL: '0.01'
@@ -47,7 +45,7 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+  variables: ["ud","vd","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
               "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 ModelBias: null
@@ -56,3 +54,6 @@ State:
   filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
 Variables:
   variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+varchange: Analysis2Model
+filetype: geos
+filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4

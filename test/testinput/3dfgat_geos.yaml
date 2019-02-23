@@ -6,9 +6,6 @@ cost_function:
       state:
       - filetype: geos
         filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
-        variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
-                    "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-                    "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-14T21:00:00Z'
@@ -89,11 +86,12 @@ cost_function:
         - air_temperature
         threshold: 4.0
   cost_type: 4D-Var
-  variables: ["ud","vd","ua","va","t","delp","ps","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+  variables: ["ua","va","t","delp","ps","q","qi","ql","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
+  varchange: Analysis2Model
+  filetype: 'geos'
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
 final:
   diagnostics:
     departures: oman
@@ -109,6 +107,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  variables: ["ud","vd","t","delp","ps","q","qi","ql","o3mr","phis"]
 output:
   filetype: geos
   datapath: Data/
@@ -135,6 +134,7 @@ variational:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
+      variables: ["ua","va","t","delp","ps","q","qi","ql","o3mr"]
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_geos_c24.nml
@@ -145,6 +145,7 @@ variational:
         lm_do_dyn: 1
         lm_do_trb: 0
         lm_do_mst: 0
+        variables: ["ua","va","t","delp","ps","q","qi","ql","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_geos_c24.nml

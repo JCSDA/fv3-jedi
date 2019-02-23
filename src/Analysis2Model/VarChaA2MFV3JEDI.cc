@@ -34,22 +34,27 @@ VarChaA2MFV3JEDI::~VarChaA2MFV3JEDI() {
 // -----------------------------------------------------------------------------
 void VarChaA2MFV3JEDI::changeVar(const StateFV3JEDI & xa,
                                        StateFV3JEDI & xm) const {
+  oops::Log::trace() << "VarChaA2MFV3JEDI::changeVar starting" << xm <<
+                        std::endl;
   util::DateTime * vtime = &xm.validTime();
   fv3jedi_varcha_a2m_changevar_f90(keyFtnConfig_, geom_->toFortran(),
                                    xa.toFortran(), xm.toFortran(),
                                    &vtime);
-  ASSERT(xa.validTime() == xm.validTime());
-  oops::Log::debug() << "VarChaA2MFV3JEDI::changeVar" << xm << std::endl;
+  xm.validTime() = xa.validTime();
+  oops::Log::trace() << "VarChaA2MFV3JEDI::changeVar done" << xm << std::endl;
 }
 // -----------------------------------------------------------------------------
 void VarChaA2MFV3JEDI::changeVarInverse(const StateFV3JEDI & xm,
                                               StateFV3JEDI & xa) const {
+  oops::Log::trace() << "VarChaA2MFV3JEDI::changeVarInverse starting" <<xm <<
+                        std::endl;
   util::DateTime * vtime = &xa.validTime();
   fv3jedi_varcha_a2m_changevarinverse_f90(keyFtnConfig_, geom_->toFortran(),
                                           xm.toFortran(), xa.toFortran(),
                                           &vtime);
-  ASSERT(xa.validTime() == xm.validTime());
-  oops::Log::debug() << "VarChaA2MFV3JEDI::changeVar" << xm << std::endl;
+  xa.validTime() = xm.validTime();
+  oops::Log::trace() << "VarChaA2MFV3JEDI::changeVarInverse done" << xm <<
+                        std::endl;
 }
 // -----------------------------------------------------------------------------
 void VarChaA2MFV3JEDI::print(std::ostream & os) const {

@@ -33,7 +33,7 @@ LinearModel:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
-    variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
+    variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 LinearModelTest:
   fclength: PT30M
   firstmulTL: '0.01'
@@ -50,7 +50,7 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
+  variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 ModelBias: null
 State:
   filetype: gfs
@@ -62,3 +62,11 @@ State:
   filename_cplr: 20180415.000000.coupler.res
 Variables:
   variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+varchange: Analysis2Model
+filetype: 'gfs'
+datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+filename_core: 20180415.000000.fv_core.res.nc
+filename_trcr: 20180415.000000.fv_tracer.res.nc
+filename_sfcd: 20180415.000000.sfc_data.nc
+filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+filename_cplr: 20180415.000000.coupler.res

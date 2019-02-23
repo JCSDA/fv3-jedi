@@ -129,7 +129,7 @@ do index_mod = 1, xmod%nf
       !Already done above
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
-          "A2M ChangeVar: analysis state va         => model state ud"
+          "A2M ChangeVar: analysis state va         => model state vd"
     endif
 
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
@@ -137,11 +137,11 @@ do index_mod = 1, xmod%nf
     !Special case: ps in analysis, delp in model
     if (associated(xana%ps)) then 
       do k = 1,geom%npz
-        xmod%delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
+        xmod%delp(:,:,k) = (geom%ak(k+1)-geom%ak(k)) + (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
       enddo
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
-          "A2M ChangeVar: analysis state ps         => model state ud"
+          "A2M ChangeVar: analysis state ps         => model state delp"
     endif
 
   endif
@@ -230,7 +230,7 @@ do index_ana = 1, xana%nf
 
     !Special case: ps in analysis, delp in model
     if (associated(xmod%delp)) then 
-      xana%ps(:,:,1)   = sum(xmod%delp,3)
+      xana%ps(:,:,1) = sum(xmod%delp,3)
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &
           "A2M ChangeVarInverse: model state delp       => analysis state ps"

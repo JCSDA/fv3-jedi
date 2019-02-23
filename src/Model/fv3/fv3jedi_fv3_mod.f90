@@ -168,8 +168,8 @@ implicit none
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
  
-lm%traj%u       = state%ud
-lm%traj%v       = state%vd
+lm%traj%u       = state%ud(state%isc:state%iec,state%jsc:state%jec,:)
+lm%traj%v       = state%vd(state%isc:state%iec,state%jsc:state%jec,:)
 lm%traj%ua      = state%ua
 lm%traj%va      = state%va
 lm%traj%t       = state%t
@@ -196,8 +196,8 @@ implicit none
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
  
-state%ud      = lm%traj%u
-state%vd      = lm%traj%v
+state%ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
+state%vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
 state%ua      = lm%traj%ua
 state%va      = lm%traj%va
 state%t       = lm%traj%t
