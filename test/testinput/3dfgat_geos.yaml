@@ -107,7 +107,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ud","vd","t","delp","ps","q","qi","ql","o3mr","phis"]
+  variables: ["ud","vd","ua","va","t","delp","ps","q","qi","ql","o3mr","phis"]
 output:
   filetype: geos
   datapath: Data/

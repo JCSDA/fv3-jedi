@@ -113,7 +113,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ud","vd","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 output:
   filetype: gfs
   datapath_tile: Data/
