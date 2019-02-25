@@ -1008,6 +1008,7 @@ Data/fv3files/input_gfs_c768.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_geos_c48.nml
 Data/fv3files/input_geos_c90.nml
+Data/fv3files/input_geos_c90_np96.nml
 Data/fv3files/input_geos_c180.nml
 Data/fv3files/inputpert_4dvar.nml
 Data/fv3files/inputpert_fsoi.nml

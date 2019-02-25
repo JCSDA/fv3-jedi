@@ -1,8 +1,8 @@
 &fv_core_nml
-       layout = 1,1
+       layout = 4,4
        io_layout = 1,1
-       npx = 49
-       npy = 49
+       npx = 91
+       npy = 91
        npz = 72
        ntiles = 6
        fv_debug = .F.
