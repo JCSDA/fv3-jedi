@@ -6,15 +6,8 @@ resolution:
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 model:
-  name: 'FV3'
-  nml_file: Data/fv3files/input_geos_c48.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-  tstep: PT15M
-  readtraj: 0
-  lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
+  name: 'GEOS'
+  GEOSSCRDIR: '/gpfsm/dnb31/drholdaw/jason-jedi-c48/scratch' 
 initial:
   filetype: geos
   filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4        
