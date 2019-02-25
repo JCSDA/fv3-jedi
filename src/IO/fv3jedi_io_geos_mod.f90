@@ -171,41 +171,41 @@ endif
 
 allocate(arrayg(1:geom%npx-1,1:geom%npy-1)) !Whole tile array
 
-do n = 1,size(fields)
-
-  if (iam_io_proc) then
-    if (fields(n)%npz == 1) then
-      istart => istart2; icount => icount2
-    elseif (fields(n)%npz == geom%npz) then
-      istart => istart3; icount => icount3
-    else
-      call abor1_ftn("read_geos: vertical dimension not supported")
-    endif
-  endif
-
-  do lev = 1,fields(n)%npz
-
-    arrayg = 0.0_kind_real    
-    if (iam_io_proc) then
-      istart3(vindex) = lev
-      call nccheck ( nf90_inq_varid (ncid, trim(fields(n)%short_name), varid), &
-                    "nf90_inq_varid "//trim(fields(n)%short_name) )
-      call nccheck ( nf90_get_var( ncid, varid, arrayg, istart, icount), &
-                    "nf90_get_var "//trim(fields(n)%short_name) )
-    endif
-
-    if (f_comm%size() > 6) then
-      call scatter_tile(geom, commtile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
-    else
-      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec) !1 proc per tile already
-    endif
-  enddo
-
-  if (iam_io_proc) then
-    nullify(istart,icount)
-  endif
-
-enddo
+!do n = 1,size(fields)
+!
+!  if (iam_io_proc) then
+!    if (fields(n)%npz == 1) then
+!      istart => istart2; icount => icount2
+!    elseif (fields(n)%npz == geom%npz) then
+!      istart => istart3; icount => icount3
+!    else
+!      call abor1_ftn("read_geos: vertical dimension not supported")
+!    endif
+!  endif
+!
+!  do lev = 1,fields(n)%npz
+!
+!    arrayg = 0.0_kind_real    
+!    if (iam_io_proc) then
+!      istart3(vindex) = lev
+!      call nccheck ( nf90_inq_varid (ncid, trim(fields(n)%short_name), varid), &
+!                    "nf90_inq_varid "//trim(fields(n)%short_name) )
+!      call nccheck ( nf90_get_var( ncid, varid, arrayg, istart, icount), &
+!                    "nf90_get_var "//trim(fields(n)%short_name) )
+!    endif
+!
+!    if (f_comm%size() > 6) then
+!      call scatter_tile(geom, commtile, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+!    else
+!      fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec) !1 proc per tile already
+!    endif
+!  enddo
+!
+!  if (iam_io_proc) then
+!    nullify(istart,icount)
+!  endif
+!
+!enddo
   
 if (iam_io_proc) then
   !Close this file
