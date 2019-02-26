@@ -2,27 +2,22 @@ test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 forecast_length: PT6H
 resolution:
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_geos_c90_np96.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 model:
-  name: 'FV3'
-  nml_file: Data/fv3files/input_geos_c48.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  name: 'GEOS'
   tstep: PT15M
-  readtraj: 0
-  lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
+  GEOSSCRDIR: '/gpfsm/dnb31/drholdaw/jason-jedi-c90/scratch' 
 initial:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4        
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4        
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar",
+              "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 output:
-  geos_tile_dim: 1
   filetype: geos
   datapath: Data/
-  filename: forecast_geos_ana.
+  filename: forecast.jediex.
   first: PT0H
-  frequency: PT1H
+  frequency: PT15H

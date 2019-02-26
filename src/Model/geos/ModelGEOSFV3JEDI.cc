@@ -30,7 +30,10 @@ ModelGEOSFV3JEDI::ModelGEOSFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & model)
   : keyConfig_(0), tstep_(0), geom_(resol),
   vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
-                                 "q", "qi", "ql", "o3"})
+                                 "q", "qi", "ql", "o3mr", "phis",
+                                 "qls", "qcn", "cfcn", "frocean", "frland",
+                                 "varflt", "ustar", "bstar", "zpbl",
+                                 "cm", "ct", "cq", "kcbl", "ts", "khl", "khu"})
 {
   oops::Log::trace() << "ModelGEOSFV3JEDI::ModelGEOSFV3JEDI" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));

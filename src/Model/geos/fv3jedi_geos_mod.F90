@@ -424,6 +424,8 @@ integer :: ierror, npes_model
 call cap%set_n_members(1)
 call cap%set_npes_input_server(0)
 call cap%set_npes_output_server(0)
+call cap%set_nodes_input_server(0)
+call cap%set_nodes_output_server(0)
 call MPI_Comm_size(cap%get_comm_world(), npes_model, ierror)
 call cap%set_npes_model(npes_model)
 call cap%set_npes_member(cap%get_npes_model() / cap%get_n_members())
