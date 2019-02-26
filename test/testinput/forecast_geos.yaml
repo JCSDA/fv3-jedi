@@ -12,7 +12,9 @@ model:
 initial:
   filetype: geos
   filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4        
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar",
+              "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
 output:
   filetype: geos
   datapath: Data/
