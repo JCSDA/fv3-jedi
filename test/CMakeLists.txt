@@ -1257,17 +1257,17 @@ ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_modelaux_gfs
+ecbuild_add_test( TARGET  test_fv3jedi_modelaux_gfs-fv3
                   BOOST
                   SOURCES executables/TestModelAuxControl.cc
-                  ARGS    "testinput/model_gfs.yaml"
+                  ARGS    "testinput/model_gfs-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_modelaux_geos
+ecbuild_add_test( TARGET  test_fv3jedi_modelaux_geos-fv3
                   BOOST
                   SOURCES executables/TestModelAuxControl.cc
-                  ARGS    "testinput/model_geos.yaml"
+                  ARGS    "testinput/model_geos-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

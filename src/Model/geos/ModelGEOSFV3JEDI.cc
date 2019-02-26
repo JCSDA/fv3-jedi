@@ -29,7 +29,7 @@ static oops::ModelMaker<FV3JEDITraits, ModelGEOSFV3JEDI> makermodel_("GEOS");
 ModelGEOSFV3JEDI::ModelGEOSFV3JEDI(const GeometryFV3JEDI & resol,
                             const eckit::Configuration & model)
   : keyConfig_(0), tstep_(0), geom_(resol),
-  vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp", 
+  vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
                                  "q", "qi", "ql", "o3mr", "phis",
                                  "qls", "qcn", "cfcn", "frocean", "frland",
                                  "varflt", "ustar", "bstar", "zpbl",
