@@ -312,13 +312,13 @@ do n = 1,size(fields)
 
     if (trim(fields(n)%fv3jedi_name) .ne. 'ps') then
       if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+        call scatter_tile(geom, self%tcomm, 1, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
       else
         fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
       endif
     else
       if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, arrayg, delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+        call scatter_tile(geom, self%tcomm, 1, arrayg, delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
       else
         delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
       endif
@@ -538,7 +538,7 @@ endif
 ! Gather longitudes to write
 ! --------------------------
 if (self%csize > 6) then
-  call gather_tile(geom, self%tcomm, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
+  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
 else
   arrayg = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
 endif
@@ -552,7 +552,7 @@ endif
 ! Gather latitudes and write
 ! --------------------------
 if (self%csize > 6) then
-  call gather_tile(geom, self%tcomm, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
+  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
 else
   arrayg = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
 endif
@@ -603,7 +603,7 @@ do n = 1,size(fields)
   do lev = 1,fields(n)%npz
 
     if (self%csize > 6) then
-      call gather_tile(geom, self%tcomm, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
+      call gather_tile(geom, self%tcomm, 1, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
     else
       arrayg = fields(n)%array(:,:,lev)
     endif
@@ -632,119 +632,183 @@ end subroutine write_all
 
 ! ------------------------------------------------------------------------------
 
-subroutine gather_tile(geom, comm, array_l, array_g)
+subroutine gather_tile(geom, comm, nlev, array_l, array_g)
 
 implicit none
 
 type(fv3jedi_geom),   intent(in)    :: geom
 integer,              intent(in)    :: comm
-real(kind=kind_real), intent(in)    :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec)  ! Local array
-real(kind=kind_real), intent(inout) :: array_g(1:geom%npx-1,1:geom%npy-1)            ! Gathered array (only valid on root)
+integer,              intent(in)    :: nlev
+real(kind=kind_real), intent(in)    :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec,1:nlev)  ! Local array
+real(kind=kind_real), intent(inout) :: array_g(1:geom%npx-1,1:geom%npy-1,1:nlev)            ! Gathered array (only valid on root)
 
-integer :: comm_size
-integer :: n, ierr, npx_l, npy_l, subarray, resized_subarray
-integer :: sizes_g(2), sizes_l(2), start_l(2), arraydispls_me
-integer, allocatable :: counts(:), displs(:), arraydispls(:)
-integer(kind=MPI_ADDRESS_KIND) :: extent, lb
-real(kind=kind_real) :: forsize
+real(kind=kind_real), allocatable :: vector_g(:), vector_l(:)
+integer :: comm_size, ierr
+integer :: ji, jj, jk, jc, n
+integer :: npx_g, npy_g, npx_l, npy_l
+integer, allocatable :: isc_l(:), iec_l(:), jsc_l(:), jec_l(:)
+integer, allocatable :: counts(:), displs(:), vectorcounts(:), vectordispls(:)
 
+!Get comm size
 call mpi_comm_size(comm, comm_size, ierr)
 
-npx_l = geom%iec-geom%isc+1
-npy_l = geom%jec-geom%jsc+1
-
-sizes_g = [geom%npx-1, geom%npy-1]
-sizes_l = [npx_l, npy_l]
-start_l = [geom%isc-1, geom%jsc-1]
-
-! Create recieving array
-call mpi_type_create_subarray(2, sizes_g, sizes_l, start_l, mpi_order_fortran, mpi_double_precision, subarray, ierr)
-call mpi_type_commit(subarray, ierr)
-
-! Perform resizing
-extent = sizeof(forsize)
-lb = 0
-call mpi_type_create_resized(subarray, lb, extent, resized_subarray, ierr)
-call mpi_type_commit(resized_subarray,ierr)
-
-! Set counts and displacement and gather
-allocate(counts(comm_size), arraydispls(comm_size), displs(comm_size))
-
+!Array of counts and displacement
+allocate(counts(comm_size), displs(comm_size))
 do n = 1,comm_size
    displs(n) = n-1
    counts(n) = 1
 enddo
 
-arraydispls = 0
-arraydispls_me = (geom%isc - 1) + (geom%jsc - 1) * (geom%npy-1)
-call mpi_allgatherv(arraydispls_me, 1, mpi_int, arraydispls, counts, displs, mpi_int, comm, ierr)
+!Horizontal size for global and local
+npx_g = geom%npx-1
+npy_g = geom%npy-1
+npx_l = geom%iec-geom%isc+1
+npy_l = geom%jec-geom%jsc+1
+
+!Gather local dimensions
+allocate(isc_l(comm_size), iec_l(comm_size), jsc_l(comm_size), jec_l(comm_size))
+call mpi_allgatherv(geom%isc, 1, mpi_int, isc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(geom%iec, 1, mpi_int, iec_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(geom%jsc, 1, mpi_int, jsc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(geom%jec, 1, mpi_int, jec_l, counts, displs, mpi_int, comm, ierr)
+deallocate(counts,displs)
+
+! Pack whole tile array into vector
+allocate(vectorcounts(comm_size), vectordispls(comm_size))
+
+!Gather counts and displacement
+n = 0
+do jc = 1,comm_size
+  vectordispls(jc) = n
+  do jk = 1,nlev
+    do jj = jsc_l(jc),jec_l(jc)
+      do ji = isc_l(jc),iec_l(jc)
+        n = n+1
+      enddo
+    enddo
+  enddo
+  vectorcounts(jc) = n - vectordispls(jc)
+enddo
+
+! Pack local array into vector
+allocate(vector_l(npx_l*npy_l*nlev))
+n = 0
+do jk = 1,nlev
+  do jj = geom%jsc,geom%jec
+    do ji = geom%isc,geom%iec
+      n = n+1
+      vector_l(n) = array_l(ji,jj,jk)
+    enddo
+  enddo
+enddo
 
 ! Gather the full field
-call mpi_gatherv( array_l, npx_l*npy_l, mpi_double_precision, &
-                  array_g, counts, arraydispls, resized_subarray, &
+allocate(vector_g(npx_g*npy_g*nlev))
+call mpi_gatherv( vector_l, npx_l*npy_l, mpi_double_precision, &
+                  vector_g, vectorcounts, vectordispls, mpi_double_precision, &
                   0, comm, ierr)
+deallocate(vector_l,vectorcounts,vectordispls)
 
-! Deallocate
-deallocate(counts,displs,arraydispls)
+!Unpack global vector into array
+n = 0
+do jc = 1,comm_size
+  do jk = 1,nlev
+    do jj = jsc_l(jc),jec_l(jc)
+      do ji = isc_l(jc),iec_l(jc)
+        n = n+1
+        array_g(ji,jj,jk) = vector_g(n)
+      enddo
+    enddo
+  enddo
+enddo
+deallocate(isc_l, iec_l, jsc_l, jec_l)
+
+deallocate(vector_g)
 
 end subroutine gather_tile
 
 ! ------------------------------------------------------------------------------
 
-subroutine scatter_tile(geom, comm, array_g, array_l)
+subroutine scatter_tile(geom, comm, nlev, array_g, array_l)
 
 implicit none
 
 type(fv3jedi_geom),   intent(in)    :: geom
 integer,              intent(in)    :: comm
-real(kind=kind_real), intent(in)    :: array_g(1:geom%npx-1,1:geom%npy-1)            ! Gathered array (only valid on root)
-real(kind=kind_real), intent(inout) :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec)  ! Local array
+integer,              intent(in)    :: nlev
+real(kind=kind_real), intent(in)    :: array_g(1:geom%npx-1,1:geom%npy-1,nlev)            ! Gathered array (only valid on root)
+real(kind=kind_real), intent(inout) :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec,nlev)  ! Local array
 
-integer :: comm_size
-integer :: n, ierr, npx_l, npy_l, subarray, resized_subarray
-integer :: sizes_g(2), sizes_l(2), start_l(2), arraydispls_me
-integer, allocatable :: counts(:), displs(:), arraydispls(:)
-integer(kind=MPI_ADDRESS_KIND) :: extent, lb
-real(kind=kind_real) :: forsize
+real(kind=kind_real), allocatable :: vector_g(:), vector_l(:)
+integer :: comm_size, ierr
+integer :: ji, jj, jk, jc, n
+integer :: npx_g, npy_g, npx_l, npy_l
+integer, allocatable :: isc_l(:), iec_l(:), jsc_l(:), jec_l(:)
+integer, allocatable :: counts(:), displs(:), vectorcounts(:), vectordispls(:)
 
+!Get comm size
 call mpi_comm_size(comm, comm_size, ierr)
 
-npx_l = geom%iec-geom%isc+1
-npy_l = geom%jec-geom%jsc+1
-
-sizes_g = [geom%npx-1, geom%npy-1]
-sizes_l = [npx_l, npy_l]
-start_l = [geom%isc-1, geom%jsc-1]
-
-! Create recieving array
-call mpi_type_create_subarray(2, sizes_g, sizes_l, start_l, mpi_order_fortran, mpi_double_precision, subarray, ierr)
-call mpi_type_commit(subarray, ierr)
-
-! Perform resizing
-extent = sizeof(forsize)
-lb = 0
-call mpi_type_create_resized(subarray, lb, extent, resized_subarray, ierr)
-call mpi_type_commit(resized_subarray,ierr)
-
-! Set counts and displacement and gather
-allocate(counts(comm_size), arraydispls(comm_size), displs(comm_size))
-
+!Array of counts and displacement
+allocate(counts(comm_size), displs(comm_size))
 do n = 1,comm_size
    displs(n) = n-1
    counts(n) = 1
 enddo
 
-arraydispls = 0
-arraydispls_me = (geom%isc - 1) + (geom%jsc - 1) * (geom%npy-1)
-call mpi_allgatherv(arraydispls_me, 1, mpi_int, arraydispls, counts, displs, mpi_int, comm, ierr)
+!Horizontal size for global and local
+npx_g = geom%npx-1
+npy_g = geom%npy-1
+npx_l = geom%iec-geom%isc+1
+npy_l = geom%jec-geom%jsc+1
 
-! Scatter the full field
-call mpi_scatterv( array_g, counts, arraydispls, resized_subarray, &
-                   array_l, npx_l*npy_l, mpi_double_precision, &
+!Gather local dimensions
+allocate(isc_l(comm_size), iec_l(comm_size), jsc_l(comm_size), jec_l(comm_size))
+call mpi_allgatherv(geom%isc, 1, mpi_int, isc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(geom%iec, 1, mpi_int, iec_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(geom%jsc, 1, mpi_int, jsc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(geom%jec, 1, mpi_int, jec_l, counts, displs, mpi_int, comm, ierr)
+deallocate(counts,displs)
+
+! Pack whole tile array into vector
+allocate(vector_g(npx_g*npy_g*nlev))
+allocate(vectorcounts(comm_size), vectordispls(comm_size))
+
+n = 0
+do jc = 1,comm_size
+  vectordispls(jc) = n
+  do jk = 1,nlev
+    do jj = jsc_l(jc),jec_l(jc)
+      do ji = isc_l(jc),iec_l(jc)
+        n = n+1
+        vector_g(n) = array_g(ji,jj,jk)
+      enddo
+    enddo
+  enddo
+  vectorcounts(jc) = n - vectordispls(jc)
+enddo
+deallocate(isc_l, iec_l, jsc_l, jec_l)
+
+! Scatter tile array to processors
+allocate(vector_l(npx_l*npy_l*nlev))
+
+call mpi_scatterv( vector_g, vectorcounts, vectordispls, mpi_double_precision, &
+                   vector_l, npx_l*npy_l, mpi_double_precision, &
                    0, comm, ierr )
 
-! Deallocate
-deallocate(counts,displs,arraydispls)
+deallocate(vector_g,vectorcounts,vectordispls)
+
+! Unpack local vector into array
+n = 0
+do jk = 1,nlev
+  do jj = geom%jsc,geom%jec
+    do ji = geom%isc,geom%iec
+      n = n+1
+      array_l(ji,jj,jk) = vector_l(n)
+    enddo
+  enddo
+enddo
+deallocate(vector_l)
 
 end subroutine scatter_tile
 

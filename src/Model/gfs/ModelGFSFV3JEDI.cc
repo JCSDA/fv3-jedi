@@ -24,14 +24,12 @@ namespace fv3jedi {
 static oops::ModelMaker<FV3JEDITraits, ModelGFSFV3JEDI> makermodel_("GFS");
 // -----------------------------------------------------------------------------
 ModelGFSFV3JEDI::ModelGFSFV3JEDI(const GeometryFV3JEDI & resol,
-                            const eckit::Configuration & model)
-  : keyConfig_(0), tstep_(0), geom_(resol),
-  vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
-                                 "q", "qi", "ql", "o3"})
+                            const eckit::Configuration & mconf)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf)
 {
   oops::Log::trace() << "ModelGFSFV3JEDI::ModelGFSFV3JEDI" << std::endl;
-  tstep_ = util::Duration(model.getString("tstep"));
-  const eckit::Configuration * configc = &model;
+  tstep_ = util::Duration(mconf.getString("tstep"));
+  const eckit::Configuration * configc = &mconf;
   fv3jedi_gfs_create_f90(&configc, geom_.toFortran(), keyConfig_);
   oops::Log::trace() << "ModelGFSFV3JEDI created" << std::endl;
 }

@@ -7,6 +7,7 @@ resolution:
   pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 model:
   name: 'GFS'
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 initial:
   filetype: gfs
   datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
@@ -15,7 +16,6 @@ initial:
   filename_sfcd: 20180414.210000.sfc_data.nc
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 output:
   filetype: gfs
   datapath_write: Data/forecast_gfs/

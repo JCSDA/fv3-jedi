@@ -34,6 +34,12 @@ ecbuild_add_cxx11_flags()
 set( FV3JEDI_LINKER_LANGUAGE CXX )
 
 ################################################################################
+# Standard compiler flags
+################################################################################
+
+include( fv3jedi_compiler_flags )
+
+################################################################################
 # Dependencies
 ################################################################################
 
@@ -61,6 +67,7 @@ if( ${FV3BASEDMODEL_FOUND} )
       message("GFS FOUND: Including GFS interface")
     elseif( ${GEOS_FOUND} )
       message("GEOS FOUND: Including GEOS interface")
+      include( geos_compiler_flags )  
     endif()   
     include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
 else()
@@ -74,17 +81,6 @@ include_directories( ${FMS_INCLUDE_DIRS} )
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
 ecbuild_include_mpi()
 link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
-
-################################################################################
-# Definitions
-################################################################################
-
-# Additional user supplied compiler definitions
-set( COMPDEFS_ ${COMPDEFS_FV3JEDI})
-add_definitions( ${COMPDEFS_} )
-include( fv3jedi_compiler_flags )
-
-message("Compiler definitions for fv3-jedi are: ${COMPDEFS_}")
 
 ################################################################################
 # Export package info
