@@ -86,7 +86,8 @@ IncrementFV3JEDI::~IncrementFV3JEDI() {
 void IncrementFV3JEDI::diff(const StateFV3JEDI & x1, const StateFV3JEDI & x2) {
   ASSERT(this->validTime() == x1.validTime());
   ASSERT(this->validTime() == x2.validTime());
-  fv3jedi_increment_diff_incr_f90(keyInc_, x1.toFortran(), x2.toFortran());
+  fv3jedi_increment_diff_incr_f90(keyInc_, x1.toFortran(), x2.toFortran(),
+                                  geom_->toFortran());
 }
 // -----------------------------------------------------------------------------
 IncrementFV3JEDI & IncrementFV3JEDI::operator=(const IncrementFV3JEDI & rhs) {

@@ -21,6 +21,8 @@ use fv3jedi_state_utils_mod,     only: fv3jedi_state
 use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues
 
+use wind_vt_mod, only: a2d
+
 use mpp_domains_mod,             only: east, north, center
 
 implicit none
@@ -555,19 +557,46 @@ integer :: var,i,j,k
 logical :: found_neg
 type(fv3jedi_field), pointer :: field_pointer
 
+real(kind=kind_real), allocatable :: rhs_ud(:,:,:), rhs_vd(:,:,:)
+
+!Convert A-Grid increment to D-Grid increment
+if (associated(rhs%ua) .and. associated(rhs%va) .and. &
+    .not.associated(rhs%ud) .and. .not.associated(rhs%vd) .and. &
+    associated(self%ud) .and. associated(self%vd)) then
+  allocate(rhs_ud(rhs%isc:rhs%iec  ,rhs%jsc:rhs%jec+1,1:rhs%npz))
+  allocate(rhs_vd(rhs%isc:rhs%iec+1,rhs%jsc:rhs%jec  ,1:rhs%npz))
+  call a2d(geom, rhs%ua, rhs%va, rhs_ud, rhs_vd)
+endif
+
 !Check for matching resolution between state and increment
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
 
-  do var = 1,self%nf
-  
-    !Get pointer to increment
-    call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,field_pointer)
+  !Fields to add determined from increment
+  do var = 1,rhs%nf
+ 
+    !Winds are a special case
+    if (rhs%fields(var)%fv3jedi_name == 'ua') then
 
-    !Add increment to state
-    self%fields(var)%array = self%fields(var)%array + field_pointer%array
+      if (associated(self%ua)) self%ua = self%ua + rhs%ua
+      if (associated(self%ud) .and. .not.associated(rhs%ud)) self%ud = self%ud + rhs_ud
 
-    !Nullify pointer
-    nullify(field_pointer)
+    elseif (rhs%fields(var)%fv3jedi_name == 'va') then
+
+      if (associated(self%va)) self%va = self%va + rhs%va
+      if (associated(self%vd) .and. .not.associated(rhs%vd)) self%vd = self%vd + rhs_vd
+
+    else
+
+      !Get pointer to state
+      call get_field(self%nf,self%fields,rhs%fields(var)%fv3jedi_name,field_pointer)
+
+      !Add increment to state
+      field_pointer%array = field_pointer%array + rhs%fields(var)%array
+
+      !Nullify pointer
+      nullify(field_pointer)
+
+    endif
 
   enddo
 
@@ -603,6 +632,9 @@ do var = 1,self%nf
   endif
 
 enddo
+
+if (allocated(rhs_ud)) deallocate(rhs_ud)
+if (allocated(rhs_vd)) deallocate(rhs_vd)
 
 end subroutine add_incr
 
@@ -931,7 +963,7 @@ subroutine read_file(geom, self, c_conf, vdate)
     call geos%read_fields(geom, self%fields)
     call geos%delete()
   else
-     call abor1_ftn("fv3jedi_increment_mod.read: restart type not supported")
+     call abor1_ftn("fv3jedi_state_mod.read: restart type not supported")
   endif
 
 end subroutine read_file
@@ -964,7 +996,7 @@ subroutine write_file(geom, self, c_conf, vdate)
     call geos%write_all(geom, self%fields, c_conf, vdate)
     call geos%delete()
   else
-     call abor1_ftn("fv3jedi_increment_mod.write: restart type not supported")
+     call abor1_ftn("fv3jedi_state_mod.write: restart type not supported")
   endif
 
 end subroutine write_file

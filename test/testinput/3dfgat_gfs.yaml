@@ -65,12 +65,18 @@ cost_function:
           obsfile: Data/gfs.fgat.3dvar.air.out.nc4
         obsvalue: ObsValue
       variables:
-      - air_temperature
       - eastward_wind
       - northward_wind
-#     - specific_humidity
+      - air_temperature
       Covariance:
         covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+        threshold: 3.0
     - ObsType: Radiosonde
       ObsData:
         ObsDataIn:
@@ -79,12 +85,16 @@ cost_function:
           obsfile: Data/gfs.fgat.3dvar.rs.out.nc4
         obsvalue: ObsValue
       variables:
+      - eastward_wind
+      - northward_wind
       - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
         variables:
+        - eastward_wind
+        - northward_wind
         - air_temperature
         threshold: 3.0
   cost_type: 4D-Var

@@ -24,6 +24,8 @@ use fv3jedi_state_utils_mod,     only: fv3jedi_state
 use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues_tl, getvalues_ad
 
+use wind_vt_mod, only: d2a
+
 use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north, center
 
 implicit none
@@ -549,33 +551,79 @@ end subroutine add_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine diff_incr(self,x1,x2)
+subroutine diff_incr(self,x1,x2,geom)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_state),     intent(in)    :: x1
 type(fv3jedi_state),     intent(in)    :: x2
+type(fv3jedi_geom),      intent(inout) :: geom
 
-real(kind=kind_real), allocatable :: x1_ps(:,:), x2_ps(:,:)
 integer :: var, check
 type(fv3jedi_field), pointer :: x1p, x2p
+real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
+real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
 
 check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 
 call zeros(self)
+
+!D-Grid to A-Grid (if needed)
+if (associated(self%ua) .and. associated(self%va)) then
+  allocate(x1_ua(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
+  allocate(x1_va(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
+  if (associated(x1%ud) .and. associated(x1%vd)) then
+    if (.not.associated(x1%ua) .and. .not. associated(x1%va)) then
+      call d2a(geom, x1%ud, x1%vd, x1_ua, x1_va)
+    else
+      x1_ua = x1%ua
+      x1_va = x1%va
+    endif
+  else
+    x1_ua = 0.0_kind_real
+    x1_va = 0.0_kind_real
+  endif
+  allocate(x2_ua(x2%isc:x2%iec,x2%jsc:x2%jec,1:x2%npz))
+  allocate(x2_va(x2%isc:x2%iec,x2%jsc:x2%jec,1:x2%npz))
+  if (associated(x2%ud) .and. associated(x2%vd)) then
+    if (.not.associated(x2%ua) .and. .not. associated(x2%va)) then
+      call d2a(geom, x2%ud, x2%vd, x2_ua, x2_va)
+    else
+      x2_ua = x2%ua
+      x2_va = x2%va
+    endif
+  else
+    x2_ua = 0.0_kind_real
+    x2_va = 0.0_kind_real
+  endif
+endif
+
 if (check==0) then
 
   do var = 1,self%nf
-  
-    !Get pointer to states
-    call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
-    call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
+ 
+    !A-Grid winds are special case 
+    if (self%fields(var)%fv3jedi_name == 'ua') then
 
-    !inc = state - state
-    self%fields(var)%array = x1p%array - x2p%array
+      self%ua = x1_ua - x2_ua
 
-    !Nullify pointers
-    nullify(x1p,x2p)
+    elseif (self%fields(var)%fv3jedi_name == 'va') then
+
+      self%va = x1_va - x2_va
+
+    else
+
+      !Get pointer to states
+      call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
+      call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
+
+      !inc = state - state
+      self%fields(var)%array = x1p%array - x2p%array
+
+      !Nullify pointers
+      nullify(x1p,x2p)
+
+    endif
 
   enddo
 
@@ -584,6 +632,11 @@ else
    call abor1_ftn("fv3jedi_increment_mod.diff_incr: not implemented for low res increment yet")
 
 endif
+
+if (allocated(x1_ua)) deallocate(x1_ua)
+if (allocated(x1_va)) deallocate(x1_va)
+if (allocated(x2_ua)) deallocate(x2_ua)
+if (allocated(x2_va)) deallocate(x2_va)
 
 end subroutine diff_incr
 

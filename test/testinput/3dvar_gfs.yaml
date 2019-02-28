@@ -11,6 +11,7 @@ cost_function:
         filename_sfcd: 20180415.000000.sfc_data.nc
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
+        variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -28,18 +29,17 @@ cost_function:
           obsfile: Data/gfs.3dvar.air.out.nc4
         obsvalue: ObsValue
       variables:
-      - air_temperature
       - eastward_wind
       - northward_wind
-#     - specific_humidity
+      - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
         variables:
-        - air_temperature
         - eastward_wind
         - northward_wind
+        - air_temperature
         threshold: 6.0
       - Filter: BlackList
         where:
@@ -53,12 +53,16 @@ cost_function:
           obsfile: Data/gfs.3dvar.rs.out.nc4
         obsvalue: ObsValue
       variables:
+      - eastward_wind
+      - northward_wind
       - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
         variables:
+        - eastward_wind
+        - northward_wind
         - air_temperature
         threshold: 3.0
     - ObsType: GnssroRef
@@ -114,7 +118,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr","phis"]
+  variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr","phis"]
 output:
   filetype: gfs
   datapath_tile: Data/

@@ -6,6 +6,7 @@ cost_function:
       state:
       - filetype: geos
         filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
+        variables: ["ud","vd","ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -56,18 +57,18 @@ cost_function:
           obsfile: Data/geos.3dvar.air.out.nc4
         obsvalue: ObsValue
       variables:
-      - air_temperature
       - eastward_wind
       - northward_wind
+      - air_temperature
 #     - specific_humidity
       Covariance:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
         variables:
-        - air_temperature
         - eastward_wind
         - northward_wind
+        - air_temperature
         threshold: 6.0
     - ObsType: Radiosonde
       ObsData:
@@ -77,12 +78,16 @@ cost_function:
           obsfile: Data/geos.3dvar.rs.out.nc4
         obsvalue: ObsValue
       variables:
+      - eastward_wind
+      - northward_wind
       - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
       - Filter: Background Check
         variables:
+        - eastward_wind
+        - northward_wind
         - air_temperature
         threshold: 4.0
   cost_type: 3D-Var
@@ -106,7 +111,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
 output:
   filetype: geos
   datapath: Data/

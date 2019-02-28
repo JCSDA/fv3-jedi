@@ -46,19 +46,26 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
 // -----------------------------------------------------------------------------
 StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & geom,
                            const oops::Variables & vars,
-                           const eckit::Configuration & file)
-  : geom_(new GeometryFV3JEDI(geom)), vars_(vars), time_(util::DateTime())
+                           const eckit::Configuration & sconf)
+  : geom_(new GeometryFV3JEDI(geom)), time_(util::DateTime())
 {
   oops::Log::trace() << "StateFV3JEDI::StateFV3JEDI create from analytical or"
                         " from file." << std::endl;
-
+  // Optionally user can overwrite incoming variables from config
+  oops::Variables lvars;
+  if (sconf.has("variables")) {
+    oops::Variables lvars(sconf);
+    this->vars_ = lvars;
+  } else {
+    this->vars_ = vars;
+  }
   const eckit::Configuration * confvars = &vars_.toFortran();
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &confvars);
 
-  const eckit::Configuration * conf = &file;
+  const eckit::Configuration * conf = &sconf;
   util::DateTime * dtp = &time_;
-  if (file.has("analytic_init")) {
-    stageFv3Files(file);
+  if (sconf.has("analytic_init")) {
+    stageFv3Files(sconf);
     fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), &conf, &dtp);
     removeFv3Files();
   } else {

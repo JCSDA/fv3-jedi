@@ -347,21 +347,25 @@ end subroutine fv3jedi_increment_add_incr_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_diff_incr_c(c_key_lhs,c_key_x1,c_key_x2) bind(c,name='fv3jedi_increment_diff_incr_f90')
+subroutine fv3jedi_increment_diff_incr_c(c_key_lhs,c_key_x1,c_key_x2,c_key_geom) bind(c,name='fv3jedi_increment_diff_incr_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_lhs
 integer(c_int), intent(in) :: c_key_x1
 integer(c_int), intent(in) :: c_key_x2
+integer(c_int), intent(in) :: c_key_geom
+
 type(fv3jedi_increment), pointer :: lhs
 type(fv3jedi_state), pointer :: x1
 type(fv3jedi_state), pointer :: x2
+type(fv3jedi_geom),  pointer :: geom
 
 call fv3jedi_increment_registry%get(c_key_lhs,lhs)
 call fv3jedi_state_registry%get(c_key_x1,x1)
 call fv3jedi_state_registry%get(c_key_x2,x2)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call diff_incr(lhs,x1,x2)
+call diff_incr(lhs,x1,x2,geom)
 
 end subroutine fv3jedi_increment_diff_incr_c
 
