@@ -14,8 +14,8 @@ use netcdf
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_io_gfs_mod, only: read_gfs
-use fv3jedi_io_geos_mod, only: read_geos
+use fv3jedi_io_gfs_mod, only: fv3jedi_io_gfs
+use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 use fv3jedi_increment_mod, only: fv3jedi_increment 
 
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
@@ -168,10 +168,13 @@ implicit none
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
  
-lm%traj%u       = state%ud
-lm%traj%v       = state%vd
-lm%traj%ua      = state%ua
-lm%traj%va      = state%va
+lm%traj%ua = 0.0_kind_real
+lm%traj%va = 0.0_kind_real
+
+lm%traj%u       = state%ud(state%isc:state%iec,state%jsc:state%jec,:)
+lm%traj%v       = state%vd(state%isc:state%iec,state%jsc:state%jec,:)
+if (associated(state%ua)) lm%traj%ua = state%ua
+if (associated(state%va)) lm%traj%va = state%va
 lm%traj%t       = state%t
 lm%traj%delp    = state%delp
 lm%traj%qv      = state%q
@@ -196,10 +199,10 @@ implicit none
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
  
-state%ud      = lm%traj%u
-state%vd      = lm%traj%v
-state%ua      = lm%traj%ua
-state%va      = lm%traj%va
+state%ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
+state%vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
+if (associated(state%ua)) state%ua = lm%traj%ua
+if (associated(state%ua)) state%va = lm%traj%va
 state%t       = lm%traj%t
 state%delp    = lm%traj%delp
 state%q       = lm%traj%qv
@@ -231,14 +234,8 @@ character(len=255) :: date, filename
 character(len=4)   :: yyyy
 character(len=2)   :: mm,dd,hh,mn,ss
 
-character(len=255) :: datapath_ti
-character(len=255) :: datapath_sp
-character(len=255) :: filename_spec
-character(len=255) :: filename_core
-character(len=255) :: filename_trcr
-character(len=255) :: filename_sfcd
-character(len=255) :: filename_sfcw
-character(len=255) :: filename_cplr
+type(fv3jedi_io_gfs)  :: gfs
+type(fv3jedi_io_geos) :: geos
 
 ! Convert datetime to string
 call datetime_to_string(vdate, vdatec)
@@ -257,21 +254,26 @@ ss   = vdatec(18:19)
 ! File path/filename
 if (trim(self%trajmodel) == "gfs") then
 
-  datapath_ti = trim(self%trajpath)
-  filename_core = yyyy//mm//dd//"."//hh//mn//ss//'.fv_core.res.nc'
-  filename_trcr = yyyy//mm//dd//"."//hh//mn//ss//'.fv_tracer.res.nc'
-  filename_sfcd = yyyy//mm//dd//"."//hh//mn//ss//'.sfc_data.nc'
-  filename_sfcw = yyyy//mm//dd//"."//hh//mn//ss//'.srf_wnd.nc'
-  filename_cplr = yyyy//mm//dd//"."//hh//mn//ss//'.coupler.res'
+  gfs%datapath_ti = trim(self%trajpath)
+  gfs%filename_core = yyyy//mm//dd//"."//hh//mn//ss//'.fv_core.res.nc'
+  gfs%filename_trcr = yyyy//mm//dd//"."//hh//mn//ss//'.fv_tracer.res.nc'
+  gfs%filename_sfcd = yyyy//mm//dd//"."//hh//mn//ss//'.sfc_data.nc'
+  gfs%filename_sfcw = yyyy//mm//dd//"."//hh//mn//ss//'.srf_wnd.nc'
+  gfs%filename_cplr = yyyy//mm//dd//"."//hh//mn//ss//'.coupler.res'
+  gfs%datapath_sp = 'null'
+  gfs%datapath_sp = 'null'
 
-  datapath_sp = 'null'
-  datapath_sp = 'null'
-
-  filename = filename_core
+  call print_filename(self,gfs%filename_core)
+  call gfs%read_meta  ( geom, vdate, state%calendar_type, state%date_init )
+  call gfs%read_fields( geom, state%fields )
 
 elseif (trim(self%trajmodel) == "geos") then
 
   filename = trim(self%trajpath)//trim(self%trajfile)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//'z.nc4'
+  call print_filename(self,filename)
+  call geos%create(geom, 'read', filename)
+  call geos%read_fields(geom, state%fields)
+  call geos%delete()
 
 else
 
@@ -279,26 +281,22 @@ else
 
 endif
 
+end subroutine psuedo_model
+
+! ------------------------------------------------------------------------------
+
+subroutine print_filename(self,filename)
+
+implicit none
+type(fv3_model),  intent(in) :: self
+character(len=*), intent(in) :: filename
+
 ! Print filename to the user
 if (self%fv3jedi_lm%conf%rpe) print*, ' '
 if (self%fv3jedi_lm%conf%rpe) print*, 'Psuedo model from file: ', trim(filename)
 if (self%fv3jedi_lm%conf%rpe) print*, ' '
 
-! Read state from file
-if (trim(self%trajmodel) == "gfs") then
-
-  call read_gfs ( geom, state%fields, vdate, state%calendar_type, state%date_init, &
-                  datapath_ti, datapath_sp, &
-                  filename_spec, filename_core, filename_trcr, &
-                  filename_sfcd, filename_sfcw, filename_cplr )
-
-elseif (trim(self%trajmodel) == "geos") then
-
-  call read_geos(geom, state%fields, vdate, filename)
-
-endif
-
-end subroutine psuedo_model
+end subroutine print_filename
 
 ! ------------------------------------------------------------------------------
 

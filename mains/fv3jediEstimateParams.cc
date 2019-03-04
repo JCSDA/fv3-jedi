@@ -6,13 +6,13 @@
  */
 
 #include "FV3JEDITraits.h"
-#include "instantiateFV3JEDIVarChangeFactory.h"
+#include "instantiateFV3JEDIVarChangeFactories.h"
 #include "oops/runs/EstimateParams.h"
 #include "RunFV3JEDI.h"
 
 int main(int argc,  char ** argv) {
   fv3jedi::RunFV3JEDI run(argc, argv);
-  fv3jedi::instantiateFV3JEDIVarChangeFactory();
+  fv3jedi::instantiateFV3JEDIVarChangeFactories();
   oops::EstimateParams<fv3jedi::FV3JEDITraits> dir;
   run.execute(dir);
   return 0;

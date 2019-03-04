@@ -1,4 +1,4 @@
-# (C) Copyright 2017 UCAR.
+# (C) Copyright 2017-2019 UCAR.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -90,8 +90,9 @@ list( APPEND FV3JEDI_TPLS ufo oops)
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} 
                           ${CMAKE_CURRENT_SOURCE_DIR}/src
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Analysis2Model
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Control2Analysis
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/ErrorCovariance
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/ControlToModel
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment

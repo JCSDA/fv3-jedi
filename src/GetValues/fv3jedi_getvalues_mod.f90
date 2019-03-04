@@ -63,6 +63,7 @@ logical :: do_interp
 integer :: isc,iec,jsc,jec,npz,i,j
 
 !Local pressure variables
+real(kind=kind_real), allocatable :: delp(:,:,:) !Pressure thickness Pa
 real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
 real(kind=kind_real), allocatable :: prs (:,:,:) !Pressure Pa, midpoint
 real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
@@ -95,6 +96,7 @@ real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fra
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
 logical,  parameter               :: use_compress = .true.       !Could be a fv3 namelist option?
+
 
 
 ! Grid convenience
@@ -170,11 +172,22 @@ allocate(geovalm(isc:iec,jsc:jec,npz))
 
 ! Get pressures at edge, center & log center
 ! ------------------------------------------
+allocate(delp(isc:iec,jsc:jec,npz  ))
 allocate(prsi(isc:iec,jsc:jec,npz+1))
 allocate(prs (isc:iec,jsc:jec,npz  ))
 allocate(logp(isc:iec,jsc:jec,npz  ))
 
-call delp_to_pe_p_logp(geom,state%delp,prsi,prs,logp)
+if (associated(state%delp)) then
+  delp = state%delp
+elseif (associated(state%ps)) then
+  do jlev = 1,geom%npz
+    delp(:,:,jlev) = (geom%bk(jlev+1)-geom%bk(jlev))*state%ps(:,:,1)
+  enddo
+else
+  call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute delp from the state")
+endif
+
+call delp_to_pe_p_logp(geom,delp,prsi,prs,logp)
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -256,7 +269,7 @@ if (associated(state%slmsk)) then
     enddo
   enddo
   
-  call crtm_ade_efr( geom,prsi,state%t,state%delp, &
+  call crtm_ade_efr( geom,prsi,state%t,delp, &
                      water_coverage_m,state%q, &
                      state%ql,state%qi, &
                      ql_ade,qi_ade,ql_efr,qi_efr )
@@ -572,6 +585,7 @@ if (allocated(mod_state            )) deallocate(mod_state            )
 if (allocated(obs_state            )) deallocate(obs_state            )
 if (allocated(geovale              )) deallocate(geovale              )
 if (allocated(geovalm              )) deallocate(geovalm              )
+if (allocated(delp                 )) deallocate(delp                 )
 if (allocated(prsi                 )) deallocate(prsi                 )
 if (allocated(prs                  )) deallocate(prs                  )
 if (allocated(logp                 )) deallocate(logp                 )

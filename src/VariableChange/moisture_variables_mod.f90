@@ -259,7 +259,7 @@ subroutine rh_to_q_tl(geom,qsat,rh,q)
  type(fv3jedi_geom),   intent(in)    :: geom
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)    ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
  q = rh * qsat
 
@@ -272,7 +272,7 @@ subroutine rh_to_q_ad(geom,qsat,rh,q)
  implicit none
  type(fv3jedi_geom),   intent(in)    :: geom
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)    ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  
  rh = rh + q * qsat

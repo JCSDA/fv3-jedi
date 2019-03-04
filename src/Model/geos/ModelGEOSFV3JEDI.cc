@@ -27,22 +27,17 @@ namespace fv3jedi {
 static oops::ModelMaker<FV3JEDITraits, ModelGEOSFV3JEDI> makermodel_("GEOS");
 // -----------------------------------------------------------------------------
 ModelGEOSFV3JEDI::ModelGEOSFV3JEDI(const GeometryFV3JEDI & resol,
-                            const eckit::Configuration & model)
-  : keyConfig_(0), tstep_(0), geom_(resol),
-  vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
-                                 "q", "qi", "ql", "o3mr", "phis",
-                                 "qls", "qcn", "cfcn", "frocean", "frland",
-                                 "varflt", "ustar", "bstar", "zpbl",
-                                 "cm", "ct", "cq", "kcbl", "ts", "khl", "khu"})
+                            const eckit::Configuration & mconf)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf)
 {
   oops::Log::trace() << "ModelGEOSFV3JEDI::ModelGEOSFV3JEDI" << std::endl;
-  tstep_ = util::Duration(model.getString("tstep"));
-  const eckit::Configuration * configc = &model;
+  tstep_ = util::Duration(mconf.getString("tstep"));
+  const eckit::Configuration * configc = &mconf;
 
   // JEDI to GEOS directory
   getcwd(jedidir_, 10000);
 
-  std::string sGEOSSCRDIR = model.getString("GEOSSCRDIR");
+  std::string sGEOSSCRDIR = mconf.getString("GEOSSCRDIR");
   strcpy(geosscrdir_, sGEOSSCRDIR.c_str());
   chdir(geosscrdir_);
 

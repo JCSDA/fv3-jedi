@@ -12,13 +12,20 @@ LinearVariableChangeTests:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   outputVariables:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
-- varchange: Control2Model
-  toleranceInverse: -0.1
-  testinverse: 0
+- varchange: Control2Analysis
+  toleranceInverse: 1000
+  testinverse: 1
   inputVariables:
     variables: ["ua","va","t","ps","q","qi","ql","o3"]
   outputVariables:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
+- varchange: Analysis2Model
+  toleranceInverse: 1000
+  testinverse: 1
+  inputVariables:
+    variables: ["ud","vd","t","delp","q","qi","ql","o3"]
+  outputVariables:
+    variables: ["ua","va","t","ps","q","qi","ql","o3"]
 Geometry:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table

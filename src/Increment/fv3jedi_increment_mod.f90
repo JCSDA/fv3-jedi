@@ -17,14 +17,16 @@ use fv3jedi_field_mod,           only: fv3jedi_field, get_field, fields_rms, fie
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_io_gfs_mod,          only: read_gfs, write_gfs
-use fv3jedi_io_geos_mod,         only: read_geos, write_geos
+use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs 
+use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
 use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues_tl, getvalues_ad
 
-use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center
+use wind_vt_mod, only: d2a
+
+use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north, center
 
 implicit none
 private
@@ -55,21 +57,6 @@ integer :: var, vcount
 ! ------------
 self%nf = vars%nv
 
-! Reduce count for variables not in increment
-! -------------------------------------------
-do var = 1, vars%nv
-   select case (trim(vars%fldnames(var)))
-   case("delp","delz","w","DELP","DZ","W")
-     self%nf = self%nf - 1
-   case("u","v","ud","vd","phis",&
-        "slmsk","sheleg","tsea","vtype","stype","vfrac",&
-        "stc","smc","snwdph","u_srf","v_srf","f10m", &
-        "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
-        "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
-     self%nf = self%nf - 1
-   end select
-enddo
-
 ! Allocate fields structure
 ! -------------------------
 allocate(self%fields(self%nf))
@@ -79,6 +66,16 @@ allocate(self%fields(self%nf))
 vcount = 0
 do var = 1, vars%nv
   select case (trim(vars%fldnames(var)))
+    case("u","ud")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_d_grid_u_wind', &
+           fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north, arraypointer = self%ud)
+    case("v","vd")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_d_grid_v_wind', &
+           fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east, arraypointer = self%vd)
     case("ua")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -140,42 +137,33 @@ do var = 1, vars%nv
            short_name = vars%fldnames(var), long_name = 'increment_of_relative_humidity', &
            fv3jedi_name = 'rh', units = '1', staggerloc = center, arraypointer = self%rh)
     case("delp","DELP")
-      !vcount=vcount+1;
-      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-      !     short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
-      !     fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_pressure_thickness', &
+           fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
     case("w","W")
-      !vcount=vcount+1;
-      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-      !     short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
-      !     fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_vertical_wind', &
+           fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
     case("delz","DZ")
-      !vcount=vcount+1;
-      !call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-      !     short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
-      !     fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
-    case("u","v","ud","vd","phis",&
-         "slmsk","sheleg","tsea","vtype","stype","vfrac",&
-         "stc","smc","snwdph","u_srf","v_srf","f10m", &
-         "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
-         "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
-      !State fields not in increment
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_layer_thickness', &
+           fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
+      !Fields not in increment
     case default 
-      call abor1_ftn("Increment: unknown variable "//trim(vars%fldnames(var)))
+      call abor1_ftn("fv3jedi_increment_mod.create: unknown variable "//trim(vars%fldnames(var)))
 
   end select
 
 enddo
 
 if (vcount .ne. self%nf) &
-call abor1_ftn("fv3jedi_increment_mod create: vcount does not equal self%nf")
+call abor1_ftn("fv3jedi_increment_mod.create: vcount does not equal self%nf")
 
 self%hydrostatic = .true.
 if (associated(self%w) .and. associated(self%delz)) self%hydrostatic = .false.
-
-if (associated(self%ps) .and. associated(self%delp)) then
-  call abor1_ftn("Increment: Ps and delp are both allocated, only one can be used")
-endif
 
 ! Initialize all domain arrays to zero
 call zeros(self)
@@ -195,6 +183,9 @@ self%npz    = geom%npz
 self%ntile  = geom%ntile
 self%ntiles = geom%ntiles
 
+! Pointer to fv3jedi communicator
+self%f_comm = fckit_mpi_comm()
+
 end subroutine create
 
 ! ------------------------------------------------------------------------------
@@ -206,10 +197,30 @@ type(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
 
+!Deallocate fields
 do var = 1, self%nf
   call self%fields(var)%deallocate_field()
 enddo
 deallocate(self%fields)
+
+!Nullify pointers
+if (associated(self%ud  )) nullify(self%ud  )
+if (associated(self%vd  )) nullify(self%vd  )
+if (associated(self%ua  )) nullify(self%ua  )
+if (associated(self%va  )) nullify(self%va  )
+if (associated(self%t   )) nullify(self%t   )
+if (associated(self%ps  )) nullify(self%ps  )
+if (associated(self%delp)) nullify(self%delp)
+if (associated(self%w   )) nullify(self%w   )
+if (associated(self%delz)) nullify(self%delz)
+if (associated(self%q   )) nullify(self%q   )
+if (associated(self%qi  )) nullify(self%qi  )
+if (associated(self%ql  )) nullify(self%ql  )
+if (associated(self%o3  )) nullify(self%o3  )
+if (associated(self%psi )) nullify(self%psi )
+if (associated(self%chi )) nullify(self%chi )
+if (associated(self%tv  )) nullify(self%tv  )
+if (associated(self%rh  )) nullify(self%rh  )
 
 end subroutine delete
 
@@ -314,7 +325,7 @@ else
         exit
       endif
     enddo
-    if (.not.found) call abor1_ftn("fv3jedi_state: Error in increment copy, field "//&
+    if (.not.found) call abor1_ftn("fv3jedi_increment_mod.copy: Field "//&
                     trim(self%fields(self_var)%fv3jedi_name)//" not found in increment being copied from." )
 
   enddo
@@ -324,14 +335,24 @@ endif
 !Set pointers
 do self_var = 1, self%nf
   select case (trim(self%fields(self_var)%fv3jedi_name))
+    case("u","ud")
+      call self%fields(self_var)%array_pointer(self%ud)
+    case("v","vd")
+      call self%fields(self_var)%array_pointer(self%vd)
     case("ua")
       call self%fields(self_var)%array_pointer(self%ua)
     case("va")
       call self%fields(self_var)%array_pointer(self%va)
     case("t","T")
       call self%fields(self_var)%array_pointer(self%t)
+    case("delp","DELP")
+      call self%fields(self_var)%array_pointer(self%delp)
     case("ps")
       call self%fields(self_var)%array_pointer(self%ps)
+    case("w","W")
+      call self%fields(self_var)%array_pointer(self%w)
+    case("delz","DZ")
+      call self%fields(self_var)%array_pointer(self%delz)
     case("q","sphum")
       call self%fields(self_var)%array_pointer(self%q)
     case("qi","ice_wat")
@@ -348,20 +369,8 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%tv)
     case("rh")
       call self%fields(self_var)%array_pointer(self%rh)
-    case("delp","DELP")
-      !call self%fields(self_var)%array_pointer(self%delp)
-    case("w","W")
-      !call self%fields(self_var)%array_pointer(self%w)
-    case("delz","DZ")
-      !call self%fields(self_var)%array_pointer(self%delz)
-    case("u","v","ud","vd","phis",&
-         "slmsk","sheleg","tsea","vtype","stype","vfrac",&
-         "stc","smc","snwdph","u_srf","v_srf","f10m", &
-         "qls","qcn","cfcn","frocean","frland","varflt","ustar",&
-         "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu")
-      !State fields not in increment
     case default 
-      call abor1_ftn("Increment: copy unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
+      call abor1_ftn("fv3jedi_increment_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
   end select
 enddo
 
@@ -466,24 +475,18 @@ real(kind=kind_real),    intent(in)    :: zz
 type(fv3jedi_state),     intent(in)    :: rhs
 
 integer :: var
-real(kind=kind_real), allocatable :: rhs_ps(:,:)
-type(fv3jedi_field), pointer :: rhs_p
+type(fv3jedi_field), pointer :: field_pointer
 
 do var = 1,self%nf
 
-  if (trim(self%fields(var)%fv3jedi_name) .ne. "ps") then
+  !Get pointer to equivalent state
+  call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,field_pointer)
 
-    call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,rhs_p)
-    self%fields(var)%array = self%fields(var)%array + zz * rhs_p%array
+  !inc = inc + zz state
+  self%fields(var)%array = self%fields(var)%array + zz * field_pointer%array
 
-  else
-
-    allocate(rhs_ps(rhs%isc:rhs%iec,rhs%jsc:rhs%jec))
-    rhs_ps = sum(rhs%delp,3)
-    self%fields(var)%array(:,:,1) = self%fields(var)%array(:,:,1) + zz * rhs_ps
-    deallocate(rhs_ps)
-
-  endif
+  !Clear pointer
+  nullify(field_pointer)
 
 enddo
 
@@ -500,12 +503,9 @@ real(kind=kind_real),    intent(inout) :: zprod
 
 real(kind=kind_real) :: zp
 integer :: i,j,k
-type(fckit_mpi_comm) :: f_comm
 integer :: var
 
 call checksame(self,other)
-
-f_comm = fckit_mpi_comm()
 
 zp=0.0_kind_real
 do var = 1,self%nf
@@ -519,10 +519,10 @@ do var = 1,self%nf
 enddo
 
 !Get global dot product
-call f_comm%allreduce(zp,zprod,fckit_mpi_sum())
+call self%f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 
 !For debugging print result:
-if (f_comm%rank() == 0) print*, "Dot product test result: ", zprod
+if (self%f_comm%rank() == 0) print*, "Dot product test result: ", zprod
 
 end subroutine dot_prod
 
@@ -544,56 +544,99 @@ if (check==0) then
     self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
   enddo
 else
-   call abor1_ftn("Increment:  add_incr not implemented for low res increment yet")
+   call abor1_ftn("fv3jedi_increment_mod.add_incr not implemented for low res increment yet")
 endif
 
 end subroutine add_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine diff_incr(self,x1,x2)
+subroutine diff_incr(self,x1,x2,geom)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_state),     intent(in)    :: x1
 type(fv3jedi_state),     intent(in)    :: x2
+type(fv3jedi_geom),      intent(inout) :: geom
 
-real(kind=kind_real), allocatable :: x1_ps(:,:), x2_ps(:,:)
 integer :: var, check
 type(fv3jedi_field), pointer :: x1p, x2p
+real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
+real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
 
 check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 
 call zeros(self)
+
+!D-Grid to A-Grid (if needed)
+if (associated(self%ua) .and. associated(self%va)) then
+  allocate(x1_ua(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
+  allocate(x1_va(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
+  if (associated(x1%ud) .and. associated(x1%vd)) then
+    if (.not.associated(x1%ua) .and. .not. associated(x1%va)) then
+      call d2a(geom, x1%ud, x1%vd, x1_ua, x1_va)
+    else
+      x1_ua = x1%ua
+      x1_va = x1%va
+    endif
+  else
+    x1_ua = 0.0_kind_real
+    x1_va = 0.0_kind_real
+  endif
+  allocate(x2_ua(x2%isc:x2%iec,x2%jsc:x2%jec,1:x2%npz))
+  allocate(x2_va(x2%isc:x2%iec,x2%jsc:x2%jec,1:x2%npz))
+  if (associated(x2%ud) .and. associated(x2%vd)) then
+    if (.not.associated(x2%ua) .and. .not. associated(x2%va)) then
+      call d2a(geom, x2%ud, x2%vd, x2_ua, x2_va)
+    else
+      x2_ua = x2%ua
+      x2_va = x2%va
+    endif
+  else
+    x2_ua = 0.0_kind_real
+    x2_va = 0.0_kind_real
+  endif
+endif
+
 if (check==0) then
 
   do var = 1,self%nf
-  
-    if (trim(self%fields(var)%fv3jedi_name) .ne. "ps") then
-  
+ 
+    !A-Grid winds are special case 
+    if (self%fields(var)%fv3jedi_name == 'ua') then
+
+      self%ua = x1_ua - x2_ua
+
+    elseif (self%fields(var)%fv3jedi_name == 'va') then
+
+      self%va = x1_va - x2_va
+
+    else
+
+      !Get pointer to states
       call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
       call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
 
+      !inc = state - state
       self%fields(var)%array = x1p%array - x2p%array
-  
-    else
-  
-      allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec))
-      allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec))
-      x1_ps = sum(x1%delp,3)
-      x2_ps = sum(x2%delp,3)
-      self%fields(var)%array(:,:,1) = x1_ps   - x2_ps
-      deallocate(x1_ps,x2_ps)
-  
+
+      !Nullify pointers
+      nullify(x1p,x2p)
+
     endif
-  
+
   enddo
 
 else
 
-   call abor1_ftn("Increment: diff_incr not implemented for low res increment yet")
+   call abor1_ftn("fv3jedi_increment_mod.diff_incr: not implemented for low res increment yet")
 
 endif
+
+if (allocated(x1_ua)) deallocate(x1_ua)
+if (allocated(x1_va)) deallocate(x1_va)
+if (allocated(x2_ua)) deallocate(x2_ua)
+if (allocated(x2_va)) deallocate(x2_va)
 
 end subroutine diff_incr
 
@@ -612,7 +655,7 @@ check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 if (check==0) then
    call copy(self, rhs)
 else
-   call abor1_ftn("Increment: change_resol not implmeneted yet")
+   call abor1_ftn("fv3jedi_increment_mod.change_resol: not implmeneted yet")
 endif
 
 end subroutine change_resol
@@ -627,70 +670,26 @@ subroutine read_file(geom, self, c_conf, vdate)
   type(c_ptr),             intent(in)    :: c_conf   !< Configuration
   type(datetime),          intent(inout) :: vdate    !< DateTime
 
+  type(fv3jedi_io_gfs)  :: gfs
+  type(fv3jedi_io_geos) :: geos
+
   character(len=10) :: filetype
   character(len=255) :: filename
-  character(len=255) :: datapath_ti
-  character(len=255) :: datapath_sp
-  character(len=255) :: filename_spec
-  character(len=255) :: filename_core
-  character(len=255) :: filename_trcr
-  character(len=255) :: filename_sfcd
-  character(len=255) :: filename_sfcw
-  character(len=255) :: filename_cplr
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-
-    !Set filenames
-    !--------------
-    filename_core = 'fv_core.res.nc'
-    filename_trcr = 'fv_tracer.res.nc'
-    filename_sfcd = 'sfc_data.nc'
-    filename_sfcw = 'srf_wnd.nc'
-    filename_cplr = 'coupler.res'
-    
-    datapath_ti = config_get_string(c_conf,len(datapath_ti),"datapath_tile")
-    
-    if (config_element_exists(c_conf,"filename_core")) then
-       filename_core = config_get_string(c_conf,len(filename_core),"filename_core")
-    endif
-    if (config_element_exists(c_conf,"filename_trcr")) then
-       filename_trcr = config_get_string(c_conf,len(filename_trcr),"filename_trcr")
-    endif
-    if (config_element_exists(c_conf,"filename_sfcd")) then
-       filename_sfcd = config_get_string(c_conf,len(filename_sfcd),"filename_sfcd")
-    endif
-    if (config_element_exists(c_conf,"filename_sfcw")) then
-       filename_sfcw = config_get_string(c_conf,len(filename_sfcw),"filename_sfcw")
-    endif
-    if (config_element_exists(c_conf,"filename_cplr")) then
-       filename_cplr = config_get_string(c_conf,len(filename_cplr),"filename_cplr")
-    endif
-    if (config_element_exists(c_conf,"filename_spec")) then
-       filename_spec = config_get_string(c_conf,len(filename_spec),"filename_spec")
-       datapath_sp = config_get_string(c_conf,len(datapath_sp),"datapath_spec")  
-    else
-       filename_spec = "null"
-       datapath_sp = "null"
-    endif
-
-    call read_gfs ( geom, self%fields, vdate, self%calendar_type, self%date_init, &
-                    datapath_ti, datapath_sp, &
-                    filename_spec, filename_core, filename_trcr, &
-                    filename_sfcd, filename_sfcw, filename_cplr )
-
+    call gfs%setup(c_conf)
+    call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
+    call gfs%read_fields(geom, self%fields)
   elseif (trim(filetype) == 'geos') then
-
-    if (config_element_exists(c_conf,"filename")) then
-       filename = config_get_string(c_conf,len(filename),"filename")
-       call read_geos(geom, self%fields, vdate, filename)
-    else
-       call read_geos(geom, self%fields, vdate) 
-    endif
-
+    filename = config_get_string(c_conf,len(filename),"filename")
+    call geos%create(geom, 'read', filename)
+    call geos%read_time(vdate)
+    call geos%read_fields(geom, self%fields)
+    call geos%delete()
   else
-     call abor1_ftn("Increment: read restart type not supported")
+     call abor1_ftn("fv3jedi_increment_mod.read: restart type not supported")
   endif
 
 end subroutine read_file
@@ -706,16 +705,22 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(c_ptr),             intent(in)    :: c_conf   !< Configuration
   type(datetime),          intent(inout) :: vdate    !< DateTime
 
+  type(fv3jedi_io_gfs)  :: gfs
+  type(fv3jedi_io_geos) :: geos
+
   character(len=10) :: filetype
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
-     call write_gfs(geom, self%fields, c_conf, vdate, self%calendar_type, self%date_init)
+    call gfs%setup(c_conf)
+    call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos') then
-     call write_geos(geom, self%fields, c_conf, vdate)
+    call geos%create(geom, 'write')
+    call geos%write_all(geom, self%fields, c_conf, vdate)
+    call geos%delete()
   else
-     call abor1_ftn("Increment: write restart type not supported")
+     call abor1_ftn("fv3jedi_increment_mod.write: restart type not supported")
   endif
 
 end subroutine write_file
@@ -741,7 +746,7 @@ integer,                 intent(in)    :: nf
 real(kind=kind_real),    intent(inout) :: pstat(3, nf)
 
 if (nf .ne. self%nf) then
-  call abor1_ftn("fv3jedi_increment: gpnorm | nf passed in does not match expeted nf")
+  call abor1_ftn("fv3jedi_increment.gpnorm: nf passed in does not match expeted nf")
 endif
 
 call fields_gpnorm(nf, self%fields, pstat)
@@ -790,18 +795,18 @@ ifdir = config_get_string(c_conf,len(ifdir),"ifdir")
 itiledir = config_get_int(c_conf,"itiledir")
 
 ! Check
-if (ndir<1) call abor1_ftn("Increment: dirac non-positive ndir")
+if (ndir<1) call abor1_ftn("fv3jedi_increment_mod.dirac: non-positive ndir")
 if (any(ixdir<1).or.any(ixdir>self%npx)) then
-   call abor1_ftn("Increment: dirac invalid ixdir")
+   call abor1_ftn("fv3jedi_increment_mod.dirac: invalid ixdir")
 endif
 if (any(iydir<1).or.any(iydir>geom%size_cubic_grid)) then
-   call abor1_ftn("Increment: dirac invalid iydir")
+   call abor1_ftn("fv3jedi_increment_mod.dirac: invalid iydir")
 endif
 if ((ildir<1).or.(ildir>self%npz)) then
-   call abor1_ftn("Increment: dirac invalid ildir")
+   call abor1_ftn("fv3jedi_increment_mod.dirac invalid ildir")
 endif
 if ((itiledir<1).or.(itiledir>6)) then
-   call abor1_ftn("Increment: dirac invalid itiledir")
+   call abor1_ftn("fv3jedi_increment_mod.dirac: invalid itiledir")
 endif
 
 ! Setup Diracs
@@ -822,7 +827,7 @@ do idir=1,ndir
            self%fields(var)%array(ixdir(idir),iydir(idir),ildir) = 1.0
          endif
        enddo
-       if (.not.found) call abor1_ftn("fv3jedi_increment, dirac error: field "&
+       if (.not.found) call abor1_ftn("fv3jedi_increment_mod.dirac:: field "&
                                        //trim(ifdir)//" not found")
    endif
 end do
@@ -844,7 +849,7 @@ if (ug%colocated==1) then
 else
    ! Not colocated
    ug%ngrid = 1
-   call abor1_ftn("Increment: Uncolocated grids not coded yet, and not needed")
+   call abor1_ftn("fv3jedi_increment_mod.ug_size: Uncolocated grids not coded yet")
 end if
 
 ! Allocate grid instances
@@ -999,7 +1004,6 @@ real(kind=kind_real) :: Tfac, Tref
 real(kind=kind_real) :: qfac, qeps
 real(kind=kind_real) :: pfac, pref
 
-
 !Code to compute a vector norm for an increment, e.g. the energy norm for FSOI
 
 isc = self%isc
@@ -1081,7 +1085,7 @@ if (associated(self%ps)) then
     enddo
   enddo
 else
-  call abor1_ftn("Increment: JGradNorm does not support not using Ps in the increment yet")
+  call abor1_ftn("fv3jedi_increment_mod.jnormgrad: Ps must be in the increment")
 endif
 
 deallocate(cellweight)
@@ -1100,15 +1104,13 @@ type(fv3jedi_increment), intent(in) :: other
 integer :: var
 
 if (self%nf .ne. other%nf) then
-  call abor1_ftn("fv3jedi_increment check increments have same fields failed: &
-                  different number of fields")
+  call abor1_ftn("fv3jedi_increment_mod.checksame: Different number of fields")
 endif
 
 do var = 1,self%nf
   if (self%fields(var)%fv3jedi_name .ne. other%fields(var)%fv3jedi_name) then
-      call abor1_ftn("fv3jedi_increment check increments have same fields failed: &
-                  field "//self%fields(var)%fv3jedi_name//" not in the equivalent position &
-                  in the right hand side")
+      call abor1_ftn("fv3jedi_increment_mod.checksame: field "//trim(self%fields(var)%fv3jedi_name)//&
+                     " not in the equivalent position in the right hand side")
   endif
 enddo
 

@@ -20,9 +20,10 @@ public :: fv3jedi_field, get_field, &
 type :: fv3jedi_field
  logical :: lalloc = .false.
  character(len=32) :: short_name = "null"   !Short name (to match file name)
- character(len=64) :: fv3jedi_name = "null" !Common name
+ character(len=10) :: fv3jedi_name = "null" !Common name
  character(len=64) :: long_name = "null"    !More descriptive name
  character(len=32) :: units = "null"        !Units for the field
+ logical :: tracer = .false.
  integer :: staggerloc   !Middle, corners, east, south, etc
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
@@ -41,7 +42,7 @@ contains
 ! ------------------------------------------------------------------------------
 
 subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
-                          fv3jedi_name,units,staggerloc,arraypointer)
+                          fv3jedi_name,units,staggerloc,tracer,arraypointer)
 
 implicit none
 class(fv3jedi_field), target,  intent(inout) :: self
@@ -50,14 +51,18 @@ character(len=*),              intent(in)    :: short_name
 character(len=*),              intent(in)    :: long_name
 character(len=*),              intent(in)    :: fv3jedi_name
 character(len=*),              intent(in)    :: units
-integer,                       intent(in)    :: staggerloc 
+integer,                       intent(in)    :: staggerloc
 real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
+logical, optional,             intent(in)    :: tracer 
 
 self%isc = isc
 self%iec = iec
 self%jsc = jsc
 self%jec = jec
 self%npz = npz
+
+if (len(fv3jedi_name) > 10) &
+call abor1_ftn("fv3jedi_field_mod.allocate_field: fv3jedi_name should not be longer than ten characters")
 
 if(.not.self%lalloc) then
 
@@ -74,6 +79,8 @@ if(.not.self%lalloc) then
 
 endif
 
+arraypointer => self%array
+
 self%lalloc = .true.
 
 self%short_name   = trim(short_name)
@@ -82,7 +89,11 @@ self%fv3jedi_name = trim(fv3jedi_name)
 self%units        = trim(units)
 self%staggerloc   = staggerloc
 
-arraypointer => self%array
+if (present(tracer)) then
+  self%tracer = tracer
+else
+  self%tracer = .false.
+endif
 
 end subroutine allocate_field
 
@@ -148,7 +159,7 @@ subroutine get_field(nf,fields,fv3jedi_name,field_pointer)
 
 integer,                      intent(in)  :: nf
 type(fv3jedi_field), target,  intent(in)  :: fields(nf)
-character(len=32),            intent(in)  :: fv3jedi_name
+character(len=10),            intent(in)  :: fv3jedi_name
 type(fv3jedi_field), pointer, intent(out) :: field_pointer
 
 integer :: var
