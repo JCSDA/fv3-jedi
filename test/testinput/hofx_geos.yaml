@@ -31,29 +31,6 @@ Observations:
     - air_temperature
     - northward_wind
     ObsBias: {}
-#  - ObsType: GnssroBndGSI
-#    ObsData:
-#      ObsDataIn:
-#        obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
-#      obsvalue: BNA
-#      ObsDataOut:
-#        obsfile: Data/gnssro_hofx.nc4
-#      obsvalue: BNA
-#    ObsBias: {}
-#  - ObsType: CRTM
-#    ObsData:
-#      ObsDataIn:
-#        obsfile: Data/amsua_obs_n19_2018041500_m.nc4
-#      ObsDataOut:
-#        obsfile: Data/amsua_hofx.nc4
-#    ObsBias: {}
-#    ObsOptions:
-#      n_Absorbers: 3
-#      n_Clouds: 2
-#      n_Aerosols: 0
-#      Sensor_ID: 'amsua_n19'
-#      EndianType: 'little_endian'
-#      CoefficientPath: 'Data/'
   - ObsType: Radiosonde
     ObsData:
       ObsDataIn:

@@ -5,28 +5,13 @@ cost_function:
     Background:
       state:
       - filetype: gfs
-        datapath_read: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
         datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-        datapath_write: 'Data/'
-        date: '2018-04-15T00:00:00Z'
-        read_crtm_surface: 1
         filename_core: 20180415.000000.fv_core.res.nc
-        filename_cplr: 20180415.000000.coupler.res
         filename_trcr: 20180415.000000.fv_tracer.res.nc
         filename_sfcd: 20180415.000000.sfc_data.nc
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        nml_file: Data/fv3files/input_gfs_c48.nml
-        variables:
-        - ud
-        - vd
-        - ua
-        - va
-        - t
-        - delp
-        - q
-        - qi
-        - ql
-        - o3
+        filename_cplr: 20180415.000000.coupler.res
+        variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -34,43 +19,6 @@ cost_function:
       maximum_condition_number: 1.0e6
       standard_deviation: '0.8'
       vertical_correlation: '0.2'
-#    Covariance:
-#      covariance: BUMP
-#      default_seed: 1
-#      prefix: fv3jedi_gfs
-#      method: cov
-#      strategy: specific_univariate
-#      new_nicas: 1     # Recompute convolution parameters
-#      load_nicas: 0    # Load precomputed convolution parameters
-#      sam_read: 0
-#      sam_write: 1  
-#      mask_check: 0
-#      draw_type: random_uniform
-#      nc1: 100
-#      ntry: 3
-#      nrep:  2
-#      nc3: 10
-#      dc: 1000.0e3
-#      nl0r: 1
-#      minim_algo: "hooke"
-#      rvflt: 0.0
-#      lsqrt: 1  
-#      resol: 10.0
-#      nicas_interp: bilin
-#      network: 0
-#      mpicom: 2
-#      forced_radii: 1
-#      rh: 1000e3
-#      rv: 100
-#      advmode: 0
-#      diag_interp: bilin
-#      date: '2018-04-15T00:00:00Z'
-#      variable_changes:
-#      - varchange: Control2Analysis
-#        inputVariables:
-#          variables: ["ua","va","t","ps","q","qi","ql","o3"]
-#        outputVariables:
-#          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: "CRTM"
@@ -84,26 +32,23 @@ cost_function:
        CoefficientPath: "Data/"
       ObsData: 
        ObsDataIn: 
-        obsfile: "Data/amsua_obs_n19_2018041500_m.nc4"
+        obsfile: "Data/amsua_n19_obs_2018041500_m.nc4"
        ObsDataOut: 
         obsfile: "Data/amsua_fmo.nc4"
       Covariance:
         covariance: diagonal
   cost_type: 3D-Var
-  variables:
-  - ud
-  - vd
-  - ua
-  - va
-  - t
-  - delp
-  - ps
-  - q
-  - qi
-  - ql
-  - o3
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
+  varchange: Analysis2Model
+  filetype: 'gfs'
+  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
 final:
   diagnostics:
     departures: oman
@@ -112,19 +57,27 @@ minimizer:
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
-  tstep: PT15M
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr","phis"]
 output:
   filetype: gfs
-  datapath_write: Data/
-  filename_core: 3DVar.gfs.fv_core.res.nc
-  filename_cplr: 3DVar.gfs.coupler.res
-  filename_trcr: 3DVar.gfs.fv_tracer.res.nc
+  datapath_tile: Data/
+  filename_core: 3dvar_gfs.fv_core.res.nc
+  filename_trcr: 3dvar_gfs.fv_tracer.res.nc
+  filename_sfcd: 3dvar_gfs.sfc_data.nc
+  filename_sfcw: 3dvar_gfs.fv_srf_wnd.res.nc
+  filename_cplr: 3dvar_gfs.coupler.res
   first: PT0H
   frequency: PT1H
 resolution:
   nml_file: Data/fv3files/input_gfs_c48.nml
-  filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_akbk: 20180415.000000.fv_core.res.nc
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 variational:
   iteration:
   - diagnostics:
@@ -132,52 +85,56 @@ variational:
     gradient_norm_reduction: 1e-10
     linearmodel:
       varchange: 'Identity'
-      name: 'FV3JEDITLM'
-      version: FV3JEDITLM
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        tstep: PT15M
-      tstep: PT15M
-      version: FV3JEDIIdTLM
-      varchange: 'Identity'
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT3H
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20180415.000000.fv_core.res.nc
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
       varchange: 'Identity'
-      name: 'FV3JEDITLM'
-      version: FV3JEDITLM
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
-        tstep: PT15M
-      tstep: PT15M
-      update_dgridwind: '0'
-      update_pressures: '1'
-      version: FV3JEDIIdTLM
-      varchange: 'Identity'
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT3H
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c48.nml
-      filepath_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-      filename_akbk: 20180415.000000.fv_core.res.nc
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
     test: 'on'

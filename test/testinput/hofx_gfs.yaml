@@ -33,7 +33,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/aircraft_hofx.nc4
+        obsfile: Data/aircraft_hofx_gfs.nc4
     variables:
     - air_temperature
     ObsBias: {}
@@ -56,16 +56,16 @@ Observations:
         obsfile: Data/gnssro_obs_2018041500_m.nc4
       obsvalue: refractivity
       ObsDataOut:
-        obsfile: Data/gnssro_hofx.nc4
+        obsfile: Data/gnssro_hofx_gfs.nc4
       obsvalue: refractivity
     ObsBias: {}
   - ObsType: CRTM
     channels: "1-15"
     ObsData:
       ObsDataIn:
-        obsfile: Data/amsua_obs_n19_2018041500_m.nc4
+        obsfile: Data/amsua_n19_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/amsua_hofx.nc4
+        obsfile: Data/amsua_hofx_gfs.nc4
     ObsBias: {}
     ObsOptions:
       n_Absorbers: 3
@@ -79,7 +79,7 @@ Observations:
       ObsDataIn:
         obsfile: Data/sondes_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/sondes_hofx.nc4
+        obsfile: Data/sondes_hofx_gfs.nc4
     variables:
     - air_temperature
     ObsBias: {}
