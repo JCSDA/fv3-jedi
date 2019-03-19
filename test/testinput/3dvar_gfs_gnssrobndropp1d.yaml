@@ -1,0 +1,151 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: gfs
+        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+        filename_core: 20180415.000000.fv_core.res.nc
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_sfcd: 20180415.000000.sfc_data.nc
+        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+        variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+    Covariance:
+      covariance: FV3JEDIstatic
+      date: '2018-04-15T00:00:00Z'
+      horizontal_length_scale: 1e6
+      maximum_condition_number: 1.0e6
+      standard_deviation: '0.8'
+      vertical_correlation: '0.2'
+  Jo:
+    ObsTypes:
+    - ObsType: GnssroBndROPP1D
+      ObsOptions:
+        use_compress: 1
+      ObsData:
+        ObsDataIn:
+          obsfile: Data/gnssro_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/gfs.3dvar.ropp1d.out.nc4
+        obsvalue: bending_angle
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Domain Check
+        where:
+        - variable: altitude
+          minvalue: 0
+          maxvalue: 50000
+        - variable: earth_radius_of_curvature
+          minvalue: 6250000
+          maxvalue: 6450000
+        - variable: geoid_height_above_reference_ellipsoid
+          minvalue: -200
+          maxvalue: 200
+      - Filter: Background Check
+        variables:
+        - bending_angle
+        threshold: 3.0
+  cost_type: 3D-Var
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: 'gfs'
+  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT6H
+  readtraj: 0
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr","phis"]
+output:
+  filetype: gfs
+  datapath_tile: Data/
+  filename_core: 3dvar_gfs.fv_core.res.nc
+  filename_trcr: 3dvar_gfs.fv_tracer.res.nc
+  filename_sfcd: 3dvar_gfs.sfc_data.nc
+  filename_sfcw: 3dvar_gfs.fv_srf_wnd.res.nc
+  filename_cplr: 3dvar_gfs.coupler.res
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file: Data/fv3files/input_gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+variational:
+  iteration:
+  - diagnostics:
+      departures: ombg
+    gradient_norm_reduction: 1e-10
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      nml_file: Data/fv3files/input_gfs_c48.nml
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT6H
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+      trajectory:
+        name: 'FV3'
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT6H
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+    ninner: '10'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c48.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+    test: 'on'
+  - gradient_norm_reduction: 1e-10
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      nml_file: Data/fv3files/input_gfs_c48.nml
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT6H
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+      trajectory:
+        name: 'FV3'
+        nml_file: Data/fv3files/input_gfs_c48.nml
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT6H
+        readtraj: 0
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+    ninner: '10'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c48.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+    test: 'on'
