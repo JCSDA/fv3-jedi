@@ -181,7 +181,7 @@ if (associated(state%delp)) then
   delp = state%delp
 elseif (associated(state%ps)) then
   do jlev = 1,geom%npz
-    delp(:,:,jlev) = (geom%bk(jlev+1)-geom%bk(jlev))*state%ps(:,:,1)
+    delp(:,:,jlev) = (geom%ak(jlev+1)-geom%ak(jlev))+(geom%bk(jlev+1)-geom%bk(jlev))*state%ps(:,:,1)
   enddo
 else
   call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute delp from the state")
