@@ -81,7 +81,7 @@ cost_function:
         where:
         - variable: altitude
           minvalue: 0
-          maxvalue: 20000
+          maxvalue: 30000
         - variable: earth_radius_of_curvature
           minvalue: 6250000
           maxvalue: 6450000
