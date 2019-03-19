@@ -21,59 +21,15 @@ cost_function:
       vertical_correlation: '0.2'
   Jo:
     ObsTypes:
-    - ObsType: Aircraft
-      ObsData:
-        ObsDataIn:
-          obsfile: Data/aircraft_obs_2018041500_m.nc4
-        ObsDataOut:
-          obsfile: Data/gfs.3dvar.air.out.nc4
-        obsvalue: ObsValue
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
-      Covariance:
-        covariance: diagonal
-      ObsFilters:
-      - Filter: Background Check
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
-        threshold: 6.0
-      - Filter: BlackList
-        where:
-        - variable: Land_Fraction@GeoVaLs
-          maxvalue: 0.0
-    - ObsType: Radiosonde
-      ObsData:
-        ObsDataIn:
-          obsfile: Data/sondes_obs_2018041500_m.nc4
-        ObsDataOut:
-          obsfile: Data/gfs.3dvar.rs.out.nc4
-        obsvalue: ObsValue
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
-      Covariance:
-        covariance: diagonal
-      ObsFilters:
-      - Filter: Background Check
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
-        threshold: 3.0
-    - ObsType: GnssroRef
+    - ObsType: GnssroBndROPP1D
       ObsOptions:
         use_compress: 1
       ObsData:
         ObsDataIn:
           obsfile: Data/gnssro_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.3dvar.ref.out.nc4
-        obsvalue: refractivity
+          obsfile: Data/gfs.3dvar.ropp1d.out.nc4
+        obsvalue: bending_angle
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -81,7 +37,7 @@ cost_function:
         where:
         - variable: altitude
           minvalue: 0
-          maxvalue: 30000
+          maxvalue: 50000
         - variable: earth_radius_of_curvature
           minvalue: 6250000
           maxvalue: 6450000
@@ -90,7 +46,7 @@ cost_function:
           maxvalue: 200
       - Filter: Background Check
         variables:
-        - refractivity
+        - bending_angle
         threshold: 3.0
   cost_type: 3D-Var
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
@@ -113,7 +69,7 @@ model:
   name: 'FV3'
   nml_file: Data/fv3files/input_gfs_c48.nml
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-  tstep: PT3H
+  tstep: PT6H
   readtraj: 0
   lm_do_dyn: 1
   lm_do_trb: 0
@@ -144,7 +100,7 @@ variational:
       version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT3H
+      tstep: PT6H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -153,7 +109,7 @@ variational:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
+        tstep: PT6H
         readtraj: 0
         lm_do_dyn: 1
         lm_do_trb: 0
@@ -172,7 +128,7 @@ variational:
       version: FV3JEDIIdTLM
       nml_file: Data/fv3files/input_gfs_c48.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT3H
+      tstep: PT6H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -181,7 +137,7 @@ variational:
         name: 'FV3'
         nml_file: Data/fv3files/input_gfs_c48.nml
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
+        tstep: PT6H
         readtraj: 0
         lm_do_dyn: 1
         lm_do_trb: 0
