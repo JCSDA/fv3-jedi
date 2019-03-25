@@ -563,6 +563,7 @@ integer :: var, check
 type(fv3jedi_field), pointer :: x1p, x2p
 real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
 real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
+real(kind=kind_real), allocatable :: x1_ps(:,:,:), x2_ps(:,:,:)
 
 check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 
@@ -598,11 +599,35 @@ if (associated(self%ua) .and. associated(self%va)) then
   endif
 endif
 
+!delp to ps
+if (associated(self%ps)) then
+ 
+  allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec,1))
+  allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec,1))
+
+  if (associated(x1%delp)) then
+    x1_ps(:,:,1) = sum(x1%delp,3)
+  elseif (associated(x1%ps)) then
+    x1_ps = x1%ps
+  else
+    call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x1")
+  endif
+
+  if (associated(x2%delp)) then
+    x2_ps(:,:,1) = sum(x2%delp,3)
+  elseif (associated(x2%ps)) then
+    x2_ps = x2%ps
+  else
+    call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x2")
+  endif
+
+endif
+
 if (check==0) then
 
   do var = 1,self%nf
- 
-    !A-Grid winds are special case 
+
+    !A-Grid winds can be a special case 
     if (self%fields(var)%fv3jedi_name == 'ua') then
 
       self%ua = x1_ua - x2_ua
@@ -610,6 +635,11 @@ if (check==0) then
     elseif (self%fields(var)%fv3jedi_name == 'va') then
 
       self%va = x1_va - x2_va
+
+    !Ps can be a special case
+    elseif (self%fields(var)%fv3jedi_name == 'ps') then
+
+      self%ps = x1_ps - x2_ps
 
     else
 
@@ -637,6 +667,8 @@ if (allocated(x1_ua)) deallocate(x1_ua)
 if (allocated(x1_va)) deallocate(x1_va)
 if (allocated(x2_ua)) deallocate(x2_ua)
 if (allocated(x2_va)) deallocate(x2_va)
+if (allocated(x1_ps)) deallocate(x1_ps)
+if (allocated(x2_ps)) deallocate(x2_ps)
 
 end subroutine diff_incr
 

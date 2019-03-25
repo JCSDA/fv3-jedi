@@ -11,7 +11,9 @@ cost_function:
         filename_sfcd: 20180415.000000.sfc_data.nc
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
-        variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+                    "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+                    "u_srf","v_srf","f10m"]
     Covariance:
       covariance: FV3JEDIstatic
       date: '2018-04-15T00:00:00Z'
@@ -92,6 +94,22 @@ cost_function:
         variables:
         - refractivity
         threshold: 3.0
+    - ObsType: "CRTM"
+      channels: "1-6,9-13,15"
+      ObsOptions: 
+       n_Absorbers: 3
+       n_Clouds: 2
+       n_Aerosols: 0
+       Sensor_ID: amsua_n19
+       EndianType: little_endian
+       CoefficientPath: "Data/"
+      ObsData: 
+       ObsDataIn: 
+        obsfile: "Data/amsua_n19_obs_2018041500_m.nc4"
+       ObsDataOut: 
+        obsfile: "Data/amsua_fmo.nc4"
+      Covariance:
+        covariance: diagonal
   cost_type: 3D-Var
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'
@@ -118,7 +136,9 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["u","v","ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr","phis"]
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
 output:
   filetype: gfs
   datapath_tile: Data/

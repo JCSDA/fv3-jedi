@@ -487,7 +487,7 @@ if (self%iam_io_proc) then
       allocate(dimids(ndimids3))
       dimids = dimids3
     else
-      call abor1_ftn("read_geos: vertical dimension not supported")
+      call abor1_ftn("write_geos: vertical dimension not supported")
     endif
   
     vc=vc+1

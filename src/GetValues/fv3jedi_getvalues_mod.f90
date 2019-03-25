@@ -2,7 +2,7 @@ module fv3jedi_getvalues_mod
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use type_bump, only: bump_type
-use ufo_geovals_mod, only: ufo_geovals
+use ufo_geovals_mod, only: ufo_geovals, ufo_geovals_write_netcdf
 use ufo_locs_mod, only: ufo_locs
 use ufo_vars_mod, only: ufo_vars
 
@@ -97,7 +97,10 @@ real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperatu
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
 logical,  parameter               :: use_compress = .true.       !Could be a fv3 namelist option?
 
-
+!For writing GeoVaLs foe debugging
+!type(fckit_mpi_comm) :: comm
+!character(len=800)   :: gomfilename
+!character(len=10)    :: cproc
 
 ! Grid convenience
 ! ----------------
@@ -541,7 +544,7 @@ do jvar = 1, vars%nv
 
   !Run some basic checks on the interpolation
   !------------------------------------------
-  call getvalues_checks(myname, locs, vars, gom, jvar)
+  call getvalues_checks(myname, vars, gom, jvar)
 
 
   ! Find observation location equivlent
@@ -570,6 +573,14 @@ do jvar = 1, vars%nv
   nullify(geoval)
 
 enddo
+
+
+!For debugging we can write the geovals
+!comm = fckit_mpi_comm()
+!write(cproc,fmt='(i4.4)') comm%rank()
+!gomfilename = 'Data/fv3jedi_geovals_'//trim(cproc)//'.nc4'
+!call ufo_geovals_write_netcdf(gom, trim(gomfilename), locs%lat(:), locs%lon(:))
+
 
 if (.not. present(traj)) then
   call pbump%dealloc
@@ -743,7 +754,7 @@ do jvar = 1, vars%nv
 
   !Run some basic checks on the interpolation
   !------------------------------------------
-  call getvalues_checks(myname, locs, vars, gom, jvar)
+  call getvalues_checks(myname, vars, gom, jvar)
 
 
   ! Find observation location equivlent
@@ -1089,10 +1100,9 @@ end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 
-subroutine getvalues_checks(cop, locs, vars, gom, jvar)
+subroutine getvalues_checks(cop, vars, gom, jvar)
 implicit none
 character(len=*),  intent(in) :: cop
-type(ufo_locs),    intent(in) :: locs
 type(ufo_vars),    intent(in) :: vars
 type(ufo_geovals), intent(in) :: gom
 integer, intent(in)           :: jvar

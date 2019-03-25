@@ -136,7 +136,7 @@ do k = 1,npz
 
         tem2 = t(i,j,k) - tice
         tem1 = grav/rdry
-        tem3 = tem1 * qi_ade(i,j,k) * (p(i,j,k)/delp(i,j,k))/t(i,j,k) * (1.0_kind_real + zvir * q(i,j,k))
+        tem3 = tem1 * qi_ade(i,j,k) * (p(i,j,k)/delp(i,j,k))/t(i,j,k) * (1.0_kind_real + zvir * max(q(i,j,k),0.0_kind_real))
 
         if (tem2 < -50.0_kind_real ) then
            qi_efr(i,j,k) =  (1250._kind_real/9.917_kind_real)*tem3**0.109_kind_real
@@ -176,12 +176,39 @@ real(kind=kind_real), intent(in ) :: q  (geom%isc:geom%iec,geom%jsc:geom%jec, 1:
 real(kind=kind_real), intent(out) :: qmr(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+real(kind=kind_real) :: q_pos(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 real(kind=kind_real) :: c3(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+
+
+! Grid convenience
+! ----------------
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
+
+
+! Remove negative values
+! ----------------------
+q_pos = q
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+      if (q_pos(i,j,k) < 0.0_kind_real) then
+        q_pos(i,j,k) = 0.0_kind_real
+      endif
+    enddo
+  enddo
+enddo
+
 
 ! Convert specific humidity
 ! -------------------------
-c3 = 1.0_kind_real / (1.0_kind_real - q)
-qmr = 1000.0_kind_real * q * c3
+c3 = 1.0_kind_real / (1.0_kind_real - q_pos)
+qmr = 1000.0_kind_real * q_pos * c3
 
 end subroutine crtm_mixratio
 
@@ -198,14 +225,44 @@ real(kind=kind_real), intent(in ) :: q_tl  (geom%isc:geom%iec,geom%jsc:geom%jec,
 real(kind=kind_real), intent(out) :: qmr_tl(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+real(kind=kind_real) :: q_pos(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real) :: q_tl_pos(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 real(kind=kind_real) :: c3   (geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 real(kind=kind_real) :: c3_tl(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 
+
+! Grid convenience
+! ----------------
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
+
+
+! Remove negative values
+! ----------------------
+q_pos = q
+q_tl_pos = q_tl
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+      if (q_pos(i,j,k) < 0.0_kind_real) then
+        q_pos(i,j,k) = 0.0_kind_real
+        q_tl_pos(i,j,k) = 0.0_kind_real
+      endif
+    enddo
+  enddo
+enddo
+
+
 ! Convert specific humidity
 ! -------------------------
-c3 = 1.0_kind_real / (1.0_kind_real - q)
-c3_tl = -((-q_tl)/(1.0_kind_real-q)**2)
-qmr_tl = 1000.0_kind_real*(q_tl*c3+q*c3_tl)
+c3 = 1.0_kind_real / (1.0_kind_real - q_pos)
+c3_tl = -((-q_tl_pos)/(1.0_kind_real-q_pos)**2)
+qmr_tl = 1000.0_kind_real*(q_tl_pos*c3+q_pos*c3_tl)
 
 end subroutine crtm_mixratio_tl
 
@@ -222,15 +279,58 @@ real(kind=kind_real), intent(inout) :: q_ad  (geom%isc:geom%iec,geom%jsc:geom%je
 real(kind=kind_real), intent(inout) :: qmr_ad(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Mixing ratio | 1
 
 !Locals
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+real(kind=kind_real) :: q_pos(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real) :: q_ad_pos(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 real(kind=kind_real) :: c3   (geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 real(kind=kind_real) :: c3_ad(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
 
+
+! Grid convenience
+! ----------------
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
+
+
+! Remove negative values
+! ----------------------
+q_pos = q
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+      if (q_pos(i,j,k) < 0.0_kind_real) then
+        q_pos(i,j,k) = 0.0_kind_real
+      endif
+    enddo
+  enddo
+enddo
+
+
 ! Convert specific humidity
 ! -------------------------
-c3 = 1.0_kind_real/(1.0_kind_real-q)
-c3_ad = 1000.0_kind_real*q*qmr_ad
-q_ad = q_ad + c3_ad/(1.0_kind_real-q)**2 + 1000.0_kind_real*c3*qmr_ad
+c3 = 1.0_kind_real/(1.0_kind_real-q_pos)
+c3_ad = 1000.0_kind_real*q_pos*qmr_ad
+q_ad_pos = c3_ad/(1.0_kind_real-q_pos)**2 + 1000.0_kind_real*c3*qmr_ad
 qmr_ad = 0.0_8
+
+
+! Remove negative values adjoint
+! ------------------------------
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+      if (q_pos(i,j,k) < 0.0_kind_real) then
+        q_ad_pos(i,j,k) = 0.0_kind_real
+      endif
+    enddo
+  enddo
+enddo
+
+q_ad = q_ad + q_ad_pos
 
 end subroutine crtm_mixratio_ad
 

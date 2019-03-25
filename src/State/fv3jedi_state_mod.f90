@@ -558,6 +558,7 @@ logical :: found_neg
 type(fv3jedi_field), pointer :: field_pointer
 
 real(kind=kind_real), allocatable :: rhs_ud(:,:,:), rhs_vd(:,:,:)
+real(kind=kind_real), allocatable :: rhs_delp(:,:,:)
 
 !Convert A-Grid increment to D-Grid increment
 if (associated(rhs%ua) .and. associated(rhs%va) .and. &
@@ -566,6 +567,20 @@ if (associated(rhs%ua) .and. associated(rhs%va) .and. &
   allocate(rhs_ud(rhs%isc:rhs%iec  ,rhs%jsc:rhs%jec+1,1:rhs%npz))
   allocate(rhs_vd(rhs%isc:rhs%iec+1,rhs%jsc:rhs%jec  ,1:rhs%npz))
   call a2d(geom, rhs%ua, rhs%va, rhs_ud, rhs_vd)
+endif
+
+!ps to delp if necessary
+if (associated(self%delp)) then
+  allocate(rhs_delp(rhs%isc:rhs%iec,rhs%jsc:rhs%jec,1:rhs%npz))
+  if (associated(rhs%ps)) then
+     do k = 1,rhs%npz
+       rhs_delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*rhs%ps(:,:,1) !TLM
+     enddo
+  elseif (associated(rhs%delp)) then
+     rhs_delp = rhs%delp
+  else
+    call abor1_ftn("fv3jedi_state_mod.add_incr: problem getting delp from the increment")
+  endif
 endif
 
 !Check for matching resolution between state and increment
@@ -584,6 +599,10 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
 
       if (associated(self%va)) self%va = self%va + rhs%va
       if (associated(self%vd) .and. .not.associated(rhs%vd)) self%vd = self%vd + rhs_vd
+
+    elseif (rhs%fields(var)%fv3jedi_name == 'ps') then
+
+      self%delp = self%delp + rhs_delp
 
     else
 
@@ -635,6 +654,7 @@ enddo
 
 if (allocated(rhs_ud)) deallocate(rhs_ud)
 if (allocated(rhs_vd)) deallocate(rhs_vd)
+if (allocated(rhs_delp)) deallocate(rhs_delp)
 
 end subroutine add_incr
 

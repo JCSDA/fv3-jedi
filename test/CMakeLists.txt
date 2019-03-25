@@ -1035,7 +1035,6 @@ list( APPEND fv3jedi_test_input
 compare.sh
 testinput/3dfgat_geos.yaml
 testinput/3dfgat_gfs.yaml
-testinput/3dvar_amsua_gfs.yaml
 testinput/3dvar_geos.yaml
 testinput/3dvar_gfs.yaml
 testinput/4dvar.dripcg_geos.yaml

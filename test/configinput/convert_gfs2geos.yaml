@@ -1,23 +1,24 @@
 nml_file: Data/fv3files/fmsmpp.nml
 inputresolution:
-  nml_file: Data/fv3files/input_gfs_c768.nml
+  nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: /gpfsm/dnb31/drholdaw/JediScratch/AWS/24h_forecast/20180415.210000.fv_core.res.nc
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 outputresolution:
-  nml_file: Data/fv3files/input_gfs_c768.nml
+  nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: /gpfsm/dnb31/drholdaw/JediScratch/AWS/24h_forecast/20180415.210000.fv_core.res.nc
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
 input:
   filetype: gfs
-  datapath_tile: /gpfsm/dnb31/drholdaw/JediScratch/AWS/24h_forecast/
-  filename_core: 20180415.210000.fv_core.res.nc
-  filename_trcr: 20180415.210000.fv_tracer.res.nc
-  filename_sfcd: 20180415.210000.sfc_data.nc
-  filename_sfcw: 20180415.210000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.210000.coupler.res
-  #variables: ["u","v","T","DELP","sphum","liq_wat","o3mr","phis"]
-  variables: ["u","T"]
+  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","snwdph",
+              "u_srf","v_srf","f10m"]
 output:
   filetype: geos
-  datapath: /gpfsm/dnb31/drholdaw/JediScratch/AWS/24h_forecast/
-  filename: forecast_aws_.
+  datapath: Data/
+  filename: gfs_geos_.
