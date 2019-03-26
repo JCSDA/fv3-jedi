@@ -16,7 +16,7 @@ State:
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
 InterpTest:
-  tolerance: 1.0e-10
+  tolerance: 1.0e-12
   Locations:
     Rdist: '1'
     Nrandom: '100'

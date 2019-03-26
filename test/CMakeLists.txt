@@ -1194,133 +1194,114 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 # Test interface classes with FV3JEDI
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_gfs
-                  BOOST
                   SOURCES executables/TestGeometry.cc
                   ARGS    "testinput/geometry_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
-                  BOOST
                   SOURCES executables/TestGeometry.cc
                   ARGS    "testinput/geometry_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_state_gfs
-                  BOOST
                   SOURCES executables/TestState.cc
                   ARGS    "testinput/state_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_state_geos
-                  BOOST
                   SOURCES executables/TestState.cc
                   ARGS    "testinput/state_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_gfs-fv3
-                  BOOST
                   SOURCES executables/TestModel.cc
                   ARGS    "testinput/model_gfs-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_geos-fv3
-                  BOOST
                   SOURCES executables/TestModel.cc
                   ARGS    "testinput/model_geos-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelread_geos-fv3
-                  BOOST
                   SOURCES executables/TestModel.cc
                   ARGS    "testinput/modelread_geos-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_gfs
-                  BOOST
                   SOURCES executables/TestLinearModel.cc
                   ARGS    "testinput/linearmodel_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_geos
-                  BOOST
                   SOURCES executables/TestLinearModel.cc
                   ARGS    "testinput/linearmodel_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelaux_gfs-fv3
-                  BOOST
                   SOURCES executables/TestModelAuxControl.cc
                   ARGS    "testinput/model_gfs-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelaux_geos-fv3
-                  BOOST
                   SOURCES executables/TestModelAuxControl.cc
                   ARGS    "testinput/model_geos-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment_gfs
-                  BOOST
                   SOURCES executables/TestIncrement.cc
                   ARGS    "testinput/increment_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
-                  BOOST
                   SOURCES executables/TestIncrement.cc
                   ARGS    "testinput/increment_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_gfs
-                  BOOST
                   SOURCES executables/TestLinVarCha.cc
                   ARGS    "testinput/linvarcha_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_geos
-                  BOOST
                   SOURCES executables/TestLinVarCha.cc
                   ARGS    "testinput/linvarcha_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_gfs
-                  BOOST
                   SOURCES executables/TestErrorCovariance.cc
                   ARGS    "testinput/errorcov_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_geos
-                  BOOST
                   SOURCES executables/TestErrorCovariance.cc
                   ARGS    "testinput/errorcov_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_gfs
-                  BOOST
                   SOURCES executables/TestModelAuxCovariance.cc
                   ARGS    "testinput/model_gfs-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
-                  BOOST
                   SOURCES executables/TestModelAuxCovariance.cc
                   ARGS    "testinput/model_geos-fv3.yaml"
                   MPI     6
@@ -1328,7 +1309,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
 
 #Expensive for laptops, so off for now
 #ecbuild_add_test( TARGET  test_fv3jedi_localization
-#                  BOOST
 #                  SOURCES executables/TestLocalization.cc
 #                  ARGS    "testinput/localization.yaml"
 #                  MPI     6

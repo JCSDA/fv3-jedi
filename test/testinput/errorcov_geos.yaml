@@ -34,7 +34,7 @@ Covariance:
   verbosity: 'none'
 CovarianceTest:
   testinverse: false
-  tolerance: '1.0e-10'
+  tolerance: '1.0e-12'
 Geometry:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table

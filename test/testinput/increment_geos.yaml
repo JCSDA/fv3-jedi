@@ -11,7 +11,7 @@ State:
   filetype: geos
   filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4        
 InterpTest:
-  tolerance: 1.0e-10
+  tolerance: 1.0e-12
   Locations:
     Rdist: '1'
     Nrandom: '100'
