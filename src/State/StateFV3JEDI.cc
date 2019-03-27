@@ -13,7 +13,6 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "oops/base/Variables.h"
-#include "oops/generic/UnstructuredGrid.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"

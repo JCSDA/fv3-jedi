@@ -33,7 +33,6 @@ namespace ufo {
 
 namespace oops {
   class Variables;
-  class UnstructuredGrid;
 }
 
 namespace fv3jedi {

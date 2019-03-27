@@ -84,9 +84,9 @@ class IncrementFV3JEDI : public oops::GeneralizedDepartures,
                    const ufo::GeoVaLs &, const GetValuesTrajFV3JEDI &);
 
 /// Unstructured grid
-  void ug_coord(oops::UnstructuredGrid &, const int &) const;
+  void ug_coord(oops::UnstructuredGrid &) const;
   void field_to_ug(oops::UnstructuredGrid &, const int &) const;
-  void field_from_ug(const oops::UnstructuredGrid &);
+  void field_from_ug(const oops::UnstructuredGrid &, const int &);
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);

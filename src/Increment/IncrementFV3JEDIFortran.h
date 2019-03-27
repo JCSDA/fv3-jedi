@@ -111,7 +111,6 @@ extern "C" {
 
   void fv3jedi_increment_ug_coord_f90(const F90inc &,
                                       const int &,
-                                      const int &,
                                       const F90geom &);
 
   void fv3jedi_increment_increment_to_ug_f90(const F90inc &,
@@ -119,6 +118,7 @@ extern "C" {
                                              const int &);
 
   void fv3jedi_increment_increment_from_ug_f90(const F90inc &,
+                                               const int &,
                                                const int &);
 
   void fv3jedi_increment_dirac_f90(const F90inc &,

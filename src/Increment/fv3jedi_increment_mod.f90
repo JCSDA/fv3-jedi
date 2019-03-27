@@ -903,19 +903,15 @@ end subroutine ug_size
 
 ! ------------------------------------------------------------------------------
 
-subroutine ug_coord(self, ug, colocated, geom)
+subroutine ug_coord(self, ug, geom)
 
 implicit none
 type(fv3jedi_increment), intent(in)    :: self
 type(unstructured_grid), intent(inout) :: ug
-integer,                 intent(in)    :: colocated
 type(fv3jedi_geom),      intent(in)    :: geom
 
 integer :: imga,jx,jy,jl
 real(kind=kind_real) :: sigmaup,sigmadn
-
-! Copy colocated
-ug%colocated = colocated
 
 ! Define size
 call ug_size(self, ug)
@@ -945,17 +941,14 @@ end subroutine ug_coord
 
 ! ------------------------------------------------------------------------------
 
-subroutine increment_to_ug(self, ug, colocated)
+subroutine increment_to_ug(self, ug, its)
 
 implicit none
 type(fv3jedi_increment), intent(in)    :: self
 type(unstructured_grid), intent(inout) :: ug
-integer,                 intent(in)    :: colocated
+integer,                 intent(in)    :: its
 
 integer :: var,imga,jx,jy,jl
-
-! Copy colocated
-ug%colocated = colocated
 
 ! Define size
 call ug_size(self, ug)
@@ -968,49 +961,46 @@ call allocate_unstructured_grid_field(ug)
 ug%grid(1)%fld = 0.0_kind_real
 
 if (ug%colocated==1) then
-
   do var = 1,self%nf
     imga = 0
     do jy=self%jsc,self%jec
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%fields(var)%npz
-          ug%grid(1)%fld(imga,jl,var,1) = self%fields(var)%array(jx,jy,jl)
+          ug%grid(1)%fld(imga,jl,var,its) = self%fields(var)%array(jx,jy,jl)
         enddo
       enddo
     enddo
   enddo
-
 endif
 
 end subroutine increment_to_ug
 
 ! -----------------------------------------------------------------------------
 
-subroutine increment_from_ug(self, ug)
+subroutine increment_from_ug(self, ug, its)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(unstructured_grid), intent(in)    :: ug
+integer,                 intent(in)    :: its
 
 integer :: imga,jx,jy,jl,var
 
 ! Copy increment
 
 if (ug%colocated==1) then
-
   do var = 1,self%nf
     imga = 0
     do jy=self%jsc,self%jec
       do jx=self%isc,self%iec
         imga = imga+1
         do jl=1,self%fields(var)%npz
-          self%fields(var)%array(jx,jy,jl) = ug%grid(1)%fld(imga,jl,var,1)
+          self%fields(var)%array(jx,jy,jl) = ug%grid(1)%fld(imga,jl,var,its)
         enddo
       enddo
     enddo
   enddo
-
 endif
 
 end subroutine increment_from_ug

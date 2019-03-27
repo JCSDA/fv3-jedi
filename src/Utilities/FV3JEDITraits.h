@@ -36,6 +36,7 @@ namespace fv3jedi {
 struct FV3JEDITraits {
   static std::string name() {return "FV3JEDI";}
   static std::string nameCovar() {return "FV3JEDIstatic";}
+  static std::string nameCovar4D() {return "FV3JEDIstatic";}
 
   typedef fv3jedi::ErrorCovarianceFV3JEDI      Covariance;
   typedef fv3jedi::IncrementFV3JEDI            Increment;

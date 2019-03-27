@@ -122,63 +122,63 @@ end subroutine fv3jedi_increment_random_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_ug_coord_c(c_key_inc, c_key_ug, c_colocated, c_key_geom) bind (c,name='fv3jedi_increment_ug_coord_f90')
+subroutine fv3jedi_increment_ug_coord_c(c_key_inc, c_key_ug, c_key_geom) bind (c,name='fv3jedi_increment_ug_coord_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_inc
 integer(c_int), intent(in) :: c_key_ug
-integer(c_int), intent(in) :: c_colocated
 integer(c_int), intent(in) :: c_key_geom !< Geometry
 type(fv3jedi_increment), pointer :: inc
 type(unstructured_grid), pointer :: ug
-integer :: colocated
 type(fv3jedi_geom),  pointer :: geom
-
-colocated = c_colocated
 
 call fv3jedi_increment_registry%get(c_key_inc,inc)
 call unstructured_grid_registry%get(c_key_ug,ug)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call ug_coord(inc, ug, colocated, geom)
+call ug_coord(inc, ug, geom)
 
 end subroutine fv3jedi_increment_ug_coord_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_increment_to_ug_c(c_key_inc, c_key_ug, c_colocated) bind (c,name='fv3jedi_increment_increment_to_ug_f90')
+subroutine fv3jedi_increment_increment_to_ug_c(c_key_inc, c_key_ug, c_its) bind (c,name='fv3jedi_increment_increment_to_ug_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_inc
 integer(c_int), intent(in) :: c_key_ug
-integer(c_int), intent(in) :: c_colocated
+integer(c_int), intent(in) :: c_its
 type(fv3jedi_increment), pointer :: inc
 type(unstructured_grid), pointer :: ug
-integer :: colocated
+integer :: its
 
-colocated = c_colocated
+its = c_its+1
 
 call fv3jedi_increment_registry%get(c_key_inc,inc)
 call unstructured_grid_registry%get(c_key_ug,ug)
 
-call increment_to_ug(inc, ug, colocated)
+call increment_to_ug(inc, ug, its)
 
 end subroutine fv3jedi_increment_increment_to_ug_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_increment_from_ug_c(c_key_inc, c_key_ug) bind (c,name='fv3jedi_increment_increment_from_ug_f90')
+subroutine fv3jedi_increment_increment_from_ug_c(c_key_inc, c_key_ug, c_its) bind (c,name='fv3jedi_increment_increment_from_ug_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_inc
 integer(c_int), intent(in) :: c_key_ug
+integer(c_int), intent(in) :: c_its
 type(fv3jedi_increment), pointer :: inc
 type(unstructured_grid), pointer :: ug
+integer :: its
+
+its = c_its+1
 
 call fv3jedi_increment_registry%get(c_key_inc,inc)
 call unstructured_grid_registry%get(c_key_ug,ug)
 
-call increment_from_ug(inc, ug)
+call increment_from_ug(inc, ug, its)
 
 end subroutine fv3jedi_increment_increment_from_ug_c
 

@@ -1,37 +1,32 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 Covariance:
+  bump:
+    default_seed: 1
+    prefix: fv3jedi_errorcov_geos
+    method: cor
+    strategy: specific_univariate
+    new_nicas: 1     # Recompute convolution parameters
+    load_nicas: 0    # Load precomputed convolution parameters
+    sam_read: 0
+    sam_write: 1
+    nc1: 100
+    ntry: 3
+    nrep:  2
+    nc3: 10
+    dc: 1000.0e3
+    nl0r: 1
+    minim_algo: "hooke"
+    lsqrt: 1
+    resol: 10.0
+    network: 0
+    mpicom: 2
+    forced_radii: 1
+    rh: 3000e3
+    rv: 100
+    verbosity: 'none'
   covariance: BUMP
-  default_seed: 1
-  prefix: fv3jedi_errorcov_geos
-  method: cov
-  strategy: specific_univariate
-  new_nicas: 1     # Recompute convolution parameters
-  load_nicas: 0    # Load precomputed convolution parameters
-  sam_read: 0
-  sam_write: 1  
-  mask_check: 0
-  draw_type: random_uniform
-  nc1: 100
-  ntry: 3
-  nrep:  2
-  nc3: 10
-  dc: 1000.0e3
-  nl0r: 1
-  minim_algo: "hooke"
-  rvflt: 0.0
-  lsqrt: 1  
-  resol: 10.0
-  nicas_interp: bilin
-  network: 0
-  mpicom: 2
-  forced_radii: 1
-  rh: 3000e3
-  rv: 100
-  advmode: 0
-  diag_interp: bilin
   date: '2018-04-15T00:00:00Z'
-  verbosity: 'none'
 CovarianceTest:
   testinverse: false
   tolerance: '1.0e-12'

@@ -174,19 +174,18 @@ void IncrementFV3JEDI::getValuesAD(const ufo::Locations & locs,
                                      traj.toFortran());
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::ug_coord(oops::UnstructuredGrid & ug,
-                                const int & colocated) const {
-  fv3jedi_increment_ug_coord_f90(keyInc_, ug.toFortran(), colocated,
-                             geom_->toFortran());
+void IncrementFV3JEDI::ug_coord(oops::UnstructuredGrid & ug) const {
+  fv3jedi_increment_ug_coord_f90(keyInc_, ug.toFortran(), geom_->toFortran());
 }
 // -----------------------------------------------------------------------------
 void IncrementFV3JEDI::field_to_ug(oops::UnstructuredGrid & ug,
-                                   const int & colocated) const {
-  fv3jedi_increment_increment_to_ug_f90(keyInc_, ug.toFortran(), colocated);
+                                   const int & its) const {
+  fv3jedi_increment_increment_to_ug_f90(keyInc_, ug.toFortran(), its);
 }
 // -----------------------------------------------------------------------------
-void IncrementFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug) {
-  fv3jedi_increment_increment_from_ug_f90(keyInc_, ug.toFortran());
+void IncrementFV3JEDI::field_from_ug(const oops::UnstructuredGrid & ug,
+                                     const int & its) {
+  fv3jedi_increment_increment_from_ug_f90(keyInc_, ug.toFortran(), its);
 }
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics

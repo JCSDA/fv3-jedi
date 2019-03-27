@@ -8,45 +8,38 @@ cost_function:
         filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
         variables: ["ud","vd","ua","va","t","delp","ps","q","qi","ql","o3mr"]     
     Covariance:
-      covariance: FV3JEDIstatic
-      date: '2018-04-14T21:00:00Z'
-#    Covariance:
-#      covariance: BUMP
-#      default_seed: 1
-#      prefix: fv3jedi_geos_fgat 
-#      method: cov
-#      strategy: specific_univariate
-#      new_nicas: 1     # Recompute convolution parameters
-#      load_nicas: 0    # Load precomputed convolution parameters
-#      sam_read: 0
-#      sam_write: 1  
-#      mask_check: 0
-#      draw_type: random_uniform
-#      nc1: 100
-#      ntry: 3
-#      nrep:  2
-#      nc3: 10
-#      dc: 1000.0e3
-#      nl0r: 1
-#      minim_algo: "hooke"
-#      rvflt: 0.0
-#      lsqrt: 1  
-#      resol: 10.0
-#      nicas_interp: bilin
-#      network: 0
-#      mpicom: 2
-#      forced_radii: 1
-#      rh: 1000e3
-#      rv: 100
-#      advmode: 0
-#      diag_interp: bilin
-#      date: '2018-04-15T00:00:00Z'
-#      variable_changes:
-#      - varchange: Control2Analysis
-#        inputVariables:
-#          variables: ["ua","va","t","ps","q","qi","ql","o3"]
-#        outputVariables:
-#          variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
+      covariance: BUMP
+      date: '2018-04-15T00:00:00Z'
+      bump:
+        default_seed: 1
+        prefix: 3dfgat_geos
+        method: cor
+        strategy: specific_univariate
+        new_nicas: 1     # Recompute convolution parameters
+        load_nicas: 0    # Load precomputed convolution parameters
+        sam_read: 0
+        sam_write: 1
+        nc1: 100
+        ntry: 3
+        nrep:  2
+        nc3: 10
+        dc: 1000.0e3
+        nl0r: 1
+        minim_algo: "hooke"
+        lsqrt: 1
+        resol: 10.0
+        network: 0
+        mpicom: 2
+        forced_radii: 1
+        rh: 3000e3
+        rv: 100
+        verbosity: 'none'
+        variable_changes:
+        - varchange: Control2Model
+          inputVariables:
+            variables: ["ua","va","t","ps","q","qi","ql","o3"]
+          outputVariables:
+            variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: Aircraft
