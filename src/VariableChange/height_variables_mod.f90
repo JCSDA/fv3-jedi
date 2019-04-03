@@ -1,3 +1,8 @@
+! (C) Copyright 2018-2019 UCAR
+! 
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+
 module height_vt_mod
 
 use fv3jedi_constants_mod, only: grav, rvap, tice,rdry, zvir 
