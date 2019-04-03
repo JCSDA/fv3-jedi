@@ -44,9 +44,6 @@ include( fv3jedi_compiler_flags )
 ################################################################################
 
 # Boost
-set( Boost_MINIMUM_VERSION "1.47" )
-find_package( Boost ${Boost_MINIMUM_VERSION} REQUIRED
-              COMPONENTS unit_test_framework )
 include_directories( ${Boost_INCLUDE_DIR} )
 
 # fv3-jedi-lm

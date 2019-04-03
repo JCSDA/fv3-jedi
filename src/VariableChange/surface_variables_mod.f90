@@ -3,9 +3,6 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 
-!> Variable transforms/interpolation for surface variables in fv3-jedi 
-!> Daniel Holdaway, NASA/JCSDA
-
 module surface_vt_mod
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -13,9 +10,8 @@ use fv3jedi_kinds_mod, only: kind_real
 use crtm_module, only: crtm_irlandcoeff_classification
 use fv3jedi_constants_mod, only: rad2deg, deg2rad, pi
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
-use type_kdtree, only: kdtree_type
-use type_mpl, only: mpl_type
-use tools_func, only: sphere_dist
+use fckit_geometry_module, only: sphere_distance
+use fckit_kdtree_module, only: kdtree,kdtree_create,kdtree_destroy,kdtree_k_nearest_neighbors
 
 implicit none
 private
@@ -226,8 +222,7 @@ allocate(f10mp(nobs,nn))
  f10mp = 0.0_kind_real
 
  !Get interpolation weights and index in global grid
- call kdtree_getweightsindex(comm, geom, nobs, ngrid, deg2rad*lats_ob, deg2rad*lons_ob, &
-                             nn, interp_w, interp_i) 
+ call kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i) 
 
  !Get field at nn neighbours
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_slmsk (:,:,1), rslmsk)
@@ -569,7 +564,7 @@ end subroutine crtm_surface
 
 !----------------------------------------------------------------------------
 
-subroutine kdtree_getweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i)
+subroutine kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i)
 
 implicit none
 
@@ -585,11 +580,9 @@ real(kind=kind_real), intent(out) :: interp_w(nobs,nn)  !Interpolation weights
 integer,              intent(out) :: interp_i(nobs,nn)  !Interpolation indices (global unstructured grid)
 
 !Locals
-type(mpl_type)    :: mpl
-type(kdtree_type) :: kdtree
+type(kdtree) :: kd
 integer :: i, j, ob, jj, kk, ngrid_loc, ngrid_all
 integer, allocatable :: displs(:), rcvcnt(:), nn_index(:)
-logical, allocatable :: mask(:)
 real(kind=kind_real) :: wprod, dist, bw(nn), bsw
 real(kind=kind_real), allocatable :: lat_loc(:), lon_loc(:), lat_all(:), lon_all(:)
 real(kind=kind_real), allocatable :: nn_dist(:)
@@ -612,8 +605,8 @@ jj = 0
 do j = geom%jsc,geom%jec
   do i = geom%isc,geom%iec
      jj = jj + 1
-     lat_loc(jj) = geom%grid_lat(i,j)
-     lon_loc(jj) = geom%grid_lon(i,j) - pi   !BUMP needs -180 to 180
+     lat_loc(jj) = rad2deg*geom%grid_lat(i,j)
+     lon_loc(jj) = rad2deg*geom%grid_lon(i,j)
   enddo
 enddo
 
@@ -640,17 +633,8 @@ deallocate(lat_loc,lon_loc)
 ! Create a KDTree for finding nearest neighbours
 ! ----------------------------------------------
 
-! No mask to true everywhere
-allocate(mask(ngrid_all))
-mask = .true.
-
-! Initialize mpl (note kdtree not parallel)
-call mpl%init()
-
 ! Create kdtree
-call kdtree%alloc(mpl,ngrid_all,mask)
-call kdtree%init(mpl,lon_all,lat_all)
-
+kd = kdtree_create(ngrid_all,lon_all,lat_all)
 
 ! Loop over observations calling kdtree to generate barycentric interpolation weights
 ! -----------------------------------------------------------------------------------
@@ -663,15 +647,19 @@ do ob = 1,nobs
   nn_index = 0
   nn_dist = 0.0_kind_real
 
-  call kdtree%find_nearest_neighbors(mpl,lons_ob(ob)-pi,lats_ob(ob),nn,nn_index,nn_dist)
+  call kdtree_k_nearest_neighbors(kd,lons_ob(ob),lats_ob(ob),nn,nn_index)
+  do kk=1,nn
+    nn_dist(kk) = sphere_distance(lons_ob(ob),lats_ob(ob),lon_all(nn_index(kk)),lat_all(nn_index(kk)))
+  enddo
 
   !if (comm%rank()==0) then
+  !  !Check the kdtree returned close neighbours
   !  print*, '==========================='
-  !  print*, rad2deg*lats_ob(ob)
-  !  print*, rad2deg*lat_all(nn_index)
+  !  print*, lats_ob(ob)
+  !  print*, lat_all(nn_index)
   !  print*, ' '
-  !  print*, rad2deg*lons_ob(ob)
-  !  print*, rad2deg*lon_all(nn_index) + 180.0
+  !  print*, lons_ob(ob)
+  !  print*, lon_all(nn_index)
   !  print*, '==========================='
   !endif
 
@@ -681,8 +669,8 @@ do ob = 1,nobs
     wprod = 1.0_kind_real
     do kk = 1,nn
       if (jj.ne.kk) then
-        call sphere_dist(rad2deg*lon_all(nn_index(jj)),rad2deg*lat_all(nn_index(jj)),&
-                         rad2deg*lon_all(nn_index(kk)),rad2deg*lat_all(nn_index(kk)),dist)
+        dist = sphere_distance(lon_all(nn_index(jj)),lat_all(nn_index(jj)),&
+                               lon_all(nn_index(kk)),lat_all(nn_index(kk)))
         wprod = wprod * dist
       endif
     enddo
@@ -704,12 +692,11 @@ do ob = 1,nobs
 enddo
 
 !Deallocate
-call kdtree%dealloc
-deallocate(mask)
+call kdtree_destroy(kd)
 deallocate(nn_index,nn_dist)
 deallocate(lon_all,lat_all)
 
-end subroutine kdtree_getweightsindex
+end subroutine kdtree_baryweightsindex
 
 !----------------------------------------------------------------------------
 
