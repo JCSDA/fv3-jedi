@@ -75,6 +75,27 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: khl     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khu     => null()
 
+  ! aerosols (GOCART)
+  real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: du003    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: du004    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: du005    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ss001    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ss002    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ss003    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ss004    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ss005    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: no3an1   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: no3an2   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: no3an3   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: bcphobic => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: bcphilic => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ocphobic => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ocphilic => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: so4      => null()
+
+
 end type fv3jedi_state
 
 ! ------------------------------------------------------------------------------

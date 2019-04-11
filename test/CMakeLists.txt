@@ -995,6 +995,7 @@ Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0245z.nc4
 Data/INPUTS/GEOS_c24/traj/GEOS.traj.c24.eta.20180415_0300z.nc4
 Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
+Data/INPUTS/GEOS_c48/GEOSaero.bkg.c48.eta.20180415_00z.nc4
 Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180414_21z.nc4
 Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
 )
@@ -1059,6 +1060,7 @@ testinput/model_geos-fv3.yaml
 testinput/model_gfs-fv3.yaml
 testinput/modelread_geos-fv3.yaml
 testinput/state_geos.yaml
+testinput/state_geosaero.yaml
 testinput/state_gfs.yaml
 testinput/tlmforecast_geos.yaml
 testinput/linvarcha_geos.yaml
@@ -1306,6 +1308,15 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
                   ARGS    "testinput/model_geos-fv3.yaml"
                   MPI     6
                   LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
+                  BOOST
+                  SOURCES executables/TestState.cc
+                  ARGS    "testinput/state_geosaero.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+
 
 #Expensive for laptops, so off for now
 #ecbuild_add_test( TARGET  test_fv3jedi_localization

@@ -275,6 +275,116 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'upper_index_where_Kh_greater_than_2', &
             fv3jedi_name = 'khu', units = '1', staggerloc = center, arraypointer = self%khu)
+     ! aer
+     !---------
+     case("du001", "DU001")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'dust_mixing _ratio_bin_1', &
+            fv3jedi_name = 'du001', units = 'kg kg-1', staggerloc = center, arraypointer = self%du001, &
+            tracer = .true.)
+     case("du002", "DU002")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin_2', &
+            fv3jedi_name = 'du002', units = 'kg kg-1', staggerloc = center, arraypointer = self%du002, &
+            tracer = .true.)
+     case("du003", "DU003")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin_3', &
+            fv3jedi_name = 'du003', units = 'kg kg-1', staggerloc = center, arraypointer = self%du003, &
+            tracer = .true.)
+     case("du004", "DU004")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin_4', &
+            fv3jedi_name = 'du004', units = 'kg kg-1', staggerloc = center, arraypointer = self%du004, &
+            tracer = .true.)
+     case("du005", "DU005")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin_5', &
+            fv3jedi_name = 'du005', units = 'kg kg-1', staggerloc = center, arraypointer = self%du005, &
+            tracer = .true.)
+     case("ss001", "SS001")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin_1', &
+            fv3jedi_name = 'ss001', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss001, &
+            tracer = .true.)
+     case("ss002", "SS002")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin_2', &
+            fv3jedi_name = 'ss002', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss002, &
+            tracer = .true.)
+     case("ss003", "SS003")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin_3', &
+            fv3jedi_name = 'ss003', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss003, &
+            tracer = .true.)
+     case("ss004", "SS004")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin_4', &
+            fv3jedi_name = 'ss004', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss004, &
+            tracer = .true.)
+     case("ss005", "SS005")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin_5', &
+            fv3jedi_name = 'ss005', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss005, &
+            tracer = .true.)
+     case("bcphobic", "BCPHOBIC")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'hydrophobic_black_carbon', &
+            fv3jedi_name = 'bcphobic', units = 'kg kg-1', staggerloc = center, arraypointer = self%bcphobic, &
+            tracer = .true.)
+     case("bcphilic", "BCPHILIC")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'hydrophilic_black_carbon', &
+            fv3jedi_name = 'bcphilic', units = 'kg kg-1', staggerloc = center, arraypointer = self%bcphilic, &
+            tracer = .true.)
+     case("ocphobic", "OCPHOBIC")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'hydrophobic_organic_carbon', &
+            fv3jedi_name = 'ocphobic', units = 'kg kg-1', staggerloc = center, arraypointer = self%ocphobic, &
+            tracer = .true.)
+     case("ocphilic", "OCPHILIC")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'hydrophilic_organic_carbon', &
+            fv3jedi_name = 'ocphilic', units = 'kg kg-1', staggerloc = center, arraypointer = self%ocphilic, &
+            tracer = .true.)
+     case("no3an1", "NO3AN1")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'nitrate_size_bin_1', &
+            fv3jedi_name = 'no3an1', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an1, &
+            tracer = .true.)
+     case("no3an2", "NO3AN2")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'nitrate_size_bin_2', &
+            fv3jedi_name = 'no3an2', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an2, &
+            tracer = .true.)
+     case("no3an3", "NO3AN3")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'nitrate_size_bin_3', &
+            fv3jedi_name = 'no3an3', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an3, &
+            tracer = .true.)
+     case("so4", "SO4")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'sulphate_aerosol', &
+            fv3jedi_name = 'so4', units = 'kg kg-1', staggerloc = center, arraypointer = self%so4, &
+            tracer = .true.)
      case default 
        call abor1_ftn("Create: unknown variable "//trim(vars%fldnames(var)))
    end select
@@ -363,6 +473,24 @@ if (associated(self%kcbl   )) nullify(self%kcbl   )
 if (associated(self%ts     )) nullify(self%ts     )
 if (associated(self%khl    )) nullify(self%khl    )
 if (associated(self%khu    )) nullify(self%khu    )
+if (associated(self%du001  )) nullify(self%du001  )
+if (associated(self%du002  )) nullify(self%du002  )
+if (associated(self%du003  )) nullify(self%du003  )
+if (associated(self%du004  )) nullify(self%du004  )
+if (associated(self%du005  )) nullify(self%du005  )
+if (associated(self%ss001  )) nullify(self%ss001  )
+if (associated(self%ss002  )) nullify(self%ss002  )
+if (associated(self%ss003  )) nullify(self%ss003  )
+if (associated(self%ss004  )) nullify(self%ss004  )
+if (associated(self%ss005  )) nullify(self%ss005  )
+if (associated(self%no3an1 )) nullify(self%no3an1 )
+if (associated(self%no3an2 )) nullify(self%no3an2 )
+if (associated(self%no3an3 )) nullify(self%no3an3 )
+if (associated(self%so4    )) nullify(self%so4    )
+if (associated(self%bcphobic )) nullify(self%bcphobic )
+if (associated(self%bcphilic )) nullify(self%bcphilic )
+if (associated(self%ocphobic )) nullify(self%ocphobic )
+if (associated(self%ocphilic )) nullify(self%ocphilic )
 
 end subroutine delete
 
@@ -520,6 +648,42 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%khl)
     case("khu")
       call self%fields(self_var)%array_pointer(self%khu)
+    case("du001", "DU001")
+      call self%fields(self_var)%array_pointer(self%du001)
+    case("du002", "DU002")
+      call self%fields(self_var)%array_pointer(self%du002)
+    case("du003", "DU003")
+      call self%fields(self_var)%array_pointer(self%du003)
+    case("du004", "DU004")
+      call self%fields(self_var)%array_pointer(self%du004)
+    case("du005", "DU005")
+      call self%fields(self_var)%array_pointer(self%du005)
+    case("ss001", "SS001")
+      call self%fields(self_var)%array_pointer(self%ss001)
+    case("ss002", "SS002")
+      call self%fields(self_var)%array_pointer(self%ss002)
+    case("ss003", "SS003")
+      call self%fields(self_var)%array_pointer(self%ss003)
+    case("ss004", "SS004")
+      call self%fields(self_var)%array_pointer(self%ss004)
+    case("ss005", "SS005")
+      call self%fields(self_var)%array_pointer(self%ss005)
+    case("no3an1", "NO3AN1")
+      call self%fields(self_var)%array_pointer(self%no3an1)
+    case("no3an2", "NO3AN2")
+      call self%fields(self_var)%array_pointer(self%no3an2)
+    case("no3an3", "NO3AN3")
+      call self%fields(self_var)%array_pointer(self%no3an3)
+    case("so4", "SO4")
+      call self%fields(self_var)%array_pointer(self%so4)
+    case("bcphobic", "BCPHOBIC")
+      call self%fields(self_var)%array_pointer(self%bcphobic)
+    case("bcphilic", "BCPHILIC")
+      call self%fields(self_var)%array_pointer(self%bcphilic)
+    case("ocphobic", "OCPHOBIC")
+      call self%fields(self_var)%array_pointer(self%ocphobic)
+    case("ocphilic", "OCPHILIC")
+      call self%fields(self_var)%array_pointer(self%ocphilic)
     case default 
       call abor1_ftn("fv3jedi_state_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
   end select
@@ -616,7 +780,7 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
       nullify(field_pointer)
 
     endif
-
+  
   enddo
 
 else

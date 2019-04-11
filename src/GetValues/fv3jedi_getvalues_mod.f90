@@ -531,6 +531,133 @@ do jvar = 1, vars%nv
    do_interp = .false.
    obs_state(:,1) = real(soil_type,kind_real)
 
+  case ("du001")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%du001
+    geoval => geovalm
+
+  case ("du002")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%du002
+    geoval => geovalm
+  
+  case ("du003")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%du003
+    geoval => geovalm
+
+  case ("du004")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%du004
+    geoval => geovalm
+
+  case ("du005")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%du005
+    geoval => geovalm
+
+
+  case ("ss001")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ss001
+    geoval => geovalm
+
+  case ("ss002")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ss002
+    geoval => geovalm
+ 
+  case ("ss003")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ss003
+    geoval => geovalm
+
+  case ("ss004")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ss004
+    geoval => geovalm
+
+  case ("ss005")
+
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ss005
+    geoval => geovalm
+
+  case ("bcphobic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%bcphobic
+    geoval => geovalm
+
+  case ("bcphilic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%bcphilic
+    geoval => geovalm
+
+  case ("ocphobic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ocphobic
+    geoval => geovalm
+
+  case ("ocphilic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%ocphilic
+    geoval => geovalm
+
+  case ("no3an1")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%no3an1
+    geoval => geovalm
+
+  case ("no3an2")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%no3an2
+    geoval => geovalm
+
+  case ("no3an3")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%no3an3
+    geoval => geovalm
+
+  case ("so4")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = state%so4
+    geoval => geovalm
+
   case default
 
     call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
@@ -740,6 +867,132 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
+  case ("du001")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%du001
+    geoval => geovalm
+
+  case ("du002")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%du002
+    geoval => geovalm
+
+  case ("du003")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%du003
+    geoval => geovalm
+
+  case ("du004")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%du004
+    geoval => geovalm
+
+  case ("du005")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%du005
+    geoval => geovalm
+
+  case ("ss001")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ss001
+    geoval => geovalm
+
+  case ("ss002")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ss002
+    geoval => geovalm
+
+  case ("ss003")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ss003
+    geoval => geovalm
+
+  case ("ss004")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ss004
+    geoval => geovalm
+
+  case ("ss005")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ss005
+    geoval => geovalm
+
+  case ("bcphobic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%bcphobic
+    geoval => geovalm
+
+  case ("bcphilic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%bcphilic
+    geoval => geovalm
+
+  case ("ocphobic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ocphobic
+    geoval => geovalm
+
+  case ("ocphilic")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%ocphilic
+    geoval => geovalm
+
+  case ("no3an1")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%no3an1
+    geoval => geovalm
+
+  case ("no3an2")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%no3an2
+    geoval => geovalm
+
+  case ("no3an3")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%no3an3
+    geoval => geovalm
+
+  case ("so4")
+  
+    nvl = npz
+    do_interp = .true.
+    geovalm = inc%so4
+    geoval => geovalm
+
   case default
 
     call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
@@ -899,7 +1152,31 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("air_pressure")
- 
+
+  case ("du001", "du002", "du003", "du004", "du005")
+  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("ss001", "ss002", "ss003", "ss004", "ss005")
+  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("bcphobic", "bcphilic", "ocphobic", "ocphilic")
+  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("no3an1", "no3an2", "no3an3", "so4")
+  
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
   case default
 
     call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
@@ -959,6 +1236,78 @@ do jvar = 1, vars%nv
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
   case ("air_pressure")
+
+  case ("du001")
+
+    inc%du001 = geovalm
+
+  case ("du002")
+
+    inc%du002 = geovalm
+
+  case ("du003")
+
+    inc%du003 = geovalm
+
+  case ("du004")
+
+    inc%du004 = geovalm
+
+  case ("du005")
+
+    inc%du005 = geovalm
+
+  case ("ss001")
+
+    inc%ss001 = geovalm
+
+  case ("ss002")
+
+    inc%ss002 = geovalm
+
+  case ("ss003")
+
+    inc%ss003 = geovalm
+
+  case ("ss004")
+
+    inc%ss004 = geovalm
+
+  case ("ss005")
+
+    inc%ss005 = geovalm
+
+  case ("no3an1")
+
+    inc%no3an1 = geovalm
+
+  case ("no3an2")
+
+    inc%no3an2 = geovalm
+
+  case ("no3an3")
+
+    inc%no3an3 = geovalm
+
+  case ("bcphobic")
+
+    inc%bcphobic = geovalm
+
+  case ("bcphilic")
+
+    inc%bcphilic = geovalm
+
+  case ("ocphobic")
+
+    inc%ocphobic = geovalm
+
+  case ("ocphilic")
+
+    inc%ocphilic = geovalm
+
+  case ("so4")
+
+    inc%so4 = geovalm
 
   case default
 
