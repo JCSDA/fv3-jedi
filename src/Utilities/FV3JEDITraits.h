@@ -20,6 +20,7 @@
 #include "ModelBiasCovarianceFV3JEDI.h"
 #include "StateFV3JEDI.h"
 
+#include "ioda/ObsDataVector.h"
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
 
@@ -58,6 +59,7 @@ struct FV3JEDITraits {
 
   typedef ioda::ObsSpace                       ObsSpace;
   typedef ioda::ObsVector                      ObsVector;
+  template <typename DATA> using ObsDataVector = ioda::ObsDataVector<DATA>;
 };
 
 }  // namespace fv3jedi
