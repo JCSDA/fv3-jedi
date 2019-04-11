@@ -94,6 +94,9 @@ cost_function:
         variables:
         - refractivity
         threshold: 3.0
+      - Filter: ROobserror
+        variable: refractivity
+        errmodel: GSI       
     - ObsType: "CRTM"
       channels: "1-6,9-13,15"
       ObsOptions: 
