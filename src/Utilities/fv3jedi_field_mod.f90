@@ -145,6 +145,7 @@ call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
                           fv3jedi_name=rhs%fv3jedi_name, &
                           units=rhs%units, &
                           staggerloc=rhs%staggerloc, &
+                          tracer = rhs%tracer, &
                           arraypointer = dummy_pointer)
 
 self%array = rhs%array

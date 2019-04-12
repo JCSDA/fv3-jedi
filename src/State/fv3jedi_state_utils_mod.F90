@@ -74,8 +74,7 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: ts      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khl     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khu     => null()
-
-  ! aerosols (GOCART)
+  !Aerosols
   real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du003    => null()

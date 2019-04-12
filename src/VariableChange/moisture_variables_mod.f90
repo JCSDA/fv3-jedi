@@ -24,6 +24,7 @@ public q_to_rh_tl
 public q_to_rh_ad
 public ESINIT
 public dqsat
+public dqsat_calc
 
 contains
 
@@ -421,6 +422,41 @@ subroutine q_to_rh_ad(geom,qsat,q,rh)
 
 end subroutine q_to_rh_ad
 
+!----------------------------------------------------------------------------
+
+subroutine dqsat(geom,T,pmid,dqsatdt,qsat)
+
+implicit none
+type(fv3jedi_geom),             intent(in)    :: geom
+real(kind=kind_real),           intent(in)    ::       T(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+real(kind=kind_real),           intent(in)    ::    pmid(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+real(kind=kind_real), optional, intent(inout) :: dqsatdt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+real(kind=kind_real), optional, intent(inout) ::    qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+integer :: degsubs   = 100
+real(8) :: tmintbl   = 150.0_8, tmaxtbl = 333.0_8
+integer :: tablesize
+real(8), allocatable :: estblx(:)
+real(kind=kind_real) :: dqsatdt_loc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+real(kind=kind_real) ::    qsat_loc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+! Set size of table for look-up
+tablesize = nint(tmaxtbl-tmintbl)*degsubs + 1
+
+! Allocate table and fill values
+allocate(estblx(tablesize))
+call esinit(tablesize,degsubs,tmintbl,tmaxtbl,estblx)
+
+! Compute dqsat/dT and qsat
+call dqsat_calc( geom,T,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsatdt_loc,qsat_loc)
+
+! Deallocate
+deallocate(estblx)
+
+if (present(dqsatdt)) dqsatdt = dqsatdt_loc
+if (present(qsat)) qsat = qsat_loc
+
+end subroutine dqsat
 
 !----------------------------------------------------------------------------
 ! Utilities -----------------------------------------------------------------
@@ -594,7 +630,7 @@ end subroutine QSATICE0
 
 !----------------------------------------------------------------------------
 
-subroutine dqsat(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qssi)
+subroutine dqsat_calc(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qssi)
 
 !computes saturation vapour pressure qssi and gradient w.r.t temperature dqsi.
 !inputs are temperature and plo (pressure at t-levels)
@@ -668,7 +704,7 @@ subroutine dqsat(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qs
     end do
  end do
 
-end subroutine dqsat
+end subroutine dqsat_calc
 
 !----------------------------------------------------------------------------
 

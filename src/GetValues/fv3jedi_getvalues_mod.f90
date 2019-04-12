@@ -68,6 +68,9 @@ real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
 real(kind=kind_real), allocatable :: prs (:,:,:) !Pressure Pa, midpoint
 real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
 
+!Local moisture variables
+real(kind=kind_real), allocatable :: qsat(:,:,:) !Saturation specific humidity
+
 !Local CRTM moisture variables
 real(kind=kind_real), allocatable :: ql_ade(:,:,:) !Cloud liq water kgm^2
 real(kind=kind_real), allocatable :: qi_ade(:,:,:) !Cloud ice water kgm^2
@@ -339,10 +342,21 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
+
     nvl = npz
     do_interp = .true.
     geovalm = qmr
     geoval => geovalm
+
+  case ("relative_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    allocate(qsat(isc:iec,jsc:jec,npz  ))    
+    call dqsat(geom,state%t,prs,qsat=qsat)
+    call q_to_rh(geom,qsat,state%q,geovalm)
+    geoval => geovalm
+    deallocate(qsat)
 
   case ("air_pressure")
 
@@ -531,103 +545,109 @@ do jvar = 1, vars%nv
    do_interp = .false.
    obs_state(:,1) = real(soil_type,kind_real)
 
-  case ("du001")
+  case ("sulf","so4")
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%du001
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%so4
+   geoval => geovalm
 
-  case ("du002")
+  case ("bc1","bcphobic")
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%du002
-    geoval => geovalm
-  
-  case ("du003")
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%bcphobic
+   geoval => geovalm
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%du003
-    geoval => geovalm
+  case ("bc2","bcphilic")
 
-  case ("du004")
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%bcphilic
+   geoval => geovalm
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%du004
-    geoval => geovalm
+  case ("oc1","ocphobic")
 
-  case ("du005")
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%ocphobic
+   geoval => geovalm
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%du005
-    geoval => geovalm
+  case ("oc2","ocphilic")
 
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%ocphilic
+   geoval => geovalm
 
-  case ("ss001")
+  case ("dust1","du001")
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%ss001
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%du001
+   geoval => geovalm
 
-  case ("ss002")
+  case ("dust2","du002")
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%ss002
-    geoval => geovalm
- 
-  case ("ss003")
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%du002
+   geoval => geovalm
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%ss003
-    geoval => geovalm
+  case ("dust3","du003")
 
-  case ("ss004")
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%du003
+   geoval => geovalm
 
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%ss004
-    geoval => geovalm
+  case ("dust4","du004")
 
-  case ("ss005")
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%du004
+   geoval => geovalm
+
+  case ("dust5","du005")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%du005
+   geoval => geovalm
+
+  case ("seas1","ss001")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%ss001
+   geoval => geovalm
+
+  case ("seas2","ss002")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%ss002
+   geoval => geovalm
+
+  case ("seas3","ss003")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%ss003
+   geoval => geovalm
+
+  case ("seas4","ss004")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = state%ss004
+   geoval => geovalm
+
+  case ("seas5","ss005")
 
     nvl = npz
     do_interp = .true.
     geovalm = state%ss005
-    geoval => geovalm
-
-  case ("bcphobic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%bcphobic
-    geoval => geovalm
-
-  case ("bcphilic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%bcphilic
-    geoval => geovalm
-
-  case ("ocphobic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%ocphobic
-    geoval => geovalm
-
-  case ("ocphilic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%ocphilic
     geoval => geovalm
 
   case ("no3an1")
@@ -649,13 +669,6 @@ do jvar = 1, vars%nv
     nvl = npz
     do_interp = .true.
     geovalm = state%no3an3
-    geoval => geovalm
-
-  case ("so4")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = state%so4
     geoval => geovalm
 
   case default
@@ -867,103 +880,110 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
-  case ("du001")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%du001
-    geoval => geovalm
+  case ("sulf","so4")
 
-  case ("du002")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%du002
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%so4
+   geoval => geovalm
 
-  case ("du003")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%du003
-    geoval => geovalm
+  case ("bc1","bcphobic")
 
-  case ("du004")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%du004
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%bcphobic
+   geoval => geovalm
 
-  case ("du005")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%du005
-    geoval => geovalm
+  case ("bc2","bcphilic")
 
-  case ("ss001")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ss001
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%bcphilic
+   geoval => geovalm
 
-  case ("ss002")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ss002
-    geoval => geovalm
+  case ("oc1","ocphobic")
 
-  case ("ss003")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ss003
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ocphobic
+   geoval => geovalm
 
-  case ("ss004")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ss004
-    geoval => geovalm
+  case ("oc2","ocphilic")
 
-  case ("ss005")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ss005
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ocphilic
+   geoval => geovalm
 
-  case ("bcphobic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%bcphobic
-    geoval => geovalm
+  case ("dust1","du001")
 
-  case ("bcphilic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%bcphilic
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%du001
+   geoval => geovalm
 
-  case ("ocphobic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ocphobic
-    geoval => geovalm
+  case ("dust2","du002")
 
-  case ("ocphilic")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%ocphilic
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%du002
+   geoval => geovalm
+
+  case ("dust3","du003")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%du003
+   geoval => geovalm
+
+  case ("dust4","du004")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%du004
+   geoval => geovalm
+
+  case ("dust5","du005")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%du005
+   geoval => geovalm
+
+  case ("seas1","ss001")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ss001
+   geoval => geovalm
+
+  case ("seas2","ss002")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ss002
+   geoval => geovalm
+
+  case ("seas3","ss003")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ss003
+   geoval => geovalm
+
+  case ("seas4","ss004")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ss004
+   geoval => geovalm
+
+  case ("seas5","ss005")
+
+   nvl = npz
+   do_interp = .true.
+   geovalm = inc%ss005
+   geoval => geovalm
 
   case ("no3an1")
   
@@ -984,13 +1004,6 @@ do jvar = 1, vars%nv
     nvl = npz
     do_interp = .true.
     geovalm = inc%no3an3
-    geoval => geovalm
-
-  case ("so4")
-  
-    nvl = npz
-    do_interp = .true.
-    geovalm = inc%so4
     geoval => geovalm
 
   case default
@@ -1152,26 +1165,98 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("air_pressure")
+ 
+  case ("sulf","so4")
 
-  case ("du001", "du002", "du003", "du004", "du005")
-  
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
 
-  case ("ss001", "ss002", "ss003", "ss004", "ss005")
-  
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
+  case ("bc1","bcphobic")
 
-  case ("bcphobic", "bcphilic", "ocphobic", "ocphilic")
-  
-    nvl = npz
-    do_interp = .true.
-    geoval => geovalm
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
 
-  case ("no3an1", "no3an2", "no3an3", "so4")
+  case ("bc2","bcphilic")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("oc1","ocphobic")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("oc2","ocphilic")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("dust1","du001")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("dust2","du002")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("dust3","du003")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("dust4","du004")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("dust5","du005")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("seas1","ss001")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("seas2","ss002")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("seas3","ss003")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("seas4","ss004")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("seas5","ss005")
+
+   nvl = npz
+   do_interp = .true.
+   geoval => geovalm
+
+  case ("no3an1","no3an2","no3an3")
   
     nvl = npz
     do_interp = .true.
@@ -1237,43 +1322,63 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
-  case ("du001")
+  case ("sulf","so4")
 
-    inc%du001 = geovalm
+   inc%so4 = geovalm
 
-  case ("du002")
+  case ("bc1","bcphobic")
 
-    inc%du002 = geovalm
+   inc%bcphobic = geovalm
 
-  case ("du003")
+  case ("bc2","bcphilic")
 
-    inc%du003 = geovalm
+   inc%bcphilic = geovalm
 
-  case ("du004")
+  case ("oc1","ocphobic")
 
-    inc%du004 = geovalm
+   inc%ocphobic = geovalm
 
-  case ("du005")
+  case ("oc2","ocphilic")
 
-    inc%du005 = geovalm
+   inc%ocphilic = geovalm
 
-  case ("ss001")
+  case ("dust1","du001")
 
-    inc%ss001 = geovalm
+   inc%du001 = geovalm
 
-  case ("ss002")
+  case ("dust2","du002")
 
-    inc%ss002 = geovalm
+   inc%du002 = geovalm
 
-  case ("ss003")
+  case ("dust3","du003")
 
-    inc%ss003 = geovalm
+   inc%du003 = geovalm
 
-  case ("ss004")
+  case ("dust4","du004")
 
-    inc%ss004 = geovalm
+   inc%du004 = geovalm
 
-  case ("ss005")
+  case ("dust5","du005")
+
+   inc%du005 = geovalm
+
+  case ("seas1","ss001")
+
+   inc%ss001 = geovalm
+
+  case ("seas2","ss002")
+
+   inc%ss002 = geovalm
+
+  case ("seas3","ss003")
+
+   inc%ss003 = geovalm
+
+  case ("seas4","ss004")
+
+   inc%ss004 = geovalm
+
+  case ("seas5","ss005")
 
     inc%ss005 = geovalm
 
@@ -1288,26 +1393,6 @@ do jvar = 1, vars%nv
   case ("no3an3")
 
     inc%no3an3 = geovalm
-
-  case ("bcphobic")
-
-    inc%bcphobic = geovalm
-
-  case ("bcphilic")
-
-    inc%bcphilic = geovalm
-
-  case ("ocphobic")
-
-    inc%ocphobic = geovalm
-
-  case ("ocphilic")
-
-    inc%ocphilic = geovalm
-
-  case ("so4")
-
-    inc%so4 = geovalm
 
   case default
 

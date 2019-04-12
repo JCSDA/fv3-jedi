@@ -49,8 +49,7 @@ type :: fv3jedi_increment
   real(kind=kind_real), pointer, dimension(:,:,:) :: chi  => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: tv   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: rh   => null()
-
-  !aerosols (GOCART)
+  !Aerosols
   real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du003    => null()

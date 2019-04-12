@@ -1370,7 +1370,6 @@ ecbuild_add_test( TARGET test_fv3jedi_3dfgat_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-
 #ecbuild_add_test( TARGET test_fv3jedi_dirac_bump_gfs
 #                  TYPE SCRIPT
 #                  MPI     6

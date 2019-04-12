@@ -84,8 +84,8 @@ allocate(pm(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 allocate(dqsatdt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 
 call delp_to_pe_p_logp(geom,bg%delp,pe,pm)
-call dqsat( geom,bg%t,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
-            self%tablesize,self%estblx,dqsatdt,self%qsattraj)
+call dqsat_calc( geom,bg%t,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
+                 self%tablesize,self%estblx,dqsatdt,self%qsattraj)
 
 deallocate(dqsatdt)
 deallocate(pm)
