@@ -11,28 +11,28 @@ cost_function:
       covariance: BUMP
       date: '2018-04-15T00:00:00Z'
       bump:
-        default_seed: 1
-        prefix: 3dvar_geos
+        prefix: fv3jedi_bumpparameters_cor_3dvar_geos
         method: cor
+        nonunit_diag: 1
         strategy: specific_univariate
-        new_nicas: 1     # Recompute convolution parameters
-        load_nicas: 0    # Load precomputed convolution parameters
-        sam_read: 0
-        sam_write: 1
-        nc1: 100
+        new_nicas: 1
         ntry: 3
-        nrep:  2
-        nc3: 10
-        dc: 1000.0e3
-        nl0r: 1
-        minim_algo: "hooke"
+        nrep: 2
         lsqrt: 1
-        resol: 10.0
+        resol: 6
         network: 0
         mpicom: 2
         forced_radii: 1
-        rh: 3000e3
-        rv: 100
+        rh: 5000000.0
+        rv: 0.5
+        new_hdiag: 0
+        nc1: 2000
+        nc2: 500
+        nc3: 15
+        dc: 200000.0
+        nl0r: 11
+        ne: 5
+        minim_algo: hooke
         verbosity: 'none'
         variable_changes:
         - varchange: Control2Model

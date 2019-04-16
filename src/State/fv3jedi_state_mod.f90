@@ -1139,34 +1139,34 @@ end subroutine analytic_IC
 
 subroutine read_file(geom, self, c_conf, vdate)
 
-  implicit none
+implicit none
 
-  type(fv3jedi_geom),  intent(inout) :: geom     !< Geometry
-  type(fv3jedi_state), intent(inout) :: self     !< State
-  type(c_ptr),         intent(in)    :: c_conf   !< Configuration
-  type(datetime),      intent(inout) :: vdate    !< DateTime
+type(fv3jedi_geom),  intent(inout) :: geom     !< Geometry
+type(fv3jedi_state), intent(inout) :: self     !< State
+type(c_ptr),         intent(in)    :: c_conf   !< Configuration
+type(datetime),      intent(inout) :: vdate    !< DateTime
 
-  type(fv3jedi_io_gfs)  :: gfs
-  type(fv3jedi_io_geos) :: geos
+type(fv3jedi_io_gfs)  :: gfs
+type(fv3jedi_io_geos) :: geos
 
-  character(len=10) :: filetype
-  character(len=255) :: filename
+character(len=10) :: filetype
+character(len=255) :: filename
 
-  filetype = config_get_string(c_conf,len(filetype),"filetype")
+filetype = config_get_string(c_conf,len(filetype),"filetype")
 
-  if (trim(filetype) == 'gfs') then
-    call gfs%setup(c_conf)
-    call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
-    call gfs%read_fields(geom, self%fields)
-  elseif (trim(filetype) == 'geos') then
-    filename = config_get_string(c_conf,len(filename),"filename")
-    call geos%create(geom, 'read', filename)
-    call geos%read_time(vdate)
-    call geos%read_fields(geom, self%fields)
-    call geos%delete()
-  else
-     call abor1_ftn("fv3jedi_state_mod.read: restart type not supported")
-  endif
+if (trim(filetype) == 'gfs') then
+  call gfs%setup(c_conf)
+  call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
+  call gfs%read_fields(geom, self%fields)
+elseif (trim(filetype) == 'geos') then
+  filename = config_get_string(c_conf,len(filename),"filename")
+  call geos%create(geom, 'read', filename)
+  call geos%read_time(vdate)
+  call geos%read_fields(geom, self%fields)
+  call geos%delete()
+else
+  call abor1_ftn("fv3jedi_state_mod.read: restart type not supported")
+endif
 
 end subroutine read_file
 

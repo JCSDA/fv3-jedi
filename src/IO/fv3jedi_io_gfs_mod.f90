@@ -153,8 +153,9 @@ type(restart_file_type)  :: restart_spec
 logical :: read_core, read_trcr, read_sfcd, read_sfcw
 integer :: var, id_restart
 character(len=255) :: filename
-logical :: compute_ps
-integer :: indexof_ps
+integer :: compute_ps, compute_ps_type
+integer :: indexof_ps, indexof_delp
+logical :: assocps, assocdelp
 real(kind=kind_real), allocatable :: delp(:,:,:)
 
 ! Register and read fields
@@ -163,15 +164,33 @@ read_core = .false.
 read_trcr = .false.
 read_sfcd = .false.
 read_sfcw = .false.
+
+assocdelp = .false.
+assocps   = .false.
+do var = 1,size(fields)
+  if (trim(fields(var)%short_name) == 'DELP') assocdelp = .true.
+  if (trim(fields(var)%short_name) == 'ps')   assocps   = .true.
+enddo
+
+if (assocps) then
+  compute_ps_type = 1
+  if (assocdelp) compute_ps_type = 2
+endif
+
 do var = 1,size(fields)
 
-  compute_ps = .false.
+  compute_ps = 0
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","DELP","W","DZ")
+  case("u","v","ud","vd","ua","va","phis","T","W","DZ")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
+  case("DELP")
+    filename = self%filename_core
+    restart => restart_core
+    read_core = .true.
+    indexof_delp = var    
   case("sphum","ice_wat","liq_wat","o3mr","sulf","bc1","bc2","oc1","oc2",&
        "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
     filename = self%filename_trcr
@@ -189,18 +208,18 @@ do var = 1,size(fields)
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
-    compute_ps = .true.
+    compute_ps = compute_ps_type
     indexof_ps = var
-    allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   case default
     call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
 
-  if (.not.compute_ps) then
+  if (compute_ps == 0) then
     id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
                                          fields(var)%array, domain=geom%domain, &
                                          position=fields(var)%staggerloc )
-  else
+  elseif (compute_ps == 1) then
     id_restart = register_restart_field( restart, trim(filename), "DELP", &
                                          delp, domain=geom%domain, &
                                          position=fields(var)%staggerloc )
@@ -226,9 +245,13 @@ if (read_sfcw) then
 endif
 
 !Compute ps from DELP
-if (allocated(delp)) then
-  fields(indexof_ps)%array(:,:,1) = sum(delp,3)
-  deallocate(delp)
+if (compute_ps > 0) then
+  if (compute_ps == 2) then
+    fields(indexof_ps)%array(:,:,1) = sum(fields(indexof_delp)%array,3)
+  elseif (compute_ps == 1) then
+    fields(indexof_ps)%array(:,:,1) = sum(delp,3)
+    deallocate(delp)
+  endif
 endif
 
 end subroutine read_fields

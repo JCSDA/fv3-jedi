@@ -11,12 +11,69 @@ cost_function:
         filename_sfcd: 20180414.210000.sfc_data.nc
         filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
         filename_cplr: 20180414.210000.coupler.res
-        variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-                    "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
-                    "u_srf","v_srf","f10m"]
+        variables: ["u","v","ua","va","T","DELP","ps","sphum","ice_wat","liq_wat","o3mr"]
     Covariance:
-      covariance: FV3JEDIstatic
-      date: '2018-04-15T00:00:00Z'
+      covariance: hybrid
+      static_weight: '0.7'
+      ensemble_weight: '0.3'
+      static:
+        date: '2018-04-14T21:00:00Z'
+        covariance: BUMP
+        bump:
+          prefix: fv3jedi_bumpparameters_cor_gfs
+          method: cor
+          strategy: specific_univariate
+          load_nicas: 1
+          mpicom: 2
+      ensemble:
+        date: '2018-04-14T21:00:00Z'
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        members:
+        - filetype: gfs
+          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem006/RESTART/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        localization:
+          timeslots: ['2018-04-14T21:00:00Z']
+          variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+          localization: BUMP
+          bump:
+            prefix: fv3jedi_bumpparameters_loc_gfs
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
   Jo:
     ObsTypes:
     - ObsType: Aircraft

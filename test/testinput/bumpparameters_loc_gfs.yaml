@@ -1,0 +1,134 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+resolution:
+  nml_file: Data/fv3files/input_gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180414.210000.fv_core.res.nc
+variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+date: '2018-04-14T21:00:00Z'
+background:
+  filetype: gfs
+  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+ensemble:
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  members:
+  - filetype: gfs
+    datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+    filename_core: 20180414.210000.fv_core.res.nc
+    filename_trcr: 20180414.210000.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.sfc_data.nc
+    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.coupler.res
+  - filetype: gfs
+    datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+    filename_core: 20180414.210000.fv_core.res.nc
+    filename_trcr: 20180414.210000.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.sfc_data.nc
+    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.coupler.res
+  - filetype: gfs
+    datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+    filename_core: 20180414.210000.fv_core.res.nc
+    filename_trcr: 20180414.210000.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.sfc_data.nc
+    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.coupler.res
+  - filetype: gfs
+    datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+    filename_core: 20180414.210000.fv_core.res.nc
+    filename_trcr: 20180414.210000.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.sfc_data.nc
+    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.coupler.res
+  - filetype: gfs
+    datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem006/RESTART/
+    filename_core: 20180414.210000.fv_core.res.nc
+    filename_trcr: 20180414.210000.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.sfc_data.nc
+    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.coupler.res
+bump:
+  prefix: fv3jedi_bumpparameters_loc_gfs
+  method: loc
+#  nonunit_diag: 1
+  strategy: common
+  new_nicas: 1
+  ntry: 3
+  nrep: 2
+  lsqrt: 1
+  resol: 6
+  network: 0
+  mpicom: 2
+# Forced localization length-scales
+# ---------------------------------
+  forced_radii: 1
+  rh: 2500000.0
+  rv: 0.3
+# Diagnostic based on ens
+# -----------------------
+  new_hdiag: 0
+  nc1: 2000
+  nc2: 500
+  nc3: 15
+  dc: 200000.0
+  nl0r: 11
+  ne: 5
+  #local_diag: 1
+  #local_rad: 1000000
+  minim_algo: hooke
+  #diag_rhflt: 3000000
+#  Dirac gridded output
+#  --------------------
+  load_nicas: 0
+  check_dirac: 0
+  ndir: 1
+  londir: [0.0]
+  latdir: [0.0]
+  levdir: [50]
+  ivdir: [1]
+  itsdir: [1]
+  grid_output: 1
+  grid_resol: 200000.0
+output:
+- parameter: loc_coef
+  filetype: gfs
+  datapath_tile: Data/
+  filename_core: bump_params_gfs.loc_coef.fv_core.res.nc
+  filename_trcr: bump_params_gfs.loc_coef.fv_tracer.res.nc
+  filename_sfcd: bump_params_gfs.loc_coef.sfc_data.nc
+  filename_sfcw: bump_params_gfs.loc_coef.fv_srf_wnd.res.nc
+  filename_cplr: bump_params_gfs.loc_coef.coupler.res
+  date: '2018-04-14T21:00:00Z'  
+- parameter: loc_rh
+  filetype: gfs
+  datapath_tile: Data/
+  filename_core: bump_params_gfs.loc_rh.fv_core.res.nc
+  filename_trcr: bump_params_gfs.loc_rh.fv_tracer.res.nc
+  filename_sfcd: bump_params_gfs.loc_rh.sfc_data.nc
+  filename_sfcw: bump_params_gfs.loc_rh.fv_srf_wnd.res.nc
+  filename_cplr: bump_params_gfs.loc_rh.coupler.res
+  date: '2018-04-14T21:00:00Z'  
+- parameter: loc_rv
+  filetype: gfs
+  datapath_tile: Data/
+  filename_core: bump_params_gfs.loc_rv.fv_core.res.nc
+  filename_trcr: bump_params_gfs.loc_rv.fv_tracer.res.nc
+  filename_sfcd: bump_params_gfs.loc_rv.sfc_data.nc
+  filename_sfcw: bump_params_gfs.loc_rv.fv_srf_wnd.res.nc
+  filename_cplr: bump_params_gfs.loc_rv.coupler.res
+  date: '2018-04-14T21:00:00Z'  
+- parameter: hyb_coef
+  filetype: gfs
+  datapath_tile: Data/
+  filename_core: bump_params_gfs.hyb_coef.fv_core.res.nc
+  filename_trcr: bump_params_gfs.hyb_coef.fv_tracer.res.nc
+  filename_sfcd: bump_params_gfs.hyb_coef.sfc_data.nc
+  filename_sfcw: bump_params_gfs.hyb_coef.fv_srf_wnd.res.nc
+  filename_cplr: bump_params_gfs.hyb_coef.coupler.res
+  date: '2018-04-14T21:00:00Z'  

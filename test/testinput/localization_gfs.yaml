@@ -1,0 +1,19 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+Geometry:
+  nml_file: Data/fv3files/input_gfs_c48.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180414.210000.fv_core.res.nc
+Variables: 
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+TestDate: '2018-04-14T21:00:00Z'
+Localization:
+  localization: BUMP
+  timeslots: ['2018-04-14T21:00:00Z']
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  bump:
+    prefix: fv3jedi_bumpparameters_loc_gfs
+    method: loc
+    strategy: common
+    load_nicas: 1
+    mpicom: 2

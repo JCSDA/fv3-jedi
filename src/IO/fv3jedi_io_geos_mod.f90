@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_io_geos_mod
 
@@ -104,13 +104,13 @@ if (self%iam_io_proc) then
     ! Get dimensions, XDim,YDim,lev,time
     call nccheck ( nf90_inq_dimid(self%ncid, "Xdim", dimid), "nf90_inq_dimid Xdim" )
     call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = im), "nf90_inquire_dimension Xdim" )
-    
+
     call nccheck ( nf90_inq_dimid(self%ncid, "Ydim", dimid), "nf90_inq_dimid YDim" )
     call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = jm), "nf90_inquire_dimension YDim" )
-    
+
     call nccheck ( nf90_inq_dimid(self%ncid, "lev",  dimid), "nf90_inq_dimid lev" )
     call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = lm), "nf90_inquire_dimension lev" )
-    
+
     call nccheck ( nf90_inq_dimid(self%ncid, "time", dimid), "nf90_inq_dimid time" )
     call nccheck ( nf90_inquire_dimension(self%ncid, dimid, len = nm), "nf90_inquire_dimension time" )
 
@@ -141,7 +141,7 @@ if (self%iam_io_proc) then
 
   allocate(self%istart3(ncdim3),self%icount3(ncdim3))
   allocate(self%istart2(ncdim2),self%icount2(ncdim2))
-  
+
   ! Create local to this proc start/count
   if (ncdim3 == 5) then
     self%istart3(1) = 1;           self%icount3(1) = geom%npx-1  !X
@@ -166,7 +166,7 @@ if (self%iam_io_proc) then
   else
     call abor1_ftn("fv3jedi_io_geos_mod.create: ncdim3 set incorrectly")
   endif
-  
+
 endif
 
 end subroutine create
@@ -214,16 +214,16 @@ idate = 0
 isecs = 0
 
 if (self%iam_io_proc) then
-  
+
   ! Get time attributes
   call nccheck ( nf90_inq_varid(self%ncid, "time", varid), "nf90_inq_varid time" )
   call nccheck ( nf90_get_att(self%ncid, varid, "begin_date", intdate), "nf90_get_att begin_date" )
   call nccheck ( nf90_get_att(self%ncid, varid, "begin_time", inttime), "nf90_get_att begin_time" )
-  
+
   ! Pad with leading zeros if need be
   write(cdate,"(I0.8)") intdate
   write(ctime,"(I0.6)") inttime
-  
+
   ! Back to integer
   read(cdate(1:4),*) date(1)
   read(cdate(5:6),*) date(2)
@@ -231,11 +231,11 @@ if (self%iam_io_proc) then
   read(ctime(1:2),*) date(4)
   read(ctime(3:4),*) date(5)
   read(ctime(5:6),*) date(6)
-  
+
   ! To idate/isecs for Jedi
   idate = date(1)*10000 + date(2)*100 + date(3)
   isecs = date(4)*3600  + date(5)*60  + date(6)
-  
+
 endif
 
 ! Set the object date from the date of the file
@@ -297,7 +297,7 @@ do n = 1,size(fields)
   do lev = 1,fields(n)%npz
 
     arrayg = 0.0_kind_real
- 
+
     if (self%iam_io_proc) then
 
       !Set counter to current level
@@ -328,7 +328,7 @@ do n = 1,size(fields)
 
   if (self%iam_io_proc) then
     nullify(istart,icount)
-    if (n == size(fields)) deallocate(istart3)    
+    if (n == size(fields)) deallocate(istart3)
   endif
 
   if (trim(fields(n)%fv3jedi_name) == 'ps') then
@@ -339,7 +339,7 @@ do n = 1,size(fields)
   endif
 
 enddo
-  
+
 deallocate(arrayg)
 
 end subroutine read_fields
@@ -373,24 +373,24 @@ real(kind=kind_real), allocatable :: arrayg(:,:), realarray(:)
 integer, pointer :: istart(:), icount(:)
 
 ! Whole level of tile array
-allocate(arrayg(1:geom%npx-1,1:geom%npy-1)) 
+allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
 
 ! Define all the variables and meta data to be written
 ! ----------------------------------------------------
 if (self%iam_io_proc) then
-  
+
   ! Place to save restarts
   datapath = "Data/"
   if (config_element_exists(c_conf,"datapath")) then
      datapath = config_get_string(c_conf,len(datapath),"datapath")
   endif
-    
+
   ! Base filename
   filename = 'GEOS.eta.'
   if (config_element_exists(c_conf,"filename")) then
      filename = config_get_string(c_conf,len(filename),"filename")
   endif
-  
+
   ! Append with the date
   call datetime_to_ifs(vdate, idate, isecs)
   date(1) = idate/10000
@@ -404,12 +404,12 @@ if (self%iam_io_proc) then
 
   write(datefile,'(I4,A1,I0.2,A1,I0.2,A1,I0.2,A1,I0.2,A1,I0.2)') date(1),"-",date(2),"-",date(3)," "&
                                                     ,date(4),":",date(5),":",date(6)
-  
+
   write(date8s,'(I4,I0.2,I0.2)')   date(1),date(2),date(3)
   write(time6s,'(I0.2,I0.2,I0.2)') date(4),date(5),date(6)
   read(date8s,*)  date8
   read(time6s,*)  time6
-   
+
   ! Create and open the file for parallel write
   call nccheck( nf90_create( trim(filename), ior(NF90_NETCDF4, NF90_MPIIO), self%ncid, &
                              comm = self%ocomm, info = MPI_INFO_NULL), "nf90_create" )
@@ -420,7 +420,7 @@ if (self%iam_io_proc) then
   call nccheck ( nf90_def_dim(self%ncid, "nf",   geom%ntiles, n_dimid), "nf90_def_dim nf"   )
   call nccheck ( nf90_def_dim(self%ncid, "lev",  geom%npz,    z_dimid), "nf90_def_dim lev"  )
   call nccheck ( nf90_def_dim(self%ncid, "time", 1,           t_dimid), "nf90_def_dim time" )
-  
+
   ! DimId arrays
   ndimidsv = 1
   ndimidsg = 3
@@ -435,8 +435,8 @@ if (self%iam_io_proc) then
   dimids2 =  (/ x_dimid, y_dimid, n_dimid, t_dimid /)
   allocate(dimids3(ndimids3))
   dimids3 =  (/ x_dimid, y_dimid, n_dimid, z_dimid, t_dimid /)
-  
-  ! Define fields to be written (geom) 
+
+  ! Define fields to be written (geom)
   vc=1;
   call nccheck( nf90_def_var(self%ncid, "nf", NF90_INT, n_dimid, varid(vc)), "nf90_def_var nf" )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "cubed-sphere face") )
@@ -457,12 +457,12 @@ if (self%iam_io_proc) then
   call nccheck( nf90_def_var(self%ncid, "lons", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lons" )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "longitude") )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "degrees_east") )
-  
+
   vc=vc+1;
   call nccheck( nf90_def_var(self%ncid, "lats", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lats" )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "latitude") )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "units", "degrees_north") )
-  
+
   vc=vc+1;
   call nccheck( nf90_def_var(self%ncid, "lev", NF90_DOUBLE, z_dimid, varid(vc)), "nf90_def_var lev" )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "vertical level") )
@@ -476,10 +476,10 @@ if (self%iam_io_proc) then
   call nccheck( nf90_put_att(self%ncid, varid(vc), "long_name", "time"), "nf90_def_var time long_name" )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "begin_date", date8), "nf90_def_var time begin_date" )
   call nccheck( nf90_put_att(self%ncid, varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
-  
+
   ! Define fields to be written
   do n = 1,size(fields)
-  
+
     if (fields(n)%npz == 1) then
       allocate(dimids(ndimids2))
       dimids = dimids2
@@ -489,7 +489,7 @@ if (self%iam_io_proc) then
     else
       call abor1_ftn("write_geos: vertical dimension not supported")
     endif
-  
+
     vc=vc+1
     call nccheck( nf90_def_var(self%ncid, trim(fields(n)%short_name), NF90_DOUBLE, dimids, varid(vc)), &
                   "nf90_def_var"//trim(fields(n)%short_name)   )
@@ -498,18 +498,18 @@ if (self%iam_io_proc) then
     call nccheck( nf90_put_att(self%ncid, varid(vc), "standard_name", trim(fields(n)%long_name) ), "nf90_put_att" )
     call nccheck( nf90_put_att(self%ncid, varid(vc), "coordinates"  , "lons lats"               ), "nf90_put_att" )
     call nccheck( nf90_put_att(self%ncid, varid(vc), "grid_mapping" , "cubed_sphere"            ), "nf90_put_att" )
-  
+
     deallocate(dimids)
-  
+
   enddo
-  
+
   ! End define mode
   call nccheck( nf90_enddef(self%ncid), "nf90_enddef" )
-   
+
 endif
 
 
-! Write Xdim, YDim, and nf (tile) 
+! Write Xdim, YDim, and nf (tile)
 ! -------------------------------
 if (self%iam_io_proc) then
 
@@ -519,7 +519,7 @@ if (self%iam_io_proc) then
   do n = 1,6
     intarray(n) = n
   enddo
-  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), intarray ), "nf90_put_var nf" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), intarray ), "nf90_put_var nf" )
   deallocate(intarray)
 
   allocate(realarray(geom%npx-1))
@@ -527,8 +527,8 @@ if (self%iam_io_proc) then
     realarray(n) = real(n,kind_real)
   enddo
 
-  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), realarray ), "nf90_put_var Xdim" )  
-  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), realarray ), "nf90_put_var Ydim" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), realarray ), "nf90_put_var Xdim" )
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), realarray ), "nf90_put_var Ydim" )
 
   deallocate(realarray)
 
@@ -570,17 +570,17 @@ if (self%iam_io_proc) then
   do n = 1,geom%npz
     intarray(n) = n
   enddo
-  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), intarray ), "nf90_put_var lev" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), intarray ), "nf90_put_var lev" )
   deallocate(intarray)
 
-  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), 0 ), "nf90_put_var time" )  
+  vc=vc+1;call nccheck( nf90_put_var( self%ncid, varid(vc), 0 ), "nf90_put_var time" )
 endif
 
 
 ! Loop over fields and levels and write fields to file
 ! ----------------------------------------------------
 do n = 1,size(fields)
-  
+
   if (self%iam_io_proc) then
 
     ! Local counts for 3 to allow changing start point
@@ -598,8 +598,8 @@ do n = 1,size(fields)
     !Up field counter outside of level loop
     vc = vc + 1
 
-  endif 
- 
+  endif
+
   do lev = 1,fields(n)%npz
 
     if (self%csize > 6) then
@@ -614,7 +614,7 @@ do n = 1,size(fields)
 
       call nccheck( nf90_put_var( self%ncid, varid(vc), arrayg, start = istart, count = icount ), &
                                   "nf90_put_var "//trim(fields(n)%short_name) )
- 
+
     endif
 
   enddo

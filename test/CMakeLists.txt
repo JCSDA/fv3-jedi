@@ -1034,13 +1034,15 @@ configinput/hyb-4DVar.dripcg.gfs.yaml
 
 list( APPEND fv3jedi_test_input
 compare.sh
-testinput/3dfgat_geos.yaml
-testinput/3dfgat_gfs.yaml
 testinput/3dvar_geos.yaml
 testinput/3dvar_gfs.yaml
 testinput/4dvar.dripcg_geos.yaml
 testinput/4dvar.dripcg_gfs.yaml
 testinput/admforecast_geos.yaml
+testinput/bumpparameters_cor_gfs.yaml
+testinput/bumpparameters_cor_geos.yaml
+testinput/bumpparameters_loc_gfs.yaml
+testinput/bumpparameters_loc_geos.yaml
 testinput/errorcov_geos.yaml
 testinput/errorcov_gfs.yaml
 testinput/forecast_geos-fv3.yaml
@@ -1051,11 +1053,15 @@ testinput/geometry_geos.yaml
 testinput/geometry_gfs.yaml
 testinput/hofx_geos.yaml
 testinput/hofx_gfs.yaml
+testinput/hyb-fgat_geos.yaml
+testinput/hyb-fgat_gfs.yaml
 testinput/increment_geos.yaml
 testinput/increment_gfs.yaml
 testinput/linearmodel_geos.yaml
 testinput/linearmodel_gfs.yaml
 testinput/linearmodelread_geos.yaml
+testinput/localization_geos.yaml
+testinput/localization_gfs.yaml
 testinput/model_geos-fv3.yaml
 testinput/model_gfs-fv3.yaml
 testinput/modelread_geos-fv3.yaml
@@ -1068,8 +1074,9 @@ testinput/linvarcha_gfs.yaml
 )
 
 list( APPEND fv3jedi_testoutput
-testoutput/hofx.test  
-testoutput/3dfgat.test
+testoutput/hofx.test
+testoutput/hyb-fgat_geos.test
+testoutput/hyb-fgat_gfs.test
 testoutput/3dvar.test
 testoutput/4dvar.dripcg.test
 testoutput/4dvar.drplanczos.test
@@ -1219,6 +1226,12 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_geos
                   MPI     6
                   LIBS    fv3jedi )
 
+ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
+                  SOURCES executables/TestState.cc
+                  ARGS    "testinput/state_geosaero.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
 ecbuild_add_test( TARGET  test_fv3jedi_model_gfs-fv3
                   SOURCES executables/TestModel.cc
                   ARGS    "testinput/model_gfs-fv3.yaml"
@@ -1285,18 +1298,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_gfs
-                  SOURCES executables/TestErrorCovariance.cc
-                  ARGS    "testinput/errorcov_gfs.yaml"
-                  MPI     6
-                  LIBS    fv3jedi )
-
-ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_geos
-                  SOURCES executables/TestErrorCovariance.cc
-                  ARGS    "testinput/errorcov_geos.yaml"
-                  MPI     6
-                  LIBS    fv3jedi )
-
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_gfs
                   SOURCES executables/TestModelAuxCovariance.cc
                   ARGS    "testinput/model_gfs-fv3.yaml"
@@ -1309,23 +1310,9 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
-                  SOURCES executables/TestState.cc
-                  ARGS    "testinput/state_geosaero.yaml"
-                  MPI     6
-                  LIBS    fv3jedi )
 
-
-
-#Expensive for laptops, so off for now
-#ecbuild_add_test( TARGET  test_fv3jedi_localization
-#                  SOURCES executables/TestLocalization.cc
-#                  ARGS    "testinput/localization.yaml"
-#                  MPI     6
-#                  LIBS    fv3jedi )
-
-#Tests that just check for sucessful run
-#---------------------------------------
+# H(x)
+# ----
 
 ecbuild_add_test( TARGET test_fv3jedi_hofx_gfs
                   TYPE EXE
@@ -1341,6 +1328,77 @@ ecbuild_add_test( TARGET test_fv3jedi_hofx_geos
                   MPI     6
                   LIBS    fv3jedi )
 
+
+# Pre-compute localization and covariances for var tests
+# ------------------------------------------------------
+
+ecbuild_add_test( TARGET test_fv3jedi_bumpparameters_cor_gfs
+                  TYPE EXE
+                  SOURCES ../mains/fv3jediEstimateParams.cc
+                  ARGS "testinput/bumpparameters_cor_gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_bumpparameters_cor_geos
+                  TYPE EXE
+                  SOURCES ../mains/fv3jediEstimateParams.cc
+                  ARGS "testinput/bumpparameters_cor_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_bumpparameters_loc_gfs
+                  TYPE EXE
+                  SOURCES ../mains/fv3jediEstimateParams.cc
+                  ARGS "testinput/bumpparameters_loc_gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET test_fv3jedi_bumpparameters_loc_geos
+                  TYPE EXE
+                  SOURCES ../mains/fv3jediEstimateParams.cc
+                  ARGS "testinput/bumpparameters_loc_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+
+# Error covariance
+# ----------------
+
+ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_gfs
+                  SOURCES executables/TestErrorCovariance.cc
+                  ARGS    "testinput/errorcov_gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_errorcovariance_geos
+                  SOURCES executables/TestErrorCovariance.cc
+                  ARGS    "testinput/errorcov_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+
+# Localization
+# ------------
+
+ecbuild_add_test( TARGET  test_fv3jedi_localization_gfs
+                  SOURCES executables/TestLocalization.cc
+                  ARGS    "testinput/localization_gfs.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_localization_geos
+                  SOURCES executables/TestLocalization.cc
+                  ARGS    "testinput/localization_geos.yaml"
+                  MPI     6
+                  LIBS    fv3jedi )
+
+
+# Dirac tests
+# -----------
+
+# Data assimilation runs
+# ----------------------
+
 ecbuild_add_test( TARGET test_fv3jedi_3dvar_gfs
                   TYPE EXE
                   SOURCES ../mains/fv3jediVar.cc
@@ -1355,17 +1413,17 @@ ecbuild_add_test( TARGET test_fv3jedi_3dvar_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET test_fv3jedi_3dfgat_gfs
+ecbuild_add_test( TARGET test_fv3jedi_hybfgat_gfs
                   TYPE EXE
                   SOURCES ../mains/fv3jediVar.cc
-                  ARGS "testinput/3dfgat_gfs.yaml"
+                  ARGS "testinput/hyb-fgat_gfs.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET test_fv3jedi_3dfgat_geos
+ecbuild_add_test( TARGET test_fv3jedi_hybfgat_geos
                   TYPE EXE
                   SOURCES ../mains/fv3jediVar.cc
-                  ARGS "testinput/3dfgat_geos.yaml"
+                  ARGS "testinput/hyb-fgat_geos.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 

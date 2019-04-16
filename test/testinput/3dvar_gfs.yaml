@@ -15,12 +15,38 @@ cost_function:
                     "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
                     "u_srf","v_srf","f10m"]
     Covariance:
-      covariance: FV3JEDIstatic
+      covariance: BUMP
       date: '2018-04-15T00:00:00Z'
-      horizontal_length_scale: 1e6
-      maximum_condition_number: 1.0e6
-      standard_deviation: '0.8'
-      vertical_correlation: '0.2'
+      bump:
+        prefix: fv3jedi_bumpparameters_cor_3dvar_gfs
+        method: cor
+        nonunit_diag: 1
+        strategy: specific_univariate
+        new_nicas: 1
+        ntry: 3
+        nrep: 2
+        lsqrt: 1
+        resol: 6
+        network: 0
+        mpicom: 2
+        forced_radii: 1
+        rh: 5000000.0
+        rv: 0.5
+        new_hdiag: 0
+        nc1: 2000
+        nc2: 500
+        nc3: 15
+        dc: 200000.0
+        nl0r: 11
+        ne: 5
+        minim_algo: hooke
+        verbosity: 'none'
+        variable_changes:
+        - varchange: Control2Model
+          inputVariables:
+            variables: ["ua","va","t","ps","q","qi","ql","o3"]
+          outputVariables:
+            variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
     - ObsType: Aircraft

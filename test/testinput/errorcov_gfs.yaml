@@ -1,46 +1,28 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
-Covariance:
-  bump:
-    default_seed: 1
-    prefix: fv3jedi_errorcov_gfs
-    method: cor
-    strategy: specific_univariate
-    new_nicas: 1     # Recompute convolution parameters
-    load_nicas: 0    # Load precomputed convolution parameters
-    sam_read: 0
-    sam_write: 1
-    nc1: 100
-    ntry: 3
-    nrep:  2
-    nc3: 10
-    dc: 1000.0e3
-    nl0r: 1
-    minim_algo: "hooke"
-    lsqrt: 1
-    resol: 10.0
-    network: 0
-    mpicom: 2
-    forced_radii: 1
-    rh: 3000e3
-    rv: 100
-    verbosity: 'none'
-  covariance: BUMP
-  date: '2018-04-15T00:00:00Z'
 CovarianceTest:
   testinverse: false
-  tolerance: '1.0e-12'
+  tolerance: '1.0e-13'
 Geometry:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180414.210000.fv_core.res.nc
+Variables:
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
 State:
   filetype: gfs
   datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
-Variables:
-  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+Covariance:
+  covariance: BUMP
+  date: '2018-04-14T21:00:00Z'
+  bump:
+    prefix: fv3jedi_bumpparameters_cor_gfs
+    method: cor
+    strategy: specific_univariate
+    load_nicas: 1
+    mpicom: 2
