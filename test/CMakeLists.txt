@@ -1310,7 +1310,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
-                  BOOST
                   SOURCES executables/TestState.cc
                   ARGS    "testinput/state_geosaero.yaml"
                   MPI     6
