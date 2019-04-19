@@ -139,6 +139,60 @@ cost_function:
         obsfile: "Data/amsua_fmo.nc4"
       Covariance:
         covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        bounds:
+        - variable: brightness_temperature_1
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_2
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_3
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_4
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_5
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_6
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_9
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_10
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_11
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_12
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_13
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_15
+          minvalue: 100.0
+          maxvalue: 500.0
+      - Filter: Background Check
+        variables:
+        - brightness_temperature_1
+        - brightness_temperature_2
+        - brightness_temperature_3
+        - brightness_temperature_4
+        - brightness_temperature_5
+        - brightness_temperature_6
+        - brightness_temperature_9
+        - brightness_temperature_10
+        - brightness_temperature_11
+        - brightness_temperature_12
+        - brightness_temperature_13
+        - brightness_temperature_15
+        threshold: 3.0
   cost_type: 3D-Var
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'
