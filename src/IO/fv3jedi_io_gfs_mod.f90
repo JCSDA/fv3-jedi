@@ -191,7 +191,7 @@ do var = 1,size(fields)
     restart => restart_core
     read_core = .true.
     indexof_delp = var    
-  case("sphum","ice_wat","liq_wat","o3mr","sulf","bc1","bc2","oc1","oc2",&
+  case("sphum","ice_wat","liq_wat","rainwat","snowwat","o3mr","sulf","bc1","bc2","oc1","oc2",&
        "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
     filename = self%filename_trcr
     restart => restart_trcr

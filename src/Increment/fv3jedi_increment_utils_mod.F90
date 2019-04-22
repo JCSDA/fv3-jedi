@@ -44,6 +44,8 @@ type :: fv3jedi_increment
   real(kind=kind_real), pointer, dimension(:,:,:) :: q    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qi   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ql   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qr   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qs   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: o3   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: psi  => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: chi  => null()

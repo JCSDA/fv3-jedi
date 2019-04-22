@@ -193,6 +193,90 @@ cost_function:
         - brightness_temperature_13
         - brightness_temperature_15
         threshold: 3.0
+    - ObsType: "CRTM"
+      channels: "1-13"
+      ObsOptions:
+       n_Absorbers: 3
+       n_Clouds: 2
+       n_Aerosols: 0
+       Sensor_ID: gmi_gpm
+       EndianType: little_endian
+       CoefficientPath: "Data/"
+      ObsData:
+       ObsDataIn:
+        obsfile: "Data/gmi_obs_gpm_2018041500_m.nc4"
+       ObsDataOut:
+        obsfile: "Data/gmi_fmo.nc4"
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        bounds:
+        - variable: brightness_temperature_1
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_2
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_3
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_4
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_5
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_6
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_7
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_8
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_9
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_10
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_11
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_12
+          minvalue: 30.0
+          maxvalue: 350.0
+        - variable: brightness_temperature_13
+          minvalue: 30.0
+          maxvalue: 350.0
+      - Filter: Domain Check
+        where:
+        - variable: latitude
+          minvalue:-55.0
+          maxvalue: 55.0
+      - Filter: BlackList
+        where:
+        - variable: Water_Fraction@GeoVaLs
+          minvalue: 0.0
+          maxvalue: 0.99
+      - Filter: Background Check
+        variables:
+        - brightness_temperature_1
+        - brightness_temperature_2
+        - brightness_temperature_3
+        - brightness_temperature_4
+        - brightness_temperature_5
+        - brightness_temperature_6
+        - brightness_temperature_7
+        - brightness_temperature_8
+        - brightness_temperature_9
+        - brightness_temperature_10
+        - brightness_temperature_11
+        - brightness_temperature_12
+        - brightness_temperature_13
+        threshold: 2.0
   cost_type: 3D-Var
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'

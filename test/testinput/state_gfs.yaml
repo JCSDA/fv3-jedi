@@ -25,7 +25,7 @@ StateTest:
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
-    variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+    variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","rainwat","snowwat","o3mr"]
   StateGenerate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-15T00:00:00Z'
@@ -37,7 +37,7 @@ StateTest:
     - atmosphere_ln_pressure_coordinate
   date: '2018-04-15T00:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '690.34419073984634'
+  norm-file: '617.462615347'
   norm-gen: '626.84835664602417'
   tolerance: 1.0e-08
   values:

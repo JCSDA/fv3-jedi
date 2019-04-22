@@ -111,6 +111,16 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'increment_of_cloud_liquid_ice_water', &
            fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center, arraypointer = self%ql)
+    case("qs","snowwat")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_snow_water', &
+           fv3jedi_name = 'qs', units = 'kg kg-1', staggerloc = center, arraypointer = self%qs)
+    case("qr","rainwat")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_rain_water', &
+           fv3jedi_name = 'qr', units = 'kg kg-1', staggerloc = center, arraypointer = self%qr)
     case("o3","o3mr")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -324,6 +334,8 @@ if (associated(self%delz)) nullify(self%delz)
 if (associated(self%q   )) nullify(self%q   )
 if (associated(self%qi  )) nullify(self%qi  )
 if (associated(self%ql  )) nullify(self%ql  )
+if (associated(self%qr  )) nullify(self%qr  )
+if (associated(self%qs  )) nullify(self%qs  )
 if (associated(self%o3  )) nullify(self%o3  )
 if (associated(self%psi )) nullify(self%psi )
 if (associated(self%chi )) nullify(self%chi )
@@ -486,6 +498,10 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%qi)
     case("ql","liq_wat")
       call self%fields(self_var)%array_pointer(self%ql)
+    case("qs","snowwat")
+      call self%fields(self_var)%array_pointer(self%qs)
+    case("qr","rainwat")
+      call self%fields(self_var)%array_pointer(self%qr)
     case("o3","o3mr")
       call self%fields(self_var)%array_pointer(self%o3)
     case("psi")
