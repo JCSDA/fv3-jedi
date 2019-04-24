@@ -23,6 +23,7 @@ bump:
   network: 0
   mpicom: 2
   verbosity: 'all'
+  default_seed: 1
 # Forced localization length-scales
 # ---------------------------------
   forced_radii: 1

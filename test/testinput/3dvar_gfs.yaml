@@ -40,6 +40,7 @@ cost_function:
         nl0r: 11
         ne: 5
         minim_algo: hooke
+        default_seed: 1
         verbosity: 'none'
         variable_changes:
         - varchange: Control2Model

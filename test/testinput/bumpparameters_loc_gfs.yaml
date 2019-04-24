@@ -65,6 +65,7 @@ bump:
   resol: 6
   network: 0
   mpicom: 2
+  default_seed: 1
 # Forced localization length-scales
 # ---------------------------------
   forced_radii: 1
