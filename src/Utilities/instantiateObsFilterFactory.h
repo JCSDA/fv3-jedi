@@ -18,6 +18,7 @@
 #include "ufo/ObsBoundsCheck.h"
 #include "ufo/ObsDomainCheck.h"
 #include "ufo/ObsPreQC.h"
+#include "ufo/Thinning.h"
 
 namespace fv3jedi {
 
@@ -41,6 +42,9 @@ void instantiateObsFilterFactory() {
   static oops::FilterMaker<FV3JEDITraits,
                  oops::ObsFilter<FV3JEDITraits, ufo::ROobserror>
                           > makerChk6_("ROobserror");
+  static oops::FilterMaker<FV3JEDITraits,
+                 oops::ObsFilter<FV3JEDITraits, ufo::Thinning>
+                          > makerChk7_("Thinning");
 }
 
 }  // namespace fv3jedi
