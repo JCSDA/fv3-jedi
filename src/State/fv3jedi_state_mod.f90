@@ -9,6 +9,7 @@ use iso_c_binding
 use config_mod
 use datetime_mod
 use fckit_mpi_module
+use variables_mod
 
 use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms, fields_rms, fields_gpnorm, fields_print, get_field
 use fv3jedi_constants_mod,       only: rad2deg, constoz
@@ -18,7 +19,6 @@ use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs 
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos 
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
-use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues
 
 use wind_vt_mod, only: a2d
@@ -42,7 +42,7 @@ subroutine create(self, geom, vars)
 implicit none
 type(fv3jedi_state), intent(inout) :: self
 type(fv3jedi_geom),  intent(in)    :: geom
-type(fv3jedi_vars),  intent(in)    :: vars
+type(oops_vars),     intent(in)    :: vars
 
 integer :: var, vcount
 

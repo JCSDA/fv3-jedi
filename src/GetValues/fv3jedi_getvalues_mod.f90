@@ -4,7 +4,7 @@ use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use type_bump, only: bump_type
 use ufo_geovals_mod, only: ufo_geovals, ufo_geovals_write_netcdf
 use ufo_locs_mod, only: ufo_locs
-use ufo_vars_mod, only: ufo_vars
+use variables_mod, only: oops_vars
 
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -38,7 +38,7 @@ implicit none
 type(fv3jedi_geom),                             intent(in)    :: geom 
 type(fv3jedi_state),                            intent(in)    :: state 
 type(ufo_locs),                                 intent(in)    :: locs 
-type(ufo_vars),                                 intent(in)    :: vars
+type(oops_vars),                                intent(in)    :: vars
 type(ufo_geovals),                              intent(inout) :: gom
 type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
 
@@ -775,7 +775,7 @@ implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_increment),  intent(in)    :: inc 
 type(ufo_locs),           intent(in)    :: locs 
-type(ufo_vars),           intent(in)    :: vars
+type(oops_vars),          intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
@@ -1065,7 +1065,7 @@ implicit none
 type(fv3jedi_geom),       intent(inout) :: geom 
 type(fv3jedi_increment),  intent(inout) :: inc 
 type(ufo_locs),           intent(in)    :: locs 
-type(ufo_vars),           intent(in)    :: vars
+type(oops_vars),          intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
@@ -1426,7 +1426,7 @@ if (.not.allocated(gom%geovals(jvar)%vals)) then
   gom%geovals(jvar)%nval = gvlev
   
   ! Allocate %vals
-  allocate(gom%geovals(jvar)%vals(gom%geovals(jvar)%nval,gom%geovals(jvar)%nobs))
+  allocate(gom%geovals(jvar)%vals(gom%geovals(jvar)%nval,gom%geovals(jvar)%nlocs))
   gom%geovals(jvar)%vals = 0.0_kind_real
   
   ! Set flag for internal data arrays having been set
@@ -1536,10 +1536,10 @@ end subroutine initialize_bump
 
 subroutine getvalues_checks(cop, vars, gom, jvar)
 implicit none
-character(len=*),  intent(in) :: cop
-type(ufo_vars),    intent(in) :: vars
-type(ufo_geovals), intent(in) :: gom
-integer, intent(in)           :: jvar
+character(len=*),   intent(in) :: cop
+type(oops_vars),    intent(in) :: vars
+type(ufo_geovals),  intent(in) :: gom
+integer,            intent(in) :: jvar
 
 character(len=255) :: cinfo
 

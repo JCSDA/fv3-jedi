@@ -8,6 +8,7 @@ module fv3jedi_increment_mod
 use iso_c_binding
 use config_mod
 use datetime_mod
+use variables_mod, only: oops_vars
 
 use random_mod
 use fckit_mpi_module
@@ -21,7 +22,6 @@ use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
-use fv3jedi_vars_mod,            only: fv3jedi_vars
 use fv3jedi_getvalues_mod,       only: getvalues_tl, getvalues_ad
 
 use wind_vt_mod, only: d2a
@@ -49,7 +49,7 @@ subroutine create(self, geom, vars)
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_geom),      intent(in)    :: geom
-type(fv3jedi_vars),      intent(in)    :: vars
+type(oops_vars),         intent(in)    :: vars
 
 integer :: var, vcount
 

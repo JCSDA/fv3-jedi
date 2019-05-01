@@ -68,7 +68,6 @@ Utilities/fv3jedi_constants_mod.f90
 Utilities/fv3jedi_field_mod.f90
 Utilities/fv3jedi_kinds_mod.f90
 Utilities/fv3jedi_netcdf_utils_mod.F90
-Utilities/fv3jedi_vars_mod.f90
 Utilities/instantiateFV3JEDIVarChangeFactories.h
 Utilities/instantiateObsFilterFactory.h
 VariableChange/height_variables_mod.f90

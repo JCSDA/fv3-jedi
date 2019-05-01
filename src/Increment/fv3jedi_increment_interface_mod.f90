@@ -12,19 +12,18 @@ use config_mod
 use datetime_mod
 use duration_mod
 use iso_c_binding
+use variables_mod
 
 use fv3jedi_increment_mod
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment_registry
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
 use fv3jedi_state_utils_mod, only: fv3jedi_state, fv3jedi_state_registry
-use fv3jedi_vars_mod
 use unstructured_grid_mod, only: unstructured_grid, unstructured_grid_registry
 
 !GetValues
 use ufo_locs_mod
 use ufo_locs_mod_c, only: ufo_locs_registry
-use ufo_vars_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
 use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj, fv3jedi_getvalues_traj_registry
@@ -49,15 +48,16 @@ type(c_ptr), intent(in)    :: c_vars     !< List of variables
 
 type(fv3jedi_increment), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
-type(fv3jedi_vars) :: vars
+type(oops_vars) :: vars
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%init()
 call fv3jedi_increment_registry%add(c_key_self)
 call fv3jedi_increment_registry%get(c_key_self,self)
 
-call fv3jedi_vars_create(c_vars,vars)
+call oops_vars_create(c_vars,vars)
 call create(self, geom, vars)
+call oops_vars_delete(vars)
 
 end subroutine fv3jedi_increment_create_c
 
@@ -500,11 +500,11 @@ integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_increment), pointer :: inc
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
-type(ufo_vars) :: vars
+type(oops_vars) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
 
-call ufo_vars_setup(vars, c_vars)
+call oops_vars_create(c_vars,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
@@ -513,6 +513,8 @@ call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues_tl(geom, inc, locs, vars, gom, traj)
+
+call oops_vars_delete(vars)
 
 end subroutine fv3jedi_increment_getvalues_tl_c
 
@@ -530,11 +532,11 @@ integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_increment), pointer :: inc
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
-type(ufo_vars) :: vars
+type(oops_vars) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
 
-call ufo_vars_setup(vars, c_vars)
+call oops_vars_create(c_vars,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
@@ -543,6 +545,8 @@ call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues_ad(geom, inc, locs, vars, gom, traj)
+
+call oops_vars_delete(vars)
 
 end subroutine fv3jedi_increment_getvalues_ad_c
 
