@@ -17,7 +17,8 @@
 #include "ufo/gnssro/QC/ROobserror.h"
 #include "ufo/ObsBoundsCheck.h"
 #include "ufo/ObsDomainCheck.h"
-#include "ufo/ObsPreQC.h"
+#include "ufo/PreQC.h"
+#include "ufo/QCmanager.h"
 #include "ufo/Thinning.h"
 
 namespace fv3jedi {
@@ -25,7 +26,10 @@ namespace fv3jedi {
 void instantiateObsFilterFactory() {
   oops::instantiateObsFilterFactory<FV3JEDITraits>();
   static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::ObsPreQC>
+                 oops::ObsFilter<FV3JEDITraits, ufo::QCmanager>
+                          > makerChk0_("QCmanager");
+  static oops::FilterMaker<FV3JEDITraits,
+                 oops::ObsFilter<FV3JEDITraits, ufo::PreQC>
                           > makerChk1_("PreQC");
   static oops::FilterMaker<FV3JEDITraits,
                  oops::ObsFilter<FV3JEDITraits, ufo::ObsDomainCheck>
