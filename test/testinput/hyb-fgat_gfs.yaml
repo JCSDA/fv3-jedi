@@ -76,45 +76,163 @@ cost_function:
             mpicom: 2
   Jo:
     ObsTypes:
-    - ObsType: Aircraft
-      ObsData:
+    - ObsSpace:
+        name: Aircraft
         ObsDataIn:
           obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.fgat.3dvar.air.out.nc4
-        obsvalue: ObsValue
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
+          obsfile: Data/aircraft_hyb-fgat_gfs_2018041500_m.nc4
+      ObsOperator:
+        name: Aircraft
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
       - Filter: Background Check
         variables:
         - eastward_wind
         - northward_wind
         - air_temperature
-        threshold: 3.0
-    - ObsType: Radiosonde
-      ObsData:
+        threshold: 6.0
+#      - Filter: BlackList
+#        where:
+#        - variable: Land_Fraction@GeoVaLs
+#          maxvalue: 0.0
+    - ObsSpace:
+        name: Radiosonde
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/gfs.fgat.3dvar.rs.out.nc4
-        obsvalue: ObsValue
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
+          obsfile: Data/sondes_hyb-fgat_gfs_2018041500_m.nc4
+      ObsOperator:
+        name: Radiosonde
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
       - Filter: Background Check
         variables:
         - eastward_wind
         - northward_wind
         - air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/gnssro_hyb-fgat_gfs_2018041500_s.nc4
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Thinning
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        where:
+        - variable: altitude
+          minvalue: 0
+          maxvalue: 30000
+        - variable: earth_radius_of_curvature
+          minvalue: 6250000
+          maxvalue: 6450000
+        - variable: geoid_height_above_reference_ellipsoid
+          minvalue: -200
+          maxvalue: 200
+      - Filter: Background Check
+        variables:
+        - refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        variable: refractivity
+        errmodel: GSI
+    - ObsSpace:
+        name: AMSUA-NOAA19
+        ObsDataIn:
+          obsfile: Data/amsua_n19_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/amsua_n19_hyb-fgat_gfs_2018041500_m.nc4
+      ObsOperator:
+        name: CRTM
+        channels: 1-6,9-12,13,15
+        n_Absorbers: 3
+        n_Clouds: 2
+        n_Aerosols: 0
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        bounds:
+        - variable: brightness_temperature_1
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_2
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_3
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_4
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_5
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_6
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_9
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_10
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_11
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_12
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_13
+          minvalue: 100.0
+          maxvalue: 500.0
+        - variable: brightness_temperature_15
+          minvalue: 100.0
+          maxvalue: 500.0
+      - Filter: Background Check
+        variables:
+        - brightness_temperature_1
+        - brightness_temperature_2
+        - brightness_temperature_3
+        - brightness_temperature_4
+        - brightness_temperature_5
+        - brightness_temperature_6
+        - brightness_temperature_9
+        - brightness_temperature_10
+        - brightness_temperature_11
+        - brightness_temperature_12
+        - brightness_temperature_13
+        - brightness_temperature_15
         threshold: 3.0
   cost_type: 4D-Var
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]

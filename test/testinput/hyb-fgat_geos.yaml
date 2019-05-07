@@ -42,46 +42,93 @@ cost_function:
             variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
   Jo:
     ObsTypes:
-    - ObsType: Aircraft
-      ObsData:
+    - ObsSpace:
+        name: Aircraft
         ObsDataIn:
           obsfile: Data/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/3dfgat_geos.aircraft.nc4
-        obsvalue: ObsValue
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
+          obsfile: Data/aircraft_hyb-fgat_geos_2018041500_m.nc4
+      ObsOperator:
+        name: Aircraft
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
       - Filter: Background Check
         variables:
         - eastward_wind
         - northward_wind
         - air_temperature
         threshold: 6.0
-    - ObsType: Radiosonde
-      ObsData:
+#      - Filter: BlackList
+#        where:
+#        - variable: Land_Fraction@GeoVaLs
+#          maxvalue: 0.0
+    - ObsSpace:
+        name: Radiosonde
         ObsDataIn:
           obsfile: Data/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/3dfgat_geos.radiosonde.nc4
-        obsvalue: ObsValue
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
+          obsfile: Data/sondes_hyb-fgat_geos_2018041500_m.nc4
+      ObsOperator:
+        name: Radiosonde
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
       - Filter: Background Check
         variables:
         - eastward_wind
         - northward_wind
         - air_temperature
-        threshold: 4.0
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/gnssro_hyb-fgat_geos_2018041500_s.nc4
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Thinning
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        where:
+        - variable: altitude
+          minvalue: 0
+          maxvalue: 30000
+        - variable: earth_radius_of_curvature
+          minvalue: 6250000
+          maxvalue: 6450000
+        - variable: geoid_height_above_reference_ellipsoid
+          minvalue: -200
+          maxvalue: 200
+      - Filter: Background Check
+        variables:
+        - refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        variable: refractivity
+        errmodel: GSI
   cost_type: 4D-Var
   variables: ["ua","va","t","delp","ps","q","qi","ql","o3mr"]
   window_begin: '2018-04-14T21:00:00Z'

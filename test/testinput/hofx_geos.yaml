@@ -8,7 +8,7 @@ Geometry:
   pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 Initial Condition:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
 Model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c24.nml
@@ -21,27 +21,40 @@ Model:
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
 Observations:
   ObsTypes:
-  - ObsType: Aircraft
-    ObsData:
+  - ObsSpace:
+      name: Aircraft
       ObsDataIn:
         obsfile: Data/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/aircraft_hofx.nc4
-    variables:
-    - air_temperature
-    - northward_wind
+        obsfile: Data/aircraft_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: Aircraft
+      variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
     ObsBias: {}
-  - ObsType: Radiosonde
-    ObsData:
+  - ObsSpace:
+      name: Radiosonde
       ObsDataIn:
         obsfile: Data/sondes_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/sondes_hofx.nc4
-    variables:
-    - air_temperature
-    - eastward_wind
-    - northward_wind
-#   - specific_humidity
+        obsfile: Data/sondes_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: Radiosonde
+      variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
     ObsBias: {}
+  - ObsSpace:
+     name: GnssroRef
+     ObsDataIn:
+      obsfile: Data/gnssro_obs_2018041500_s.nc4
+     ObsDataOut:
+      obsfile: Data/gnssro_hofx_2018041500_s.nc4
+    ObsOperator:
+     name: GnssroRef
+     ObsOptions:
 Prints:
   frequency: PT3H

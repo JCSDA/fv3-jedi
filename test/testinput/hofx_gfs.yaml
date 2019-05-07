@@ -28,60 +28,177 @@ Model:
               "u_srf","v_srf","f10m"]
 Observations:
   ObsTypes:
-  - ObsType: Aircraft
-    ObsData:
+  - ObsSpace:
+      name: Aircraft
       ObsDataIn:
         obsfile: Data/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/aircraft_hofx_gfs.nc4
-    variables:
-    - air_temperature
+        obsfile: Data/aircraft_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: Aircraft
+      variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
     ObsBias: {}
-#  - ObsType: GnssroBndGSI
-#    ObsData:
-#      ObsDataIn:
-#        obsfile: Data/gnssro_gdas_bufr2nc_2018041500.nc4
-#      obsvalue: BNA
-#      ObsDataOut:
-#        obsfile: Data/gnssro_hofx.nc4
-#      obsvalue: BNA
-#    ObsBias: {}
-  - ObsType: GnssroRef
-    ObsOptions:
-      ro_top_meter: 30000
-      obserr_method: RefGSI
-      use_compress: 1
-    ObsData:
-      ObsDataIn:
-        obsfile: Data/gnssro_obs_2018041500_m.nc4
-      obsvalue: refractivity
-      ObsDataOut:
-        obsfile: Data/gnssro_hofx_gfs.nc4
-      obsvalue: refractivity
-    ObsBias: {}
-  - ObsType: CRTM
-    channels: "1-15"
-    ObsData:
-      ObsDataIn:
-        obsfile: Data/amsua_n19_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/amsua_hofx_gfs.nc4
-    ObsBias: {}
-    ObsOptions:
-      n_Absorbers: 3
-      n_Clouds: 2
-      n_Aerosols: 0
-      Sensor_ID: 'amsua_n19'
-      EndianType: 'little_endian'
-      CoefficientPath: 'Data/'
-  - ObsType: Radiosonde
-    ObsData:
+  - ObsSpace:
+      name: Radiosonde
       ObsDataIn:
         obsfile: Data/sondes_obs_2018041500_m.nc4
       ObsDataOut:
-        obsfile: Data/sondes_hofx_gfs.nc4
-    variables:
-    - air_temperature
+        obsfile: Data/sondes_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: Radiosonde
+      variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
     ObsBias: {}
+  - ObsSpace:
+      name: AMSUA-NOAA19
+      ObsDataIn:
+        obsfile: Data/amsua_n19_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/amsua_n19_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: CRTM
+      channels: 1-6,9-12,13,15
+      n_Absorbers: 3
+      n_Clouds: 2
+      n_Aerosols: 0
+      Sensor_ID: amsua_n19
+      EndianType: little_endian
+      CoefficientPath: Data/
+  - ObsSpace:
+      name: AIRS-AQUA
+      ObsDataIn:
+        obsfile: Data/airs_aqua_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/airs_aqua_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: CRTM
+      channels: 1,6-7
+      n_Absorbers: 3
+      n_Clouds: 0
+      n_Aerosols: 0
+      Sensor_ID: airs_aqua
+      EndianType: little_endian
+      CoefficientPath: Data/
+  - ObsSpace:
+     name: GnssroRef
+     ObsDataIn:
+      obsfile: Data/gnssro_obs_2018041500_s.nc4
+     ObsDataOut:
+      obsfile: Data/gnssro_hofx_2018041500_s.nc4
+    ObsOperator:
+     name: GnssroRef
+     ObsOptions:
+  - ObsSpace:
+      name: HIRS4-METOPA
+      ObsDataIn:
+        obsfile: Data/hirs4_metop-a_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hirs4_metop-a_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: CRTM
+      channels: 1-15
+      n_Absorbers: 3
+      n_Clouds: 0
+      n_Aerosols: 0
+      Sensor_ID: hirs4_metop-a
+      EndianType: little_endian
+      CoefficientPath: Data/
+  - ObsSpace:
+      name: CRIS-NPP
+      ObsDataIn:
+        obsfile: Data/cris-fsr_npp_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/cris-fsr_npp_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: CRTM
+      channels: 24,26,28,32,37,39,42,44,47,49,51,53,55,57,59,61,63,
+                65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,
+                99,103,105,107,109,111,113,115,117,119,121,123,125,
+                127,129,131,133,135,137,139,141,143,145,147,149,151,
+                153,155,157,159,163,167,171,175,179,183,187,190,194,
+                197,200,211,224,275,279,291,311,332,342,389,410,427,
+                464,501,529,710,713,742,882,890,937,995,1008,1022,1058
+      n_Absorbers: 3
+      n_Clouds: 0
+      n_Aerosols: 0
+      Sensor_ID: cris-fsr_npp
+      EndianType: little_endian
+      CoefficientPath: Data/
+  - ObsSpace:
+      name: Satwind
+      ObsDataIn:
+        obsfile: Data/satwind_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/satwind_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: Satwind
+      variables:
+      - eastward_wind
+      - northward_wind
+  - ObsSpace:
+      name: Radiance
+      ObsDataIn:
+        obsfile: Data/mhs_n19_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/mhs_n19_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: CRTM
+      channels: 1-5
+      n_Absorbers: 3
+      n_Clouds: 0
+      n_Aerosols: 0
+      Sensor_ID: mhs_n19
+      EndianType: little_endian
+      CoefficientPath: Data/
+  - ObsSpace:
+     name: IASI-METOPA
+     ObsDataIn:
+       obsfile: Data/iasi_metop-a_obs_2018041500_m.nc4
+     ObsDataOut:
+       obsfile: Data/iasi_metop-a_hofx_2018041500_m.nc4
+    ObsOperator:
+      name: CRTM
+      channels: 16,29,32,35,38,41,44
+      n_Absorbers: 3
+      n_Clouds: 0
+      n_Aerosols: 0
+      Sensor_ID: iasi_metop-a
+      EndianType: little_endian
+      CoefficientPath: Data/
+  - ObsSpace:
+     name: MHS-NOAA19
+     ObsDataIn:
+       obsfile: Data/mhs_n19_obs_2018041500_m.nc4
+     ObsDataOut:
+       obsfile: Data/mhs_n19_hofx_2018041500_m.nc4
+    ObsOperator:
+     name: CRTM
+     channels: 1-5
+     n_Absorbers: 3
+     n_Clouds: 0
+     n_Aerosols: 0
+     Sensor_ID: mhs_n19
+     EndianType: little_endian
+     CoefficientPath: Data/
+  - ObsSpace:
+     name: SEVIRI-METEOSAT8
+     ObsDataIn:
+       obsfile: Data/seviri_m08_obs_2018041500_m.nc4
+     ObsDataOut:
+       obsfile: Data/seviri_m08_hofx_2018041500_m.nc4
+    ObsOperator:
+     name: CRTM
+     channels: 5
+     n_Absorbers: 3
+     n_Clouds: 0
+     n_Aerosols: 0
+     Sensor_ID: seviri_m08
+     EndianType: little_endian
+     CoefficientPath: Data/
 Prints:
   frequency: PT3H
