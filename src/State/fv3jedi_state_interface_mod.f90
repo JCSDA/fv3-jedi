@@ -147,17 +147,23 @@ end subroutine fv3jedi_state_add_incr_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_change_resol_c(c_key_state,c_key_rhs) bind(c,name='fv3jedi_state_change_resol_f90')
+subroutine fv3jedi_state_change_resol_c(c_key_state,c_key_geom,c_key_rhs,c_key_geom_rhs) bind(c,name='fv3jedi_state_change_resol_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_state
+integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_rhs
+integer(c_int), intent(in) :: c_key_geom_rhs
+
 type(fv3jedi_state), pointer :: state, rhs
+type(fv3jedi_geom),  pointer :: geom, geom_rhs
 
 call fv3jedi_state_registry%get(c_key_state,state)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_state_registry%get(c_key_rhs,rhs)
+call fv3jedi_geom_registry%get(c_key_geom_rhs, geom_rhs)
 
-call change_resol(state,rhs)
+call change_resol(state,geom,rhs,geom_rhs)
 
 end subroutine fv3jedi_state_change_resol_c
 

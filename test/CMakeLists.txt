@@ -1003,9 +1003,12 @@ Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
 list( APPEND fv3jedi_test_fv3files
 Data/fv3files/field_table
 Data/fv3files/fmsmpp.nml
+Data/fv3files/input_gfs_c12.nml
+Data/fv3files/input_gfs_c24.nml
 Data/fv3files/input_gfs_c48.nml
 Data/fv3files/input_gfs_c96.nml
 Data/fv3files/input_gfs_c768.nml
+Data/fv3files/input_geos_c12.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_geos_c48.nml
 Data/fv3files/input_geos_c90.nml

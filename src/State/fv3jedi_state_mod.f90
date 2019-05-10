@@ -15,6 +15,7 @@ use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms, fields_rms, fi
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
+use fv3jedi_interpolation_mod,   only: bilinear_bump_interp
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
@@ -781,49 +782,39 @@ if (associated(rhs%ps)) then !ps in increment
   endif
 endif
 
+!Fields to add determined from increment
+do var = 1,rhs%nf
 
-!Check for matching resolution between state and increment
-if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
+  !Winds are a special case
+  if (rhs%fields(var)%fv3jedi_name == 'ua') then
 
-  !Fields to add determined from increment
-  do var = 1,rhs%nf
+    if (associated(self%ua)) self%ua = self%ua + rhs%ua
+    if (associated(self%ud) .and. .not.associated(rhs%ud)) self%ud = self%ud + rhs_ud
 
-    !Winds are a special case
-    if (rhs%fields(var)%fv3jedi_name == 'ua') then
+  elseif (rhs%fields(var)%fv3jedi_name == 'va') then
 
-      if (associated(self%ua)) self%ua = self%ua + rhs%ua
-      if (associated(self%ud) .and. .not.associated(rhs%ud)) self%ud = self%ud + rhs_ud
+    if (associated(self%va)) self%va = self%va + rhs%va
+    if (associated(self%vd) .and. .not.associated(rhs%vd)) self%vd = self%vd + rhs_vd
 
-    elseif (rhs%fields(var)%fv3jedi_name == 'va') then
+  elseif (rhs%fields(var)%fv3jedi_name == 'ps') then
 
-      if (associated(self%va)) self%va = self%va + rhs%va
-      if (associated(self%vd) .and. .not.associated(rhs%vd)) self%vd = self%vd + rhs_vd
+    if (associated(self%ps)) self%ps = self%ps + rhs%ps
+    if (associated(self%delp) .and. .not.associated(rhs%delp)) self%delp = self%delp + rhs_delp
 
-    elseif (rhs%fields(var)%fv3jedi_name == 'ps') then
+  else
 
-      if (associated(self%ps)) self%ps = self%ps + rhs%ps
-      if (associated(self%delp) .and. .not.associated(rhs%delp)) self%delp = self%delp + rhs_delp
+    !Get pointer to state
+    call get_field(self%nf,self%fields,rhs%fields(var)%fv3jedi_name,field_pointer)
 
-    else
+    !Add increment to state
+    field_pointer%array = field_pointer%array + rhs%fields(var)%array
 
-      !Get pointer to state
-      call get_field(self%nf,self%fields,rhs%fields(var)%fv3jedi_name,field_pointer)
+    !Nullify pointer
+    nullify(field_pointer)
 
-      !Add increment to state
-      field_pointer%array = field_pointer%array + rhs%fields(var)%array
+  endif
 
-      !Nullify pointer
-      nullify(field_pointer)
-
-    endif
-
-  enddo
-
-else
-
-   call abor1_ftn("fv3jedi state:  add_incr not implemented for low res increment yet")
-
-endif
+enddo
 
 if (allocated(rhs_ud)) deallocate(rhs_ud)
 if (allocated(rhs_vd)) deallocate(rhs_vd)
@@ -860,18 +851,29 @@ end subroutine add_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine change_resol(self,rhs)
+subroutine change_resol(self,geom,rhs,geom_rhs)
+
 implicit none
 type(fv3jedi_state), intent(inout) :: self
+type(fv3jedi_geom),  intent(in)    :: geom
 type(fv3jedi_state), intent(in)    :: rhs
+type(fv3jedi_geom),  intent(in)    :: geom_rhs
 
 integer :: check
+
 check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 
+call checksame(self,rhs)
+
 if (check==0) then
-   call copy(self, rhs)
+
+  !Resolution is the same so copy
+  call copy(self, rhs)
+
 else
-   call abor1_ftn("fv3jedi_state: change_resol not implmeneted yet")
+
+  call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+
 endif
 
 end subroutine change_resol
@@ -1260,6 +1262,29 @@ real(kind=kind_real), intent(out) :: prms
 call fields_rms(self%nf,self%fields,prms)
 
 end subroutine rms
+
+! ------------------------------------------------------------------------------
+
+subroutine checksame(self,other)
+
+implicit none
+type(fv3jedi_state), intent(in) :: self
+type(fv3jedi_state), intent(in) :: other
+
+integer :: var
+
+if (self%nf .ne. other%nf) then
+  call abor1_ftn("fv3jedi_increment_mod.checksame: Different number of fields")
+endif
+
+do var = 1,self%nf
+  if (self%fields(var)%fv3jedi_name .ne. other%fields(var)%fv3jedi_name) then
+      call abor1_ftn("fv3jedi_increment_mod.checksame: field "//trim(self%fields(var)%fv3jedi_name)//&
+                     " not in the equivalent position in the right hand side")
+  endif
+enddo
+
+end subroutine checksame
 
 ! ------------------------------------------------------------------------------
 

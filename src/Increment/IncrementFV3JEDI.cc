@@ -49,7 +49,8 @@ IncrementFV3JEDI::IncrementFV3JEDI(const GeometryFV3JEDI & geom,
 {
   const eckit::Configuration * conf = &vars_.toFortran();
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), &conf);
-  fv3jedi_increment_change_resol_f90(keyInc_, other.keyInc_);
+  fv3jedi_increment_change_resol_f90(keyInc_, geom_->toFortran(), other.keyInc_,
+                                     other.geometry()->toFortran());
   oops::Log::trace() << "IncrementFV3JEDI constructed from other." << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -86,7 +87,10 @@ IncrementFV3JEDI::~IncrementFV3JEDI() {
 void IncrementFV3JEDI::diff(const StateFV3JEDI & x1, const StateFV3JEDI & x2) {
   ASSERT(this->validTime() == x1.validTime());
   ASSERT(this->validTime() == x2.validTime());
-  fv3jedi_increment_diff_incr_f90(keyInc_, x1.toFortran(), x2.toFortran(),
+  // States at increment resolution
+  StateFV3JEDI x1_ir(*geom_, x1);
+  StateFV3JEDI x2_ir(*geom_, x2);
+  fv3jedi_increment_diff_incr_f90(keyInc_, x1_ir.toFortran(), x2_ir.toFortran(),
                                   geom_->toFortran());
 }
 // -----------------------------------------------------------------------------

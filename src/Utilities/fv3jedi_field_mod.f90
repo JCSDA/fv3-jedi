@@ -266,7 +266,13 @@ real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
 type(fckit_mpi_comm) :: f_comm
 character(len=34) :: printname
 
+integer :: ngrid, sngrid
+
 f_comm = fckit_mpi_comm()
+
+ngrid = (fields(1)%iec-fields(1)%isc+1)*(fields(1)%iec-fields(1)%isc+1)
+call f_comm%allreduce(ngrid,sngrid,fckit_mpi_sum())
+sngrid = nint(sqrt(real(sngrid,kind_real)/6.0_kind_real))
 
 printname = "|     "//trim(name)//" print"
 
@@ -274,6 +280,9 @@ if (f_comm%rank() == 0) then
   write(*,"(A70)") "----------------------------------------------------------------------"
   write(*,"(A34)") printname
   write(*,"(A70)") "----------------------------------------------------------------------"
+  write(*,"(A70)") " "
+  write(*,"(A27,I5)") "    Cube sphere face size: ", sngrid
+  write(*,"(A70)") " "
 endif
 
 do var = 1,nf

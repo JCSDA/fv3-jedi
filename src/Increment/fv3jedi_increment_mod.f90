@@ -18,6 +18,7 @@ use fv3jedi_field_mod,           only: fv3jedi_field, get_field, fields_rms, fie
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
+use fv3jedi_interpolation_mod,   only: bilinear_bump_interp
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_kinds_mod,           only: kind_real
@@ -32,7 +33,7 @@ implicit none
 private
 public :: fv3jedi_increment, create, delete, zeros, random, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
-          dot_prod, add_incr, diff_incr, &
+          dot_prod, diff_incr, &
           read_file, write_file, gpnorm, rms, &
           change_resol, getvalues_tl, getvalues_ad, &
           ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad, &
@@ -709,29 +710,6 @@ end subroutine dot_prod
 
 ! ------------------------------------------------------------------------------
 
-subroutine add_incr(self,rhs)
-
-implicit none
-type(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_increment), intent(in)    :: rhs
-
-integer :: check, var
-
-check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
-
-if (check==0) then
-  call checksame(self,rhs)
-  do var = 1,self%nf
-    self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
-  enddo
-else
-   call abor1_ftn("fv3jedi_increment_mod.add_incr not implemented for low res increment yet")
-endif
-
-end subroutine add_incr
-
-! ------------------------------------------------------------------------------
-
 subroutine diff_incr(self,x1,x2,geom)
 
 implicit none
@@ -740,13 +718,11 @@ type(fv3jedi_state),     intent(in)    :: x1
 type(fv3jedi_state),     intent(in)    :: x2
 type(fv3jedi_geom),      intent(inout) :: geom
 
-integer :: var, check
+integer :: var
 type(fv3jedi_field), pointer :: x1p, x2p
 real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
 real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
 real(kind=kind_real), allocatable :: x1_ps(:,:,:), x2_ps(:,:,:)
-
-check = (x1%iec-x1%isc+1) - (x2%iec-x2%isc+1)
 
 call zeros(self)
 
@@ -804,45 +780,37 @@ if (associated(self%ps)) then
 
 endif
 
-if (check==0) then
+do var = 1,self%nf
 
-  do var = 1,self%nf
+  !A-Grid winds can be a special case
+  if (self%fields(var)%fv3jedi_name == 'ua') then
 
-    !A-Grid winds can be a special case
-    if (self%fields(var)%fv3jedi_name == 'ua') then
+    self%ua = x1_ua - x2_ua
 
-      self%ua = x1_ua - x2_ua
+  elseif (self%fields(var)%fv3jedi_name == 'va') then
 
-    elseif (self%fields(var)%fv3jedi_name == 'va') then
+    self%va = x1_va - x2_va
 
-      self%va = x1_va - x2_va
+  !Ps can be a special case
+  elseif (self%fields(var)%fv3jedi_name == 'ps') then
 
-    !Ps can be a special case
-    elseif (self%fields(var)%fv3jedi_name == 'ps') then
+    self%ps = x1_ps - x2_ps
 
-      self%ps = x1_ps - x2_ps
+  else
 
-    else
+    !Get pointer to states
+    call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
+    call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
 
-      !Get pointer to states
-      call get_field(x1%nf,x1%fields,self%fields(var)%fv3jedi_name,x1p)
-      call get_field(x2%nf,x2%fields,self%fields(var)%fv3jedi_name,x2p)
+    !inc = state - state
+    self%fields(var)%array = x1p%array - x2p%array
 
-      !inc = state - state
-      self%fields(var)%array = x1p%array - x2p%array
+    !Nullify pointers
+    nullify(x1p,x2p)
 
-      !Nullify pointers
-      nullify(x1p,x2p)
+  endif
 
-    endif
-
-  enddo
-
-else
-
-   call abor1_ftn("fv3jedi_increment_mod.diff_incr: not implemented for low res increment yet")
-
-endif
+enddo
 
 if (allocated(x1_ua)) deallocate(x1_ua)
 if (allocated(x1_va)) deallocate(x1_va)
@@ -855,20 +823,30 @@ end subroutine diff_incr
 
 ! ------------------------------------------------------------------------------
 
-subroutine change_resol(self,rhs)
+subroutine change_resol(self,geom,rhs,geom_rhs)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
+type(fv3jedi_geom),      intent(in)    :: geom
 type(fv3jedi_increment), intent(in)    :: rhs
+type(fv3jedi_geom),      intent(in)    :: geom_rhs
 
 integer :: check
 
 check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
 
+call checksame(self,rhs)
+
 if (check==0) then
-   call copy(self, rhs)
+
+  !Resolution is the same so copy
+  call copy(self, rhs)
+
 else
-   call abor1_ftn("fv3jedi_increment_mod.change_resol: not implmeneted yet")
+
+  !Interpolate from rhs to self resolution
+  call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+
 endif
 
 end subroutine change_resol

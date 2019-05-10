@@ -47,7 +47,9 @@ extern "C" {
                                   const F90inc &);
 
   void fv3jedi_state_change_resol_f90(const F90state &,
-                                      const F90state &);
+                                      const F90geom &,
+                                      const F90state &,
+                                      const F90geom &);
 
   void fv3jedi_state_read_file_f90(const F90geom &,
                                    const F90state &,

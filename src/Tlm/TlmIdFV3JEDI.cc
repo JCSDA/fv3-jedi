@@ -31,17 +31,10 @@ TlmIdFV3JEDI::TlmIdFV3JEDI(const GeometryFV3JEDI & resol,
   : keyConfig_(0), tstep_(), resol_(resol), linvars_(tlConf)
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
-
-  const eckit::Configuration * configc = &tlConf;
-  stageFv3Files(tlConf);
-  fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_);
-  removeFv3Files();
-
   oops::Log::trace() << "TlmIdFV3JEDI created" << std::endl;
 }
 // -----------------------------------------------------------------------------
 TlmIdFV3JEDI::~TlmIdFV3JEDI() {
-  fv3jedi_tlm_delete_f90(keyConfig_);
   oops::Log::trace() << "TlmIdFV3JEDI destructed" << std::endl;
 }
 // -----------------------------------------------------------------------------

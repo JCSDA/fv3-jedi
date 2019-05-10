@@ -81,7 +81,8 @@ StateFV3JEDI::StateFV3JEDI(const GeometryFV3JEDI & resol,
 {
   const eckit::Configuration * conf = &vars_.toFortran();
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &conf);
-  fv3jedi_state_change_resol_f90(keyState_, other.keyState_);
+  fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
+                                 other.geom_->toFortran());
   oops::Log::trace() << "StateFV3JEDI::StateFV3JEDI created by interpolation."
                      << std::endl;
 }
@@ -136,7 +137,8 @@ void StateFV3JEDI::getValues(const ufo::Locations & locs,
 // -----------------------------------------------------------------------------
 void StateFV3JEDI::changeResolution(const StateFV3JEDI & other) {
   oops::Log::trace() << "StateFV3JEDI change resolution starting" << std::endl;
-  fv3jedi_state_change_resol_f90(keyState_, other.keyState_);
+  fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
+                                 other.geom_->toFortran());
   oops::Log::trace() << "StateFV3JEDI change resolution done" << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -145,7 +147,10 @@ void StateFV3JEDI::changeResolution(const StateFV3JEDI & other) {
 StateFV3JEDI & StateFV3JEDI::operator+=(const IncrementFV3JEDI & dx) {
   oops::Log::trace() << "StateFV3JEDI add increment starting" << std::endl;
   ASSERT(this->validTime() == dx.validTime());
-  fv3jedi_state_add_incr_f90(geom_->toFortran(), keyState_, dx.toFortran());
+  // Interpolate increment to state resolution
+  IncrementFV3JEDI dx_sr(*geom_, dx);
+  // Call transform and add
+  fv3jedi_state_add_incr_f90(geom_->toFortran(), keyState_, dx_sr.toFortran());
   oops::Log::trace() << "StateFV3JEDI add increment done" << std::endl;
   return *this;
 }
