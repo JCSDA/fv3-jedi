@@ -1,7 +1,7 @@
 ! (C) Copyright 2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_pseudo_mod
 
@@ -135,7 +135,7 @@ elseif (trim(self%pseudo_type) == "geos") then
 
 else
 
-  call abor1_ftn("fv3jedi_pseudo_mod: psuedo_model, model choice must be geos or gfs")
+  call abor1_ftn("fv3jedi_pseudo_mod: pseudo_model, model choice must be geos or gfs")
 
 endif
 
@@ -166,7 +166,7 @@ f_comm = fckit_mpi_comm()
 ! Print filename to the user
 if (f_comm%rank()==0) then
   print*, ' '
-  print*, 'Psuedo model from file: ', trim(filename)
+  print*, 'Pseudo model from file: ', trim(filename)
   print*, ' '
 endif
 
