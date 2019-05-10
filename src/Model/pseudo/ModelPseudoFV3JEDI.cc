@@ -9,6 +9,7 @@
 
 #include "eckit/config/Configuration.h"
 
+#include "oops/parallel/mpi/mpi.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
 
@@ -58,8 +59,12 @@ void ModelPseudoFV3JEDI::step(StateFV3JEDI & xx,
     fv3jedi_pseudo_step_f90(keyConfig_, xx.toFortran(),
                             geom_.toFortran(), &dtp);
   } else {
-    oops::Log::warning() << "Pseudo model has already run through once so not"
-                            "re-reading, just ticking the clock." << std::endl;
+    int world_rank = oops::mpi::comm().rank();
+    if (world_rank == 0) {
+      oops::Log::warning() << "Pseudo model has already run through "
+                            "once so not re-reading states, just ticking the"
+                            " clock." << std::endl;
+    }
   }
   oops::Log::debug() << "ModelPseudoFV3JEDI::step" << std::endl;
 }
