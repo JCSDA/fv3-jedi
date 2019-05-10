@@ -127,7 +127,7 @@ if (trim(self%pseudo_type) == "gfs") then
 
 elseif (trim(self%pseudo_type) == "geos") then
 
-  filename = trim(self%pseudo_path)//trim(self%pseudo_file)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//'z.nc4'
+  filename = trim(self%pseudo_path)//trim(self%pseudo_file)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//trim(ss)//'z.nc4'
   call print_filename(self,filename)
   call geos%create(geom, 'read', filename)
   call geos%read_fields(geom, state%fields)

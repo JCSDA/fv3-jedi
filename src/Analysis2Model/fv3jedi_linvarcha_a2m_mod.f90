@@ -327,7 +327,7 @@ do index_mod = 1, xmod%nf
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
         "A2M MultiplyInverseAdjoint: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name&
-        //" => to the linearized model "//xmod%fields(index_mod)%fv3jedi_name
+        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name
 
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
 
