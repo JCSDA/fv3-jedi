@@ -47,6 +47,11 @@ Model/fv3/fv3jedi_fv3_mod.f90
 Model/fv3/ModelFV3FV3JEDI.cc
 Model/fv3/ModelFV3FV3JEDI.h
 Model/fv3/ModelFV3FV3JEDIFortran.h
+Model/pseudo/fv3jedi_pseudo_interface_mod.F90
+Model/pseudo/fv3jedi_pseudo_mod.f90
+Model/pseudo/ModelPseudoFV3JEDI.cc
+Model/pseudo/ModelPseudoFV3JEDI.h
+Model/pseudo/ModelPseudoFV3JEDIFortran.h
 ModelBias/ModelBiasCovarianceFV3JEDI.h
 ModelBias/ModelBiasFV3JEDI.h
 ModelBias/ModelBiasIncrementFV3JEDI.h

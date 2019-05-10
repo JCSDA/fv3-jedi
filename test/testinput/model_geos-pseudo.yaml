@@ -5,21 +5,14 @@ Geometry:
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
 Model:
-  name: 'FV3'
+  name: 'PSEUDO'
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
               "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
-  nml_file: Data/fv3files/input_geos_c24.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  readtraj: 1
-  trajmodel: 'geos'
-  trajpath: 'Data/INPUTS/GEOS_c24/traj/'
-  trajfile: 'GEOS.traj.c24.eta.'
-  lm_do_dyn: 1
-  lm_do_trb: 1
-  lm_do_mst: 1
+  pseudo_type: 'geos'
+  pseudo_path: 'Data/INPUTS/GEOS_c24/traj/'
+  pseudo_file: 'GEOS.traj.c24.eta.'
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:

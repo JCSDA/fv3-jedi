@@ -191,8 +191,10 @@ if (self%csize > 6) call MPI_Comm_free(self%tcomm, ierr)
 call MPI_Comm_free(self%ocomm, ierr)
 
 ! Deallocate start/count
-deallocate ( self%istart2, self%icount2 )
-deallocate ( self%istart3, self%icount3 )
+if (self%iam_io_proc) then
+  deallocate ( self%istart2, self%icount2 )
+  deallocate ( self%istart3, self%icount3 )
+endif
 
 end subroutine delete
 

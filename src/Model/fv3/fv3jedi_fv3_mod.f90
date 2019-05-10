@@ -35,10 +35,6 @@ public :: fv3_finalize
 !> Fortran derived type to hold model definition
 type :: fv3_model
   type(fv3jedi_lm_type)                        :: fv3jedi_lm          !<Linearized model object
-  integer                                      :: readtraj            !<Read trajectory from file
-  character(len=255)                           :: trajmodel           !<User specified model type for traj
-  character(len=255)                           :: trajpath            !<User specified path to traj files
-  character(len=255)                           :: trajfile            !<User specified path to traj files
 end type fv3_model
 
 ! ------------------------------------------------------------------------------
@@ -67,16 +63,6 @@ dtstep = trim(ststep)
 dt = real(duration_seconds(dtstep),kind_real)
 
 
-! Option to read traj from file instead of propagating model
-! ----------------------------------------------------------
-self%readtraj = config_get_int(c_conf,"readtraj")
-if (self%readtraj == 1) then
-  self%trajmodel = config_get_string(c_conf,len(self%trajmodel),"trajmodel")
-  self%trajpath  = config_get_string(c_conf,len(self%trajpath ),"trajpath")
-  self%trajfile  = config_get_string(c_conf,len(self%trajfile ),"trajfile")
-endif
-
-
 ! Model configuration and creation
 ! --------------------------------
 self%fv3jedi_lm%conf%do_dyn     = config_get_int(c_conf,"lm_do_dyn")
@@ -92,8 +78,8 @@ call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom
 !The full trajecotory of the tlm/adm is not output by this simplified model
 !so if being used to generate the trajectry with physics the traj must be read
 !from file or obtained by running GEOS or GFS. 
-if ((self%fv3jedi_lm%conf%do_phy_trb .ne. 0 .and. self%readtraj == 0) .or. &
-    (self%fv3jedi_lm%conf%do_phy_mst .ne. 0 .and. self%readtraj == 0) ) then
+if ((self%fv3jedi_lm%conf%do_phy_trb .ne. 0) .or. &
+    (self%fv3jedi_lm%conf%do_phy_mst .ne. 0) ) then
    call abor1_ftn("fv3_model | FV3 : unless reading the trajecotory physics should be off")
 endif
 
@@ -134,17 +120,9 @@ type(fv3jedi_state), intent(inout) :: state
 type(fv3jedi_geom),  intent(inout) :: geom
 type(datetime),      intent(inout) :: vdate !< Valid datetime after step
 
-if (self%readtraj == 0) then
-
-  call state_to_lm(state,self%fv3jedi_lm)
-  call self%fv3jedi_lm%step_nl()
-  call lm_to_state(self%fv3jedi_lm,state)
-
-else
-
-  call psuedo_model( geom, self, state, vdate)
-
-endif
+call state_to_lm(state,self%fv3jedi_lm)
+call self%fv3jedi_lm%step_nl()
+call lm_to_state(self%fv3jedi_lm,state)
 
 end subroutine fv3_step
 
@@ -218,85 +196,6 @@ endif
 state%phis(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state
-
-! ------------------------------------------------------------------------------
-
-subroutine psuedo_model( geom, self, state, vdate)
-
-implicit none
-type(fv3jedi_geom),  intent(inout) :: geom
-type(fv3_model),     intent(in)    :: self
-type(fv3jedi_state), intent(inout) :: state
-type(datetime),      intent(inout) :: vdate !< Valid datetime after step
-
-character(len=20)  :: vdatec
-character(len=255) :: date, filename
-character(len=4)   :: yyyy
-character(len=2)   :: mm,dd,hh,mn,ss
-
-type(fv3jedi_io_gfs)  :: gfs
-type(fv3jedi_io_geos) :: geos
-
-! Convert datetime to string
-call datetime_to_string(vdate, vdatec)
-
-! Write character form of date
-write(date,*) vdatec(1:4),vdatec(6:7),vdatec(9:10),'_',vdatec(12:13),vdatec(15:16),'z.nc4'
-
-! Date part of the filename
-yyyy = vdatec(1 :4 )
-mm   = vdatec(6 :7 )
-dd   = vdatec(9 :10)
-hh   = vdatec(12:13)
-mn   = vdatec(15:16)
-ss   = vdatec(18:19)
-
-! File path/filename
-if (trim(self%trajmodel) == "gfs") then
-
-  gfs%datapath_ti = trim(self%trajpath)
-  gfs%filename_core = yyyy//mm//dd//"."//hh//mn//ss//'.fv_core.res.nc'
-  gfs%filename_trcr = yyyy//mm//dd//"."//hh//mn//ss//'.fv_tracer.res.nc'
-  gfs%filename_sfcd = yyyy//mm//dd//"."//hh//mn//ss//'.sfc_data.nc'
-  gfs%filename_sfcw = yyyy//mm//dd//"."//hh//mn//ss//'.srf_wnd.nc'
-  gfs%filename_cplr = yyyy//mm//dd//"."//hh//mn//ss//'.coupler.res'
-  gfs%datapath_sp = 'null'
-  gfs%datapath_sp = 'null'
-
-  call print_filename(self,gfs%filename_core)
-  call gfs%read_meta  ( geom, vdate, state%calendar_type, state%date_init )
-  call gfs%read_fields( geom, state%fields )
-
-elseif (trim(self%trajmodel) == "geos") then
-
-  filename = trim(self%trajpath)//trim(self%trajfile)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//'z.nc4'
-  call print_filename(self,filename)
-  call geos%create(geom, 'read', filename)
-  call geos%read_fields(geom, state%fields)
-  call geos%delete()
-
-else
-
-  call abor1_ftn("fv3jedi_fv3_mod: psuedo_model, model choice must be geos or gfs")
-
-endif
-
-end subroutine psuedo_model
-
-! ------------------------------------------------------------------------------
-
-subroutine print_filename(self,filename)
-
-implicit none
-type(fv3_model),  intent(in) :: self
-character(len=*), intent(in) :: filename
-
-! Print filename to the user
-if (self%fv3jedi_lm%conf%rpe) print*, ' '
-if (self%fv3jedi_lm%conf%rpe) print*, 'Psuedo model from file: ', trim(filename)
-if (self%fv3jedi_lm%conf%rpe) print*, ' '
-
-end subroutine print_filename
 
 ! ------------------------------------------------------------------------------
 

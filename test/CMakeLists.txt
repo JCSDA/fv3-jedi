@@ -1059,12 +1059,12 @@ testinput/increment_geos.yaml
 testinput/increment_gfs.yaml
 testinput/linearmodel_geos.yaml
 testinput/linearmodel_gfs.yaml
-testinput/linearmodelread_geos.yaml
+testinput/linearmodel_pseudogeos.yaml
 testinput/localization_geos.yaml
 testinput/localization_gfs.yaml
 testinput/model_geos-fv3.yaml
 testinput/model_gfs-fv3.yaml
-testinput/modelread_geos-fv3.yaml
+testinput/model_geos-pseudo.yaml
 testinput/state_geos.yaml
 testinput/state_geosaero.yaml
 testinput/state_gfs.yaml
@@ -1264,9 +1264,9 @@ ecbuild_add_test( TARGET  test_fv3jedi_model_geos-fv3
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_modelread_geos-fv3
+ecbuild_add_test( TARGET  test_fv3jedi_model_geos-pseudo
                   SOURCES executables/TestModel.cc
-                  ARGS    "testinput/modelread_geos-fv3.yaml"
+                  ARGS    "testinput/model_geos-pseudo.yaml"
                   MPI     6
                   LIBS    fv3jedi )
 
