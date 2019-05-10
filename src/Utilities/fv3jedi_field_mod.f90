@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_field_mod
 
@@ -53,7 +53,7 @@ character(len=*),              intent(in)    :: fv3jedi_name
 character(len=*),              intent(in)    :: units
 integer,                       intent(in)    :: staggerloc
 real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
-logical, optional,             intent(in)    :: tracer 
+logical, optional,             intent(in)    :: tracer
 
 self%isc = isc
 self%iec = iec
@@ -68,7 +68,7 @@ if(.not.self%lalloc) then
 
   if (staggerloc == center) then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
-    allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))    
+    allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
   elseif (staggerloc == north) then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
     allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
@@ -106,7 +106,7 @@ class(fv3jedi_field), target,  intent(in)    :: self
 real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
 
 if (self%staggerloc == center) then
-  allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))    
+  allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
 elseif (self%staggerloc == north) then
   allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
 elseif (self%staggerloc == east) then
@@ -235,7 +235,7 @@ type(fckit_mpi_comm) :: f_comm
 f_comm = fckit_mpi_comm()
 
 do var = 1,nf
- 
+
   gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
   call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 

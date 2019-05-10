@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 #define I_AM_MAIN
 #include "MAPL_Generic.h"
@@ -18,7 +18,7 @@ use netcdf
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_increment_mod, only: fv3jedi_increment 
+use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fckit_mpi_module, only: fckit_mpi_comm
 
@@ -302,8 +302,8 @@ do i = 1, num_items
    !Get field from the state
    call ESMF_StateGet(self%cap%cap_gc%export_state, item_names(i), field, rc = rc)
    if (rc.ne.0) call abor1_ftn("geos_to_state: ESMF_StateGet field failed")
-   
-   !Validate the field 
+
+   !Validate the field
    call ESMF_FieldValidate(field, rc = rc)
    if (rc.ne.0) call abor1_ftn("geos_to_state: ESMF_FieldValidate failed")
 
@@ -317,7 +317,7 @@ do i = 1, num_items
 
      call ESMF_FieldGet( field, 0, farrayPtr = farrayPtr2, totalLBound = lb2, totalUBound = ub2, rc = rc )
      if (rc.ne.0) call abor1_ftn("geos_to_state: ESMF_FieldGet 2D failed")
- 
+
     if (((ub2(1)-lb2(1)+1) .ne. (iec-isc+1)) .or. &
          ((ub2(2)-lb2(2)+1) .ne. (jec-jsc+1)) ) then
        call abor1_ftn("geos_to_state: rank 2 dimension mismatch between JEDI and GEOS grid")
@@ -326,7 +326,7 @@ do i = 1, num_items
    elseif (rank == 3) then
 
      call ESMF_FieldGet( field, 0, farrayPtr = farrayPtr3, totalLBound = lb3, totalUBound = ub3, rc = rc )
-     if (rc.ne.0) call abor1_ftn("geos_to_state: ESMF_FieldGet 3D failed")     
+     if (rc.ne.0) call abor1_ftn("geos_to_state: ESMF_FieldGet 3D failed")
 
      if (((ub3(1)-lb3(1)+1) .ne. (iec-isc+1)) .or. &
          ((ub3(2)-lb3(2)+1) .ne. (jec-jsc+1)) .or. &
@@ -445,40 +445,40 @@ type(ESMF_Field) :: field
 character(len=ESMF_MAXSTR), allocatable :: item_names(:)
 
 
- ! MAPL exports are only allocated if a connection is found between the 
+ ! MAPL exports are only allocated if a connection is found between the
  ! export and something else, e.g. HISTORY. This routine creates this
  ! link between exports and MAPL_CapGridComp
- 
+
  ! Get number of items
  ! -------------------
  call ESMF_StateGet(self%cap%cap_gc%export_state, itemcount = num_items, rc = rc)
  if (rc.ne.0) call abor1_ftn("allocate_exports: ESMF_StateGet itemcount failed")
- 
- 
+
+
  ! Get names of the items
  ! ----------------------
  allocate(item_names(num_items))
  call ESMF_StateGet(self%cap%cap_gc%export_state, itemnamelist = item_names, rc = rc)
  if (rc.ne.0) call abor1_ftn("allocate_exports: ESMF_StateGet items failed")
- 
- 
+
+
  ! Loop over states and allocate coupling
  ! --------------------------------------
  do i = 1, num_items
- 
+
    !Get field from the state
    call ESMF_StateGet(self%cap%cap_gc%export_state, item_names(i), field, rc = rc)
    if (rc.ne.0) call abor1_ftn("allocate_exports: ESMF_StateGet field failed")
- 
-   !Validate the field 
+
+   !Validate the field
    call ESMF_FieldValidate(field, rc = rc)
    if (rc.ne.0) call abor1_ftn("allocate_exports: ESMF_FieldValidate failed")
- 
+
    call MAPL_AllocateCoupling(field, rc)
    if (rc.ne.0) call abor1_ftn("allocate_exports: MAPL_AllocateCoupling failed")
- 
+
  end do
- 
+
  deallocate(item_names)
 
 end subroutine allocate_exports

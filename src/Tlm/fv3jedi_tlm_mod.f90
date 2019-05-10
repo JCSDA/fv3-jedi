@@ -1,7 +1,7 @@
 ! (C) Copyright 2017 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_tlm_mod
 
@@ -12,7 +12,7 @@ use duration_mod
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_increment_mod, only: fv3jedi_increment 
+use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_traj_mod, only: fv3jedi_traj
 
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
@@ -20,7 +20,7 @@ use fv3jedi_lm_mod, only: fv3jedi_lm_type
 implicit none
 private
 
-public :: fv3jedi_tlm 
+public :: fv3jedi_tlm
 public :: tlm_create
 public :: tlm_delete
 public :: tlm_initialize_tl
@@ -248,12 +248,12 @@ lm%traj%qv   = traj%qv
 lm%traj%ql   = traj%ql
 lm%traj%qi   = traj%qi
 lm%traj%o3   = traj%o3
-                                        
+
 if (.not. lm%conf%hydrostatic) then
   lm%traj%w    = traj%w
   lm%traj%delz = traj%delz
 endif
-                                        
+
 if (lm%conf%do_phy_mst .ne. 0) then
   lm%traj%qls  = traj%qls
   lm%traj%qcn  = traj%qcn

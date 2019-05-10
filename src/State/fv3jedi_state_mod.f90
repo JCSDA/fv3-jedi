@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_state_mod
 
@@ -16,8 +16,8 @@ use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,           only: kind_real
-use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs 
-use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos 
+use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
+use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
 use fv3jedi_getvalues_mod,       only: getvalues
 
@@ -75,7 +75,7 @@ do var = 1, vars%nv
             short_name = vars%fldnames(var), long_name = 'eastward_wind', &
             fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center, arraypointer = self%ua)
      case("va")
-       vcount=vcount+1; 
+       vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'northward_wind', &
             fv3jedi_name = 'va', units = 'm s-1', staggerloc = center, arraypointer = self%va )
@@ -299,7 +299,7 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin2', &
            fv3jedi_name = 'du002', units = 'kg kg-1', staggerloc = center, arraypointer = self%du002, &
-           tracer = .true.)  
+           tracer = .true.)
     case("du003","DU003","dust3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -311,13 +311,13 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin4', &
            fv3jedi_name = 'du004', units = 'kg kg-1', staggerloc = center, arraypointer = self%du004, &
-           tracer = .true.)  
+           tracer = .true.)
     case("du005","DU005","dust5")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin5', &
            fv3jedi_name = 'du005', units = 'kg kg-1', staggerloc = center, arraypointer = self%du005, &
-           tracer = .true.)  
+           tracer = .true.)
     case("ss001","SS001","seas1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -396,7 +396,7 @@ do var = 1, vars%nv
            fv3jedi_name = 'so4', units = 'kg kg-1', staggerloc = center, arraypointer = self%so4, &
            tracer = .true.)
      !Not found
-     case default 
+     case default
        call abor1_ftn("Create: unknown variable "//trim(vars%fldnames(var)))
    end select
 enddo
@@ -583,7 +583,7 @@ else
                     trim(self%fields(self_var)%fv3jedi_name)//" not found in state being copied from." )
   enddo
 
-endif  
+endif
 
 ! Set pointers
 do self_var = 1, self%nf
@@ -713,7 +713,7 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%ocphobic)
     case("ocphilic","OCPHILIC","oc2")
       call self%fields(self_var)%array_pointer(self%ocphilic)
-    case default 
+    case default
       !Not found
       call abor1_ftn("fv3jedi_state_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
   end select
@@ -787,7 +787,7 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
 
   !Fields to add determined from increment
   do var = 1,rhs%nf
- 
+
     !Winds are a special case
     if (rhs%fields(var)%fv3jedi_name == 'ua') then
 
@@ -816,7 +816,7 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
       nullify(field_pointer)
 
     endif
-  
+
   enddo
 
 else
@@ -936,7 +936,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
   implicit none
 
   type(fv3jedi_state), intent(inout) :: self    !< State
-  type(fv3jedi_geom),  intent(inout) :: geom    !< Geometry 
+  type(fv3jedi_geom),  intent(inout) :: geom    !< Geometry
   type(c_ptr), intent(in)            :: c_conf  !< Configuration
   type(datetime), intent(inout)      :: vdate   !< DateTime
 
@@ -977,7 +977,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
 
         call init_case( FV_AtmIC(1)%u,FV_AtmIC(1)%v,FV_AtmIC(1)%w,FV_AtmIC(1)%pt,FV_AtmIC(1)%delp,FV_AtmIC(1)%q, &
                         FV_AtmIC(1)%phis, FV_AtmIC(1)%ps,FV_AtmIC(1)%pe, FV_AtmIC(1)%peln,FV_AtmIC(1)%pk,FV_AtmIC(1)%pkz, &
-                        FV_AtmIC(1)%uc,FV_AtmIC(1)%vc, FV_AtmIC(1)%ua,FV_AtmIC(1)%va,        & 
+                        FV_AtmIC(1)%uc,FV_AtmIC(1)%vc, FV_AtmIC(1)%ua,FV_AtmIC(1)%va,        &
                         FV_AtmIC(1)%ak, FV_AtmIC(1)%bk, FV_AtmIC(1)%gridstruct, FV_AtmIC(1)%flagstruct,&
                         FV_AtmIC(1)%npx, FV_AtmIC(1)%npy, FV_AtmIC(1)%npz, FV_AtmIC(1)%ng, &
                         FV_AtmIC(1)%flagstruct%ncnst, FV_AtmIC(1)%flagstruct%nwat,  &
@@ -1040,7 +1040,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  self%qi(i,j,k) = q1
                  self%ql(i,j,k) = q2
                  self%o3(i,j,k) = q3
-                 
+
               enddo
            enddo
         enddo
@@ -1074,7 +1074,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  self%delp(i,j,k) = pe2-pe1
                  self%q(i,j,k) = hum0
                  self%qi(i,j,k) = q1
-                 
+
               enddo
            enddo
         enddo
@@ -1107,7 +1107,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  self%t(i,j,k) = t0
                  self%delp(i,j,k) = pe2-pe1
                  self%q(i,j,k) = hum0
-                 
+
               enddo
            enddo
         enddo
@@ -1140,7 +1140,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
                  self%t(i,j,k) = t0
                  self%delp(i,j,k) = pe2-pe1
                  self%q(i,j,k) = hum0
-                 
+
               enddo
            enddo
         enddo
@@ -1150,9 +1150,9 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
         call abor1_ftn("fv3jedi_state analytic_IC: provide analytic_init")
 
      End Select int_option
-        
+
 end subroutine analytic_IC
-  
+
 ! ------------------------------------------------------------------------------
 
 subroutine read_file(geom, self, c_conf, vdate)

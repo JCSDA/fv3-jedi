@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_fv3_mod
 
@@ -16,7 +16,7 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_io_gfs_mod, only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
-use fv3jedi_increment_mod, only: fv3jedi_increment 
+use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
 
@@ -77,7 +77,7 @@ call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom
 
 !The full trajecotory of the tlm/adm is not output by this simplified model
 !so if being used to generate the trajectry with physics the traj must be read
-!from file or obtained by running GEOS or GFS. 
+!from file or obtained by running GEOS or GFS.
 if ((self%fv3jedi_lm%conf%do_phy_trb .ne. 0) .or. &
     (self%fv3jedi_lm%conf%do_phy_mst .ne. 0) ) then
    call abor1_ftn("fv3_model | FV3 : unless reading the trajecotory physics should be off")
@@ -145,7 +145,7 @@ subroutine state_to_lm( state, lm )
 implicit none
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
- 
+
 lm%traj%ua = 0.0_kind_real
 lm%traj%va = 0.0_kind_real
 
@@ -176,7 +176,7 @@ subroutine lm_to_state( lm, state )
 implicit none
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
- 
+
 state%ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
 state%vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
 if (associated(state%ua)) state%ua = lm%traj%ua

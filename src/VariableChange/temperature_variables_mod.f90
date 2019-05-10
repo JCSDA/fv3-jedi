@@ -1,7 +1,7 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module temperature_vt_mod
 
@@ -54,7 +54,7 @@ end subroutine T_to_Tv_tl
 subroutine T_to_Tv_ad(geom,T,T_ad,q,q_ad,Tv_ad)
 
  implicit none
- type(fv3jedi_geom)  , intent(in   ) :: geom 
+ type(fv3jedi_geom)  , intent(in   ) :: geom
  real(kind=kind_real), intent(in   ) :: T    (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) :: T_ad (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(in   ) :: q    (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
@@ -110,7 +110,7 @@ subroutine Tv_to_T_ad(geom,Tv,Tv_ad,q,q_ad,T_ad)
  real(kind=kind_real), intent(in   ) :: q    (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) :: q_ad (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) :: T_ad (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  real(kind=kind_real) :: temp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
  temp = t_ad/(epsilon*q+1.0_kind_real)

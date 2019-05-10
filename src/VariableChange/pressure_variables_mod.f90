@@ -1,7 +1,7 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module pressure_vt_mod
 
@@ -217,7 +217,7 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp)
  real(kind=kind_real), intent(out) ::   pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !Pressure edge/interface
  real(kind=kind_real), intent(out) ::    p(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !Pressure mid point
  real(kind=kind_real), optional, intent(out) :: logp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !Log of pressure mid point
- 
+
  !Locals
  integer :: isc,iec,jsc,jec,k
 
@@ -233,7 +233,7 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp)
  enddo
 
  !Midpoint pressure
- p(isc:iec,jsc:jec,:) = 0.5*(pe(isc:iec,jsc:jec,2:geom%npz+1) + pe(isc:iec,jsc:jec,1:geom%npz))  
+ p(isc:iec,jsc:jec,:) = 0.5*(pe(isc:iec,jsc:jec,2:geom%npz+1) + pe(isc:iec,jsc:jec,1:geom%npz))
 
  if (present(logp)) then
    !Log pressure

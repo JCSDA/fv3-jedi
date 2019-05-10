@@ -6,7 +6,7 @@ cost_function:
       state:
       - filetype: geos
         date: '2018-04-14T21:00:00Z'
-        filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
+        filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
         read_crtm_surface: 0
         variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
     Covariance:
@@ -19,13 +19,13 @@ cost_function:
 #    Covariance:
 #      covariance: BUMP
 #      default_seed: 1
-#      prefix: fv3jedi_geos_4dvar 
+#      prefix: fv3jedi_geos_4dvar
 #      method: cov
 #      strategy: specific_univariate
 #      new_nicas: 1     # Recompute convolution parameters
 #      load_nicas: 0    # Load precomputed convolution parameters
 #      sam_read: 0
-#      sam_write: 1  
+#      sam_write: 1
 #      mask_check: 0
 #      draw_type: random_uniform
 #      nc1: 100
@@ -36,7 +36,7 @@ cost_function:
 #      nl0r: 1
 #      minim_algo: "hooke"
 #      rvflt: 0.0
-#      lsqrt: 1  
+#      lsqrt: 1
 #      resol: 10.0
 #      nicas_interp: bilin
 #      network: 0

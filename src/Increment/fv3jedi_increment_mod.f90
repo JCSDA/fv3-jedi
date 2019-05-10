@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_increment_mod
 
@@ -18,7 +18,7 @@ use fv3jedi_field_mod,           only: fv3jedi_field, get_field, fields_rms, fie
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs 
+use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
@@ -173,7 +173,7 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'increment_of_dust_mixing_ratio_bin2', &
            fv3jedi_name = 'du002', units = 'kg kg-1', staggerloc = center, arraypointer = self%du002, &
-           tracer = .true.)  
+           tracer = .true.)
     case("du003","DU003","dust3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -185,13 +185,13 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'increment_of_dust_mixing_ratio_bin4', &
            fv3jedi_name = 'du004', units = 'kg kg-1', staggerloc = center, arraypointer = self%du004, &
-           tracer = .true.)  
+           tracer = .true.)
     case("du005","DU005","dust5")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'increment_of_dust_mixing_ratio_bin5', &
            fv3jedi_name = 'du005', units = 'kg kg-1', staggerloc = center, arraypointer = self%du005, &
-           tracer = .true.)  
+           tracer = .true.)
     case("ss001","SS001","seas1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -270,7 +270,7 @@ do var = 1, vars%nv
            fv3jedi_name = 'so4', units = 'kg kg-1', staggerloc = center, arraypointer = self%so4, &
            tracer = .true.)
     !Not found
-    case default 
+    case default
       call abor1_ftn("fv3jedi_increment_mod.create: unknown variable "//trim(vars%fldnames(var)))
 
   end select
@@ -436,7 +436,7 @@ self%ntile          = rhs%ntile
 self%hydrostatic    = rhs%hydrostatic
 self%tladphystrj    = rhs%tladphystrj
 self%calendar_type  = rhs%calendar_type
-self%date_init      = rhs%date_init   
+self%date_init      = rhs%date_init
 
 !Copy the individual fields
 if (.not.allocated(self%fields)) then
@@ -451,7 +451,7 @@ if (.not.allocated(self%fields)) then
     self%fields(self_var) = rhs%fields(self_var)
 
   enddo
-  
+
 else
 
   !Increment copy, potentialy with differnt fields
@@ -549,7 +549,7 @@ do self_var = 1, self%nf
       call self%fields(self_var)%array_pointer(self%ocphobic)
     case("ocphilic","OCPHILIC","oc2")
       call self%fields(self_var)%array_pointer(self%ocphilic)
-    case default 
+    case default
       !Not found
       call abor1_ftn("fv3jedi_increment_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
   end select
@@ -782,7 +782,7 @@ endif
 
 !delp to ps
 if (associated(self%ps)) then
- 
+
   allocate(x1_ps(x1%isc:x1%iec,x1%jsc:x1%jec,1))
   allocate(x2_ps(x2%isc:x2%iec,x2%jsc:x2%jec,1))
 
@@ -808,7 +808,7 @@ if (check==0) then
 
   do var = 1,self%nf
 
-    !A-Grid winds can be a special case 
+    !A-Grid winds can be a special case
     if (self%fields(var)%fv3jedi_name == 'ua') then
 
       self%ua = x1_ua - x2_ua
@@ -1069,13 +1069,13 @@ end if
 if (.not.allocated(ug%grid)) allocate(ug%grid(ug%ngrid))
 
 ! Set local number of points
-ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1) 
+ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
 
 ! Set number of levels
 ug%grid(1)%nl0 = self%npz
 
 ! Set number of variables
-ug%grid(1)%nv = self%nf 
+ug%grid(1)%nv = self%nf
 
 ! Set number of timeslots
 ug%grid(1)%nts = 1
@@ -1115,7 +1115,7 @@ if (ug%colocated==1) then
         ug%grid(1)%lmask(imga,jl) = .true.
       enddo
     enddo
-  enddo 
+  enddo
 endif
 
 end subroutine ug_coord

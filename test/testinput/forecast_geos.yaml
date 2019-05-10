@@ -16,7 +16,7 @@ member:
   -filetype: geos
    filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
   -filetype: geos
-   filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4          
+   filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
 output:
   filetype: geos
   datapath: Data/

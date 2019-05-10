@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_gfs_mod
 
@@ -14,7 +14,7 @@ use netcdf
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_increment_mod, only: fv3jedi_increment 
+use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fv3gfs_cap_mod, only: FV3SS => SetServices
 use esmf
@@ -104,7 +104,7 @@ subroutine state_to_gfs( state, self )
 implicit none
 type(fv3jedi_state), intent(in)    :: state
 type(gfs_model),    intent(inout) :: self
- 
+
 end subroutine state_to_gfs
 
 ! ------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ subroutine gfs_to_state( self, state )
 implicit none
 type(gfs_model),    intent(in)    :: self
 type(fv3jedi_state), intent(inout) :: state
- 
+
 end subroutine gfs_to_state
 
 ! ------------------------------------------------------------------------------

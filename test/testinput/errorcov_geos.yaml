@@ -11,7 +11,7 @@ Variables:
   variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
 State:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4    
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
 Covariance:
   covariance: BUMP
   date: '2018-04-14T21:00:00Z'

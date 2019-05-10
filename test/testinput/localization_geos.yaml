@@ -4,7 +4,7 @@ Geometry:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
-Variables: 
+Variables:
   variables: ["ua","va","T","ps","q","qi","ql","o3"]
 TestDate: '2018-04-14T21:00:00Z'
 Localization:

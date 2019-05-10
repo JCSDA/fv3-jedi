@@ -51,7 +51,7 @@ Model:
 ModelBias: null
 State:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
 Variables:
   variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
 varchange: Analysis2Model

@@ -1,7 +1,7 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module moisture_vt_mod
 
@@ -150,7 +150,7 @@ do k = 1,npz
 
     enddo
   enddo
-enddo 
+enddo
 
 
 ql_efr = max(0.0_kind_real,ql_efr)
@@ -344,7 +344,7 @@ subroutine rh_to_q(geom,qsat,rh,q)
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  q = rh * qsat
 
 end subroutine rh_to_q
@@ -358,7 +358,7 @@ subroutine rh_to_q_tl(geom,qsat,rh,q)
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(in)    ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  q = rh * qsat
 
 end subroutine rh_to_q_tl
@@ -372,7 +372,7 @@ subroutine rh_to_q_ad(geom,qsat,rh,q)
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(in)    ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  rh = rh + q * qsat
 
 end subroutine rh_to_q_ad
@@ -389,7 +389,7 @@ subroutine q_to_rh(geom,qsat,q,rh)
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(in)    ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  rh = q / qsat
 
 end subroutine q_to_rh
@@ -403,7 +403,7 @@ subroutine q_to_rh_tl(geom,qsat,q,rh)
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(in)    ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  rh = q / qsat
 
 end subroutine q_to_rh_tl
@@ -417,7 +417,7 @@ subroutine q_to_rh_ad(geom,qsat,q,rh)
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- 
+
  q = rh / qsat
 
 end subroutine q_to_rh_ad
@@ -557,8 +557,8 @@ end subroutine QSATLQU0
 subroutine QSATICE0(QS,TL)
 !SUPERSATURATED AS ICE
 
- IMPLICIT NONE   
-      
+ IMPLICIT NONE
+
  !INPUTS
  real(8) :: TL
 
@@ -625,7 +625,7 @@ subroutine QSATICE0(QS,TL)
  QS = EX
 
  return
- 
+
 end subroutine QSATICE0
 
 !----------------------------------------------------------------------------

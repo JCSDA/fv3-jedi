@@ -1,7 +1,7 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_varcha_a2m_mod
 
@@ -102,7 +102,7 @@ do index_mod = 1, xmod%nf
   enddo
 
   if (index_ana_found >= 0) then
- 
+
     !OK, direct copy
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     failed = .false.
@@ -135,7 +135,7 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
 
     !Special case: ps in analysis, delp in model
-    if (associated(xana%ps)) then 
+    if (associated(xana%ps)) then
       do k = 1,geom%npz
         xmod%delp(:,:,k) = (geom%ak(k+1)-geom%ak(k)) + (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
       enddo
@@ -196,7 +196,7 @@ do index_ana = 1, xana%nf
   enddo
 
   if (index_mod_found >= 0) then
- 
+
     !OK, direct copy
     failed = .false.
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
@@ -229,7 +229,7 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
 
     !Special case: ps in analysis, delp in model
-    if (associated(xmod%delp)) then 
+    if (associated(xmod%delp)) then
       xana%ps(:,:,1) = sum(xmod%delp,3)
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &

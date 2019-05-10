@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_nuopc_mod
 
@@ -14,7 +14,7 @@ use netcdf
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_increment_mod, only: fv3jedi_increment 
+use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 
@@ -88,7 +88,7 @@ if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
   line=__LINE__, &
   file=__FILE__)) &
   call ESMF_Finalize(endflag=ESMF_END_ABORT)
-  
+
 ! SetServices for the Earth system Component
 call ESMF_GridCompSetServices(self%esmComp, esmSS, userRc=self%urc, rc=rc)
 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &

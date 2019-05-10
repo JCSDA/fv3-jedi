@@ -1,7 +1,7 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module wind_vt_mod
 
@@ -72,12 +72,12 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
 
  !10m wind speed
  spd10m(isc:iec,jsc:jec) = f10r(isc:iec,jsc:jec)*sqrt( usrf(isc:iec,jsc:jec)*usrf(isc:iec,jsc:jec) + &
-                                                      vsrf(isc:iec,jsc:jec)*vsrf(isc:iec,jsc:jec) ) 
+                                                      vsrf(isc:iec,jsc:jec)*vsrf(isc:iec,jsc:jec) )
 
  !10m wind direction
  do j = jsc,jec
    do i = isc,iec
-     
+
      if (usrf(i,j)*f10r(i,j) >= 0.0_kind_real .and. vsrf(i,j)*f10r(i,j) >= 0.0_kind_real) iquad = 1
      if (usrf(i,j)*f10r(i,j) >= 0.0_kind_real .and. vsrf(i,j)*f10r(i,j) <  0.0_kind_real) iquad = 2
      if (usrf(i,j)*f10r(i,j) <  0.0_kind_real .and. vsrf(i,j)*f10r(i,j) >= 0.0_kind_real) iquad = 3
@@ -86,10 +86,10 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
      if (abs(vsrf(i,j)*f10r(i,j)) >= windlimit) then
         windratio = (usrf(i,j)*f10r(i,j)) / (vsrf(i,j)*f10r(i,j))
      else
-        windratio = 0.0_kind_real 
-        if (abs(usrf(i,j)*f10r(i,j)) > windlimit) then 
-          windratio = windscale * usrf(i,j)*f10r(i,j) 
-        endif 
+        windratio = 0.0_kind_real
+        if (abs(usrf(i,j)*f10r(i,j)) > windlimit) then
+          windratio = windscale * usrf(i,j)*f10r(i,j)
+        endif
      endif
 
      windangle = atan(abs(windratio))
@@ -151,7 +151,7 @@ subroutine uv_to_vortdivg(geom,u,v,ua,va,vort,divg)
  !Fill the halos of Dgrid winds and get A/C grid winds
  !----------------------------------------------------
  call d_to_ac(geom,u,v,ua,va,uc,vc)
- 
+
 
  !Calculate vorticity (Agrid)
  !---------------------------
@@ -210,7 +210,7 @@ subroutine vortdivg_to_psichi(geom,vort,divg,psi,chi)
  real(kind=kind_real), intent(out)   :: chi (geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Velocity potential
 
  real(kind=kind_real) :: psinew(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz) !Stream function
- 
+
  integer :: i,j,k,isc,iec,jsc,jec,npz
  integer :: maxiter, iter, ierr
  real(kind=kind_real) :: tolerance, converged, convergedg
@@ -225,8 +225,8 @@ subroutine vortdivg_to_psichi(geom,vort,divg,psi,chi)
  !       |                 |
  !       x-----------------x
 
- call gauss_seidel(geom,psi,-vort) 
- call gauss_seidel(geom,chi,-divg) 
+ call gauss_seidel(geom,psi,-vort)
+ call gauss_seidel(geom,chi,-divg)
 
 endsubroutine vortdivg_to_psichi
 
@@ -315,7 +315,7 @@ subroutine psichi_to_uava(geom,psi,chi,ua,va)
 
  call mpp_update_domains(psi, geom%domain, complete=.true.)
  call mpp_update_domains(chi, geom%domain, complete=.true.)
- 
+
  do k=1,geom%npz
    do j=geom%jsc,geom%jec
      do i=geom%isc,geom%iec
@@ -327,7 +327,7 @@ subroutine psichi_to_uava(geom,psi,chi,ua,va)
 
      enddo
    enddo
- enddo 
+ enddo
 
 end subroutine psichi_to_uava
 
@@ -417,7 +417,7 @@ subroutine psichi_to_udvd(geom,psi,chi,u,v)
  !Fill halos of psi and chi
  call mpp_update_domains(psi, geom%domain, complete=.true.)
  call mpp_update_domains(chi, geom%domain, complete=.true.)
- 
+
  !Interpolate chi to the B grid
  call a2b_ord4(chi, chib, geom, geom%npx, geom%npy, geom%isc, geom%iec, geom%jsc, geom%jec, geom%halo)
 
@@ -432,7 +432,7 @@ subroutine psichi_to_udvd(geom,psi,chi,u,v)
 
      enddo
    enddo
- enddo 
+ enddo
 
 endsubroutine psichi_to_udvd
 
@@ -466,7 +466,7 @@ subroutine d_to_ac(geom, u, v, ua, va, uc, vc)
  integer isd,ied,jsd,jed
  integer npz
  integer i,j,k
- 
+
  real(kind=kind_real) :: ut(geom%isd:geom%ied, geom%jsd:geom%jed)
  real(kind=kind_real) :: vt(geom%isd:geom%ied, geom%jsd:geom%jed)
 
@@ -482,7 +482,7 @@ subroutine d_to_ac(geom, u, v, ua, va, uc, vc)
  jsd=geom%jsd
  jed=geom%jed
  npz = geom%npz
- 
+
  uctemp = 0.0_kind_real
  vctemp = 0.0_kind_real
 
@@ -494,11 +494,11 @@ subroutine d_to_ac(geom, u, v, ua, va, uc, vc)
  do k=1,npz
     do i=isc,iec
        u(i,jec+1,k) = nbuffer(i,k)
-    enddo  
+    enddo
     do j=jsc,jec
        v(iec+1,j,k) = ebuffer(j,k)
-    enddo  
- enddo   
+    enddo
+ enddo
 
  !Fill halo on winds
  call mpp_update_domains(u, v, geom%domain, gridtype=DGRID_NE, complete=.true.)
@@ -529,7 +529,7 @@ subroutine d2a2c_vect(geom, u, v, ua, va, uc, vc, ut, vt, dord4)
   real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed  ):: ua, va
   real(kind=kind_real), intent(out), dimension(geom%isd:geom%ied  ,geom%jsd:geom%jed  ):: ut, vt
 
- ! Local 
+ ! Local
   real(kind=kind_real), dimension(geom%isd:geom%ied,geom%jsd:geom%jed):: utmp, vtmp
   integer npt, i, j, ifirst, ilast, id
   integer :: npx, npy
@@ -558,15 +558,15 @@ subroutine d2a2c_vect(geom, u, v, ua, va, uc, vc, ut, vt, dord4)
       npx = geom%npx
       npy = geom%npy
 
-      sin_sg    => geom%sin_sg  
-      cosa_u    => geom%cosa_u  
-      cosa_v    => geom%cosa_v  
-      cosa_s    => geom%cosa_s  
-      rsin_u    => geom%rsin_u  
-      rsin_v    => geom%rsin_v  
-      rsin2     => geom%rsin2   
-      dxa       => geom%dxa     
-      dya       => geom%dya     
+      sin_sg    => geom%sin_sg
+      cosa_u    => geom%cosa_u
+      cosa_v    => geom%cosa_v
+      cosa_s    => geom%cosa_s
+      rsin_u    => geom%rsin_u
+      rsin_v    => geom%rsin_v
+      rsin2     => geom%rsin2
+      dxa       => geom%dxa
+      dya       => geom%dya
 
   if ( dord4 ) then
        id = 1
@@ -681,24 +681,24 @@ subroutine d2a2c_vect(geom, u, v, ua, va, uc, vc, ut, vt, dord4)
 ! Xdir:
      if( geom%sw_corner ) then
          ua(-1,0) = -va(0,2)
-         ua( 0,0) = -va(0,1) 
+         ua( 0,0) = -va(0,1)
      endif
      if( geom%se_corner ) then
          ua(npx,  0) = va(npx,1)
-         ua(npx+1,0) = va(npx,2) 
+         ua(npx+1,0) = va(npx,2)
      endif
      if( geom%ne_corner ) then
          ua(npx,  npy) = -va(npx,npy-1)
-         ua(npx+1,npy) = -va(npx,npy-2) 
+         ua(npx+1,npy) = -va(npx,npy-2)
      endif
      if( geom%nw_corner ) then
          ua(-1,npy) = va(0,npy-2)
-         ua( 0,npy) = va(0,npy-1) 
+         ua( 0,npy) = va(0,npy-1)
      endif
 
      if( is==1 ) then
         do j=js-1,je+1
-           uc(0,j) = c1*utmp(-2,j) + c2*utmp(-1,j) + c3*utmp(0,j) 
+           uc(0,j) = c1*utmp(-2,j) + c2*utmp(-1,j) + c3*utmp(0,j)
            ut(1,j) = edge_interpolate4(ua(-1:2,j), dxa(-1:2,j))
            !Want to use the UPSTREAM value
            if (ut(1,j) > 0.) then
@@ -714,14 +714,14 @@ subroutine d2a2c_vect(geom, u, v, ua, va, uc, vc, ut, vt, dord4)
 
      if( (ie+1)==npx ) then
         do j=js-1,je+1
-           uc(npx-1,j) = c1*utmp(npx-3,j)+c2*utmp(npx-2,j)+c3*utmp(npx-1,j) 
+           uc(npx-1,j) = c1*utmp(npx-3,j)+c2*utmp(npx-2,j)+c3*utmp(npx-1,j)
            ut(npx,  j) = edge_interpolate4(ua(npx-2:npx+1,j), dxa(npx-2:npx+1,j))
            if (ut(npx,j) > 0.) then
                uc(npx,j) = ut(npx,j)*sin_sg(npx-1,j,3)
            else
                uc(npx,j) = ut(npx,j)*sin_sg(npx,j,1)
            end if
-           uc(npx+1,j) = c3*utmp(npx,j) + c2*utmp(npx+1,j) + c1*utmp(npx+2,j) 
+           uc(npx+1,j) = c3*utmp(npx,j) + c2*utmp(npx+1,j) + c1*utmp(npx+2,j)
            ut(npx-1,j) = (uc(npx-1,j)-v(npx-1,j)*cosa_u(npx-1,j))*rsin_u(npx-1,j)
            ut(npx+1,j) = (uc(npx+1,j)-v(npx+1,j)*cosa_u(npx+1,j))*rsin_u(npx+1,j)
         enddo
@@ -856,7 +856,7 @@ end function edge_interpolate4
  je  = geom%jec
 
  npx = geom%npx
- npy = geom%npy  
+ npy = geom%npy
 
  is2 = max(2,is)
  ie1 = min(npx-1,ie+1)
@@ -1016,7 +1016,7 @@ end subroutine divergence_corner
           qx(npx-1,j) = (3.*(qin(npx-2,j)+g_in*qin(npx-1,j)) - (g_in*qx(npx,j)+qx(npx-2,j)))/(2.+2.*g_in)
        enddo
     endif
-    
+
 !------------
 ! Y-Interior:
 !------------
@@ -1082,19 +1082,19 @@ end subroutine divergence_corner
        enddo
     endif
 
-    
+
     do j=max(2,js),min(npy-1,je+1)
        do i=max(3,is),min(npx-2,ie+1)
           qyy(i,j) = a2*(qy(i-2,j)+qy(i+1,j)) + a1*(qy(i-1,j)+qy(i,j))
        enddo
        if ( is==1 ) qyy(2,j) = c1*(qy(1,j)+qy(2,j))+c2*(qout(1,j)+qyy(3,j))
        if((ie+1)==npx) qyy(npx-1,j) = c1*(qy(npx-2,j)+qy(npx-1,j))+c2*(qout(npx,j)+qyy(npx-2,j))
- 
+
        do i=max(2,is),min(npx-1,ie+1)
           qout(i,j) = 0.5*(qxx(i,j) + qyy(i,j))   ! averaging
        enddo
     enddo
-    
+
   end subroutine a2b_ord4
 
 !----------------------------------------------------------------------------
@@ -1112,25 +1112,25 @@ real(kind=kind_real) function extrap_corner ( p0, p1, p2, q1, q2 )
     extrap_corner = q1 + x1/(x2-x1) * (q1-q2)
 
   end function extrap_corner
-  
+
 !----------------------------------------------------------------------------
 
   real(kind=kind_real) function great_circle_dist( q1, q2 )
 
        implicit none
        real(kind=kind_real), intent(IN)           :: q1(2), q2(2)
- 
+
        real (kind=kind_real):: p1(2), p2(2)
        integer n
- 
+
        do n=1,2
           p1(n) = q1(n)
           p2(n) = q2(n)
        enddo
- 
+
        great_circle_dist = asin( sqrt( sin((p1(2)-p2(2))/2.)**2 + cos(p1(2))*cos(p2(2))*   &
                           sin((p1(1)-p2(1))/2.)**2 ) ) * 2.
-  
+
    end function great_circle_dist
 
 !----------------------------------------------------------------------------
@@ -1942,7 +1942,7 @@ real(kind=kind_real), intent(in)    :: va(geom%isc:geom%iec,  geom%jsc:geom%jec,
 real(kind=kind_real), intent(inout) :: ud(geom%isc:geom%iec,  geom%jsc:geom%jec+1,geom%npz)
 real(kind=kind_real), intent(inout) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec,  geom%npz)
 
-integer :: is ,ie , js ,je 
+integer :: is ,ie , js ,je
 integer :: npx, npy, npz
 integer :: i,j,k, im2,jm2
 

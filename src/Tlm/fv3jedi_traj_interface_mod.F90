@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_traj_interface_mod
 
@@ -43,7 +43,7 @@ type(fv3jedi_traj),  pointer :: self
 
 call fv3jedi_state_registry%get(c_key_state,state)
 
-call fv3jedi_traj_registry%init()            
+call fv3jedi_traj_registry%init()
 call fv3jedi_traj_registry%add(c_key_self)
 call fv3jedi_traj_registry%get(c_key_self,self)
 

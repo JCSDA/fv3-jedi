@@ -4,7 +4,7 @@ Geometry:
   nml_file: Data/fv3files/input_gfs_c48.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180414.210000.fv_core.res.nc
-Variables: 
+Variables:
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
 TestDate: '2018-04-14T21:00:00Z'
 Localization:

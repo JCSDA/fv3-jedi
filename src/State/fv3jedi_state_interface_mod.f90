@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 ! ------------------------------------------------------------------------------
 
@@ -345,7 +345,7 @@ call oops_vars_delete(vars)
 
 end subroutine fv3jedi_state_getvalues_c
 
-! ------------------------------------------------------------------------------   
+! ------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_state_sizes_f90')
 
@@ -362,6 +362,6 @@ ny = self%npy
 
 end subroutine fv3jedi_state_sizes_c
 
-! ------------------------------------------------------------------------------   
+! ------------------------------------------------------------------------------
 
 end module fv3jedi_state_interface_mod

@@ -1,7 +1,7 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module surface_vt_mod
 
@@ -21,7 +21,7 @@ public crtm_surface
 contains
 
 !----------------------------------------------------------------------------
-! Surface quantities in the form needed by the crtm ------------------------- 
+! Surface quantities in the form needed by the crtm -------------------------
 !----------------------------------------------------------------------------
 
 subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
@@ -168,7 +168,7 @@ real(kind=kind_real), allocatable, dimension(:,:) :: f10mp
 type(fckit_mpi_comm) :: comm
 
 ! Communicator
-comm = fckit_mpi_comm() 
+comm = fckit_mpi_comm()
 
 ! Number of weights
 nn = 4
@@ -222,7 +222,7 @@ allocate(f10mp(nobs,nn))
  f10mp = 0.0_kind_real
 
  !Get interpolation weights and index in global grid
- call kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i) 
+ call kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i)
 
  !Get field at nn neighbours
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_slmsk (:,:,1), rslmsk)
@@ -265,9 +265,9 @@ allocate(f10mp(nobs,nn))
  !end select
 
  !Loop over all obs
- 
+
  do n = 1,nobs
- 
+
 ! Stage 1, like deter_sfc in GSI
 ! ------------------------------
 
@@ -275,12 +275,12 @@ allocate(f10mp(nobs,nn))
     w10 = interp_w(n,2)
     w01 = interp_w(n,3)
     w11 = interp_w(n,4)
- 
+
     istyp00 = slmsk(n,1)
     istyp10 = slmsk(n,2)
     istyp01 = slmsk(n,3)
     istyp11 = slmsk(n,4)
- 
+
     sno00 = snwdph(n,1)*dtsfc + snwdphp(n,1)*dtsfcp
     sno01 = snwdph(n,2)*dtsfc + snwdphp(n,2)*dtsfcp
     sno10 = snwdph(n,3)*dtsfc + snwdphp(n,3)*dtsfcp
@@ -290,20 +290,20 @@ allocate(f10mp(nobs,nn))
     sst01 = tsea(n,2)*dtsfc + tsea(n,2)*dtsfcp
     sst10 = tsea(n,3)*dtsfc + tsea(n,3)*dtsfcp
     sst11 = tsea(n,4)*dtsfc + tsea(n,4)*dtsfcp
- 
+
     tsavg = sst00*w00 + sst10*w10 + sst01*w01 + sst11*w11
- 
+
     if (istyp00 >=1 .and. sno00 > minsnow) istyp00 = 3
     if (istyp01 >=1 .and. sno01 > minsnow) istyp01 = 3
     if (istyp10 >=1 .and. sno10 > minsnow) istyp10 = 3
     if (istyp11 >=1 .and. sno11 > minsnow) istyp11 = 3
- 
+
     sfcpct = 0.0_kind_real
     sfcpct(istyp00) = sfcpct(istyp00) + w00
     sfcpct(istyp01) = sfcpct(istyp01) + w01
     sfcpct(istyp10) = sfcpct(istyp10) + w10
     sfcpct(istyp11) = sfcpct(istyp11) + w11
- 
+
     isflg = 0
     if(sfcpct(0) > 0.99_kind_real)then
        isflg = 0
@@ -316,7 +316,7 @@ allocate(f10mp(nobs,nn))
     else
        isflg = 4
     end if
- 
+
     ts(0:3)=0.0_kind_real
     wgtavg(0:3)=0.0_kind_real
     vfr=0.0_kind_real
@@ -325,7 +325,7 @@ allocate(f10mp(nobs,nn))
     vty=0.0_kind_real
     sm=0.0_kind_real
     sn=0.0_kind_real
- 
+
     idomsfc=slmsk(n,1)
     wgtmin = w00
 
@@ -439,7 +439,7 @@ allocate(f10mp(nobs,nn))
        idomsfc=slmsk(n,4)
        wgtmin = w11
     end if
- 
+
     if(wgtavg(0) > 0.0_kind_real)then
        ts(0) = ts(0)/wgtavg(0)
     else
@@ -496,8 +496,8 @@ allocate(f10mp(nobs,nn))
 
       if(lai_type>0)then
         call get_lai(lai_type,lai(n)) !TODO: does nothing yet
-      endif     
-   
+      endif
+
       ! for Glacial land ice soil type and vegetation type
       if(Soil_Type(n) == 9 .OR. Vegetation_Type(n) == 13) then
          ice_coverage(n) = min(ice_coverage(n) + land_coverage(n), 1.0_kind_real)
@@ -508,28 +508,28 @@ allocate(f10mp(nobs,nn))
 
    if (lwind) then
 
-     !Interpolate lowest level winds to observation location 
+     !Interpolate lowest level winds to observation location
      uu5 = ( u_srf (n,1)*w00 + u_srf (n,2)*w10 + u_srf (n,3)*w01 + u_srf (n,4)*w11 ) * dtsfc  + &
-           ( u_srfp(n,1)*w00 + u_srfp(n,2)*w10 + u_srfp(n,3)*w01 + u_srfp(n,4)*w11 ) * dtsfcp 
+           ( u_srfp(n,1)*w00 + u_srfp(n,2)*w10 + u_srfp(n,3)*w01 + u_srfp(n,4)*w11 ) * dtsfcp
      vv5 = ( v_srf (n,1)*w00 + v_srf (n,2)*w10 + v_srf (n,3)*w01 + v_srf (n,4)*w11 ) * dtsfc  + &
            ( v_srfp(n,1)*w00 + v_srfp(n,2)*w10 + v_srfp(n,3)*w01 + v_srfp(n,4)*w11 ) * dtsfcp
 
      sfc_speed = f10*sqrt(uu5*uu5+vv5*vv5)
-     wind10    = sfc_speed 
-     if (uu5*f10 >= 0.0_kind_real .and. vv5*f10 >= 0.0_kind_real) iquadrant = 1 
-     if (uu5*f10 >= 0.0_kind_real .and. vv5*f10 <  0.0_kind_real) iquadrant = 2 
-     if (uu5*f10 <  0.0_kind_real .and. vv5*f10 >= 0.0_kind_real) iquadrant = 4 
-     if (uu5*f10 <  0.0_kind_real .and. vv5*f10 <  0.0_kind_real) iquadrant = 3 
-     if (abs(vv5*f10) >= windlimit) then 
-         windratio = (uu5*f10) / (vv5*f10) 
-     else 
-         windratio = 0.0_kind_real 
-         if (abs(uu5*f10) > windlimit) then 
-             windratio = windscale * uu5*f10 
-         endif 
-     endif 
-     windangle        = atan(abs(windratio))   ! wind azimuth is in radians 
-     wind10_direction = quadcof(iquadrant, 1) * pi + windangle * quadcof(iquadrant, 2)   
+     wind10    = sfc_speed
+     if (uu5*f10 >= 0.0_kind_real .and. vv5*f10 >= 0.0_kind_real) iquadrant = 1
+     if (uu5*f10 >= 0.0_kind_real .and. vv5*f10 <  0.0_kind_real) iquadrant = 2
+     if (uu5*f10 <  0.0_kind_real .and. vv5*f10 >= 0.0_kind_real) iquadrant = 4
+     if (uu5*f10 <  0.0_kind_real .and. vv5*f10 <  0.0_kind_real) iquadrant = 3
+     if (abs(vv5*f10) >= windlimit) then
+         windratio = (uu5*f10) / (vv5*f10)
+     else
+         windratio = 0.0_kind_real
+         if (abs(uu5*f10) > windlimit) then
+             windratio = windscale * uu5*f10
+         endif
+     endif
+     windangle        = atan(abs(windratio))   ! wind azimuth is in radians
+     wind10_direction = quadcof(iquadrant, 1) * pi + windangle * quadcof(iquadrant, 2)
      wind_speed(n)           = sfc_speed
      wind_direction(n)       = rad2deg*wind10_direction
 

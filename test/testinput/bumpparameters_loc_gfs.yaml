@@ -105,7 +105,7 @@ output:
   filename_sfcd: bump_params_gfs.loc_coef.sfc_data.nc
   filename_sfcw: bump_params_gfs.loc_coef.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.loc_coef.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'
 - parameter: loc_rh
   filetype: gfs
   datapath_tile: Data/
@@ -114,7 +114,7 @@ output:
   filename_sfcd: bump_params_gfs.loc_rh.sfc_data.nc
   filename_sfcw: bump_params_gfs.loc_rh.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.loc_rh.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'
 - parameter: loc_rv
   filetype: gfs
   datapath_tile: Data/
@@ -123,7 +123,7 @@ output:
   filename_sfcd: bump_params_gfs.loc_rv.sfc_data.nc
   filename_sfcw: bump_params_gfs.loc_rv.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.loc_rv.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'
 - parameter: hyb_coef
   filetype: gfs
   datapath_tile: Data/
@@ -132,4 +132,4 @@ output:
   filename_sfcd: bump_params_gfs.hyb_coef.sfc_data.nc
   filename_sfcw: bump_params_gfs.hyb_coef.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.hyb_coef.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'

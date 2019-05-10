@@ -121,14 +121,14 @@ Model/nuopc/ocn.F90
 Model/nuopc/med.F90
 )
 
-#Append includes and libraries with particular model 
+#Append includes and libraries with particular model
 list (APPEND FV3JEDI_LIB_DEP oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
 
 if( ${FV3BASEDMODEL_FOUND} )
     list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES})
 endif()
 
-#Append src with particular model 
+#Append src with particular model
 list (APPEND FV3JEDI_SRC_DEP ${fv3jedi_src_files} )
 
 if( ${GEOS_FOUND} )

@@ -56,7 +56,7 @@ cost_function:
   Covariance:
    covariance: hybrid
    ensemble_weight: "0.3"
-   static: 
+   static:
     covariance: BUMP
     default_seed: 1
     prefix: fv3jedi_gfs_static

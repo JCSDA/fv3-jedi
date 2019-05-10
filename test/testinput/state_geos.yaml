@@ -17,11 +17,11 @@ StateTest:
     random_seed: '560921'
   StateFile:
     filetype: geos
-    filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4        
+    filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180414_21z.nc4
     variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   StateGenerate:
     analytic_init: dcmip-test-4-0
-    date: '2018-04-14T21:00:00Z'   
+    date: '2018-04-14T21:00:00Z'
     nml_file: Data/fv3files/input_geos_c48.nml
     variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   InterpTest:

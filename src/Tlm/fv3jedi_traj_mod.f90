@@ -1,7 +1,7 @@
 ! (C) Copyright 2017 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_traj_mod
 
@@ -37,7 +37,7 @@ isc = state%isc
 iec = state%iec
 jsc = state%jsc
 jec = state%jsc
-npz = state%npz 
+npz = state%npz
 
 ! Allocate traj
 allocate(self%u      (isc:iec, jsc:jec, npz))
@@ -54,7 +54,7 @@ allocate(self%w      (isc:iec, jsc:jec, npz))
 allocate(self%delz   (isc:iec, jsc:jec, npz))
 allocate(self%qls    (isc:iec, jsc:jec, npz))
 allocate(self%qcn    (isc:iec, jsc:jec, npz))
-allocate(self%cfcn   (isc:iec, jsc:jec, npz)) 
+allocate(self%cfcn   (isc:iec, jsc:jec, npz))
 allocate(self%phis   (isc:iec, jsc:jec))
 allocate(self%frocean(isc:iec, jsc:jec))
 allocate(self%frland (isc:iec, jsc:jec))

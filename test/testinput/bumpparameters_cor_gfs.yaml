@@ -110,7 +110,7 @@ output:
   filename_sfcd: bump_params_gfs.var.sfc_data.nc
   filename_sfcw: bump_params_gfs.var.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.var.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'
 - parameter: cor_rh
   filetype: gfs
   datapath_tile: Data/
@@ -119,7 +119,7 @@ output:
   filename_sfcd: bump_params_gfs.cor_rh.sfc_data.nc
   filename_sfcw: bump_params_gfs.cor_rh.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.cor_rh.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'
 - parameter: cor_rv
   filetype: gfs
   datapath_tile: Data/
@@ -128,4 +128,4 @@ output:
   filename_sfcd: bump_params_gfs.cor_rv.sfc_data.nc
   filename_sfcw: bump_params_gfs.cor_rv.fv_srf_wnd.res.nc
   filename_cplr: bump_params_gfs.cor_rv.coupler.res
-  date: '2018-04-14T21:00:00Z'  
+  date: '2018-04-14T21:00:00Z'

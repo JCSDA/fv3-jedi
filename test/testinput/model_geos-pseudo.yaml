@@ -21,7 +21,7 @@ ModelTest:
   tolerance: '1.0e-4'
 State:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4        
+  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
               "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]

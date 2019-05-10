@@ -22,7 +22,7 @@ state:
   filetype: geos
   date: '2018-10-03T00:00:00Z'
   read_crtm_surface: 0
-  filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4    
+  filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4
   variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 increment:
   state:
@@ -30,12 +30,12 @@ increment:
     filetype: geos
     date: '2018-10-03T00:00:00Z'
     read_crtm_surface: 0
-    filename: Data/INPUTS/GEOS_c180/H15/GEOS.traj.c180.eta.20181003_0000z.nc4    
+    filename: Data/INPUTS/GEOS_c180/H15/GEOS.traj.c180.eta.20181003_0000z.nc4
     variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
   - filetype: geos
     date: '2018-10-03T00:00:00Z'
     read_crtm_surface: 0
-    filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4    
+    filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_0000z.nc4
     variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 JnormGrad:
   normkind: twe

@@ -1,7 +1,7 @@
 ! (C) Copyright 2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_linvarcha_c2a_mod
 
@@ -174,9 +174,9 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
 xctl%psi = xana%ua
 xctl%chi = xana%va
-xctl%tv  = xana%t 
+xctl%tv  = xana%t
 xctl%ps  = xana%ps
-xctl%rh  = xana%q 
+xctl%rh  = xana%q
 xctl%qi  = xana%qi
 xctl%ql  = xana%ql
 xctl%o3  = xana%o3
@@ -216,12 +216,12 @@ type(fv3jedi_increment),     intent(inout) :: xana
 
 xana%ua = xctl%psi
 xana%va = xctl%chi
-xana%t  = xctl%tv 
-xana%ps = xctl%ps 
-xana%q  = xctl%rh 
-xana%qi = xctl%qi 
-xana%ql = xctl%ql 
-xana%o3 = xctl%o3 
+xana%t  = xctl%tv
+xana%ps = xctl%ps
+xana%q  = xctl%rh
+xana%qi = xctl%qi
+xana%ql = xctl%ql
+xana%o3 = xctl%o3
 
 end subroutine multiplyinverseadjoint
 
@@ -245,20 +245,20 @@ subroutine control_to_analysis_tlm(geom,psi, chi, tv, rh, &
  real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (va)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
- 
+
  !Trajectory for virtual temperature to temperature
  real(kind=kind_real), intent(in)    ::  tvt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !VTemperature traj
  real(kind=kind_real), intent(in)    ::   qt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity traj
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Sat spec hum
 
  real(kind=kind_real), allocatable, dimension(:,:,:) :: psi_dom, chi_dom
- 
+
  ua = 0.0_kind_real
  va = 0.0_kind_real
  t  = 0.0_kind_real
  q  = 0.0_kind_real
 
- !psi and chi to A-grid u and v 
+ !psi and chi to A-grid u and v
  !-----------------------------
  allocate(psi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
  allocate(chi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
@@ -304,7 +304,7 @@ subroutine control_to_analysis_adm(geom,psi, chi, tv, rh, &
  real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (v)
  real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
- 
+
  !Trajectory for virtual temperature to temperaturc
  real(kind=kind_real), intent(in)    ::  tvt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !VTemperature traj
  real(kind=kind_real), intent(in)    ::   qt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity traj
@@ -325,7 +325,7 @@ subroutine control_to_analysis_adm(geom,psi, chi, tv, rh, &
  !--------------------------------------
  call rh_to_q_ad(geom,qsat,rh,q)
 
- !psi and chi to D-grid u and v 
+ !psi and chi to D-grid u and v
  !-----------------------------
  allocate(psi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
  allocate(chi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))

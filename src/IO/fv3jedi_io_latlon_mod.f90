@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_io_latlon_mod
 
@@ -86,7 +86,7 @@ llgeom%npes = llgeom%layout(1) * llgeom%layout(2)
 
 !Since the lat lon grid is only for IO purposes it is only
 !defined on a subset of PEs - those that will do the writing.
-!This is generally more efficient than having many PEs trying 
+!This is generally more efficient than having many PEs trying
 !to write to the same file.
 
 llgeom%nxg = 4*(geom%npx - 1)
@@ -109,7 +109,7 @@ if (llgeom%f_comm%rank() <= llgeom%npes-1) then
 
   llgeom%nx = llgeom%nxg / llgeom%layout(1)
   llgeom%ny = llgeom%nyg / llgeom%layout(2)
-  
+
   allocate(llgeom%lons(llgeom%nx))
   allocate(llgeom%lats(llgeom%ny))
 
@@ -270,7 +270,7 @@ implicit none
 type(fv3jedi_geom),   intent(in)    :: geom           !< Geometry
 type(fv3jedi_llgeom), intent(inout) :: llgeom         !< LatLon Geometry
 real(kind=kind_real), intent(in)    :: csfield(:,:,:) !< Field to write
-character(len=*),     intent(in)    :: fieldname      !< Name for field 
+character(len=*),     intent(in)    :: fieldname      !< Name for field
 type(c_ptr),          intent(in)    :: c_conf         !< Configuration
 type(datetime),       intent(in)    :: vdate          !< DateTime
 
@@ -311,7 +311,7 @@ do jk = 1, geom%npz
 
   !Bilinear interpolation to latlon grid
   call llgeom%bump%apply_obsop(csfield_bump,llfield_bump)
- 
+
   !Unpack BUMP latlon field
   if (llgeom%thispe) then
     ii = 0
@@ -388,7 +388,7 @@ type(bump_type),      intent(inout) :: bump
 
 !Locals
 integer :: mod_num
-real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
+real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:)
 real(kind=kind_real), allocatable :: area(:),vunit(:,:)
 logical, allocatable :: lmask(:,:)
 
@@ -419,7 +419,7 @@ allocate(mod_lat(mod_num))
 allocate(mod_lon(mod_num))
 mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
-                                        [mod_num] )  
+                                        [mod_num] )
 mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
                                         [mod_num] ) - 180.0_kind_real
@@ -482,7 +482,7 @@ subroutine nccheck(status,iam)
 
 implicit none
 integer, intent ( in) :: status
-character(len=*), optional :: iam 
+character(len=*), optional :: iam
 
 character(len=1024) :: error_descr
 

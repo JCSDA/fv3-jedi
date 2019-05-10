@@ -20,7 +20,7 @@ model:
   lm_do_mst: 1
 state:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_2300z.nc4    
+  filename: Data/INPUTS/GEOS_c180/H21/GEOS.traj.c180.eta.20181003_2300z.nc4
   date: '2018-10-03T23:00:00Z'
   read_crtm_surface: 0
   variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
@@ -30,7 +30,7 @@ increment:
   - filetype: geos
     date: '2018-10-04T00:00:00Z'
     read_crtm_surface: 0
-    filename: Data/INPUTS/GEOS_c180/GEOS.vana.c180.eta.20181004_0000z.nc4    
+    filename: Data/INPUTS/GEOS_c180/GEOS.vana.c180.eta.20181004_0000z.nc4
     variables: ['ud','vd','ua','va','t','delp','q','qi','ql','o3']
 JnormGrad:
   normkind: twe

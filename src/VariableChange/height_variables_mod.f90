@@ -1,11 +1,11 @@
 ! (C) Copyright 2018-2019 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module height_vt_mod
 
-use fv3jedi_constants_mod, only: grav, rvap, tice,rdry, zvir 
+use fv3jedi_constants_mod, only: grav, rvap, tice,rdry, zvir
 use fv3jedi_geom_mod,  only: fv3jedi_geom
 use fv3jedi_kinds_mod,             only: kind_real
 
@@ -30,7 +30,7 @@ real(kind_real),parameter ::  psv_d = -6.3431645e+3_kind_real       !  (K)
 ! Constants for enhancement factor to calculating the mole fraction of water vapor
 real(kind_real),parameter ::  ef_alpha = 1.00062_kind_real           !
 real(kind_real),parameter ::  ef_beta  = 3.14e-8_kind_real           !  (1/Pa)
-real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real   
+real(kind_real),parameter ::  ef_gamma = 5.6e-7_kind_real
 
 public geop_height
 public geop_height_levels
@@ -44,7 +44,7 @@ type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
 real(kind_real), intent(in ) :: prs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)    !mid layerpressure
 real(kind_real), intent(in ) :: prsi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !interface pressure
 real(kind_real), intent(in ) :: phis(geom%isc:geom%iec,geom%jsc:geom%jec)              !Surface geopotential (grav*Z_sfc)
-real(kind_real), intent(in ) :: T(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)            
+real(kind_real), intent(in ) :: T(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 real(kind_real), intent(in ) :: q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)     ! specific humidity
 real(kind_real), intent(out) :: gph(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !geopotential height (meters)
 
@@ -54,7 +54,7 @@ real(kind_real)       :: qmr(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! m
 logical               :: use_compress
 integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
-real(kind=kind_real)  :: prs_sv, prs_v           
+real(kind=kind_real)  :: prs_sv, prs_v
 real(kind=kind_real)  :: ehn_fct,x_v,cmpr
 
 isc = geom%isc
@@ -69,8 +69,8 @@ qmr(isc:iec,jsc:jec,:) = q(isc:iec,jsc:jec,:)/(1.0 - q(isc:iec,jsc:jec,:))
 Tv(isc:iec,jsc:jec,:)  = T(isc:iec,jsc:jec,:)*(1.0 + zvir*qmr(isc:iec,jsc:jec,:))
 
 if (use_compress) then
- 
-!  Compute compressibility factor (Picard et al 2008) and geopotential heights at midpoint 
+
+!  Compute compressibility factor (Picard et al 2008) and geopotential heights at midpoint
   do j = jsc,jec
   do i = isc,iec
 
@@ -80,10 +80,10 @@ if (use_compress) then
            Tvk  = Tv(i,j,k)
            Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1))+log(prs(i,j,k))))
            dpk  = prsi(i,j,k+1)/prs(i,j,k)
-        else 
+        else
            Tkk  = 0.5_kind_real * ( T(i,j,k+1) +  T(i,j,k) )
            Tvk  = 0.5_kind_real * (Tv(i,j,k+1) + Tv(i,j,k) )
-           Pak  = exp(0.5_kind_real*(log(prs(i,j,k+1))+log(prs(i,j,k)))) 
+           Pak  = exp(0.5_kind_real*(log(prs(i,j,k+1))+log(prs(i,j,k))))
            dpk  = prs(i,j,k+1)/prs(i,j,k)
         end if
 
@@ -116,7 +116,7 @@ else  ! not use compressivity
      k  = geom%npz
      dz         = rdry/grav * Tv(i,j,k) * log(prsi(i,j,k+1)/prs(i,j,k))
      gph(i,j,k) = phis(i,j)/grav + dz
- 
+
      do k = geom%npz-1, 1, -1
         dz         = rdry/grav * 0.5_kind_real * (Tv(i,j,k+1)+Tv(i,j,k)) * log(prs(i,j,k+1)/prs(i,j,k))
         gph(i,j,k) = gph(i,j,k+1) + dz
@@ -162,7 +162,7 @@ Tv(isc:iec,jsc:jec,:)  = T(isc:iec,jsc:jec,:)*(1.0 + zvir*qmr(isc:iec,jsc:jec,:)
 
 if (use_compress) then
 
-!  Compute compressibility factor (Picard et al 2008) and geopotential heights at midpoint 
+!  Compute compressibility factor (Picard et al 2008) and geopotential heights at midpoint
   do j = jsc,jec
   do i = isc,iec
 

@@ -35,9 +35,9 @@ subroutine getvalues(geom, state, locs, vars, gom, traj)
 
 implicit none
 
-type(fv3jedi_geom),                             intent(in)    :: geom 
-type(fv3jedi_state),                            intent(in)    :: state 
-type(ufo_locs),                                 intent(in)    :: locs 
+type(fv3jedi_geom),                             intent(in)    :: geom
+type(fv3jedi_state),                            intent(in)    :: state
+type(ufo_locs),                                 intent(in)    :: locs
 type(oops_vars),                                intent(in)    :: vars
 type(ufo_geovals),                              intent(inout) :: gom
 type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
@@ -90,14 +90,14 @@ real(kind=kind_real), allocatable :: land_coverage(:)            !Fraction of la
 real(kind=kind_real), allocatable :: ice_coverage(:)             !Fraction of ice coverage        | surface(1)%ice_coverage
 real(kind=kind_real), allocatable :: snow_coverage(:)            !Fraction of snow coverage       | surface(1)%snow_coverage
 real(kind=kind_real), allocatable :: lai(:)                      !Leaf area index                 ! surface(1)%lai
-real(kind=kind_real), allocatable :: water_temperature(:)        !Water temp (K)                  | surface(1)%water_temperature    
-real(kind=kind_real), allocatable :: land_temperature(:)         !Land temp (K)                   | surface(1)%land_temperature     
-real(kind=kind_real), allocatable :: ice_temperature(:)          !Ice temp (K)                    | surface(1)%ice_temperature      
-real(kind=kind_real), allocatable :: snow_temperature(:)         !Snow temp (K)                   | surface(1)%snow_temperature     
+real(kind=kind_real), allocatable :: water_temperature(:)        !Water temp (K)                  | surface(1)%water_temperature
+real(kind=kind_real), allocatable :: land_temperature(:)         !Land temp (K)                   | surface(1)%land_temperature
+real(kind=kind_real), allocatable :: ice_temperature(:)          !Ice temp (K)                    | surface(1)%ice_temperature
+real(kind=kind_real), allocatable :: snow_temperature(:)         !Snow temp (K)                   | surface(1)%snow_temperature
 real(kind=kind_real), allocatable :: soil_moisture_content(:)    !Soil moisture content           | surface(1)%soil_moisture_content
-real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction  
-real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature     
-real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth           
+real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction
+real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature
+real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth
 logical,  parameter               :: use_compress = .true.       !Could be a fv3 namelist option?
 
 !For writing GeoVaLs foe debugging
@@ -114,7 +114,7 @@ jec = geom%jec
 npz = geom%npz
 
 ngrid = (iec-isc+1)*(jec-jsc+1)
-nlocs = locs%nlocs 
+nlocs = locs%nlocs
 
 
 !If no observations can early exit
@@ -136,15 +136,15 @@ if (present(traj)) then
   pbump => traj%bump
 
   if (.not. traj%lalloc) then
-  
+
      traj%ngrid = ngrid
-   
+
      if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
      if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
-  
+
      traj%t = state%t
      traj%q = state%q
- 
+
      pbump_alloc => traj%lalloc
      pbumpid => traj%bumpid
 
@@ -274,12 +274,12 @@ if (associated(state%slmsk)) then
       if (state%slmsk(i,j,1) == 0) water_coverage_m(i,j) = 1.0_kind_real
     enddo
   enddo
-  
+
   call crtm_ade_efr( geom,prsi,state%t,delp, &
                      water_coverage_m,state%q, &
                      state%ql,state%qi, &
                      ql_ade,qi_ade,ql_efr,qi_efr )
-  
+
   call crtm_mixratio(geom,state%q,qmr)
 
 endif
@@ -352,7 +352,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    allocate(qsat(isc:iec,jsc:jec,npz  ))    
+    allocate(qsat(isc:iec,jsc:jec,npz  ))
     call dqsat(geom,state%t,prs,qsat=qsat)
     call q_to_rh(geom,qsat,state%q,geovalm)
     geoval => geovalm
@@ -651,21 +651,21 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("no3an1")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = state%no3an1
     geoval => geovalm
 
   case ("no3an2")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = state%no3an2
     geoval => geovalm
 
   case ("no3an3")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = state%no3an3
@@ -772,9 +772,9 @@ end subroutine getvalues
 subroutine getvalues_tl(geom, inc, locs, vars, gom, traj)
 
 implicit none
-type(fv3jedi_geom),       intent(inout) :: geom 
-type(fv3jedi_increment),  intent(in)    :: inc 
-type(ufo_locs),           intent(in)    :: locs 
+type(fv3jedi_geom),       intent(inout) :: geom
+type(fv3jedi_increment),  intent(in)    :: inc
+type(ufo_locs),           intent(in)    :: locs
 type(oops_vars),          intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(inout)    :: traj
@@ -828,30 +828,30 @@ allocate(geovalm(isc:iec,jsc:jec,npz))
 ! Interpolate increment to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nv
- 
+
   geovalm = 0.0_kind_real
   geovale = 0.0_kind_real
 
   do_interp = .false.
 
   select case (trim(vars%fldnames(jvar)))
-   
+
   case ("eastward_wind")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = inc%ua
     geoval => geovalm
 
   case ("northward_wind")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = inc%va
     geoval => geovalm
 
   case ("air_temperature","temperature")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = inc%t
@@ -872,11 +872,11 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
-  
+
     nvl = inc%npz
     do_interp = .true.
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
-    geoval => geovalm  
+    geoval => geovalm
 
   case ("air_pressure")
 
@@ -986,21 +986,21 @@ do jvar = 1, vars%nv
    geoval => geovalm
 
   case ("no3an1")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = inc%no3an1
     geoval => geovalm
 
   case ("no3an2")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = inc%no3an2
     geoval => geovalm
 
   case ("no3an3")
-  
+
     nvl = npz
     do_interp = .true.
     geovalm = inc%no3an3
@@ -1062,9 +1062,9 @@ end subroutine getvalues_tl
 subroutine getvalues_ad(geom, inc, locs, vars, gom, traj)
 
 implicit none
-type(fv3jedi_geom),       intent(inout) :: geom 
-type(fv3jedi_increment),  intent(inout) :: inc 
-type(ufo_locs),           intent(in)    :: locs 
+type(fv3jedi_geom),       intent(inout) :: geom
+type(fv3jedi_increment),  intent(inout) :: inc
+type(ufo_locs),           intent(in)    :: locs
 type(oops_vars),          intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(inout)    :: traj
@@ -1127,21 +1127,21 @@ do jvar = 1, vars%nv
   do_interp = .false.
 
   select case (trim(vars%fldnames(jvar)))
-   
+
   case ("eastward_wind")
-  
+
     nvl = npz
     do_interp = .true.
     geoval => geovalm
 
   case ("northward_wind")
-  
+
     nvl = npz
     do_interp = .true.
     geoval => geovalm
 
   case ("air_temperature","temperature")
-  
+
     nvl = npz
     do_interp = .true.
     geoval => geovalm
@@ -1159,13 +1159,13 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
-  
+
     nvl = npz
     do_interp = .true.
     geoval => geovalm
 
   case ("air_pressure")
- 
+
   case ("sulf","so4")
 
    nvl = npz
@@ -1257,7 +1257,7 @@ do jvar = 1, vars%nv
    geoval => geovalm
 
   case ("no3an1","no3an2","no3an3")
-  
+
     nvl = npz
     do_interp = .true.
     geoval => geovalm
@@ -1293,9 +1293,9 @@ do jvar = 1, vars%nv
 
   !Part 3, back to increment variables
   !-----------------------------------
- 
+
   select case (trim(vars%fldnames(jvar)))
- 
+
   case ("eastward_wind")
 
     inc%ua = geovalm
@@ -1313,11 +1313,11 @@ do jvar = 1, vars%nv
     inc%q = geovalm
 
   case ("virtual_temperature")
-    
+
     call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
 
   case ("humidity_mixing_ratio")
-  
+
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
   case ("air_pressure")
@@ -1416,7 +1416,7 @@ subroutine allocate_geovals_vals(gom,jvar,gvlev,lastvar)
 
 implicit none
 type(ufo_geovals), intent(inout) :: gom     !GeoVaL
-integer,           intent(in)    :: jvar    !Current variable   
+integer,           intent(in)    :: jvar    !Current variable
 integer,           intent(in)    :: gvlev   !Number of model levels
 logical,           intent(in)    :: lastvar !Logical true if on last var to go into gom
 
@@ -1424,11 +1424,11 @@ if (.not.allocated(gom%geovals(jvar)%vals)) then
 
   ! Set number of levels, nobs already set from total locs
   gom%geovals(jvar)%nval = gvlev
-  
+
   ! Allocate %vals
   allocate(gom%geovals(jvar)%vals(gom%geovals(jvar)%nval,gom%geovals(jvar)%nlocs))
   gom%geovals(jvar)%vals = 0.0_kind_real
-  
+
   ! Set flag for internal data arrays having been set
   if (lastvar) gom%linit  = .true.
 
@@ -1450,7 +1450,7 @@ integer,            intent(in)    :: bumpid
 
 !Locals
 integer :: mod_num
-real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:) 
+real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:)
 real(kind=kind_real), allocatable :: area(:),vunit(:,:)
 logical, allocatable :: lmask(:,:)
 
@@ -1481,7 +1481,7 @@ allocate(mod_lat(mod_num))
 allocate(mod_lon(mod_num))
 mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
-                                        [mod_num] )  
+                                        [mod_num] )
 mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
                                         [mod_num] ) - 180.0_kind_real
@@ -1559,9 +1559,9 @@ endif
 if (.not.gom%linit) then
 !   call abor1_ftn(trim(cinfo)//" geovals initialization flag not set")
 endif
-if (.not. allocated(gom%geovals(jvar)%vals)) then  
+if (.not. allocated(gom%geovals(jvar)%vals)) then
    call abor1_ftn(trim(cinfo)//"vals not allocated")
-endif 
+endif
 
 end subroutine getvalues_checks
 

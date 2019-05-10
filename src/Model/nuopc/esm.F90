@@ -10,19 +10,19 @@ module ESM
     driver_routine_SS             => SetServices, &
     driver_label_SetModelServices => label_SetModelServices, &
     driver_label_SetRunSequence   => label_SetRunSequence
-  
+
   use ATM, only: atmSS => SetServices
   use OCN, only: ocnSS => SetServices
   use MED, only: medSS => SetServices
-  
+
   use NUOPC_Connector, only: cplSS => SetServices
-  
+
   implicit none
-  
+
   private
-  
+
   public SetServices
-  
+
   !-----------------------------------------------------------------------------
   contains
   !-----------------------------------------------------------------------------
@@ -30,16 +30,16 @@ module ESM
   subroutine SetServices(driver, rc)
     type(ESMF_GridComp)  :: driver
     integer, intent(out) :: rc
-    
+
     rc = ESMF_SUCCESS
-    
+
     ! NUOPC_Driver registers the generic methods
     call NUOPC_CompDerive(driver, driver_routine_SS, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-      
+
     ! attach specializing method(s)
     call NUOPC_CompSpecialize(driver, specLabel=driver_label_SetModelServices, &
       specRoutine=SetModelServices, rc=rc)
@@ -53,7 +53,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
+
   end subroutine
 
   !-----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ module ESM
   subroutine SetModelServices(driver, rc)
     type(ESMF_GridComp)  :: driver
     integer, intent(out) :: rc
-    
+
     ! local variables
     integer                       :: localrc
     type(ESMF_Time)               :: startTime
@@ -74,14 +74,14 @@ module ESM
     type(ESMF_CplComp)            :: connector
 
     rc = ESMF_SUCCESS
-    
+
     ! get the petCount
     call ESMF_GridCompGet(driver, petCount=petCount, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
+
     ! SetServices for ATM
     allocate(petList(petCount))
     do i=1, petCount
@@ -99,7 +99,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
+
     ! SetServices for OCN
     allocate(petList(petCount))
     do i=1, petCount
@@ -124,7 +124,7 @@ module ESM
     ! neither in size, nor the PETs that are included.
     ! In this example the petList for MED is set to some crazy combination,
     ! just to show that it can basically be set to anything:
-    !   -> first PET of each ATM and OCN and the two missed PETs 
+    !   -> first PET of each ATM and OCN and the two missed PETs
     !   -> kind of strange, but hey this is just a feature demo
     allocate(petList(petCount)) ! makes 4 total PETs in the petList
     do i=1, petCount
@@ -155,7 +155,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-      
+
     ! SetServices for ocn2med
     call NUOPC_DriverAddComp(driver, srcCompLabel="OCN", dstCompLabel="MED", &
       compSetServicesRoutine=cplSS, comp=connector, rc=rc)
@@ -168,7 +168,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-      
+
     ! SetServices for med2atm
     call NUOPC_DriverAddComp(driver, srcCompLabel="MED", dstCompLabel="ATM", &
       compSetServicesRoutine=cplSS, comp=connector, rc=rc)
@@ -181,7 +181,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-      
+
     ! SetServices for med2ocn
     call NUOPC_DriverAddComp(driver, srcCompLabel="MED", dstCompLabel="OCN", &
       compSetServicesRoutine=cplSS, comp=connector, rc=rc)
@@ -194,7 +194,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-      
+
     ! set the driver clock
     call ESMF_TimeIntervalSet(timeStep, m=15, rc=rc) ! 15 minute steps
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
@@ -220,13 +220,13 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
+
     call ESMF_GridCompSet(driver, clock=internalClock, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-    
+
   end subroutine
 
   !-----------------------------------------------------------------------------
@@ -234,12 +234,12 @@ module ESM
   subroutine SetRunSequence(driver, rc)
     type(ESMF_GridComp)  :: driver
     integer, intent(out) :: rc
-    
+
     ! local variables
     integer                       :: localrc
 
     rc = ESMF_SUCCESS
-   
+
 !ATM->MED
 !OCN->MED
 !MED
@@ -247,7 +247,7 @@ module ESM
 !MED->OCN
 !ATM
 !OCN
- 
+
     ! Replace the default RunSequence with a customized sequence, one time slot
     call NUOPC_DriverNewRunSequence(driver, slotCount=1, rc=rc)
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
@@ -293,7 +293,7 @@ module ESM
       line=__LINE__, &
       file=__FILE__)) &
       return  ! bail out
-      
+
   end subroutine
 
   !-----------------------------------------------------------------------------

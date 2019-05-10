@@ -1,7 +1,7 @@
 ! (C) Copyright 2017-2018 UCAR
-! 
+!
 ! This software is licensed under the terms of the Apache Licence Version 2.0
-! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 !> Fortran module handling geometry for the FV3 model
 
@@ -285,7 +285,7 @@ self%ptop = self%ak(1)
 
 !Done with the FV_Atm stucture here
 call deallocate_fv_atmos_type(FV_Atm(1))
-deallocate(FV_Atm)  
+deallocate(FV_Atm)
 deallocate(grids_on_this_pe)
 
 !Misc
