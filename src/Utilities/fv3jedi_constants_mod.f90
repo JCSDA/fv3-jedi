@@ -10,9 +10,9 @@ use fv3jedi_kinds_mod, only: kind_real
 implicit none
 private
 
-real(kind=kind_real), parameter, public :: rad2deg = 57.29577954572_kind_real
-real(kind=kind_real), parameter, public :: deg2rad =  0.01745329251_kind_real
-real(kind=8)        , parameter, public :: pi_r8   = 3.14159265358979323846
+real(kind=kind_real), parameter, public :: rad2deg = 57.2957779186820_kind_real
+real(kind=kind_real), parameter, public :: deg2rad = 0.01745329300562541_kind_real
+  real(kind=8)        , parameter, public :: pi_r8   = 3.14159265358979323846
 real(kind=kind_real), parameter, public :: pi      = real(pi_r8,kind_real)
 real(kind=kind_real), parameter, public :: grav    = 9.80665_kind_real
 real(kind=kind_real), parameter, public :: radius  = 6371.0e3_kind_real
