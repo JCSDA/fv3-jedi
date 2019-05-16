@@ -1,0 +1,40 @@
+nml_file: Data/fv3files/fmsmpp.nml
+resolution:
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+initial:
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+Covariance:
+  covariance: BUMP
+  date: '2018-04-14T21:00:00Z'
+  bump:
+    prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs
+    method: cor
+    strategy: specific_univariate
+    load_nicas: 1
+    mpicom: 2
+    verbosity: main
+output_B:
+  filetype: gfs
+  datapath_tile: Data/bump/
+  filename_core: dirac_gfs.B.fv_core.res.nc
+  filename_trcr: dirac_gfs.B.fv_tracer.res.nc
+  filename_sfcd: dirac_gfs.B.sfc_data.nc
+  filename_sfcw: dirac_gfs.B.fv_srf_wnd.res.nc
+  filename_cplr: dirac_gfs.B.coupler.res
+dirac:
+  ndir: 1
+  ixdir: [1]    #Xdir
+  iydir: [1]    #Ydir
+  ildir: [50]   #Level
+  itdir: [1]    #Tile
+  ifdir: ['ua'] #Field

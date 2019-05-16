@@ -38,6 +38,7 @@ set( FV3JEDI_LINKER_LANGUAGE CXX )
 ################################################################################
 
 include( fv3jedi_compiler_flags )
+include( fv3jedi_extra_macros )
 
 ################################################################################
 # Dependencies

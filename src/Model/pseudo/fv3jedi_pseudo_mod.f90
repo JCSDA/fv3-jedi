@@ -54,7 +54,7 @@ type(fv3jedi_geom), intent(in)    :: geom
 !File types, paths and names
 self%pseudo_type = config_get_string(c_conf,len(self%pseudo_type),"pseudo_type")
 self%pseudo_path = config_get_string(c_conf,len(self%pseudo_path),"pseudo_path")
-self%pseudo_file = config_get_string(c_conf,len(self%pseudo_file),"pseudo_file")
+if (trim(self%pseudo_type) == "geos") self%pseudo_file = config_get_string(c_conf,len(self%pseudo_file),"pseudo_file")
 
 end subroutine pseudo_create
 
@@ -116,7 +116,7 @@ if (trim(self%pseudo_type) == "gfs") then
   gfs%filename_core = yyyy//mm//dd//"."//hh//mn//ss//'.fv_core.res.nc'
   gfs%filename_trcr = yyyy//mm//dd//"."//hh//mn//ss//'.fv_tracer.res.nc'
   gfs%filename_sfcd = yyyy//mm//dd//"."//hh//mn//ss//'.sfc_data.nc'
-  gfs%filename_sfcw = yyyy//mm//dd//"."//hh//mn//ss//'.srf_wnd.nc'
+  gfs%filename_sfcw = yyyy//mm//dd//"."//hh//mn//ss//'.fv_srf_wnd.res.nc'
   gfs%filename_cplr = yyyy//mm//dd//"."//hh//mn//ss//'.coupler.res'
   gfs%datapath_sp = 'null'
   gfs%datapath_sp = 'null'

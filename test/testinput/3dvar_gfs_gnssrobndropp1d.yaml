@@ -5,7 +5,7 @@ cost_function:
     Background:
       state:
       - filetype: gfs
-        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+        datapath_tile: Data/inputs/gfs_c12/bkg/
         filename_core: 20180415.000000.fv_core.res.nc
         filename_trcr: 20180415.000000.fv_tracer.res.nc
         filename_sfcd: 20180415.000000.sfc_data.nc
@@ -54,7 +54,7 @@ cost_function:
   window_length: PT6H
   varchange: Analysis2Model
   filetype: 'gfs'
-  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
@@ -67,7 +67,7 @@ minimizer:
   algorithm: DRIPCG
 model:
   name: 'FV3'
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT6H
   readtraj: 0
@@ -86,9 +86,9 @@ output:
   first: PT0H
   frequency: PT1H
 resolution:
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 variational:
   iteration:
   - diagnostics:
@@ -98,7 +98,7 @@ variational:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
-      nml_file: Data/fv3files/input_gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c12.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT6H
       lm_do_dyn: 1
@@ -107,7 +107,7 @@ variational:
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
-        nml_file: Data/fv3files/input_gfs_c48.nml
+        nml_file: Data/fv3files/input_gfs_c12.nml
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT6H
         readtraj: 0
@@ -117,16 +117,16 @@ variational:
         variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
-      nml_file: Data/fv3files/input_gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c12.nml
       trc_file: Data/fv3files/field_table
-      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
-      nml_file: Data/fv3files/input_gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c12.nml
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT6H
       lm_do_dyn: 1
@@ -135,7 +135,7 @@ variational:
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
-        nml_file: Data/fv3files/input_gfs_c48.nml
+        nml_file: Data/fv3files/input_gfs_c12.nml
         nml_file_pert: Data/fv3files/inputpert_4dvar.nml
         tstep: PT6H
         readtraj: 0
@@ -145,7 +145,7 @@ variational:
         variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
-      nml_file: Data/fv3files/input_gfs_c48.nml
+      nml_file: Data/fv3files/input_gfs_c12.nml
       trc_file: Data/fv3files/field_table
-      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
     test: 'on'

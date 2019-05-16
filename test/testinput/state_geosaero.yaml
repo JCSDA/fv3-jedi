@@ -1,9 +1,9 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 Geometry:
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 StateTest:
   Locations:
     Rdist: '1'
@@ -17,25 +17,24 @@ StateTest:
     random_seed: '560921'
   StateFile:
     filetype: geos
-    filename: Data/INPUTS/GEOS_c48/GEOSaero.bkg.c48.eta.20180415_00z.nc4
+    filename: Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
     variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
                 "SS001", "SS002", "SS003", "SS004", "SS005",
                 "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
                 "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
   StateGenerate:
     filetype: geos
-    filename: Data/INPUTS/GEOS_c48/GEOSaero.bkg.c48.eta.20180415_00z.nc4
+    filename: Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
     variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
                 "SS001", "SS002", "SS003", "SS004", "SS005",
                 "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
                 "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
   InterpTest:
-    variables:
-    - DU001
+    variables: ["DU001"]
   date: '2018-04-15T00:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '6.176009842484941e-09'
-  norm-gen: '6.176009842484941e-09'
+  norm-file: '5.819017202953366e-09'
+  norm-gen: '5.819017202953366e-09'
   tolerance: 1.0e-8
   values:
   - 2806.686940093405

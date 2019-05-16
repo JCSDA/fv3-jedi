@@ -46,12 +46,12 @@ LinearVariableChangeTests:
   outputVariables:
     variables: ["ua","va","t","ps","q","qi","ql","o3"]
 Geometry:
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 State:
   filetype: gfs
-  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc

@@ -1,27 +1,25 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 Geometry:
-  nml_file: Data/fv3files/input_geos_c24.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 Model:
   name: 'PSEUDO'
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
-  tstep: PT15M
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  tstep: PT1H
   pseudo_type: 'geos'
-  pseudo_path: 'Data/INPUTS/GEOS_c24/traj/'
-  pseudo_file: 'GEOS.traj.c24.eta.'
+  pseudo_path: 'Data/inputs/geos_c12/'
+  pseudo_file: 'geos.bkg.'
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
-  fclength: PT6H
-  finalnorm: '706.51355876828325'
+  fclength: PT2H
+  finalnorm: '595.84034406483318'
   tolerance: '1.0e-4'
 State:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c24.eta.20180414_21z.nc4
+  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
   variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
               "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]

@@ -1,6 +1,6 @@
 test_framework_runtime_config: --log_level=test_suite
 nml_file: Data/fv3files/fmsmpp.nml
 Geometry:
-  nml_file: Data/fv3files/input_geos_c48.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GEOS_akbk/akbk72.nc4
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4

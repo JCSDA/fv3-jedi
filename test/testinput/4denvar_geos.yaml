@@ -1,0 +1,272 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: geos
+        filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+        variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+      - filetype: geos
+        filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+        variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+      - filetype: geos
+        filename: Data/inputs/geos_c12/geos.bkg.20180415_030000z.nc4
+        variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+    Covariance:
+      covariance: ensemble
+      ensemble:
+      localization:
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
+          method: loc
+          strategy: common
+          load_nicas: 1
+          mpicom: 2
+          verbosity: main
+        localization: BUMP
+        timeslots: ['2018-04-14T21:00:00Z','2018-04-15T00:00:00Z','2018-04-15T03:00:00Z']
+        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      members:
+      - state:
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem001.20180415_030000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      - state:
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem002.20180415_030000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      - state:
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem003.20180415_030000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      - state:
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem004.20180415_030000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      - state:
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        - filetype: geos
+          filename: Data/inputs/geos_c12/geos.mem005.20180415_030000z.nc4
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#      - state:
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem006.20180415_030000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#      - state:
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem007.20180415_030000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#      - state:
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem008.20180415_030000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#      - state:
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem009.20180415_030000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#      - state:
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+#        - filetype: geos
+#          filename: Data/inputs/geos_c12/geos.mem010.20180415_030000z.nc4
+#          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aircraft
+        ObsDataIn:
+          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/aircraft_4denvar-geos_2018041500_m.nc4
+      ObsOperator:
+        name: Aircraft
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+        threshold: 6.0
+#      - Filter: BlackList
+#        where:
+#        - variable: Land_Fraction@GeoVaLs
+#          maxvalue: 0.0
+    - ObsSpace:
+        name: Radiosonde
+        ObsDataIn:
+          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sondes_4denvar-geos_2018041500_m.nc4
+      ObsOperator:
+        name: Radiosonde
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/hofx/gnssro_4denvar-geos_2018041500_s.nc4
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Thinning
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        where:
+        - variable: altitude
+          minvalue: 0
+          maxvalue: 30000
+        - variable: earth_radius_of_curvature
+          minvalue: 6250000
+          maxvalue: 6450000
+        - variable: geoid_height_above_reference_ellipsoid
+          minvalue: -200
+          maxvalue: 200
+      - Filter: Background Check
+        variables:
+        - refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        variable: refractivity
+        errmodel: GSI
+  cost_type: 4D-Ens-Var
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  window_sub: PT3H
+  varchange: Analysis2Model
+  filetype: 'geos'
+  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'PSEUDO'
+  pseudo_type: 'geos'
+  pseudo_path: 'Data/inputs/geos_c12/'
+  pseudo_file: 'geos.bkg.'
+  RunStageCheck: 1
+  tstep: PT1H
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+output:
+  filetype: geos
+  datapath: Data/analysis/
+  filename: 4denvar-geos.
+  first: PT0H
+  frequency: PT3H
+resolution:
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+variational:
+  iteration:
+  - ninner: '10'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT1H
+      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      trajectory:
+        name: 'FV3'
+        tstep: PT1H
+        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]

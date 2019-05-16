@@ -5,60 +5,96 @@ cost_function:
     Background:
       state:
       - filetype: gfs
-        datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+        datapath_tile: Data/inputs/gfs_c12/bkg/
         filename_core: 20180414.210000.fv_core.res.nc
         filename_trcr: 20180414.210000.fv_tracer.res.nc
         filename_sfcd: 20180414.210000.sfc_data.nc
         filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
         filename_cplr: 20180414.210000.coupler.res
-        variables: ["u","v","ua","va","T","DELP","ps","sphum","ice_wat","liq_wat","o3mr"]
+        variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
     Covariance:
       covariance: hybrid
-      static_weight: '0.7'
-      ensemble_weight: '0.3'
+      static_weight: '0.1'
+      ensemble_weight: '0.9'
       static:
         date: '2018-04-14T21:00:00Z'
         covariance: BUMP
         bump:
-          prefix: fv3jedi_bumpparameters_cor_gfs
+          prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs
           method: cor
           strategy: specific_univariate
           load_nicas: 1
           mpicom: 2
+          verbosity: main
       ensemble:
         date: '2018-04-14T21:00:00Z'
         variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
         members:
         - filetype: gfs
-          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem002/RESTART/
+          datapath_tile: Data/inputs/gfs_c12/mem001/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem003/RESTART/
+          datapath_tile: Data/inputs/gfs_c12/mem002/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem004/RESTART/
+          datapath_tile: Data/inputs/gfs_c12/mem003/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem005/RESTART/
+          datapath_tile: Data/inputs/gfs_c12/mem004/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem006/RESTART/
+          datapath_tile: Data/inputs/gfs_c12/mem005/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem006/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem007/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem008/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem009/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem010/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
@@ -69,19 +105,20 @@ cost_function:
           variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
           localization: BUMP
           bump:
-            prefix: fv3jedi_bumpparameters_loc_gfs
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs
             method: loc
             strategy: common
             load_nicas: 1
             mpicom: 2
+            verbosity: main
   Jo:
     ObsTypes:
     - ObsSpace:
         name: Aircraft
         ObsDataIn:
-          obsfile: Data/aircraft_obs_2018041500_m.nc4
+          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/aircraft_hyb-fgat_gfs_2018041500_m.nc4
+          obsfile: Data/hofx/aircraft_hyb-fgat-gfs_2018041500_m.nc4
       ObsOperator:
         name: Aircraft
         variables:
@@ -107,9 +144,9 @@ cost_function:
     - ObsSpace:
         name: Radiosonde
         ObsDataIn:
-          obsfile: Data/sondes_obs_2018041500_m.nc4
+          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/sondes_hyb-fgat_gfs_2018041500_m.nc4
+          obsfile: Data/hofx/sondes_hyb-fgat-gfs_2018041500_m.nc4
       ObsOperator:
         name: Radiosonde
         variables:
@@ -131,9 +168,9 @@ cost_function:
     - ObsSpace:
         name: GnssroRef
         ObsDataIn:
-         obsfile: Data/gnssro_obs_2018041500_s.nc4
+         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
-         obsfile: Data/gnssro_hyb-fgat_gfs_2018041500_s.nc4
+         obsfile: Data/hofx/gnssro_hyb-fgat-gfs_2018041500_s.nc4
       ObsOperator:
         name: GnssroRef
         ObsOptions:
@@ -166,18 +203,18 @@ cost_function:
     - ObsSpace:
         name: AMSUA-NOAA19
         ObsDataIn:
-          obsfile: Data/amsua_n19_obs_2018041500_m.nc4
+          obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/amsua_n19_hyb-fgat_gfs_2018041500_m.nc4
+          obsfile: Data/hofx/amsua_n19_hyb-fgat-gfs_2018041500_m.nc4
       ObsOperator:
         name: CRTM
-        channels: 1-6,9-12,13,15
+        channels: 1-15
         n_Absorbers: 3
         n_Clouds: 2
         n_Aerosols: 0
         Sensor_ID: amsua_n19
         EndianType: little_endian
-        CoefficientPath: Data/
+        CoefficientPath: Data/crtm/
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -239,73 +276,59 @@ cost_function:
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model
-  filetype: 'gfs'
-  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
 final:
   diagnostics:
     departures: oman
 minimizer:
   algorithm: DRIPCG
 model:
-  name: 'FV3'
-  nml_file: Data/fv3files/input_gfs_c48.nml
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-  tstep: PT15M
-  readtraj: 0
-  lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
+  name: 'PSEUDO'
+  pseudo_type: 'gfs'
+  pseudo_path: 'Data/inputs/gfs_c12/bkg/'
+  RunStageCheck: 1
+  tstep: PT1H
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
               "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
               "u_srf","v_srf","f10m"]
 output:
   filetype: gfs
-  datapath_tile: Data/
-  filename_core: 3dfgat_gfs.fv_core.res.nc
-  filename_trcr: 3dfgat_gfs.fv_tracer.res.nc
-  filename_sfcd: 3dfgat_gfs.sfc_data.nc
-  filename_sfcw: 3dfgat_gfs.fv_srf_wnd.res.nc
-  filename_cplr: 3dfgat_gfs.coupler.res
+  datapath_tile: Data/analysis/
+  filename_core: hyb-fgat-gfs.fv_core.res.nc
+  filename_trcr: hyb-fgat-gfs.fv_tracer.res.nc
+  filename_sfcd: hyb-fgat-gfs.sfc_data.nc
+  filename_sfcw: hyb-fgat-gfs.fv_srf_wnd.res.nc
+  filename_cplr: hyb-fgat-gfs.coupler.res
   first: PT0H
   frequency: PT1H
 resolution:
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 variational:
   iteration:
-  - diagnostics:
-      departures: ombg
+  - ninner: '10'
     gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
     linearmodel:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
-      nml_file: Data/fv3files/input_gfs_c48.nml
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT15M
-      lm_do_dyn: 1
-      lm_do_trb: 0
-      lm_do_mst: 0
+      tstep: PT1H
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
       trajectory:
         name: 'FV3'
-        nml_file: Data/fv3files/input_gfs_c48.nml
-        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT15M
-        readtraj: 0
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
+        tstep: PT1H
         variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-    ninner: '10'
-    resolution:
-      nml_file: Data/fv3files/input_gfs_c48.nml
-      trc_file: Data/fv3files/field_table
-      pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
-    test: 'on'

@@ -8,13 +8,13 @@ Covariance:
   standard_deviation: '0.8'
   vertical_correlation: '0.2'
 Geometry:
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/20180415.000000.fv_core.res.nc
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 LinearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
@@ -25,7 +25,7 @@ LinearModel:
   variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
   trajectory:
     name: 'FV3'
-    nml_file: Data/fv3files/input_gfs_c48.nml
+    nml_file: Data/fv3files/input_gfs_c12.nml
     trc_file: Data/fv3files/field_table
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     tstep: PT15M
@@ -42,7 +42,7 @@ LinearModelTest:
   toleranceTL: '1.0'
 Model:
   name: 'FV3'
-  nml_file: Data/fv3files/input_gfs_c48.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
@@ -54,7 +54,7 @@ Model:
 ModelBias: null
 State:
   filetype: gfs
-  datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+  datapath_tile: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
@@ -64,7 +64,7 @@ Variables:
   variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
 varchange: Analysis2Model
 filetype: 'gfs'
-datapath_tile: Data/INPUTS/GFS_c48/ENSEMBLE/mem001/RESTART/
+datapath_tile: Data/inputs/gfs_c12/bkg/
 filename_core: 20180415.000000.fv_core.res.nc
 filename_trcr: 20180415.000000.fv_tracer.res.nc
 filename_sfcd: 20180415.000000.sfc_data.nc

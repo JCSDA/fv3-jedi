@@ -1,0 +1,222 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: geos
+        filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+        variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr"]
+    Covariance:
+      covariance: hybrid
+      static_weight: '0.1'
+      ensemble_weight: '0.9'
+      static:
+        date: '2018-04-14T21:00:00Z'
+        covariance: BUMP
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
+          method: cor
+          strategy: specific_univariate
+          load_nicas: 1
+          mpicom: 2
+          verbosity: main
+      ensemble:
+        date: '2018-04-14T21:00:00Z'
+        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        members:
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
+            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        localization:
+          timeslots: ['2018-04-14T21:00:00Z']
+          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          localization: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aircraft
+        ObsDataIn:
+          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/aircraft_hyb-fgat-geos_2018041500_m.nc4
+      ObsOperator:
+        name: Aircraft
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+        threshold: 6.0
+#      - Filter: BlackList
+#        where:
+#        - variable: Land_Fraction@GeoVaLs
+#          maxvalue: 0.0
+    - ObsSpace:
+        name: Radiosonde
+        ObsDataIn:
+          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sondes_hyb-fgat-geos_2018041500_m.nc4
+      ObsOperator:
+        name: Radiosonde
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        variables:
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/hofx/gnssro_hyb-fgat-geos_2018041500_s.nc4
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Thinning
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        where:
+        - variable: altitude
+          minvalue: 0
+          maxvalue: 30000
+        - variable: earth_radius_of_curvature
+          minvalue: 6250000
+          maxvalue: 6450000
+        - variable: geoid_height_above_reference_ellipsoid
+          minvalue: -200
+          maxvalue: 200
+      - Filter: Background Check
+        variables:
+        - refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        variable: refractivity
+        errmodel: GSI
+  cost_type: 4D-Var
+  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: 'geos'
+  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'PSEUDO'
+  pseudo_type: 'geos'
+  pseudo_path: 'Data/inputs/geos_c12/'
+  pseudo_file: 'geos.bkg.'
+  RunStageCheck: 1
+  tstep: PT1H
+  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+output:
+  filetype: geos
+  datapath: Data/analysis/
+  filename: hyb-fgat-geos.
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+variational:
+  iteration:
+  - ninner: '3'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Analysis2Model'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT1H
+      variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr"]
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      trajectory:
+        name: 'PSEUDO'
+        nml_file: Data/fv3files/input_geos_c12.nml
+        trc_file: Data/fv3files/field_table
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT1H
+        variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr"]
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0

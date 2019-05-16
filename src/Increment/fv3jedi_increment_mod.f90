@@ -965,40 +965,34 @@ type(fv3jedi_increment), intent(inout) :: self
 type(c_ptr),             intent(in)    :: c_conf
 type(fv3jedi_geom),      intent(in)    :: geom
 
-integer :: ndir,idir,ildir,itiledir,var
-integer,allocatable :: ixdir(:),iydir(:)
-character(len=3) :: idirchar
-character(len=32) :: ifdir
+integer :: ndir,idir,var
+
+integer, allocatable :: ixdir(:),iydir(:),ildir(:),itdir(:)
+character(len=32), allocatable :: ifdir(:)
+
 logical :: found
 
 ! Get Diracs positions
 ndir = config_get_int(c_conf,"ndir")
+
 allocate(ixdir(ndir))
 allocate(iydir(ndir))
+allocate(ildir(ndir))
+allocate(itdir(ndir))
 
-do idir=1,ndir
-   write(idirchar,'(i3)') idir
-   ixdir(idir) = config_get_int(c_conf,"ixdir("//trim(adjustl(idirchar))//")")
-   iydir(idir) = config_get_int(c_conf,"iydir("//trim(adjustl(idirchar))//")")
-end do
-ildir = config_get_int(c_conf,"ildir")
-ifdir = config_get_string(c_conf,len(ifdir),"ifdir")
-itiledir = config_get_int(c_conf,"itiledir")
+if ((config_get_data_dimension(c_conf,'ixdir')/=ndir) .or. &
+    (config_get_data_dimension(c_conf,'iydir')/=ndir) .or. &
+    (config_get_data_dimension(c_conf,'ildir')/=ndir) .or. &
+    (config_get_data_dimension(c_conf,'itdir')/=ndir) .or. &
+    (config_get_data_dimension(c_conf,'ifdir')/=ndir)) &
+  call abor1_ftn("fv3jedi_increment_mod.diracL=: dimension inconsistency")
 
-! Check
-if (ndir<1) call abor1_ftn("fv3jedi_increment_mod.dirac: non-positive ndir")
-if (any(ixdir<1).or.any(ixdir>self%npx)) then
-   call abor1_ftn("fv3jedi_increment_mod.dirac: invalid ixdir")
-endif
-if (any(iydir<1).or.any(iydir>geom%size_cubic_grid)) then
-   call abor1_ftn("fv3jedi_increment_mod.dirac: invalid iydir")
-endif
-if ((ildir<1).or.(ildir>self%npz)) then
-   call abor1_ftn("fv3jedi_increment_mod.dirac invalid ildir")
-endif
-if ((itiledir<1).or.(itiledir>6)) then
-   call abor1_ftn("fv3jedi_increment_mod.dirac: invalid itiledir")
-endif
+call config_get_int_vector(c_conf,'ixdir',ixdir)
+call config_get_int_vector(c_conf,'iydir',iydir)
+call config_get_int_vector(c_conf,'ildir',ildir)
+call config_get_int_vector(c_conf,'itdir',itdir)
+
+ifdir = config_get_string_vector(c_conf,len(ifdir(1)),'ifdir')
 
 ! Setup Diracs
 call zeros(self)
@@ -1006,22 +1000,26 @@ call zeros(self)
 ! only u, v, T, ps and tracers allowed
 do idir=1,ndir
 
-   ! is specified grid point, tile number on this processor
-   if (geom%ntile == itiledir .and. &
-       ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
-       iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
-       ! If so, perturb desired increment and level
-       found = .false.
-       do var = 1,self%nf
-         if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir)) then
-           found = .true.
-           self%fields(var)%array(ixdir(idir),iydir(idir),ildir) = 1.0
-         endif
-       enddo
-       if (.not.found) call abor1_ftn("fv3jedi_increment_mod.dirac:: field "&
-                                       //trim(ifdir)//" not found")
-   endif
-end do
+  found = .false.
+
+  ! is specified grid point, tile number on this processor
+  if (geom%ntile == itdir(idir) .and. &
+    ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
+    iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
+
+    ! If so, perturb desired increment and level
+    do var = 1,self%nf
+      if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir(idir))) then
+        found = .true.
+        self%fields(var)%array(ixdir(idir),iydir(idir),ildir) = 1.0
+      endif
+    enddo
+
+    if (.not.found) call abor1_ftn("fv3jedi_increment_mod.dirac: dirac not found")
+
+  endif
+
+enddo
 
 end subroutine dirac
 
@@ -1056,7 +1054,7 @@ ug%grid(1)%nl0 = self%npz
 ug%grid(1)%nv = self%nf
 
 ! Set number of timeslots
-ug%grid(1)%nts = 1
+ug%grid(1)%nts = ug%nts
 
 end subroutine ug_size
 

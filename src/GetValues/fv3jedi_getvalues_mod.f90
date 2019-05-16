@@ -1298,19 +1298,19 @@ do jvar = 1, vars%nv
 
   case ("eastward_wind")
 
-    inc%ua = geovalm
+    inc%ua = inc%ua + geovalm
 
   case ("northward_wind")
 
-    inc%va = geovalm
+    inc%va = inc%va + geovalm
 
   case ("air_temperature","temperature")
 
-    inc%t = geovalm
+    inc%t = inc%t + geovalm
 
   case ("specific_humidity")
 
-    inc%q = geovalm
+    inc%q = inc%q + geovalm
 
   case ("virtual_temperature")
 
@@ -1324,75 +1324,75 @@ do jvar = 1, vars%nv
 
   case ("sulf","so4")
 
-   inc%so4 = geovalm
+   inc%so4 = inc%so4 + geovalm
 
   case ("bc1","bcphobic")
 
-   inc%bcphobic = geovalm
+   inc%bcphobic = inc%bcphobic + geovalm
 
   case ("bc2","bcphilic")
 
-   inc%bcphilic = geovalm
+   inc%bcphilic = inc%bcphilic + geovalm
 
   case ("oc1","ocphobic")
 
-   inc%ocphobic = geovalm
+   inc%ocphobic = inc%ocphobic + geovalm
 
   case ("oc2","ocphilic")
 
-   inc%ocphilic = geovalm
+   inc%ocphilic = inc%ocphilic + geovalm
 
   case ("dust1","du001")
 
-   inc%du001 = geovalm
+   inc%du001 = inc%du001 + geovalm
 
   case ("dust2","du002")
 
-   inc%du002 = geovalm
+   inc%du002 = inc%du002 + geovalm
 
   case ("dust3","du003")
 
-   inc%du003 = geovalm
+   inc%du003 = inc%du003 + geovalm
 
   case ("dust4","du004")
 
-   inc%du004 = geovalm
+   inc%du004 = inc%du004 + geovalm
 
   case ("dust5","du005")
 
-   inc%du005 = geovalm
+   inc%du005 = inc%du005 + geovalm
 
   case ("seas1","ss001")
 
-   inc%ss001 = geovalm
+   inc%ss001 = inc%ss001 + geovalm
 
   case ("seas2","ss002")
 
-   inc%ss002 = geovalm
+   inc%ss002 = inc%ss002 + geovalm
 
   case ("seas3","ss003")
 
-   inc%ss003 = geovalm
+   inc%ss003 = inc%ss003 + geovalm
 
   case ("seas4","ss004")
 
-   inc%ss004 = geovalm
+   inc%ss004 = inc%ss004 + geovalm
 
   case ("seas5","ss005")
 
-    inc%ss005 = geovalm
+    inc%ss005 = inc%ss005 + geovalm
 
   case ("no3an1")
 
-    inc%no3an1 = geovalm
+    inc%no3an1 = inc%no3an1 + geovalm
 
   case ("no3an2")
 
-    inc%no3an2 = geovalm
+    inc%no3an2 = inc%no3an2 + geovalm
 
   case ("no3an3")
 
-    inc%no3an3 = geovalm
+    inc%no3an3 = inc%no3an3 + geovalm
 
   case default
 
