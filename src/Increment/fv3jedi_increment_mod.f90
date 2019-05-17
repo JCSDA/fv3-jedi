@@ -14,7 +14,7 @@ use random_mod
 use fckit_mpi_module
 use unstructured_grid_mod
 
-use fv3jedi_field_mod,           only: fv3jedi_field, get_field, fields_rms, fields_print, fields_gpnorm
+use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -418,143 +418,14 @@ implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_increment), intent(in)    :: rhs
 
-logical :: found
-integer :: self_var, rhs_var
+integer :: var
 
-self%isc            = rhs%isc
-self%iec            = rhs%iec
-self%jsc            = rhs%jsc
-self%jec            = rhs%jec
-self%isd            = rhs%isd
-self%ied            = rhs%ied
-self%jsd            = rhs%jsd
-self%jed            = rhs%jed
-self%npx            = rhs%npx
-self%npy            = rhs%npy
-self%npz            = rhs%npz
-self%ntiles         = rhs%ntiles
-self%ntile          = rhs%ntile
-self%hydrostatic    = rhs%hydrostatic
-self%tladphystrj    = rhs%tladphystrj
+do var = 1, self%nf
+  self%fields(var) = rhs%fields(var)
+enddo
+
 self%calendar_type  = rhs%calendar_type
 self%date_init      = rhs%date_init
-
-!Copy the individual fields
-if (.not.allocated(self%fields)) then
-
-  !Direct copy of one increment to another
-  self%nf = rhs%nf
-  allocate(self%fields(self%nf))
-
-  do self_var = 1, self%nf
-
-    !Field copy
-    self%fields(self_var) = rhs%fields(self_var)
-
-  enddo
-
-else
-
-  !Increment copy, potentialy with differnt fields
-  do self_var = 1, self%nf
-    found = .false.
-    do rhs_var = 1, rhs%nf
-      if (trim(self%fields(self_var)%fv3jedi_name) == trim(rhs%fields(rhs_var)%fv3jedi_name)) then
-        self%fields(self_var) = rhs%fields(rhs_var)
-        found = .true.
-        exit
-      endif
-    enddo
-    if (.not.found) call abor1_ftn("fv3jedi_increment_mod.copy: Field "//&
-                    trim(self%fields(self_var)%fv3jedi_name)//" not found in increment being copied from." )
-
-  enddo
-
-endif
-
-!Set pointers
-do self_var = 1, self%nf
-  select case (trim(self%fields(self_var)%fv3jedi_name))
-    case("u","ud")
-      call self%fields(self_var)%array_pointer(self%ud)
-    case("v","vd")
-      call self%fields(self_var)%array_pointer(self%vd)
-    case("ua")
-      call self%fields(self_var)%array_pointer(self%ua)
-    case("va")
-      call self%fields(self_var)%array_pointer(self%va)
-    case("t","T")
-      call self%fields(self_var)%array_pointer(self%t)
-    case("delp","DELP")
-      call self%fields(self_var)%array_pointer(self%delp)
-    case("ps")
-      call self%fields(self_var)%array_pointer(self%ps)
-    case("w","W")
-      call self%fields(self_var)%array_pointer(self%w)
-    case("delz","DZ")
-      call self%fields(self_var)%array_pointer(self%delz)
-    case("q","sphum")
-      call self%fields(self_var)%array_pointer(self%q)
-    case("qi","ice_wat")
-      call self%fields(self_var)%array_pointer(self%qi)
-    case("ql","liq_wat")
-      call self%fields(self_var)%array_pointer(self%ql)
-    case("qs","snowwat")
-      call self%fields(self_var)%array_pointer(self%qs)
-    case("qr","rainwat")
-      call self%fields(self_var)%array_pointer(self%qr)
-    case("o3","o3mr")
-      call self%fields(self_var)%array_pointer(self%o3)
-    case("psi")
-      call self%fields(self_var)%array_pointer(self%psi)
-    case("chi")
-      call self%fields(self_var)%array_pointer(self%chi)
-    case("tv")
-      call self%fields(self_var)%array_pointer(self%tv)
-    case("rh")
-      call self%fields(self_var)%array_pointer(self%rh)
-    !Aerosols
-    case("du001","DU001","dust1")
-      call self%fields(self_var)%array_pointer(self%du001)
-    case("du002","DU002","dust2")
-      call self%fields(self_var)%array_pointer(self%du002)
-    case("du003","DU003","dust3")
-      call self%fields(self_var)%array_pointer(self%du003)
-    case("du004","DU004","dust4")
-      call self%fields(self_var)%array_pointer(self%du004)
-    case("du005","DU005","dust5")
-      call self%fields(self_var)%array_pointer(self%du005)
-    case("ss001","SS001","seas1")
-      call self%fields(self_var)%array_pointer(self%ss001)
-    case("ss002","SS002","seas2")
-      call self%fields(self_var)%array_pointer(self%ss002)
-    case("ss003","SS003","seas3")
-      call self%fields(self_var)%array_pointer(self%ss003)
-    case("ss004","SS004","seas4")
-      call self%fields(self_var)%array_pointer(self%ss004)
-    case("ss005","SS005","seas5")
-      call self%fields(self_var)%array_pointer(self%ss005)
-    case("no3an1","NO3AN1")
-      call self%fields(self_var)%array_pointer(self%no3an1)
-    case("no3an2","NO3AN2")
-      call self%fields(self_var)%array_pointer(self%no3an2)
-    case("no3an3","NO3AN3")
-      call self%fields(self_var)%array_pointer(self%no3an3)
-    case("so4","SO4","sulf")
-      call self%fields(self_var)%array_pointer(self%so4)
-    case("bcphobic","BCPHOBIC","bc1")
-      call self%fields(self_var)%array_pointer(self%bcphobic)
-    case("bcphilic","BCPHILIC","bc2")
-      call self%fields(self_var)%array_pointer(self%bcphilic)
-    case("ocphobic","OCPHOBIC","oc1")
-      call self%fields(self_var)%array_pointer(self%ocphobic)
-    case("ocphilic","OCPHILIC","oc2")
-      call self%fields(self_var)%array_pointer(self%ocphilic)
-    case default
-      !Not found
-      call abor1_ftn("fv3jedi_increment_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
-  end select
-enddo
 
 end subroutine copy
 
@@ -568,7 +439,7 @@ type(fv3jedi_increment), intent(in)    :: rhs
 
 integer :: var
 
-call checksame(self,rhs)
+call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.self_add")
 
 do var = 1,self%nf
   self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
@@ -586,7 +457,7 @@ type(fv3jedi_increment), intent(in)    :: rhs
 
 integer :: var
 
-call checksame(self,rhs)
+call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.self_schur")
 
 do var = 1,self%nf
   self%fields(var)%array = self%fields(var)%array * rhs%fields(var)%array
@@ -604,7 +475,7 @@ type(fv3jedi_increment), intent(in)    :: rhs
 
 integer :: var
 
-call checksame(self,rhs)
+call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.self_sub")
 
 do var = 1,self%nf
   self%fields(var)%array = self%fields(var)%array - rhs%fields(var)%array
@@ -639,7 +510,7 @@ type(fv3jedi_increment), intent(in)    :: rhs
 
 integer :: var
 
-call checksame(self,rhs)
+call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.axpy_inc")
 
 do var = 1,self%nf
   self%fields(var)%array = self%fields(var)%array + zz * rhs%fields(var)%array
@@ -657,19 +528,11 @@ real(kind=kind_real),    intent(in)    :: zz
 type(fv3jedi_state),     intent(in)    :: rhs
 
 integer :: var
-type(fv3jedi_field), pointer :: field_pointer
+
+call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.axpy_state")
 
 do var = 1,self%nf
-
-  !Get pointer to equivalent state
-  call get_field(rhs%nf,rhs%fields,self%fields(var)%fv3jedi_name,field_pointer)
-
-  !inc = inc + zz state
-  self%fields(var)%array = self%fields(var)%array + zz * field_pointer%array
-
-  !Clear pointer
-  nullify(field_pointer)
-
+  self%fields(var)%array = self%fields(var)%array + zz * rhs%fields(var)%array
 enddo
 
 end subroutine axpy_state
@@ -687,7 +550,7 @@ real(kind=kind_real) :: zp
 integer :: i,j,k
 integer :: var
 
-call checksame(self,other)
+call checksame(self%fields,other%fields,"fv3jedi_increment_mod.dot_prod")
 
 zp=0.0_kind_real
 do var = 1,self%nf
@@ -831,22 +694,12 @@ type(fv3jedi_geom),      intent(in)    :: geom
 type(fv3jedi_increment), intent(in)    :: rhs
 type(fv3jedi_geom),      intent(in)    :: geom_rhs
 
-integer :: check
+call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.change_resol")
 
-check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
-
-call checksame(self,rhs)
-
-if (check==0) then
-
-  !Resolution is the same so copy
+if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   call copy(self, rhs)
-
 else
-
-  !Interpolate from rhs to self resolution
   call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
-
 endif
 
 end subroutine change_resol
@@ -1271,29 +1124,6 @@ deallocate(cellweight)
 deallocate(ref_ps)
 
 end subroutine jnormgrad
-
-! ------------------------------------------------------------------------------
-
-subroutine checksame(self,other)
-
-implicit none
-type(fv3jedi_increment), intent(in) :: self
-type(fv3jedi_increment), intent(in) :: other
-
-integer :: var
-
-if (self%nf .ne. other%nf) then
-  call abor1_ftn("fv3jedi_increment_mod.checksame: Different number of fields")
-endif
-
-do var = 1,self%nf
-  if (self%fields(var)%fv3jedi_name .ne. other%fields(var)%fv3jedi_name) then
-      call abor1_ftn("fv3jedi_increment_mod.checksame: field "//trim(self%fields(var)%fv3jedi_name)//&
-                     " not in the equivalent position in the right hand side")
-  endif
-enddo
-
-end subroutine checksame
 
 ! ------------------------------------------------------------------------------
 

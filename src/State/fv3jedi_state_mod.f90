@@ -11,7 +11,7 @@ use datetime_mod
 use fckit_mpi_module
 use variables_mod
 
-use fv3jedi_field_mod,           only: fv3jedi_field, fields_rms, fields_rms, fields_gpnorm, fields_print, get_field
+use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -408,9 +408,6 @@ call abor1_ftn("fv3jedi_state_mod create: vcount does not equal self%nf")
 self%hydrostatic = .true.
 if (associated(self%w) .and. associated(self%delz)) self%hydrostatic = .false.
 
-self%tladphystrj = .false.
-if (associated(self%khu)) self%tladphystrj = .true.
-
 ! Initialize all arrays to zero
 call zeros(self)
 
@@ -447,11 +444,6 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_state), intent(inout) :: self
 integer :: var
-
-do var = 1, self%nf
-  call self%fields(var)%deallocate_field()
-enddo
-deallocate(self%fields)
 
 if (associated(self%ud     )) nullify(self%ud     )
 if (associated(self%vd     )) nullify(self%vd     )
@@ -517,6 +509,11 @@ if (associated(self%bcphilic )) nullify(self%bcphilic )
 if (associated(self%ocphobic )) nullify(self%ocphobic )
 if (associated(self%ocphilic )) nullify(self%ocphilic )
 
+do var = 1, self%nf
+  call self%fields(var)%deallocate_field()
+enddo
+deallocate(self%fields)
+
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
@@ -541,184 +538,16 @@ implicit none
 type(fv3jedi_state), intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: rhs
 
-logical :: found
-integer :: self_var, rhs_var
+integer :: var
 
-self%isc            = rhs%isc
-self%iec            = rhs%iec
-self%jsc            = rhs%jsc
-self%jec            = rhs%jec
-self%npx            = rhs%npx
-self%npy            = rhs%npy
-self%npz            = rhs%npz
-self%ntiles         = rhs%ntiles
-self%ntile          = rhs%ntile
-self%hydrostatic    = rhs%hydrostatic
-self%tladphystrj    = rhs%tladphystrj
-self%calendar_type  = rhs%calendar_type
-self%date_init      = rhs%date_init
+call checksame(self%fields,rhs%fields,"fv3jedi_state_mod.copy")
 
-!Copy the individual fields
-if (.not.allocated(self%fields)) then
-
-  !Direct copy of one state to another
-  self%nf = rhs%nf
-  allocate(self%fields(self%nf))
-  do self_var = 1, self%nf
-    self%fields(self_var) = rhs%fields(self_var)
-  enddo
-
-else
-
-  !State copy, potentialy with differnt fields
-  do self_var = 1, self%nf
-    found = .false.
-    do rhs_var = 1, rhs%nf
-      if (trim(self%fields(self_var)%fv3jedi_name) == trim(rhs%fields(rhs_var)%fv3jedi_name)) then
-        self%fields(self_var) = rhs%fields(rhs_var)
-        found = .true.
-        exit
-      endif
-    enddo
-    if (.not.found) call abor1_ftn("fv3jedi_state: Error in state copy, field "//&
-                    trim(self%fields(self_var)%fv3jedi_name)//" not found in state being copied from." )
-  enddo
-
-endif
-
-! Set pointers
-do self_var = 1, self%nf
-  select case (trim(self%fields(self_var)%fv3jedi_name))
-    case("ud","u")
-      call self%fields(self_var)%array_pointer(self%ud)
-    case("vd","v")
-      call self%fields(self_var)%array_pointer(self%vd)
-    case("ua")
-      call self%fields(self_var)%array_pointer(self%ua)
-    case("va")
-      call self%fields(self_var)%array_pointer(self%va)
-    case("t","T")
-      call self%fields(self_var)%array_pointer(self%t)
-    case("delp","DELP")
-      call self%fields(self_var)%array_pointer(self%delp)
-    case("ps")
-      call self%fields(self_var)%array_pointer(self%ps)
-    case("q","sphum")
-      call self%fields(self_var)%array_pointer(self%q)
-    case("qi","ice_wat")
-      call self%fields(self_var)%array_pointer(self%qi)
-    case("ql","liq_wat")
-      call self%fields(self_var)%array_pointer(self%ql)
-    case("qs","snowwat")
-      call self%fields(self_var)%array_pointer(self%qs)
-    case("qr","rainwat")
-      call self%fields(self_var)%array_pointer(self%qr)
-    case("o3","o3mr")
-      call self%fields(self_var)%array_pointer(self%o3)
-    case("w","W")
-      call self%fields(self_var)%array_pointer(self%w)
-    case("delz","DZ")
-      call self%fields(self_var)%array_pointer(self%delz)
-    case("phis")
-      call self%fields(self_var)%array_pointer(self%phis)
-    case("slmsk")
-      call self%fields(self_var)%array_pointer(self%slmsk)
-    case("sheleg")
-      call self%fields(self_var)%array_pointer(self%sheleg)
-    case("tsea")
-      call self%fields(self_var)%array_pointer(self%tsea)
-    case("vtype")
-      call self%fields(self_var)%array_pointer(self%vtype)
-    case("stype")
-      call self%fields(self_var)%array_pointer(self%stype)
-    case("vfrac")
-      call self%fields(self_var)%array_pointer(self%vfrac)
-    case("stc")
-      call self%fields(self_var)%array_pointer(self%stc)
-    case("smc")
-      call self%fields(self_var)%array_pointer(self%smc)
-    case("snwdph")
-      call self%fields(self_var)%array_pointer(self%snwdph)
-    case("u_srf")
-      call self%fields(self_var)%array_pointer(self%u_srf)
-    case("v_srf")
-      call self%fields(self_var)%array_pointer(self%v_srf)
-    case("f10m")
-      call self%fields(self_var)%array_pointer(self%f10m)
-    case("qls")
-      call self%fields(self_var)%array_pointer(self%qls)
-    case("qcn")
-      call self%fields(self_var)%array_pointer(self%qcn)
-    case("cfcn")
-      call self%fields(self_var)%array_pointer(self%cfcn)
-    case("frocean")
-      call self%fields(self_var)%array_pointer(self%frocean)
-    case("frland")
-      call self%fields(self_var)%array_pointer(self%frland)
-    case("varflt")
-      call self%fields(self_var)%array_pointer(self%varflt)
-    case("ustar")
-      call self%fields(self_var)%array_pointer(self%ustar)
-    case("bstar")
-      call self%fields(self_var)%array_pointer(self%bstar)
-    case("zpbl")
-      call self%fields(self_var)%array_pointer(self%zpbl)
-    case("cm")
-      call self%fields(self_var)%array_pointer(self%cm)
-    case("ct")
-      call self%fields(self_var)%array_pointer(self%ct)
-    case("cq")
-      call self%fields(self_var)%array_pointer(self%cq)
-    case("kcbl")
-      call self%fields(self_var)%array_pointer(self%kcbl)
-    case("ts")
-      call self%fields(self_var)%array_pointer(self%ts)
-    case("khl")
-      call self%fields(self_var)%array_pointer(self%khl)
-    case("khu")
-      call self%fields(self_var)%array_pointer(self%khu)
-    !Aerosols
-    case("du001","DU001","dust1")
-      call self%fields(self_var)%array_pointer(self%du001)
-    case("du002","DU002","dust2")
-      call self%fields(self_var)%array_pointer(self%du002)
-    case("du003","DU003","dust3")
-      call self%fields(self_var)%array_pointer(self%du003)
-    case("du004","DU004","dust4")
-      call self%fields(self_var)%array_pointer(self%du004)
-    case("du005","DU005","dust5")
-      call self%fields(self_var)%array_pointer(self%du005)
-    case("ss001","SS001","seas1")
-      call self%fields(self_var)%array_pointer(self%ss001)
-    case("ss002","SS002","seas2")
-      call self%fields(self_var)%array_pointer(self%ss002)
-    case("ss003","SS003","seas3")
-      call self%fields(self_var)%array_pointer(self%ss003)
-    case("ss004","SS004","seas4")
-      call self%fields(self_var)%array_pointer(self%ss004)
-    case("ss005","SS005","seas5")
-      call self%fields(self_var)%array_pointer(self%ss005)
-    case("no3an1","NO3AN1")
-      call self%fields(self_var)%array_pointer(self%no3an1)
-    case("no3an2","NO3AN2")
-      call self%fields(self_var)%array_pointer(self%no3an2)
-    case("no3an3","NO3AN3")
-      call self%fields(self_var)%array_pointer(self%no3an3)
-    case("so4","SO4","sulf")
-      call self%fields(self_var)%array_pointer(self%so4)
-    case("bcphobic","BCPHOBIC","bc1")
-      call self%fields(self_var)%array_pointer(self%bcphobic)
-    case("bcphilic","BCPHILIC","bc2")
-      call self%fields(self_var)%array_pointer(self%bcphilic)
-    case("ocphobic","OCPHOBIC","oc1")
-      call self%fields(self_var)%array_pointer(self%ocphobic)
-    case("ocphilic","OCPHILIC","oc2")
-      call self%fields(self_var)%array_pointer(self%ocphilic)
-    case default
-      !Not found
-      call abor1_ftn("fv3jedi_state_mod.copy: unknown variable "//trim(self%fields(self_var)%fv3jedi_name))
-  end select
+do var = 1, self%nf
+  self%fields(var) = rhs%fields(var)
 enddo
+
+self%calendar_type = rhs%calendar_type
+self%date_init = rhs%date_init
 
 end subroutine copy
 
@@ -732,6 +561,8 @@ real(kind=kind_real), intent(in)    :: zz
 type(fv3jedi_state),  intent(in)    :: rhs
 
 integer :: var
+
+call checksame(self%fields,rhs%fields,"fv3jedi_state_mod.axpy")
 
 do var = 1, self%nf
   self%fields(var)%array = self%fields(var)%array + zz * rhs%fields(var)%array
@@ -859,21 +690,12 @@ type(fv3jedi_geom),  intent(in)    :: geom
 type(fv3jedi_state), intent(in)    :: rhs
 type(fv3jedi_geom),  intent(in)    :: geom_rhs
 
-integer :: check
+call checksame(self%fields,rhs%fields,"fv3jedi_state_mod.change_resol")
 
-check = (rhs%iec-rhs%isc+1) - (self%iec-self%isc+1)
-
-call checksame(self,rhs)
-
-if (check==0) then
-
-  !Resolution is the same so copy
+if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1) == 0) then
   call copy(self, rhs)
-
 else
-
   call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
-
 endif
 
 end subroutine change_resol
@@ -1262,29 +1084,6 @@ real(kind=kind_real), intent(out) :: prms
 call fields_rms(self%nf,self%fields,prms)
 
 end subroutine rms
-
-! ------------------------------------------------------------------------------
-
-subroutine checksame(self,other)
-
-implicit none
-type(fv3jedi_state), intent(in) :: self
-type(fv3jedi_state), intent(in) :: other
-
-integer :: var
-
-if (self%nf .ne. other%nf) then
-  call abor1_ftn("fv3jedi_increment_mod.checksame: Different number of fields")
-endif
-
-do var = 1,self%nf
-  if (self%fields(var)%fv3jedi_name .ne. other%fields(var)%fv3jedi_name) then
-      call abor1_ftn("fv3jedi_increment_mod.checksame: field "//trim(self%fields(var)%fv3jedi_name)//&
-                     " not in the equivalent position in the right hand side")
-  endif
-enddo
-
-end subroutine checksame
 
 ! ------------------------------------------------------------------------------
 

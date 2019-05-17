@@ -6,7 +6,7 @@ cost_function:
       state:
       - filetype: geos
         filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
-        variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: hybrid
       static_weight: '0.1'
@@ -176,7 +176,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis"]
 output:
   filetype: geos
   datapath: Data/analysis/

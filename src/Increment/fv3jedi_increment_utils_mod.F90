@@ -23,7 +23,6 @@ type :: fv3jedi_increment
   integer :: npx, npy, npz
   integer :: ntiles, ntile
   logical :: hydrostatic = .true.
-  logical :: tladphystrj = .false.
   integer :: calendar_type, date_init(6) !Read/write for GFS
   integer :: nf
 

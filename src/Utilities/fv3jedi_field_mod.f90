@@ -14,7 +14,8 @@ implicit none
 
 private
 public :: fv3jedi_field, get_field, &
-          fields_rms, fields_gpnorm, fields_print
+          fields_rms, fields_gpnorm, fields_print, &
+          checksame
 
 !Field type
 type :: fv3jedi_field
@@ -312,6 +313,29 @@ if (f_comm%rank() == 0) &
 
 end subroutine fields_print
 
+! ------------------------------------------------------------------------------
+
+subroutine checksame(self,other,method)
+
+implicit none
+type(fv3jedi_field), intent(in) :: self(:)
+type(fv3jedi_field), intent(in) :: other(:)
+character(len=*),    intent(in) :: method
+
+integer :: var
+
+if (size(self) .ne. size(other)) then
+  call abor1_ftn(trim(method)//"(checksame): Different number of fields")
+endif
+
+do var = 1,size(self)
+  if (self(var)%fv3jedi_name .ne. other(var)%fv3jedi_name) then
+      call abor1_ftn(trim(method)//"(checksame): field "//trim(self(var)%fv3jedi_name)//&
+                     " not in the equivalent position in the right hand side")
+  endif
+enddo
+
+end subroutine checksame
 ! ------------------------------------------------------------------------------
 
 end module fv3jedi_field_mod

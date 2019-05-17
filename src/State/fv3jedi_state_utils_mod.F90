@@ -23,7 +23,6 @@ type :: fv3jedi_state
   integer :: npx, npy, npz
   integer :: ntiles, ntile
   logical :: hydrostatic = .true.
-  logical :: tladphystrj = .false.
   integer :: calendar_type, date_init(6) !Read/write for GFS
   integer :: nf
 
@@ -95,7 +94,6 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: ocphobic => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ocphilic => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: so4      => null()
-
 
 end type fv3jedi_state
 
