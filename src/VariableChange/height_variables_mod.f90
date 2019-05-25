@@ -78,12 +78,12 @@ if (use_compress) then
         if ( k == geom%npz) then
            Tkk  = T(i,j,k)
            Tvk  = Tv(i,j,k)
-           Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1))+log(prs(i,j,k))))
+           Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1)*0.01)+log(prs(i,j,k)*0.01)))
            dpk  = prsi(i,j,k+1)/prs(i,j,k)
         else
            Tkk  = 0.5_kind_real * ( T(i,j,k+1) +  T(i,j,k) )
            Tvk  = 0.5_kind_real * (Tv(i,j,k+1) + Tv(i,j,k) )
-           Pak  = exp(0.5_kind_real*(log(prs(i,j,k+1))+log(prs(i,j,k))))
+           Pak  = exp(0.5_kind_real*(log(prs(i,j,k+1)*0.01)+log(prs(i,j,k)*0.01)))
            dpk  = prs(i,j,k+1)/prs(i,j,k)
         end if
 
@@ -169,10 +169,10 @@ if (use_compress) then
      gphi(i,j,geom%npz+1) = phis(i,j)/grav !phis is gh? or gopoential
      do k = geom%npz, 1, -1
         if ( k == 1) then
-           Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1))+log(prs(i,j,k))))
+           Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1)*0.01)+log(prs(i,j,k)*0.01)))
            dpk  = prsi(i,j,k+1)/prs(i,j,k)
         else
-           Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1))+log(prsi(i,j,k))))
+           Pak  = exp(0.5_kind_real*(log(prsi(i,j,k+1)*0.01)+log(prsi(i,j,k)*0.01)))
            dpk  = prsi(i,j,k+1)/prsi(i,j,k)
         end if
         Tkk  = T(i,j,k)

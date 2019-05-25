@@ -334,13 +334,6 @@ do jvar = 1, vars%nv
     call T_to_Tv(geom,state%t,state%q,geovalm)
     geoval => geovalm
 
-  case ("atmosphere_ln_pressure_coordinate")
-
-    nvl = npz
-    do_interp = .true.
-    geovalm = log(0.001_kind_real) + logp !to kPa
-    geoval => geovalm
-
   case ("humidity_mixing_ratio")
 
     nvl = npz
@@ -362,14 +355,14 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    geovalm = prs / 100.0_kind_real !to hPa
+    geovalm = prs
     geoval => geovalm
 
   case ("air_pressure_levels")
 
     nvl = npz + 1
     do_interp = .true.
-    geovale = prsi / 100.0_kind_real !to hPa
+    geovale = prsi
     geoval => geovale
 
   case ("geopotential_height")
@@ -880,6 +873,8 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
+  case ("air_pressure_levels")
+
   case ("sulf","so4")
 
    nvl = npz
@@ -1166,6 +1161,8 @@ do jvar = 1, vars%nv
 
   case ("air_pressure")
 
+  case ("air_pressure_levels")
+
   case ("sulf","so4")
 
    nvl = npz
@@ -1321,6 +1318,8 @@ do jvar = 1, vars%nv
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
   case ("air_pressure")
+
+  case ("air_pressure_levels")
 
   case ("sulf","so4")
 

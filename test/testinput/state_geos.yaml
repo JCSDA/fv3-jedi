@@ -27,7 +27,7 @@ StateTest:
   InterpTest:
     variables:
     - air_temperature
-    - atmosphere_ln_pressure_coordinate
+    - air_pressure
   date: '2018-04-14T21:00:00Z'
   interp_tolerance: 6.0e-5
   norm-file: '661.38673706686461'
