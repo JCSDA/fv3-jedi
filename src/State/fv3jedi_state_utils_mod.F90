@@ -25,6 +25,8 @@ type :: fv3jedi_state
   logical :: hydrostatic = .true.
   integer :: calendar_type, date_init(6) !Read/write for GFS
   integer :: nf
+  logical :: have_agrid
+  logical :: have_dgrid
 
   type(fckit_mpi_comm) :: f_comm
 
@@ -36,14 +38,24 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: ua      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: va      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: t       => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: pt      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: delp    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: pe      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: pkz     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ps      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: q       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qi      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: ql      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qils    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qlls    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qicn    => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qlcn    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qs      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qr      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: gr      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ca      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: o3      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ox      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: w       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: delz    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: phis    => null()

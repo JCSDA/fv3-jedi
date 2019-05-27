@@ -289,10 +289,13 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
-  name: 'PSEUDO'
-  pseudo_type: 'gfs'
-  pseudo_path: 'Data/inputs/gfs_c12/bkg/'
-  RunStageCheck: 1
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
   tstep: PT1H
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
               "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
@@ -314,6 +317,25 @@ resolution:
 variational:
   iteration:
   - ninner: '10'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT1H
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+      trajectory:
+        name: 'FV3'
+        tstep: PT1H
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  - ninner: '5'
     gradient_norm_reduction: 1e-10
     test: 'on'
     resolution:

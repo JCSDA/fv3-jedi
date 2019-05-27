@@ -37,8 +37,11 @@ TlmFV3JEDI::TlmFV3JEDI(const GeometryFV3JEDI & resol,
   tstep_ = util::Duration(tlConf.getString("tstep"));
 
   const eckit::Configuration * configc = &tlConf;
+
+  const eckit::Configuration * confvars = &linvars_.toFortran();
+
   stageFv3Files(tlConf);
-  fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_);
+  fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_, &confvars);
   removeFv3Files();
   oops::Log::trace() << "TlmFV3JEDI created" << std::endl;
 }

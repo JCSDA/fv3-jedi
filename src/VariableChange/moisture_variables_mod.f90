@@ -153,6 +153,8 @@ do k = 1,npz
 enddo
 
 
+ql_ade = max(0.0_kind_real,ql_ade)
+qi_ade = max(0.0_kind_real,qi_ade)
 ql_efr = max(0.0_kind_real,ql_efr)
 qi_efr = max(0.0_kind_real,qi_efr)
 

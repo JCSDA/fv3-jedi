@@ -122,6 +122,18 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'increment_of_rain_water', &
            fv3jedi_name = 'qr', units = 'kg kg-1', staggerloc = center, arraypointer = self%qr)
+    case("graupel")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'graupel', &
+           fv3jedi_name = 'graupel', units = 'kg kg-1', staggerloc = center, arraypointer = self%gr, &
+           tracer = .true.)
+    case("cld_amt")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'cld_amt', &
+           fv3jedi_name = 'cld_amt', units = 'kg kg-1', staggerloc = center, arraypointer = self%ca, &
+           tracer = .true.)
     case("o3","o3mr")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -305,6 +317,22 @@ self%ntiles = geom%ntiles
 ! Pointer to fv3jedi communicator
 self%f_comm = fckit_mpi_comm()
 
+! Check winds
+if (associated(self%ua) .and. .not.associated(self%va)) &
+call abor1_ftn("fv3jedi_state_mod create: found A-Grid u but not v")
+if (.not.associated(self%ua) .and. associated(self%va)) &
+call abor1_ftn("fv3jedi_state_mod create: found A-Grid v but not u")
+if (associated(self%ud) .and. .not.associated(self%vd)) &
+call abor1_ftn("fv3jedi_state_mod create: found D-Grid u but not v")
+if (.not.associated(self%ud) .and. associated(self%vd)) &
+call abor1_ftn("fv3jedi_state_mod create: found D-Grid v but not u")
+
+self%have_agrid = .false.
+self%have_dgrid = .false.
+if (associated(self%ua)) self%have_agrid = .true.
+if (associated(self%ud)) self%have_dgrid = .true.
+
+
 end subroutine create
 
 ! ------------------------------------------------------------------------------
@@ -337,6 +365,8 @@ if (associated(self%qi  )) nullify(self%qi  )
 if (associated(self%ql  )) nullify(self%ql  )
 if (associated(self%qr  )) nullify(self%qr  )
 if (associated(self%qs  )) nullify(self%qs  )
+if (associated(self%gr  )) nullify(self%gr  )
+if (associated(self%ca  )) nullify(self%ca  )
 if (associated(self%o3  )) nullify(self%o3  )
 if (associated(self%psi )) nullify(self%psi )
 if (associated(self%chi )) nullify(self%chi )
@@ -719,11 +749,17 @@ subroutine read_file(geom, self, c_conf, vdate)
 
   character(len=10) :: filetype
   character(len=255) :: filename
+  integer :: psinfile
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
+  psinfile = 0
+  if (config_element_exists(c_conf,"psinfile")) then
+    psinfile = config_get_int(c_conf,"psinfile")
+  endif
+
   if (trim(filetype) == 'gfs') then
-    call gfs%setup(c_conf)
+    call gfs%setup(c_conf,psinfile = psinfile)
     call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
     call gfs%read_fields(geom, self%fields)
   elseif (trim(filetype) == 'geos') then

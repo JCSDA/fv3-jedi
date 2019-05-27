@@ -28,7 +28,7 @@ cost_function:
           verbosity: main
       ensemble:
         date: '2018-04-14T21:00:00Z'
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        variables: &incvars ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
         members:
         - filetype: gfs
           datapath_tile: Data/inputs/gfs_c12/mem001/
@@ -102,7 +102,7 @@ cost_function:
           filename_cplr: 20180414.210000.coupler.res
         localization:
           timeslots: ['2018-04-14T21:00:00Z']
-          variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+          variables: *incvars
           localization: BUMP
           bump:
             prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs
@@ -272,7 +272,7 @@ cost_function:
         - brightness_temperature_15
         threshold: 3.0
   cost_type: 4D-Var
-  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  variables: *incvars
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model
@@ -289,10 +289,13 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
-  name: 'PSEUDO'
-  pseudo_type: 'gfs'
-  pseudo_path: 'Data/inputs/gfs_c12/bkg/'
-  RunStageCheck: 1
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
   tstep: PT1H
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
               "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
@@ -313,6 +316,37 @@ resolution:
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 variational:
   iteration:
+  - ninner: '5'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Analysis2Model'
+      name: 'FV3JEDITLM'
+      version: FV3JEDITLM
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT1H
+      variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr"]
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      trajectory:
+        name: 'PSEUDO'
+        nml_file: Data/fv3files/input_gfs_c12.nml
+        trc_file: Data/fv3files/field_table
+        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT1H
+        variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr"]
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
   - ninner: '3'
     gradient_norm_reduction: 1e-10
     test: 'on'

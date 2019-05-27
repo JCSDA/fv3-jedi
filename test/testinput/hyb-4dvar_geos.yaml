@@ -23,41 +23,31 @@ cost_function:
           verbosity: main
       ensemble:
         date: '2018-04-14T21:00:00Z'
-        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        variables: &incvars ["ua","va","t","ps","q","qi","ql","o3mr"]
         members:
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
         localization:
           timeslots: ['2018-04-14T21:00:00Z']
-          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          variables: *incvars
           localization: BUMP
           bump:
             prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
@@ -156,7 +146,7 @@ cost_function:
         variable: refractivity
         errmodel: GSI
   cost_type: 4D-Var
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  variables: *incvars
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model

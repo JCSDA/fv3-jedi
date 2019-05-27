@@ -11,7 +11,7 @@ cost_function:
         filename_sfcd: 20180415.000000.sfc_data.nc
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
-        variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+        variables: &3dvars ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
     Covariance:
       covariance: hybrid
       static_weight: '0.1'
@@ -28,7 +28,7 @@ cost_function:
           verbosity: main
       ensemble:
         date: '2018-04-15T00:00:00Z'
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        variables: *3dvars
         members:
         - filetype: gfs
           datapath_tile: Data/inputs/gfs_c12/mem001/
@@ -102,7 +102,7 @@ cost_function:
           filename_cplr: 20180415.000000.coupler.res
         localization:
           timeslots: ['2018-04-15T00:00:00Z']
-          variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+          variables: *3dvars
           localization: BUMP
           bump:
             prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs
@@ -272,7 +272,7 @@ cost_function:
         - brightness_temperature_15
         threshold: 3.0
   cost_type: 3D-Var
-  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  variables: *3dvars
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model
@@ -329,11 +329,11 @@ variational:
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
       tstep: PT3H
-      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+      variables: *3dvars
       trajectory:
         name: 'FV3'
         tstep: PT3H
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        variables: *3dvars
   - ninner: '5'
     gradient_norm_reduction: 1e-10
     test: 'on'
@@ -348,9 +348,9 @@ variational:
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
       tstep: PT3H
-      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+      variables: *3dvars
       trajectory:
         name: 'FV3'
         tstep: PT3H
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        variables: *3dvars
 

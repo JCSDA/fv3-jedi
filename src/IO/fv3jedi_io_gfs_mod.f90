@@ -24,6 +24,7 @@ type fv3jedi_io_gfs
  character(len=255) :: filename_sfcd
  character(len=255) :: filename_sfcw
  character(len=255) :: filename_cplr
+ logical :: ps_in_file
  contains
   procedure :: setup
   procedure :: read_meta
@@ -38,10 +39,11 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine setup(self,c_conf)
+subroutine setup(self,c_conf,psinfile)
 
 class(fv3jedi_io_gfs), intent(inout) :: self
 type(c_ptr),           intent(in)    :: c_conf
+integer, optional,     intent(in)    :: psinfile
 
 !Set filenames
 !--------------
@@ -75,6 +77,13 @@ if (config_element_exists(c_conf,"filename_spec")) then
 else
    self%filename_spec = "null"
    self%datapath_sp = "null"
+endif
+
+self%ps_in_file = .false.
+if (present(psinfile)) then
+  if (psinfile == 1) then
+    self%ps_in_file = .true.
+  endif
 endif
 
 end subroutine setup
@@ -173,8 +182,12 @@ do var = 1,size(fields)
 enddo
 
 if (assocps) then
-  compute_ps_type = 1
-  if (assocdelp) compute_ps_type = 2
+  if (self%ps_in_file) then
+    compute_ps_type = 0
+  else
+    compute_ps_type = 1
+    if (assocdelp) compute_ps_type = 2
+  endif
 endif
 
 do var = 1,size(fields)
@@ -186,12 +199,13 @@ do var = 1,size(fields)
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
-  case("DELP")
+  case("DELP","delp")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
     indexof_delp = var
-  case("sphum","ice_wat","liq_wat","rainwat","snowwat","o3mr","sulf","bc1","bc2","oc1","oc2",&
+  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt",&
+       "o3mr","sulf","bc1","bc2","oc1","oc2",&
        "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
     filename = self%filename_trcr
     restart => restart_trcr
@@ -209,8 +223,10 @@ do var = 1,size(fields)
     restart => restart_core
     read_core = .true.
     compute_ps = compute_ps_type
-    indexof_ps = var
-    if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    if (compute_ps .ne. 0) then
+      indexof_ps = var
+      if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    endif
   case default
     call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
@@ -306,11 +322,12 @@ read_sfcw = .false.
 do var = 1,size(fields)
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","W","DZ")
+  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
-  case("sphum","ice_wat","liq_wat","o3mr","sulf","bc1","bc2","oc1","oc2",&
+  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt",&
+       "o3mr","sulf","bc1","bc2","oc1","oc2",&
        "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
     filename = self%filename_trcr
     restart => restart_trcr

@@ -6,13 +6,13 @@ cost_function:
       state:
       - filetype: geos
         filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
-        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        variables: &3dvars ["ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: hybrid
       static_weight: '0.1'
       ensemble_weight: '0.9'
       static:
-        date: '2018-04-15T00:00:00Z'
+        date: &adate '2018-04-15T00:00:00Z'
         covariance: BUMP
         bump:
           prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
@@ -22,42 +22,32 @@ cost_function:
           mpicom: 2
           verbosity: main
       ensemble:
-        date: '2018-04-15T00:00:00Z'
-        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        date: *adate
+        variables: *3dvars
         members:
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
           - filetype: geos
             filename: Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
-            variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
         localization:
           timeslots: ['2018-04-15T00:00:00Z']
-          variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+          variables: *3dvars
           localization: BUMP
           bump:
             prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
@@ -156,7 +146,7 @@ cost_function:
         variable: refractivity
         errmodel: GSI
   cost_type: 3D-Var
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  variables: *3dvars
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model
@@ -203,11 +193,11 @@ variational:
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
       tstep: PT3H
-      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      variables: *3dvars
       trajectory:
         name: 'FV3'
         tstep: PT3H
-        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        variables: *3dvars
   - ninner: '5'
     gradient_norm_reduction: 1e-10
     test: 'on'
@@ -222,8 +212,8 @@ variational:
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
       tstep: PT3H
-      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      variables: *3dvars
       trajectory:
         name: 'FV3'
         tstep: PT3H
-        variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+        variables: *3dvars

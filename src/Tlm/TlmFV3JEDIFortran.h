@@ -26,7 +26,8 @@ extern "C" {
 
   void fv3jedi_tlm_create_f90(const eckit::Configuration * const *,
                               const F90geom &,
-                              F90tlm &);
+                              F90tlm &,
+                              const eckit::Configuration * const *);
   void fv3jedi_tlm_delete_f90(F90tlm &);
 
 

@@ -8,14 +8,17 @@ module fv3jedi_tlm_mod
 use iso_c_binding
 use config_mod
 use duration_mod
+use variables_mod
 
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_increment_mod, only: fv3jedi_increment
+use fv3jedi_increment_mod, only: fv3jedi_increment, create_inc=>create
 use fv3jedi_traj_mod, only: fv3jedi_traj
 
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
+
+use fv3jedi_linvarcha_a2m_mod
 
 implicit none
 private
@@ -35,6 +38,8 @@ public :: tlm_finalize_ad
 !> Fortran derived type to hold tlm definition
 type:: fv3jedi_tlm
   type(fv3jedi_lm_type) :: fv3jedi_lm  !<Linearized model object
+  type(fv3jedi_linvarcha_a2m) :: lvc
+  type(fv3jedi_increment) :: xmod
 end type fv3jedi_tlm
 
 ! ------------------------------------------------------------------------------
@@ -43,12 +48,13 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine tlm_create(self, geom, c_conf)
+subroutine tlm_create(self, geom, c_conf, vars)
 
 implicit none
 type(fv3jedi_tlm),  intent(inout) :: self
 type(fv3jedi_geom), intent(in)    :: geom
 type(c_ptr),        intent(in)    :: c_conf
+type(oops_vars),    intent(in)    :: vars
 
 !Locals
 character(len=20) :: ststep
@@ -70,6 +76,8 @@ self%fv3jedi_lm%conf%do_phy_trb = config_get_int(c_conf,"lm_do_trb")
 self%fv3jedi_lm%conf%do_phy_mst = config_get_int(c_conf,"lm_do_mst")
 
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
+
+call create_inc(self%xmod, geom, vars)
 
 end subroutine tlm_create
 
@@ -95,9 +103,13 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
+call multiplyinverseadjoint(self%lvc,geom,inc,self%xmod)
+
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
+
+call multiplyadjoint(self%lvc,geom,self%xmod,inc)
 
 end subroutine tlm_initialize_ad
 
@@ -110,9 +122,13 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
+call multiply(self%lvc,geom,inc,self%xmod)
+
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
+
+call multiplyinverse(self%lvc,geom,self%xmod,inc)
 
 end subroutine tlm_initialize_tl
 
@@ -128,9 +144,13 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
+call multiplyinverseadjoint(self%lvc,geom,inc,self%xmod)
+
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
+
+call multiplyadjoint(self%lvc,geom,self%xmod,inc)
 
 end subroutine tlm_step_ad
 
@@ -146,9 +166,13 @@ type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
+call multiply(self%lvc,geom,inc,self%xmod)
+
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
+
+call multiplyinverse(self%lvc,geom,self%xmod,inc)
 
 end subroutine tlm_step_tl
 
@@ -161,9 +185,13 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
+call multiplyinverseadjoint(self%lvc,geom,inc,self%xmod)
+
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
+
+call multiplyadjoint(self%lvc,geom,self%xmod,inc)
 
 end subroutine tlm_finalize_ad
 
@@ -176,9 +204,13 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_tlm),       intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 
+call multiply(self%lvc,geom,inc,self%xmod)
+
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
+
+call multiplyinverse(self%lvc,geom,self%xmod,inc)
 
 end subroutine tlm_finalize_tl
 

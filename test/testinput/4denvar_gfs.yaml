@@ -447,7 +447,7 @@ model:
   pseudo_type: 'gfs'
   pseudo_path: 'Data/inputs/gfs_c12/bkg/'
   RunStageCheck: 1
-  tstep: PT1H
+  tstep: PT3H
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
               "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
               "u_srf","v_srf","f10m"]

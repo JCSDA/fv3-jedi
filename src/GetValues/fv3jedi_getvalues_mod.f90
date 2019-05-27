@@ -392,7 +392,7 @@ do jvar = 1, vars%nv
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%o3 * constoz
+   geovalm = max(0.0_kind_real,state%o3) * constoz
    geoval => geovalm
 
   case ("mass_concentration_of_carbon_dioxide_in_air")

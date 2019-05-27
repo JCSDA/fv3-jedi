@@ -25,6 +25,8 @@ type :: fv3jedi_increment
   logical :: hydrostatic = .true.
   integer :: calendar_type, date_init(6) !Read/write for GFS
   integer :: nf
+  logical :: have_agrid
+  logical :: have_dgrid
 
   type(fckit_mpi_comm) :: f_comm
 
@@ -45,6 +47,8 @@ type :: fv3jedi_increment
   real(kind=kind_real), pointer, dimension(:,:,:) :: ql   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qr   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qs   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: gr   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: ca   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: o3   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: psi  => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: chi  => null()
