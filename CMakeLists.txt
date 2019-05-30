@@ -100,6 +100,8 @@ set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/fv3
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/geos
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/gfs
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/pseudo
+                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/traj
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/ModelBias
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/Run
                           ${CMAKE_CURRENT_SOURCE_DIR}/src/State

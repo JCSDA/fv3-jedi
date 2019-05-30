@@ -236,7 +236,3 @@ variational:
       version: FV3JEDIIdTLM
       tstep: PT3H
       variables: *4denvars
-      trajectory:
-        name: 'FV3'
-        tstep: PT3H
-        variables: *4denvars

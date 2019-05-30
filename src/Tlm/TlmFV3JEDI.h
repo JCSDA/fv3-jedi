@@ -73,7 +73,7 @@ class TlmFV3JEDI: public oops::LinearModelBase<FV3JEDITraits>,
   util::Duration tstep_;
   const GeometryFV3JEDI resol_;
   std::map< util::DateTime, F90traj> traj_;
-  const ModelFV3FV3JEDI lrmodel_;
+  const ModelTrajFV3JEDI lrmodel_;
   const oops::Variables linvars_;
 };
 // -----------------------------------------------------------------------------

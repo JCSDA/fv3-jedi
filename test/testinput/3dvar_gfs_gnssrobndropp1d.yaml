@@ -70,7 +70,6 @@ model:
   nml_file: Data/fv3files/input_gfs_c12.nml
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT6H
-  readtraj: 0
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
@@ -98,23 +97,8 @@ variational:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
-      nml_file: Data/fv3files/input_gfs_c12.nml
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT6H
-      lm_do_dyn: 1
-      lm_do_trb: 0
-      lm_do_mst: 0
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-      trajectory:
-        name: 'FV3'
-        nml_file: Data/fv3files/input_gfs_c12.nml
-        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT6H
-        readtraj: 0
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c12.nml
@@ -126,23 +110,8 @@ variational:
       varchange: 'Identity'
       name: 'FV3JEDIIdTLM'
       version: FV3JEDIIdTLM
-      nml_file: Data/fv3files/input_gfs_c12.nml
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT6H
-      lm_do_dyn: 1
-      lm_do_trb: 0
-      lm_do_mst: 0
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-      trajectory:
-        name: 'FV3'
-        nml_file: Data/fv3files/input_gfs_c12.nml
-        nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT6H
-        readtraj: 0
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     ninner: '10'
     resolution:
       nml_file: Data/fv3files/input_gfs_c12.nml

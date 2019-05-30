@@ -65,10 +65,6 @@ void ModelNUOPCFV3JEDI::finalize(StateFV3JEDI & xx) const {
 // -----------------------------------------------------------------------------
 int ModelNUOPCFV3JEDI::saveTrajectory(StateFV3JEDI & xx,
                                  const ModelBiasFV3JEDI &) const {
-  int ftraj = 0;
-  fv3jedi_traj_prop_f90(keyConfig_, xx.toFortran(), ftraj);
-  ASSERT(ftraj != 0);
-  return ftraj;
 }
 // -----------------------------------------------------------------------------
 void ModelNUOPCFV3JEDI::print(std::ostream & os) const {

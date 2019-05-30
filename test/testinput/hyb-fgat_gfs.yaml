@@ -331,10 +331,6 @@ variational:
       version: FV3JEDIIdTLM
       tstep: PT1H
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-      trajectory:
-        name: 'FV3'
-        tstep: PT1H
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
   - ninner: '5'
     gradient_norm_reduction: 1e-10
     test: 'on'
@@ -350,7 +346,3 @@ variational:
       version: FV3JEDIIdTLM
       tstep: PT1H
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-      trajectory:
-        name: 'FV3'
-        tstep: PT1H
-        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]

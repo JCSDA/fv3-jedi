@@ -9,7 +9,6 @@
 #define SRC_MODEL_GEOS_MODELGEOSFV3JEDIFORTRAN_H_
 
 #include "Fortran.h"
-#include "TrajFV3JEDIFortran.h"
 
 // Forward declarations
 namespace eckit {

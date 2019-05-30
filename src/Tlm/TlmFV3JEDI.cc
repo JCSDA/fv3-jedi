@@ -17,7 +17,7 @@
 #include "TlmFV3JEDIFortran.h"
 #include "GeometryFV3JEDI.h"
 #include "IncrementFV3JEDI.h"
-#include "ModelFV3FV3JEDI.h"
+#include "ModelTrajFV3JEDI.h"
 #include "StateFV3JEDI.h"
 #include "src/Tlm/TlmFV3JEDI.h"
 #include "UtilitiesFV3JEDI.h"

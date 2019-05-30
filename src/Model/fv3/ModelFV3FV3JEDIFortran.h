@@ -9,7 +9,6 @@
 #define SRC_MODEL_FV3_MODELFV3FV3JEDIFORTRAN_H_
 
 #include "Fortran.h"
-#include "TrajFV3JEDIFortran.h"
 
 // Forward declarations
 namespace eckit {
