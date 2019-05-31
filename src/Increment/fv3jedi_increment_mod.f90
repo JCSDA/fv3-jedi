@@ -617,35 +617,25 @@ real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
 real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
 real(kind=kind_real), allocatable :: x1_ps(:,:,:), x2_ps(:,:,:)
 
-call zeros(self)
+! Make sure two states have same fields and in same position
+call checksame(x1%fields,x2%fields,"fv3jedi_state_mod.diff_incr x1 vs x2")
 
 !D-Grid to A-Grid (if needed)
-if (associated(self%ua) .and. associated(self%va)) then
+if (self%have_agrid) then
   allocate(x1_ua(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
   allocate(x1_va(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
-  if (associated(x1%ud) .and. associated(x1%vd)) then
-    if (.not.associated(x1%ua) .and. .not. associated(x1%va)) then
-      call d2a(geom, x1%ud, x1%vd, x1_ua, x1_va)
-    else
-      x1_ua = x1%ua
-      x1_va = x1%va
-    endif
+  allocate(x2_ua(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
+  allocate(x2_va(x1%isc:x1%iec,x1%jsc:x1%jec,1:x1%npz))
+  if (x1%have_agrid) then
+    x1_ua = x1%ua
+    x1_va = x1%va
+    x2_ua = x2%ua
+    x2_va = x2%va
+  elseif (x1%have_dgrid) then
+    call d2a(geom, x1%ud, x1%vd, x1_ua, x1_va)
+    call d2a(geom, x2%ud, x2%vd, x2_ua, x2_va)
   else
-    x1_ua = 0.0_kind_real
-    x1_va = 0.0_kind_real
-  endif
-  allocate(x2_ua(x2%isc:x2%iec,x2%jsc:x2%jec,1:x2%npz))
-  allocate(x2_va(x2%isc:x2%iec,x2%jsc:x2%jec,1:x2%npz))
-  if (associated(x2%ud) .and. associated(x2%vd)) then
-    if (.not.associated(x2%ua) .and. .not. associated(x2%va)) then
-      call d2a(geom, x2%ud, x2%vd, x2_ua, x2_va)
-    else
-      x2_ua = x2%ua
-      x2_va = x2%va
-    endif
-  else
-    x2_ua = 0.0_kind_real
-    x2_va = 0.0_kind_real
+    call abor1_ftn("fv3jedi_state_mod.diff_incr: no way to determine A grid winds")
   endif
 endif
 
