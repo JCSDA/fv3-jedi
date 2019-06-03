@@ -19,15 +19,6 @@ LinearModel:
   lm_do_mst: 0
   variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
   trajectory:
-    name: 'FV3'
-    nml_file: Data/fv3files/input_geos_c12.nml
-    trc_file: Data/fv3files/field_table
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT15M
-    readtraj: 0
-    lm_do_dyn: 1
-    lm_do_trb: 0
-    lm_do_mst: 0
     variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
 LinearModelTest:
   fclength: PT30M
@@ -41,7 +32,6 @@ Model:
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
-  readtraj: 0
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0

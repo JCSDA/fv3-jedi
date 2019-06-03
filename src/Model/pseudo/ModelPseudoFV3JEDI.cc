@@ -10,6 +10,7 @@
 #include "eckit/config/Configuration.h"
 
 #include "oops/parallel/mpi/mpi.h"
+#include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
 
@@ -79,10 +80,7 @@ void ModelPseudoFV3JEDI::finalize(StateFV3JEDI & xx) const {
 // -----------------------------------------------------------------------------
 int ModelPseudoFV3JEDI::saveTrajectory(StateFV3JEDI & xx,
                                  const ModelBiasFV3JEDI &) const {
-  int ftraj = 0;
-  fv3jedi_traj_prop_f90(keyConfig_, xx.toFortran(), ftraj);
-  ASSERT(ftraj != 0);
-  return ftraj;
+  ABORT("Model: pseudo should not be used for the trajecotry");
 }
 // -----------------------------------------------------------------------------
 void ModelPseudoFV3JEDI::print(std::ostream & os) const {

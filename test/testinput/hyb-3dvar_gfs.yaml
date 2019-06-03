@@ -330,10 +330,6 @@ variational:
       version: FV3JEDIIdTLM
       tstep: PT3H
       variables: *3dvars
-      trajectory:
-        name: 'FV3'
-        tstep: PT3H
-        variables: *3dvars
   - ninner: '5'
     gradient_norm_reduction: 1e-10
     test: 'on'
@@ -349,8 +345,3 @@ variational:
       version: FV3JEDIIdTLM
       tstep: PT3H
       variables: *3dvars
-      trajectory:
-        name: 'FV3'
-        tstep: PT3H
-        variables: *3dvars
-

@@ -52,6 +52,11 @@ Model/pseudo/fv3jedi_pseudo_mod.f90
 Model/pseudo/ModelPseudoFV3JEDI.cc
 Model/pseudo/ModelPseudoFV3JEDI.h
 Model/pseudo/ModelPseudoFV3JEDIFortran.h
+Model/traj/fv3jedi_traj_interface_mod.F90
+Model/traj/fv3jedi_traj_mod.f90
+Model/traj/ModelTrajFV3JEDI.cc
+Model/traj/ModelTrajFV3JEDI.h
+Model/traj/ModelTrajFV3JEDIFortran.h
 ModelBias/ModelBiasCovarianceFV3JEDI.h
 ModelBias/ModelBiasFV3JEDI.h
 ModelBias/ModelBiasIncrementFV3JEDI.h
@@ -89,9 +94,6 @@ Tlm/TlmIdFV3JEDI.cc
 Tlm/TlmIdFV3JEDI.h
 Tlm/fv3jedi_tlm_interface_mod.F90
 Tlm/fv3jedi_tlm_mod.f90
-Tlm/fv3jedi_traj_interface_mod.F90
-Tlm/fv3jedi_traj_mod.f90
-Tlm/TrajFV3JEDIFortran.h
 )
 
 list( APPEND fv3jedi_geos_src_files
