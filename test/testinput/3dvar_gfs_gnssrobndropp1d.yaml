@@ -35,7 +35,7 @@ cost_function:
       ObsFilters:
       - Filter: Domain Check
         where:
-        - variable: altitude
+        - variable: impact_height
           minvalue: 0
           maxvalue: 50000
         - variable: earth_radius_of_curvature
