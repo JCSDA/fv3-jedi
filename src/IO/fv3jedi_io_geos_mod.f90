@@ -366,9 +366,9 @@ character(len=6)   :: time6s
 integer :: n, lev, date8, time6
 integer :: varid(1000), date(6), vc
 integer(kind=c_int) :: idate, isecs
-integer :: x_dimid, y_dimid, n_dimid, z_dimid, t_dimid
+integer :: x_dimid, y_dimid, n_dimid, z_dimid, t_dimid, z4_dimid
 integer :: ndimidsv, ndimidsg, ndimids2, ndimids3
-integer, allocatable :: dimidsv(:), dimidsg(:), dimids2(:), dimids3(:)
+integer, allocatable :: dimidsv(:), dimidsg(:), dimids2(:), dimids3(:), dimids3_4(:)
 integer, target, allocatable :: istart3(:)
 integer, allocatable :: dimids(:), intarray(:)
 real(kind=kind_real), allocatable :: arrayg(:,:), realarray(:)
@@ -423,6 +423,8 @@ if (self%iam_io_proc) then
   call nccheck ( nf90_def_dim(self%ncid, "lev",  geom%npz,    z_dimid), "nf90_def_dim lev"  )
   call nccheck ( nf90_def_dim(self%ncid, "time", 1,           t_dimid), "nf90_def_dim time" )
 
+  call nccheck ( nf90_def_dim(self%ncid, "lev4", 4, z4_dimid), "nf90_def_dim lev"  )
+
   ! DimId arrays
   ndimidsv = 1
   ndimidsg = 3
@@ -437,6 +439,8 @@ if (self%iam_io_proc) then
   dimids2 =  (/ x_dimid, y_dimid, n_dimid, t_dimid /)
   allocate(dimids3(ndimids3))
   dimids3 =  (/ x_dimid, y_dimid, n_dimid, z_dimid, t_dimid /)
+  allocate(dimids3_4(ndimids3))
+  dimids3_4 =  (/ x_dimid, y_dimid, n_dimid, z4_dimid, t_dimid /)
 
   ! Define fields to be written (geom)
   vc=1;
@@ -488,6 +492,9 @@ if (self%iam_io_proc) then
     elseif (fields(n)%npz == geom%npz) then
       allocate(dimids(ndimids3))
       dimids = dimids3
+    elseif (fields(n)%npz == 4) then
+      allocate(dimids(ndimids3))
+      dimids = dimids3_4
     else
       call abor1_ftn("write_geos: vertical dimension not supported")
     endif
