@@ -119,12 +119,10 @@ cost_function:
           obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/aircraft_hyb-fgat-gfs_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
         name: Aircraft
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -132,10 +130,7 @@ cost_function:
         threshold: 3
         apply_at_iterations: 0
       - Filter: Background Check
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
+        variables: [eastward_wind,northward_wind,air_temperature]
         threshold: 6.0
 #      - Filter: BlackList
 #        where:
@@ -147,12 +142,10 @@ cost_function:
           obsfile: Data/obs/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/sondes_hyb-fgat-gfs_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
         name: Radiosonde
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -160,10 +153,7 @@ cost_function:
         threshold: 3
         apply_at_iterations: 0
       - Filter: Background Check
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
+        variables: [eastward_wind,northward_wind,air_temperature]
         threshold: 6.0
     - ObsSpace:
         name: GnssroRef
@@ -171,6 +161,8 @@ cost_function:
          obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
          obsfile: Data/hofx/gnssro_hyb-fgat-gfs_2018041500_s.nc4
+        simulate:
+         variables: [refractivity]
       ObsOperator:
         name: GnssroRef
         ObsOptions:
@@ -206,9 +198,11 @@ cost_function:
           obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/amsua_n19_hyb-fgat-gfs_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-15
       ObsOperator:
         name: CRTM
-        channels: 1-15
         n_Absorbers: 3
         n_Clouds: 2
         n_Aerosols: 0

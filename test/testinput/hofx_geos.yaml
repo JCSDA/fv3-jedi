@@ -26,12 +26,10 @@ Observations:
         obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/aircraft_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
       name: Aircraft
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
     ObsBias: {}
   - ObsSpace:
       name: Radiosonde
@@ -39,21 +37,21 @@ Observations:
         obsfile: Data/obs/sondes_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/sondes_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
       name: Radiosonde
-      variables:
-      - eastward_wind
-      - northward_wind
-      - air_temperature
     ObsBias: {}
   - ObsSpace:
-     name: GnssroRef
-     ObsDataIn:
-      obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
-     ObsDataOut:
-      obsfile: Data/hofx/gnssro_hofx_geos_2018041500_s.nc4
+      name: GnssroRef
+      ObsDataIn:
+        obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/gnssro_hofx_geos_2018041500_s.nc4
+      simulate:
+        variables: [refractivity]
     ObsOperator:
-     name: GnssroRef
-     ObsOptions:
+      name: GnssroRef
+      ObsOptions:
 Prints:
   frequency: PT3H

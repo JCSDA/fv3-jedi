@@ -64,12 +64,10 @@ cost_function:
           obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/aircraft_hyb-fgat-geos_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
         name: Aircraft
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -77,27 +75,18 @@ cost_function:
         threshold: 3
         apply_at_iterations: 0
       - Filter: Background Check
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
+        variables: [eastward_wind,northward_wind,air_temperature]
         threshold: 6.0
-#      - Filter: BlackList
-#        where:
-#        - variable: Land_Fraction@GeoVaLs
-#          maxvalue: 0.0
     - ObsSpace:
         name: Radiosonde
         ObsDataIn:
           obsfile: Data/obs/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/sondes_hyb-fgat-geos_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
         name: Radiosonde
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -105,17 +94,16 @@ cost_function:
         threshold: 3
         apply_at_iterations: 0
       - Filter: Background Check
-        variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
+        variables: [eastward_wind,northward_wind,air_temperature]
         threshold: 6.0
     - ObsSpace:
         name: GnssroRef
         ObsDataIn:
-         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+          obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
-         obsfile: Data/hofx/gnssro_hyb-fgat-geos_2018041500_s.nc4
+          obsfile: Data/hofx/gnssro_hyb-4dvar-geos_2018041500_s.nc4
+        simulate:
+          variables: [refractivity]
       ObsOperator:
         name: GnssroRef
         ObsOptions:
