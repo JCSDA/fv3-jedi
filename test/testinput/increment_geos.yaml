@@ -28,4 +28,3 @@ InterpTest:
     - northward_wind
     - temperature
     - specific_humidity
-    - humidity_mixing_ratio
