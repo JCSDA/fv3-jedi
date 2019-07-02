@@ -102,7 +102,7 @@ do var = 1, vars%nv
             fv3jedi_name = 'pkz', units = 'Pa', staggerloc = center, arraypointer = self%pkz)
      case("pe","PE")
        vcount=vcount+1;
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz+1, &
             short_name = vars%fldnames(var), long_name = 'pressure', &
             fv3jedi_name = 'pe', units = 'Pa', staggerloc = center, arraypointer = self%pe)
      case("ps")
@@ -198,7 +198,7 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'layer_thickness', &
             fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
-     case("phis")
+     case("phis","PHIS")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_geopotential_height', &
@@ -674,22 +674,6 @@ if (rhs%have_agrid) then !A-Grid in increment
   endif
 endif
 
-! Convert t to pt if necessary
-! ----------------------------
-if (associated(rhs%t)) then !Temperature in increment
-  if (.not.associated(rhs%t)) then !Temperature not in increment
-    if (associated(self%pt)) then !Potential temperature in state
-
-      allocate(rhs_pt(rhs%isc:rhs%iec,rhs%jsc:rhs%jec,1:rhs%npz))
-      
-      if (.not.associated(self%pkz)) &
-        call abor1_ftn("fv3jedi_state_mod add_incr: need pkz in state to convert t to pt")
-      
-      rhs_pt = rhs%t * self%pkz
-
-    endif
-  endif
-endif
 
 ! Convert ps to delp if necessary
 ! -------------------------------
@@ -793,6 +777,8 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1) == 0) then
   call copy(self, rhs)
 else
   call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+  self%calendar_type = rhs%calendar_type
+  self%date_init = rhs%date_init
 endif
 
 end subroutine change_resol
@@ -1090,21 +1076,46 @@ type(fv3jedi_io_geos) :: geos
 
 character(len=10) :: filetype
 character(len=255) :: filename
+character(len=255), allocatable :: filenames(:)
+integer :: flipvert
 
 filetype = config_get_string(c_conf,len(filetype),"filetype")
 
 if (trim(filetype) == 'gfs') then
+
   call gfs%setup(c_conf)
   call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
   call gfs%read_fields(geom, self%fields)
-elseif (trim(filetype) == 'geos') then
-  filename = config_get_string(c_conf,len(filename),"filename")
-  call geos%create(geom, 'read', filename)
+
+  flipvert = 0
+  if (config_element_exists(c_conf,"flip_vertically")) then
+    flipvert = config_get_int(c_conf,"flip_vertically")
+  endif
+  if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
+
+elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+
+  if (trim(filetype) == 'geos') then
+    allocate(filenames(1))
+    filenames(1) = config_get_string(c_conf,len(filename),"filename")
+  elseif (trim(filetype) == 'geos-rst') then
+    allocate(filenames(3))
+    filenames(1) = config_get_string(c_conf,len(filename),"filename-fvcore")
+    filenames(2) = config_get_string(c_conf,len(filename),"filename-moist")
+    filenames(3) = config_get_string(c_conf,len(filename),"filename-surf")
+  endif
+
+  call geos%create(geom, 'read', filetype, filenames)
   call geos%read_time(vdate)
   call geos%read_fields(geom, self%fields)
   call geos%delete()
+
+  deallocate(filenames)
+
 else
+
   call abor1_ftn("fv3jedi_state_mod.read: restart type not supported")
+
 endif
 
 end subroutine read_file
@@ -1118,7 +1129,7 @@ subroutine write_file(geom, self, c_conf, vdate)
   implicit none
 
   type(fv3jedi_geom),  intent(inout) :: geom     !< Geometry
-  type(fv3jedi_state), intent(in)    :: self     !< State
+  type(fv3jedi_state), intent(inout) :: self     !< State
   type(c_ptr),         intent(in)    :: c_conf   !< Configuration
   type(datetime),      intent(inout) :: vdate    !< DateTime
 
@@ -1126,18 +1137,38 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
+  integer :: tiledim
+  integer :: flipvert
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
+
+    flipvert = 0
+    if (config_element_exists(c_conf,"flip_vertically")) then
+      flipvert = config_get_int(c_conf,"flip_vertically")
+    endif
+    if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
+
     call gfs%setup(c_conf)
     call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
-  elseif (trim(filetype) == 'geos') then
-    call geos%create(geom, 'write')
+
+    if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
+
+  elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+
+    tiledim = 1
+    if (config_element_exists(c_conf,"tiledim")) then
+       tiledim = config_get_int(c_conf,"tiledim")
+    endif
+    call geos%create(geom, 'write', filetype, tiledim=tiledim)
     call geos%write_all(geom, self%fields, c_conf, vdate)
     call geos%delete()
+
   else
+
      call abor1_ftn("fv3jedi_state_mod.write: restart type not supported")
+
   endif
 
 end subroutine write_file

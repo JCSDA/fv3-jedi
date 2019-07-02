@@ -239,7 +239,7 @@ allocate ( self%ak(self%npz+1) )
 allocate ( self%bk(self%npz+1) )
 
 !Open file
-call nccheck ( nf90_open(pathfile_akbk, nf90_nowrite, ncid), "fv3jedi_geom, nf90_open" )
+call nccheck ( nf90_open(pathfile_akbk, nf90_nowrite, ncid), "fv3jedi_geom, nf90_open "//pathfile_akbk )
 
 !Search for ak in the file
 ncstat = nf90_inq_varid(ncid, "AK", akvarid)

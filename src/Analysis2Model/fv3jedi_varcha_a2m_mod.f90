@@ -30,7 +30,7 @@ public :: changevarinverse
 
 type :: fv3jedi_varcha_a2m
   character(len=10)  :: filetype !Model type
-  character(len=255) :: filename !GEOS
+  character(len=255), allocatable :: filename(:) !GEOS
   type(fv3jedi_io_gfs)  :: gfs
 end type fv3jedi_varcha_a2m
 
@@ -53,7 +53,8 @@ self%filetype = config_get_string(c_conf,len(self%filetype),"filetype")
 if (trim(self%filetype) == 'gfs') then
   call self%gfs%setup(c_conf)
 elseif (trim(self%filetype) == 'geos') then
-  self%filename = config_get_string(c_conf,len(self%filename),"filename")
+  allocate(self%filename(1))
+  self%filename(1) = config_get_string(c_conf,len(self%filename),"filename")
 endif
 
 end subroutine create
@@ -64,6 +65,8 @@ subroutine delete(self)
 
 implicit none
 type(fv3jedi_varcha_a2m), intent(inout) :: self
+
+if (trim(self%filetype) == 'geos') deallocate(self%filename)
 
 end subroutine delete
 
@@ -85,7 +88,7 @@ logical :: failed
 type(fv3jedi_io_geos) :: geos
 
 if (trim(self%filetype) == 'geos') then
-    call geos%create(geom, 'read', self%filename)
+    call geos%create(geom, 'read', self%filetype, self%filename)
 endif
 
 do index_mod = 1, xmod%nf

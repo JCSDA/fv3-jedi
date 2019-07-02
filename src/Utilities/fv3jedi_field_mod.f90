@@ -15,7 +15,7 @@ implicit none
 private
 public :: fv3jedi_field, get_field, &
           fields_rms, fields_gpnorm, fields_print, &
-          checksame
+          checksame, flip_array_vertical
 
 !Field type
 type :: fv3jedi_field
@@ -336,6 +336,47 @@ do var = 1,size(self)
 enddo
 
 end subroutine checksame
+
+! ------------------------------------------------------------------------------
+
+subroutine flip_array_vertical(nf,fields)
+
+implicit none
+integer,             intent(in)    :: nf
+type(fv3jedi_field), intent(inout) :: fields(nf)
+
+integer :: n, lev_in, lev_out
+real(kind=kind_real), allocatable :: array_tmp(:,:,:)
+
+do n = 1, nf
+
+  if (fields(n)%npz > 1) then
+
+    if (fields(n)%staggerloc == center) then
+      allocate(array_tmp(fields(n)%isc:fields(n)%iec,fields(n)%jsc:fields(n)%jec,1:fields(n)%npz))
+    elseif (fields(n)%staggerloc == north) then
+      allocate(array_tmp(fields(n)%isc:fields(n)%iec,fields(n)%jsc:fields(n)%jec+1,1:fields(n)%npz))
+    elseif (fields(n)%staggerloc == east) then
+      allocate(array_tmp(fields(n)%isc:fields(n)%iec+1,fields(n)%jsc:fields(n)%jec,1:fields(n)%npz))
+    endif
+
+    do lev_in = 1,fields(n)%npz
+
+      lev_out = fields(n)%npz-lev_in+1
+      array_tmp(:,:,lev_out) = fields(n)%array(:,:,lev_in)
+
+    enddo
+
+    fields(n)%array = array_tmp
+
+    deallocate(array_tmp)
+
+  endif
+
+enddo
+
+end subroutine flip_array_vertical
+
 ! ------------------------------------------------------------------------------
 
 end module fv3jedi_field_mod

@@ -720,6 +720,8 @@ if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   call copy(self, rhs)
 else
   call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+  self%calendar_type = rhs%calendar_type
+  self%date_init = rhs%date_init
 endif
 
 end subroutine change_resol
@@ -739,6 +741,7 @@ subroutine read_file(geom, self, c_conf, vdate)
 
   character(len=10) :: filetype
   character(len=255) :: filename
+  character(len=255), allocatable :: filenames(:)
   integer :: psinfile
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
@@ -749,17 +752,34 @@ subroutine read_file(geom, self, c_conf, vdate)
   endif
 
   if (trim(filetype) == 'gfs') then
+
     call gfs%setup(c_conf,psinfile = psinfile)
     call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
     call gfs%read_fields(geom, self%fields)
-  elseif (trim(filetype) == 'geos') then
-    filename = config_get_string(c_conf,len(filename),"filename")
-    call geos%create(geom, 'read', filename)
+
+  elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+
+    if (trim(filetype) == 'geos') then
+      allocate(filenames(1))
+      filenames(1) = config_get_string(c_conf,len(filename),"filename")
+    elseif (trim(filetype) == 'geos-rst') then
+      allocate(filenames(3))
+      filenames(1) = config_get_string(c_conf,len(filename),"filename-fvcore")
+      filenames(2) = config_get_string(c_conf,len(filename),"filename-moist")
+      filenames(3) = config_get_string(c_conf,len(filename),"filename-surf")
+    endif
+
+    call geos%create(geom, 'read', filetype, filenames)
     call geos%read_time(vdate)
     call geos%read_fields(geom, self%fields)
     call geos%delete()
+
+    deallocate(filenames)
+
   else
+
      call abor1_ftn("fv3jedi_increment_mod.read: restart type not supported")
+
   endif
 
 end subroutine read_file
@@ -779,14 +799,19 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
+  integer :: tiledim
 
   filetype = config_get_string(c_conf,len(filetype),"filetype")
 
   if (trim(filetype) == 'gfs') then
     call gfs%setup(c_conf)
     call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
-  elseif (trim(filetype) == 'geos') then
-    call geos%create(geom, 'write')
+  elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+    tiledim = 1
+    if (config_element_exists(c_conf,"tiledim")) then
+       tiledim = config_get_int(c_conf,"tiledim")
+    endif
+    call geos%create(geom, 'write', filetype, tiledim=tiledim)
     call geos%write_all(geom, self%fields, c_conf, vdate)
     call geos%delete()
   else

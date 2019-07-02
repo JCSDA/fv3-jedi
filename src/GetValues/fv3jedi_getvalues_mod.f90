@@ -68,6 +68,8 @@ real(kind=kind_real), allocatable :: prsi(:,:,:) !Pressure Pa, interfaces
 real(kind=kind_real), allocatable :: prs (:,:,:) !Pressure Pa, midpoint
 real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
 
+real(kind=kind_real), allocatable :: t   (:,:,:) !Temperature
+
 !Local moisture variables
 real(kind=kind_real), allocatable :: qsat(:,:,:) !Saturation specific humidity
 
@@ -129,6 +131,25 @@ if (nlocsg == 0) then
   return
 endif
 
+
+! Variable transforms
+! -------------------
+
+! Temperature
+allocate(t(isc:iec,jsc:jec,npz  ))
+
+if (associated(state%t)) then
+  t = state%t
+elseif (associated(state%pt)) then
+  if (.not. associated(state%pkz)) then
+    call abor1_ftn("fv3jedi_getvalues_mod.getvalues: A state with potential temperature needs pressure to the kappa")
+  endif
+  call pt_to_t(geom,state%pkz,state%pt,t)
+else
+  call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute temperature from the state")
+endif
+
+
 ! Initialize the interpolation trajectory
 ! ---------------------------------------
 if (present(traj)) then
@@ -142,7 +163,7 @@ if (present(traj)) then
      if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
      if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
 
-     traj%t = state%t
+     traj%t = t
      traj%q = state%q
 
      pbump_alloc => traj%lalloc
@@ -189,11 +210,16 @@ elseif (associated(state%ps)) then
   do jlev = 1,geom%npz
     delp(:,:,jlev) = (geom%ak(jlev+1)-geom%ak(jlev))+(geom%bk(jlev+1)-geom%bk(jlev))*state%ps(:,:,1)
   enddo
+elseif (associated(state%pe)) then
+  do jlev = 1,geom%npz
+    delp(:,:,jlev) = state%pe(:,:,jlev+1) - state%pe(:,:,jlev)
+  enddo
 else
   call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute delp from the state")
 endif
 
 call delp_to_pe_p_logp(geom,delp,prsi,prs,logp)
+
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -275,7 +301,7 @@ if (associated(state%slmsk)) then
     enddo
   enddo
 
-  call crtm_ade_efr( geom,prsi,state%t,delp, &
+  call crtm_ade_efr( geom,prsi,t,delp, &
                      water_coverage_m,state%q, &
                      state%ql,state%qi, &
                      ql_ade,qi_ade,ql_efr,qi_efr )
@@ -317,7 +343,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%t
+    geovalm = t
     geoval => geovalm
 
   case ("specific_humidity")
@@ -331,7 +357,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    call T_to_Tv(geom,state%t,state%q,geovalm)
+    call T_to_Tv(geom,t,state%q,geovalm)
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
@@ -346,7 +372,7 @@ do jvar = 1, vars%nv
     nvl = npz
     do_interp = .true.
     allocate(qsat(isc:iec,jsc:jec,npz  ))
-    call dqsat(geom,state%t,prs,qsat=qsat)
+    call dqsat(geom,t,prs,qsat=qsat)
     call q_to_rh(geom,qsat,state%q,geovalm)
     geoval => geovalm
     deallocate(qsat)
@@ -367,7 +393,7 @@ do jvar = 1, vars%nv
 
   case ("geopotential_height")
 
-    call geop_height(geom,prs,prsi,state%t,state%q,&
+    call geop_height(geom,prs,prsi,t,state%q,&
                      state%phis(:,:,1),use_compress,geovalm)
     nvl = npz
     do_interp = .true.
@@ -375,7 +401,7 @@ do jvar = 1, vars%nv
 
   case ("geopotential_height_levels")
 
-    call geop_height_levels(geom,prs,prsi,state%t,state%q,&
+    call geop_height_levels(geom,prs,prsi,t,state%q,&
                             state%phis(:,:,1),use_compress,geovale)
     nvl = npz + 1
     do_interp = .true.
@@ -733,6 +759,7 @@ if (allocated(delp                 )) deallocate(delp                 )
 if (allocated(prsi                 )) deallocate(prsi                 )
 if (allocated(prs                  )) deallocate(prs                  )
 if (allocated(logp                 )) deallocate(logp                 )
+if (allocated(t                    )) deallocate(t                    )
 if (allocated(wind_speed           )) deallocate(wind_speed           )
 if (allocated(wind_direction       )) deallocate(wind_direction       )
 if (allocated(land_type            )) deallocate(land_type            )
