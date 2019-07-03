@@ -34,60 +34,24 @@ public :: create, clone, delete, info
 
 !> Fortran derived type to hold geometry data for the FV3JEDI model
 type :: fv3jedi_geom
-  integer :: isd, ied, jsd, jed                           !data domain
-  integer :: isc, iec, jsc, jec                           !compute domain
-  integer :: npx,npy,npz                                  !x/y/z-dir grid edge points per tile
-  integer :: layout(2)                                    !Processor layout for computation
-  integer :: io_layout(2)                                 !Processor layout for read/write
-  integer :: halo                                         !Number of halo points, normally 3
-  character(len=255) :: nml_file                          !FV3 nml file associated with this geom
-  integer :: size_cubic_grid                              !Size of cubed sphere grid (cell center)
-  type(domain2D) :: domain                                !MPP domain
-  integer :: ntile                                        !Tile ID
-  integer :: ntiles = 6                                   !Number of tiles, always 6
-  integer :: stackmax                                     !Stackmax
-  real(kind=kind_real), allocatable :: grid_lon(:,:)      !Longitude at cell center
-  real(kind=kind_real), allocatable :: grid_lat(:,:)      !Latitude at cell center
-  real(kind=kind_real), allocatable :: egrid_lon(:,:)      !Longitude at cell center
-  real(kind=kind_real), allocatable :: egrid_lat(:,:)      !Latitude at cell center
-  real(kind=kind_real), allocatable :: area(:,:)          !Grid area
-  real(kind=kind_real), allocatable :: ak(:),bk(:)        !Model level coefficients
-  real(kind=kind_real) :: ptop                            !Pressure at top of domain
-  real(kind=kind_real), allocatable :: sin_sg(:,:,:)
-  real(kind=kind_real), allocatable :: cos_sg(:,:,:)
-  real(kind=kind_real), allocatable :: cosa_u(:,:)
-  real(kind=kind_real), allocatable :: cosa_v(:,:)
-  real(kind=kind_real), allocatable :: cosa_s(:,:)
-  real(kind=kind_real), allocatable :: rsin_u(:,:)
-  real(kind=kind_real), allocatable :: rsin_v(:,:)
-  real(kind=kind_real), allocatable :: rsin2(:,:)
-  real(kind=kind_real), allocatable :: dxa(:,:)
-  real(kind=kind_real), allocatable :: dya(:,:)
-  real(kind=kind_real), allocatable :: dx(:,:)
-  real(kind=kind_real), allocatable :: dy(:,:)
-  real(kind=kind_real), allocatable :: dxc(:,:)
-  real(kind=kind_real), allocatable :: dyc(:,:)
-  real(kind=kind_real), allocatable :: rarea(:,:)
-  real(kind=kind_real), allocatable :: rarea_c(:,:)
-  real(kind=kind_real), allocatable :: edge_w(:)
-  real(kind=kind_real), allocatable :: edge_e(:)
-  real(kind=kind_real), allocatable :: edge_s(:)
-  real(kind=kind_real), allocatable :: edge_n(:)
-  real(kind=kind_real), allocatable :: grid(:,:,:)
-  real(kind=kind_real), allocatable :: agrid(:,:,:)
-  logical :: sw_corner, se_corner, ne_corner, nw_corner
-  real(kind=kind_real), allocatable :: vlon(:,:,:)
-  real(kind=kind_real), allocatable :: vlat(:,:,:)
-  real(kind=kind_real), allocatable :: edge_vect_n(:)
-  real(kind=kind_real), allocatable :: edge_vect_e(:)
-  real(kind=kind_real), allocatable :: edge_vect_s(:)
-  real(kind=kind_real), allocatable :: edge_vect_w(:)
-  real(kind=kind_real), allocatable :: es(:,:,:,:)
-  real(kind=kind_real), allocatable :: ew(:,:,:,:)
-  real(kind=kind_real), allocatable :: a11(:,:)
-  real(kind=kind_real), allocatable :: a12(:,:)
-  real(kind=kind_real), allocatable :: a21(:,:)
-  real(kind=kind_real), allocatable :: a22(:,:)
+  integer :: isd, ied, jsd, jed                                                     !data domain
+  integer :: isc, iec, jsc, jec                                                     !compute domain
+  integer :: npx,npy,npz                                                            !x/y/z-dir grid edge points per tile
+  integer :: layout(2), io_layout(2)                                                !Processor layouts
+  integer :: ntile, ntiles                                                          !Tile number and total
+  real(kind=kind_real) :: ptop                                                      !Pressure at top of domain
+  type(domain2D) :: domain                                                          !MPP domain
+  real(kind=kind_real), allocatable, dimension(:)       :: ak, bk                   !Model level coefficients
+  real(kind=kind_real), allocatable, dimension(:,:)     :: grid_lon, grid_lat       !Lat/lon centers
+  real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
+  real(kind=kind_real), allocatable, dimension(:,:)     :: area                     !Grid area
+  real(kind=kind_real), allocatable, dimension(:,:)     :: dx, dy                   !dx/dy at edges
+  real(kind=kind_real), allocatable, dimension(:,:)     :: dxc, dyc                 !dx/dy c grid
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: grid, vlon, vlat
+  real(kind=kind_real), allocatable, dimension(:)       :: edge_vect_n, edge_vect_e
+  real(kind=kind_real), allocatable, dimension(:)       :: edge_vect_s, edge_vect_w
+  real(kind=kind_real), allocatable, dimension(:,:,:,:) :: es, ew
+  real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
 end type fv3jedi_geom
 
 ! ------------------------------------------------------------------------------
@@ -112,13 +76,6 @@ integer                               :: p_split = 1
 integer                               :: ncstat, ncid, akvarid, bkvarid, i, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
-! User input constructing the grid
-! --------------------------------
-self%nml_file = config_get_string(c_conf,len(self%nml_file),"nml_file")
-
-!Halo
-self%halo = 3
-
 
 ! Set path/filename for ak and bk
 ! -------------------------------
@@ -126,6 +83,7 @@ pathfile_akbk = config_get_string(c_conf,len(pathfile_akbk),"pathfile_akbk")
 
 
 !Intialize using the model setup routine
+! --------------------------------------
 call fv_init(FV_Atm, 300.0_kind_real, grids_on_this_pe, p_split)
 deallocate(pelist_all)
 
@@ -137,106 +95,52 @@ self%isc = FV_Atm(1)%bd%isc
 self%iec = FV_Atm(1)%bd%iec
 self%jsc = FV_Atm(1)%bd%jsc
 self%jec = FV_Atm(1)%bd%jec
+
 self%ntile  = FV_Atm(1)%tile
+self%ntiles = 6
 
 self%npx = FV_Atm(1)%npx
 self%npy = FV_Atm(1)%npy
 self%npz = FV_Atm(1)%npz
+
 self%layout(1) = FV_Atm(1)%layout(1)
 self%layout(2) = FV_Atm(1)%layout(2)
 self%io_layout(1) = FV_Atm(1)%io_layout(1)
 self%io_layout(2) = FV_Atm(1)%io_layout(2)
 
-!Lat,lon and area from
-allocate ( self%area(self%isd:self%ied, self%jsd:self%jed) )
-allocate ( self%grid_lon(self%isd:self%ied, self%jsd:self%jed) )
-allocate ( self%grid_lat(self%isd:self%ied, self%jsd:self%jed) )
-allocate ( self%egrid_lon(self%isd:self%ied+1, self%jsd:self%jed+1) )
-allocate ( self%egrid_lat(self%isd:self%ied+1, self%jsd:self%jed+1) )
+!Allocatable arrays
+allocate(self%ak(self%npz+1) )
+allocate(self%bk(self%npz+1) )
 
-self%area = FV_Atm(1)%gridstruct%area_64
-self%grid_lon = real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
-self%grid_lat = real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
-self%egrid_lon = real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
-self%egrid_lat = real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
+allocate(self%grid_lon   (self%isd  :self%ied,  self%jsd  :self%jed  ))
+allocate(self%grid_lat   (self%isd  :self%ied,  self%jsd  :self%jed  ))
+allocate(self%egrid_lon  (self%isd  :self%ied+1,self%jsd  :self%jed+1))
+allocate(self%egrid_lat  (self%isd  :self%ied+1,self%jsd  :self%jed+1))
+allocate(self%area       (self%isd  :self%ied,  self%jsd  :self%jed  ))
+allocate(self%dx         (self%isd  :self%ied  ,self%jsd  :self%jed+1))
+allocate(self%dy         (self%isd  :self%ied+1,self%jsd  :self%jed  ))
+allocate(self%dxc        (self%isd  :self%ied+1,self%jsd  :self%jed  ))
+allocate(self%dyc        (self%isd  :self%ied  ,self%jsd  :self%jed+1))
 
-allocate( self%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
-allocate( self%cos_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
-allocate( self%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate( self%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate( self%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate( self%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate( self%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(  self%rsin2(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(    self%dxa(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(    self%dya(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(     self%dx(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(     self%dy(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate(    self%dxc(self%isd:self%ied+1,self%jsd:self%jed ))
-allocate(    self%dyc(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(  self%rarea(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(self%rarea_c(self%isd:self%ied+1,self%jsd:self%jed+1))
-allocate(self%edge_s(self%npx))
-allocate(self%edge_n(self%npx))
-allocate(self%edge_w(self%npy))
-allocate(self%edge_e(self%npy))
-allocate(self%grid (self%isd:self%ied+1,self%jsd:self%jed+1,1:2))
-allocate(self%agrid(self%isd:self%ied  ,self%jsd:self%jed  ,1:2))
-allocate(self%vlon(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
-allocate(self%vlat(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(self%grid       (self%isd  :self%ied+1,self%jsd  :self%jed+1,2))
+allocate(self%vlon       (self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(self%vlat       (self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+
 allocate(self%edge_vect_n(self%isd:self%ied))
 allocate(self%edge_vect_e(self%jsd:self%jed))
 allocate(self%edge_vect_s(self%isd:self%ied))
 allocate(self%edge_vect_w(self%jsd:self%jed))
+
 allocate(self%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
 allocate(self%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
+
 allocate(self%a11(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(self%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(self%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(self%a22(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 
-self%sin_sg = Fv_Atm(1)%gridstruct%sin_sg
-self%cos_sg = Fv_Atm(1)%gridstruct%cos_sg
-self%cosa_u = Fv_Atm(1)%gridstruct%cosa_u
-self%cosa_v = Fv_Atm(1)%gridstruct%cosa_v
-self%cosa_s = Fv_Atm(1)%gridstruct%cosa_s
-self%rsin_u = Fv_Atm(1)%gridstruct%rsin_u
-self%rsin_v = Fv_Atm(1)%gridstruct%rsin_v
-self%rsin2 = Fv_Atm(1)%gridstruct%rsin2
-self%dxa = Fv_Atm(1)%gridstruct%dxa
-self%dya = Fv_Atm(1)%gridstruct%dya
-self%dx = Fv_Atm(1)%gridstruct%dx
-self%dy = Fv_Atm(1)%gridstruct%dy
-self%dxc = Fv_Atm(1)%gridstruct%dxc
-self%dyc = Fv_Atm(1)%gridstruct%dyc
-self%rarea = Fv_Atm(1)%gridstruct%rarea
-self%rarea_c = Fv_Atm(1)%gridstruct%rarea_c
-self%sw_corner = FV_Atm(1)%gridstruct%sw_corner
-self%se_corner = FV_Atm(1)%gridstruct%se_corner
-self%ne_corner = FV_Atm(1)%gridstruct%ne_corner
-self%nw_corner = FV_Atm(1)%gridstruct%nw_corner
-self%edge_s = FV_Atm(1)%gridstruct%edge_s
-self%edge_n = FV_Atm(1)%gridstruct%edge_n
-self%edge_w = FV_Atm(1)%gridstruct%edge_w
-self%edge_e = FV_Atm(1)%gridstruct%edge_e
-self%grid = FV_Atm(1)%gridstruct%grid
-self%agrid = FV_Atm(1)%gridstruct%agrid
-self%vlon = Fv_Atm(1)%gridstruct%vlon
-self%vlat = Fv_Atm(1)%gridstruct%vlat
-self%edge_vect_n = Fv_Atm(1)%gridstruct%edge_vect_n
-self%edge_vect_e = Fv_Atm(1)%gridstruct%edge_vect_e
-self%edge_vect_s = Fv_Atm(1)%gridstruct%edge_vect_s
-self%edge_vect_w = Fv_Atm(1)%gridstruct%edge_vect_w
-self%es = Fv_Atm(1)%gridstruct%es
-self%ew = Fv_Atm(1)%gridstruct%ew
-self%a11 = Fv_Atm(1)%gridstruct%a11
-self%a12 = Fv_Atm(1)%gridstruct%a12
-self%a21 = Fv_Atm(1)%gridstruct%a21
-self%a22 = Fv_Atm(1)%gridstruct%a22
-
-!ak and bk are read from file
-allocate ( self%ak(self%npz+1) )
-allocate ( self%bk(self%npz+1) )
+! ak and bk hybrid coordinate coefficients
+! ----------------------------------------
 
 !Open file
 call nccheck ( nf90_open(pathfile_akbk, nf90_nowrite, ncid), "fv3jedi_geom, nf90_open "//pathfile_akbk )
@@ -280,6 +184,37 @@ if (readdim == -1) call abor1_ftn("fv3-jedi geometry: ak/bk in file does not mat
 call nccheck( nf90_get_var(ncid, akvarid, self%ak), "fv3jedi_geom, nf90_get_var ak" )
 call nccheck( nf90_get_var(ncid, bkvarid, self%bk), "fv3jedi_geom, nf90_get_var bk" )
 
+
+! Arrays from the FV_Atm Structure
+! --------------------------------
+
+self%grid_lon  = real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
+self%grid_lat  = real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
+self%egrid_lon = real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
+self%egrid_lat = real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
+self%area      = real(FV_Atm(1)%gridstruct%area_64,kind_real)
+self%dx        = real(Fv_Atm(1)%gridstruct%dx ,kind_real)
+self%dy        = real(Fv_Atm(1)%gridstruct%dy ,kind_real)
+self%dxc       = real(Fv_Atm(1)%gridstruct%dxc,kind_real)
+self%dyc       = real(Fv_Atm(1)%gridstruct%dyc,kind_real)
+
+self%grid      = real(FV_Atm(1)%gridstruct%grid,kind_real)
+self%vlon      = real(Fv_Atm(1)%gridstruct%vlon,kind_real)
+self%vlat      = real(Fv_Atm(1)%gridstruct%vlat,kind_real)
+
+self%edge_vect_n = real(Fv_Atm(1)%gridstruct%edge_vect_n,kind_real)
+self%edge_vect_e = real(Fv_Atm(1)%gridstruct%edge_vect_e,kind_real)
+self%edge_vect_s = real(Fv_Atm(1)%gridstruct%edge_vect_s,kind_real)
+self%edge_vect_w = real(Fv_Atm(1)%gridstruct%edge_vect_w,kind_real)
+
+self%es = real(Fv_Atm(1)%gridstruct%es,kind_real)
+self%ew = real(Fv_Atm(1)%gridstruct%ew,kind_real)
+
+self%a11 = real(Fv_Atm(1)%gridstruct%a11,kind_real)
+self%a12 = real(Fv_Atm(1)%gridstruct%a12,kind_real)
+self%a21 = real(Fv_Atm(1)%gridstruct%a21,kind_real)
+self%a22 = real(Fv_Atm(1)%gridstruct%a22,kind_real)
+
 !Set Ptop
 self%ptop = self%ak(1)
 
@@ -288,13 +223,9 @@ call deallocate_fv_atmos_type(FV_Atm(1))
 deallocate(FV_Atm)
 deallocate(grids_on_this_pe)
 
-!Misc
-self%stackmax = 4000000
-self%size_cubic_grid = self%npx-1
-
 !Resetup domain to avoid risk of copied pointers
-call setup_domain( self%domain, self%size_cubic_grid, self%size_cubic_grid, &
-                   self%ntiles, self%layout, self%io_layout, self%halo)
+call setup_domain( self%domain, self%npx-1, self%npx-1, &
+                   self%ntiles, self%layout, self%io_layout, 3)
 
 end subroutine create
 
@@ -307,44 +238,31 @@ implicit none
 type(fv3jedi_geom), intent(in   ) :: self
 type(fv3jedi_geom), intent(inout) :: other
 
-allocate(other%grid_lon(self%isd:self%ied, self%jsd:self%jed))
-allocate(other%grid_lat(self%isd:self%ied, self%jsd:self%jed))
-allocate(other%egrid_lon(self%isd:self%ied+1, self%jsd:self%jed+1) )
-allocate(other%egrid_lat(self%isd:self%ied+1, self%jsd:self%jed+1) )
-allocate(other%area(self%isd:self%ied, self%jsd:self%jed))
-allocate(other%ak(self%npz+1))
-allocate(other%bk(self%npz+1))
+allocate(other%ak(self%npz+1) )
+allocate(other%bk(self%npz+1) )
 
-allocate( other%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
-allocate( other%cos_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
-allocate( other%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate( other%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate( other%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate( other%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate( other%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(  other%rsin2(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(    other%dxa(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(    other%dya(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(     other%dx(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(     other%dy(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate(    other%dxc(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate(    other%dyc(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(  other%rarea(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(other%rarea_c(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(other%edge_s(self%npx))
-allocate(other%edge_n(self%npx))
-allocate(other%edge_w(self%npy))
-allocate(other%edge_e(self%npy))
-allocate(other%grid (self%isd:self%ied+1,self%jsd:self%jed+1,1:2))
-allocate(other%agrid(self%isd:self%ied  ,self%jsd:self%jed  ,1:2))
-allocate(other%vlon(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
-allocate(other%vlat(self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(other%grid_lon   (self%isd  :self%ied,  self%jsd  :self%jed  ))
+allocate(other%grid_lat   (self%isd  :self%ied,  self%jsd  :self%jed  ))
+allocate(other%egrid_lon  (self%isd  :self%ied+1,self%jsd  :self%jed+1))
+allocate(other%egrid_lat  (self%isd  :self%ied+1,self%jsd  :self%jed+1))
+allocate(other%area       (self%isd  :self%ied,  self%jsd  :self%jed  ))
+allocate(other%dx         (self%isd  :self%ied  ,self%jsd  :self%jed+1))
+allocate(other%dy         (self%isd  :self%ied+1,self%jsd  :self%jed  ))
+allocate(other%dxc        (self%isd  :self%ied+1,self%jsd  :self%jed  ))
+allocate(other%dyc        (self%isd  :self%ied  ,self%jsd  :self%jed+1))
+
+allocate(other%grid       (self%isd  :self%ied+1,self%jsd  :self%jed+1,2))
+allocate(other%vlon       (self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(other%vlat       (self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+
 allocate(other%edge_vect_n(self%isd:self%ied))
 allocate(other%edge_vect_e(self%jsd:self%jed))
 allocate(other%edge_vect_s(self%isd:self%ied))
 allocate(other%edge_vect_w(self%jsd:self%jed))
+
 allocate(other%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
 allocate(other%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
+
 allocate(other%a11(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(other%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(other%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
@@ -355,9 +273,6 @@ other%npy             = self%npy
 other%npz             = self%npz
 other%layout          = self%layout
 other%io_layout       = self%io_layout
-other%halo            = self%halo
-other%nml_file        = self%nml_file
-other%size_cubic_grid = self%size_cubic_grid
 other%isc             = self%isc
 other%isd             = self%isd
 other%iec             = self%iec
@@ -368,57 +283,34 @@ other%jec             = self%jec
 other%jed             = self%jed
 other%ntile           = self%ntile
 other%ntiles          = self%ntiles
-other%stackmax        = self%stackmax
+other%ptop            = self%ptop
+other%ak              = self%ak
+other%bk              = self%bk
 other%grid_lon        = self%grid_lon
 other%grid_lat        = self%grid_lat
 other%egrid_lon       = self%egrid_lon
 other%egrid_lat       = self%egrid_lat
 other%area            = self%area
-other%ak              = self%ak
-other%bk              = self%bk
-other%ptop            = self%ptop
+other%dx              = self%dx
+other%dy              = self%dy
+other%dxc             = self%dxc
+other%dyc             = self%dyc
+other%grid            = self%grid
+other%vlon            = self%vlon
+other%vlat            = self%vlat
+other%edge_vect_n     = self%edge_vect_n
+other%edge_vect_e     = self%edge_vect_e
+other%edge_vect_s     = self%edge_vect_s
+other%edge_vect_w     = self%edge_vect_w
+other%es              = self%es
+other%ew              = self%ew
+other%a11             = self%a11
+other%a12             = self%a12
+other%a21             = self%a21
+other%a22             = self%a22
 
-other%sin_sg = self%sin_sg
-other%cos_sg = self%cos_sg
-other%cosa_u = self%cosa_u
-other%cosa_v = self%cosa_v
-other%cosa_s = self%cosa_s
-other%rsin_u = self%rsin_u
-other%rsin_v = self%rsin_v
-other%rsin2 = self%rsin2
-other%dxa = self%dxa
-other%dya = self%dya
-other%dx = self%dx
-other%dy = self%dy
-other%dxc = self%dxc
-other%dyc = self%dyc
-other%rarea = self%rarea
-other%rarea_c = self%rarea_c
-other%sw_corner = self%sw_corner
-other%se_corner = self%se_corner
-other%ne_corner = self%ne_corner
-other%nw_corner = self%nw_corner
-other%edge_s = self%edge_s
-other%edge_n = self%edge_n
-other%edge_w = self%edge_w
-other%edge_e = self%edge_e
-other%grid   = self%grid
-other%agrid  = self%agrid
-other%vlon = self%vlon
-other%vlat = self%vlat
-other%edge_vect_n = self%edge_vect_n
-other%edge_vect_e = self%edge_vect_e
-other%edge_vect_s = self%edge_vect_s
-other%edge_vect_w = self%edge_vect_w
-other%es = self%es
-other%ew = self%ew
-other%a11 = self%a11
-other%a12 = self%a12
-other%a21 = self%a21
-other%a22 = self%a22
-
-call setup_domain( other%domain, other%size_cubic_grid, other%size_cubic_grid, &
-                   other%ntiles, other%layout, other%io_layout, other%halo)
+call setup_domain( other%domain, other%npx-1, other%npx-1, &
+                   other%ntiles, other%layout, other%io_layout, 3)
 
 end subroutine clone
 
@@ -431,36 +323,18 @@ implicit none
 type(fv3jedi_geom), intent(inout) :: self
 
 ! Deallocate
+deallocate(self%ak)
+deallocate(self%bk)
 deallocate(self%grid_lon)
 deallocate(self%grid_lat)
 deallocate(self%egrid_lon)
 deallocate(self%egrid_lat)
 deallocate(self%area)
-deallocate(self%ak)
-deallocate(self%bk)
-
-deallocate(self%sin_sg)
-deallocate(self%cos_sg)
-deallocate(self%cosa_u)
-deallocate(self%cosa_v)
-deallocate(self%cosa_s)
-deallocate(self%rsin_u)
-deallocate(self%rsin_v)
-deallocate( self%rsin2)
-deallocate(   self%dxa)
-deallocate(   self%dya)
-deallocate(    self%dx)
-deallocate(    self%dy)
-deallocate(    self%dxc)
-deallocate(    self%dyc)
-deallocate( self%rarea)
-deallocate( self%rarea_c)
-deallocate(self%edge_s)
-deallocate(self%edge_n)
-deallocate(self%edge_w)
-deallocate(self%edge_e)
+deallocate(self%dx)
+deallocate(self%dy)
+deallocate(self%dxc)
+deallocate(self%dyc)
 deallocate(self%grid)
-deallocate(self%agrid)
 deallocate(self%vlon)
 deallocate(self%vlat)
 deallocate(self%edge_vect_n)

@@ -170,8 +170,6 @@ type(fv3jedi_increment),     intent(inout) :: xctl
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
-!Tangent linear inverse (analysis to control)
-
 xctl%psi = xana%ua
 xctl%chi = xana%va
 xctl%tv  = xana%t
@@ -180,27 +178,6 @@ xctl%rh  = xana%q
 xctl%qi  = xana%qi
 xctl%ql  = xana%ql
 xctl%o3  = xana%o3
-
-!allocate (vort(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-!allocate (divg(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-!allocate (  ua(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-!allocate (  va(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-!
-!!> Convert u,v to vorticity and divergence
-!call uv_to_vortdivg(geom,xana%ua,xana%va,ua,va,vort,divg)
-!
-!!> Poisson solver for vorticity and divergence to psi and chi
-!call vortdivg_to_psichi(geom,vort,divg,xctl%psi,xctl%chi)
-!
-!!> T to Tv
-!call t_to_tv_tl(geom,self%ttraj,xana%t,self%qtraj,xana%q)
-!xctl%tv = xana%t
-!
-!!> q to RH
-!call q_to_rh_tl(geom,self%qsattraj,xana%q,xctl%rh)
-!
-!!Deallocate
-!deallocate(vort,divg,ua,va)
 
 end subroutine multiplyinverse
 
