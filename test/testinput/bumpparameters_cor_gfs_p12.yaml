@@ -1,0 +1,93 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+resolution:
+  nml_file: Data/fv3files/input_gfs_c12_p12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+date: '2018-04-14T21:00:00Z'
+background:
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+bump:
+  prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs_p12
+  method: cor
+  nonunit_diag: 1
+  strategy: specific_univariate
+  new_nicas: 1
+  ntry: 3
+  nrep: 2
+  lsqrt: 1
+  resol: 6
+  network: 0
+  mpicom: 2
+  default_seed: 1
+# Forced length-scales
+# --------------------
+  forced_radii: 1
+  rh: 2500000.0
+  rv: 0.3
+# Diagnostic based on ens
+# -----------------------
+  new_hdiag: 0
+  nc1: 2000
+  nc2: 500
+  nc3: 15
+  dc: 200000.0
+  nl0r: 11
+  ne: 5
+  #local_diag: 1
+  #local_rad: 1000000
+  minim_algo: hooke
+  #diag_rhflt: 3000000
+# Variance filter
+# ---------------
+#  var_filter: 1
+#  var_niter: 10
+#  var_rhflt: 1000000.0
+#  Dirac gridded output
+#  --------------------
+#  load_nicas: 1
+  check_dirac: 0
+  ndir: 1
+  londir: [0.0]
+  latdir: [0.0]
+  levdir: [50]
+  ivdir: [1]
+  itsdir: [1]
+  grid_output: 1
+  grid_resol: 200000.0
+output:
+- parameter: var
+  filetype: gfs
+  datapath_tile: Data/bump/
+  filename_core: bumpparameters_cor_gfs_p12.var.fv_core.res.nc
+  filename_trcr: bumpparameters_cor_gfs_p12.var.fv_tracer.res.nc
+  filename_sfcd: bumpparameters_cor_gfs_p12.var.sfc_data.nc
+  filename_sfcw: bumpparameters_cor_gfs_p12.var.fv_srf_wnd.res.nc
+  filename_cplr: bumpparameters_cor_gfs_p12.var.coupler.res
+  date: '2018-04-14T21:00:00Z'
+- parameter: cor_rh
+  filetype: gfs
+  datapath_tile: Data/bump/
+  filename_core: bumpparameters_cor_gfs_p12.cor_rh.fv_core.res.nc
+  filename_trcr: bumpparameters_cor_gfs_p12.cor_rh.fv_tracer.res.nc
+  filename_sfcd: bumpparameters_cor_gfs_p12.cor_rh.sfc_data.nc
+  filename_sfcw: bumpparameters_cor_gfs_p12.cor_rh.fv_srf_wnd.res.nc
+  filename_cplr: bumpparameters_cor_gfs_p12.cor_rh.coupler.res
+  date: '2018-04-14T21:00:00Z'
+- parameter: cor_rv
+  filetype: gfs
+  datapath_tile: Data/bump/
+  filename_core: bumpparameters_cor_gfs_p12.cor_rv.fv_core.res.nc
+  filename_trcr: bumpparameters_cor_gfs_p12.cor_rv.fv_tracer.res.nc
+  filename_sfcd: bumpparameters_cor_gfs_p12.cor_rv.sfc_data.nc
+  filename_sfcw: bumpparameters_cor_gfs_p12.cor_rv.fv_srf_wnd.res.nc
+  filename_cplr: bumpparameters_cor_gfs_p12.cor_rv.coupler.res
+  date: '2018-04-14T21:00:00Z'
