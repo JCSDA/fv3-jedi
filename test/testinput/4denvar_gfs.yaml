@@ -356,8 +356,6 @@ cost_function:
           channels: 1-15
       ObsOperator:
         name: CRTM
-        n_Absorbers: 3
-        n_Clouds: 2
         n_Aerosols: 0
         Sensor_ID: amsua_n19
         EndianType: little_endian

@@ -149,7 +149,6 @@ else
   call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute temperature from the state")
 endif
 
-
 ! Initialize the interpolation trajectory
 ! ---------------------------------------
 if (present(traj)) then
@@ -162,9 +161,11 @@ if (present(traj)) then
 
      if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
      if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
+     if (.not.allocated(traj%o3)) allocate(traj%o3(isc:iec,jsc:jec,1:npz))
 
      traj%t = t
      traj%q = state%q
+     traj%o3 = state%o3
 
      pbump_alloc => traj%lalloc
      pbumpid => traj%bumpid
@@ -801,7 +802,7 @@ type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
 character(len=*), parameter :: myname = 'getvalues_tl'
 
-integer :: ii, jj, ji, jvar, jlev, jloc
+integer :: ii, jj, ji, jvar, jlev, jloc, i, j, k
 real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
@@ -896,6 +897,24 @@ do jvar = 1, vars%nv
     nvl = inc%npz
     do_interp = .true.
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
+    geoval => geovalm
+
+  case ("mass_concentration_of_ozone_in_air")
+
+    nvl = npz
+    do_interp = .true.
+	do k = 1,npz
+     do j = jsc,jec
+      do i = isc,iec
+	   if (traj%o3(i,j,k) .ge. 0.0_kind_real) then
+	    geovalm = inc%o3
+	   else
+	    geovalm = 0.0_kind_real
+	   endif
+      enddo
+     enddo
+    enddo
+
     geoval => geovalm
 
   case ("air_pressure")
@@ -1097,7 +1116,7 @@ integer :: ii, jj, ji, jvar, jlev, jloc
 real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
-integer :: nvl
+integer :: nvl, i, j, k
 real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
@@ -1169,6 +1188,12 @@ do jvar = 1, vars%nv
     geoval => geovalm
 
   case ("specific_humidity")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("mass_concentration_of_ozone_in_air")
 
     nvl = npz
     do_interp = .true.
@@ -1331,6 +1356,20 @@ do jvar = 1, vars%nv
   case ("air_temperature","temperature")
 
     inc%t = inc%t + geovalm
+
+  case ("mass_concentration_of_ozone_in_air")
+
+  	do k = 1,npz
+     do j = jsc,jec
+      do i = isc,iec
+	   if (traj%o3(i,j,k) .ge. 0.0_kind_real) then
+	    inc%o3 = inc%o3 + geovalm
+	   else
+	    inc%o3 = 0.0_kind_real
+	   endif
+      enddo
+     enddo
+    enddo
 
   case ("specific_humidity")
 

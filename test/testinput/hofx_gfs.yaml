@@ -60,8 +60,8 @@ Observations:
         channels: 1-15
     ObsOperator:
       name: CRTM
-      n_Absorbers: 3
-      n_Clouds: 2
+      Extra_Absorbers: [carbon_dioxide]
+      Clouds: [cloud_liquid_water, cloud_ice]
       n_Aerosols: 0
       Sensor_ID: amsua_n19
       EndianType: little_endian
@@ -77,8 +77,7 @@ Observations:
         channels: 1,6-7
     ObsOperator:
       name: CRTM
-      n_Absorbers: 3
-      n_Clouds: 0
+      Extra_Absorbers: [carbon_dioxide]
       n_Aerosols: 0
       Sensor_ID: airs_aqua
       EndianType: little_endian
@@ -105,8 +104,7 @@ Observations:
         channels: 1-15
     ObsOperator:
       name: CRTM
-      n_Absorbers: 3
-      n_Clouds: 0
+      Extra_Absorbers: [carbon_dioxide]
       n_Aerosols: 0
       Sensor_ID: hirs4_metop-a
       EndianType: little_endian
@@ -128,8 +126,7 @@ Observations:
                   464,501,529,710,713,742,882,890,937,995,1008,1022,1058
     ObsOperator:
       name: CRTM
-      n_Absorbers: 3
-      n_Clouds: 0
+      Extra_Absorbers: [carbon_dioxide]
       n_Aerosols: 0
       Sensor_ID: cris-fsr_npp
       EndianType: little_endian
@@ -155,8 +152,7 @@ Observations:
         channels: 1-5
     ObsOperator:
       name: CRTM
-      n_Absorbers: 3
-      n_Clouds: 0
+      Extra_Absorbers: [carbon_dioxide]
       n_Aerosols: 0
       Sensor_ID: mhs_n19
       EndianType: little_endian
@@ -172,8 +168,7 @@ Observations:
         channels: 16,29,32,35,38,41,44
     ObsOperator:
       name: CRTM
-      n_Absorbers: 3
-      n_Clouds: 0
+      Extra_Absorbers: [carbon_dioxide]
       n_Aerosols: 0
       Sensor_ID: iasi_metop-a
       EndianType: little_endian
@@ -189,8 +184,7 @@ Observations:
         channels: 1-5
     ObsOperator:
      name: CRTM
-     n_Absorbers: 3
-     n_Clouds: 0
+     Extra_Absorbers: [carbon_dioxide]
      n_Aerosols: 0
      Sensor_ID: mhs_n19
      EndianType: little_endian
@@ -206,8 +200,7 @@ Observations:
         channels: 5
     ObsOperator:
      name: CRTM
-     n_Absorbers: 3
-     n_Clouds: 0
+     Extra_Absorbers: [carbon_dioxide]
      n_Aerosols: 0
      Sensor_ID: seviri_m08
      EndianType: little_endian

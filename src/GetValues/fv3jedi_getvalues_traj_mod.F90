@@ -20,6 +20,7 @@ type :: fv3jedi_getvalues_traj
  logical :: noobs
  real(kind=kind_real), allocatable :: t(:,:,:)
  real(kind=kind_real), allocatable :: q(:,:,:)
+ real(kind=kind_real), allocatable :: o3(:,:,:)
  type(bump_type) :: bump
  logical :: lalloc = .false.
  contains
@@ -75,6 +76,7 @@ call fv3jedi_getvalues_traj_registry%get(c_key_self, self)
 if (self%lalloc) then
   if (allocated(self%t)) deallocate(self%t)
   if (allocated(self%q)) deallocate(self%q)
+  if (allocated(self%o3)) deallocate(self%o3)
   call self%bump%dealloc
 endif
 

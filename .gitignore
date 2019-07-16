@@ -3,3 +3,5 @@
 *.swp
 *.png
 Testing/
+/.vs
+/out/build/x64-Debug

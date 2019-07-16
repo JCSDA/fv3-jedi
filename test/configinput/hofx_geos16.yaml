@@ -57,8 +57,8 @@ Observations:
         obsfile: Data/amsua_n19_obs_2018041500_hofx.nc4
     ObsBias: {}
     ObsOptions:
-      n_Absorbers: 3
-      n_Clouds: 2
+      Extra_Absorbers: [carbon_dioxide]
+      Clouds: [cloud_liquid_water, cloud_ice]
       n_Aerosols: 0
       Sensor_ID: 'amsua_n19'
       EndianType: 'little_endian'
@@ -72,8 +72,8 @@ Observations:
         obsfile: Data/goes16_ch10_disk_2018041500.nc4
     ObsBias: {}
     ObsOptions:
-      n_Absorbers: 3
-      n_Clouds: 2
+      Extra_Absorbers: [carbon_dioxide]
+      Clouds: [cloud_liquid_water, cloud_ice]
       n_Aerosols: 0
       Sensor_ID: 'abi_gr'
       EndianType: 'little_endian'
