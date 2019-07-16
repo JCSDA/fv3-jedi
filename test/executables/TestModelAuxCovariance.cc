@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "FV3JEDITraits.h"
-#include "RunFV3JEDI.h"
+#include "fv3jedi/Utilities/FV3JEDITraits.h"
+#include "fv3jedi/Run/RunFV3JEDI.h"
 #include "test/interface/ModelAuxCovariance.h"
 
 int main(int argc,  char ** argv) {

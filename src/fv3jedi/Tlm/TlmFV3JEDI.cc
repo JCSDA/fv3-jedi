@@ -1,0 +1,136 @@
+/*
+ * (C) Copyright 2017 UCAR
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+#include <vector>
+
+#include "eckit/config/LocalConfiguration.h"
+
+#include "oops/util/abor1_cpp.h"
+#include "oops/util/DateTime.h"
+#include "oops/util/Logger.h"
+
+#include "TlmFV3JEDIFortran.h"
+
+#include "fv3jedi/Geometry/GeometryFV3JEDI.h"
+#include "fv3jedi/Increment/IncrementFV3JEDI.h"
+#include "fv3jedi/Model/traj/ModelTrajFV3JEDI.h"
+#include "fv3jedi/State/StateFV3JEDI.h"
+#include "fv3jedi/Tlm/TlmFV3JEDI.h"
+#include "fv3jedi/Utilities/FV3JEDITraits.h"
+#include "fv3jedi/Utilities/UtilitiesFV3JEDI.h"
+
+namespace fv3jedi {
+
+// -----------------------------------------------------------------------------
+static oops::LinearModelMaker<FV3JEDITraits, TlmFV3JEDI>
+                                     makerFV3JEDITLM_("FV3JEDITLM");
+// -----------------------------------------------------------------------------
+TlmFV3JEDI::TlmFV3JEDI(const GeometryFV3JEDI & resol,
+                        const eckit::Configuration & tlConf)
+  : keyConfig_(0), tstep_(), resol_(resol), traj_(),
+    lrmodel_(resol_, eckit::LocalConfiguration(tlConf, "trajectory")),
+    linvars_(tlConf)
+{
+  tstep_ = util::Duration(tlConf.getString("tstep"));
+
+  const eckit::Configuration * configc = &tlConf;
+
+  const eckit::Configuration * confvars = &linvars_.toFortran();
+
+  stageFv3Files(tlConf);
+  fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_, &confvars);
+  removeFv3Files();
+  oops::Log::trace() << "TlmFV3JEDI created" << std::endl;
+}
+// -----------------------------------------------------------------------------
+TlmFV3JEDI::~TlmFV3JEDI() {
+  fv3jedi_tlm_delete_f90(keyConfig_);
+  for (trajIter jtra = traj_.begin(); jtra != traj_.end(); ++jtra) {
+    fv3jedi_traj_wipe_f90(jtra->second);
+  }
+  oops::Log::trace() << "TlmFV3JEDI destructed" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::setTrajectory(const StateFV3JEDI & xx, StateFV3JEDI & xlr,
+                                const ModelBiasFV3JEDI & bias) {
+// StateFV3JEDI xlr(resol_, xx);
+  xlr.changeResolution(xx);
+  int ftraj = lrmodel_.saveTrajectory(xlr, bias);
+  traj_[xx.validTime()] = ftraj;
+
+// should be in print method
+  std::vector<double> zstat(15);
+//  fv3jedi_traj_minmaxrms_f90(ftraj, zstat[0]);
+  oops::Log::debug() << "TlmFV3JEDI trajectory at time "
+                     << xx.validTime() << std::endl;
+  for (unsigned int jj = 0; jj < 5; ++jj) {
+    oops::Log::debug() << "  Min=" << zstat[3*jj] << ", Max=" << zstat[3*jj+1]
+                       << ", RMS=" << zstat[3*jj+2] << std::endl;
+  }
+// should be in print method
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::initializeTL(IncrementFV3JEDI & dx) const {
+  fv3jedi_tlm_initialize_tl_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
+  oops::Log::debug() << "TlmFV3JEDI::initializeTL" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::stepTL(IncrementFV3JEDI & dx,
+                         const ModelBiasIncrementFV3JEDI &) const {
+  trajICst itra = traj_.find(dx.validTime());
+  if (itra == traj_.end()) {
+    oops::Log::error() << "TlmFV3JEDI: trajectory not available at time "
+                       << dx.validTime() << std::endl;
+    ABORT("TlmFV3JEDI: trajectory not available");
+  }
+  fv3jedi_tlm_step_tl_f90(resol_.toFortran(), keyConfig_,
+                                 dx.toFortran(),
+                                  itra->second);
+  dx.validTime() += tstep_;
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::finalizeTL(IncrementFV3JEDI & dx) const {
+  fv3jedi_tlm_finalize_tl_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
+  oops::Log::debug() << "TlmFV3JEDI::finalizeTL" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::initializeAD(IncrementFV3JEDI & dx) const {
+  fv3jedi_tlm_initialize_ad_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
+  oops::Log::debug() << "TlmFV3JEDI::initializeAD" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::stepAD(IncrementFV3JEDI & dx, ModelBiasIncrementFV3JEDI &)
+    const {
+  dx.validTime() -= tstep_;
+  trajICst itra = traj_.find(dx.validTime());
+  if (itra == traj_.end()) {
+    oops::Log::error() << "TlmFV3JEDI: trajectory not available at time "
+                       << dx.validTime() << std::endl;
+    ABORT("TlmFV3JEDI: trajectory not available");
+  }
+  fv3jedi_tlm_step_ad_f90(resol_.toFortran(), keyConfig_,
+                                 dx.toFortran(),
+                                  itra->second);
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::finalizeAD(IncrementFV3JEDI & dx) const {
+  fv3jedi_tlm_finalize_ad_f90(resol_.toFortran(), keyConfig_, dx.toFortran());
+  oops::Log::debug() << "TlmFV3JEDI::finalizeAD" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void TlmFV3JEDI::print(std::ostream & os) const {
+  os << "FV3JEDI TLM Trajectory, nstep=" << traj_.size() << std::endl;
+  typedef std::map< util::DateTime, int >::const_iterator trajICst;
+  if (traj_.size() > 0) {
+    os << "FV3JEDI TLM Trajectory: times are:";
+    for (trajICst jtra = traj_.begin(); jtra != traj_.end(); ++jtra) {
+      os << "  " << jtra->first;
+    }
+  }
+}
+// -----------------------------------------------------------------------------
+}  // namespace fv3jedi

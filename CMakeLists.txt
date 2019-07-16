@@ -4,7 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 ################################################################################
-# FV3JEDI 
+# FV3JEDI
 ################################################################################
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
@@ -65,8 +65,8 @@ if( ${FV3BASEDMODEL_FOUND} )
       message("GFS FOUND: Including GFS interface")
     elseif( ${GEOS_FOUND} )
       message("GEOS FOUND: Including GEOS interface")
-      include( geos_compiler_flags )  
-    endif()   
+      include( geos_compiler_flags )
+    endif()
     include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
 else()
    message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface and using local FMS")
@@ -86,28 +86,8 @@ link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 
 list( APPEND FV3JEDI_TPLS ufo oops)
 
-set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} 
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Analysis2Model
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Control2Analysis
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/ErrorCovariance
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Geometry
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/GetValues
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Increment
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/IO
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Localization
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/fv3
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/geos
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/gfs
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/pseudo
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Model/traj
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/ModelBias
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Run
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/State
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/VariableChange
-                          ${CMAKE_CURRENT_SOURCE_DIR}/src/Tlm
+set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
+                          ${CMAKE_CURRENT_BINARY_DIR}/src
                           ${CMAKE_Fortran_MODULE_DIRECTORY})
 
 set( FV3JEDI_LIBRARIES fv3jedi )
@@ -128,7 +108,6 @@ endforeach()
 include_directories( ${FV3JEDI_INCLUDE_DIRS}
                      ${FV3JEDI_EXTRA_INCLUDE_DIRS} )
 
-add_subdirectory( mains )
 add_subdirectory( src )
 add_subdirectory( test )
 
@@ -141,9 +120,3 @@ ecbuild_install_project( NAME fv3jedi )
 
 # print the summary of the configuration
 ecbuild_print_summary()
-
-ecbuild_add_test( TARGET fv3jedi_coding_norms
-                  TYPE SCRIPT
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/cpplint.py
-                  ARGS --quiet --recursive ${CMAKE_CURRENT_SOURCE_DIR} )
-
