@@ -5,13 +5,13 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "fv3jedi/Utilities/FV3JEDITraits.h"
-#include "fv3jedi/Run/RunFV3JEDI.h"
+#include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/Run/Run.h"
 #include "test/interface/Geometry.h"
 
 int main(int argc,  char ** argv) {
-  fv3jedi::RunFV3JEDI run(argc, argv);
-  test::Geometry<fv3jedi::FV3JEDITraits> tests;
+  fv3jedi::Run run(argc, argv);
+  test::Geometry<fv3jedi::Traits> tests;
   run.execute(tests);
   return 0;
 }

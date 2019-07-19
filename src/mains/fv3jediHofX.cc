@@ -5,15 +5,15 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "fv3jedi/Run/RunFV3JEDI.h"
-#include "fv3jedi/Utilities/FV3JEDITraits.h"
+#include "fv3jedi/Run/Run.h"
 #include "fv3jedi/Utilities/instantiateObsFilterFactory.h"
+#include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/HofX.h"
 
 int main(int argc,  char ** argv) {
-  fv3jedi::RunFV3JEDI run(argc, argv);
+  fv3jedi::Run run(argc, argv);
   fv3jedi::instantiateObsFilterFactory();
-  oops::HofX<fv3jedi::FV3JEDITraits> hofx;
+  oops::HofX<fv3jedi::Traits> hofx;
   run.execute(hofx);
   return 0;
 }

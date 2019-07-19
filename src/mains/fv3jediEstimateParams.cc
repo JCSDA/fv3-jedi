@@ -5,15 +5,15 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "fv3jedi/Run/RunFV3JEDI.h"
-#include "fv3jedi/Utilities/FV3JEDITraits.h"
-#include "fv3jedi/Utilities/instantiateFV3JEDIVarChangeFactories.h"
+#include "fv3jedi/Run/Run.h"
+#include "fv3jedi/Utilities/instantiateVarChangeFactories.h"
+#include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/EstimateParams.h"
 
 int main(int argc,  char ** argv) {
-  fv3jedi::RunFV3JEDI run(argc, argv);
-  fv3jedi::instantiateFV3JEDIVarChangeFactories();
-  oops::EstimateParams<fv3jedi::FV3JEDITraits> dir;
+  fv3jedi::Run run(argc, argv);
+  fv3jedi::instantiateVarChangeFactories();
+  oops::EstimateParams<fv3jedi::Traits> dir;
   run.execute(dir);
   return 0;
 }

@@ -8,7 +8,7 @@
 #ifndef FV3JEDI_UTILITIES_INSTANTIATEOBSFILTERFACTORY_H_
 #define FV3JEDI_UTILITIES_INSTANTIATEOBSFILTERFACTORY_H_
 
-#include "fv3jedi/Utilities/FV3JEDITraits.h"
+#include "fv3jedi/Utilities/Traits.h"
 #include "oops/base/instantiateObsFilterFactory.h"
 #include "oops/base/ObsFilterBase.h"
 #include "oops/interface/ObsFilter.h"
@@ -24,30 +24,30 @@
 namespace fv3jedi {
 
 void instantiateObsFilterFactory() {
-  oops::instantiateObsFilterFactory<FV3JEDITraits>();
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::QCmanager>
+  oops::instantiateObsFilterFactory<Traits>();
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::QCmanager>
                           > makerChk0_("QCmanager");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::PreQC>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::PreQC>
                           > makerChk1_("PreQC");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::ObsDomainCheck>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::ObsDomainCheck>
                           > makerChk2_("Domain Check");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::ObsBoundsCheck>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::ObsBoundsCheck>
                           > makerChk3_("Bounds Check");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::BlackList>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::BlackList>
                           > makerChk4_("BlackList");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::BackgroundCheck>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::BackgroundCheck>
                           > makerChk5_("Background Check");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::ROobserror>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::ROobserror>
                           > makerChk6_("ROobserror");
-  static oops::FilterMaker<FV3JEDITraits,
-                 oops::ObsFilter<FV3JEDITraits, ufo::Thinning>
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::Thinning>
                           > makerChk7_("Thinning");
 }
 

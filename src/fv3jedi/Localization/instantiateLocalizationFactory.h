@@ -13,13 +13,13 @@
 
 #include "oops/interface/LocalizationBase.h"
 
-#include "fv3jedi/Localization/LocalizationMatrixFV3JEDI.h"
-#include "fv3jedi/Utilities/FV3JEDITraits.h"
+#include "fv3jedi/Localization/LocalizationMatrix.h"
+#include "fv3jedi/Utilities/Traits.h"
 
 namespace fv3jedi {
 
 void instantiateLocalizationFactory() {
-//  static oops::LocalizationMaker<fv3jedi::FV3JEDITraits,
+//  static oops::LocalizationMaker<fv3jedi::Traits,
 //  LocalizationMatrix> makerRadiosonde_("FV3JEDI");
 }
 
