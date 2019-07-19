@@ -56,9 +56,9 @@ bump:
 #  load_nicas: 1
   check_dirac: 0
   ndir: 1
-  londir: [0.0]
-  latdir: [0.0]
-  levdir: [50]
+#  londir: [0.0]
+#  latdir: [0.0]
+#  levdir: [50]
   ivdir: [1]
   itsdir: [1]
   grid_output: 1
