@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_UTILITIES_FORTRAN_H_
-#define FV3JEDI_UTILITIES_FORTRAN_H_
+#ifndef FV3JEDI_UTILITIES_INTERFACE_H_
+#define FV3JEDI_UTILITIES_INTERFACE_H_
 
 // Forward declarations
 namespace eckit {
@@ -49,4 +49,4 @@ typedef int F90state;
 typedef int F90inc;
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_UTILITIES_FORTRAN_H_
+#endif  // FV3JEDI_UTILITIES_INTERFACE_H_

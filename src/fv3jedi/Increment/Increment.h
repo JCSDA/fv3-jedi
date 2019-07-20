@@ -15,7 +15,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Increment/IncrementFortran.h"
+#include "fv3jedi/Increment/Increment.interface.h"
 #include "fv3jedi/State/State.h"
 #include "oops/base/GeneralizedDepartures.h"
 #include "oops/base/Variables.h"

@@ -10,7 +10,7 @@
 
 #include <ostream>
 
-#include "fv3jedi/GetValues/GetValuesTrajFortran.h"
+#include "fv3jedi/GetValues/GetValuesTraj.interface.h"
 #include "oops/util/Printable.h"
 
 namespace fv3jedi {

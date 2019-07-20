@@ -21,7 +21,7 @@
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Model/geos/ModelGEOSFortran.h"
+#include "fv3jedi/Model/geos/ModelGEOS.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
 
 // Forward declarations

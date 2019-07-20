@@ -22,7 +22,7 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "ModelNUOPCFortran.h"
+#include "ModelNUOPC.interface.h"
 
 // Forward declarations
 namespace eckit {

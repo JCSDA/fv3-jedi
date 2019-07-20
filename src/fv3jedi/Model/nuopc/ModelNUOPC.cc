@@ -12,7 +12,7 @@
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
 
-#include "ModelNUOPCFortran.h"
+#include "ModelNUOPC.interface.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/nuopc/ModelNUOPC.h"

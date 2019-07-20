@@ -5,10 +5,10 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_TRAJ_MODELTRAJFORTRAN_H_
-#define FV3JEDI_MODEL_TRAJ_MODELTRAJFORTRAN_H_
+#ifndef FV3JEDI_MODEL_TRAJ_MODELTRAJ_INTERFACE_H_
+#define FV3JEDI_MODEL_TRAJ_MODELTRAJ_INTERFACE_H_
 
-#include "fv3jedi/Utilities/Fortran.h"
+#include "fv3jedi/Utilities/interface.h"
 
 // Forward declarations
 namespace eckit {
@@ -35,5 +35,5 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_TRAJ_MODELTRAJFORTRAN_H_
+#endif  // FV3JEDI_MODEL_TRAJ_MODELTRAJ_INTERFACE_H_
 

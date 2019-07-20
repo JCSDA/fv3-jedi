@@ -15,7 +15,7 @@
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Localization/LocalizationMatrixFortran.h"
+#include "fv3jedi/Localization/LocalizationMatrix.interface.h"
 #include "oops/interface/LocalizationBase.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/ObjectCounter.h"

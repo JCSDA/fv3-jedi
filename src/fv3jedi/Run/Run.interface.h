@@ -5,10 +5,10 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_GETVALUES_GETVALUESTRAJFORTRAN_H_
-#define FV3JEDI_GETVALUES_GETVALUESTRAJFORTRAN_H_
+#ifndef FV3JEDI_RUN_RUN_INTERFACE_H_
+#define FV3JEDI_RUN_RUN_INTERFACE_H_
 
-#include "fv3jedi/Utilities/Fortran.h"
+#include "Run.interface.h"
 
 // Forward declarations
 namespace eckit {
@@ -24,11 +24,11 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_getvalues_traj_setup_f90(const F90ootrj &);
-  void fv3jedi_getvalues_traj_delete_f90(const F90ootrj &);
+  void fv3jedi_setup_f(const eckit::Configuration * const *);
+  void fv3jedi_finalize_f();
 
-};  // extern "C"
+}  // extern "C"
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_GETVALUES_GETVALUESTRAJFORTRAN_H_
+#endif  // FV3JEDI_RUN_RUN_INTERFACE_H_

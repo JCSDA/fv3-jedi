@@ -13,7 +13,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include "fv3jedi/ErrorCovariance/ErrorCovarianceFortran.h"
+#include "fv3jedi/ErrorCovariance/ErrorCovariance.interface.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 

@@ -8,7 +8,7 @@
 #ifndef FV3JEDI_ANALYSIS2MODEL_LINVARCHAA2M_INTERFACE_H_
 #define FV3JEDI_ANALYSIS2MODEL_LINVARCHAA2M_INTERFACE_H_
 
-#include "fv3jedi/Utilities/Fortran.h"
+#include "fv3jedi/Utilities/interface.h"
 
 // Forward declarations
 namespace eckit {

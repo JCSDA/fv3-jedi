@@ -14,7 +14,7 @@
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
-#include "fv3jedi/Geometry/GeometryFortran.h"
+#include "fv3jedi/Geometry/Geometry.interface.h"
 
 namespace eckit {
   class Configuration;

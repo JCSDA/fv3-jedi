@@ -17,7 +17,7 @@
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
-#include "fv3jedi/Tlm/TlmFortran.h"
+#include "fv3jedi/Tlm/Tlm.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
 
 // Forward declarations

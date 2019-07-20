@@ -9,7 +9,7 @@
 #define FV3JEDI_RUN_RUN_H_
 
 #include "oops/runs/Run.h"
-#include "fv3jedi/Run/RunFortran.h"
+#include "fv3jedi/Run/Run.interface.h"
 
 namespace fv3jedi {
 
