@@ -8,8 +8,8 @@
 #ifndef FV3JEDI_RUN_RUN_H_
 #define FV3JEDI_RUN_RUN_H_
 
-#include "oops/runs/Run.h"
 #include "fv3jedi/Run/Run.interface.h"
+#include "oops/runs/Run.h"
 
 namespace fv3jedi {
 
