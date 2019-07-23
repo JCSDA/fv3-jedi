@@ -408,7 +408,7 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovale
 
-  case ("sfc_geopotential_height")
+  case ("surface_geopotential_height")
 
     nvl = 1
     do_interp = .true.
