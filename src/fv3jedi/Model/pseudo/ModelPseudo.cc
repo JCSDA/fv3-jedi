@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "eckit/config/Configuration.h"
+#include "eckit/exception/Exceptions.h"
 
 #include "oops/parallel/mpi/mpi.h"
 #include "oops/util/abor1_cpp.h"
@@ -80,6 +81,7 @@ void ModelPseudo::finalize(State & xx) const {
 int ModelPseudo::saveTrajectory(State & xx,
                                  const ModelBias &) const {
   ABORT("Model: pseudo should not be used for the trajecotry");
+  return -1;
 }
 // -----------------------------------------------------------------------------
 void ModelPseudo::print(std::ostream & os) const {

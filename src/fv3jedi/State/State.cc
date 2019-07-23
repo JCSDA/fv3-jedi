@@ -10,8 +10,9 @@
 #include <string>
 #include <vector>
 
-
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+
 #include "oops/base/Variables.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
