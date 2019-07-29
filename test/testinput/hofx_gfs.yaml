@@ -60,12 +60,13 @@ Observations:
         channels: 1-15
     ObsOperator:
       name: CRTM
-      Extra_Absorbers: [carbon_dioxide]
-      Clouds: [cloud_liquid_water, cloud_ice]
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
       n_Aerosols: 0
-      Sensor_ID: amsua_n19
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+      ObsOptions:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
   - ObsSpace:
       name: AIRS-AQUA
       ObsDataIn:
@@ -77,11 +78,12 @@ Observations:
         channels: 1,6-7
     ObsOperator:
       name: CRTM
-      Extra_Absorbers: [carbon_dioxide]
+      Absorbers: [H2O,O3,CO2]
       n_Aerosols: 0
-      Sensor_ID: airs_aqua
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+      ObsOptions:
+        Sensor_ID: airs_aqua
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
   - ObsSpace:
       name: GnssroRef
       ObsDataIn:
@@ -104,11 +106,12 @@ Observations:
         channels: 1-15
     ObsOperator:
       name: CRTM
-      Extra_Absorbers: [carbon_dioxide]
+      Absorbers: [H2O,O3,CO2]
       n_Aerosols: 0
-      Sensor_ID: hirs4_metop-a
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+      ObsOptions:
+        Sensor_ID: hirs4_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
   - ObsSpace:
       name: CRIS-NPP
       ObsDataIn:
@@ -126,11 +129,12 @@ Observations:
                   464,501,529,710,713,742,882,890,937,995,1008,1022,1058
     ObsOperator:
       name: CRTM
-      Extra_Absorbers: [carbon_dioxide]
+      Absorbers: [H2O,O3,CO2]
       n_Aerosols: 0
-      Sensor_ID: cris-fsr_npp
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+      ObsOptions:
+        Sensor_ID: cris-fsr_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
   - ObsSpace:
       name: Satwind
       ObsDataIn:
@@ -152,11 +156,12 @@ Observations:
         channels: 1-5
     ObsOperator:
       name: CRTM
-      Extra_Absorbers: [carbon_dioxide]
+      Absorbers: [H2O,O3,CO2]
       n_Aerosols: 0
-      Sensor_ID: mhs_n19
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+      ObsOptions:
+        Sensor_ID: mhs_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
   - ObsSpace:
       name: IASI-METOPA
       ObsDataIn:
@@ -168,11 +173,12 @@ Observations:
         channels: 16,29,32,35,38,41,44
     ObsOperator:
       name: CRTM
-      Extra_Absorbers: [carbon_dioxide]
+      Absorbers: [H2O,O3,CO2]
       n_Aerosols: 0
-      Sensor_ID: iasi_metop-a
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+      ObsOptions:
+        Sensor_ID: iasi_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
   - ObsSpace:
       name: MHS-NOAA19
       ObsDataIn:
@@ -184,11 +190,12 @@ Observations:
         channels: 1-5
     ObsOperator:
      name: CRTM
-     Extra_Absorbers: [carbon_dioxide]
+     Absorbers: [H2O,O3,CO2]
      n_Aerosols: 0
-     Sensor_ID: mhs_n19
-     EndianType: little_endian
-     CoefficientPath: Data/crtm/
+     ObsOptions:
+       Sensor_ID: mhs_n19
+       EndianType: little_endian
+       CoefficientPath: Data/crtm/
   - ObsSpace:
       name: SEVIRI-METEOSAT8
       ObsDataIn:
@@ -200,10 +207,11 @@ Observations:
         channels: 5
     ObsOperator:
      name: CRTM
-     Extra_Absorbers: [carbon_dioxide]
+     Absorbers: [H2O,O3,CO2]
      n_Aerosols: 0
-     Sensor_ID: seviri_m08
-     EndianType: little_endian
-     CoefficientPath: Data/crtm/
+     ObsOptions:
+       Sensor_ID: seviri_m08
+       EndianType: little_endian
+       CoefficientPath: Data/crtm/
 Prints:
   frequency: PT3H

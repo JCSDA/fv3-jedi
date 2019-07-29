@@ -356,10 +356,11 @@ cost_function:
           channels: 1-15
       ObsOperator:
         name: CRTM
-        n_Aerosols: 0
-        Sensor_ID: amsua_n19
-        EndianType: little_endian
-        CoefficientPath: Data/crtm/
+        Absorbers: [H2O,O3]
+        ObsOptions:
+          Sensor_ID: amsua_n19
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
       Covariance:
         covariance: diagonal
       ObsFilters:
