@@ -19,8 +19,8 @@
 #include "ufo/filters/PreQC.h"
 #include "ufo/filters/QCmanager.h"
 #include "ufo/filters/Thinning.h"
+#include "ufo/gnssro/QC/BackgroundCheckROGSI.h"
 #include "ufo/gnssro/QC/ROobserror.h"
-
 namespace fv3jedi {
 
 void instantiateObsFilterFactory() {
@@ -49,6 +49,9 @@ void instantiateObsFilterFactory() {
   static oops::FilterMaker<Traits,
                  oops::ObsFilter<Traits, ufo::Thinning>
                           > makerChk7_("Thinning");
+  static oops::FilterMaker<Traits,
+                 oops::ObsFilter<Traits, ufo::BackgroundCheckROGSI>
+                          > makerChk8_("Background Check ROGSI");
 }
 
 }  // namespace fv3jedi
