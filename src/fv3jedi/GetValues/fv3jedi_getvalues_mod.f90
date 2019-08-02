@@ -415,28 +415,28 @@ do jvar = 1, vars%nv
     geovalm(:,:,1) = state%phis(:,:,1) / grav
     geoval => geovalm
 
-  case ("mass_concentration_of_ozone_in_air")
+  case ("mole_fraction_of_ozone_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = max(0.0_kind_real,state%o3) * constoz
    geoval => geovalm
 
-  case ("mass_concentration_of_carbon_dioxide_in_air")
+  case ("mole_fraction_of_carbon_dioxide_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = 407.0_kind_real !Just a constant for now
    geoval => geovalm
 
-  case ("atmosphere_mass_content_of_cloud_liquid_water")
+  case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 
    nvl = npz
    do_interp = .true.
    geovalm = ql_ade
    geoval => geovalm
 
-  case ("atmosphere_mass_content_of_cloud_ice")
+  case ("mass_content_of_cloud_ice_in_atmosphere_layer")
 
    nvl = npz
    do_interp = .true.
@@ -457,109 +457,109 @@ do jvar = 1, vars%nv
    geovalm = qi_efr
    geoval => geovalm
 
-  case ("Water_Fraction")
+  case ("water_area_fraction")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = water_coverage
 
-  case ("Land_Fraction")
+  case ("land_area_fraction")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = land_coverage
 
-  case ("Ice_Fraction")
+  case ("ice_area_fraction")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = ice_coverage
 
-  case ("Snow_Fraction")
+  case ("surface_snow_area_fraction")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = snow_coverage
 
-  case ("Water_Temperature")
+  case ("surface_temperature_where_sea")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = water_temperature
 
-  case ("Land_Temperature")
+  case ("surface_temperature_where_land")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = land_temperature
 
-  case ("Ice_Temperature")
+  case ("surface_temperature_where_ice")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = ice_temperature
 
-  case ("Snow_Temperature")
+  case ("surface_temperature_where_snow")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = snow_temperature
 
-  case ("Snow_Depth")
+  case ("surface_snow_thickness")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = snow_depth
 
-  case ("Vegetation_Fraction")
+  case ("vegetation_area_fraction")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = vegetation_fraction
 
-  case ("Sfc_Wind_Speed")
+  case ("surface_wind_speed")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = wind_speed
 
-  case ("Sfc_Wind_Direction")
+  case ("surface_wind_from_direction")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = wind_direction
 
-  case ("Lai")
+  case ("leaf_area_index")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = lai
 
-  case ("Soil_Moisture")
+  case ("volume_fraction_of_condensed_water_in_soil")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = soil_moisture_content
 
-  case ("Soil_Temperature")
+  case ("soil_temperature")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = soil_temperature
 
-  case ("Land_Type_Index")
+  case ("land_type_index")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = real(land_type,kind_real)
 
-  case ("Vegetation_Type")
+  case ("vegetation_type_index")
 
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = real(vegetation_type,kind_real)
 
-  case ("Soil_Type")
+  case ("soil_type")
 
    nvl = 1
    do_interp = .false.
@@ -899,7 +899,7 @@ do jvar = 1, vars%nv
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm
 
-  case ("mass_concentration_of_ozone_in_air")
+  case ("mole_fraction_of_ozone_in_air")
 
     nvl = npz
     do_interp = .true.
@@ -1193,7 +1193,7 @@ do jvar = 1, vars%nv
     do_interp = .true.
     geoval => geovalm
 
-  case ("mass_concentration_of_ozone_in_air")
+  case ("mole_fraction_of_ozone_in_air")
 
     nvl = npz
     do_interp = .true.
@@ -1357,7 +1357,7 @@ do jvar = 1, vars%nv
 
     inc%t = inc%t + geovalm
 
-  case ("mass_concentration_of_ozone_in_air")
+  case ("mole_fraction_of_ozone_in_air")
 
   	do k = 1,npz
      do j = jsc,jec

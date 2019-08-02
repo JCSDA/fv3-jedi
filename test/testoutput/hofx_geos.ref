@@ -2,6 +2,6 @@ Test     : Initial state:
 Test     : Final state: 
 Test     : H(x): 
 Test     : Aircraft nobs= 6294 Min=-21.3283, Max=299.673, RMS=146.198
-Test     : Radiosonde nobs= 2919 Min=-35.3586, Max=301.242, RMS=139.207
+Test     : Radiosonde nobs= 2922 Min=-35.3586, Max=301.242, RMS=139.193
 Test     : GnssroRef nobs= 20 Min=0.21983, Max=342.683, RMS=130.463
 Test     : End H(x)
