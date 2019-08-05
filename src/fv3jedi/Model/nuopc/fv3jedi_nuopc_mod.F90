@@ -6,7 +6,7 @@
 module fv3jedi_nuopc_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use duration_mod
 use netcdf
@@ -64,6 +64,13 @@ character(len=20) :: cdate_start
 character(len=20) :: cdate_final
 
 type(fckit_mpi_comm) :: f_comm
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
 
 ! FCKIT MPI wrapper for global communicator
 f_comm = fckit_mpi_comm()
@@ -104,7 +111,9 @@ if (ESMF_LogFoundError(rcToCheck=self%urc, msg=ESMF_LOGERR_PASSTHRU, &
 ! Reset the clock based on what JEDI provides
 ! -------------------------------------------
 
-ststep = config_get_string(c_conf,len(ststep),"tstep")
+call f_conf%get_or_die("tstep",str)
+ststep = str
+deallocate(str)
 dtstep = trim(ststep)
 self%dt = int(duration_seconds(dtstep))
 

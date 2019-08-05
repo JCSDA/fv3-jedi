@@ -6,7 +6,6 @@
 module fv3jedi_interpolation_mod
 
 use type_bump, only: bump_type
-use config_mod
 
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_field_mod,     only: fv3jedi_field

@@ -5,7 +5,6 @@
 
 module fv3jedi_netcdf_utils_mod
 
-use config_mod
 use netcdf
 
 implicit none

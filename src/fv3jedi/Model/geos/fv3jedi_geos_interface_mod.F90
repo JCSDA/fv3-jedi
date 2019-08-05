@@ -6,7 +6,6 @@
 module fv3jedi_geos_interface_mod
 
 use fv3jedi_kinds_mod
-use config_mod
 use datetime_mod
 use duration_mod
 use iso_c_binding

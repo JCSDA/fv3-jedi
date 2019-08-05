@@ -6,10 +6,10 @@
 module fv3jedi_tlm_interface_mod
 
 use fv3jedi_kinds_mod
-use config_mod
 use duration_mod
 use iso_c_binding
 use variables_mod
+use fckit_configuration_module, only: fckit_configuration
 
 use fv3jedi_tlm_mod
 use fv3jedi_traj_mod, only: fv3jedi_traj
@@ -53,8 +53,11 @@ type(c_ptr), intent(in)    :: c_vars     !< List of variables
 type(fv3jedi_tlm),  pointer :: self
 type(fv3jedi_geom), pointer :: geom
 type(oops_vars) :: vars
+type(fckit_configuration)    :: f_conf
 
-call oops_vars_create(c_vars,vars)
+f_conf = fckit_configuration(c_vars)
+
+call oops_vars_create(f_conf,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_tlm_registry%init()

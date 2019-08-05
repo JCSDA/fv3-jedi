@@ -6,7 +6,7 @@
 module fv3jedi_covariance_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_geom_mod, only: fv3jedi_geom
 
@@ -32,8 +32,12 @@ subroutine fv3jedi_covar_setup(self, geom, c_conf)
 
 implicit none
 type(fv3jedi_covar), intent(inout) :: self    !< Covariance structure
-type(c_ptr), intent(in)       :: c_conf  !< Configuration
+type(c_ptr), intent(in)            :: c_conf  !< Configuration
 type(fv3jedi_geom), intent(in)     :: geom    !< Geometry
+
+type(fckit_configuration) :: f_conf
+
+f_conf = fckit_configuration(c_conf)
 
 end subroutine fv3jedi_covar_setup
 

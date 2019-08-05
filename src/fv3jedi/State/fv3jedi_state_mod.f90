@@ -6,7 +6,7 @@
 module fv3jedi_state_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use fckit_mpi_module
 use variables_mod
@@ -860,12 +860,23 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
   logical, allocatable             :: grids_on_this_pe(:)
   integer                          :: p_split = 1
 
-  If (config_element_exists(c_conf,"analytic_init")) Then
-     IC = Trim(config_get_string(c_conf,len(IC),"analytic_init"))
+  type(fckit_configuration) :: f_conf
+  character(len=:), allocatable :: str
+
+  ! Fortran configuration
+  ! ---------------------
+  f_conf = fckit_configuration(c_conf)
+
+  If (f_conf%has("analytic_init")) Then
+     call f_conf%get_or_die("analytic_init",str)
+     IC = str
+     deallocate(str)
   EndIf
 
   call log%warning("fv3jedi_state:analytic_init: "//IC)
-  sdate = config_get_string(c_conf,len(sdate),"date")
+  call f_conf%get_or_die("date",str)
+  sdate = str
+  deallocate(str)
   WRITE(buf,*) 'validity date is: '//sdate
   call log%info(buf)
   call datetime_set(sdate, vdate)
@@ -880,7 +891,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
         deallocate(pelist_all)
 
         !Test case to run, see fv3: /tools/test_cases.F90 for possibilities
-        test_case = config_get_int(c_conf,"fv3_test_case")
+        call f_conf%get_or_die("fv3_test_case",test_case)
 
         call init_case( FV_AtmIC(1)%u,FV_AtmIC(1)%v,FV_AtmIC(1)%w,FV_AtmIC(1)%pt,FV_AtmIC(1)%delp,FV_AtmIC(1)%q, &
                         FV_AtmIC(1)%phis, FV_AtmIC(1)%ps,FV_AtmIC(1)%pe, FV_AtmIC(1)%peln,FV_AtmIC(1)%pk,FV_AtmIC(1)%pkz, &
@@ -1078,18 +1089,28 @@ character(len=10) :: filetype
 character(len=255) :: filename
 character(len=255), allocatable :: filenames(:)
 integer :: flipvert
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
 
-filetype = config_get_string(c_conf,len(filetype),"filetype")
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
+
+call f_conf%get_or_die("filetype",str)
+filetype = str
+deallocate(str)
+
 
 if (trim(filetype) == 'gfs') then
 
-  call gfs%setup(c_conf)
+  call gfs%setup(f_conf)
   call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
   call gfs%read_fields(geom, self%fields)
 
   flipvert = 0
-  if (config_element_exists(c_conf,"flip_vertically")) then
-    flipvert = config_get_int(c_conf,"flip_vertically")
+  if (f_conf%has("flip_vertically")) then
+     call f_conf%get_or_die("flip_vertically",flipvert)
   endif
   if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
@@ -1097,12 +1118,20 @@ elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
 
   if (trim(filetype) == 'geos') then
     allocate(filenames(1))
-    filenames(1) = config_get_string(c_conf,len(filename),"filename")
+    call f_conf%get_or_die("filename",str)
+    filenames(1) = str
+    deallocate(str)
   elseif (trim(filetype) == 'geos-rst') then
     allocate(filenames(3))
-    filenames(1) = config_get_string(c_conf,len(filename),"filename-fvcore")
-    filenames(2) = config_get_string(c_conf,len(filename),"filename-moist")
-    filenames(3) = config_get_string(c_conf,len(filename),"filename-surf")
+    call f_conf%get_or_die("filename-fvcore",str)
+    filenames(1) = str
+    deallocate(str)
+    call f_conf%get_or_die("filename-moist",str)
+    filenames(2) = str
+    deallocate(str)
+    call f_conf%get_or_die("filename-surf",str)
+    filenames(3) = str
+    deallocate(str)
   endif
 
   call geos%create(geom, 'read', filetype, filenames)
@@ -1139,18 +1168,28 @@ subroutine write_file(geom, self, c_conf, vdate)
   character(len=10) :: filetype
   integer :: tiledim
   integer :: flipvert
+  type(fckit_configuration) :: f_conf
+  character(len=:), allocatable :: str
 
-  filetype = config_get_string(c_conf,len(filetype),"filetype")
+
+  ! Fortran configuration
+  ! ---------------------
+  f_conf = fckit_configuration(c_conf)
+
+
+  call f_conf%get_or_die("filetype",str)
+  filetype = str
+  deallocate(str)
 
   if (trim(filetype) == 'gfs') then
 
     flipvert = 0
-    if (config_element_exists(c_conf,"flip_vertically")) then
-      flipvert = config_get_int(c_conf,"flip_vertically")
+    if (f_conf%has("flip_vertically")) then
+      call f_conf%get_or_die("flip_vertically",flipvert)
     endif
     if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
-    call gfs%setup(c_conf)
+    call gfs%setup(f_conf)
     call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
 
     if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
@@ -1158,11 +1197,11 @@ subroutine write_file(geom, self, c_conf, vdate)
   elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
 
     tiledim = 1
-    if (config_element_exists(c_conf,"tiledim")) then
-       tiledim = config_get_int(c_conf,"tiledim")
+    if (f_conf%has("tiledim")) then
+       call f_conf%get_or_die("tiledim",tiledim)
     endif
     call geos%create(geom, 'write', filetype, tiledim=tiledim)
-    call geos%write_all(geom, self%fields, c_conf, vdate)
+    call geos%write_all(geom, self%fields, f_conf, vdate)
     call geos%delete()
 
   else

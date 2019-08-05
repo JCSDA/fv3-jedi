@@ -6,7 +6,7 @@
 module fv3jedi_increment_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use variables_mod, only: oops_vars
 
@@ -743,17 +743,23 @@ subroutine read_file(geom, self, c_conf, vdate)
   character(len=255) :: filename
   character(len=255), allocatable :: filenames(:)
   integer :: psinfile
+  type(fckit_configuration) :: f_conf
+  character(len=:), allocatable :: str
 
-  filetype = config_get_string(c_conf,len(filetype),"filetype")
+  f_conf = fckit_configuration(c_conf)
+
+  call f_conf%get_or_die("filetype",str)
+  filetype = str
+  deallocate(str)
 
   psinfile = 0
-  if (config_element_exists(c_conf,"psinfile")) then
-    psinfile = config_get_int(c_conf,"psinfile")
+  if (f_conf%has("psinfile")) then
+    call f_conf%get_or_die("psinfile",psinfile)
   endif
 
   if (trim(filetype) == 'gfs') then
 
-    call gfs%setup(c_conf,psinfile = psinfile)
+    call gfs%setup(f_conf,psinfile = psinfile)
     call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
     call gfs%read_fields(geom, self%fields)
 
@@ -761,12 +767,20 @@ subroutine read_file(geom, self, c_conf, vdate)
 
     if (trim(filetype) == 'geos') then
       allocate(filenames(1))
-      filenames(1) = config_get_string(c_conf,len(filename),"filename")
+      call f_conf%get_or_die("filename",str)
+      filenames(1) = str
+      deallocate(str)
     elseif (trim(filetype) == 'geos-rst') then
       allocate(filenames(3))
-      filenames(1) = config_get_string(c_conf,len(filename),"filename-fvcore")
-      filenames(2) = config_get_string(c_conf,len(filename),"filename-moist")
-      filenames(3) = config_get_string(c_conf,len(filename),"filename-surf")
+      call f_conf%get_or_die("filename-fvcore",str)
+      filenames(1) = str
+      deallocate(str)
+      call f_conf%get_or_die("filename-moist",str)
+      filenames(2) = str
+      deallocate(str)
+      call f_conf%get_or_die("filename-surf",str)
+      filenames(3) = str
+      deallocate(str)
     endif
 
     call geos%create(geom, 'read', filetype, filenames)
@@ -800,19 +814,25 @@ subroutine write_file(geom, self, c_conf, vdate)
 
   character(len=10) :: filetype
   integer :: tiledim
+  type(fckit_configuration) :: f_conf
+  character(len=:), allocatable :: str
 
-  filetype = config_get_string(c_conf,len(filetype),"filetype")
+  f_conf = fckit_configuration(c_conf)
+
+  call f_conf%get_or_die("filetype",str)
+  filetype = str
+  deallocate(str)
 
   if (trim(filetype) == 'gfs') then
-    call gfs%setup(c_conf)
+    call gfs%setup(f_conf)
     call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
   elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
     tiledim = 1
-    if (config_element_exists(c_conf,"tiledim")) then
-       tiledim = config_get_int(c_conf,"tiledim")
+    if (f_conf%has("tiledim")) then
+      call f_conf%get_or_die("tiledim",tiledim)
     endif
     call geos%create(geom, 'write', filetype, tiledim=tiledim)
-    call geos%write_all(geom, self%fields, c_conf, vdate)
+    call geos%write_all(geom, self%fields, f_conf, vdate)
     call geos%delete()
   else
      call abor1_ftn("fv3jedi_increment_mod.write: restart type not supported")
@@ -875,28 +895,36 @@ integer, allocatable :: ixdir(:),iydir(:),ildir(:),itdir(:)
 character(len=32), allocatable :: ifdir(:)
 
 logical :: found
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+character(kind=c_char,len=255), allocatable :: ifdir_array(:)
+integer(c_size_t),parameter :: csize = 255
+
+f_conf = fckit_configuration(c_conf)
 
 ! Get Diracs positions
-ndir = config_get_int(c_conf,"ndir")
+call f_conf%get_or_die("ndir",ndir)
 
 allocate(ixdir(ndir))
 allocate(iydir(ndir))
 allocate(ildir(ndir))
 allocate(itdir(ndir))
 
-if ((config_get_data_dimension(c_conf,'ixdir')/=ndir) .or. &
-    (config_get_data_dimension(c_conf,'iydir')/=ndir) .or. &
-    (config_get_data_dimension(c_conf,'ildir')/=ndir) .or. &
-    (config_get_data_dimension(c_conf,'itdir')/=ndir) .or. &
-    (config_get_data_dimension(c_conf,'ifdir')/=ndir)) &
+if ((f_conf%get_size("ixdir")/=ndir) .or. &
+    (f_conf%get_size("iydir")/=ndir) .or. &
+    (f_conf%get_size("ildir")/=ndir) .or. &
+    (f_conf%get_size("itdir")/=ndir) .or. &
+    (f_conf%get_size("ifdir")/=ndir)) &
   call abor1_ftn("fv3jedi_increment_mod.diracL=: dimension inconsistency")
 
-call config_get_int_vector(c_conf,'ixdir',ixdir)
-call config_get_int_vector(c_conf,'iydir',iydir)
-call config_get_int_vector(c_conf,'ildir',ildir)
-call config_get_int_vector(c_conf,'itdir',itdir)
+call f_conf%get_or_die("ixdir",ixdir)
+call f_conf%get_or_die("iydir",iydir)
+call f_conf%get_or_die("ildir",ildir)
+call f_conf%get_or_die("itdir",itdir)
 
-ifdir = config_get_string_vector(c_conf,len(ifdir(1)),'ifdir')
+call f_conf%get_or_die("ifdir",csize,ifdir_array)
+ifdir = ifdir_array
+deallocate(ifdir_array)
 
 ! Setup Diracs
 call zeros(self)
@@ -1087,6 +1115,9 @@ real(kind=kind_real) :: Tfac, Tref
 real(kind=kind_real) :: qfac, qeps
 real(kind=kind_real) :: pfac, pref
 
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
 !Code to compute a vector norm for an increment, e.g. the energy norm for FSOI
 
 isc = self%isc
@@ -1097,9 +1128,11 @@ npz = self%npz
 
 ! Constants
 ! ---------
-tref = config_get_real(c_conf,"Tref")
-qeps = config_get_real(c_conf,"qepsilon")
-pref = config_get_real(c_conf,"pref")
+f_conf = fckit_configuration(c_conf)
+
+call f_conf%get_or_die("Tref",tref)
+call f_conf%get_or_die("qepsilon",qeps)
+call f_conf%get_or_die("pref",pref)
 
 Ufac = 0.5_kind_real
 Tfac = 0.5_kind_real*cp/tref

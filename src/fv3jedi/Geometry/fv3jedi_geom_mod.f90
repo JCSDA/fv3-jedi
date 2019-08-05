@@ -10,7 +10,7 @@ module fv3jedi_geom_mod
 !General JEDI uses
 use fv3jedi_kinds_mod
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use netcdf
 
 !FMS/MPP uses
@@ -76,11 +76,20 @@ integer                               :: p_split = 1
 integer                               :: ncstat, ncid, akvarid, bkvarid, i, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
+
 
 ! Set path/filename for ak and bk
 ! -------------------------------
-pathfile_akbk = config_get_string(c_conf,len(pathfile_akbk),"pathfile_akbk")
-
+call f_conf%get_or_die("pathfile_akbk",str)
+pathfile_akbk = str
+deallocate(str)
 
 !Intialize using the model setup routine
 ! --------------------------------------

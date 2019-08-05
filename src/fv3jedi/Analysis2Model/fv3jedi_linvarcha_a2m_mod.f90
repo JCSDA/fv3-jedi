@@ -6,7 +6,7 @@
 module fv3jedi_linvarcha_a2m_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use fv3jedi_kinds_mod
 
 use fv3jedi_geom_mod,      only: fv3jedi_geom
@@ -44,6 +44,10 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_state),         intent(in)    :: bg
 type(fv3jedi_state),         intent(in)    :: fg
 type(c_ptr),                 intent(in)    :: c_conf
+
+type(fckit_configuration) :: f_conf
+
+f_conf = fckit_configuration(c_conf)
 
 !Nothing yet as transforms are linear
 

@@ -8,11 +8,11 @@
 module fv3jedi_state_interface_mod
 
 use fv3jedi_kinds_mod
-use config_mod
 use datetime_mod
 use duration_mod
 use iso_c_binding
 use variables_mod
+use fckit_configuration_module, only: fckit_configuration
 
 use fv3jedi_state_mod
 use fv3jedi_state_utils_mod, only: fv3jedi_state_registry
@@ -45,14 +45,17 @@ type(c_ptr), intent(in)    :: c_vars     !< List of variables
 
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
-type(oops_vars) :: vars
+type(oops_vars)              :: vars
+type(fckit_configuration)    :: f_conf
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_state_registry%init()
 call fv3jedi_state_registry%add(c_key_self)
 call fv3jedi_state_registry%get(c_key_self,self)
 
-call oops_vars_create(c_vars,vars)
+f_conf = fckit_configuration(c_vars)
+
+call oops_vars_create(f_conf,vars)
 call create(self, geom, vars)
 call oops_vars_delete(vars)
 
@@ -305,7 +308,11 @@ type(ufo_geovals),  pointer :: gom
 type(oops_vars) :: vars
 type(fv3jedi_geom),  pointer :: geom
 
-call oops_vars_create(c_vars,vars)
+type(fckit_configuration)    :: f_conf
+
+f_conf = fckit_configuration(c_vars)
+
+call oops_vars_create(f_conf,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_state_registry%get(c_key_state, state)
@@ -336,8 +343,11 @@ type(ufo_geovals),  pointer :: gom
 type(oops_vars) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
+type(fckit_configuration)    :: f_conf
 
-call oops_vars_create(c_vars,vars)
+f_conf = fckit_configuration(c_vars)
+
+call oops_vars_create(f_conf,vars)
 
 call fv3jedi_state_registry%get(c_key_state, state)
 call fv3jedi_geom_registry%get(c_key_geom, geom)

@@ -6,7 +6,7 @@
 module fv3jedi_pseudo_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use duration_mod
 use netcdf
@@ -51,10 +51,25 @@ type(pseudo_model), intent(inout) :: self
 type(c_ptr),        intent(in)    :: c_conf
 type(fv3jedi_geom), intent(in)    :: geom
 
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
+
 !File types, paths and names
-self%pseudo_type = config_get_string(c_conf,len(self%pseudo_type),"pseudo_type")
-self%pseudo_path = config_get_string(c_conf,len(self%pseudo_path),"pseudo_path")
-if (trim(self%pseudo_type) == "geos") self%pseudo_file = config_get_string(c_conf,len(self%pseudo_file),"pseudo_file")
+call f_conf%get_or_die("pseudo_type",str)
+self%pseudo_type = str
+deallocate(str)
+call f_conf%get_or_die("pseudo_path",str)
+self%pseudo_path = str
+deallocate(str)
+if (trim(self%pseudo_type) == "geos") then
+  call f_conf%get_or_die("pseudo_file",str)
+  self%pseudo_file = str
+  deallocate(str)
+endif
 
 end subroutine pseudo_create
 

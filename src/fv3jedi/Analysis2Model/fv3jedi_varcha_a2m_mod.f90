@@ -6,7 +6,7 @@
 module fv3jedi_varcha_a2m_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 
 use fckit_log_module, only : fckit_log
@@ -47,14 +47,24 @@ type(fv3jedi_varcha_a2m), intent(inout) :: self
 type(fv3jedi_geom),       intent(inout) :: geom
 type(c_ptr),              intent(in)    :: c_conf
 
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+! Fortran configuration
+f_conf = fckit_configuration(c_conf)
+
 ! Model type
-self%filetype = config_get_string(c_conf,len(self%filetype),"filetype")
+call f_conf%get_or_die("filetype",str)
+self%filetype = str
+deallocate(str)
 
 if (trim(self%filetype) == 'gfs') then
-  call self%gfs%setup(c_conf)
+  call self%gfs%setup(f_conf)
 elseif (trim(self%filetype) == 'geos') then
   allocate(self%filename(1))
-  self%filename(1) = config_get_string(c_conf,len(self%filename),"filename")
+  call f_conf%get_or_die("filename",str)
+  self%filename(1) = str
+  deallocate(str)
 endif
 
 end subroutine create

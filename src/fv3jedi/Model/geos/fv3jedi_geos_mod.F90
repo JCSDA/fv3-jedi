@@ -10,7 +10,7 @@
 module fv3jedi_geos_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use duration_mod
 use netcdf
@@ -78,6 +78,13 @@ type (ESMF_VM) :: vm
 type(MAPL_Communicators) :: mapl_comm
 type(fckit_mpi_comm) :: f_comm
 
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
 
 ! FCKIT MPI wrapper for communicator
 ! ----------------------------------
@@ -146,7 +153,9 @@ call allocate_exports(self)
 
 ! Time step checks and get number of GEOSsubsteps if any
 ! ------------------------------------------------------
-ststep = config_get_string(c_conf,len(ststep),"tstep")
+call f_conf%get_or_die("tstep",str)
+ststep = str
+deallocate(str)
 dtstep = trim(ststep)
 jedi_dt = int(duration_seconds(dtstep))
 

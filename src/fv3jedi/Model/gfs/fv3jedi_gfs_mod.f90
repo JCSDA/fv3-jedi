@@ -6,7 +6,7 @@
 module fv3jedi_gfs_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use duration_mod
 use netcdf

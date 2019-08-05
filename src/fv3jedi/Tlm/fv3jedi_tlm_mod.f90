@@ -6,7 +6,7 @@
 module fv3jedi_tlm_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use duration_mod
 use variables_mod
 
@@ -62,18 +62,28 @@ type(duration) :: dtstep
 real(kind=kind_real) :: dt
 integer :: tmp
 
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
+
 ! Model time step
 ! ---------------
-ststep = config_get_string(c_conf,len(ststep),"tstep")
+call f_conf%get_or_die("tstep",str)
+ststep = str
+deallocate(str)
 dtstep = trim(ststep)
 dt = real(duration_seconds(dtstep),kind_real)
 
 
 ! Model configuration and creation
 ! --------------------------------
-self%fv3jedi_lm%conf%do_dyn     = config_get_int(c_conf,"lm_do_dyn")
-self%fv3jedi_lm%conf%do_phy_trb = config_get_int(c_conf,"lm_do_trb")
-self%fv3jedi_lm%conf%do_phy_mst = config_get_int(c_conf,"lm_do_mst")
+call f_conf%get_or_die("lm_do_dyn",self%fv3jedi_lm%conf%do_dyn)
+call f_conf%get_or_die("lm_do_trb",self%fv3jedi_lm%conf%do_phy_trb)
+call f_conf%get_or_die("lm_do_mst",self%fv3jedi_lm%conf%do_phy_mst)
 
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
 

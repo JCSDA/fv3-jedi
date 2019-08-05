@@ -5,7 +5,7 @@
 
 module fv3jedi_io_geos_mod
 
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use iso_c_binding
 
@@ -414,14 +414,14 @@ end subroutine read_fields
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_all(self, geom, fields, c_conf, vdate)
+subroutine write_all(self, geom, fields, f_conf, vdate)
 
 implicit none
 
 class(fv3jedi_io_geos), target, intent(inout) :: self
 type(fv3jedi_geom),             intent(in)    :: geom
 type(fv3jedi_field),            intent(in)    :: fields(:)
-type(c_ptr),                    intent(in)    :: c_conf
+type(fckit_configuration),      intent(in)    :: f_conf
 type(datetime),                 intent(in)    :: vdate
 
 ! Locals
@@ -441,6 +441,7 @@ integer, allocatable :: dimids(:), intarray(:)
 real(kind=kind_real), allocatable :: arrayg(:,:), realarray(:)
 integer, pointer :: istart(:), icount(:)
 logical :: write_lev4 = .false.
+character(len=:), allocatable :: str
 
 
 ! Whole level of tile array
@@ -452,30 +453,40 @@ if (self%iam_io_proc) then
 
   ! Place to save restarts
   datapath = "Data/"
-  if (config_element_exists(c_conf,"datapath")) then
-     datapath = config_get_string(c_conf,len(datapath),"datapath")
+  if (f_conf%has("datapath")) then
+     call f_conf%get_or_die("datapath",str)
+     datapath = str
+     deallocate(str)
   endif
 
   ! Base filename
   allocate(filename(self%numfiles))
   if (self%filetype == 'geos') then
     filename(1) = 'geos.'
-    if (config_element_exists(c_conf,"filename")) then
-       filename(1) = config_get_string(c_conf,len(filename(1)),"filename")
+    if (f_conf%has("filename")) then
+       call f_conf%get_or_die("filename",str)
+       filename(1) = str
+       deallocate(str)
     endif
     dfend = 15
   elseif (self%filetype == 'geos-rst') then
     filename(1) = 'fvcore_internal_rst.'
     filename(2) = 'moist_internal_rst.'
     filename(3) = 'surf_import_rst.'
-    if (config_element_exists(c_conf,"filename-fvcore")) then
-       filename(1) = config_get_string(c_conf,len(filename(1)),"filename-fvcore")
+    if (f_conf%has("filename-fvcore")) then
+       call f_conf%get_or_die("filename-fvcore",str)
+       filename(1) = str
+       deallocate(str)
     endif
-    if (config_element_exists(c_conf,"filename-moist")) then
-       filename(2) = config_get_string(c_conf,len(filename(2)),"filename-moist")
+    if (f_conf%has("filename-moist")) then
+       call f_conf%get_or_die("filename-moist",str)
+       filename(2) = str
+       deallocate(str)
     endif
-    if (config_element_exists(c_conf,"filename-surf")) then
-       filename(3) = config_get_string(c_conf,len(filename(3)),"filename-surf")
+    if (f_conf%has("filename-surf")) then
+       call f_conf%get_or_die("filename-surf",str)
+       filename(3) = str
+       deallocate(str)
     endif
     dfend = 11
   endif

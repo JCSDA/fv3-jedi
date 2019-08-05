@@ -1,15 +1,15 @@
 module fv3jedi_io_gfs_mod
 
-use config_mod
 use datetime_mod
 use iso_c_binding
-use fv3jedi_constants_mod,   only: rad2deg
-use fv3jedi_geom_mod,        only: fv3jedi_geom
-use fv3jedi_field_mod,       only: fv3jedi_field
-use fv3jedi_kinds_mod,       only: kind_real
-use mpp_mod,                 only: mpp_pe, mpp_root_pe
-use fms_io_mod,              only: restart_file_type, register_restart_field, &
-                                   free_restart_type, restore_state, save_restart
+use fv3jedi_constants_mod,      only: rad2deg
+use fv3jedi_geom_mod,           only: fv3jedi_geom
+use fv3jedi_field_mod,          only: fv3jedi_field
+use fv3jedi_kinds_mod,          only: kind_real
+use mpp_mod,                    only: mpp_pe, mpp_root_pe
+use fms_io_mod,                 only: restart_file_type, register_restart_field, &
+                                      free_restart_type, restore_state, save_restart
+use fckit_configuration_module, only: fckit_configuration
 
 implicit none
 private
@@ -39,11 +39,13 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine setup(self,c_conf,psinfile)
+subroutine setup(self,f_conf,psinfile)
 
-class(fv3jedi_io_gfs), intent(inout) :: self
-type(c_ptr),           intent(in)    :: c_conf
-integer, optional,     intent(in)    :: psinfile
+class(fv3jedi_io_gfs),     intent(inout) :: self
+type(fckit_configuration), intent(in)    :: f_conf
+integer, optional,         intent(in)    :: psinfile
+
+character(len=:), allocatable :: str
 
 !Set filenames
 !--------------
@@ -53,27 +55,43 @@ self%filename_sfcd = 'sfc_data.nc'
 self%filename_sfcw = 'srf_wnd.nc'
 self%filename_cplr = 'coupler.res'
 
-self%datapath_ti = config_get_string(c_conf,len(self%datapath_ti),"datapath_tile")
+call f_conf%get_or_die("datapath_tile",str)
+self%datapath_ti = str
+deallocate(str)
 
-if (config_element_exists(c_conf,"filename_core")) then
-   self%filename_core = config_get_string(c_conf,len(self%filename_core),"filename_core")
+if (f_conf%has("filename_core")) then
+   call f_conf%get_or_die("filename_core",str)
+   self%filename_core = str
+   deallocate(str)
 endif
-if (config_element_exists(c_conf,"filename_trcr")) then
-   self%filename_trcr = config_get_string(c_conf,len(self%filename_trcr),"filename_trcr")
+if (f_conf%has("filename_trcr")) then
+   call f_conf%get_or_die("filename_trcr",str)
+   self%filename_trcr = str
+   deallocate(str)
 endif
-if (config_element_exists(c_conf,"filename_sfcd")) then
-   self%filename_sfcd = config_get_string(c_conf,len(self%filename_sfcd),"filename_sfcd")
+if (f_conf%has("filename_sfcd")) then
+   call f_conf%get_or_die("filename_sfcd",str)
+   self%filename_sfcd = str
+   deallocate(str)
 endif
-if (config_element_exists(c_conf,"filename_sfcw")) then
-   self%filename_sfcw = config_get_string(c_conf,len(self%filename_sfcw),"filename_sfcw")
+if (f_conf%has("filename_sfcw")) then
+   call f_conf%get_or_die("filename_sfcw",str)
+   self%filename_sfcw = str
+   deallocate(str)
 endif
-if (config_element_exists(c_conf,"filename_cplr")) then
-   self%filename_cplr = config_get_string(c_conf,len(self%filename_cplr),"filename_cplr")
+if (f_conf%has("filename_cplr")) then
+   call f_conf%get_or_die("filename_cplr",str)
+   self%filename_cplr = str
+   deallocate(str)
 endif
 
-if (config_element_exists(c_conf,"filename_spec")) then
-   self%filename_spec = config_get_string(c_conf,len(self%filename_spec),"filename_spec")
-   self%datapath_sp   = config_get_string(c_conf,len(self%datapath_sp),"datapath_spec")
+if (f_conf%has("filename_spec")) then
+   call f_conf%get_or_die("filename_spec",str)
+   self%filename_spec = str
+   deallocate(str)
+   call f_conf%get_or_die("datapath_spec",str)
+   self%datapath_sp = str
+   deallocate(str)
 else
    self%filename_spec = "null"
    self%datapath_sp = "null"

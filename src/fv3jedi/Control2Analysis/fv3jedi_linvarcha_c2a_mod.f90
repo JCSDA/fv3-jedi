@@ -9,7 +9,7 @@ use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use fv3jedi_kinds_mod
 
 use pressure_vt_mod
@@ -59,7 +59,12 @@ real(kind=kind_real), allocatable :: pe(:,:,:)
 real(kind=kind_real), allocatable :: pm(:,:,:)
 real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
 
-!Create lookup table for computing saturation specific humidity
+type(fckit_configuration) :: f_conf
+
+!> Fortran configuration
+f_conf = fckit_configuration(c_conf)
+
+!> Create lookup table for computing saturation specific humidity
 self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
 allocate(self%estblx(self%tablesize))
 call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)

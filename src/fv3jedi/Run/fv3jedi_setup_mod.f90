@@ -8,7 +8,7 @@
 module fv3jedi_setup_mod
 
 use iso_c_binding
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 
 use mpp_mod,         only: mpp_init, mpp_exit
 use mpp_domains_mod, only: mpp_domains_init, mpp_domains_exit
@@ -34,14 +34,24 @@ implicit none
 type(c_ptr), intent(in) :: c_conf
 integer :: stackmax = 4000000
 type(fckit_mpi_comm) :: f_comm
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
 
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
 f_comm = fckit_mpi_comm()
+
 call mpp_init(localcomm=f_comm%communicator())
 call mpp_domains_init
 call fms_io_init
 call fms_init()
 
-if (config_element_exists(c_conf,"stackmax")) stackmax = config_get_int(c_conf,"stackmax")
+if (f_conf%has("stackmax")) then
+  call f_conf%get_or_die("stackmax",stackmax)
+endif
+
 call mpp_domains_set_stack_size(stackmax)
 
 end subroutine fv3jedi_setup

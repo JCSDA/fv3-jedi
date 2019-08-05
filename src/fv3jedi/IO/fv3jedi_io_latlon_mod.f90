@@ -5,7 +5,7 @@
 
 module fv3jedi_io_latlon_mod
 
-use config_mod
+use fckit_configuration_module, only: fckit_configuration
 use iso_c_binding
 use datetime_mod
 use fckit_log_module, only : log
@@ -207,6 +207,14 @@ character(len=64)   :: datefile
 
 integer :: ncid, varid(2)
 integer :: x_dimid, y_dimid, z_dimid, t_dimid
+type(fckit_configuration) :: f_conf
+character(len=:), allocatable :: str
+
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
+
 
 ! Current date
 call datetime_to_ifs(vdate, idate, isecs)
@@ -219,8 +227,10 @@ date(6) = isecs - (date(4)*3600 + date(5)*60)
 
 ! Naming convention for the file
 llgeom%filename = 'Data/fv3jedi.latlon.'
-if (config_element_exists(c_conf,"filename")) then
-   llgeom%filename = config_get_string(c_conf,len(llgeom%filename),"filename")
+if (f_conf%has("filename")) then
+   call f_conf%get_or_die("filename",str)
+   llgeom%filename = str
+   deallocate(str)
 endif
 
 ! Append filename with the curent datetime from fv3jedi
