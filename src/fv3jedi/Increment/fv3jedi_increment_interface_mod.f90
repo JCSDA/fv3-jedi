@@ -58,7 +58,7 @@ call fv3jedi_increment_registry%get(c_key_self,self)
 
 f_conf = fckit_configuration(c_vars)
 
-call oops_vars_create(f_conf,vars)
+call oops_vars_create(c_vars,vars)
 call create(self, geom, vars)
 call oops_vars_delete(vars)
 
@@ -499,7 +499,7 @@ type(fckit_configuration)    :: f_conf
 
 f_conf = fckit_configuration(c_vars)
 
-call oops_vars_create(f_conf,vars)
+call oops_vars_create(c_vars,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
@@ -534,7 +534,7 @@ type(fckit_configuration)    :: f_conf
 
 f_conf = fckit_configuration(c_vars)
 
-call oops_vars_create(f_conf,vars)
+call oops_vars_create(c_vars,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
