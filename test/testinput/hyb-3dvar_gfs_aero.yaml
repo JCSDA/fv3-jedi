@@ -1,0 +1,175 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: gfs
+        datapath_tile: Data/inputs/gfs_aero_c12/ensmean/
+        filename_core: 20180415.000000.fv_core.res.nc
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+        variables: ["T","DELP","sphum",
+                    "sulf","bc1","bc2","oc1","oc2",
+                    "dust1","dust2","dust3","dust4","dust5",
+                    "seas1","seas2","seas3","seas4"]
+    Covariance:
+      covariance: hybrid
+      static_weight: '0.01'
+      ensemble_weight: '0.99'
+      static:
+        date: '2018-04-15T00:00:00Z'
+        covariance: FV3JEDIstatic
+      ensemble:
+        date: '2018-04-15T00:00:00Z'
+        variables: ["sulf","bc1","bc2","oc1","oc2",
+                    "dust1","dust2","dust3","dust4","dust5",
+                    "seas1","seas2","seas3","seas4"]
+        members:
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem001/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem002/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem003/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem004/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem005/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem006/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem007/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem008/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_aero_c12/mem009/
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        localization:
+          timeslots: ['2018-04-15T00:00:00Z']
+          variables: ["sulf","bc1","bc2","oc1","oc2",
+                      "dust1","dust2","dust3","dust4","dust5",
+                      "seas1","seas2","seas3","seas4"]
+          localization: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs_aero
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aod
+        ObsDataIn:
+          obsfile: Data/obs/aod_viirs_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/aod_viirs_fmo_2018041500_m.nc4
+        simulate:
+          variables: [aerosol_optical_depth]
+          channels: 4
+      ObsOperator:
+        name: Aod
+        Absorbers: [H2O,O3]
+        ObsOptions:
+          Sensor_ID: v.viirs-m_npp
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+          AerosolOption: aerosols_gocart_default
+      Covariance:
+        covariance: diagonal
+  cost_type: 3D-Var
+  variables: ["sulf","bc1","bc2","oc1","oc2",
+              "dust1","dust2","dust3","dust4","dust5",
+              "seas1","seas2","seas3","seas4"]
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_aero_c12/ensmean/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["T","DELP","sphum",
+              "sulf","bc1","bc2","oc1","oc2",
+              "dust1","dust2","dust3","dust4","dust5",
+              "seas1","seas2","seas3","seas4"]
+output:
+  filetype: gfs
+  datapath_tile: Data/analysis/
+  filename_core: hyb-3dvar-gfs_aero.fv_core.res.nc
+  filename_trcr: hyb-3dvar-gfs_aero.fv_tracer.res.nc
+  filename_cplr: hyb-3dvar-gfs_aero.coupler.res
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_aero_c12/akbk.nc
+variational:
+  iteration:
+  - ninner: '10'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_aero_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: ["sulf","bc1","bc2","oc1","oc2",
+                  "dust1","dust2","dust3","dust4","dust5",
+                  "seas1","seas2","seas3","seas4"]
+  - ninner: '5'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_aero_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: ["sulf","bc1","bc2","oc1","oc2",
+                  "dust1","dust2","dust3","dust4","dust5",
+                  "seas1","seas2","seas3","seas4"]

@@ -69,9 +69,8 @@ real(kind=kind_real), allocatable :: prs (:,:,:) !Pressure Pa, midpoint
 real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
 
 real(kind=kind_real), allocatable :: t   (:,:,:) !Temperature
-
-!Local moisture variables
 real(kind=kind_real), allocatable :: qsat(:,:,:) !Saturation specific humidity
+real(kind=kind_real), allocatable :: rh  (:,:,:) !Relative humidity
 
 !Local CRTM moisture variables
 real(kind=kind_real), allocatable :: ql_ade(:,:,:) !Cloud liq water kgm^2
@@ -221,6 +220,17 @@ endif
 
 call delp_to_pe_p_logp(geom,delp,prsi,prs,logp)
 
+! Compute relative humidity
+! -------------------------
+allocate(qsat(isc:iec,jsc:jec,npz))
+allocate(rh(isc:iec,jsc:jec,npz))
+do j = jsc,jec
+  do i = isc,iec
+    call qsmith(npz,state%t(i,j,:),state%q(i,j,:),prs(i,j,:),qsat(i,j,:))
+  enddo
+enddo
+call q_to_rh(geom,qsat,state%q,rh)
+deallocate(qsat)
 
 ! Get CRTM surface variables
 ! ----------------------
@@ -307,9 +317,9 @@ if (associated(state%slmsk)) then
                      state%ql,state%qi, &
                      ql_ade,qi_ade,ql_efr,qi_efr )
 
-  call crtm_mixratio(geom,state%q,qmr)
-
 endif
+
+call crtm_mixratio(geom,state%q,qmr)
 
 
 ! Variable transforms and interpolate to obs locations
@@ -351,7 +361,7 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%q
+    geovalm = max(state%q,0.0_kind_real)
     geoval => geovalm
 
   case ("virtual_temperature")
@@ -372,11 +382,8 @@ do jvar = 1, vars%nv
 
     nvl = npz
     do_interp = .true.
-    allocate(qsat(isc:iec,jsc:jec,npz  ))
-    call dqsat(geom,t,prs,qsat=qsat)
-    call q_to_rh(geom,qsat,state%q,geovalm)
+    geovalm = max(rh,0.0_kind_real)
     geoval => geovalm
-    deallocate(qsat)
 
   case ("air_pressure")
 
@@ -569,126 +576,126 @@ do jvar = 1, vars%nv
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%so4
+   geovalm = max(state%so4,0.0_kind_real)
    geoval => geovalm
 
   case ("bc1","bcphobic")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%bcphobic
+   geovalm = max(state%bcphobic,0.0_kind_real)
    geoval => geovalm
 
   case ("bc2","bcphilic")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%bcphilic
+   geovalm = max(state%bcphilic,0.0_kind_real)
    geoval => geovalm
 
   case ("oc1","ocphobic")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%ocphobic
+   geovalm = max(state%ocphobic,0.0_kind_real)
    geoval => geovalm
 
   case ("oc2","ocphilic")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%ocphilic
+   geovalm = max(state%ocphilic,0.0_kind_real)
    geoval => geovalm
 
   case ("dust1","du001")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%du001
+   geovalm = max(state%du001,0.0_kind_real)
    geoval => geovalm
 
   case ("dust2","du002")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%du002
+   geovalm = max(state%du002,0.0_kind_real)
    geoval => geovalm
 
   case ("dust3","du003")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%du003
+   geovalm = max(state%du003,0.0_kind_real)
    geoval => geovalm
 
   case ("dust4","du004")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%du004
+   geovalm = max(state%du004,0.0_kind_real)
    geoval => geovalm
 
   case ("dust5","du005")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%du005
+   geovalm = max(state%du005,0.0_kind_real)
    geoval => geovalm
 
   case ("seas1","ss001")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%ss001
+   geovalm = max(state%ss001,0.0_kind_real)
    geoval => geovalm
 
   case ("seas2","ss002")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%ss002
+   geovalm = max(state%ss002,0.0_kind_real)
    geoval => geovalm
 
   case ("seas3","ss003")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%ss003
+   geovalm = max(state%ss003,0.0_kind_real)
    geoval => geovalm
 
   case ("seas4","ss004")
 
    nvl = npz
    do_interp = .true.
-   geovalm = state%ss004
+   geovalm = max(state%ss004,0.0_kind_real)
    geoval => geovalm
 
   case ("seas5","ss005")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%ss005
+    geovalm = max(state%ss005,0.0_kind_real)
     geoval => geovalm
 
   case ("no3an1")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%no3an1
+    geovalm = max(state%no3an1,0.0_kind_real)
     geoval => geovalm
 
   case ("no3an2")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%no3an2
+    geovalm = max(state%no3an2,0.0_kind_real)
     geoval => geovalm
 
   case ("no3an3")
 
     nvl = npz
     do_interp = .true.
-    geovalm = state%no3an3
+    geovalm = max(state%no3an3,0.0_kind_real)
     geoval => geovalm
 
   case default
@@ -761,6 +768,7 @@ if (allocated(prsi                 )) deallocate(prsi                 )
 if (allocated(prs                  )) deallocate(prs                  )
 if (allocated(logp                 )) deallocate(logp                 )
 if (allocated(t                    )) deallocate(t                    )
+if (allocated(rh                   )) deallocate(rh                   )
 if (allocated(wind_speed           )) deallocate(wind_speed           )
 if (allocated(wind_direction       )) deallocate(wind_direction       )
 if (allocated(land_type            )) deallocate(land_type            )

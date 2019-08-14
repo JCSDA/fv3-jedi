@@ -30,10 +30,6 @@ public :: multiplyinverseadjoint
 
 !> Fortran derived type to hold configuration data for the B mat variable change
 type :: fv3jedi_linvarcha_c2a
- integer :: degsubs   = 100
- real(8) :: tmintbl   = 150.0_8, tmaxtbl = 333.0_8
- integer :: tablesize
- real(8), allocatable :: estblx(:)
  real(kind=kind_real), allocatable :: ttraj(:,:,:)
  real(kind=kind_real), allocatable :: tvtraj(:,:,:)
  real(kind=kind_real), allocatable :: qtraj(:,:,:)
@@ -55,19 +51,14 @@ type(fv3jedi_state), target, intent(in)    :: bg
 type(fv3jedi_state), target, intent(in)    :: fg
 type(c_ptr),                 intent(in)    :: c_conf
 
+integer :: i,j
 real(kind=kind_real), allocatable :: pe(:,:,:)
 real(kind=kind_real), allocatable :: pm(:,:,:)
-real(kind=kind_real), allocatable :: dqsatdt(:,:,:)
 
 type(fckit_configuration) :: f_conf
 
 !> Fortran configuration
 f_conf = fckit_configuration(c_conf)
-
-!> Create lookup table for computing saturation specific humidity
-self%tablesize = nint(self%tmaxtbl-self%tmintbl)*self%degsubs + 1
-allocate(self%estblx(self%tablesize))
-call esinit(self%tablesize,self%degsubs,self%tmintbl,self%tmaxtbl,self%estblx)
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -86,13 +77,15 @@ allocate(self%qsattraj(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
 
 allocate(pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
 allocate(pm(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
-allocate(dqsatdt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
 
 call delp_to_pe_p_logp(geom,bg%delp,pe,pm)
-call dqsat_calc( geom,bg%t,pm,self%degsubs,self%tmintbl,self%tmaxtbl,&
-                 self%tablesize,self%estblx,dqsatdt,self%qsattraj)
 
-deallocate(dqsatdt)
+do j = geom%jsc,geom%jec
+  do i = geom%isc,geom%iec
+    call qsmith(geom%npz,bg%t(i,j,:),bg%q(i,j,:),pm(i,j,:),self%qsattraj(i,j,:))
+  enddo
+enddo
+
 deallocate(pm)
 deallocate(pe)
 
@@ -105,7 +98,6 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_linvarcha_c2a), intent(inout) :: self
 
-if (allocated(self%estblx)) deallocate(self%estblx)
 if (allocated(self%tvtraj)) deallocate(self%tvtraj)
 if (allocated(self%ttraj)) deallocate(self%ttraj)
 if (allocated(self%qtraj)) deallocate(self%qtraj)

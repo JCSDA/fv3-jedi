@@ -22,9 +22,7 @@ public rh_to_q_ad
 public q_to_rh
 public q_to_rh_tl
 public q_to_rh_ad
-public ESINIT
-public dqsat
-public dqsat_calc
+public qsmith
 
 contains
 
@@ -426,287 +424,76 @@ end subroutine q_to_rh_ad
 
 !----------------------------------------------------------------------------
 
-subroutine dqsat(geom,T,pmid,dqsatdt,qsat)
+subroutine qsmith(nlev,t,sphum,pl,qs)
 
-implicit none
-type(fv3jedi_geom),             intent(in)    :: geom
-real(kind=kind_real),           intent(in)    ::       T(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
-real(kind=kind_real),           intent(in)    ::    pmid(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
-real(kind=kind_real), optional, intent(inout) :: dqsatdt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
-real(kind=kind_real), optional, intent(inout) ::    qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  implicit none
+  integer,         intent(in)  :: nlev
+  real(kind_real), intent(in)  :: t(nlev)
+  real(kind_real), intent(in)  :: sphum(nlev)
+  real(kind_real), intent(in)  :: pl(nlev)
+  real(kind_real), intent(out) :: qs(nlev)
 
-integer :: degsubs   = 100
-real(8) :: tmintbl   = 150.0_8, tmaxtbl = 333.0_8
-integer :: tablesize
-real(8), allocatable :: estblx(:)
-real(kind=kind_real) :: dqsatdt_loc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
-real(kind=kind_real) ::    qsat_loc(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind_real), parameter :: esl = 0.621971831
+  real(kind_real), allocatable :: table(:), des(:)
 
-! Set size of table for look-up
-tablesize = nint(tmaxtbl-tmintbl)*degsubs + 1
+  real(kind_real) :: es
+  real(kind_real) :: ap1, eps10
+  real(kind_real) :: tmin
+  integer :: k, it
+  integer, parameter :: length=2621
 
-! Allocate table and fill values
-allocate(estblx(tablesize))
-call esinit(tablesize,degsubs,tmintbl,tmaxtbl,estblx)
+  eps10  = 10.0_kind_real*esl
 
-! Compute dqsat/dT and qsat
-call dqsat_calc( geom,T,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsatdt_loc,qsat_loc)
+  allocate ( table(length) )
+  call qs_table(length,table)
 
-! Deallocate
-deallocate(estblx)
+  allocate (  des (length) )
+  do k=1,length-1
+    des(k) = table(k+1) - table(k)
+  enddo
+  des(length) = des(length-1)
 
-if (present(dqsatdt)) dqsatdt = dqsatdt_loc
-if (present(qsat)) qsat = qsat_loc
+  do k=1,nlev
+    ap1 = 10.0_kind_real*dim(t(k), tice-160.0_kind_real) + 1.0_kind_real
+    ap1 = min(2621.0_kind_real, ap1)
+    it = int(ap1)
+    es = table(it) + (ap1-it)*des(it)
+    qs(k) = esl*es*(1.0_kind_real+zvir*sphum(k))/(pl(k))
+  enddo
 
-end subroutine dqsat
+  deallocate(table,des)
 
-!----------------------------------------------------------------------------
-! Utilities -----------------------------------------------------------------
-!----------------------------------------------------------------------------
-
-subroutine ESINIT(TABLESIZE,DEGSUBS,TMINTBL,TMAXTBL,ESTBLX)
-
- IMPLICIT NONE
-
- integer, intent(in) :: TABLESIZE,DEGSUBS
- real(8), intent(in) :: TMINTBL,TMAXTBL
-
- !OUTPUT
- real(8), dimension(TABLESIZE) :: ESTBLX
-
- !LOCALS
- real(8), parameter :: ZEROC = 273.16, TMIX = -20.0
-
- real(8), dimension(TABLESIZE) :: ESTBLE, ESTBLW
-
- integer :: I
- real(8)    :: T, DELTA_T
-
- DELTA_T = 1.0/DEGSUBS
-
- do I=1,TABLESIZE
-
-    T = (I-1)*DELTA_T + TMINTBL
-
-    if(T>ZEROC) then
-       call QSATLQU0(ESTBLE(I),T,TMAXTBL)
-    else
-       call QSATICE0(ESTBLE(I),T)
-    end if
-
-    call QSATLQU0(ESTBLW(I),T,TMAXTBL)
-
-    T = T-ZEROC
-    if(T>=TMIX .and. T<0.0) then
-       ESTBLX(I) = ( T/TMIX )*( ESTBLE(I) - ESTBLW(I) ) + ESTBLW(I)
-    else
-       ESTBLX(I) = ESTBLE(I)
-    end if
-
- end do
-
- end subroutine ESINIT
+end subroutine qsmith
 
 !----------------------------------------------------------------------------
 
-subroutine QSATLQU0(QS,TL,TMAXTBL)
-!SUPERSATURATED AS LIQUID
+subroutine qs_table(n,table)
 
- IMPLICIT NONE
+  implicit none
 
- !INPUTS
- real(8) :: TL, TMAXTBL
+  integer,              intent(in)    :: n
+  real(kind=kind_real), intent(inout) :: table(n)
 
- !OUTPUTS
- real(8) :: QS
+  real(kind=kind_real) :: tem, aa, b, c, d, e
+  integer :: i
+  real(kind=kind_real), parameter :: dt=0.1_kind_real
+  real(kind=kind_real), parameter :: esbasw = 1013246.0_kind_real
+  real(kind=kind_real), parameter :: tbasw = 373.16_kind_real
+  real(kind=kind_real), parameter :: tbasi = 273.16_kind_real
+  real(kind=kind_real), parameter :: Tmin = tbasi - 160.0_kind_real
 
- !LOCALS
- real(8), parameter :: ZEROC   = 273.16
- real(8), parameter :: TMINLQU = ZEROC - 40.0
+  ! Compute es over water, see smithsonian meteorological tables page 350.
+  do  i=1,n
+     tem = tmin+dt*real(i-1)
+     aa  = -7.90298_kind_real*(tbasw/tem-1)
+     b   =  5.02808_kind_real*log10(tbasw/tem)
+     c   = -1.3816e-07_kind_real*(10.0_kind_real**((1.0_kind_real-tem/tbasw)*11.344_kind_real)-1.0_kind_real)
+     d   =  8.1328e-03_kind_real*(10.0_kind_real**((tbasw/tem-1.0_kind_real)*(-3.49149_kind_real))-1.0_kind_real)
+     e   =  log10(esbasw)
+     table(i)  = 0.1_kind_real*10.0_kind_real**(aa+b+c+d+e)
+  enddo
 
- real(8),  parameter :: B6 = 6.136820929E-11*100.0
- real(8),  parameter :: B5 = 2.034080948E-8 *100.0
- real(8),  parameter :: B4 = 3.031240396E-6 *100.0
- real(8),  parameter :: B3 = 2.650648471E-4 *100.0
- real(8),  parameter :: B2 = 1.428945805E-2 *100.0
- real(8),  parameter :: B1 = 4.436518521E-1 *100.0
- real(8),  parameter :: B0 = 6.107799961E+0 *100.0
-
- real(8) :: TX, EX, TI, TT
-
- TX = TL
-
- if    (TX<TMINLQU) then
-    TI = TMINLQU
- elseif(TX>TMAXTBL) then
-    TI = TMAXTBL
- else
-    TI = TX
- end if
-
- TT = TI-ZEROC  !Starr polynomial fit
- EX = (TT*(TT*(TT*(TT*(TT*(TT*B6+B5)+B4)+B3)+B2)+B1)+B0)
-
- TL = TX
- QS = EX
-
- return
-
-end subroutine QSATLQU0
-
-!----------------------------------------------------------------------------
-
-subroutine QSATICE0(QS,TL)
-!SUPERSATURATED AS ICE
-
- IMPLICIT NONE
-
- !INPUTS
- real(8) :: TL
-
- !OUTPUTS
- real(8) :: QS
-
- !LOCALS
- real(8), parameter :: ZEROC = 273.16, TMINSTR = -95.0
- real(8), parameter :: TMINICE = ZEROC + TMINSTR
-
- real(8), parameter :: TSTARR1 = -75.0, TSTARR2 = -65.0, TSTARR3 = -50.0,  TSTARR4 = -40.0
-
- real(8),  parameter :: BI6= 1.838826904E-10*100.0
- real(8),  parameter :: BI5= 4.838803174E-8 *100.0
- real(8),  parameter :: BI4= 5.824720280E-6 *100.0
- real(8),  parameter :: BI3= 4.176223716E-4 *100.0
- real(8),  parameter :: BI2= 1.886013408E-2 *100.0
- real(8),  parameter :: BI1= 5.034698970E-1 *100.0
- real(8),  parameter :: BI0= 6.109177956E+0 *100.0
- real(8),  parameter :: S16= 0.516000335E-11*100.0
- real(8),  parameter :: S15= 0.276961083E-8 *100.0
- real(8),  parameter :: S14= 0.623439266E-6 *100.0
- real(8),  parameter :: S13= 0.754129933E-4 *100.0
- real(8),  parameter :: S12= 0.517609116E-2 *100.0
- real(8),  parameter :: S11= 0.191372282E+0 *100.0
- real(8),  parameter :: S10= 0.298152339E+1 *100.0
- real(8),  parameter :: S26= 0.314296723E-10*100.0
- real(8),  parameter :: S25= 0.132243858E-7 *100.0
- real(8),  parameter :: S24= 0.236279781E-5 *100.0
- real(8),  parameter :: S23= 0.230325039E-3 *100.0
- real(8),  parameter :: S22= 0.129690326E-1 *100.0
- real(8),  parameter :: S21= 0.401390832E+0 *100.0
- real(8),  parameter :: S20= 0.535098336E+1 *100.0
-
- real(8) :: TX, TI, TT, W, EX
-
- TX = TL
-
- if (TX<TMINICE) then
-    TI = TMINICE
- elseif(TX>ZEROC  ) then
-    TI = ZEROC
- else
-    TI = TX
- end if
-
- TT = TI - ZEROC
- if (TT < TSTARR1 ) then
-     EX = (TT*(TT*(TT*(TT*(TT*(TT*S16+S15)+S14)+S13)+S12)+S11)+S10)
- elseif(TT >= TSTARR1 .and. TT < TSTARR2) then
-     W = (TSTARR2 - TT)/(TSTARR2-TSTARR1)
-     EX =       W *(TT*(TT*(TT*(TT*(TT*(TT*S16+S15)+S14)+S13)+S12)+S11)+S10) &
-              + (1.-W)*(TT*(TT*(TT*(TT*(TT*(TT*S26+S25)+S24)+S23)+S22)+S21)+S20)
- elseif(TT >= TSTARR2 .and. TT < TSTARR3) then
-     EX = (TT*(TT*(TT*(TT*(TT*(TT*S26+S25)+S24)+S23)+S22)+S21)+S20)
- elseif(TT >= TSTARR3 .and. TT < TSTARR4) then
-     W = (TSTARR4 - TT)/(TSTARR4-TSTARR3)
-     EX =       W *(TT*(TT*(TT*(TT*(TT*(TT*S26+S25)+S24)+S23)+S22)+S21)+S20) &
-              + (1.-W)*(TT*(TT*(TT*(TT*(TT*(TT*BI6+BI5)+BI4)+BI3)+BI2)+BI1)+BI0)
- else
-     EX = (TT*(TT*(TT*(TT*(TT*(TT*BI6+BI5)+BI4)+BI3)+BI2)+BI1)+BI0)
- endif
-
- QS = EX
-
- return
-
-end subroutine QSATICE0
-
-!----------------------------------------------------------------------------
-
-subroutine dqsat_calc(geom,temp,pmid,degsubs,tmintbl,tmaxtbl,tablesize,estblx,dqsi,qssi)
-
-!computes saturation vapour pressure qssi and gradient w.r.t temperature dqsi.
-!inputs are temperature and plo (pressure at t-levels)
-!vales are computed from look-up talbe (piecewise linear)
-
- use fv3jedi_constants_mod, only: h2omw, airmw
-
- implicit none
-
- !inputs
- type(fv3jedi_geom),   intent(in) :: geom
- integer,              intent(in) :: degsubs
- real(8),              intent(in) :: tmintbl, tmaxtbl
- integer,              intent(in) :: tablesize
- real(kind=kind_real), intent(in) :: temp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(in) :: pmid(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(8),              intent(in) :: estblx(tablesize)
-
- !outputs
- real(kind=kind_real), intent(inout) :: dqsi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(inout) :: qssi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
-
- !locals
- real(8), parameter :: max_mixing_ratio = 1.0_8
- real(8) :: esfac
-
- integer :: i, j, k
- real(8) :: tt, ti, dqq, qq, dd
- integer :: it
- real(8) :: temp8, pmid8, qssi8, dqsi8
-
- dqsi = 0.0_kind_real
- qssi = 0.0_kind_real
-
- esfac = real(h2omw,8)/real(airmw,8)
-
- do k=1,geom%npz
-    do j=geom%jsc,geom%jec
-      do i=geom%isc,geom%iec
-
-          temp8 = real(temp(i,j,k),8)
-          pmid8 = real(pmid(i,j,k),8)
-
-          if (temp8<=tmintbl) then
-             ti = tmintbl
-          elseif(temp8>=tmaxtbl-.001_8) then
-             ti = tmaxtbl-.001_8
-          else
-             ti = temp8
-          end if
-
-          tt = (ti - tmintbl)*real(degsubs,8)+1.0_8
-          it = int(tt)
-
-          dqq =  estblx(it+1) - estblx(it)
-          qq  =  (tt-real(it,8))*dqq + estblx(it)
-
-          if (pmid8 <= qq) then
-             qssi8 = max_mixing_ratio
-             dqsi8 = 0.0
-          else
-             dd = 1.0/(pmid8 - (1.0-esfac)*qq)
-             qssi8 = esfac*qq*dd
-             dqsi8 = (esfac*degsubs)*dqq*pmid8*(dd*dd)
-          end if
-
-          dqsi(i,j,k) = real(dqsi8,kind_real)
-          qssi(i,j,k) = real(qssi8,kind_real)
-
-       end do
-    end do
- end do
-
-end subroutine dqsat_calc
+end subroutine qs_table
 
 !----------------------------------------------------------------------------
 
