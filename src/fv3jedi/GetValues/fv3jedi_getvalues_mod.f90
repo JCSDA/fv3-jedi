@@ -55,7 +55,7 @@ integer, pointer      :: pbumpid => null()
 integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg
 real(kind=kind_real), allocatable :: mod_state(:,:)
 real(kind=kind_real), allocatable :: obs_state(:,:)
-real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
 logical :: do_interp
@@ -196,6 +196,7 @@ allocate(obs_state(nlocs,1))
 ! -------------
 allocate(geovale(isc:iec,jsc:jec,npz+1))
 allocate(geovalm(isc:iec,jsc:jec,npz))
+allocate(geovals(isc:iec,jsc:jec,1))
 
 ! Get pressures at edge, center & log center
 ! ------------------------------------------
@@ -328,6 +329,7 @@ call crtm_mixratio(geom,state%q,qmr)
 do jvar = 1, vars%nv
 
   geovalm = 0.0_kind_real
+  geovals = 0.0_kind_real   
   geovale = 0.0_kind_real
 
   do_interp = .false.
@@ -494,6 +496,14 @@ do jvar = 1, vars%nv
    do_interp = .false.
    obs_state(:,1) = water_temperature
 
+
+  case ("sea_surface_temperature")
+
+   nvl = 1
+   do_interp = .true.
+   geovals = state%tsea
+   geoval => geovals
+   
   case ("surface_temperature_where_land")
 
    nvl = 1
@@ -763,6 +773,7 @@ if (allocated(mod_state            )) deallocate(mod_state            )
 if (allocated(obs_state            )) deallocate(obs_state            )
 if (allocated(geovale              )) deallocate(geovale              )
 if (allocated(geovalm              )) deallocate(geovalm              )
+if (allocated(geovals              )) deallocate(geovals              )
 if (allocated(delp                 )) deallocate(delp                 )
 if (allocated(prsi                 )) deallocate(prsi                 )
 if (allocated(prs                  )) deallocate(prs                  )

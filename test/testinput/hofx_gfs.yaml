@@ -28,6 +28,18 @@ Model:
 Observations:
   ObsTypes:
   - ObsSpace:
+      name: SeaSurfaceTemp
+      ObsDataIn:
+        obsfile: Data/obs/sst_obs-2018-04-15.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/sst_gmi_hofx_gfs_2018041500_m.nc4
+      simulate:
+        variables: [sea_surface_temperature]
+    ObsOperator:
+      name: SeaSurfaceTemp
+    Covariance:
+      covariance: diagonal
+  - ObsSpace:
       name: Aircraft
       ObsDataIn:
         obsfile: Data/obs/aircraft_obs_2018041500_m.nc4

@@ -282,8 +282,10 @@ LINK_FILES_DIR("${crtm_viw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 
 # IODA observation files
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
-file(GLOB ioda_obs "${ioda_SOURCE_DIR}/test/testinput/atmosphere/*nc4")
-LINK_FILES_DIR("${ioda_obs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
+file(GLOB ioda_atm_obs "${ioda_SOURCE_DIR}/test/testinput/atmosphere/*nc4")
+file(GLOB ioda_mar_obs "${ioda_SOURCE_DIR}/test/testinput/marine/*nc4")
+LINK_FILES_DIR("${ioda_atm_obs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
+LINK_FILES_DIR("${ioda_mar_obs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
 
 
 # Create tests
