@@ -31,7 +31,7 @@
 #include "ufo/Locations.h"
 #include "ufo/ObsBias.h"
 #include "ufo/ObsBiasCovariance.h"
-#include "ufo/ObsBiasIncrement.h"
+#include "ufo/ObsDiagnostics.h"
 #include "ufo/ObsOperator.h"
 
 namespace fv3jedi {
@@ -57,6 +57,7 @@ struct Traits {
   typedef ufo::ObsBias                         ObsAuxControl;
   typedef ufo::ObsBiasCovariance               ObsAuxCovariance;
   typedef ufo::ObsBiasIncrement                ObsAuxIncrement;
+  typedef ufo::ObsDiagnostics                  ObsDiagnostics;
   typedef ufo::ObsOperator                     ObsOperator;
 
   typedef ioda::ObsSpace                       ObsSpace;
