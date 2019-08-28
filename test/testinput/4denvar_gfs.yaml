@@ -328,6 +328,7 @@ cost_function:
         amount: 0.96
         apply_at_iterations: 0
       - Filter: Domain Check
+        variables: [refractivity]
         where:
         - variable: altitude
           minvalue: 0
@@ -365,57 +366,13 @@ cost_function:
         covariance: diagonal
       ObsFilters:
       - Filter: Bounds Check
-        bounds:
-        - variable: brightness_temperature_1
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_2
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_3
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_4
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_5
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_6
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_9
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_10
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_11
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_12
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_13
-          minvalue: 100.0
-          maxvalue: 500.0
-        - variable: brightness_temperature_15
-          minvalue: 100.0
-          maxvalue: 500.0
+        variables: [brightness_temperature]
+        channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
       - Filter: Background Check
-        variables:
-        - brightness_temperature_1
-        - brightness_temperature_2
-        - brightness_temperature_3
-        - brightness_temperature_4
-        - brightness_temperature_5
-        - brightness_temperature_6
-        - brightness_temperature_9
-        - brightness_temperature_10
-        - brightness_temperature_11
-        - brightness_temperature_12
-        - brightness_temperature_13
-        - brightness_temperature_15
+        variables: [brightness_temperature]
+        channels: 1-15
         threshold: 3.0
   cost_type: 4D-Ens-Var
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]

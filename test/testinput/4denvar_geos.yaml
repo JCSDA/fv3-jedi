@@ -159,6 +159,7 @@ cost_function:
         amount: 0.96
         apply_at_iterations: 0
       - Filter: Domain Check
+        variables: [refractivity]
         where:
         - variable: altitude
           minvalue: 0

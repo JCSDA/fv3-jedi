@@ -331,12 +331,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_geos
                   MPI     6
                   LIBS    fv3jedi )
 
-ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
-                  SOURCES executables/TestState.cc
-                  ARGS    testinput/state_geosaero.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
-
 ecbuild_add_test( TARGET  test_fv3jedi_model_gfs-fv3
                   SOURCES executables/TestModel.cc
                   ARGS    testinput/model_gfs-fv3.yaml
@@ -491,14 +485,6 @@ ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs
                   MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_cor_gfs )
 
-ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_aero
-                  TYPE         EXE
-                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_parameters.x
-                  ARGS         testinput/bumpparameters_loc_gfs_aero.yaml testoutput/bumpparameters_loc_gfs_aero.run
-                  MPI          6
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_cor_gfs_aero )
-
-
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
@@ -558,13 +544,6 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs
                   ARGS         testinput/hyb-3dvar_gfs.yaml testoutput/hyb-3dvar_gfs.run
                   MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
-
-ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_aero
-                  TYPE         EXE
-                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
-                  ARGS         testinput/hyb-3dvar_gfs_aero.yaml testoutput/hyb-3dvar_gfs-aero.run
-                  MPI          6
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_compare
                   TYPE         SCRIPT
@@ -705,3 +684,25 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-3dvar_gfs_p12.run testoutput/hyb-3dvar_gfs.ref ${ctol} ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs_p12 )
+
+# Aerosol tests
+
+ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
+                  SOURCES executables/TestState.cc
+                  ARGS    testinput/state_geosaero.yaml
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_aero
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_parameters.x
+                  ARGS         testinput/bumpparameters_loc_gfs_aero.yaml testoutput/bumpparameters_loc_gfs_aero.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_cor_gfs_aero )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_aero
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
+                  ARGS         testinput/hyb-3dvar_gfs_aero.yaml testoutput/hyb-3dvar_gfs-aero.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
