@@ -57,7 +57,7 @@ type(fckit_configuration)    :: f_conf
 
 f_conf = fckit_configuration(c_vars)
 
-call oops_vars_create(c_vars,vars)
+call oops_vars_create(f_conf,vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_tlm_registry%init()
