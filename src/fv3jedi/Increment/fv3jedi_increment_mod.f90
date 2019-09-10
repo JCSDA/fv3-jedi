@@ -1047,7 +1047,7 @@ call allocate_unstructured_grid_field(ug)
 
 ! Copy increment
 
-ug%grid(1)%fld = 0.0_kind_real
+ug%grid(1)%fld(:,:,:,its) = 0.0_kind_real
 
 if (ug%colocated==1) then
   do var = 1,self%nf
