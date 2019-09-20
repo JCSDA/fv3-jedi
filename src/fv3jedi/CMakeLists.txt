@@ -87,7 +87,6 @@ Utilities/fv3jedi_interpolation_mod.f90
 Utilities/fv3jedi_kinds_mod.f90
 Utilities/fv3jedi_netcdf_utils_mod.F90
 Utilities/instantiateVarChangeFactories.h
-Utilities/instantiateObsFilterFactory.h
 VariableChange/height_variables_mod.f90
 VariableChange/moisture_variables_mod.f90
 VariableChange/pressure_variables_mod.f90

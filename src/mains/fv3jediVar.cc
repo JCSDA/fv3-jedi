@@ -7,9 +7,9 @@
 
 #include "fv3jedi/Localization/instantiateLocalizationFactory.h"
 #include "fv3jedi/Run/Run.h"
-#include "fv3jedi/Utilities/instantiateObsFilterFactory.h"
 #include "fv3jedi/Utilities/instantiateVarChangeFactories.h"
 #include "fv3jedi/Utilities/Traits.h"
+#include "ufo/instantiateObsFilterFactory.h"
 
 #include "oops/runs/Variational.h"
 
@@ -17,7 +17,7 @@ int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   fv3jedi::instantiateLocalizationFactory();
   fv3jedi::instantiateVarChangeFactories();
-  fv3jedi::instantiateObsFilterFactory();
+  ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
   oops::Variational<fv3jedi::Traits> var;
   run.execute(var);
   return 0;
