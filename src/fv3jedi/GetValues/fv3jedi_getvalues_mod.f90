@@ -80,6 +80,9 @@ real(kind=kind_real), allocatable :: qi_efr(:,:,:) !Cloud effective radium micro
 real(kind=kind_real), allocatable :: qmr(:,:,:)    !Moisture mixing ratio
 real(kind=kind_real), allocatable :: water_coverage_m(:,:) !Water coverage, model grid
 
+!Flags on variables
+logical :: have_t, have_pressures, have_crtm_srf, have_crtm_cld, have_rh, have_qmr
+
 !Local CRTM surface variables
 integer             , allocatable :: vegetation_type(:)          !Index of vege type              | surface(1)%Vegetation_Type
 integer             , allocatable :: land_type(:)                !Index of land type              | surface(1)%Land_Type
@@ -135,17 +138,19 @@ endif
 ! -------------------
 
 ! Temperature
-allocate(t(isc:iec,jsc:jec,npz  ))
+have_t = .false.
 
 if (associated(state%t)) then
+  allocate(t(isc:iec,jsc:jec,npz))
   t = state%t
+  have_t = .true.
 elseif (associated(state%pt)) then
   if (.not. associated(state%pkz)) then
     call abor1_ftn("fv3jedi_getvalues_mod.getvalues: A state with potential temperature needs pressure to the kappa")
   endif
+  allocate(t(isc:iec,jsc:jec,npz))
   call pt_to_t(geom,state%pkz,state%pt,t)
-else
-  call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute temperature from the state")
+  have_t = .true.
 endif
 
 ! Initialize the interpolation trajectory
@@ -158,13 +163,20 @@ if (present(traj)) then
 
      traj%ngrid = ngrid
 
-     if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
-     if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
-     if (.not.allocated(traj%o3)) allocate(traj%o3(isc:iec,jsc:jec,1:npz))
+     if (have_t) then
+       if (.not.allocated(traj%t)) allocate(traj%t(isc:iec,jsc:jec,1:npz))
+       traj%t = t
+     endif
 
-     traj%t = t
-     traj%q = state%q
-     traj%o3 = state%o3
+     if (associated(state%q)) then
+       if (.not.allocated(traj%q)) allocate(traj%q(isc:iec,jsc:jec,1:npz))
+       traj%q = state%q
+     endif
+
+     if (associated(state%o3)) then
+       if (.not.allocated(traj%o3)) allocate(traj%o3(isc:iec,jsc:jec,1:npz))
+       traj%o3 = state%o3
+     endif
 
      pbump_alloc => traj%lalloc
      pbumpid => traj%bumpid
@@ -200,80 +212,98 @@ allocate(geovals(isc:iec,jsc:jec,1))
 
 ! Get pressures at edge, center & log center
 ! ------------------------------------------
-allocate(delp(isc:iec,jsc:jec,npz  ))
-allocate(prsi(isc:iec,jsc:jec,npz+1))
-allocate(prs (isc:iec,jsc:jec,npz  ))
-allocate(logp(isc:iec,jsc:jec,npz  ))
+have_pressures = .false.
 
 if (associated(state%delp)) then
+  allocate(delp(isc:iec,jsc:jec,npz))
   delp = state%delp
+  have_pressures = .true.
 elseif (associated(state%ps)) then
+  allocate(delp(isc:iec,jsc:jec,npz  ))
   do jlev = 1,geom%npz
     delp(:,:,jlev) = (geom%ak(jlev+1)-geom%ak(jlev))+(geom%bk(jlev+1)-geom%bk(jlev))*state%ps(:,:,1)
   enddo
+  have_pressures = .true.
 elseif (associated(state%pe)) then
+  allocate(delp(isc:iec,jsc:jec,npz  ))
   do jlev = 1,geom%npz
     delp(:,:,jlev) = state%pe(:,:,jlev+1) - state%pe(:,:,jlev)
   enddo
-else
-  call abor1_ftn("fv3jedi_getvalues_mod.getvalues: No way to compute delp from the state")
+  have_pressures = .true.
 endif
 
-call delp_to_pe_p_logp(geom,delp,prsi,prs,logp)
+if (have_pressures) then
+  allocate(prsi(isc:iec,jsc:jec,npz+1))
+  allocate(prs (isc:iec,jsc:jec,npz  ))
+  allocate(logp(isc:iec,jsc:jec,npz  ))
+  call delp_to_pe_p_logp(geom,delp,prsi,prs,logp)
+endif
 
 ! Compute relative humidity
 ! -------------------------
-allocate(qsat(isc:iec,jsc:jec,npz))
-allocate(rh(isc:iec,jsc:jec,npz))
-do j = jsc,jec
-  do i = isc,iec
-    call qsmith(npz,state%t(i,j,:),state%q(i,j,:),prs(i,j,:),qsat(i,j,:))
+have_rh = .false.
+if (have_t .and. have_pressures .and. associated(state%q)) then
+  allocate(qsat(isc:iec,jsc:jec,npz))
+  allocate(rh(isc:iec,jsc:jec,npz))
+  do j = jsc,jec
+    do i = isc,iec
+      call qsmith(npz,t(i,j,:),state%q(i,j,:),prs(i,j,:),qsat(i,j,:))
+    enddo
   enddo
-enddo
-call q_to_rh(geom,qsat,state%q,rh)
-deallocate(qsat)
+  call q_to_rh(geom,qsat,state%q,rh)
+  deallocate(qsat)
+  have_rh = .true.
+endif
 
 ! Get CRTM surface variables
 ! ----------------------
-allocate(wind_speed(nlocs))
-allocate(wind_direction(nlocs))
-allocate(land_type(nlocs))
-allocate(vegetation_type(nlocs))
-allocate(soil_type(nlocs))
-allocate(water_coverage(nlocs))
-allocate(land_coverage(nlocs))
-allocate(ice_coverage(nlocs))
-allocate(snow_coverage(nlocs))
-allocate(lai(nlocs))
-allocate(water_temperature(nlocs))
-allocate(land_temperature(nlocs))
-allocate(ice_temperature(nlocs))
-allocate(snow_temperature(nlocs))
-allocate(soil_moisture_content(nlocs))
-allocate(vegetation_fraction(nlocs))
-allocate(soil_temperature(nlocs))
-allocate(snow_depth(nlocs))
+have_crtm_srf =.false.
+if (associated(state%slmsk ) .and. associated(state%slmsk ) .and. &
+    associated(state%sheleg) .and. associated(state%tsea  ) .and. &
+    associated(state%vtype ) .and. associated(state%stype ) .and. &
+    associated(state%vfrac ) .and. associated(state%stc   ) .and. &
+    associated(state%smc   ) .and. associated(state%snwdph) .and. &
+    associated(state%u_srf ) .and. associated(state%v_srf ) .and. &
+    associated(state%f10m  )) then
 
-wind_speed = 0.0_kind_real
-wind_direction = 0.0_kind_real
-land_type = 0
-vegetation_type = 0
-soil_type = 0
-water_coverage = 0.0_kind_real
-land_coverage = 0.0_kind_real
-ice_coverage = 0.0_kind_real
-snow_coverage = 0.0_kind_real
-lai = 0.0_kind_real
-water_temperature = 0.0_kind_real
-land_temperature = 0.0_kind_real
-ice_temperature = 0.0_kind_real
-snow_temperature = 0.0_kind_real
-soil_moisture_content = 0.0_kind_real
-vegetation_fraction = 0.0_kind_real
-soil_temperature = 0.0_kind_real
-snow_depth = 0.0_kind_real
+  allocate(wind_speed(nlocs))
+  allocate(wind_direction(nlocs))
+  allocate(land_type(nlocs))
+  allocate(vegetation_type(nlocs))
+  allocate(soil_type(nlocs))
+  allocate(water_coverage(nlocs))
+  allocate(land_coverage(nlocs))
+  allocate(ice_coverage(nlocs))
+  allocate(snow_coverage(nlocs))
+  allocate(lai(nlocs))
+  allocate(water_temperature(nlocs))
+  allocate(land_temperature(nlocs))
+  allocate(ice_temperature(nlocs))
+  allocate(snow_temperature(nlocs))
+  allocate(soil_moisture_content(nlocs))
+  allocate(vegetation_fraction(nlocs))
+  allocate(soil_temperature(nlocs))
+  allocate(snow_depth(nlocs))
 
-if (associated(state%slmsk)) then
+  wind_speed = 0.0_kind_real
+  wind_direction = 0.0_kind_real
+  land_type = 0
+  vegetation_type = 0
+  soil_type = 0
+  water_coverage = 0.0_kind_real
+  land_coverage = 0.0_kind_real
+  ice_coverage = 0.0_kind_real
+  snow_coverage = 0.0_kind_real
+  lai = 0.0_kind_real
+  water_temperature = 0.0_kind_real
+  land_temperature = 0.0_kind_real
+  ice_temperature = 0.0_kind_real
+  snow_temperature = 0.0_kind_real
+  soil_moisture_content = 0.0_kind_real
+  vegetation_fraction = 0.0_kind_real
+  soil_temperature = 0.0_kind_real
+  snow_depth = 0.0_kind_real
+
   !TODO only if a radiance
   call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
                      state%slmsk,  state%sheleg, &
@@ -286,24 +316,29 @@ if (associated(state%slmsk)) then
                      snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                      snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
                      wind_speed, wind_direction )
+
+  have_crtm_srf = .true.
+
 endif
 
 
 ! Get CRTM moisture variables
 ! ---------------------------
-allocate(ql_ade(isc:iec,jsc:jec,npz))
-allocate(qi_ade(isc:iec,jsc:jec,npz))
-allocate(ql_efr(isc:iec,jsc:jec,npz))
-allocate(qi_efr(isc:iec,jsc:jec,npz))
-allocate(qmr(isc:iec,jsc:jec,npz))
-allocate(water_coverage_m(isc:iec,jsc:jec))
 
-ql_ade = 0.0_kind_real
-qi_ade = 0.0_kind_real
-ql_efr = 0.0_kind_real
-qi_efr = 0.0_kind_real
+have_crtm_cld = .false.
+if (associated(state%slmsk) .and. have_t .and. have_pressures &
+  .and. associated(state%q) .and. associated(state%qi) .and. associated(state%ql)) then
 
-if (associated(state%slmsk)) then
+  allocate(ql_ade(isc:iec,jsc:jec,npz))
+  allocate(qi_ade(isc:iec,jsc:jec,npz))
+  allocate(ql_efr(isc:iec,jsc:jec,npz))
+  allocate(qi_efr(isc:iec,jsc:jec,npz))
+  allocate(water_coverage_m(isc:iec,jsc:jec))
+
+  ql_ade = 0.0_kind_real
+  qi_ade = 0.0_kind_real
+  ql_efr = 0.0_kind_real
+  qi_efr = 0.0_kind_real
 
   !TODO Is it water_coverage or sea_coverage fed in here?
   water_coverage_m = 0.0_kind_real
@@ -318,10 +353,18 @@ if (associated(state%slmsk)) then
                      state%ql,state%qi, &
                      ql_ade,qi_ade,ql_efr,qi_efr )
 
+  have_crtm_cld = .true.
+
 endif
 
-call crtm_mixratio(geom,state%q,qmr)
-
+! CRTM mixing ratio
+! -----------------
+have_qmr = .false.
+if (associated(state%q)) then
+  allocate(qmr(isc:iec,jsc:jec,npz))
+  call crtm_mixratio(geom,state%q,qmr)
+  have_qmr = .true.
+endif
 
 ! Variable transforms and interpolate to obs locations
 ! ----------------------------------------------------
@@ -329,7 +372,7 @@ call crtm_mixratio(geom,state%q,qmr)
 do jvar = 1, vars%nv
 
   geovalm = 0.0_kind_real
-  geovals = 0.0_kind_real   
+  geovals = 0.0_kind_real
   geovale = 0.0_kind_real
 
   do_interp = .false.
@@ -340,12 +383,18 @@ do jvar = 1, vars%nv
 
   case ("eastward_wind")
 
+    if (.not. associated(state%ua)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%ua")
+
     nvl = npz
     do_interp = .true.
     geovalm = state%ua
     geoval => geovalm
 
   case ("northward_wind")
+
+    if (.not. associated(state%va)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%va")
 
     nvl = npz
     do_interp = .true.
@@ -354,12 +403,18 @@ do jvar = 1, vars%nv
 
   case ("air_temperature","temperature")
 
+    if (.not. have_t) &
+      call variable_fail(trim(vars%fldnames(jvar)),"t")
+
     nvl = npz
     do_interp = .true.
     geovalm = t
     geoval => geovalm
 
   case ("specific_humidity")
+
+    if (.not. associated(state%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
 
     nvl = npz
     do_interp = .true.
@@ -368,12 +423,20 @@ do jvar = 1, vars%nv
 
   case ("virtual_temperature")
 
+    if (.not. have_t) &
+      call variable_fail(trim(vars%fldnames(jvar)),"t")
+    if (.not. associated(state%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+
     nvl = npz
     do_interp = .true.
     call T_to_Tv(geom,t,state%q,geovalm)
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
+
+    if (.not. have_qmr) &
+      call variable_fail(trim(vars%fldnames(jvar)),"qmr")
 
     nvl = npz
     do_interp = .true.
@@ -382,12 +445,18 @@ do jvar = 1, vars%nv
 
   case ("relative_humidity")
 
+    if (.not. have_rh) &
+      call variable_fail(trim(vars%fldnames(jvar)),"rh")
+
     nvl = npz
     do_interp = .true.
     geovalm = max(rh,0.0_kind_real)
     geoval => geovalm
 
   case ("air_pressure")
+
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%fldnames(jvar)),"prs")
 
     nvl = npz
     do_interp = .true.
@@ -396,12 +465,24 @@ do jvar = 1, vars%nv
 
   case ("air_pressure_levels")
 
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%fldnames(jvar)),"prsi")
+
     nvl = npz + 1
     do_interp = .true.
     geovale = prsi
     geoval => geovale
 
   case ("geopotential_height")
+
+    if (.not. have_t) &
+      call variable_fail(trim(vars%fldnames(jvar)),"t")
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%fldnames(jvar)),"prs,prsi")
+    if (.not. associated(state%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+    if (.not. associated(state%phis)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%phis")
 
     call geop_height(geom,prs,prsi,t,state%q,&
                      state%phis(:,:,1),use_compress,geovalm)
@@ -411,6 +492,15 @@ do jvar = 1, vars%nv
 
   case ("geopotential_height_levels")
 
+    if (.not. have_t) &
+      call variable_fail(trim(vars%fldnames(jvar)),"t")
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%fldnames(jvar)),"prs,prsi")
+    if (.not. associated(state%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+    if (.not. associated(state%phis)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%phis")
+
     call geop_height_levels(geom,prs,prsi,t,state%q,&
                             state%phis(:,:,1),use_compress,geovale)
     nvl = npz + 1
@@ -419,12 +509,18 @@ do jvar = 1, vars%nv
 
   case ("surface_geopotential_height")
 
+    if (.not. associated(state%phis)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%phis")
+
     nvl = 1
     do_interp = .true.
     geovalm(:,:,1) = state%phis(:,:,1) / grav
     geoval => geovalm
 
   case ("mole_fraction_of_ozone_in_air")
+
+    if (.not. associated(state%o3)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%o3")
 
    nvl = npz
    do_interp = .true.
@@ -440,12 +536,18 @@ do jvar = 1, vars%nv
 
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 
+    if (.not. have_crtm_cld) &
+      call variable_fail(trim(vars%fldnames(jvar)),"ql_ade")
+
    nvl = npz
    do_interp = .true.
    geovalm = ql_ade
    geoval => geovalm
 
   case ("mass_content_of_cloud_ice_in_atmosphere_layer")
+
+    if (.not. have_crtm_cld) &
+      call variable_fail(trim(vars%fldnames(jvar)),"qi_ade")
 
    nvl = npz
    do_interp = .true.
@@ -454,12 +556,18 @@ do jvar = 1, vars%nv
 
   case ("effective_radius_of_cloud_liquid_water_particle")
 
+    if (.not. have_crtm_cld) &
+      call variable_fail(trim(vars%fldnames(jvar)),"ql_efr")
+
    nvl = npz
    do_interp = .true.
    geovalm = ql_efr
    geoval => geovalm
 
   case ("effective_radius_of_cloud_ice_particle")
+
+    if (.not. have_crtm_cld) &
+      call variable_fail(trim(vars%fldnames(jvar)),"qi_efr")
 
    nvl = npz
    do_interp = .true.
@@ -468,11 +576,17 @@ do jvar = 1, vars%nv
 
   case ("water_area_fraction")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"water_coverage")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = water_coverage
 
   case ("land_area_fraction")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"land_coverage")
 
    nvl = 1
    do_interp = .false.
@@ -480,17 +594,26 @@ do jvar = 1, vars%nv
 
   case ("ice_area_fraction")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"ice_coverage")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = ice_coverage
 
   case ("surface_snow_area_fraction")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"snow_coverage")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = snow_coverage
 
   case ("surface_temperature_where_sea")
+
+   if (.not. have_crtm_srf) &
+     call variable_fail(trim(vars%fldnames(jvar)),"water_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -499,12 +622,18 @@ do jvar = 1, vars%nv
 
   case ("sea_surface_temperature")
 
+    if (.not. associated(state%tsea)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"state%tsea")
+
    nvl = 1
    do_interp = .true.
    geovals = state%tsea
    geoval => geovals
-   
+
   case ("surface_temperature_where_land")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"land_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -512,11 +641,17 @@ do jvar = 1, vars%nv
 
   case ("surface_temperature_where_ice")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"ice_temperature")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = ice_temperature
 
   case ("surface_temperature_where_snow")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"snow_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -524,11 +659,17 @@ do jvar = 1, vars%nv
 
   case ("surface_snow_thickness")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"snow_depth")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = snow_depth
 
   case ("vegetation_area_fraction")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"vegetation_fraction")
 
    nvl = 1
    do_interp = .false.
@@ -536,11 +677,17 @@ do jvar = 1, vars%nv
 
   case ("surface_wind_speed")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"wind_speed")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = wind_speed
 
   case ("surface_wind_from_direction")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"wind_direction")
 
    nvl = 1
    do_interp = .false.
@@ -548,11 +695,17 @@ do jvar = 1, vars%nv
 
   case ("leaf_area_index")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"lai")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = lai
 
   case ("volume_fraction_of_condensed_water_in_soil")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"soil_moisture_content")
 
    nvl = 1
    do_interp = .false.
@@ -560,11 +713,17 @@ do jvar = 1, vars%nv
 
   case ("soil_temperature")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"soil_temperature")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = soil_temperature
 
   case ("land_type_index")
+
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"land_type")
 
    nvl = 1
    do_interp = .false.
@@ -572,17 +731,26 @@ do jvar = 1, vars%nv
 
   case ("vegetation_type_index")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"vegetation_type")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = real(vegetation_type,kind_real)
 
   case ("soil_type")
 
+    if (.not. have_crtm_srf) &
+      call variable_fail(trim(vars%fldnames(jvar)),"soil_type")
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = real(soil_type,kind_real)
 
   case ("sulf","so4")
+
+   if (.not. associated(state%so4)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%so4")
 
    nvl = npz
    do_interp = .true.
@@ -591,12 +759,18 @@ do jvar = 1, vars%nv
 
   case ("bc1","bcphobic")
 
+   if (.not. associated(state%bcphobic)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%bcphobic")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%bcphobic,0.0_kind_real)
    geoval => geovalm
 
   case ("bc2","bcphilic")
+
+   if (.not. associated(state%bcphilic)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%bcphilic")
 
    nvl = npz
    do_interp = .true.
@@ -605,12 +779,18 @@ do jvar = 1, vars%nv
 
   case ("oc1","ocphobic")
 
+   if (.not. associated(state%ocphobic)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ocphobic")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%ocphobic,0.0_kind_real)
    geoval => geovalm
 
   case ("oc2","ocphilic")
+
+   if (.not. associated(state%ocphilic)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ocphilic")
 
    nvl = npz
    do_interp = .true.
@@ -619,12 +799,18 @@ do jvar = 1, vars%nv
 
   case ("dust1","du001")
 
+   if (.not. associated(state%du001)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%du001")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%du001,0.0_kind_real)
    geoval => geovalm
 
   case ("dust2","du002")
+
+   if (.not. associated(state%du002)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%du002")
 
    nvl = npz
    do_interp = .true.
@@ -633,12 +819,18 @@ do jvar = 1, vars%nv
 
   case ("dust3","du003")
 
+   if (.not. associated(state%du003)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%du003")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%du003,0.0_kind_real)
    geoval => geovalm
 
   case ("dust4","du004")
+
+   if (.not. associated(state%du004)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%du004")
 
    nvl = npz
    do_interp = .true.
@@ -647,12 +839,18 @@ do jvar = 1, vars%nv
 
   case ("dust5","du005")
 
+   if (.not. associated(state%du005)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%du005")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%du005,0.0_kind_real)
    geoval => geovalm
 
   case ("seas1","ss001")
+
+   if (.not. associated(state%ss001)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ss001")
 
    nvl = npz
    do_interp = .true.
@@ -661,12 +859,18 @@ do jvar = 1, vars%nv
 
   case ("seas2","ss002")
 
+   if (.not. associated(state%ss002)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ss002")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%ss002,0.0_kind_real)
    geoval => geovalm
 
   case ("seas3","ss003")
+
+   if (.not. associated(state%ss003)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ss003")
 
    nvl = npz
    do_interp = .true.
@@ -675,12 +879,18 @@ do jvar = 1, vars%nv
 
   case ("seas4","ss004")
 
+   if (.not. associated(state%ss004)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ss004")
+
    nvl = npz
    do_interp = .true.
    geovalm = max(state%ss004,0.0_kind_real)
    geoval => geovalm
 
   case ("seas5","ss005")
+
+   if (.not. associated(state%ss005)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%ss005")
 
     nvl = npz
     do_interp = .true.
@@ -689,6 +899,9 @@ do jvar = 1, vars%nv
 
   case ("no3an1")
 
+   if (.not. associated(state%no3an1)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%no3an1")
+
     nvl = npz
     do_interp = .true.
     geovalm = max(state%no3an1,0.0_kind_real)
@@ -696,12 +909,18 @@ do jvar = 1, vars%nv
 
   case ("no3an2")
 
+   if (.not. associated(state%no3an2)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%no3an2")
+
     nvl = npz
     do_interp = .true.
     geovalm = max(state%no3an2,0.0_kind_real)
     geoval => geovalm
 
   case ("no3an3")
+
+   if (.not. associated(state%no3an3)) &
+     call variable_fail(trim(vars%fldnames(jvar)),"state%no3an3")
 
     nvl = npz
     do_interp = .true.
@@ -906,12 +1125,20 @@ do jvar = 1, vars%nv
 
   case ("virtual_temperature")
 
+    if (.not.allocated(traj%t)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%t")
+    if (.not.allocated(traj%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
+
     nvl = inc%npz
     do_interp = .true.
     call T_to_Tv_tl(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
     geoval => geovalm
 
   case ("humidity_mixing_ratio")
+
+    if (.not.allocated(traj%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
 
     nvl = inc%npz
     do_interp = .true.
@@ -920,18 +1147,21 @@ do jvar = 1, vars%nv
 
   case ("mole_fraction_of_ozone_in_air")
 
+    if (.not.allocated(traj%o3)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%o3")
+
     nvl = npz
     do_interp = .true.
-	do k = 1,npz
-     do j = jsc,jec
-      do i = isc,iec
-	   if (traj%o3(i,j,k) .ge. 0.0_kind_real) then
-	    geovalm = inc%o3
-	   else
-	    geovalm = 0.0_kind_real
-	   endif
+	  do k = 1,npz
+      do j = jsc,jec
+        do i = isc,iec
+	        if (traj%o3(i,j,k) .ge. 0.0_kind_real) then
+	          geovalm = inc%o3
+	        else
+	          geovalm = 0.0_kind_real
+	        endif
+        enddo
       enddo
-     enddo
     enddo
 
     geoval => geovalm
@@ -1378,16 +1608,19 @@ do jvar = 1, vars%nv
 
   case ("mole_fraction_of_ozone_in_air")
 
+    if (.not.allocated(traj%o3)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%o3")
+
   	do k = 1,npz
-     do j = jsc,jec
-      do i = isc,iec
-	   if (traj%o3(i,j,k) .ge. 0.0_kind_real) then
-	    inc%o3 = inc%o3 + geovalm
-	   else
-	    inc%o3 = 0.0_kind_real
-	   endif
+      do j = jsc,jec
+        do i = isc,iec
+	        if (traj%o3(i,j,k) .ge. 0.0_kind_real) then
+	          inc%o3 = inc%o3 + geovalm
+	        else
+	          inc%o3 = 0.0_kind_real
+	        endif
+        enddo
       enddo
-     enddo
     enddo
 
   case ("specific_humidity")
@@ -1396,9 +1629,18 @@ do jvar = 1, vars%nv
 
   case ("virtual_temperature")
 
+    if (.not.allocated(traj%t)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%t")
+
+    if (.not.allocated(traj%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
+
     call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
 
   case ("humidity_mixing_ratio")
+
+    if (.not.allocated(traj%q)) &
+      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
 
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
@@ -1648,6 +1890,19 @@ if (.not. allocated(gom%geovals(jvar)%vals)) then
 endif
 
 end subroutine getvalues_checks
+
+! ------------------------------------------------------------------------------
+
+subroutine variable_fail(ufo_var,fv3_var)
+
+implicit none
+character(len=*), intent(in) :: ufo_var
+character(len=*), intent(in) :: fv3_var
+
+call abor1_ftn("GetValues.variable_fail: ufo variable "//trim(ufo_var)//&
+               " needs fv3-jedi variable "//trim(fv3_var)//", but it is not available.")
+
+end subroutine variable_fail
 
 ! ------------------------------------------------------------------------------
 

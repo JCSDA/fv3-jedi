@@ -548,7 +548,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_gfs.run testoutput/hyb-3dvar_gfs.ref ${ctol} ${idif}
+                  ARGS         testoutput/hyb-3dvar_gfs.run testoutput/hyb-3dvar_gfs.ref 1.0e-1 ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos
