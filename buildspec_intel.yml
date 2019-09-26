@@ -66,7 +66,8 @@ phases:
       - cp ~/.gitconfig /home/jcsdauser/
 
       - if ["$CODEBUILD_WEBHOOK_EVENT" = "PULL_REQUEST_MERGED"];
-        export CODEBUILD_GIT_BRANCH="develop";
+        then export CODEBUILD_GIT_BRANCH="develop";
+        echo $CODEBUILD_GIT_BRANCH;
         echo "Merging to develop";
         else CODEBUILD_GIT_BRANCH="$(git branch -a --contains $CODEBUILD_SOURCE_VERSION | sed -n 2p | awk '{ printf $1 }')";
         export CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH#remotes/origin/};
