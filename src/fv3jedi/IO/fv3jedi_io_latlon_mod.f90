@@ -440,7 +440,6 @@ mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
 
 !Important namelist options
 call bump%nam%init
-bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
 
 !Less important namelist options (should not be changed)
 bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
