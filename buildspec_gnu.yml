@@ -111,9 +111,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR
 
       # FV3 based model and/or FMS
-      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/FMS fv3-bundle/fms
-      - cd fv3-bundle/fms
-      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fms repo"
+      - git clone -b dev/master-ecbuild https://$GIT_USER:$GIT_PASS@github.com/jcsda/FMS fv3-bundle/fms
       - cd $CODEBUILD_SRC_DIR
 
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fckit fv3-bundle/fckit
@@ -129,6 +127,7 @@ phases:
       - pwd
       - ls
       - sed -i 's/BRANCH develop             UPDATE //' CMakeLists.txt
+      - sed -i 's/BRANCH dev/master-ecbuild  UPDATE //' CMakeLists.txt
       - sed -i '/PROJECT eckit/d' CMakeLists.txt
 
   build:
