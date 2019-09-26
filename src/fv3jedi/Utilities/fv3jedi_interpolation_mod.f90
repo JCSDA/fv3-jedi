@@ -200,7 +200,6 @@ subroutine bilinear_bump_init(isc_in, iec_in, jsc_in, jec_in, lat_in, lon_in, &
 
   !Important namelist options
   call bump%nam%init
-  bump%nam%obsop_interp = 'bilin'     ! Interpolation type (bilinear)
 
   !Less important namelist options (should not be changed)
   bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
