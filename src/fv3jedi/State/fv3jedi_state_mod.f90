@@ -85,6 +85,11 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'air_temperature', &
             fv3jedi_name = 't', units = 'K', staggerloc = center, arraypointer = self%t)
+     case("tv","TV")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'virtual_temperature', &
+            fv3jedi_name = 'tv', units = 'K', staggerloc = center, arraypointer = self%tv)
      case("pt","PT")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -115,6 +120,12 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%fldnames(var), long_name = 'specific_humidity', &
             fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center, arraypointer = self%q, &
+            tracer = .true.)
+     case("rh","RH")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'relative_humidity', &
+            fv3jedi_name = 'rh', units = '1', staggerloc = center, arraypointer = self%rh, &
             tracer = .true.)
      case("qi","ice_wat")
        vcount=vcount+1;
@@ -203,6 +214,26 @@ do var = 1, vars%nv
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%fldnames(var), long_name = 'surface_geopotential_height', &
             fv3jedi_name = 'phis', units = 'm', staggerloc = center, arraypointer = self%phis)
+     case("psi")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'stream_function', &
+            fv3jedi_name = 'psi', units = 'm+2 s', staggerloc = center, arraypointer = self%psi)
+     case("chi")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'velocity_potential', &
+            fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center, arraypointer = self%chi)
+     case("vort")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'vorticity', &
+            fv3jedi_name = 'vort', units = 'm+2 s', staggerloc = center, arraypointer = self%vort)
+     case("divg")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+            short_name = vars%fldnames(var), long_name = 'divergence', &
+            fv3jedi_name = 'divg', units = 'm+2 s', staggerloc = center, arraypointer = self%divg)
      !CRTM
      case("slmsk")
        vcount=vcount+1;
@@ -512,12 +543,14 @@ if (associated(self%vd     )) nullify(self%vd     )
 if (associated(self%ua     )) nullify(self%ua     )
 if (associated(self%va     )) nullify(self%va     )
 if (associated(self%t      )) nullify(self%t      )
+if (associated(self%tv     )) nullify(self%tv     )
 if (associated(self%pt     )) nullify(self%pt     )
 if (associated(self%delp   )) nullify(self%delp   )
 if (associated(self%pe     )) nullify(self%pe     )
 if (associated(self%pkz    )) nullify(self%pkz    )
 if (associated(self%ps     )) nullify(self%ps     )
 if (associated(self%q      )) nullify(self%q      )
+if (associated(self%rh     )) nullify(self%rh     )
 if (associated(self%qi     )) nullify(self%qi     )
 if (associated(self%ql     )) nullify(self%ql     )
 if (associated(self%qils   )) nullify(self%qils   )
@@ -533,6 +566,10 @@ if (associated(self%ox     )) nullify(self%ox     )
 if (associated(self%w      )) nullify(self%w      )
 if (associated(self%delz   )) nullify(self%delz   )
 if (associated(self%phis   )) nullify(self%phis   )
+if (associated(self%psi    )) nullify(self%psi    )
+if (associated(self%chi    )) nullify(self%chi    )
+if (associated(self%vort   )) nullify(self%vort   )
+if (associated(self%divg   )) nullify(self%divg   )
 if (associated(self%slmsk  )) nullify(self%slmsk  )
 if (associated(self%sheleg )) nullify(self%sheleg )
 if (associated(self%tsea   )) nullify(self%tsea   )

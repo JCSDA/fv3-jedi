@@ -149,6 +149,16 @@ do var = 1, vars%nv
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%fldnames(var), long_name = 'increment_of_velocity_potential', &
            fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center, arraypointer = self%chi)
+    case("vort")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_vorticity', &
+           fv3jedi_name = 'vort', units = 'm+2 s', staggerloc = center, arraypointer = self%vort)
+    case("divg")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+           short_name = vars%fldnames(var), long_name = 'increment_of_divergence', &
+           fv3jedi_name = 'divg', units = 'm+2 s', staggerloc = center, arraypointer = self%divg)
     case("tv")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -370,6 +380,8 @@ if (associated(self%ca  )) nullify(self%ca  )
 if (associated(self%o3  )) nullify(self%o3  )
 if (associated(self%psi )) nullify(self%psi )
 if (associated(self%chi )) nullify(self%chi )
+if (associated(self%vort)) nullify(self%vort)
+if (associated(self%divg)) nullify(self%divg)
 if (associated(self%tv  )) nullify(self%tv  )
 if (associated(self%rh  )) nullify(self%rh  )
 !Aerosols

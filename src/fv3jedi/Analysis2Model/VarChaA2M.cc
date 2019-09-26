@@ -17,8 +17,7 @@
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-VarChaA2M::VarChaA2M(const Geometry & resol,
-                                   const eckit::Configuration & conf):
+VarChaA2M::VarChaA2M(const Geometry & resol, const eckit::Configuration & conf):
     geom_(new Geometry(resol))
 {
   oops::Log::trace() << "VarChaA2M::VarChaA2M start" << std::endl;

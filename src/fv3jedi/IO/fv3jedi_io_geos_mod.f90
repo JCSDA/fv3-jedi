@@ -823,7 +823,7 @@ do n = 1,size(fields)
     if (self%csize > 6) then
       call gather_tile(geom, self%tcomm, 1, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
     else
-      arrayg = fields(n)%array(:,:,lev)
+      arrayg = fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev)
     endif
 
     if (self%iam_io_proc) then

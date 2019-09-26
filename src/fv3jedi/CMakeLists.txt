@@ -21,6 +21,11 @@ Control2Analysis/LinVarChaC2A.h
 Control2Analysis/LinVarChaC2A.interface.h
 Control2Analysis/fv3jedi_linvarcha_c2a.interface.F90
 Control2Analysis/fv3jedi_linvarcha_c2a_mod.f90
+Control2Analysis/VarChaC2A.cc
+Control2Analysis/VarChaC2A.h
+Control2Analysis/VarChaC2A.interface.h
+Control2Analysis/fv3jedi_varcha_c2a.interface.F90
+Control2Analysis/fv3jedi_varcha_c2a_mod.f90
 ErrorCovariance/ErrorCovariance.cc
 ErrorCovariance/ErrorCovariance.h
 ErrorCovariance/ErrorCovariance.interface.h
@@ -81,6 +86,7 @@ Utilities/Traits.h
 Utilities/interface.h
 Utilities/Utilities.cc
 Utilities/Utilities.h
+Utilities/fv3jedi_communication_mod.f90
 Utilities/fv3jedi_constants_mod.f90
 Utilities/fv3jedi_field_mod.f90
 Utilities/fv3jedi_interpolation_mod.f90
@@ -131,7 +137,7 @@ Model/nuopc/med.F90
 )
 
 #Append includes and libraries with particular model
-list (APPEND FV3JEDI_LIB_DEP oops ufo ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
+list (APPEND FV3JEDI_LIB_DEP oops ufo femps ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
 
 if( ${FV3BASEDMODEL_FOUND} )
     list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES})

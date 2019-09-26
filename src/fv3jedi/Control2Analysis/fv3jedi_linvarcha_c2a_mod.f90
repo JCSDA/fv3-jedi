@@ -5,6 +5,8 @@
 
 module fv3jedi_linvarcha_c2a_mod
 
+use fckit_configuration_module, only: fckit_configuration
+
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -42,23 +44,14 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine create(self, geom, bg, fg, c_conf)
+subroutine create(self, geom, bg, fg, conf)
 
 implicit none
 type(fv3jedi_linvarcha_c2a), intent(inout) :: self
 type(fv3jedi_geom), target,  intent(in)    :: geom
 type(fv3jedi_state), target, intent(in)    :: bg
 type(fv3jedi_state), target, intent(in)    :: fg
-type(c_ptr),                 intent(in)    :: c_conf
-
-integer :: i,j
-real(kind=kind_real), allocatable :: pe(:,:,:)
-real(kind=kind_real), allocatable :: pm(:,:,:)
-
-type(fckit_configuration) :: f_conf
-
-!> Fortran configuration
-f_conf = fckit_configuration(c_conf)
+type(fckit_configuration),   intent(in)    :: conf
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -75,19 +68,8 @@ self%qtraj = bg%q
 !> Compute saturation specific humidity for q to RH transform
 allocate(self%qsattraj(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
 
-allocate(pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
-allocate(pm(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
-
-call delp_to_pe_p_logp(geom,bg%delp,pe,pm)
-
-do j = geom%jsc,geom%jec
-  do i = geom%isc,geom%iec
-    call qsmith(geom%npz,bg%t(i,j,:),bg%q(i,j,:),pm(i,j,:),self%qsattraj(i,j,:))
-  enddo
-enddo
-
-deallocate(pm)
-deallocate(pe)
+!> Compute saturation specific humidity
+call get_qsat(geom,bg%delp,bg%t,bg%q,self%qsattraj)
 
 end subroutine create
 

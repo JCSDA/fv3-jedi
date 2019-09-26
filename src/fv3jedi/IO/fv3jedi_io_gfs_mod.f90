@@ -213,7 +213,7 @@ do var = 1,size(fields)
   compute_ps = 0
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","W","DZ")
+  case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
@@ -340,7 +340,7 @@ read_sfcw = .false.
 do var = 1,size(fields)
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ")
+  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ","psi","chi","vort","divg")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.

@@ -243,14 +243,13 @@ endif
 ! -------------------------
 have_rh = .false.
 if (have_t .and. have_pressures .and. associated(state%q)) then
+
   allocate(qsat(isc:iec,jsc:jec,npz))
   allocate(rh(isc:iec,jsc:jec,npz))
-  do j = jsc,jec
-    do i = isc,iec
-      call qsmith(npz,t(i,j,:),state%q(i,j,:),prs(i,j,:),qsat(i,j,:))
-    enddo
-  enddo
+
+  call get_qsat(geom,delp,t,state%q,qsat)
   call q_to_rh(geom,qsat,state%q,rh)
+
   deallocate(qsat)
   have_rh = .true.
 endif
@@ -304,7 +303,6 @@ if (associated(state%slmsk ) .and. associated(state%slmsk ) .and. &
   soil_temperature = 0.0_kind_real
   snow_depth = 0.0_kind_real
 
-  !TODO only if a radiance
   call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
                      state%slmsk,  state%sheleg, &
                      state%tsea,   state%vtype, &

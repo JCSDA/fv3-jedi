@@ -59,6 +59,10 @@ include_directories( ${OOPS_INCLUDE_DIRS} )
 ecbuild_use_package( PROJECT ufo )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
+# femps
+ecbuild_use_package( PROJECT femps )
+include_directories( ${FEMPS_INCLUDE_DIRS} )
+
 #gfs or geos
 if( ${FV3BASEDMODEL_FOUND} )
     if ( ${GFS_FOUND} )

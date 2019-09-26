@@ -11,6 +11,7 @@
 #include "fv3jedi/Analysis2Model/LinVarChaA2M.h"
 #include "fv3jedi/Analysis2Model/VarChaA2M.h"
 #include "fv3jedi/Control2Analysis/LinVarChaC2A.h"
+#include "fv3jedi/Control2Analysis/VarChaC2A.h"
 #include "fv3jedi/Utilities/Traits.h"
 
 #include "oops/interface/LinearVariableChange.h"
@@ -19,18 +20,22 @@
 namespace fv3jedi {
 
 void instantiateVarChangeFactories() {
+  static oops::VariableChangeMaker<fv3jedi::Traits,
+               oops::VariableChange<fv3jedi::Traits,
+               fv3jedi::VarChaC2A> >
+                   makerVarChaC2A_("Control2Analysis");
   static oops::LinearVariableChangeMaker<fv3jedi::Traits,
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaC2A> >
-                   makerLinVarChaC2AV3JEDI_("Control2Analysis");
+                   makerLinVarChaC2A_("Control2Analysis");
   static oops::VariableChangeMaker<fv3jedi::Traits,
                oops::VariableChange<fv3jedi::Traits,
                fv3jedi::VarChaA2M> >
-                   makerVarChaA2MV3JEDI_("Analysis2Model");
+                   makerVarChaA2M_("Analysis2Model");
   static oops::LinearVariableChangeMaker<fv3jedi::Traits,
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaA2M> >
-                   makerLinVarChaA2MV3JEDI_("Analysis2Model");
+                   makerLinVarChaA2M_("Analysis2Model");
 }
 
 }  // namespace fv3jedi

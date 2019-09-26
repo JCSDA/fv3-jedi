@@ -9,6 +9,8 @@ use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_constants_mod, only: rdry,grav,tice,zvir
 
+use pressure_vt_mod, only: delp_to_pe_p_logp
+
 implicit none
 private
 
@@ -22,7 +24,7 @@ public rh_to_q_ad
 public q_to_rh
 public q_to_rh_tl
 public q_to_rh_ad
-public qsmith
+public get_qsat
 
 contains
 
@@ -416,11 +418,42 @@ subroutine q_to_rh_ad(geom,qsat,q,rh)
  type(fv3jedi_geom),   intent(in)    :: geom
  real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
  real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)    ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
- q = rh / qsat
+ q = q + rh / qsat
 
 end subroutine q_to_rh_ad
+
+!----------------------------------------------------------------------------
+
+subroutine get_qsat(geom,delp,t,q,qsat)
+
+  implicit none
+  type(fv3jedi_geom),   intent(in)  :: geom
+  real(kind=kind_real), intent(in)  :: delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind=kind_real), intent(in)  ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind=kind_real), intent(in)  ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind=kind_real), intent(out) :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+  integer :: i,j
+  real(kind=kind_real), allocatable :: pe(:,:,:)
+  real(kind=kind_real), allocatable :: pm(:,:,:)
+
+  allocate(pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
+  allocate(pm(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz  ))
+
+  call delp_to_pe_p_logp(geom,delp,pe,pm)
+
+  do j = geom%jsc,geom%jec
+    do i = geom%isc,geom%iec
+      call qsmith(geom%npz,t(i,j,:),q(i,j,:),pm(i,j,:),qsat(i,j,:))
+    enddo
+  enddo
+
+  deallocate(pm)
+  deallocate(pe)
+
+end subroutine get_qsat
 
 !----------------------------------------------------------------------------
 
@@ -438,7 +471,6 @@ subroutine qsmith(nlev,t,sphum,pl,qs)
 
   real(kind_real) :: es
   real(kind_real) :: ap1, eps10
-  real(kind_real) :: tmin
   integer :: k, it
   integer, parameter :: length=2621
 

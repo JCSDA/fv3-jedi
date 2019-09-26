@@ -10,8 +10,11 @@ module fv3jedi_geom_mod
 !General JEDI uses
 use fv3jedi_kinds_mod
 use iso_c_binding
-use fckit_configuration_module, only: fckit_configuration
+use fckit_mpi_module, only: fckit_mpi_comm
 use netcdf
+use mpi
+
+use fckit_configuration_module, only: fckit_configuration
 
 !FMS/MPP uses
 use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
@@ -52,6 +55,21 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:)       :: edge_vect_s, edge_vect_w
   real(kind=kind_real), allocatable, dimension(:,:,:,:) :: es, ew
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
+  ! For D to (A to) C grid
+  real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
+  real(kind=kind_real), allocatable, dimension(:,:)     :: cosa_u
+  real(kind=kind_real), allocatable, dimension(:,:)     :: cosa_v
+  real(kind=kind_real), allocatable, dimension(:,:)     :: cosa_s
+  real(kind=kind_real), allocatable, dimension(:,:)     :: rsin_u
+  real(kind=kind_real), allocatable, dimension(:,:)     :: rsin_v
+  real(kind=kind_real), allocatable, dimension(:,:)     :: rsin2
+  real(kind=kind_real), allocatable, dimension(:,:)     :: dxa, dya
+  logical :: ne_corner, se_corner, sw_corner, nw_corner
+  logical :: nested = .false.
+  integer :: grid_type = 0
+  logical :: dord4 = .true.
+
 end type fv3jedi_geom
 
 ! ------------------------------------------------------------------------------
@@ -78,7 +96,7 @@ integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
-
+logical :: do_write_geom = .false.
 
 ! Fortran configuration
 ! ---------------------
@@ -147,6 +165,17 @@ allocate(self%a11(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(self%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(self%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(self%a22(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+
+allocate(self%rarea (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(self%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
+allocate(self%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(self%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(self%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(self%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(self%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(self%rsin2 (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(self%dxa   (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(self%dya   (self%isd:self%ied  ,self%jsd:self%jed  ))
 
 ! ak and bk hybrid coordinate coefficients
 ! ----------------------------------------
@@ -224,6 +253,21 @@ self%a12 = real(Fv_Atm(1)%gridstruct%a12,kind_real)
 self%a21 = real(Fv_Atm(1)%gridstruct%a21,kind_real)
 self%a22 = real(Fv_Atm(1)%gridstruct%a22,kind_real)
 
+self%rarea     = real(Fv_Atm(1)%gridstruct%rarea ,kind_real)
+self%sin_sg    = real(Fv_Atm(1)%gridstruct%sin_sg,kind_real)
+self%cosa_u    = real(Fv_Atm(1)%gridstruct%cosa_u,kind_real)
+self%cosa_v    = real(Fv_Atm(1)%gridstruct%cosa_v,kind_real)
+self%cosa_s    = real(Fv_Atm(1)%gridstruct%cosa_s,kind_real)
+self%rsin_u    = real(Fv_Atm(1)%gridstruct%rsin_u,kind_real)
+self%rsin_v    = real(Fv_Atm(1)%gridstruct%rsin_v,kind_real)
+self%rsin2     = real(Fv_Atm(1)%gridstruct%rsin2 ,kind_real)
+self%dxa       = real(Fv_Atm(1)%gridstruct%dxa   ,kind_real)
+self%dya       = real(Fv_Atm(1)%gridstruct%dya   ,kind_real)
+self%ne_corner = Fv_Atm(1)%gridstruct%ne_corner
+self%se_corner = Fv_Atm(1)%gridstruct%se_corner
+self%sw_corner = Fv_Atm(1)%gridstruct%sw_corner
+self%nw_corner = Fv_Atm(1)%gridstruct%nw_corner
+
 !Set Ptop
 self%ptop = self%ak(1)
 
@@ -235,6 +279,17 @@ deallocate(grids_on_this_pe)
 !Resetup domain to avoid risk of copied pointers
 call setup_domain( self%domain, self%npx-1, self%npx-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
+
+
+! Optionally write the geometry to file
+! -------------------------------------
+if (f_conf%has("do_write_geom")) then
+  call f_conf%get_or_die("do_write_geom",do_write_geom)
+endif
+
+if (do_write_geom) then
+  call write_geom(self)
+endif
 
 end subroutine create
 
@@ -277,6 +332,17 @@ allocate(other%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(other%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 allocate(other%a22(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
 
+allocate(other%rarea (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(other%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
+allocate(other%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(other%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(other%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(other%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
+allocate(other%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
+allocate(other%rsin2 (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(other%dxa   (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(other%dya   (self%isd:self%ied  ,self%jsd:self%jed  ))
+
 other%npx             = self%npx
 other%npy             = self%npy
 other%npz             = self%npz
@@ -318,6 +384,21 @@ other%a12             = self%a12
 other%a21             = self%a21
 other%a22             = self%a22
 
+other%rarea     = self%rarea
+other%sin_sg    = self%sin_sg
+other%cosa_u    = self%cosa_u
+other%cosa_v    = self%cosa_v
+other%cosa_s    = self%cosa_s
+other%rsin_u    = self%rsin_u
+other%rsin_v    = self%rsin_v
+other%rsin2     = self%rsin2
+other%dxa       = self%dxa
+other%dya       = self%dya
+other%ne_corner = self%ne_corner
+other%se_corner = self%se_corner
+other%sw_corner = self%sw_corner
+other%nw_corner = self%nw_corner
+
 call setup_domain( other%domain, other%npx-1, other%npx-1, &
                    other%ntiles, other%layout, other%io_layout, 3)
 
@@ -356,6 +437,17 @@ deallocate(self%a11)
 deallocate(self%a12)
 deallocate(self%a21)
 deallocate(self%a22)
+
+deallocate(self%rarea)
+deallocate(self%sin_sg)
+deallocate(self%cosa_u)
+deallocate(self%cosa_v)
+deallocate(self%cosa_s)
+deallocate(self%rsin_u)
+deallocate(self%rsin_v)
+deallocate(self%rsin2 )
+deallocate(self%dxa   )
+deallocate(self%dya   )
 
 call mpp_deallocate_domain(self%domain)
 
@@ -498,6 +590,114 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
   deallocate(istart2, iend2, jstart2, jend2)
 
 end subroutine setup_domain
+
+! ------------------------------------------------------------------------------
+
+subroutine write_geom(self)
+
+  implicit none
+  type(fv3jedi_geom), intent(in) :: self
+
+  type(fckit_mpi_comm) :: f_comm
+  character(len=255) :: filename
+  integer :: ncid, xf_dimid, yf_dimid, xv_dimid, yv_dimid, ti_dimid, pe_dimid
+  integer :: mydims(3,3), ijdims(1), ijdimf(1), tmpij(1)
+  integer :: varid(8)
+
+
+  ! Pointer to fv3jedi communicator
+  f_comm = fckit_mpi_comm()
+
+  write(filename,"(A9,I0.4,A4)") 'fv3grid_c', self%npx-1, '.nc4'
+
+  ! Create and open the file for parallel write
+  call nccheck( nf90_create( trim(filename), ior(NF90_NETCDF4, NF90_MPIIO), ncid, &
+                             comm = f_comm%communicator(), info = MPI_INFO_NULL), "nf90_create" )
+
+  !Dimensions
+  call nccheck ( nf90_def_dim(ncid, 'fxdim', self%npx-1   , xf_dimid), "nf90_def_dim fxdim" )
+  call nccheck ( nf90_def_dim(ncid, 'fydim', self%npy-1   , yf_dimid), "nf90_def_dim fydim" )
+  call nccheck ( nf90_def_dim(ncid, 'vxdim', self%npx     , xv_dimid), "nf90_def_dim vxdim" )
+  call nccheck ( nf90_def_dim(ncid, 'vydim', self%npy     , yv_dimid), "nf90_def_dim vydim" )
+  call nccheck ( nf90_def_dim(ncid, 'ntile', 6            , ti_dimid), "nf90_def_dim ntile" )
+  call nccheck ( nf90_def_dim(ncid, 'nproc', f_comm%size(), pe_dimid), "nf90_def_dim ntile" )
+
+  !Define variables
+  call nccheck( nf90_def_var(ncid, "flons", NF90_DOUBLE, (/ xf_dimid, yf_dimid, ti_dimid /), varid(1)), "nf90_def_var flons" )
+  call nccheck( nf90_put_att(ncid, varid(1), "long_name", "longitude of faces") )
+  call nccheck( nf90_put_att(ncid, varid(1), "units", "degrees_east") )
+
+  call nccheck( nf90_def_var(ncid, "flats", NF90_DOUBLE, (/ xf_dimid, yf_dimid, ti_dimid /), varid(2)), "nf90_def_var flats" )
+  call nccheck( nf90_put_att(ncid, varid(2), "long_name", "latitude of faces") )
+  call nccheck( nf90_put_att(ncid, varid(2), "units", "degrees_north") )
+
+  call nccheck( nf90_def_var(ncid, "vlons", NF90_DOUBLE, (/ xv_dimid, yv_dimid, ti_dimid /), varid(3)), "nf90_def_var vlons" )
+  call nccheck( nf90_put_att(ncid, varid(3), "long_name", "longitude of vertices") )
+  call nccheck( nf90_put_att(ncid, varid(3), "units", "degrees_east") )
+
+  call nccheck( nf90_def_var(ncid, "vlats", NF90_DOUBLE, (/ xv_dimid, yv_dimid, ti_dimid /), varid(4)), "nf90_def_var vlats" )
+  call nccheck( nf90_put_att(ncid, varid(4), "long_name", "latitude of vertices") )
+  call nccheck( nf90_put_att(ncid, varid(4), "units", "degrees_north") )
+
+  call nccheck( nf90_def_var(ncid, "isc", NF90_INT, (/ pe_dimid /), varid(5)), "nf90_def_var isc" )
+  call nccheck( nf90_put_att(ncid, varid(5), "long_name", "starting index i direction") )
+  call nccheck( nf90_put_att(ncid, varid(5), "units", "1") )
+
+  call nccheck( nf90_def_var(ncid, "iec", NF90_INT, (/ pe_dimid /), varid(6)), "nf90_def_var iec" )
+  call nccheck( nf90_put_att(ncid, varid(6), "long_name", "ending index i direction") )
+  call nccheck( nf90_put_att(ncid, varid(6), "units", "1") )
+
+  call nccheck( nf90_def_var(ncid, "jsc", NF90_INT, (/ pe_dimid /), varid(7)), "nf90_def_var jsc" )
+  call nccheck( nf90_put_att(ncid, varid(7), "long_name", "starting index j direction") )
+  call nccheck( nf90_put_att(ncid, varid(7), "units", "1") )
+
+  call nccheck( nf90_def_var(ncid, "jec", NF90_INT, (/ pe_dimid /), varid(8)), "nf90_def_var jec" )
+  call nccheck( nf90_put_att(ncid, varid(8), "long_name", "ending index j direction") )
+  call nccheck( nf90_put_att(ncid, varid(8), "units", "1") )
+
+  ! End define mode
+  call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+
+  ! Write variables
+  mydims(1,1) = 1;          mydims(2,1) = self%npx-1
+  mydims(1,2) = 1;          mydims(2,2) = self%npy-1
+  mydims(1,3) = self%ntile; mydims(2,3) = 1
+
+  call nccheck( nf90_put_var( ncid, varid(1), self%grid_lon(self%isc:self%iec,self%jsc:self%jec), &
+                              start = mydims(1,:), count = mydims(2,:) ), "nf90_put_var flons" )
+
+  call nccheck( nf90_put_var( ncid, varid(2), self%grid_lat(self%isc:self%iec,self%jsc:self%jec), &
+                              start = mydims(1,:), count = mydims(2,:) ), "nf90_put_var flats" )
+
+  mydims(1,1) = 1;          mydims(2,1) = self%npx
+  mydims(1,2) = 1;          mydims(2,2) = self%npy
+  mydims(1,3) = self%ntile; mydims(2,3) = 1
+
+  call nccheck( nf90_put_var( ncid, varid(3), self%egrid_lon(self%isc:self%iec+1,self%jsc:self%jec+1), &
+                              start = mydims(1,:), count = mydims(2,:) ), "nf90_put_var vlons" )
+
+  call nccheck( nf90_put_var( ncid, varid(4), self%egrid_lat(self%isc:self%iec+1,self%jsc:self%jec+1), &
+                              start = mydims(1,:), count = mydims(2,:) ), "nf90_put_var vlats" )
+
+  ijdims(1) = f_comm%rank()+1
+  ijdimf(1) = 1
+
+  tmpij = self%isc
+  call nccheck( nf90_put_var( ncid, varid(5), tmpij, start = ijdims, count = ijdimf ), "nf90_put_var isc" )
+
+  tmpij = self%iec
+  call nccheck( nf90_put_var( ncid, varid(6), tmpij, start = ijdims, count = ijdimf ), "nf90_put_var iec" )
+
+  tmpij = self%jsc
+  call nccheck( nf90_put_var( ncid, varid(7), tmpij, start = ijdims, count = ijdimf ), "nf90_put_var jsc" )
+
+  tmpij = self%jec
+  call nccheck( nf90_put_var( ncid, varid(8), tmpij, start = ijdims, count = ijdimf ), "nf90_put_var jec" )
+
+  ! Close the file
+  call nccheck ( nf90_close(ncid), "nf90_close" )
+
+end subroutine write_geom
 
 ! ------------------------------------------------------------------------------
 

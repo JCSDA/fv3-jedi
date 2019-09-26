@@ -141,6 +141,7 @@ LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 list( APPEND fv3jedi_test_fv3files
 Data/fv3files/field_table
 Data/fv3files/fmsmpp.nml
+Data/fv3files/input_gfs_c6.nml
 Data/fv3files/input_gfs_c12.nml
 Data/fv3files/input_gfs_c12_p12.nml
 Data/fv3files/input_gfs_c24.nml
@@ -153,6 +154,7 @@ Data/fv3files/input_geos_c12.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_geos_c48.nml
 Data/fv3files/input_geos_c90.nml
+Data/fv3files/input_geos_c96.nml
 Data/fv3files/input_geos_c180.nml
 Data/fv3files/input_geos_c360.nml
 Data/fv3files/input_geos_c720.nml
@@ -178,6 +180,8 @@ testinput/bumpparameters_loc_gfs.yaml
 testinput/bumpparameters_cor_gfs_aero.yaml
 testinput/bumpparameters_loc_gfs_aero.yaml
 testinput/bumpparameters_loc_gfs_p12.yaml
+testinput/convertstate_gfs.yaml
+testinput/convertstate_geos.yaml
 testinput/dirac_geos.yaml
 testinput/dirac_gfs.yaml
 testinput/errorcov.yaml
@@ -211,6 +215,8 @@ testinput/model_gfs-fv3.yaml
 testinput/state_geosaero.yaml
 testinput/state_geos.yaml
 testinput/state_gfs.yaml
+testinput/varcha_geos.yaml
+testinput/varcha_gfs.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -245,6 +251,18 @@ testoutput/hyb-fgat_gfs.ref
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testoutput)
 LINK_FILES( "${fv3jedi_testoutput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# Grid data for femps
+# -------------------
+list( APPEND fv3jedi_femps_grid
+Data/femps/fv3grid_c0006.nc4
+Data/femps/fv3grid_c0012.nc4
+Data/femps/fv3grid_c0024.nc4
+Data/femps/fv3grid_c0048.nc4
+Data/femps/fv3grid_c0096.nc4
+)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/femps)
+LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Resources from other respositores
 # ---------------------------------
@@ -384,6 +402,34 @@ ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
                   ARGS    testinput/increment_geos.yaml
                   MPI     6
                   LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs
+                  TYPE    EXE
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
+                  ARGS    testinput/convertstate_gfs.yaml
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_convertstate_geos
+                  TYPE    EXE
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
+                  ARGS    testinput/convertstate_geos.yaml
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET       test_fv3jedi_varcha_gfs
+                  SOURCES      executables/TestVarCha.cc
+                  ARGS         testinput/varcha_gfs.yaml
+                  MPI          6
+                  LIBS         fv3jedi
+                  TEST_DEPENDS test_fv3jedi_convertstate_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_varcha_geos
+                  SOURCES      executables/TestVarCha.cc
+                  ARGS         testinput/varcha_geos.yaml
+                  MPI          6
+                  LIBS         fv3jedi
+                  TEST_DEPENDS test_fv3jedi_convertstate_geos )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_gfs
                   SOURCES executables/TestLinVarCha.cc

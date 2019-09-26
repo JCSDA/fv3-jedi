@@ -8,6 +8,9 @@
 module fv3jedi_linvarcha_c2a_interface_mod
 
 use iso_c_binding
+
+use fckit_configuration_module, only: fckit_configuration
+
 use fv3jedi_linvarcha_c2a_mod
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_state_interface_mod, only: fv3jedi_state_registry
@@ -55,6 +58,7 @@ type(fv3jedi_linvarcha_c2a), pointer :: self
 type(fv3jedi_geom),          pointer :: geom
 type(fv3jedi_state),         pointer :: bg
 type(fv3jedi_state),         pointer :: fg
+type(fckit_configuration) :: conf
 
 call fv3jedi_linvarcha_c2a_registry%init()
 call fv3jedi_linvarcha_c2a_registry%add(c_key_self)
@@ -64,7 +68,9 @@ call fv3jedi_geom_registry%get(c_key_geom,geom)
 call fv3jedi_state_registry%get(c_key_bg,bg)
 call fv3jedi_state_registry%get(c_key_fg,fg)
 
-call create(self,geom,bg,fg,c_conf)
+conf = fckit_configuration(c_conf)
+
+call create(self,geom,bg,fg,conf)
 
 end subroutine c_fv3jedi_linvarcha_c2a_create
 

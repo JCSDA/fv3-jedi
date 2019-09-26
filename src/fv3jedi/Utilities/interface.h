@@ -43,6 +43,7 @@ typedef int F90lvcc2a;
 typedef int F90lvca2m;
 // VariableChange keys
 typedef int F90vca2m;
+typedef int F90vcc2a;
 // State key
 typedef int F90state;
 // Increment key
