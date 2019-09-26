@@ -21,7 +21,7 @@ phases:
         echo "Merging to develop";
         else CODEBUILD_GIT_BRANCH="$(git branch -a --contains $CODEBUILD_SOURCE_VERSION | sed -n 2p | awk '{ printf $1 }')";
         export CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH#remotes/origin/};
-        CODEBUILD_GIT_BRANCH = "develop"
+        CODEBUILD_GIT_BRANCH = "develop";
         echo $CODEBUILD_GIT_BRANCH
         fi
 
