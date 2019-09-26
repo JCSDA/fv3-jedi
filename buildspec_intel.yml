@@ -11,6 +11,8 @@ phases:
       - echo Executing install phase
       - echo $CODEBUILD_WEBHOOK_TRIGGER
       - echo $CODEBUILD_WEBHOOK_BASE_REF
+      - echo $CODEBUILD_WEBHOOK_ACTOR_ACCOUNT_ID
+      - echo $CODEBUILD_WEBHOOK_EVENT
 
 
       - echo MPI setup for Docker
@@ -60,29 +62,65 @@ phases:
   pre_build:
     commands:
       - echo Executing pre_build phase
-      - my_branch=$(echo $CODEBUILD_WEBHOOK_TRIGGER| cut -d"/" -f2-)
-      - echo $my_branch
       - git lfs install # creates .gitconfig
       - cp ~/.gitconfig /home/jcsdauser/
+
+      - CODEBUILD_GIT_BRANCH="$(git branch -a --contains $CODEBUILD_SOURCE_VERSION | sed -n 2p | awk '{ printf $1 }')";
+        export CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH#remotes/origin/}
+      - echo "CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH}"
+      - echo "CODEBUILD_SOURCE_VERSION=${CODEBUILD_SOURCE_VERSION}"
+
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-bundle fv3-bundle
+      - cd fv3-bundle
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fv3-bundle repo"
+      - cd $CODEBUILD_SRC_DIR
+
+      # FV3-JEDI and the linearized model
+      - git clone -b $CODEBUILD_GIT_BRANCH https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-jedi fv3-bundle/fv3-jedi
+
+      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-jedi-linearmodel fv3-bundle/fv3-jedi-lm
+      - cd fv3-bundle/fv3-jedi-lm
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fv3-jedi-lm repo"
+      - cd $CODEBUILD_SRC_DIR
+
 
       # External observation operators
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/crtm fv3-bundle/crtm
+      - cd fv3-bundle/crtm
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in crtm repo"
+      - cd $CODEBUILD_SRC_DIR
 
       # Core JEDI repositories
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/saber fv3-bundle/saber
+      - cd fv3-bundle/saber
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in saber repo"
+      - cd $CODEBUILD_SRC_DIR
+
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/oops fv3-bundle/oops
+      - cd fv3-bundle/oops
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in oops repo"
+      - cd $CODEBUILD_SRC_DIR
+
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/ioda fv3-bundle/ioda
+      - cd fv3-bundle/ioda
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in ioda repo"
+      - cd $CODEBUILD_SRC_DIR
+
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/ufo fv3-bundle/ufo
+      - cd fv3-bundle/ufo
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in ufo repo"
+      - cd $CODEBUILD_SRC_DIR
 
       # FV3 based model and/or FMS
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/FMS fv3-bundle/fms
-
-      # FV3-JEDI and the linearized model
-      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-jedi-linearmodel fv3-bundle/fv3-jedi-lm
-      - git clone -b $my_branch https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-jedi fv3-bundle/fv3-jedi
+      - cd fv3-bundle/fms
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fms repo"
+      - cd $CODEBUILD_SRC_DIR
 
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fckit fv3-bundle/fckit
+      - cd fv3-bundle/fckit
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fckit repo"
+      - cd $CODEBUILD_SRC_DIR
 
       - ls
       - pwd
@@ -116,8 +154,10 @@ phases:
   post_build:
     commands:
       - echo Executing post_build phase
-
-      - su - jcsdauser -c "export COMPILERVARS_ARCHITECTURE=intel64
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
+        then echo "Build Failing";
+        su - jcsdauser -c "export COMPILERVARS_ARCHITECTURE=intel64
         && export COMPILERVARS_PLATFORM=linux
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
         && export FC=mpiifort
@@ -128,4 +168,6 @@ phases:
         && export LIBRARY_PATH=/usr/local/lib
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
         && cd /build_container/fv3-jedi/
-        && ctest -VV --rerun-failed"
+        && ctest -VV --rerun-failed";
+        else echo "CODEBUILD_BUILD_SUCCEEDING=$CODEBUILD_BUILD_SUCCEEDING";
+        fi
