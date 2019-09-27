@@ -65,7 +65,7 @@ phases:
       - git lfs install # creates .gitconfig
       - cp ~/.gitconfig /home/jcsdauser/
 
-      - if ["$CODEBUILD_WEBHOOK_EVENT" = "PULL_REQUEST_MERGED"];
+      - if [ "$CODEBUILD_WEBHOOK_EVENT" = "PULL_REQUEST_MERGED" ];
         then export CODEBUILD_GIT_BRANCH="develop";
         echo $CODEBUILD_GIT_BRANCH;
         echo "Merging to develop";
@@ -124,9 +124,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR
 
       # FV3 based model and/or FMS
-      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/FMS fv3-bundle/fms
-      - cd fv3-bundle/fms
-      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fms repo"
+      - git clone -b dev/master-ecbuild https://$GIT_USER:$GIT_PASS@github.com/jcsda/FMS fv3-bundle/fms
       - cd $CODEBUILD_SRC_DIR
 
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fckit fv3-bundle/fckit
@@ -140,6 +138,7 @@ phases:
       - cd /jcsda/fv3-bundle
       - pwd
       - ls
+      - sed -i 's/BRANCH dev\/master-ecbuild  UPDATE //' CMakeLists.txt
       - sed -i 's/BRANCH develop             UPDATE //' CMakeLists.txt
       - sed -i '/PROJECT eckit/d' CMakeLists.txt
 
