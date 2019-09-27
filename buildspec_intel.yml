@@ -138,7 +138,7 @@ phases:
       - cd /jcsda/fv3-bundle
       - pwd
       - ls
-      - sed -i 's/BRANCH dev/master-ecbuild  UPDATE //' CMakeLists.txt
+      - sed -i 's/BRANCH dev\/master-ecbuild  UPDATE //' CMakeLists.txt
       - sed -i 's/BRANCH develop             UPDATE //' CMakeLists.txt
       - sed -i '/PROJECT eckit/d' CMakeLists.txt
 
