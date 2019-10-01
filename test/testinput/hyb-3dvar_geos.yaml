@@ -67,7 +67,7 @@ cost_function:
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
-        name: Aircraft
+        name: VertInterp
       Covariance:
         covariance: diagonal
       ObsFilters:
@@ -86,7 +86,7 @@ cost_function:
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
-        name: Radiosonde
+        name: VertInterp
       Covariance:
         covariance: diagonal
       ObsFilters:

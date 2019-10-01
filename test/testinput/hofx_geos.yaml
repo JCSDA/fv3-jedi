@@ -29,7 +29,7 @@ Observations:
       simulate:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
-      name: Aircraft
+      name: VertInterp
     ObsBias: {}
   - ObsSpace:
       name: Radiosonde
@@ -40,7 +40,7 @@ Observations:
       simulate:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
-      name: Radiosonde
+      name: VertInterp
     ObsBias: {}
   - ObsSpace:
       name: GnssroRef

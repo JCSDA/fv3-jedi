@@ -36,7 +36,7 @@ Observations:
       simulate:
         variables: [sea_surface_temperature]
     ObsOperator:
-      name: SeaSurfaceTemp
+      name: Identity
     Covariance:
       covariance: diagonal
   - ObsSpace:
@@ -48,7 +48,7 @@ Observations:
       simulate:
         variables: [eastward_wind,northward_wind,air_temperature]
     ObsOperator:
-      name: Aircraft
+      name: VertInterp
     ObsBias: {}
   - ObsSpace:
       name: Radiosonde
@@ -59,7 +59,7 @@ Observations:
       simulate:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
-      name: Radiosonde
+      name: VertInterp
     ObsBias: {}
   - ObsSpace:
       name: AMSUA-NOAA19
@@ -156,7 +156,7 @@ Observations:
       simulate:
         variables: [eastward_wind, northward_wind]
     ObsOperator:
-      name: Satwind
+      name: VertInterp
   - ObsSpace:
       name: MHS-N19
       ObsDataIn:
