@@ -1836,7 +1836,7 @@ lmask = .true.       ! Mask
 
 ! Initialize BUMP
 ! ---------------
-call bump%setup_online( mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
+call bump%setup_online( f_comm,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
                         nobs=locs%nlocs,lonobs=locs%lon(:)-180.0_kind_real,latobs=locs%lat(:))
 
 !Run BUMP drivers

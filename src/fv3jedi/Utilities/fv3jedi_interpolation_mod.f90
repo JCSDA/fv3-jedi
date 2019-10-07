@@ -7,6 +7,8 @@ module fv3jedi_interpolation_mod
 
 use type_bump, only: bump_type
 
+use fckit_mpi_module, only: fckit_mpi_comm
+
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_field_mod,     only: fv3jedi_field
 use fv3jedi_geom_mod,      only: fv3jedi_geom
@@ -160,6 +162,14 @@ subroutine bilinear_bump_init(isc_in, iec_in, jsc_in, jec_in, lat_in, lon_in, &
 
   integer :: ii, ji, jj
 
+  type(fckit_mpi_comm) :: f_comm
+
+
+  ! Communicator from OOPS
+  ! ----------------------
+  f_comm = fckit_mpi_comm()
+
+
   ! Each bump%nam%prefix must be distinct
   ! -------------------------------------
   write(cbumpcount,"(I0.5)") bumpid
@@ -220,7 +230,7 @@ subroutine bilinear_bump_init(isc_in, iec_in, jsc_in, jec_in, lat_in, lon_in, &
 
   ! Initialize BUMP
   ! ---------------
-  call bump%setup_online( ngrid_in,1,1,1,lon_in_us,lat_in_us,area,vunit,lmask, &
+  call bump%setup_online( f_comm,ngrid_in,1,1,1,lon_in_us,lat_in_us,area,vunit,lmask, &
                           nobs=ngrid_ou,lonobs=lon_ou_us(:,1),latobs=lat_ou_us(:,1))
 
   !Run BUMP drivers

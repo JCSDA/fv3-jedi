@@ -46,7 +46,7 @@ phases:
         && echo $FC
         && whereis mpicc"
 
-      ## cannot source /etc/bash.bashrc so copy what's there for root 
+      ## cannot source /etc/bash.bashrc so copy what's there for root
       - sed '12s/INTEL_TARGET_ARCH=/INTEL_TARGET_ARCH=intel64/' /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
       - export COMPILERVARS_ARCHITECTURE=intel64
       - export COMPILERVARS_PLATFORM=linux
@@ -156,7 +156,7 @@ phases:
         && export LD_LIBRARY_PATH=/usr/local/lib
         && export LIBRARY_PATH=/usr/local/lib
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
-        && cd /build_container 
+        && cd /build_container
         && ls
         && ecbuild /jcsda/fv3-bundle/
         && cd fv3-jedi
