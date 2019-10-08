@@ -163,14 +163,6 @@ subroutine bilinear_bump_init(f_comm, isc_in, iec_in, jsc_in, jec_in, lat_in, lo
 
   integer :: ii, ji, jj
 
-  type(fckit_mpi_comm) :: f_comm
-
-
-  ! Communicator from OOPS
-  ! ----------------------
-  f_comm = fckit_mpi_comm()
-
-
   ! Each bump%nam%prefix must be distinct
   ! -------------------------------------
   write(cbumpcount,"(I0.5)") bumpid

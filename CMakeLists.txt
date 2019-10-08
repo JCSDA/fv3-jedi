@@ -88,7 +88,7 @@ link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 # Export package info
 ################################################################################
 
-list( APPEND FV3JEDI_TPLS ufo oops)
+list( APPEND FV3JEDI_TPLS ufo oops NetCDF )
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
                           ${CMAKE_CURRENT_BINARY_DIR}/src
