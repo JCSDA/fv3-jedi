@@ -11,6 +11,9 @@
 #include <ostream>
 #include <string>
 
+#include "eckit/mpi/Comm.h"
+
+#include "oops/parallel/mpi/mpi.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
@@ -30,17 +33,19 @@ class Geometry : public util::Printable,
  public:
   static const std::string classname() {return "fv3jedi::Geometry";}
 
-  explicit Geometry(const eckit::Configuration &);
+  explicit Geometry(const eckit::Configuration &, const eckit::mpi::Comm &);
   Geometry(const Geometry &);
   ~Geometry();
 
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
+  const eckit::mpi::Comm & getComm() const {return comm_;}
 
  private:
   Geometry & operator=(const Geometry &);
   void print(std::ostream &) const;
   F90geom keyGeom_;
+  const eckit::mpi::Comm & comm_;
 };
 // -----------------------------------------------------------------------------
 

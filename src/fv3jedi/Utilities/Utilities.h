@@ -24,4 +24,3 @@ namespace fv3jedi {
 }  // namespace fv3jedi
 
 #endif  // FV3JEDI_UTILITIES_UTILITIES_H_
-

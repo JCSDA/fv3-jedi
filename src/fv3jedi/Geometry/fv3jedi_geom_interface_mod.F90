@@ -36,15 +36,21 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_setup(c_key_self, c_conf) bind(c,name='fv3jedi_geo_setup_f90')
+subroutine c_fv3jedi_geo_setup(c_key_self, c_conf, lcname, cname) bind(c,name='fv3jedi_geo_setup_f90')
+use fckit_mpi_module,   only: fckit_mpi_comm
+use string_f_c_mod
 
 implicit none
 
 !Arguments
-integer(c_int), intent(inout) :: c_key_self
-type(c_ptr), intent(in)       :: c_conf
+integer(c_int), intent(inout)           :: c_key_self
+type(c_ptr), intent(in)                 :: c_conf
+integer(c_int),intent(in)               :: lcname          !< Communicator name length
+character(kind=c_char,len=1),intent(in) :: cname(lcname+1) !< Communicator name
 
 type(fv3jedi_geom), pointer :: self
+character(len=lcname)       :: name
+type(fckit_mpi_comm)        :: f_comm
 
 ! Init, add and get key
 ! ---------------------
@@ -52,7 +58,10 @@ call fv3jedi_geom_registry%init()
 call fv3jedi_geom_registry%add(c_key_self)
 call fv3jedi_geom_registry%get(c_key_self,self)
 
-call create(self,c_conf)
+call c_f_string(cname, name)
+f_comm = fckit_mpi_comm(name)
+
+call create(self,c_conf, f_comm)
 
 end subroutine c_fv3jedi_geo_setup
 

@@ -182,18 +182,16 @@ end subroutine get_field
 
 ! ------------------------------------------------------------------------------
 
-subroutine fields_rms(nf,fields,rms)
+subroutine fields_rms(nf,fields,rms, f_comm)
 
 implicit none
 integer,              intent(in)    :: nf
 type(fv3jedi_field),  intent(in)    :: fields(nf)
 real(kind=kind_real), intent(inout) :: rms
+type(fckit_mpi_comm), intent(in)    :: f_comm
 
 integer :: i, j, k, ii, iisum, var
 real(kind=kind_real) :: zz
-type(fckit_mpi_comm) :: f_comm
-
-f_comm = fckit_mpi_comm()
 
 zz = 0.0_kind_real
 ii = 0
@@ -221,18 +219,16 @@ end subroutine fields_rms
 
 ! ------------------------------------------------------------------------------
 
-subroutine fields_gpnorm(nf, fields, pstat)
+subroutine fields_gpnorm(nf, fields, pstat, f_comm)
 
 implicit none
 integer,              intent(in)    :: nf
 type(fv3jedi_field),  intent(in)    :: fields(nf)
 real(kind=kind_real), intent(inout) :: pstat(3, nf)
+type(fckit_mpi_comm), intent(in)    :: f_comm
 
 integer :: var
 real(kind=kind_real) :: tmp(3),  gs3, gs3g
-type(fckit_mpi_comm) :: f_comm
-
-f_comm = fckit_mpi_comm()
 
 do var = 1,nf
 
@@ -254,21 +250,19 @@ end subroutine fields_gpnorm
 
 ! ------------------------------------------------------------------------------
 
-subroutine fields_print(nf, fields, name)
+subroutine fields_print(nf, fields, name, f_comm)
 
 implicit none
 integer,              intent(in)    :: nf
 type(fv3jedi_field),  intent(in)    :: fields(nf)
 character(len=*),     intent(in)    :: name
+type(fckit_mpi_comm), intent(in)    :: f_comm
 
 integer :: var
 real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
-type(fckit_mpi_comm) :: f_comm
 character(len=34) :: printname
 
 integer :: ngrid, sngrid
-
-f_comm = fckit_mpi_comm()
 
 ngrid = (fields(1)%iec-fields(1)%isc+1)*(fields(1)%iec-fields(1)%isc+1)
 call f_comm%allreduce(ngrid,sngrid,fckit_mpi_sum())

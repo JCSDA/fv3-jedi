@@ -588,5 +588,4 @@ call jnormgrad(self,geom,state,c_conf)
 end subroutine fv3jedi_increment_jnormgrad_c
 
 ! ------------------------------------------------------------------------------
-
 end module fv3jedi_increment_interface_mod

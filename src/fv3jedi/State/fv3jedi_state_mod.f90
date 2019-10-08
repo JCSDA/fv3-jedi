@@ -47,6 +47,7 @@ type(oops_vars),     intent(in)    :: vars
 
 integer :: var, vcount
 
+
 ! Total fields
 ! ------------
 self%nf = vars%nv
@@ -511,7 +512,7 @@ self%ntile  = geom%ntile
 self%ntiles = geom%ntiles
 
 ! Pointer to fv3jedi communicator
-self%f_comm = fckit_mpi_comm()
+self%f_comm = geom%f_comm
 
 ! Check winds
 if (associated(self%ua) .and. .not.associated(self%va)) &
@@ -1256,7 +1257,7 @@ subroutine state_print(self)
 implicit none
 type(fv3jedi_state), intent(in) :: self
 
-call fields_print(self%nf, self%fields, "State")
+call fields_print(self%nf, self%fields, "State", self%f_comm)
 
 end subroutine state_print
 
@@ -1273,7 +1274,7 @@ if (nf .ne. self%nf) then
   call abor1_ftn("fv3jedi_state: gpnorm | nf passed in does not match expeted nf")
 endif
 
-call fields_gpnorm(nf, self%fields, pstat)
+call fields_gpnorm(nf, self%fields, pstat, self%f_comm)
 
 end subroutine gpnorm
 
@@ -1285,7 +1286,7 @@ implicit none
 type(fv3jedi_state),  intent(in)  :: self
 real(kind=kind_real), intent(out) :: prms
 
-call fields_rms(self%nf,self%fields,prms)
+call fields_rms(self%nf, self%fields, prms, self%f_comm)
 
 end subroutine rms
 

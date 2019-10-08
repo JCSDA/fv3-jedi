@@ -16,14 +16,17 @@
 // -----------------------------------------------------------------------------
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-Geometry::Geometry(const eckit::Configuration & conf) {
+Geometry::Geometry(const eckit::Configuration & conf,
+                   const eckit::mpi::Comm & comm) : comm_(comm) {
   const eckit::Configuration * configc = &conf;
+  std::string commName = comm_.name();
+
   stageFv3Files(conf);
-  fv3jedi_geo_setup_f90(keyGeom_, &configc);
+  fv3jedi_geo_setup_f90(keyGeom_, &configc, commName.size(), commName.c_str());
   removeFv3Files();
 }
 // -----------------------------------------------------------------------------
-Geometry::Geometry(const Geometry & other) {
+Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
   const int key_geo = other.keyGeom_;
   fv3jedi_geo_clone_f90(key_geo, keyGeom_);
 }

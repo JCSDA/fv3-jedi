@@ -133,7 +133,6 @@ extern "C" {
                                        const eckit::Configuration * const *);
 
   void fv3jedi_increment_print_f90(const F90inc &);
-
 }  // extern "C"
 // -----------------------------------------------------------------------------
 

@@ -67,10 +67,10 @@ real(kind=kind_real) :: dx, dy
 integer :: i, j, ji, jj, ii, locs_nlocs, ierr
 real(kind=kind_real), allocatable :: locs_lat(:), locs_lon(:)
 
-! Create lat lon grid and inteproltion object for going from cube to lat-lon
+! Create lat lon grid and interpolation object for going from cube to lat-lon
 ! --------------------------------------------------------------------------
 
-llgeom%f_comm = fckit_mpi_comm()
+llgeom%f_comm = geom%f_comm
 
 !Maximum of 12 IO processors
 if (llgeom%f_comm%size() >= 12) then
@@ -408,10 +408,9 @@ character(len=255) :: bump_nam_prefix
 type(fckit_mpi_comm) :: f_comm
 
 
-! Communicator from OOPS
-! ----------------------
-f_comm = fckit_mpi_comm()
-
+! Communicator from geometry
+! --------------------------
+f_comm = geom%f_comm
 
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------

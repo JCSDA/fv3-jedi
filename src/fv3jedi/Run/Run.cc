@@ -6,8 +6,10 @@
  */
 
 #include <fstream>
+#include <string>
 
 #include "eckit/config/Configuration.h"
+#include "oops/parallel/mpi/mpi.h"
 #include "oops/runs/Run.h"
 #include "oops/util/Logger.h"
 
@@ -22,8 +24,13 @@ Run::Run(int argc, char ** argv) : oops::Run(argc, argv) {
   oops::Log::trace() << "Creating Run" << std::endl;
   const eckit::Configuration * conf = &config();
 
+  /* NOTE: the following lines should move to another place
+  after the EDA has been constructed and the communicators exist.
+  Right now we use MPI_COMM_WORLD */
+
   stageFv3Files(config());
-  fv3jedi_setup_f(&conf);
+  std::string commName = oops::mpi::comm().name();
+  fv3jedi_setup_f(&conf, commName.size(), commName.c_str());
   removeFv3Files();
 
   oops::Log::trace() << "Run created" << std::endl;

@@ -66,8 +66,8 @@ character(len=2055) :: path2fv3gridfiles
 ! -----------------------------------------------
 
 
-! Pointer to fv3jedi communicator
-self%f_comm = fckit_mpi_comm()
+! Pointer to fv3jedi geometry communicator
+self%f_comm = geom%f_comm
 
 ! Solver only works on one PE
 if (self%f_comm%rank() == 0) then

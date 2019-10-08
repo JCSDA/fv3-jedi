@@ -179,6 +179,7 @@ character(len=*),   intent(in) :: filename
 
 type(fckit_mpi_comm) :: f_comm
 
+! This should not be MPI_WORLD, but this is for display only so ignored at the moment
 f_comm = fckit_mpi_comm()
 
 ! Print filename to the user

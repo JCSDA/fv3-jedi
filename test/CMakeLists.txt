@@ -691,7 +691,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb4dvar_geos_compare
                   ARGS         testoutput/hyb-4dvar_geos.run testoutput/hyb-4dvar_geos.ref ${ctol} ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb4dvar_geos )
 
-# Test wit 12 (instead of 6) processors
+# Test with 12 (instead of 6) processors
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_gfs_p12
                   TYPE         EXE

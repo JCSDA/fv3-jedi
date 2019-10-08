@@ -36,6 +36,7 @@ void stageFv3Files(const eckit::Configuration &conf) {
   int world_rank = oops::mpi::comm().rank();
 
   // Only one processor needs to move the files
+  // When we use several backgrounds, this lines will have to change
   if (world_rank == 0) {
     // User provided input files for this geom/state/model etc
     delete_file("input.nml");
@@ -66,6 +67,7 @@ void stageFv3Files(const eckit::Configuration &conf) {
 
   // Nobody moves until files are in place
   oops::mpi::comm().barrier();
+  oops::Log::trace() << "End of staging files for FV3" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -85,6 +87,7 @@ void removeFv3Files() {
     delete_file("field_table");
     delete_file("inputpert.nml");
   }
+  oops::Log::trace() << "End of removing staged fv3 files" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

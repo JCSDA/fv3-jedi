@@ -77,8 +77,8 @@ if (present(tiledim)) then
   self%tiledim = tiledim == 1
 endif
 
-! Component communicator
-self%ccomm = fckit_mpi_comm()
+! Component communicator / get the main communicator from fv3 geometry
+self%ccomm = geom%f_comm
 self%csize = self%ccomm%size()
 self%crank = self%ccomm%rank()
 

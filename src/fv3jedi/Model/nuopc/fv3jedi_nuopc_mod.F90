@@ -72,8 +72,8 @@ character(len=:), allocatable :: str
 ! ---------------------
 f_conf = fckit_configuration(c_conf)
 
-! FCKIT MPI wrapper for global communicator
-f_comm = fckit_mpi_comm()
+! FCKIT MPI from geometry
+f_comm = geom%f_comm
 
 ! Initialize ESMF
 call ESMF_Initialize(logkindflag=ESMF_LOGKIND_MULTI, &

@@ -24,8 +24,8 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_geo_setup_f90(F90geom &,
-                             const eckit::Configuration * const *);
+  void fv3jedi_geo_setup_f90(F90geom &, const eckit::Configuration * const *,
+                             const int &, const char *);
   void fv3jedi_geo_clone_f90(const F90geom &,
                              F90geom &);
   void fv3jedi_geo_info_f90(const F90geom &);

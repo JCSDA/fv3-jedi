@@ -167,8 +167,8 @@ real(kind=kind_real), allocatable, dimension(:,:) :: f10mp
 
 type(fckit_mpi_comm) :: comm
 
-! Communicator
-comm = fckit_mpi_comm()
+! Communicator from geometry
+comm = geom%f_comm
 
 ! Number of weights
 nn = 4

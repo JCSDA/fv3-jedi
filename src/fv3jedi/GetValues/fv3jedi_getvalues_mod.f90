@@ -123,7 +123,8 @@ nlocs = locs%nlocs
 
 !If no observations can early exit
 !---------------------------------
-f_comm = fckit_mpi_comm()
+f_comm = geom%f_comm
+
 call f_comm%allreduce(nlocs,nlocsg,fckit_mpi_sum())
 if (nlocsg == 0) then
   if (present(traj)) then
@@ -969,11 +970,11 @@ do jvar = 1, vars%nv
 enddo
 
 
-!For debugging we can write the geovals
-!comm = fckit_mpi_comm()
-!write(cproc,fmt='(i4.4)') comm%rank()
-!gomfilename = 'Data/fv3jedi_geovals_'//trim(cproc)//'.nc4'
-!call ufo_geovals_write_netcdf(gom, trim(gomfilename), locs%lat(:), locs%lon(:))
+! For debugging we can write the geovals
+! comm = geom%f_comm
+! write(cproc,fmt='(i4.4)') comm%rank()
+! gomfilename = 'Data/fv3jedi_geovals_'//trim(cproc)//'.nc4'
+! call ufo_geovals_write_netcdf(gom, trim(gomfilename), locs%lat(:), locs%lon(:))
 
 
 if (.not. present(traj)) then
@@ -1784,10 +1785,9 @@ character(len=1024) :: bump_nam_prefix
 type(fckit_mpi_comm) :: f_comm
 
 
-! Communicator from OOPS
-! ----------------------
-f_comm = fckit_mpi_comm()
-
+! Communicator from geometry
+! --------------------------
+f_comm = geom%f_comm
 
 ! Each bump%nam%prefix must be distinct
 ! -------------------------------------

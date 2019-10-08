@@ -76,6 +76,7 @@ integer :: jedi_dt, i
 
 type (ESMF_VM) :: vm
 type(MAPL_Communicators) :: mapl_comm
+
 type(fckit_mpi_comm) :: f_comm
 
 type(fckit_configuration) :: f_conf
@@ -86,10 +87,9 @@ character(len=:), allocatable :: str
 ! ---------------------
 f_conf = fckit_configuration(c_conf)
 
-! FCKIT MPI wrapper for communicator
+! FCKIT MPI from geometry
 ! ----------------------------------
-f_comm = fckit_mpi_comm()
-
+f_comm = geom%f_comm
 
 ! Duplicate the communicator
 ! --------------------------
@@ -113,7 +113,7 @@ call self%cap%initialize_mpi() !This is only needed to set cap%rank
 call initialize_cap_default_values(self%cap)
 
 
-! IO Server commincator (not on by default)
+! IO Server communicator (not on by default)
 ! -----------------------------------------
 subcommunicator = self%cap%create_member_subcommunicator(self%cap%get_comm_world(), rc=rc);
 if (rc.ne.0) call abor1_ftn("geos_mod: create_member_subcommunicator failed")

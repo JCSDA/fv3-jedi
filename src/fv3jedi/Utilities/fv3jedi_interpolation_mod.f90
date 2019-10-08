@@ -114,7 +114,7 @@ subroutine bilinear_bump_interp(nf, geom_in, fields_in, geom_ou, fields_ou)
     endif
 
     if (.not. bump_alloc) then
-      call bilinear_bump_init(isc_in, iec_in, jsc_in, jec_in, rad2deg*lat_in, rad2deg*lon_in-180.0_kind_real, &
+      call bilinear_bump_init(geom_in%f_comm, isc_in, iec_in, jsc_in, jec_in, rad2deg*lat_in, rad2deg*lon_in-180.0_kind_real, &
                               isc_ou, iec_ou, jsc_ou, jec_ou, rad2deg*lat_ou, rad2deg*lon_ou-180.0_kind_real, bump, 99999)
       bump_alloc = .true.
     endif
@@ -134,12 +134,13 @@ end subroutine bilinear_bump_interp
 
 ! ------------------------------------------------------------------------------
 
-subroutine bilinear_bump_init(isc_in, iec_in, jsc_in, jec_in, lat_in, lon_in, &
+subroutine bilinear_bump_init(f_comm, isc_in, iec_in, jsc_in, jec_in, lat_in, lon_in, &
                               isc_ou, iec_ou, jsc_ou, jec_ou, lat_ou, lon_ou, bump, bumpid)
 
   implicit none
 
   !Arguments
+  type(fckit_mpi_comm), intent(in)    :: f_comm
   integer,              intent(in)    :: isc_in, iec_in, jsc_in, jec_in      !Input grid dimensions
   real(kind=kind_real), intent(in)    :: lat_in(isc_in:iec_in,jsc_in:jec_in) !Degrees -90 to 90
   real(kind=kind_real), intent(in)    :: lon_in(isc_in:iec_in,jsc_in:jec_in) !Degrees -180 to 180

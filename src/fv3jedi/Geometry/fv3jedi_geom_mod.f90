@@ -13,10 +13,12 @@ use iso_c_binding
 use fckit_mpi_module, only: fckit_mpi_comm
 use netcdf
 use mpi
+use string_f_c_mod
 
 use fckit_configuration_module, only: fckit_configuration
 
 !FMS/MPP uses
+use fckit_mpi_module,   only: fckit_mpi_comm
 use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
 use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
 use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
@@ -55,6 +57,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:)       :: edge_vect_s, edge_vect_w
   real(kind=kind_real), allocatable, dimension(:,:,:,:) :: es, ew
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
+  type(fckit_mpi_comm) :: f_comm
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -78,13 +81,14 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine create(self, c_conf)
+subroutine create(self, c_conf, f_comm)
 
 implicit none
 
 !Arguments
-type(fv3jedi_geom), intent(inout) :: self
-type(c_ptr),        intent(in)    :: c_conf
+type(fv3jedi_geom),   intent(inout) :: self
+type(c_ptr),          intent(in)    :: c_conf
+type(fckit_mpi_comm), intent(in)    :: f_comm
 
 !Locals
 character(len=256)                    :: pathfile_akbk
@@ -97,6 +101,10 @@ integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
+
+! Add the communicator to the geometry
+! ------------------------------------
+self%f_comm = f_comm
 
 ! Fortran configuration
 ! ---------------------
@@ -383,6 +391,7 @@ other%a11             = self%a11
 other%a12             = self%a12
 other%a21             = self%a21
 other%a22             = self%a22
+other%f_comm          = self%f_comm
 
 other%rarea     = self%rarea
 other%sin_sg    = self%sin_sg
@@ -605,8 +614,8 @@ subroutine write_geom(self)
   integer :: varid(8)
 
 
-  ! Pointer to fv3jedi communicator
-  f_comm = fckit_mpi_comm()
+  ! Pointer to fv3jedi geom communicator
+  f_comm = self%f_comm
 
   write(filename,"(A9,I0.4,A4)") 'fv3grid_c', self%npx-1, '.nc4'
 

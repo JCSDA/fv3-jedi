@@ -325,7 +325,7 @@ self%ntile  = geom%ntile
 self%ntiles = geom%ntiles
 
 ! Pointer to fv3jedi communicator
-self%f_comm = fckit_mpi_comm()
+self%f_comm = geom%f_comm
 
 ! Check winds
 if (associated(self%ua) .and. .not.associated(self%va)) &
@@ -859,7 +859,7 @@ subroutine increment_print(self)
 implicit none
 type(fv3jedi_increment), intent(in) :: self
 
-call fields_print(self%nf, self%fields, "Increment")
+call fields_print(self%nf, self%fields, "Increment", self%f_comm)
 
 end subroutine increment_print
 
@@ -876,7 +876,7 @@ if (nf .ne. self%nf) then
   call abor1_ftn("fv3jedi_increment.gpnorm: nf passed in does not match expeted nf")
 endif
 
-call fields_gpnorm(nf, self%fields, pstat)
+call fields_gpnorm(nf, self%fields, pstat, self%f_comm)
 
 end subroutine gpnorm
 
@@ -888,7 +888,7 @@ implicit none
 type(fv3jedi_increment), intent(in)  :: self
 real(kind=kind_real),    intent(out) :: prms
 
-call fields_rms(self%nf,self%fields,prms)
+call fields_rms(self%nf, self%fields, prms, self%f_comm)
 
 end subroutine rms
 
@@ -1222,5 +1222,4 @@ deallocate(ref_ps)
 end subroutine jnormgrad
 
 ! ------------------------------------------------------------------------------
-
 end module fv3jedi_increment_mod

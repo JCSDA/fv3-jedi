@@ -429,7 +429,7 @@ subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,vor_out,div_out)
  ! Gather voricity and divergence to one processor and compute psi and chi
  ! -----------------------------------------------------------------------
 
- f_comm = fckit_mpi_comm()
+ f_comm = geom%f_comm
 
  allocate(vorg(1:geom%npx-1,1:geom%npy-1,6))
  allocate(divg(1:geom%npx-1,1:geom%npy-1,6))
@@ -507,7 +507,7 @@ subroutine psichi_to_vortdivg(geom,grid,oprs,psi,chi,vor,div)
  ! Gather voricity and divergence to one processor and compute psi and chi
  ! -----------------------------------------------------------------------
 
- f_comm = fckit_mpi_comm()
+ f_comm = geom%f_comm
 
  allocate(vorg(1:geom%npx-1,1:geom%npy-1,6))
  allocate(divg(1:geom%npx-1,1:geom%npy-1,6))

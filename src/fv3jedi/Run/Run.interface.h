@@ -24,7 +24,8 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_setup_f(const eckit::Configuration * const *);
+  void fv3jedi_setup_f(const eckit::Configuration * const *,
+                       const int &, const char *);
   void fv3jedi_finalize_f();
 
 }  // extern "C"
