@@ -21,7 +21,7 @@ public :: fv3jedi_covar_registry
 #define LISTED_TYPE fv3jedi_covar
 
 !> Linked list interface - defines registry_t type
-#include "Utilities/linkedList_i.f"
+#include "oops/util/linkedList_i.f"
 
 !> Global registry
 type(registry_t) :: fv3jedi_covar_registry
@@ -33,7 +33,7 @@ contains
 ! ------------------------------------------------------------------------------
 
 !> Linked list implementation
-#include "Utilities/linkedList_c.f"
+#include "oops/util/linkedList_c.f"
 
 ! ------------------------------------------------------------------------------
 subroutine c_fv3jedi_b_setup(c_key_self, c_conf, c_key_geom) &

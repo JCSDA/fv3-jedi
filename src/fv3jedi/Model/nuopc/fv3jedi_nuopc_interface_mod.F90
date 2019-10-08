@@ -23,7 +23,7 @@ public :: fv3jedi_nuopc_registry
 
 !> Linked list interface
 #define LISTED_TYPE model_nuopc_type
-#include "Utilities/linkedList_i.f"
+#include "oops/util/linkedList_i.f"
 type(registry_t) :: fv3jedi_nuopc_registry
 
 ! ------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ contains
 ! ------------------------------------------------------------------------------
 
 !> Linked list implementation
-#include "Utilities/linkedList_c.f"
+#include "oops/util/linkedList_c.f"
 
 ! ------------------------------------------------------------------------------
 
