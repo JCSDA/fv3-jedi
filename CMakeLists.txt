@@ -47,8 +47,12 @@ include( fv3jedi_extra_macros )
 # Boost
 include_directories( ${Boost_INCLUDE_DIR} )
 
+# NetCDF
+find_package( NetCDF REQUIRED COMPONENTS Fortran )
+include_directories( ${NETCDF_INCLUDE_DIRS} )
+
 # fv3-jedi-lm
-ecbuild_use_package( PROJECT fv3-jedi-lm REQUIRED )
+ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
 include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
 
 # oops
@@ -88,7 +92,7 @@ link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 # Export package info
 ################################################################################
 
-list( APPEND FV3JEDI_TPLS ufo oops NetCDF )
+list( APPEND FV3JEDI_TPLS ufo oops )
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
                           ${CMAKE_CURRENT_BINARY_DIR}/src
