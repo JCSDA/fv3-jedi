@@ -68,37 +68,44 @@ phases:
       - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fv3-bundle repo"
       - cd $CODEBUILD_SRC_DIR
 
-      # FV3-JEDI and the linearized model
+      # FV3-JEDI (testing repo)
       - git clone -b $CODEBUILD_GIT_BRANCH https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-jedi fv3-bundle/fv3-jedi
 
+      # fv3-jedi-lm
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fv3-jedi-linearmodel fv3-bundle/fv3-jedi-lm
       - cd fv3-bundle/fv3-jedi-lm
       - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fv3-jedi-lm repo"
       - cd $CODEBUILD_SRC_DIR
 
-
-      # External observation operators
+      # crtm
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/crtm fv3-bundle/crtm
       - cd fv3-bundle/crtm
       - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in crtm repo"
       - cd $CODEBUILD_SRC_DIR
 
-      # Core JEDI repositories
-      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/saber fv3-bundle/saber
-      - cd fv3-bundle/saber
-      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in saber repo"
-      - cd $CODEBUILD_SRC_DIR
-
-      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/oops fv3-bundle/oops
-      - cd fv3-bundle/oops
-      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in oops repo"
-      - cd $CODEBUILD_SRC_DIR
-
+      # ioda
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/ioda fv3-bundle/ioda
       - cd fv3-bundle/ioda
       - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in ioda repo"
       - cd $CODEBUILD_SRC_DIR
 
+
+      # disable git-lfs
+      - git lfs install --skip-smudge
+
+      # saber
+      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/saber fv3-bundle/saber
+      - cd fv3-bundle/saber
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in saber repo"
+      - cd $CODEBUILD_SRC_DIR
+
+      # oops
+      - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/oops fv3-bundle/oops
+      - cd fv3-bundle/oops
+      - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in oops repo"
+      - cd $CODEBUILD_SRC_DIR
+
+      # ufo
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/ufo fv3-bundle/ufo
       - cd fv3-bundle/ufo
       - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in ufo repo"
@@ -114,11 +121,11 @@ phases:
       - git clone -b dev/master-ecbuild https://$GIT_USER:$GIT_PASS@github.com/jcsda/FMS fv3-bundle/fms
       - cd $CODEBUILD_SRC_DIR
 
+      # fckit
       - git clone https://$GIT_USER:$GIT_PASS@github.com/jcsda/fckit fv3-bundle/fckit
       - cd fv3-bundle/fckit
       - git checkout $CODEBUILD_GIT_BRANCH || echo "No branch named $CODEBUILD_GIT_BRANCH in fckit repo"
       - cd $CODEBUILD_SRC_DIR
-
 
       - ls
       - pwd
@@ -138,9 +145,15 @@ phases:
         && echo $CC
         && echo $CXX
         && echo $FC
-        && CC=mpicc CXX=mpicxx FC=mpifort ecbuild /jcsda/fv3-bundle/
+        && CC=mpicc CXX=mpicxx FC=mpifort 
+        && ecbuild /jcsda/fv3-bundle/
         && cd fv3-jedi
-        && make -j4
+        && make -j4"
+
+      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];then exit 1; fi
+
+      - su - jcsdauser -c "CC=mpicc CXX=mpicxx FC=mpifort
+        && cd /build_container/fv3-jedi
         && ctest"
   post_build:
     commands:
