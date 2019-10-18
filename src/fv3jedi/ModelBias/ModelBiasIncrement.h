@@ -9,6 +9,7 @@
 #define FV3JEDI_MODELBIAS_MODELBIASINCREMENT_H_
 
 #include <iostream>
+#include <vector>
 
 #include "oops/util/Printable.h"
 
@@ -47,6 +48,11 @@ class ModelBiasIncrement : public util::Printable {
   void axpy(const double, const ModelBiasIncrement &) {}
   double dot_product_with(const ModelBiasIncrement &)
                           const {return 0.0;}
+
+/// Serialize-Deserialize
+  size_t serialSize() {return 0;}
+  void serialize(std::vector<double> & vect) const {}
+  void deserialize(const std::vector<double> &, size_t & index) {}
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &) {}

@@ -550,18 +550,20 @@ end subroutine fv3jedi_increment_getvalues_ad_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_sizes_c(c_key_self,nx,ny,nv) bind(c,name='fv3jedi_increment_sizes_f90')
+subroutine fv3jedi_increment_sizes_c(c_key_self,inc_size) bind(c,name='fv3jedi_increment_sizes_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(inout) :: nx,ny,nv
+integer(c_int), intent(inout) :: inc_size
 type(fv3jedi_increment), pointer :: self
+integer var, i, j, k
 
 call fv3jedi_increment_registry%get(c_key_self,self)
 
-nv = self%nf
-nx = self%npx
-ny = self%npy
+inc_size = 0
+do var = 1, self%nf
+  inc_size = inc_size + (self%fields(var)%iec-self%fields(var)%isc+1)*(self%fields(var)%jec-self%fields(var)%jsc+1)*self%fields(var)%npz
+end do
 
 end subroutine fv3jedi_increment_sizes_c
 
@@ -586,6 +588,48 @@ call fv3jedi_state_registry%get(c_key_state,state)
 call jnormgrad(self,geom,state,c_conf)
 
 end subroutine fv3jedi_increment_jnormgrad_c
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_serialize_c(c_key_self,c_vsize,c_vect_inc) bind(c,name='fv3jedi_increment_serialize_f90')
+
+implicit none
+
+! Passed variables
+integer(c_int),intent(in) :: c_key_self           !< Increment
+integer(c_int),intent(in) :: c_vsize              !< Size
+real(c_double),intent(out) :: c_vect_inc(c_vsize) !< Vector
+
+type(fv3jedi_increment),pointer :: self
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+! Call Fortran
+call fv3jedi_increment_serialize(self,c_vsize,c_vect_inc)
+
+
+end subroutine fv3jedi_increment_serialize_c
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_deserialize_c(c_key_self,c_vsize,c_vect_inc,c_index) bind(c,name='fv3jedi_increment_deserialize_f90')
+
+implicit none
+
+! Passed variables
+integer(c_int),intent(in) :: c_key_self          !< Increment
+integer(c_int),intent(in) :: c_vsize             !< Size
+real(c_double),intent(in) :: c_vect_inc(c_vsize) !< Vector
+integer(c_int), intent(inout):: c_index          !< Index
+
+type(fv3jedi_increment),pointer :: self
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+
+! Call Fortran
+call fv3jedi_increment_deserialize(self,c_vsize,c_vect_inc,c_index)
+
+
+end subroutine fv3jedi_increment_deserialize_c
 
 ! ------------------------------------------------------------------------------
 end module fv3jedi_increment_interface_mod

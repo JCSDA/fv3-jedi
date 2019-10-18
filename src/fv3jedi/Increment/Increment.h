@@ -10,6 +10,7 @@
 
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -98,6 +99,11 @@ class Increment : public oops::GeneralizedDepartures,
 /// Other
   void accumul(const double &, const State &);
   void jnormgrad(const State &, const eckit::Configuration &);
+
+/// Serialize and deserialize
+  size_t serialSize() const;
+  void serialize(std::vector<double> &) const;
+  void deserialize(const std::vector<double> &, size_t &);
 
 // Utilities
   boost::shared_ptr<const Geometry> geometry() const {return geom_;}

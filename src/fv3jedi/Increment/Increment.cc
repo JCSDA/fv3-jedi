@@ -246,4 +246,42 @@ void Increment::jnormgrad(const State & xxf,
   oops::Log::trace() << "Increment jnormgrad done" << std::endl;
 }
 // -----------------------------------------------------------------------------
+size_t Increment::serialSize() const {
+  oops::Log::trace() << "Increment serialSize starting" << std::endl;
+  size_t nn = 1;
+  int inc_size;
+  fv3jedi_increment_sizes_f90(keyInc_, inc_size);
+  nn+= inc_size;  // to verify
+  nn += time_.serialSize();
+  return nn;
+  oops::Log::trace() << "Increment serialSize done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void Increment::serialize(std::vector<double> & vect) const {
+  oops::Log::trace() << "Increment serialize starting" << std::endl;
+  int size_inc = this->serialSize() - 3;
+  std::vector<double> v_inc(size_inc, 0);
+
+  fv3jedi_increment_serialize_f90(keyInc_, size_inc, v_inc.data());
+  vect.insert(vect.end(), v_inc.begin(), v_inc.end());
+
+  // Serialize the date and time
+  vect.push_back(-54321.98765);
+  time_.serialize(vect);
+
+  oops::Log::trace() << "Increment serialize done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void Increment::deserialize(const std::vector<double> & vect,
+                                   size_t & index) {
+  oops::Log::trace() << "Increment deserialize starting" << std::endl;
+  fv3jedi_increment_deserialize_f90(keyInc_, vect.size(), vect.data(), index);
+
+  ASSERT(vect.at(index) == -54321.98765);
+  ++index;
+
+  time_.deserialize(vect, index);
+  oops::Log::trace() << "Increment deserialize done" << std::endl;
+}
+// -----------------------------------------------------------------------------
 }  // namespace fv3jedi

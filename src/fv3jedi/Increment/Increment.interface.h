@@ -104,8 +104,6 @@ extern "C" {
                                     double &);
 
   void fv3jedi_increment_sizes_f90(const F90inc &,
-                                   int &,
-                                   int &,
                                    int &);
 
   void fv3jedi_increment_rms_f90(const F90inc &,
@@ -133,6 +131,16 @@ extern "C" {
                                        const eckit::Configuration * const *);
 
   void fv3jedi_increment_print_f90(const F90inc &);
+
+  void fv3jedi_increment_serialize_f90(const F90inc &,
+                                     const std::size_t &,
+                                     double[]);
+
+  void fv3jedi_increment_deserialize_f90(const F90inc &,
+                                         const std::size_t &,
+                                         const double[],
+                                         const std::size_t &);
+
 }  // extern "C"
 // -----------------------------------------------------------------------------
 

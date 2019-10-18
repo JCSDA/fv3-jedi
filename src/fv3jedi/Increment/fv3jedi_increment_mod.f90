@@ -37,6 +37,7 @@ public :: fv3jedi_increment, create, delete, zeros, random, copy, &
           read_file, write_file, gpnorm, rms, &
           change_resol, getvalues_tl, getvalues_ad, &
           ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad, &
+          fv3jedi_increment_serialize, fv3jedi_increment_deserialize, &
           increment_print
 
 ! ------------------------------------------------------------------------------
@@ -1220,6 +1221,69 @@ deallocate(cellweight)
 deallocate(ref_ps)
 
 end subroutine jnormgrad
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_serialize(self,vsize,vect_inc)
+
+implicit none
+
+! Passed variables
+type(fv3jedi_increment),intent(in) :: self       !< Increment
+integer,intent(in) :: vsize                      !< Size
+real(kind_real),intent(out) :: vect_inc(vsize)   !< Vector
+
+! Local variables
+integer :: ind, var, i, j, k
+
+! Initialize
+ind = 0
+
+! Copy
+do var = 1, self%nf
+  do k = 1,self%fields(var)%npz
+    do j = self%fields(var)%jsc,self%fields(var)%jec
+      do i = self%fields(var)%isc,self%fields(var)%iec
+        ind = ind + 1
+        vect_inc(ind) = self%fields(var)%array(i, j, k)
+      end do
+    end do
+  end do
+end do
+
+
+
+end subroutine fv3jedi_increment_serialize
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_deserialize(self,vsize,vect_inc,index)
+
+implicit none
+
+! Passed variables
+type(fv3jedi_increment),intent(inout) :: self         !< Increment
+integer,intent(in) :: vsize                           !< Size
+real(kind_real),intent(in) :: vect_inc(vsize)         !< Vector
+integer,intent(inout) :: index                        !< Index
+
+! Local variables
+integer :: ind, var, i, j, k
+
+! Copy
+do var = 1, self%nf
+  do k = 1,self%fields(var)%npz
+    do j = self%fields(var)%jsc,self%fields(var)%jec
+      do i = self%fields(var)%isc,self%fields(var)%iec
+        self%fields(var)%array(i, j, k) = vect_inc(index + 1)
+        index = index + 1
+      end do
+    end do
+  end do
+end do
+
+
+end subroutine fv3jedi_increment_deserialize
 
 ! ------------------------------------------------------------------------------
 end module fv3jedi_increment_mod
