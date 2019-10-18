@@ -11,7 +11,7 @@ use fv3jedi_kinds_mod
 use datetime_mod
 use duration_mod
 use iso_c_binding
-use variables_mod
+use oops_variables_mod
 use fckit_configuration_module, only: fckit_configuration
 
 use fv3jedi_increment_mod
@@ -44,11 +44,11 @@ subroutine fv3jedi_increment_create_c(c_key_self, c_key_geom, c_vars) bind(c,nam
 implicit none
 integer(c_int), intent(inout) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom !< Geometry
-type(c_ptr), intent(in)    :: c_vars     !< List of variables
+type(c_ptr), value, intent(in) :: c_vars     !< List of variables
 
 type(fv3jedi_increment), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
-type(oops_vars) :: vars
+type(oops_variables) :: vars
 type(fckit_configuration)    :: f_conf
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
@@ -56,11 +56,8 @@ call fv3jedi_increment_registry%init()
 call fv3jedi_increment_registry%add(c_key_self)
 call fv3jedi_increment_registry%get(c_key_self,self)
 
-f_conf = fckit_configuration(c_vars)
-
-call oops_vars_create(f_conf,vars)
+vars = oops_variables(c_vars)
 call create(self, geom, vars)
-call oops_vars_delete(vars)
 
 end subroutine fv3jedi_increment_create_c
 
@@ -485,21 +482,19 @@ subroutine fv3jedi_increment_getvalues_tl_c(c_key_geom, c_key_inc,c_key_loc,c_va
 implicit none
 integer(c_int), intent(in) :: c_key_inc  !< Increment to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
-type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
+type(c_ptr), value, intent(in) :: c_vars !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_increment), pointer :: inc
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
-type(oops_vars) :: vars
+type(oops_variables) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
 type(fckit_configuration)    :: f_conf
 
-f_conf = fckit_configuration(c_vars)
-
-call oops_vars_create(f_conf,vars)
+vars = oops_variables(c_vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
@@ -508,8 +503,6 @@ call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues_tl(geom, inc, locs, vars, gom, traj)
-
-call oops_vars_delete(vars)
 
 end subroutine fv3jedi_increment_getvalues_tl_c
 
@@ -520,21 +513,19 @@ subroutine fv3jedi_increment_getvalues_ad_c(c_key_geom, c_key_inc,c_key_loc,c_va
 implicit none
 integer(c_int), intent(in) :: c_key_inc  !< Increment to be interpolated
 integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
-type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
+type(c_ptr), value, intent(in) :: c_vars !< List of requested variables
 integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
 integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_increment), pointer :: inc
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
-type(oops_vars) :: vars
+type(oops_variables) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
 type(fckit_configuration)    :: f_conf
 
-f_conf = fckit_configuration(c_vars)
-
-call oops_vars_create(f_conf,vars)
+vars = oops_variables(c_vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%get(c_key_inc, inc)
@@ -543,8 +534,6 @@ call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues_ad(geom, inc, locs, vars, gom, traj)
-
-call oops_vars_delete(vars)
 
 end subroutine fv3jedi_increment_getvalues_ad_c
 

@@ -38,8 +38,7 @@ Increment::Increment(const Geometry & geom,
                                    const util::DateTime & time):
   geom_(new Geometry(geom)), vars_(vars), time_(time)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), &conf);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_zero_f90(keyInc_);
   oops::Log::trace() << "Increment constructed." << std::endl;
 }
@@ -48,8 +47,7 @@ Increment::Increment(const Geometry & geom,
                                    const Increment & other)
   : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), &conf);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_change_resol_f90(keyInc_, geom_->toFortran(), other.keyInc_,
                                      other.geometry()->toFortran());
   oops::Log::trace() << "Increment constructed from other." << std::endl;
@@ -59,8 +57,7 @@ Increment::Increment(const Increment & other,
                                    const bool copy)
   : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), &conf);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   if (copy) {
     fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
   } else {
@@ -72,8 +69,7 @@ Increment::Increment(const Increment & other,
 Increment::Increment(const Increment & other)
   : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), &conf);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
   oops::Log::trace() << "Increment copy-created." << std::endl;
 }
@@ -158,11 +154,10 @@ void Increment::getValuesTL(const ufo::Locations & locs,
                                    const oops::Variables & vars,
                                    ufo::GeoVaLs & gom,
                                    const GetValuesTrajMatrix & traj) const {
-  const eckit::Configuration * conf = &vars.toFortran();
   fv3jedi_increment_getvalues_tl_f90(geom_->toFortran(),
                                      keyInc_,
                                      locs.toFortran(),
-                                     &conf,
+                                     vars,
                                      gom.toFortran(),
                                      traj.toFortran());
 }
@@ -171,10 +166,9 @@ void Increment::getValuesAD(const ufo::Locations & locs,
                              const oops::Variables & vars,
                              const ufo::GeoVaLs & gom,
                              const GetValuesTrajMatrix & traj) {
-  const eckit::Configuration * conf = &vars.toFortran();
   fv3jedi_increment_getvalues_ad_f90(geom_->toFortran(),
                                      keyInc_, locs.toFortran(),
-                                     &conf,
+                                     vars,
                                      gom.toFortran(),
                                      traj.toFortran());
 }

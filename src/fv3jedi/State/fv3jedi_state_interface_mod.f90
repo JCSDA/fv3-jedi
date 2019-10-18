@@ -11,7 +11,7 @@ use fv3jedi_kinds_mod
 use datetime_mod
 use duration_mod
 use iso_c_binding
-use variables_mod
+use oops_variables_mod
 use fckit_configuration_module, only: fckit_configuration
 
 use fv3jedi_state_mod
@@ -41,23 +41,19 @@ subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='f
 implicit none
 integer(c_int), intent(inout) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom !< Geometry
-type(c_ptr), intent(in)    :: c_vars     !< List of variables
+type(c_ptr), value, intent(in)    :: c_vars     !< List of variables
 
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
-type(oops_vars)              :: vars
-type(fckit_configuration)    :: f_conf
+type(oops_variables)         :: vars
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_state_registry%init()
 call fv3jedi_state_registry%add(c_key_self)
 call fv3jedi_state_registry%get(c_key_self,self)
 
-f_conf = fckit_configuration(c_vars)
-
-call oops_vars_create(f_conf,vars)
+vars = oops_variables(c_vars)
 call create(self, geom, vars)
-call oops_vars_delete(vars)
 
 end subroutine fv3jedi_state_create_c
 
@@ -297,22 +293,18 @@ end subroutine fv3jedi_state_rms_c
 subroutine fv3jedi_state_getvalues_notraj_c(c_key_geom, c_key_state,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_state_getvalues_notraj_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_state  !< State to be interpolated
-integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
-type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
-integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
+integer(c_int), intent(in) :: c_key_state !< State to be interpolated
+integer(c_int), intent(in) :: c_key_loc   !< List of requested locations
+type(c_ptr), value, intent(in) :: c_vars  !< List of requested variables
+integer(c_int), intent(in) :: c_key_gom   !< Interpolated values
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(fv3jedi_state), pointer :: state
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
-type(oops_vars) :: vars
+type(oops_variables) :: vars
 type(fv3jedi_geom),  pointer :: geom
 
-type(fckit_configuration)    :: f_conf
-
-f_conf = fckit_configuration(c_vars)
-
-call oops_vars_create(f_conf,vars)
+vars = oops_variables(c_vars)
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_state_registry%get(c_key_state, state)
@@ -321,8 +313,6 @@ call ufo_geovals_registry%get(c_key_gom, gom)
 
 call getvalues(geom, state, locs, vars, gom)
 
-call oops_vars_delete(vars)
-
 end subroutine fv3jedi_state_getvalues_notraj_c
 
 ! ------------------------------------------------------------------------------
@@ -330,24 +320,21 @@ end subroutine fv3jedi_state_getvalues_notraj_c
 subroutine fv3jedi_state_getvalues_c(c_key_geom, c_key_state,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_state_getvalues_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_state  !< State to be interpolated
-integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
-type(c_ptr), intent(in)    :: c_vars     !< List of requested variables
-integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
-integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
+integer(c_int), intent(in)     :: c_key_state  !< State to be interpolated
+integer(c_int), intent(in)     :: c_key_loc  !< List of requested locations
+type(c_ptr), value, intent(in) :: c_vars     !< List of requested variables
+integer(c_int), intent(in)     :: c_key_gom  !< Interpolated values
+integer(c_int), intent(in)     :: c_key_traj !< Trajectory for interpolation/transforms
+integer(c_int), intent(in)     :: c_key_geom  !< Geometry
 
 type(fv3jedi_state), pointer :: state
 type(ufo_locs),  pointer :: locs
 type(ufo_geovals),  pointer :: gom
-type(oops_vars) :: vars
+type(oops_variables) :: vars
 type(fv3jedi_getvalues_traj), pointer :: traj
 type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration)    :: f_conf
 
-f_conf = fckit_configuration(c_vars)
-
-call oops_vars_create(f_conf,vars)
+vars = oops_variables(c_vars)
 
 call fv3jedi_state_registry%get(c_key_state, state)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
@@ -356,8 +343,6 @@ call ufo_geovals_registry%get(c_key_gom, gom)
 call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
 
 call getvalues(geom, state, locs, vars, gom, traj)
-
-call oops_vars_delete(vars)
 
 end subroutine fv3jedi_state_getvalues_c
 

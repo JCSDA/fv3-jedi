@@ -9,7 +9,7 @@ use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use fckit_mpi_module
-use variables_mod
+use oops_variables_mod
 
 use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz
@@ -41,16 +41,16 @@ contains
 subroutine create(self, geom, vars)
 
 implicit none
-type(fv3jedi_state), intent(inout) :: self
-type(fv3jedi_geom),  intent(in)    :: geom
-type(oops_vars),     intent(in)    :: vars
+type(fv3jedi_state),  intent(inout) :: self
+type(fv3jedi_geom),   intent(in)    :: geom
+type(oops_variables), intent(in)    :: vars
 
 integer :: var, vcount
 
 
 ! Total fields
 ! ------------
-self%nf = vars%nv
+self%nf = vars%nvars()
 
 ! Allocate fields structure
 ! -------------------------
@@ -59,435 +59,435 @@ allocate(self%fields(self%nf))
 ! Loop through and allocate main state fields
 ! -------------------------------------------
 vcount = 0
-do var = 1, vars%nv
-   select case (trim(vars%fldnames(var)))
+do var = 1, vars%nvars()
+   select case (trim(vars%variable(var)))
      case("ud","u","U")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'eastward_wind_on_native_D-Grid', &
+            short_name = vars%variable(var), long_name = 'eastward_wind_on_native_D-Grid', &
             fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north, arraypointer = self%ud )
      case("vd","v","V")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'northward_wind_on_native_D-Grid', &
+            short_name = vars%variable(var), long_name = 'northward_wind_on_native_D-Grid', &
             fv3jedi_name = 'vd', units = 'm s-1', staggerloc = east, arraypointer = self%vd )
      case("ua")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'eastward_wind', &
+            short_name = vars%variable(var), long_name = 'eastward_wind', &
             fv3jedi_name = 'ua', units = 'm s-1', staggerloc = center, arraypointer = self%ua)
      case("va")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'northward_wind', &
+            short_name = vars%variable(var), long_name = 'northward_wind', &
             fv3jedi_name = 'va', units = 'm s-1', staggerloc = center, arraypointer = self%va )
      case("t","T")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'air_temperature', &
+            short_name = vars%variable(var), long_name = 'air_temperature', &
             fv3jedi_name = 't', units = 'K', staggerloc = center, arraypointer = self%t)
      case("tv","TV")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'virtual_temperature', &
+            short_name = vars%variable(var), long_name = 'virtual_temperature', &
             fv3jedi_name = 'tv', units = 'K', staggerloc = center, arraypointer = self%tv)
      case("pt","PT")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'potential_temperature', &
+            short_name = vars%variable(var), long_name = 'potential_temperature', &
             fv3jedi_name = 'pt', units = 'K', staggerloc = center, arraypointer = self%pt)
      case("delp","DELP")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'pressure_thickness', &
+            short_name = vars%variable(var), long_name = 'pressure_thickness', &
             fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
      case("pkz","PKZ")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'pressure_to_kappa', &
+            short_name = vars%variable(var), long_name = 'pressure_to_kappa', &
             fv3jedi_name = 'pkz', units = 'Pa', staggerloc = center, arraypointer = self%pkz)
      case("pe","PE")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz+1, &
-            short_name = vars%fldnames(var), long_name = 'pressure', &
+            short_name = vars%variable(var), long_name = 'pressure', &
             fv3jedi_name = 'pe', units = 'Pa', staggerloc = center, arraypointer = self%pe)
      case("ps")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_pressure', &
+            short_name = vars%variable(var), long_name = 'surface_pressure', &
             fv3jedi_name = 'ps', units = 'Pa', staggerloc = center, arraypointer = self%ps)
      case("q","sphum","Q")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'specific_humidity', &
+            short_name = vars%variable(var), long_name = 'specific_humidity', &
             fv3jedi_name = 'q', units = 'kg kg-1', staggerloc = center, arraypointer = self%q, &
             tracer = .true.)
      case("rh","RH")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'relative_humidity', &
+            short_name = vars%variable(var), long_name = 'relative_humidity', &
             fv3jedi_name = 'rh', units = '1', staggerloc = center, arraypointer = self%rh, &
             tracer = .true.)
      case("qi","ice_wat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice', &
+            short_name = vars%variable(var), long_name = 'cloud_liquid_ice', &
             fv3jedi_name = 'qi', units = 'kg kg-1', staggerloc = center, arraypointer = self%qi, &
             tracer = .true.)
      case("ql","liq_wat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'cloud_liquid_ice_water', &
+            short_name = vars%variable(var), long_name = 'cloud_liquid_ice_water', &
             fv3jedi_name = 'ql', units = 'kg kg-1', staggerloc = center, arraypointer = self%ql, &
             tracer = .true.)
      case("qils","QILS")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'mass_fraction_of_large_scale_cloud_ice_water', &
+            short_name = vars%variable(var), long_name = 'mass_fraction_of_large_scale_cloud_ice_water', &
             fv3jedi_name = 'qils', units = 'kg kg-1', staggerloc = center, arraypointer = self%qils, &
             tracer = .true.)
      case("qlls","QLLS")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'mass_fraction_of_large_scale_cloud_liquid_water', &
+            short_name = vars%variable(var), long_name = 'mass_fraction_of_large_scale_cloud_liquid_water', &
             fv3jedi_name = 'qlls', units = 'kg kg-1', staggerloc = center, arraypointer = self%qlls, &
             tracer = .true.)
      case("qicn","QICN")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'mass_fraction_of_convective_cloud_ice_water', &
+            short_name = vars%variable(var), long_name = 'mass_fraction_of_convective_cloud_ice_water', &
             fv3jedi_name = 'qicn', units = 'kg kg-1', staggerloc = center, arraypointer = self%qicn, &
             tracer = .true.)
      case("qlcn","QLCN")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'mass_fraction_of_convective_cloud_liquid_water', &
+            short_name = vars%variable(var), long_name = 'mass_fraction_of_convective_cloud_liquid_water', &
             fv3jedi_name = 'qlcn', units = 'kg kg-1', staggerloc = center, arraypointer = self%qlcn, &
             tracer = .true.)
        case("qs","snowwat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'snow_water', &
+            short_name = vars%variable(var), long_name = 'snow_water', &
             fv3jedi_name = 'qs', units = 'kg kg-1', staggerloc = center, arraypointer = self%qs, &
             tracer = .true.)
      case("qr","rainwat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'rain_water', &
+            short_name = vars%variable(var), long_name = 'rain_water', &
             fv3jedi_name = 'qr', units = 'kg kg-1', staggerloc = center, arraypointer = self%qr, &
             tracer = .true.)
      case("graupel")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'graupel', &
+            short_name = vars%variable(var), long_name = 'graupel', &
             fv3jedi_name = 'graupel', units = 'kg kg-1', staggerloc = center, arraypointer = self%gr, &
             tracer = .true.)
      case("cld_amt")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'cld_amt', &
+            short_name = vars%variable(var), long_name = 'cld_amt', &
             fv3jedi_name = 'cld_amt', units = 'kg kg-1', staggerloc = center, arraypointer = self%ca, &
             tracer = .true.)
      case("o3","o3mr")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'ozone_mass_mixing_ratio', &
+            short_name = vars%variable(var), long_name = 'ozone_mass_mixing_ratio', &
             fv3jedi_name = 'o3', units = 'kg kg-1', staggerloc = center, arraypointer = self%o3, &
             tracer = .true.)
      case("ox","OX")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'odd_oxygen_mixing_ratio', &
+            short_name = vars%variable(var), long_name = 'odd_oxygen_mixing_ratio', &
             fv3jedi_name = 'ox', units = 'kg kg-1', staggerloc = center, arraypointer = self%ox, &
             tracer = .true.)
      case("w","W")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'vertical_wind', &
+            short_name = vars%variable(var), long_name = 'vertical_wind', &
             fv3jedi_name = 'w', units = 'm s-1', staggerloc = center, arraypointer = self%w)
      case("delz","DZ")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'layer_thickness', &
+            short_name = vars%variable(var), long_name = 'layer_thickness', &
             fv3jedi_name = 'delz', units = 'm', staggerloc = center, arraypointer = self%delz)
      case("phis","PHIS")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_geopotential_height', &
+            short_name = vars%variable(var), long_name = 'surface_geopotential_height', &
             fv3jedi_name = 'phis', units = 'm', staggerloc = center, arraypointer = self%phis)
      case("psi")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'stream_function', &
+            short_name = vars%variable(var), long_name = 'stream_function', &
             fv3jedi_name = 'psi', units = 'm+2 s', staggerloc = center, arraypointer = self%psi)
      case("chi")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'velocity_potential', &
+            short_name = vars%variable(var), long_name = 'velocity_potential', &
             fv3jedi_name = 'chi', units = 'm+2 s', staggerloc = center, arraypointer = self%chi)
      case("vort")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'vorticity', &
+            short_name = vars%variable(var), long_name = 'vorticity', &
             fv3jedi_name = 'vort', units = 'm+2 s', staggerloc = center, arraypointer = self%vort)
      case("divg")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'divergence', &
+            short_name = vars%variable(var), long_name = 'divergence', &
             fv3jedi_name = 'divg', units = 'm+2 s', staggerloc = center, arraypointer = self%divg)
      !CRTM
      case("slmsk")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'slmsk', &
+            short_name = vars%variable(var), long_name = 'slmsk', &
             fv3jedi_name = 'slmsk', units = 'none', staggerloc = center, arraypointer = self%slmsk)
      case("sheleg")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'sheleg', &
+            short_name = vars%variable(var), long_name = 'sheleg', &
             fv3jedi_name = 'sheleg', units = 'none', staggerloc = center, arraypointer = self%sheleg)
      case("tsea")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'tsea', &
+            short_name = vars%variable(var), long_name = 'tsea', &
             fv3jedi_name = 'tsea', units = 'none', staggerloc = center, arraypointer = self%tsea)
      case("vtype")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'vtype', &
+            short_name = vars%variable(var), long_name = 'vtype', &
             fv3jedi_name = 'vtype', units = 'none', staggerloc = center, arraypointer = self%vtype)
      case("stype")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'stype', &
+            short_name = vars%variable(var), long_name = 'stype', &
             fv3jedi_name = 'stype', units = 'none', staggerloc = center, arraypointer = self%stype)
      case("vfrac")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'vfrac', &
+            short_name = vars%variable(var), long_name = 'vfrac', &
             fv3jedi_name = 'vfrac', units = 'none', staggerloc = center, arraypointer = self%vfrac)
      case("stc")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
-            short_name = vars%fldnames(var), long_name = 'stc', &
+            short_name = vars%variable(var), long_name = 'stc', &
             fv3jedi_name = 'stc', units = 'none', staggerloc = center, arraypointer = self%stc)
      case("smc")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
-            short_name = vars%fldnames(var), long_name = 'smc', &
+            short_name = vars%variable(var), long_name = 'smc', &
             fv3jedi_name = 'smc', units = 'none', staggerloc = center, arraypointer = self%smc)
      case("snwdph")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'snwdph', &
+            short_name = vars%variable(var), long_name = 'snwdph', &
             fv3jedi_name = 'snwdph', units = 'none', staggerloc = center, arraypointer = self%snwdph)
      case("u_srf")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'u_srf', &
+            short_name = vars%variable(var), long_name = 'u_srf', &
             fv3jedi_name = 'u_srf', units = 'none', staggerloc = center, arraypointer = self%u_srf)
      case("v_srf")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'v_srf', &
+            short_name = vars%variable(var), long_name = 'v_srf', &
             fv3jedi_name = 'v_srf', units = 'none', staggerloc = center, arraypointer = self%v_srf)
      case("f10m")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'f10m', &
+            short_name = vars%variable(var), long_name = 'f10m', &
             fv3jedi_name = 'f10m', units = 'none', staggerloc = center, arraypointer = self%f10m)
      !TL/AD trajectory
      case("qls")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'initial_mass_fraction_of_large_scale_cloud_condensate', &
+            short_name = vars%variable(var), long_name = 'initial_mass_fraction_of_large_scale_cloud_condensate', &
             fv3jedi_name = 'qls', units = 'kg kg-1', staggerloc = center, arraypointer = self%qls)
      case("qcn")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'initial_mass_fraction_of_convective_cloud_condensate', &
+            short_name = vars%variable(var), long_name = 'initial_mass_fraction_of_convective_cloud_condensate', &
             fv3jedi_name = 'qcn', units = 'kg kg-1', staggerloc = center, arraypointer = self%qcn)
      case("cfcn")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-            short_name = vars%fldnames(var), long_name = 'convective_cloud_area_fraction', &
+            short_name = vars%variable(var), long_name = 'convective_cloud_area_fraction', &
             fv3jedi_name = 'cfcn', units = '1', staggerloc = center, arraypointer = self%cfcn)
      case("frocean")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'fraction_of_ocean', &
+            short_name = vars%variable(var), long_name = 'fraction_of_ocean', &
             fv3jedi_name = 'frocean', units = '1', staggerloc = center, arraypointer = self%frocean)
      case("frland")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'fraction_of_land', &
+            short_name = vars%variable(var), long_name = 'fraction_of_land', &
             fv3jedi_name = 'frland', units = '1', staggerloc = center, arraypointer = self%frland)
      case("varflt")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'isotropic_variance_of_filtered_topography', &
+            short_name = vars%variable(var), long_name = 'isotropic_variance_of_filtered_topography', &
             fv3jedi_name = 'varflt', units = 'm+2', staggerloc = center, arraypointer = self%varflt)
      case("ustar")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_velocity_scale', &
+            short_name = vars%variable(var), long_name = 'surface_velocity_scale', &
             fv3jedi_name = 'ustar', units = 'm s-1', staggerloc = center, arraypointer = self%ustar)
      case("bstar")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_bouyancy_scale', &
+            short_name = vars%variable(var), long_name = 'surface_bouyancy_scale', &
             fv3jedi_name = 'bstar', units = 'm s-2', staggerloc = center, arraypointer = self%bstar)
      case("zpbl")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'planetary_boundary_layer_height', &
+            short_name = vars%variable(var), long_name = 'planetary_boundary_layer_height', &
             fv3jedi_name = 'zpbl', units = 'm', staggerloc = center, arraypointer = self%zpbl)
      case("cm")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_momentum', &
+            short_name = vars%variable(var), long_name = 'surface_exchange_coefficient_for_momentum', &
             fv3jedi_name = 'cm', units = 'kg m-2 s-1', staggerloc = center, arraypointer = self%cm)
      case("ct")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_heat', &
+            short_name = vars%variable(var), long_name = 'surface_exchange_coefficient_for_heat', &
             fv3jedi_name = 'ct', units = 'kg m-2 s-1', staggerloc = center, arraypointer = self%ct)
      case("cq")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_exchange_coefficient_for_moisture', &
+            short_name = vars%variable(var), long_name = 'surface_exchange_coefficient_for_moisture', &
             fv3jedi_name = 'cq', units = 'kg m-2 s-1', staggerloc = center, arraypointer = self%cq)
      case("kcbl")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'KCBL_before_moist', &
+            short_name = vars%variable(var), long_name = 'KCBL_before_moist', &
             fv3jedi_name = 'kcbl', units = '1', staggerloc = center, arraypointer = self%kcbl)
      case("ts")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'surface_temp_before_moist', &
+            short_name = vars%variable(var), long_name = 'surface_temp_before_moist', &
             fv3jedi_name = 'ts', units = 'K', staggerloc = center, arraypointer = self%ts)
      case("khl")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'lower_index_where_Kh_greater_than_2', &
+            short_name = vars%variable(var), long_name = 'lower_index_where_Kh_greater_than_2', &
             fv3jedi_name = 'khl', units = '1', staggerloc = center, arraypointer = self%khl)
      case("khu")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
-            short_name = vars%fldnames(var), long_name = 'upper_index_where_Kh_greater_than_2', &
+            short_name = vars%variable(var), long_name = 'upper_index_where_Kh_greater_than_2', &
             fv3jedi_name = 'khu', units = '1', staggerloc = center, arraypointer = self%khu)
     !Aerosols
     case("du001","DU001","dust1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin1', &
+           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin1', &
            fv3jedi_name = 'du001', units = 'kg kg-1', staggerloc = center, arraypointer = self%du001, &
            tracer = .true.)
     case("du002","DU002","dust2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin2', &
+           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin2', &
            fv3jedi_name = 'du002', units = 'kg kg-1', staggerloc = center, arraypointer = self%du002, &
            tracer = .true.)
     case("du003","DU003","dust3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin3', &
+           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin3', &
            fv3jedi_name = 'du003', units = 'kg kg-1', staggerloc = center, arraypointer = self%du003, &
            tracer = .true.)
     case("du004","DU004","dust4")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin4', &
+           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin4', &
            fv3jedi_name = 'du004', units = 'kg kg-1', staggerloc = center, arraypointer = self%du004, &
            tracer = .true.)
     case("du005","DU005","dust5")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'dust_mixing_ratio_bin5', &
+           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin5', &
            fv3jedi_name = 'du005', units = 'kg kg-1', staggerloc = center, arraypointer = self%du005, &
            tracer = .true.)
     case("ss001","SS001","seas1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin1', &
+           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin1', &
            fv3jedi_name = 'ss001', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss001)
     case("ss002","SS002","seas2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin2', &
+           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin2', &
            fv3jedi_name = 'ss002', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss002, &
            tracer = .true.)
     case("ss003","SS003","seas3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin3', &
+           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin3', &
            fv3jedi_name = 'ss003', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss003, &
            tracer = .true.)
     case("ss004","SS004","seas4")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin4', &
+           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin4', &
            fv3jedi_name = 'ss004', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss004, &
            tracer = .true.)
     case("ss005","SS005","seas5")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'sea_salt_mixing_ratio_bin5', &
+           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin5', &
            fv3jedi_name = 'ss005', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss005, &
            tracer = .true.)
     case("bcphobic","BCPHOBIC","bc1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'hydrophobic_black_carbon', &
+           short_name = vars%variable(var), long_name = 'hydrophobic_black_carbon', &
            fv3jedi_name = 'bcphobic', units = 'kg kg-1', staggerloc = center, arraypointer = self%bcphobic, &
            tracer = .true.)
     case("bcphilic","BCPHILIC","bc2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'hydrophilic_black_carbon', &
+           short_name = vars%variable(var), long_name = 'hydrophilic_black_carbon', &
            fv3jedi_name = 'bcphilic', units = 'kg kg-1', staggerloc = center, arraypointer = self%bcphilic, &
            tracer = .true.)
     case("ocphobic","OCPHOBIC","oc1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'hydrophobic_organic_carbon', &
+           short_name = vars%variable(var), long_name = 'hydrophobic_organic_carbon', &
            fv3jedi_name = 'ocphobic', units = 'kg kg-1', staggerloc = center, arraypointer = self%ocphobic, &
            tracer = .true.)
     case("ocphilic","OCPHILIC","oc2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'hydrophilic_organic_carbon', &
+           short_name = vars%variable(var), long_name = 'hydrophilic_organic_carbon', &
            fv3jedi_name = 'ocphilic', units = 'kg kg-1', staggerloc = center, arraypointer = self%ocphilic, &
            tracer = .true.)
     case("no3an1","NO3AN1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'nitrate_size_bin_1', &
+           short_name = vars%variable(var), long_name = 'nitrate_size_bin_1', &
            fv3jedi_name = 'no3an1', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an1, &
            tracer = .true.)
     case("no3an2","NO3AN2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'nitrate_size_bin_2', &
+           short_name = vars%variable(var), long_name = 'nitrate_size_bin_2', &
            fv3jedi_name = 'no3an2', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an2, &
            tracer = .true.)
     case("no3an3","NO3AN3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'nitrate_size_bin_3', &
+           short_name = vars%variable(var), long_name = 'nitrate_size_bin_3', &
            fv3jedi_name = 'no3an3', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an3, &
            tracer = .true.)
     case("so4","SO4","sulf")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%fldnames(var), long_name = 'sulphate_aerosol', &
+           short_name = vars%variable(var), long_name = 'sulphate_aerosol', &
            fv3jedi_name = 'so4', units = 'kg kg-1', staggerloc = center, arraypointer = self%so4, &
            tracer = .true.)
      !Not found
      case default
-       call abor1_ftn("Create: unknown variable "//trim(vars%fldnames(var)))
+       call abor1_ftn("Create: unknown variable "//trim(vars%variable(var)))
    end select
 enddo
 

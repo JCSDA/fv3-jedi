@@ -29,7 +29,7 @@ extern "C" {
 // -----------------------------------------------------------------------------
   void fv3jedi_state_create_f90(F90state &,
                                 const F90geom &,
-                                const eckit::Configuration * const *);
+                                const oops::Variables &);
 
   void fv3jedi_state_delete_f90(F90state &);
 
@@ -69,13 +69,13 @@ extern "C" {
   void fv3jedi_state_getvalues_notraj_f90(const F90geom &,
                                           const F90state &,
                                           const F90locs &,
-                                          const eckit::Configuration * const *,
+                                          const oops::Variables &,
                                           const F90goms &);
 
   void fv3jedi_state_getvalues_f90(const F90geom &,
                                    const F90state &,
                                    const F90locs &,
-                                   const eckit::Configuration * const *,
+                                   const oops::Variables &,
                                    const F90goms &,
                                    const F90ootrj &);
 

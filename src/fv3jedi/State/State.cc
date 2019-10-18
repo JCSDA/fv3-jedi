@@ -38,8 +38,7 @@ State::State(const Geometry & geom,
                            const util::DateTime & time):
   geom_(new Geometry(geom)), vars_(vars), time_(time)
 {
-  const eckit::Configuration * confvars = &vars_.toFortran();
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &confvars);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   oops::Log::trace() << "State::State created." << std::endl;
 }
 // -----------------------------------------------------------------------------
@@ -58,8 +57,7 @@ State::State(const Geometry & geom,
   } else {
     this->vars_ = vars;
   }
-  const eckit::Configuration * confvars = &vars_.toFortran();
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &confvars);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
 
   const eckit::Configuration * conf = &sconf;
   util::DateTime * dtp = &time_;
@@ -79,8 +77,7 @@ State::State(const Geometry & resol,
                            const State & other):
   geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &conf);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
   oops::Log::trace() << "State::State created by interpolation."
@@ -90,8 +87,7 @@ State::State(const Geometry & resol,
 State::State(const State & other):
   geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
-  const eckit::Configuration * conf = &vars_.toFortran();
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), &conf);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_copy_f90(keyState_, other.keyState_);
   oops::Log::trace() << "State::State copied." << std::endl;
 }
@@ -115,9 +111,8 @@ void State::getValues(const ufo::Locations & locs,
                              const oops::Variables & vars,
                              ufo::GeoVaLs & gom) const {
   oops::Log::trace() << "State::getValues starting." << std::endl;
-  const eckit::Configuration * conf = &vars.toFortran();
   fv3jedi_state_getvalues_notraj_f90(geom_->toFortran(), keyState_,
-                                     locs.toFortran(), &conf,
+                                     locs.toFortran(), vars,
                                      gom.toFortran());
   oops::Log::trace() << "State::getValues done." << std::endl;
 }
@@ -127,9 +122,8 @@ void State::getValues(const ufo::Locations & locs,
                              ufo::GeoVaLs & gom,
                              const GetValuesTrajMatrix & traj) const {
   oops::Log::trace() << "State::getValues traj starting." << std::endl;
-  const eckit::Configuration * conf = &vars.toFortran();
   fv3jedi_state_getvalues_f90(geom_->toFortran(), keyState_, locs.toFortran(),
-                              &conf, gom.toFortran(), traj.toFortran());
+                              vars, gom.toFortran(), traj.toFortran());
   oops::Log::trace() << "State::getValues traj done." << std::endl;
 }
 // -----------------------------------------------------------------------------

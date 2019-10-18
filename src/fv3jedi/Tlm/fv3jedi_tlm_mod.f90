@@ -8,7 +8,7 @@ module fv3jedi_tlm_mod
 use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use duration_mod
-use variables_mod
+use oops_variables_mod
 
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -51,10 +51,10 @@ contains
 subroutine tlm_create(self, geom, c_conf, vars)
 
 implicit none
-type(fv3jedi_tlm),  intent(inout) :: self
-type(fv3jedi_geom), intent(in)    :: geom
-type(c_ptr),        intent(in)    :: c_conf
-type(oops_vars),    intent(in)    :: vars
+type(fv3jedi_tlm),    intent(inout) :: self
+type(fv3jedi_geom),   intent(in)    :: geom
+type(c_ptr),          intent(in)    :: c_conf
+type(oops_variables), intent(in)    :: vars
 
 !Locals
 character(len=20) :: ststep

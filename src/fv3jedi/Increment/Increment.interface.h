@@ -9,6 +9,7 @@
 #define FV3JEDI_INCREMENT_INCREMENT_INTERFACE_H_
 
 #include "fv3jedi/Utilities/interface.h"
+#include "oops/base/Variables.h"
 
 // Forward declarations
 namespace eckit {
@@ -30,7 +31,7 @@ extern "C" {
 
   void fv3jedi_increment_create_f90(F90inc &,
                                     const F90geom &,
-                                    const eckit::Configuration * const *);
+                                    const oops::Variables &);
 
   void fv3jedi_increment_delete_f90(F90inc &);
 
@@ -88,14 +89,14 @@ extern "C" {
   void fv3jedi_increment_getvalues_tl_f90(const F90geom &,
                                           const F90inc &,
                                           const F90locs &,
-                                          const eckit::Configuration * const *,
+                                          const oops::Variables &,
                                           const F90goms &,
                                           const F90ootrj &);
 
   void fv3jedi_increment_getvalues_ad_f90(const F90geom &,
                                           const F90inc &,
                                           const F90locs &,
-                                          const eckit::Configuration * const *,
+                                          const oops::Variables &,
                                           const F90goms &,
                                           const F90ootrj &);
 

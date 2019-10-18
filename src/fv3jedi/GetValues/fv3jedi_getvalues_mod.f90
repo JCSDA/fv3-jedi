@@ -4,7 +4,7 @@ use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use type_bump, only: bump_type
 use ufo_geovals_mod, only: ufo_geovals, ufo_geovals_write_netcdf
 use ufo_locs_mod, only: ufo_locs
-use variables_mod, only: oops_vars
+use oops_variables_mod, only: oops_variables
 
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -38,7 +38,7 @@ implicit none
 type(fv3jedi_geom),                             intent(in)    :: geom
 type(fv3jedi_state),                            intent(in)    :: state
 type(ufo_locs),                                 intent(in)    :: locs
-type(oops_vars),                                intent(in)    :: vars
+type(oops_variables),                           intent(in)    :: vars
 type(ufo_geovals),                              intent(inout) :: gom
 type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
 
@@ -368,7 +368,7 @@ endif
 ! Variable transforms and interpolate to obs locations
 ! ----------------------------------------------------
 
-do jvar = 1, vars%nv
+do jvar = 1, vars%nvars()
 
   geovalm = 0.0_kind_real
   geovals = 0.0_kind_real
@@ -378,12 +378,12 @@ do jvar = 1, vars%nv
 
   ! Convert to observation variables/units
   ! --------------------------------------
-  select case (trim(vars%fldnames(jvar)))
+  select case (trim(vars%variable(jvar)))
 
   case ("eastward_wind")
 
     if (.not. associated(state%ua)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%ua")
+      call variable_fail(trim(vars%variable(jvar)),"state%ua")
 
     nvl = npz
     do_interp = .true.
@@ -393,7 +393,7 @@ do jvar = 1, vars%nv
   case ("northward_wind")
 
     if (.not. associated(state%va)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%va")
+      call variable_fail(trim(vars%variable(jvar)),"state%va")
 
     nvl = npz
     do_interp = .true.
@@ -403,7 +403,7 @@ do jvar = 1, vars%nv
   case ("air_temperature","temperature")
 
     if (.not. have_t) &
-      call variable_fail(trim(vars%fldnames(jvar)),"t")
+      call variable_fail(trim(vars%variable(jvar)),"t")
 
     nvl = npz
     do_interp = .true.
@@ -413,7 +413,7 @@ do jvar = 1, vars%nv
   case ("specific_humidity")
 
     if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+      call variable_fail(trim(vars%variable(jvar)),"state%q")
 
     nvl = npz
     do_interp = .true.
@@ -423,9 +423,9 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     if (.not. have_t) &
-      call variable_fail(trim(vars%fldnames(jvar)),"t")
+      call variable_fail(trim(vars%variable(jvar)),"t")
     if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+      call variable_fail(trim(vars%variable(jvar)),"state%q")
 
     nvl = npz
     do_interp = .true.
@@ -435,7 +435,7 @@ do jvar = 1, vars%nv
   case ("humidity_mixing_ratio")
 
     if (.not. have_qmr) &
-      call variable_fail(trim(vars%fldnames(jvar)),"qmr")
+      call variable_fail(trim(vars%variable(jvar)),"qmr")
 
     nvl = npz
     do_interp = .true.
@@ -445,7 +445,7 @@ do jvar = 1, vars%nv
   case ("relative_humidity")
 
     if (.not. have_rh) &
-      call variable_fail(trim(vars%fldnames(jvar)),"rh")
+      call variable_fail(trim(vars%variable(jvar)),"rh")
 
     nvl = npz
     do_interp = .true.
@@ -455,7 +455,7 @@ do jvar = 1, vars%nv
   case ("air_pressure")
 
     if (.not. have_pressures) &
-      call variable_fail(trim(vars%fldnames(jvar)),"prs")
+      call variable_fail(trim(vars%variable(jvar)),"prs")
 
     nvl = npz
     do_interp = .true.
@@ -465,7 +465,7 @@ do jvar = 1, vars%nv
   case ("air_pressure_levels")
 
     if (.not. have_pressures) &
-      call variable_fail(trim(vars%fldnames(jvar)),"prsi")
+      call variable_fail(trim(vars%variable(jvar)),"prsi")
 
     nvl = npz + 1
     do_interp = .true.
@@ -475,13 +475,13 @@ do jvar = 1, vars%nv
   case ("geopotential_height")
 
     if (.not. have_t) &
-      call variable_fail(trim(vars%fldnames(jvar)),"t")
+      call variable_fail(trim(vars%variable(jvar)),"t")
     if (.not. have_pressures) &
-      call variable_fail(trim(vars%fldnames(jvar)),"prs,prsi")
+      call variable_fail(trim(vars%variable(jvar)),"prs,prsi")
     if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+      call variable_fail(trim(vars%variable(jvar)),"state%q")
     if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%phis")
+      call variable_fail(trim(vars%variable(jvar)),"state%phis")
 
     call geop_height(geom,prs,prsi,t,state%q,&
                      state%phis(:,:,1),use_compress,geovalm)
@@ -492,13 +492,13 @@ do jvar = 1, vars%nv
   case ("geopotential_height_levels")
 
     if (.not. have_t) &
-      call variable_fail(trim(vars%fldnames(jvar)),"t")
+      call variable_fail(trim(vars%variable(jvar)),"t")
     if (.not. have_pressures) &
-      call variable_fail(trim(vars%fldnames(jvar)),"prs,prsi")
+      call variable_fail(trim(vars%variable(jvar)),"prs,prsi")
     if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%q")
+      call variable_fail(trim(vars%variable(jvar)),"state%q")
     if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%phis")
+      call variable_fail(trim(vars%variable(jvar)),"state%phis")
 
     call geop_height_levels(geom,prs,prsi,t,state%q,&
                             state%phis(:,:,1),use_compress,geovale)
@@ -509,7 +509,7 @@ do jvar = 1, vars%nv
   case ("surface_geopotential_height")
 
     if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%phis")
+      call variable_fail(trim(vars%variable(jvar)),"state%phis")
 
     nvl = 1
     do_interp = .true.
@@ -519,7 +519,7 @@ do jvar = 1, vars%nv
   case ("mole_fraction_of_ozone_in_air")
 
     if (.not. associated(state%o3)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%o3")
+      call variable_fail(trim(vars%variable(jvar)),"state%o3")
 
    nvl = npz
    do_interp = .true.
@@ -536,7 +536,7 @@ do jvar = 1, vars%nv
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 
     if (.not. have_crtm_cld) &
-      call variable_fail(trim(vars%fldnames(jvar)),"ql_ade")
+      call variable_fail(trim(vars%variable(jvar)),"ql_ade")
 
    nvl = npz
    do_interp = .true.
@@ -546,7 +546,7 @@ do jvar = 1, vars%nv
   case ("mass_content_of_cloud_ice_in_atmosphere_layer")
 
     if (.not. have_crtm_cld) &
-      call variable_fail(trim(vars%fldnames(jvar)),"qi_ade")
+      call variable_fail(trim(vars%variable(jvar)),"qi_ade")
 
    nvl = npz
    do_interp = .true.
@@ -556,7 +556,7 @@ do jvar = 1, vars%nv
   case ("effective_radius_of_cloud_liquid_water_particle")
 
     if (.not. have_crtm_cld) &
-      call variable_fail(trim(vars%fldnames(jvar)),"ql_efr")
+      call variable_fail(trim(vars%variable(jvar)),"ql_efr")
 
    nvl = npz
    do_interp = .true.
@@ -566,7 +566,7 @@ do jvar = 1, vars%nv
   case ("effective_radius_of_cloud_ice_particle")
 
     if (.not. have_crtm_cld) &
-      call variable_fail(trim(vars%fldnames(jvar)),"qi_efr")
+      call variable_fail(trim(vars%variable(jvar)),"qi_efr")
 
    nvl = npz
    do_interp = .true.
@@ -576,7 +576,7 @@ do jvar = 1, vars%nv
   case ("water_area_fraction")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"water_coverage")
+      call variable_fail(trim(vars%variable(jvar)),"water_coverage")
 
    nvl = 1
    do_interp = .false.
@@ -585,7 +585,7 @@ do jvar = 1, vars%nv
   case ("land_area_fraction")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"land_coverage")
+      call variable_fail(trim(vars%variable(jvar)),"land_coverage")
 
    nvl = 1
    do_interp = .false.
@@ -594,7 +594,7 @@ do jvar = 1, vars%nv
   case ("ice_area_fraction")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"ice_coverage")
+      call variable_fail(trim(vars%variable(jvar)),"ice_coverage")
 
    nvl = 1
    do_interp = .false.
@@ -603,7 +603,7 @@ do jvar = 1, vars%nv
   case ("surface_snow_area_fraction")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"snow_coverage")
+      call variable_fail(trim(vars%variable(jvar)),"snow_coverage")
 
    nvl = 1
    do_interp = .false.
@@ -612,7 +612,7 @@ do jvar = 1, vars%nv
   case ("surface_temperature_where_sea")
 
    if (.not. have_crtm_srf) &
-     call variable_fail(trim(vars%fldnames(jvar)),"water_temperature")
+     call variable_fail(trim(vars%variable(jvar)),"water_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -622,7 +622,7 @@ do jvar = 1, vars%nv
   case ("sea_surface_temperature")
 
     if (.not. associated(state%tsea)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"state%tsea")
+      call variable_fail(trim(vars%variable(jvar)),"state%tsea")
 
    nvl = 1
    do_interp = .true.
@@ -632,7 +632,7 @@ do jvar = 1, vars%nv
   case ("surface_temperature_where_land")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"land_temperature")
+      call variable_fail(trim(vars%variable(jvar)),"land_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -641,7 +641,7 @@ do jvar = 1, vars%nv
   case ("surface_temperature_where_ice")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"ice_temperature")
+      call variable_fail(trim(vars%variable(jvar)),"ice_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -650,7 +650,7 @@ do jvar = 1, vars%nv
   case ("surface_temperature_where_snow")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"snow_temperature")
+      call variable_fail(trim(vars%variable(jvar)),"snow_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -659,7 +659,7 @@ do jvar = 1, vars%nv
   case ("surface_snow_thickness")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"snow_depth")
+      call variable_fail(trim(vars%variable(jvar)),"snow_depth")
 
    nvl = 1
    do_interp = .false.
@@ -668,7 +668,7 @@ do jvar = 1, vars%nv
   case ("vegetation_area_fraction")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"vegetation_fraction")
+      call variable_fail(trim(vars%variable(jvar)),"vegetation_fraction")
 
    nvl = 1
    do_interp = .false.
@@ -677,7 +677,7 @@ do jvar = 1, vars%nv
   case ("surface_wind_speed")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"wind_speed")
+      call variable_fail(trim(vars%variable(jvar)),"wind_speed")
 
    nvl = 1
    do_interp = .false.
@@ -686,7 +686,7 @@ do jvar = 1, vars%nv
   case ("surface_wind_from_direction")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"wind_direction")
+      call variable_fail(trim(vars%variable(jvar)),"wind_direction")
 
    nvl = 1
    do_interp = .false.
@@ -695,7 +695,7 @@ do jvar = 1, vars%nv
   case ("leaf_area_index")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"lai")
+      call variable_fail(trim(vars%variable(jvar)),"lai")
 
    nvl = 1
    do_interp = .false.
@@ -704,7 +704,7 @@ do jvar = 1, vars%nv
   case ("volume_fraction_of_condensed_water_in_soil")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"soil_moisture_content")
+      call variable_fail(trim(vars%variable(jvar)),"soil_moisture_content")
 
    nvl = 1
    do_interp = .false.
@@ -713,7 +713,7 @@ do jvar = 1, vars%nv
   case ("soil_temperature")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"soil_temperature")
+      call variable_fail(trim(vars%variable(jvar)),"soil_temperature")
 
    nvl = 1
    do_interp = .false.
@@ -722,7 +722,7 @@ do jvar = 1, vars%nv
   case ("land_type_index")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"land_type")
+      call variable_fail(trim(vars%variable(jvar)),"land_type")
 
    nvl = 1
    do_interp = .false.
@@ -731,7 +731,7 @@ do jvar = 1, vars%nv
   case ("vegetation_type_index")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"vegetation_type")
+      call variable_fail(trim(vars%variable(jvar)),"vegetation_type")
 
    nvl = 1
    do_interp = .false.
@@ -740,7 +740,7 @@ do jvar = 1, vars%nv
   case ("soil_type")
 
     if (.not. have_crtm_srf) &
-      call variable_fail(trim(vars%fldnames(jvar)),"soil_type")
+      call variable_fail(trim(vars%variable(jvar)),"soil_type")
 
    nvl = 1
    do_interp = .false.
@@ -749,7 +749,7 @@ do jvar = 1, vars%nv
   case ("sulf","so4")
 
    if (.not. associated(state%so4)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%so4")
+     call variable_fail(trim(vars%variable(jvar)),"state%so4")
 
    nvl = npz
    do_interp = .true.
@@ -759,7 +759,7 @@ do jvar = 1, vars%nv
   case ("bc1","bcphobic")
 
    if (.not. associated(state%bcphobic)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%bcphobic")
+     call variable_fail(trim(vars%variable(jvar)),"state%bcphobic")
 
    nvl = npz
    do_interp = .true.
@@ -769,7 +769,7 @@ do jvar = 1, vars%nv
   case ("bc2","bcphilic")
 
    if (.not. associated(state%bcphilic)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%bcphilic")
+     call variable_fail(trim(vars%variable(jvar)),"state%bcphilic")
 
    nvl = npz
    do_interp = .true.
@@ -779,7 +779,7 @@ do jvar = 1, vars%nv
   case ("oc1","ocphobic")
 
    if (.not. associated(state%ocphobic)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ocphobic")
+     call variable_fail(trim(vars%variable(jvar)),"state%ocphobic")
 
    nvl = npz
    do_interp = .true.
@@ -789,7 +789,7 @@ do jvar = 1, vars%nv
   case ("oc2","ocphilic")
 
    if (.not. associated(state%ocphilic)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ocphilic")
+     call variable_fail(trim(vars%variable(jvar)),"state%ocphilic")
 
    nvl = npz
    do_interp = .true.
@@ -799,7 +799,7 @@ do jvar = 1, vars%nv
   case ("dust1","du001")
 
    if (.not. associated(state%du001)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%du001")
+     call variable_fail(trim(vars%variable(jvar)),"state%du001")
 
    nvl = npz
    do_interp = .true.
@@ -809,7 +809,7 @@ do jvar = 1, vars%nv
   case ("dust2","du002")
 
    if (.not. associated(state%du002)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%du002")
+     call variable_fail(trim(vars%variable(jvar)),"state%du002")
 
    nvl = npz
    do_interp = .true.
@@ -819,7 +819,7 @@ do jvar = 1, vars%nv
   case ("dust3","du003")
 
    if (.not. associated(state%du003)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%du003")
+     call variable_fail(trim(vars%variable(jvar)),"state%du003")
 
    nvl = npz
    do_interp = .true.
@@ -829,7 +829,7 @@ do jvar = 1, vars%nv
   case ("dust4","du004")
 
    if (.not. associated(state%du004)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%du004")
+     call variable_fail(trim(vars%variable(jvar)),"state%du004")
 
    nvl = npz
    do_interp = .true.
@@ -839,7 +839,7 @@ do jvar = 1, vars%nv
   case ("dust5","du005")
 
    if (.not. associated(state%du005)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%du005")
+     call variable_fail(trim(vars%variable(jvar)),"state%du005")
 
    nvl = npz
    do_interp = .true.
@@ -849,7 +849,7 @@ do jvar = 1, vars%nv
   case ("seas1","ss001")
 
    if (.not. associated(state%ss001)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ss001")
+     call variable_fail(trim(vars%variable(jvar)),"state%ss001")
 
    nvl = npz
    do_interp = .true.
@@ -859,7 +859,7 @@ do jvar = 1, vars%nv
   case ("seas2","ss002")
 
    if (.not. associated(state%ss002)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ss002")
+     call variable_fail(trim(vars%variable(jvar)),"state%ss002")
 
    nvl = npz
    do_interp = .true.
@@ -869,7 +869,7 @@ do jvar = 1, vars%nv
   case ("seas3","ss003")
 
    if (.not. associated(state%ss003)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ss003")
+     call variable_fail(trim(vars%variable(jvar)),"state%ss003")
 
    nvl = npz
    do_interp = .true.
@@ -879,7 +879,7 @@ do jvar = 1, vars%nv
   case ("seas4","ss004")
 
    if (.not. associated(state%ss004)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ss004")
+     call variable_fail(trim(vars%variable(jvar)),"state%ss004")
 
    nvl = npz
    do_interp = .true.
@@ -889,7 +889,7 @@ do jvar = 1, vars%nv
   case ("seas5","ss005")
 
    if (.not. associated(state%ss005)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%ss005")
+     call variable_fail(trim(vars%variable(jvar)),"state%ss005")
 
     nvl = npz
     do_interp = .true.
@@ -899,7 +899,7 @@ do jvar = 1, vars%nv
   case ("no3an1")
 
    if (.not. associated(state%no3an1)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%no3an1")
+     call variable_fail(trim(vars%variable(jvar)),"state%no3an1")
 
     nvl = npz
     do_interp = .true.
@@ -909,7 +909,7 @@ do jvar = 1, vars%nv
   case ("no3an2")
 
    if (.not. associated(state%no3an2)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%no3an2")
+     call variable_fail(trim(vars%variable(jvar)),"state%no3an2")
 
     nvl = npz
     do_interp = .true.
@@ -919,7 +919,7 @@ do jvar = 1, vars%nv
   case ("no3an3")
 
    if (.not. associated(state%no3an3)) &
-     call variable_fail(trim(vars%fldnames(jvar)),"state%no3an3")
+     call variable_fail(trim(vars%variable(jvar)),"state%no3an3")
 
     nvl = npz
     do_interp = .true.
@@ -928,13 +928,13 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%variable(jvar)))
 
   end select
 
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
-  call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
+  call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nvars())
 
 
   !Run some basic checks on the interpolation
@@ -1033,7 +1033,7 @@ implicit none
 type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(in)    :: inc
 type(ufo_locs),           intent(in)    :: locs
-type(oops_vars),          intent(in)    :: vars
+type(oops_variables),     intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
@@ -1085,14 +1085,14 @@ allocate(geovalm(isc:iec,jsc:jec,npz))
 
 ! Interpolate increment to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
-do jvar = 1, vars%nv
+do jvar = 1, vars%nvars()
 
   geovalm = 0.0_kind_real
   geovale = 0.0_kind_real
 
   do_interp = .false.
 
-  select case (trim(vars%fldnames(jvar)))
+  select case (trim(vars%variable(jvar)))
 
   case ("eastward_wind")
 
@@ -1125,9 +1125,9 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     if (.not.allocated(traj%t)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%t")
+      call variable_fail(trim(vars%variable(jvar)),"traj%t")
     if (.not.allocated(traj%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
+      call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     nvl = inc%npz
     do_interp = .true.
@@ -1137,7 +1137,7 @@ do jvar = 1, vars%nv
   case ("humidity_mixing_ratio")
 
     if (.not.allocated(traj%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
+      call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     nvl = inc%npz
     do_interp = .true.
@@ -1147,7 +1147,7 @@ do jvar = 1, vars%nv
   case ("mole_fraction_of_ozone_in_air")
 
     if (.not.allocated(traj%o3)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%o3")
+      call variable_fail(trim(vars%variable(jvar)),"traj%o3")
 
     nvl = npz
     do_interp = .true.
@@ -1297,14 +1297,14 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%variable(jvar)))
 
   end select
 
 
   ! Allocate geovals%val for this jvars
   ! -----------------------------------
-  call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nv)
+  call allocate_geovals_vals(gom,jvar,nvl,jvar==vars%nvars())
 
 
   !Run some basic checks on the interpolation
@@ -1354,7 +1354,7 @@ implicit none
 type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_increment),  intent(inout) :: inc
 type(ufo_locs),           intent(in)    :: locs
-type(oops_vars),          intent(in)    :: vars
+type(oops_variables),     intent(in)    :: vars
 type(ufo_geovals),        intent(inout) :: gom
 type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 
@@ -1409,13 +1409,13 @@ geovalm = 0.0_kind_real
 
 ! Interpolate increment to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
-do jvar = 1, vars%nv
+do jvar = 1, vars%nvars()
 
   ! PART 1, do_interp flag
   ! ----------------------
   do_interp = .false.
 
-  select case (trim(vars%fldnames(jvar)))
+  select case (trim(vars%variable(jvar)))
 
   case ("eastward_wind")
 
@@ -1561,7 +1561,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%variable(jvar)))
 
   end select
 
@@ -1591,7 +1591,7 @@ do jvar = 1, vars%nv
   !Part 3, back to increment variables
   !-----------------------------------
 
-  select case (trim(vars%fldnames(jvar)))
+  select case (trim(vars%variable(jvar)))
 
   case ("eastward_wind")
 
@@ -1608,7 +1608,7 @@ do jvar = 1, vars%nv
   case ("mole_fraction_of_ozone_in_air")
 
     if (.not.allocated(traj%o3)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%o3")
+      call variable_fail(trim(vars%variable(jvar)),"traj%o3")
 
   	do k = 1,npz
       do j = jsc,jec
@@ -1629,17 +1629,17 @@ do jvar = 1, vars%nv
   case ("virtual_temperature")
 
     if (.not.allocated(traj%t)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%t")
+      call variable_fail(trim(vars%variable(jvar)),"traj%t")
 
     if (.not.allocated(traj%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
+      call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     call T_to_Tv_ad(geom, traj%t, inc%t, traj%q, inc%q, geovalm )
 
   case ("humidity_mixing_ratio")
 
     if (.not.allocated(traj%q)) &
-      call variable_fail(trim(vars%fldnames(jvar)),"traj%q")
+      call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
 
@@ -1721,7 +1721,7 @@ do jvar = 1, vars%nv
 
   case default
 
-    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%fldnames(jvar)))
+    call abor1_ftn(trim(myname)//"unknown variable: "//trim(vars%variable(jvar)))
 
   end select
 
@@ -1859,10 +1859,10 @@ end subroutine initialize_bump
 
 subroutine getvalues_checks(cop, vars, gom, jvar)
 implicit none
-character(len=*),   intent(in) :: cop
-type(oops_vars),    intent(in) :: vars
-type(ufo_geovals),  intent(in) :: gom
-integer,            intent(in) :: jvar
+character(len=*),     intent(in) :: cop
+type(oops_variables), intent(in) :: vars
+type(ufo_geovals),    intent(in) :: gom
+integer,              intent(in) :: jvar
 
 character(len=255) :: cinfo
 
@@ -1870,13 +1870,13 @@ cinfo="fv3jedi_"//trim(cop)//" checks:"
 
 !Check things are the sizes we expect
 !------------------------------------
-if( gom%nvar .ne. vars%nv )then
+if( gom%nvar .ne. vars%nvars() )then
    call abor1_ftn(trim(cinfo)//" nvar wrong size")
 endif
 if( .not. allocated(gom%geovals) )then
    call abor1_ftn(trim(cinfo)//" geovals not allocated")
 endif
-if( size(gom%geovals) .ne. vars%nv )then
+if( size(gom%geovals) .ne. vars%nvars() )then
    call abor1_ftn(trim(cinfo)//" size geovals does not match number of vars from UFo")
 endif
 if (.not.gom%linit) then
