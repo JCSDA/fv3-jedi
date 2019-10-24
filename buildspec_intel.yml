@@ -170,7 +170,15 @@ phases:
         && cd fv3-jedi
         && make -j4"
 
-      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];then exit 1; fi
+      - export BUILD_STATUS="0"
+      - echo $BUILD_STATUS
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+
+      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+        then export BUILD_STATUS="1";
+        echo "Build passed";
+        fi
+      - echo $BUILD_STATUS
 
       - su - jcsdauser -c "export COMPILERVARS_ARCHITECTURE=intel64
         && export COMPILERVARS_PLATFORM=linux
@@ -188,8 +196,8 @@ phases:
     commands:
       - echo Executing post_build phase
       - echo $CODEBUILD_BUILD_SUCCEEDING
-      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
-        then echo "Build Failing";
+      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
+        then echo "Build passed, rerun failed tests";
         su - jcsdauser -c "export COMPILERVARS_ARCHITECTURE=intel64
         && export COMPILERVARS_PLATFORM=linux
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
@@ -200,7 +208,8 @@ phases:
         && export LD_LIBRARY_PATH=/usr/local/lib
         && export LIBRARY_PATH=/usr/local/lib
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
-        && cd /build_container/fv3-jedi/
+        && cd /build_container/fv3-jedi
+        && echo $LD_LIBRARY_PATH
         && ctest -VV --rerun-failed";
-        else echo "CODEBUILD_BUILD_SUCCEEDING=$CODEBUILD_BUILD_SUCCEEDING";
+        else echo "Build failed";
         fi
