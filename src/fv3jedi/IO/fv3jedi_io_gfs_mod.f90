@@ -16,14 +16,14 @@ private
 public fv3jedi_io_gfs
 
 type fv3jedi_io_gfs
- character(len=255) :: datapath_ti
- character(len=255) :: datapath_sp
- character(len=255) :: filename_spec
- character(len=255) :: filename_core
- character(len=255) :: filename_trcr
- character(len=255) :: filename_sfcd
- character(len=255) :: filename_sfcw
- character(len=255) :: filename_cplr
+ character(len=128) :: datapath_ti
+ character(len=128) :: datapath_sp
+ character(len=128) :: filename_spec
+ character(len=128) :: filename_core
+ character(len=128) :: filename_trcr
+ character(len=128) :: filename_sfcd
+ character(len=128) :: filename_sfcw
+ character(len=128) :: filename_cplr
  logical :: ps_in_file
  contains
   procedure :: setup
@@ -56,40 +56,56 @@ self%filename_sfcw = 'srf_wnd.nc'
 self%filename_cplr = 'coupler.res'
 
 call f_conf%get_or_die("datapath_tile",str)
+if (len(str) > 128) &
+  call abor1_ftn('fv3jedi_io_gfs_mod.setup: datapath_tile too long, max FMS char length= 128')
 self%datapath_ti = str
 deallocate(str)
 
 if (f_conf%has("filename_core")) then
    call f_conf%get_or_die("filename_core",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: filename_core too long, max FMS char length= 128')
    self%filename_core = str
    deallocate(str)
 endif
 if (f_conf%has("filename_trcr")) then
    call f_conf%get_or_die("filename_trcr",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: filename_trcr too long, max FMS char length= 128')
    self%filename_trcr = str
    deallocate(str)
 endif
 if (f_conf%has("filename_sfcd")) then
    call f_conf%get_or_die("filename_sfcd",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: filename_sfcd too long, max FMS char length= 128')
    self%filename_sfcd = str
    deallocate(str)
 endif
 if (f_conf%has("filename_sfcw")) then
    call f_conf%get_or_die("filename_sfcw",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: filename_sfcw too long, max FMS char length= 128')
    self%filename_sfcw = str
    deallocate(str)
 endif
 if (f_conf%has("filename_cplr")) then
    call f_conf%get_or_die("filename_cplr",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: filename_cplr too long, max FMS char length= 128')
    self%filename_cplr = str
    deallocate(str)
 endif
 
 if (f_conf%has("filename_spec")) then
    call f_conf%get_or_die("filename_spec",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: filename_spec too long, max FMS char length= 128')
    self%filename_spec = str
    deallocate(str)
    call f_conf%get_or_die("datapath_spec",str)
+   if (len(str) > 128) &
+     call abor1_ftn('fv3jedi_io_gfs_mod.setup: datapath_spec too long, max FMS char length= 128')
    self%datapath_sp = str
    deallocate(str)
 else
@@ -213,7 +229,7 @@ do var = 1,size(fields)
   compute_ps = 0
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg")
+  case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg","tv")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
@@ -222,7 +238,7 @@ do var = 1,size(fields)
     restart => restart_core
     read_core = .true.
     indexof_delp = var
-  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt",&
+  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh",&
        "o3mr","sulf","bc1","bc2","oc1","oc2",&
        "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
     filename = self%filename_trcr
@@ -340,11 +356,11 @@ read_sfcw = .false.
 do var = 1,size(fields)
 
   select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ","psi","chi","vort","divg")
+  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ","psi","chi","vort","divg","tv")
     filename = self%filename_core
     restart => restart_core
     read_core = .true.
-  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt",&
+  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh",&
        "o3mr","sulf","bc1","bc2","oc1","oc2",&
        "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
     filename = self%filename_trcr
