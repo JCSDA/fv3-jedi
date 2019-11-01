@@ -112,6 +112,7 @@ cost_function:
         covariance: diagonal
       ObsFilters:
       - Filter: Thinning
+        variables: [refractivity]
         random_seed: 123
         amount: 0.96
         apply_at_iterations: 0
@@ -132,6 +133,7 @@ cost_function:
         - refractivity
         threshold: 3.0
       - Filter: ROobserror
+        variables: [refractivity]
         variable: refractivity
         errmodel: GSI
   cost_type: 4D-Var
