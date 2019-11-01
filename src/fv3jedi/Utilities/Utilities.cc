@@ -34,9 +34,10 @@ void stageFMSFiles(const eckit::Configuration & conf) {
 
   if (world_rank == 0) {
     // User provided input files for this geom/state/model etc
+    delete_file("input.nml");
     if (conf.has("nml_file_mpp")) {
       oops::Log::debug() << "Staging input.nml" << std::endl;
-      std::string nml_file = conf.getString("nml_file");
+      std::string nml_file = conf.getString("nml_file_mpp");
       symlink(nml_file.c_str(), "./input.nml");
     } else {
       ABORT("nml_file_mpp not in configuration");
