@@ -11,6 +11,7 @@
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
+#include "fv3jedi/Run/Run.h"
 #include "fv3jedi/Utilities/Utilities.h"
 
 // -----------------------------------------------------------------------------
@@ -20,6 +21,15 @@ Geometry::Geometry(const eckit::Configuration & conf,
                    const eckit::mpi::Comm & comm) : comm_(comm) {
   const eckit::Configuration * configc = &conf;
   std::string commName = comm_.name();
+
+  static bool initialized = false;
+  if (!initialized) {
+    stageFMSFiles(conf);
+    fv3jedi_setup_f(&configc, commName.size(), commName.c_str());
+    removeFv3Files();
+    initialized = true;
+    oops::Log::debug() << "FMS MPP initialized on " << commName << std::endl;
+  }
 
   stageFv3Files(conf);
   fv3jedi_geo_setup_f90(keyGeom_, &configc, commName.size(), commName.c_str());

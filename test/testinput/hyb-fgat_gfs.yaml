@@ -1,5 +1,3 @@
-test_framework_runtime_config: --log_level=test_suite
-nml_file: Data/fv3files/fmsmpp.nml
 cost_function:
   Jb:
     Background:
@@ -263,6 +261,7 @@ output:
   first: PT0H
   frequency: PT1H
 resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
   nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc

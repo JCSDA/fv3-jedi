@@ -28,10 +28,26 @@ namespace eckit {
 namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
+void stageFMSFiles(const eckit::Configuration & conf) {
+  // Get processor ID
+  int world_rank = oops::mpi::comm().rank();
+
+  if (world_rank == 0) {
+    // User provided input files for this geom/state/model etc
+    if (conf.has("nml_file_mpp")) {
+      oops::Log::debug() << "Staging input.nml" << std::endl;
+      std::string nml_file = conf.getString("nml_file");
+      symlink(nml_file.c_str(), "./input.nml");
+    } else {
+      ABORT("nml_file_mpp not in configuration");
+    }
+  }
+  // Nobody moves until files are in place
+  oops::mpi::comm().barrier();
+}
+// -----------------------------------------------------------------------------
 
 void stageFv3Files(const eckit::Configuration &conf) {
-  oops::Log::trace() << "Staging files for FV3" << std::endl;
-
   // Get processor ID
   int world_rank = oops::mpi::comm().rank();
 
@@ -67,14 +83,11 @@ void stageFv3Files(const eckit::Configuration &conf) {
 
   // Nobody moves until files are in place
   oops::mpi::comm().barrier();
-  oops::Log::trace() << "End of staging files for FV3" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void removeFv3Files() {
-  oops::Log::trace() << "Removing staged fv3 files" << std::endl;
-
   // Get processor ID
   int world_rank = oops::mpi::comm().rank();
 
@@ -87,7 +100,6 @@ void removeFv3Files() {
     delete_file("field_table");
     delete_file("inputpert.nml");
   }
-  oops::Log::trace() << "End of removing staged fv3 files" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

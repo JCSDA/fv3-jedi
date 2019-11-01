@@ -1,5 +1,3 @@
-test_framework_runtime_config: --log_level=test_suite
-nml_file: Data/fv3files/fmsmpp.nml
 LinearVariableChangeTests:
 - varchange: StatsVariableChange
   toleranceInverse: 1.0e-12
@@ -46,6 +44,7 @@ LinearVariableChangeTests:
   outputVariables:
     variables: ["ua","va","t","ps","q","qi","ql","o3"]
 Geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
   nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
