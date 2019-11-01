@@ -243,7 +243,12 @@ endif
 ! Compute relative humidity
 ! -------------------------
 have_rh = .false.
-if (have_t .and. have_pressures .and. associated(state%q)) then
+
+if (associated(state%rh)) then
+  allocate(rh(isc:iec,jsc:jec,npz))
+  rh = state%rh 
+  have_rh = .true.
+elseif (have_t .and. have_pressures .and. associated(state%q)) then
 
   allocate(qsat(isc:iec,jsc:jec,npz))
   allocate(rh(isc:iec,jsc:jec,npz))
