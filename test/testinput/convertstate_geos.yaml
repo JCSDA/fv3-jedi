@@ -7,11 +7,14 @@ outputresolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
-input:
-  filetype: geos
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+inputVariables:
   variables: ["ud","vd","t","ps","q","qi","ql","o3mr"]
-output:
- filetype: geos
- datapath: Data/
- filename: geos.bkg.converted.
+states:
+- input:
+    filetype: geos
+    filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+    variables: ["ud","vd","t","ps","q","qi","ql","o3mr"]
+  output:
+   filetype: geos
+   datapath: Data/
+   filename: geos.bkg.converted.
