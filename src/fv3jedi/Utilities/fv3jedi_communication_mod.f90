@@ -86,14 +86,14 @@ allocate(vectorcounts(comm_size), vectordispls(comm_size))
  allocate(vector_g(npx_g*npy_g*6))
  call mpi_gatherv( vector_l, npx_l*npy_l, mpi_double_precision, &
                    vector_g, vectorcounts, vectordispls, mpi_double_precision, &
-                   0, comm, ierr)
+                   gproc, comm, ierr)
  deallocate(vector_l,vectorcounts,vectordispls)
 
 
  ! Unpack global vector into array
  ! -------------------------------
 
- if (comm_rank == 0) then
+ if (comm_rank == gproc) then
    n = 0
    do jc = 1,comm_size
      do jj = jsc_l(jc),jec_l(jc)
@@ -172,7 +172,7 @@ subroutine scatter_field(geom,comm,gproc,field_in,field_out)
    vectorcounts(jc) = n - vectordispls(jc)
  enddo
 
- if (comm_rank == 0) then
+ if (comm_rank == gproc) then
    n = 0
    do jc = 1,comm_size
      do jj = jsc_l(jc),jec_l(jc)
@@ -191,7 +191,7 @@ subroutine scatter_field(geom,comm,gproc,field_in,field_out)
 
  call mpi_scatterv( vector_g, vectorcounts, vectordispls, mpi_double_precision, &
                     vector_l, npx_l*npy_l, mpi_double_precision, &
-                    0, comm, ierr )
+                    gproc, comm, ierr )
 
   deallocate(vector_g,vectorcounts,vectordispls)
 

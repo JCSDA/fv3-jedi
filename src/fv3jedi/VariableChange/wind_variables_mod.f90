@@ -5,8 +5,6 @@
 
 module wind_vt_mod
 
-use fckit_mpi_module, only: fckit_mpi_comm
-
 use fv3jedi_constants_mod, only: pi, rad2deg
 use fv3jedi_geom_mod,  only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
@@ -317,7 +315,7 @@ end subroutine psichi_to_uava_adm
 
 !----------------------------------------------------------------------------
 
-subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,vor_out,div_out)
+subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,lsize,lev_start,lev_final,vor_out,div_out)
 
  implicit none
  type(fv3jedi_geom),             intent(inout) :: geom
@@ -327,10 +325,11 @@ subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,vor_out,div_out)
  real(kind=kind_real),           intent(inout) :: v_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Dgrid winds (v)
  real(kind=kind_real),           intent(out)   ::  psi(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Stream function
  real(kind=kind_real),           intent(out)   ::  chi(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Velocity potential
+ integer,                        intent(in)    :: lsize
+ integer,                        intent(in)    :: lev_start(lsize),lev_final(lsize)
  real(kind=kind_real), optional, intent(out)   :: vor_out(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real), optional, intent(out)   :: div_out(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
 
- type(fckit_mpi_comm) :: f_comm
  integer :: i,j,k
  real(kind=kind_real), allocatable, dimension(:,:,:) :: u, v
  real(kind=kind_real), allocatable, dimension(:,:,:) :: uc, vc
@@ -338,12 +337,16 @@ subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,vor_out,div_out)
 
  real(kind=kind_real), allocatable, dimension(:,:,:) :: vor, div
 
- real(kind=kind_real), allocatable, dimension(:,:,:) :: vorg, divg !Global level of vor and div
- real(kind=kind_real), allocatable, dimension(:,:,:) :: psig, chig !Global level of psi and chi
+ real(kind=kind_real), allocatable, dimension(:,:,:) :: vorgcomm, divgcomm
+ real(kind=kind_real), allocatable, dimension(:,:,:) :: psigcomm, chigcomm
+ real(kind=kind_real), allocatable, dimension(:,:,:,:) :: vorg, divg !Global level of vor and div
+ real(kind=kind_real), allocatable, dimension(:,:,:,:) :: psig, chig !Global level of psi and chi
 
  real(kind=kind_real), allocatable, dimension(:) :: voru, divu     !Unstructured vor and div
  real(kind=kind_real), allocatable, dimension(:) :: psiu, chiu     !Unstructured psi and chi
 
+ integer :: ranki, n
+ integer, allocatable :: lev_proc(:)
 
  ! ------------------------------------------ !
  ! Convert D-grid winds to A-grid psi and chi !
@@ -429,34 +432,54 @@ subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,vor_out,div_out)
  ! Gather voricity and divergence to one processor and compute psi and chi
  ! -----------------------------------------------------------------------
 
- f_comm = geom%f_comm
+ ranki = geom%f_comm%rank() + 1
 
- allocate(vorg(1:geom%npx-1,1:geom%npy-1,6))
- allocate(divg(1:geom%npx-1,1:geom%npy-1,6))
+ allocate(vorgcomm(1:geom%npx-1,1:geom%npy-1,6))
+ allocate(divgcomm(1:geom%npx-1,1:geom%npy-1,6))
 
- allocate(psig(1:geom%npx-1,1:geom%npy-1,6))
- allocate(chig(1:geom%npx-1,1:geom%npy-1,6))
+ if (ranki <= lsize) then
+   allocate(vorg(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+   allocate(divg(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+   allocate(psig(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+   allocate(chig(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
 
- if (f_comm%rank() == 0) then
    allocate(voru(grid%nface(grid%ngrids)))
    allocate(divu(grid%nface(grid%ngrids)))
-
    allocate(psiu(grid%nface(grid%ngrids)))
    allocate(chiu(grid%nface(grid%ngrids)))
  endif
 
+ ! Processor that each level is associated with
+ allocate(lev_proc(geom%npz))
+ do k = 1,geom%npz
+   do n = 1,lsize
+     if (k >= lev_start(n) .and. k <= lev_final(n)) then
+       lev_proc(k) = n
+     endif
+   enddo
+ enddo
+
+ ! Gather field to respective processor
  do k=1,geom%npz
+   call gather_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,vor(:,:,k),vorgcomm)
+   call gather_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,div(:,:,k),divgcomm)
+   if (ranki == lev_proc(k)) then
+     vorg(:,:,:,k) = vorgcomm
+     divg(:,:,:,k) = divgcomm
+   endif
+ enddo
 
-   ! Gather field from all to root
-   call gather_field(geom,f_comm%communicator(),0,vor(:,:,k),vorg)
-   call gather_field(geom,f_comm%communicator(),0,div(:,:,k),divg)
+ deallocate(vorgcomm,divgcomm)
 
-   if (f_comm%rank() == 0) then
+ ! Loop over level and compute psi/chi
+ if (ranki <= lsize) then ! Only processors with a level
+   do k = lev_start(ranki),lev_final(ranki)
 
-     print*, "femps, model level:", k
+     if (geom%f_comm%rank()==0) &
+       print*, "Doing femps level ", k, ". Proc range:",lev_start(ranki),"-",lev_final(ranki)
 
-     call fv3field_to_ufield(grid,geom%npx-1,vorg,voru)
-     call fv3field_to_ufield(grid,geom%npx-1,divg,divu)
+     call fv3field_to_ufield(grid,geom%npx-1,vorg(:,:,:,k),voru)
+     call fv3field_to_ufield(grid,geom%npx-1,divg(:,:,:,k),divu)
 
      ! Convert to area integrals, required by femps
      voru = voru*grid%farea(:,grid%ngrids)
@@ -470,22 +493,30 @@ subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,vor_out,div_out)
      psiu = psiu/grid%farea(:,grid%ngrids)
      chiu = chiu/grid%farea(:,grid%ngrids)
 
-     call ufield_to_fv3field(grid,geom%npx-1,psiu,psig)
-     call ufield_to_fv3field(grid,geom%npx-1,chiu,chig)
+     call ufield_to_fv3field(grid,geom%npx-1,psiu,psig(:,:,:,k))
+     call ufield_to_fv3field(grid,geom%npx-1,chiu,chig(:,:,:,k))
 
+   enddo
+ endif
+
+ ! Scatter field from respective processor
+ allocate(psigcomm(1:geom%npx-1,1:geom%npy-1,6))
+ allocate(chigcomm(1:geom%npx-1,1:geom%npy-1,6))
+
+ do k=1,geom%npz
+   if (ranki == lev_proc(k)) then
+     psigcomm = psig(:,:,:,k)
+     chigcomm = chig(:,:,:,k)
    endif
-
-   ! Scatter field from root to all
-   call scatter_field(geom,f_comm%communicator(),0,psig,psi(:,:,k))
-   call scatter_field(geom,f_comm%communicator(),0,chig,chi(:,:,k))
-
+   call scatter_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,psigcomm,psi(:,:,k))
+   call scatter_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,chigcomm,chi(:,:,k))
  enddo
 
 end subroutine udvd_to_psichi
 
 ! ------------------------------------------------------------------------------
 
-subroutine psichi_to_vortdivg(geom,grid,oprs,psi,chi,vor,div)
+subroutine psichi_to_vortdivg(geom,grid,oprs,psi,chi,lsize,lev_start,lev_final,vor,div)
 
  implicit none
  type(fv3jedi_geom),             intent(inout) :: geom
@@ -493,48 +524,69 @@ subroutine psichi_to_vortdivg(geom,grid,oprs,psi,chi,vor,div)
  type(fempsoprs),                intent(in)    :: oprs
  real(kind=kind_real),           intent(in)    ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
  real(kind=kind_real),           intent(in)    ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
+ integer,                        intent(in)    :: lsize
+ integer,                        intent(in)    :: lev_start(lsize),lev_final(lsize)
  real(kind=kind_real), optional, intent(out)   ::  vor(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Vorticity
  real(kind=kind_real), optional, intent(out)   ::  div(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Divergence
 
- type(fckit_mpi_comm) :: f_comm
  integer :: k
- real(kind=kind_real), allocatable, dimension(:,:,:) :: vorg, divg !Global level of vor and div
- real(kind=kind_real), allocatable, dimension(:,:,:) :: psig, chig !Global level of psi and chi
+ real(kind=kind_real), allocatable, dimension(:,:,:) :: vorgcomm, divgcomm
+ real(kind=kind_real), allocatable, dimension(:,:,:) :: psigcomm, chigcomm
+ real(kind=kind_real), allocatable, dimension(:,:,:,:) :: vorg, divg !Global level of vor and div
+ real(kind=kind_real), allocatable, dimension(:,:,:,:) :: psig, chig !Global level of psi and chi
  real(kind=kind_real), allocatable, dimension(:) :: voru, divu     !Unstructured vor and div
  real(kind=kind_real), allocatable, dimension(:) :: psiu, chiu     !Unstructured psi and chi
 
+ integer :: ranki, n
+ integer, allocatable :: lev_proc(:)
 
  ! Gather voricity and divergence to one processor and compute psi and chi
  ! -----------------------------------------------------------------------
 
- f_comm = geom%f_comm
+ ranki = geom%f_comm%rank() + 1
 
- allocate(vorg(1:geom%npx-1,1:geom%npy-1,6))
- allocate(divg(1:geom%npx-1,1:geom%npy-1,6))
+  if (ranki <= lsize) then
+    allocate(vorg(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+    allocate(divg(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+    allocate(psig(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+    allocate(chig(1:geom%npx-1,1:geom%npy-1,6,lev_start(ranki):lev_final(ranki)))
+    allocate(voru(grid%nface(grid%ngrids)))
+    allocate(divu(grid%nface(grid%ngrids)))
+    allocate(psiu(grid%nface(grid%ngrids)))
+    allocate(chiu(grid%nface(grid%ngrids)))
+  endif
 
- allocate(psig(1:geom%npx-1,1:geom%npy-1,6))
- allocate(chig(1:geom%npx-1,1:geom%npy-1,6))
+ ! Processor that each level is associated with
+ allocate(lev_proc(geom%npz))
+ do k = 1,geom%npz
+   do n = 1,lsize
+     if (k >= lev_start(n) .and. k <= lev_final(n)) then
+       lev_proc(k) = n
+     endif
+   enddo
+ enddo
 
- if (f_comm%rank() == 0) then
-   allocate(voru(grid%nface(grid%ngrids)))
-   allocate(divu(grid%nface(grid%ngrids)))
-
-   allocate(psiu(grid%nface(grid%ngrids)))
-   allocate(chiu(grid%nface(grid%ngrids)))
- endif
-
+ allocate(psigcomm(1:geom%npx-1,1:geom%npy-1,6))
+ allocate(chigcomm(1:geom%npx-1,1:geom%npy-1,6))
  do k=1,geom%npz
+   call gather_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,psi(:,:,k),psigcomm)
+   call gather_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,chi(:,:,k),chigcomm)
+   if (ranki == lev_proc(k)) then
+     psig(:,:,:,k) = psigcomm
+     chig(:,:,:,k) = chigcomm
+   endif
+ enddo
+ deallocate(psigcomm,chigcomm)
 
-   ! Gather field from all to root
-   call gather_field(geom,f_comm%communicator(),0,psi(:,:,k),psig)
-   call gather_field(geom,f_comm%communicator(),0,chi(:,:,k),chig)
+ ! Loop over level and compute vort/divg
+ if (ranki <= lsize) then ! Only processors with a level
+   do k = lev_start(ranki),lev_final(ranki)
 
-   if (f_comm%rank() == 0) then
+     if (geom%f_comm%rank()==0) &
+       print*, "Doing femps level ", k, ". Proc range:",lev_start(ranki),"-",lev_final(ranki)
 
-     print*, "femps, model level:", k
-
-     call fv3field_to_ufield(grid,geom%npx-1,psig,psiu)
-     call fv3field_to_ufield(grid,geom%npx-1,chig,chiu)
+     call fv3field_to_ufield(grid,geom%npx-1,psig(:,:,:,k),psiu)
+     call fv3field_to_ufield(grid,geom%npx-1,chig(:,:,:,k),chiu)
 
      ! Convert to area integrals, required by femps
      psiu = psiu*grid%farea(:,grid%ngrids)
@@ -548,16 +600,24 @@ subroutine psichi_to_vortdivg(geom,grid,oprs,psi,chi,vor,div)
      voru = voru/grid%farea(:,grid%ngrids)
      divu = divu/grid%farea(:,grid%ngrids)
 
-     call ufield_to_fv3field(grid,geom%npx-1,voru,vorg)
-     call ufield_to_fv3field(grid,geom%npx-1,divu,divg)
+     call ufield_to_fv3field(grid,geom%npx-1,voru,vorg(:,:,:,k))
+     call ufield_to_fv3field(grid,geom%npx-1,divu,divg(:,:,:,k))
 
+   enddo
+ endif
+
+ ! Scatter field from root to all
+ allocate(vorgcomm(1:geom%npx-1,1:geom%npy-1,6))
+ allocate(divgcomm(1:geom%npx-1,1:geom%npy-1,6))
+ do k=1,geom%npz
+   if (ranki == lev_proc(k)) then
+     vorgcomm = vorg(:,:,:,k)
+     divgcomm = divg(:,:,:,k)
    endif
-
-   ! Scatter field from root to all
-   call scatter_field(geom,f_comm%communicator(),0,vorg,vor(:,:,k))
-   call scatter_field(geom,f_comm%communicator(),0,divg,div(:,:,k))
-
+   call scatter_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,vorgcomm,vor(:,:,k))
+   call scatter_field(geom,geom%f_comm%communicator(),lev_proc(k)-1,divgcomm,div(:,:,k))
  enddo
+ deallocate(vorgcomm,divgcomm)
 
 end subroutine psichi_to_vortdivg
 

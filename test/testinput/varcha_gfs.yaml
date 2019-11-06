@@ -17,6 +17,7 @@ VariableChangeTests:
     toleranceInverse: 1.0e-4
     femps_iterations: 50
     femps_ngrids: 2
+    femps_levelprocs: -1
     femps_path2fv3gridfiles: Data/femps
     inverseFirst: true #Switched input and output variables
     inputVariables:

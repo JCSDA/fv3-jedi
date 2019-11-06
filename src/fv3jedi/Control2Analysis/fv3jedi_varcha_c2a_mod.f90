@@ -11,7 +11,6 @@ use datetime_mod
 
 use fckit_log_module, only : fckit_log
 use fckit_configuration_module, only: fckit_configuration
-use fckit_mpi_module, only: fckit_mpi_comm
 
 use fv3jedi_kinds_mod,   only: kind_real
 use fv3jedi_geom_mod,    only: fv3jedi_geom
@@ -42,7 +41,8 @@ public :: changevarinverse
 type :: fv3jedi_varcha_c2a
   type(fempsgrid) :: grid
   type(fempsoprs) :: oprs
-  type(fckit_mpi_comm) :: f_comm
+  integer :: lprocs
+  integer, allocatable :: lev_start(:), lev_final(:)
 end type fv3jedi_varcha_c2a
 
 ! ------------------------------------------------------------------------------
@@ -58,26 +58,71 @@ type(fv3jedi_varcha_c2a),  intent(inout) :: self
 type(fv3jedi_geom),        intent(inout) :: geom
 type(fckit_configuration), intent(in)    :: conf
 
-integer :: ngrids, niter
+integer :: ngrids, niter, lprocs, lstart
+logical :: check_convergence
 character(len=:), allocatable :: str
 character(len=2055) :: path2fv3gridfiles
+
+integer :: n, levs_per_proc
 
 ! Grid and operators for the femps Poisson solver
 ! -----------------------------------------------
 
+! Configuration
+call conf%get_or_die("femps_iterations",niter)
+call conf%get_or_die("femps_ngrids",ngrids)
+call conf%get_or_die("femps_path2fv3gridfiles",str); path2fv3gridfiles = str
+if( .not. conf%get('femps_levelprocs',lprocs) ) then
+  lprocs = -1
+endif
+if( .not. conf%get('femps_checkconvergence',check_convergence) ) then
+  check_convergence = .false.
+endif
 
-! Pointer to fv3jedi geometry communicator
-self%f_comm = geom%f_comm
+! Processors that will do the work
+! --------------------------------
+lprocs = min(lprocs,geom%f_comm%size())
+lprocs = min(lprocs,geom%npz)
 
-! Solver only works on one PE
-if (self%f_comm%rank() == 0) then
+if (lprocs == -1) then
+  self%lprocs = min(geom%npz,geom%f_comm%size())
+else
+  self%lprocs = lprocs
+endif
 
-  ! Configuration
-  call conf%get_or_die("femps_iterations",niter)
-  call conf%get_or_die("femps_ngrids",ngrids)
-  call conf%get_or_die("femps_path2fv3gridfiles",str); path2fv3gridfiles = str
+if (geom%f_comm%rank() == 0 ) print*, "Running femps with ", self%lprocs ," processors."
 
-  call self%grid%setup('cs',ngrids=ngrids,cube=geom%npx-1,niter=niter)
+allocate(self%lev_start(self%lprocs))
+allocate(self%lev_final(self%lprocs))
+
+if (self%lprocs == geom%npz) then
+  do n = 1,self%lprocs
+    self%lev_start(n) = n
+    self%lev_final(n) = n
+  enddo
+else
+  levs_per_proc = floor(real(geom%npz,kind_real)/real(self%lprocs,kind_real))
+  lstart = 0
+  do n = 1,self%lprocs
+    self%lev_start(n) = lstart+1
+    self%lev_final(n) = self%lev_start(n) + levs_per_proc - 1
+    if (n .le. mod(geom%npz, self%lprocs)) self%lev_final(n) = self%lev_final(n) + 1
+    lstart = self%lev_final(n)
+  enddo
+endif
+
+if (self%lev_final(self%lprocs) .ne. geom%npz) &
+  call abor1_ftn("fv3jedi_varcha_c2a_mod.create: last level not equal to number of levels.")
+
+! Processors doing the work need grid and operators
+if (geom%f_comm%rank() < self%lprocs ) then
+
+  call self%grid%setup('cs',ngrids=ngrids,cube=geom%npx-1,niter=niter,&
+                       comm = geom%f_comm%communicator(), &
+                       rank = geom%f_comm%rank(), &
+                       csize = geom%f_comm%size(), &
+                       check_convergence = check_convergence )
+
   call fv3grid_to_ugrid(self%grid,path2fv3gridfiles)
 
   ! Build the connectivity and extra geom
@@ -85,6 +130,9 @@ if (self%f_comm%rank() == 0) then
 
   ! Perform all the setup
   call preliminary(self%grid,self%oprs)
+
+  ! Partial delete of operators not needed
+  call self%oprs%pdelete()
 
 endif
 
@@ -97,10 +145,10 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_varcha_c2a), intent(inout) :: self
 
-if (self%f_comm%rank() == 0) then
-  call self%oprs%delete()
-  call self%grid%delete()
-endif
+call self%oprs%delete()
+call self%grid%delete()
+
+deallocate(self%lev_start,self%lev_final)
 
 end subroutine delete
 
@@ -121,7 +169,8 @@ call psichi_to_udvd(geom,xctl%psi,xctl%chi,xana%ud,xana%vd)
 ! For testing Poisson solver recover vorticity and divergence
 ! -----------------------------------------------------------
 if (associated(xana%vort) .and. associated(xana%divg)) then
-  call psichi_to_vortdivg(geom,self%grid,self%oprs,xctl%psi,xctl%chi,xana%vort,xana%divg)
+  call psichi_to_vortdivg(geom,self%grid,self%oprs,xctl%psi,xctl%chi,self%lprocs,self%lev_start,&
+                          self%lev_final,xana%vort,xana%divg)
 endif
 
 ! Copied variables
@@ -147,12 +196,15 @@ type(fv3jedi_state),      intent(inout) :: xctl
 
 real(kind=kind_real) :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
-! A-grid winds to stream func and velocity potential
+! D-grid winds to stream func and velocity potential
 ! --------------------------------------------------
 if (associated(xctl%vort) .and. associated(xctl%divg)) then
-  call udvd_to_psichi(geom,self%grid,self%oprs,xana%ud,xana%vd,xctl%psi,xctl%chi,xctl%vort,xctl%divg)
+  call udvd_to_psichi(geom,self%grid,self%oprs,xana%ud,xana%vd,xctl%psi,xctl%chi,&
+                      self%lprocs, self%lev_start, self%lev_final, &
+                      xctl%vort,xctl%divg)
 else
-  call udvd_to_psichi(geom,self%grid,self%oprs,xana%ud,xana%vd,xctl%psi,xctl%chi)
+  call udvd_to_psichi(geom,self%grid,self%oprs,xana%ud,xana%vd,xctl%psi,xctl%chi,&
+                      self%lprocs, self%lev_start, self%lev_final)
 endif
 
 ! Temperature to virtual temperature

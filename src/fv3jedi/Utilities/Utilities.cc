@@ -101,6 +101,8 @@ void removeFv3Files() {
     delete_file("field_table");
     delete_file("inputpert.nml");
   }
+  // Nobody moves until files are deleted
+  oops::mpi::comm().barrier();
 }
 
 // -----------------------------------------------------------------------------

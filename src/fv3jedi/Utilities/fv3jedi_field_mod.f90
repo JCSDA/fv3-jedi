@@ -68,13 +68,10 @@ if(.not.self%lalloc) then
 
   if (staggerloc == center) then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
-    allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
   elseif (staggerloc == north) then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
-    allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
   elseif (staggerloc == east) then
     allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
-    allocate(arraypointer(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
   endif
 
 endif
@@ -104,14 +101,6 @@ subroutine array_pointer(self,arraypointer)
 implicit none
 class(fv3jedi_field), target,  intent(in)    :: self
 real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
-
-if (self%staggerloc == center) then
-  allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
-elseif (self%staggerloc == north) then
-  allocate(arraypointer(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
-elseif (self%staggerloc == east) then
-  allocate(arraypointer(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
-endif
 
 arraypointer => self%array
 

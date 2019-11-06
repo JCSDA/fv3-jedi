@@ -14,8 +14,6 @@ use netcdf
 use fv3jedi_kinds_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
-use fv3jedi_io_gfs_mod, only: fv3jedi_io_gfs
-use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 use fv3jedi_increment_mod, only: fv3jedi_increment
 
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
