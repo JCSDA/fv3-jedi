@@ -8,6 +8,7 @@
 #ifndef FV3JEDI_RUN_RUN_INTERFACE_H_
 #define FV3JEDI_RUN_RUN_INTERFACE_H_
 
+#include "eckit/mpi/Comm.h"
 #include "Run.interface.h"
 
 // Forward declarations
@@ -25,7 +26,7 @@ namespace fv3jedi {
 extern "C" {
 
   void fv3jedi_setup_f(const eckit::Configuration * const *,
-                       const int &, const char *);
+                       const eckit::mpi::Comm *);
   void fv3jedi_finalize_f();
 
 }  // extern "C"

@@ -9,7 +9,6 @@ module fv3jedi_setup_mod
 
 use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
-use string_f_c_mod
 
 use mpp_mod,         only: mpp_init, mpp_exit
 use mpp_domains_mod, only: mpp_domains_init, mpp_domains_exit
@@ -28,26 +27,22 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_setup(c_conf, lcname, cname) bind(c,name='fv3jedi_setup_f')
+subroutine fv3jedi_setup(c_conf, c_comm) bind(c,name='fv3jedi_setup_f')
 
 implicit none
 
-type(c_ptr), intent(in) :: c_conf
-integer(c_int),intent(in) :: lcname                        !< comm name size
-character(kind=c_char,len=1),intent(in) :: cname(lcname+1) !< comm name
+type(c_ptr), intent(in)        :: c_conf
+type(c_ptr), value, intent(in) :: c_comm
 
 integer :: stackmax = 4000000
 type(fckit_mpi_comm) :: f_comm
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
-character(len=lcname) :: name
-
-call c_f_string(cname, name)
 
 ! Fortran configuration
 ! ---------------------
 f_conf = fckit_configuration(c_conf)
-f_comm = fckit_mpi_comm(name)
+f_comm = fckit_mpi_comm(c_comm)
 
 call mpp_init(localcomm=f_comm%communicator())
 call mpp_domains_init
