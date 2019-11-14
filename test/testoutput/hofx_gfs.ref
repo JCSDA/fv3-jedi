@@ -1,17 +1,17 @@
 Test     : Initial state: 
 Test     : Final state: 
 Test     : H(x): 
-Test     : SeaSurfaceTemp nobs= 200 Min=269.78, Max=275.129, RMS=272.781
-Test     : Aircraft nobs= 6294 Min=-21.7939, Max=300.117, RMS=146.193
-Test     : Radiosonde nobs= 2922 Min=-39.3451, Max=301.526, RMS=139.31
-Test     : AMSUA-NOAA19 nobs= 1500 Min=145.845, Max=295.076, RMS=231.099
+Test     : SeaSurfaceTemp nobs= 200 Min=269.78, Max=275.129, RMS=272.841
+Test     : Aircraft nobs= 6294 Min=-21.7939, Max=300.117, RMS=146.195
+Test     : Radiosonde nobs= 2922 Min=-39.3451, Max=301.526, RMS=139.321
+Test     : AMSUA-NOAA19 nobs= 1500 Min=147.619, Max=295.076, RMS=231.137
 Test     : AIRS-AQUA nobs= 300 Min=206.931, Max=226.164, RMS=217.83
 Test     : GnssroRef nobs= 20 Min=0.221891, Max=343.691, RMS=129.739
-Test     : HIRS4-METOPA nobs= 1500 Min=213.723, Max=295.656, RMS=248.54
-Test     : CRIS-NPP nobs= 9900 Min=210.699, Max=299.935, RMS=247.726
-Test     : Satwind nobs= 198 Min=-14.1784, Max=47.8937, RMS=10.18
-Test     : MHS-N19 nobs= 500 Min=162.013, Max=294.587, RMS=254.303
-Test     : IASI-METOPA nobs= 700 Min=205.571, Max=237.798, RMS=221.537
-Test     : MHS-NOAA19 nobs= 500 Min=162.013, Max=294.587, RMS=254.303
-Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.83, Max=248.428, RMS=237.777
+Test     : HIRS4-METOPA nobs= 1500 Min=213.723, Max=295.656, RMS=248.56
+Test     : CRIS-NPP nobs= 9900 Min=210.722, Max=299.935, RMS=247.731
+Test     : Satwind nobs= 198 Min=-14.1784, Max=47.8937, RMS=10.1831
+Test     : MHS-N19 nobs= 500 Min=162.013, Max=294.587, RMS=254.333
+Test     : IASI-METOPA nobs= 700 Min=205.571, Max=237.798, RMS=221.538
+Test     : MHS-NOAA19 nobs= 500 Min=162.013, Max=294.587, RMS=254.333
+Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.83, Max=248.428, RMS=237.847
 Test     : End H(x)

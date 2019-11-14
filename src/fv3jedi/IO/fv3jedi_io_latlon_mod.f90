@@ -431,7 +431,7 @@ mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
                                         [mod_num] )
 mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
                                          geom%jsc:geom%jec),     &
-                                        [mod_num] ) - 180.0_kind_real
+                                        [mod_num] )
 
 
 ! Namelist options
@@ -460,7 +460,7 @@ lmask = .true.       ! Mask
 ! Initialize BUMP
 ! ---------------
 call bump%setup_online( f_comm,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs_nlocs,lonobs=locs_lon(:)-180.0_kind_real,latobs=locs_lat(:) )
+                        nobs=locs_nlocs,lonobs=locs_lon(:),latobs=locs_lat(:) )
 
 !Run BUMP drivers
 call bump%run_drivers
