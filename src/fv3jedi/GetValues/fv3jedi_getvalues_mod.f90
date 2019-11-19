@@ -477,6 +477,17 @@ do jvar = 1, vars%nvars()
     geovale = prsi
     geoval => geovale
 
+  case ("air_pressure_thickness")
+
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%variable(jvar)),"delp")
+
+    nvl = npz 
+    do_interp = .true.
+    geovale = delp
+    geoval => geovale
+  
+
   case ("geopotential_height")
 
     if (.not. have_t) &
@@ -751,7 +762,7 @@ do jvar = 1, vars%nvars()
    do_interp = .false.
    obs_state(:,1) = real(soil_type,kind_real)
 
-  case ("sulf","so4")
+  case ("sulf","so4","mass_fraction_of_sulfate_in_air")
 
    if (.not. associated(state%so4)) &
      call variable_fail(trim(vars%variable(jvar)),"state%so4")
@@ -761,7 +772,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%so4,0.0_kind_real)
    geoval => geovalm
 
-  case ("bc1","bcphobic")
+  case ("bc1","bcphobic","mass_fraction_of_hydrophobic_black_carbon_in_air")
 
    if (.not. associated(state%bcphobic)) &
      call variable_fail(trim(vars%variable(jvar)),"state%bcphobic")
@@ -771,7 +782,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%bcphobic,0.0_kind_real)
    geoval => geovalm
 
-  case ("bc2","bcphilic")
+  case ("bc2","bcphilic","mass_fraction_of_hydrophilic_black_carbon_in_air")
 
    if (.not. associated(state%bcphilic)) &
      call variable_fail(trim(vars%variable(jvar)),"state%bcphilic")
@@ -781,7 +792,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%bcphilic,0.0_kind_real)
    geoval => geovalm
 
-  case ("oc1","ocphobic")
+  case ("oc1","ocphobic","mass_fraction_of_hydrophobic_organic_carbon_in_air")
 
    if (.not. associated(state%ocphobic)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ocphobic")
@@ -791,7 +802,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%ocphobic,0.0_kind_real)
    geoval => geovalm
 
-  case ("oc2","ocphilic")
+  case ("oc2","ocphilic","mass_fraction_of_hydrophilic_organic_carbon_in_air")
 
    if (.not. associated(state%ocphilic)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ocphilic")
@@ -801,7 +812,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%ocphilic,0.0_kind_real)
    geoval => geovalm
 
-  case ("dust1","du001")
+  case ("dust1","du001","mass_fraction_of_dust001_in_air")
 
    if (.not. associated(state%du001)) &
      call variable_fail(trim(vars%variable(jvar)),"state%du001")
@@ -811,7 +822,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%du001,0.0_kind_real)
    geoval => geovalm
 
-  case ("dust2","du002")
+  case ("dust2","du002","mass_fraction_of_dust002_in_air")
 
    if (.not. associated(state%du002)) &
      call variable_fail(trim(vars%variable(jvar)),"state%du002")
@@ -821,7 +832,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%du002,0.0_kind_real)
    geoval => geovalm
 
-  case ("dust3","du003")
+  case ("dust3","du003","mass_fraction_of_dust003_in_air")
 
    if (.not. associated(state%du003)) &
      call variable_fail(trim(vars%variable(jvar)),"state%du003")
@@ -831,7 +842,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%du003,0.0_kind_real)
    geoval => geovalm
 
-  case ("dust4","du004")
+  case ("dust4","du004","mass_fraction_of_dust004_in_air")
 
    if (.not. associated(state%du004)) &
      call variable_fail(trim(vars%variable(jvar)),"state%du004")
@@ -841,7 +852,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%du004,0.0_kind_real)
    geoval => geovalm
 
-  case ("dust5","du005")
+  case ("dust5","du005","mass_fraction_of_dust005_in_air")
 
    if (.not. associated(state%du005)) &
      call variable_fail(trim(vars%variable(jvar)),"state%du005")
@@ -851,7 +862,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%du005,0.0_kind_real)
    geoval => geovalm
 
-  case ("seas1","ss001")
+  case ("seas1","ss001","mass_fraction_of_sea_salt001_in_air")
 
    if (.not. associated(state%ss001)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ss001")
@@ -861,7 +872,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%ss001,0.0_kind_real)
    geoval => geovalm
 
-  case ("seas2","ss002")
+  case ("seas2","ss002","mass_fraction_of_sea_salt002_in_air")
 
    if (.not. associated(state%ss002)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ss002")
@@ -871,7 +882,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%ss002,0.0_kind_real)
    geoval => geovalm
 
-  case ("seas3","ss003")
+  case ("seas3","ss003","mass_fraction_of_sea_salt003_in_air")
 
    if (.not. associated(state%ss003)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ss003")
@@ -881,7 +892,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%ss003,0.0_kind_real)
    geoval => geovalm
 
-  case ("seas4","ss004")
+  case ("seas4","ss004","mass_fraction_of_sea_salt004_in_air")
 
    if (.not. associated(state%ss004)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ss004")
@@ -891,7 +902,7 @@ do jvar = 1, vars%nvars()
    geovalm = max(state%ss004,0.0_kind_real)
    geoval => geovalm
 
-  case ("seas5","ss005")
+  case ("seas5","ss005","mass_fraction_of_sea_salt005_in_air")
 
    if (.not. associated(state%ss005)) &
      call variable_fail(trim(vars%variable(jvar)),"state%ss005")
@@ -901,7 +912,7 @@ do jvar = 1, vars%nvars()
     geovalm = max(state%ss005,0.0_kind_real)
     geoval => geovalm
 
-  case ("no3an1")
+  case ("no3an1","mass_fraction_of_nitrate001_in_air")
 
    if (.not. associated(state%no3an1)) &
      call variable_fail(trim(vars%variable(jvar)),"state%no3an1")
@@ -911,7 +922,7 @@ do jvar = 1, vars%nvars()
     geovalm = max(state%no3an1,0.0_kind_real)
     geoval => geovalm
 
-  case ("no3an2")
+  case ("no3an2", "mass_fraction_of_nitrate002_in_air")
 
    if (.not. associated(state%no3an2)) &
      call variable_fail(trim(vars%variable(jvar)),"state%no3an2")
@@ -921,7 +932,7 @@ do jvar = 1, vars%nvars()
     geovalm = max(state%no3an2,0.0_kind_real)
     geoval => geovalm
 
-  case ("no3an3")
+  case ("no3an3", "mass_fraction_of_nitrate003_in_air")
 
    if (.not. associated(state%no3an3)) &
      call variable_fail(trim(vars%variable(jvar)),"state%no3an3")
@@ -1174,126 +1185,126 @@ do jvar = 1, vars%nvars()
 
   case ("air_pressure_levels")
 
-  case ("sulf","so4")
+  case ("sulf","so4", "mass_fraction_of_sulfate_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%so4
    geoval => geovalm
 
-  case ("bc1","bcphobic")
+  case ("bc1","bcphobic", "mass_fraction_of_hydrophobic_black_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%bcphobic
    geoval => geovalm
 
-  case ("bc2","bcphilic")
+  case ("bc2","bcphilic", "mass_fraction_of_hydrophilic_black_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%bcphilic
    geoval => geovalm
 
-  case ("oc1","ocphobic")
+  case ("oc1","ocphobic", "mass_fraction_of_hydrophobic_organic_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ocphobic
    geoval => geovalm
 
-  case ("oc2","ocphilic")
+  case ("oc2","ocphilic", "mass_fraction_of_hydrophilic_organic_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ocphilic
    geoval => geovalm
 
-  case ("dust1","du001")
+  case ("dust1","du001", "mass_fraction_of_dust001_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%du001
    geoval => geovalm
 
-  case ("dust2","du002")
+  case ("dust2","du002", "mass_fraction_of_dust002_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%du002
    geoval => geovalm
 
-  case ("dust3","du003")
+  case ("dust3","du003", "mass_fraction_of_dust003_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%du003
    geoval => geovalm
 
-  case ("dust4","du004")
+  case ("dust4","du004", "mass_fraction_of_dust004_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%du004
    geoval => geovalm
 
-  case ("dust5","du005")
+  case ("dust5","du005","mass_fraction_of_dust005_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%du005
    geoval => geovalm
 
-  case ("seas1","ss001")
+  case ("seas1","ss001","mass_fraction_of_sea_salt001_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ss001
    geoval => geovalm
 
-  case ("seas2","ss002")
+  case ("seas2","ss002","mass_fraction_of_sea_salt002_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ss002
    geoval => geovalm
 
-  case ("seas3","ss003")
+  case ("seas3","ss003","mass_fraction_of_sea_salt003_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ss003
    geoval => geovalm
 
-  case ("seas4","ss004")
+  case ("seas4","ss004","mass_fraction_of_sea_salt004_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ss004
    geoval => geovalm
 
-  case ("seas5","ss005")
+  case ("seas5","ss005","mass_fraction_of_sea_salt005_in_air")
 
    nvl = npz
    do_interp = .true.
    geovalm = inc%ss005
    geoval => geovalm
 
-  case ("no3an1")
+  case ("no3an1", "mass_fraction_of_nitrate001_in_air")
 
     nvl = npz
     do_interp = .true.
     geovalm = inc%no3an1
     geoval => geovalm
 
-  case ("no3an2")
+  case ("no3an2", "mass_fraction_of_nitrate002_in_air")
 
     nvl = npz
     do_interp = .true.
     geovalm = inc%no3an2
     geoval => geovalm
 
-  case ("no3an3")
+  case ("no3an3", "mass_fraction_of_nitrate003_in_air")
 
     nvl = npz
     do_interp = .true.
@@ -1468,101 +1479,115 @@ do jvar = 1, vars%nvars()
 
   case ("air_pressure_levels")
 
-  case ("sulf","so4")
+  case ("sulf","so4", "mass_fraction_of_sulfate_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("bc1","bcphobic")
+  case ("bc1","bcphobic", "mass_fraction_of_hydrophobic_black_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("bc2","bcphilic")
+  case ("bc2","bcphilic","mass_fraction_of_hydrophilic_black_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("oc1","ocphobic")
+  case ("oc1","ocphobic", "mass_fraction_of_hydrophobic_organic_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("oc2","ocphilic")
+  case ("oc2","ocphilic", "mass_fraction_of_hydrophilic_organic_carbon_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("dust1","du001")
+  case ("dust1","du001", "mass_fraction_of_dust001_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("dust2","du002")
+  case ("dust2","du002","mass_fraction_of_dust002_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("dust3","du003")
+  case ("dust3","du003","mass_fraction_of_dust003_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("dust4","du004")
+  case ("dust4","du004","mass_fraction_of_dust004_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("dust5","du005")
+  case ("dust5","du005","mass_fraction_of_dust005_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("seas1","ss001")
+  case ("seas1","ss001","mass_fraction_of_sea_salt001_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("seas2","ss002")
+  case ("seas2","ss002","mass_fraction_of_sea_salt002_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("seas3","ss003")
+  case ("seas3","ss003","mass_fraction_of_sea_salt003_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("seas4","ss004")
+  case ("seas4","ss004","mass_fraction_of_sea_salt004_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("seas5","ss005")
+  case ("seas5","ss005","mass_fraction_of_sea_salt005_in_air")
 
    nvl = npz
    do_interp = .true.
    geoval => geovalm
 
-  case ("no3an1","no3an2","no3an3")
+  case ("no3an1", "mass_fraction_of_nitrate001_in_air")
 
     nvl = npz
     do_interp = .true.
     geoval => geovalm
+
+
+  case ("no3an2", "mass_fraction_of_nitrate002_in_air")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
+  case ("no3an3", "mass_fraction_of_nitrate003_in_air")
+
+    nvl = npz
+    do_interp = .true.
+    geoval => geovalm
+
 
   case default
 
@@ -1652,75 +1677,75 @@ do jvar = 1, vars%nvars()
 
   case ("air_pressure_levels")
 
-  case ("sulf","so4")
+  case ("sulf","so4", "mass_fraction_of_sulfate_in_air")
 
    inc%so4 = inc%so4 + geovalm
 
-  case ("bc1","bcphobic")
+  case ("bc1","bcphobic", "mass_fraction_of_hydrophobic_black_carbon_in_air")
 
    inc%bcphobic = inc%bcphobic + geovalm
 
-  case ("bc2","bcphilic")
+  case ("bc2","bcphilic","mass_fraction_of_hydrophilic_black_carbon_in_air")
 
    inc%bcphilic = inc%bcphilic + geovalm
 
-  case ("oc1","ocphobic")
+  case ("oc1","ocphobic", "mass_fraction_of_hydrophobic_organic_carbon_in_air")
 
    inc%ocphobic = inc%ocphobic + geovalm
 
-  case ("oc2","ocphilic")
+  case ("oc2","ocphilic", "mass_fraction_of_hydrophilic_organic_carbon_in_air")
 
    inc%ocphilic = inc%ocphilic + geovalm
 
-  case ("dust1","du001")
+  case ("dust1","du001", "mass_fraction_of_dust001_in_air")
 
    inc%du001 = inc%du001 + geovalm
 
-  case ("dust2","du002")
+  case ("dust2","du002", "mass_fraction_of_dust002_in_air")
 
    inc%du002 = inc%du002 + geovalm
 
-  case ("dust3","du003")
+  case ("dust3","du003", "mass_fraction_of_dust003_in_air")
 
    inc%du003 = inc%du003 + geovalm
 
-  case ("dust4","du004")
+  case ("dust4","du004", "mass_fraction_of_dust004_in_air")
 
    inc%du004 = inc%du004 + geovalm
 
-  case ("dust5","du005")
+  case ("dust5","du005", "mass_fraction_of_dust005_in_air")
 
    inc%du005 = inc%du005 + geovalm
 
-  case ("seas1","ss001")
+  case ("seas1","ss001","mass_fraction_of_sea_salt001_in_air")
 
    inc%ss001 = inc%ss001 + geovalm
 
-  case ("seas2","ss002")
+  case ("seas2","ss002","mass_fraction_of_sea_salt002_in_air")
 
    inc%ss002 = inc%ss002 + geovalm
 
-  case ("seas3","ss003")
+  case ("seas3","ss003","mass_fraction_of_sea_salt003_in_air")
 
    inc%ss003 = inc%ss003 + geovalm
 
-  case ("seas4","ss004")
+  case ("seas4","ss004","mass_fraction_of_sea_salt004_in_air")
 
    inc%ss004 = inc%ss004 + geovalm
 
-  case ("seas5","ss005")
+  case ("seas5","ss005","mass_fraction_of_sea_salt005_in_air")
 
     inc%ss005 = inc%ss005 + geovalm
 
-  case ("no3an1")
+  case ("no3an1", "mass_fraction_of_nitrate001_in_air")
 
     inc%no3an1 = inc%no3an1 + geovalm
 
-  case ("no3an2")
+  case ("no3an2", "mass_fraction_of_nitrate002_in_air")
 
     inc%no3an2 = inc%no3an2 + geovalm
 
-  case ("no3an3")
+  case ("no3an3", "mass_fraction_of_nitrate003_in_air")
 
     inc%no3an3 = inc%no3an3 + geovalm
 

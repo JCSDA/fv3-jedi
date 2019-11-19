@@ -381,108 +381,108 @@ do var = 1, vars%nvars()
     case("du001","DU001","dust1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin1', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_dust001_in_air', &
            fv3jedi_name = 'du001', units = 'kg kg-1', staggerloc = center, arraypointer = self%du001, &
            tracer = .true.)
     case("du002","DU002","dust2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin2', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_dust002_in_air', &
            fv3jedi_name = 'du002', units = 'kg kg-1', staggerloc = center, arraypointer = self%du002, &
            tracer = .true.)
     case("du003","DU003","dust3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin3', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_dust003_in_air', &
            fv3jedi_name = 'du003', units = 'kg kg-1', staggerloc = center, arraypointer = self%du003, &
            tracer = .true.)
     case("du004","DU004","dust4")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin4', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_dust004_in_air', &
            fv3jedi_name = 'du004', units = 'kg kg-1', staggerloc = center, arraypointer = self%du004, &
            tracer = .true.)
     case("du005","DU005","dust5")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'dust_mixing_ratio_bin5', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_dust005_in_air', &
            fv3jedi_name = 'du005', units = 'kg kg-1', staggerloc = center, arraypointer = self%du005, &
            tracer = .true.)
     case("ss001","SS001","seas1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin1', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_sea_salt001_in_air', &
            fv3jedi_name = 'ss001', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss001)
     case("ss002","SS002","seas2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin2', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_sea_salt002_in_air', &
            fv3jedi_name = 'ss002', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss002, &
            tracer = .true.)
     case("ss003","SS003","seas3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin3', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_sea_salt003_in_air', &
            fv3jedi_name = 'ss003', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss003, &
            tracer = .true.)
     case("ss004","SS004","seas4")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin4', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_sea_salt004_in_air', &
            fv3jedi_name = 'ss004', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss004, &
            tracer = .true.)
     case("ss005","SS005","seas5")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'sea_salt_mixing_ratio_bin5', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_sea_salt005_in_air', &
            fv3jedi_name = 'ss005', units = 'kg kg-1', staggerloc = center, arraypointer = self%ss005, &
            tracer = .true.)
     case("bcphobic","BCPHOBIC","bc1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'hydrophobic_black_carbon', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_hydrophobic_black_carbon_in_air', &
            fv3jedi_name = 'bcphobic', units = 'kg kg-1', staggerloc = center, arraypointer = self%bcphobic, &
            tracer = .true.)
     case("bcphilic","BCPHILIC","bc2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'hydrophilic_black_carbon', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_hydrophilic_black_carbon_in_air', &
            fv3jedi_name = 'bcphilic', units = 'kg kg-1', staggerloc = center, arraypointer = self%bcphilic, &
            tracer = .true.)
     case("ocphobic","OCPHOBIC","oc1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'hydrophobic_organic_carbon', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_hydrophobic_organic_carbon_in_air', &
            fv3jedi_name = 'ocphobic', units = 'kg kg-1', staggerloc = center, arraypointer = self%ocphobic, &
            tracer = .true.)
     case("ocphilic","OCPHILIC","oc2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'hydrophilic_organic_carbon', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_hydrophilic_organic_carbon_in_air', &
            fv3jedi_name = 'ocphilic', units = 'kg kg-1', staggerloc = center, arraypointer = self%ocphilic, &
            tracer = .true.)
     case("no3an1","NO3AN1")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'nitrate_size_bin_1', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_nitrate001_in_air', &
            fv3jedi_name = 'no3an1', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an1, &
            tracer = .true.)
     case("no3an2","NO3AN2")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'nitrate_size_bin_2', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_nitrate002_in_air', &
            fv3jedi_name = 'no3an2', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an2, &
            tracer = .true.)
     case("no3an3","NO3AN3")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'nitrate_size_bin_3', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_nitrate003_in_air', &
            fv3jedi_name = 'no3an3', units = 'kg kg-1', staggerloc = center, arraypointer = self%no3an3, &
            tracer = .true.)
     case("so4","SO4","sulf")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
-           short_name = vars%variable(var), long_name = 'sulphate_aerosol', &
+           short_name = vars%variable(var), long_name = 'mass_fraction_of_sulfate_in_air', &
            fv3jedi_name = 'so4', units = 'kg kg-1', staggerloc = center, arraypointer = self%so4, &
            tracer = .true.)
      !Not found
