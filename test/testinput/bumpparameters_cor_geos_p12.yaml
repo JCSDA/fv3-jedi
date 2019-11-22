@@ -1,6 +1,6 @@
 resolution:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
-  nml_file: Data/fv3files/input_geos_c12.nml
+  nml_file: Data/fv3files/input_geos_c12_p12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 variables: ["ua","va","T","ps","q","qi","ql","o3mr"]
@@ -10,11 +10,11 @@ background:
   filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
   variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
 bump:
-  prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
+  prefix: Data/bump/fv3jedi_bumpparameters_cor_geos_p12
   verbosity: main
-  method: loc
-#  nonunit_diag: 1
-  strategy: common
+  method: cor
+  nonunit_diag: 1
+  strategy: specific_univariate
   new_nicas: 1
   ntry: 3
   nrep: 2
@@ -23,8 +23,8 @@ bump:
   network: 0
   mpicom: 2
   default_seed: 1
-# Forced localization length-scales
-# ---------------------------------
+# Forced length-scales
+# --------------------
   forced_radii: 1
   rh: 2500000.0
   rv: 0.3
@@ -41,9 +41,14 @@ bump:
   #local_rad: 1000000
   minim_algo: hooke
   #diag_rhflt: 3000000
+# Variance filter
+# ---------------
+#  var_filter: 1
+#  var_niter: 10
+#  var_rhflt: 1000000.0
 #  Dirac gridded output
 #  --------------------
-  load_nicas: 0
+#  load_nicas: 1
   check_dirac: 0
   ndir: 1
 #  londir: [0.0]
@@ -54,23 +59,18 @@ bump:
   grid_output: 1
   grid_resol: 200000.0
 output:
-- parameter: loc_coef
+- parameter: var
   filetype: geos
   datapath: Data/bump/
-  filename: bumpparameters_loc_geos.loc_coef.
+  filename: bumpparameters_cor_geos_p12.var.
   date: '2018-04-14T21:00:00Z'
-- parameter: loc_rh
+- parameter: cor_rh
   filetype: geos
   datapath: Data/bump/
-  filename: bumpparameters_loc_geos.loc_rh.
+  filename: bumpparameters_cor_geos_p12.cor_rh.
   date: '2018-04-14T21:00:00Z'
-- parameter: loc_rv
+- parameter: cor_rv
   filetype: geos
   datapath: Data/bump/
-  filename: bumpparameters_loc_geos.loc_rv.
-  date: '2018-04-14T21:00:00Z'
-- parameter: hyb_coef
-  filetype: geos
-  datapath: Data/bump/
-  filename: bumpparameters_loc_geos.hyb_coef.
+  filename: bumpparameters_cor_geos_p12.cor_rv.
   date: '2018-04-14T21:00:00Z'

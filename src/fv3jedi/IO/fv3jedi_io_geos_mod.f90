@@ -777,7 +777,7 @@ if (self%iam_io_proc) then
 endif
 
 ! Cube sphere thing for GEOS
-vc=vc+1
+if (self%iam_io_proc) vc=vc+1
 
 ! Loop over fields and levels and write fields to file
 ! ----------------------------------------------------
@@ -841,10 +841,12 @@ do n = 1,size(fields)
 
 enddo
 
-if (self%iam_io_proc) &
-deallocate ( dimidsv, dimidsg, dimids2, dimids3, dimids3e )
+if (self%iam_io_proc) then
+  deallocate ( dimidsv, dimidsg, dimids2, dimids3, dimids3e )
+  deallocate(vc)
+endif
 
-deallocate(arrayg, vc)
+deallocate(arrayg)
 
 end subroutine write_all
 

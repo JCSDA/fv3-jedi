@@ -11,6 +11,7 @@ background:
   variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
 bump:
   prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
+  verbosity: main
   method: cor
   nonunit_diag: 1
   strategy: specific_univariate

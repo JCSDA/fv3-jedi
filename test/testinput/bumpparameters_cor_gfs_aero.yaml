@@ -34,6 +34,7 @@ ensemble:
     filename: Data/inputs/gfs_aero_c12/mem009/20180415.000000.fv_tracer.res.nc
 bump:
   prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs_aero
+  verbosity: main
   method: cor
   nonunit_diag: 1
   strategy: specific_univariate

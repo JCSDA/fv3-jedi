@@ -16,6 +16,7 @@ background:
   variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
 bump:
   prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs
+  verbosity: main
   method: loc
 #  nonunit_diag: 1
   strategy: common
