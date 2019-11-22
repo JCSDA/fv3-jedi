@@ -103,7 +103,7 @@ type(fv3jedi_geom),  intent(inout) :: geom
 type(datetime),      intent(inout) :: vdate !< Valid datetime after step
 
 character(len=20)  :: vdatec
-character(len=255) :: date, filename
+character(len=255) :: date
 character(len=4)   :: yyyy
 character(len=2)   :: mm,dd,hh,mn,ss
 character(len=255), allocatable :: filename_geos(:)
@@ -145,7 +145,7 @@ elseif (trim(self%pseudo_type) == "geos") then
 
   allocate(filename_geos(1))
   filename_geos(1) = trim(self%pseudo_path)//trim(self%pseudo_file)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//trim(ss)//'z.nc4'
-  call print_filename(self,filename)
+  call print_filename(self,filename_geos(1))
   call geos%create(geom, 'read', self%pseudo_type, filename_geos)
   call geos%read_fields(geom, state%fields)
   call geos%delete()
