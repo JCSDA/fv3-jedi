@@ -61,6 +61,7 @@ void ModelFV3::finalize(State & xx) const {
 int ModelFV3::saveTrajectory(State & xx,
                                  const ModelBias &) const {
   ABORT("Model FV3 should not be used for the trajectory");
+  abort(); /* Prevent g++ missing return statement warning */
 }
 // -----------------------------------------------------------------------------
 void ModelFV3::print(std::ostream & os) const {

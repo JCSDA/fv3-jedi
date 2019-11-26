@@ -38,7 +38,8 @@ void stageFMSFiles(const eckit::Configuration & conf) {
     if (conf.has("nml_file_mpp")) {
       oops::Log::debug() << "Staging input.nml" << std::endl;
       std::string nml_file = conf.getString("nml_file_mpp");
-      symlink(nml_file.c_str(), "./input.nml");
+      if (symlink(nml_file.c_str(), "./input.nml"))
+        ABORT("Unable to symlink input.nml");
     } else {
       ABORT("nml_file_mpp not in configuration");
     }
@@ -60,7 +61,8 @@ void stageFv3Files(const eckit::Configuration &conf) {
     if (conf.has("nml_file")) {
       oops::Log::debug() << "Staging input.nml" << std::endl;
       std::string nml_file = conf.getString("nml_file");
-      symlink(nml_file.c_str(), "./input.nml");
+      if (symlink(nml_file.c_str(), "./input.nml"))
+        ABORT("Unable to symlink input.nml");
     } else {
       ABORT("nml_file not in configuration");
     }
@@ -70,7 +72,8 @@ void stageFv3Files(const eckit::Configuration &conf) {
     if (conf.has("trc_file")) {
       oops::Log::debug() << "Staging field_table" << std::endl;
       std::string trc_file = conf.getString("trc_file");
-      symlink(trc_file.c_str(), "./field_table");
+      if (symlink(trc_file.c_str(), "./field_table"))
+        ABORT("Unable to symlink field_table");
     }
 
     // User may also be requesting the tlm/adm nml file
@@ -78,7 +81,8 @@ void stageFv3Files(const eckit::Configuration &conf) {
     if (conf.has("nml_file_pert")) {
       oops::Log::debug() << "Staging inputpert.nml" << std::endl;
       std::string nml_file_pert = conf.getString("nml_file_pert");
-      symlink(nml_file_pert.c_str(), "./inputpert.nml");
+      if (symlink(nml_file_pert.c_str(), "./inputpert.nml"))
+        ABORT("Unable to symlink inputpert.nml");
     }
   }
 
