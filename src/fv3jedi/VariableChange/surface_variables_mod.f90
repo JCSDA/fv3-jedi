@@ -480,7 +480,7 @@ allocate(f10mp(nobs,nn))
 
    itype  = min(max(1,itype),nvege_type)
    istype = min(max(1,istype),SOIL_N_TYPES)
-   land_type(n) = max(1,map_to_crtm_ir(itype))
+   land_type(n) = max(1,map_to_crtm_mwave(itype))
    Vegetation_Type(n) = max(1,map_to_crtm_mwave(itype))
    Soil_Type(n) = map_soil_to_crtm(istype)
    lai_type = map_to_crtm_mwave(itype)
