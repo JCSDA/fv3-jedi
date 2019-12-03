@@ -1,0 +1,319 @@
+EnsembleApplication:
+  members: 3
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: gfs
+        datapath_tile: Data/inputs/gfs_c12/bkg/
+        filename_core: 20180414.210000.fv_core.res.nc
+        filename_trcr: 20180414.210000.fv_tracer.res.nc
+        filename_sfcd: 20180414.210000.sfc_data.nc
+        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+        filename_cplr: 20180414.210000.coupler.res
+        variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+    Covariance:
+      covariance: hybrid
+      static_weight: '0.1'
+      ensemble_weight: '0.9'
+      static:
+        date: '2018-04-14T21:00:00Z'
+        covariance: BUMP
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs
+          method: cor
+          strategy: specific_univariate
+          load_nicas: 1
+          mpicom: 2
+          verbosity: main
+      ensemble:
+        date: '2018-04-14T21:00:00Z'
+        variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        members:
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem001/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem002/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem003/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem004/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem005/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem006/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem007/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem008/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem009/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem010/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        localization:
+          timeslots: ['2018-04-14T21:00:00Z']
+          variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+          localization: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aircraft
+        ObsDataIn:
+          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/%{member}%/hofx/aircraft_eda-fgat-gfs_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
+      ObsOperator:
+        name: VertInterp
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.3
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+#      - Filter: BlackList
+#        where:
+#        - variable: Land_Fraction@GeoVaLs
+#          maxvalue: 0.0
+    - ObsSpace:
+        name: Radiosonde
+        ObsDataIn:
+          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/%{member}%/hofx/sondes_eda-fgat-gfs_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
+      ObsOperator:
+        name: VertInterp
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.5
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/%{member}%/hofx/gnssro_eda-fgat-gfs_2018041500_s.nc4
+        simulate:
+         variables: [refractivity]
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.4
+      ObsFilters:
+      - Filter: Thinning
+        filter variables:
+        - name: refractivity
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        filter variables:
+        - name: refractivity
+        where:
+        - variable:
+            name: altitude@MetaData
+            minvalue: 0
+            maxvalue: 30000
+        - variable:
+            name: earth_radius_of_curvature@MetaData
+            minvalue: 6250000
+            maxvalue: 6450000
+        - variable:
+            name: geoid_height_above_reference_ellipsoid@MetaData
+            minvalue: -200
+            maxvalue: 200
+      - Filter: Background Check
+        filter variables:
+        - name: refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        filter variables:
+        - name: refractivity
+        variable: refractivity
+        errmodel: GSI
+    - ObsSpace:
+        name: AMSUA-NOAA19
+        ObsDataIn:
+          obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/%{member}%/hofx/amsua_n19_eda-fgat-gfs_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-15
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        ObsOptions:
+          Sensor_ID: amsua_n19
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.7
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        threshold: 3.0
+  cost_type: 4D-Var
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  tstep: PT1H
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
+output:
+  filetype: gfs
+  datapath_tile: Data/%{member}%/analysis/
+  filename_core: eda-fgat-gfs.fv_core.res.nc
+  filename_trcr: eda-fgat-gfs.fv_tracer.res.nc
+  filename_sfcd: eda-fgat-gfs.sfc_data.nc
+  filename_sfcw: eda-fgat-gfs.fv_srf_wnd.res.nc
+  filename_cplr: eda-fgat-gfs.coupler.res
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+variational:
+  iteration:
+  - ninner: '2'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT1H
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+  - ninner: '1'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT1H
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]

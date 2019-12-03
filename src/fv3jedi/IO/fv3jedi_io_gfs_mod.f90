@@ -40,6 +40,7 @@ contains
 ! ------------------------------------------------------------------------------
 
 subroutine setup(self,f_conf,psinfile)
+use string_utils
 
 class(fv3jedi_io_gfs),     intent(inout) :: self
 type(fckit_configuration), intent(in)    :: f_conf
@@ -58,6 +59,9 @@ self%filename_cplr = 'coupler.res'
 call f_conf%get_or_die("datapath_tile",str)
 if (len(str) > 128) &
   call abor1_ftn('fv3jedi_io_gfs_mod.setup: datapath_tile too long, max FMS char length= 128')
+
+call swap_name_member(f_conf, str)
+
 self%datapath_ti = str
 deallocate(str)
 

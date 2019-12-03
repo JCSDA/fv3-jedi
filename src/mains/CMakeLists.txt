@@ -18,6 +18,16 @@ ecbuild_add_executable( TARGET  fv3jedi_dirac.x
                         LIBS	fv3jedi
                       )
 
+ecbuild_add_executable( TARGET  fv3jedi_eda.x
+                        SOURCES fv3jediEDA.cc
+                        LIBS	fv3jedi
+                      )
+
+ecbuild_add_executable( TARGET  fv3jedi_enshofx.x
+                        SOURCES fv3jediEnsHofX.cc
+                        LIBS    fv3jedi
+                      )
+
 ecbuild_add_executable( TARGET  fv3jedi_forecast.x
                         SOURCES fv3jediForecast.cc
                         LIBS    fv3jedi

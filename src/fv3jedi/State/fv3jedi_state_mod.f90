@@ -1112,6 +1112,7 @@ end subroutine analytic_IC
 ! ------------------------------------------------------------------------------
 
 subroutine read_file(geom, self, c_conf, vdate)
+use string_utils
 
 implicit none
 
@@ -1157,6 +1158,7 @@ elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
   if (trim(filetype) == 'geos') then
     allocate(filenames(1))
     call f_conf%get_or_die("filename",str)
+    call swap_name_member(f_conf, str)
     filenames(1) = str
     deallocate(str)
   elseif (trim(filetype) == 'geos-rst') then

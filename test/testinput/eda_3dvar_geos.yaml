@@ -1,0 +1,217 @@
+EnsembleApplication:
+  members: 4
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: geos
+        filename: Data/inputs/geos_c12/geos.%{member}%.20180415_000000z.nc4
+        variables: &3dvars ["ua","va","t","ps","q","qi","ql","o3mr"]
+    Covariance:
+      covariance: hybrid
+      static_weight: '0.1'
+      ensemble_weight: '0.9'
+      static:
+        date: &adate '2018-04-15T00:00:00Z'
+        covariance: BUMP
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
+          method: cor
+          strategy: specific_univariate
+          load_nicas: 1
+          mpicom: 2
+          verbosity: main
+      ensemble:
+        date: *adate
+        variables: *3dvars
+        members:
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
+          - filetype: geos
+            filename: Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
+        localization:
+          timeslots: ['2018-04-15T00:00:00Z']
+          variables: *3dvars
+          localization: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aircraft
+        ObsDataIn:
+          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/%{member}%/hofx/aircraft_eda-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
+      ObsOperator:
+        name: VertInterp
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.4
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: Radiosonde
+        ObsDataIn:
+          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/%{member}%/hofx/sondes_eda-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
+      ObsOperator:
+        name: VertInterp
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.2
+      ObsFilters:
+      - Filter: PreQC
+        threshold: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/%{member}%/hofx/gnssro_eda-3dvar-geos_2018041500_s.nc4
+        simulate:
+         variables: [refractivity]
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+        random_amplitude: 0.7
+      ObsFilters:
+      - Filter: Thinning
+        filter variables:
+        - name: refractivity
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        filter variables:
+        - name: refractivity
+        where:
+        - variable:
+            name: altitude@MetaData
+            minvalue: 0
+            maxvalue: 30000
+        - variable:
+            name: earth_radius_of_curvature@MetaData
+            minvalue: 6250000
+            maxvalue: 6450000
+        - variable:
+            name: geoid_height_above_reference_ellipsoid@MetaData
+            minvalue: -200
+            maxvalue: 200
+      - Filter: Background Check
+        filter variables:
+        - name: refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        filter variables:
+        - name: refractivity
+        variable: refractivity
+        errmodel: GSI
+  cost_type: 3D-Var
+  variables: *3dvars
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: 'geos'
+  filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_geos_c12.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis"]
+output:
+  filetype: geos
+  datapath: Data/%{member}%/analysis/
+  filename: eda-3dvar-geos.
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+variational:
+  iteration:
+  - ninner: '2'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: *3dvars
+  - ninner: '1'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: *3dvars

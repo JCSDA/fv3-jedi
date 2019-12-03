@@ -187,6 +187,13 @@ testinput/convertstate_gfs.yaml
 testinput/convertstate_geos.yaml
 testinput/dirac_geos.yaml
 testinput/dirac_gfs.yaml
+testinput/eda_3dvar_geos.yaml
+testinput/eda_3dvar_gfs.yaml
+testinput/eda_4dvar_geos.yaml
+testinput/eda_4dvar_gfs.yaml
+testinput/eda_fgat_geos.yaml
+testinput/eda_fgat_gfs.yaml
+testinput/enshofx_geos.yaml
 testinput/errorcov.yaml
 testinput/forecast_geos-fv3.yaml
 testinput/forecast_geos.yaml
@@ -318,7 +325,13 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis)
 
-#Tolernaces for compare script
+set(members mem001;mem002;mem003;mem004)
+foreach(MEM IN LISTS members)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/${MEM}/hofx)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/${MEM}/analysis)
+endforeach()
+
+#Tolerances for compare script
 set (ctol 0.0) #Max relative difference
 set (idif 0)      #Max difference
 
@@ -794,3 +807,63 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_aero
                   ARGS         testinput/hyb-3dvar_gfs_aero.yaml testoutput/hyb-3dvar_gfs-aero.run
                   MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
+
+
+# EDA tests
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_3dvar_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_3dvar_geos.yaml testoutput/eda_3dvar_geos.run
+                  MPI          24
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_3dvar_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_3dvar_gfs.yaml testoutput/eda_3dvar_gfs.run
+                  MPI          24
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_4dvar_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_4dvar_geos.yaml testoutput/eda_4dvar_geos.run
+                  MPI          12
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_4dvar_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_4dvar_gfs.yaml testoutput/eda_4dvar_gfs.run
+                  MPI          12
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_fgat_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_fgat_geos.yaml testoutput/eda_fgat_geos.run
+                  MPI          18
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_fgat_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_fgat_gfs.yaml testoutput/eda_fgat_gfs.run
+                  MPI          18
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+
+# EnsHofx tests
+
+ecbuild_add_test( TARGET  test_fv3jedi_enshofx_geos
+                  TYPE    EXE
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_enshofx.x
+                  ARGS    testinput/enshofx_geos.yaml testoutput/enshofx_geos.run
+                  MPI     12 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_enshofx_geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/enshofx_geos.run testoutput/hofx_geos.ref ${ctol} ${idif}
+                  TEST_DEPENDS test_fv3jedi_enshofx_geos )

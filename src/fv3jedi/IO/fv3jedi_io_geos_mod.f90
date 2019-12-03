@@ -415,7 +415,7 @@ end subroutine read_fields
 ! ------------------------------------------------------------------------------
 
 subroutine write_all(self, geom, fields, f_conf, vdate)
-
+use string_utils
 implicit none
 
 class(fv3jedi_io_geos), target, intent(inout) :: self
@@ -455,6 +455,7 @@ if (self%iam_io_proc) then
   datapath = "Data/"
   if (f_conf%has("datapath")) then
      call f_conf%get_or_die("datapath",str)
+     call swap_name_member(f_conf, str)
      datapath = str
      deallocate(str)
   endif
@@ -465,6 +466,7 @@ if (self%iam_io_proc) then
     filename(1) = 'geos.'
     if (f_conf%has("filename")) then
        call f_conf%get_or_die("filename",str)
+       call swap_name_member(f_conf, str)
        filename(1) = str
        deallocate(str)
     endif
