@@ -65,7 +65,6 @@ class TlmId: public oops::LinearModelBase<Traits>,
   void print(std::ostream &) const override;
 
 // Data
-  int keyConfig_;
   util::Duration tstep_;
   const Geometry resol_;
   const oops::Variables linvars_;

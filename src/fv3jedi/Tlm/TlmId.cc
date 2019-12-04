@@ -27,7 +27,7 @@ static oops::LinearModelMaker<Traits, TlmId>
 // -----------------------------------------------------------------------------
 TlmId::TlmId(const Geometry & resol,
                             const eckit::Configuration & tlConf)
-  : keyConfig_(0), tstep_(), resol_(resol), linvars_(tlConf)
+  : tstep_(), resol_(resol), linvars_(tlConf)
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
   oops::Log::trace() << "TlmId created" << std::endl;

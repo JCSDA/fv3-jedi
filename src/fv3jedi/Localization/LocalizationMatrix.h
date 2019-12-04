@@ -44,7 +44,6 @@ class LocalizationMatrix: public util::Printable,
 
  private:
   void print(std::ostream &) const;
-  F90lclz keyFtnConfig_;
 };
 // -----------------------------------------------------------------------------
 
