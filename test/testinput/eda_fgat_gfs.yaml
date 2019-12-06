@@ -128,7 +128,7 @@ cost_function:
         random_amplitude: 0.3
       ObsFilters:
       - Filter: PreQC
-        threshold: 3
+        maxvalue: 3
         apply_at_iterations: 0
       - Filter: Background Check
         filter variables:
@@ -155,7 +155,7 @@ cost_function:
         random_amplitude: 0.5
       ObsFilters:
       - Filter: PreQC
-        threshold: 3
+        maxvalue: 3
         apply_at_iterations: 0
       - Filter: Background Check
         filter variables:
