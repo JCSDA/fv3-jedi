@@ -191,8 +191,6 @@ testinput/eda_3dvar_geos.yaml
 testinput/eda_3dvar_gfs.yaml
 testinput/eda_4dvar_geos.yaml
 testinput/eda_4dvar_gfs.yaml
-testinput/eda_fgat_geos.yaml
-testinput/eda_fgat_gfs.yaml
 testinput/enshofx_geos.yaml
 testinput/errorcov.yaml
 testinput/forecast_geos-fv3.yaml
@@ -808,7 +806,6 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_aero
                   MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
 
-
 # EDA tests
 
 ecbuild_add_test( TARGET       test_fv3jedi_eda_3dvar_geos
@@ -838,21 +835,6 @@ ecbuild_add_test( TARGET       test_fv3jedi_eda_4dvar_gfs
                   ARGS         testinput/eda_4dvar_gfs.yaml testoutput/eda_4dvar_gfs.run
                   MPI          12
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
-
-ecbuild_add_test( TARGET       test_fv3jedi_eda_fgat_geos
-                  TYPE         EXE
-                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
-                  ARGS         testinput/eda_fgat_geos.yaml testoutput/eda_fgat_geos.run
-                  MPI          18
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
-
-ecbuild_add_test( TARGET       test_fv3jedi_eda_fgat_gfs
-                  TYPE         EXE
-                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
-                  ARGS         testinput/eda_fgat_gfs.yaml testoutput/eda_fgat_gfs.run
-                  MPI          18
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
-
 
 # EnsHofx tests
 
