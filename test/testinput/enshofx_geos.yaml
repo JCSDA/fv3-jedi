@@ -35,7 +35,6 @@ Observations:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
       name: VertInterp
-    ObsBias: {}
   - ObsSpace:
       name: Radiosonde
       ObsDataIn:
@@ -46,7 +45,6 @@ Observations:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
       name: VertInterp
-    ObsBias: {}
   - ObsSpace:
       name: GnssroRef
       ObsDataIn:
