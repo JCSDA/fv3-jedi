@@ -16,14 +16,16 @@ StateTest:
     random_seed: '560921'
   StateFile:
     filetype: geos
-    filename: Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
     variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
                 "SS001", "SS002", "SS003", "SS004", "SS005",
                 "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
                 "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
   StateGenerate:
     filetype: geos
-    filename: Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
     variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
                 "SS001", "SS002", "SS003", "SS004", "SS005",
                 "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",

@@ -14,7 +14,7 @@ implicit none
 private
 public :: fv3jedi_field, get_field, &
           fields_rms, fields_gpnorm, fields_print, &
-          checksame, flip_array_vertical
+          checksame, flip_array_vertical, get_field_array
 
 !Field type
 type :: fv3jedi_field
@@ -27,6 +27,7 @@ type :: fv3jedi_field
  integer :: staggerloc   !Middle, corners, east, south, etc
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
+ logical :: integerfield = .false.
  contains
   procedure :: allocate_field
   procedure :: array_pointer
@@ -35,14 +36,14 @@ type :: fv3jedi_field
   procedure :: deallocate_field
 endtype fv3jedi_field
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
-                          fv3jedi_name,units,staggerloc,tracer,arraypointer)
+                          fv3jedi_name,units,staggerloc,arraypointer,tracer,integerfield)
 
 implicit none
 class(fv3jedi_field), target,  intent(inout) :: self
@@ -54,6 +55,7 @@ character(len=*),              intent(in)    :: units
 integer,                       intent(in)    :: staggerloc
 real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
 logical, optional,             intent(in)    :: tracer
+logical, optional,             intent(in)    :: integerfield
 
 self%isc = isc
 self%iec = iec
@@ -92,9 +94,16 @@ else
   self%tracer = .false.
 endif
 
+! Fields that are e.g. types
+if (present(integerfield)) then
+  self%integerfield = integerfield
+else
+  self%integerfield = .false.
+endif
+
 end subroutine allocate_field
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine array_pointer(self,arraypointer)
 
@@ -106,7 +115,7 @@ arraypointer => self%array
 
 end subroutine array_pointer
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine deallocate_field(self)
 
@@ -118,7 +127,7 @@ self%lalloc = .false.
 
 end subroutine deallocate_field
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine equals(self,rhs)
 
@@ -143,7 +152,44 @@ nullify(dummy_pointer)
 
 end subroutine equals
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+function get_field_array(fields,fv3jedi_name,arraypointer) result(isallocated)
+
+implicit none
+
+type(fv3jedi_field), target,   intent(in)    :: fields(:)
+character(len=*),              intent(in)    :: fv3jedi_name
+real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
+logical :: isallocated
+
+integer :: findex, var
+
+isallocated = .false.
+
+! Loop over fields and set array pointer when found
+findex = -1
+do var = 1,size(fields)
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    arraypointer => fields(var)%array
+    findex = var
+    exit
+  endif
+enddo
+
+! If not found then return
+if (findex == -1) return
+
+! If found check array is actually allocated
+if (.not. allocated(fields(findex)%array)) call abor1_ftn("fv3jedi_field get_field_array. Field "&
+                                                //fv3jedi_name//" found but array is not allocated")
+
+ ! Return that array is allocated
+ isallocated = .true.
+
+end function get_field_array
+
+! --------------------------------------------------------------------------------------------------
 
 subroutine get_field(nf,fields,fv3jedi_name,field_pointer)
 
@@ -169,7 +215,7 @@ if (.not.found) call abor1_ftn("fv3jedi_field get_field. Field "&
 
 end subroutine get_field
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fields_rms(nf,fields,rms, f_comm)
 
@@ -206,7 +252,7 @@ rms = sqrt(rms/real(iisum,kind_real))
 
 end subroutine fields_rms
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fields_gpnorm(nf, fields, pstat, f_comm)
 
@@ -237,7 +283,7 @@ enddo
 
 end subroutine fields_gpnorm
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fields_print(nf, fields, name, f_comm)
 
@@ -295,7 +341,7 @@ if (f_comm%rank() == 0) &
 
 end subroutine fields_print
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine checksame(self,other,method)
 
@@ -319,7 +365,7 @@ enddo
 
 end subroutine checksame
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine flip_array_vertical(nf,fields)
 
@@ -359,6 +405,6 @@ enddo
 
 end subroutine flip_array_vertical
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_field_mod

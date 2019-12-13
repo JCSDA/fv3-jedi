@@ -5,7 +5,8 @@ cost_function:
     Background:
       state:
       - filetype: geos
-        filename: Data/inputs/geos_c12/geos.%{member}%.20180415_000000z.nc4
+        datapath: Data/inputs/geos_c12
+        filename_bkgd: geos.bkg.20180415_000000z.nc4
         variables: &3dvars ["ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: hybrid
@@ -26,25 +27,35 @@ cost_function:
         variables: *3dvars
         members:
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem001.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem002.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem003.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem004.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem005.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem006.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem007.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem008.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem009.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem010.20180415_000000z.nc4
         localization:
           timeslots: ['2018-04-15T00:00:00Z']
           variables: *3dvars
@@ -63,7 +74,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/%{member}%/hofx/aircraft_eda-3dvar-geos_2018041500_m.nc4
+          obsfile: Data/hofx/eda/geos/%{member}%/aircraft_eda-3dvar-geos_2018041500_m.nc4
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
@@ -86,7 +97,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/%{member}%/hofx/sondes_eda-3dvar-geos_2018041500_m.nc4
+          obsfile: Data/hofx/eda/geos/%{member}%/sondes_eda-3dvar-geos_2018041500_m.nc4
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
@@ -109,7 +120,7 @@ cost_function:
         ObsDataIn:
          obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
-         obsfile: Data/%{member}%/hofx/gnssro_eda-3dvar-geos_2018041500_s.nc4
+         obsfile: Data/hofx/eda/geos/%{member}%/gnssro_eda-3dvar-geos_2018041500_s.nc4
         simulate:
          variables: [refractivity]
       ObsOperator:
@@ -157,7 +168,8 @@ cost_function:
   window_length: PT6H
   varchange: Analysis2Model
   filetype: 'geos'
-  filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180415_000000z.nc4
 final:
   diagnostics:
     departures: oman
@@ -174,8 +186,8 @@ model:
   variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis"]
 output:
   filetype: geos
-  datapath: Data/%{member}%/analysis/
-  filename: eda-3dvar-geos.
+  datapath: Data/analysis/eda/geos/%{member}%
+  filename_bkgd: eda-3dvar-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 resolution:

@@ -30,8 +30,8 @@ public :: changevarinverse
 
 type :: fv3jedi_varcha_a2m
   character(len=10)  :: filetype !Model type
-  character(len=255), allocatable :: filename(:) !GEOS
   type(fv3jedi_io_gfs)  :: gfs
+  type(fckit_configuration) :: f_conf
 end type fv3jedi_varcha_a2m
 
 ! ------------------------------------------------------------------------------
@@ -47,24 +47,18 @@ type(fv3jedi_varcha_a2m), intent(inout) :: self
 type(fv3jedi_geom),       intent(inout) :: geom
 type(c_ptr),              intent(in)    :: c_conf
 
-type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
 
 ! Fortran configuration
-f_conf = fckit_configuration(c_conf)
+self%f_conf = fckit_configuration(c_conf)
 
 ! Model type
-call f_conf%get_or_die("filetype",str)
+call self%f_conf%get_or_die("filetype",str)
 self%filetype = str
 deallocate(str)
 
 if (trim(self%filetype) == 'gfs') then
-  call self%gfs%setup(f_conf)
-elseif (trim(self%filetype) == 'geos') then
-  allocate(self%filename(1))
-  call f_conf%get_or_die("filename",str)
-  self%filename(1) = str
-  deallocate(str)
+  call self%gfs%setup(self%f_conf)
 endif
 
 end subroutine create
@@ -75,8 +69,6 @@ subroutine delete(self)
 
 implicit none
 type(fv3jedi_varcha_a2m), intent(inout) :: self
-
-if (trim(self%filetype) == 'geos') deallocate(self%filename)
 
 end subroutine delete
 
@@ -96,10 +88,6 @@ integer :: k
 logical :: failed
 
 type(fv3jedi_io_geos) :: geos
-
-if (trim(self%filetype) == 'geos') then
-    call geos%create(geom, 'read', self%filetype, self%filename)
-endif
 
 do index_mod = 1, xmod%nf
 
@@ -168,16 +156,14 @@ do index_mod = 1, xmod%nf
     if (trim(self%filetype) == 'gfs') then
       call self%gfs%read_fields( geom, xmod%fields(index_mod:index_mod) )
     elseif (trim(self%filetype) == 'geos') then
+      call geos%setup(geom, xmod%fields(index_mod:index_mod), vdt, 'read', self%f_conf)
       call geos%read_fields(geom, xmod%fields(index_mod:index_mod))
+      call geos%delete()
     endif
 
   endif
 
 enddo
-
-if (trim(self%filetype) == 'geos') then
-  call geos%delete()
-endif
 
 end subroutine changevar
 

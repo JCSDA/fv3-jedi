@@ -8,9 +8,9 @@ model:
   name: 'GEOS'
   tstep: PT15M
   GEOSSCRDIR: '/gpfsm/dnb31/drholdaw/jason-jedi-c90/scratch'
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar",
-              "bstar","zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+              "bstar","zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
 member:
   -filetype: geos
    filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4

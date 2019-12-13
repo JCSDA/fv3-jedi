@@ -5,11 +5,13 @@ Geometry:
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 Model:
   name: 'PSEUDO'
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   tstep: PT1H
   pseudo_type: 'geos'
-  pseudo_path: 'Data/inputs/geos_c12/'
-  pseudo_file: 'geos.bkg.'
+  pseudo_path: 'Data/inputs/geos_c12'
+  filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
+  filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
+  pseudo_file:
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
@@ -18,7 +20,8 @@ ModelTest:
   tolerance: '1.0e-4'
 State:
   filetype: geos
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis",
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]

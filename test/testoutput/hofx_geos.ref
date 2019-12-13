@@ -1,7 +1,8 @@
 Test     : Initial state: 
 Test     : Final state: 
 Test     : H(x): 
-Test     : Aircraft nobs= 6294 Min=-21.3283, Max=299.673, RMS=146.198
-Test     : Radiosonde nobs= 2922 Min=-35.3586, Max=301.242, RMS=139.2
-Test     : GnssroRef nobs= 20 Min=0.21983, Max=342.683, RMS=130.463
+Test     : Aircraft nobs= 6294 Min=-28.6563, Max=300.743, RMS=146.477
+Test     : Radiosonde nobs= 2922 Min=-32.7193, Max=301.273, RMS=139.214
+Test     : GnssroRef nobs= 20 Min=0.220248, Max=342.865, RMS=130.313
+Test     : AMSUA-NOAA19 nobs= 1500 Min=149.546, Max=291.505, RMS=230.995
 Test     : End H(x)

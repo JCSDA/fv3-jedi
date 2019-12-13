@@ -150,7 +150,7 @@ if (associated(state%cm))      self%cm      = state%cm(:,:,1)
 if (associated(state%ct))      self%ct      = state%ct(:,:,1)
 if (associated(state%cq))      self%cq      = state%cq(:,:,1)
 if (associated(state%kcbl))    self%kcbl    = state%kcbl(:,:,1)
-if (associated(state%ts))      self%ts      = state%ts(:,:,1)
+if (associated(state%tsm))     self%ts      = state%tsm(:,:,1)
 if (associated(state%khl))     self%khl     = state%khl(:,:,1)
 if (associated(state%khu))     self%khu     = state%khu(:,:,1)
 

@@ -118,7 +118,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/%{member}%/hofx/aircraft_eda-4dvar-gfs_2018041500_m.nc4
+          obsfile: Data/hofx/eda/gfs/%{member}%/aircraft_eda-4dvar-gfs_2018041500_m.nc4
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
@@ -145,7 +145,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/%{member}%/hofx/sondes_eda-4dvar-gfs_2018041500_m.nc4
+          obsfile: Data/hofx/eda/gfs/%{member}%/sondes_eda-4dvar-gfs_2018041500_m.nc4
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
@@ -168,7 +168,7 @@ cost_function:
         ObsDataIn:
          obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
-         obsfile: Data/%{member}%/hofx/gnssro_eda-4dvar-gfs_2018041500_s.nc4
+         obsfile: Data/hofx/eda/gfs/%{member}%/gnssro_eda-4dvar-gfs_2018041500_s.nc4
         simulate:
          variables: [refractivity]
       ObsOperator:
@@ -215,7 +215,7 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/%{member}%/hofx/amsua_n19_eda-4dvar-gfs_2018041500_m.nc4
+          obsfile: Data/hofx/eda/gfs/%{member}%/amsua_n19_eda-4dvar-gfs_2018041500_m.nc4
         simulate:
           variables: [brightness_temperature]
           channels: 1-15
@@ -272,7 +272,7 @@ model:
               "u_srf","v_srf","f10m"]
 output:
   filetype: gfs
-  datapath_tile: Data/%{member}%/analysis/
+  datapath_tile: Data/analysis/eda/gfs/%{member}%
   filename_core: eda-4dvar-gfs.fv_core.res.nc
   filename_trcr: eda-4dvar-gfs.fv_tracer.res.nc
   filename_sfcd: eda-4dvar-gfs.sfc_data.nc

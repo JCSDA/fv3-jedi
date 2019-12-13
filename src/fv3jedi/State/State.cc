@@ -33,9 +33,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 /// Constructor, destructor
 // -------------------------------------------------------------------------------------------------
-State::State(const Geometry & geom,
-                           const oops::Variables & vars,
-                           const util::DateTime & time):
+State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time):
   geom_(new Geometry(geom)), vars_(vars), time_(time)
 {
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);

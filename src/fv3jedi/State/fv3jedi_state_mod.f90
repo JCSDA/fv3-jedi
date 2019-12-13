@@ -15,7 +15,7 @@ use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_interpolation_mod,   only: bilinear_bump_interp
+use fv3jedi_interpolation_mod,   only: field2field_interp
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
@@ -45,8 +45,7 @@ type(fv3jedi_state),  intent(inout) :: self
 type(fv3jedi_geom),   intent(in)    :: geom
 type(oops_variables), intent(in)    :: vars
 
-integer :: var, vcount
-
+integer :: var, vcount, nlev
 
 ! Total fields
 ! ------------
@@ -246,7 +245,7 @@ do var = 1, vars%nvars()
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'sheleg', &
             fv3jedi_name = 'sheleg', units = 'none', staggerloc = center, arraypointer = self%sheleg)
-     case("tsea")
+     case("tsea","ts")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'tsea', &
@@ -255,25 +254,37 @@ do var = 1, vars%nvars()
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'vtype', &
-            fv3jedi_name = 'vtype', units = 'none', staggerloc = center, arraypointer = self%vtype)
+            fv3jedi_name = 'vtype', units = 'none', staggerloc = center, arraypointer = self%vtype, &
+            integerfield = .true.)
      case("stype")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'stype', &
-            fv3jedi_name = 'stype', units = 'none', staggerloc = center, arraypointer = self%stype)
+            fv3jedi_name = 'stype', units = 'none', staggerloc = center, arraypointer = self%stype, &
+            integerfield = .true.)
      case("vfrac")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'vfrac', &
             fv3jedi_name = 'vfrac', units = 'none', staggerloc = center, arraypointer = self%vfrac)
-     case("stc")
+     case("stc","soilt")
        vcount=vcount+1;
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
+       if (trim(vars%variable(var)) == "soilt") then
+         nlev = 1 !geos
+       else
+         nlev = 4 !gfs
+       endif
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,nlev, &
             short_name = vars%variable(var), long_name = 'stc', &
             fv3jedi_name = 'stc', units = 'none', staggerloc = center, arraypointer = self%stc)
-     case("smc")
+     case("smc","soilm")
        vcount=vcount+1;
-       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,4, &
+       if (trim(vars%variable(var)) == "soilm") then
+         nlev = 1 !geos
+       else
+         nlev = 4 !gfs
+       endif
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,nlev, &
             short_name = vars%variable(var), long_name = 'smc', &
             fv3jedi_name = 'smc', units = 'none', staggerloc = center, arraypointer = self%smc)
      case("snwdph")
@@ -281,12 +292,12 @@ do var = 1, vars%nvars()
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'snwdph', &
             fv3jedi_name = 'snwdph', units = 'none', staggerloc = center, arraypointer = self%snwdph)
-     case("u_srf")
+     case("u_srf","u10m")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'u_srf', &
             fv3jedi_name = 'u_srf', units = 'none', staggerloc = center, arraypointer = self%u_srf)
-     case("v_srf")
+     case("v_srf","v10m")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'v_srf', &
@@ -322,6 +333,21 @@ do var = 1, vars%nvars()
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'fraction_of_land', &
             fv3jedi_name = 'frland', units = '1', staggerloc = center, arraypointer = self%frland)
+     case("frlandice")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%variable(var), long_name = 'fraction_of_landice', &
+            fv3jedi_name = 'frlandice', units = '1', staggerloc = center, arraypointer = self%frlandice)
+     case("frlake")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%variable(var), long_name = 'fraction_of_lake', &
+            fv3jedi_name = 'frlake', units = '1', staggerloc = center, arraypointer = self%frlake)
+     case("frseaice")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
+            short_name = vars%variable(var), long_name = 'fraction_of_ice', &
+            fv3jedi_name = 'frseaice', units = '1', staggerloc = center, arraypointer = self%frseaice)
      case("varflt")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
@@ -362,11 +388,11 @@ do var = 1, vars%nvars()
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'KCBL_before_moist', &
             fv3jedi_name = 'kcbl', units = '1', staggerloc = center, arraypointer = self%kcbl)
-     case("ts")
+     case("tsm")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'surface_temp_before_moist', &
-            fv3jedi_name = 'ts', units = 'K', staggerloc = center, arraypointer = self%ts)
+            fv3jedi_name = 'tsm', units = 'K', staggerloc = center, arraypointer = self%tsm)
      case("khl")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
@@ -539,66 +565,69 @@ implicit none
 type(fv3jedi_state), intent(inout) :: self
 integer :: var
 
-if (associated(self%ud     )) nullify(self%ud     )
-if (associated(self%vd     )) nullify(self%vd     )
-if (associated(self%ua     )) nullify(self%ua     )
-if (associated(self%va     )) nullify(self%va     )
-if (associated(self%t      )) nullify(self%t      )
-if (associated(self%tv     )) nullify(self%tv     )
-if (associated(self%pt     )) nullify(self%pt     )
-if (associated(self%delp   )) nullify(self%delp   )
-if (associated(self%pe     )) nullify(self%pe     )
-if (associated(self%pkz    )) nullify(self%pkz    )
-if (associated(self%ps     )) nullify(self%ps     )
-if (associated(self%q      )) nullify(self%q      )
-if (associated(self%rh     )) nullify(self%rh     )
-if (associated(self%qi     )) nullify(self%qi     )
-if (associated(self%ql     )) nullify(self%ql     )
-if (associated(self%qils   )) nullify(self%qils   )
-if (associated(self%qlls   )) nullify(self%qlls   )
-if (associated(self%qicn   )) nullify(self%qicn   )
-if (associated(self%qlcn   )) nullify(self%qlcn   )
-if (associated(self%qs     )) nullify(self%qs     )
-if (associated(self%qr     )) nullify(self%qr     )
-if (associated(self%gr     )) nullify(self%gr     )
-if (associated(self%ca     )) nullify(self%ca     )
-if (associated(self%o3     )) nullify(self%o3     )
-if (associated(self%ox     )) nullify(self%ox     )
-if (associated(self%w      )) nullify(self%w      )
-if (associated(self%delz   )) nullify(self%delz   )
-if (associated(self%phis   )) nullify(self%phis   )
-if (associated(self%psi    )) nullify(self%psi    )
-if (associated(self%chi    )) nullify(self%chi    )
-if (associated(self%vort   )) nullify(self%vort   )
-if (associated(self%divg   )) nullify(self%divg   )
-if (associated(self%slmsk  )) nullify(self%slmsk  )
-if (associated(self%sheleg )) nullify(self%sheleg )
-if (associated(self%tsea   )) nullify(self%tsea   )
-if (associated(self%vtype  )) nullify(self%vtype  )
-if (associated(self%stype  )) nullify(self%stype  )
-if (associated(self%vfrac  )) nullify(self%vfrac  )
-if (associated(self%stc    )) nullify(self%stc    )
-if (associated(self%smc    )) nullify(self%smc    )
-if (associated(self%snwdph )) nullify(self%snwdph )
-if (associated(self%u_srf  )) nullify(self%u_srf  )
-if (associated(self%v_srf  )) nullify(self%v_srf  )
-if (associated(self%f10m   )) nullify(self%f10m   )
-if (associated(self%qls    )) nullify(self%qls    )
-if (associated(self%qcn    )) nullify(self%qcn    )
-if (associated(self%cfcn   )) nullify(self%cfcn   )
-if (associated(self%frocean)) nullify(self%frocean)
-if (associated(self%frland )) nullify(self%frland )
-if (associated(self%varflt )) nullify(self%varflt )
-if (associated(self%ustar  )) nullify(self%ustar  )
-if (associated(self%bstar  )) nullify(self%bstar  )
-if (associated(self%zpbl   )) nullify(self%zpbl   )
-if (associated(self%cm     )) nullify(self%cm     )
-if (associated(self%ct     )) nullify(self%ct     )
-if (associated(self%cq     )) nullify(self%cq     )
-if (associated(self%kcbl   )) nullify(self%kcbl   )
-if (associated(self%ts     )) nullify(self%ts     )
-if (associated(self%khl    )) nullify(self%khl    )
-if (associated(self%khu    )) nullify(self%khu    )
+if (associated(self%ud       )) nullify(self%ud       )
+if (associated(self%vd       )) nullify(self%vd       )
+if (associated(self%ua       )) nullify(self%ua       )
+if (associated(self%va       )) nullify(self%va       )
+if (associated(self%t        )) nullify(self%t        )
+if (associated(self%tv       )) nullify(self%tv       )
+if (associated(self%pt       )) nullify(self%pt       )
+if (associated(self%delp     )) nullify(self%delp     )
+if (associated(self%pe       )) nullify(self%pe       )
+if (associated(self%pkz      )) nullify(self%pkz      )
+if (associated(self%ps       )) nullify(self%ps       )
+if (associated(self%q        )) nullify(self%q        )
+if (associated(self%rh       )) nullify(self%rh       )
+if (associated(self%qi       )) nullify(self%qi       )
+if (associated(self%ql       )) nullify(self%ql       )
+if (associated(self%qils     )) nullify(self%qils     )
+if (associated(self%qlls     )) nullify(self%qlls     )
+if (associated(self%qicn     )) nullify(self%qicn     )
+if (associated(self%qlcn     )) nullify(self%qlcn     )
+if (associated(self%qs       )) nullify(self%qs       )
+if (associated(self%qr       )) nullify(self%qr       )
+if (associated(self%gr       )) nullify(self%gr       )
+if (associated(self%ca       )) nullify(self%ca       )
+if (associated(self%o3       )) nullify(self%o3       )
+if (associated(self%ox       )) nullify(self%ox       )
+if (associated(self%w        )) nullify(self%w        )
+if (associated(self%delz     )) nullify(self%delz     )
+if (associated(self%phis     )) nullify(self%phis     )
+if (associated(self%psi      )) nullify(self%psi      )
+if (associated(self%chi      )) nullify(self%chi      )
+if (associated(self%vort     )) nullify(self%vort     )
+if (associated(self%divg     )) nullify(self%divg     )
+if (associated(self%slmsk    )) nullify(self%slmsk    )
+if (associated(self%sheleg   )) nullify(self%sheleg   )
+if (associated(self%tsea     )) nullify(self%tsea     )
+if (associated(self%vtype    )) nullify(self%vtype    )
+if (associated(self%stype    )) nullify(self%stype    )
+if (associated(self%vfrac    )) nullify(self%vfrac    )
+if (associated(self%stc      )) nullify(self%stc      )
+if (associated(self%smc      )) nullify(self%smc      )
+if (associated(self%snwdph   )) nullify(self%snwdph   )
+if (associated(self%u_srf    )) nullify(self%u_srf    )
+if (associated(self%v_srf    )) nullify(self%v_srf    )
+if (associated(self%f10m     )) nullify(self%f10m     )
+if (associated(self%qls      )) nullify(self%qls      )
+if (associated(self%qcn      )) nullify(self%qcn      )
+if (associated(self%cfcn     )) nullify(self%cfcn     )
+if (associated(self%frocean  )) nullify(self%frocean  )
+if (associated(self%frland   )) nullify(self%frland   )
+if (associated(self%frlandice)) nullify(self%frlandice)
+if (associated(self%frlake   )) nullify(self%frlake   )
+if (associated(self%frseaice )) nullify(self%frseaice )
+if (associated(self%varflt   )) nullify(self%varflt   )
+if (associated(self%ustar    )) nullify(self%ustar    )
+if (associated(self%bstar    )) nullify(self%bstar    )
+if (associated(self%zpbl     )) nullify(self%zpbl     )
+if (associated(self%cm       )) nullify(self%cm       )
+if (associated(self%ct       )) nullify(self%ct       )
+if (associated(self%cq       )) nullify(self%cq       )
+if (associated(self%kcbl     )) nullify(self%kcbl     )
+if (associated(self%tsm      )) nullify(self%tsm      )
+if (associated(self%khl      )) nullify(self%khl      )
+if (associated(self%khu      )) nullify(self%khu      )
 !Aerosols
 if (associated(self%du001    )) nullify(self%du001    )
 if (associated(self%du002    )) nullify(self%du002    )
@@ -805,16 +834,16 @@ subroutine change_resol(self,geom,rhs,geom_rhs)
 
 implicit none
 type(fv3jedi_state), intent(inout) :: self
-type(fv3jedi_geom),  intent(in)    :: geom
+type(fv3jedi_geom),  intent(inout) :: geom
 type(fv3jedi_state), intent(in)    :: rhs
-type(fv3jedi_geom),  intent(in)    :: geom_rhs
+type(fv3jedi_geom),  intent(inout) :: geom_rhs
 
 call checksame(self%fields,rhs%fields,"fv3jedi_state_mod.change_resol")
 
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1) == 0) then
   call copy(self, rhs)
 else
-  call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+  call field2field_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
   self%calendar_type = rhs%calendar_type
   self%date_init = rhs%date_init
 endif
@@ -1126,7 +1155,6 @@ type(fv3jedi_io_geos) :: geos
 
 character(len=10) :: filetype
 character(len=255) :: filename
-character(len=255), allocatable :: filenames(:)
 integer :: flipvert
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
@@ -1153,33 +1181,12 @@ if (trim(filetype) == 'gfs') then
   endif
   if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
-elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+elseif (trim(filetype) == 'geos') then
 
-  if (trim(filetype) == 'geos') then
-    allocate(filenames(1))
-    call f_conf%get_or_die("filename",str)
-    call swap_name_member(f_conf, str)
-    filenames(1) = str
-    deallocate(str)
-  elseif (trim(filetype) == 'geos-rst') then
-    allocate(filenames(3))
-    call f_conf%get_or_die("filename-fvcore",str)
-    filenames(1) = str
-    deallocate(str)
-    call f_conf%get_or_die("filename-moist",str)
-    filenames(2) = str
-    deallocate(str)
-    call f_conf%get_or_die("filename-surf",str)
-    filenames(3) = str
-    deallocate(str)
-  endif
-
-  call geos%create(geom, 'read', filetype, filenames)
-  call geos%read_time(vdate)
+  call geos%setup(geom, self%fields, vdate, 'read', f_conf)
+  call geos%read_meta(geom, vdate, self%calendar_type, self%date_init)
   call geos%read_fields(geom, self%fields)
   call geos%delete()
-
-  deallocate(filenames)
 
 else
 
@@ -1206,7 +1213,6 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
-  integer :: tiledim
   integer :: flipvert
   type(fckit_configuration) :: f_conf
   character(len=:), allocatable :: str
@@ -1234,14 +1240,10 @@ subroutine write_file(geom, self, c_conf, vdate)
 
     if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
-  elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+  elseif (trim(filetype) == 'geos') then
 
-    tiledim = 1
-    if (f_conf%has("tiledim")) then
-       call f_conf%get_or_die("tiledim",tiledim)
-    endif
-    call geos%create(geom, 'write', filetype, tiledim=tiledim)
-    call geos%write_all(geom, self%fields, f_conf, vdate)
+    call geos%setup(geom, self%fields, vdate, 'write', f_conf)
+    call geos%write_all(geom, self%fields, vdate)
     call geos%delete()
 
   else

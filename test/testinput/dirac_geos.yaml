@@ -5,7 +5,8 @@ resolution:
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 initial:
   filetype: geos
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
   variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
 variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
 Covariance:
@@ -25,29 +26,34 @@ Covariance:
       verbosity: 'main'
   members:
     - filetype: geos
-      filename: Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem001.20180414_210000z.nc4
       variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
     - filetype: geos
-      filename: Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem002.20180414_210000z.nc4
       variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
     - filetype: geos
-      filename: Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem003.20180414_210000z.nc4
       variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
     - filetype: geos
-      filename: Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem004.20180414_210000z.nc4
       variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
     - filetype: geos
-      filename: Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem005.20180414_210000z.nc4
 output_B:
   filetype: geos
   datapath: Data/bump/
-  filename: dirac.B.
+  filename: dirac.B.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 output_localization:
   filetype: geos
   datapath: Data/bump/
-  filename: dirac.loc.
+  filename: dirac.loc.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 dirac:

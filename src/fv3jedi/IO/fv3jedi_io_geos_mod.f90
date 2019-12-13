@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2019 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,6 +8,8 @@ module fv3jedi_io_geos_mod
 use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use iso_c_binding
+
+use string_utils, only: swap_name_member
 
 use fckit_mpi_module
 
@@ -24,31 +26,49 @@ implicit none
 private
 public fv3jedi_io_geos
 
+integer, parameter :: maxstring = 2048
+
+integer, parameter :: numfiles = 5 ! May change as more restarts are used
+
 type fv3jedi_io_geos
- logical :: iam_io_proc        !Flag for procs doing IO
- type(fckit_mpi_comm) :: ccomm !Component communicator
+ ! File names and paths
+ integer :: ncid(numfiles)
+ integer, allocatable :: ncid_forfield(:)
+ logical :: ncid_isneeded(numfiles)
+ ! Whether to expect/use the tile dimension
+ logical :: tiledim(numfiles) = .false.
+ logical:: restart(numfiles) = .false.
+ ! Filename
+ character(len=maxstring) :: datapath = ''
+ character(len=maxstring) :: filenames(numfiles) = ''
+ character(len=maxstring) :: filenames_default(numfiles) = ''
+ ! Write extra meta data needed for GEOS ingest
+ logical :: geosingestmeta = .false.
+ ! Comms
+ logical :: iam_io_proc
+ type(fckit_mpi_comm) :: ccomm
  integer :: tcomm, ocomm       !Communicator for each tile and for output
  integer :: trank, tsize       !Tile come info
  integer :: crank, csize       !Component comm info
  integer :: orank, osize       !Output comm info
- integer :: vindex
- integer, allocatable :: ncid(:)
- logical :: tiledim
- character(len=10) :: filetype
- character(len=4) :: XdimVar, YdimVar
- integer :: ncdim3, ncdim2
- integer, allocatable :: istart3(:), icount3(:)
- integer, allocatable :: istart2(:), icount2(:)
- integer :: numfiles
-  contains
-  procedure :: create
+ ! IO ranges
+ integer :: is_r3_tile(5), ic_r3_tile(5)
+ integer :: is_r2_tile(4), ic_r2_tile(4)
+ integer :: is_r3_noti(4), ic_r3_noti(4)
+ integer :: is_r2_noti(3), ic_r2_noti(3)
+ integer :: vindex_tile = 4
+ integer :: vindex_noti = 3
+ ! Clobber option
+ logical :: clobber = .false.
+ integer :: x_dimid, y_dimid, n_dimid, z_dimid, e_dimid, t_dimid, f_dimid, c_dimid, o_dimid
+ contains
+  procedure :: setup
   procedure :: delete
-  procedure :: read_time
+  procedure :: read_meta
   procedure :: read_fields
   procedure :: write_all
   final     :: dummy_final
 end type fv3jedi_io_geos
-
 
 ! ------------------------------------------------------------------------------
 
@@ -56,43 +76,84 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine create(self, geom, accesstype, filetype, filename, tiledim)
+subroutine setup(self, geom, fields, vdate, readorwrite, f_conf)
 
-implicit none
+class(fv3jedi_io_geos),              intent(inout) :: self
+type(fv3jedi_geom),                  intent(in)    :: geom
+type(fv3jedi_field),                 intent(in)    :: fields(:)
+type(datetime),                      intent(in)    :: vdate
+character(len=*),                    intent(in)    :: readorwrite
+type(fckit_configuration), optional, intent(in)    :: f_conf
 
-class(fv3jedi_io_geos),     intent(inout) :: self
-type(fv3jedi_geom),         intent(in)    :: geom
-character(len=*),           intent(in)    :: accesstype
-character(len=10),          intent(in)    :: filetype
-character(len=*), optional, intent(in)    :: filename(:)
-integer, optional,          intent(in)    :: tiledim
+integer :: ierr, nf, var, fileopts
 
-integer :: ierr, ncstat, nf
-integer :: im,jm,lm,nm,dimid
-integer :: tileoffset
+integer :: tileoffset, dt_in_name
+character(len=4) :: yyyy
+character(len=2) :: mm, dd, hh, min, ss
 
-! Tile dimension in file
-self%tiledim = .true.
-if (present(tiledim)) then
-  self%tiledim = tiledim == 1
-endif
+
+! Allocatable arrays
+! ------------------
+allocate(self%ncid_forfield(size(fields)))
+
+self%ncid = -1
+self%ncid_isneeded = .false.
+self%ncid_forfield = -1
+
+
+! Default file names
+! ------------------
+nf = 0
+nf = nf+1; self%filenames_default(nf) = 'bkg'
+nf = nf+1; self%filenames_default(nf) = 'crtmsrf'
+nf = nf+1; self%filenames_default(nf) = 'fvcore_internal_rst'
+nf = nf+1; self%filenames_default(nf) = 'moist_internal_rst'
+nf = nf+1; self%filenames_default(nf) = 'surf_import_rst'
+
+if (nf .ne. numfiles) &
+  call abor1_ftn("fv3jedi_io_geos_mod.setup: number of potential restart files &
+                  does not match numfiles")
+
+
+! Set default tile dim and restart flags
+! --------------------------------------
+self%tiledim(1) = .true.  ! History defult tile dim
+self%tiledim(2) = .true.  ! History defult tile dim
+self%restart(3) = .false. ! Restarts do not use tiledim
+self%restart(4) = .false. ! Restarts do not use tiledim
+self%restart(5) = .false. ! Restarts do not use tiledim
+
+self%restart(1) = .false. !Is not a restart file
+self%restart(2) = .false. !Is not a restart file
+self%restart(3) = .true.  !Is a restart file
+self%restart(4) = .true.  !Is a restart file
+self%restart(5) = .true.  !Is a restart file
+
+
+! Get configuration
+! -----------------
+if (present(f_conf)) call get_conf(self,f_conf)
+
 
 ! Component communicator / get the main communicator from fv3 geometry
+! --------------------------------------------------------------------
 self%ccomm = geom%f_comm
 self%csize = self%ccomm%size()
 self%crank = self%ccomm%rank()
 
+
 ! Split comm and set flag for IO procs
+! ------------------------------------
 self%iam_io_proc = .true.
 
 if (self%csize > 6) then
 
-  ! Tile communicator
+  ! Communicator for all procs on each tile. To communicate to tiles write proc
   call mpi_comm_split(self%ccomm%communicator(), geom%ntile, self%ccomm%rank(), self%tcomm, ierr)
   call mpi_comm_rank(self%tcomm, self%trank, ierr)
   call mpi_comm_size(self%tcomm, self%tsize, ierr)
 
-  ! Write communicator
+  ! Communicator for procs that will write, one per tile
   call mpi_comm_split(self%ccomm%communicator(), self%trank, geom%ntile, self%ocomm, ierr)
   call mpi_comm_rank(self%ocomm, self%orank, ierr)
   call mpi_comm_size(self%ocomm, self%osize, ierr)
@@ -106,160 +167,240 @@ else
 
 endif
 
-! Allocatables based on type of file
-self%filetype = filetype
-if (self%filetype == 'geos') then
-  self%numfiles = 1
-elseif (self%filetype == 'geos-rst') then
-  self%numfiles = 3
-else
-  call abor1_ftn("fv3jedi_io_geos_mod.create support filetpe geos or geos-rst only")
-endif
-allocate(self%ncid(self%numfiles))
 
-! Prepare the file handle for later access
+! Create local to this proc start/count
+! -------------------------------------
 if (self%iam_io_proc) then
 
-  if (trim(accesstype) == 'read') then
+  ! Starts/counts with tile dimension
+  self%is_r3_tile(1) = 1;           self%ic_r3_tile(1) = geom%npx-1  !X
+  self%is_r3_tile(2) = 1;           self%ic_r3_tile(2) = geom%npy-1  !Y
+  self%is_r3_tile(3) = geom%ntile;  self%ic_r3_tile(3) = 1           !Tile
+  self%is_r3_tile(4) = 1;           self%ic_r3_tile(4) = 1           !Lev
+  self%is_r3_tile(5) = 1;           self%ic_r3_tile(5) = 1           !Time
+  self%is_r2_tile(1) = 1;           self%ic_r2_tile(1) = geom%npx-1
+  self%is_r2_tile(2) = 1;           self%ic_r2_tile(2) = geom%npy-1
+  self%is_r2_tile(3) = geom%ntile;  self%ic_r2_tile(3) = 1
+  self%is_r2_tile(4) = 1;           self%ic_r2_tile(4) = 1
 
-    ! Open the file for reading
-    do nf = 1,self%numfiles
-      call nccheck ( nf90_open(trim(filename(nf)), NF90_NOWRITE, self%ncid(nf)), "nf90_open"//trim(filename(nf)) )
-    enddo
+  ! Starts/counts with no tile dimension
+  tileoffset = (geom%ntile-1)*(6*(geom%npy-1)/geom%ntiles)
+  self%is_r3_noti(1) = 1;              self%ic_r3_noti(1) = geom%npx-1
+  self%is_r3_noti(2) = tileoffset+1;   self%ic_r3_noti(2) = geom%npy-1
+  self%is_r3_noti(3) = 1;              self%ic_r3_noti(3) = 1
+  self%is_r3_noti(4) = 1;              self%ic_r3_noti(4) = 1
+  self%is_r2_noti(1) = 1;              self%ic_r2_noti(1) = geom%npx-1
+  self%is_r2_noti(2) = tileoffset+1;   self%ic_r2_noti(2) = geom%npy-1
+  self%is_r2_noti(3) = 1;              self%ic_r2_noti(3) = 1
 
-    ! Get dimensions, XDim,YDim,lev,time
-    ncstat = nf90_inq_dimid(self%ncid(1), "Xdim", dimid)
-    if(ncstat /= nf90_noerr) &
-    ncstat = nf90_inq_dimid(self%ncid(1), "lon", dimid)
-    if(ncstat /= nf90_noerr) &
-    call abor1_ftn("Failed to find Xdim or lon in GEOS read")
+endif
 
-    call nccheck ( nf90_inquire_dimension(self%ncid(1), dimid, len = im), "nf90_inquire_dimension Xdim/lon" )
 
-    ncstat = nf90_inq_dimid(self%ncid(1), "Ydim", dimid)
-    if(ncstat /= nf90_noerr) &
-    ncstat = nf90_inq_dimid(self%ncid(1), "lat", dimid)
-    if(ncstat /= nf90_noerr) &
-    call abor1_ftn("Failed to find Ydim or lat in GEOS read")
+! Formatting of the files
+! -----------------------
 
-    call nccheck ( nf90_inquire_dimension(self%ncid(1), dimid, len = jm), "nf90_inquire_dimension YDim/lat" )
+! Check if filename needs datetime information
+do nf = 1, numfiles
+  dt_in_name = index(self%filenames(nf),"%yyyy") + index(self%filenames(nf),"%mm") + index(self%filenames(nf),"%dd") + &
+               index(self%filenames(nf),"%hh"  ) + index(self%filenames(nf),"%MM") + index(self%filenames(nf),"%ss")
 
-    call nccheck ( nf90_inq_dimid(self%ncid(1), "lev",  dimid), "nf90_inq_dimid lev" )
-    call nccheck ( nf90_inquire_dimension(self%ncid(1), dimid, len = lm), "nf90_inquire_dimension lev" )
-
-    call nccheck ( nf90_inq_dimid(self%ncid(1), "time", dimid), "nf90_inq_dimid time" )
-    call nccheck ( nf90_inquire_dimension(self%ncid(1), dimid, len = nm), "nf90_inquire_dimension time" )
-
-    ! GEOS can use concatenated tiles or tile as a dimension
-    if ( (im == geom%npx-1) .and. (jm == 6*(geom%npy-1) ) ) then
-      tileoffset = (geom%ntile-1)*(jm/geom%ntiles)
-      self%ncdim3 = 4
-      self%ncdim2 = 3
-    elseif ( (im == geom%npx-1) .and. (jm == geom%npy-1 ) ) then
-      tileoffset = 0
-      self%ncdim3 = 5
-      self%ncdim2 = 4
-    else
-      call abor1_ftn("fv3jedi_io_geos_mod.create: dimension mismatch between geometry and file")
-    endif
-
-    if (geom%npz .ne. lm) &
-    call abor1_ftn("fv3jedi_io_geos_mod.create: level mismatch between geometry and file")
-
-  elseif (trim(accesstype) == 'write') then
-
-    ! Choose dimension based on tiledim
-    if ( .not. self%tiledim ) then
-      tileoffset = (geom%ntile-1)*(6*(geom%npy-1)/geom%ntiles)
-      self%ncdim3 = 4
-      self%ncdim2 = 3
-      self%XdimVar = 'lon'
-      self%YdimVar = 'lat'
-    else
-      tileoffset = 0
-      self%ncdim3 = 5
-      self%ncdim2 = 4
-      self%XdimVar = 'Xdim'
-      self%YdimVar = 'Ydim'
-    endif
-
+  ! If needed in filename get datetime
+  if (dt_in_name > 0) then
+    call vdate_to_datestring(vdate, yyyy=yyyy, mm=mm, dd=dd, hh=hh, min=min, ss=ss)
+    exit
   endif
 
-  allocate(self%istart3(self%ncdim3),self%icount3(self%ncdim3))
-  allocate(self%istart2(self%ncdim2),self%icount2(self%ncdim2))
+end do
 
-  ! Create local to this proc start/count
-  if (self%ncdim3 == 5) then
-    self%istart3(1) = 1;           self%icount3(1) = geom%npx-1  !X
-    self%istart3(2) = 1;           self%icount3(2) = geom%npy-1  !Y
-    self%istart3(3) = geom%ntile;  self%icount3(3) = 1           !Tile
-    self%istart3(4) = 1;           self%icount3(4) = 1           !Lev
-    self%istart3(5) = 1;           self%icount3(5) = 1           !Time
-    self%istart2(1) = 1;           self%icount2(1) = geom%npx-1
-    self%istart2(2) = 1;           self%icount2(2) = geom%npy-1
-    self%istart2(3) = geom%ntile;  self%icount2(3) = 1
-    self%istart2(4) = 1;           self%icount2(4) = 1
-    self%vindex = 4
-  elseif (self%ncdim3 == 4) then
-    self%istart3(1) = 1;              self%icount3(1) = geom%npx-1
-    self%istart3(2) = tileoffset+1;   self%icount3(2) = geom%npy-1
-    self%istart3(3) = 1;              self%icount3(3) = 1
-    self%istart3(4) = 1;              self%icount3(4) = 1
-    self%istart2(1) = 1;              self%icount2(1) = geom%npx-1
-    self%istart2(2) = tileoffset+1;   self%icount2(2) = geom%npy-1
-    self%istart2(3) = 1;              self%icount2(3) = 1
-    self%vindex = 3
+do nf = 1, numfiles
+
+  ! Replace %yyyy, %mm, %dd, %hh, %MM, %ss with current date if user requested
+  if (index(self%filenames(nf),"%yyyy") > 0) self%filenames(nf) = replace_text(self%filenames(nf),'%yyyy',yyyy)
+  if (index(self%filenames(nf),"%mm"  ) > 0) self%filenames(nf) = replace_text(self%filenames(nf),'%mm'  ,mm  )
+  if (index(self%filenames(nf),"%dd"  ) > 0) self%filenames(nf) = replace_text(self%filenames(nf),'%dd'  ,dd  )
+  if (index(self%filenames(nf),"%hh"  ) > 0) self%filenames(nf) = replace_text(self%filenames(nf),'%hh'  ,hh  )
+  if (index(self%filenames(nf),"%MM"  ) > 0) self%filenames(nf) = replace_text(self%filenames(nf),'%MM'  ,min )
+  if (index(self%filenames(nf),"%ss"  ) > 0) self%filenames(nf) = replace_text(self%filenames(nf),'%ss'  ,ss  )
+
+  ! Prepend filenames with path
+  self%filenames(nf) = trim(self%datapath)//'/'//trim(self%filenames(nf))
+
+enddo
+
+
+! Set files for the fields
+! ------------------------
+do var = 1,size(fields)
+
+  select case (trim(fields(var)%short_name))
+
+    ! Standard background history file
+    case("ud","vd","u","v","ua","va","t","q","delp","qi","ql","qs","qr","o3mr","qls","qcn","cfcn","ps","phis",&
+         "hs_stdv","frland","frlandice","frlake","frocean","frseaice","kcbl","tsm","khl","khu",&
+         "varflt","ustar","bstar","zpbl","cm","ct","cq","u10m","v10m","ts","sheleg","soilt","soilm",&
+         "DU001","DU002","DU003","DU004","DU005","SS001","SS002","SS003","SS004","SS005",&
+         "BCPHOBIC","BCPHILIC","OCPHOBIC","OCPHILIC","NO3AN1","NO3AN2","NO3AN3","SO4")
+      call set_file_names(self,var,1)
+
+    ! CRTM surface quantities, usually from GFS output
+    case("vtype","stype","vfrac")
+      call set_file_names(self,var,2)
+
+    ! GEOS fv_core restart
+    case("U","V","W","PT","PKZ","PE","DZ")
+      call set_file_names(self,var,3)
+
+    ! GEOS moist restart
+    case("Q","QILS","QICN","QLLS","QLCN","CLLS","CLCN")
+      call set_file_names(self,var,4)
+
+    ! GEOS surface restart
+    case("PHIS")
+      call set_file_names(self,var,5)
+
+    ! Default to abort
+    case default
+      call abor1_ftn("fv3jedi_io_geos_mod.create: geos restart file for "//trim(fields(var)%short_name)//" not defined")
+
+  endselect
+
+enddo
+
+
+! Open/create the files
+! ---------------------
+self%ncid = -1
+
+if (self%iam_io_proc) then
+
+  if (trim(readorwrite) == 'read') then
+
+    fileopts = NF90_NOWRITE
+
+    ! Open files for reading
+    do nf = 1,numfiles
+      if (self%ncid_isneeded(nf)) then
+        call nccheck ( nf90_open( trim(self%filenames(nf)), fileopts, self%ncid(nf) ), &
+                       "nf90_open"//trim(self%filenames(nf)) )
+      endif
+    enddo
+
+  elseif (trim(readorwrite) == 'write') then
+
+    fileopts = ior(NF90_NETCDF4, NF90_MPIIO)
+    if (self%clobber) fileopts = ior(fileopts, NF90_CLOBBER)
+
+    ! Create/open files for writing
+    do nf = 1,numfiles
+      if (self%ncid_isneeded(nf)) then
+        call nccheck( nf90_create( trim(self%filenames(nf)), fileopts, self%ncid(nf), &
+                                   comm = self%ocomm, info = MPI_INFO_NULL), &
+                                   "nf90_create"//trim(self%filenames(nf)) )
+      endif
+    enddo
+
   else
-    call abor1_ftn("fv3jedi_io_geos_mod.create: ncdim3 set incorrectly")
+
+    call abor1_ftn("fv3jedi_io_geos_mod.setup: readorwrite must be read or write not "//readorwrite)
+
   endif
 
 endif
 
-end subroutine create
+end subroutine setup
+
+! ------------------------------------------------------------------------------
+
+subroutine get_conf(self,f_conf)
+
+implicit none
+class(fv3jedi_io_geos),    intent(inout) :: self
+type(fckit_configuration), intent(in)    :: f_conf
+
+integer :: n, nf
+
+! Path where files are read from or saved to
+! ------------------------------------------
+call string_from_conf(f_conf,"datapath",self%datapath,'Data',memberswap=.true.)
+
+! User can ask for extra meta data needed for GEOS ingest
+! -------------------------------------------------------
+if (.not. f_conf%get('geosingestmeta',self%geosingestmeta)) self%geosingestmeta = .false.
+
+! Whether to expect/use the tile dimenstion in the file
+! -----------------------------------------------------
+if (.not. f_conf%get('clobber',self%clobber)) self%clobber = .false.
+
+! Whether to expect/use the tile dimenstion in the file
+! -----------------------------------------------------
+if (.not. f_conf%get('tiledim',self%tiledim(1))) self%tiledim(1) = .true.
+if (.not. f_conf%get('tiledim',self%tiledim(2))) self%tiledim(2) = .true.
+
+! User can optionally specify the file names
+! -------------------------------------------
+nf = 0
+nf = nf+1; call string_from_conf(f_conf,"filename_bkgd",self%filenames(1),self%filenames_default(1),memberswap=.true.)
+nf = nf+1; call string_from_conf(f_conf,"filename_crtm",self%filenames(2),self%filenames_default(2),memberswap=.true.)
+nf = nf+1; call string_from_conf(f_conf,"filename_core",self%filenames(3),self%filenames_default(3),memberswap=.true.)
+nf = nf+1; call string_from_conf(f_conf,"filename_mois",self%filenames(4),self%filenames_default(4),memberswap=.true.)
+nf = nf+1; call string_from_conf(f_conf,"filename_surf",self%filenames(5),self%filenames_default(5),memberswap=.true.)
+
+! Sanity check
+! ------------
+if (nf .ne. numfiles) &
+  call abor1_ftn("fv3jedi_io_geos_mod.get_conf: number of potential restart files &
+                  does not match numfiles")
+
+end subroutine get_conf
 
 ! ------------------------------------------------------------------------------
 
 subroutine delete(self)
 
 implicit none
-
 class(fv3jedi_io_geos), intent(inout) :: self
 
 integer :: ierr, nf
 
+! Close the files
+! ---------------
 if (self%iam_io_proc) then
-  !Close the file
-  do nf = 1,self%numfiles
-    call nccheck ( nf90_close(self%ncid(nf)), "nf90_close" )
+  do nf = 1,numfiles
+    if (self%ncid_isneeded(nf)) then
+      call nccheck ( nf90_close(self%ncid(nf)), "nf90_close" )
+    endif
   enddo
 endif
-deallocate(self%ncid)
+
+! Deallocate
+! ----------
+if (allocated(self%ncid_forfield)) deallocate(self%ncid_forfield)
 
 ! Release split comms
+! -------------------
 if (self%csize > 6) call MPI_Comm_free(self%tcomm, ierr)
 call MPI_Comm_free(self%ocomm, ierr)
-
-! Deallocate start/count
-if (self%iam_io_proc) then
-  deallocate ( self%istart2, self%icount2 )
-  deallocate ( self%istart3, self%icount3 )
-endif
 
 end subroutine delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_time(self, vdate)
+subroutine read_meta(self, geom, vdate, calendar_type, date_init)
 
 implicit none
-
-class(fv3jedi_io_geos), intent(in)    :: self
-type(datetime),         intent(inout) :: vdate
+class(fv3jedi_io_geos), intent(inout) :: self
+type(fv3jedi_geom),     intent(inout) :: geom          !< Geometry
+type(datetime),         intent(inout) :: vdate         !< DateTime
+integer,                intent(inout) :: calendar_type !< Calendar type
+integer,                intent(inout) :: date_init(6)  !< Date intialized
 
 integer :: varid, date(6), intdate, inttime, idate, isecs
 character(len=8) :: cdate
 character(len=6) :: ctime
-integer(kind=c_int) :: cidate, cisecs
+integer(kind=c_int) :: cidate, cisecs, nf, df
+
+calendar_type = -1
+date_init = 0
 
 idate = 0
 isecs = 0
@@ -267,9 +408,16 @@ isecs = 0
 if (self%iam_io_proc) then
 
   ! Get time attributes
-  call nccheck ( nf90_inq_varid(self%ncid(1), "time", varid), "nf90_inq_varid time" )
-  call nccheck ( nf90_get_att(self%ncid(1), varid, "begin_date", intdate), "nf90_get_att begin_date" )
-  call nccheck ( nf90_get_att(self%ncid(1), varid, "begin_time", inttime), "nf90_get_att begin_time" )
+  do nf = 1,numfiles
+    if (self%ncid_isneeded(nf)) then
+      df = nf
+      exit
+    endif
+  enddo
+
+  call nccheck ( nf90_inq_varid(self%ncid(df), "time", varid), "nf90_inq_varid time" )
+  call nccheck ( nf90_get_att(self%ncid(df), varid, "begin_date", intdate), "nf90_get_att begin_date" )
+  call nccheck ( nf90_get_att(self%ncid(df), varid, "begin_time", inttime), "nf90_get_att begin_time" )
 
   ! Pad with leading zeros if need be
   write(cdate,"(I0.8)") intdate
@@ -296,93 +444,108 @@ cidate = idate
 cisecs = isecs
 call datetime_from_ifs(vdate, cidate, cisecs)
 
-end subroutine read_time
+end subroutine read_meta
 
 ! ------------------------------------------------------------------------------
 
 subroutine read_fields(self, geom, fields)
 
 implicit none
-
-class(fv3jedi_io_geos), target, intent(in)    :: self
-type(fv3jedi_geom),             intent(in)    :: geom
+class(fv3jedi_io_geos), target, intent(inout) :: self
+type(fv3jedi_geom),             intent(inout) :: geom
 type(fv3jedi_field),            intent(inout) :: fields(:)
 
-integer :: varid, n, lev, fieldncid
+integer :: varid, var, lev, ncid
+logical :: tiledim
 integer, pointer :: istart(:), icount(:)
-integer, allocatable, target :: istart3(:)
+integer, allocatable, target :: is_r3_tile(:), is_r3_noti(:)
 real(kind=kind_real), allocatable :: arrayg(:,:), delp(:,:,:)
 
 
+! Local copy of starts for rank 3 in order to do one level at a time
+! ------------------------------------------------------------------
+allocate(is_r3_tile(size(self%is_r3_tile)))
+is_r3_tile = self%is_r3_tile
+allocate(is_r3_noti(size(self%is_r3_noti)))
+is_r3_noti = self%is_r3_noti
+
 ! Array for level of whole tile
+! -----------------------------
 allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
 
-do n = 1,size(fields)
 
-  ! For GEOS restarts specify file for variables
-  fieldncid = 1
-  if (self%filetype == 'geos-rst') then
-    select case (trim(fields(n)%short_name))
-    case("U","V","W","PT","PKZ","PE","DZ")
-      fieldncid = 1
-    case("Q","QILS","QICN","QLLS","QLCN","CLLS","CLCN")
-      fieldncid = 2
-    case("PHIS")
-      fieldncid = 3
-    case default
-      call abor1_ftn("fv3jedi_io_geos_mod.read_fields: no geos restart for "//trim(fields(n)%short_name))
-    end select
-  endif
+! Loop over fields
+! ----------------
+do var = 1,size(fields)
 
-
-  if (self%iam_io_proc) then
-
-    ! Local counts for 3 to allow changing start point
-    if (.not.allocated(istart3)) then
-      allocate(istart3(size(self%istart3)))
-      istart3 = self%istart3
-    endif
-
-    if (fields(n)%npz == 1) then
-      istart => self%istart2; icount => self%icount2
-    elseif (fields(n)%npz > 1) then
-      istart => istart3; icount => self%icount3
-    endif
-
-  endif
+  ! ncid for this variable
+  ncid = self%ncid(self%ncid_forfield(var))
 
   !If ps then switch to delp
-  if (trim(fields(n)%fv3jedi_name) == 'ps') then
-    fields(n)%short_name = 'delp'
-    fields(n)%npz = geom%npz
-    if (self%iam_io_proc) then
-      istart => istart3; icount => self%icount3
-    endif
+  if (trim(fields(var)%fv3jedi_name) == 'ps') then
+    fields(var)%short_name = 'delp'
+    fields(var)%npz = geom%npz
     allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   endif
 
+  ! Set pointers to the appropriate array ranges
+  ! --------------------------------------------
+  if (self%iam_io_proc) then
 
-  do lev = 1,fields(n)%npz
+    tiledim = self%tiledim(self%ncid_forfield(var))
+
+    if (associated(istart)) nullify(istart)
+    if (associated(icount)) nullify(icount)
+
+    if (fields(var)%npz == 1) then
+      if (tiledim) then
+        istart => self%is_r2_tile
+        icount => self%ic_r2_tile
+      else
+        istart => self%is_r2_noti
+        icount => self%ic_r2_noti
+      endif
+    elseif (fields(var)%npz > 1) then
+      if (tiledim) then
+        istart => is_r3_tile;
+        icount => self%ic_r3_tile
+      else
+        istart => is_r3_noti
+        icount => self%ic_r3_noti
+      endif
+    endif
+  endif
+
+  if (self%iam_io_proc) then
+    call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%short_name), varid), &
+                  "nf90_inq_varid "//trim(fields(var)%short_name) )
+  endif
+
+  ! Loop over level and read the data
+  ! ---------------------------------
+  do lev = 1,fields(var)%npz
 
     arrayg = 0.0_kind_real
 
     if (self%iam_io_proc) then
 
-      !Set counter to current level
-      istart3(self%vindex) = lev
+      !Set start to current level
+      is_r3_tile(self%vindex_tile) = lev
+      is_r3_noti(self%vindex_noti) = lev
 
-      call nccheck ( nf90_inq_varid (self%ncid(fieldncid), trim(fields(n)%short_name), varid), &
-                    "nf90_inq_varid "//trim(fields(n)%short_name) )
-      call nccheck ( nf90_get_var( self%ncid(fieldncid), varid, arrayg, istart, icount), &
-                    "nf90_get_var "//trim(fields(n)%short_name) )
-
+      ! Read the level
+      call nccheck ( nf90_get_var( ncid, varid, arrayg, istart, icount), &
+                    "nf90_get_var "//trim(fields(var)%short_name) )
     endif
 
-    if (trim(fields(n)%fv3jedi_name) .ne. 'ps') then
+
+    ! Scatter the field to all processors on the tile
+    ! -----------------------------------------------
+    if (trim(fields(var)%fv3jedi_name) .ne. 'ps') then
       if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, 1, arrayg, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+        call scatter_tile(geom, self%tcomm, 1, arrayg, fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
       else
-        fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+        fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
       endif
     else
       if (self%csize > 6) then
@@ -394,463 +557,457 @@ do n = 1,size(fields)
 
   enddo
 
-  if (self%iam_io_proc) then
-    nullify(istart,icount)
-    if (n == size(fields)) deallocate(istart3)
-  endif
-
-  if (trim(fields(n)%fv3jedi_name) == 'ps') then
-    fields(n)%short_name = 'ps'
-    fields(n)%npz = 1
-    fields(n)%array(:,:,1) = sum(delp,3)
+  if (trim(fields(var)%fv3jedi_name) == 'ps') then
+    fields(var)%short_name = 'ps'
+    fields(var)%npz = 1
+    fields(var)%array(:,:,1) = sum(delp,3)
     deallocate(delp)
   endif
 
 enddo
 
+
+! Deallocate locals
+! -----------------
+deallocate(is_r3_tile,is_r3_noti)
 deallocate(arrayg)
 
 end subroutine read_fields
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_all(self, geom, fields, f_conf, vdate)
-use string_utils
+subroutine write_all(self, geom, fields, vdate)
+
 implicit none
+class(fv3jedi_io_geos), intent(inout) :: self
+type(fv3jedi_geom),     intent(inout) :: geom          !< Geom
+type(fv3jedi_field),    intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),         intent(in)    :: vdate         !< DateTime
 
+! Write meta data
+! ---------------
+if (.not. self%clobber) call write_meta(self, geom, fields, vdate)
+
+! Write fields
+! ------------
+call write_fields(self, geom, fields, vdate)
+
+end subroutine write_all
+
+! ------------------------------------------------------------------------------
+
+subroutine write_meta(self, geom, fields, vdate)
+
+implicit none
 class(fv3jedi_io_geos), target, intent(inout) :: self
-type(fv3jedi_geom),             intent(in)    :: geom
-type(fv3jedi_field),            intent(in)    :: fields(:)
-type(fckit_configuration),      intent(in)    :: f_conf
-type(datetime),                 intent(in)    :: vdate
+type(fv3jedi_geom),             intent(inout) :: geom          !< Geom
+type(fv3jedi_field),            intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),                 intent(in)    :: vdate         !< DateTime
 
-! Locals
-character(len=255), allocatable :: filename(:)
-character(len=255) :: datapath
+integer :: var, ymult, k, nf, vc
 character(len=15)  :: datefile
+integer :: date(6), date8, time6
 character(len=8)   :: date8s, cubesize
 character(len=6)   :: time6s
-integer, allocatable :: vc(:)
-integer :: n, nf, lev, date8, time6, ymult, dfend, fieldncid
-integer :: varid(1000), date(6)
-integer(kind=c_int) :: idate, isecs
-integer :: x_dimid, y_dimid, n_dimid, z_dimid, ze_dimid, t_dimid, z4_dimid, c_dimid, o_dimid
-integer, allocatable :: dimidsv(:,:), dimidsg(:,:), dimids2(:,:), dimids3(:,:), dimids3e(:,:), dimids3_4(:,:)
-integer, target, allocatable :: istart3(:)
-integer, allocatable :: dimids(:), intarray(:)
-real(kind=kind_real), allocatable :: arrayg(:,:), realarray(:)
+character(len=4) :: XdimVar, YdimVar
+integer :: varid(10000)
+
 integer, pointer :: istart(:), icount(:)
-logical :: write_lev4 = .false.
-character(len=:), allocatable :: str
+integer, allocatable :: dimidsg(:), tiles(:), levels(:)
+real(kind=kind_real), allocatable :: latg(:,:), long(:,:), xdimydim(:)
 
 
-! Whole level of tile array
-allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
+! Gathered lats/lons
+! ------------------
+allocate(latg(1:geom%npx-1,1:geom%npy-1))
+allocate(long(1:geom%npx-1,1:geom%npy-1))
 
-! Define all the variables and meta data to be written
-! ----------------------------------------------------
+if (self%csize > 6) then
+  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), latg)
+  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), long)
+else
+  latg = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
+  long = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
+endif
+
+write(cubesize,'(I8)') geom%npx-1
+
+! IO processors write the metadata
+! --------------------------------
 if (self%iam_io_proc) then
 
-  ! Place to save restarts
-  datapath = "Data/"
-  if (f_conf%has("datapath")) then
-     call f_conf%get_or_die("datapath",str)
-     call swap_name_member(f_conf, str)
-     datapath = str
-     deallocate(str)
-  endif
-
-  ! Base filename
-  allocate(filename(self%numfiles))
-  if (self%filetype == 'geos') then
-    filename(1) = 'geos.'
-    if (f_conf%has("filename")) then
-       call f_conf%get_or_die("filename",str)
-       call swap_name_member(f_conf, str)
-       filename(1) = str
-       deallocate(str)
-    endif
-    dfend = 15
-  elseif (self%filetype == 'geos-rst') then
-    filename(1) = 'fvcore_internal_rst.'
-    filename(2) = 'moist_internal_rst.'
-    filename(3) = 'surf_import_rst.'
-    if (f_conf%has("filename-fvcore")) then
-       call f_conf%get_or_die("filename-fvcore",str)
-       filename(1) = str
-       deallocate(str)
-    endif
-    if (f_conf%has("filename-moist")) then
-       call f_conf%get_or_die("filename-moist",str)
-       filename(2) = str
-       deallocate(str)
-    endif
-    if (f_conf%has("filename-surf")) then
-       call f_conf%get_or_die("filename-surf",str)
-       filename(3) = str
-       deallocate(str)
-    endif
-    dfend = 11
-  endif
-
-  ! Append with the date
-  call datetime_to_ifs(vdate, idate, isecs)
-  date(1) = idate/10000
-  date(2) = idate/100 - date(1)*100
-  date(3) = idate - (date(1)*10000 + date(2)*100)
-  date(4) = isecs/3600
-  date(5) = (isecs - date(4)*3600)/60
-  date(6) = isecs - (date(4)*3600 + date(5)*60)
-  write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2)') date(1),date(2),date(3),"_",date(4),date(5),date(6)
-
+  ! Get datetime information ready to write
+  ! ---------------------------------------
+  call vdate_to_datestring(vdate,datest=datefile,date=date)
   write(date8s,'(I4,I0.2,I0.2)')   date(1),date(2),date(3)
   write(time6s,'(I0.2,I0.2,I0.2)') date(4),date(5),date(6)
-  read(date8s,*)  date8
-  read(time6s,*)  time6
+  read(date8s,*) date8
+  read(time6s,*) time6
 
-  write(cubesize,'(I8)') geom%npx-1
 
-  ! DimId arrays
-  allocate(dimidsv(self%numfiles,1))
-  allocate(dimidsg(self%numfiles,self%ncdim2-1))
-  allocate(dimids2(self%numfiles,self%ncdim2))
-  allocate(dimids3(self%numfiles,self%ncdim3))
-  allocate(dimids3e(self%numfiles,self%ncdim3))
-  allocate(dimids3_4(self%numfiles,self%ncdim3))
+  ! Xdim, Ydim arrays
+  ! -----------------
+  allocate(xdimydim(geom%npx-1))
+  do k = 1,geom%npx-1
+    xdimydim(k) = real(k,kind_real)
+  enddo
 
-  allocate(vc(self%numfiles))
 
-  do nf = 1,self%numfiles
+  ! Tile array
+  ! ----------
+  allocate(tiles(6))
+  do k = 1,6
+    tiles(k) = k
+  enddo
 
-    filename(nf) = trim(datapath)//trim(filename(nf))//trim(datefile(1:dfend))//trim("z.nc4")
 
-    ! Create and open the file for parallel write
-    call nccheck( nf90_create( trim(filename(nf)), ior(NF90_NETCDF4, NF90_MPIIO), self%ncid(nf), &
-                               comm = self%ocomm, info = MPI_INFO_NULL), "nf90_create" )
+  ! Level and edge arrays
+  ! ---------------------
+  allocate(levels(geom%npz+1))
+  do k = 1,geom%npz+1
+    levels(k) = k
+  enddo
 
-    ! Create dimensions
-    ymult = 1
-    if (.not. self%tiledim) ymult = 6
 
-    call nccheck ( nf90_def_dim(self%ncid(nf), trim(self%XdimVar), geom%npx-1,  x_dimid), "nf90_def_dim "//trim(self%XdimVar) )
-    call nccheck ( nf90_def_dim(self%ncid(nf), trim(self%YdimVar), ymult*(geom%npy-1),  y_dimid), "nf90_def_dim "//trim(self%YdimVar) )
-    if (self%tiledim) call nccheck ( nf90_def_dim(self%ncid(nf), "nf",   geom%ntiles, n_dimid), "nf90_def_dim nf"   )
-    call nccheck ( nf90_def_dim(self%ncid(nf), "lev",  geom%npz,    z_dimid), "nf90_def_dim lev"  )
-    call nccheck ( nf90_def_dim(self%ncid(nf), "edge",  geom%npz+1, ze_dimid), "nf90_def_dim edge"  )
-    call nccheck ( nf90_def_dim(self%ncid(nf), "time", 1,           t_dimid), "nf90_def_dim time" )
+  ! Loop over all files to be created/written to
+  ! --------------------------------------------
+  do nf = 1, numfiles
 
-    do n = 1,size(fields)
-      if (fields(n)%npz == 4) then
-        write_lev4 = .true.
+    if (self%ncid_isneeded(nf)) then
+
+      ! Multiplication factor when no tile dimension
+      ! --------------------------------------------
+      ymult = 1
+      if (.not. self%tiledim(nf)) ymult = 6
+
+      if ( self%tiledim(nf) ) then
+        XdimVar = 'Xdim'
+        YdimVar = 'Ydim'
+      else
+        XdimVar = 'lon'
+        YdimVar = 'lat'
       endif
-    enddo
-    if (write_lev4) call nccheck ( nf90_def_dim(self%ncid(nf), "lev4", 4, z4_dimid), "nf90_def_dim lev"  )
 
-    !Needed by GEOS for ingesting cube sphere field
-    call nccheck ( nf90_def_dim(self%ncid(nf), "ncontact", 4, c_dimid), "nf90_def_dim ncontact" )
-    call nccheck ( nf90_def_dim(self%ncid(nf), "orientationStrLen", 5, o_dimid), "nf90_def_dim orientationStrLend" )
+      ! Main dimensions
+      call nccheck ( nf90_def_dim(self%ncid(nf), trim(XdimVar), geom%npx-1,         self%x_dimid), "nf90_def_dim "//trim(XdimVar) )
+      call nccheck ( nf90_def_dim(self%ncid(nf), trim(YdimVar), ymult*(geom%npy-1), self%y_dimid), "nf90_def_dim "//trim(YdimVar) )
+      if (self%tiledim(nf)) &
+      call nccheck ( nf90_def_dim(self%ncid(nf), "nf",   geom%ntiles, self%n_dimid),  "nf90_def_dim nf"   )
+      call nccheck ( nf90_def_dim(self%ncid(nf), "lev",  geom%npz,    self%z_dimid),  "nf90_def_dim lev"  )
+      call nccheck ( nf90_def_dim(self%ncid(nf), "edge", geom%npz+1,  self%e_dimid), "nf90_def_dim edge" )
+      call nccheck ( nf90_def_dim(self%ncid(nf), "time", 1,           self%t_dimid),  "nf90_def_dim time" )
 
-    dimidsv(nf,:)   =  (/ z_dimid /)
+      ! In case the four level surface fields need to be written
+      do var = 1,size(fields)
+        if (fields(var)%npz == 4) then
+          call nccheck ( nf90_def_dim(self%ncid(nf), "lev4", 4, self%f_dimid), "nf90_def_dim lev"  )
+          exit
+        endif
+      enddo
 
-    if ( self%tiledim ) then
-      dimidsg(nf,:)   =  (/ x_dimid, y_dimid, n_dimid /)
-      dimids2(nf,:)   =  (/ x_dimid, y_dimid, n_dimid, t_dimid /)
-      dimids3(nf,:)   =  (/ x_dimid, y_dimid, n_dimid, z_dimid, t_dimid /)
-      dimids3e(nf,:)  =  (/ x_dimid, y_dimid, n_dimid, ze_dimid, t_dimid /)
-      dimids3_4(nf,:) =  (/ x_dimid, y_dimid, n_dimid, z4_dimid, t_dimid /)
-    else
-      dimidsg(nf,:)   =  (/ x_dimid, y_dimid /)
-      dimids2(nf,:)   =  (/ x_dimid, y_dimid, t_dimid /)
-      dimids3(nf,:)   =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
-      dimids3e(nf,:)  =  (/ x_dimid, y_dimid, ze_dimid, t_dimid /)
-      dimids3_4(nf,:) =  (/ x_dimid, y_dimid, z4_dimid, t_dimid /)
+      !Needed by GEOS for ingesting cube sphere field
+      call nccheck ( nf90_def_dim(self%ncid(nf), "ncontact",          4, self%c_dimid), "nf90_def_dim ncontact" )
+      call nccheck ( nf90_def_dim(self%ncid(nf), "orientationStrLen", 5, self%o_dimid), "nf90_def_dim orientationStrLend" )
+
+      ! Dimension ID array for lat/lon arrays
+      if (allocated(dimidsg)) deallocate(dimidsg)
+      if ( self%tiledim(nf) ) then
+        allocate(dimidsg(3))
+        dimidsg(:) = (/ self%x_dimid, self%y_dimid, self%n_dimid /)
+      else
+        allocate(dimidsg(2))
+        dimidsg(:) = (/ self%x_dimid, self%y_dimid /)
+      endif
+
+      ! Define fields to be written (geom)
+      vc=0;
+
+      if (self%tiledim(nf)) then
+        vc=vc+1;
+        call nccheck( nf90_def_var(self%ncid(nf), "nf", NF90_INT, self%n_dimid, varid(vc)), "nf90_def_var nf" )
+        call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "cubed-sphere face") )
+        call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "axis", "e") )
+        call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "grads_dim", "e") )
+      endif
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), trim(XdimVar), NF90_DOUBLE, self%x_dimid, varid(vc)), "nf90_def_var "//trim(XdimVar) )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "Fake Longitude for GrADS Compatibility") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "units", "degrees_east") )
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), trim(YdimVar), NF90_DOUBLE, self%y_dimid, varid(vc)), "nf90_def_var "//trim(YdimVar) )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "Fake Latitude for GrADS Compatibility") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "units", "degrees_north") )
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), "lons", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lons" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "longitude") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "units", "degrees_east") )
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), "lats", NF90_DOUBLE, dimidsg, varid(vc)), "nf90_def_var lats" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "latitude") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "units", "degrees_north") )
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), "lev", NF90_DOUBLE, self%z_dimid, varid(vc)), "nf90_def_var lev" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "vertical level") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "units", "layer") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "positive", "down") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "coordinate", "eta") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "standard_name", "model_layers") )
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), "edge", NF90_DOUBLE, self%e_dimid, varid(vc)), "nf90_def_var edge" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "vertical level edges") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "units", "layer") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "positive", "down") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "coordinate", "eta") )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "standard_name", "model_layers") )
+
+      vc=vc+1;
+      call nccheck( nf90_def_var(self%ncid(nf), "time", NF90_INT, self%t_dimid, varid(vc)), "nf90_def_var time" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "long_name", "time"), "nf90_def_var time long_name" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "begin_date", date8), "nf90_def_var time begin_date" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
+
+      vc=vc+1; !(Needed by GEOS to ingest cube sphere analysis)
+      call nccheck( nf90_def_var(self%ncid(nf), "cubed_sphere", NF90_CHAR, varid(vc)), "nf90_def_var cubed_sphere" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "grid_mapping_name", "gnomonic cubed-sphere"), "nf90_def_var time grid_mapping_name" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "file_format_version", "2.90"), "nf90_def_var time file_format_version" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "additional_vars", "contacts,orientation,anchor"), "nf90_def_var time additional_vars" )
+      call nccheck( nf90_put_att(self%ncid(nf), varid(vc), "gridspec_file", "C"//trim(cubesize)//"_gridspec.nc4"), "nf90_def_var gridspec_file" )
+
+      !vc=vc+1; !(Needed by GEOS to ingest cube sphere analysis)
+      !call nccheck( nf90_def_var(self%ncid(nf), "ncontact", NF90_INT, varid(vc)), "nf90_def_var ncontact" )
+
+
+      ! End define mode
+      ! ---------------
+      call nccheck( nf90_enddef(self%ncid(nf)), "nf90_enddef" )
+
+
+      ! Reset counter
+      ! -------------
+      vc=0
+
+
+      ! Write metadata arrays
+      ! ---------------------
+
+      ! Tiles
+      if (self%tiledim(nf)) &
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), tiles ), "nf90_put_var nf" )
+
+      ! Xdim & Ydim arrays
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), xdimydim ), "nf90_put_var "//trim(XdimVar) )
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), xdimydim ), "nf90_put_var "//trim(YdimVar) )
+
+      ! Start/counts
+      if (associated(istart)) nullify(istart)
+      if (associated(icount)) nullify(icount)
+      if (self%tiledim(nf)) then
+        istart => self%is_r2_tile(1:3); icount => self%ic_r2_tile(1:3)
+      else
+        istart => self%is_r2_noti(1:2); icount => self%ic_r2_noti(1:2)
+      endif
+
+      ! Lat/lon arrays
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), long, &
+                                                  start = istart, &
+                                                  count = icount ), &
+                                                  "nf90_put_var lons" )
+
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), latg, &
+                                                  start = istart, &
+                                                  count = icount ), &
+                                                  "nf90_put_var lats" )
+
+      ! Write model levels & time
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), levels(1:geom%npz) ), "nf90_put_var lev" )
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), levels ), "nf90_put_var edge" )
+
+      ! Time
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), 0 ), "nf90_put_var time" )
+
     endif
-
-    ! Define fields to be written (geom)
-    vc(nf)=0;
-
-    if (self%tiledim) then
-      vc(nf)=vc(nf)+1;
-      call nccheck( nf90_def_var(self%ncid(nf), "nf", NF90_INT, n_dimid, varid(vc(nf))), "nf90_def_var nf" )
-      call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "cubed-sphere face") )
-      call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "axis", "e") )
-      call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "grads_dim", "e") )
-    endif
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), trim(self%XdimVar), NF90_DOUBLE, x_dimid, varid(vc(nf))), "nf90_def_var "//trim(self%XdimVar) )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "Fake Longitude for GrADS Compatibility") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "units", "degrees_east") )
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), trim(self%YdimVar), NF90_DOUBLE, y_dimid, varid(vc(nf))), "nf90_def_var "//trim(self%YdimVar) )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "Fake Latitude for GrADS Compatibility") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "units", "degrees_north") )
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), "lons", NF90_DOUBLE, dimidsg(nf,:), varid(vc(nf))), "nf90_def_var lons" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "longitude") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "units", "degrees_east") )
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), "lats", NF90_DOUBLE, dimidsg(nf,:), varid(vc(nf))), "nf90_def_var lats" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "latitude") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "units", "degrees_north") )
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), "lev", NF90_DOUBLE, z_dimid, varid(vc(nf))), "nf90_def_var lev" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "vertical level") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "units", "layer") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "positive", "down") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "coordinate", "eta") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "standard_name", "model_layers") )
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), "edge", NF90_DOUBLE, ze_dimid, varid(vc(nf))), "nf90_def_var edge" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "vertical level edges") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "units", "layer") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "positive", "down") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "coordinate", "eta") )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "standard_name", "model_layers") )
-
-    vc(nf)=vc(nf)+1;
-    call nccheck( nf90_def_var(self%ncid(nf), "time", NF90_INT, t_dimid, varid(vc(nf))), "nf90_def_var time" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "long_name", "time"), "nf90_def_var time long_name" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "begin_date", date8), "nf90_def_var time begin_date" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "begin_time", time6), "nf90_def_var time begin_time" )
-
-    vc(nf)=vc(nf)+1; !(Needed by GEOS to ingest cube sphere analysis)
-    call nccheck( nf90_def_var(self%ncid(nf), "cubed_sphere", NF90_CHAR, varid(vc(nf))), "nf90_def_var cubed_sphere" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "grid_mapping_name", "gnomonic cubed-sphere"), "nf90_def_var time grid_mapping_name" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "file_format_version", "2.90"), "nf90_def_var time file_format_version" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "additional_vars", "contacts,orientation,anchor"), "nf90_def_var time additional_vars" )
-    call nccheck( nf90_put_att(self%ncid(nf), varid(vc(nf)), "gridspec_file", "C"//trim(cubesize)//"_gridspec.nc4"), "nf90_def_var gridspec_file" )
-
-    !vc(nf)=vc(nf)+1; !(Needed by GEOS to ingest cube sphere analysis)
-    !call nccheck( nf90_def_var(self%ncid(nf), "ncontact", NF90_INT, varid(vc(nf))), "nf90_def_var ncontact" )
 
   enddo
 
-  ! Define fields to be written
-  do n = 1,size(fields)
+endif
 
-    ! For GEOS restarts specify file for variables
-    fieldncid = 1
-    if (self%filetype == 'geos-rst') then
-      select case (trim(fields(n)%short_name))
-      case("U","V","W","PT","PKZ","PE","DZ")
-        fieldncid = 1
-      case("Q","QILS","QICN","QLLS","QLCN","CLLS","CLCN")
-        fieldncid = 2
-      case("PHIS")
-        fieldncid = 3
-      case default
-        call abor1_ftn("fv3jedi_io_geos_mod.write_all: no geos restart for "//trim(fields(n)%short_name))
-      end select
+end subroutine write_meta
+
+! ------------------------------------------------------------------------------
+
+subroutine write_fields(self, geom, fields, vdate)
+
+implicit none
+class(fv3jedi_io_geos), target, intent(inout) :: self
+type(fv3jedi_geom),             intent(inout) :: geom          !< Geom
+type(fv3jedi_field),            intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),                 intent(in)    :: vdate         !< DateTime
+
+integer :: var, lev, nf, ncid, filei, varid
+integer, target :: dimids2_tile(4), dimids3_tile(5), dimidse_tile(5), dimids4_tile(5)
+integer, target :: dimids2_noti(3), dimids3_noti(4), dimidse_noti(4), dimids4_noti(4)
+integer, pointer :: dimids2(:), dimids3(:), dimidse(:), dimids4(:), dimids(:)
+integer, allocatable, target :: is_r3_tile(:), is_r3_noti(:)
+real(kind=kind_real), allocatable :: arrayg(:,:)
+integer, pointer :: istart(:), icount(:)
+
+
+! Whole level of tile array
+! -------------------------
+allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
+
+
+! Local counts for 3 to allow changing start point
+! ------------------------------------------------
+allocate(is_r3_tile(size(self%is_r3_tile)))
+is_r3_tile = self%is_r3_tile
+allocate(is_r3_noti(size(self%is_r3_noti)))
+is_r3_noti = self%is_r3_noti
+
+
+! Dimension ID arrays for the various fields with and without tile dimension
+! --------------------------------------------------------------------------
+dimids2_tile = (/ self%x_dimid, self%y_dimid, self%n_dimid,               self%t_dimid /)
+dimids3_tile = (/ self%x_dimid, self%y_dimid, self%n_dimid, self%z_dimid, self%t_dimid /)
+dimidse_tile = (/ self%x_dimid, self%y_dimid, self%n_dimid, self%e_dimid, self%t_dimid /)
+dimids4_tile = (/ self%x_dimid, self%y_dimid, self%n_dimid, self%f_dimid, self%t_dimid /)
+
+dimids2_noti = (/ self%x_dimid, self%y_dimid,                             self%t_dimid /)
+dimids3_noti = (/ self%x_dimid, self%y_dimid,               self%z_dimid, self%t_dimid /)
+dimidse_noti = (/ self%x_dimid, self%y_dimid,               self%e_dimid, self%t_dimid /)
+dimids4_noti = (/ self%x_dimid, self%y_dimid,               self%f_dimid, self%t_dimid /)
+
+
+! Loop over the fields
+! --------------------
+do var = 1,size(fields)
+
+  if (self%iam_io_proc) then
+
+    ! ncid for this field
+    ! -------------------
+    filei = self%ncid_forfield(var)
+    ncid = self%ncid(filei)
+
+    ! Redefine
+    ! --------
+    call nccheck( nf90_redef(ncid), "nf90_enddef" )
+
+    ! Dimension IDs for this field
+    ! ----------------------------
+    if (associated(dimids2)) nullify(dimids2)
+    if (associated(dimids3)) nullify(dimids3)
+    if (associated(dimidse)) nullify(dimidse)
+    if (associated(dimids4)) nullify(dimids4)
+
+    if (self%tiledim(filei)) then
+      dimids2 => dimids2_tile
+      dimids3 => dimids3_tile
+      dimidse => dimidse_tile
+      dimids4 => dimids4_tile
+    else
+      dimids2 => dimids2_noti
+      dimids3 => dimids3_noti
+      dimidse => dimidse_noti
+      dimids4 => dimids4_noti
     endif
 
-    if (fields(n)%npz == 1) then
-      allocate(dimids(self%ncdim2))
-      dimids = dimids2(fieldncid,:)
-    elseif (fields(n)%npz == geom%npz) then
-      allocate(dimids(self%ncdim3))
-      dimids = dimids3(fieldncid,:)
-    elseif (fields(n)%npz == geom%npz+1) then
-      allocate(dimids(self%ncdim3))
-      dimids = dimids3e(fieldncid,:)
-    elseif (fields(n)%npz == 4) then
-      allocate(dimids(self%ncdim3))
-      dimids = dimids3_4(fieldncid,:)
+    if (associated(dimids)) nullify (dimids)
+
+    if (fields(var)%npz == 1) then
+      dimids => dimids2
+    elseif (fields(var)%npz == geom%npz) then
+      dimids => dimids3
+    elseif (fields(var)%npz == geom%npz+1) then
+      dimids => dimidse
+    elseif (fields(var)%npz == 4) then
+      dimids => dimids4
     else
       call abor1_ftn("write_geos: vertical dimension not supported")
     endif
 
-    vc(fieldncid)=vc(fieldncid)+1
-    call nccheck( nf90_def_var(self%ncid(fieldncid), trim(fields(n)%short_name), NF90_DOUBLE, dimids, varid(vc(fieldncid))), &
-                  "nf90_def_var"//trim(fields(n)%short_name)   )
-    call nccheck( nf90_put_att(self%ncid(fieldncid), varid(vc(fieldncid)), "long_name"    , trim(fields(n)%long_name) ), "nf90_put_att" )
-    call nccheck( nf90_put_att(self%ncid(fieldncid), varid(vc(fieldncid)), "units"        , trim(fields(n)%units)     ), "nf90_put_att" )
-    call nccheck( nf90_put_att(self%ncid(fieldncid), varid(vc(fieldncid)), "standard_name", trim(fields(n)%long_name) ), "nf90_put_att" )
-    call nccheck( nf90_put_att(self%ncid(fieldncid), varid(vc(fieldncid)), "coordinates"  , "lons lats"               ), "nf90_put_att" )
-    call nccheck( nf90_put_att(self%ncid(fieldncid), varid(vc(fieldncid)), "grid_mapping" , "cubed_sphere"            ), "nf90_put_att" )
+    ! Define field
+    call nccheck( nf90_def_var(ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), &
+                  "nf90_def_var"//trim(fields(var)%short_name))
 
-    deallocate(dimids)
+    ! Write attributes if not clobbering
+    if (.not.self%clobber) then
 
-  enddo
+      ! Long name and units
+      call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
+      call nccheck( nf90_put_att(ncid, varid, "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
 
-  do nf = 1,self%numfiles
+      ! Additional attributes for history and or plotting compatibility
+      if (.not.self%restart(filei)) then
+        call nccheck( nf90_put_att(ncid, varid, "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
+        call nccheck( nf90_put_att(ncid, varid, "coordinates"  , "lons lats"                 ), "nf90_put_att" )
+        call nccheck( nf90_put_att(ncid, varid, "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
+      endif
+
+    endif
 
     ! End define mode
-    call nccheck( nf90_enddef(self%ncid(nf)), "nf90_enddef" )
-
-  enddo
-
-endif
+    call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
 
-! Write Xdim/lon, YDim/lat, and nf (tile)
-! ---------------------------------------
-if (self%iam_io_proc) then
+    ! Set starts and counts based on levels and tiledim flag
+    ! ------------------------------------------------------
 
-  do nf = 1,self%numfiles
+    if (associated(istart)) nullify(istart)
+    if (associated(icount)) nullify(icount)
 
-    vc(nf)=0
-
-    if (self%tiledim) then
-      allocate(intarray(6))
-      do n = 1,6
-        intarray(n) = n
-      enddo
-      vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), intarray ), "nf90_put_var nf" )
-      deallocate(intarray)
+    if (fields(var)%npz == 1) then
+      if (self%tiledim(filei)) then
+        istart => self%is_r2_tile; icount => self%ic_r2_tile
+      else
+        istart => self%is_r2_noti; icount => self%ic_r2_noti
+      endif
+    elseif (fields(var)%npz > 1) then
+      if (self%tiledim(filei)) then
+        istart => is_r3_tile; icount => self%ic_r3_tile
+      else
+        istart => is_r3_noti; icount => self%ic_r3_noti
+      endif
     endif
-
-    allocate(realarray(geom%npx-1))
-    do n = 1,geom%npx-1
-      realarray(n) = real(n,kind_real)
-    enddo
-
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), realarray ), "nf90_put_var "//trim(self%XdimVar) )
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), realarray ), "nf90_put_var "//trim(self%YdimVar) )
-
-    deallocate(realarray)
-
-  enddo
-
-endif
-
-
-! Gather longitudes to write
-! --------------------------
-if (self%csize > 6) then
-  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
-else
-  arrayg = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
-endif
-
-if (self%iam_io_proc) then
-  do nf = 1,self%numfiles
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), arrayg, &
-                                        start = self%istart2(1:self%ncdim2-1), count = self%icount2(1:self%ncdim2-1) ), "nf90_put_var lons" )
-  enddo
-endif
-
-
-! Gather latitudes and write
-! --------------------------
-if (self%csize > 6) then
-  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), arrayg)
-else
-  arrayg = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
-endif
-
-if (self%iam_io_proc) then
-  do nf = 1,self%numfiles
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), arrayg, &
-                                        start = self%istart2(1:self%ncdim2-1), count = self%icount2(1:self%ncdim2-1) ), "nf90_put_var lats" )
-  enddo
-endif
-
-
-! Write model levels & time
-! -------------------------
-if (self%iam_io_proc) then
-  allocate(intarray(geom%npz))
-  do n = 1,geom%npz
-    intarray(n) = n
-  enddo
-  do nf = 1,self%numfiles
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), intarray ), "nf90_put_var lev" )
-  enddo
-  deallocate(intarray)
-
-  allocate(intarray(geom%npz+1))
-  do n = 1,geom%npz+1
-    intarray(n) = n
-  enddo
-  do nf = 1,self%numfiles
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), intarray ), "nf90_put_var edge" )
-  enddo
-  deallocate(intarray)
-
-  do nf = 1,self%numfiles
-    vc(nf)=vc(nf)+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc(nf)), 0 ), "nf90_put_var time" )
-  enddo
-endif
-
-! Cube sphere thing for GEOS
-if (self%iam_io_proc) vc=vc+1
-
-! Loop over fields and levels and write fields to file
-! ----------------------------------------------------
-do n = 1,size(fields)
-
-  ! For GEOS restarts specify file for variables
-  fieldncid = 1
-  if (self%filetype == 'geos-rst') then
-    select case (trim(fields(n)%short_name))
-    case("U","V","W","PT","PKZ","PE","DZ")
-      fieldncid = 1
-    case("Q","QILS","QICN","QLLS","QLCN","CLLS","CLCN")
-      fieldncid = 2
-    case("PHIS")
-      fieldncid = 3
-    case default
-      call abor1_ftn("fv3jedi_io_geos_mod.write_all: no geos restart for "//trim(fields(n)%short_name))
-    end select
-  endif
-
-
-  if (self%iam_io_proc) then
-
-    ! Local counts for 3 to allow changing start point
-    if (.not.allocated(istart3)) then
-      allocate(istart3(size(self%istart3)))
-      istart3 = self%istart3
-    endif
-
-    if (fields(n)%npz == 1) then
-      istart => self%istart2; icount => self%icount2
-    elseif (fields(n)%npz > 1) then
-      istart => istart3; icount => self%icount3
-    endif
-
-    !Up field counter outside of level loop
-    vc(fieldncid) = vc(fieldncid) + 1
 
   endif
 
-  do lev = 1,fields(n)%npz
+  do lev = 1,fields(var)%npz
 
     if (self%csize > 6) then
-      call gather_tile(geom, self%tcomm, 1, fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
+      call gather_tile(geom, self%tcomm, 1, fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
     else
-      arrayg = fields(n)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev)
+      arrayg = fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev)
     endif
 
     if (self%iam_io_proc) then
 
-      istart3(self%vindex) = lev
+      is_r3_tile(self%vindex_tile) = lev
+      is_r3_noti(self%vindex_noti) = lev
 
-      call nccheck( nf90_put_var( self%ncid(fieldncid), varid(vc(fieldncid)), arrayg, start = istart, count = icount ), &
-                                  "nf90_put_var "//trim(fields(n)%short_name) )
+      call nccheck( nf90_put_var( ncid, varid, arrayg, start = istart, count = icount ), &
+                                  "nf90_put_var "//trim(fields(var)%short_name) )
 
     endif
 
   enddo
 
-  if (self%iam_io_proc .and. n==size(fields)) deallocate(istart3)
-
 enddo
 
-if (self%iam_io_proc) then
-  deallocate ( dimidsv, dimidsg, dimids2, dimids3, dimids3e )
-  deallocate(vc)
-endif
 
+! Deallocate locals
+! -----------------
+deallocate(is_r3_tile,is_r3_noti)
 deallocate(arrayg)
 
-end subroutine write_all
+
+end subroutine write_fields
 
 ! ------------------------------------------------------------------------------
 
@@ -1034,13 +1191,148 @@ deallocate(vector_l)
 
 end subroutine scatter_tile
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine dummy_final(self)
-implicit none
 type(fv3jedi_io_geos), intent(inout) :: self
 end subroutine dummy_final
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+subroutine string_from_conf(f_conf,varstring,var,default,memberswap)
+
+implicit none
+type(fckit_configuration),  intent(in)  :: f_conf
+character(len=*),           intent(in)  :: varstring
+character(len=*),           intent(out) :: var
+character(len=*), optional, intent(in)  :: default
+logical,          optional, intent(in)  :: memberswap
+
+character(len=:), allocatable :: str
+
+if (.not. f_conf%get(trim(varstring),str)) then
+
+  if (present(default)) then
+    var = trim(default)
+  else
+    call abor1_ftn("fv3jedi_io_geos_mod.string_from_conf: "//trim(varstring)//" not found in config&
+                    and no default provided. Aborting")
+  endif
+
+else
+
+  if (present(memberswap) .and. memberswap) call swap_name_member(f_conf, str)
+
+  var = trim(str)
+
+endif
+
+if (allocated(str)) deallocate(str)
+
+end subroutine string_from_conf
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine str_check(str,maxlen)
+
+implicit none
+character(len=*), intent(in) :: str
+integer,          intent(in) :: maxlen
+
+character(len=maxlen) :: maxlenstr
+
+write (maxlenstr, *) maxlen
+
+if (len(str) > maxstring) then
+  call abor1_ftn('Reading '//trim(str)//'from configuration. Too long, max length = '//trim(maxlenstr))
+endif
+
+end subroutine str_check
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine vdate_to_datestring(vdate,datest,date,yyyy,mm,dd,hh,min,ss)
+
+implicit none
+type(datetime),              intent(in)  :: vdate
+character(len=*), optional,  intent(out) :: datest
+integer,          optional,  intent(out) :: date(6)
+character(len=4), optional,  intent(out) :: yyyy
+character(len=2), optional,  intent(out) :: mm
+character(len=2), optional,  intent(out) :: dd
+character(len=2), optional,  intent(out) :: hh
+character(len=2), optional,  intent(out) :: min
+character(len=2), optional,  intent(out) :: ss
+
+integer :: dateloc(6)
+integer(kind=c_int) :: idate, isecs
+
+! Outputs various forms of datetime
+
+call datetime_to_ifs(vdate, idate, isecs)
+dateloc(1) = idate/10000
+dateloc(2) = idate/100 - dateloc(1)*100
+dateloc(3) = idate - (dateloc(1)*10000 + dateloc(2)*100)
+dateloc(4) = isecs/3600
+dateloc(5) = (isecs - dateloc(4)*3600)/60
+dateloc(6) = isecs - (dateloc(4)*3600 + dateloc(5)*60)
+
+if (present(datest)) &
+write(datest,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2)') dateloc(1),dateloc(2),dateloc(3),"_",&
+                                                 dateloc(4),dateloc(5),dateloc(6)
+
+!Optionally pass date back
+if (present(date)) date = dateloc
+
+! Optionally pass back individual strings of datetime
+if (present(yyyy)) write(yyyy,'(I4)  ') dateloc(1)
+if (present(mm  )) write(mm  ,'(I0.2)') dateloc(2)
+if (present(dd  )) write(dd  ,'(I0.2)') dateloc(3)
+if (present(hh  )) write(hh  ,'(I0.2)') dateloc(4)
+if (present(min )) write(min ,'(I0.2)') dateloc(5)
+if (present(ss  )) write(ss  ,'(I0.2)') dateloc(6)
+
+end subroutine vdate_to_datestring
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine set_file_names(self,var,grp)
+
+implicit none
+type(fv3jedi_io_geos), intent(inout) :: self
+integer,               intent(in)    :: var
+integer,               intent(in)    :: grp
+
+self%ncid_forfield(var) = grp
+self%ncid_isneeded(grp) = .true.
+
+end subroutine set_file_names
+
+! --------------------------------------------------------------------------------------------------
+
+function replace_text (inputstr,search,replace)  result(outputstr)
+
+implicit none
+character(len=*), intent(in) :: inputstr
+character(len=*), intent(in) :: search
+character(len=*), intent(in) :: replace
+character(len(inputstr)+100) :: outputstr
+
+! Locals
+integer :: i, nt, nr
+
+outputstr = inputstr
+nt = len_trim(search)
+nr = len_trim(replace)
+
+do
+  i = index(outputstr,search(:nt)) ; if (i == 0) exit
+  outputstr = outputstr(:i-1) // replace(:nr) // outputstr(i+nt:)
+end do
+
+end function replace_text
+
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_io_geos_mod
+                                                                                          

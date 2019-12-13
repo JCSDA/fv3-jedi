@@ -16,9 +16,9 @@ LinearModel:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+  variables: ["u","v","t","delp","q","qi","ql","o3mr"]
   trajectory:
-    variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+    variables: ["u","v","t","delp","q","qi","ql","o3mr"]
 LinearModelTest:
   fclength: PT30M
   firstmulTL: '0.01'
@@ -34,15 +34,19 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ud","vd","t","delp","q","qi","ql","o3mr","phis",
+  variables: ["u","v","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
 ModelBias: null
 State:
   filetype: geos
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
 Variables:
-  variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+  variables: ["u","v","t","delp","q","qi","ql","o3mr"]
 varchange: Analysis2Model
 filetype: geos
-filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+datapath: Data/inputs/geos_c12
+filename_bkgd: geos.bkg.20180414_210000z.nc4
+filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4

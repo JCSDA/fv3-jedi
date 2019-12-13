@@ -3,13 +3,16 @@ cost_function:
     Background:
       state:
       - filetype: geos
-        filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+        datapath: Data/inputs/geos_c12
+        filename_bkgd: geos.bkg.20180414_210000z.nc4
         variables: &4denvars ["ua","va","t","ps","q","qi","ql","o3mr"]
       - filetype: geos
-        filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+        datapath: Data/inputs/geos_c12
+        filename_bkgd: geos.bkg.20180415_000000z.nc4
         variables: *4denvars
       - filetype: geos
-        filename: Data/inputs/geos_c12/geos.bkg.20180415_030000z.nc4
+        datapath: Data/inputs/geos_c12
+        filename_bkgd: geos.bkg.20180415_030000z.nc4
         variables: *4denvars
     Covariance:
       covariance: ensemble
@@ -28,74 +31,104 @@ cost_function:
       members:
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem001.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem001.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem001.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem001.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem002.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem002.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem002.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem002.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem003.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem003.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem003.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem003.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem004.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem004.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem004.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem004.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem005.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem005.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem005.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem005.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem006.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem006.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem006.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem006.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem007.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem007.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem007.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem007.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem008.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem008.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem008.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem008.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem009.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem009.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem009.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem009.20180415_030000z.nc4
       - state:
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem010.20180414_210000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem010.20180415_000000z.nc4
         - filetype: geos
-          filename: Data/inputs/geos_c12/geos.mem010.20180415_030000z.nc4
+          datapath: Data/inputs/geos_c12
+          filename_bkgd: geos.mem010.20180415_030000z.nc4
       variables: *4denvars
   Jo:
     ObsTypes:
@@ -189,6 +222,37 @@ cost_function:
         - name: refractivity
         variable: refractivity
         errmodel: GSI
+#    - ObsSpace:
+#        name: AMSUA-NOAA19
+#        ObsDataIn:
+#          obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
+#        ObsDataOut:
+#          obsfile: Data/hofx/amsua_n19_4denvar-geos_2018041500_m.nc4
+#        simulate:
+#          variables: [brightness_temperature]
+#          channels: 1-15
+#      ObsOperator:
+#        name: CRTM
+#        Absorbers: [H2O,O3]
+#        Clouds: [Water, Ice]
+#        ObsOptions:
+#          Sensor_ID: amsua_n19
+#          EndianType: little_endian
+#          CoefficientPath: Data/crtm/
+#      Covariance:
+#        covariance: diagonal
+#      ObsFilters:
+#      - Filter: Bounds Check
+#        filter variables:
+#        - name: brightness_temperature
+#          channels: 1-15
+#        minvalue: 100.0
+#        maxvalue: 500.0
+#      - Filter: Background Check
+#        filter variables:
+#        - name: brightness_temperature
+#          channels: 1-15
+#        threshold: 3.0
   cost_type: 4D-Ens-Var
   variables: *4denvars
   window_begin: '2018-04-14T21:00:00Z'
@@ -196,7 +260,9 @@ cost_function:
   window_sub: PT3H
   varchange: Analysis2Model
   filetype: 'geos'
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 final:
   diagnostics:
     departures: oman
@@ -205,15 +271,17 @@ minimizer:
 model:
   name: 'PSEUDO'
   pseudo_type: 'geos'
-  pseudo_path: 'Data/inputs/geos_c12/'
-  pseudo_file: 'geos.bkg.'
+  pseudo_path: 'Data/inputs/geos_c12'
+  filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
+  filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
   RunStageCheck: 1
   tstep: PT3H
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis"]
+  variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis","frocean","frlake","frseaice","vtype",
+              "stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
 output:
   filetype: geos
   datapath: Data/analysis/
-  filename: 4denvar-geos.
+  filename_bkgd: 4denvar-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT3H
 resolution:

@@ -185,6 +185,7 @@ testinput/bumpparameters_cor_gfs_aero.yaml
 testinput/bumpparameters_loc_gfs_aero.yaml
 testinput/convertstate_gfs.yaml
 testinput/convertstate_geos.yaml
+testinput/crtm_surface_for_geos.yaml
 testinput/dirac_geos.yaml
 testinput/dirac_gfs.yaml
 testinput/eda_3dvar_geos.yaml
@@ -321,12 +322,20 @@ LINK_FILES_DIR("${ioda_mar_obs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
 #Make some output directories for test data
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/geos)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/gfs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs)
 
 set(members mem001;mem002;mem003;mem004)
 foreach(MEM IN LISTS members)
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/${MEM}/hofx)
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/${MEM}/analysis)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/geos/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/gfs/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs/${MEM})
 endforeach()
 
 #Tolerances for compare script
@@ -358,11 +367,19 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_gfs
                   MPI     6
                   LIBS    fv3jedi )
 
+ecbuild_add_test( TARGET  test_fv3jedi_crtm_surface_for_geos
+                  TYPE    EXE
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
+                  ARGS    testinput/crtm_surface_for_geos.yaml
+                  MPI     6
+                  LIBS    fv3jedi )
+
 ecbuild_add_test( TARGET  test_fv3jedi_state_geos
                   SOURCES executables/TestState.cc
                   ARGS    testinput/state_geos.yaml
                   MPI     6
-                  LIBS    fv3jedi )
+                  LIBS    fv3jedi
+                  TEST_DEPENDS test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_gfs-fv3
                   SOURCES executables/TestModel.cc
@@ -617,7 +634,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/hyb-3dvar_geos.yaml testoutput/hyb-3dvar_geos.run
                   MPI          6
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_compare
                   TYPE         SCRIPT
@@ -644,7 +661,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_geos
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/hyb-fgat_geos.yaml testoutput/hyb-fgat_geos.run
                   MPI          6
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_geos_compare
                   TYPE         SCRIPT
@@ -671,7 +688,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_4denvar_geos
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/4denvar_geos.yaml testoutput/4denvar_geos.run
                   MPI          6
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_4denvar_geos_compare
                   TYPE         SCRIPT
@@ -698,7 +715,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb4dvar_geos
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/hyb-4dvar_geos.yaml testoutput/hyb-4dvar_geos.run
                   MPI          6
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb4dvar_geos_compare
                   TYPE         SCRIPT
@@ -738,7 +755,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/hyb-3dvar_geos_p12.yaml testoutput/hyb-3dvar_geos_p12.run
                   MPI          12
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos_p12 )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos_p12 test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12_compare
                   TYPE         SCRIPT

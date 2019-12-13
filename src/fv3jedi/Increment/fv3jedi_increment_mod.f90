@@ -18,7 +18,7 @@ use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
-use fv3jedi_interpolation_mod,   only: bilinear_bump_interp
+use fv3jedi_interpolation_mod,   only: field2field_interp
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_kinds_mod,           only: kind_real
@@ -723,16 +723,16 @@ subroutine change_resol(self,geom,rhs,geom_rhs)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_geom),      intent(in)    :: geom
+type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: rhs
-type(fv3jedi_geom),      intent(in)    :: geom_rhs
+type(fv3jedi_geom),      intent(inout) :: geom_rhs
 
 call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.change_resol")
 
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
   call copy(self, rhs)
 else
-  call bilinear_bump_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+  call field2field_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
   self%calendar_type = rhs%calendar_type
   self%date_init = rhs%date_init
 endif
@@ -753,8 +753,6 @@ subroutine read_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
-  character(len=255) :: filename
-  character(len=255), allocatable :: filenames(:)
   integer :: psinfile
   type(fckit_configuration) :: f_conf
   character(len=:), allocatable :: str
@@ -776,32 +774,12 @@ subroutine read_file(geom, self, c_conf, vdate)
     call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
     call gfs%read_fields(geom, self%fields)
 
-  elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
+  elseif (trim(filetype) == 'geos') then
 
-    if (trim(filetype) == 'geos') then
-      allocate(filenames(1))
-      call f_conf%get_or_die("filename",str)
-      filenames(1) = str
-      deallocate(str)
-    elseif (trim(filetype) == 'geos-rst') then
-      allocate(filenames(3))
-      call f_conf%get_or_die("filename-fvcore",str)
-      filenames(1) = str
-      deallocate(str)
-      call f_conf%get_or_die("filename-moist",str)
-      filenames(2) = str
-      deallocate(str)
-      call f_conf%get_or_die("filename-surf",str)
-      filenames(3) = str
-      deallocate(str)
-    endif
-
-    call geos%create(geom, 'read', filetype, filenames)
-    call geos%read_time(vdate)
+    call geos%setup(geom, self%fields, vdate, 'read', f_conf)
+    call geos%read_meta(geom, vdate, self%calendar_type, self%date_init)
     call geos%read_fields(geom, self%fields)
     call geos%delete()
-
-    deallocate(filenames)
 
   else
 
@@ -826,7 +804,6 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
-  integer :: tiledim
   type(fckit_configuration) :: f_conf
   character(len=:), allocatable :: str
 
@@ -837,18 +814,20 @@ subroutine write_file(geom, self, c_conf, vdate)
   deallocate(str)
 
   if (trim(filetype) == 'gfs') then
+
     call gfs%setup(f_conf)
     call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
-  elseif (trim(filetype) == 'geos' .or. trim(filetype) == 'geos-rst') then
-    tiledim = 1
-    if (f_conf%has("tiledim")) then
-      call f_conf%get_or_die("tiledim",tiledim)
-    endif
-    call geos%create(geom, 'write', filetype, tiledim=tiledim)
-    call geos%write_all(geom, self%fields, f_conf, vdate)
+
+  elseif (trim(filetype) == 'geos') then
+
+    call geos%setup(geom, self%fields, vdate, 'write', f_conf)
+    call geos%write_all(geom, self%fields, vdate)
     call geos%delete()
+
   else
+
      call abor1_ftn("fv3jedi_increment_mod.write: restart type not supported")
+
   endif
 
 end subroutine write_file

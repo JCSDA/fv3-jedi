@@ -8,13 +8,15 @@ outputresolution:
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 inputVariables:
-  variables: ["ud","vd","t","ps","q","qi","ql","o3mr"]
+  variables: ["u","v","t","delp","q","qi","ql","o3mr"]
 states:
 - input:
     filetype: geos
-    filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-    variables: ["ud","vd","t","ps","q","qi","ql","o3mr"]
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.bkg.20180414_210000z.nc4
+    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+    variables: ["u","v","t","delp","q","qi","ql","o3mr"]
   output:
    filetype: geos
    datapath: Data/
-   filename: geos.bkg.converted.
+   filename_bkgd: geos.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4

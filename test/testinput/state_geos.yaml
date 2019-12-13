@@ -22,20 +22,28 @@ StateTest:
         obs_errors: []
   StateFile:
     filetype: geos
-    filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.bkg.20180414_210000z.nc4
+    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+    filename_core: ''
+    filename_mois: ''
+    filename_surf: ''
+    tiledim: true
+    geosingestmeta: false
+    clobber: false
+    variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis","vfrac","vtype","stype"]
   StateGenerate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
     nml_file: Data/fv3files/input_geos_c12.nml
-    variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+    variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   InterpTest:
     variables:
     - air_temperature
     - air_pressure
   date: '2018-04-14T21:00:00Z'
   interp_tolerance: 6.0e-5
-  norm-file: '661.38673706686461'
+  norm-file: '660.01454469137059'
   norm-gen: '630.85428384947306'
   tolerance: 1.0e-08
   values:

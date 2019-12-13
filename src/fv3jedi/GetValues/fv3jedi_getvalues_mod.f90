@@ -12,6 +12,7 @@ use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_state_utils_mod, only: fv3jedi_state
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
+use fv3jedi_field_mod, only: get_field_array
 
 use surface_vt_mod
 use pressure_vt_mod
@@ -103,6 +104,21 @@ real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fra
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth
 logical,  parameter               :: use_compress = .true.       !Could be a fv3 namelist option?
+
+! Pointers to needed fields
+real(kind=kind_real), pointer :: slmsk   (:,:,:)
+real(kind=kind_real), pointer :: frocean (:,:,:)
+real(kind=kind_real), pointer :: frlake  (:,:,:)
+real(kind=kind_real), pointer :: frseaice(:,:,:)
+real(kind=kind_real), pointer :: tsea    (:,:,:)
+real(kind=kind_real), pointer :: f10m    (:,:,:)
+real(kind=kind_real), pointer :: ua      (:,:,:)
+real(kind=kind_real), pointer :: va      (:,:,:)
+real(kind=kind_real), pointer :: u_srf   (:,:,:)
+real(kind=kind_real), pointer :: v_srf   (:,:,:)
+
+real(kind=kind_real), allocatable :: state_f10m(:,:,:), state_slmsk(:,:,:)
+real(kind=kind_real) :: wspd
 
 !For writing GeoVaLs foe debugging
 !type(fckit_mpi_comm) :: comm
@@ -246,7 +262,7 @@ have_rh = .false.
 
 if (associated(state%rh)) then
   allocate(rh(isc:iec,jsc:jec,npz))
-  rh = state%rh 
+  rh = state%rh
   have_rh = .true.
 elseif (have_t .and. have_pressures .and. associated(state%q)) then
 
@@ -262,14 +278,72 @@ endif
 
 ! Get CRTM surface variables
 ! ----------------------
+
+! Model may not have slmsk
+if (get_field_array(state%fields,'slmsk',slmsk)) then
+
+  allocate(state_slmsk(isc:iec,jsc:jec,1))
+  state_slmsk(isc:iec,jsc:jec,1) = slmsk(isc:iec,jsc:jec,1)
+
+elseif ( get_field_array(state%fields,'frocean' ,frocean ) .and. &
+         get_field_array(state%fields,'frlake'  ,frlake  ) .and. &
+         get_field_array(state%fields,'frseaice',frseaice) .and. &
+         get_field_array(state%fields,'tsea'    ,tsea    ) ) then
+
+  allocate(state_slmsk(isc:iec,jsc:jec,1))
+
+  state_slmsk = 1.0_kind_real !Land
+  do j = jsc,jec
+    do i = isc,iec
+      if ( frocean(i,j,1) + frlake(i,j,1) >= 0.6_kind_real) then
+        state_slmsk(i,j,1) = 0.0_kind_real ! Water
+      endif
+      if ( state_slmsk(i,j,1) == 0.0_kind_real .and. frseaice(i,j,1) > 0.5_kind_real) then
+        state_slmsk(i,j,1) = 2.0_kind_real ! Ice
+      endif
+      if ( state_slmsk(i,j,1) == 0.0_kind_real .and. tsea(i,j,1) < 271.4_kind_real ) then
+        state_slmsk(i,j,1) = 2.0_kind_real ! Ice
+      endif
+    enddo
+  enddo
+
+endif
+
+! Model may not have f10m
+if (get_field_array(state%fields,'f10m',f10m)) then
+
+  allocate(state_f10m(isc:iec,jsc:jec,1))
+  state_f10m(isc:iec,jsc:jec,1) = f10m(isc:iec,jsc:jec,1)
+
+elseif ( get_field_array(state%fields,'ua'    , ua    ) .and. &
+         get_field_array(state%fields,'va'    , va    ) .and. &
+         get_field_array(state%fields,'u_srf' , u_srf ) .and. &
+         get_field_array(state%fields,'v_srf' , v_srf ) ) then
+
+  allocate(state_f10m(isc:iec,jsc:jec,1))
+
+  state_f10m(isc:iec,jsc:jec,1) = sqrt(u_srf(isc:iec,jsc:jec,1)**2 + v_srf(isc:iec,jsc:jec,1)**2)
+
+  do j = jsc,jec
+    do i = isc,iec
+      wspd = sqrt(ua(i,j,geom%npz)**2 +  va(i,j,geom%npz)**2)
+      if (state_f10m(i,j,1) > 0.0_kind_real) then
+        state_f10m(i,j,1) = state_f10m(i,j,1)/wspd
+      else
+        state_f10m(i,j,1) = 1.0_kind_real
+      endif
+    enddo
+  enddo
+
+endif
+
 have_crtm_srf =.false.
-if (associated(state%slmsk ) .and. associated(state%slmsk ) .and. &
-    associated(state%sheleg) .and. associated(state%tsea  ) .and. &
-    associated(state%vtype ) .and. associated(state%stype ) .and. &
-    associated(state%vfrac ) .and. associated(state%stc   ) .and. &
-    associated(state%smc   ) .and. associated(state%snwdph) .and. &
-    associated(state%u_srf ) .and. associated(state%v_srf ) .and. &
-    associated(state%f10m  )) then
+if ( associated(state%sheleg) .and. associated(state%tsea  ) .and. &
+     associated(state%vtype ) .and. associated(state%stype ) .and. &
+     associated(state%vfrac ) .and. associated(state%stc   ) .and. &
+     associated(state%smc   ) .and. associated(state%u_srf ) .and. &
+     associated(state%v_srf ) .and. allocated(state_slmsk  ) .and. &
+     allocated(state_f10m) ) then
 
   allocate(wind_speed(nlocs))
   allocate(wind_direction(nlocs))
@@ -310,12 +384,11 @@ if (associated(state%slmsk ) .and. associated(state%slmsk ) .and. &
   snow_depth = 0.0_kind_real
 
   call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
-                     state%slmsk,  state%sheleg, &
+                     state_slmsk,  state%sheleg, &
                      state%tsea,   state%vtype, &
                      state%stype,  state%vfrac, &
-                     state%stc,    state%smc, &
-                     state%snwdph, state%u_srf, &
-                     state%v_srf,  state%f10m, &
+                     state%stc(:,:,1), state%smc(:,:,1), &
+                     state%u_srf, state%v_srf, state_f10m, &
                      land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
                      snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                      snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
@@ -325,12 +398,11 @@ if (associated(state%slmsk ) .and. associated(state%slmsk ) .and. &
 
 endif
 
-
 ! Get CRTM moisture variables
 ! ---------------------------
 
 have_crtm_cld = .false.
-if (associated(state%slmsk) .and. have_t .and. have_pressures &
+if (allocated(state_slmsk) .and. have_t .and. have_pressures &
   .and. associated(state%q) .and. associated(state%qi) .and. associated(state%ql)) then
 
   allocate(ql_ade(isc:iec,jsc:jec,npz))
@@ -348,7 +420,7 @@ if (associated(state%slmsk) .and. have_t .and. have_pressures &
   water_coverage_m = 0.0_kind_real
   do j = jsc,jec
     do i = isc,iec
-      if (state%slmsk(i,j,1) == 0) water_coverage_m(i,j) = 1.0_kind_real
+      if (state_slmsk(i,j,1) == 0) water_coverage_m(i,j) = 1.0_kind_real
     enddo
   enddo
 
@@ -369,6 +441,9 @@ if (associated(state%q)) then
   call crtm_mixratio(geom,state%q,qmr)
   have_qmr = .true.
 endif
+
+if (allocated(state_slmsk)) deallocate(state_slmsk)
+if (allocated(state_f10m)) deallocate(state_f10m)
 
 ! Variable transforms and interpolate to obs locations
 ! ----------------------------------------------------
@@ -482,11 +557,11 @@ do jvar = 1, vars%nvars()
     if (.not. have_pressures) &
       call variable_fail(trim(vars%variable(jvar)),"delp")
 
-    nvl = npz 
+    nvl = npz
     do_interp = .true.
     geovale = delp
     geoval => geovale
-  
+
 
   case ("geopotential_height")
 
@@ -1160,6 +1235,10 @@ do jvar = 1, vars%nvars()
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm
 
+  case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
+
+  case ("mass_content_of_cloud_ice_in_atmosphere_layer")
+
   case ("mole_fraction_of_ozone_in_air")
 
     if (.not.allocated(traj%o3)) &
@@ -1475,6 +1554,10 @@ do jvar = 1, vars%nvars()
     do_interp = .true.
     geoval => geovalm
 
+  case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
+
+  case ("mass_content_of_cloud_ice_in_atmosphere_layer")
+
   case ("air_pressure")
 
   case ("air_pressure_levels")
@@ -1672,6 +1755,10 @@ do jvar = 1, vars%nvars()
       call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
+
+  case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
+
+  case ("mass_content_of_cloud_ice_in_atmosphere_layer")
 
   case ("air_pressure")
 

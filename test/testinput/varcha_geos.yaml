@@ -7,14 +7,16 @@ VariableChangeTests:
   - varchange: Control2Analysis
     state:
       filetype: geos
-      filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-      variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.bkg.20180414_210000z.nc4
+      filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+      variables: ["u","v","t","delp","q","qi","ql","o3mr"]
     toleranceInverse: 1.0e-4
     femps_iterations: 50
     femps_ngrids: 2
     femps_path2fv3gridfiles: Data/femps
     inverseFirst: true #Switched input and output variables
     inputVariables:
-      variables: ["ud","vd","t","delp","q","qi","ql","o3mr"]
+      variables: ["u","v","t","delp","q","qi","ql","o3mr"]
     outputVariables:
       variables: ["psi","chi","t","tv","delp","ps","q","rh","qi","ql","o3"]

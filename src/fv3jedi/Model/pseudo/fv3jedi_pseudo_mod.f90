@@ -35,7 +35,8 @@ public :: pseudo_finalize
 type :: pseudo_model
   character(len=255)  :: pseudo_type !geos of gfs
   character(len=255)  :: pseudo_path
-  character(len=255)  :: pseudo_file
+  character(len=255)  :: filename_bkgd
+  character(len=255)  :: filename_crtm
 end type pseudo_model
 
 ! ------------------------------------------------------------------------------
@@ -66,8 +67,11 @@ call f_conf%get_or_die("pseudo_path",str)
 self%pseudo_path = str
 deallocate(str)
 if (trim(self%pseudo_type) == "geos") then
-  call f_conf%get_or_die("pseudo_file",str)
-  self%pseudo_file = str
+  call f_conf%get_or_die("filename_bkgd",str)
+  self%filename_bkgd = str
+  deallocate(str)
+  call f_conf%get_or_die("filename_crtm",str)
+  self%filename_crtm = str
   deallocate(str)
 endif
 
@@ -106,7 +110,6 @@ character(len=20)  :: vdatec
 character(len=255) :: date
 character(len=4)   :: yyyy
 character(len=2)   :: mm,dd,hh,mn,ss
-character(len=255), allocatable :: filename_geos(:)
 
 type(fv3jedi_io_gfs)  :: gfs
 type(fv3jedi_io_geos) :: geos
@@ -143,13 +146,14 @@ if (trim(self%pseudo_type) == "gfs") then
 
 elseif (trim(self%pseudo_type) == "geos") then
 
-  allocate(filename_geos(1))
-  filename_geos(1) = trim(self%pseudo_path)//trim(self%pseudo_file)//trim(yyyy)//trim(mm)//trim(dd)//"_"//trim(hh)//trim(mn)//trim(ss)//'z.nc4'
-  call print_filename(self,filename_geos(1))
-  call geos%create(geom, 'read', self%pseudo_type, filename_geos)
+  geos%datapath = trim(self%pseudo_path)
+  geos%filenames(1) = trim(self%filename_bkgd) ! Use background file for trajectory
+  geos%filenames(2) = trim(self%filename_crtm) ! In case CRTM is being called
+
+  call geos%setup(geom, state%fields, vdate, 'read')
+  call geos%read_meta(geom, vdate, state%calendar_type, state%date_init)
   call geos%read_fields(geom, state%fields)
   call geos%delete()
-  deallocate(filename_geos)
 
 else
 

@@ -390,7 +390,7 @@ do i = 1, num_items
    case ("KCBL_moist")
      state%kcbl   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("TS_moist")
-     state%ts     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     state%tsm    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("KHl_moist")
      state%khl    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("KHu_moist")

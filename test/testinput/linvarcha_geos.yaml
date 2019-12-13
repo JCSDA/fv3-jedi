@@ -40,7 +40,7 @@ LinearVariableChangeTests:
   toleranceInverse: 1000
   testinverse: 1
   inputVariables:
-    variables: ["ud","vd","t","delp","q","qi","ql","o3"]
+    variables: ["u","v","t","delp","q","qi","ql","o3"]
   outputVariables:
     variables: ["ua","va","t","ps","q","qi","ql","o3"]
 Geometry:
@@ -50,7 +50,9 @@ Geometry:
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
 State:
   filetype: geos
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
 Variables:
   variables: ["ua","va","t","ps","q","qi","ql","o3"]

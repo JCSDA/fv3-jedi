@@ -2,6 +2,8 @@ module fv3jedi_io_gfs_mod
 
 use datetime_mod
 use iso_c_binding
+use string_utils, only: swap_name_member
+
 use fv3jedi_constants_mod,      only: rad2deg
 use fv3jedi_geom_mod,           only: fv3jedi_geom
 use fv3jedi_field_mod,          only: fv3jedi_field
@@ -171,7 +173,7 @@ endif
 
 ! Get dates from coupler.res
 !---------------------------
-open(101, file=trim(adjustl(self%datapath_ti))//self%filename_cplr, form='formatted')
+open(101, file=trim(adjustl(self%datapath_ti))//'/'//self%filename_cplr, form='formatted')
 read(101, '(i6)')  calendar_type
 read(101, '(6i6)') date_init
 read(101, '(6i6)') date
@@ -409,7 +411,7 @@ endif
 !Write date/time info in coupler.res
 !-----------------------------------
 if (mpp_pe() == mpp_root_pe()) then
-   open(101, file=trim(adjustl(self%datapath_ti))//trim(adjustl(self%filename_cplr)), form='formatted')
+   open(101, file=trim(adjustl(self%datapath_ti))//'/'//trim(adjustl(self%filename_cplr)), form='formatted')
    write( 101, '(i6,8x,a)' ) calendar_type, &
         '(Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)'
    write( 101, '(6i6,8x,a)') date_init, 'Model start time:   year, month, day, hour, minute, second'

@@ -3,7 +3,8 @@ cost_function:
     Background:
       state:
       - filetype: geos
-        filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+        datapath: Data/inputs/geos_c12
+        filename_bkgd: geos.bkg.20180414_210000z.nc4
         variables: &fgatvars ["ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: hybrid
@@ -24,25 +25,35 @@ cost_function:
         variables: *fgatvars
         members:
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem001.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem002.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem003.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem004.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem005.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem006.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem007.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem008.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem009.20180414_210000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem010.20180414_210000z.nc4
         localization:
           timeslots: ['2018-04-14T21:00:00Z']
           variables: *fgatvars
@@ -152,7 +163,9 @@ cost_function:
   window_length: PT6H
   varchange: Analysis2Model
   filetype: 'geos'
-  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 final:
   diagnostics:
     departures: oman
@@ -167,11 +180,12 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   tstep: PT1H
-  variables: ["ud","vd","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis","frocean","frlake",
+              "frseaice","vtype","stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
 output:
   filetype: geos
   datapath: Data/analysis/
-  filename: hyb-fgat-geos.
+  filename: hyb-fgat-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 resolution:

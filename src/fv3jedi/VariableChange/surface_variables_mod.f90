@@ -26,7 +26,7 @@ contains
 
 subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
                          fld_slmsk, fld_sheleg, fld_tsea, fld_vtype, fld_stype, fld_vfrac, fld_stc, &
-                         fld_smc, fld_snwdph, fld_u_srf, fld_v_srf, fld_f10m, &
+                         fld_smc, fld_u_srf, fld_v_srf, fld_f10m, &
                          land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
                          snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                          snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
@@ -46,9 +46,8 @@ real(kind=kind_real), intent(in)  :: fld_tsea  (geom%isc:geom%iec,geom%jsc:geom%
 real(kind=kind_real), intent(in)  :: fld_vtype (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: fld_stype (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: fld_vfrac (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(in)  :: fld_stc   (geom%isc:geom%iec,geom%jsc:geom%jec,4)
-real(kind=kind_real), intent(in)  :: fld_smc   (geom%isc:geom%iec,geom%jsc:geom%jec,4)
-real(kind=kind_real), intent(in)  :: fld_snwdph(geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(in)  :: fld_stc   (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(in)  :: fld_smc   (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: fld_u_srf (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: fld_v_srf (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: fld_f10m  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
@@ -233,7 +232,6 @@ allocate(f10mp(nobs,nn))
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_vfrac (:,:,1), vfrac )
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_stc   (:,:,1), stc   )
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_smc   (:,:,1), smc   )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_snwdph(:,:,1), snwdph)
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_u_srf (:,:,1), u_srf )
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_v_srf (:,:,1), v_srf )
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_f10m  (:,:,1), f10m  )
@@ -281,10 +279,15 @@ allocate(f10mp(nobs,nn))
     istyp01 = slmsk(n,3)
     istyp11 = slmsk(n,4)
 
-    sno00 = snwdph(n,1)*dtsfc + snwdphp(n,1)*dtsfcp
-    sno01 = snwdph(n,2)*dtsfc + snwdphp(n,2)*dtsfcp
-    sno10 = snwdph(n,3)*dtsfc + snwdphp(n,3)*dtsfcp
-    sno11 = snwdph(n,4)*dtsfc + snwdphp(n,4)*dtsfcp
+    !sno00 = snwdph(n,1)*dtsfc + snwdphp(n,1)*dtsfcp
+    !sno01 = snwdph(n,2)*dtsfc + snwdphp(n,2)*dtsfcp
+    !sno10 = snwdph(n,3)*dtsfc + snwdphp(n,3)*dtsfcp
+    !sno11 = snwdph(n,4)*dtsfc + snwdphp(n,4)*dtsfcp
+
+    sno00 = sheleg(n,1)*dtsfc + shelegp(n,1)*dtsfcp
+    sno01 = sheleg(n,2)*dtsfc + shelegp(n,2)*dtsfcp
+    sno10 = sheleg(n,3)*dtsfc + shelegp(n,3)*dtsfcp
+    sno11 = sheleg(n,4)*dtsfc + shelegp(n,4)*dtsfcp
 
     sst00 = tsea(n,1)*dtsfc + tsea(n,1)*dtsfcp
     sst01 = tsea(n,2)*dtsfc + tsea(n,2)*dtsfcp

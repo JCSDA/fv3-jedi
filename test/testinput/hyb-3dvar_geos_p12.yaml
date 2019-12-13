@@ -3,7 +3,8 @@ cost_function:
     Background:
       state:
       - filetype: geos
-        filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+        datapath: Data/inputs/geos_c12
+        filename_bkgd: geos.bkg.20180415_000000z.nc4
         variables: &3dvars ["ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: hybrid
@@ -24,25 +25,35 @@ cost_function:
         variables: *3dvars
         members:
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem001.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem002.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem003.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem004.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem005.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem006.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem007.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem008.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem009.20180415_000000z.nc4
           - filetype: geos
-            filename: Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem010.20180415_000000z.nc4
         localization:
           timeslots: ['2018-04-15T00:00:00Z']
           variables: *3dvars
@@ -146,13 +157,46 @@ cost_function:
         - name: refractivity
         variable: refractivity
         errmodel: GSI
+    - ObsSpace:
+        name: AMSUA-NOAA19
+        ObsDataIn:
+          obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/amsua_n19_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-15
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        ObsOptions:
+          Sensor_ID: amsua_n19
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        threshold: 3.0
   cost_type: 3D-Var
   variables: *3dvars
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model
   filetype: 'geos'
-  filename: Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 final:
   diagnostics:
     departures: oman
@@ -166,11 +210,12 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis"]
+  variables: ["ua","va","t","ps","q","qi","ql","o3mr","phis","frocean","frlake","frseaice","vtype",
+              "stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
 output:
   filetype: geos
   datapath: Data/analysis/
-  filename: hyb-3dvar-geos.
+  filename: hyb-3dvar-geos_p12.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 resolution:
