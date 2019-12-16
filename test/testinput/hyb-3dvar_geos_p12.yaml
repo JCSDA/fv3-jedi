@@ -214,8 +214,8 @@ model:
               "stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
 output:
   filetype: geos
-  datapath: Data/analysis/
-  filename: hyb-3dvar-geos_p12.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  datapath: Data/analysis
+  filename_bkgd: hyb-3dvar-geos_p12.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 resolution:

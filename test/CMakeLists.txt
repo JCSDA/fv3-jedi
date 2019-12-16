@@ -186,6 +186,8 @@ testinput/bumpparameters_loc_gfs_aero.yaml
 testinput/convertstate_gfs.yaml
 testinput/convertstate_geos.yaml
 testinput/crtm_surface_for_geos.yaml
+testinput/diffstates_gfs.yaml
+testinput/diffstates_geos.yaml
 testinput/dirac_geos.yaml
 testinput/dirac_gfs.yaml
 testinput/eda_3dvar_geos.yaml
@@ -329,6 +331,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/increment)
 
 set(members mem001;mem002;mem003;mem004)
 foreach(MEM IN LISTS members)
@@ -640,6 +643,22 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-3dvar_geos.run testoutput/hyb-3dvar_geos.ref ${ctol} ${idif}
+                  TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
+
+ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_diffstates.x
+                  ARGS         testinput/diffstates_gfs.yaml
+                  MPI          6
+                  LIBS         fv3jedi
+                  TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_diffstates_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_diffstates.x
+                  ARGS         testinput/diffstates_geos.yaml
+                  MPI          6
+                  LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
 
 #Hybrid FGAT

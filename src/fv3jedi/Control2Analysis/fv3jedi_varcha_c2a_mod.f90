@@ -182,6 +182,10 @@ xana%qi   = xctl%qi
 xana%ql   = xctl%ql
 xana%o3   = xctl%o3
 
+! Copy calendar infomation
+xana%calendar_type = xctl%calendar_type
+xana%date_init = xctl%date_init
+
 end subroutine changevar
 
 ! ------------------------------------------------------------------------------
@@ -228,6 +232,10 @@ xctl%q    = xana%q
 xctl%qi   = xana%qi
 xctl%ql   = xana%ql
 xctl%o3   = xana%o3
+
+! Copy calendar infomation
+xctl%calendar_type = xana%calendar_type
+xctl%date_init = xana%date_init
 
 end subroutine changevarinverse
 

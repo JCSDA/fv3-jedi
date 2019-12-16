@@ -110,6 +110,10 @@ call control_to_analysis_tlm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%rh, &
                                    xana%ua,  xana%va,  xana%t,  xana%q,  &
                                    self%tvtraj,self%qtraj,self%qsattraj )
 
+! Copy calendar infomation
+xana%calendar_type = xctl%calendar_type
+xana%date_init = xctl%date_init
+
 end subroutine multiply
 
 ! ------------------------------------------------------------------------------
@@ -135,6 +139,10 @@ call control_to_analysis_adm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%rh, &
                                    xana%ua,  xana%va,  xana%t,  xana%q,  &
                                    self%tvtraj,self%qtraj,self%qsattraj )
 
+! Copy calendar infomation
+xctl%calendar_type = xana%calendar_type
+xctl%date_init = xana%date_init
+
 end subroutine multiplyadjoint
 
 ! ------------------------------------------------------------------------------
@@ -158,6 +166,10 @@ xctl%qi  = xana%qi
 xctl%ql  = xana%ql
 xctl%o3  = xana%o3
 
+! Copy calendar infomation
+xctl%calendar_type = xana%calendar_type
+xctl%date_init = xana%date_init
+
 end subroutine multiplyinverse
 
 ! ------------------------------------------------------------------------------
@@ -178,6 +190,10 @@ xana%q  = xctl%rh
 xana%qi = xctl%qi
 xana%ql = xctl%ql
 xana%o3 = xctl%o3
+
+! Copy calendar infomation
+xana%calendar_type = xctl%calendar_type
+xana%date_init = xctl%date_init
 
 end subroutine multiplyinverseadjoint
 

@@ -139,6 +139,10 @@ do index_mod = 1, xmod%nf
 
 enddo
 
+! Copy calendar infomation
+xmod%calendar_type = xana%calendar_type
+xmod%date_init = xana%date_init
+
 end subroutine multiply
 
 ! ------------------------------------------------------------------------------
@@ -219,6 +223,10 @@ do index_ana = 1, xana%nf
 
 enddo
 
+! Copy calendar infomation
+xana%calendar_type = xmod%calendar_type
+xana%date_init = xmod%date_init
+
 end subroutine multiplyadjoint
 
 ! ------------------------------------------------------------------------------
@@ -294,6 +302,10 @@ do index_ana = 1, xana%nf
                              xana%fields(index_ana)%fv3jedi_name//" from the linearized model" )
 
 enddo
+
+! Copy calendar infomation
+xana%calendar_type = xmod%calendar_type
+xana%date_init = xmod%date_init
 
 end subroutine multiplyinverse
 
@@ -373,6 +385,10 @@ do index_mod = 1, xmod%nf
                              xmod%fields(index_mod)%fv3jedi_name//" from the analysis increment" )
 
 enddo
+
+! Copy calendar infomation
+xmod%calendar_type = xana%calendar_type
+xmod%date_init = xana%date_init
 
 end subroutine multiplyinverseadjoint
 

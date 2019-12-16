@@ -239,7 +239,8 @@ do var = 1,size(fields)
          "hs_stdv","frland","frlandice","frlake","frocean","frseaice","kcbl","tsm","khl","khu",&
          "varflt","ustar","bstar","zpbl","cm","ct","cq","u10m","v10m","ts","sheleg","soilt","soilm",&
          "DU001","DU002","DU003","DU004","DU005","SS001","SS002","SS003","SS004","SS005",&
-         "BCPHOBIC","BCPHILIC","OCPHOBIC","OCPHILIC","NO3AN1","NO3AN2","NO3AN3","SO4")
+         "BCPHOBIC","BCPHILIC","OCPHOBIC","OCPHILIC","NO3AN1","NO3AN2","NO3AN3","SO4",&
+         "T","DELP","sphum","ice_wat","liq_wat")
       call set_file_names(self,var,1)
 
     ! CRTM surface quantities, usually from GFS output
