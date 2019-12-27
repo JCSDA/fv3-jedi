@@ -41,6 +41,7 @@ typedef int F90ootrj;
 // LinearVariableChange keys
 typedef int F90lvcc2a;
 typedef int F90lvca2m;
+typedef int F90lvcnmcbal;
 // VariableChange keys
 typedef int F90vca2m;
 typedef int F90vcc2a;

@@ -12,6 +12,7 @@
 #include "fv3jedi/Analysis2Model/VarChaA2M.h"
 #include "fv3jedi/Control2Analysis/LinVarChaC2A.h"
 #include "fv3jedi/Control2Analysis/VarChaC2A.h"
+#include "fv3jedi/NMCBalance/LinVarChaNMCBal.h"
 #include "fv3jedi/Utilities/Traits.h"
 
 #include "oops/interface/LinearVariableChange.h"
@@ -28,6 +29,10 @@ void instantiateVarChangeFactories() {
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaC2A> >
                    makerLinVarChaC2A_("Control2Analysis");
+  static oops::LinearVariableChangeMaker<fv3jedi::Traits,
+               oops::LinearVariableChange<fv3jedi::Traits,
+               fv3jedi::LinVarChaNMCBal> >
+                   makerLinVarChaNMCBal_("NMCBalance");
   static oops::VariableChangeMaker<fv3jedi::Traits,
                oops::VariableChange<fv3jedi::Traits,
                fv3jedi::VarChaA2M> >

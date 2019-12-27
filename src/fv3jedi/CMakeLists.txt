@@ -72,6 +72,11 @@ Model/traj/ModelTraj.interface.h
 ModelBias/ModelBiasCovariance.h
 ModelBias/ModelBias.h
 ModelBias/ModelBiasIncrement.h
+NMCBalance/LinVarChaNMCBal.cc
+NMCBalance/LinVarChaNMCBal.h
+NMCBalance/LinVarChaNMCBal.interface.h
+NMCBalance/fv3jedi_linvarcha_nmcbal.interface.F90
+NMCBalance/fv3jedi_linvarcha_nmcbal_mod.f90
 Run/Run.cc
 Run/Run.h
 Run/Run.interface.h
