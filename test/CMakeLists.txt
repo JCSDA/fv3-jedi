@@ -145,6 +145,7 @@ Data/fv3files/input_gfs_c6.nml
 Data/fv3files/input_gfs_c12.nml
 Data/fv3files/input_gfs_c12_p12.nml
 Data/fv3files/input_gfs_c24.nml
+Data/fv3files/input_gfs_c24_p12.nml
 Data/fv3files/input_gfs_c48.nml
 Data/fv3files/input_gfs_c96.nml
 Data/fv3files/input_gfs_c192.nml
@@ -672,7 +673,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_gfs
 ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-fgat_gfs.run testoutput/hyb-fgat_gfs.ref 1.0e-4 ${idif}
+                  ARGS         testoutput/hyb-fgat_gfs.run testoutput/hyb-fgat_gfs.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_hybfgat_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_geos

@@ -185,7 +185,7 @@ model:
   tstep: PT1H
   variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
 output:
   filetype: geos
   datapath: Data/analysis/eda/geos/%{member}%
@@ -223,4 +223,4 @@ variational:
       trajectory:
         variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
                     "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-                    "zpbl","cm","ct","cq","kcbl","ts","khl","khu"]
+                    "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]

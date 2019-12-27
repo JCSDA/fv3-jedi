@@ -8,7 +8,9 @@ outputresolution:
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 inputVariables:
-  variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
 states:
 - input:
     filetype: gfs
@@ -19,6 +21,10 @@ states:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   output:
-   filetype: geos
-   datapath: Data/
-   filename_bkgd: converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filetype: gfs
+    datapath_tile: Data/
+    filename_core: c24.fv_core.res.nc
+    filename_trcr: c24.fv_tracer.res.nc
+    filename_sfcd: c24.sfc_data.nc
+    filename_sfcw: c24.fv_srf_wnd.res.nc
+    filename_cplr: c24.coupler.res

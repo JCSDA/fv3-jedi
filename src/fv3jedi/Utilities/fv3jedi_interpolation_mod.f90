@@ -13,7 +13,7 @@ use wind_vt_mod,           only: d2a, a2d
 
 use type_bump, only: bump_type
 
-use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_max
+use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 use fckit_geometry_module, only: sphere_distance
 use fckit_kdtree_module, only: kdtree,kdtree_create,kdtree_destroy,kdtree_k_nearest_neighbors
 
@@ -57,7 +57,8 @@ subroutine field2field_interp(nf, geom_in, fields_in, geom_ou, fields_ou)
   type(bump_type)  :: bump
 
   ! Interpolation objects barycenric
-  integer :: i, j, k, n, nnearest = 4, ngrid_ou, maxtype, mintype, disp
+  integer :: maxtypel, mintypel, maxtype, mintype
+  integer :: i, j, k, n, nnearest = 4, ngrid_ou, disp
   real(kind=kind_real), allocatable :: lats_ou(:), lons_ou(:)
   real(kind=kind_real), allocatable :: interp_w(:,:)
   integer, allocatable :: interp_i(:,:)
@@ -196,8 +197,10 @@ subroutine field2field_interp(nf, geom_in, fields_in, geom_ou, fields_ou)
 
         ! Get field maximum and create array
         if (.not.allocated(field_types)) then
-          call geom_in%f_comm%allreduce(int(maxval(fields_in(var)%array)),maxtype,fckit_mpi_max())
-          call geom_in%f_comm%allreduce(int(minval(fields_in(var)%array)),mintype,fckit_mpi_max())
+          maxtypel = int(maxval(fields_in(var)%array))
+          mintypel = int(minval(fields_in(var)%array))
+          call geom_in%f_comm%allreduce(maxtypel,maxtype,fckit_mpi_max())
+          call geom_in%f_comm%allreduce(mintypel,mintype,fckit_mpi_min())
           allocate(field_types(mintype:maxtype))
           disp = mintype - 1
         endif
@@ -225,6 +228,8 @@ subroutine field2field_interp(nf, geom_in, fields_in, geom_ou, fields_ou)
 
         enddo
 
+        deallocate(field_types)
+
       endif
 
     endif
@@ -240,7 +245,6 @@ subroutine field2field_interp(nf, geom_in, fields_in, geom_ou, fields_ou)
 
   if (allocated(field_neighbours)) deallocate(field_neighbours)
   if (allocated(field_ou)) deallocate(field_ou)
-  if (allocated(field_types)) deallocate(field_types)
 
 end subroutine field2field_interp
 
