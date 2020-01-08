@@ -216,6 +216,8 @@ testinput/hyb-fgat_geos.yaml
 testinput/hyb-fgat_gfs.yaml
 testinput/increment_geos.yaml
 testinput/increment_gfs.yaml
+testinput/geometry_iterator_gfs.yaml
+testinput/geometry_iterator_geos.yaml
 testinput/linearmodel_geos.yaml
 testinput/linearmodel_gfs.yaml
 testinput/linearmodel_pseudogeos.yaml
@@ -436,6 +438,18 @@ ecbuild_add_test( TARGET  test_fv3jedi_increment_gfs
 ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
                   SOURCES executables/TestIncrement.cc
                   ARGS    testinput/increment_geos.yaml
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_gfs
+                  SOURCES executables/TestGeometryIterator.cc
+                  ARGS    testinput/geometry_iterator_gfs.yaml
+                  MPI     6
+                  LIBS    fv3jedi )
+
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_geos
+                  SOURCES executables/TestGeometryIterator.cc
+                  ARGS    testinput/geometry_iterator_geos.yaml
                   MPI     6
                   LIBS    fv3jedi )
 

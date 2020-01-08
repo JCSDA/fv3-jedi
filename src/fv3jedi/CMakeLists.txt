@@ -36,6 +36,11 @@ Geometry/Geometry.h
 Geometry/Geometry.interface.h
 Geometry/fv3jedi_geom_interface_mod.F90
 Geometry/fv3jedi_geom_mod.f90
+GeometryIterator/GeometryIterator.cc
+GeometryIterator/GeometryIterator.h
+GeometryIterator/GeometryIterator.interface.h
+GeometryIterator/fv3jedi_geom_iter_interface.F90
+GeometryIterator/fv3jedi_geom_iter_mod.F90
 GetValues/GetValuesTraj.cc
 GetValues/GetValuesTraj.h
 GetValues/GetValuesTraj.interface.h

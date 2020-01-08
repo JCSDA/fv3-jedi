@@ -19,6 +19,7 @@
 #include "fv3jedi/Increment/Increment.interface.h"
 #include "fv3jedi/State/State.h"
 #include "oops/base/GeneralizedDepartures.h"
+#include "oops/base/GridPoint.h"
 #include "oops/base/Variables.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/dot_product.h"
@@ -77,6 +78,11 @@ class Increment : public oops::GeneralizedDepartures,
   void schur_product_with(const Increment &);
   void random();
   void dirac(const eckit::Configuration &);
+
+/// Get/Set increment values at grid points
+  oops::GridPoint getPoint(const GeometryIterator &) const;
+  void setPoint(const oops::GridPoint &, const GeometryIterator &);
+
 
 /// Get increment values at observation locations
   void getValuesTL(const ufo::Locations &, const oops::Variables &,

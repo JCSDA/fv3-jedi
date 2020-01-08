@@ -18,6 +18,7 @@ use fv3jedi_increment_mod
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment_registry
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
+use fv3jedi_geom_iter_mod, only: fv3jedi_geom_iter, fv3jedi_geom_iter_registry
 use fv3jedi_state_utils_mod, only: fv3jedi_state, fv3jedi_state_registry
 use unstructured_grid_mod, only: unstructured_grid, unstructured_grid_registry
 
@@ -619,6 +620,50 @@ call fv3jedi_increment_deserialize(self,c_vsize,c_vect_inc,c_index)
 
 
 end subroutine fv3jedi_increment_deserialize_c
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_getpoint_c(c_key_self, c_key_iter, values, values_len) bind(c,name='fv3jedi_increment_getpoint_f90')
+
+implicit none
+
+! Passed variables
+integer(c_int),intent(in) :: c_key_self           !< Increment
+integer(c_int), intent(in) :: c_key_iter
+integer(c_int), intent(in) :: values_len
+real(c_double), intent(inout) :: values(values_len)
+
+type(fv3jedi_increment), pointer :: self
+type(fv3jedi_geom_iter), pointer :: iter
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+call fv3jedi_geom_iter_registry%get(c_key_iter,iter)
+
+call fv3jedi_getpoint(self, iter, values)
+
+end subroutine fv3jedi_increment_getpoint_c
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_setpoint_c(c_key_self, c_key_iter, values, values_len) bind(c,name='fv3jedi_increment_setpoint_f90')
+
+implicit none
+
+! Passed variables
+integer(c_int),intent(inout) :: c_key_self           !< Increment
+integer(c_int), intent(in)   :: c_key_iter
+integer(c_int), intent(in)   :: values_len
+real(c_double), intent(in)   :: values(values_len)
+
+type(fv3jedi_increment), pointer :: self
+type(fv3jedi_geom_iter), pointer :: iter
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+call fv3jedi_geom_iter_registry%get(c_key_iter,iter)
+
+call fv3jedi_setpoint(self, iter, values)
+
+end subroutine fv3jedi_increment_setpoint_c
 
 ! ------------------------------------------------------------------------------
 end module fv3jedi_increment_interface_mod

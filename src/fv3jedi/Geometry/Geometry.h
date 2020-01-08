@@ -18,12 +18,15 @@
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.interface.h"
+#include "fv3jedi/GeometryIterator/GeometryIterator.h"
 
 namespace eckit {
   class Configuration;
 }
 
 namespace fv3jedi {
+
+  class GeometryIterator;
 
 // -----------------------------------------------------------------------------
 /// Geometry handles geometry for FV3JEDI model.
@@ -36,6 +39,9 @@ class Geometry : public util::Printable,
   explicit Geometry(const eckit::Configuration &, const eckit::mpi::Comm &);
   Geometry(const Geometry &);
   ~Geometry();
+
+  GeometryIterator begin() const;
+  GeometryIterator end() const;
 
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}

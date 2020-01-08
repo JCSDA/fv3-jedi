@@ -11,6 +11,7 @@
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
+#include "fv3jedi/GeometryIterator/GeometryIterator.interface.h"
 #include "fv3jedi/Run/Run.h"
 #include "fv3jedi/Utilities/Utilities.h"
 
@@ -42,6 +43,20 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
 // -----------------------------------------------------------------------------
 Geometry::~Geometry() {
   fv3jedi_geo_delete_f90(keyGeom_);
+}
+// -----------------------------------------------------------------------------
+GeometryIterator Geometry::begin() const {
+  // return start of the geometry on this mpi tile
+  int ist, iend, jst, jend, npz;
+  fv3jedi_geo_start_end_f90(keyGeom_, ist, iend, jst, jend, npz);
+  return GeometryIterator(*this, ist, jst);
+}
+// -----------------------------------------------------------------------------
+GeometryIterator Geometry::end() const {
+  // return end of the geometry on this mpi tile
+  // (returns index out of bounds for the iterator loops to work)
+
+  return GeometryIterator(*this, -1, -1);
 }
 // -----------------------------------------------------------------------------
 void Geometry::print(std::ostream & os) const {

@@ -17,6 +17,7 @@ use unstructured_grid_mod
 use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
+use fv3jedi_geom_iter_mod,       only: fv3jedi_geom_iter
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_interpolation_mod,   only: field2field_interp
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
@@ -38,6 +39,7 @@ public :: fv3jedi_increment, create, delete, zeros, random, copy, &
           change_resol, getvalues_tl, getvalues_ad, &
           ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad, &
           fv3jedi_increment_serialize, fv3jedi_increment_deserialize, &
+          fv3jedi_getpoint, fv3jedi_setpoint, &
           increment_print
 
 ! ------------------------------------------------------------------------------
@@ -1263,6 +1265,47 @@ end do
 
 
 end subroutine fv3jedi_increment_deserialize
+
+! ------------------------------------------------------------------------------
+subroutine fv3jedi_getpoint(self, geoiter, values)
+
+implicit none
+
+type(fv3jedi_increment),           intent(   in) :: self
+type(fv3jedi_geom_iter),           intent(   in) :: geoiter
+real(kind=kind_real),              intent(inout) :: values(:)
+
+integer :: var, nz, ii
+
+ii = 0
+do var = 1,self%nf
+  nz = self%fields(var)%npz
+  values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iind, geoiter%jind,:)
+  ii = ii + nz
+enddo
+
+end subroutine fv3jedi_getpoint
+
+! ------------------------------------------------------------------------------
+subroutine fv3jedi_setpoint(self, geoiter, values)
+
+implicit none
+
+! Passed variables
+type(fv3jedi_increment),        intent(inout) :: self
+type(fv3jedi_geom_iter),        intent(   in) :: geoiter
+real(kind=kind_real),           intent(   in) :: values(:)
+
+integer :: var, nz, ii
+
+ii = 0
+do var = 1,self%nf
+  nz = self%fields(var)%npz
+  self%fields(var)%array(geoiter%iind, geoiter%jind,:) = values(ii+1:ii+nz)
+  ii = ii + nz
+enddo
+
+end subroutine fv3jedi_setpoint
 
 ! ------------------------------------------------------------------------------
 end module fv3jedi_increment_mod

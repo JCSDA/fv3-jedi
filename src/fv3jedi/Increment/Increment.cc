@@ -148,6 +148,40 @@ void Increment::random() {
   fv3jedi_increment_random_f90(keyInc_);
 }
 // -----------------------------------------------------------------------------
+/// Get increment values at grid locations
+// -----------------------------------------------------------------------------
+oops::GridPoint Increment::getPoint(const GeometryIterator & iter) const {
+  int ist, iend, jst, jend, npz;
+  fv3jedi_geo_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, npz);
+
+  oops::Variables fieldNames = vars_;
+
+  std::vector<int> varlens(fieldNames.size());
+  for (unsigned int ii = 0; ii < fieldNames.size(); ii++) {
+     // might need to modify if non-npz variables are also used
+     varlens[ii] = npz;
+  }
+
+  int lenvalues = std::accumulate(varlens.begin(), varlens.end(), 0);
+  std::vector<double> values(lenvalues);
+
+  // Get variable values
+  fv3jedi_increment_getpoint_f90(keyInc_, iter.toFortran(), values[0],
+                                  values.size());
+
+  return oops::GridPoint(oops::Variables(fieldNames), values, varlens);
+}
+
+
+// -----------------------------------------------------------------------------
+void Increment::setPoint(const oops::GridPoint & values,
+                         const GeometryIterator & iter) {
+  const std::vector<double> vals = values.getVals();
+  fv3jedi_increment_setpoint_f90(keyInc_, iter.toFortran(), vals[0], vals.size());
+}
+
+
+// -----------------------------------------------------------------------------
 /// Get increment values at observation locations
 // -----------------------------------------------------------------------------
 void Increment::getValuesTL(const ufo::Locations & locs,

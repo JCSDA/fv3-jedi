@@ -115,5 +115,27 @@ call info(self)
 end subroutine c_fv3jedi_geo_info
 
 ! ------------------------------------------------------------------------------
+!> return begin and end of local geometry
+subroutine c_fv3jedi_geo_start_end(c_key_self, ist, iend, jst, jend, npz) bind(c, name='fv3jedi_geo_start_end_f90')
+
+  implicit none
+
+  integer(c_int), intent( in) :: c_key_self
+  integer(c_int), intent(out) :: ist, iend, jst, jend, npz
+
+  type(fv3jedi_geom), pointer :: self
+  call fv3jedi_geom_registry%get(c_key_self, self)
+
+  ist  = self%isc
+  iend = self%iec
+  jst  = self%jsc
+  jend = self%jec
+  npz  = self%npz
+
+end subroutine c_fv3jedi_geo_start_end
+
+
+
+! ------------------------------------------------------------------------------
 
 end module fv3jedi_geom_interface_mod

@@ -31,6 +31,8 @@ extern "C" {
                              F90geom &);
   void fv3jedi_geo_info_f90(const F90geom &);
   void fv3jedi_geo_delete_f90(F90geom &);
+  void fv3jedi_geo_start_end_f90(const F90geom &, int &, int &, int &, int &,
+                                 int &);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------

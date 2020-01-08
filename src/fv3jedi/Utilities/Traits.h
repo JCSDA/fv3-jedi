@@ -12,6 +12,7 @@
 
 #include "fv3jedi/ErrorCovariance/ErrorCovariance.h"
 #include "fv3jedi/Geometry/Geometry.h"
+#include "fv3jedi/GeometryIterator/GeometryIterator.h"
 #include "fv3jedi/GetValues/GetValuesTraj.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/Localization/LocalizationMatrix.h"
@@ -44,6 +45,7 @@ struct Traits {
   typedef fv3jedi::ErrorCovariance      Covariance;
   typedef fv3jedi::Increment            Increment;
   typedef fv3jedi::Geometry             Geometry;
+  typedef fv3jedi::GeometryIterator     GeometryIterator;
   typedef fv3jedi::GetValuesTrajMatrix        InterpolatorTraj;
   typedef fv3jedi::LocalizationMatrix   LocalizationMatrix;
   typedef fv3jedi::ModelBias            ModelAuxControl;

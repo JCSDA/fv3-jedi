@@ -141,7 +141,10 @@ extern "C" {
                                          const std::size_t &,
                                          const double[],
                                          const std::size_t &);
-
+  void fv3jedi_increment_getpoint_f90(const F90inc &, const F90iter &, double &,
+                                      const int &);
+  void fv3jedi_increment_setpoint_f90(F90inc &, const F90iter &, const double &,
+                                      const int &);
 }  // extern "C"
 // -----------------------------------------------------------------------------
 

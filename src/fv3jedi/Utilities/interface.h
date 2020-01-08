@@ -22,6 +22,8 @@ namespace fv3jedi {
 
 // Geometry key type
 typedef int F90geom;
+// Geometry iterator key type
+typedef int F90iter;
 // Model key type
 typedef int F90model;
 // Tlm key type
