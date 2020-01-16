@@ -45,7 +45,8 @@ type :: fv3jedi_geom
   integer :: layout(2), io_layout(2)                                                !Processor layouts
   integer :: ntile, ntiles                                                          !Tile number and total
   real(kind=kind_real) :: ptop                                                      !Pressure at top of domain
-  type(domain2D) :: domain                                                          !MPP domain
+  type(domain2D) :: domain_fix                                                      !MPP domain
+  type(domain2D), pointer :: domain                                                 !MPP domain
   real(kind=kind_real), allocatable, dimension(:)       :: ak, bk                   !Model level coefficients
   real(kind=kind_real), allocatable, dimension(:,:)     :: grid_lon, grid_lat       !Lat/lon centers
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
@@ -86,9 +87,9 @@ subroutine create(self, c_conf, f_comm)
 implicit none
 
 !Arguments
-type(fv3jedi_geom),   intent(inout) :: self
-type(c_ptr),          intent(in)    :: c_conf
-type(fckit_mpi_comm), intent(in)    :: f_comm
+type(fv3jedi_geom), target,  intent(inout) :: self
+type(c_ptr),                 intent(in)    :: c_conf
+type(fckit_mpi_comm),        intent(in)    :: f_comm
 
 !Locals
 character(len=256)                    :: pathfile_akbk
@@ -285,9 +286,10 @@ deallocate(FV_Atm)
 deallocate(grids_on_this_pe)
 
 !Resetup domain to avoid risk of copied pointers
-call setup_domain( self%domain, self%npx-1, self%npx-1, &
+call setup_domain( self%domain_fix, self%npx-1, self%npx-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
 
+self%domain => self%domain_fix
 
 ! Optionally write the geometry to file
 ! -------------------------------------
@@ -307,8 +309,8 @@ subroutine clone(self, other)
 
 implicit none
 
-type(fv3jedi_geom), intent(in   ) :: self
-type(fv3jedi_geom), intent(inout) :: other
+type(fv3jedi_geom), target, intent(in)    :: self
+type(fv3jedi_geom),         intent(inout) :: other
 
 allocate(other%ak(self%npz+1) )
 allocate(other%bk(self%npz+1) )
@@ -408,8 +410,7 @@ other%se_corner = self%se_corner
 other%sw_corner = self%sw_corner
 other%nw_corner = self%nw_corner
 
-call setup_domain( other%domain, other%npx-1, other%npx-1, &
-                   other%ntiles, other%layout, other%io_layout, 3)
+other%domain => self%domain
 
 end subroutine clone
 
@@ -458,7 +459,8 @@ deallocate(self%rsin2 )
 deallocate(self%dxa   )
 deallocate(self%dya   )
 
-call mpp_deallocate_domain(self%domain)
+! Required memory leak, since copying this causes problems
+!call mpp_deallocate_domain(self%domain_fix)
 
 end subroutine delete
 
