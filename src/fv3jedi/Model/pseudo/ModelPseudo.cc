@@ -33,7 +33,7 @@ ModelPseudo::ModelPseudo(const Geometry & resol,
   oops::Log::trace() << "ModelPseudo::ModelPseudo" << std::endl;
   tstep_ = util::Duration(mconf.getString("tstep"));
   const eckit::Configuration * configc = &mconf;
-  fv3jedi_pseudo_create_f90(&configc, geom_.toFortran(), keyConfig_);
+  fv3jedi_pseudo_create_f90(&configc, geom_.toFortran(), keyConfig_, vars_);
   if (mconf.has("RunStageCheck")) {
     runstagecheck_ = mconf.getInt("RunStageCheck");
   }

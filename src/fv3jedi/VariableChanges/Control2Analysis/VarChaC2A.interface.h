@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_ANALYSIS2MODEL_VARCHAA2M_INTERFACE_H_
-#define FV3JEDI_ANALYSIS2MODEL_VARCHAA2M_INTERFACE_H_
+#ifndef FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_INTERFACE_H_
+#define FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_INTERFACE_H_
 
 #include "fv3jedi/Utilities/interface.h"
 
@@ -24,24 +24,21 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_varcha_a2m_create_f90(const F90vca2m &,
+  void fv3jedi_varcha_c2a_create_f90(const F90vcc2a &,
                                      const F90geom &,
                                      const eckit::Configuration * const *);
-  void fv3jedi_varcha_a2m_delete_f90(F90vca2m &);
-  void fv3jedi_varcha_a2m_changevar_f90(const F90vca2m &,
+  void fv3jedi_varcha_c2a_delete_f90(F90vcc2a &);
+  void fv3jedi_varcha_c2a_changevar_f90(const F90vcc2a &,
                                         const F90geom &,
                                         const F90state &,
-                                        const F90state &,
-                                        util::DateTime * const *);
-  void fv3jedi_varcha_a2m_changevarinverse_f90(const F90vca2m &,
+                                        const F90state &);
+  void fv3jedi_varcha_c2a_changevarinverse_f90(const F90vcc2a &,
                                                const F90geom &,
                                                const F90state &,
-                                               const F90state &,
-                                               util::DateTime * const *);
+                                               const F90state &);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_ANALYSIS2MODEL_VARCHAA2M_INTERFACE_H_
-
+#endif  // FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_INTERFACE_H_

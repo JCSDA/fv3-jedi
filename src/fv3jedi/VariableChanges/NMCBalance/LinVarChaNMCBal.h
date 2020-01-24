@@ -5,16 +5,17 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_ANALYSIS2MODEL_LINVARCHAA2M_H_
-#define FV3JEDI_ANALYSIS2MODEL_LINVARCHAA2M_H_
+#ifndef FV3JEDI_VARIABLECHANGES_NMCBALANCE_LINVARCHANMCBAL_H_
+#define FV3JEDI_VARIABLECHANGES_NMCBALANCE_LINVARCHANMCBAL_H_
 
 #include <ostream>
 #include <string>
 
+#include "LinVarChaNMCBal.interface.h"
+
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
 #include "oops/util/Printable.h"
-#include "LinVarChaA2M.interface.h"
 
 // Forward declarations
 namespace eckit {
@@ -29,13 +30,13 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 /// FV3JEDI linear change of variable
 
-class LinVarChaA2M: public util::Printable {
+class LinVarChaNMCBal: public util::Printable {
  public:
-  static const std::string classname() {return "fv3jedi::LinVarChaA2M";}
+  static const std::string classname() {return "fv3jedi::LinVarChaNMCBal";}
 
-  explicit LinVarChaA2M(const State &, const State &,
-                        const Geometry &, const eckit::Configuration &);
-  ~LinVarChaA2M();
+  explicit LinVarChaNMCBal(const State &, const State &,
+                           const Geometry &, const eckit::Configuration &);
+  ~LinVarChaNMCBal();
 
 /// Perform linear multiplications
   void multiply(const Increment &, Increment &) const;
@@ -45,10 +46,10 @@ class LinVarChaA2M: public util::Printable {
 
  private:
   boost::shared_ptr<const Geometry> geom_;
-  F90lvca2m keyFtnConfig_;
+  F90lvcnmcbal keyFtnConfig_;
   void print(std::ostream &) const override;
 };
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_ANALYSIS2MODEL_LINVARCHAA2M_H_
+#endif  // FV3JEDI_VARIABLECHANGES_NMCBALANCE_LINVARCHANMCBAL_H_

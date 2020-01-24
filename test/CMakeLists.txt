@@ -196,6 +196,8 @@ testinput/eda_3dvar_gfs.yaml
 testinput/eda_4dvar_geos.yaml
 testinput/eda_4dvar_gfs.yaml
 testinput/enshofx_geos.yaml
+testinput/ensvariance_geos.yaml
+testinput/ensvariance_gfs.yaml
 testinput/errorcov.yaml
 testinput/forecast_geos-fv3.yaml
 testinput/forecast_geos.yaml
@@ -630,6 +632,19 @@ ecbuild_add_test( TARGET       test_fv3jedi_dirac_gfs_compare
                   ARGS         testoutput/dirac_gfs.run testoutput/dirac_gfs.ref ${ctol} ${idif}
                   TEST_DEPENDS test_fv3jedi_dirac_gfs )
 
+# Ensemble variance
+ecbuild_add_test( TARGET       test_fv3jedi_ensvariance_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_ensvariance.x
+                  ARGS         testinput/ensvariance_gfs.yaml testoutput/ensvariance_gfs.run
+                  MPI          6 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_ensvariance_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_ensvariance.x
+                  ARGS         testinput/ensvariance_geos.yaml testoutput/ensvariance_geos.run
+                  MPI          6 )
+
 # Data assimilation runs
 # ----------------------
 
@@ -657,7 +672,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_geos.run testoutput/hyb-3dvar_geos.ref ${ctol} ${idif}
+                  ARGS         testoutput/hyb-3dvar_geos.run testoutput/hyb-3dvar_geos.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs

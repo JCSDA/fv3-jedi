@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_CONTROL2ANALYSIS_VARCHAC2A_H_
-#define FV3JEDI_CONTROL2ANALYSIS_VARCHAC2A_H_
+#ifndef FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_H_
+#define FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_H_
 
 #include <ostream>
 #include <string>
@@ -47,4 +47,4 @@ class VarChaC2A: public util::Printable {
 // -----------------------------------------------------------------------------
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_CONTROL2ANALYSIS_VARCHAC2A_H_
+#endif  // FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_H_

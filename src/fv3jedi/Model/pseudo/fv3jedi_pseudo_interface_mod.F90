@@ -9,6 +9,7 @@ use fv3jedi_kinds_mod
 use datetime_mod
 use duration_mod
 use iso_c_binding
+use oops_variables_mod
 
 use fv3jedi_pseudo_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -37,22 +38,26 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_pseudo_create(c_conf, c_key_geom, c_key_self) bind (c,name='fv3jedi_pseudo_create_f90')
+subroutine c_fv3jedi_pseudo_create(c_conf, c_key_geom, c_key_self, c_vars) bind (c,name='fv3jedi_pseudo_create_f90')
 
 implicit none
-integer(c_int), intent(inout) :: c_key_self  !< Key to model data
-integer(c_int), intent(in)    :: c_key_geom  !< Geometry
-type(c_ptr),    intent(in)    :: c_conf      !< pointer to object of class Config
+integer(c_int), intent(inout)  :: c_key_self  !< Key to model data
+integer(c_int), intent(in)     :: c_key_geom  !< Geometry
+type(c_ptr),    intent(in)     :: c_conf      !< pointer to object of class Config
+type(c_ptr), value, intent(in) :: c_vars      !< List of variables
 
 type(pseudo_model), pointer :: self
 type(fv3jedi_geom), pointer :: geom
+type(oops_variables)        :: vars
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_pseudo_registry%init()
 call fv3jedi_pseudo_registry%add(c_key_self)
 call fv3jedi_pseudo_registry%get(c_key_self, self)
 
-call pseudo_create(self, geom, c_conf)
+vars = oops_variables(c_vars)
+
+call pseudo_create(self, geom, c_conf, vars)
 
 end subroutine c_fv3jedi_pseudo_create
 

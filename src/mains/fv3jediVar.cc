@@ -7,8 +7,8 @@
 
 #include "fv3jedi/Localization/instantiateLocalizationFactory.h"
 #include "fv3jedi/Run/Run.h"
-#include "fv3jedi/Utilities/instantiateVarChangeFactories.h"
 #include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/VariableChanges/instantiateVarChangeFactories.h"
 #include "ufo/instantiateObsFilterFactory.h"
 
 #include "oops/runs/Variational.h"

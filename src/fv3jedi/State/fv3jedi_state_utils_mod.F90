@@ -52,6 +52,8 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: qlls      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qicn      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qlcn      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qilsf     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qicnf     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qs        => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qr        => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: gr        => null()

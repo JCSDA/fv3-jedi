@@ -5,8 +5,8 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_NMCBALANCE_LINVARCHANMCBAL_INTERFACE_H_
-#define FV3JEDI_NMCBALANCE_LINVARCHANMCBAL_INTERFACE_H_
+#ifndef FV3JEDI_VARIABLECHANGES_NMCBALANCE_LINVARCHANMCBAL_INTERFACE_H_
+#define FV3JEDI_VARIABLECHANGES_NMCBALANCE_LINVARCHANMCBAL_INTERFACE_H_
 
 #include "fv3jedi/Utilities/interface.h"
 
@@ -51,4 +51,4 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_NMCBALANCE_LINVARCHANMCBAL_INTERFACE_H_
+#endif  // FV3JEDI_VARIABLECHANGES_NMCBALANCE_LINVARCHANMCBAL_INTERFACE_H_

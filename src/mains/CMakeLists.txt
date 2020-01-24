@@ -28,6 +28,11 @@ ecbuild_add_executable( TARGET  fv3jedi_enshofx.x
                         LIBS    fv3jedi
                       )
 
+ecbuild_add_executable( TARGET  fv3jedi_ensvariance.x
+                        SOURCES fv3jediEnsVariance.cc
+                        LIBS    fv3jedi
+                        )
+
 ecbuild_add_executable( TARGET  fv3jedi_forecast.x
                         SOURCES fv3jediForecast.cc
                         LIBS    fv3jedi

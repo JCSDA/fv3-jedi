@@ -126,6 +126,11 @@ if (present(psinfile)) then
   endif
 endif
 
+! Option to allow for ps infile
+if (f_conf%has("psinfile")) then
+  call f_conf%get_or_die("psinfile",self%ps_in_file)
+endif
+
 end subroutine setup
 
 ! ------------------------------------------------------------------------------

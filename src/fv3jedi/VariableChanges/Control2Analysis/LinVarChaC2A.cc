@@ -5,7 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "fv3jedi/Control2Analysis/LinVarChaC2A.h"
+#include "fv3jedi/VariableChanges/Control2Analysis/LinVarChaC2A.h"
 
 #include <ostream>
 #include <string>

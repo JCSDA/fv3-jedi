@@ -25,6 +25,8 @@ public q_to_rh
 public q_to_rh_tl
 public q_to_rh_ad
 public get_qsat
+public q4_to_q2
+public q2_to_q4
 
 contains
 
@@ -379,6 +381,60 @@ subroutine rh_to_q_ad(geom,qsat,rh,q)
 
 end subroutine rh_to_q_ad
 
+!----------------------------------------------------------------------------
+
+subroutine q4_to_q2(geom,qils,qicn,qlls,qlcn,qi,ql,qilsf,qicnf)
+
+ implicit none
+ type(fv3jedi_geom),             intent(in)  :: geom
+ real(kind=kind_real),           intent(in)  :: qils(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real),           intent(in)  :: qicn(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real),           intent(in)  :: qlls(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real),           intent(in)  :: qlcn(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real),           intent(out) :: ql(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real),           intent(out) :: qi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), optional, intent(out) :: qilsf(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), optional, intent(out) :: qicnf(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+ ! Convert cloud for large scale and convective regions into totals
+
+ qi = qils + qicn
+ ql = qlls + qlcn
+
+ ! Record fractions contained in each
+ if (present(qilsf)) then
+   qilsf = 0.0_kind_real
+   where (qi > 0.0_kind_real) qilsf = qils / qi
+ endif
+ if (present(qicnf)) then
+   qicnf = 0.0_kind_real
+   where (qi > 0.0_kind_real) qicnf = qicn / qi
+ endif
+
+end subroutine q4_to_q2
+
+!----------------------------------------------------------------------------
+
+subroutine q2_to_q4(geom,qi,ql,qilsf,qicnf,qils,qicn,qlls,qlcn)
+
+ implicit none
+ type(fv3jedi_geom),   intent(in)  :: geom
+ real(kind=kind_real), intent(in)  :: ql(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)  :: qi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)  :: qilsf(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)  :: qicnf(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(out) :: qils(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(out) :: qicn(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(out) :: qlls(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(out) :: qlcn(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+ ! Convert totals into large scale and convective (requies knowledge of some desired fractions)
+ qils = qi * qilsf
+ qlls = qi * (1.0_kind_real - qilsf)
+ qicn = qi * qicnf
+ qlcn = qi * (1.0_kind_real - qicnf)
+
+end subroutine q2_to_q4
 
 !----------------------------------------------------------------------------
 ! Specific to relative humidity ---------------------------------------------

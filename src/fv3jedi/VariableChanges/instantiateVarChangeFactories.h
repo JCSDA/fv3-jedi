@@ -5,15 +5,16 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_UTILITIES_INSTANTIATEVARCHANGEFACTORIES_H_
-#define FV3JEDI_UTILITIES_INSTANTIATEVARCHANGEFACTORIES_H_
+#ifndef FV3JEDI_VARIABLECHANGES_INSTANTIATEVARCHANGEFACTORIES_H_
+#define FV3JEDI_VARIABLECHANGES_INSTANTIATEVARCHANGEFACTORIES_H_
 
-#include "fv3jedi/Analysis2Model/LinVarChaA2M.h"
-#include "fv3jedi/Analysis2Model/VarChaA2M.h"
-#include "fv3jedi/Control2Analysis/LinVarChaC2A.h"
-#include "fv3jedi/Control2Analysis/VarChaC2A.h"
-#include "fv3jedi/NMCBalance/LinVarChaNMCBal.h"
 #include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/VariableChanges/Analysis2Model/LinVarChaA2M.h"
+#include "fv3jedi/VariableChanges/Analysis2Model/VarChaA2M.h"
+#include "fv3jedi/VariableChanges/Control2Analysis/LinVarChaC2A.h"
+#include "fv3jedi/VariableChanges/Control2Analysis/VarChaC2A.h"
+#include "fv3jedi/VariableChanges/GEOSRstToBkg/VarChaGeosRst2Bkg.h"
+#include "fv3jedi/VariableChanges/NMCBalance/LinVarChaNMCBal.h"
 
 #include "oops/interface/LinearVariableChange.h"
 #include "oops/interface/VariableChange.h"
@@ -41,8 +42,12 @@ void instantiateVarChangeFactories() {
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaA2M> >
                    makerLinVarChaA2M_("Analysis2Model");
+  static oops::VariableChangeMaker<fv3jedi::Traits,
+              oops::VariableChange<fv3jedi::Traits,
+              fv3jedi::VarChaGeosRst2Bkg> >
+                  makerVarChaGeosRst2Bkg_("GeosRst2Bkg");
 }
 
 }  // namespace fv3jedi
 
-#endif  // FV3JEDI_UTILITIES_INSTANTIATEVARCHANGEFACTORIES_H_
+#endif  // FV3JEDI_VARIABLECHANGES_INSTANTIATEVARCHANGEFACTORIES_H_

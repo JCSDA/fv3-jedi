@@ -60,6 +60,11 @@ allocate(self%fields(self%nf))
 vcount = 0
 do var = 1, vars%nvars()
    select case (trim(vars%variable(var)))
+
+     ! In the below the variable names are designed to cover the potential names encountered in
+     ! GEOS and GFS restart and history files. E.g. U for GEOS, u for GFS and ud for history.
+     ! Within fv3-jedi variables can be accessed using the fv3jedi_name.
+
      case("ud","u","U")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -145,6 +150,8 @@ do var = 1, vars%nvars()
             short_name = vars%variable(var), long_name = 'mass_fraction_of_large_scale_cloud_ice_water', &
             fv3jedi_name = 'qils', units = 'kg kg-1', staggerloc = center, arraypointer = self%qils, &
             tracer = .true.)
+
+
      case("qlls","QLLS")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -163,7 +170,19 @@ do var = 1, vars%nvars()
             short_name = vars%variable(var), long_name = 'mass_fraction_of_convective_cloud_liquid_water', &
             fv3jedi_name = 'qlcn', units = 'kg kg-1', staggerloc = center, arraypointer = self%qlcn, &
             tracer = .true.)
-       case("qs","snowwat")
+     case("qicnf","QICNF")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+             short_name = vars%variable(var), long_name = 'fraction_of_large_scale_cloud_ice_water_in_total', &
+             fv3jedi_name = 'qicnf', units = '1', staggerloc = center, arraypointer = self%qicnf, &
+             tracer = .true.)
+     case("qilsf","QILSF")
+       vcount=vcount+1;
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+             short_name = vars%variable(var), long_name = 'fraction_of_large_scale_cloud_ice_water_in_total', &
+             fv3jedi_name = 'qilsf', units = '1', staggerloc = center, arraypointer = self%qilsf, &
+             tracer = .true.)
+     case("qs","snowwat")
        vcount=vcount+1;
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
             short_name = vars%variable(var), long_name = 'snow_water', &
@@ -584,6 +603,8 @@ if (associated(self%qils     )) nullify(self%qils     )
 if (associated(self%qlls     )) nullify(self%qlls     )
 if (associated(self%qicn     )) nullify(self%qicn     )
 if (associated(self%qlcn     )) nullify(self%qlcn     )
+if (associated(self%qilsf    )) nullify(self%qilsf    )
+if (associated(self%qicnf    )) nullify(self%qicnf    )
 if (associated(self%qs       )) nullify(self%qs       )
 if (associated(self%qr       )) nullify(self%qr       )
 if (associated(self%gr       )) nullify(self%gr       )

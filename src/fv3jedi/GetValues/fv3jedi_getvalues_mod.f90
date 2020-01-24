@@ -19,6 +19,7 @@ use pressure_vt_mod
 use temperature_vt_mod
 use moisture_vt_mod
 use height_vt_mod
+use wind_vt_mod, only: d2a, d2a_ad
 
 implicit none
 
@@ -1141,6 +1142,9 @@ logical :: do_interp
 
 integer :: isc, iec, jsc, jec, npz
 
+logical :: have_winds
+real(kind=kind_real), pointer :: u(:,:,:), v(:,:,:)
+real(kind=kind_real), allocatable :: inc_ua(:,:,:), inc_va(:,:,:)
 
 ! Check traj is implemented
 ! -------------------------
@@ -1174,6 +1178,27 @@ allocate(geovale(isc:iec,jsc:jec,npz+1))
 allocate(geovalm(isc:iec,jsc:jec,npz))
 
 
+! Wind transforms
+! ---------------
+have_winds = .false.
+if (get_field_array(inc%fields,'ua',u) .and. get_field_array(inc%fields,'va',v)) then
+
+  have_winds = .true.
+  allocate(inc_ua(isc:iec,jsc:jec,npz))
+  allocate(inc_va(isc:iec,jsc:jec,npz))
+  inc_ua(isc:iec,jsc:jec,:) = u(isc:iec,jsc:jec,:)
+  inc_va(isc:iec,jsc:jec,:) = v(isc:iec,jsc:jec,:)
+
+elseif (get_field_array(inc%fields,'ud',u) .and. get_field_array(inc%fields,'vd',v)) then
+
+  have_winds = .true.
+  allocate(inc_ua(isc:iec,jsc:jec,npz))
+  allocate(inc_va(isc:iec,jsc:jec,npz))
+  call d2a(geom, u, v, inc_ua, inc_va)
+
+endif
+
+
 ! Interpolate increment to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nvars()
@@ -1187,19 +1212,28 @@ do jvar = 1, vars%nvars()
 
   case ("eastward_wind")
 
+    if (.not. have_winds) &
+      call variable_fail(trim(vars%variable(jvar)),"eastward_wind (tl)")
+
     nvl = npz
     do_interp = .true.
-    geovalm = inc%ua
+    geovalm = inc_ua
     geoval => geovalm
 
   case ("northward_wind")
 
+    if (.not. have_winds) &
+      call variable_fail(trim(vars%variable(jvar)),"northward_wind (tl)")
+
     nvl = npz
     do_interp = .true.
-    geovalm = inc%va
+    geovalm = inc_va
     geoval => geovalm
 
   case ("air_temperature","temperature")
+
+    if (.not. associated(inc%t)) &
+      call variable_fail(trim(vars%variable(jvar)),"inc%t (tl)")
 
     nvl = npz
     do_interp = .true.
@@ -1207,6 +1241,9 @@ do jvar = 1, vars%nvars()
     geoval => geovalm
 
   case ("specific_humidity")
+
+    if (.not. associated(inc%q)) &
+      call variable_fail(trim(vars%variable(jvar)),"inc%q (tl)")
 
     nvl = npz
     do_interp = .true.
@@ -1216,9 +1253,13 @@ do jvar = 1, vars%nvars()
   case ("virtual_temperature")
 
     if (.not.allocated(traj%t)) &
-      call variable_fail(trim(vars%variable(jvar)),"traj%t")
+      call variable_fail(trim(vars%variable(jvar)),"traj%t (tl)")
     if (.not.allocated(traj%q)) &
-      call variable_fail(trim(vars%variable(jvar)),"traj%q")
+      call variable_fail(trim(vars%variable(jvar)),"traj%q (tl)")
+    if (.not. associated(inc%t)) &
+      call variable_fail(trim(vars%variable(jvar)),"inc%t (tl)")
+    if (.not. associated(inc%q)) &
+      call variable_fail(trim(vars%variable(jvar)),"inc%q (tl)")
 
     nvl = inc%npz
     do_interp = .true.
@@ -1228,7 +1269,9 @@ do jvar = 1, vars%nvars()
   case ("humidity_mixing_ratio")
 
     if (.not.allocated(traj%q)) &
-      call variable_fail(trim(vars%variable(jvar)),"traj%q")
+      call variable_fail(trim(vars%variable(jvar)),"traj%q (tl)")
+    if (.not.associated(inc%q)) &
+      call variable_fail(trim(vars%variable(jvar)),"inc%q (tl)")
 
     nvl = inc%npz
     do_interp = .true.
@@ -1243,6 +1286,8 @@ do jvar = 1, vars%nvars()
 
     if (.not.allocated(traj%o3)) &
       call variable_fail(trim(vars%variable(jvar)),"traj%o3")
+    if (.not.associated(inc%o3)) &
+      call variable_fail(trim(vars%variable(jvar)),"inc%o3 (tl)")
 
     nvl = npz
     do_interp = .true.
@@ -1466,6 +1511,10 @@ logical :: do_interp
 
 integer :: isc, iec, jsc, jec, npz
 
+logical :: have_winds
+real(kind=kind_real), pointer :: u(:,:,:), v(:,:,:)
+real(kind=kind_real), allocatable :: inc_ua(:,:,:), inc_va(:,:,:)
+real(kind=kind_real), allocatable :: inc_u(:,:,:), inc_v(:,:,:)
 
 ! Check traj is implemented
 ! -------------------------
@@ -1502,6 +1551,10 @@ geovale = 0.0_kind_real
 geovalm = 0.0_kind_real
 
 
+! Flag on whether wind observations are used
+! ------------------------------------------
+have_winds = .false.
+
 ! Interpolate increment to obs locations using pre-calculated weights
 ! ----------------------------------------------------------------
 do jvar = 1, vars%nvars()
@@ -1514,12 +1567,14 @@ do jvar = 1, vars%nvars()
 
   case ("eastward_wind")
 
+    have_winds = .true.
     nvl = npz
     do_interp = .true.
     geoval => geovalm
 
   case ("northward_wind")
 
+    have_winds = .true.
     nvl = npz
     do_interp = .true.
     geoval => geovalm
@@ -1708,11 +1763,13 @@ do jvar = 1, vars%nvars()
 
   case ("eastward_wind")
 
-    inc%ua = inc%ua + geovalm
+    allocate(inc_ua(isc:iec,jsc:jec,npz))
+    inc_ua = geovalm
 
   case ("northward_wind")
 
-    inc%va = inc%va + geovalm
+    allocate(inc_va(isc:iec,jsc:jec,npz))
+    inc_va = geovalm
 
   case ("air_temperature","temperature")
 
@@ -1846,6 +1903,32 @@ do jvar = 1, vars%nvars()
   geovalm = 0.0_kind_real
 
 enddo
+
+
+! Conversion of wind fields
+! -------------------------
+if (have_winds) then
+
+  if (get_field_array(inc%fields,'ua',u) .and. get_field_array(inc%fields,'va',v)) then
+
+    u = u + inc_ua
+    v = v + inc_va
+
+  elseif (get_field_array(inc%fields,'ud',u) .and. get_field_array(inc%fields,'vd',v)) then
+
+    allocate(inc_u(isc:iec  ,jsc:jec+1,npz))
+    allocate(inc_v(isc:iec+1,jsc:jec  ,npz))
+    call d2a_ad(geom, inc_u, inc_v, inc_ua, inc_va)
+    u = u + inc_u
+    v = v + inc_u
+
+  else
+
+    call abor1_ftn("getvalues_ad: problem getting winds from increment")
+
+  endif
+
+endif
 
 deallocate(mod_increment)
 deallocate(obs_increment)

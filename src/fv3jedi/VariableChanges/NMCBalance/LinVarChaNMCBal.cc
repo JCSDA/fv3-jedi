@@ -5,7 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include "fv3jedi/NMCBalance/LinVarChaNMCBal.h"
+#include "fv3jedi/VariableChanges/NMCBalance/LinVarChaNMCBal.h"
 
 #include <ostream>
 #include <string>

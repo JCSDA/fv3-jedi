@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2019 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -59,8 +59,10 @@ type fv3jedi_io_geos
  integer :: vindex_tile = 4
  integer :: vindex_noti = 3
  ! Clobber option
- logical :: clobber = .false.
+ logical :: clobber = .true.
  integer :: x_dimid, y_dimid, n_dimid, z_dimid, e_dimid, t_dimid, f_dimid, c_dimid, o_dimid
+ ! Ps in file option
+ logical :: ps_in_file = .false.
  contains
   procedure :: setup
   procedure :: delete
@@ -236,6 +238,7 @@ do var = 1,size(fields)
 
     ! Standard background history file
     case("ud","vd","u","v","ua","va","t","q","delp","qi","ql","qs","qr","o3mr","qls","qcn","cfcn","ps","phis",&
+         "qilsf","qicnf",&
          "hs_stdv","frland","frlandice","frlake","frocean","frseaice","kcbl","tsm","khl","khu",&
          "varflt","ustar","bstar","zpbl","cm","ct","cq","u10m","v10m","ts","sheleg","soilt","soilm",&
          "DU001","DU002","DU003","DU004","DU005","SS001","SS002","SS003","SS004","SS005",&
@@ -276,29 +279,40 @@ if (self%iam_io_proc) then
 
   if (trim(readorwrite) == 'read') then
 
-    fileopts = NF90_NOWRITE
-
     ! Open files for reading
     do nf = 1,numfiles
       if (self%ncid_isneeded(nf)) then
-        call nccheck ( nf90_open( trim(self%filenames(nf)), fileopts, self%ncid(nf) ), &
+        call nccheck ( nf90_open( trim(self%filenames(nf)), NF90_NOWRITE, self%ncid(nf) ), &
                        "nf90_open"//trim(self%filenames(nf)) )
       endif
     enddo
 
   elseif (trim(readorwrite) == 'write') then
 
-    fileopts = ior(NF90_NETCDF4, NF90_MPIIO)
-    if (self%clobber) fileopts = ior(fileopts, NF90_CLOBBER)
+    if (self%clobber) then
 
-    ! Create/open files for writing
-    do nf = 1,numfiles
-      if (self%ncid_isneeded(nf)) then
-        call nccheck( nf90_create( trim(self%filenames(nf)), fileopts, self%ncid(nf), &
-                                   comm = self%ocomm, info = MPI_INFO_NULL), &
-                                   "nf90_create"//trim(self%filenames(nf)) )
-      endif
-    enddo
+      fileopts = ior(NF90_NETCDF4, NF90_MPIIO)
+
+      ! Create/open files for writing
+      do nf = 1,numfiles
+        if (self%ncid_isneeded(nf)) then
+          call nccheck( nf90_create( trim(self%filenames(nf)), fileopts, self%ncid(nf), &
+                                     comm = self%ocomm, info = MPI_INFO_NULL), &
+                                     "nf90_create"//trim(self%filenames(nf)) )
+        endif
+      enddo
+
+    else
+
+      ! Open files for reading
+      do nf = 1,numfiles
+        if (self%ncid_isneeded(nf)) then
+          call nccheck ( nf90_open( trim(self%filenames(nf)), NF90_WRITE, self%ncid(nf) ), &
+                         "nf90_open"//trim(self%filenames(nf)) )
+        endif
+      enddo
+
+    endif
 
   else
 
@@ -330,7 +344,7 @@ if (.not. f_conf%get('geosingestmeta',self%geosingestmeta)) self%geosingestmeta 
 
 ! Whether to expect/use the tile dimenstion in the file
 ! -----------------------------------------------------
-if (.not. f_conf%get('clobber',self%clobber)) self%clobber = .false.
+if (.not. f_conf%get('clobber',self%clobber)) self%clobber = .true.
 
 ! Whether to expect/use the tile dimenstion in the file
 ! -----------------------------------------------------
@@ -351,6 +365,9 @@ nf = nf+1; call string_from_conf(f_conf,"filename_surf",self%filenames(5),self%f
 if (nf .ne. numfiles) &
   call abor1_ftn("fv3jedi_io_geos_mod.get_conf: number of potential restart files &
                   does not match numfiles")
+
+! Option to allow for ps infile
+if (f_conf%has("psinfile")) call f_conf%get_or_die("psinfile",self%ps_in_file)
 
 end subroutine get_conf
 
@@ -483,10 +500,12 @@ do var = 1,size(fields)
   ncid = self%ncid(self%ncid_forfield(var))
 
   !If ps then switch to delp
-  if (trim(fields(var)%fv3jedi_name) == 'ps') then
-    fields(var)%short_name = 'delp'
-    fields(var)%npz = geom%npz
-    allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  if (.not. self%ps_in_file) then
+    if (trim(fields(var)%fv3jedi_name) == 'ps') then
+      fields(var)%short_name = 'delp'
+      fields(var)%npz = geom%npz
+      allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    endif
   endif
 
   ! Set pointers to the appropriate array ranges
@@ -542,23 +561,23 @@ do var = 1,size(fields)
 
     ! Scatter the field to all processors on the tile
     ! -----------------------------------------------
-    if (trim(fields(var)%fv3jedi_name) .ne. 'ps') then
-      if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, 1, arrayg, fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
-      else
-        fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
-      endif
-    else
+    if (.not. self%ps_in_file .and. trim(fields(var)%fv3jedi_name) == 'ps') then
       if (self%csize > 6) then
         call scatter_tile(geom, self%tcomm, 1, arrayg, delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
       else
         delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
       endif
+    else
+      if (self%csize > 6) then
+        call scatter_tile(geom, self%tcomm, 1, arrayg, fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+      else
+        fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+      endif
     endif
 
   enddo
 
-  if (trim(fields(var)%fv3jedi_name) == 'ps') then
+  if (.not. self%ps_in_file .and. trim(fields(var)%fv3jedi_name) == 'ps') then
     fields(var)%short_name = 'ps'
     fields(var)%npz = 1
     fields(var)%array(:,:,1) = sum(delp,3)
@@ -587,7 +606,7 @@ type(datetime),         intent(in)    :: vdate         !< DateTime
 
 ! Write meta data
 ! ---------------
-if (.not. self%clobber) call write_meta(self, geom, fields, vdate)
+if (self%clobber) call write_meta(self, geom, fields, vdate)
 
 ! Write fields
 ! ------------
@@ -693,7 +712,7 @@ if (self%iam_io_proc) then
       call nccheck ( nf90_def_dim(self%ncid(nf), trim(XdimVar), geom%npx-1,         self%x_dimid), "nf90_def_dim "//trim(XdimVar) )
       call nccheck ( nf90_def_dim(self%ncid(nf), trim(YdimVar), ymult*(geom%npy-1), self%y_dimid), "nf90_def_dim "//trim(YdimVar) )
       if (self%tiledim(nf)) &
-      call nccheck ( nf90_def_dim(self%ncid(nf), "nf",   geom%ntiles, self%n_dimid),  "nf90_def_dim nf"   )
+        call nccheck ( nf90_def_dim(self%ncid(nf), "nf",   geom%ntiles, self%n_dimid),  "nf90_def_dim nf"   )
       call nccheck ( nf90_def_dim(self%ncid(nf), "lev",  geom%npz,    self%z_dimid),  "nf90_def_dim lev"  )
       call nccheck ( nf90_def_dim(self%ncid(nf), "edge", geom%npz+1,  self%e_dimid), "nf90_def_dim edge" )
       call nccheck ( nf90_def_dim(self%ncid(nf), "time", 1,           self%t_dimid),  "nf90_def_dim time" )
@@ -798,8 +817,10 @@ if (self%iam_io_proc) then
       ! ---------------------
 
       ! Tiles
-      if (self%tiledim(nf)) &
-      vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), tiles ), "nf90_put_var nf" )
+      if (self%tiledim(nf)) then
+        vc=vc+1
+        call nccheck( nf90_put_var( self%ncid(nf), varid(vc), tiles ), "nf90_put_var nf" )
+      endif
 
       ! Xdim & Ydim arrays
       vc=vc+1;call nccheck( nf90_put_var( self%ncid(nf), varid(vc), xdimydim ), "nf90_put_var "//trim(XdimVar) )
@@ -898,64 +919,73 @@ do var = 1,size(fields)
 
     ! Redefine
     ! --------
-    call nccheck( nf90_redef(ncid), "nf90_enddef" )
+    if (self%clobber) then
 
-    ! Dimension IDs for this field
-    ! ----------------------------
-    if (associated(dimids2)) nullify(dimids2)
-    if (associated(dimids3)) nullify(dimids3)
-    if (associated(dimidse)) nullify(dimidse)
-    if (associated(dimids4)) nullify(dimids4)
+      call nccheck( nf90_redef(ncid), "nf90_enddef" )
 
-    if (self%tiledim(filei)) then
-      dimids2 => dimids2_tile
-      dimids3 => dimids3_tile
-      dimidse => dimidse_tile
-      dimids4 => dimids4_tile
-    else
-      dimids2 => dimids2_noti
-      dimids3 => dimids3_noti
-      dimidse => dimidse_noti
-      dimids4 => dimids4_noti
-    endif
+      ! Dimension IDs for this field
+      ! ----------------------------
+      if (associated(dimids2)) nullify(dimids2)
+      if (associated(dimids3)) nullify(dimids3)
+      if (associated(dimidse)) nullify(dimidse)
+      if (associated(dimids4)) nullify(dimids4)
 
-    if (associated(dimids)) nullify (dimids)
-
-    if (fields(var)%npz == 1) then
-      dimids => dimids2
-    elseif (fields(var)%npz == geom%npz) then
-      dimids => dimids3
-    elseif (fields(var)%npz == geom%npz+1) then
-      dimids => dimidse
-    elseif (fields(var)%npz == 4) then
-      dimids => dimids4
-    else
-      call abor1_ftn("write_geos: vertical dimension not supported")
-    endif
-
-    ! Define field
-    call nccheck( nf90_def_var(ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), &
-                  "nf90_def_var"//trim(fields(var)%short_name))
-
-    ! Write attributes if not clobbering
-    if (.not.self%clobber) then
-
-      ! Long name and units
-      call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
-      call nccheck( nf90_put_att(ncid, varid, "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
-
-      ! Additional attributes for history and or plotting compatibility
-      if (.not.self%restart(filei)) then
-        call nccheck( nf90_put_att(ncid, varid, "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
-        call nccheck( nf90_put_att(ncid, varid, "coordinates"  , "lons lats"                 ), "nf90_put_att" )
-        call nccheck( nf90_put_att(ncid, varid, "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
+      if (self%tiledim(filei)) then
+        dimids2 => dimids2_tile
+        dimids3 => dimids3_tile
+        dimidse => dimidse_tile
+        dimids4 => dimids4_tile
+      else
+        dimids2 => dimids2_noti
+        dimids3 => dimids3_noti
+        dimidse => dimidse_noti
+        dimids4 => dimids4_noti
       endif
 
+      if (associated(dimids)) nullify (dimids)
+
+      if (fields(var)%npz == 1) then
+        dimids => dimids2
+      elseif (fields(var)%npz == geom%npz) then
+        dimids => dimids3
+      elseif (fields(var)%npz == geom%npz+1) then
+        dimids => dimidse
+      elseif (fields(var)%npz == 4) then
+        dimids => dimids4
+      else
+        call abor1_ftn("write_geos: vertical dimension not supported")
+      endif
+
+      ! Define field
+      call nccheck( nf90_def_var(ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), &
+                    "nf90_def_var"//trim(fields(var)%short_name))
+
+      ! Write attributes if clobbering
+      if (self%clobber) then
+
+        ! Long name and units
+        call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
+        call nccheck( nf90_put_att(ncid, varid, "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
+
+        ! Additional attributes for history and or plotting compatibility
+        if (.not.self%restart(filei)) then
+          call nccheck( nf90_put_att(ncid, varid, "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
+          call nccheck( nf90_put_att(ncid, varid, "coordinates"  , "lons lats"                 ), "nf90_put_att" )
+          call nccheck( nf90_put_att(ncid, varid, "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
+        endif
+
+      endif
+
+      ! End define mode
+      call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+
+    else
+
+      ! Get existing variable id to write to
+      call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%short_name), varid), &
+                    "nf90_inq_varid "//trim(fields(var)%short_name) )
+
     endif
-
-    ! End define mode
-    call nccheck( nf90_enddef(ncid), "nf90_enddef" )
-
 
     ! Set starts and counts based on levels and tiledim flag
     ! ------------------------------------------------------
@@ -1001,12 +1031,10 @@ do var = 1,size(fields)
 
 enddo
 
-
 ! Deallocate locals
 ! -----------------
 deallocate(is_r3_tile,is_r3_noti)
 deallocate(arrayg)
-
 
 end subroutine write_fields
 

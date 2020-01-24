@@ -70,12 +70,12 @@ allocate(self%fields(self%nf))
 vcount = 0
 do var = 1, vars%nvars()
   select case (trim(vars%variable(var)))
-    case("u","ud")
+  case("u","ud","U")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%variable(var), long_name = 'increment_of_d_grid_u_wind', &
            fv3jedi_name = 'ud', units = 'm s-1', staggerloc = north, arraypointer = self%ud)
-    case("v","vd")
+    case("v","vd","V")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%variable(var), long_name = 'increment_of_d_grid_v_wind', &
@@ -95,12 +95,17 @@ do var = 1, vars%nvars()
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%variable(var), long_name = 'increment_of_air_temperature', &
            fv3jedi_name = 't', units = 'K', staggerloc = center, arraypointer = self%t)
+    case("pt","PT")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+          short_name = vars%variable(var), long_name = 'increment_of_potential_temperature', &
+          fv3jedi_name = 'pt', units = 'K', staggerloc = center, arraypointer = self%pt)
     case("ps")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
            short_name = vars%variable(var), long_name = 'increment_of_surface_pressure', &
            fv3jedi_name = 'ps', units = 'Pa', staggerloc = center, arraypointer = self%ps)
-    case("q","sphum")
+    case("q","sphum","Q")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%variable(var), long_name = 'increment_of_specific_humidity', &
@@ -177,6 +182,16 @@ do var = 1, vars%nvars()
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
            short_name = vars%variable(var), long_name = 'increment_of_pressure_thickness', &
            fv3jedi_name = 'delp', units = 'Pa', staggerloc = center, arraypointer = self%delp)
+    case("pkz","PKZ")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
+          short_name = vars%variable(var), long_name = 'increment_of_pressure_to_kappa', &
+          fv3jedi_name = 'pkz', units = 'Pa', staggerloc = center, arraypointer = self%pkz)
+    case("pe","PE")
+      vcount=vcount+1;
+      call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz+1, &
+          short_name = vars%variable(var), long_name = 'increment_of_pressure', &
+          fv3jedi_name = 'pe', units = 'Pa', staggerloc = center, arraypointer = self%pe)
     case("w","W")
       vcount=vcount+1;
       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz, &
@@ -387,6 +402,9 @@ if (associated(self%vort)) nullify(self%vort)
 if (associated(self%divg)) nullify(self%divg)
 if (associated(self%tv  )) nullify(self%tv  )
 if (associated(self%rh  )) nullify(self%rh  )
+if (associated(self%pt  )) nullify(self%pt  )
+if (associated(self%pe  )) nullify(self%pe  )
+if (associated(self%pkz )) nullify(self%pkz )
 !Aerosols
 if (associated(self%du001    )) nullify(self%du001    )
 if (associated(self%du002    )) nullify(self%du002    )

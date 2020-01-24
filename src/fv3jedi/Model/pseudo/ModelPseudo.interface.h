@@ -26,7 +26,8 @@ extern "C" {
 
   void fv3jedi_pseudo_create_f90(const eckit::Configuration * const *,
                                  const F90geom &,
-                                 F90model &);
+                                 F90model &,
+                                 const oops::Variables &);
   void fv3jedi_pseudo_delete_f90(F90model &);
 
   void fv3jedi_pseudo_initialize_f90(const F90model &,
