@@ -9,6 +9,11 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
 list( APPEND fv3jedi_geos_test_data
 Data/inputs/geos_c12/akbk72.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
+Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem001.nc4
+Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem002.nc4
+Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem003.nc4
+Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem004.nc4
+Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem005.nc4
 Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
 Data/inputs/geos_c12/geos.bkg.20180414_220000z.nc4
 Data/inputs/geos_c12/geos.bkg.20180414_230000z.nc4
@@ -171,6 +176,7 @@ LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 # Test input scripts
 # ------------------
 list( APPEND fv3jedi_test_input
+testinput/3denvar_geos_aero.yaml
 testinput/3dvar_gfs_gnssrobndropp1d.yaml
 testinput/4denvar_geos.yaml
 testinput/4denvar_gfs.yaml
@@ -179,6 +185,7 @@ testinput/bumpparameters_cor_geos_p12.yaml
 testinput/bumpparameters_cor_gfs.yaml
 testinput/bumpparameters_cor_gfs_p12.yaml
 testinput/bumpparameters_loc_geos.yaml
+testinput/bumpparameters_loc_geos_aero.yaml
 testinput/bumpparameters_loc_geos_p12.yaml
 testinput/bumpparameters_loc_gfs.yaml
 testinput/bumpparameters_loc_gfs_p12.yaml
@@ -871,6 +878,53 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_aero
                   ARGS         testinput/hyb-3dvar_gfs_aero.yaml testoutput/hyb-3dvar_gfs-aero.run
                   MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
+
+if( ${GEOS-AERO_FOUND} )
+
+###
+#files needed
+###
+
+list( APPEND geos-aero_test_data
+Data/optics_BC.v1_3_.nc
+Data/optics_BRC.v1_5_.nc
+Data/optics_DU.v15_3_.nc
+Data/optics_NI.v2_5_.nc
+Data/optics_OC.v1_3_.nc
+Data/optics_SS.v3_3_.nc
+Data/optics_SU.v1_3_.nc
+)
+
+CREATE_SYMLINK_FILENAME( ${geos-aero_SOURCE_DIR}/test/
+                         ${CMAKE_CURRENT_BINARY_DIR}/Data
+                         ${geos-aero_test_data} )
+
+list( APPEND geos-aero_test_input
+testinput/geosaod.rc
+testinput/Chem_MieRegistry.rc)
+
+CREATE_SYMLINK_FILENAME( ${geos-aero_SOURCE_DIR}/test/
+                         ${CMAKE_CURRENT_BINARY_DIR}
+                         ${geos-aero_test_input} )
+
+ecbuild_add_test( TARGET  test_fv3jedi_bumpparameters_loc_geos_aero
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_parameters.x
+                  ARGS         testinput/bumpparameters_loc_geos_aero.yaml testoutput/bumpparameters_loc_geos_aero.run
+                  MPI          6
+                )
+
+ecbuild_add_test( TARGET       test_fv3jedi_3denvar_geos_aero
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
+                  ARGS         testinput/3denvar_geos_aero.yaml testoutput/3denvar_geos_aero.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos_aero
+                 )
+
+endif()
+
+
 
 # EDA tests
 

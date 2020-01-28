@@ -1,0 +1,158 @@
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: 'geos'
+        datapath : Data/inputs/geos_c12
+        filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
+        variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
+                "SS001", "SS002", "SS003", "SS004", "SS005",
+                "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+                "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
+    Covariance:
+      covariance: hybrid
+      static_weight: '0.01'
+      ensemble_weight: '0.99'
+      static:
+        date: '2018-04-15T00:00:00Z'
+        covariance: FV3JEDIstatic
+      ensemble:
+        date: ['2018-04-15T00:00:00Z']
+        variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
+                "SS001", "SS002", "SS003", "SS004", "SS005",
+                "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+                "NO3AN1", "NO3AN2", "NO3AN3", "SO4"]
+        localization: 
+          localization: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_geos_aero
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+          timeslots: ['2018-04-15T00:00:00Z']
+          variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
+                "SS001", "SS002", "SS003", "SS004", "SS005",
+                "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+                "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
+        members:
+          - filetype: geos
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem001.nc4
+          - filetype: geos
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem002.nc4
+          - filetype: geos
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem003.nc4 
+          - filetype: geos
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem004.nc4
+          - filetype: geos
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem005.nc4        
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aod          
+        ObsDataIn:
+          obsfile: Data/obs/geos_aod_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/geos_aero_aod_550_3dvar_20180415_00z.nc4
+        simulate: 
+          variables: [Total_Aerosol_Optical_Depth_550] 
+      ObsOperator:
+        name: GeosAod
+        tracer_geovals: ["mass_fraction_of_dust001_in_air", "mass_fraction_of_dust002_in_air",
+                        "mass_fraction_of_dust003_in_air", "mass_fraction_of_dust004_in_air",
+                        "mass_fraction_of_dust005_in_air", "mass_fraction_of_sea_salt001_in_air",
+                        "mass_fraction_of_sea_salt002_in_air", "mass_fraction_of_sea_salt003_in_air",
+                        "mass_fraction_of_sea_salt004_in_air", "mass_fraction_of_sea_salt005_in_air",
+                        "mass_fraction_of_hydrophobic_black_carbon_in_air", "mass_fraction_of_hydrophilic_black_carbon_in_air",
+                        "mass_fraction_of_hydrophobic_organic_carbon_in_air", "mass_fraction_of_hydrophilic_organic_carbon_in_air",
+                        "mass_fraction_of_sulfate_in_air", "mass_fraction_of_nitrate001_in_air", "mass_fraction_of_nitrate002_in_air",
+                        "mass_fraction_of_nitrate003_in_air"] 
+        RCFile: ["geosaod.rc"]
+        wavelengths: [550.0]
+      Covariance:
+        covariance: diagonal
+  cost_type: 3D-Var
+  variables: [ "DU001", "DU002", "DU003", "DU004", "DU005",
+                "SS001", "SS002", "SS003", "SS004", "SS005",
+                "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+                "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: 'geos'
+  datapath: Data/inputs/geos_c12/
+  filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_geos_c12.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["DELP", "RH", "DU001", "DU002", "DU003", "DU004", "DU005",
+             "SS001", "SS002", "SS003", "SS004", "SS005",
+             "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+             "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
+output:
+  filetype: 'geos'
+  datapath_tile: Data/analysis
+  filename: 3denvar_geos_aero_C12_550 
+  first: PT0H
+  frequency: PT3H
+resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+variational:
+  iteration:
+  - diagnostics:
+      departures: ombg
+    gradient_norm_reduction: 1e-10
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
+                "SS001", "SS002", "SS003", "SS004", "SS005",
+                "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+                "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
+    ninner: '10'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+    test: 'on'
+  - diagnostics:
+      departures: ombg
+    gradient_norm_reduction: 1e-10
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
+                "SS001", "SS002", "SS003", "SS004", "SS005",
+                "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
+                "NO3AN1", "NO3AN2", "NO3AN3", "SO4" ]
+    ninner: '10'
+    resolution:
+      nml_file: Data/fv3files/input_geos_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+    test: 'on'
+ 
+ 
