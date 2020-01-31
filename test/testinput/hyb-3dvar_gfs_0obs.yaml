@@ -1,0 +1,202 @@
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: gfs
+        datapath_tile: Data/inputs/gfs_c12/bkg/
+        filename_core: 20180415.000000.fv_core.res.nc
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_sfcd: 20180415.000000.sfc_data.nc
+        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+        variables: &3dvars ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+    Covariance:
+      covariance: hybrid
+      static_weight: '0.1'
+      ensemble_weight: '0.9'
+      static:
+        date: '2018-04-15T00:00:00Z'
+        covariance: BUMP
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs
+          method: cor
+          strategy: specific_univariate
+          load_nicas: 1
+          mpicom: 2
+          verbosity: main
+      ensemble:
+        date: '2018-04-15T00:00:00Z'
+        variables: *3dvars
+        members:
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem001/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem002/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem003/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem004/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem005/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem006/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem007/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem008/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem009/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          datapath_tile: Data/inputs/gfs_c12/mem010/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        localization:
+          timeslots: ['2018-04-15T00:00:00Z']
+          variables: *3dvars
+          localization: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/obs/gnssro_obs_2018041500_1obs.nc4
+        ObsDataOut:
+         obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_2018041500_1obs.nc4
+        simulate:
+         variables: [refractivity]
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+  cost_type: 3D-Var
+  variables: *3dvars
+  window_begin: '2017-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
+output:
+  filetype: gfs
+  datapath_tile: Data/analysis/
+  filename_core: hyb-3dvar-gfs.fv_core.res.nc
+  filename_trcr: hyb-3dvar-gfs.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar-gfs.sfc_data.nc
+  filename_sfcw: hyb-3dvar-gfs.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar-gfs.coupler.res
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+variational:
+  iteration:
+  - ninner: '10'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: *3dvars
+  - ninner: '5'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: *3dvars

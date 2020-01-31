@@ -218,6 +218,8 @@ testinput/hyb-3dvar_geos_p12.yaml
 testinput/hyb-3dvar_geos.yaml
 testinput/hyb-3dvar_gfs_p12.yaml
 testinput/hyb-3dvar_gfs.yaml
+testinput/hyb-3dvar_gfs_0obs.yaml
+testinput/hyb-3dvar_gfs_1obs.yaml
 testinput/hyb-3dvar_gfs_aero.yaml
 testinput/hyb-4dvar_geos.yaml
 testinput/hyb-4dvar_gfs.yaml
@@ -266,6 +268,8 @@ testoutput/hofx_geos.ref
 testoutput/hofx_gfs.ref
 testoutput/hyb-3dvar_geos.ref
 testoutput/hyb-3dvar_gfs.ref
+testoutput/hyb-3dvar_gfs_0obs.ref
+testoutput/hyb-3dvar_gfs_1obs.ref
 testoutput/hyb-4dvar_geos.ref
 testoutput/hyb-4dvar_gfs.ref
 testoutput/hyb-fgat_geos.ref
@@ -667,6 +671,36 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-3dvar_gfs.run testoutput/hyb-3dvar_gfs.ref 1.0e-1 ${idif}
+                  TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
+
+# 3DVar with zero obs is not working yet, so these 2 tests are are commented out.
+# When you want to debug this case, all you need to do is uncomment these tests.
+# The YAML and obs files are are already in place. The appropriate ref file for checking
+# the output is also in place, but needs to be updated.
+#ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_0obs
+#                  TYPE         EXE
+#                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
+#                  ARGS         testinput/hyb-3dvar_gfs_0obs.yaml testoutput/hyb-3dvar_gfs_0obs.run
+#                  MPI          6
+#                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+#
+#ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_0obs_compare
+#                  TYPE         SCRIPT
+#                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+#                  ARGS         testoutput/hyb-3dvar_gfs_0obs.run testoutput/hyb-3dvar_gfs_0obs.ref 1.0e-1 ${idif}
+#                  TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_1obs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
+                  ARGS         testinput/hyb-3dvar_gfs_1obs.yaml testoutput/hyb-3dvar_gfs_1obs.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_1obs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/hyb-3dvar_gfs_1obs.run testoutput/hyb-3dvar_gfs_1obs.ref 1.0e-1 ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos
