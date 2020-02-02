@@ -98,6 +98,7 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: tsm       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khl       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khu       => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: sss       => null()
   !Aerosols
   real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()

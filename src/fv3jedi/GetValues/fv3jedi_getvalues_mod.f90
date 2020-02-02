@@ -104,6 +104,7 @@ real(kind=kind_real), allocatable :: soil_moisture_content(:)    !Soil moisture 
 real(kind=kind_real), allocatable :: vegetation_fraction(:)      !Vegetation fraction             | surface(1)%vegetation_fraction
 real(kind=kind_real), allocatable :: soil_temperature(:)         !Soil temperature                | surface(1)%soil_temperature
 real(kind=kind_real), allocatable :: snow_depth(:)               !Snow depth                      | surface(1)%snow_depth
+real(kind=kind_real), allocatable :: salinity(:)                 !Sea Surface Salinity            | surface(1)%salinity
 logical,  parameter               :: use_compress = .true.       !Could be a fv3 namelist option?
 
 ! Pointers to needed fields
@@ -383,17 +384,32 @@ if ( associated(state%sheleg) .and. associated(state%tsea  ) .and. &
   vegetation_fraction = 0.0_kind_real
   soil_temperature = 0.0_kind_real
   snow_depth = 0.0_kind_real
-
-  call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
-                     state_slmsk,  state%sheleg, &
-                     state%tsea,   state%vtype, &
-                     state%stype,  state%vfrac, &
-                     state%stc(:,:,1), state%smc(:,:,1), &
-                     state%u_srf, state%v_srf, state_f10m, &
-                     land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
-                     snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
-                     snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
-                     wind_speed, wind_direction )
+ 
+  if ( associated(state%sss)) then 
+    allocate(salinity(nlocs))
+    salinity = 0.0_kind_real
+    call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
+                       state_slmsk,  state%sheleg, &
+                       state%tsea,   state%vtype, &
+                       state%stype,  state%vfrac, &
+                       state%stc(:,:,1), state%smc(:,:,1), &
+                       state%u_srf, state%v_srf, state_f10m, &
+                       land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
+                       snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
+                       snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
+                       wind_speed, wind_direction, state%sss, salinity)
+  else
+    call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
+                       state_slmsk,  state%sheleg, &
+                       state%tsea,   state%vtype, &
+                       state%stype,  state%vfrac, &
+                       state%stc(:,:,1), state%smc(:,:,1), &
+                       state%u_srf, state%v_srf, state_f10m, &
+                       land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
+                       snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
+                       snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
+                       wind_speed, wind_direction)
+  endif    
 
   have_crtm_srf = .true.
 
@@ -720,6 +736,17 @@ do jvar = 1, vars%nvars()
    do_interp = .true.
    geovals = state%tsea
    geoval => geovals
+   
+   case ("sea_surface_salinity")
+
+   if (.not. associated(state%sss)) &
+      call variable_fail(trim(vars%variable(jvar)),"salinity")
+     
+   nvl = 1
+   do_interp = .false.
+   obs_state(:,1) = salinity
+
+
 
   case ("surface_temperature_where_land")
 

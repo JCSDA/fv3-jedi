@@ -30,7 +30,7 @@ subroutine crtm_surface( geom, nobs, ngrid, lats_ob, lons_ob, &
                          land_type, vegetation_type, soil_type, water_coverage, land_coverage, ice_coverage, &
                          snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                          snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
-                         wind_speed, wind_direction )
+                         wind_speed, wind_direction,fld_sss , sea_surface_salinity)
 
 implicit none
 
@@ -69,6 +69,8 @@ real(kind=kind_real), intent(out) :: soil_temperature(nobs)
 real(kind=kind_real), intent(out) :: snow_depth(nobs)
 real(kind=kind_real), intent(out) :: wind_speed(nobs)
 real(kind=kind_real), intent(out) :: wind_direction(nobs)
+real(kind=kind_real), optional, intent(in)  :: fld_sss   (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), optional, intent(out) :: sea_surface_salinity(nobs)
 
 !Locals
 real(kind=kind_real), parameter :: minsnow = 1.0_kind_real / 10.0_kind_real
@@ -87,8 +89,9 @@ real(kind=kind_real) :: sfcpct(0:3), ts(0:3), wgtavg(0:3), dtskin(0:3)
 real(kind=kind_real) :: w00,w01,w10,w11
 real(kind=kind_real) :: sno00,sno01,sno10,sno11
 real(kind=kind_real) :: sst00,sst01,sst10,sst11
-real(kind=kind_real) :: tsavg,wgtmin
-real(kind=kind_real) :: vty, sty, vfr, stp, sm, sn
+real(kind=kind_real) :: ss00,ss01,ss10,ss11
+real(kind=kind_real) :: tsavg,wgtmin,ssavg
+real(kind=kind_real) :: vty, sty, vfr, stp, sm, sn, ss
 real(kind=kind_real) :: uu5, vv5, f10, sfc_speed, windratio, windangle, windscale
 real(kind=kind_real) :: wind10, wind10_direction
 
@@ -146,6 +149,7 @@ real(kind=kind_real), allocatable, dimension(:,:) :: smc
 real(kind=kind_real), allocatable, dimension(:,:) :: u_srf
 real(kind=kind_real), allocatable, dimension(:,:) :: v_srf
 real(kind=kind_real), allocatable, dimension(:,:) :: f10m
+real(kind=kind_real), allocatable, dimension(:,:) :: sss
 
 real(kind=kind_real), allocatable, dimension(:,:) :: rslmsk
 real(kind=kind_real), allocatable, dimension(:,:) :: rvtype
@@ -163,6 +167,7 @@ real(kind=kind_real), allocatable, dimension(:,:) :: smcp
 real(kind=kind_real), allocatable, dimension(:,:) :: u_srfp
 real(kind=kind_real), allocatable, dimension(:,:) :: v_srfp
 real(kind=kind_real), allocatable, dimension(:,:) :: f10mp
+real(kind=kind_real), allocatable, dimension(:,:) :: sssp
 
 type(fckit_mpi_comm) :: comm
 
@@ -187,6 +192,7 @@ allocate(snwdph(nobs,nn))
 allocate(u_srf(nobs,nn))
 allocate(v_srf(nobs,nn))
 allocate(f10m(nobs,nn))
+allocate(sss(nobs,nn))
 
 allocate(rslmsk(nobs,nn))
 allocate(rvtype(nobs,nn))
@@ -204,6 +210,7 @@ allocate(snwdphp(nobs,nn))
 allocate(u_srfp(nobs,nn))
 allocate(v_srfp(nobs,nn))
 allocate(f10mp(nobs,nn))
+allocate(sssp(nobs,nn))
 
  !Second time level option, zero for now
  slmskp = 0
@@ -219,6 +226,7 @@ allocate(f10mp(nobs,nn))
  u_srfp = 0.0_kind_real
  v_srfp = 0.0_kind_real
  f10mp = 0.0_kind_real
+ sssp = 0.0_kind_real
 
  !Get interpolation weights and index in global grid
  call kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i)
@@ -235,6 +243,9 @@ allocate(f10mp(nobs,nn))
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_u_srf (:,:,1), u_srf )
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_v_srf (:,:,1), v_srf )
  call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_f10m  (:,:,1), f10m  )
+ if ( present(fld_sss) ) then 
+    call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_sss   (:,:,1), sss   )
+ endif
 
  !Convert some reals to integer
  slmsk = nint(rslmsk)
@@ -295,6 +306,15 @@ allocate(f10mp(nobs,nn))
     sst11 = tsea(n,4)*dtsfc + tsea(n,4)*dtsfcp
 
     tsavg = sst00*w00 + sst10*w10 + sst01*w01 + sst11*w11
+    
+    if ( present(fld_sss) ) then
+       ss00 = sss(n,1)*dtsfc + sss(n,1)*dtsfcp
+       ss01 = sss(n,2)*dtsfc + sss(n,2)*dtsfcp
+       ss10 = sss(n,3)*dtsfc + sss(n,3)*dtsfcp
+       ss11 = sss(n,4)*dtsfc + sss(n,4)*dtsfcp
+       
+       ssavg = ss00*w00 + ss10*w10 + ss01*w01 + ss11*w11
+    endif
 
     if (istyp00 >=1 .and. sno00 > minsnow) istyp00 = 3
     if (istyp01 >=1 .and. sno01 > minsnow) istyp01 = 3
@@ -328,6 +348,7 @@ allocate(f10mp(nobs,nn))
     vty=0.0_kind_real
     sm=0.0_kind_real
     sn=0.0_kind_real
+    ss=0.0_kind_real
 
     idomsfc=slmsk(n,1)
     wgtmin = w00
@@ -353,6 +374,7 @@ allocate(f10mp(nobs,nn))
     else
        wgtavg(0) = wgtavg(0) + w00
        ts(0)=ts(0)+w00*sst00
+       if ( present(fld_sss) ) ss   =ss   +w00*ss00
     end if
 
     if(istyp01 == 1)then
@@ -378,6 +400,7 @@ allocate(f10mp(nobs,nn))
     else
        wgtavg(0) = wgtavg(0) + w01
        ts(0)=ts(0)+w01*sst01
+       if ( present(fld_sss) ) ss   =ss   +w01*ss01
     end if
     if(wgtmin < w01)then
        idomsfc=slmsk(n,3)
@@ -407,6 +430,7 @@ allocate(f10mp(nobs,nn))
     else
        wgtavg(0) = wgtavg(0) + w10
        ts(0)=ts(0)+w10*sst10
+       if ( present(fld_sss) ) ss = ss + w10*ss10
     end if
     if(wgtmin < w10)then
        idomsfc=slmsk(n,2)
@@ -436,6 +460,7 @@ allocate(f10mp(nobs,nn))
     else
        wgtavg(0) = wgtavg(0) + w11
        ts(0)=ts(0)+w11*sst11
+       if ( present(fld_sss) ) ss = ss + w11*ss11
     end if
 
     if(wgtmin < w11)then
@@ -445,8 +470,10 @@ allocate(f10mp(nobs,nn))
 
     if(wgtavg(0) > 0.0_kind_real)then
        ts(0) = ts(0)/wgtavg(0)
+       if ( present(fld_sss) ) ss    = ss/wgtavg(0)
     else
        ts(0) = tsavg
+       if ( present(fld_sss) ) ss    = ssavg
     end if
 
     if(wgtavg(1) > 0.0_kind_real)then
@@ -544,6 +571,7 @@ allocate(f10mp(nobs,nn))
    endif
 
    water_temperature(n)     = max(ts(0) + dtskin(0), 270._kind_real)
+   if ( present(fld_sss) ) sea_surface_salinity(n)  = ss
 
    !TODO, is nst_gsi ever > 1?
    !if(nst_gsi > 1 .and. water_coverage(1) > 0.0_kind_real) then

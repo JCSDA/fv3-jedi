@@ -24,7 +24,7 @@ Model:
   lm_do_mst: 0
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
               "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
-              "u_srf","v_srf","f10m"]
+              "u_srf","v_srf","f10m","sss"]
 Observations:
   ObsTypes:
   - ObsSpace:
@@ -222,6 +222,25 @@ Observations:
      ObsOptions:
        Sensor_ID: seviri_m08
        EndianType: little_endian
-       CoefficientPath: Data/crtm/
+       CoefficientPath: Data/crtm/ 
+  - ObsSpace:
+      name: RADIOMETER-SMAP
+      ObsDataIn:
+        obsfile: Data/obs/smap_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/smap_hofx_gfs_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-4
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      n_Aerosols: 0
+      ObsOptions:
+        Salinity : on
+        Sensor_ID: radiometer_smap
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
 Prints:
   frequency: PT3H

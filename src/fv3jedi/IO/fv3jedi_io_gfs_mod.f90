@@ -255,7 +255,7 @@ do var = 1,size(fields)
     filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
+  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
     filename = self%filename_sfcd
     restart => restart_sfcd
     read_sfcd = .true.
@@ -377,7 +377,7 @@ do var = 1,size(fields)
     filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
+  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
     filename = self%filename_sfcd
     restart => restart_sfcd
     read_sfcd = .true.

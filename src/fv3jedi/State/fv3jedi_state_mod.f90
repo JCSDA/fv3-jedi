@@ -326,6 +326,11 @@ do var = 1, vars%nvars()
        call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &
             short_name = vars%variable(var), long_name = 'f10m', &
             fv3jedi_name = 'f10m', units = 'none', staggerloc = center, arraypointer = self%f10m)
+     case("sss")	
+       vcount=vcount+1;	
+       call self%fields(vcount)%allocate_field(geom%isc,geom%iec,geom%jsc,geom%jec,1, &	
+            short_name = vars%variable(var), long_name = 'sea surface salinity', &	
+            fv3jedi_name = 'sss', units = 'psu', staggerloc = center, arraypointer = self%sss)
      !TL/AD trajectory
      case("qls")
        vcount=vcount+1;
@@ -649,6 +654,7 @@ if (associated(self%kcbl     )) nullify(self%kcbl     )
 if (associated(self%tsm      )) nullify(self%tsm      )
 if (associated(self%khl      )) nullify(self%khl      )
 if (associated(self%khu      )) nullify(self%khu      )
+if (associated(self%sss      )) nullify(self%sss      )
 !Aerosols
 if (associated(self%du001    )) nullify(self%du001    )
 if (associated(self%du002    )) nullify(self%du002    )
