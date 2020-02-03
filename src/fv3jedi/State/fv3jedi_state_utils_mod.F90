@@ -52,6 +52,8 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: qlls      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qicn      => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qlcn      => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qilsf     => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: qicnf     => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qs        => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: qr        => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: gr        => null()
@@ -96,6 +98,7 @@ type :: fv3jedi_state
   real(kind=kind_real), pointer, dimension(:,:,:) :: tsm       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khl       => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: khu       => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: sss       => null()
   !Aerosols
   real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()

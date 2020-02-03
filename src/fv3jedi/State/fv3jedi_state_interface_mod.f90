@@ -39,9 +39,9 @@ contains
 subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='fv3jedi_state_create_f90')
 
 implicit none
-integer(c_int), intent(inout) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom !< Geometry
-type(c_ptr), value, intent(in)    :: c_vars     !< List of variables
+integer(c_int), intent(inout)  :: c_key_self
+integer(c_int), intent(in)     :: c_key_geom !< Geometry
+type(c_ptr), value, intent(in) :: c_vars     !< List of variables
 
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_geom),  pointer :: geom

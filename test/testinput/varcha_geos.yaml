@@ -20,3 +20,17 @@ VariableChangeTests:
       variables: ["u","v","t","delp","q","qi","ql","o3mr"]
     outputVariables:
       variables: ["psi","chi","t","tv","delp","ps","q","rh","qi","ql","o3"]
+  - varchange: GeosRst2Bkg
+    state:
+      filetype: geos
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.bkg.20180414_210000z.nc4
+      variables: ["t","delp"]
+    toleranceInverse: 1.0e-9
+    inverseFirst: true
+    do_clouds: false
+    do_wind: false
+    inputVariables:
+      variables: ["t","delp"]
+    outputVariables:
+      variables: ["PT","PKZ","PE"]

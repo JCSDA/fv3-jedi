@@ -10,6 +10,7 @@ use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
 use duration_mod
 use netcdf
+use oops_variables_mod
 
 use fckit_mpi_module, only: fckit_mpi_comm
 
@@ -37,6 +38,8 @@ type :: pseudo_model
   character(len=255)  :: pseudo_path
   character(len=255)  :: filename_bkgd
   character(len=255)  :: filename_crtm
+  logical :: tiledim_bkgd, tiledim_crtm
+  logical :: need_crtm_fields
 end type pseudo_model
 
 ! ------------------------------------------------------------------------------
@@ -45,15 +48,17 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine pseudo_create(self, geom, c_conf)
+subroutine pseudo_create(self, geom, c_conf, vars)
 
 implicit none
-type(pseudo_model), intent(inout) :: self
-type(c_ptr),        intent(in)    :: c_conf
-type(fv3jedi_geom), intent(in)    :: geom
+type(pseudo_model),   intent(inout) :: self
+type(c_ptr),          intent(in)    :: c_conf
+type(fv3jedi_geom),   intent(in)    :: geom
+type(oops_variables), intent(in)    :: vars
 
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
+integer :: var
 
 ! Fortran configuration
 ! ---------------------
@@ -66,14 +71,33 @@ deallocate(str)
 call f_conf%get_or_die("pseudo_path",str)
 self%pseudo_path = str
 deallocate(str)
+
+! Geos specific details
 if (trim(self%pseudo_type) == "geos") then
+
+  self%need_crtm_fields = .false.
+  do var = 1, vars%nvars()
+    if ( trim(vars%variable(var)) == 'vtype' .or. &
+         trim(vars%variable(var)) == 'stype' .or. &
+         trim(vars%variable(var)) == 'vfrac' ) then
+      self%need_crtm_fields = .true.
+    endif
+  enddo
+
   call f_conf%get_or_die("filename_bkgd",str)
   self%filename_bkgd = str
   deallocate(str)
-  call f_conf%get_or_die("filename_crtm",str)
-  self%filename_crtm = str
-  deallocate(str)
+  if (self%need_crtm_fields) then
+    call f_conf%get_or_die("filename_crtm",str)
+    self%filename_crtm = str
+    deallocate(str)
+  endif
+  if (.not. f_conf%get('tiledim_bkgd',self%tiledim_bkgd)) self%tiledim_bkgd = .true.
+  if (.not. f_conf%get('tiledim_crtm',self%tiledim_crtm)) self%tiledim_crtm = .true.
+
 endif
+
+
 
 end subroutine pseudo_create
 
@@ -140,7 +164,7 @@ if (trim(self%pseudo_type) == "gfs") then
   gfs%datapath_sp = 'null'
   gfs%datapath_sp = 'null'
 
-  call print_filename(self,gfs%filename_core)
+  call print_filename(self,gfs%filename_core,geom)
   call gfs%read_meta  ( geom, vdate, state%calendar_type, state%date_init )
   call gfs%read_fields( geom, state%fields )
 
@@ -151,6 +175,10 @@ elseif (trim(self%pseudo_type) == "geos") then
   geos%filenames(2) = trim(self%filename_crtm) ! In case CRTM is being called
 
   call geos%setup(geom, state%fields, vdate, 'read')
+
+  geos%tiledim(1) = self%tiledim_bkgd
+  if (self%need_crtm_fields) geos%tiledim(2) = self%tiledim_crtm
+
   call geos%read_meta(geom, vdate, state%calendar_type, state%date_init)
   call geos%read_fields(geom, state%fields)
   call geos%delete()
@@ -175,19 +203,15 @@ end subroutine pseudo_finalize
 
 ! ------------------------------------------------------------------------------
 
-subroutine print_filename(self,filename)
+subroutine print_filename(self,filename,geom)
 
 implicit none
 type(pseudo_model), intent(in) :: self
 character(len=*),   intent(in) :: filename
-
-type(fckit_mpi_comm) :: f_comm
-
-! This should not be MPI_WORLD, but this is for display only so ignored at the moment
-f_comm = fckit_mpi_comm()
+type(fv3jedi_geom), intent(in) :: geom
 
 ! Print filename to the user
-if (f_comm%rank()==0) then
+if (geom%f_comm%rank()==0) then
   print*, ' '
   print*, 'Pseudo model from file: ', trim(filename)
   print*, ' '

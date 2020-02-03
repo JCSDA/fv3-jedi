@@ -14,7 +14,8 @@ implicit none
 private
 public :: fv3jedi_field, get_field, &
           fields_rms, fields_gpnorm, fields_print, &
-          checksame, flip_array_vertical, get_field_array
+          checksame, flip_array_vertical, get_field_array, &
+          copy_subset
 
 !Field type
 type :: fv3jedi_field
@@ -166,6 +167,8 @@ logical :: isallocated
 integer :: findex, var
 
 isallocated = .false.
+
+if (associated(arraypointer)) nullify(arraypointer)
 
 ! Loop over fields and set array pointer when found
 findex = -1
@@ -404,6 +407,40 @@ do n = 1, nf
 enddo
 
 end subroutine flip_array_vertical
+
+! ------------------------------------------------------------------------------
+
+subroutine copy_subset(rhs,lhs,not_copied)
+
+implicit none
+type(fv3jedi_field),                      intent(in)    :: rhs(:)
+type(fv3jedi_field),                      intent(inout) :: lhs(:)
+character(len=10), allocatable, optional, intent(out)   :: not_copied(:)
+
+integer :: var
+real(kind=kind_real), pointer :: rhs_array(:,:,:)
+character(len=10) :: not_copied_(1000)
+integer :: num_not_copied
+
+! Loop over fields and copy if existing in both
+num_not_copied = 0
+do var = 1, size(lhs)
+  if (get_field_array(rhs, lhs(var)%fv3jedi_name, rhs_array )) then
+    lhs(var)%array = rhs_array
+    nullify(rhs_array)
+  else
+    num_not_copied = num_not_copied + 1
+    not_copied_(num_not_copied) = lhs(var)%fv3jedi_name
+  endif
+enddo
+
+! Send back list of variables not retrivable from rhs
+if (present(not_copied) .and. num_not_copied > 0) then
+  allocate(not_copied(num_not_copied))
+  not_copied(1:num_not_copied) = not_copied_(1:num_not_copied)
+endif
+
+end subroutine copy_subset
 
 ! --------------------------------------------------------------------------------------------------
 

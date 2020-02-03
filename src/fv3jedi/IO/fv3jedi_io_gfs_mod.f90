@@ -126,6 +126,11 @@ if (present(psinfile)) then
   endif
 endif
 
+! Option to allow for ps infile
+if (f_conf%has("psinfile")) then
+  call f_conf%get_or_die("psinfile",self%ps_in_file)
+endif
+
 end subroutine setup
 
 ! ------------------------------------------------------------------------------
@@ -250,7 +255,7 @@ do var = 1,size(fields)
     filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
+  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
     filename = self%filename_sfcd
     restart => restart_sfcd
     read_sfcd = .true.
@@ -372,7 +377,7 @@ do var = 1,size(fields)
     filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m")
+  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
     filename = self%filename_sfcd
     restart => restart_sfcd
     read_sfcd = .true.

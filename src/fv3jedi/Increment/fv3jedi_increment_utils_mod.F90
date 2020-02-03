@@ -56,6 +56,9 @@ type :: fv3jedi_increment
   real(kind=kind_real), pointer, dimension(:,:,:) :: divg => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: tv   => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: rh   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: pt   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: pe   => null()
+  real(kind=kind_real), pointer, dimension(:,:,:) :: pkz  => null()
   !Aerosols
   real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
   real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()
