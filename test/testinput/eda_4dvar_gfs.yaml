@@ -116,7 +116,7 @@ cost_function:
     - ObsSpace:
         name: Aircraft
         ObsDataIn:
-          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/eda/gfs/%{member}%/aircraft_eda-4dvar-gfs_2018041500_m.nc4
         simulate:
@@ -143,7 +143,7 @@ cost_function:
     - ObsSpace:
         name: Radiosonde
         ObsDataIn:
-          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/eda/gfs/%{member}%/sondes_eda-4dvar-gfs_2018041500_m.nc4
         simulate:
@@ -166,7 +166,7 @@ cost_function:
     - ObsSpace:
         name: GnssroRef
         ObsDataIn:
-         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
          obsfile: Data/hofx/eda/gfs/%{member}%/gnssro_eda-4dvar-gfs_2018041500_s.nc4
         simulate:
@@ -213,7 +213,7 @@ cost_function:
     - ObsSpace:
         name: AMSUA-NOAA19
         ObsDataIn:
-          obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/eda/gfs/%{member}%/amsua_n19_eda-4dvar-gfs_2018041500_m.nc4
         simulate:
