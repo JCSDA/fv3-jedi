@@ -18,7 +18,7 @@ Interface between the generic components of the JEDI data assimilation system an
 
 For details about JEDI, including installation instructions see: https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/
 
-The fv3-bundle is a convenient way of building fv3-jedi will all the necessary JEDI software. https://github.com/JCSDA/fv3-bundle
+The fv3-bundle is a convenient way of building fv3-jedi with all the necessary JEDI software. https://github.com/JCSDA/fv3-bundle
 
 
 
