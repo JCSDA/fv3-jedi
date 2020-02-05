@@ -70,7 +70,7 @@ cost_function:
     - ObsSpace:
         name: Aircraft
         ObsDataIn:
-          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/aircraft_hyb-fgat-geos_2018041500_m.nc4
         simulate:
@@ -92,7 +92,7 @@ cost_function:
     - ObsSpace:
         name: Radiosonde
         ObsDataIn:
-          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
         ObsDataOut:
           obsfile: Data/hofx/sondes_hyb-fgat-geos_2018041500_m.nc4
         simulate:
@@ -114,7 +114,7 @@ cost_function:
     - ObsSpace:
         name: GnssroRef
         ObsDataIn:
-         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
          obsfile: Data/hofx/gnssro_hyb-fgat-geos_2018041500_s.nc4
         simulate:

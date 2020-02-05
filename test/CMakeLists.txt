@@ -326,13 +326,62 @@ LINK_FILES_DIR("${crtm_vil_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 LINK_FILES_DIR("${crtm_vis_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 LINK_FILES_DIR("${crtm_viw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 
-# IODA observation files
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
-file(GLOB ioda_atm_obs "${ioda_SOURCE_DIR}/test/testinput/atmosphere/*nc4")
-file(GLOB ioda_mar_obs "${ioda_SOURCE_DIR}/test/testinput/marine/*nc4")
-LINK_FILES_DIR("${ioda_atm_obs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
-LINK_FILES_DIR("${ioda_mar_obs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/)
 
+# IODA observation files
+list( APPEND fv3_ioda_test_data
+      testinput_tier_1.tar.gz
+    )
+
+# Set URL for IODA test files
+set(ECBUILD_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com/ioda)
+
+
+# If local path to testfiles is defined don't download
+if (DEFINED ENV{LOCAL_PATH_TESTFILES})
+        set(LOCAL_PATH_TESTFILES "$ENV{LOCAL_PATH_TESTFILES}")
+endif()
+
+if( NOT DEFINED LOCAL_PATH_TESTFILES )
+  set(TESTFILE_DIR ${CMAKE_BINARY_DIR}/test_data/ioda CACHE PATH "data dir for test data")
+  file(MAKE_DIRECTORY ${TESTFILE_DIR})
+else()
+  set(TESTFILE_DIR ${LOCAL_PATH_TESTFILES})
+endif()
+
+# Get the current git branch
+execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Check whether the URL exists or not 
+ecbuild_check_multiurl(NAMES   ${fv3_ioda_test_data}
+                       DIRNAME ${GIT_BRANCH}
+                       RESULT  SPECIFIC_TEST_FILES)
+
+# Set distant directory
+if(${SPECIFIC_TEST_FILES} MATCHES 0)
+    # Download and extract new test files (distant directory = git branch)
+    set(DIRNAME ${GIT_BRANCH})
+else()
+    # Download and extract develop test files (distant directory = develop)
+    set(DIRNAME "develop")
+endif()
+message(STATUS "Test data downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+
+#  Now run test to download data
+ecbuild_get_test_multidata ( TARGET get_ioda_test_data_fv3
+                               NAMES ${fv3_ioda_test_data}
+			       DIRNAME ${DIRNAME}
+			       DIRLOCAL ${TESTFILE_DIR}
+                               EXTRACT
+                             )
+execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+                 ${TESTFILE_DIR}
+                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs
+		 )
 
 # Create tests
 # ------------

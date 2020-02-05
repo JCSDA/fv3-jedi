@@ -30,7 +30,7 @@ Observations:
   - ObsSpace:
       name: SeaSurfaceTemp
       ObsDataIn:
-        obsfile: Data/obs/sst_obs-2018-04-15.nc4
+        obsfile: Data/obs/testinput_tier_1/sst_obs-2018-04-15.nc4
       ObsDataOut:
         obsfile: Data/hofx/sst_gmi_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -42,7 +42,7 @@ Observations:
   - ObsSpace:
       name: Aircraft
       ObsDataIn:
-        obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/aircraft_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -52,7 +52,7 @@ Observations:
   - ObsSpace:
       name: Radiosonde
       ObsDataIn:
-        obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/sondes_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -62,7 +62,7 @@ Observations:
   - ObsSpace:
       name: AMSUA-NOAA19
       ObsDataIn:
-        obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/amsua_n19_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -80,7 +80,7 @@ Observations:
   - ObsSpace:
       name: AIRS-AQUA
       ObsDataIn:
-        obsfile: Data/obs/airs_aqua_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/airs_aqua_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -96,7 +96,7 @@ Observations:
   - ObsSpace:
       name: GnssroRef
       ObsDataIn:
-        obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
       ObsDataOut:
         obsfile: Data/hofx/gnssro_hofx_gfs_2018041500_s.nc4
       simulate:
@@ -107,7 +107,7 @@ Observations:
   - ObsSpace:
       name: HIRS4-METOPA
       ObsDataIn:
-        obsfile: Data/obs/hirs4_metop-a_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -123,7 +123,7 @@ Observations:
   - ObsSpace:
       name: CRIS-NPP
       ObsDataIn:
-        obsfile: Data/obs/cris-fsr_npp_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -145,7 +145,7 @@ Observations:
   - ObsSpace:
       name: Satwind
       ObsDataIn:
-        obsfile: Data/obs/satwind_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/satwind_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/satwind_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -155,7 +155,7 @@ Observations:
   - ObsSpace:
       name: MHS-N19
       ObsDataIn:
-        obsfile: Data/obs/mhs_n19_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/mhs_n19_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -171,7 +171,7 @@ Observations:
   - ObsSpace:
       name: IASI-METOPA
       ObsDataIn:
-        obsfile: Data/obs/iasi_metop-a_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -187,7 +187,7 @@ Observations:
   - ObsSpace:
       name: MHS-NOAA19
       ObsDataIn:
-        obsfile: Data/obs/mhs_n19_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/mhs_n19_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -203,7 +203,7 @@ Observations:
   - ObsSpace:
       name: SEVIRI-METEOSAT8
       ObsDataIn:
-        obsfile: Data/obs/seviri_m08_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/seviri_m08_hofx_gfs_2018041500_m.nc4
       simulate:
@@ -215,11 +215,11 @@ Observations:
      ObsOptions:
        Sensor_ID: seviri_m08
        EndianType: little_endian
-       CoefficientPath: Data/crtm/ 
+       CoefficientPath: Data/crtm/
   - ObsSpace:
       name: RADIOMETER-SMAP
       ObsDataIn:
-        obsfile: Data/obs/smap_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/smap_obs_2018041500_m.nc4
       ObsDataOut:
         obsfile: Data/hofx/smap_hofx_gfs_2018041500_m.nc4
       simulate:
