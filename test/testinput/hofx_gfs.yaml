@@ -40,6 +40,18 @@ Observations:
     Covariance:
       covariance: diagonal
   - ObsSpace:
+      name: SeaSurfaceSalinity
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/sss_obs_20180415_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/sss_hofx_gfs_2018041500_m.nc4
+      simulate:
+        variables: [sea_surface_salinity]
+    ObsOperator:
+      name: Identity
+    Covariance:
+      covariance: diagonal
+  - ObsSpace:
       name: Aircraft
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
