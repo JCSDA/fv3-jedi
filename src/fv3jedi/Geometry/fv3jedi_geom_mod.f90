@@ -29,6 +29,8 @@ use fv3jedi_netcdf_utils_mod, only: nccheck
 use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
 use fv_control_nlm_mod, only: fv_init, pelist_all
 
+use fv3geom_create_grid_mod, only: create_fv3_grid
+
 implicit none
 private
 
@@ -105,6 +107,9 @@ integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
+
+logical :: test_stand_alone = .false.
+real(kind=kind_real), allocatable, dimension(:,:) :: egrid_lon, egrid_lat
 
 ! Add the communicator to the geometry
 ! ------------------------------------
@@ -324,6 +329,20 @@ endif
 
 if (do_write_geom) then
   call write_geom(self)
+endif
+
+! Compare with offline mode
+! -------------------------
+if (test_stand_alone) then
+  allocate(egrid_lat(self%isc:self%iec+1,self%jsc:self%jec+1))
+  allocate(egrid_lon(self%isc:self%iec+1,self%jsc:self%jec+1))
+
+  call create_fv3_grid( 0, self%npx, self%npy, 3, self%isc, self%iec, self%jsc, self%jec, self%ntile, &
+                        egrid_lat, egrid_lon, &
+                        18.0_kind_real )
+
+  print*, 'maxval lat', maxval(abs(egrid_lat - self%egrid_lat(self%isc:self%iec+1,self%jsc:self%jec+1)))
+  print*, 'maxval lon', maxval(abs(egrid_lon - self%egrid_lon(self%isc:self%iec+1,self%jsc:self%jec+1)))
 endif
 
 end subroutine create
