@@ -1,19 +1,19 @@
 Test     : Initial state: 
 Test     : Final state: 
 Test     : H(x): 
-Test     : SeaSurfaceTemp nobs= 200 Min=269.78, Max=275.129, RMS=272.841
+Test     : SeaSurfaceTemp nobs= 200 Min=268.871, Max=276.306, RMS=271.956
 Test     : SeaSurfaceSalinity nobs= 100 Min=33.585, Max=33.5925, RMS=33.5883
-Test     : Aircraft nobs= 6294 Min=-21.7939, Max=300.117, RMS=146.195
-Test     : Radiosonde nobs= 2922 Min=-39.3451, Max=301.526, RMS=139.321
-Test     : AMSUA-NOAA19 nobs= 1500 Min=147.619, Max=295.076, RMS=231.132
-Test     : AIRS-AQUA nobs= 300 Min=206.931, Max=226.164, RMS=217.83
-Test     : GnssroRef nobs= 20 Min=0.221891, Max=343.691, RMS=129.739
-Test     : HIRS4-METOPA nobs= 1500 Min=213.723, Max=295.621, RMS=248.524
-Test     : CRIS-NPP nobs= 9900 Min=210.722, Max=299.207, RMS=247.704
-Test     : Satwind nobs= 198 Min=-14.1784, Max=47.8937, RMS=10.1831
-Test     : MHS-N19 nobs= 500 Min=162.013, Max=294.587, RMS=254.333
-Test     : IASI-METOPA nobs= 700 Min=205.625, Max=237.918, RMS=221.809
-Test     : MHS-NOAA19 nobs= 500 Min=162.013, Max=294.587, RMS=254.333
-Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.83, Max=248.428, RMS=237.847
-Test     : RADIOMETER-SMAP nobs= 400 Min=2.63478, Max=228.306, RMS=131.369
+Test     : Aircraft nobs= 6294 Min=-21.1144, Max=300.054, RMS=146.08
+Test     : Radiosonde nobs= 2922 Min=-35.9648, Max=301.53, RMS=139.308
+Test     : AMSUA-NOAA19 nobs= 1500 Min=147.278, Max=295.082, RMS=231.159
+Test     : AIRS-AQUA nobs= 300 Min=207.007, Max=226.079, RMS=217.837
+Test     : GnssroRef nobs= 20 Min=0.222533, Max=342.781, RMS=129.695
+Test     : HIRS4-METOPA nobs= 1500 Min=213.686, Max=295.319, RMS=248.485
+Test     : CRIS-NPP nobs= 9900 Min=210.643, Max=298.889, RMS=247.69
+Test     : Satwind nobs= 198 Min=-13.5365, Max=41.8134, RMS=9.93779
+Test     : MHS-N19 nobs= 500 Min=162.104, Max=294.524, RMS=254.287
+Test     : IASI-METOPA nobs= 700 Min=205.656, Max=238.031, RMS=221.83
+Test     : MHS-NOAA19 nobs= 500 Min=162.104, Max=294.524, RMS=254.287
+Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.704, Max=247.584, RMS=237.505
+Test     : RADIOMETER-SMAP nobs= 400 Min=2.68794, Max=228.302, RMS=131.378
 Test     : End H(x)

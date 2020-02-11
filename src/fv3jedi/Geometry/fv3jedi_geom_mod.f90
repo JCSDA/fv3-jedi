@@ -41,15 +41,17 @@ public :: create, clone, delete, info
 type :: fv3jedi_geom
   integer :: isd, ied, jsd, jed                                                     !data domain
   integer :: isc, iec, jsc, jec                                                     !compute domain
-  integer :: npx,npy,npz                                                            !x/y/z-dir grid edge points per tile
+  integer :: npx,npy,npz,ngrid                                                      !x/y/z-dir grid edge points per tile
   integer :: layout(2), io_layout(2)                                                !Processor layouts
   integer :: ntile, ntiles                                                          !Tile number and total
   real(kind=kind_real) :: ptop                                                      !Pressure at top of domain
   type(domain2D) :: domain_fix                                                      !MPP domain
   type(domain2D), pointer :: domain                                                 !MPP domain
+  character(len=10) :: interp_method                                                !Interpolation type
   real(kind=kind_real), allocatable, dimension(:)       :: ak, bk                   !Model level coefficients
   real(kind=kind_real), allocatable, dimension(:,:)     :: grid_lon, grid_lat       !Lat/lon centers
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
+  real(kind=kind_real), allocatable, dimension(:)       :: lon_us, lat_us           !Lat/lon centers unstructured
   real(kind=kind_real), allocatable, dimension(:,:)     :: area                     !Grid area
   real(kind=kind_real), allocatable, dimension(:,:)     :: dx, dy                   !dx/dy at edges
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxc, dyc                 !dx/dy c grid
@@ -95,8 +97,9 @@ type(fckit_mpi_comm),        intent(in)    :: f_comm
 character(len=256)                    :: pathfile_akbk
 type(fv_atmos_type), allocatable      :: FV_Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
+integer                               :: i, j, jj
 integer                               :: p_split = 1
-integer                               :: ncstat, ncid, akvarid, bkvarid, i, readdim, dcount
+integer                               :: ncstat, ncid, akvarid, bkvarid, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
 type(fckit_configuration) :: f_conf
@@ -111,12 +114,20 @@ self%f_comm = f_comm
 ! ---------------------
 f_conf = fckit_configuration(c_conf)
 
-
 ! Set path/filename for ak and bk
 ! -------------------------------
 call f_conf%get_or_die("pathfile_akbk",str)
 pathfile_akbk = str
 deallocate(str)
+
+! Interpolation type
+! ------------------
+self%interp_method = 'barycent'
+if (f_conf%has("interp_method")) then
+  call f_conf%get_or_die("interp_method",str)
+  self%interp_method = str
+  deallocate(str)
+endif
 
 !Intialize using the model setup routine
 ! --------------------------------------
@@ -277,6 +288,20 @@ self%se_corner = Fv_Atm(1)%gridstruct%se_corner
 self%sw_corner = Fv_Atm(1)%gridstruct%sw_corner
 self%nw_corner = Fv_Atm(1)%gridstruct%nw_corner
 
+!Unstructured lat/lon
+self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
+allocate(self%lat_us(self%ngrid))
+allocate(self%lon_us(self%ngrid))
+
+jj = 0
+do j = self%jsc,self%jec
+  do i = self%isc,self%iec
+     jj = jj + 1
+     self%lat_us(jj) = self%grid_lat(i,j)
+     self%lon_us(jj) = self%grid_lon(i,j)
+  enddo
+enddo
+
 !Set Ptop
 self%ptop = self%ak(1)
 
@@ -353,9 +378,13 @@ allocate(other%rsin2 (self%isd:self%ied  ,self%jsd:self%jed  ))
 allocate(other%dxa   (self%isd:self%ied  ,self%jsd:self%jed  ))
 allocate(other%dya   (self%isd:self%ied  ,self%jsd:self%jed  ))
 
+allocate(other%lat_us(self%ngrid))
+allocate(other%lon_us(self%ngrid))
+
 other%npx             = self%npx
 other%npy             = self%npy
 other%npz             = self%npz
+other%ngrid           = self%ngrid
 other%layout          = self%layout
 other%io_layout       = self%io_layout
 other%isc             = self%isc
@@ -394,6 +423,7 @@ other%a12             = self%a12
 other%a21             = self%a21
 other%a22             = self%a22
 other%f_comm          = self%f_comm
+other%interp_method   = self%interp_method
 
 other%rarea     = self%rarea
 other%sin_sg    = self%sin_sg
@@ -411,6 +441,9 @@ other%sw_corner = self%sw_corner
 other%nw_corner = self%nw_corner
 
 other%domain => self%domain
+
+other%lat_us = self%lat_us
+other%lon_us = self%lon_us
 
 end subroutine clone
 
@@ -458,6 +491,9 @@ deallocate(self%rsin_v)
 deallocate(self%rsin2 )
 deallocate(self%dxa   )
 deallocate(self%dya   )
+
+deallocate(self%lat_us)
+deallocate(self%lon_us)
 
 ! Required memory leak, since copying this causes problems
 !call mpp_deallocate_domain(self%domain_fix)

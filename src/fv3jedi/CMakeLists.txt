@@ -71,6 +71,7 @@ Utilities/Traits.h
 Utilities/interface.h
 Utilities/Utilities.cc
 Utilities/Utilities.h
+Utilities/fv3jedi_bump_init_mod.f90
 Utilities/fv3jedi_communication_mod.f90
 Utilities/fv3jedi_constants_mod.f90
 Utilities/fv3jedi_field_mod.f90

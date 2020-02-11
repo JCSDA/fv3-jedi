@@ -7,6 +7,7 @@ module fv3jedi_getvalues_traj_mod
 use fv3jedi_kinds_mod, only: kind_real
 use iso_c_binding
 use type_bump, only: bump_type
+use unstructured_interpolation_mod, only: unstrc_interp
 
 implicit none
 private
@@ -23,6 +24,8 @@ type :: fv3jedi_getvalues_traj
  real(kind=kind_real), allocatable :: o3(:,:,:)
  type(bump_type) :: bump
  logical :: lalloc = .false.
+ type(unstrc_interp) :: unsinterp
+ character(len=24) :: interp_method
  contains
   final :: dummy_final !Work around for gcc compiler bug
 end type fv3jedi_getvalues_traj
@@ -77,7 +80,11 @@ if (self%lalloc) then
   if (allocated(self%t)) deallocate(self%t)
   if (allocated(self%q)) deallocate(self%q)
   if (allocated(self%o3)) deallocate(self%o3)
-  call self%bump%dealloc
+  if (trim(self%interp_method) == 'bump') then
+    call self%bump%dealloc
+  elseif (trim(self%interp_method) == 'barycent') then
+    call self%unsinterp%delete
+  endif
 endif
 
 ! Remove key

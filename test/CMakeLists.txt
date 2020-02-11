@@ -800,7 +800,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_geos.run testoutput/hyb-3dvar_geos.ref 1.0e-2 ${idif}
+                  ARGS         testoutput/hyb-3dvar_geos.run testoutput/hyb-3dvar_geos.ref 1.0e-1 ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
 
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs
@@ -932,12 +932,12 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/hyb-3dvar_geos_p12.yaml testoutput/hyb-3dvar_geos_p12.run
                   MPI          12
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos_p12 test_fv3jedi_crtm_surface_for_geos )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos_p12 test_fv3jedi_crtm_surface_for_geos test_fv3jedi_hyb3dvar_geos)
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_geos_p12.run testoutput/hyb-3dvar_geos.ref ${ctol} ${idif}
+                  ARGS         testoutput/hyb-3dvar_geos_p12.run testoutput/hyb-3dvar_geos.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_gfs_p12
@@ -970,12 +970,12 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS         testinput/hyb-3dvar_gfs_p12.yaml testoutput/hyb-3dvar_gfs_p12.run
                   MPI          12
-                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_p12 )
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_p12 test_fv3jedi_hyb3dvar_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_gfs_p12.run testoutput/hyb-3dvar_gfs.ref ${ctol} ${idif}
+                  ARGS         testoutput/hyb-3dvar_gfs_p12.run testoutput/hyb-3dvar_gfs.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs_p12 )
 
 # Aerosol tests

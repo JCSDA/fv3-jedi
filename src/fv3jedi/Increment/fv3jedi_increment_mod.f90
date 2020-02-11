@@ -747,14 +747,31 @@ type(fv3jedi_geom),      intent(inout) :: geom
 type(fv3jedi_increment), intent(in)    :: rhs
 type(fv3jedi_geom),      intent(inout) :: geom_rhs
 
+! Interpolation
+integer :: var
+type(field2field_interp) :: interp
+logical :: integer_interp = .false.
+
 call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.change_resol")
 
 if ((rhs%iec-rhs%isc+1)-(self%iec-self%isc+1)==0) then
+
   call copy(self, rhs)
+
 else
-  call field2field_interp(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+
+  ! Check if integer interp needed
+  do var = 1, self%nf
+    if (rhs%fields(var)%integerfield) integer_interp = .true.
+  enddo
+
+  call interp%create(geom%interp_method, integer_interp, geom_rhs, geom)
+  call interp%apply(self%nf, geom_rhs, rhs%fields, geom, self%fields)
+  call interp%delete()
+
   self%calendar_type = rhs%calendar_type
   self%date_init = rhs%date_init
+
 endif
 
 end subroutine change_resol

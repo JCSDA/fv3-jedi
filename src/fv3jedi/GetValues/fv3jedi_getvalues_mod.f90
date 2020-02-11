@@ -5,7 +5,9 @@ use type_bump, only: bump_type
 use ufo_geovals_mod, only: ufo_geovals, ufo_geovals_write_netcdf
 use ufo_locs_mod, only: ufo_locs
 use oops_variables_mod, only: oops_variables
+use unstructured_interpolation_mod, only: unstrc_interp
 
+use fv3jedi_bump_init_mod, only: bump_init
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj
@@ -47,12 +49,17 @@ type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
 character(len=*), parameter :: myname = 'getvalues'
 
 type(fckit_mpi_comm) :: f_comm
+
+! Interpolation
+logical, target  :: interp_alloc = .false.
+logical, pointer :: pinterp_alloc => null()
 type(bump_type), target  :: bump
 type(bump_type), pointer :: pbump => null()
-logical, target  :: bump_alloc = .false.
-logical, pointer :: pbump_alloc => null()
 integer, target, save :: bumpid = 1000
 integer, pointer      :: pbumpid => null()
+type(unstrc_interp), target  :: unsinterp
+type(unstrc_interp), pointer :: punsinterp => null()
+real(kind=kind_real), allocatable :: lats_in(:), lons_in(:)
 
 integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg
 real(kind=kind_real), allocatable :: mod_state(:,:)
@@ -174,9 +181,11 @@ endif
 
 ! Initialize the interpolation trajectory
 ! ---------------------------------------
+
 if (present(traj)) then
 
   pbump => traj%bump
+  punsinterp => traj%unsinterp
 
   if (.not. traj%lalloc) then
 
@@ -197,7 +206,7 @@ if (present(traj)) then
        traj%o3 = state%o3
      endif
 
-     pbump_alloc => traj%lalloc
+     pinterp_alloc => traj%lalloc
      pbumpid => traj%bumpid
 
   endif
@@ -205,16 +214,36 @@ if (present(traj)) then
 else
 
   pbump => bump
-  bump_alloc = .false.
-  pbump_alloc => bump_alloc
   bumpid = bumpid + 1
   pbumpid => bumpid
 
+  punsinterp => unsinterp
+
+  interp_alloc = .false.
+  pinterp_alloc => interp_alloc
+
 endif
 
-if (.not. pbump_alloc) then
-   call initialize_bump(geom, locs, pbump, pbumpid)
-   pbump_alloc = .true.
+if (.not. pinterp_alloc) then
+  if (trim(geom%interp_method) == 'bump') then
+    call bump_init(geom%f_comm, geom%ngrid, rad2deg*geom%lat_us, rad2deg*geom%lon_us, &
+                   locs%nlocs, locs%lat, locs%lon, pbump, pbumpid)
+  elseif (trim(geom%interp_method) == 'barycent') then
+    allocate(lats_in(ngrid))
+    allocate(lons_in(ngrid))
+    jj = 0
+    do j = jsc,jec
+      do i = isc,iec
+         jj = jj + 1
+         lats_in(jj) = rad2deg*geom%grid_lat(i,j)
+         lons_in(jj) = rad2deg*geom%grid_lon(i,j)
+      enddo
+    enddo
+    call punsinterp%create( f_comm, 4, trim(geom%interp_method), &
+                           ngrid, lats_in, lons_in, &
+                           locs%nlocs, locs%lat, locs%lon )
+  endif
+  pinterp_alloc = .true.
 endif
 
 ! Create Buffer for interpolated values
@@ -384,8 +413,8 @@ if ( associated(state%sheleg) .and. associated(state%tsea  ) .and. &
   vegetation_fraction = 0.0_kind_real
   soil_temperature = 0.0_kind_real
   snow_depth = 0.0_kind_real
- 
-  if ( associated(state%sss)) then 
+
+  if ( associated(state%sss)) then
     allocate(salinity(nlocs))
     salinity = 0.0_kind_real
     call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
@@ -409,7 +438,7 @@ if ( associated(state%sheleg) .and. associated(state%tsea  ) .and. &
                        snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                        snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
                        wind_speed, wind_direction)
-  endif    
+  endif
 
   have_crtm_srf = .true.
 
@@ -736,12 +765,12 @@ do jvar = 1, vars%nvars()
    do_interp = .true.
    geovals = state%tsea
    geoval => geovals
-   
+
    case ("sea_surface_salinity")
 
    if (.not. associated(state%sss)) &
       call variable_fail(trim(vars%variable(jvar)),"salinity")
-     
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = salinity
@@ -1073,7 +1102,11 @@ do jvar = 1, vars%nvars()
           mod_state(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
-      call pbump%apply_obsop(mod_state,obs_state)
+      if (trim(geom%interp_method) == 'bump') then
+        call pbump%apply_obsop(mod_state,obs_state)
+      elseif (trim(geom%interp_method) == 'barycent') then
+        call punsinterp%apply(mod_state,obs_state)
+      endif
       do jloc = 1,locs%nlocs
         gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_state(jloc,1)
       enddo
@@ -1097,12 +1130,17 @@ enddo
 
 
 if (.not. present(traj)) then
-  call pbump%dealloc
+  if (trim(geom%interp_method) == 'bump') then
+    call pbump%dealloc
+  elseif (trim(geom%interp_method) == 'barycent') then
+    call punsinterp%delete
+  endif
 endif
 
 nullify(pbump)
-nullify(pbump_alloc)
+nullify(pinterp_alloc)
 nullify(pbumpid)
+nullify(punsinterp)
 
 ! Deallocate local memory
 ! -----------------------
@@ -1491,7 +1529,11 @@ do jvar = 1, vars%nvars()
           mod_increment(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
-      call traj%bump%apply_obsop(mod_increment,obs_increment)
+      if (trim(geom%interp_method) == 'bump') then
+        call traj%bump%apply_obsop(mod_increment,obs_increment)
+      elseif (trim(geom%interp_method) == 'barycent') then
+        call traj%unsinterp%apply(mod_increment,obs_increment)
+      endif
       do jloc = 1,locs%nlocs
         gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_increment(jloc,1)
       enddo
@@ -1768,7 +1810,11 @@ do jvar = 1, vars%nvars()
       do jloc = 1,locs%nlocs
         obs_increment(jloc,1) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
       enddo
-      call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
+      if (trim(geom%interp_method) == 'bump') then
+        call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
+      elseif (trim(geom%interp_method) == 'barycent') then
+        call traj%unsinterp%apply_ad(mod_increment,obs_increment)
+      endif
       ii = 0
       do jj = jsc, jec
         do ji = isc, iec
@@ -1987,100 +2033,6 @@ if (.not.allocated(gom%geovals(jvar)%vals)) then
 endif
 
 end subroutine allocate_geovals_vals
-
-! ------------------------------------------------------------------------------
-
-subroutine initialize_bump(geom, locs, bump, bumpid)
-
-implicit none
-
-!Arguments
-type(fv3jedi_geom), intent(in)    :: geom
-type(ufo_locs),     intent(in)    :: locs
-type(bump_type),    intent(inout) :: bump
-integer,            intent(in)    :: bumpid
-
-!Locals
-integer :: mod_num
-real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:)
-real(kind=kind_real), allocatable :: area(:),vunit(:,:)
-logical, allocatable :: lmask(:,:)
-
-character(len=5)    :: cbumpcount
-character(len=1024) :: bump_nam_prefix
-
-type(fckit_mpi_comm) :: f_comm
-
-
-! Communicator from geometry
-! --------------------------
-f_comm = geom%f_comm
-
-! Each bump%nam%prefix must be distinct
-! -------------------------------------
-write(cbumpcount,"(I0.5)") bumpid
-bump_nam_prefix = 'fv3jedi_bumpobsop_data_'//cbumpcount
-
-!Get the Solution dimensions
-!---------------------------
-mod_num = (geom%iec - geom%isc + 1) * (geom%jec - geom%jsc + 1)
-
-
-!Calculate interpolation weight using BUMP
-!-----------------------------------------
-allocate(mod_lat(mod_num))
-allocate(mod_lon(mod_num))
-mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
-                                         geom%jsc:geom%jec),     &
-                                        [mod_num] )
-mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
-                                         geom%jsc:geom%jec),     &
-                                        [mod_num] )
-
-
-! Namelist options
-! ----------------
-
-!Important namelist options
-call bump%nam%init
-
-!Less important namelist options (should not be changed)
-bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
-bump%nam%default_seed = .true.
-bump%nam%new_obsop = .true.
-
-bump%nam%write_obsop = .false.
-bump%nam%verbosity = "none"
-
-! Initialize geometry
-! -------------------
-allocate(area(mod_num))
-allocate(vunit(mod_num,1))
-allocate(lmask(mod_num,1))
-area = 1.0           ! Dummy area
-vunit = 1.0          ! Dummy vertical unit
-lmask = .true.       ! Mask
-
-! Initialize BUMP
-! ---------------
-call bump%setup_online( f_comm,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs%nlocs,lonobs=locs%lon(:),latobs=locs%lat(:))
-
-!Run BUMP drivers
-call bump%run_drivers
-
-!Partial deallocate option
-call bump%partial_dealloc
-
-! Release memory
-! --------------
-deallocate(area)
-deallocate(vunit)
-deallocate(lmask)
-deallocate(mod_lat)
-deallocate(mod_lon)
-
-end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 

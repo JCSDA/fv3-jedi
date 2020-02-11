@@ -13,6 +13,8 @@ use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use fckit_geometry_module, only: sphere_distance
 use fckit_kdtree_module, only: kdtree,kdtree_create,kdtree_destroy,kdtree_k_nearest_neighbors
 
+use unstructured_interpolation_mod, only: unstrc_interp
+
 implicit none
 private
 
@@ -134,8 +136,6 @@ integer, parameter, dimension(1:IGBP_N_TYPES) :: igbp_to_gfs=(/4, &
 
 !For interpolation
 integer :: nn
-real(kind=kind_real), allocatable, dimension(:,:) :: interp_w
-integer             , allocatable, dimension(:,:) :: interp_i
 
 integer             , allocatable, dimension(:,:) :: slmsk
 real(kind=kind_real), allocatable, dimension(:,:) :: sheleg
@@ -170,15 +170,17 @@ real(kind=kind_real), allocatable, dimension(:,:) :: f10mp
 real(kind=kind_real), allocatable, dimension(:,:) :: sssp
 
 type(fckit_mpi_comm) :: comm
+integer :: i, j, jj
+real(kind=kind_real), allocatable, dimension(:) :: slmsk_ob, sheleg_ob, tsea_ob, vtype_ob, stype_ob, &
+                                                   vfrac_ob, stc_ob, smc_ob, u_srf_ob, v_srf_ob, f10m_ob, sss_ob
+real(kind=kind_real), allocatable :: lat_loc(:), lon_loc(:)
+type(unstrc_interp) :: unsinterp
 
 ! Communicator from geometry
 comm = geom%f_comm
 
-! Number of weights
+! Number of neighbors
 nn = 4
-
-allocate(interp_w(nobs,nn))
-allocate(interp_i(nobs,nn))
 
 allocate(slmsk(nobs,nn))
 allocate(sheleg(nobs,nn))
@@ -197,6 +199,19 @@ allocate(sss(nobs,nn))
 allocate(rslmsk(nobs,nn))
 allocate(rvtype(nobs,nn))
 allocate(rstype(nobs,nn))
+
+allocate(slmsk_ob (nobs))
+allocate(sheleg_ob(nobs))
+allocate(tsea_ob  (nobs))
+allocate(vtype_ob (nobs))
+allocate(stype_ob (nobs))
+allocate(vfrac_ob (nobs))
+allocate(stc_ob   (nobs))
+allocate(smc_ob   (nobs))
+allocate(u_srf_ob (nobs))
+allocate(v_srf_ob (nobs))
+allocate(f10m_ob  (nobs))
+allocate(sss_ob   (nobs))
 
 allocate(slmskp(nobs,nn))
 allocate(shelegp(nobs,nn))
@@ -228,24 +243,39 @@ allocate(sssp(nobs,nn))
  f10mp = 0.0_kind_real
  sssp = 0.0_kind_real
 
- !Get interpolation weights and index in global grid
- call kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i)
+ ! Fill local unstructured lat/lon
+ allocate(lat_loc(ngrid))
+ allocate(lon_loc(ngrid))
 
- !Get field at nn neighbours
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_slmsk (:,:,1), rslmsk)
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_sheleg(:,:,1), sheleg)
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_tsea  (:,:,1), tsea  )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_vtype (:,:,1), rvtype)
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_stype (:,:,1), rstype)
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_vfrac (:,:,1), vfrac )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_stc   (:,:,1), stc   )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_smc   (:,:,1), smc   )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_u_srf (:,:,1), u_srf )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_v_srf (:,:,1), v_srf )
- call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_f10m  (:,:,1), f10m  )
- if ( present(fld_sss) ) then 
-    call kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, fld_sss   (:,:,1), sss   )
- endif
+ jj = 0
+ do j = geom%jsc,geom%jec
+   do i = geom%isc,geom%iec
+      jj = jj + 1
+      lat_loc(jj) = rad2deg*geom%grid_lat(i,j)
+      lon_loc(jj) = rad2deg*geom%grid_lon(i,j)
+   enddo
+ enddo
+
+ call unsinterp%create( comm, nn, 'barycent', ngrid, lat_loc, lon_loc, &
+                                              nobs,  lats_ob, lons_ob )
+
+ deallocate(lat_loc,lon_loc)
+
+ ! Get neighbours
+ call unsinterp%apply(fld_slmsk (:,:,1), slmsk_ob , rslmsk)
+ call unsinterp%apply(fld_sheleg(:,:,1), sheleg_ob, sheleg)
+ call unsinterp%apply(fld_tsea  (:,:,1), tsea_ob  , tsea  )
+ call unsinterp%apply(fld_vtype (:,:,1), vtype_ob , rvtype)
+ call unsinterp%apply(fld_stype (:,:,1), stype_ob , rstype)
+ call unsinterp%apply(fld_vfrac (:,:,1), vfrac_ob , vfrac )
+ call unsinterp%apply(fld_stc   (:,:,1), stc_ob   , stc   )
+ call unsinterp%apply(fld_smc   (:,:,1), smc_ob   , smc   )
+ call unsinterp%apply(fld_u_srf (:,:,1), u_srf_ob , u_srf )
+ call unsinterp%apply(fld_v_srf (:,:,1), v_srf_ob , v_srf )
+ call unsinterp%apply(fld_f10m  (:,:,1), f10m_ob  , f10m  )
+ if ( present(fld_sss) ) then
+   call unsinterp%apply(fld_sss   (:,:,1), sss_ob  , sss  )
+ endif 
 
  !Convert some reals to integer
  slmsk = nint(rslmsk)
@@ -280,10 +310,10 @@ allocate(sssp(nobs,nn))
 ! Stage 1, like deter_sfc in GSI
 ! ------------------------------
 
-    w00 = interp_w(n,1)
-    w10 = interp_w(n,2)
-    w01 = interp_w(n,3)
-    w11 = interp_w(n,4)
+    w00 = unsinterp%interp_w(n,1)
+    w10 = unsinterp%interp_w(n,2)
+    w01 = unsinterp%interp_w(n,3)
+    w11 = unsinterp%interp_w(n,4)
 
     istyp00 = slmsk(n,1)
     istyp10 = slmsk(n,2)
@@ -588,216 +618,11 @@ allocate(sssp(nobs,nn))
 
  enddo
 
+ call unsinterp%delete()
  deallocate(map_to_crtm_ir)
  deallocate(map_to_crtm_mwave)
 
 end subroutine crtm_surface
-
-!----------------------------------------------------------------------------
-
-subroutine kdtree_baryweightsindex(comm, geom, nobs, ngrid, lats_ob, lons_ob, nn, interp_w, interp_i)
-
-implicit none
-
-!Arguments
-type(fckit_mpi_comm), intent(in)  :: comm               !Communicator
-type(fv3jedi_geom),   intent(in)  :: geom               !Model geometry
-integer,              intent(in)  :: nobs               !Number of obs on this processor
-integer,              intent(in)  :: ngrid              !Number of grid points on this processor
-real(kind=kind_real), intent(in)  :: lats_ob(nobs)      !Observation locations, lats
-real(kind=kind_real), intent(in)  :: lons_ob(nobs)      !Observation locations, lons
-integer,              intent(in)  :: nn                 !Number of neighbours to get back
-real(kind=kind_real), intent(out) :: interp_w(nobs,nn)  !Interpolation weights
-integer,              intent(out) :: interp_i(nobs,nn)  !Interpolation indices (global unstructured grid)
-
-!Locals
-type(kdtree) :: kd
-integer :: i, j, ob, jj, kk, ngrid_loc, ngrid_all
-integer, allocatable :: displs(:), rcvcnt(:), nn_index(:)
-real(kind=kind_real) :: wprod, dist, bw(nn), bsw
-real(kind=kind_real), allocatable :: lat_loc(:), lon_loc(:), lat_all(:), lon_all(:)
-real(kind=kind_real), allocatable :: nn_dist(:)
-
-
-! Gather the model grid to all processors
-! ---------------------------------------
-
-! Allocate arrays for unstructured lat/lon
-ngrid_loc = ngrid
-ngrid_all = 6 * (geom%npx-1) * (geom%npy-1)
-
-allocate(lat_loc(ngrid_loc))
-allocate(lon_loc(ngrid_loc))
-allocate(lat_all(ngrid_all))
-allocate(lon_all(ngrid_all))
-
-! Fill local unstructured lat/lon
-jj = 0
-do j = geom%jsc,geom%jec
-  do i = geom%isc,geom%iec
-     jj = jj + 1
-     lat_loc(jj) = rad2deg*geom%grid_lat(i,j)
-     lon_loc(jj) = rad2deg*geom%grid_lon(i,j)
-  enddo
-enddo
-
-! Gather receive count from each processor
-allocate(rcvcnt(comm%size()))
-call comm%allgather(jj, rcvcnt)
-
-! Diplacement for each processor
-allocate(displs(comm%size()))
-displs(1) = 0
-do j = 2,comm%size()
-   displs(j) = displs(j-1) + rcvcnt(j-1)
-enddo
-
-! Gather the lat/lons to all
-call comm%allgather(lat_loc,lat_all,jj,rcvcnt,displs)
-call comm%allgather(lon_loc,lon_all,jj,rcvcnt,displs)
-
-! Deallocate
-deallocate(rcvcnt,displs)
-deallocate(lat_loc,lon_loc)
-
-
-! Create a KDTree for finding nearest neighbours
-! ----------------------------------------------
-
-! Create kdtree
-kd = kdtree_create(ngrid_all,lon_all,lat_all)
-
-! Loop over observations calling kdtree to generate barycentric interpolation weights
-! -----------------------------------------------------------------------------------
-
-allocate(nn_index(nn))
-allocate(nn_dist(nn))
-
-do ob = 1,nobs
-
-  nn_index = 0
-  nn_dist = 0.0_kind_real
-
-  call kdtree_k_nearest_neighbors(kd,lons_ob(ob),lats_ob(ob),nn,nn_index)
-  do kk=1,nn
-    nn_dist(kk) = sphere_distance(lons_ob(ob),lats_ob(ob),lon_all(nn_index(kk)),lat_all(nn_index(kk)))
-  enddo
-
-  !if (comm%rank()==0) then
-  !  !Check the kdtree returned close neighbours
-  !  print*, '==========================='
-  !  print*, lats_ob(ob)
-  !  print*, lat_all(nn_index)
-  !  print*, ' '
-  !  print*, lons_ob(ob)
-  !  print*, lon_all(nn_index)
-  !  print*, '==========================='
-  !endif
-
-  !Barycentric weights formula
-  bw(:) = 0.0_kind_real
-  do jj = 1,nn
-    wprod = 1.0_kind_real
-    do kk = 1,nn
-      if (jj.ne.kk) then
-        dist = sphere_distance(lon_all(nn_index(jj)),lat_all(nn_index(jj)),&
-                               lon_all(nn_index(kk)),lat_all(nn_index(kk)))
-        wprod = wprod * dist
-      endif
-    enddo
-    bw(jj) = 1.0_kind_real / wprod
-  enddo
-
-  !Barycentric weights
-  bsw = 0.0_kind_real
-  do jj = 1,nn
-    bsw = bsw + (bw(jj) / nn_dist(jj))
-  enddo
-
-  interp_w(ob,:) = 0.0_kind_real
-  do jj = 1,nn
-    interp_w(ob,jj) = ( bw(jj) / nn_dist(jj) ) / bsw
-    interp_i(ob,jj) = nn_index(jj)
-  enddo
-
-enddo
-
-!Deallocate
-call kdtree_destroy(kd)
-deallocate(nn_index,nn_dist)
-deallocate(lon_all,lat_all)
-
-end subroutine kdtree_baryweightsindex
-
-!----------------------------------------------------------------------------
-
-subroutine kdtree_getneighbours(comm, geom, nobs, ngrid, nn, interp_i, field_in, field_out)
-
-!Arguments
-type(fckit_mpi_comm), intent(in)  :: comm               !Communicator
-type(fv3jedi_geom)  , intent(in)  :: geom               !Model geometry
-integer             , intent(in)  :: nobs               !Number of obs on this processor
-integer             , intent(in)  :: ngrid              !Number of grid points on this processor
-integer             , intent(in)  :: nn                 !Number of neighbours
-integer             , intent(in)  :: interp_i(nobs,nn)  !Interpolation index
-real(kind=kind_real), intent(in)  :: field_in(geom%isc:geom%iec,geom%jsc:geom%jec) !Fields in
-real(kind=kind_real), intent(out) :: field_out(nobs,nn)                            !Field nearest neighbours
-
-!Locals
-integer :: i, j, jj, ob, ngrid_loc, ngrid_all
-integer, allocatable :: displs(:), rcvcnt(:)
-real(kind=kind_real), allocatable :: field_loc(:), field_all(:)
-
-
-! Gather the field to all processors
-! ---------------------------------------
-
-! Allocate arrays for unstructured fields
-ngrid_loc = ngrid
-ngrid_all = 6 * (geom%npx-1) * (geom%npy-1)
-
-allocate(field_loc(ngrid_loc))
-allocate(field_all(ngrid_all))
-
-! Fill local unstructured field
-jj = 0
-do j = geom%jsc,geom%jec
-  do i = geom%isc,geom%iec
-     jj = jj + 1
-     field_loc(jj) = field_in(i,j)
-  enddo
-enddo
-
-! Gather receive count from each processor
-allocate(rcvcnt(comm%size()))
-call comm%allgather(jj, rcvcnt)
-
-! Diplacement for each processor
-allocate(displs(comm%size()))
-displs(1) = 0
-do j = 2,comm%size()
-   displs(j) = displs(j-1) + rcvcnt(j-1)
-enddo
-
-! Gather the lat/lons to all
-call comm%allgather(field_loc,field_all,jj,rcvcnt,displs)
-
-! Deallocate
-deallocate(rcvcnt,displs)
-deallocate(field_loc)
-
-
-! Set Field out using indices from the kdtree
-! -------------------------------------------
-
-do ob = 1,nobs
-   field_out(ob,1) = field_all(interp_i(ob,1))
-   field_out(ob,2) = field_all(interp_i(ob,2))
-   field_out(ob,3) = field_all(interp_i(ob,3))
-   field_out(ob,4) = field_all(interp_i(ob,4))
-enddo
-
-end subroutine kdtree_getneighbours
 
 !----------------------------------------------------------------------------
 
