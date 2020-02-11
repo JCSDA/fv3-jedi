@@ -356,7 +356,7 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-# Check whether the URL exists or not 
+# Check whether the URL exists or not
 ecbuild_check_multiurl(NAMES   ${fv3_ioda_test_data}
                        DIRNAME ${GIT_BRANCH}
                        RESULT  SPECIFIC_TEST_FILES)
@@ -386,6 +386,67 @@ execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
 # Create tests
 # ------------
 
+# Executables
+ecbuild_add_executable( TARGET  test_fv3jedi_errorcovariance.x
+                        SOURCES mains/TestErrorCovariance.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_geometry.x
+                        SOURCES mains/TestGeometry.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_geometryiterator.x
+                        SOURCES mains/TestGeometryIterator.cc
+                        LIBS    fv3jedi
+                      )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_increment.x
+                        SOURCES mains/TestIncrement.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_linearmodel.x
+                        SOURCES mains/TestLinearModel.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_linvarcha.x
+                        SOURCES mains/TestLinVarCha.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_localization.x
+                        SOURCES mains/TestLocalization.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcontrol.x
+                        SOURCES mains/TestModelAuxControl.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcovariance.x
+                        SOURCES mains/TestModelAuxCovariance.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_model.x
+                        SOURCES mains/TestModel.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_state.x
+                        SOURCES mains/TestState.cc
+                        LIBS    fv3jedi
+                       )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_varcha.x
+                        SOURCES mains/TestVarCha.cc
+                        LIBS    fv3jedi
+                       )
+
 #Make some output directories for test data
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx)
@@ -408,32 +469,30 @@ endforeach()
 
 #Tolerances for compare script
 set (ctol 0.0) #Max relative difference
-set (idif 0)      #Max difference
+set (idif 0)   #Max difference
 
 ecbuild_add_resources( TARGET   fv3jedi_test_scripts
                        SOURCES_PACK
                        ${fv3jedi_test_input}
                      )
 
-# Test executables
+# Add tests
+# ---------
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_gfs
-                  SOURCES executables/TestGeometry.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
                   ARGS    testinput/geometry_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
-                  SOURCES executables/TestGeometry.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
                   ARGS    testinput/geometry_geos.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_state_gfs
-                  SOURCES executables/TestState.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_state.x
                   ARGS    testinput/state_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_crtm_surface_for_geos
                   TYPE    EXE
@@ -443,129 +502,110 @@ ecbuild_add_test( TARGET  test_fv3jedi_crtm_surface_for_geos
                   LIBS    fv3jedi )
 
 ecbuild_add_test( TARGET  test_fv3jedi_state_geos
-                  SOURCES executables/TestState.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_state.x
                   ARGS    testinput/state_geos.yaml
                   MPI     6
                   LIBS    fv3jedi
                   TEST_DEPENDS test_fv3jedi_crtm_surface_for_geos )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_gfs-fv3
-                  SOURCES executables/TestModel.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
                   ARGS    testinput/model_gfs-fv3.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_geos-fv3
-                  SOURCES executables/TestModel.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
                   ARGS    testinput/model_geos-fv3.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_geos-pseudo
-                  SOURCES executables/TestModel.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
                   ARGS    testinput/model_geos-pseudo.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_gfs
-                  SOURCES executables/TestLinearModel.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linearmodel.x
                   ARGS    testinput/linearmodel_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_geos
-                  SOURCES executables/TestLinearModel.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linearmodel.x
                   ARGS    testinput/linearmodel_geos.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelaux_gfs-fv3
-                  SOURCES executables/TestModelAuxControl.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_modelauxcontrol.x
                   ARGS    testinput/model_gfs-fv3.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelaux_geos-fv3
-                  SOURCES executables/TestModelAuxControl.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_modelauxcontrol.x
                   ARGS    testinput/model_geos-fv3.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment_gfs
-                  SOURCES executables/TestIncrement.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_increment.x
                   ARGS    testinput/increment_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment_geos
-                  SOURCES executables/TestIncrement.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_increment.x
                   ARGS    testinput/increment_geos.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_gfs
-                  SOURCES executables/TestGeometryIterator.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometryiterator.x
                   ARGS    testinput/geometry_iterator_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_geos
-                  SOURCES executables/TestGeometryIterator.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometryiterator.x
                   ARGS    testinput/geometry_iterator_geos.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs
                   TYPE    EXE
                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
                   ARGS    testinput/convertstate_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_convertstate_geos
                   TYPE    EXE
                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
                   ARGS    testinput/convertstate_geos.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_varcha_gfs
-                  SOURCES      executables/TestVarCha.cc
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_varcha.x
                   ARGS         testinput/varcha_gfs.yaml
                   MPI          6
-                  LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_convertstate_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_varcha_geos
-                  SOURCES      executables/TestVarCha.cc
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_varcha.x
                   ARGS         testinput/varcha_geos.yaml
                   MPI          6
-                  LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_convertstate_geos )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_gfs
-                  SOURCES executables/TestLinVarCha.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linvarcha.x
                   ARGS    testinput/linvarcha_gfs.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_linvarcha_geos
-                  SOURCES executables/TestLinVarCha.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linvarcha.x
                   ARGS    testinput/linvarcha_geos.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_gfs
-                  SOURCES executables/TestModelAuxCovariance.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_modelauxcovariance.x
                   ARGS    testinput/model_gfs-fv3.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6)
 
 ecbuild_add_test( TARGET  test_fv3jedi_modelauxcovariance_geos
-                  SOURCES executables/TestModelAuxCovariance.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_modelauxcovariance.x
                   ARGS    testinput/model_geos-fv3.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 
 # H(x)
@@ -651,18 +691,16 @@ ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_compare
 
 # Error covariance
 ecbuild_add_test( TARGET       test_fv3jedi_errorcovariance
-                  SOURCES      executables/TestErrorCovariance.cc
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_errorcovariance.x
                   ARGS         testinput/errorcov.yaml
                   MPI          6
-                  LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_bumpparameters_cor_gfs )
 
 # Localization
 ecbuild_add_test( TARGET       test_fv3jedi_localization
-                  SOURCES      executables/TestLocalization.cc
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_localization.x
                   ARGS         testinput/localization.yaml
                   MPI          6
-                  LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
 
 # Diracs
@@ -943,10 +981,9 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12_compare
 # Aerosol tests
 
 ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
-                  SOURCES executables/TestState.cc
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_state.x
                   ARGS    testinput/state_geosaero.yaml
-                  MPI     6
-                  LIBS    fv3jedi )
+                  MPI     6 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_aero
                   TYPE         EXE
