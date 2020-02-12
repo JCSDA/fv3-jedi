@@ -81,6 +81,11 @@ real(kind=kind_real), allocatable :: t   (:,:,:) !Temperature
 real(kind=kind_real), allocatable :: qsat(:,:,:) !Saturation specific humidity
 real(kind=kind_real), allocatable :: rh  (:,:,:) !Relative humidity
 
+! Height variables
+logical :: have_heights
+real(kind=kind_real), allocatable :: height (:,:,:) !Height m
+real(kind=kind_real), allocatable :: heighti(:,:,:) !Height m, interfaces
+
 !Local CRTM moisture variables
 real(kind=kind_real), allocatable :: ql_ade(:,:,:) !Cloud liq water kgm^2
 real(kind=kind_real), allocatable :: qi_ade(:,:,:) !Cloud ice water kgm^2
@@ -305,6 +310,25 @@ elseif (have_t .and. have_pressures .and. associated(state%q)) then
 
   deallocate(qsat)
   have_rh = .true.
+endif
+
+! Compute heights
+! ---------------
+have_heights = .false.
+
+if (have_pressures .and. have_t .and. associated(state%q) .and. associated(state%phis)) then
+
+  have_heights = .true.
+
+  allocate(height(isc:iec,jsc:jec,npz))
+  allocate(heighti(isc:iec,jsc:jec,npz+1))
+
+  call geop_height(geom,prs,prsi,t,state%q,&
+                   state%phis(:,:,1),use_compress,height)
+
+  call geop_height_levels(geom,prs,prsi,t,state%q,&
+                          state%phis(:,:,1),use_compress,heighti)
+
 endif
 
 ! Get CRTM surface variables
@@ -578,6 +602,24 @@ do jvar = 1, vars%nvars()
     geovalm = max(rh,0.0_kind_real)
     geoval => geovalm
 
+  case ("surface_pressure")
+
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%variable(jvar)),"ps")
+
+      nvl = 1
+      do_interp = .true.
+
+      if (associated(state%ps)) then
+        geovals(:,:,1) = state%ps(:,:,1)
+      elseif (associated(state%delp)) then
+        geovals(:,:,1) = sum(state%delp,3)
+      else
+        call abor1_ftn(trim(myname)//" no way to get surface pressure ")
+      endif
+
+      geoval => geovals
+
   case ("air_pressure")
 
     if (.not. have_pressures) &
@@ -605,45 +647,31 @@ do jvar = 1, vars%nvars()
 
     nvl = npz
     do_interp = .true.
-    geovale = delp
-    geoval => geovale
+    geovalm = delp
+    geoval => geovalm
 
 
-  case ("geopotential_height")
+  case ("geopotential_height","height")
 
-    if (.not. have_t) &
-      call variable_fail(trim(vars%variable(jvar)),"t")
-    if (.not. have_pressures) &
-      call variable_fail(trim(vars%variable(jvar)),"prs,prsi")
-    if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%q")
-    if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%phis")
+    if (.not. have_heights) &
+      call variable_fail(trim(vars%variable(jvar)),"have_heights")
 
-    call geop_height(geom,prs,prsi,t,state%q,&
-                     state%phis(:,:,1),use_compress,geovalm)
     nvl = npz
     do_interp = .true.
+    geovalm = height
     geoval => geovalm
 
   case ("geopotential_height_levels")
 
-    if (.not. have_t) &
-      call variable_fail(trim(vars%variable(jvar)),"t")
-    if (.not. have_pressures) &
-      call variable_fail(trim(vars%variable(jvar)),"prs,prsi")
-    if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%q")
-    if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%phis")
+    if (.not. have_heights) &
+      call variable_fail(trim(vars%variable(jvar)),"have_heights")
 
-    call geop_height_levels(geom,prs,prsi,t,state%q,&
-                            state%phis(:,:,1),use_compress,geovale)
-    nvl = npz + 1
+    nvl = npz
     do_interp = .true.
+    geovale = heighti
     geoval => geovale
 
-  case ("surface_geopotential_height")
+  case ("surface_geopotential_height","surface_altitude")
 
     if (.not. associated(state%phis)) &
       call variable_fail(trim(vars%variable(jvar)),"state%phis")
@@ -1201,7 +1229,7 @@ real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
 integer :: nvl
-real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
@@ -1241,6 +1269,7 @@ allocate(obs_increment(locs%nlocs,1))
 ! -------------
 allocate(geovale(isc:iec,jsc:jec,npz+1))
 allocate(geovalm(isc:iec,jsc:jec,npz))
+allocate(geovals(isc:iec,jsc:jec,1))
 
 
 ! Wind transforms
@@ -1342,6 +1371,21 @@ do jvar = 1, vars%nvars()
     do_interp = .true.
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm
+
+  case ("surface_pressure")
+
+    nvl = 1
+    do_interp = .true.
+
+    if (associated(inc%ps)) then
+      geovals = inc%ps
+    elseif (associated(inc%delp)) then
+      geovals(:,:,1) = sum(inc%delp,3)
+    else
+      call abor1_ftn(trim(myname)//" no way to get surface pressure ")
+    endif
+
+    geoval => geovals
 
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 
@@ -1574,7 +1618,7 @@ real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
 integer :: nvl, i, j, k
-real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
@@ -1615,9 +1659,11 @@ allocate(obs_increment(locs%nlocs,1))
 ! -------------
 allocate(geovale(isc:iec,jsc:jec,npz+1))
 allocate(geovalm(isc:iec,jsc:jec,npz))
+allocate(geovals(isc:iec,jsc:jec,1))
 
 geovale = 0.0_kind_real
 geovalm = 0.0_kind_real
+geovals = 0.0_kind_real
 
 
 ! Flag on whether wind observations are used
@@ -1659,6 +1705,12 @@ do jvar = 1, vars%nvars()
     nvl = npz
     do_interp = .true.
     geoval => geovalm
+
+  case ("surface_pressure")
+
+   nvl = 1
+   do_interp = .true.
+   geoval => geovals
 
   case ("mole_fraction_of_ozone_in_air")
 
@@ -1885,6 +1937,18 @@ do jvar = 1, vars%nvars()
       call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
+
+  case ("surface_pressure")
+
+    if (associated(inc%ps)) then
+      inc%ps = inc%ps + geovals
+    elseif (associated(inc%delp)) then
+      do k = 1,geom%npz
+        inc%delp(:,:,k) = inc%delp(:,:,k) + geovals(:,:,1)
+      enddo
+    else
+      call abor1_ftn(trim(myname)//" no way to set surface pressure ")
+    endif
 
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 

@@ -188,6 +188,24 @@ cost_function:
         - name: brightness_temperature
           channels: 1-15
         threshold: 3.0
+    - ObsSpace:
+        name: SfcObs
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/sfc_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sfc_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [surface_pressure]
+      ObsOperator:
+        name: SfcPCorrected
+        da_psfc_scheme: UKMO
+      LinearObsOperator:
+        name: Identity
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Background Check
+        threshold: 1000
   cost_type: 3D-Var
   variables: *3dvars
   window_begin: '2018-04-14T21:00:00Z'

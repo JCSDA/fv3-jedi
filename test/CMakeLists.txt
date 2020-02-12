@@ -911,7 +911,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_geos_p12
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_geos_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/bumpparameters_cor_geos_p12.run testoutput/bumpparameters_cor_geos.ref ${ctol} ${idif}
+                  ARGS         testoutput/bumpparameters_cor_geos_p12.run testoutput/bumpparameters_cor_geos.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_bumpparameters_cor_geos_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_geos_p12
@@ -924,7 +924,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_geos_p12
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_geos_compare_p12
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/bumpparameters_loc_geos_p12.run testoutput/bumpparameters_loc_geos.ref ${ctol} ${idif}
+                  ARGS         testoutput/bumpparameters_loc_geos_p12.run testoutput/bumpparameters_loc_geos.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_geos_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12
@@ -949,7 +949,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_gfs_p12
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_gfs_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/bumpparameters_cor_gfs_p12.run testoutput/bumpparameters_cor_gfs.ref ${ctol} ${idif}
+                  ARGS         testoutput/bumpparameters_cor_gfs_p12.run testoutput/bumpparameters_cor_gfs.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_bumpparameters_cor_gfs_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_p12
@@ -962,7 +962,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_p12
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_compare_p12
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/bumpparameters_loc_gfs_p12.run testoutput/bumpparameters_loc_gfs.ref ${ctol} ${idif}
+                  ARGS         testoutput/bumpparameters_loc_gfs_p12.run testoutput/bumpparameters_loc_gfs.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12

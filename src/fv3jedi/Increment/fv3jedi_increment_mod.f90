@@ -630,7 +630,7 @@ enddo
 call self%f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 
 !For debugging print result:
-if (self%f_comm%rank() == 0) print*, "Dot product test result: ", zprod
+!if (self%f_comm%rank() == 0) print*, "Dot product test result: ", zprod
 
 end subroutine dot_prod
 
