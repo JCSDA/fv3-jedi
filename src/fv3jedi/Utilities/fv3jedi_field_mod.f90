@@ -12,7 +12,7 @@ use mpp_domains_mod,   only: east, north, center
 implicit none
 
 private
-public :: fv3jedi_field, get_field, &
+public :: fv3jedi_field, get_field, has_field, &
           fields_rms, fields_gpnorm, fields_print, &
           checksame, flip_array_vertical, get_field_array, &
           copy_subset
@@ -194,11 +194,32 @@ end function get_field_array
 
 ! --------------------------------------------------------------------------------------------------
 
+function has_field(nf,fields,fv3jedi_name) result(hasfield)
+
+integer,                      intent(in)  :: nf
+type(fv3jedi_field), target,  intent(in)  :: fields(nf)
+character(len=*),            intent(in)  :: fv3jedi_name
+logical :: hasfield
+
+integer :: var
+
+hasfield = .false.
+do var = 1,nf
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    hasfield = .true.
+    exit
+  endif
+enddo
+
+end function has_field
+
+! --------------------------------------------------------------------------------------------------
+
 subroutine get_field(nf,fields,fv3jedi_name,field_pointer)
 
 integer,                      intent(in)  :: nf
 type(fv3jedi_field), target,  intent(in)  :: fields(nf)
-character(len=10),            intent(in)  :: fv3jedi_name
+character(len=*),            intent(in)  :: fv3jedi_name
 type(fv3jedi_field), pointer, intent(out) :: field_pointer
 
 integer :: var

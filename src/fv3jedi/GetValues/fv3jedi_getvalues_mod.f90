@@ -5,7 +5,9 @@ use type_bump, only: bump_type
 use ufo_geovals_mod, only: ufo_geovals, ufo_geovals_write_netcdf
 use ufo_locs_mod, only: ufo_locs
 use oops_variables_mod, only: oops_variables
+use unstructured_interpolation_mod, only: unstrc_interp
 
+use fv3jedi_bump_init_mod, only: bump_init
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj
@@ -47,12 +49,17 @@ type(fv3jedi_getvalues_traj), optional, target, intent(inout) :: traj
 character(len=*), parameter :: myname = 'getvalues'
 
 type(fckit_mpi_comm) :: f_comm
+
+! Interpolation
+logical, target  :: interp_alloc = .false.
+logical, pointer :: pinterp_alloc => null()
 type(bump_type), target  :: bump
 type(bump_type), pointer :: pbump => null()
-logical, target  :: bump_alloc = .false.
-logical, pointer :: pbump_alloc => null()
 integer, target, save :: bumpid = 1000
 integer, pointer      :: pbumpid => null()
+type(unstrc_interp), target  :: unsinterp
+type(unstrc_interp), pointer :: punsinterp => null()
+real(kind=kind_real), allocatable :: lats_in(:), lons_in(:)
 
 integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg
 real(kind=kind_real), allocatable :: mod_state(:,:)
@@ -73,6 +80,11 @@ real(kind=kind_real), allocatable :: logp(:,:,:) !Log(pressue), (Pa) midpoint
 real(kind=kind_real), allocatable :: t   (:,:,:) !Temperature
 real(kind=kind_real), allocatable :: qsat(:,:,:) !Saturation specific humidity
 real(kind=kind_real), allocatable :: rh  (:,:,:) !Relative humidity
+
+! Height variables
+logical :: have_heights
+real(kind=kind_real), allocatable :: height (:,:,:) !Height m
+real(kind=kind_real), allocatable :: heighti(:,:,:) !Height m, interfaces
 
 !Local CRTM moisture variables
 real(kind=kind_real), allocatable :: ql_ade(:,:,:) !Cloud liq water kgm^2
@@ -174,9 +186,11 @@ endif
 
 ! Initialize the interpolation trajectory
 ! ---------------------------------------
+
 if (present(traj)) then
 
   pbump => traj%bump
+  punsinterp => traj%unsinterp
 
   if (.not. traj%lalloc) then
 
@@ -197,7 +211,7 @@ if (present(traj)) then
        traj%o3 = state%o3
      endif
 
-     pbump_alloc => traj%lalloc
+     pinterp_alloc => traj%lalloc
      pbumpid => traj%bumpid
 
   endif
@@ -205,16 +219,36 @@ if (present(traj)) then
 else
 
   pbump => bump
-  bump_alloc = .false.
-  pbump_alloc => bump_alloc
   bumpid = bumpid + 1
   pbumpid => bumpid
 
+  punsinterp => unsinterp
+
+  interp_alloc = .false.
+  pinterp_alloc => interp_alloc
+
 endif
 
-if (.not. pbump_alloc) then
-   call initialize_bump(geom, locs, pbump, pbumpid)
-   pbump_alloc = .true.
+if (.not. pinterp_alloc) then
+  if (trim(geom%interp_method) == 'bump') then
+    call bump_init(geom%f_comm, geom%ngrid, rad2deg*geom%lat_us, rad2deg*geom%lon_us, &
+                   locs%nlocs, locs%lat, locs%lon, pbump, pbumpid)
+  elseif (trim(geom%interp_method) == 'barycent') then
+    allocate(lats_in(ngrid))
+    allocate(lons_in(ngrid))
+    jj = 0
+    do j = jsc,jec
+      do i = isc,iec
+         jj = jj + 1
+         lats_in(jj) = rad2deg*geom%grid_lat(i,j)
+         lons_in(jj) = rad2deg*geom%grid_lon(i,j)
+      enddo
+    enddo
+    call punsinterp%create( f_comm, 4, trim(geom%interp_method), &
+                           ngrid, lats_in, lons_in, &
+                           locs%nlocs, locs%lat, locs%lon )
+  endif
+  pinterp_alloc = .true.
 endif
 
 ! Create Buffer for interpolated values
@@ -276,6 +310,25 @@ elseif (have_t .and. have_pressures .and. associated(state%q)) then
 
   deallocate(qsat)
   have_rh = .true.
+endif
+
+! Compute heights
+! ---------------
+have_heights = .false.
+
+if (have_pressures .and. have_t .and. associated(state%q) .and. associated(state%phis)) then
+
+  have_heights = .true.
+
+  allocate(height(isc:iec,jsc:jec,npz))
+  allocate(heighti(isc:iec,jsc:jec,npz+1))
+
+  call geop_height(geom,prs,prsi,t,state%q,&
+                   state%phis(:,:,1),use_compress,height)
+
+  call geop_height_levels(geom,prs,prsi,t,state%q,&
+                          state%phis(:,:,1),use_compress,heighti)
+
 endif
 
 ! Get CRTM surface variables
@@ -384,8 +437,8 @@ if ( associated(state%sheleg) .and. associated(state%tsea  ) .and. &
   vegetation_fraction = 0.0_kind_real
   soil_temperature = 0.0_kind_real
   snow_depth = 0.0_kind_real
- 
-  if ( associated(state%sss)) then 
+
+  if ( associated(state%sss)) then
     allocate(salinity(nlocs))
     salinity = 0.0_kind_real
     call crtm_surface( geom, nlocs, ngrid, locs%lat(:), locs%lon(:), &
@@ -409,7 +462,7 @@ if ( associated(state%sheleg) .and. associated(state%tsea  ) .and. &
                        snow_coverage, lai, water_temperature, land_temperature, ice_temperature, &
                        snow_temperature, soil_moisture_content, vegetation_fraction, soil_temperature, snow_depth, &
                        wind_speed, wind_direction)
-  endif    
+  endif
 
   have_crtm_srf = .true.
 
@@ -549,6 +602,24 @@ do jvar = 1, vars%nvars()
     geovalm = max(rh,0.0_kind_real)
     geoval => geovalm
 
+  case ("surface_pressure")
+
+    if (.not. have_pressures) &
+      call variable_fail(trim(vars%variable(jvar)),"ps")
+
+      nvl = 1
+      do_interp = .true.
+
+      if (associated(state%ps)) then
+        geovals(:,:,1) = state%ps(:,:,1)
+      elseif (associated(state%delp)) then
+        geovals(:,:,1) = sum(state%delp,3)
+      else
+        call abor1_ftn(trim(myname)//" no way to get surface pressure ")
+      endif
+
+      geoval => geovals
+
   case ("air_pressure")
 
     if (.not. have_pressures) &
@@ -576,45 +647,31 @@ do jvar = 1, vars%nvars()
 
     nvl = npz
     do_interp = .true.
-    geovale = delp
-    geoval => geovale
+    geovalm = delp
+    geoval => geovalm
 
 
-  case ("geopotential_height")
+  case ("geopotential_height","height")
 
-    if (.not. have_t) &
-      call variable_fail(trim(vars%variable(jvar)),"t")
-    if (.not. have_pressures) &
-      call variable_fail(trim(vars%variable(jvar)),"prs,prsi")
-    if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%q")
-    if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%phis")
+    if (.not. have_heights) &
+      call variable_fail(trim(vars%variable(jvar)),"have_heights")
 
-    call geop_height(geom,prs,prsi,t,state%q,&
-                     state%phis(:,:,1),use_compress,geovalm)
     nvl = npz
     do_interp = .true.
+    geovalm = height
     geoval => geovalm
 
   case ("geopotential_height_levels")
 
-    if (.not. have_t) &
-      call variable_fail(trim(vars%variable(jvar)),"t")
-    if (.not. have_pressures) &
-      call variable_fail(trim(vars%variable(jvar)),"prs,prsi")
-    if (.not. associated(state%q)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%q")
-    if (.not. associated(state%phis)) &
-      call variable_fail(trim(vars%variable(jvar)),"state%phis")
+    if (.not. have_heights) &
+      call variable_fail(trim(vars%variable(jvar)),"have_heights")
 
-    call geop_height_levels(geom,prs,prsi,t,state%q,&
-                            state%phis(:,:,1),use_compress,geovale)
-    nvl = npz + 1
+    nvl = npz
     do_interp = .true.
+    geovale = heighti
     geoval => geovale
 
-  case ("surface_geopotential_height")
+  case ("surface_geopotential_height","surface_altitude")
 
     if (.not. associated(state%phis)) &
       call variable_fail(trim(vars%variable(jvar)),"state%phis")
@@ -736,12 +793,12 @@ do jvar = 1, vars%nvars()
    do_interp = .true.
    geovals = state%tsea
    geoval => geovals
-   
+
    case ("sea_surface_salinity")
 
    if (.not. associated(state%sss)) &
       call variable_fail(trim(vars%variable(jvar)),"salinity")
-     
+
    nvl = 1
    do_interp = .false.
    obs_state(:,1) = salinity
@@ -1073,7 +1130,11 @@ do jvar = 1, vars%nvars()
           mod_state(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
-      call pbump%apply_obsop(mod_state,obs_state)
+      if (trim(geom%interp_method) == 'bump') then
+        call pbump%apply_obsop(mod_state,obs_state)
+      elseif (trim(geom%interp_method) == 'barycent') then
+        call punsinterp%apply(mod_state,obs_state)
+      endif
       do jloc = 1,locs%nlocs
         gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_state(jloc,1)
       enddo
@@ -1097,12 +1158,17 @@ enddo
 
 
 if (.not. present(traj)) then
-  call pbump%dealloc
+  if (trim(geom%interp_method) == 'bump') then
+    call pbump%dealloc
+  elseif (trim(geom%interp_method) == 'barycent') then
+    call punsinterp%delete
+  endif
 endif
 
 nullify(pbump)
-nullify(pbump_alloc)
+nullify(pinterp_alloc)
 nullify(pbumpid)
+nullify(punsinterp)
 
 ! Deallocate local memory
 ! -----------------------
@@ -1163,7 +1229,7 @@ real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
 integer :: nvl
-real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
@@ -1203,6 +1269,7 @@ allocate(obs_increment(locs%nlocs,1))
 ! -------------
 allocate(geovale(isc:iec,jsc:jec,npz+1))
 allocate(geovalm(isc:iec,jsc:jec,npz))
+allocate(geovals(isc:iec,jsc:jec,1))
 
 
 ! Wind transforms
@@ -1304,6 +1371,21 @@ do jvar = 1, vars%nvars()
     do_interp = .true.
     call crtm_mixratio_tl(geom, traj%q, inc%q, geovalm)
     geoval => geovalm
+
+  case ("surface_pressure")
+
+    nvl = 1
+    do_interp = .true.
+
+    if (associated(inc%ps)) then
+      geovals = inc%ps
+    elseif (associated(inc%delp)) then
+      geovals(:,:,1) = sum(inc%delp,3)
+    else
+      call abor1_ftn(trim(myname)//" no way to get surface pressure ")
+    endif
+
+    geoval => geovals
 
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 
@@ -1491,7 +1573,11 @@ do jvar = 1, vars%nvars()
           mod_increment(ii, 1) = geoval(ji, jj, jlev)
         enddo
       enddo
-      call traj%bump%apply_obsop(mod_increment,obs_increment)
+      if (trim(geom%interp_method) == 'bump') then
+        call traj%bump%apply_obsop(mod_increment,obs_increment)
+      elseif (trim(geom%interp_method) == 'barycent') then
+        call traj%unsinterp%apply(mod_increment,obs_increment)
+      endif
       do jloc = 1,locs%nlocs
         gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_increment(jloc,1)
       enddo
@@ -1532,7 +1618,7 @@ real(kind=kind_real), allocatable :: mod_increment(:,:)
 real(kind=kind_real), allocatable :: obs_increment(:,:)
 
 integer :: nvl, i, j, k
-real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:)
+real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
@@ -1573,9 +1659,11 @@ allocate(obs_increment(locs%nlocs,1))
 ! -------------
 allocate(geovale(isc:iec,jsc:jec,npz+1))
 allocate(geovalm(isc:iec,jsc:jec,npz))
+allocate(geovals(isc:iec,jsc:jec,1))
 
 geovale = 0.0_kind_real
 geovalm = 0.0_kind_real
+geovals = 0.0_kind_real
 
 
 ! Flag on whether wind observations are used
@@ -1617,6 +1705,12 @@ do jvar = 1, vars%nvars()
     nvl = npz
     do_interp = .true.
     geoval => geovalm
+
+  case ("surface_pressure")
+
+   nvl = 1
+   do_interp = .true.
+   geoval => geovals
 
   case ("mole_fraction_of_ozone_in_air")
 
@@ -1768,7 +1862,11 @@ do jvar = 1, vars%nvars()
       do jloc = 1,locs%nlocs
         obs_increment(jloc,1) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
       enddo
-      call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
+      if (trim(geom%interp_method) == 'bump') then
+        call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
+      elseif (trim(geom%interp_method) == 'barycent') then
+        call traj%unsinterp%apply_ad(mod_increment,obs_increment)
+      endif
       ii = 0
       do jj = jsc, jec
         do ji = isc, iec
@@ -1839,6 +1937,18 @@ do jvar = 1, vars%nvars()
       call variable_fail(trim(vars%variable(jvar)),"traj%q")
 
     call crtm_mixratio_ad(geom, traj%q, inc%q, geovalm)
+
+  case ("surface_pressure")
+
+    if (associated(inc%ps)) then
+      inc%ps = inc%ps + geovals
+    elseif (associated(inc%delp)) then
+      do k = 1,geom%npz
+        inc%delp(:,:,k) = inc%delp(:,:,k) + geovals(:,:,1)
+      enddo
+    else
+      call abor1_ftn(trim(myname)//" no way to set surface pressure ")
+    endif
 
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
 
@@ -1987,100 +2097,6 @@ if (.not.allocated(gom%geovals(jvar)%vals)) then
 endif
 
 end subroutine allocate_geovals_vals
-
-! ------------------------------------------------------------------------------
-
-subroutine initialize_bump(geom, locs, bump, bumpid)
-
-implicit none
-
-!Arguments
-type(fv3jedi_geom), intent(in)    :: geom
-type(ufo_locs),     intent(in)    :: locs
-type(bump_type),    intent(inout) :: bump
-integer,            intent(in)    :: bumpid
-
-!Locals
-integer :: mod_num
-real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:)
-real(kind=kind_real), allocatable :: area(:),vunit(:,:)
-logical, allocatable :: lmask(:,:)
-
-character(len=5)    :: cbumpcount
-character(len=1024) :: bump_nam_prefix
-
-type(fckit_mpi_comm) :: f_comm
-
-
-! Communicator from geometry
-! --------------------------
-f_comm = geom%f_comm
-
-! Each bump%nam%prefix must be distinct
-! -------------------------------------
-write(cbumpcount,"(I0.5)") bumpid
-bump_nam_prefix = 'fv3jedi_bumpobsop_data_'//cbumpcount
-
-!Get the Solution dimensions
-!---------------------------
-mod_num = (geom%iec - geom%isc + 1) * (geom%jec - geom%jsc + 1)
-
-
-!Calculate interpolation weight using BUMP
-!-----------------------------------------
-allocate(mod_lat(mod_num))
-allocate(mod_lon(mod_num))
-mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
-                                         geom%jsc:geom%jec),     &
-                                        [mod_num] )
-mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
-                                         geom%jsc:geom%jec),     &
-                                        [mod_num] )
-
-
-! Namelist options
-! ----------------
-
-!Important namelist options
-call bump%nam%init
-
-!Less important namelist options (should not be changed)
-bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
-bump%nam%default_seed = .true.
-bump%nam%new_obsop = .true.
-
-bump%nam%write_obsop = .false.
-bump%nam%verbosity = "none"
-
-! Initialize geometry
-! -------------------
-allocate(area(mod_num))
-allocate(vunit(mod_num,1))
-allocate(lmask(mod_num,1))
-area = 1.0           ! Dummy area
-vunit = 1.0          ! Dummy vertical unit
-lmask = .true.       ! Mask
-
-! Initialize BUMP
-! ---------------
-call bump%setup_online( f_comm,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs%nlocs,lonobs=locs%lon(:),latobs=locs%lat(:))
-
-!Run BUMP drivers
-call bump%run_drivers
-
-!Partial deallocate option
-call bump%partial_dealloc
-
-! Release memory
-! --------------
-deallocate(area)
-deallocate(vunit)
-deallocate(lmask)
-deallocate(mod_lat)
-deallocate(mod_lon)
-
-end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 

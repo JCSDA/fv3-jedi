@@ -16,6 +16,10 @@ Geometry/Geometry.h
 Geometry/Geometry.interface.h
 Geometry/fv3jedi_geom_interface_mod.F90
 Geometry/fv3jedi_geom_mod.f90
+Geometry/fv3geom/fv3geom_constants_mod.f90
+Geometry/fv3geom/fv3geom_create_grid.f90
+Geometry/fv3geom/fv3geom_gnomonicgrids_mod.f90
+Geometry/fv3geom/fv3geom_utils_mod.f90
 GeometryIterator/GeometryIterator.cc
 GeometryIterator/GeometryIterator.h
 GeometryIterator/GeometryIterator.interface.h
@@ -71,6 +75,7 @@ Utilities/Traits.h
 Utilities/interface.h
 Utilities/Utilities.cc
 Utilities/Utilities.h
+Utilities/fv3jedi_bump_init_mod.f90
 Utilities/fv3jedi_communication_mod.f90
 Utilities/fv3jedi_constants_mod.f90
 Utilities/fv3jedi_field_mod.f90

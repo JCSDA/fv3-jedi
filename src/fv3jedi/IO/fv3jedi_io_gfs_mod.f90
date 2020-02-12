@@ -119,6 +119,8 @@ else
    self%datapath_sp = "null"
 endif
 
+! Option to retrieve Ps from delp
+! -------------------------------
 self%ps_in_file = .false.
 if (present(psinfile)) then
   if (psinfile == 1) then

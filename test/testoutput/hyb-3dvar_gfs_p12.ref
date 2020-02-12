@@ -1,6 +1,0 @@
-Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aircraft) = 2831.12, nobs = 1472, Jo/n = 1.92331, err = 2.66471
-Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1946.26, nobs = 1125, Jo/n = 1.73001, err = 2.06038
-Test     : CostJo   : Nonlinear Jo(GnssroRef) = 0 --- No Observations
-Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 4425.85, nobs = 1120, Jo/n = 3.95166, err = 1.5986
-Test     : CostFunction: Nonlinear J = 9203.24

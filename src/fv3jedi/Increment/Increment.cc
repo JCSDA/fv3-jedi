@@ -33,37 +33,37 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 /// Constructor, destructor
 // -----------------------------------------------------------------------------
-Increment::Increment(const Geometry & geom,
-                                   const oops::Variables & vars,
-                                   const util::DateTime & time):
+Increment::Increment(const Geometry & geom, const oops::Variables & vars,
+                     const util::DateTime & time):
   geom_(new Geometry(geom)), vars_(vars), time_(time)
 {
+  oops::Log::trace() << "Increment constructed from var starting." << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_zero_f90(keyInc_);
-  oops::Log::trace() << "Increment constructed." << std::endl;
+  oops::Log::trace() << "Increment constructed from var done." << std::endl;
 }
 // -----------------------------------------------------------------------------
-Increment::Increment(const Geometry & geom,
-                                   const Increment & other)
+Increment::Increment(const Geometry & geom, const Increment & other)
   : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_)
 {
+  oops::Log::trace() << "Increment constructed from other starting." << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_change_resol_f90(keyInc_, geom_->toFortran(), other.keyInc_,
                                      other.geometry()->toFortran());
-  oops::Log::trace() << "Increment constructed from other." << std::endl;
+  oops::Log::trace() << "Increment constructed from other done." << std::endl;
 }
 // -----------------------------------------------------------------------------
-Increment::Increment(const Increment & other,
-                                   const bool copy)
+Increment::Increment(const Increment & other, const bool copy)
   : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
+  oops::Log::trace() << "Increment copy-create starting." << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   if (copy) {
     fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
   } else {
     fv3jedi_increment_zero_f90(keyInc_);
   }
-  oops::Log::trace() << "Increment copy-created." << std::endl;
+  oops::Log::trace() << "Increment copy-create done." << std::endl;
 }
 // -----------------------------------------------------------------------------
 Increment::Increment(const Increment & other)
