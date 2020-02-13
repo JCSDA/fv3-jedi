@@ -84,7 +84,7 @@ Observations:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
       Clouds: [Water, Ice]
-      n_Aerosols: 0
+      Cloud_Fraction: 1.0
       ObsOptions:
         Sensor_ID: amsua_n19
         EndianType: little_endian
@@ -101,7 +101,6 @@ Observations:
     ObsOperator:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
-      n_Aerosols: 0
       ObsOptions:
         Sensor_ID: airs_aqua
         EndianType: little_endian
@@ -129,7 +128,6 @@ Observations:
     ObsOperator:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
-      n_Aerosols: 0
       ObsOptions:
         Sensor_ID: hirs4_metop-a
         EndianType: little_endian
@@ -152,7 +150,6 @@ Observations:
     ObsOperator:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
-      n_Aerosols: 0
       ObsOptions:
         Sensor_ID: cris-fsr_npp
         EndianType: little_endian
@@ -179,7 +176,6 @@ Observations:
     ObsOperator:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
-      n_Aerosols: 0
       ObsOptions:
         Sensor_ID: mhs_n19
         EndianType: little_endian
@@ -196,7 +192,6 @@ Observations:
     ObsOperator:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
-      n_Aerosols: 0
       ObsOptions:
         Sensor_ID: iasi_metop-a
         EndianType: little_endian
@@ -213,7 +208,6 @@ Observations:
     ObsOperator:
      name: CRTM
      Absorbers: [H2O,O3,CO2]
-     n_Aerosols: 0
      ObsOptions:
        Sensor_ID: mhs_n19
        EndianType: little_endian
@@ -230,7 +224,6 @@ Observations:
     ObsOperator:
      name: CRTM
      Absorbers: [H2O,O3,CO2]
-     n_Aerosols: 0
      ObsOptions:
        Sensor_ID: seviri_m08
        EndianType: little_endian
@@ -248,7 +241,7 @@ Observations:
       name: CRTM
       Absorbers: [H2O,O3,CO2]
       Clouds: [Water, Ice]
-      n_Aerosols: 0
+      Cloud_Fraction: 1.0
       ObsOptions:
         Salinity : on
         Sensor_ID: radiometer_smap
