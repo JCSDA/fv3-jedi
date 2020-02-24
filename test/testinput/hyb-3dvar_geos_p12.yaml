@@ -242,6 +242,7 @@ resolution:
   nml_file: Data/fv3files/input_geos_c12_p12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+  interp_method: bump
 variational:
   iteration:
   - ninner: '10'
@@ -251,6 +252,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c12_p12.nml
       trc_file: Data/fv3files/field_table
       pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+      interp_method: bump
     diagnostics:
       departures: ombg
     linearmodel:
@@ -266,6 +268,7 @@ variational:
       nml_file: Data/fv3files/input_geos_c12_p12.nml
       trc_file: Data/fv3files/field_table
       pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+      interp_method: bump
     diagnostics:
       departures: ombg
     linearmodel:
