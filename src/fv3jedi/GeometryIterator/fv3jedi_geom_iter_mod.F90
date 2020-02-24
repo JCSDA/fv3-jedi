@@ -9,6 +9,7 @@ module fv3jedi_geom_iter_mod
   use iso_c_binding
   use kinds
   use fv3jedi_geom_mod, only: fv3jedi_geom
+  use fv3jedi_constants_mod, only: rad2deg
 
   implicit none
 
@@ -116,6 +117,10 @@ contains
       lat = self%geom%grid_lat(self%iind,self%jind)
       lon = self%geom%grid_lon(self%iind,self%jind)
     endif
+
+    !convert to degrees from radians
+    lat = rad2deg*lat
+    lon = rad2deg*lon
 
   end subroutine fv3jedi_geom_iter_current
 
