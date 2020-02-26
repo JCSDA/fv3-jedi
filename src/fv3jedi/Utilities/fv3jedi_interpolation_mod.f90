@@ -7,7 +7,8 @@ module fv3jedi_interpolation_mod
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 
-use fv3jedi_bump_init_mod, only: bump_init
+use atlas_module
+use fv3jedi_bump_mod,      only: bump_init, bump_apply
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_field_mod,     only: fv3jedi_field, get_field, has_field
 use fv3jedi_geom_mod,      only: fv3jedi_geom
@@ -52,6 +53,7 @@ type(fv3jedi_geom),        intent(in)    :: geom_in        !Geometry of input gr
 type(fv3jedi_geom),        intent(in)    :: geom_ou        !Geometry of output grid
 
 ! Locals
+integer :: ngrid_ou
 character(len=32) :: us_interp_type
 
 self%need_bump = .false.
@@ -76,14 +78,9 @@ endif
 
 ! Initialize bump object
 ! ----------------------
-if (self%need_bump) then
-  call bump_init(geom_in%f_comm, &
-                 geom_in%ngrid, rad2deg*geom_in%lat_us, rad2deg*geom_in%lon_us, &
-                 geom_ou%ngrid, rad2deg*geom_ou%lat_us, rad2deg*geom_ou%lon_us, &
-                 self%bump, 99999)
-endif
+if (self%need_bump) call bump_init(geom_in, geom_ou%ngrid, rad2deg*geom_ou%lat_us, rad2deg*geom_ou%lon_us, self%bump)
 
-! Initialize unstructured interpoaltion object
+! Initialize unstructured interpolation object
 ! --------------------------------------------
 self%nnearest = 4
 if (self%need_bary) then
@@ -118,7 +115,7 @@ type(fv3jedi_field),       intent(inout) :: fields_ou(nf)  !Output fields
 
 !Locals
 integer :: var, i, j, k, n
-real(kind=kind_real), allocatable :: field_in(:,:), field_ou(:,:)
+real(kind=kind_real), allocatable :: field_in(:), field_ou(:), field_ou_2d(:,:)
 
 logical :: do_d2a
 real(kind=kind_real), allocatable :: ua_in(:,:,:)
@@ -129,13 +126,6 @@ type(fv3jedi_field), pointer :: ud_in
 type(fv3jedi_field), pointer :: vd_in
 type(fv3jedi_field), pointer :: ua_ou
 type(fv3jedi_field), pointer :: va_ou
-
-
-! Allocate unstructured fields
-! ----------------------------
-allocate(field_in(geom_in%ngrid,1))
-allocate(field_ou(geom_ou%ngrid,1))
-
 
 ! Special case of D-grid winds
 ! ----------------------------
@@ -165,42 +155,70 @@ endif
 ! ---------------------
 do var = 1,nf
 
-  do k = 1, fields_ou(var)%npz
+  if (.not. fields_in(var)%integerfield .and. trim(self%interp_type) == 'bump') then
 
-    ! To unstructured
-    n = 0
-    do j = geom_in%jsc,geom_in%jec
-      do i = geom_in%isc,geom_in%iec
-          n = n + 1
-          field_in(n,1) = fields_in(var)%array(i,j,k)
-      enddo
-    enddo
+    ! Allocation
+    allocate(field_ou_2d(geom_ou%ngrid,1:fields_ou(var)%npz))
 
     ! Interpolate
-    if (.not. fields_in(var)%integerfield .and. trim(self%interp_type) == 'bump') then
-
-      call self%bump%apply_obsop(field_in,field_ou)
-
-    elseif (.not. fields_in(var)%integerfield .and. trim(self%interp_type) == 'barycent') then
-
-      call self%unsinterp%apply(field_in(:,1), field_ou(:,1))
-
-    elseif (fields_in(var)%integerfield) then
-
-      call iinterp_apply(self, geom_in%f_comm, geom_in%ngrid, field_in(:,1), geom_ou%ngrid, field_ou(:,1))
-
-    endif
+    call bump_apply(fields_ou(var)%npz, geom_in, fields_in(var)%array, geom_ou%ngrid, field_ou_2d, self%bump)
 
     ! Back to structured
     n = 0
     do j = geom_ou%jsc,geom_ou%jec
       do i = geom_ou%isc,geom_ou%iec
           n = n + 1
-          fields_ou(var)%array(i,j,k) = field_ou(n,1)
+          fields_ou(var)%array(i,j,1:fields_ou(var)%npz) = field_ou_2d(n,1:fields_ou(var)%npz)
       enddo
     enddo
 
-  enddo
+    ! Release memory
+    deallocate(field_ou_2d)
+
+  else
+
+    ! Allocation
+    allocate(field_in(geom_in%ngrid))
+    allocate(field_ou(geom_ou%ngrid))
+
+    do k = 1, fields_ou(var)%npz
+
+      ! To unstructured
+      n = 0
+      do j = geom_in%jsc,geom_in%jec
+        do i = geom_in%isc,geom_in%iec
+            n = n + 1
+            field_in(n) = fields_in(var)%array(i,j,k)
+        enddo
+      enddo
+
+      ! Interpolate
+      if (.not. fields_in(var)%integerfield .and. trim(self%interp_type) == 'barycent') then
+
+        call self%unsinterp%apply(field_in, field_ou)
+
+      elseif (fields_in(var)%integerfield) then
+
+        call iinterp_apply(self, geom_in%f_comm, geom_in%ngrid, field_in, geom_ou%ngrid, field_ou)
+
+      endif
+
+      ! Back to structured
+      n = 0
+      do j = geom_ou%jsc,geom_ou%jec
+        do i = geom_ou%isc,geom_ou%iec
+            n = n + 1
+            fields_ou(var)%array(i,j,k) = field_ou(n)
+        enddo
+      enddo
+
+    enddo
+
+    ! Release memory
+    deallocate(field_in)
+    deallocate(field_ou)
+
+  endif
 
 enddo
 
@@ -226,9 +244,6 @@ if (do_d2a) then
   deallocate(ud_ou, vd_ou)
 
 endif
-
-deallocate(field_in)
-deallocate(field_ou)
 
 end subroutine apply
 

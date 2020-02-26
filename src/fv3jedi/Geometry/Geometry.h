@@ -8,8 +8,12 @@
 #ifndef FV3JEDI_GEOMETRY_GEOMETRY_H_
 #define FV3JEDI_GEOMETRY_GEOMETRY_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
+
+#include "atlas/field.h"
+#include "atlas/functionspace.h"
 
 #include "eckit/mpi/Comm.h"
 
@@ -32,7 +36,7 @@ namespace fv3jedi {
 /// Geometry handles geometry for FV3JEDI model.
 
 class Geometry : public util::Printable,
-                      private util::ObjectCounter<Geometry> {
+                 private util::ObjectCounter<Geometry> {
  public:
   static const std::string classname() {return "fv3jedi::Geometry";}
 
@@ -46,12 +50,16 @@ class Geometry : public util::Printable,
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
   const eckit::mpi::Comm & getComm() const {return comm_;}
+  atlas::FunctionSpace * atlasFunctionSpace() const {return atlasFunctionSpace_.get();}
+  atlas::FieldSet * atlasFieldSet() const {return atlasFieldSet_.get();}
 
  private:
   Geometry & operator=(const Geometry &);
   void print(std::ostream &) const;
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
+  std::unique_ptr<atlas::functionspace::NodeColumns> atlasFunctionSpace_;
+  std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
 };
 // -----------------------------------------------------------------------------
 

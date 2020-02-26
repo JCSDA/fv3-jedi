@@ -1,5 +1,6 @@
 module fv3jedi_getvalues_mod
 
+use atlas_module
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_sum
 use type_bump, only: bump_type
 use ufo_geovals_mod, only: ufo_geovals, ufo_geovals_write_netcdf
@@ -7,11 +8,11 @@ use ufo_locs_mod, only: ufo_locs
 use oops_variables_mod, only: oops_variables
 use unstructured_interpolation_mod, only: unstrc_interp
 
-use fv3jedi_bump_init_mod, only: bump_init
+use fv3jedi_bump_mod,      only: bump_init, bump_apply, bump_apply_ad
 use fv3jedi_constants_mod, only: rad2deg, constoz, grav
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj
-use fv3jedi_kinds_mod, only: kind_real
+use fv3jedi_kinds_mod, only: kind_int, kind_real
 use fv3jedi_state_utils_mod, only: fv3jedi_state
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_field_mod, only: get_field_array
@@ -62,8 +63,7 @@ type(unstrc_interp), pointer :: punsinterp => null()
 real(kind=kind_real), allocatable :: lats_in(:), lons_in(:)
 
 integer :: ii, jj, ji, jvar, jlev, jloc, ngrid, nlocs, nlocsg
-real(kind=kind_real), allocatable :: mod_state(:,:)
-real(kind=kind_real), allocatable :: obs_state(:,:)
+real(kind=kind_real), allocatable :: mod_state(:), obs_state(:,:)
 real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 integer :: nvl
@@ -231,8 +231,7 @@ endif
 
 if (.not. pinterp_alloc) then
   if (trim(geom%interp_method) == 'bump') then
-    call bump_init(geom%f_comm, geom%ngrid, rad2deg*geom%lat_us, rad2deg*geom%lon_us, &
-                   locs%nlocs, locs%lat, locs%lon, pbump, pbumpid)
+    call bump_init(geom, locs%nlocs, locs%lat, locs%lon, pbump, pbumpid)
   elseif (trim(geom%interp_method) == 'barycent') then
     allocate(lats_in(ngrid))
     allocate(lons_in(ngrid))
@@ -253,8 +252,8 @@ endif
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
-allocate(mod_state(ngrid,1))
-allocate(obs_state(nlocs,1))
+if (trim(geom%interp_method) == 'barycent') allocate(mod_state(ngrid))
+allocate(obs_state(nlocs,npz+1))
 
 
 ! Local GeoVals
@@ -1121,24 +1120,28 @@ do jvar = 1, vars%nvars()
   ! Find observation location equivlent
   ! -----------------------------------
   if (do_interp) then
-    !Perform level-by-level interpolation using BUMP
-    do jlev = 1, nvl
-      ii = 0
-      do jj = jsc, jec
-        do ji = isc, iec
-          ii = ii + 1
-          mod_state(ii, 1) = geoval(ji, jj, jlev)
+    if (trim(geom%interp_method) == 'bump') then
+      call bump_apply(nvl, geom, geoval(:,:,1:nvl), locs%nlocs, obs_state(:,1:nvl), pbump)
+      do jlev = 1, nvl
+        do jloc = 1,locs%nlocs
+          gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_state(jloc,jlev)
         enddo
       enddo
-      if (trim(geom%interp_method) == 'bump') then
-        call pbump%apply_obsop(mod_state,obs_state)
-      elseif (trim(geom%interp_method) == 'barycent') then
-        call punsinterp%apply(mod_state,obs_state)
-      endif
-      do jloc = 1,locs%nlocs
-        gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_state(jloc,1)
+    elseif (trim(geom%interp_method) == 'barycent') then
+      do jlev = 1, nvl
+        ii = 0
+        do jj = jsc, jec
+          do ji = isc, iec
+            ii = ii + 1
+            mod_state(ii) = geoval(ji, jj, jlev)
+          enddo
+        enddo
+        call punsinterp%apply(mod_state,obs_state(:,1))
+        do jloc = 1,locs%nlocs
+          gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_state(jloc,1)
+        enddo
       enddo
-    enddo
+    endif
   else
     do jloc = 1,locs%nlocs
       gom%geovals(jvar)%vals(nvl,locs%indx(jloc)) = obs_state(jloc,1)
@@ -1225,15 +1228,14 @@ type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 character(len=*), parameter :: myname = 'getvalues_tl'
 
 integer :: ii, jj, ji, jvar, jlev, jloc, i, j, k
-real(kind=kind_real), allocatable :: mod_increment(:,:)
-real(kind=kind_real), allocatable :: obs_increment(:,:)
+real(kind=kind_real), allocatable :: mod_increment(:), obs_increment(:,:)
 
 integer :: nvl
 real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
-integer :: isc, iec, jsc, jec, npz
+integer :: isc, iec, jsc, jec, npz, ngrid
 
 logical :: have_winds
 real(kind=kind_real), pointer :: u(:,:,:), v(:,:,:)
@@ -1261,8 +1263,11 @@ npz = inc%npz
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
-allocate(mod_increment(traj%ngrid,1))
-allocate(obs_increment(locs%nlocs,1))
+if (trim(geom%interp_method) == 'barycent') then
+  ngrid = (iec-isc+1)*(jec-jsc+1)
+  allocate(mod_increment(ngrid))
+endif
+allocate(obs_increment(locs%nlocs,npz+1))
 
 
 ! Local GeoVals
@@ -1564,24 +1569,28 @@ do jvar = 1, vars%nvars()
   ! Find observation location equivlent
   ! -----------------------------------
   if (do_interp) then
-    !Perform level-by-level interpolation using BUMP
-    do jlev = 1, nvl
-      ii = 0
-      do jj = jsc, jec
-        do ji = isc, iec
-          ii = ii + 1
-          mod_increment(ii, 1) = geoval(ji, jj, jlev)
+    if (trim(geom%interp_method) == 'bump') then
+      call bump_apply(nvl, geom, geoval(:,:,1:nvl), locs%nlocs, obs_increment(:,1:nvl), traj%bump)
+      do jlev = 1, nvl
+        do jloc = 1,locs%nlocs
+          gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_increment(jloc,jlev)
         enddo
       enddo
-      if (trim(geom%interp_method) == 'bump') then
-        call traj%bump%apply_obsop(mod_increment,obs_increment)
-      elseif (trim(geom%interp_method) == 'barycent') then
-        call traj%unsinterp%apply(mod_increment,obs_increment)
-      endif
-      do jloc = 1,locs%nlocs
-        gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_increment(jloc,1)
+    elseif (trim(geom%interp_method) == 'barycent') then
+      do jlev = 1, nvl
+        ii = 0
+        do jj = jsc, jec
+          do ji = isc, iec
+            ii = ii + 1
+            mod_increment(ii) = geoval(ji, jj, jlev)
+          enddo
+        enddo
+        call traj%unsinterp%apply(mod_increment,obs_increment(:,1))
+        do jloc = 1,locs%nlocs
+          gom%geovals(jvar)%vals(jlev,locs%indx(jloc)) = obs_increment(jloc,1)
+        enddo
       enddo
-    enddo
+    endif
   else
     do jloc = 1,locs%nlocs
       gom%geovals(jvar)%vals(nvl,locs%indx(jloc)) = obs_increment(jloc,1)
@@ -1592,10 +1601,10 @@ do jvar = 1, vars%nvars()
 
 enddo
 
-deallocate(geovalm,geovale)
-
-deallocate(mod_increment)
+if (trim(geom%interp_method) == 'barycent') deallocate(mod_increment)
 deallocate(obs_increment)
+deallocate(geovalm,geovale,geovals)
+if (allocated(inc_ua) .and. allocated(inc_va)) deallocate(inc_ua,inc_va)
 
 end subroutine getvalues_tl
 
@@ -1614,15 +1623,14 @@ type(fv3jedi_getvalues_traj), intent(inout)    :: traj
 character(len=*), parameter :: myname = 'getvalues_ad'
 
 integer :: ii, jj, ji, jvar, jlev, jloc
-real(kind=kind_real), allocatable :: mod_increment(:,:)
-real(kind=kind_real), allocatable :: obs_increment(:,:)
+real(kind=kind_real), allocatable :: mod_increment(:), obs_increment(:,:)
 
 integer :: nvl, i, j, k
 real(kind=kind_real), target, allocatable :: geovale(:,:,:), geovalm(:,:,:), geovals(:,:,:)
 real(kind=kind_real), pointer :: geoval(:,:,:)
 logical :: do_interp
 
-integer :: isc, iec, jsc, jec, npz
+integer :: isc, iec, jsc, jec, npz, ngrid
 
 logical :: have_winds
 real(kind=kind_real), pointer :: u(:,:,:), v(:,:,:)
@@ -1651,9 +1659,11 @@ npz = inc%npz
 
 ! Create Buffer for interpolated values
 ! --------------------------------------
-allocate(mod_increment(traj%ngrid,1))
-allocate(obs_increment(locs%nlocs,1))
-
+if (trim(geom%interp_method) == 'barycent') then
+  ngrid = (iec-isc+1)*(jec-jsc+1)
+  allocate(mod_increment(ngrid))
+endif
+allocate(obs_increment(locs%nlocs,npz+1))
 
 ! Local GeoVals
 ! -------------
@@ -1664,7 +1674,6 @@ allocate(geovals(isc:iec,jsc:jec,1))
 geovale = 0.0_kind_real
 geovalm = 0.0_kind_real
 geovals = 0.0_kind_real
-
 
 ! Flag on whether wind observations are used
 ! ------------------------------------------
@@ -1857,24 +1866,28 @@ do jvar = 1, vars%nvars()
   !Part 2, apply adjoint of interp
   !-------------------------------
   if (do_interp) then
-    !Perform level-by-level interpolation using BUMP
-    do jlev = nvl, 1, -1
-      do jloc = 1,locs%nlocs
-        obs_increment(jloc,1) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
-      enddo
-      if (trim(geom%interp_method) == 'bump') then
-        call traj%bump%apply_obsop_ad(obs_increment,mod_increment)
-      elseif (trim(geom%interp_method) == 'barycent') then
-        call traj%unsinterp%apply_ad(mod_increment,obs_increment)
-      endif
-      ii = 0
-      do jj = jsc, jec
-        do ji = isc, iec
-          ii = ii + 1
-          geoval(ji, jj, jlev) = mod_increment(ii, 1)
+    if (trim(geom%interp_method) == 'bump') then
+      do jlev = 1, nvl
+        do jloc = 1,locs%nlocs
+          obs_increment(jloc,jlev) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
         enddo
       enddo
-    enddo
+      call bump_apply_ad(nvl, geom, geoval(:,:,1:nvl), locs%nlocs, obs_increment(:,1:nvl), traj%bump)
+    elseif (trim(geom%interp_method) == 'barycent') then
+      do jlev = nvl, 1, -1
+        do jloc = 1,locs%nlocs
+          obs_increment(jloc,1) = gom%geovals(jvar)%vals(jlev,locs%indx(jloc))
+        enddo
+        call traj%unsinterp%apply_ad(mod_increment,obs_increment(:,1))
+        ii = 0
+        do jj = jsc, jec
+          do ji = isc, iec
+            ii = ii + 1
+            geoval(ji, jj, jlev) = mod_increment(ii)
+          enddo
+        enddo
+      enddo
+    endif
   else
     do jloc = 1,locs%nlocs
       obs_increment(jloc,1) = gom%geovals(jvar)%vals(nvl,locs%indx(jloc))
@@ -2041,7 +2054,6 @@ do jvar = 1, vars%nvars()
 
 enddo
 
-
 ! Conversion of wind fields
 ! -------------------------
 if (have_winds) then
@@ -2067,8 +2079,11 @@ if (have_winds) then
 
 endif
 
-deallocate(mod_increment)
+if (trim(geom%interp_method) == 'barycent') deallocate(mod_increment)
 deallocate(obs_increment)
+deallocate(geovalm,geovale,geovals)
+if (allocated(inc_ua) .and. allocated(inc_va)) deallocate(inc_ua,inc_va)
+if (allocated(inc_u) .and. allocated(inc_v)) deallocate(inc_u,inc_v)
 
 end subroutine getvalues_ad
 

@@ -10,11 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "atlas/functionspace.h"
+
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
-#include "oops/generic/UnstructuredGrid.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
@@ -207,18 +208,24 @@ void Increment::getValuesAD(const ufo::Locations & locs,
                                      traj.toFortran());
 }
 // -----------------------------------------------------------------------------
-void Increment::ug_coord(oops::UnstructuredGrid & ug) const {
-  fv3jedi_increment_ug_coord_f90(keyInc_, ug.toFortran(), geom_->toFortran());
+/// ATLAS
+// -----------------------------------------------------------------------------
+void Increment::setAtlas(atlas::FieldSet * afieldset) const {
+  const util::DateTime * dtp = &time_;
+  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars_, &dtp,
+                                  afieldset->get());
 }
 // -----------------------------------------------------------------------------
-void Increment::field_to_ug(oops::UnstructuredGrid & ug,
-                                   const int & its) const {
-  fv3jedi_increment_increment_to_ug_f90(keyInc_, ug.toFortran(), its);
+void Increment::toAtlas(atlas::FieldSet * afieldset) const {
+  const util::DateTime * dtp = &time_;
+  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars_, &dtp,
+                                 afieldset->get());
 }
 // -----------------------------------------------------------------------------
-void Increment::field_from_ug(const oops::UnstructuredGrid & ug,
-                                     const int & its) {
-  fv3jedi_increment_increment_from_ug_f90(keyInc_, ug.toFortran(), its);
+void Increment::fromAtlas(atlas::FieldSet * afieldset) {
+  const util::DateTime * dtp = &time_;
+  fv3jedi_increment_from_atlas_f90(keyInc_, geom_->toFortran(), vars_, &dtp,
+                                   afieldset->get());
 }
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics

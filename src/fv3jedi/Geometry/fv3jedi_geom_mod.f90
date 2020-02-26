@@ -8,6 +8,7 @@
 module fv3jedi_geom_mod
 
 !General JEDI uses
+use atlas_module
 use fv3jedi_kinds_mod
 use iso_c_binding
 use fckit_mpi_module, only: fckit_mpi_comm
@@ -18,12 +19,12 @@ use string_f_c_mod
 use fckit_configuration_module, only: fckit_configuration
 
 !FMS/MPP uses
-use fckit_mpi_module,   only: fckit_mpi_comm
 use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
 use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
 use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 
 use fv3jedi_netcdf_utils_mod, only: nccheck
+use fv3jedi_constants_mod,    only: ps, rad2deg
 
 !Uses for generating geometry using FV3 routines
 use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
@@ -35,7 +36,7 @@ implicit none
 private
 
 public :: fv3jedi_geom
-public :: create, clone, delete, info
+public :: create, create_atlas_grid_conf, fill_atlas_fieldset, clone, delete, info
 
 ! ------------------------------------------------------------------------------
 
@@ -77,7 +78,7 @@ type :: fv3jedi_geom
   logical :: nested = .false.
   integer :: grid_type = 0
   logical :: dord4 = .true.
-
+  type(atlas_functionspace) :: afunctionspace
 end type fv3jedi_geom
 
 ! ------------------------------------------------------------------------------
@@ -349,6 +350,82 @@ end subroutine create
 
 ! ------------------------------------------------------------------------------
 
+subroutine create_atlas_grid_conf(self,c_conf)
+
+implicit none
+
+!Arguments
+type(fv3jedi_geom), intent(inout) :: self
+type(c_ptr),        intent(in)    :: c_conf
+
+!Locals
+integer :: i,j,node
+real(kind=kind_real) :: x((self%iec-self%isc+1)*(self%jec-self%jsc+1)),y((self%iec-self%isc+1)*(self%jec-self%jsc+1))
+type(fckit_configuration) :: f_conf
+
+! Fortran configuration
+! ---------------------
+f_conf = fckit_configuration(c_conf)
+
+! Create unstructured grid configuration
+node = 0
+do j=self%jsc,self%jec
+  do i=self%isc,self%iec
+    node = node+1
+    x(node) = rad2deg*self%grid_lon(i,j)
+    y(node) = rad2deg*self%grid_lat(i,j)
+  enddo
+enddo
+
+! Create ATLAS grid configuration
+call f_conf%set("type","unstructured")
+call f_conf%set("x",x)
+call f_conf%set("y",y)
+
+end subroutine create_atlas_grid_conf
+
+! ------------------------------------------------------------------------------
+
+subroutine fill_atlas_fieldset(self,afieldset)
+
+!Arguments
+type(fv3jedi_geom),   intent(inout) :: self
+type(atlas_fieldset), intent(inout) :: afieldset
+
+!Locals
+integer :: i, j, jl, node
+real(kind=kind_real) :: sigmaup, sigmadn
+real(kind=kind_real),pointer :: real_ptr_1(:), real_ptr_2(:,:)
+type(atlas_field) :: afield
+
+! Add area
+afield = self%afunctionspace%create_field(name='area',kind=atlas_real(kind_real),levels=0)
+call afield%data(real_ptr_1)
+node = 0
+do j=self%jsc,self%jec
+  do i=self%isc,self%iec
+    node = node+1
+    real_ptr_1(node) = self%area(i,j)
+  enddo
+enddo
+call afieldset%add(afield)
+call afield%final()
+
+! Add vertical unit
+afield = self%afunctionspace%create_field(name='vunit',kind=atlas_real(kind_real),levels=self%npz)
+call afield%data(real_ptr_2)
+do jl=1,self%npz
+  sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
+  sigmadn = self%ak(jl  )/ps+self%bk(jl  )
+  real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+enddo
+call afieldset%add(afield)
+call afield%final()
+
+end subroutine fill_atlas_fieldset
+
+! ------------------------------------------------------------------------------
+
 subroutine clone(self, other)
 
 implicit none
@@ -461,6 +538,8 @@ other%nw_corner = self%nw_corner
 
 other%domain => self%domain
 
+other%afunctionspace = atlas_functionspace_nodecolumns(self%afunctionspace%c_ptr())
+
 other%lat_us = self%lat_us
 other%lon_us = self%lon_us
 
@@ -516,6 +595,8 @@ deallocate(self%lon_us)
 
 ! Required memory leak, since copying this causes problems
 !call mpp_deallocate_domain(self%domain_fix)
+
+call self%afunctionspace%final()
 
 end subroutine delete
 

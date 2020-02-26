@@ -7,7 +7,15 @@
 
 #include <mpi.h>
 
+#include "atlas/field.h"
+#include "atlas/functionspace.h"
+#include "atlas/grid.h"
+#include "atlas/mesh.h"
+#include "atlas/meshgenerator.h"
+#include "atlas/util/Config.h"
+
 #include "eckit/config/Configuration.h"
+
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
@@ -34,11 +42,41 @@ Geometry::Geometry(const eckit::Configuration & conf,
   stageFv3Files(conf);
   fv3jedi_geo_setup_f90(keyGeom_, &configc, &comm_);
   removeFv3Files();
+
+  // Create ATLAS grid configuration
+  const atlas::util::Config atlasConfig;
+  const eckit::Configuration * fconf = &atlasConfig;
+  fv3jedi_geo_create_atlas_grid_conf_f90(keyGeom_, &fconf);
+
+  // Create ATLAS grid
+  atlas::UnstructuredGrid atlasUnstructuredGrid(atlasConfig);
+
+  // Create mesh
+  atlas::MeshGenerator atlasMeshGenerator("no_connectivity");
+  atlas::Mesh atlasMesh = atlasMeshGenerator.generate(atlasUnstructuredGrid);
+
+  // Create ATLAS function space
+  atlasFunctionSpace_.reset(new atlas::functionspace::NodeColumns(atlasMesh,
+                            atlas::option::halo(0)));
+
+  // Set ATLAS function space pointer in Fortran
+  fv3jedi_geo_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
+
+  // Fill ATLAS fieldset
+  atlasFieldSet_.reset(new atlas::FieldSet());
+  fv3jedi_geo_fill_atlas_fieldset_f90(keyGeom_, atlasFieldSet_->get());
 }
 // -----------------------------------------------------------------------------
 Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
   const int key_geo = other.keyGeom_;
   fv3jedi_geo_clone_f90(key_geo, keyGeom_);
+  atlasFunctionSpace_.reset(new atlas::functionspace::NodeColumns(
+                            other.atlasFunctionSpace_->mesh(), atlas::option::halo(0)));
+  atlasFieldSet_.reset(new atlas::FieldSet());
+  for (int jfield = 0; jfield < other.atlasFieldSet_->size(); ++jfield) {
+    atlas::Field atlasField = other.atlasFieldSet_->field(jfield);
+    atlasFieldSet_->add(atlasField);
+  }
 }
 // -----------------------------------------------------------------------------
 Geometry::~Geometry() {

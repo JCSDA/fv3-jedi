@@ -12,7 +12,7 @@ private
 
 real(kind=kind_real), parameter, public :: rad2deg = 57.2957779186820_kind_real
 real(kind=kind_real), parameter, public :: deg2rad = 0.01745329300562541_kind_real
-  real(kind=8)        , parameter, public :: pi_r8   = 3.14159265358979323846
+real(kind=8)        , parameter, public :: pi_r8   = 3.14159265358979323846
 real(kind=kind_real), parameter, public :: pi      = real(pi_r8,kind_real)
 real(kind=kind_real), parameter, public :: grav    = 9.80665_kind_real
 real(kind=kind_real), parameter, public :: radius  = 6371.0e3_kind_real
@@ -41,6 +41,7 @@ real(kind=kind_real), parameter, public :: cp      = rgas/kappa
 real(kind=kind_real), parameter, public :: zvir    = rvap/rgas - 1._kind_real
 real(kind=kind_real), parameter, public :: vireps  = 1.0_kind_real/epsilon-1.0_kind_real
 real(kind=kind_real), parameter, public :: p00     = 100000.0_kind_real
+real(kind=kind_real), parameter, public :: ps      = 101300.0_kind_real
 real(kind=kind_real), parameter, public :: capice  = 2000._kind_real
 real(kind=kind_real), parameter, public :: capwtr  = 4218._kind_real
 real(kind=kind_real), parameter, public :: rhowtr  = 1000._kind_real

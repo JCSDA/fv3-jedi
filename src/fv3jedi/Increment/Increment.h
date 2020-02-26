@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "atlas/field.h"
+
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -38,7 +40,6 @@ namespace ufo {
 
 namespace oops {
   class Variables;
-  class UnstructuredGrid;
 }
 
 namespace fv3jedi {
@@ -90,10 +91,10 @@ class Increment : public oops::GeneralizedDepartures,
   void getValuesAD(const ufo::Locations &, const oops::Variables &,
                    const ufo::GeoVaLs &, const GetValuesTrajMatrix &);
 
-/// Unstructured grid
-  void ug_coord(oops::UnstructuredGrid &) const;
-  void field_to_ug(oops::UnstructuredGrid &, const int &) const;
-  void field_from_ug(const oops::UnstructuredGrid &, const int &);
+/// ATLAS
+  void setAtlas(atlas::FieldSet *) const;
+  void toAtlas(atlas::FieldSet *) const;
+  void fromAtlas(atlas::FieldSet *);
 
 /// I/O and diagnostics
   void read(const eckit::Configuration &);

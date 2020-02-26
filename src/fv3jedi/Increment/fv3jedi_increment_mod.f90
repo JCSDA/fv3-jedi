@@ -5,6 +5,7 @@
 
 module fv3jedi_increment_mod
 
+use atlas_module
 use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
@@ -12,10 +13,9 @@ use oops_variables_mod, only: oops_variables
 
 use random_mod
 use fckit_mpi_module
-use unstructured_grid_mod
 
 use fv3jedi_field_mod
-use fv3jedi_constants_mod,       only: rad2deg, constoz, cp, alhl, rgas
+use fv3jedi_constants_mod,       only: constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_geom_iter_mod,       only: fv3jedi_geom_iter
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
@@ -32,12 +32,12 @@ use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north,
 
 implicit none
 private
-public :: fv3jedi_increment, create, delete, zeros, random, copy, &
+public :: fv3jedi_increment, create, delete, zeros, random, set_atlas, to_atlas, from_atlas, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
           dot_prod, diff_incr, &
           read_file, write_file, gpnorm, rms, &
           change_resol, getvalues_tl, getvalues_ad, &
-          ug_coord, increment_to_ug, increment_from_ug, dirac, jnormgrad, &
+          dirac, jnormgrad, &
           fv3jedi_increment_serialize, fv3jedi_increment_deserialize, &
           fv3jedi_getpoint, fv3jedi_setpoint, &
           increment_print
@@ -472,6 +472,165 @@ do var = 1,self%nf
 enddo
 
 end subroutine random
+
+! ------------------------------------------------------------------------------
+
+subroutine set_atlas(self, geom, vars, vdate, afieldset)
+
+implicit none
+type(fv3jedi_increment), intent(in)    :: self
+type(fv3jedi_geom),      intent(in)    :: geom
+type(oops_variables),    intent(in)    :: vars
+type(datetime),          intent(in)    :: vdate
+type(atlas_fieldset),    intent(inout) :: afieldset
+
+integer :: jvar, jf, jl
+logical :: var_found
+character(len=20) :: sdate
+character(len=1024) :: fieldname
+type(atlas_field) :: afield
+
+! Set date
+call datetime_to_string(vdate,sdate)
+
+do jvar = 1,vars%nvars()
+  var_found = .false.
+  do jf = 1,self%nf
+    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
+      ! Get or create field
+      fieldname = trim(vars%variable(jvar))//'_'//sdate
+      if (afieldset%has_field(trim(fieldname))) then
+        ! Get field
+        afield = afieldset%field(trim(fieldname))
+      else
+        ! Create field
+        afield = geom%afunctionspace%create_field(name=trim(fieldname),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
+
+        ! Add field
+        call afieldset%add(afield)
+      endif
+
+      ! Release pointer
+      call afield%final()
+
+      ! Set flag
+      var_found = .true.
+      exit
+    end if
+  end do
+  if (.not.var_found) call abor1_ftn('variable '//trim(vars%variable(jvar))//' not found in increment')
+end do
+
+end subroutine set_atlas
+
+! ------------------------------------------------------------------------------
+
+subroutine to_atlas(self, geom, vars, vdate, afieldset)
+
+implicit none
+type(fv3jedi_increment), intent(in)    :: self
+type(fv3jedi_geom),      intent(in)    :: geom
+type(oops_variables),    intent(in)    :: vars
+type(datetime),          intent(in)    :: vdate
+type(atlas_fieldset),    intent(inout) :: afieldset
+
+integer :: jvar, jf, jl
+real(kind=kind_real), pointer :: real_ptr_2(:,:)
+logical :: var_found
+character(len=20) :: sdate
+character(len=1024) :: fieldname
+type(atlas_field) :: afield
+
+! Set date
+call datetime_to_string(vdate,sdate)
+
+do jvar = 1,vars%nvars()
+  var_found = .false.
+  do jf = 1,self%nf
+    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
+      ! Get or create field
+      fieldname = trim(vars%variable(jvar))//'_'//sdate
+      if (afieldset%has_field(trim(fieldname))) then
+        ! Get field
+        afield = afieldset%field(trim(fieldname))
+      else
+        ! Create field
+        afield = geom%afunctionspace%create_field(name=trim(fieldname),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
+
+        ! Add field
+        call afieldset%add(afield)
+      endif
+
+      ! Copy data
+      call afield%data(real_ptr_2)
+      do jl=1,self%fields(jf)%npz
+        real_ptr_2(jl,:) = pack(self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),.true.)
+      enddo
+
+      ! Release pointer
+      call afield%final()
+
+      ! Set flag
+      var_found = .true.
+      exit
+    end if
+  end do
+  if (.not.var_found) call abor1_ftn('variable '//trim(vars%variable(jvar))//' not found in increment')
+end do
+
+end subroutine to_atlas
+
+! ------------------------------------------------------------------------------
+
+subroutine from_atlas(self, geom, vars, vdate, afieldset)
+
+implicit none
+type(fv3jedi_increment), intent(inout) :: self
+type(fv3jedi_geom),      intent(in)    :: geom
+type(oops_variables),    intent(in)    :: vars
+type(datetime),          intent(in)    :: vdate
+type(atlas_fieldset),    intent(in)    :: afieldset
+
+integer :: jvar, jf, jl
+real(kind=kind_real), pointer :: real_ptr_2(:,:)
+logical :: umask(geom%isc:geom%iec,geom%jsc:geom%jec),var_found
+character(len=20) :: sdate
+character(len=1024) :: fieldname
+type(atlas_field) :: afield
+
+! Set date
+call datetime_to_string(vdate,sdate)
+
+! Initialization
+umask = .true.
+
+do jvar = 1,vars%nvars()
+  var_found = .false.
+  do jf = 1,self%nf
+    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
+      ! Get field
+      fieldname = trim(vars%variable(jvar))//'_'//sdate
+      afield = afieldset%field(trim(fieldname))
+
+      ! Copy data
+      call afield%data(real_ptr_2)
+      do jl=1,self%fields(jf)%npz
+        self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl) = unpack(real_ptr_2(jl,:), &
+      & umask,self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl))
+      enddo
+
+      ! Release pointer
+      call afield%final()
+
+      ! Set flag
+      var_found = .true.
+      exit
+    end if
+  end do
+  if (.not.var_found) call abor1_ftn('variable '//trim(vars%variable(jvar))//' not found in increment')
+end do
+
+end subroutine from_atlas
 
 ! ------------------------------------------------------------------------------
 
@@ -983,145 +1142,6 @@ do idir=1,ndir
 enddo
 
 end subroutine dirac
-
-! ------------------------------------------------------------------------------
-
-subroutine ug_size(self, ug)
-
-implicit none
-type(fv3jedi_increment), intent(in)    :: self
-type(unstructured_grid), intent(inout) :: ug
-
-! Set number of grids
-if (ug%colocated==1) then
-   ! Colocatd
-   ug%ngrid = 1
-else
-   ! Not colocated
-   ug%ngrid = 1
-   call abor1_ftn("fv3jedi_increment_mod.ug_size: Uncolocated grids not coded yet")
-end if
-
-! Allocate grid instances
-if (.not.allocated(ug%grid)) allocate(ug%grid(ug%ngrid))
-
-! Set local number of points
-ug%grid(1)%nmga = (self%iec - self%isc + 1) * (self%jec - self%jsc + 1)
-
-! Set number of levels
-ug%grid(1)%nl0 = self%npz
-
-! Set number of variables
-ug%grid(1)%nv = self%nf
-
-! Set number of timeslots
-ug%grid(1)%nts = ug%nts
-
-end subroutine ug_size
-
-! ------------------------------------------------------------------------------
-
-subroutine ug_coord(self, ug, geom)
-
-implicit none
-type(fv3jedi_increment), intent(in)    :: self
-type(unstructured_grid), intent(inout) :: ug
-type(fv3jedi_geom),      intent(in)    :: geom
-
-integer :: imga,jx,jy,jl
-real(kind=kind_real) :: sigmaup,sigmadn
-
-! Define size
-call ug_size(self, ug)
-
-! Allocate unstructured grid coordinates
-call allocate_unstructured_grid_coord(ug)
-
-if (ug%colocated==1) then
-  imga = 0
-  do jy=self%jsc,self%jec
-    do jx=self%isc,self%iec
-      imga = imga+1
-      ug%grid(1)%lon(imga) = rad2deg*geom%grid_lon(jx,jy)
-      ug%grid(1)%lat(imga) = rad2deg*geom%grid_lat(jx,jy)
-      ug%grid(1)%area(imga) = geom%area(jx,jy)
-      do jl=1,self%npz
-        sigmaup = geom%ak(jl+1)/101300.0+geom%bk(jl+1) ! si are now sigmas
-        sigmadn = geom%ak(jl  )/101300.0+geom%bk(jl  )
-        ug%grid(1)%vunit(imga,jl) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
-        ug%grid(1)%lmask(imga,jl) = .true.
-      enddo
-    enddo
-  enddo
-endif
-
-end subroutine ug_coord
-
-! ------------------------------------------------------------------------------
-
-subroutine increment_to_ug(self, ug, its)
-
-implicit none
-type(fv3jedi_increment), intent(in)    :: self
-type(unstructured_grid), intent(inout) :: ug
-integer,                 intent(in)    :: its
-
-integer :: var,imga,jx,jy,jl
-
-! Define size
-call ug_size(self, ug)
-
-! Allocate unstructured grid increment
-call allocate_unstructured_grid_field(ug)
-
-! Copy increment
-
-ug%grid(1)%fld(:,:,:,its) = 0.0_kind_real
-
-if (ug%colocated==1) then
-  do var = 1,self%nf
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%fields(var)%npz
-          ug%grid(1)%fld(imga,jl,var,its) = self%fields(var)%array(jx,jy,jl)
-        enddo
-      enddo
-    enddo
-  enddo
-endif
-
-end subroutine increment_to_ug
-
-! -----------------------------------------------------------------------------
-
-subroutine increment_from_ug(self, ug, its)
-
-implicit none
-type(fv3jedi_increment), intent(inout) :: self
-type(unstructured_grid), intent(in)    :: ug
-integer,                 intent(in)    :: its
-
-integer :: imga,jx,jy,jl,var
-
-! Copy increment
-
-if (ug%colocated==1) then
-  do var = 1,self%nf
-    imga = 0
-    do jy=self%jsc,self%jec
-      do jx=self%isc,self%iec
-        imga = imga+1
-        do jl=1,self%fields(var)%npz
-          self%fields(var)%array(jx,jy,jl) = ug%grid(1)%fld(imga,jl,var,its)
-        enddo
-      enddo
-    enddo
-  enddo
-endif
-
-end subroutine increment_from_ug
 
 ! ------------------------------------------------------------------------------
 

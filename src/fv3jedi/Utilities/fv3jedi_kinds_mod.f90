@@ -8,7 +8,8 @@ module fv3jedi_kinds_mod
   implicit none
 
   private
-  public kind_real
+  public kind_int, kind_real
 
+  integer, parameter :: kind_int=c_int
   integer, parameter :: kind_real=c_double
 end module fv3jedi_kinds_mod

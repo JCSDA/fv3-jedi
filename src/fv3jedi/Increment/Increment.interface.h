@@ -8,6 +8,7 @@
 #ifndef FV3JEDI_INCREMENT_INCREMENT_INTERFACE_H_
 #define FV3JEDI_INCREMENT_INCREMENT_INTERFACE_H_
 
+#include "atlas/field/FieldSet.h"
 #include "fv3jedi/Utilities/interface.h"
 #include "oops/base/Variables.h"
 
@@ -110,17 +111,23 @@ extern "C" {
   void fv3jedi_increment_rms_f90(const F90inc &,
                                  double &);
 
-  void fv3jedi_increment_ug_coord_f90(const F90inc &,
-                                      const int &,
-                                      const F90geom &);
+  void fv3jedi_increment_set_atlas_f90(const F90inc &,
+                                       const F90geom &,
+                                       const oops::Variables &,
+                                       const util::DateTime * const *,
+                                       atlas::field::FieldSetImpl *);
 
-  void fv3jedi_increment_increment_to_ug_f90(const F90inc &,
-                                             const int &,
-                                             const int &);
+  void fv3jedi_increment_to_atlas_f90(const F90inc &,
+                                      const F90geom &,
+                                      const oops::Variables &,
+                                      const util::DateTime * const *,
+                                      atlas::field::FieldSetImpl *);
 
-  void fv3jedi_increment_increment_from_ug_f90(const F90inc &,
-                                               const int &,
-                                               const int &);
+  void fv3jedi_increment_from_atlas_f90(const F90inc &,
+                                        const F90geom &,
+                                        const oops::Variables &,
+                                        const util::DateTime * const *,
+                                        atlas::field::FieldSetImpl *);
 
   void fv3jedi_increment_dirac_f90(const F90inc &,
                                    const eckit::Configuration * const *,

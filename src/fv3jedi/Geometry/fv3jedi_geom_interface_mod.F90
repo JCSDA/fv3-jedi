@@ -7,6 +7,7 @@
 
 module fv3jedi_geom_interface_mod
 
+use atlas_module
 use fv3jedi_kinds_mod
 use iso_c_binding
 use fv3jedi_geom_mod
@@ -59,6 +60,64 @@ f_comm = fckit_mpi_comm(c_comm)
 call create(self,c_conf, f_comm)
 
 end subroutine c_fv3jedi_geo_setup
+
+! ------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geo_create_atlas_grid_conf(c_key_self, c_conf) bind(c,name='fv3jedi_geo_create_atlas_grid_conf_f90')
+
+implicit none
+
+!Arguments
+integer(c_int), intent(in) :: c_key_self
+type(c_ptr), intent(in)    :: c_conf
+
+type(fv3jedi_geom), pointer :: self
+
+! Get key
+call fv3jedi_geom_registry%get(c_key_self,self)
+
+call create_atlas_grid_conf(self,c_conf)
+
+end subroutine c_fv3jedi_geo_create_atlas_grid_conf
+
+! ------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geo_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace) &
+ & bind(c,name='fv3jedi_geo_set_atlas_functionspace_pointer_f90')
+
+!Arguments
+integer(c_int), intent(in)     :: c_key_self
+type(c_ptr), intent(in), value :: c_afunctionspace
+
+type(fv3jedi_geom),pointer :: self
+
+! Get key
+call fv3jedi_geom_registry%get(c_key_self,self)
+self%afunctionspace = atlas_functionspace_nodecolumns(c_afunctionspace)
+
+end subroutine c_fv3jedi_geo_set_atlas_functionspace_pointer
+
+! ------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geo_fill_atlas_fieldset(c_key_self, c_afieldset) &
+ & bind(c,name='fv3jedi_geo_fill_atlas_fieldset_f90')
+
+implicit none
+
+!Arguments
+integer(c_int), intent(in)     :: c_key_self
+type(c_ptr), intent(in), value :: c_afieldset
+
+type(fv3jedi_geom), pointer :: self
+type(atlas_fieldset) :: afieldset
+
+! Get key
+call fv3jedi_geom_registry%get(c_key_self,self)
+afieldset = atlas_fieldset(c_afieldset)
+
+call fill_atlas_fieldset(self,afieldset)
+
+end subroutine c_fv3jedi_geo_fill_atlas_fieldset
 
 ! ------------------------------------------------------------------------------
 

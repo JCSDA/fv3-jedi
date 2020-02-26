@@ -6,6 +6,7 @@
 module fv3jedi_field_mod
 
 use fckit_mpi_module
+use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
 use mpp_domains_mod,   only: east, north, center
 

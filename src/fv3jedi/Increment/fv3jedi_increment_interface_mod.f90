@@ -7,6 +7,7 @@
 
 module fv3jedi_increment_interface_mod
 
+use atlas_module
 use fv3jedi_kinds_mod
 use datetime_mod
 use duration_mod
@@ -20,7 +21,6 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
 use fv3jedi_geom_iter_mod, only: fv3jedi_geom_iter, fv3jedi_geom_iter_registry
 use fv3jedi_state_utils_mod, only: fv3jedi_state, fv3jedi_state_registry
-use unstructured_grid_mod, only: unstructured_grid, unstructured_grid_registry
 
 !GetValues
 use ufo_locs_mod
@@ -123,65 +123,87 @@ end subroutine fv3jedi_increment_random_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_ug_coord_c(c_key_inc, c_key_ug, c_key_geom) bind (c,name='fv3jedi_increment_ug_coord_f90')
+subroutine fv3jedi_increment_set_atlas_c(c_key_self, c_key_geom, c_vars, c_dt, c_afieldset) &
+ & bind (c,name='fv3jedi_increment_set_atlas_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_inc
-integer(c_int), intent(in) :: c_key_ug
-integer(c_int), intent(in) :: c_key_geom !< Geometry
-type(fv3jedi_increment), pointer :: inc
-type(unstructured_grid), pointer :: ug
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr),intent(inout) :: c_dt
+type(c_ptr), intent(in), value :: c_afieldset
+
+type(fv3jedi_increment), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(datetime) :: fdate
+type(atlas_fieldset) :: afieldset
 
-call fv3jedi_increment_registry%get(c_key_inc,inc)
-call unstructured_grid_registry%get(c_key_ug,ug)
+call fv3jedi_increment_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+call c_f_datetime(c_dt, fdate)
+afieldset = atlas_fieldset(c_afieldset)
 
-call ug_coord(inc, ug, geom)
+call to_atlas(self, geom, vars, fdate, afieldset)
 
-end subroutine fv3jedi_increment_ug_coord_c
-
-! ------------------------------------------------------------------------------
-
-subroutine fv3jedi_increment_increment_to_ug_c(c_key_inc, c_key_ug, c_its) bind (c,name='fv3jedi_increment_increment_to_ug_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_inc
-integer(c_int), intent(in) :: c_key_ug
-integer(c_int), intent(in) :: c_its
-type(fv3jedi_increment), pointer :: inc
-type(unstructured_grid), pointer :: ug
-integer :: its
-
-its = c_its+1
-
-call fv3jedi_increment_registry%get(c_key_inc,inc)
-call unstructured_grid_registry%get(c_key_ug,ug)
-
-call increment_to_ug(inc, ug, its)
-
-end subroutine fv3jedi_increment_increment_to_ug_c
+end subroutine fv3jedi_increment_set_atlas_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_increment_from_ug_c(c_key_inc, c_key_ug, c_its) bind (c,name='fv3jedi_increment_increment_from_ug_f90')
+subroutine fv3jedi_increment_to_atlas_c(c_key_self, c_key_geom, c_vars, c_dt, c_afieldset) &
+ & bind (c,name='fv3jedi_increment_to_atlas_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_inc
-integer(c_int), intent(in) :: c_key_ug
-integer(c_int), intent(in) :: c_its
-type(fv3jedi_increment), pointer :: inc
-type(unstructured_grid), pointer :: ug
-integer :: its
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr),intent(inout) :: c_dt
+type(c_ptr), intent(in), value :: c_afieldset
 
-its = c_its+1
+type(fv3jedi_increment), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(datetime) :: fdate
+type(atlas_fieldset) :: afieldset
 
-call fv3jedi_increment_registry%get(c_key_inc,inc)
-call unstructured_grid_registry%get(c_key_ug,ug)
+call fv3jedi_increment_registry%get(c_key_self,self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+call c_f_datetime(c_dt, fdate)
+afieldset = atlas_fieldset(c_afieldset)
 
-call increment_from_ug(inc, ug, its)
+call to_atlas(self, geom, vars, fdate, afieldset)
 
-end subroutine fv3jedi_increment_increment_from_ug_c
+end subroutine fv3jedi_increment_to_atlas_c
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_from_atlas_c(c_key_self, c_key_geom, c_vars, c_dt, c_afieldset) &
+ & bind (c,name='fv3jedi_increment_from_atlas_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr),intent(inout) :: c_dt
+type(c_ptr), intent(in), value :: c_afieldset
+
+type(fv3jedi_increment), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(datetime) :: fdate
+type(atlas_fieldset) :: afieldset
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+call c_f_datetime(c_dt, fdate)
+afieldset = atlas_fieldset(c_afieldset)
+
+call from_atlas(self, geom, vars, fdate, afieldset)
+
+end subroutine fv3jedi_increment_from_atlas_c
 
 ! ------------------------------------------------------------------------------
 
@@ -595,7 +617,6 @@ type(fv3jedi_increment),pointer :: self
 call fv3jedi_increment_registry%get(c_key_self,self)
 ! Call Fortran
 call fv3jedi_increment_serialize(self,c_vsize,c_vect_inc)
-
 
 end subroutine fv3jedi_increment_serialize_c
 

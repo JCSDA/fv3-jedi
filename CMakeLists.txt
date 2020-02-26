@@ -53,6 +53,10 @@ include_directories( ${Boost_INCLUDE_DIR} )
 find_package( NetCDF REQUIRED COMPONENTS Fortran )
 include_directories( ${NETCDF_INCLUDE_DIRS} )
 
+# atlas
+ecbuild_use_package( PROJECT atlas VERSION 0.18.1 REQUIRED )
+include_directories( ${ATLAS_INCLUDE_DIRS} )
+
 # fv3-jedi-lm
 ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
 include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
@@ -60,6 +64,7 @@ include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
 # oops
 ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )
 include_directories( ${OOPS_INCLUDE_DIRS} )
+add_definitions(-DATLASIFIED=1)
 
 # ufo
 ecbuild_use_package( PROJECT ufo )
@@ -94,7 +99,7 @@ link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 # Export package info
 ################################################################################
 
-list( APPEND FV3JEDI_TPLS ufo oops )
+list( APPEND FV3JEDI_TPLS atlas atlas_f ufo oops )
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
                           ${CMAKE_CURRENT_BINARY_DIR}/src

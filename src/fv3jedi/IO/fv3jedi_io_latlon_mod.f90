@@ -5,17 +5,19 @@
 
 module fv3jedi_io_latlon_mod
 
+use atlas_module
 use fckit_configuration_module, only: fckit_configuration
 use iso_c_binding
 use datetime_mod
 use fckit_log_module, only : log
 use fckit_mpi_module
 use fv3jedi_constants_mod, only: rad2deg
+use fv3jedi_bump_mod,      only: bump_init, bump_apply
 
 use type_bump, only: bump_type
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_kinds_mod, only: kind_real
+use fv3jedi_kinds_mod, only: kind_int, kind_real
 
 use netcdf
 use mpi
@@ -146,7 +148,7 @@ else
 
 endif
 
-call initialize_bump(geom, locs_nlocs, locs_lat, locs_lon, llgeom%bump)
+call bump_init(geom, locs_nlocs, locs_lat, locs_lon, llgeom%bump)
 
 deallocate(locs_lon)
 deallocate(locs_lat)
@@ -285,11 +287,16 @@ type(c_ptr),          intent(in)    :: c_conf         !< Configuration
 type(datetime),       intent(in)    :: vdate          !< DateTime
 
 integer :: ji, jj, jk, csngrid, llngrid, ii, i, j, k, n
-real(kind=kind_real), allocatable :: csfield_bump(:,:), llfield_bump(:,:)
+real(kind=kind_real), allocatable :: llfield_bump(:,:)
 real(kind=kind_real), allocatable :: llfield(:,:,:)
 
 integer :: ncid, varid
 integer :: x_dimid, y_dimid, z_dimid, t_dimid, dimids(4)
+
+integer :: jl
+real(kind=kind_real), pointer :: real_ptr_2(:,:)
+type(atlas_field) :: afield
+type(atlas_fieldset) :: afieldset
 
 ! Interpolate the field to the lat-lon grid
 ! -----------------------------------------
@@ -305,35 +312,23 @@ csngrid = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
 llngrid = llgeom%nx*llgeom%ny
 
 !Allocate fields with BUMP arrangement
-allocate(csfield_bump(csngrid,1))
-allocate(llfield_bump(llngrid,1))
+allocate(llfield_bump(llngrid,geom%npz))
 
-do jk = 1, geom%npz
+!Bilinear interpolation to latlon grid
+call bump_apply(geom%npz,geom,csfield,llngrid,llfield_bump,llgeom%bump)
 
-  !Pack Cube sphere field as BUMP wants
-  ii = 0
-  do jj = geom%jsc, geom%jec
-    do ji = geom%isc, geom%iec
-      ii = ii + 1
-      csfield_bump(ii, 1) = csfield(ji, jj, jk)
-    enddo
-  enddo
-
-  !Bilinear interpolation to latlon grid
-  call llgeom%bump%apply_obsop(csfield_bump,llfield_bump)
-
-  !Unpack BUMP latlon field
-  if (llgeom%thispe) then
+!Unpack BUMP latlon field
+if (llgeom%thispe) then
+  do jk = 1, geom%npz
     ii = 0
     do jj = 1,llgeom%ny
       do ji = 1,llgeom%nx
         ii = ii + 1
-        llfield(ji,jj,jk) = llfield_bump(ii,1)
+        llfield(ji,jj,jk) = llfield_bump(ii,jk)
       enddo
     enddo
-  endif
-
-enddo
+  enddo
+endif
 
 !Open file
 call nccheck( nf90_open( llgeom%filename, ior(NF90_WRITE, NF90_MPIIO), ncid, &
@@ -361,7 +356,7 @@ call nccheck( nf90_close(ncid), "nf90_close" )
 call llgeom%f_comm%barrier()
 
 deallocate(llfield)
-deallocate(csfield_bump,llfield_bump)
+deallocate(llfield_bump)
 
 end subroutine write_latlon_field_r3
 
@@ -382,101 +377,6 @@ if (llgeom%thispe) then
 endif
 
 end subroutine write_latlon_field_r2
-
-! ------------------------------------------------------------------------------
-
-subroutine initialize_bump(geom, locs_nlocs, locs_lat, locs_lon, bump)
-
-implicit none
-
-!Arguments
-type(fv3jedi_geom),   intent(in)    :: geom
-integer,              intent(in)    :: locs_nlocs
-real(kind=kind_real), intent(in)    :: locs_lat(locs_nlocs)
-real(kind=kind_real), intent(in)    :: locs_lon(locs_nlocs)
-type(bump_type),      intent(inout) :: bump
-
-!Locals
-integer :: mod_num
-real(kind=kind_real), allocatable :: mod_lat(:), mod_lon(:)
-real(kind=kind_real), allocatable :: area(:),vunit(:,:)
-logical, allocatable :: lmask(:,:)
-
-character(len=5)   :: cbumpcount
-character(len=255) :: bump_nam_prefix
-
-type(fckit_mpi_comm) :: f_comm
-
-
-! Communicator from geometry
-! --------------------------
-f_comm = geom%f_comm
-
-! Each bump%nam%prefix must be distinct
-! -------------------------------------
-write(cbumpcount,"(I0.5)") 1
-bump_nam_prefix = 'fv3jedi_bump_c2latllo_'//cbumpcount
-
-!Get the Solution dimensions
-!---------------------------
-mod_num = (geom%iec - geom%isc + 1) * (geom%jec - geom%jsc + 1)
-
-
-!Calculate interpolation weight using BUMP
-!-----------------------------------------
-allocate(mod_lat(mod_num))
-allocate(mod_lon(mod_num))
-mod_lat = reshape( rad2deg*geom%grid_lat(geom%isc:geom%iec,      &
-                                         geom%jsc:geom%jec),     &
-                                        [mod_num] )
-mod_lon = reshape( rad2deg*geom%grid_lon(geom%isc:geom%iec,      &
-                                         geom%jsc:geom%jec),     &
-                                        [mod_num] )
-
-
-! Namelist options
-! ----------------
-
-!Important namelist options
-call bump%nam%init
-
-!Less important namelist options (should not be changed)
-bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
-bump%nam%default_seed = .true.
-bump%nam%new_obsop = .true.
-
-bump%nam%write_obsop = .false.
-bump%nam%verbosity = "none"
-
-! Initialize geometry
-! -------------------
-allocate(area(mod_num))
-allocate(vunit(mod_num,1))
-allocate(lmask(mod_num,1))
-area = 1.0           ! Dummy area
-vunit = 1.0          ! Dummy vertical unit
-lmask = .true.       ! Mask
-
-! Initialize BUMP
-! ---------------
-call bump%setup_online( f_comm,mod_num,1,1,1,mod_lon,mod_lat,area,vunit,lmask, &
-                        nobs=locs_nlocs,lonobs=locs_lon(:),latobs=locs_lat(:) )
-
-!Run BUMP drivers
-call bump%run_drivers
-
-!Partial deallocate option
-call bump%partial_dealloc
-
-! Release memory
-! --------------
-deallocate(area)
-deallocate(vunit)
-deallocate(lmask)
-deallocate(mod_lat)
-deallocate(mod_lon)
-
-end subroutine initialize_bump
 
 ! ------------------------------------------------------------------------------
 
