@@ -18,6 +18,8 @@ use fv3jedi_state_mod,   only: fv3jedi_state
 use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+
 use pressure_vt_mod
 use temperature_vt_mod
 use moisture_vt_mod
@@ -162,25 +164,34 @@ type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_state),      intent(in)    :: xctl
 type(fv3jedi_state),      intent(inout) :: xana
 
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_chi
+
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_vort
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_divg
+
+! Copy fields that are the same in both
+! -------------------------------------
+call copy_subset(xctl%fields,xana%fields)
+
 ! psi and chi to A-grid u and v
 ! -----------------------------
-call psichi_to_udvd(geom,xctl%psi,xctl%chi,xana%ud,xana%vd)
+call pointer_field_array(xctl%fields, 'psi', xctl_psi)
+call pointer_field_array(xctl%fields, 'chi', xctl_chi)
+call pointer_field_array(xana%fields, 'ud' , xana_ud)
+call pointer_field_array(xana%fields, 'vd' , xana_vd)
+call psichi_to_udvd(geom, xctl_psi, xctl_chi, xana_ud, xana_vd)
 
 ! For testing Poisson solver recover vorticity and divergence
 ! -----------------------------------------------------------
-if (associated(xana%vort) .and. associated(xana%divg)) then
-  call psichi_to_vortdivg(geom,self%grid,self%oprs,xctl%psi,xctl%chi,self%lprocs,self%lev_start,&
-                          self%lev_final,xana%vort,xana%divg)
+if (has_field(xana%fields, 'vort') .and. has_field(xana%fields, 'divg')) then
+  call pointer_field_array(xana%fields, 'vort', xana_vort)
+  call pointer_field_array(xana%fields, 'divg', xana_divg)
+  call psichi_to_vortdivg(geom, self%grid, self%oprs, xctl_psi, xctl_chi, self%lprocs, self%lev_start,&
+                          self%lev_final, xana_vort, xana_divg)
 endif
-
-! Copied variables
-! ----------------
-xana%t    = xctl%t
-xana%delp = xctl%delp
-xana%q    = xctl%q
-xana%qi   = xctl%qi
-xana%ql   = xctl%ql
-xana%o3   = xctl%o3
 
 ! Copy calendar infomation
 xana%calendar_type = xctl%calendar_type
@@ -200,38 +211,66 @@ type(fv3jedi_state),      intent(inout) :: xctl
 
 real(kind=kind_real) :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_vort
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_divg
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_rh
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_ps
+
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_t
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_q
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_delp
+
+! Copy fields that are the same in both
+! -------------------------------------
+call copy_subset(xana%fields,xctl%fields)
+
 ! D-grid winds to stream func and velocity potential
 ! --------------------------------------------------
-if (associated(xctl%vort) .and. associated(xctl%divg)) then
-  call udvd_to_psichi(geom,self%grid,self%oprs,xana%ud,xana%vd,xctl%psi,xctl%chi,&
+if (has_field(xctl%fields, 'vort') .and. has_field(xctl%fields, 'divg')) then
+  call pointer_field_array(xana%fields, 'ud' , xana_ud)
+  call pointer_field_array(xana%fields, 'vd' , xana_vd)
+  call pointer_field_array(xctl%fields, 'psi', xctl_psi)
+  call pointer_field_array(xctl%fields, 'chi', xctl_chi)
+  call pointer_field_array(xctl%fields, 'vort', xctl_vort)
+  call pointer_field_array(xctl%fields, 'divg', xctl_divg)
+  call udvd_to_psichi(geom, self%grid, self%oprs, xana_ud, xana_vd, xctl_psi, xctl_chi, &
                       self%lprocs, self%lev_start, self%lev_final, &
-                      xctl%vort,xctl%divg)
+                      xctl_vort, xctl_divg)
 else
-  call udvd_to_psichi(geom,self%grid,self%oprs,xana%ud,xana%vd,xctl%psi,xctl%chi,&
+  call pointer_field_array(xana%fields, 'ud' , xana_ud)
+  call pointer_field_array(xana%fields, 'vd' , xana_vd)
+  call pointer_field_array(xctl%fields, 'psi', xctl_psi)
+  call pointer_field_array(xctl%fields, 'chi', xctl_chi)
+  call udvd_to_psichi(geom, self%grid, self%oprs, xana_ud, xana_vd, xctl_psi, xctl_chi, &
                       self%lprocs, self%lev_start, self%lev_final)
 endif
 
 ! Temperature to virtual temperature
 ! ----------------------------------
-call t_to_tv(geom,xana%t,xana%q,xctl%tv)
+call pointer_field_array(xana%fields, 't' , xana_t)
+call pointer_field_array(xana%fields, 'q' , xana_q)
+call pointer_field_array(xctl%fields, 'tv', xctl_tv)
+call t_to_tv(geom, xana_t, xana_q, xctl_tv)
 
 ! Specific humidity to relative humidity
 ! --------------------------------------
-call get_qsat(geom,xana%delp,xana%t,xana%q,qsat)
-call q_to_rh(geom,qsat,xana%q,xctl%rh)
+call pointer_field_array(xana%fields, 'delp', xana_delp)
+call pointer_field_array(xana%fields, 't'   , xana_t)
+call pointer_field_array(xana%fields, 'q'   , xana_q)
+call pointer_field_array(xctl%fields, 'rh'  , xctl_rh)
+call get_qsat(geom, xana_delp, xana_t, xana_q, qsat)
+call q_to_rh(geom, qsat, xana_q, xctl_rh)
 
 ! Surface pressure
 ! ----------------
-xctl%ps(:,:,1) = sum(xana%delp,3)
-
-! Copied variables
-! ----------------
-xctl%t    = xana%t
-xctl%delp = xana%delp
-xctl%q    = xana%q
-xctl%qi   = xana%qi
-xctl%ql   = xana%ql
-xctl%o3   = xana%o3
+call pointer_field_array(xana%fields, 'delp', xana_delp)
+call pointer_field_array(xctl%fields, 'ps'  , xctl_ps)
+xctl_ps(:,:,1) = sum(xana_delp,3)
 
 ! Copy calendar infomation
 xctl%calendar_type = xana%calendar_type

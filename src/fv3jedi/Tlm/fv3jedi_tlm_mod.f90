@@ -16,6 +16,8 @@ use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment, create_inc=>create
 use fv3jedi_traj_mod, only: fv3jedi_traj
 
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
 
 use fv3jedi_linvarcha_a2m_mod
@@ -232,19 +234,41 @@ implicit none
 type(fv3jedi_increment), intent(in)    :: inc
 type(fv3jedi_lm_type),   intent(inout) :: lm
 
-lm%pert%u    = inc%ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
-lm%pert%v    = inc%vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
+real(kind=kind_real), pointer, dimension(:,:,:) :: ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: delp
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: qi
+real(kind=kind_real), pointer, dimension(:,:,:) :: ql
+real(kind=kind_real), pointer, dimension(:,:,:) :: o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: w
+real(kind=kind_real), pointer, dimension(:,:,:) :: delz
+
+call pointer_field_array(inc%fields, 'ud',   ud  )
+call pointer_field_array(inc%fields, 'vd',   vd  )
+call pointer_field_array(inc%fields, 't',    t   )
+call pointer_field_array(inc%fields, 'delp', delp)
+call pointer_field_array(inc%fields, 'q',    q   )
+call pointer_field_array(inc%fields, 'qi',   qi  )
+call pointer_field_array(inc%fields, 'ql',   ql  )
+call pointer_field_array(inc%fields, 'o3',   o3  )
+
+lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
+lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
 lm%pert%ua   = 0.0_kind_real
 lm%pert%va   = 0.0_kind_real
-lm%pert%t    = inc%t
-lm%pert%delp = inc%delp
-lm%pert%qv   = inc%q
-lm%pert%qi   = inc%qi
-lm%pert%ql   = inc%ql
-lm%pert%o3   = inc%o3
+lm%pert%t    = t
+lm%pert%delp = delp
+lm%pert%qv   = q
+lm%pert%qi   = qi
+lm%pert%ql   = ql
+lm%pert%o3   = o3
 if (.not. inc%hydrostatic) then
-   lm%pert%delz = inc%delz
-   lm%pert%w    = inc%w
+  call pointer_field_array(inc%fields, 'delz', delz)
+  call pointer_field_array(inc%fields, 'delz', w)
+   lm%pert%delz = delz
+   lm%pert%w    = w
 endif
 
 end subroutine inc_to_lm
@@ -257,17 +281,39 @@ implicit none
 type(fv3jedi_lm_type),   intent(in)    :: lm
 type(fv3jedi_increment), intent(inout) :: inc
 
-inc%ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%u
-inc%vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%v
-inc%t    = lm%pert%t
-inc%delp = lm%pert%delp
-inc%q    = lm%pert%qv
-inc%qi   = lm%pert%qi
-inc%ql   = lm%pert%ql
-inc%o3   = lm%pert%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: delp
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: qi
+real(kind=kind_real), pointer, dimension(:,:,:) :: ql
+real(kind=kind_real), pointer, dimension(:,:,:) :: o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: w
+real(kind=kind_real), pointer, dimension(:,:,:) :: delz
+
+call pointer_field_array(inc%fields, 'ud',   ud  )
+call pointer_field_array(inc%fields, 'vd',   vd  )
+call pointer_field_array(inc%fields, 't',    t   )
+call pointer_field_array(inc%fields, 'delp', delp)
+call pointer_field_array(inc%fields, 'q',    q   )
+call pointer_field_array(inc%fields, 'qi',   qi  )
+call pointer_field_array(inc%fields, 'ql',   ql  )
+call pointer_field_array(inc%fields, 'o3',   o3  )
+
+ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%u
+vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%v
+t    = lm%pert%t
+delp = lm%pert%delp
+q    = lm%pert%qv
+qi   = lm%pert%qi
+ql   = lm%pert%ql
+o3   = lm%pert%o3
 if (.not. inc%hydrostatic) then
-  inc%delz = lm%pert%delz
-  inc%w    = lm%pert%w
+  call pointer_field_array(inc%fields, 'delz', delz)
+  call pointer_field_array(inc%fields, 'delz', w)
+  delz = lm%pert%delz
+  w    = lm%pert%w
 endif
 
 end subroutine lm_to_inc

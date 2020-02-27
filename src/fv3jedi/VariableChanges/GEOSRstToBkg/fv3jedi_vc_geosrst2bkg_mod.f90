@@ -17,7 +17,7 @@ use fv3jedi_state_mod,   only: fv3jedi_state
 use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 
-use fv3jedi_field_mod, only: copy_subset, get_field_array
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
 
 use wind_vt_mod, only: a2d, d2a
 use temperature_vt_mod, only: pt_to_t, t_to_pt
@@ -104,7 +104,6 @@ type(fv3jedi_geom),       intent(inout) :: geom
 type(fv3jedi_state),      intent(in)    :: xr
 type(fv3jedi_state),      intent(inout) :: xb
 
-character(len=32) :: field_name
 logical :: have_fractions
 
 ! Poitners to restart state
@@ -129,9 +128,8 @@ real(kind=kind_real), pointer :: ql(:,:,:)
 real(kind=kind_real), pointer :: qilsf(:,:,:)
 real(kind=kind_real), pointer :: qicnf(:,:,:)
 
-logical :: have_pkz
 real(kind=kind_real), allocatable :: pe_tmp(:,:,:)
-real(kind=kind_real), allocatable :: pkz_tmp(:,:,:)
+real(kind=kind_real), target, allocatable :: pkz_tmp(:,:,:)
 
 ! Identity part of the change of variables
 ! ----------------------------------------
@@ -143,19 +141,11 @@ call copy_subset(xr%fields,xb%fields)
 
 if (self%do_wind) then
 
-  field_name = 'ud'
-  if (.not. get_field_array(xr%fields, trim(field_name), ud )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
-  field_name = 'vd'
-  if (.not. get_field_array(xr%fields, trim(field_name), vd )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xr%fields, 'ud', ud)
+  call pointer_field_array(xr%fields, 'vd', vd)
 
-  field_name = 'ua'
-  if (.not. get_field_array(xb%fields, trim(field_name), ua )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in outputs")
-  field_name = 'va'
-  if (.not. get_field_array(xb%fields, trim(field_name), va )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in outputs")
+  call pointer_field_array(xb%fields, 'ua', ua)
+  call pointer_field_array(xb%fields, 'va', va)
 
   call d2a(geom, ud, vd, ua, va)
 
@@ -165,29 +155,25 @@ endif
 ! ------------------------------------
 if (self%do_temp) then
 
-  field_name = 'pt'
-  if (.not. get_field_array(xr%fields, trim(field_name), pt )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xr%fields, 'pt', pt)
+  call pointer_field_array(xb%fields, 't' , t )
 
-  field_name = 't'
-  if (.not. get_field_array(xb%fields, trim(field_name), t )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in outputs")
-
-  have_pkz = get_field_array(xr%fields, 'pkz', pkz )
-
-  if (.not. have_pkz) then
-    if (get_field_array(xr%fields, 'delp', delp )) then
+  if (.not. has_field(xr%fields,'pkz')) then
+    if (has_field(xr%fields, 'delp')) then
+      call pointer_field_array(xr%fields, 'delp' , delp )
       allocate(pe_tmp (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
       allocate(pkz_tmp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
       call delp_to_pe(geom, delp, pe_tmp)
       call pe_to_pk(geom, pe, pkz_tmp)
-      pkz = pkz_tmp
+      pkz => pkz_tmp
     else
       call abor1_ftn("No way of getting pressures needed to convert temperature")
     endif
+  else
+    call pointer_field_array(xr%fields, 'pkz' , pkz )
   endif
 
-  call pt_to_t(geom,pkz,pt,t)
+  call pt_to_t(geom, pkz, pt, t)
 
 endif
 
@@ -195,17 +181,15 @@ endif
 ! ------------------------------
 if (self%do_pres) then
 
-  field_name = 'pe'
-  if (.not. get_field_array(xr%fields, trim(field_name), pe )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xr%fields, 'pe'  , pe)
 
-  field_name = 'delp'
-  if (get_field_array(xb%fields, trim(field_name), delp )) then
+  if (has_field(xb%fields, 'delp')) then
+    call pointer_field_array(xb%fields, 'delp', delp)
     call pe_to_delp(geom,pe,delp)
   endif
 
-  field_name = 'ps'
-  if (get_field_array(xb%fields, trim(field_name), ps )) then
+  if (has_field(xb%fields, 'ps')) then
+    call pointer_field_array(xb%fields, 'ps'  , ps)
     ps(:,:,1) = pe(:,:,geom%npz+1)
   endif
 
@@ -216,31 +200,22 @@ endif
 
 if (self%do_clds) then
 
-  field_name = 'qils'
-  if (.not. get_field_array(xr%fields, trim(field_name), qils )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
-  field_name = 'qicn'
-  if (.not. get_field_array(xr%fields, trim(field_name), qicn )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
-  field_name = 'qlls'
-  if (.not. get_field_array(xr%fields, trim(field_name), qlls )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
-  field_name = 'qlcn'
-  if (.not. get_field_array(xr%fields, trim(field_name), qlcn )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xr%fields, 'qils', qils)
+  call pointer_field_array(xr%fields, 'qicn', qicn)
+  call pointer_field_array(xr%fields, 'qlls', qlls)
+  call pointer_field_array(xr%fields, 'qlcn', qlcn)
 
-  field_name = 'qi'
-  if (.not. get_field_array(xb%fields, trim(field_name), qi )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in outputs")
-  field_name = 'ql'
-  if (.not. get_field_array(xb%fields, trim(field_name), ql )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevar, no "//trim(field_name)//" in outputs")
+  call pointer_field_array(xb%fields, 'qi', qi)
+  call pointer_field_array(xb%fields, 'ql', ql)
 
   have_fractions = .true.
-  field_name = 'qilsf'
-  if (.not. get_field_array(xb%fields, trim(field_name), qilsf )) have_fractions = .false.
-  field_name = 'qicnf'
-  if (.not. get_field_array(xb%fields, trim(field_name), qicnf )) have_fractions = .false.
+  if (.not.has_field(xb%fields, 'qilsf')) have_fractions = .false.
+  if (.not.has_field(xb%fields, 'qicnf')) have_fractions = .false.
+
+  if (have_fractions) then
+    call pointer_field_array(xb%fields, 'qilsf', qilsf)
+    call pointer_field_array(xb%fields, 'qicnf', qicnf)
+  endif
 
   if (have_fractions) then
     call q4_to_q2(geom,qils,qicn,qlls,qlcn,qi,ql,qilsf,qicnf)
@@ -298,26 +273,18 @@ real(kind=kind_real), allocatable :: pkz_tmp(:,:,:)
 
 ! Identity part of the change of variables
 ! ----------------------------------------
-call copy_subset(xb%fields,xr%fields)
+call copy_subset(xb%fields, xr%fields)
 
 ! A-Grid to D-Grid
 ! ----------------
 
 if (self%do_wind) then
 
-  field_name = 'ud'
-  if (.not. get_field_array(xr%fields, trim(field_name), ud )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
-  field_name = 'vd'
-  if (.not. get_field_array(xr%fields, trim(field_name), vd )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
+  call pointer_field_array(xr%fields, 'ud', ud)
+  call pointer_field_array(xr%fields, 'vd', vd)
 
-  field_name = 'ua'
-  if (.not. get_field_array(xb%fields, trim(field_name), ua )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
-  field_name = 'va'
-  if (.not. get_field_array(xb%fields, trim(field_name), va )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xb%fields, 'ua', ua)
+  call pointer_field_array(xb%fields, 'va', va)
 
   call a2d(geom, ua, va, ud, vd)
 
@@ -327,26 +294,17 @@ endif
 ! ------------------------------
 if (self%do_pres) then
 
-  field_name = 'pe'
-  if (.not. get_field_array(xr%fields, trim(field_name), pe )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
-  field_name = 'pkz'
-  if (.not. get_field_array(xr%fields, trim(field_name), pkz )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
+  call pointer_field_array(xr%fields, 'pe'  , pe )
+  call pointer_field_array(xr%fields, 'pkz' , pkz )
 
   if (trim(self%pres_var) == 'delp') then
 
-    field_name = 'delp'
-    if (.not. get_field_array(xb%fields, trim(field_name), delp )) &
-      call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
-
+    call pointer_field_array(xb%fields, 'delp' , delp )
     call delp_to_pe(geom, delp, pe)
 
   elseif (trim(self%pres_var) == 'ps') then
 
-    field_name = 'ps'
-    if (.not. get_field_array(xb%fields, trim(field_name), ps )) &
-      call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
+    call pointer_field_array(xb%fields, 'ps' , ps )
 
     call ps_to_pe(geom, ps, pe)
 
@@ -365,22 +323,15 @@ endif
 ! ------------------------------------
 if (self%do_temp) then
 
-  field_name = 'pt'
-  if (.not. get_field_array(xr%fields, trim(field_name), pt )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
-
-  field_name = 't'
-  if (.not. get_field_array(xb%fields, trim(field_name), t )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xr%fields, 'pt', pt)
+  call pointer_field_array(xb%fields, 't' , t )
 
   if (.not. self%do_pres) then
 
     allocate(pe_tmp (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
     allocate(pkz_tmp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
 
-    field_name = 'delp'
-    if (.not. get_field_array(xb%fields, trim(field_name), delp )) &
-      call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
+    call pointer_field_array(xb%fields, 'delp' , delp )
 
     call delp_to_pe(geom, delp, pe_tmp)
     call pe_to_pk(geom, pe_tmp, pkz_tmp)
@@ -402,36 +353,19 @@ endif
 
 if (self%do_clds) then
 
-  field_name = 'qils'
-  if (.not. get_field_array(xr%fields, trim(field_name), qils )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
-  field_name = 'qicn'
-  if (.not. get_field_array(xr%fields, trim(field_name), qicn )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
-  field_name = 'qlls'
-  if (.not. get_field_array(xr%fields, trim(field_name), qlls )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
-  field_name = 'qlcn'
-  if (.not. get_field_array(xr%fields, trim(field_name), qlcn )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in outputs")
+  call pointer_field_array(xr%fields, 'qils', qils)
+  call pointer_field_array(xr%fields, 'qicn', qicn)
+  call pointer_field_array(xr%fields, 'qlls', qlls)
+  call pointer_field_array(xr%fields, 'qlcn', qlcn)
 
-  field_name = 'qi'
-  if (.not. get_field_array(xb%fields, trim(field_name), qi )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
-  field_name = 'ql'
-  if (.not. get_field_array(xb%fields, trim(field_name), ql )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
-  field_name = 'qilsf'
-  if (.not. get_field_array(xb%fields, trim(field_name), qilsf )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
-  field_name = 'qicnf'
-  if (.not. get_field_array(xb%fields, trim(field_name), qicnf )) &
-    call abor1_ftn("fv3jedi_vc_geosrst2bkg_mod.changevarinverse, no "//trim(field_name)//" in inputs")
+  call pointer_field_array(xb%fields, 'qi', qi)
+  call pointer_field_array(xb%fields, 'ql', ql)
+  call pointer_field_array(xb%fields, 'qilsf', qilsf)
+  call pointer_field_array(xb%fields, 'qicnf', qicnf)
 
-  call q2_to_q4(geom,qi,ql,qilsf,qicnf,qils,qicn,qlls,qlcn)
+  call q2_to_q4(geom, qi, ql, qilsf, qicnf, qils, qicn, qlls, qlcn)
 
 endif
-
 
 ! Copy calendar infomation
 ! ------------------------

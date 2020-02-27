@@ -17,6 +17,8 @@ use fv3jedi_state_mod,   only: fv3jedi_state
 use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+
 use wind_vt_mod, only: a2d, d2a
 
 implicit none
@@ -87,6 +89,14 @@ integer :: index_ana, index_mod, index_ana_found
 integer :: k
 logical :: failed
 
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ps
+
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_delp
+
 type(fv3jedi_io_geos) :: geos
 
 do index_mod = 1, xmod%nf
@@ -114,10 +124,14 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (associated(xana%ua) .and. associated(xana%va)) then
-      call a2d(geom, xana%ua, xana%va, xmod%ud, xmod%vd)
-      xmod%ud(:,geom%jec+1,:) = 0.0_kind_real
-      xmod%vd(geom%iec+1,:,:) = 0.0_kind_real
+    if (xana%have_agrid) then
+      call pointer_field_array(xana%fields, 'ua', xana_ua)
+      call pointer_field_array(xana%fields, 'va', xana_va)
+      call pointer_field_array(xmod%fields, 'ud', xmod_ud)
+      call pointer_field_array(xmod%fields, 'vd', xmod_vd)
+      call a2d(geom, xana_ua, xana_va, xmod_ud, xmod_vd)
+      xmod_ud(:,geom%jec+1,:) = 0.0_kind_real
+      xmod_vd(geom%iec+1,:,:) = 0.0_kind_real
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
           "A2M ChangeVar: analysis state ua         => model state ud"
@@ -126,7 +140,7 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (associated(xana%ua) .and. associated(xana%va)) then
+    if (xana%have_agrid) then
       !Already done above
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
@@ -136,9 +150,11 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
 
     !Special case: ps in analysis, delp in model
-    if (associated(xana%ps)) then
+    if (has_field(xana%fields, 'ps')) then
+      call pointer_field_array(xana%fields, 'ps',   xana_ps)
+      call pointer_field_array(xmod%fields, 'delp', xmod_delp)
       do k = 1,geom%npz
-        xmod%delp(:,:,k) = (geom%ak(k+1)-geom%ak(k)) + (geom%bk(k+1)-geom%bk(k))*xana%ps(:,:,1)
+        xmod_delp(:,:,k) = (geom%ak(k+1)-geom%ak(k)) + (geom%bk(k+1)-geom%bk(k))*xana_ps(:,:,1)
       enddo
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
@@ -185,6 +201,14 @@ type(datetime),           intent(inout) :: vdt
 integer :: index_ana, index_mod, index_mod_found
 logical :: failed
 
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ps
+
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_delp
+
 do index_ana = 1, xana%nf
 
   index_mod_found = -1
@@ -210,10 +234,14 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (associated(xmod%ud) .and. associated(xmod%vd)) then
-      xmod%ud(:,geom%jec+1,:) = 0.0_kind_real
-      xmod%vd(geom%iec+1,:,:) = 0.0_kind_real
-      call d2a(geom, xmod%ud, xmod%vd, xana%ua, xana%va)
+    if (xmod%have_dgrid) then
+      call pointer_field_array(xana%fields, 'ua', xana_ua)
+      call pointer_field_array(xana%fields, 'va', xana_va)
+      call pointer_field_array(xmod%fields, 'ud', xmod_ud)
+      call pointer_field_array(xmod%fields, 'vd', xmod_vd)
+      xmod_ud(:,geom%jec+1,:) = 0.0_kind_real
+      xmod_vd(geom%iec+1,:,:) = 0.0_kind_real
+      call d2a(geom, xmod_ud, xmod_vd, xana_ua, xana_va)
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &
           "A2M ChangeVarInverse: model state ud         => analysis state ua"
@@ -222,7 +250,7 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (associated(xmod%ud) .and. associated(xmod%vd)) then
+    if (xmod%have_dgrid) then
       !Already done above
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &
@@ -232,8 +260,10 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
 
     !Special case: ps in analysis, delp in model
-    if (associated(xmod%delp)) then
-      xana%ps(:,:,1) = sum(xmod%delp,3)
+    if (has_field(xmod%fields, 'delp')) then
+      call pointer_field_array(xana%fields, 'ps',   xana_ps)
+      call pointer_field_array(xmod%fields, 'delp', xmod_delp)
+      xana_ps(:,:,1) = sum(xmod_delp,3)
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &
           "A2M ChangeVarInverse: model state delp       => analysis state ps"

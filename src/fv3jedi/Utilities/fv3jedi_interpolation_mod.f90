@@ -10,7 +10,7 @@ use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 use atlas_module
 use fv3jedi_bump_mod,      only: bump_init, bump_apply
 use fv3jedi_kinds_mod,     only: kind_real
-use fv3jedi_field_mod,     only: fv3jedi_field, get_field, has_field
+use fv3jedi_field_mod,     only: fv3jedi_field, pointer_field, has_field
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_constants_mod, only: rad2deg
 use wind_vt_mod,           only: d2a, a2d
@@ -130,12 +130,12 @@ type(fv3jedi_field), pointer :: va_ou
 ! Special case of D-grid winds
 ! ----------------------------
 do_d2a = .false.
-if (has_field(nf,fields_in,'ud')) then
+if (has_field(fields_in,'ud')) then
 
   do_d2a = .true.
 
-  call get_field(nf,fields_in,'ud',ud_in)
-  call get_field(nf,fields_in,'vd',vd_in)
+  call pointer_field(fields_in,'ud',ud_in)
+  call pointer_field(fields_in,'vd',vd_in)
 
   allocate(ua_in(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
   allocate(va_in(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
@@ -227,8 +227,8 @@ enddo
 ! --------------
 if (do_d2a) then
 
-  call get_field(nf,fields_ou,'ud',ua_ou)
-  call get_field(nf,fields_ou,'vd',va_ou)
+  call pointer_field(fields_ou,'ud',ua_ou)
+  call pointer_field(fields_ou,'vd',va_ou)
 
   allocate(ud_ou(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
   allocate(vd_ou(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))

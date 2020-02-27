@@ -10,6 +10,7 @@ use iso_c_binding
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_lm_utils_mod, only: fv3jedi_traj => fv3jedi_lm_traj, &
                                 allocate_traj, deallocate_traj
+use fv3jedi_field_mod, only: has_field, copy_field_array, pointer_field_array
 
 implicit none
 private
@@ -33,10 +34,29 @@ type(fv3jedi_traj)  :: self
 
 integer :: isc,iec,jsc,jec,npz
 
+! Pointers to rank 2 state
+real(kind=kind_real), allocatable, dimension(:,:,:) :: u_tmp
+real(kind=kind_real), allocatable, dimension(:,:,:) :: v_tmp
+
+real(kind=kind_real), pointer, dimension(:,:,:) :: phis
+real(kind=kind_real), pointer, dimension(:,:,:) :: frocean
+real(kind=kind_real), pointer, dimension(:,:,:) :: frland
+real(kind=kind_real), pointer, dimension(:,:,:) :: varflt
+real(kind=kind_real), pointer, dimension(:,:,:) :: ustar
+real(kind=kind_real), pointer, dimension(:,:,:) :: bstar
+real(kind=kind_real), pointer, dimension(:,:,:) :: zpbl
+real(kind=kind_real), pointer, dimension(:,:,:) :: cm
+real(kind=kind_real), pointer, dimension(:,:,:) :: ct
+real(kind=kind_real), pointer, dimension(:,:,:) :: cq
+real(kind=kind_real), pointer, dimension(:,:,:) :: kcbl
+real(kind=kind_real), pointer, dimension(:,:,:) :: tsm
+real(kind=kind_real), pointer, dimension(:,:,:) :: khl
+real(kind=kind_real), pointer, dimension(:,:,:) :: khu
+
 isc = state%isc
 iec = state%iec
 jsc = state%jsc
-jec = state%jsc
+jec = state%jec
 npz = state%npz
 
 ! Allocate traj
@@ -102,57 +122,89 @@ self%khl     = 0.0_kind_real
 self%khu     = 0.0_kind_real
 
 ! Copy mandatory parts of the trajecotry
-if (associated(state%ud)) then
-  self%u = state%ud
-else
-  call abor1_ftn("fv3jedi_traj_mod.traj_prop: ud not found in state, minimally needed for TL/AD")
-endif
-if (associated(state%vd)) then
-  self%v = state%vd
-else
-  call abor1_ftn("fv3jedi_traj_mod.traj_prop: vd not found in state, minimally needed for TL/AD")
-endif
-if (associated(state%t)) then
-  self%t = state%t
-else
-  call abor1_ftn("fv3jedi_traj_mod.traj_prop: t not found in state, minimally needed for TL/AD")
-endif
-if (associated(state%delp)) then
-  self%delp = state%delp
-else
-  call abor1_ftn("fv3jedi_traj_mod.traj_prop: delp not found in state, minimally needed for TL/AD")
-endif
-if (associated(state%q)) then
-  self%qv = state%q
-else
-  call abor1_ftn("fv3jedi_traj_mod.traj_prop: q not found in state, minimally needed for TL/AD")
-endif
+allocate(u_tmp(isc:iec  , jsc:jec+1, npz))
+allocate(v_tmp(isc:iec+1, jsc:jec  , npz))
 
-! Copy optional parts of the trajecotry
-if (associated(state%ua))      self%ua      = state%ua
-if (associated(state%va))      self%va      = state%va
-if (associated(state%qi))      self%qi      = state%qi
-if (associated(state%ql))      self%ql      = state%ql
-if (associated(state%o3))      self%o3      = state%o3
-if (associated(state%w))       self%w       = state%w
-if (associated(state%delz))    self%delz    = state%delz
-if (associated(state%qls))     self%qls     = state%qls
-if (associated(state%qcn))     self%qcn     = state%qcn
-if (associated(state%cfcn))    self%cfcn    = state%cfcn
-if (associated(state%phis))    self%phis    = state%phis(:,:,1)
-if (associated(state%frocean)) self%frocean = state%frocean(:,:,1)
-if (associated(state%frland))  self%frland  = state%frland(:,:,1)
-if (associated(state%varflt))  self%varflt  = state%varflt(:,:,1)
-if (associated(state%ustar))   self%ustar   = state%ustar(:,:,1)
-if (associated(state%bstar))   self%bstar   = state%bstar(:,:,1)
-if (associated(state%zpbl))    self%zpbl    = state%zpbl(:,:,1)
-if (associated(state%cm))      self%cm      = state%cm(:,:,1)
-if (associated(state%ct))      self%ct      = state%ct(:,:,1)
-if (associated(state%cq))      self%cq      = state%cq(:,:,1)
-if (associated(state%kcbl))    self%kcbl    = state%kcbl(:,:,1)
-if (associated(state%tsm))     self%ts      = state%tsm(:,:,1)
-if (associated(state%khl))     self%khl     = state%khl(:,:,1)
-if (associated(state%khu))     self%khu     = state%khu(:,:,1)
+call copy_field_array(state%fields, 'ud'  , u_tmp     )
+call copy_field_array(state%fields, 'vd'  , v_tmp     )
+call copy_field_array(state%fields, 't'   , self%t    )
+call copy_field_array(state%fields, 'delp', self%delp )
+call copy_field_array(state%fields, 'q'   , self%qv   )
+
+self%u = u_tmp(isc:iec, jsc:jec, :)
+self%v = v_tmp(isc:iec, jsc:jec, :)
+
+deallocate(u_tmp, v_tmp)
+
+! Copy optional parts of the trajecotry (Rank 3)
+if (has_field(state%fields, 'ua'  )) call copy_field_array(state%fields, 'ua'  , self%ua  )
+if (has_field(state%fields, 'va'  )) call copy_field_array(state%fields, 'va'  , self%va  )
+if (has_field(state%fields, 'qi'  )) call copy_field_array(state%fields, 'qi'  , self%qi  )
+if (has_field(state%fields, 'ql'  )) call copy_field_array(state%fields, 'ql'  , self%ql  )
+if (has_field(state%fields, 'o3'  )) call copy_field_array(state%fields, 'o3'  , self%o3  )
+if (has_field(state%fields, 'w'   )) call copy_field_array(state%fields, 'w'   , self%w   )
+if (has_field(state%fields, 'delz')) call copy_field_array(state%fields, 'delz', self%delz)
+if (has_field(state%fields, 'qls' )) call copy_field_array(state%fields, 'qls' , self%qls )
+if (has_field(state%fields, 'qcn' )) call copy_field_array(state%fields, 'qcn' , self%qcn )
+if (has_field(state%fields, 'cfcn')) call copy_field_array(state%fields, 'cfcn', self%cfcn)
+
+! Copy optional parts of the trajecotry (Rank 2)
+if (has_field(state%fields, 'phis')) then
+  call pointer_field_array(state%fields, 'phis', phis)
+  self%phis = phis(:,:,1)
+endif
+if (has_field(state%fields, 'frocean')) then
+  call pointer_field_array(state%fields, 'frocean', frocean)
+  self%frocean = frocean(:,:,1)
+endif
+if (has_field(state%fields, 'frland')) then
+  call pointer_field_array(state%fields, 'frland', frland)
+  self%frland = frland(:,:,1)
+endif
+if (has_field(state%fields, 'varflt')) then
+  call pointer_field_array(state%fields, 'varflt', varflt)
+  self%varflt = varflt(:,:,1)
+endif
+if (has_field(state%fields, 'ustar')) then
+  call pointer_field_array(state%fields, 'ustar', ustar)
+  self%ustar = ustar(:,:,1)
+endif
+if (has_field(state%fields, 'bstar')) then
+  call pointer_field_array(state%fields, 'bstar', bstar)
+  self%bstar = bstar(:,:,1)
+endif
+if (has_field(state%fields, 'zpbl')) then
+  call pointer_field_array(state%fields, 'zpbl', zpbl)
+  self%zpbl = zpbl(:,:,1)
+endif
+if (has_field(state%fields, 'cm')) then
+  call pointer_field_array(state%fields, 'cm', cm)
+  self%cm = cm(:,:,1)
+endif
+if (has_field(state%fields, 'ct')) then
+  call pointer_field_array(state%fields, 'ct', ct)
+  self%ct = ct(:,:,1)
+endif
+if (has_field(state%fields, 'cq')) then
+  call pointer_field_array(state%fields, 'cq', cq)
+  self%cq = cq(:,:,1)
+endif
+if (has_field(state%fields, 'kcbl')) then
+  call pointer_field_array(state%fields, 'kcbl', kcbl)
+  self%kcbl = kcbl(:,:,1)
+endif
+if (has_field(state%fields, 'tsm')) then
+  call pointer_field_array(state%fields, 'tsm', tsm)
+  self%ts = tsm(:,:,1)
+endif
+if (has_field(state%fields, 'khl')) then
+  call pointer_field_array(state%fields, 'khl', khl)
+  self%khl = khl(:,:,1)
+endif
+if (has_field(state%fields, 'khu')) then
+  call pointer_field_array(state%fields, 'khu', khu)
+  self%khu = khu(:,:,1)
+endif
 
 end subroutine traj_prop
 

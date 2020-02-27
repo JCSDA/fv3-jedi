@@ -29,55 +29,7 @@ type :: fv3jedi_increment
   logical :: have_dgrid
 
   type(fckit_mpi_comm) :: f_comm
-
   type(fv3jedi_field), allocatable :: fields(:)
-
-  !Adding a new variable? Update create, delete and copy
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ud   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: vd   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ua   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: va   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: t    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ps   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: delp => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: w    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: delz => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: q    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: qi   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ql   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: qr   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: qs   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: gr   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ca   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: o3   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: psi  => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: chi  => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: vort => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: divg => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: tv   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: rh   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: pt   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: pe   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: pkz  => null()
-  !Aerosols
-  real(kind=kind_real), pointer, dimension(:,:,:) :: du001    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: du002    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: du003    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: du004    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: du005    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ss001    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ss002    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ss003    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ss004    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ss005    => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: no3an1   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: no3an2   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: no3an3   => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: bcphobic => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: bcphilic => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ocphobic => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: ocphilic => null()
-  real(kind=kind_real), pointer, dimension(:,:,:) :: so4      => null()
 
 end type fv3jedi_increment
 

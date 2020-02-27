@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -13,9 +13,17 @@ use mpp_domains_mod,   only: east, north, center
 implicit none
 
 private
-public :: fv3jedi_field, get_field, has_field, &
-          fields_rms, fields_gpnorm, fields_print, &
-          checksame, flip_array_vertical, get_field_array, &
+public :: fv3jedi_field, &
+          has_field, &
+          pointer_field, &
+          pointer_field_array, &
+          copy_field_array, &
+          allocate_copy_field_array, &
+          fields_rms, &
+          fields_gpnorm, &
+          fields_print, &
+          checksame, &
+          flip_array_vertical, &
           copy_subset
 
 !Field type
@@ -32,7 +40,6 @@ type :: fv3jedi_field
  logical :: integerfield = .false.
  contains
   procedure :: allocate_field
-  procedure :: array_pointer
   procedure :: equals
   generic :: assignment(=) => equals
   procedure :: deallocate_field
@@ -45,7 +52,7 @@ contains
 ! --------------------------------------------------------------------------------------------------
 
 subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
-                          fv3jedi_name,units,staggerloc,arraypointer,tracer,integerfield)
+                          fv3jedi_name,units,staggerloc,tracer,integerfield)
 
 implicit none
 class(fv3jedi_field), target,  intent(inout) :: self
@@ -55,7 +62,6 @@ character(len=*),              intent(in)    :: long_name
 character(len=*),              intent(in)    :: fv3jedi_name
 character(len=*),              intent(in)    :: units
 integer,                       intent(in)    :: staggerloc
-real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
 logical, optional,             intent(in)    :: tracer
 logical, optional,             intent(in)    :: integerfield
 
@@ -79,8 +85,6 @@ if(.not.self%lalloc) then
   endif
 
 endif
-
-arraypointer => self%array
 
 self%lalloc = .true.
 
@@ -107,18 +111,6 @@ end subroutine allocate_field
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine array_pointer(self,arraypointer)
-
-implicit none
-class(fv3jedi_field), target,  intent(in)    :: self
-real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
-
-arraypointer => self%array
-
-end subroutine array_pointer
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine deallocate_field(self)
 
 implicit none
@@ -137,77 +129,31 @@ implicit none
 class(fv3jedi_field), intent(inout) :: self
 type (fv3jedi_field), intent(in)    :: rhs
 
-real(kind=kind_real), pointer :: dummy_pointer(:,:,:) => null()
-
 call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
                           short_name=rhs%short_name, &
                           long_name=rhs%long_name, &
                           fv3jedi_name=rhs%fv3jedi_name, &
                           units=rhs%units, &
                           staggerloc=rhs%staggerloc, &
-                          tracer = rhs%tracer, &
-                          arraypointer = dummy_pointer)
+                          tracer = rhs%tracer)
 
 self%array = rhs%array
-
-nullify(dummy_pointer)
 
 end subroutine equals
 
 ! --------------------------------------------------------------------------------------------------
 
-function get_field_array(fields,fv3jedi_name,arraypointer) result(isallocated)
+logical function has_field(fields, fv3jedi_name)
 
-implicit none
-
-type(fv3jedi_field), target,   intent(in)    :: fields(:)
-character(len=*),              intent(in)    :: fv3jedi_name
-real(kind=kind_real), pointer, intent(inout) :: arraypointer(:,:,:)
-logical :: isallocated
-
-integer :: findex, var
-
-isallocated = .false.
-
-if (associated(arraypointer)) nullify(arraypointer)
-
-! Loop over fields and set array pointer when found
-findex = -1
-do var = 1,size(fields)
-  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
-    arraypointer => fields(var)%array
-    findex = var
-    exit
-  endif
-enddo
-
-! If not found then return
-if (findex == -1) return
-
-! If found check array is actually allocated
-if (.not. allocated(fields(findex)%array)) call abor1_ftn("fv3jedi_field get_field_array. Field "&
-                                                //fv3jedi_name//" found but array is not allocated")
-
- ! Return that array is allocated
- isallocated = .true.
-
-end function get_field_array
-
-! --------------------------------------------------------------------------------------------------
-
-function has_field(nf,fields,fv3jedi_name) result(hasfield)
-
-integer,                      intent(in)  :: nf
-type(fv3jedi_field), target,  intent(in)  :: fields(nf)
-character(len=*),            intent(in)  :: fv3jedi_name
-logical :: hasfield
+type(fv3jedi_field), target,  intent(in)  :: fields(:)
+character(len=*),             intent(in)  :: fv3jedi_name
 
 integer :: var
 
-hasfield = .false.
-do var = 1,nf
+has_field = .false.
+do var = 1, size(fields)
   if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
-    hasfield = .true.
+    has_field = .true.
     exit
   endif
 enddo
@@ -216,18 +162,72 @@ end function has_field
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine get_field(nf,fields,fv3jedi_name,field_pointer)
+subroutine allocate_copy_field_array(fields, fv3jedi_name, field_array)
 
-integer,                      intent(in)  :: nf
-type(fv3jedi_field), target,  intent(in)  :: fields(nf)
-character(len=*),            intent(in)  :: fv3jedi_name
-type(fv3jedi_field), pointer, intent(out) :: field_pointer
+type(fv3jedi_field),               intent(in)  :: fields(:)
+character(len=*),                  intent(in)  :: fv3jedi_name
+real(kind=kind_real), allocatable, intent(out) :: field_array(:,:,:)
+
+integer :: var
+logical :: found
+
+if(allocated(field_array)) deallocate(field_array)
+
+found = .false.
+do var = 1,size(fields)
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    allocate(field_array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,fields(var)%npz))
+    field_array = fields(var)%array
+    found = .true.
+    exit
+  endif
+enddo
+
+if (.not.found) call abor1_ftn("fv3jedi_field.allocate_copy_field_array: field "&
+                                //trim(fv3jedi_name)//" not found in fields")
+
+end subroutine allocate_copy_field_array
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine copy_field_array(fields, fv3jedi_name, field_array)
+
+type(fv3jedi_field),  intent(in)  :: fields(:)
+character(len=*),     intent(in)  :: fv3jedi_name
+real(kind=kind_real), intent(out) :: field_array(:,:,:)
 
 integer :: var
 logical :: found
 
 found = .false.
-do var = 1,nf
+do var = 1,size(fields)
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    field_array = fields(var)%array
+    found = .true.
+    exit
+  endif
+enddo
+
+if (.not.found) call abor1_ftn("fv3jedi_field.copy_field_array: field "&
+                                //trim(fv3jedi_name)//" not found in fields")
+
+end subroutine copy_field_array
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine pointer_field(fields, fv3jedi_name, field_pointer)
+
+type(fv3jedi_field), target,  intent(in)  :: fields(:)
+character(len=*),             intent(in)  :: fv3jedi_name
+type(fv3jedi_field), pointer, intent(out) :: field_pointer
+
+integer :: var
+logical :: found
+
+if(associated(field_pointer)) nullify(field_pointer)
+
+found = .false.
+do var = 1,size(fields)
   if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
     field_pointer => fields(var)
     found = .true.
@@ -235,10 +235,37 @@ do var = 1,nf
   endif
 enddo
 
-if (.not.found) call abor1_ftn("fv3jedi_field get_field. Field "&
-                                //fv3jedi_name//" not found in field array")
+if (.not.found) call abor1_ftn("fv3jedi_field.pointer_field: field "&
+                                //trim(fv3jedi_name)//" not found in fields")
 
-end subroutine get_field
+end subroutine pointer_field
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine pointer_field_array(fields, fv3jedi_name, array_pointer)
+
+type(fv3jedi_field), target,   intent(in)    :: fields(:)
+character(len=*),              intent(in)    :: fv3jedi_name
+real(kind=kind_real), pointer, intent(out)   :: array_pointer(:,:,:)
+
+integer :: var
+logical :: found
+
+if(associated(array_pointer)) nullify(array_pointer)
+
+found = .false.
+do var = 1,size(fields)
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    array_pointer => fields(var)%array
+    found = .true.
+    exit
+  endif
+enddo
+
+if (.not.found) call abor1_ftn("fv3jedi_field.pointer_field_array: field "&
+                                //trim(fv3jedi_name)//" not found in fields")
+
+end subroutine pointer_field_array
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -440,16 +467,14 @@ type(fv3jedi_field),                      intent(inout) :: lhs(:)
 character(len=10), allocatable, optional, intent(out)   :: not_copied(:)
 
 integer :: var
-real(kind=kind_real), pointer :: rhs_array(:,:,:)
-character(len=10) :: not_copied_(1000)
+character(len=10) :: not_copied_(10000)
 integer :: num_not_copied
 
 ! Loop over fields and copy if existing in both
 num_not_copied = 0
 do var = 1, size(lhs)
-  if (get_field_array(rhs, lhs(var)%fv3jedi_name, rhs_array )) then
-    lhs(var)%array = rhs_array
-    nullify(rhs_array)
+  if (has_field(rhs, lhs(var)%fv3jedi_name )) then
+    call copy_field_array(rhs, lhs(var)%fv3jedi_name, lhs(var)%array)
   else
     num_not_copied = num_not_copied + 1
     not_copied_(num_not_copied) = lhs(var)%fv3jedi_name

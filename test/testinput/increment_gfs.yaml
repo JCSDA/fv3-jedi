@@ -5,7 +5,7 @@ Geometry:
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
 TestDate: '2018-04-15T00:00:00Z'
 Variables:
-  variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+  variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
 State:
   filetype: gfs
   datapath_tile: Data/inputs/gfs_c12/bkg/
@@ -38,3 +38,6 @@ InterpTest:
     - northward_wind
     - temperature
     - specific_humidity
+    - virtual_temperature
+    - mole_fraction_of_ozone_in_air
+    - humidity_mixing_ratio

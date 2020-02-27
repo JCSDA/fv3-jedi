@@ -34,3 +34,6 @@ State:
     - northward_wind
     - temperature
     - specific_humidity
+    - virtual_temperature
+    - mole_fraction_of_ozone_in_air
+    - humidity_mixing_ratio

@@ -281,6 +281,36 @@ integer :: isc,iec,jsc,jec,npz
 integer :: lb2(2), ub2(2)
 integer :: lb3(3), ub3(3)
 
+! Pointers to the Jedi state
+real(kind=kind_real), pointer, dimension(:,:,:) :: ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: delp
+real(kind=kind_real), pointer, dimension(:,:,:) :: delz
+real(kind=kind_real), pointer, dimension(:,:,:) :: w
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: qi
+real(kind=kind_real), pointer, dimension(:,:,:) :: ql
+real(kind=kind_real), pointer, dimension(:,:,:) :: o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: qls
+real(kind=kind_real), pointer, dimension(:,:,:) :: qcn
+real(kind=kind_real), pointer, dimension(:,:,:) :: cfcn
+real(kind=kind_real), pointer, dimension(:,:,:) :: phis
+real(kind=kind_real), pointer, dimension(:,:,:) :: frland
+real(kind=kind_real), pointer, dimension(:,:,:) :: frocean
+real(kind=kind_real), pointer, dimension(:,:,:) :: kcbl
+real(kind=kind_real), pointer, dimension(:,:,:) :: tsm
+real(kind=kind_real), pointer, dimension(:,:,:) :: khl
+real(kind=kind_real), pointer, dimension(:,:,:) :: khu
+real(kind=kind_real), pointer, dimension(:,:,:) :: varflt
+real(kind=kind_real), pointer, dimension(:,:,:) :: ustar
+real(kind=kind_real), pointer, dimension(:,:,:) :: bstar
+real(kind=kind_real), pointer, dimension(:,:,:) :: zpbl
+real(kind=kind_real), pointer, dimension(:,:,:) :: cm
+real(kind=kind_real), pointer, dimension(:,:,:) :: ct
+real(kind=kind_real), pointer, dimension(:,:,:) :: cq
 
 ! Convenience
 ! -----------
@@ -352,63 +382,92 @@ do i = 1, num_items
    !Fill up JEDI state
    select case (trim(item_names(i)))
    case ("U_DGRID")
-     state%ud  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'ud', ud)
+     ud  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("V_DGRID")
-     state%vd  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'vd', vd)
+     vd  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("U")
-     state%ua  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'ua', ua)
+     ua  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("V")
-     state%va  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'va', va)
+     va  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("T")
-     state%t   (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 't', t)
+     t   (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("DELP")
-     state%delp(isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'delp', delp)
+     delp(isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("DZ")
-     state%delz(isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'delz', delz)
+     delz(isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("W")
-     state%w   (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'w', w)
+     w   (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("Q")
-     state%q   (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'q', q)
+     q   (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("QITOT")
-     state%qi  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'qi', qi)
+     qi  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("QLTOT")
-     state%ql  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'ql', ql)
+     ql  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("O3")
-     state%o3  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'o3', o3)
+     o3  (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("QCLSX0")
-     state%qls (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'qls', qls)
+     qls (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("QCCNX0")
-     state%qcn (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'qcn', qcn)
+     qcn (isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("CLCNX0")
-     state%cfcn(isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
+     call pointer_field_array(state%fields, 'cfcn', cfcn)
+     cfcn(isc:iec,jsc:jec,1:npz) = farrayPtr3(lb3(1):ub3(1),lb3(2):ub3(2),lb3(3):ub3(3))
    case ("PHIS")
-     state%phis   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'phis', phis)
+     phis   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("FRLAND")
-     state%frland (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'frland', frland)
+     frland (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("FROCEAN")
-     state%frocean(isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'frocean', frocean)
+     frocean(isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("KCBL_moist")
-     state%kcbl   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'kcbl', kcbl)
+     kcbl   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("TS_moist")
-     state%tsm    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'tsm', tsm)
+     tsm    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("KHl_moist")
-     state%khl    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, '', )
+     khl    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("KHu_moist")
-     state%khu    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'khu', khu)
+     khu    (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("VARFLT")
-     state%varflt (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'varflt', varflt)
+     varflt (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("USTAR")
-     state%ustar  (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, '', )
+     ustar  (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("BSTAR")
-     state%bstar  (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'bstar', bstar)
+     bstar  (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("ZPBL")
-     state%zpbl   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'zpbl', zpbl)
+     zpbl   (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("CM")
-     state%cm     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'cm', cm)
+     cm     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("CT")
-     state%ct     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'ct', ct)
+     ct     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case ("CQ")
-     state%cq     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
+     call pointer_field_array(state%fields, 'cq', cq)
+     cq     (isc:iec,jsc:jec,1) = farrayPtr2(lb2(1):ub2(1),lb2(2):ub2(2))
    case default
      call abor1_ftn("geos_to_state unknown variable")
    end select

@@ -14,6 +14,8 @@ use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use fv3jedi_kinds_mod
 
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+
 use pressure_vt_mod
 use temperature_vt_mod
 use moisture_vt_mod
@@ -53,23 +55,32 @@ type(fv3jedi_state), target, intent(in)    :: bg
 type(fv3jedi_state), target, intent(in)    :: fg
 type(fckit_configuration),   intent(in)    :: conf
 
+real(kind=kind_real), pointer :: t   (:,:,:)
+real(kind=kind_real), pointer :: q   (:,:,:)
+real(kind=kind_real), pointer :: delp(:,:,:)
+
+!> Pointers to the background state
+call pointer_field_array(bg%fields, 't'   , t)
+call pointer_field_array(bg%fields, 'q'   , q)
+call pointer_field_array(bg%fields, 'delp', delp)
+
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-call T_to_Tv(geom,bg%t,bg%q,self%tvtraj)
+call T_to_Tv(geom,t,q,self%tvtraj)
 
 !> Temperature trajectory
 allocate(self%ttraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-self%ttraj = bg%t
+self%ttraj = t
 
 !> Specific humidity trajecotory
 allocate(self%qtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-self%qtraj = bg%q
+self%qtraj = q
 
 !> Compute saturation specific humidity for q to RH transform
 allocate(self%qsattraj(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
 
 !> Compute saturation specific humidity
-call get_qsat(geom,bg%delp,bg%t,bg%q,self%qsattraj)
+call get_qsat(geom,delp,t,q,self%qsattraj)
 
 end subroutine create
 
@@ -97,17 +108,33 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xctl
 type(fv3jedi_increment),     intent(inout) :: xana
 
-!Ps (identity)
-xana%ps = xctl%ps
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_t
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_q
 
-!Tracers (identity)
-xana%qi = xctl%qi
-xana%ql = xctl%ql
-xana%o3 = xctl%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_rh
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_ps
+
+! Copy fields that are the same in both
+! -------------------------------------
+call copy_subset(xctl%fields,xana%fields)
 
 !Tangent linear of control to analysis variables
-call control_to_analysis_tlm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%rh, &
-                                   xana%ua,  xana%va,  xana%t,  xana%q,  &
+call pointer_field_array(xctl%fields, 'psi', xctl_psi)
+call pointer_field_array(xctl%fields, 'chi', xctl_chi)
+call pointer_field_array(xctl%fields, 'tv' , xctl_tv)
+call pointer_field_array(xctl%fields, 'rh' , xctl_rh)
+call pointer_field_array(xana%fields, 'ua' , xana_ua)
+call pointer_field_array(xana%fields, 'va' , xana_va)
+call pointer_field_array(xana%fields, 't'  , xana_t)
+call pointer_field_array(xana%fields, 'q'  , xana_q)
+
+call control_to_analysis_tlm(geom, xctl_psi, xctl_chi, xctl_tv, xctl_rh, &
+                                   xana_ua,  xana_va,  xana_t,  xana_q,  &
                                    self%tvtraj,self%qtraj,self%qsattraj )
 
 ! Copy calendar infomation
@@ -126,17 +153,32 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(inout) :: xana
 type(fv3jedi_increment),     intent(inout) :: xctl
 
-!Ps (identity)
-xctl%ps = xana%ps
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_t
+real(kind=kind_real), pointer, dimension(:,:,:) :: xana_q
 
-!Tracers (identity)
-xctl%qi = xana%qi
-xctl%ql = xana%ql
-xctl%o3 = xana%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_rh
+real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_ps
+
+! Copy fields that are the same in both
+! -------------------------------------
+call copy_subset(xana%fields,xctl%fields)
 
 !Adjoint of control to analysis variables
-call control_to_analysis_adm(geom, xctl%psi, xctl%chi, xctl%tv, xctl%rh, &
-                                   xana%ua,  xana%va,  xana%t,  xana%q,  &
+call pointer_field_array(xctl%fields, 'psi', xctl_psi)
+call pointer_field_array(xctl%fields, 'chi', xctl_chi)
+call pointer_field_array(xctl%fields, 'tv' , xctl_tv)
+call pointer_field_array(xctl%fields, 'rh' , xctl_rh)
+call pointer_field_array(xana%fields, 'ua' , xana_ua)
+call pointer_field_array(xana%fields, 'va' , xana_va)
+call pointer_field_array(xana%fields, 't'  , xana_t)
+call pointer_field_array(xana%fields, 'q'  , xana_q)
+call control_to_analysis_adm(geom, xctl_psi, xctl_chi, xctl_tv, xctl_rh, &
+                                   xana_ua,  xana_va,  xana_t,  xana_q,  &
                                    self%tvtraj,self%qtraj,self%qsattraj )
 
 ! Copy calendar infomation
@@ -157,14 +199,9 @@ type(fv3jedi_increment),     intent(inout) :: xctl
 
 real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
 
-xctl%psi = xana%ua
-xctl%chi = xana%va
-xctl%tv  = xana%t
-xctl%ps  = xana%ps
-xctl%rh  = xana%q
-xctl%qi  = xana%qi
-xctl%ql  = xana%ql
-xctl%o3  = xana%o3
+! Copy fields that are the same in both
+! -------------------------------------
+call copy_subset(xana%fields,xctl%fields)
 
 ! Copy calendar infomation
 xctl%calendar_type = xana%calendar_type
@@ -182,14 +219,9 @@ type(fv3jedi_geom),          intent(inout) :: geom
 type(fv3jedi_increment),     intent(in)    :: xctl
 type(fv3jedi_increment),     intent(inout) :: xana
 
-xana%ua = xctl%psi
-xana%va = xctl%chi
-xana%t  = xctl%tv
-xana%ps = xctl%ps
-xana%q  = xctl%rh
-xana%qi = xctl%qi
-xana%ql = xctl%ql
-xana%o3 = xctl%o3
+! Copy fields that are the same in both
+! -------------------------------------
+call copy_subset(xctl%fields,xana%fields)
 
 ! Copy calendar infomation
 xana%calendar_type = xctl%calendar_type

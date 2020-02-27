@@ -16,6 +16,8 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
 
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+
 use fv3jedi_lm_mod, only: fv3jedi_lm_type
 
 implicit none
@@ -154,26 +156,57 @@ implicit none
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
 
+real(kind=kind_real), pointer, dimension(:,:,:) :: ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: delp
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: qi
+real(kind=kind_real), pointer, dimension(:,:,:) :: ql
+real(kind=kind_real), pointer, dimension(:,:,:) :: o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: w
+real(kind=kind_real), pointer, dimension(:,:,:) :: delz
+real(kind=kind_real), pointer, dimension(:,:,:) :: phis
+
+call pointer_field_array(state%fields, 'ud',   ud  )
+call pointer_field_array(state%fields, 'vd',   vd  )
+call pointer_field_array(state%fields, 't',    t   )
+call pointer_field_array(state%fields, 'delp', delp)
+call pointer_field_array(state%fields, 'q',    q   )
+call pointer_field_array(state%fields, 'qi',   qi  )
+call pointer_field_array(state%fields, 'ql',   ql  )
+call pointer_field_array(state%fields, 'o3',   o3  )
+
 lm%traj%ua = 0.0_kind_real
 lm%traj%va = 0.0_kind_real
 
-lm%traj%u       = state%ud(state%isc:state%iec,state%jsc:state%jec,:)
-lm%traj%v       = state%vd(state%isc:state%iec,state%jsc:state%jec,:)
-if (associated(state%ua)) lm%traj%ua = state%ua
-if (associated(state%va)) lm%traj%va = state%va
-lm%traj%t       = state%t
-lm%traj%delp    = state%delp
-lm%traj%qv      = state%q
-lm%traj%qi      = state%qi
-lm%traj%ql      = state%ql
-lm%traj%o3      = state%o3
+lm%traj%u       = ud(state%isc:state%iec,state%jsc:state%jec,:)
+lm%traj%v       = vd(state%isc:state%iec,state%jsc:state%jec,:)
+lm%traj%t       = t
+lm%traj%delp    = delp
+lm%traj%qv      = q
+lm%traj%qi      = qi
+lm%traj%ql      = ql
+lm%traj%o3      = o3
 
-if (.not. lm%conf%hydrostatic) then
-lm%traj%w       = state%w
-lm%traj%delz    = state%delz
+if (state%have_agrid) then
+  call pointer_field_array(state%fields, 'ua',   ua  )
+  call pointer_field_array(state%fields, 'va',   va  )
+  lm%traj%ua = ua
+  lm%traj%va = va
 endif
 
-lm%traj%phis = state%phis(:,:,1)
+if (.not. lm%conf%hydrostatic) then
+  call pointer_field_array(state%fields, 'w   ', w   )
+  call pointer_field_array(state%fields, 'delz', delz)
+  lm%traj%w       = w
+  lm%traj%delz    = delz
+endif
+
+call pointer_field_array(state%fields, 'phis', phis )
+lm%traj%phis = phis(:,:,1)
 
 end subroutine state_to_lm
 
@@ -185,23 +218,54 @@ implicit none
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
 
-state%ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
-state%vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
-if (associated(state%ua)) state%ua = lm%traj%ua
-if (associated(state%ua)) state%va = lm%traj%va
-state%t       = lm%traj%t
-state%delp    = lm%traj%delp
-state%q       = lm%traj%qv
-state%qi      = lm%traj%qi
-state%ql      = lm%traj%ql
-state%o3      = lm%traj%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: ud
+real(kind=kind_real), pointer, dimension(:,:,:) :: vd
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: delp
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: qi
+real(kind=kind_real), pointer, dimension(:,:,:) :: ql
+real(kind=kind_real), pointer, dimension(:,:,:) :: o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: w
+real(kind=kind_real), pointer, dimension(:,:,:) :: delz
+real(kind=kind_real), pointer, dimension(:,:,:) :: phis
 
-if (.not. lm%conf%hydrostatic) then
-state%w       = lm%traj%w
-state%delz    = lm%traj%delz
+call pointer_field_array(state%fields, 'ud',   ud  )
+call pointer_field_array(state%fields, 'vd',   vd  )
+call pointer_field_array(state%fields, 't',    t   )
+call pointer_field_array(state%fields, 'delp', delp)
+call pointer_field_array(state%fields, 'q',    q   )
+call pointer_field_array(state%fields, 'qi',   qi  )
+call pointer_field_array(state%fields, 'ql',   ql  )
+call pointer_field_array(state%fields, 'o3',   o3  )
+
+ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
+vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
+t       = lm%traj%t
+delp    = lm%traj%delp
+q       = lm%traj%qv
+qi      = lm%traj%qi
+ql      = lm%traj%ql
+o3      = lm%traj%o3
+
+if (state%have_agrid) then
+  call pointer_field_array(state%fields, 'ua',   ua  )
+  call pointer_field_array(state%fields, 'va',   va  )
+  ua = lm%traj%ua
+  va = lm%traj%va
 endif
 
-state%phis(:,:,1)    = lm%traj%phis
+if (.not. lm%conf%hydrostatic) then
+  call pointer_field_array(state%fields, 'w   ', w   )
+  call pointer_field_array(state%fields, 'delz', delz)
+  w       = lm%traj%w
+  delz    = lm%traj%delz
+endif
+
+call pointer_field_array(state%fields, 'phis', phis )
+phis(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state
 

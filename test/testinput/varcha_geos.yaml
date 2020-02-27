@@ -30,6 +30,9 @@ VariableChangeTests:
     inverseFirst: true
     do_clouds: false
     do_wind: false
+    do_temperature: true
+    do_pressure: true
+    pres_var: delp
     inputVariables:
       variables: ["t","delp"]
     outputVariables:

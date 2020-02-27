@@ -14,6 +14,8 @@ use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use fv3jedi_kinds_mod
 
+use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+
 use pressure_vt_mod
 use temperature_vt_mod
 use moisture_vt_mod
@@ -128,21 +130,39 @@ type(fv3jedi_increment),        intent(inout) :: xbal
 
 integer :: n
 
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: rh
+
 ! Unbalanced to balanced
 
 ! 1. Intep xuba -> Gaussian (self%bump)
 ! 2. Balance operator (Gaussian)
 ! 3. Intep back to CS = xbal
 
+! Copy variables that are the same in both increments
+call copy_subset(xuba%fields, xbal%fields)
+
+! Pointers to increments
+call pointer_field_array(xbal%fields, 'ua' , ua)
+call pointer_field_array(xbal%fields, 'va' , va)
+call pointer_field_array(xbal%fields, 't'  , t )
+call pointer_field_array(xbal%fields, 'q'  , q )
+call pointer_field_array(xuba%fields, 'psi', psi)
+call pointer_field_array(xuba%fields, 'chi', chi)
+call pointer_field_array(xuba%fields, 'tv' , tv )
+call pointer_field_array(xuba%fields, 'rh' , rh )
+
 ! Identity for now
-xbal%ua = xuba%psi
-xbal%va = xuba%chi
-xbal%t  = xuba%tv
-xbal%ps = xuba%ps
-xbal%q  = xuba%rh
-xbal%qi = xuba%qi
-xbal%ql = xuba%ql
-xbal%o3 = xuba%o3
+psi = ua
+chi = va
+tv  = t
+rh  = q
 
 end subroutine multiply
 
@@ -156,14 +176,33 @@ type(fv3jedi_geom),             intent(inout) :: geom
 type(fv3jedi_increment),        intent(in)    :: xbal
 type(fv3jedi_increment),        intent(inout) :: xuba
 
-xuba%psi = xbal%ua
-xuba%chi = xbal%va
-xuba%tv  = xbal%t
-xuba%ps  = xbal%ps
-xuba%rh  = xbal%q
-xuba%qi  = xbal%qi
-xuba%ql  = xbal%ql
-xuba%o3  = xbal%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: rh
+
+! Copy variables that are the same in both increments
+call copy_subset(xbal%fields, xuba%fields)
+
+! Pointers to increments
+call pointer_field_array(xbal%fields, 'ua' , ua)
+call pointer_field_array(xbal%fields, 'va' , va)
+call pointer_field_array(xbal%fields, 't'  , t )
+call pointer_field_array(xbal%fields, 'q'  , q )
+call pointer_field_array(xuba%fields, 'psi', psi)
+call pointer_field_array(xuba%fields, 'chi', chi)
+call pointer_field_array(xuba%fields, 'tv' , tv )
+call pointer_field_array(xuba%fields, 'rh' , rh )
+
+! Identity for now
+ua = psi
+va = chi
+t  = tv
+q  = rh
 
 end subroutine multiplyadjoint
 
@@ -177,14 +216,33 @@ type(fv3jedi_geom),             intent(inout) :: geom
 type(fv3jedi_increment),        intent(in)    :: xbal
 type(fv3jedi_increment),        intent(inout) :: xuba
 
-xuba%psi = xbal%ua
-xuba%chi = xbal%va
-xuba%tv  = xbal%t
-xuba%ps  = xbal%ps
-xuba%rh  = xbal%q
-xuba%qi  = xbal%qi
-xuba%ql  = xbal%ql
-xuba%o3  = xbal%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: rh
+
+! Copy variables that are the same in both increments
+call copy_subset(xbal%fields, xuba%fields)
+
+! Pointers to increments
+call pointer_field_array(xbal%fields, 'ua' , ua)
+call pointer_field_array(xbal%fields, 'va' , va)
+call pointer_field_array(xbal%fields, 't'  , t )
+call pointer_field_array(xbal%fields, 'q'  , q )
+call pointer_field_array(xuba%fields, 'psi', psi)
+call pointer_field_array(xuba%fields, 'chi', chi)
+call pointer_field_array(xuba%fields, 'tv' , tv )
+call pointer_field_array(xuba%fields, 'rh' , rh )
+
+! Identity for now
+ua = psi
+va = chi
+t  = tv
+q  = rh
 
 end subroutine multiplyinverse
 
@@ -198,14 +256,33 @@ type(fv3jedi_geom),             intent(inout) :: geom
 type(fv3jedi_increment),        intent(in)    :: xuba
 type(fv3jedi_increment),        intent(inout) :: xbal
 
-xbal%ua = xuba%psi
-xbal%va = xuba%chi
-xbal%t  = xuba%tv
-xbal%ps = xuba%ps
-xbal%q  = xuba%rh
-xbal%qi = xuba%qi
-xbal%ql = xuba%ql
-xbal%o3 = xuba%o3
+real(kind=kind_real), pointer, dimension(:,:,:) :: ua
+real(kind=kind_real), pointer, dimension(:,:,:) :: va
+real(kind=kind_real), pointer, dimension(:,:,:) :: t
+real(kind=kind_real), pointer, dimension(:,:,:) :: q
+real(kind=kind_real), pointer, dimension(:,:,:) :: psi
+real(kind=kind_real), pointer, dimension(:,:,:) :: chi
+real(kind=kind_real), pointer, dimension(:,:,:) :: tv
+real(kind=kind_real), pointer, dimension(:,:,:) :: rh
+
+! Copy variables that are the same in both increments
+call copy_subset(xuba%fields, xbal%fields)
+
+! Pointers to increments
+call pointer_field_array(xbal%fields, 'ua' , ua)
+call pointer_field_array(xbal%fields, 'va' , va)
+call pointer_field_array(xbal%fields, 't'  , t )
+call pointer_field_array(xbal%fields, 'q'  , q )
+call pointer_field_array(xuba%fields, 'psi', psi)
+call pointer_field_array(xuba%fields, 'chi', chi)
+call pointer_field_array(xuba%fields, 'tv' , tv )
+call pointer_field_array(xuba%fields, 'rh' , rh )
+
+! Identity for now
+psi = ua
+chi = va
+tv  = t
+rh  = q
 
 end subroutine multiplyinverseadjoint
 
