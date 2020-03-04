@@ -19,7 +19,7 @@ Geometry/fv3jedi_geom_mod.f90
 Geometry/fv3geom/fv3geom_constants_mod.f90
 Geometry/fv3geom/fv3geom_create_grid.f90
 Geometry/fv3geom/fv3geom_gnomonicgrids_mod.f90
-Geometry/fv3geom/fv3geom_utils_mod.f90
+Geometry/fv3geom/fv3geom_utils_mod.F90
 GeometryIterator/GeometryIterator.cc
 GeometryIterator/GeometryIterator.h
 GeometryIterator/GeometryIterator.interface.h
@@ -157,7 +157,7 @@ Model/nuopc/med.F90
 )
 
 #Append includes and libraries with particular model
-list (APPEND FV3JEDI_LIB_DEP oops ufo femps ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
+list (APPEND FV3JEDI_LIB_DEP oops ufo femps atlas atlas_f ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
 
 if( ${FV3BASEDMODEL_FOUND} )
     list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES})

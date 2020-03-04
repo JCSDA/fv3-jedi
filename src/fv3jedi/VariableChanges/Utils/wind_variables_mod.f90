@@ -1518,9 +1518,10 @@ enddo
 !Fill halos
 call mpp_update_domains(u, v, geom%domain, gridtype=DGRID_NE)
 
-!$OMP parallel do default(none) shared(is,ie,js,je,npz,npx,npy,c2,c1, &
-!$OMP                                  u,v,ua,va)         &
-!$OMP                          private(utmp, vtmp, wu, wv)
+! TODO: OpenMP Re-enable this parallel section by fixing variable shared/private assignment
+! !$OMP parallel do default(none) shared(is,ie,js,je,npz,npx,npy,c2,c1, &
+! !$OMP                                  u,v,ua,va)         &
+! !$OMP                          private(utmp, vtmp, wu, wv)
 do k=1,npz
 
   do j=max(2,js),min(npy-2,je)
@@ -1672,9 +1673,10 @@ v_ad = 0.0_kind_real
 ua_ad(is:ie,js:je,:) = ua_ad_comp
 va_ad(is:ie,js:je,:) = va_ad_comp
 
-!$omp parallel do default(none) shared(is,ie,js,je,npz,npx,npy,c2,c1, &
-!$omp                                  u,v,ua,va)         &
-!$omp                          private(utmp, vtmp, wu, wv)
+! TODO: OpenMP Re-enable this parallel section by fixing variable shared/private assignment
+! !$omp parallel do default(none) shared(is,ie,js,je,npz,npx,npy,c2,c1, &
+! !$omp                                  u,v,ua,va)         &
+! !$omp                          private(utmp, vtmp, wu, wv)
 do k=1,npz
   if (2 .lt. js) then
     max1 = js
