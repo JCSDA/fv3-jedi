@@ -337,49 +337,53 @@ set(ECBUILD_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com/ioda)
 
 
 # If local path to testfiles is defined don't download
-if (DEFINED ENV{LOCAL_PATH_TESTFILES})
-        set(LOCAL_PATH_TESTFILES "$ENV{LOCAL_PATH_TESTFILES}")
+if (DEFINED ENV{LOCAL_PATH_TESTFILES_IODA})
+        set(LOCAL_PATH_TESTFILES_IODA "$ENV{LOCAL_PATH_TESTFILES_IODA}")
 endif()
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES )
-  set(TESTFILE_DIR ${CMAKE_BINARY_DIR}/test_data/ioda CACHE PATH "data dir for test data")
-  file(MAKE_DIRECTORY ${TESTFILE_DIR})
-else()
-  set(TESTFILE_DIR ${LOCAL_PATH_TESTFILES})
-endif()
+if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
+  set(TESTFILE_DIR_IODA ${CMAKE_BINARY_DIR}/test_data/ioda CACHE PATH "data dir for test data")
+  file(MAKE_DIRECTORY ${TESTFILE_DIR_IODA})
+  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
 
-# Get the current git branch
-execute_process(
+  # Get the current git branch
+  execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT_VARIABLE GIT_BRANCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-# Check whether the URL exists or not
-ecbuild_check_multiurl(NAMES   ${fv3_ioda_test_data}
-                       DIRNAME ${GIT_BRANCH}
-                       RESULT  SPECIFIC_TEST_FILES)
+  # Check whether the URL exists or not
+  ecbuild_check_multiurl(NAMES   ${fv3_ioda_test_data}
+                         DIRHOST ${GIT_BRANCH}
+                         RESULT  SPECIFIC_TEST_FILES)
 
-# Set distant directory
-if(${SPECIFIC_TEST_FILES} MATCHES 0)
+  # Set distant directory
+  if(${SPECIFIC_TEST_FILES} MATCHES 0)
     # Download and extract new test files (distant directory = git branch)
     set(DIRNAME ${GIT_BRANCH})
-else()
+    message(STATUS "GIT_BRANCH found, download " ${GIT_BRANCH})
+    message(STATUS "GIT_BRANCH not found, download develop")
+  else()
     # Download and extract develop test files (distant directory = develop)
     set(DIRNAME "develop")
-endif()
-message(STATUS "Test data downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+  endif()
+  message(STATUS "Test data downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
 
-#  Now run test to download data
-ecbuild_get_test_multidata ( TARGET get_ioda_test_data_fv3
+  #  Now run test to download data
+  ecbuild_get_test_multidata ( TARGET get_ioda_test_data_fv3
                                NAMES ${fv3_ioda_test_data}
 			       DIRNAME ${DIRNAME}
-			       DIRLOCAL ${TESTFILE_DIR}
-                               EXTRACT
-                             )
+			       DIRLOCAL ${TESTFILE_DIR_IODA}
+                               EXTRACT)
+
+else()
+  set(TESTFILE_DIR_IODA ${LOCAL_PATH_TESTFILES_IODA})
+  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : "${LOCAL_PATH_TESTFILES_IODA})
+endif()
+
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${TESTFILE_DIR}
+                 ${TESTFILE_DIR_IODA}
                  ${CMAKE_CURRENT_BINARY_DIR}/Data/obs
 		 )
 
