@@ -46,7 +46,7 @@ bump_nam_prefix = 'fv3jedi_bump_interp_data_'//cbumpcount
 
 ! Namelist options
 ! ----------------
-call bump%nam%init
+call bump%nam%init(geom_in%f_comm%size())
 
 bump%nam%prefix = trim(bump_nam_prefix)   ! Prefix for files output
 bump%nam%default_seed = .true.
