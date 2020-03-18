@@ -33,6 +33,9 @@ bump:
   forced_radii: 1
   rh: 2500000.0
   rv: 0.3
+# Write C matrix
+# --------------
+  write_cmat: 0  
 # Diagnostic based on ens
 # -----------------------
   new_hdiag: 0
