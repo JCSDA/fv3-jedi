@@ -12,7 +12,7 @@ cost_function:
       ensemble_weight: '0.9'
       static:
         date: &adate '2018-04-15T00:00:00Z'
-        covariance: BUMP
+        covariance: FV3JEDIstatic
         bump:
           prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
           method: cor
@@ -57,7 +57,7 @@ cost_function:
         localization:
           timeslots: ['2018-04-15T00:00:00Z']
           variables: *3dvars
-          localization: BUMP
+          localization: ID
           bump:
             prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
             method: loc
