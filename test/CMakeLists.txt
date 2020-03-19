@@ -761,7 +761,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_gfs.run testoutput/hyb-3dvar_gfs.ref 1.0e-1 ${idif}
+                  ARGS         testoutput/hyb-3dvar_gfs.run testoutput/hyb-3dvar_gfs.ref 1.0 ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
 
 # 3DVar with zero obs is not working yet, so these 2 tests are are commented out.
@@ -942,7 +942,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_geos_p12.run testoutput/hyb-3dvar_geos.run.ref 0.0 0
+                  ARGS         testoutput/hyb-3dvar_geos_p12.run testoutput/hyb-3dvar_geos.run.ref 0.01 0
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_gfs_p12
