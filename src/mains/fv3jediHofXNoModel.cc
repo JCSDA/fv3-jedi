@@ -7,13 +7,13 @@
 
 #include "fv3jedi/Run/Run.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "oops/runs/HofX3D.h"
+#include "oops/runs/HofXNoModel.h"
 #include "ufo/instantiateObsFilterFactory.h"
 
 int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
-  oops::HofX3D<fv3jedi::Traits> hofx;
+  oops::HofXNoModel<fv3jedi::Traits> hofx;
   run.execute(hofx);
   return 0;
 }

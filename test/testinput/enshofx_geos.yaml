@@ -1,8 +1,8 @@
 EnsembleApplication:
   members: 2
 Assimilation Window:
-  Begin: '2018-04-14T21:00:00Z'
-  Length: PT6H
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
 Geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   nml_file: Data/fv3files/input_geos_c12.nml
