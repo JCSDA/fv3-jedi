@@ -1,0 +1,39 @@
+resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_gfs_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+initial:
+  filetype: gfs
+  datapath_tile: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
+variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+Covariance:
+  covariance: GSIRF # Identity yet
+  date: '2018-04-14T21:00:00Z'
+  variable_changes:
+  - varchange: Control2Analysis
+    inputVariables:
+      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+    outputVariables:
+      variables: ["psi","chi","tv","ps","rh","ice_wat","liq_wat","o3mr"]
+output_B:
+  filetype: gfs
+  datapath_tile: Data/gsirf/
+  filename_core: dirac_gfs_c2a.B.fv_core.res.nc
+  filename_trcr: dirac_gfs_c2a.B.fv_tracer.res.nc
+  filename_sfcd: dirac_gfs_c2a.B.sfc_data.nc
+  filename_sfcw: dirac_gfs_c2a.B.fv_srf_wnd.res.nc
+  filename_cplr: dirac_gfs_c2a.B.coupler.res
+dirac:
+  ndir: 1
+  ixdir: [1]    #Xdir
+  iydir: [1]    #Ydir
+  ildir: [50]   #Level
+  itdir: [1]    #Tile
+  ifdir: ['ua'] #Field

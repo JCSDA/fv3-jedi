@@ -37,11 +37,15 @@ LinearVariableChangeTests:
   outputVariables:
     variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
 - varchange: NMCBalance
-  nx: 700
-  ny: 300
-  nz: 50
-  path_to_gsi_coeffs: Data/nmcbal/stats.dat
-  toleranceInverse: 1.0e-6
+  nx: 384
+  ny: 192
+  nz: 64
+  path_to_gsi_coeffs: Data/gsifiles/global_berror.l64y192.f77
+#  nx: 192
+#  ny: 96
+#  nz: 64
+#  path_to_gsi_coeffs: Data/gsifiles/global_berror.l64y96.f77
+  toleranceInverse: 1000
   testinverse: 1
   inputVariables:
     variables: ["ua","va","t","ps","q","qi","ql","o3"]

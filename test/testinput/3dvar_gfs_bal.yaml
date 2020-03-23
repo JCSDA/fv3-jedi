@@ -1,0 +1,232 @@
+cost_function:
+  Jb:
+    Background:
+      state:
+      - filetype: gfs
+        datapath_tile: Data/
+        filename_core: 20180415.000000.c24.fv_core.res.nc
+        filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
+        filename_sfcd: 20180415.000000.c24.sfc_data.nc
+        filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
+        filename_cplr: 20180415.000000.c24.coupler.res
+        variables: &3dvars ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+    Covariance:
+      date: '2018-04-15T00:00:00Z'
+      covariance: BUMP
+      bump:
+        prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs
+        method: cor
+        strategy: specific_univariate
+        load_nicas: 1
+        mpicom: 2
+        verbosity: main
+      variable_changes:
+      - varchange: NMCBalance
+        inputVariables:
+          variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+        outputVariables:
+          variables: ["psi","chi","tv","ps","rh","ice_wat","liq_wat","o3mr"]
+        nx: 384
+        ny: 192
+        nz: 64
+        layoutx: 3
+        layouty: 2
+        path_to_gsi_coeffs: Data/gsifiles/global_berror.l64y192.f77
+  Jo:
+    ObsTypes:
+    - ObsSpace:
+        name: Aircraft
+        ObsDataIn:
+          obsfile: Data/obs/aircraft_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
+      ObsOperator:
+        name: VertInterp
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: PreQC
+        maxvalue: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: Radiosonde
+        ObsDataIn:
+          obsfile: Data/obs/sondes_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sondes_hyb-3dvar-gfs_2018041500_m.nc4
+        simulate:
+          variables: [eastward_wind, northward_wind, air_temperature]
+      ObsOperator:
+        name: VertInterp
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: PreQC
+        maxvalue: 3
+        apply_at_iterations: 0
+      - Filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+    - ObsSpace:
+        name: GnssroRef
+        ObsDataIn:
+         obsfile: Data/obs/gnssro_obs_2018041500_s.nc4
+        ObsDataOut:
+         obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_2018041500_s.nc4
+        simulate:
+         variables: [refractivity]
+      ObsOperator:
+        name: GnssroRef
+        ObsOptions:
+          use_compress: 1
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Thinning
+        filter variables:
+        - name: refractivity
+        random_seed: 123
+        amount: 0.96
+        apply_at_iterations: 0
+      - Filter: Domain Check
+        filter variables:
+        - name: refractivity
+        where:
+        - variable:
+            name: altitude@MetaData
+            minvalue: 0
+            maxvalue: 30000
+        - variable:
+            name: earth_radius_of_curvature@MetaData
+            minvalue: 6250000
+            maxvalue: 6450000
+        - variable:
+            name: geoid_height_above_reference_ellipsoid@MetaData
+            minvalue: -200
+            maxvalue: 200
+      - Filter: Background Check
+        filter variables:
+        - name: refractivity
+        threshold: 3.0
+      - Filter: ROobserror
+        filter variables:
+        - name: refractivity
+        variable: refractivity
+        errmodel: GSI
+    - ObsSpace:
+        name: AMSUA-NOAA19
+        ObsDataIn:
+          obsfile: Data/obs/amsua_n19_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/amsua_n19_hyb-3dvar-gfs_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-15
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        ObsOptions:
+          Sensor_ID: amsua_n19
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        threshold: 3.0
+  cost_type: 3D-Var
+  variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
+#  variables: *3dvars
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+  varchange: Analysis2Model
+  filetype: gfs
+  datapath_tile: Data/
+  filename_core: 20180415.000000.c24.fv_core.res.nc
+  filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.c24.sfc_data.nc
+  filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.c24.coupler.res
+final:
+  diagnostics:
+    departures: oman
+minimizer:
+  algorithm: DRIPCG
+model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_gfs_c24.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT3H
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
+              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
+              "u_srf","v_srf","f10m"]
+output:
+  filetype: gfs
+  datapath_tile: Data/analysis/
+  filename_core: 3dvar-gfs_bal.fv_core.res.nc
+  filename_trcr: 3dvar-gfs_bal.fv_tracer.res.nc
+  filename_sfcd: 3dvar-gfs_bal.sfc_data.nc
+  filename_sfcw: 3dvar-gfs_bal.fv_srf_wnd.res.nc
+  filename_cplr: 3dvar-gfs_bal.coupler.res
+  first: PT0H
+  frequency: PT1H
+resolution:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_gfs_c24.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+variational:
+  iteration:
+  - ninner: '10'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: *3dvars
+  - ninner: '5'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      nml_file: Data/fv3files/input_gfs_c12.nml
+      trc_file: Data/fv3files/field_table
+      pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT3H
+      variables: *3dvars

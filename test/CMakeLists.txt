@@ -172,11 +172,24 @@ Data/fv3files/inputpert_fsoi.nml
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fv3files)
 LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# GSI config files
+# ----------------
+
+list( APPEND fv3jedi_test_gsifiles
+Data/gsifiles/global_berror.l64y192.f77
+Data/gsifiles/global_berror.l64y96.f77
+)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/gsifiles)
+LINK_FILES( "${fv3jedi_test_gsifiles}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
+
 
 # Test input scripts
 # ------------------
 list( APPEND fv3jedi_test_input
 testinput/3denvar_geos_aero.yaml
+testinput/3dvar_gfs_bal.yaml
 testinput/3dvar_gfs_gnssrobndropp1d.yaml
 testinput/4denvar_geos.yaml
 testinput/4denvar_gfs.yaml
@@ -198,6 +211,8 @@ testinput/diffstates_gfs.yaml
 testinput/diffstates_geos.yaml
 testinput/dirac_geos.yaml
 testinput/dirac_gfs.yaml
+testinput/dirac_gfs_bal.yaml
+testinput/dirac_gfs_c2a.yaml
 testinput/eda_3dvar_geos.yaml
 testinput/eda_3dvar_gfs.yaml
 testinput/eda_3dvar_gfs_member2.yaml
@@ -261,6 +276,8 @@ testoutput/bumpparameters_loc_geos.ref
 testoutput/bumpparameters_loc_gfs.ref
 testoutput/dirac_geos.ref
 testoutput/dirac_gfs.ref
+testoutput/dirac_gfs_bal.ref
+testoutput/dirac_gfs_c2a.ref
 #testoutput/forecast_geos-fv3.ref
 #testoutput/forecast_geos.ref
 #testoutput/forecast_gfs-fv3.ref
@@ -469,6 +486,7 @@ ecbuild_add_executable( TARGET  test_fv3jedi_varcha.x
 
 #Make some output directories for test data
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/gsirf)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/geos)
@@ -750,6 +768,32 @@ ecbuild_add_test( TARGET       test_fv3jedi_dirac_gfs_compare
                   ARGS         testoutput/dirac_gfs.run testoutput/dirac_gfs.ref ${ctol} ${idif}
                   TEST_DEPENDS test_fv3jedi_dirac_gfs )
 
+ecbuild_add_test( TARGET       test_fv3jedi_dirac_gfs_bal
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x
+                  ARGS         testinput/dirac_gfs_bal.yaml testoutput/dirac_gfs_bal.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_dirac_gfs_bal_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/dirac_gfs_bal.run testoutput/dirac_gfs_bal.ref ${ctol} ${idif}
+                  TEST_DEPENDS test_fv3jedi_dirac_gfs_bal )
+
+ecbuild_add_test( TARGET       test_fv3jedi_dirac_gfs_c2a
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_dirac.x
+                  ARGS         testinput/dirac_gfs_c2a.yaml testoutput/dirac_gfs_c2a.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_dirac_gfs_c2a_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/dirac_gfs_c2a.run testoutput/dirac_gfs_c2a.ref ${ctol} ${idif}
+                  TEST_DEPENDS test_fv3jedi_dirac_gfs_c2a )
+
 # Ensemble variance
 ecbuild_add_test( TARGET       test_fv3jedi_ensvariance_gfs
                   TYPE         EXE
@@ -779,6 +823,14 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-3dvar_gfs.run testoutput/hyb-3dvar_gfs.ref 1.0e-1 ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
+
+# 3DVar with GSI balance operator
+#ecbuild_add_test( TARGET       test_fv3jedi_3dvar_gfs_bal
+#                  TYPE         EXE
+#                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
+#                  ARGS         testinput/3dvar_gfs_bal.yaml testoutput/3dvar_gfs_bal.run
+#                  MPI          6
+#                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
 
 # 3DVar with zero obs is not working yet, so these 2 tests are are commented out.
 # When you want to debug this case, all you need to do is uncomment these tests.

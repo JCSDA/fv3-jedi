@@ -92,57 +92,57 @@ end subroutine c_fv3jedi_linvarcha_nmcbal_delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_nmcbal_multiply(c_key_self,c_key_geom,c_key_xbal,c_key_xuba) &
+subroutine c_fv3jedi_linvarcha_nmcbal_multiply(c_key_self,c_key_geom,c_key_xuba,c_key_xbal) &
            bind (c,name='fv3jedi_linvarcha_nmcbal_multiply_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_xbal
 integer(c_int), intent(in) :: c_key_xuba
+integer(c_int), intent(in) :: c_key_xbal
 
 type(fv3jedi_linvarcha_nmcbal), pointer :: self
 type(fv3jedi_geom),             pointer :: geom
-type(fv3jedi_increment),        pointer :: xbal
 type(fv3jedi_increment),        pointer :: xuba
+type(fv3jedi_increment),        pointer :: xbal
 
 call fv3jedi_linvarcha_nmcbal_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
-call fv3jedi_increment_registry%get(c_key_xbal,xbal)
 call fv3jedi_increment_registry%get(c_key_xuba,xuba)
+call fv3jedi_increment_registry%get(c_key_xbal,xbal)
 
-call multiply(self,geom,xbal,xuba)
+call multiply(self,geom,xuba,xbal)
 
 end subroutine c_fv3jedi_linvarcha_nmcbal_multiply
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_nmcbal_multiplyadjoint(c_key_self,c_key_geom,c_key_xuba,c_key_xbal) &
+subroutine c_fv3jedi_linvarcha_nmcbal_multiplyadjoint(c_key_self,c_key_geom,c_key_xbal,c_key_xuba) &
            bind (c,name='fv3jedi_linvarcha_nmcbal_multiplyadjoint_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_xuba
 integer(c_int), intent(in) :: c_key_xbal
+integer(c_int), intent(in) :: c_key_xuba
 
 type(fv3jedi_linvarcha_nmcbal), pointer :: self
 type(fv3jedi_geom),             pointer :: geom
-type(fv3jedi_increment),        pointer :: xuba
 type(fv3jedi_increment),        pointer :: xbal
+type(fv3jedi_increment),        pointer :: xuba
 
 call fv3jedi_linvarcha_nmcbal_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
-call fv3jedi_increment_registry%get(c_key_xuba,xuba)
 call fv3jedi_increment_registry%get(c_key_xbal,xbal)
+call fv3jedi_increment_registry%get(c_key_xuba,xuba)
 
-call multiplyadjoint(self,geom,xuba,xbal)
+call multiplyadjoint(self,geom,xbal,xuba)
 
 end subroutine c_fv3jedi_linvarcha_nmcbal_multiplyadjoint
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_nmcbal_multiplyinverse(c_key_self,c_key_geom,c_key_xuba,c_key_xbal) &
+subroutine c_fv3jedi_linvarcha_nmcbal_multiplyinverse(c_key_self,c_key_geom,c_key_xbal,c_key_xuba) &
            bind (c,name='fv3jedi_linvarcha_nmcbal_multiplyinverse_f90')
 
 implicit none
@@ -153,28 +153,28 @@ integer(c_int), intent(in) :: c_key_xbal
 
 type(fv3jedi_linvarcha_nmcbal), pointer :: self
 type(fv3jedi_geom),             pointer :: geom
-type(fv3jedi_increment),        pointer :: xuba
 type(fv3jedi_increment),        pointer :: xbal
+type(fv3jedi_increment),        pointer :: xuba
 
 call fv3jedi_linvarcha_nmcbal_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
-call fv3jedi_increment_registry%get(c_key_xuba,xuba)
 call fv3jedi_increment_registry%get(c_key_xbal,xbal)
+call fv3jedi_increment_registry%get(c_key_xuba,xuba)
 
-call multiplyinverse(self,geom,xuba,xbal)
+call multiplyinverse(self,geom,xbal,xuba)
 
 end subroutine c_fv3jedi_linvarcha_nmcbal_multiplyinverse
 
 ! ----------------------------------------------------------------------------
 
-subroutine c_fv3jedi_linvarcha_nmcbal_multiplyinverseadjoint(c_key_self,c_key_geom,c_key_xbal,c_key_xuba) &
+subroutine c_fv3jedi_linvarcha_nmcbal_multiplyinverseadjoint(c_key_self,c_key_geom,c_key_xuba,c_key_xbal) &
            bind (c,name='fv3jedi_linvarcha_nmcbal_multiplyinverseadjoint_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_xbal
 integer(c_int), intent(in) :: c_key_xuba
+integer(c_int), intent(in) :: c_key_xbal
 
 type(fv3jedi_linvarcha_nmcbal), pointer :: self
 type(fv3jedi_geom),             pointer :: geom
@@ -183,10 +183,10 @@ type(fv3jedi_increment),        pointer :: xuba
 
 call fv3jedi_linvarcha_nmcbal_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
-call fv3jedi_increment_registry%get(c_key_xbal,xbal)
 call fv3jedi_increment_registry%get(c_key_xuba,xuba)
+call fv3jedi_increment_registry%get(c_key_xbal,xbal)
 
-call multiplyinverseadjoint(self,geom,xbal,xuba)
+call multiplyinverseadjoint(self,geom,xuba,xbal)
 
 end subroutine c_fv3jedi_linvarcha_nmcbal_multiplyinverseadjoint
 
