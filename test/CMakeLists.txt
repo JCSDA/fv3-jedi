@@ -200,6 +200,7 @@ testinput/dirac_geos.yaml
 testinput/dirac_gfs.yaml
 testinput/eda_3dvar_geos.yaml
 testinput/eda_3dvar_gfs.yaml
+testinput/eda_3dvar_gfs_member2.yaml
 testinput/eda_4dvar_geos.yaml
 testinput/eda_4dvar_gfs.yaml
 testinput/enshofx_geos.yaml
@@ -1080,6 +1081,13 @@ ecbuild_add_test( TARGET       test_fv3jedi_eda_3dvar_gfs
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
                   ARGS         testinput/eda_3dvar_gfs.yaml testoutput/eda_3dvar_gfs.run
                   MPI          24
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_eda_3dvar_gfs_member2
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_eda.x
+                  ARGS         testinput/eda_3dvar_gfs_member2.yaml testoutput/eda_3dvar_gfs_member2.run
+                  MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_eda_4dvar_geos

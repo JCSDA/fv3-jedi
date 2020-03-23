@@ -1,5 +1,5 @@
 EnsembleApplication:
-  members: 4
+  current_member: 2
 cost_function:
   Jb:
     Background:
