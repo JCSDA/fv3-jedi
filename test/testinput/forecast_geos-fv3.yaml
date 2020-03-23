@@ -4,6 +4,9 @@ resolution:
   nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+  Levels: 72
+  FieldSets:
+    - FieldSet: Data/fieldsets/dynamics.yaml
 model:
   name: 'FV3'
   nml_file: Data/fv3files/input_geos_c12.nml

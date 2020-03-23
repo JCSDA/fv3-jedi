@@ -13,6 +13,8 @@ use fms_io_mod,                 only: restart_file_type, register_restart_field,
                                       free_restart_type, restore_state, save_restart
 use fckit_configuration_module, only: fckit_configuration
 
+use mpp_domains_mod,            only: east, north, center
+
 implicit none
 private
 public fv3jedi_io_gfs
@@ -213,6 +215,7 @@ integer :: compute_ps, compute_ps_type
 integer :: indexof_ps, indexof_delp
 logical :: assocps, assocdelp
 real(kind=kind_real), allocatable :: delp(:,:,:)
+integer :: position
 
 ! Register and read fields
 ! ------------------------
@@ -278,14 +281,21 @@ do var = 1,size(fields)
     call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
 
+  position = center
+  if (fields(var)%staggerloc == 'northsouth') then
+    position = north
+  elseif (fields(var)%staggerloc == 'eastwest') then
+    position = east
+  endif
+
   if (compute_ps == 0) then
     id_restart = register_restart_field( restart, trim(filename), trim(fields(var)%short_name), &
                                          fields(var)%array, domain=geom%domain, &
-                                         position=fields(var)%staggerloc )
+                                         position=position )
   elseif (compute_ps == 1) then
     id_restart = register_restart_field( restart, trim(filename), "DELP", &
                                          delp, domain=geom%domain, &
-                                         position=fields(var)%staggerloc )
+                                         position=position )
   endif
 
 enddo
@@ -342,6 +352,7 @@ integer :: var, id_restart, jlev
 logical :: read_core, read_trcr, read_sfcd, read_sfcw, register
 character(len=255) :: filename
 character(len=64)  :: datefile
+integer :: position
 
 ! Append file start with the datetime
 ! -----------------------------------
@@ -391,8 +402,15 @@ do var = 1,size(fields)
     call abor1_ftn("write_gfs: filename not set for "//trim(fields(var)%short_name))
   end select
 
+  position = center
+  if (fields(var)%staggerloc == 'northsouth') then
+    position = north
+  elseif (fields(var)%staggerloc == 'eastwest') then
+    position = east
+  endif
+
   id_restart = register_restart_field( restart, filename, fields(var)%short_name, fields(var)%array, &
-                                         domain=geom%domain, position=fields(var)%staggerloc, &
+                                         domain=geom%domain, position=position, &
                                          longname = trim(fields(var)%long_name), units = trim(fields(var)%units) )
 
 enddo

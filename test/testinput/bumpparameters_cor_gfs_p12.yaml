@@ -3,6 +3,9 @@ resolution:
   nml_file: Data/fv3files/input_gfs_c12_p12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+  Levels: 64
+  FieldSets:
+    - FieldSet: Data/fieldsets/dynamics.yaml  
 variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
 date: '2018-04-14T21:00:00Z'
 background:

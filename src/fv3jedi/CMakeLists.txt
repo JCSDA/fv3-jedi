@@ -11,6 +11,11 @@ ErrorCovariance/ErrorCovariance.h
 ErrorCovariance/ErrorCovariance.interface.h
 ErrorCovariance/fv3jedi_covariance_interface_mod.F90
 ErrorCovariance/fv3jedi_covariance_mod.f90
+FieldMetadata/FieldsMetadata.cc
+FieldMetadata/FieldsMetadata.h
+FieldMetadata/FieldsMetadata.interface.cc
+FieldMetadata/FieldsMetadata.interface.h
+FieldMetadata/fields_metadata_mod.f90
 Geometry/Geometry.cc
 Geometry/Geometry.h
 Geometry/Geometry.interface.h

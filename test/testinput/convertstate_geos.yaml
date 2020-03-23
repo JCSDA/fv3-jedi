@@ -4,11 +4,17 @@ inputresolution:
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
   interp_method: bump
+  Levels: 72
+  FieldSets:
+    - FieldSet: Data/fieldsets/dynamics.yaml
 outputresolution:
   nml_file: Data/fv3files/input_geos_c24.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
   interp_method: bump
+  Levels: 72
+  FieldSets:
+    - FieldSet: Data/fieldsets/dynamics.yaml  
 inputVariables:
   variables: ["u","v","t","delp","q","qi","ql","o3mr"]
 states:

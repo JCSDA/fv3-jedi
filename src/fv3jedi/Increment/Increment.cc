@@ -153,7 +153,7 @@ void Increment::random() {
 // -----------------------------------------------------------------------------
 oops::GridPoint Increment::getPoint(const GeometryIterator & iter) const {
   int ist, iend, jst, jend, npz;
-  fv3jedi_geo_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, npz);
+  fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, npz);
 
   oops::Variables fieldNames = vars_;
 

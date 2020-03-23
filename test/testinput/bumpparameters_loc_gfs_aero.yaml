@@ -3,6 +3,10 @@ resolution:
   nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/gfs_aero_c12/akbk.nc
+  Levels: 64
+  FieldSets:
+    - FieldSet: Data/fieldsets/aerosols.yaml
+    - FieldSet: Data/fieldsets/dynamics.yaml
 variables: ["sulf","bc1","bc2","oc1","oc2",
             "dust1","dust2","dust3","dust4","dust5",
             "seas1","seas2","seas3","seas4"]

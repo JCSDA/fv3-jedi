@@ -310,6 +310,17 @@ Data/femps/fv3grid_c0096.nc4
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/femps)
 LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# Field sets
+# ----------
+list( APPEND fv3jedi_field_sets
+Data/fieldsets/aerosols.yaml
+Data/fieldsets/dynamics.yaml
+Data/fieldsets/ufo.yaml
+)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fieldsets)
+LINK_FILES( "${fv3jedi_field_sets}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
 # Resources from other respositores
 # ---------------------------------
 

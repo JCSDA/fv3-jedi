@@ -8,7 +8,6 @@ module fv3jedi_field_mod
 use fckit_mpi_module
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
-use mpp_domains_mod,   only: east, north, center
 
 implicit none
 
@@ -33,8 +32,9 @@ type :: fv3jedi_field
  character(len=10) :: fv3jedi_name = "null" !Common name
  character(len=64) :: long_name = "null"    !More descriptive name
  character(len=32) :: units = "null"        !Units for the field
- logical :: tracer = .false.
- integer :: staggerloc   !Middle, corners, east, south, etc
+ logical :: tracer = .false.                !Whether field is classified as tracer (pos. def.)
+ character(len=64) :: space                 !One of vector, magnitude, direction
+ character(len=64) :: staggerloc            !One of center, eastwest, northsouth, corner
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
  logical :: integerfield = .false.
@@ -52,7 +52,7 @@ contains
 ! --------------------------------------------------------------------------------------------------
 
 subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
-                          fv3jedi_name,units,staggerloc,tracer,integerfield)
+                          fv3jedi_name,units,space,staggerloc,tracer,integerfield)
 
 implicit none
 class(fv3jedi_field), target,  intent(inout) :: self
@@ -61,9 +61,10 @@ character(len=*),              intent(in)    :: short_name
 character(len=*),              intent(in)    :: long_name
 character(len=*),              intent(in)    :: fv3jedi_name
 character(len=*),              intent(in)    :: units
-integer,                       intent(in)    :: staggerloc
-logical, optional,             intent(in)    :: tracer
-logical, optional,             intent(in)    :: integerfield
+character(len=*),              intent(in)    :: space
+character(len=*),              intent(in)    :: staggerloc
+logical,                       intent(in)    :: tracer
+logical,                       intent(in)    :: integerfield
 
 self%isc = isc
 self%iec = iec
@@ -71,16 +72,16 @@ self%jsc = jsc
 self%jec = jec
 self%npz = npz
 
-if (len(fv3jedi_name) > 10) &
-call abor1_ftn("fv3jedi_field_mod.allocate_field: fv3jedi_name should not be longer than ten characters")
+if (len(fv3jedi_name) > 10) call abor1_ftn("fv3jedi_field_mod.allocate_field: fv3jedi_name " &
+                                        //fv3jedi_name//" should not be longer than ten characters")
 
 if(.not.self%lalloc) then
 
-  if (staggerloc == center) then
+  if (trim(staggerloc) == 'center') then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
-  elseif (staggerloc == north) then
+  elseif (trim(staggerloc) == 'northsouth') then
     allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
-  elseif (staggerloc == east) then
+  elseif (trim(staggerloc) == 'eastwest') then
     allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
   endif
 
@@ -92,20 +93,10 @@ self%short_name   = trim(short_name)
 self%long_name    = trim(long_name)
 self%fv3jedi_name = trim(fv3jedi_name)
 self%units        = trim(units)
+self%space        = space
 self%staggerloc   = staggerloc
-
-if (present(tracer)) then
-  self%tracer = tracer
-else
-  self%tracer = .false.
-endif
-
-! Fields that are e.g. types
-if (present(integerfield)) then
-  self%integerfield = integerfield
-else
-  self%integerfield = .false.
-endif
+self%tracer       = tracer
+self%integerfield = integerfield
 
 end subroutine allocate_field
 
@@ -130,12 +121,14 @@ class(fv3jedi_field), intent(inout) :: self
 type (fv3jedi_field), intent(in)    :: rhs
 
 call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
-                          short_name=rhs%short_name, &
-                          long_name=rhs%long_name, &
-                          fv3jedi_name=rhs%fv3jedi_name, &
-                          units=rhs%units, &
-                          staggerloc=rhs%staggerloc, &
-                          tracer = rhs%tracer)
+                          short_name   = rhs%short_name, &
+                          long_name    = rhs%long_name, &
+                          fv3jedi_name = rhs%fv3jedi_name, &
+                          units        = rhs%units, &
+                          space        = rhs%space, &
+                          staggerloc   = rhs%staggerloc, &
+                          tracer       = rhs%tracer, &
+                          integerfield = rhs%integerfield)
 
 self%array = rhs%array
 
@@ -432,11 +425,11 @@ do n = 1, nf
 
   if (fields(n)%npz > 1) then
 
-    if (fields(n)%staggerloc == center) then
+    if (trim(fields(n)%staggerloc) == 'center') then
       allocate(array_tmp(fields(n)%isc:fields(n)%iec,fields(n)%jsc:fields(n)%jec,1:fields(n)%npz))
-    elseif (fields(n)%staggerloc == north) then
+    elseif (trim(fields(n)%staggerloc) == 'northsouth') then
       allocate(array_tmp(fields(n)%isc:fields(n)%iec,fields(n)%jsc:fields(n)%jec+1,1:fields(n)%npz))
-    elseif (fields(n)%staggerloc == east) then
+    elseif (trim(fields(n)%staggerloc) == 'eastwest') then
       allocate(array_tmp(fields(n)%isc:fields(n)%iec+1,fields(n)%jsc:fields(n)%jec,1:fields(n)%npz))
     endif
 

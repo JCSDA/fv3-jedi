@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,16 +8,22 @@
 module fv3jedi_geom_interface_mod
 
 use atlas_module
-use fv3jedi_kinds_mod
 use iso_c_binding
+
+use fckit_mpi_module,           only: fckit_mpi_comm
+use fckit_configuration_module, only: fckit_configuration
+
+use fields_metadata_mod, only: fields_metadata
+
+use fv3jedi_kinds_mod
 use fv3jedi_geom_mod
 
 implicit none
-private
 
+private
 public :: fv3jedi_geom_registry
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 #define LISTED_TYPE fv3jedi_geom
 
@@ -27,174 +33,221 @@ public :: fv3jedi_geom_registry
 !> Global registry
 type(registry_t) :: fv3jedi_geom_registry
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
 !> Linked list implementation
 #include "oops/util/linkedList_c.f"
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_setup(c_key_self, c_conf, c_comm) bind(c,name='fv3jedi_geo_setup_f90')
-use fckit_mpi_module,   only: fckit_mpi_comm
+subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_fields_meta) &
+                               bind(c, name='fv3jedi_geom_setup_f90')
 
 implicit none
 
 !Arguments
-integer(c_int), intent(inout)  :: c_key_self
-type(c_ptr), intent(in)        :: c_conf
-type(c_ptr), value, intent(in) :: c_comm
+integer(c_int),     intent(inout) :: c_key_self
+type(c_ptr),        intent(in)    :: c_conf
+type(c_ptr), value, intent(in)    :: c_comm
+type(c_ptr), value, intent(in)    :: c_fields_meta
 
 type(fv3jedi_geom), pointer :: self
+type(fckit_configuration)   :: f_conf
 type(fckit_mpi_comm)        :: f_comm
+type(fields_metadata)       :: f_fields_metadata
 
-! Init, add and get key
-! ---------------------
+! LinkedList
+! ----------
 call fv3jedi_geom_registry%init()
 call fv3jedi_geom_registry%add(c_key_self)
 call fv3jedi_geom_registry%get(c_key_self,self)
 
-f_comm = fckit_mpi_comm(c_comm)
-call create(self,c_conf, f_comm)
+! Fortran APIs
+! ------------
+f_conf            = fckit_configuration(c_conf)
+f_comm            = fckit_mpi_comm(c_comm)
+f_fields_metadata = fields_metadata(c_fields_meta)
 
-end subroutine c_fv3jedi_geo_setup
+! Call implementation
+! -------------------
+call self%create(f_conf, f_comm, f_fields_metadata)
 
-! ------------------------------------------------------------------------------
+end subroutine c_fv3jedi_geom_setup
 
-subroutine c_fv3jedi_geo_create_atlas_grid_conf(c_key_self, c_conf) bind(c,name='fv3jedi_geo_create_atlas_grid_conf_f90')
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_clone(c_key_self, c_key_other, c_fields_meta) bind(c,name='fv3jedi_geom_clone_f90')
 
 implicit none
 
-!Arguments
-integer(c_int), intent(in) :: c_key_self
-type(c_ptr), intent(in)    :: c_conf
+integer(c_int),     intent(inout) :: c_key_self
+integer(c_int),     intent(in)    :: c_key_other
+type(c_ptr), value, intent(in)    :: c_fields_meta
 
 type(fv3jedi_geom), pointer :: self
+type(fv3jedi_geom), pointer :: other
+type(fields_metadata)       :: f_fields_metadata
 
-! Get key
-call fv3jedi_geom_registry%get(c_key_self,self)
-
-call create_atlas_grid_conf(self,c_conf)
-
-end subroutine c_fv3jedi_geo_create_atlas_grid_conf
-
-! ------------------------------------------------------------------------------
-
-subroutine c_fv3jedi_geo_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace) &
- & bind(c,name='fv3jedi_geo_set_atlas_functionspace_pointer_f90')
-
-!Arguments
-integer(c_int), intent(in)     :: c_key_self
-type(c_ptr), intent(in), value :: c_afunctionspace
-
-type(fv3jedi_geom),pointer :: self
-
-! Get key
-call fv3jedi_geom_registry%get(c_key_self,self)
-self%afunctionspace = atlas_functionspace_nodecolumns(c_afunctionspace)
-
-end subroutine c_fv3jedi_geo_set_atlas_functionspace_pointer
-
-! ------------------------------------------------------------------------------
-
-subroutine c_fv3jedi_geo_fill_atlas_fieldset(c_key_self, c_afieldset) &
- & bind(c,name='fv3jedi_geo_fill_atlas_fieldset_f90')
-
-implicit none
-
-!Arguments
-integer(c_int), intent(in)     :: c_key_self
-type(c_ptr), intent(in), value :: c_afieldset
-
-type(fv3jedi_geom), pointer :: self
-type(atlas_fieldset) :: afieldset
-
-! Get key
-call fv3jedi_geom_registry%get(c_key_self,self)
-afieldset = atlas_fieldset(c_afieldset)
-
-call fill_atlas_fieldset(self,afieldset)
-
-end subroutine c_fv3jedi_geo_fill_atlas_fieldset
-
-! ------------------------------------------------------------------------------
-
-subroutine c_fv3jedi_geo_clone(c_key_self, c_key_other) bind(c,name='fv3jedi_geo_clone_f90')
-
-implicit none
-
-integer(c_int), intent(in   ) :: c_key_self
-integer(c_int), intent(inout) :: c_key_other
-
-type(fv3jedi_geom), pointer :: self, other
-
-!add, get, get key
-call fv3jedi_geom_registry%add(c_key_other)
-call fv3jedi_geom_registry%get(c_key_other, other)
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%add(c_key_self)
 call fv3jedi_geom_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_other, other)
 
-call clone(self, other)
+! Fortran APIs
+! ------------
+f_fields_metadata = fields_metadata(c_fields_meta)
 
-end subroutine c_fv3jedi_geo_clone
+! Call implementation
+! -------------------
+call self%clone(other, f_fields_metadata)
 
-! ------------------------------------------------------------------------------
+end subroutine c_fv3jedi_geom_clone
 
-subroutine c_fv3jedi_geo_delete(c_key_self) bind(c,name='fv3jedi_geo_delete_f90')
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_delete(c_key_self) bind(c,name='fv3jedi_geom_delete_f90')
 
 implicit none
 
 integer(c_int), intent(inout) :: c_key_self
 type(fv3jedi_geom), pointer :: self
 
-! Get key
+! LinkedList
+! ----------
 call fv3jedi_geom_registry%get(c_key_self, self)
 
-call delete(self)
+! Call implementation
+! -------------------
+call self%delete()
 
-! Remove key
+! LinkedList
+! ----------
 call fv3jedi_geom_registry%remove(c_key_self)
 
-end subroutine c_fv3jedi_geo_delete
+end subroutine c_fv3jedi_geom_delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geo_info(c_key_self) bind(c,name='fv3jedi_geo_info_f90')
+subroutine c_fv3jedi_geom_print(c_key_self, c_cube) bind(c,name='fv3jedi_geom_print_f90')
 
 implicit none
 
-integer(c_int), intent(in   ) :: c_key_self
+integer(c_int), intent(in)    :: c_key_self
+integer(c_int), intent(inout) :: c_cube
+
 type(fv3jedi_geom), pointer :: self
 
+! LinkedList
+! ----------
 call fv3jedi_geom_registry%get(c_key_self, self)
 
-call info(self)
+! Get Cube size
+! -------------
+c_cube = self%npx - 1
 
-end subroutine c_fv3jedi_geo_info
+end subroutine c_fv3jedi_geom_print
 
-! ------------------------------------------------------------------------------
-!> return begin and end of local geometry
-subroutine c_fv3jedi_geo_start_end(c_key_self, ist, iend, jst, jend, npz) bind(c, name='fv3jedi_geo_start_end_f90')
+! --------------------------------------------------------------------------------------------------
 
-  implicit none
+subroutine c_fv3jedi_geom_create_atlas_grid_conf(c_key_self, c_conf) &
+                                             bind(c,name='fv3jedi_geom_create_atlas_grid_conf_f90')
 
-  integer(c_int), intent( in) :: c_key_self
-  integer(c_int), intent(out) :: ist, iend, jst, jend, npz
+implicit none
 
-  type(fv3jedi_geom), pointer :: self
-  call fv3jedi_geom_registry%get(c_key_self, self)
+!Arguments
+integer(c_int), intent(in) :: c_key_self
+type(c_ptr),    intent(in) :: c_conf
 
-  ist  = self%isc
-  iend = self%iec
-  jst  = self%jsc
-  jend = self%jec
-  npz  = self%npz
+type(fv3jedi_geom), pointer :: self
+type(fckit_configuration)   :: f_conf
 
-end subroutine c_fv3jedi_geo_start_end
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self,self)
 
+! Fortran APIs
+! ------------
+f_conf = fckit_configuration(c_conf)
 
+! Call implementation
+! -------------------
+call self%create_atlas_grid_conf(f_conf)
 
-! ------------------------------------------------------------------------------
+end subroutine c_fv3jedi_geom_create_atlas_grid_conf
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace) &
+                                    bind(c,name='fv3jedi_geom_set_atlas_functionspace_pointer_f90')
+
+integer(c_int), intent(in)     :: c_key_self
+type(c_ptr), intent(in), value :: c_afunctionspace
+
+type(fv3jedi_geom),pointer :: self
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self,self)
+
+! Create function space
+! ---------------------
+self%afunctionspace = atlas_functionspace_nodecolumns(c_afunctionspace)
+
+end subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_fill_atlas_fieldset(c_key_self, c_afieldset) &
+ & bind(c,name='fv3jedi_geom_fill_atlas_fieldset_f90')
+
+implicit none
+
+integer(c_int),     intent(in) :: c_key_self
+type(c_ptr), value, intent(in) :: c_afieldset
+
+type(fv3jedi_geom), pointer :: self
+type(atlas_fieldset) :: afieldset
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self,self)
+afieldset = atlas_fieldset(c_afieldset)
+
+! Call implementation
+! -------------------
+call self%fill_atlas_fieldset(afieldset)
+
+end subroutine c_fv3jedi_geom_fill_atlas_fieldset
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_start_end(c_key_self, ist, iend, jst, jend, npz) &
+                                    bind(c, name='fv3jedi_geom_start_end_f90')
+
+implicit none
+
+integer(c_int), intent( in) :: c_key_self
+integer(c_int), intent(out) :: ist, iend, jst, jend, npz
+
+type(fv3jedi_geom), pointer :: self
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self, self)
+
+ist  = self%isc
+iend = self%iec
+jst  = self%jsc
+jend = self%jec
+npz  = self%npz
+
+end subroutine c_fv3jedi_geom_start_end
+
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_geom_interface_mod

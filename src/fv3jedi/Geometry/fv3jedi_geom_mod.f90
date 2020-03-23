@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,37 +8,37 @@
 module fv3jedi_geom_mod
 
 !General JEDI uses
-use atlas_module
-use fv3jedi_kinds_mod
-use iso_c_binding
-use fckit_mpi_module, only: fckit_mpi_comm
 use netcdf
 use mpi
 use string_f_c_mod
 
+use atlas_module
+
+use fckit_mpi_module, only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
+
+use fields_metadata_mod, only: fields_metadata, field_metadata
+
+use fv3jedi_kinds_mod
+use fv3jedi_netcdf_utils_mod, only: nccheck
+use fv3jedi_constants_mod,    only: ps, rad2deg
+use fv3geom_create_grid_mod,  only: create_fv3_grid
 
 !FMS/MPP uses
 use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
 use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
 use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 
-use fv3jedi_netcdf_utils_mod, only: nccheck
-use fv3jedi_constants_mod,    only: ps, rad2deg
-
 !Uses for generating geometry using FV3 routines
 use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
 use fv_control_nlm_mod, only: fv_init, pelist_all
 
-use fv3geom_create_grid_mod, only: create_fv3_grid
-
 implicit none
+
 private
-
 public :: fv3jedi_geom
-public :: create, create_atlas_grid_conf, fill_atlas_fieldset, clone, delete, info
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 !> Fortran derived type to hold geometry data for the FV3JEDI model
 type :: fv3jedi_geom
@@ -64,6 +64,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:,:,:) :: es, ew
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
+  type(fields_metadata) :: fields
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -79,33 +80,39 @@ type :: fv3jedi_geom
   integer :: grid_type = 0
   logical :: dord4 = .true.
   type(atlas_functionspace) :: afunctionspace
+  contains
+    procedure, public :: create
+    procedure, public :: clone
+    procedure, public :: delete
+    procedure, public :: create_atlas_grid_conf
+    procedure, public :: fill_atlas_fieldset
 end type fv3jedi_geom
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, c_conf, f_comm)
+subroutine create(self, conf, comm, fields)
 
 implicit none
 
 !Arguments
-type(fv3jedi_geom), target,  intent(inout) :: self
-type(c_ptr),                 intent(in)    :: c_conf
-type(fckit_mpi_comm),        intent(in)    :: f_comm
+class(fv3jedi_geom), target, intent(inout) :: self
+type(fckit_configuration),   intent(in)    :: conf
+type(fckit_mpi_comm),        intent(in)    :: comm
+type(fields_metadata),       intent(in)    :: fields
 
 !Locals
 character(len=256)                    :: pathfile_akbk
 type(fv_atmos_type), allocatable      :: FV_Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
 integer                               :: i, j, jj
-integer                               :: p_split = 1
+integer                               :: p_split = 1, levels
 integer                               :: ncstat, ncid, akvarid, bkvarid, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
-type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
 
@@ -114,26 +121,30 @@ real(kind=kind_real), allocatable, dimension(:,:) :: egrid_lon, egrid_lat
 
 ! Add the communicator to the geometry
 ! ------------------------------------
-self%f_comm = f_comm
-
-! Fortran configuration
-! ---------------------
-f_conf = fckit_configuration(c_conf)
+self%f_comm = comm
 
 ! Set path/filename for ak and bk
 ! -------------------------------
-call f_conf%get_or_die("pathfile_akbk",str)
+call conf%get_or_die("pathfile_akbk",str)
 pathfile_akbk = str
 deallocate(str)
 
 ! Interpolation type
 ! ------------------
 self%interp_method = 'barycent'
-if (f_conf%has("interp_method")) then
-  call f_conf%get_or_die("interp_method",str)
+if (conf%has("interp_method")) then
+  call conf%get_or_die("interp_method",str)
   self%interp_method = str
   deallocate(str)
 endif
+
+! Get Levels from conf
+! --------------------
+call conf%get_or_die("Levels", levels)
+
+! Local pointer to field meta data
+! --------------------------------
+self%fields = fields
 
 !Intialize using the model setup routine
 ! --------------------------------------
@@ -322,10 +333,18 @@ call setup_domain( self%domain_fix, self%npx-1, self%npx-1, &
 
 self%domain => self%domain_fix
 
+! Check on Levels
+! ---------------
+if (levels .ne. self%npz) then
+  print*, 'Levels: ', levels
+  print*, 'npz: ', self%npz
+  call abor1_ftn("Levels from config does not match levels from input.nml")
+endif
+
 ! Optionally write the geometry to file
 ! -------------------------------------
-if (f_conf%has("do_write_geom")) then
-  call f_conf%get_or_die("do_write_geom",do_write_geom)
+if (conf%has("do_write_geom")) then
+  call conf%get_or_die("do_write_geom",do_write_geom)
 endif
 
 if (do_write_geom) then
@@ -348,210 +367,137 @@ endif
 
 end subroutine create
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine create_atlas_grid_conf(self,c_conf)
-
-implicit none
-
-!Arguments
-type(fv3jedi_geom), intent(inout) :: self
-type(c_ptr),        intent(in)    :: c_conf
-
-!Locals
-integer :: i,j,node
-real(kind=kind_real) :: x((self%iec-self%isc+1)*(self%jec-self%jsc+1)),y((self%iec-self%isc+1)*(self%jec-self%jsc+1))
-type(fckit_configuration) :: f_conf
-
-! Fortran configuration
-! ---------------------
-f_conf = fckit_configuration(c_conf)
-
-! Create unstructured grid configuration
-node = 0
-do j=self%jsc,self%jec
-  do i=self%isc,self%iec
-    node = node+1
-    x(node) = rad2deg*self%grid_lon(i,j)
-    y(node) = rad2deg*self%grid_lat(i,j)
-  enddo
-enddo
-
-! Create ATLAS grid configuration
-call f_conf%set("type","unstructured")
-call f_conf%set("x",x)
-call f_conf%set("y",y)
-
-end subroutine create_atlas_grid_conf
-
-! ------------------------------------------------------------------------------
-
-subroutine fill_atlas_fieldset(self,afieldset)
-
-!Arguments
-type(fv3jedi_geom),   intent(inout) :: self
-type(atlas_fieldset), intent(inout) :: afieldset
-
-!Locals
-integer :: i, j, jl, node
-real(kind=kind_real) :: sigmaup, sigmadn
-real(kind=kind_real),pointer :: real_ptr_1(:), real_ptr_2(:,:)
-type(atlas_field) :: afield
-
-! Add area
-afield = self%afunctionspace%create_field(name='area',kind=atlas_real(kind_real),levels=0)
-call afield%data(real_ptr_1)
-node = 0
-do j=self%jsc,self%jec
-  do i=self%isc,self%iec
-    node = node+1
-    real_ptr_1(node) = self%area(i,j)
-  enddo
-enddo
-call afieldset%add(afield)
-call afield%final()
-
-! Add vertical unit
-afield = self%afunctionspace%create_field(name='vunit',kind=atlas_real(kind_real),levels=self%npz)
-call afield%data(real_ptr_2)
-do jl=1,self%npz
-  sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
-  sigmadn = self%ak(jl  )/ps+self%bk(jl  )
-  real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
-enddo
-call afieldset%add(afield)
-call afield%final()
-
-end subroutine fill_atlas_fieldset
-
-! ------------------------------------------------------------------------------
-
-subroutine clone(self, other)
+subroutine clone(self, other, fields)
 
 implicit none
 
-type(fv3jedi_geom), target, intent(in)    :: self
-type(fv3jedi_geom),         intent(inout) :: other
+class(fv3jedi_geom),        intent(inout) :: self
+type(fv3jedi_geom), target, intent(in)    :: other
+type(fields_metadata),      intent(in)    :: fields
 
-allocate(other%ak(self%npz+1) )
-allocate(other%bk(self%npz+1) )
+allocate(self%ak(other%npz+1) )
+allocate(self%bk(other%npz+1) )
 
-allocate(other%grid_lon   (self%isd  :self%ied,  self%jsd  :self%jed  ))
-allocate(other%grid_lat   (self%isd  :self%ied,  self%jsd  :self%jed  ))
-allocate(other%egrid_lon  (self%isd  :self%ied+1,self%jsd  :self%jed+1))
-allocate(other%egrid_lat  (self%isd  :self%ied+1,self%jsd  :self%jed+1))
-allocate(other%area       (self%isd  :self%ied,  self%jsd  :self%jed  ))
-allocate(other%dx         (self%isd  :self%ied  ,self%jsd  :self%jed+1))
-allocate(other%dy         (self%isd  :self%ied+1,self%jsd  :self%jed  ))
-allocate(other%dxc        (self%isd  :self%ied+1,self%jsd  :self%jed  ))
-allocate(other%dyc        (self%isd  :self%ied  ,self%jsd  :self%jed+1))
+allocate(self%grid_lon   (other%isd  :other%ied,  other%jsd  :other%jed  ))
+allocate(self%grid_lat   (other%isd  :other%ied,  other%jsd  :other%jed  ))
+allocate(self%egrid_lon  (other%isd  :other%ied+1,other%jsd  :other%jed+1))
+allocate(self%egrid_lat  (other%isd  :other%ied+1,other%jsd  :other%jed+1))
+allocate(self%area       (other%isd  :other%ied,  other%jsd  :other%jed  ))
+allocate(self%dx         (other%isd  :other%ied  ,other%jsd  :other%jed+1))
+allocate(self%dy         (other%isd  :other%ied+1,other%jsd  :other%jed  ))
+allocate(self%dxc        (other%isd  :other%ied+1,other%jsd  :other%jed  ))
+allocate(self%dyc        (other%isd  :other%ied  ,other%jsd  :other%jed+1))
 
-allocate(other%grid       (self%isd  :self%ied+1,self%jsd  :self%jed+1,2))
-allocate(other%vlon       (self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
-allocate(other%vlat       (self%isc-2:self%iec+2,self%jsc-2:self%jec+2,3))
+allocate(self%grid       (other%isd  :other%ied+1,other%jsd  :other%jed+1,2))
+allocate(self%vlon       (other%isc-2:other%iec+2,other%jsc-2:other%jec+2,3))
+allocate(self%vlat       (other%isc-2:other%iec+2,other%jsc-2:other%jec+2,3))
 
-allocate(other%edge_vect_n(self%isd:self%ied))
-allocate(other%edge_vect_e(self%jsd:self%jed))
-allocate(other%edge_vect_s(self%isd:self%ied))
-allocate(other%edge_vect_w(self%jsd:self%jed))
+allocate(self%edge_vect_n(other%isd:other%ied))
+allocate(self%edge_vect_e(other%jsd:other%jed))
+allocate(self%edge_vect_s(other%isd:other%ied))
+allocate(self%edge_vect_w(other%jsd:other%jed))
 
-allocate(other%es(3,self%isd:self%ied  ,self%jsd:self%jed+1,2))
-allocate(other%ew(3,self%isd:self%ied+1,self%jsd:self%jed,  2))
+allocate(self%es(3,other%isd:other%ied  ,other%jsd:other%jed+1,2))
+allocate(self%ew(3,other%isd:other%ied+1,other%jsd:other%jed,  2))
 
-allocate(other%a11(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
-allocate(other%a12(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
-allocate(other%a21(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
-allocate(other%a22(self%isc-1:self%iec+1,self%jsc-1:self%jec+1) )
+allocate(self%a11(other%isc-1:other%iec+1,other%jsc-1:other%jec+1) )
+allocate(self%a12(other%isc-1:other%iec+1,other%jsc-1:other%jec+1) )
+allocate(self%a21(other%isc-1:other%iec+1,other%jsc-1:other%jec+1) )
+allocate(self%a22(other%isc-1:other%iec+1,other%jsc-1:other%jec+1) )
 
-allocate(other%rarea (self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(other%sin_sg(self%isd:self%ied  ,self%jsd:self%jed  ,9))
-allocate(other%cosa_u(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate(other%cosa_v(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(other%cosa_s(self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(other%rsin_u(self%isd:self%ied+1,self%jsd:self%jed  ))
-allocate(other%rsin_v(self%isd:self%ied  ,self%jsd:self%jed+1))
-allocate(other%rsin2 (self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(other%dxa   (self%isd:self%ied  ,self%jsd:self%jed  ))
-allocate(other%dya   (self%isd:self%ied  ,self%jsd:self%jed  ))
+allocate(self%rarea (other%isd:other%ied  ,other%jsd:other%jed  ))
+allocate(self%sin_sg(other%isd:other%ied  ,other%jsd:other%jed  ,9))
+allocate(self%cosa_u(other%isd:other%ied+1,other%jsd:other%jed  ))
+allocate(self%cosa_v(other%isd:other%ied  ,other%jsd:other%jed+1))
+allocate(self%cosa_s(other%isd:other%ied  ,other%jsd:other%jed  ))
+allocate(self%rsin_u(other%isd:other%ied+1,other%jsd:other%jed  ))
+allocate(self%rsin_v(other%isd:other%ied  ,other%jsd:other%jed+1))
+allocate(self%rsin2 (other%isd:other%ied  ,other%jsd:other%jed  ))
+allocate(self%dxa   (other%isd:other%ied  ,other%jsd:other%jed  ))
+allocate(self%dya   (other%isd:other%ied  ,other%jsd:other%jed  ))
 
-allocate(other%lat_us(self%ngrid))
-allocate(other%lon_us(self%ngrid))
+allocate(self%lat_us(self%ngrid))
+allocate(self%lon_us(self%ngrid))
 
-other%npx             = self%npx
-other%npy             = self%npy
-other%npz             = self%npz
-other%ngrid           = self%ngrid
-other%layout          = self%layout
-other%io_layout       = self%io_layout
-other%isc             = self%isc
-other%isd             = self%isd
-other%iec             = self%iec
-other%ied             = self%ied
-other%jsc             = self%jsc
-other%jsd             = self%jsd
-other%jec             = self%jec
-other%jed             = self%jed
-other%ntile           = self%ntile
-other%ntiles          = self%ntiles
-other%ptop            = self%ptop
-other%ak              = self%ak
-other%bk              = self%bk
-other%grid_lon        = self%grid_lon
-other%grid_lat        = self%grid_lat
-other%egrid_lon       = self%egrid_lon
-other%egrid_lat       = self%egrid_lat
-other%area            = self%area
-other%dx              = self%dx
-other%dy              = self%dy
-other%dxc             = self%dxc
-other%dyc             = self%dyc
-other%grid            = self%grid
-other%vlon            = self%vlon
-other%vlat            = self%vlat
-other%edge_vect_n     = self%edge_vect_n
-other%edge_vect_e     = self%edge_vect_e
-other%edge_vect_s     = self%edge_vect_s
-other%edge_vect_w     = self%edge_vect_w
-other%es              = self%es
-other%ew              = self%ew
-other%a11             = self%a11
-other%a12             = self%a12
-other%a21             = self%a21
-other%a22             = self%a22
-other%f_comm          = self%f_comm
-other%interp_method   = self%interp_method
+self%npx             = other%npx
+self%npy             = other%npy
+self%npz             = other%npz
+self%ngrid           = other%ngrid
+self%layout          = other%layout
+self%io_layout       = other%io_layout
+self%isc             = other%isc
+self%isd             = other%isd
+self%iec             = other%iec
+self%ied             = other%ied
+self%jsc             = other%jsc
+self%jsd             = other%jsd
+self%jec             = other%jec
+self%jed             = other%jed
+self%ntile           = other%ntile
+self%ntiles          = other%ntiles
+self%ptop            = other%ptop
+self%ak              = other%ak
+self%bk              = other%bk
+self%grid_lon        = other%grid_lon
+self%grid_lat        = other%grid_lat
+self%egrid_lon       = other%egrid_lon
+self%egrid_lat       = other%egrid_lat
+self%area            = other%area
+self%dx              = other%dx
+self%dy              = other%dy
+self%dxc             = other%dxc
+self%dyc             = other%dyc
+self%grid            = other%grid
+self%vlon            = other%vlon
+self%vlat            = other%vlat
+self%edge_vect_n     = other%edge_vect_n
+self%edge_vect_e     = other%edge_vect_e
+self%edge_vect_s     = other%edge_vect_s
+self%edge_vect_w     = other%edge_vect_w
+self%es              = other%es
+self%ew              = other%ew
+self%a11             = other%a11
+self%a12             = other%a12
+self%a21             = other%a21
+self%a22             = other%a22
+self%f_comm          = other%f_comm
+self%interp_method   = other%interp_method
 
-other%rarea     = self%rarea
-other%sin_sg    = self%sin_sg
-other%cosa_u    = self%cosa_u
-other%cosa_v    = self%cosa_v
-other%cosa_s    = self%cosa_s
-other%rsin_u    = self%rsin_u
-other%rsin_v    = self%rsin_v
-other%rsin2     = self%rsin2
-other%dxa       = self%dxa
-other%dya       = self%dya
-other%ne_corner = self%ne_corner
-other%se_corner = self%se_corner
-other%sw_corner = self%sw_corner
-other%nw_corner = self%nw_corner
+self%rarea     = other%rarea
+self%sin_sg    = other%sin_sg
+self%cosa_u    = other%cosa_u
+self%cosa_v    = other%cosa_v
+self%cosa_s    = other%cosa_s
+self%rsin_u    = other%rsin_u
+self%rsin_v    = other%rsin_v
+self%rsin2     = other%rsin2
+self%dxa       = other%dxa
+self%dya       = other%dya
+self%ne_corner = other%ne_corner
+self%se_corner = other%se_corner
+self%sw_corner = other%sw_corner
+self%nw_corner = other%nw_corner
 
-other%domain => self%domain
+self%domain => other%domain
 
-other%afunctionspace = atlas_functionspace_nodecolumns(self%afunctionspace%c_ptr())
+self%afunctionspace = atlas_functionspace_nodecolumns(other%afunctionspace%c_ptr())
 
-other%lat_us = self%lat_us
-other%lon_us = self%lon_us
+self%fields = fields
+
+self%lat_us = other%lat_us
+self%lon_us = other%lon_us
 
 end subroutine clone
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine delete(self)
 
 implicit none
 
-type(fv3jedi_geom), intent(inout) :: self
+class(fv3jedi_geom), intent(inout) :: self
 
 ! Deallocate
 deallocate(self%ak)
@@ -600,17 +546,78 @@ call self%afunctionspace%final()
 
 end subroutine delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine info(self)
+subroutine create_atlas_grid_conf(self, conf)
 
 implicit none
 
-type(fv3jedi_geom), intent(in) :: self
+!Arguments
+class(fv3jedi_geom),       intent(inout) :: self
+type(fckit_configuration), intent(inout) :: conf
 
-end subroutine info
+!Locals
+integer :: i,j,node
+real(kind=kind_real) :: x((self%iec-self%isc+1)*(self%jec-self%jsc+1)),y((self%iec-self%isc+1)*(self%jec-self%jsc+1))
 
-! ------------------------------------------------------------------------------
+! Create unstructured grid configuration
+node = 0
+do j=self%jsc,self%jec
+  do i=self%isc,self%iec
+    node = node+1
+    x(node) = rad2deg*self%grid_lon(i,j)
+    y(node) = rad2deg*self%grid_lat(i,j)
+  enddo
+enddo
+
+! Create ATLAS grid configuration
+call conf%set("type","unstructured")
+call conf%set("x",x)
+call conf%set("y",y)
+
+end subroutine create_atlas_grid_conf
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fill_atlas_fieldset(self,afieldset)
+
+!Arguments
+class(fv3jedi_geom),  intent(inout) :: self
+type(atlas_fieldset), intent(inout) :: afieldset
+
+!Locals
+integer :: i, j, jl, node
+real(kind=kind_real) :: sigmaup, sigmadn
+real(kind=kind_real),pointer :: real_ptr_1(:), real_ptr_2(:,:)
+type(atlas_field) :: afield
+
+! Add area
+afield = self%afunctionspace%create_field(name='area',kind=atlas_real(kind_real),levels=0)
+call afield%data(real_ptr_1)
+node = 0
+do j=self%jsc,self%jec
+  do i=self%isc,self%iec
+    node = node+1
+    real_ptr_1(node) = self%area(i,j)
+  enddo
+enddo
+call afieldset%add(afield)
+call afield%final()
+
+! Add vertical unit
+afield = self%afunctionspace%create_field(name='vunit',kind=atlas_real(kind_real),levels=self%npz)
+call afield%data(real_ptr_2)
+do jl=1,self%npz
+  sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
+  sigmadn = self%ak(jl  )/ps+self%bk(jl  )
+  real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+enddo
+call afieldset%add(afield)
+call afield%final()
+
+end subroutine fill_atlas_fieldset
+
+! --------------------------------------------------------------------------------------------------
 
 subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
@@ -738,7 +745,7 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
 end subroutine setup_domain
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine write_geom(self)
 
@@ -846,6 +853,6 @@ subroutine write_geom(self)
 
 end subroutine write_geom
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_geom_mod

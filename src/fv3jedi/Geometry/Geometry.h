@@ -21,6 +21,7 @@
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
+#include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 #include "fv3jedi/Geometry/Geometry.interface.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
 
@@ -32,7 +33,7 @@ namespace fv3jedi {
 
   class GeometryIterator;
 
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 /// Geometry handles geometry for FV3JEDI model.
 
 class Geometry : public util::Printable,
@@ -60,8 +61,9 @@ class Geometry : public util::Printable,
   const eckit::mpi::Comm & comm_;
   std::unique_ptr<atlas::functionspace::NodeColumns> atlasFunctionSpace_;
   std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
+  const FieldsMetadata fieldsMeta_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 

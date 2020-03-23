@@ -23,11 +23,14 @@
 #include "fv3jedi/Run/Run.h"
 #include "fv3jedi/Utilities/Utilities.h"
 
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+
 namespace fv3jedi {
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 Geometry::Geometry(const eckit::Configuration & conf,
-                   const eckit::mpi::Comm & comm) : comm_(comm) {
+                   const eckit::mpi::Comm & comm) : comm_(comm), fieldsMeta_(conf) {
   const eckit::Configuration * configc = &conf;
 
   static bool initialized = false;
@@ -40,13 +43,13 @@ Geometry::Geometry(const eckit::Configuration & conf,
   }
 
   stageFv3Files(conf);
-  fv3jedi_geo_setup_f90(keyGeom_, &configc, &comm_);
+  fv3jedi_geom_setup_f90(keyGeom_, &configc, &comm_, &fieldsMeta_);
   removeFv3Files();
 
   // Create ATLAS grid configuration
   const atlas::util::Config atlasConfig;
   const eckit::Configuration * fconf = &atlasConfig;
-  fv3jedi_geo_create_atlas_grid_conf_f90(keyGeom_, &fconf);
+  fv3jedi_geom_create_atlas_grid_conf_f90(keyGeom_, &fconf);
 
   // Create ATLAS grid
   atlas::UnstructuredGrid atlasUnstructuredGrid(atlasConfig);
@@ -60,16 +63,17 @@ Geometry::Geometry(const eckit::Configuration & conf,
                             atlas::option::halo(0)));
 
   // Set ATLAS function space pointer in Fortran
-  fv3jedi_geo_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
+  fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
 
   // Fill ATLAS fieldset
   atlasFieldSet_.reset(new atlas::FieldSet());
-  fv3jedi_geo_fill_atlas_fieldset_f90(keyGeom_, atlasFieldSet_->get());
+  fv3jedi_geom_fill_atlas_fieldset_f90(keyGeom_, atlasFieldSet_->get());
 }
-// -----------------------------------------------------------------------------
-Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
-  const int key_geo = other.keyGeom_;
-  fv3jedi_geo_clone_f90(key_geo, keyGeom_);
+
+// -------------------------------------------------------------------------------------------------
+
+Geometry::Geometry(const Geometry & other) : comm_(other.comm_), fieldsMeta_(other.fieldsMeta_) {
+  fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, &fieldsMeta_);
   atlasFunctionSpace_.reset(new atlas::functionspace::NodeColumns(
                             other.atlasFunctionSpace_->mesh(), atlas::option::halo(0)));
   atlasFieldSet_.reset(new atlas::FieldSet());
@@ -78,28 +82,39 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
     atlasFieldSet_->add(atlasField);
   }
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 Geometry::~Geometry() {
-  fv3jedi_geo_delete_f90(keyGeom_);
+  fv3jedi_geom_delete_f90(keyGeom_);
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 GeometryIterator Geometry::begin() const {
   // return start of the geometry on this mpi tile
   int ist, iend, jst, jend, npz;
-  fv3jedi_geo_start_end_f90(keyGeom_, ist, iend, jst, jend, npz);
+  fv3jedi_geom_start_end_f90(keyGeom_, ist, iend, jst, jend, npz);
   return GeometryIterator(*this, ist, jst);
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 GeometryIterator Geometry::end() const {
   // return end of the geometry on this mpi tile
   // (returns index out of bounds for the iterator loops to work)
 
   return GeometryIterator(*this, -1, -1);
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 void Geometry::print(std::ostream & os) const {
-  fv3jedi_geo_info_f90(keyGeom_);
-  os << "fv3jedi::Geometry::print not implemented yet";
+  int cube;
+  fv3jedi_geom_print_f90(keyGeom_, cube);
+  os << "fv3jedi::Geometry resolution: c" << cube;
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 }  // namespace fv3jedi

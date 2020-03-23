@@ -10,7 +10,10 @@
 
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
+
 #include "eckit/mpi/Comm.h"
+
+#include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 #include "fv3jedi/Utilities/interface.h"
 
 // Forward declarations
@@ -27,21 +30,20 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_geo_setup_f90(F90geom &, const eckit::Configuration * const *,
-                             const eckit::mpi::Comm *);
-  void fv3jedi_geo_create_atlas_grid_conf_f90(const F90geom &,
+  void fv3jedi_geom_setup_f90(F90geom &, const eckit::Configuration * const *,
+                             const eckit::mpi::Comm *, const FieldsMetadata *);
+  void fv3jedi_geom_create_atlas_grid_conf_f90(const F90geom &,
                                               const eckit::Configuration * const *);
-  void fv3jedi_geo_set_atlas_functionspace_pointer_f90(const F90geom &,
+  void fv3jedi_geom_set_atlas_functionspace_pointer_f90(const F90geom &,
                                                        atlas::functionspace::FunctionSpaceImpl *);
-  void fv3jedi_geo_fill_atlas_fieldset_f90(const F90geom &,
+  void fv3jedi_geom_fill_atlas_fieldset_f90(const F90geom &,
                                            atlas::field::FieldSetImpl *);
-  void fv3jedi_geo_set_atlas_fieldset_pointer_f90(const F90geom &,
+  void fv3jedi_geom_set_atlas_fieldset_pointer_f90(const F90geom &,
                                                   atlas::field::FieldSetImpl *);
-  void fv3jedi_geo_clone_f90(const F90geom &,
-                             F90geom &);
-  void fv3jedi_geo_info_f90(const F90geom &);
-  void fv3jedi_geo_delete_f90(F90geom &);
-  void fv3jedi_geo_start_end_f90(const F90geom &, int &, int &, int &, int &,
+  void fv3jedi_geom_clone_f90(F90geom &, const F90geom &, const FieldsMetadata *);
+  void fv3jedi_geom_print_f90(const F90geom &, int &);
+  void fv3jedi_geom_delete_f90(F90geom &);
+  void fv3jedi_geom_start_end_f90(const F90geom &, int &, int &, int &, int &,
                                  int &);
 
 }  // extern "C"

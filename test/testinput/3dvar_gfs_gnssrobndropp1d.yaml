@@ -87,6 +87,9 @@ resolution:
   nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+  Levels: 64
+  FieldSets:
+    - FieldSet: Data/fieldsets/dynamics.yaml
 variational:
   iteration:
   - diagnostics:
@@ -103,6 +106,9 @@ variational:
       nml_file: Data/fv3files/input_gfs_c12.nml
       trc_file: Data/fv3files/field_table
       pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+      Levels: 64
+      FieldSets:
+        - FieldSet: Data/fieldsets/dynamics.yaml
     test: 'on'
   - gradient_norm_reduction: 1e-10
     linearmodel:
@@ -116,4 +122,7 @@ variational:
       nml_file: Data/fv3files/input_gfs_c12.nml
       trc_file: Data/fv3files/field_table
       pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+      Levels: 64
+      FieldSets:
+        - FieldSet: Data/fieldsets/dynamics.yaml
     test: 'on'
