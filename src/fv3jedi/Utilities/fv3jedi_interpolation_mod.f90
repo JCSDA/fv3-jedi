@@ -267,7 +267,7 @@ real(kind=kind_real), allocatable :: field_types(:)
 
 ! Get nearest neighbours
 ! ----------------------
-allocate(field_neighbours(ngrid_ou,self%nnearest))
+allocate(field_neighbours(self%nnearest,ngrid_ou))
 call self%unsinterp%apply(field_in, field_ou, field_neighbours)
 
 
@@ -287,8 +287,8 @@ field_ou = 0.0_kind_real
 do i = 1,ngrid_ou
   field_types = 0.0
   do n = 1, self%nnearest
-    index = int(field_neighbours(i,n))
-    field_types(index) = field_types(index) + self%unsinterp%interp_w(i,n)
+    index = int(field_neighbours(n,i))
+    field_types(index) = field_types(index) + self%unsinterp%interp_w(n,i)
   enddo
   field_ou(i) = real(maxloc(field_types,1)+(mintype-1),kind_real)
 enddo

@@ -182,23 +182,23 @@ comm = geom%f_comm
 ! Number of neighbors
 nn = 4
 
-allocate(slmsk(nobs,nn))
-allocate(sheleg(nobs,nn))
-allocate(tsea(nobs,nn))
-allocate(vtype(nobs,nn))
-allocate(stype(nobs,nn))
-allocate(vfrac(nobs,nn))
-allocate(stc(nobs,nn))
-allocate(smc(nobs,nn))
-allocate(snwdph(nobs,nn))
-allocate(u_srf(nobs,nn))
-allocate(v_srf(nobs,nn))
-allocate(f10m(nobs,nn))
-allocate(sss(nobs,nn))
+allocate(slmsk(nn,nobs))
+allocate(sheleg(nn,nobs))
+allocate(tsea(nn,nobs))
+allocate(vtype(nn,nobs))
+allocate(stype(nn,nobs))
+allocate(vfrac(nn,nobs))
+allocate(stc(nn,nobs))
+allocate(smc(nn,nobs))
+allocate(snwdph(nn,nobs))
+allocate(u_srf(nn,nobs))
+allocate(v_srf(nn,nobs))
+allocate(f10m(nn,nobs))
+allocate(sss(nn,nobs))
 
-allocate(rslmsk(nobs,nn))
-allocate(rvtype(nobs,nn))
-allocate(rstype(nobs,nn))
+allocate(rslmsk(nn,nobs))
+allocate(rvtype(nn,nobs))
+allocate(rstype(nn,nobs))
 
 allocate(slmsk_ob (nobs))
 allocate(sheleg_ob(nobs))
@@ -213,19 +213,19 @@ allocate(v_srf_ob (nobs))
 allocate(f10m_ob  (nobs))
 allocate(sss_ob   (nobs))
 
-allocate(slmskp(nobs,nn))
-allocate(shelegp(nobs,nn))
-allocate(tseap(nobs,nn))
-allocate(vtypep(nobs,nn))
-allocate(stypep(nobs,nn))
-allocate(vfracp(nobs,nn))
-allocate(stcp(nobs,nn))
-allocate(smcp(nobs,nn))
-allocate(snwdphp(nobs,nn))
-allocate(u_srfp(nobs,nn))
-allocate(v_srfp(nobs,nn))
-allocate(f10mp(nobs,nn))
-allocate(sssp(nobs,nn))
+allocate(slmskp(nn,nobs))
+allocate(shelegp(nn,nobs))
+allocate(tseap(nn,nobs))
+allocate(vtypep(nn,nobs))
+allocate(stypep(nn,nobs))
+allocate(vfracp(nn,nobs))
+allocate(stcp(nn,nobs))
+allocate(smcp(nn,nobs))
+allocate(snwdphp(nn,nobs))
+allocate(u_srfp(nn,nobs))
+allocate(v_srfp(nn,nobs))
+allocate(f10mp(nn,nobs))
+allocate(sssp(nn,nobs))
 
  !Second time level option, zero for now
  slmskp = 0
@@ -275,7 +275,7 @@ allocate(sssp(nobs,nn))
  call unsinterp%apply(fld_f10m  (:,:,1), f10m_ob  , f10m  )
  if ( present(fld_sss) ) then
    call unsinterp%apply(fld_sss   (:,:,1), sss_ob  , sss  )
- endif 
+ endif
 
  !Convert some reals to integer
  slmsk = nint(rslmsk)
@@ -310,39 +310,39 @@ allocate(sssp(nobs,nn))
 ! Stage 1, like deter_sfc in GSI
 ! ------------------------------
 
-    w00 = unsinterp%interp_w(n,1)
-    w10 = unsinterp%interp_w(n,2)
-    w01 = unsinterp%interp_w(n,3)
-    w11 = unsinterp%interp_w(n,4)
+    w00 = unsinterp%interp_w(1,n)
+    w10 = unsinterp%interp_w(2,n)
+    w01 = unsinterp%interp_w(3,n)
+    w11 = unsinterp%interp_w(4,n)
 
-    istyp00 = slmsk(n,1)
-    istyp10 = slmsk(n,2)
-    istyp01 = slmsk(n,3)
-    istyp11 = slmsk(n,4)
+    istyp00 = slmsk(1,n)
+    istyp10 = slmsk(2,n)
+    istyp01 = slmsk(3,n)
+    istyp11 = slmsk(4,n)
 
-    !sno00 = snwdph(n,1)*dtsfc + snwdphp(n,1)*dtsfcp
-    !sno01 = snwdph(n,2)*dtsfc + snwdphp(n,2)*dtsfcp
-    !sno10 = snwdph(n,3)*dtsfc + snwdphp(n,3)*dtsfcp
-    !sno11 = snwdph(n,4)*dtsfc + snwdphp(n,4)*dtsfcp
+    !sno00 = snwdph(1,n)*dtsfc + snwdphp(1,n)*dtsfcp
+    !sno01 = snwdph(2,n)*dtsfc + snwdphp(2,n)*dtsfcp
+    !sno10 = snwdph(3,n)*dtsfc + snwdphp(3,n)*dtsfcp
+    !sno11 = snwdph(4,n)*dtsfc + snwdphp(4,n)*dtsfcp
 
-    sno00 = sheleg(n,1)*dtsfc + shelegp(n,1)*dtsfcp
-    sno01 = sheleg(n,2)*dtsfc + shelegp(n,2)*dtsfcp
-    sno10 = sheleg(n,3)*dtsfc + shelegp(n,3)*dtsfcp
-    sno11 = sheleg(n,4)*dtsfc + shelegp(n,4)*dtsfcp
+    sno00 = sheleg(1,n)*dtsfc + shelegp(1,n)*dtsfcp
+    sno01 = sheleg(2,n)*dtsfc + shelegp(2,n)*dtsfcp
+    sno10 = sheleg(3,n)*dtsfc + shelegp(3,n)*dtsfcp
+    sno11 = sheleg(4,n)*dtsfc + shelegp(4,n)*dtsfcp
 
-    sst00 = tsea(n,1)*dtsfc + tsea(n,1)*dtsfcp
-    sst01 = tsea(n,2)*dtsfc + tsea(n,2)*dtsfcp
-    sst10 = tsea(n,3)*dtsfc + tsea(n,3)*dtsfcp
-    sst11 = tsea(n,4)*dtsfc + tsea(n,4)*dtsfcp
+    sst00 = tsea(1,n)*dtsfc + tsea(1,n)*dtsfcp
+    sst01 = tsea(2,n)*dtsfc + tsea(2,n)*dtsfcp
+    sst10 = tsea(3,n)*dtsfc + tsea(3,n)*dtsfcp
+    sst11 = tsea(4,n)*dtsfc + tsea(4,n)*dtsfcp
 
     tsavg = sst00*w00 + sst10*w10 + sst01*w01 + sst11*w11
-    
+
     if ( present(fld_sss) ) then
-       ss00 = sss(n,1)*dtsfc + sss(n,1)*dtsfcp
-       ss01 = sss(n,2)*dtsfc + sss(n,2)*dtsfcp
-       ss10 = sss(n,3)*dtsfc + sss(n,3)*dtsfcp
-       ss11 = sss(n,4)*dtsfc + sss(n,4)*dtsfcp
-       
+       ss00 = sss(1,n)*dtsfc + sss(1,n)*dtsfcp
+       ss01 = sss(2,n)*dtsfc + sss(2,n)*dtsfcp
+       ss10 = sss(3,n)*dtsfc + sss(3,n)*dtsfcp
+       ss11 = sss(4,n)*dtsfc + sss(4,n)*dtsfcp
+
        ssavg = ss00*w00 + ss10*w10 + ss01*w01 + ss11*w11
     endif
 
@@ -380,20 +380,20 @@ allocate(sssp(nobs,nn))
     sn=0.0_kind_real
     ss=0.0_kind_real
 
-    idomsfc=slmsk(n,1)
+    idomsfc=slmsk(1,n)
     wgtmin = w00
 
     if(istyp00 == 1)then
-       vty  = vtype(n,1)
-       sty  = stype(n,1)
+       vty  = vtype(1,n)
+       sty  = stype(1,n)
        wgtavg(1) = wgtavg(1) + w00
        ts(1)=ts(1)+w00*sst00
-       vfr  =vfr  +w00*( vfrac(n,1) * dtsfc + &
-                        vfracp(n,1) * dtsfcp  )
-       stp  =stp  +w00*(   stc(n,1) * dtsfc + &
-                          stcp(n,1) * dtsfcp  )
-       sm   =sm   +w00*(   smc(n,1) * dtsfc + &
-                          smcp(n,1) * dtsfcp  )
+       vfr  =vfr  +w00*( vfrac(1,n) * dtsfc + &
+                        vfracp(1,n) * dtsfcp  )
+       stp  =stp  +w00*(   stc(1,n) * dtsfc + &
+                          stcp(1,n) * dtsfcp  )
+       sm   =sm   +w00*(   smc(1,n) * dtsfc + &
+                          smcp(1,n) * dtsfcp  )
     else if(istyp00 == 2)then
        wgtavg(2) = wgtavg(2) + w00
        ts(2)=ts(2)+w00*sst00
@@ -409,17 +409,17 @@ allocate(sssp(nobs,nn))
 
     if(istyp01 == 1)then
        if(wgtmin < w01 .or. (vty == 0.0_kind_real .and. sty == 0.0_kind_real))then
-          vty  = vtype(n,3)
-          sty  = stype(n,3)
+          vty  = vtype(3,n)
+          sty  = stype(3,n)
        end if
        wgtavg(1) = wgtavg(1) + w01
        ts(1)=ts(1)+w01*sst01
-       vfr  =vfr  +w01*( vfrac(n,3) * dtsfc + &
-                        vfracp(n,3) * dtsfcp  )
-       stp  =stp  +w01*(   stc(n,3) * dtsfc + &
-                          stcp(n,3) * dtsfcp  )
-       sm   =sm   +w01*(   smc(n,3) * dtsfc + &
-                          smcp(n,3) * dtsfcp  )
+       vfr  =vfr  +w01*( vfrac(3,n) * dtsfc + &
+                        vfracp(3,n) * dtsfcp  )
+       stp  =stp  +w01*(   stc(3,n) * dtsfc + &
+                          stcp(3,n) * dtsfcp  )
+       sm   =sm   +w01*(   smc(3,n) * dtsfc + &
+                          smcp(3,n) * dtsfcp  )
     else if(istyp01 == 2)then
        wgtavg(2) = wgtavg(2) + w01
        ts(2)=ts(2)+w01*sst01
@@ -433,23 +433,23 @@ allocate(sssp(nobs,nn))
        if ( present(fld_sss) ) ss   =ss   +w01*ss01
     end if
     if(wgtmin < w01)then
-       idomsfc=slmsk(n,3)
+       idomsfc=slmsk(3,n)
        wgtmin = w01
     end if
 
     if(istyp10 == 1)then
        if(wgtmin < w10 .or. (vty == 0.0_kind_real .and. sty == 0.0_kind_real))then
-          vty  = vtype(n,2)
-          sty  = stype(n,2)
+          vty  = vtype(2,n)
+          sty  = stype(2,n)
        end if
        wgtavg(1) = wgtavg(1) + w10
        ts(1)=ts(1)+w10*sst10
-       vfr  =vfr  +w10*(vfrac (n,2) * dtsfc + &
-                        vfracp(n,2) * dtsfcp  )
-       stp  =stp  +w10*(  stc (n,2) * dtsfc + &
-                          stcp(n,2) * dtsfcp  )
-       sm   =sm   +w10*(  smc (n,2) * dtsfc + &
-                          smcp(n,2) * dtsfcp  )
+       vfr  =vfr  +w10*(vfrac (2,n) * dtsfc + &
+                        vfracp(2,n) * dtsfcp  )
+       stp  =stp  +w10*(  stc (2,n) * dtsfc + &
+                          stcp(2,n) * dtsfcp  )
+       sm   =sm   +w10*(  smc (2,n) * dtsfc + &
+                          smcp(2,n) * dtsfcp  )
     else if(istyp10 == 2)then
        wgtavg(2) = wgtavg(2) + w10
        ts(2)=ts(2)+w10*sst10
@@ -463,23 +463,23 @@ allocate(sssp(nobs,nn))
        if ( present(fld_sss) ) ss = ss + w10*ss10
     end if
     if(wgtmin < w10)then
-       idomsfc=slmsk(n,2)
+       idomsfc=slmsk(2,n)
        wgtmin = w10
     end if
 
     if(istyp11 == 1)then
        if(wgtmin < w11 .or. (vty == 0.0_kind_real .and. sty == 0.0_kind_real))then
-          vty  = vtype(n,4)
-          sty  = stype(n,4)
+          vty  = vtype(4,n)
+          sty  = stype(4,n)
        endif
        wgtavg(1) = wgtavg(1) + w11
        ts(1)=ts(1)+w11*sst11
-       vfr  =vfr  +w11*(vfrac (n,4) * dtsfc + &
-                        vfracp(n,4) * dtsfcp  )
-       stp  =stp  +w11*(  stc (n,4) * dtsfc + &
-                          stcp(n,4) * dtsfcp  )
-       sm   =sm   +w11*(  smc (n,4) * dtsfc + &
-                          smcp(n,4) * dtsfcp  )
+       vfr  =vfr  +w11*(vfrac (4,n) * dtsfc + &
+                        vfracp(4,n) * dtsfcp  )
+       stp  =stp  +w11*(  stc (4,n) * dtsfc + &
+                          stcp(4,n) * dtsfcp  )
+       sm   =sm   +w11*(  smc (4,n) * dtsfc + &
+                          smcp(4,n) * dtsfcp  )
     else if(istyp11 == 2)then
        wgtavg(2) = wgtavg(2) + w11
        ts(2)=ts(2)+w11*sst11
@@ -494,7 +494,7 @@ allocate(sssp(nobs,nn))
     end if
 
     if(wgtmin < w11)then
-       idomsfc=slmsk(n,4)
+       idomsfc=slmsk(4,n)
        wgtmin = w11
     end if
 
@@ -529,8 +529,8 @@ allocate(sssp(nobs,nn))
        ts(3) = tsavg
     end if
 
-    f10 = ( f10m (n,1)*w00 + f10m (n,2)*w10 + f10m (n,3)*w01 + f10m (n,4)*w11 ) * dtsfc + &
-          ( f10mp(n,1)*w00 + f10mp(n,2)*w10 + f10mp(n,3)*w01 + f10mp(n,4)*w11 ) * dtsfcp
+    f10 = ( f10m (1,n)*w00 + f10m (2,n)*w10 + f10m (3,n)*w01 + f10m (4,n)*w11 ) * dtsfc + &
+          ( f10mp(1,n)*w00 + f10mp(2,n)*w10 + f10mp(3,n)*w01 + f10mp(4,n)*w11 ) * dtsfcp
 
 ! Stage 2 - like crtm_interface from GSI
 ! --------------------------------------
@@ -569,10 +569,10 @@ allocate(sssp(nobs,nn))
    if (lwind) then
 
      !Interpolate lowest level winds to observation location
-     uu5 = ( u_srf (n,1)*w00 + u_srf (n,2)*w10 + u_srf (n,3)*w01 + u_srf (n,4)*w11 ) * dtsfc  + &
-           ( u_srfp(n,1)*w00 + u_srfp(n,2)*w10 + u_srfp(n,3)*w01 + u_srfp(n,4)*w11 ) * dtsfcp
-     vv5 = ( v_srf (n,1)*w00 + v_srf (n,2)*w10 + v_srf (n,3)*w01 + v_srf (n,4)*w11 ) * dtsfc  + &
-           ( v_srfp(n,1)*w00 + v_srfp(n,2)*w10 + v_srfp(n,3)*w01 + v_srfp(n,4)*w11 ) * dtsfcp
+     uu5 = ( u_srf (1,n)*w00 + u_srf (2,n)*w10 + u_srf (3,n)*w01 + u_srf (4,n)*w11 ) * dtsfc  + &
+           ( u_srfp(1,n)*w00 + u_srfp(2,n)*w10 + u_srfp(3,n)*w01 + u_srfp(4,n)*w11 ) * dtsfcp
+     vv5 = ( v_srf (1,n)*w00 + v_srf (2,n)*w10 + v_srf (3,n)*w01 + v_srf (4,n)*w11 ) * dtsfc  + &
+           ( v_srfp(1,n)*w00 + v_srfp(2,n)*w10 + v_srfp(3,n)*w01 + v_srfp(4,n)*w11 ) * dtsfcp
 
      sfc_speed = f10*sqrt(uu5*uu5+vv5*vv5)
      wind10    = sfc_speed
