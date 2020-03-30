@@ -408,10 +408,18 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
   set(IODA_BRANCH_NAME ${DIRNAME})
   set(IODA_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
 
-  CONF_TARGETS_DEPS (ioda_data_downloader.py
-                  ${CMAKE_SOURCE_DIR}/ioda/test
-                  ${CMAKE_BINARY_DIR}/bin
-                  bin_ioda_test_download_scripts_fv3_deps)
+
+  # Create download script for get_ioda_test_data test 
+  set ( FILENAME fv3_data_downloader.py)
+  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
+  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
+  list( APPEND bin_ioda_test_download_scripts_fv3_deps ${DEST_FILE} )
+
+  if( EXISTS "${SOURCE_FILE}.in" )
+    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
+  else()
+    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
+  endif()
 
   add_custom_target( bin_ioda_test_download_scripts_fv3 ALL
       COMMAND chmod +x ${bin_ioda_test_download_scripts_fv3_deps}
@@ -419,7 +427,7 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
 
   ecbuild_add_test( TARGET    fv3_get_ioda_test_data
                     TYPE      SCRIPT
-                    COMMAND    ${CMAKE_BINARY_DIR}/bin/ioda_data_downloader.py
+                    COMMAND    ${CMAKE_BINARY_DIR}/bin/fv3_data_downloader.py
                     ARGS      testoutput/download_test_fv3.log)
 else()
   set(TESTFILE_DIR_IODA ${LOCAL_PATH_TESTFILES_IODA})
