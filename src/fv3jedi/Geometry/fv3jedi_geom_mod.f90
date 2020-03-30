@@ -418,8 +418,8 @@ allocate(self%rsin2 (other%isd:other%ied  ,other%jsd:other%jed  ))
 allocate(self%dxa   (other%isd:other%ied  ,other%jsd:other%jed  ))
 allocate(self%dya   (other%isd:other%ied  ,other%jsd:other%jed  ))
 
-allocate(self%lat_us(self%ngrid))
-allocate(self%lon_us(self%ngrid))
+allocate(self%lat_us(other%ngrid))
+allocate(self%lon_us(other%ngrid))
 
 self%npx             = other%npx
 self%npy             = other%npy
