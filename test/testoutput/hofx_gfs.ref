@@ -8,8 +8,8 @@ Test     : Radiosonde nobs= 3219 Min=-35.9648, Max=301.53, RMS=140.207
 Test     : AMSUA-NOAA19 nobs= 1500 Min=146.263, Max=297.678, RMS=230.809
 Test     : AIRS-AQUA nobs= 300 Min=207.007, Max=226.079, RMS=217.837
 Test     : GnssroRef nobs= 20 Min=0.222533, Max=342.781, RMS=129.695
-Test     : HIRS4-METOPA nobs= 1500 Min=213.686, Max=295.319, RMS=248.485
-Test     : CRIS-NPP nobs= 9900 Min=210.643, Max=298.889, RMS=247.691
+Test     : HIRS4-METOPA nobs= 1500 Min=213.686, Max=295.421, RMS=248.483
+Test     : CRIS-NPP nobs= 9900 Min=210.643, Max=298.917, RMS=247.662
 Test     : Satwind nobs= 200 Min=-18.7723, Max=38.1957, RMS=11.0073
 Test     : MHS-N19 nobs= 500 Min=162.104, Max=294.524, RMS=254.287
 Test     : IASI-METOPA nobs= 700 Min=205.656, Max=238.031, RMS=221.83
