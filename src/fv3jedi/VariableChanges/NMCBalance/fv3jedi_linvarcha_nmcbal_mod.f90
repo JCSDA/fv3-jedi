@@ -7,6 +7,9 @@ module fv3jedi_linvarcha_nmcbal_mod
 
 use fckit_configuration_module, only: fckit_configuration
 
+use netcdf
+use fv3jedi_netcdf_utils_mod, only: nccheck
+
 use fv3jedi_state_mod, only: fv3jedi_state
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -14,7 +17,7 @@ use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use fckit_mpi_module, only: fckit_mpi_comm
 use fv3jedi_kinds_mod
-use fv3jedi_constants_mod, only: rad2deg, pi
+use fv3jedi_constants_mod, only: rad2deg, deg2rad, pi
 use mpp_domains_mod, only: center
 
 use pressure_vt_mod
@@ -51,6 +54,7 @@ type :: fv3jedi_linvarcha_nmcbal
  !
  integer :: isc,iec,jsc,jec,npz
  integer :: ngrid_cs ! data size for grid interpolation
+ type(fv3jedi_geom) :: geom_cs
  ! increments
  real(kind=kind_real), allocatable :: wnd1(:,:,:)    ! ua/psi
  real(kind=kind_real), allocatable :: wnd2(:,:,:)    ! va/chi
@@ -76,7 +80,10 @@ type :: fv3jedi_linvarcha_nmcbal
  integer,allocatable :: istrx(:),jstry(:) ! start index at each subdomain
  integer :: ngrid_gg, ngrid_gg1 ! data size for grid interpolation
  ! regression coeffs for GSI unbalanced variables
- character(len=256) :: path_to_gsi_coeffs ! path to fixed file
+ character(len=256) :: path_to_nmcbalance_coeffs  ! path to netcdf file
+ integer :: read_latlon_from_nc                   ! 1: read rlats/rlons of
+                                                  !    global gaugrid from
+                                                  !    netcdf
  real(kind=kind_real), allocatable :: agvz(:,:,:) ! coeffs. for psi and t 
  real(kind=kind_real), allocatable :: wgvz(:,:)   ! coeffs. for psi and ps
  real(kind=kind_real), allocatable :: bvz(:,:)    ! coeffs. for psi and chi
@@ -113,8 +120,13 @@ real(kind=kind_real), pointer :: t   (:,:,:)
 real(kind=kind_real), pointer :: q   (:,:,:)
 real(kind=kind_real), pointer :: delp(:,:,:)
 
-integer :: nx,ny,nz,hx,hy,layoutx,layouty
+integer :: hx,hy,layoutx,layouty,read_latlon_from_nc
 character(len=:),allocatable :: str
+
+! Cubed-sphere grid geometry
+call self%geom_cs%clone(geom,geom%fields)
+self%npe = geom%f_comm%size()
+self%mype = geom%f_comm%rank()
 
 ! 1. Get trajectores
 !> Pointers to the background state
@@ -155,19 +167,18 @@ allocate(self%psrf(self%isc:self%iec,self%jsc:self%jec,       1))
 self%wnd1 = 0.0_kind_real; self%wnd2 = 0.0_kind_real
 self%temp = 0.0_kind_real; self%psrf = 0.0_kind_real
 
-! 2. Get Gaussian grid size from config
-if(conf%has("nx").and.conf%has("ny").and.conf%has("nz")) then
-  call conf%get_or_die("nx",nx); self%nx = nx
-  call conf%get_or_die("ny",ny); self%ny = ny
-  call conf%get_or_die("nz",nz); self%nz = nz
+! 2. Read balance operator grid from NetCDF
+if (conf%has("path_to_nmcbalance_coeffs")) then
+  call conf%get_or_die("path_to_nmcbalance_coeffs",str)
+  self%path_to_nmcbalance_coeffs = str
+  deallocate(str)
 else
   call abor1_ftn("fv3jedi_linvarcha_nmcbal_mod.create:&
-& nx, ny and nz are needed")
+& path_to_nmcbalance_coeffs must be set in configuration file")
 end if
-if(self%nz/=self%npz) then
-  call abor1_ftn("fv3jedi_linvarcha_nmcbal_mod.create:&
-& nz must be the same as npz on FV3 geometry")
-end if
+call read_nmcbalance_grid(self)
+
+! 3. Create Gaussian grid
 self%hx = 1; self%hy = 1 ! default halo size
 if(conf%has("hx")) then
   call conf%get_or_die("hx",hx); self%hx = hx
@@ -176,9 +187,6 @@ if(conf%has("hy")) then
   call conf%get_or_die("hy",hy); self%hy = hy
 end if
 
-! 3. Create Gaussian grid
-self%npe = geom%f_comm%size()
-self%mype = geom%f_comm%rank()
 allocate(self%istrx(self%npe))
 allocate(self%jstry(self%npe))
 
@@ -224,32 +232,35 @@ self%glb%nlev = self%nz; self%gg%nlev = self%z2
 self%glb%nvar = self%nv; self%gg%nvar = self%nv
 
 ! allocate and initialize
-call self%glb%create()   ; call self%gg%create
+call self%glb%create(); call self%gg%create()
 
 ! set Gaussian field pointer
-call self%gg%fld3d_pointer(1,'psi',self%psi) 
+call self%gg%fld3d_pointer(1,'psi',self%psi)
 call self%gg%fld3d_pointer(2,'chi',self%chi)
 call self%gg%fld3d_pointer(3,'tv' ,self%tv)
 call self%gg%fld2d_pointer(4,'ps' ,self%ps)
 
 ! calculate and set Gaussian lat-lon
-call self%glb%calc_glb_latlon()
+self%read_latlon_from_nc = 0
+if(conf%has("read_latlon_from_nc")) then
+  call conf%get_or_die("read_latlon_from_nc",read_latlon_from_nc)
+  self%read_latlon_from_nc = read_latlon_from_nc
+end if
+if(self%read_latlon_from_nc==1) then
+  call read_nmcbalance_latlon(self)
+else
+  call self%glb%calc_glb_latlon()
+end if
 call set_gaugrid_latlon(self)
 
 ! 4. Create interplation weights (bump)
 call bump_init_gaugrid(self,geom)
 
 ! 5. Read balance coeffs from fixed file
-self%path_to_gsi_coeffs = 'Data/nmcbal/nmcbal_stats.dat'
-if (conf%has("path_to_gsi_coeffs")) then
-  call conf%get_or_die("path_to_gsi_coeffs",str)
-  self%path_to_gsi_coeffs = str
-  deallocate(str)
-end if
 allocate(self%agvz(self%gg%nlat,self%gg%nlev,self%gg%nlev))
 allocate(self%wgvz(self%gg%nlat,self%gg%nlev))
 allocate(self%bvz (self%gg%nlat,self%gg%nlev))
-call read_balance_coeffs(self)
+call read_nmcbalance_coeffs(self)
 
 end subroutine create
 
@@ -266,23 +277,23 @@ if (allocated(self%ttraj))    deallocate(self%ttraj)
 if (allocated(self%qtraj))    deallocate(self%qtraj)
 if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
-if(allocated(self%istrx)) deallocate(self%istrx)
-if(allocated(self%jstry)) deallocate(self%jstry)
-if(allocated(self%agvz))  deallocate(self%agvz)
-if(allocated(self%wgvz))  deallocate(self%wgvz)
-if(allocated(self%bvz))   deallocate(self%bvz)
+if (allocated(self%istrx))    deallocate(self%istrx)
+if (allocated(self%jstry))    deallocate(self%jstry)
+if (allocated(self%agvz))     deallocate(self%agvz)
+if (allocated(self%wgvz))     deallocate(self%wgvz)
+if (allocated(self%bvz))      deallocate(self%bvz)
 
-if (allocated(self%wnd1))  deallocate(self%wnd1)
-if (allocated(self%wnd2))  deallocate(self%wnd2)
-if (allocated(self%temp))  deallocate(self%temp)
-if (allocated(self%psrf))  deallocate(self%psrf)
-if (allocated(self%ugfld)) deallocate(self%ugfld)
+if (allocated(self%wnd1))     deallocate(self%wnd1)
+if (allocated(self%wnd2))     deallocate(self%wnd2)
+if (allocated(self%temp))     deallocate(self%temp)
+if (allocated(self%psrf))     deallocate(self%psrf)
+if (allocated(self%ugfld))    deallocate(self%ugfld)
 
 ! Nullify pointers
-if (associated(self%psi )) nullify(self%psi )
-if (associated(self%chi )) nullify(self%chi )
-if (associated(self%tv  )) nullify(self%tv  )
-if (associated(self%ps  )) nullify(self%ps  )
+if (associated(self%psi))     nullify(self%psi)
+if (associated(self%chi))     nullify(self%chi)
+if (associated(self%tv))      nullify(self%tv)
+if (associated(self%ps))      nullify(self%ps)
 
 call self%glb%delete()
 call self%gg%delete()
@@ -856,48 +867,132 @@ deallocate(lon_gg,lat_gg)
 end subroutine bump_init_gaugrid
 
 ! ------------------------------------------------------------------------------
-! read regression cofficients from fixed file
-subroutine read_balance_coeffs(self)
+! read NMC balance operator girds from NetCDF
+subroutine read_nmcbalance_grid(self)
 
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-integer :: iunit,ierr
-integer :: nlevstat,nlatstat
+integer :: iunit,ierr,ncid,dimid
+integer :: grid(3)
+character(len=128) :: log_grid
+character(len=16)  :: nlat_c,nlon_c,nlev_c
+
+if(self%mype==0) then
+! Open NetCDF
+  call nccheck(nf90_open(trim(self%path_to_nmcbalance_coeffs),NF90_NOWRITE,ncid), &
+ &                       "nf90_open "//trim(self%path_to_nmcbalance_coeffs))
+! Get grid
+  call nccheck(nf90_inq_dimid(ncid,"nlat",dimid), "nf90_inq_dimid nlat")
+  call nccheck(nf90_inquire_dimension(ncid,dimid,len=grid(1)), &
+ &            "nf90_inquire_dimension nlat" )
+  call nccheck(nf90_inq_dimid(ncid,"nlon",dimid), "nf90_inq_dimid nlon")
+  call nccheck(nf90_inquire_dimension(ncid,dimid,len=grid(2)), &
+ &            "nf90_inquire_dimension nlon" )
+  call nccheck(nf90_inq_dimid(ncid,"nlev",dimid), "nf90_inq_dimid nlev")
+  call nccheck(nf90_inquire_dimension(ncid,dimid,len=grid(3)), &
+&            "nf90_inquire_dimension nlev" )
+
+! Close NetCDF
+  call nccheck(nf90_close(ncid),"nf90_close")
+end if
+call self%geom_cs%f_comm%broadcast(grid,0)
+if(grid(3)/=self%npz) then
+  call abor1_ftn("fv3jedi_linvarcha_nmcbal_mod.read_nmcbalance_grid:&
+& nlev must be the same as npz on FV3 geometry")
+end if
+self%ny = grid(1)
+self%nx = grid(2)
+self%nz = grid(3)
+if(self%mype==0) then
+  write(nlat_c,*) grid(1); write(nlon_c,*) grid(2); write(nlev_c,*) grid(3);
+  write(log_grid,*) "NMC balance operalor grid size : nx=",&
+ &                          trim(adjustl(nlon_c)), &
+ &                   ",ny=",trim(adjustl(nlat_c)), &
+ &                   ",nz=",trim(adjustl(nlev_c))
+  write(6,'(A)') log_grid
+end if
+
+end subroutine read_nmcbalance_grid
+
+! ------------------------------------------------------------------------------
+! read latlon from NetCDF
+subroutine read_nmcbalance_latlon(self)
+
+implicit none
+type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
+
+integer :: iunit,ierr,ncid,varid
 integer :: mm1,jx,i,j,k
 
-real(kind=r_single),allocatable :: agvin(:,:,:)
-real(kind=r_single),allocatable :: wgvin(:,:)
-real(kind=r_single),allocatable :: bvin(:,:)
+real(kind=kind_real),allocatable :: rlats(:)
+real(kind=kind_real),allocatable :: rlons(:)
 
-allocate(agvin(self%glb%nlat,self%glb%nlev,self%glb%nlev))
-allocate(wgvin(self%glb%nlat,self%glb%nlev))
-allocate(bvin (self%glb%nlat,self%glb%nlev))
+allocate(rlats(self%glb%nlat))
+allocate(rlons(self%glb%nlon))
 
-iunit=get_fileunit()
+if(self%mype==0) then
+! Open NetCDF
+  call nccheck(nf90_open(trim(self%path_to_nmcbalance_coeffs),NF90_NOWRITE,ncid), &
+  &                      "nf90_open "//trim(self%path_to_nmcbalance_coeffs))
 
-if(self%mype==0) write(6,'(3A,I3,A)') "Read balance coeffs from ", &
-& trim(self%path_to_gsi_coeffs), "(Unit ",iunit, ")"
+! Get coefficients
+  call nccheck(nf90_inq_varid(ncid,"lats",varid), "nf90_inq_varid lats")
+  call nccheck(nf90_get_var(ncid,varid,rlats),"nf90_get_var lats" )
+  call nccheck(nf90_inq_varid(ncid,"lons",varid), "nf90_inq_varid lons")
+  call nccheck(nf90_get_var(ncid,varid,rlons),"nf90_get_var lons" )
 
-open(iunit,file=trim(self%path_to_gsi_coeffs),form='unformatted', &
-&     convert='big_endian',status='old',iostat=ierr)
-call check_iostat(ierr,"open balance coeffs file")
-rewind(iunit)
-read(iunit,iostat=ierr) nlevstat,nlatstat
-call check_iostat(ierr,"read balance coeffs size")
-if(self%glb%nlev/=nlevstat .or. self%glb%nlat/=nlatstat) then
-  if(self%mype==0) then
-    write(6,*) "resolutione of ",trim(self%path_to_gsi_coeffs), &
-   &           " incompatiable with guess"
-    write(6,*) "nz = ",self%glb%nlev,"nzstat = ",nlevstat
-    write(6,*) "ny = ",self%glb%nlat,"nystat = ",nlatstat
-  end if
-  call abor1_ftn("Abort : read_balance_coeffs")
+! Close NetCDF
+  call nccheck(nf90_close(ncid),"nf90_close")
 end if
-read(iunit,iostat=ierr) agvin,bvin,wgvin
-call check_iostat(ierr,"read balance coeff values")
-close(iunit)
+call self%geom_cs%f_comm%broadcast(rlats,0)
+call self%geom_cs%f_comm%broadcast(rlons,0)
 
+do i=1,self%glb%nlon
+  self%glb%rlons(i) = rlons(i)*deg2rad
+end do
+do i=1,self%glb%nlat
+  self%glb%rlats(i) = rlats(i)*deg2rad
+end do
+
+end subroutine read_nmcbalance_latlon
+
+! ------------------------------------------------------------------------------
+! read NMC balance cofficients from NetCDF
+subroutine read_nmcbalance_coeffs(self)
+
+implicit none
+type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
+
+integer :: iunit,ierr,ncid,varid
+integer :: mm1,jx,i,j,k
+
+real(kind=r_single),allocatable :: agvin(:,:,:,:)
+real(kind=r_single),allocatable :: wgvin(:,:,:)
+real(kind=r_single),allocatable :: bvin(:,:,:)
+
+allocate(agvin(self%glb%nlat,self%glb%nlev,self%glb%nlev,1))
+allocate(wgvin(self%glb%nlat,self%glb%nlev,1))
+allocate(bvin (self%glb%nlat,self%glb%nlev,1))
+
+if(self%mype==0) then
+! Open NetCDF
+  call nccheck(nf90_open(trim(self%path_to_nmcbalance_coeffs),NF90_NOWRITE,ncid), &
+ &                       "nf90_open"//trim(self%path_to_nmcbalance_coeffs))
+! Get coefficients
+  call nccheck(nf90_inq_varid(ncid,"agvz",varid), "nf90_inq_varid agvz")
+  call nccheck(nf90_get_var(ncid,varid,agvin),"nf90_get_var agvz" )
+  call nccheck(nf90_inq_varid(ncid,"wgvz",varid), "nf90_inq_varid wgvz")
+  call nccheck(nf90_get_var(ncid,varid,wgvin),"nf90_get_var wgvz" )
+  call nccheck(nf90_inq_varid(ncid,"bvz",varid), "nf90_inq_varid bvz")
+  call nccheck(nf90_get_var(ncid,varid,bvin),"nf90_get_var bvz" )
+
+! Close NetCDF
+  call nccheck(nf90_close(ncid),"nf90_close")
+end if
+call self%geom_cs%f_comm%broadcast(agvin,0)
+call self%geom_cs%f_comm%broadcast(wgvin,0)
+call self%geom_cs%f_comm%broadcast(bvin,0)
 self%agvz = 0.0_kind_real
 self%bvz  = 0.0_kind_real
 self%wgvz = 0.0_kind_real
@@ -908,64 +1003,20 @@ do k=1,self%gg%nlev
       jx=self%jstry(mm1)+i-2
       jx=max(jx,2)
       jx=min(self%glb%nlat-1,jx)
-      self%agvz(i,j,k)=agvin(jx,j,k)
+      self%agvz(i,j,k)=agvin(jx,j,k,1)
     end do
   end do
   do i=1,self%gg%nlat
     jx=self%jstry(mm1)+i-2
     jx=max(jx,2)
     jx=min(self%glb%nlat-1,jx)
-    self%wgvz(i,k)=wgvin(jx,k)
-    self%bvz(i,k)=bvin(jx,k)
+    self%wgvz(i,k)=wgvin(jx,k,1)
+    self%bvz(i,k)=bvin(jx,k,1)
   end do
 end do
 deallocate(agvin,wgvin,bvin)
 
-end subroutine read_balance_coeffs
-
-! ------------------------------------------------------------------------------
-! check I/O return code
-subroutine check_iostat(ierr,mess)
-
-implicit none
-integer,intent(in) :: ierr
-character(len=*),intent(in) :: mess
-
-character(len=256) :: abort_log
-
-write(abort_log,'(3A,I3)') "IO Error : ",trim(mess)," : iostat=",ierr
-if(ierr/=0) then
-  call abor1_ftn(trim(adjustl(abort_log)))
-end if
-
-end subroutine check_iostat
-
-! ------------------------------------------------------------------------------
-! return unused file unit
-integer function get_fileunit(iunit_in) result(iunit)
-
-implicit none
-integer,intent(in),optional :: iunit_in
-
-logical :: lopened, lexist
-integer,parameter :: IUNIT_STR=11, IUNIT_END=99
-integer :: i
-
-if(present(iunit_in)) then
-  inquire(unit=iunit_in,opened=lopened,exist=lexist)
-  if(lexist.and.(.not.lopened)) iunit=iunit_in
-  return
-end if
-
-do i=IUNIT_STR,IUNIT_END
-  inquire(unit=i,opened=lopened,exist=lexist)
-  if(lexist.and.(.not.lopened)) then
-    iunit=i
-    exit
-  end if
-end do
-
-end function get_fileunit
+end subroutine read_nmcbalance_coeffs
 
 ! ------------------------------------------------------------------------------
 ! Pack increments
@@ -1247,6 +1298,182 @@ do k=1,self%gg%nlev
 end do
 
 end subroutine tbalance
+
+! ------------------------------------------------------------------------------
+! Use to file format change from binary to NetCDF for more general reading
+subroutine bi2nc(path_to_gsi_bal_coeffs)
+implicit none
+
+character(len=*),               intent(in   ) :: path_to_gsi_bal_coeffs
+
+integer :: iunit,ierr
+integer :: nlev,nlat,nlon
+integer :: fileopts, ncid, vc, varid(10)
+integer :: x_dimid,y_dimid,z_dimid,t_dimid
+integer,allocatable :: v_dimids(:)
+real(kind=kind_real),allocatable :: lats(:),lons(:)
+integer,allocatable :: zk(:)
+integer :: i,j,k
+
+character(len=64)  :: nlat_c,nlev_c
+character(len=128) :: ncname
+real(kind=r_single),allocatable :: agvin(:,:,:,:)
+real(kind=r_single),allocatable :: wgvin(:,:,:)
+real(kind=r_single),allocatable :: bvin(:,:,:)
+type(gaussian_grid) :: gauss
+
+iunit=get_fileunit()
+open(iunit,file=trim(path_to_gsi_bal_coeffs),form='unformatted', &
+&     convert='big_endian',status='old',iostat=ierr)
+call check_iostat(ierr,"open balance coeffs header")
+rewind(iunit)
+read(iunit,iostat=ierr) nlev,nlat,nlon
+
+gauss%nlat = nlat
+gauss%nlon = nlon
+gauss%nlev = nlev
+gauss%nvar = 1
+call gauss%create()
+call gauss%calc_glb_latlon()
+
+allocate(lats(nlat))
+do j=1,nlat
+  lats(j)=gauss%rlats(j)*rad2deg
+end do
+allocate(lons(nlon))
+do i=1,nlon
+  lons(i)=gauss%rlons(i)*rad2deg
+end do
+allocate(zk(nlev))
+do k=1,nlev
+  zk(k)=k
+end do
+
+allocate(agvin(nlat,nlev,nlev,1))
+allocate(wgvin(nlat,nlev,1))
+allocate(bvin (nlat,nlev,1))
+read(iunit,iostat=ierr) agvin,bvin,wgvin
+close(iunit)
+
+fileopts = ior(NF90_NETCDF4, NF90_MPIIO)
+
+ncid = 1
+write(nlev_c,*) nlev; write(nlat_c,*) nlat
+write(ncname,*) "global_berror.l",trim(adjustl(nlev_c)),"y",trim(adjustl(nlat_c)),".nc"
+call nccheck(nf90_create(trim(adjustl(ncname)),fileopts,ncid),'nf90_create')
+
+call nccheck(nf90_def_dim(ncid,'nlat',nlat,y_dimid),'nf90_def_dim nlat')
+call nccheck(nf90_def_dim(ncid,'nlon',nlon,x_dimid),'nf90_def_dim nlon')
+call nccheck(nf90_def_dim(ncid,'nlev',nlev,z_dimid),'nf90_def_dim nlev')
+call nccheck(nf90_def_dim(ncid,'time',   1,t_dimid),'nf90_def_dim time')
+
+vc = 1
+call nccheck(nf90_def_var(ncid,"lats",NF90_DOUBLE,y_dimid,varid(vc)),"nf90_def_var lats")
+call nccheck(nf90_put_att(ncid,varid(vc),"long_name","latitude"))
+call nccheck(nf90_put_att(ncid,varid(vc),"units","degrees_north"))
+vc = 2
+call nccheck(nf90_def_var(ncid,"lons",NF90_DOUBLE,x_dimid,varid(vc)),"nf90_def_var lons")
+call nccheck(nf90_put_att(ncid,varid(vc),"long_name","longitude"))
+call nccheck(nf90_put_att(ncid,varid(vc),"units","degrees_west"))
+vc = 3
+call nccheck(nf90_def_var(ncid,"level",NF90_INT,z_dimid,varid(vc)),"nf90_def_var level")
+call nccheck(nf90_put_att(ncid,varid(vc),"long_name","vertical level"))
+call nccheck(nf90_put_att(ncid,varid(vc),"units","none"))
+vc = 4
+call nccheck(nf90_def_var(ncid,"time",NF90_INT,t_dimid,varid(vc)),"nf90_def_var time")
+call nccheck(nf90_put_att(ncid,varid(vc),"long_name","time"),"nf90_def_var time long_name")
+
+vc = 5
+allocate(v_dimids(4))
+v_dimids(:) = (/y_dimid,z_dimid,z_dimid,t_dimid/)
+call nccheck(nf90_def_var(ncid,'agvz',NF90_FLOAT,v_dimids,varid(vc)),'nf90_def_var agvz')
+call nccheck(nf90_put_att(ncid,varid(vc), &
+& "long_name","projection_of_streamfunction_onto_balanced_temperature"))
+call nccheck(nf90_put_att(ncid,varid(vc),"units","K s m-2"))
+deallocate(v_dimids)
+vc = 6
+allocate(v_dimids(3))
+v_dimids(:) = (/y_dimid,z_dimid,t_dimid/)
+call nccheck(nf90_def_var(ncid,'bvz',NF90_FLOAT,v_dimids,varid(vc)),'nf90_def_var bvz')
+call nccheck(nf90_put_att(ncid,varid(vc), &
+& "long_name","projection_of_streamfunction_onto_balanced_velocity_potential"))
+call nccheck(nf90_put_att(ncid,varid(vc),"units","none"))
+vc = 7
+call nccheck(nf90_def_var(ncid,'wgvz',NF90_FLOAT,v_dimids,varid(vc)),'nf90_def_var wgvz')
+call nccheck(nf90_put_att(ncid,varid(vc), &
+& "long_name","projection_of_streamfunction_onto_balanced_surface_pressure"))
+call nccheck(nf90_put_att(ncid,varid(vc),"units","Pa s m-2"))
+deallocate(v_dimids)
+
+call nccheck(nf90_enddef(ncid),"nf90_enddef")
+
+vc = 1
+call nccheck(nf90_put_var(ncid,varid(vc),lats),"nf90_put_var lats")
+vc = 2
+call nccheck(nf90_put_var(ncid,varid(vc),lons),"nf90_put_var lons")
+vc = 3
+call nccheck(nf90_put_var(ncid,varid(vc),zk),"nf90_put_var level")
+vc = 4
+call nccheck(nf90_put_var(ncid,varid(vc),1),"nf90_put_var time")
+
+vc = 5
+call nccheck(nf90_put_var(ncid,varid(vc),agvin),"nf90_put_var agvz")
+vc = 6
+call nccheck(nf90_put_var(ncid,varid(vc),bvin),"nf90_put_var bvz")
+vc = 7
+call nccheck(nf90_put_var(ncid,varid(vc),wgvin),"nf90_put_var wgvz")
+
+call nccheck(nf90_close(ncid),'nf90_close')
+
+deallocate(lats)
+deallocate(zk)
+deallocate(agvin,wgvin,bvin)
+
+end subroutine bi2nc
+
+! ------------------------------------------------------------------------------
+! get unused file unit
+integer function get_fileunit(iunit_in) result(iunit)
+
+implicit none
+integer,intent(in),optional :: iunit_in
+
+logical :: lopened, lexist
+integer,parameter :: IUNIT_STR=11, IUNIT_END=99
+integer :: i
+
+if(present(iunit_in)) then
+  inquire(unit=iunit_in,opened=lopened,exist=lexist)
+  if(lexist.and.(.not.lopened)) iunit=iunit_in
+  return
+end if
+
+do i=IUNIT_STR,IUNIT_END
+  inquire(unit=i,opened=lopened,exist=lexist)
+  if(lexist.and.(.not.lopened)) then
+    iunit=i
+    exit
+  end if
+end do
+
+end function get_fileunit
+
+! ------------------------------------------------------------------------------
+! check I/O return code
+subroutine check_iostat(ierr,mess)
+
+implicit none
+integer,intent(in) :: ierr
+character(len=*),intent(in) :: mess
+
+character(len=256) :: abort_log
+
+write(abort_log,'(3A,I3)') "IO Error : ",trim(mess)," : iostat=",ierr
+if(ierr/=0) then
+  call abor1_ftn(trim(adjustl(abort_log)))
+end if
+
+end subroutine check_iostat
 
 ! ------------------------------------------------------------------------------
 

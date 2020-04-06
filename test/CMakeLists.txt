@@ -172,17 +172,15 @@ Data/fv3files/inputpert_fsoi.nml
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fv3files)
 LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-# GSI config files
-# ----------------
+# NMC balance coefficient files
+# -----------------------------
 
-list( APPEND fv3jedi_test_gsifiles
-Data/gsifiles/global_berror.l64y192.f77
-Data/gsifiles/global_berror.l64y96.f77
+list( APPEND fv3jedi_test_nmcbalance
+Data/inputs/nmcbalance/global_berror.l64y192.nc
 )
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/gsifiles)
-LINK_FILES( "${fv3jedi_test_gsifiles}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/nmcbalance)
+LINK_FILES( "${fv3jedi_test_nmcbalance}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Test input scripts

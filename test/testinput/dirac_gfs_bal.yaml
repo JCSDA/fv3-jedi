@@ -25,12 +25,9 @@ Covariance:
       variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
     outputVariables:
       variables: ["psi","chi","tv","ps","rh","ice_wat","liq_wat","o3mr"]
-    nx: 384
-    ny: 192
-    nz: 64
     layoutx: 3
     layouty: 2
-    path_to_gsi_coeffs: Data/gsifiles/global_berror.l64y192.f77
+    path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
 output_B:
   filetype: gfs
   datapath_tile: Data/gsirf/
