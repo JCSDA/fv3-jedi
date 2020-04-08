@@ -243,6 +243,8 @@ testinput/increment_geos.yaml
 testinput/increment_gfs.yaml
 testinput/geometry_iterator_gfs.yaml
 testinput/geometry_iterator_geos.yaml
+testinput/letkf_geos.yaml
+testinput/letkf_gfs.yaml
 testinput/linearmodel_geos.yaml
 testinput/linearmodel_gfs.yaml
 testinput/linearmodel_pseudogeos.yaml
@@ -290,6 +292,8 @@ testoutput/hyb-4dvar_geos.ref
 testoutput/hyb-4dvar_gfs.ref
 testoutput/hyb-fgat_geos.ref
 testoutput/hyb-fgat_gfs.ref
+testoutput/letkf_geos.ref
+testoutput/letkf_gfs.ref
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testoutput)
@@ -512,6 +516,9 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/increment)
 
 set(members mem001;mem002;mem003;mem004)
@@ -521,6 +528,13 @@ foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos/${MEM})
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs/${MEM})
 endforeach()
+
+set(members mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem009;mem010)
+foreach(MEM IN LISTS members)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs/${MEM})
+endforeach()
+
 
 #Tolerances for compare script
 set (ctol 0.0) #Max relative difference
@@ -989,6 +1003,32 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb4dvar_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-4dvar_geos.run testoutput/hyb-4dvar_geos.ref ${ctol} ${idif}
                   TEST_DEPENDS test_fv3jedi_hyb4dvar_geos )
+
+#LETKF
+ecbuild_add_test( TARGET       test_fv3jedi_letkf_geos_run
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_letkf.x
+                  ARGS         testinput/letkf_geos.yaml testoutput/letkf_geos.run
+                  MPI          6)
+
+ecbuild_add_test( TARGET       test_fv3jedi_letkf_geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/letkf_geos.run testoutput/letkf_geos.ref 1.0e-2 ${idif}
+                  TEST_DEPENDS test_fv3jedi_letkf_geos_run )
+
+ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_run
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_letkf.x
+                  ARGS         testinput/letkf_gfs.yaml testoutput/letkf_gfs.run
+                  MPI          6)
+
+ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/letkf_gfs.run testoutput/letkf_gfs.ref 1.0e-2 ${idif}
+                  TEST_DEPENDS test_fv3jedi_letkf_gfs_run )
+
 
 # Test with 12 (instead of 6) processors
 

@@ -48,6 +48,11 @@ ecbuild_add_executable( TARGET  fv3jedi_hofx_no_model.x
                         LIBS    fv3jedi
                       )
 
+ecbuild_add_executable( TARGET  fv3jedi_letkf.x
+                        SOURCES fv3jediLETKF.cc
+                        LIBS    fv3jedi
+                      )
+
 ecbuild_add_executable( TARGET  fv3jedi_parameters.x
                         SOURCES fv3jediEstimateParams.cc
                         LIBS    fv3jedi

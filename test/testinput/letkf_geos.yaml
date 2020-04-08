@@ -1,0 +1,91 @@
+Geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+  Levels: 72
+  FieldSets:
+    - FieldSet: Data/fieldsets/dynamics.yaml
+    - FieldSet: Data/fieldsets/ufo.yaml
+Model:
+  name: 'FV3'
+  nml_file: Data/fv3files/input_geos_c12.nml
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  tstep: PT15M
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  variables: &vars ["ua","va","t","delp","q","qi","ql","o3mr"]
+Assimilation Window:
+  window_begin: &date '2018-04-14T21:00:00Z'
+  window_length: PT6H
+
+Initial Condition:
+   date: *date
+   variables: *vars
+   members:
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem001.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem002.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem003.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem004.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem005.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem006.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem007.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem008.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem009.20180415_000000z.nc4
+   - filetype: geos
+     datapath: Data/inputs/geos_c12/
+     filename_bkgd: geos.mem010.20180415_000000z.nc4
+
+Observations:
+  ObsTypes:
+  - ObsSpace:
+      name: Radiosonde
+      distribution: InefficientDistribution
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/scatwind_obs_2018041500_s.nc4
+      simulate:
+#        variables: [eastward_wind, northward_wind, air_temperature]
+        variables: [eastward_wind, northward_wind]
+    ObsOperator:
+      name: VertInterp
+    Covariance:
+      covariance: localized diagonal
+      Localization:
+        localization: Gaspari-Cohn
+        lengthscale: 5000e3
+Prints:
+  frequency: PT3H
+Localization:
+  distance: 5000e3
+  max_nobs: 1000 
+letkf:
+  inflation:
+    rtpp: 0.0
+    mult: 1.0
+output:
+  filetype: geos
+  datapath: Data/analysis/letkf/geos/%{member}%/
+  filename_bkgd: letkf.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  first: PT0H
+  frequency: PT1H
+  type: ens
+  date: *date
