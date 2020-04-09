@@ -364,7 +364,7 @@ list( APPEND fv3_ioda_test_data
     )
 
 # Set URL for IODA test files
-set(IODA_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com)
+set(FV3_IODA_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com)
 
 
 # If local path to testfiles is defined don't download
@@ -374,48 +374,54 @@ endif()
 
 if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
 
-  # Get the current git branch
-  execute_process(
-    COMMAND git rev-parse --abbrev-ref HEAD
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_BRANCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
+  if ( NOT DEFINED FV3_IODA_TESTFILES_BRANCH)
+
+    # Get the current git branch in fv3-jedi
+    execute_process(
+      COMMAND git rev-parse --abbrev-ref HEAD
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_BRANCH_FV3
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3}) 
+
+  else()
+    message(STATUS "Branch name provided by user")
+    set(GIT_BRANCH_FV3 ${FV3_IODA_TESTFILES_BRANCH})
+  endif()
 
   # Check whether the URL exists or not
-  set( ECBUILD_DOWNLOAD_BASE_URL ${IODA_DOWNLOAD_BASE_URL}/ioda)
+  set( ECBUILD_DOWNLOAD_BASE_URL ${FV3_IODA_DOWNLOAD_BASE_URL}/ioda)
+
   ecbuild_check_multiurl(NAMES   ${fv3_ioda_test_data}
-                         DIRHOST ${GIT_BRANCH}
-                         RESULT  SPECIFIC_TEST_FILES)
+                         DIRHOST ${GIT_BRANCH_FV3}
+                         RESULT  FV3_SPECIFIC_TEST_FILES)
 
   # Set distant directory
-  if(${SPECIFIC_TEST_FILES} MATCHES 0)
+  if(${FV3_SPECIFIC_TEST_FILES} MATCHES 0)
     # Download and extract new test files (distant directory = git branch)
-    set(DIRNAME ${GIT_BRANCH})
-    message(STATUS "GIT_BRANCH found, download " ${GIT_BRANCH})
-    message(STATUS "GIT_BRANCH not found, download develop")
+    set(DIRNAME ${GIT_BRANCH_FV3})
+    message(STATUS "GIT_BRANCH_FV3 found, will download " ${GIT_BRANCH_FV3})
   else()
     # Download and extract develop test files (distant directory = develop)
+    message(STATUS "GIT_BRANCH_FV3 not found on S3, will download develop")
     set(DIRNAME "develop")
   endif()
-  message(STATUS "Test data downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
 
-  message(STATUS "Save data to " ${TESTFILE_DIR_IODA})
+  message(STATUS "Test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
 
-  set(TESTFILE_DIR_IODA ${CMAKE_BINARY_DIR}/test_data/ioda CACHE PATH "data dir for test data")
-  file(MAKE_DIRECTORY ${TESTFILE_DIR_IODA})
-  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
-
-  set(IODA_REP_NAME ioda)
-  set(IODA_TESTFILES_NAME ${fv3_ioda_test_data})
-  set(IODA_BRANCH_NAME ${DIRNAME})
-  set(IODA_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
-
+  set(FV3_IODA_REP_NAME ioda)
+  set(FV3_IODA_TESTFILES_NAME ${fv3_ioda_test_data})
+  set(FV3_IODA_BRANCH_NAME ${DIRNAME})
+  set(FV3_IODA_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
+  message(STATUS "Save data to " ${FV3_IODA_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${FV3_IODA_TESTFILES_PATH})
 
   # Create download script for get_ioda_test_data test 
-  set ( FILENAME fv3_data_downloader.py)
+  set ( FILENAME fv3_ioda_data_downloader.py)
   set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
   set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
-  list( APPEND bin_ioda_test_download_scripts_fv3_deps ${DEST_FILE} )
+  list( APPEND bin_fv3_ioda_test_download_scripts_deps ${DEST_FILE} )
 
   if( EXISTS "${SOURCE_FILE}.in" )
     configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
@@ -423,23 +429,22 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
     configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
   endif()
 
-  add_custom_target( bin_ioda_test_download_scripts_fv3 ALL
-      COMMAND chmod +x ${bin_ioda_test_download_scripts_fv3_deps}
-      DEPENDS ${bin_ioda_test_download_scripts_fv3_deps})
+  add_custom_target( bin_fv3_ioda_test_download_scripts ALL
+      COMMAND chmod +x ${bin_fv3_ioda_test_download_scripts_deps}
+      DEPENDS ${bin_fv3_ioda_test_download_scripts_deps})
 
   ecbuild_add_test( TARGET    fv3_get_ioda_test_data
                     TYPE      SCRIPT
-                    COMMAND    ${CMAKE_BINARY_DIR}/bin/fv3_data_downloader.py
-                    ARGS      testoutput/download_test_fv3.log)
+                    COMMAND    ${CMAKE_BINARY_DIR}/bin/${FILENAME}
+                    ARGS      testoutput/download_test_fv3.log )
 else()
-  set(TESTFILE_DIR_IODA ${LOCAL_PATH_TESTFILES_IODA})
-  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : " ${LOCAL_PATH_TESTFILES_IODA})
+  set(FV3_IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_IODA})
+  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : " ${FV3_IODA_TESTFILES_PATH})
 endif()
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${TESTFILE_DIR_IODA}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs
-		 )
+                 ${FV3_IODA_TESTFILES_PATH}
+                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
 
 # Create tests
 # ------------
