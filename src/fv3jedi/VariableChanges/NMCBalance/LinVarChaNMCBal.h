@@ -11,6 +11,8 @@
 #include <ostream>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include "LinVarChaNMCBal.interface.h"
 
 #include "eckit/config/Configuration.h"
