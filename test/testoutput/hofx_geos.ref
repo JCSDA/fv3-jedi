@@ -5,4 +5,5 @@ Test     : Aircraft nobs= 6294 Min=-27.5038, Max=300.802, RMS=146.342
 Test     : Radiosonde nobs= 2922 Min=-32.4306, Max=301.248, RMS=139.199
 Test     : GnssroRef nobs= 20 Min=0.220756, Max=343.629, RMS=130.282
 Test     : AMSUA-NOAA19 nobs= 1500 Min=149.785, Max=291.508, RMS=231.033
+Test     : AIRS-AQUA nobs= 11800 Min=206.408, Max=299.072, RMS=243.68
 Test     : End H(x)
