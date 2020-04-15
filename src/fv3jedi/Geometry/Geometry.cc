@@ -10,8 +10,6 @@
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
 #include "atlas/grid.h"
-#include "atlas/mesh.h"
-#include "atlas/meshgenerator.h"
 #include "atlas/util/Config.h"
 
 #include "eckit/config/Configuration.h"
@@ -46,21 +44,13 @@ Geometry::Geometry(const eckit::Configuration & conf,
   fv3jedi_geom_setup_f90(keyGeom_, &configc, &comm_, &fieldsMeta_);
   removeFv3Files();
 
-  // Create ATLAS grid configuration
-  const atlas::util::Config atlasConfig;
-  const eckit::Configuration * fconf = &atlasConfig;
-  fv3jedi_geom_create_atlas_grid_conf_f90(keyGeom_, &fconf);
-
-  // Create ATLAS grid
-  atlas::UnstructuredGrid atlasUnstructuredGrid(atlasConfig);
-
-  // Create mesh
-  atlas::MeshGenerator atlasMeshGenerator("no_connectivity");
-  atlas::Mesh atlasMesh = atlasMeshGenerator.generate(atlasUnstructuredGrid);
+  // Set ATLAS lon/lat field
+  atlasFieldSet_.reset(new atlas::FieldSet());
+  fv3jedi_geom_set_atlas_lonlat_f90(keyGeom_, atlasFieldSet_->get());
+  atlas::Field atlasField = atlasFieldSet_->field("lonlat");
 
   // Create ATLAS function space
-  atlasFunctionSpace_.reset(new atlas::functionspace::NodeColumns(atlasMesh,
-                            atlas::option::halo(0)));
+  atlasFunctionSpace_.reset(new atlas::functionspace::PointCloud(atlasField));
 
   // Set ATLAS function space pointer in Fortran
   fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
@@ -74,8 +64,8 @@ Geometry::Geometry(const eckit::Configuration & conf,
 
 Geometry::Geometry(const Geometry & other) : comm_(other.comm_), fieldsMeta_(other.fieldsMeta_) {
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, &fieldsMeta_);
-  atlasFunctionSpace_.reset(new atlas::functionspace::NodeColumns(
-                            other.atlasFunctionSpace_->mesh(), atlas::option::halo(0)));
+  atlasFunctionSpace_.reset(new atlas::functionspace::PointCloud(
+                            other.atlasFunctionSpace_->lonlat()));
   atlasFieldSet_.reset(new atlas::FieldSet());
   for (int jfield = 0; jfield < other.atlasFieldSet_->size(); ++jfield) {
     atlas::Field atlasField = other.atlasFieldSet_->field(jfield);

@@ -59,7 +59,7 @@ class Geometry : public util::Printable,
   void print(std::ostream &) const;
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
-  std::unique_ptr<atlas::functionspace::NodeColumns> atlasFunctionSpace_;
+  std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpace_;
   std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
   const FieldsMetadata fieldsMeta_;
 };

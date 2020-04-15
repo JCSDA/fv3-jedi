@@ -154,17 +154,17 @@ end subroutine c_fv3jedi_geom_print
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_create_atlas_grid_conf(c_key_self, c_conf) &
-                                             bind(c,name='fv3jedi_geom_create_atlas_grid_conf_f90')
+subroutine c_fv3jedi_geom_set_atlas_lonlat(c_key_self, c_afieldset) &
+                                             bind(c,name='fv3jedi_geom_set_atlas_lonlat_f90')
 
 implicit none
 
 !Arguments
 integer(c_int), intent(in) :: c_key_self
-type(c_ptr),    intent(in) :: c_conf
+type(c_ptr), intent(in), value :: c_afieldset
 
 type(fv3jedi_geom), pointer :: self
-type(fckit_configuration)   :: f_conf
+type(atlas_fieldset) :: afieldset
 
 ! LinkedList
 ! ----------
@@ -172,13 +172,13 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 
 ! Fortran APIs
 ! ------------
-f_conf = fckit_configuration(c_conf)
+afieldset = atlas_fieldset(c_afieldset)
 
 ! Call implementation
 ! -------------------
-call self%create_atlas_grid_conf(f_conf)
+call self%set_atlas_lonlat(afieldset)
 
-end subroutine c_fv3jedi_geom_create_atlas_grid_conf
+end subroutine c_fv3jedi_geom_set_atlas_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 

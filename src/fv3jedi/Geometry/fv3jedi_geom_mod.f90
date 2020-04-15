@@ -84,7 +84,7 @@ type :: fv3jedi_geom
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
-    procedure, public :: create_atlas_grid_conf
+    procedure, public :: set_atlas_lonlat
     procedure, public :: fill_atlas_fieldset
 end type fv3jedi_geom
 
@@ -548,34 +548,34 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create_atlas_grid_conf(self, conf)
+subroutine set_atlas_lonlat(self, afieldset)
 
 implicit none
 
 !Arguments
-class(fv3jedi_geom),       intent(inout) :: self
-type(fckit_configuration), intent(inout) :: conf
+class(fv3jedi_geom),  intent(inout) :: self
+type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
 integer :: i,j,node
-real(kind=kind_real) :: x((self%iec-self%isc+1)*(self%jec-self%jsc+1)),y((self%iec-self%isc+1)*(self%jec-self%jsc+1))
+real(kind_real),pointer :: real_ptr(:,:)
+type(atlas_field) :: afield
 
-! Create unstructured grid configuration
+! Create lon/lat field
+afield = atlas_field(name="lonlat",kind=atlas_real(kind_real),shape=(/2,(self%iec-self%isc+1)*(self%jec-self%jsc+1)/))
+call afield%data(real_ptr)
+
 node = 0
 do j=self%jsc,self%jec
   do i=self%isc,self%iec
     node = node+1
-    x(node) = rad2deg*self%grid_lon(i,j)
-    y(node) = rad2deg*self%grid_lat(i,j)
+    real_ptr(1,node) = rad2deg*self%grid_lon(i,j)
+    real_ptr(2,node) = rad2deg*self%grid_lat(i,j)
   enddo
 enddo
+call afieldset%add(afield)
 
-! Create ATLAS grid configuration
-call conf%set("type","unstructured")
-call conf%set("x",x)
-call conf%set("y",y)
-
-end subroutine create_atlas_grid_conf
+end subroutine set_atlas_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
