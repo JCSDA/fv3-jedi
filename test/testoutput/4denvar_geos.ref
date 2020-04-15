@@ -3,10 +3,10 @@ Test     : CostJo   : Nonlinear Jo(Aircraft) = 2909, nobs = 1423, Jo/n = 2.04427
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 2149.72, nobs = 1125, Jo/n = 1.91086, err = 2.05967
 Test     : CostJo   : Nonlinear Jo(GnssroRef) = 0 --- No Observations
 Test     : CostFunction: Nonlinear J = 5058.72
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.00462315
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.00376883
 Test     : CostFunction::addIncrement: Analysis: 
-Test     : CostJb   : Nonlinear Jb = 40.3742
-Test     : CostJo   : Nonlinear Jo(Aircraft) = 1908.13, nobs = 1423, Jo/n = 1.34092, err = 2.6796
-Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1475.66, nobs = 1125, Jo/n = 1.3117, err = 2.05967
+Test     : CostJb   : Nonlinear Jb = 36.8955
+Test     : CostJo   : Nonlinear Jo(Aircraft) = 1896.49, nobs = 1423, Jo/n = 1.33274, err = 2.6796
+Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1475.15, nobs = 1125, Jo/n = 1.31125, err = 2.05967
 Test     : CostJo   : Nonlinear Jo(GnssroRef) = 0 --- No Observations
-Test     : CostFunction: Nonlinear J = 3424.16
+Test     : CostFunction: Nonlinear J = 3408.54
