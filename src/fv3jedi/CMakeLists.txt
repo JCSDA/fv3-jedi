@@ -162,7 +162,7 @@ Model/nuopc/med.F90
 )
 
 #Append includes and libraries with particular model
-list (APPEND FV3JEDI_LIB_DEP oops ufo femps atlas atlas_f ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
+list (APPEND FV3JEDI_LIB_DEP oops saber ufo femps atlas atlas_f ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES} ${FMS_LIBRARIES} ${FV3JEDILM_LIBRARIES})
 
 if( ${FV3BASEDMODEL_FOUND} )
     list( APPEND FV3JEDI_LIB_DEP ${FV3BASEDMODEL_LIBRARIES})

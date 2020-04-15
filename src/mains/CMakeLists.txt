@@ -6,6 +6,7 @@ ecbuild_add_executable( TARGET  fv3jedi_addincrement.x
 ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
                         SOURCES fv3jediConvertState.cc
                         LIBS    fv3jedi
+                                saber
                        )
 
 ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
@@ -16,11 +17,13 @@ ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
 ecbuild_add_executable( TARGET  fv3jedi_dirac.x
                         SOURCES fv3jediDirac.cc
                         LIBS	fv3jedi
+                                saber
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_eda.x
                         SOURCES fv3jediEDA.cc
                         LIBS	fv3jedi
+                                saber
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_enshofx.x
@@ -56,11 +59,13 @@ ecbuild_add_executable( TARGET  fv3jedi_letkf.x
 ecbuild_add_executable( TARGET  fv3jedi_parameters.x
                         SOURCES fv3jediEstimateParams.cc
                         LIBS    fv3jedi
+                                saber
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_var.x
                         SOURCES fv3jediVar.cc
                         LIBS    fv3jedi
+                                saber
                       )
 
 #ecbuild_add_executable( TARGET  fv3jedi_linearforecast.x

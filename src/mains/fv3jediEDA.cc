@@ -8,6 +8,9 @@
 #include "fv3jedi/Localization/instantiateLocalizationFactory.h"
 #include "fv3jedi/Utilities/Traits.h"
 #include "fv3jedi/VariableChanges/instantiateVarChangeFactories.h"
+#include "saber/oops/instantiateCovarFactory.h"
+#include "saber/oops/instantiateLocalizationFactory.h"
+#include "saber/oops/instantiateVariableChangeFactory.h"
 #include "ufo/instantiateObsFilterFactory.h"
 
 #include "oops/runs/EDA.h"
@@ -17,6 +20,9 @@ int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   fv3jedi::instantiateLocalizationFactory();
   fv3jedi::instantiateVarChangeFactories();
+  saber::instantiateCovarFactory<fv3jedi::Traits>();
+  saber::instantiateLocalizationFactory<fv3jedi::Traits>();
+  saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
   oops::EDA<fv3jedi::Traits> eda;
   run.execute(eda);
