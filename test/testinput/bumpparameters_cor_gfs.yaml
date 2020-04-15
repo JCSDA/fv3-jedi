@@ -21,7 +21,6 @@ bump:
   prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs
   verbosity: main
   method: cor
-  nonunit_diag: 1
   strategy: specific_univariate
   new_nicas: 1
   ntry: 3
@@ -54,6 +53,7 @@ bump:
   #diag_rhflt: 3000000
 # Variance filter
 # ---------------
+#  new_var: 1
 #  var_filter: 1
 #  var_niter: 10
 #  var_rhflt: 1000000.0
@@ -70,15 +70,15 @@ bump:
   grid_output: 1
   grid_resol: 200000.0
 output:
-- parameter: var
-  filetype: gfs
-  datapath_tile: Data/bump/
-  filename_core: bumpparameters_cor_gfs.var.fv_core.res.nc
-  filename_trcr: bumpparameters_cor_gfs.var.fv_tracer.res.nc
-  filename_sfcd: bumpparameters_cor_gfs.var.sfc_data.nc
-  filename_sfcw: bumpparameters_cor_gfs.var.fv_srf_wnd.res.nc
-  filename_cplr: bumpparameters_cor_gfs.var.coupler.res
-  date: '2018-04-14T21:00:00Z'
+#- parameter: stddev
+#  filetype: gfs
+#  datapath_tile: Data/bump/
+#  filename_core: bumpparameters_cor_gfs.stddev.fv_core.res.nc
+#  filename_trcr: bumpparameters_cor_gfs.stddev.fv_tracer.res.nc
+#  filename_sfcd: bumpparameters_cor_gfs.stddev.sfc_data.nc
+#  filename_sfcw: bumpparameters_cor_gfs.stddev.fv_srf_wnd.res.nc
+#  filename_cplr: bumpparameters_cor_gfs.stddev.coupler.res
+#  date: '2018-04-14T21:00:00Z'
 - parameter: cor_rh
   filetype: gfs
   datapath_tile: Data/bump/
