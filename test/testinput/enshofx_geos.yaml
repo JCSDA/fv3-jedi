@@ -83,6 +83,60 @@ Observations:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
   - ObsSpace:
+      name: MHS-N18
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/mhs_n18_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/eda/geos/%{member}%/mhs_n18_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-5
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: mhs_n18
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: MHS-METOP-A
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/mhs_metop-a_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/eda/geos/%{member}%/mhs_metop-a_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-5
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: mhs_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: MHS-METOP-B
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/mhs_metop-b_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/eda/geos/%{member}%/mhs_metop-b_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-5
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: mhs_metop-b
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
       name: AIRS-AQUA
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2018041500_m.nc4
@@ -109,6 +163,5 @@ Observations:
         Sensor_ID: airs_aqua
         EndianType: little_endian
         CoefficientPath: Data/crtm/
-
 Prints:
   frequency: PT3H
