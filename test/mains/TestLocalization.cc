@@ -14,7 +14,6 @@ int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   test::Localization<fv3jedi::Traits> tests;
-  run.execute(tests);
-  return 0;
+  return run.execute(tests);
 }
 

@@ -16,6 +16,5 @@ int main(int argc,  char ** argv) {
   fv3jedi::instantiateVarChangeFactories();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   test::LinearVariableChange<fv3jedi::Traits> tests;
-  run.execute(tests);
-  return 0;
+  return run.execute(tests);
 }

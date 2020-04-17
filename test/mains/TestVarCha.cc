@@ -14,6 +14,5 @@ int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   fv3jedi::instantiateVarChangeFactories();
   test::VariableChange<fv3jedi::Traits> tests;
-  run.execute(tests);
-  return 0;
+  return run.execute(tests);
 }

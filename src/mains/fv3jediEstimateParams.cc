@@ -20,6 +20,5 @@ int main(int argc,  char ** argv) {
   saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   saber::EstimateParams<fv3jedi::Traits> dir;
-  run.execute(dir);
-  return 0;
+  return run.execute(dir);
 }

@@ -14,6 +14,5 @@ int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
   oops::HofXNoModel<fv3jedi::Traits> hofx;
-  run.execute(hofx);
-  return 0;
+  return run.execute(hofx);
 }

@@ -16,6 +16,5 @@ int main(int argc,  char ** argv) {
   fv3jedi::instantiateVarChangeFactories();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   oops::ConvertState<fv3jedi::Traits> cs;
-  run.execute(cs);
-  return 0;
+  return run.execute(cs);
 }

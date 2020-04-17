@@ -12,6 +12,5 @@
 int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   oops::LinearForecast<fv3jedi::Traits> fc;
-  run.execute(fc);
-  return 0;
+  return run.execute(fc);
 }

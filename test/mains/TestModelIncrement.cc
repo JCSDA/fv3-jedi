@@ -12,7 +12,6 @@
 int main(const int argc, const char ** argv) {
   fv3jedi::Run run(argc, argv);
   test::ModelIncrement<fv3jedi::Traits> tests;
-  run.execute(tests);
-  return 0;
+  return run.execute(tests);
 }
 

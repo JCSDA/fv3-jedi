@@ -16,7 +16,6 @@ int main(int argc,  char ** argv) {
   saber::instantiateCovarFactory<fv3jedi::Traits>();
   saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   test::ErrorCovariance<fv3jedi::Traits> tests;
-  run.execute(tests);
-  return 0;
+  return run.execute(tests);
 }
 

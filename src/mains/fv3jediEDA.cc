@@ -25,6 +25,5 @@ int main(int argc,  char ** argv) {
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
   oops::EDA<fv3jedi::Traits> eda;
-  run.execute(eda);
-  return 0;
+  return run.execute(eda);
 }

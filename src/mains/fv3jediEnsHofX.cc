@@ -14,6 +14,5 @@ int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
   oops::EnsHofX<fv3jedi::Traits> enshofx;
-  run.execute(enshofx);
-  return 0;
+  return run.execute(enshofx);
 }

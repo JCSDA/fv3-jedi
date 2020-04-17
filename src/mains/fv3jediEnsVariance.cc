@@ -12,6 +12,5 @@
 int main(int argc,  char ** argv) {
   fv3jedi::Run run(argc, argv);
   oops::EnsVariance<fv3jedi::Traits> var;
-  run.execute(var);
-  return 0;
+  return run.execute(var);
 }

@@ -25,6 +25,5 @@ int main(int argc,  char ** argv) {
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
   oops::Variational<fv3jedi::Traits> var;
-  run.execute(var);
-  return 0;
+  return run.execute(var);
 }
