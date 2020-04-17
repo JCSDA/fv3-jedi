@@ -19,11 +19,7 @@
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
 
-#include "ufo/GeoVaLs.h"
-#include "ufo/Locations.h"
-
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/GetValues/GetValuesTraj.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/State/State.h"
 #include "fv3jedi/Utilities/Utilities.h"
@@ -66,8 +62,7 @@ State::State(const Geometry & geom, const oops::Variables & vars, const eckit::C
                         " from file done." << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-State::State(const Geometry & resol,
-                           const State & other):
+State::State(const Geometry & resol, const State & other):
   geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_)
 {
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
@@ -96,28 +91,6 @@ State & State::operator=(const State & rhs) {
   fv3jedi_state_copy_f90(keyState_, rhs.keyState_);
   time_ = rhs.time_;
   return *this;
-}
-// -------------------------------------------------------------------------------------------------
-/// Get state values at observation locations
-// -------------------------------------------------------------------------------------------------
-void State::getValues(const ufo::Locations & locs,
-                             const oops::Variables & vars,
-                             ufo::GeoVaLs & gom) const {
-  oops::Log::trace() << "State::getValues starting." << std::endl;
-  fv3jedi_state_getvalues_notraj_f90(geom_->toFortran(), keyState_,
-                                     locs.toFortran(), vars,
-                                     gom.toFortran());
-  oops::Log::trace() << "State::getValues done." << std::endl;
-}
-// -------------------------------------------------------------------------------------------------
-void State::getValues(const ufo::Locations & locs,
-                             const oops::Variables & vars,
-                             ufo::GeoVaLs & gom,
-                             const GetValuesTrajMatrix & traj) const {
-  oops::Log::trace() << "State::getValues traj starting." << std::endl;
-  fv3jedi_state_getvalues_f90(geom_->toFortran(), keyState_, locs.toFortran(),
-                              vars, gom.toFortran(), traj.toFortran());
-  oops::Log::trace() << "State::getValues traj done." << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 /// Interpolate full state

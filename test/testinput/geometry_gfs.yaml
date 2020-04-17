@@ -5,6 +5,6 @@ Geometry:
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
   Levels: 64
   FieldSets:
-    - FieldSet: Data/fieldsets/aerosols.yaml
+    - FieldSet: Data/fieldsets/aerosols_gfs.yaml
     - FieldSet: Data/fieldsets/dynamics.yaml
     - FieldSet: Data/fieldsets/ufo.yaml

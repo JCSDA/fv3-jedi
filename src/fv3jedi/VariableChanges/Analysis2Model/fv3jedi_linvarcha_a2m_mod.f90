@@ -105,8 +105,8 @@ do index_mod = 1, xmod%nf
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     failed = .false.
     if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M Multiply: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name&
-        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name
+        "A2M Multiply: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name(1:10)&
+        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name(1:10)
 
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
 
@@ -151,7 +151,7 @@ do index_mod = 1, xmod%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiply: found no way of getting "//&
-                             xmod%fields(index_mod)%fv3jedi_name//" from the analysis increment" )
+                             trim(xmod%fields(index_mod)%fv3jedi_name)//" from the analysis increment" )
 
 enddo
 
@@ -202,8 +202,8 @@ do index_ana = 1, xana%nf
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
     failed = .false.
     if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M MultiplyAdjoint: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name&
-        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name
+        "A2M MultiplyAdjoint: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name(1:10)&
+        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name(1:10)
 
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
 
@@ -249,7 +249,7 @@ do index_ana = 1, xana%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyadjoint: found no way of getting "//&
-                             xana%fields(index_ana)%fv3jedi_name//" from the linearized model" )
+                             trim(xana%fields(index_ana)%fv3jedi_name)//" from the linearized model" )
 
 enddo
 
@@ -299,8 +299,8 @@ do index_ana = 1, xana%nf
     failed = .false.
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
     if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M MultiplyInverse: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name&
-        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name
+        "A2M MultiplyInverse: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name(1:10)&
+        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name(1:10)
 
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
 
@@ -343,7 +343,7 @@ do index_ana = 1, xana%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyinverse: found no way of getting "//&
-                             xana%fields(index_ana)%fv3jedi_name//" from the linearized model" )
+                             trim(xana%fields(index_ana)%fv3jedi_name)//" from the linearized model" )
 
 enddo
 
@@ -394,8 +394,8 @@ do index_mod = 1, xmod%nf
     failed = .false.
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M MultiplyInverseAdjoint: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name&
-        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name
+        "A2M MultiplyInverseAdjoint: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name(1:10)&
+        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name(1:10)
 
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
 
@@ -440,7 +440,7 @@ do index_mod = 1, xmod%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyinverseadjoint: found no way of getting "//&
-                             xmod%fields(index_mod)%fv3jedi_name//" from the analysis increment" )
+                             trim(xmod%fields(index_mod)%fv3jedi_name)//" from the analysis increment" )
 
 enddo
 

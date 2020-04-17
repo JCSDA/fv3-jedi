@@ -20,7 +20,7 @@ use unstructured_interpolation_mod, only: unstrc_interp
 
 implicit none
 private
-public :: field2field_interp
+public :: field2field_interp, unsinterp_integer_apply, unsinterp_nearest_apply
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -155,7 +155,8 @@ endif
 ! ---------------------
 do var = 1,nf
 
-  if (.not. fields_in(var)%integerfield .and. trim(self%interp_type) == 'bump') then
+  if (.not. fields_in(var)%integerfield .and. trim(fields_in(var)%space) == 'magnitude' .and. &
+      trim(self%interp_type) == 'bump') then
 
     ! Allocation
     allocate(field_ou_2d(geom_ou%ngrid,1:fields_ou(var)%npz))
@@ -193,13 +194,18 @@ do var = 1,nf
       enddo
 
       ! Interpolate
-      if (.not. fields_in(var)%integerfield .and. trim(self%interp_type) == 'barycent') then
+      if (.not. fields_in(var)%integerfield .and. trim(fields_in(var)%space) == 'magnitude' .and. &
+          trim(self%interp_type) == 'barycent') then
 
         call self%unsinterp%apply(field_in, field_ou)
 
       elseif (fields_in(var)%integerfield) then
 
-        call iinterp_apply(self, geom_in%f_comm, geom_in%ngrid, field_in, geom_ou%ngrid, field_ou)
+        call unsinterp_integer_apply(self%unsinterp, field_in, field_ou)
+
+      elseif (trim(fields_in(var)%space) == 'direction') then
+
+        call unsinterp_nearest_apply(self%unsinterp, field_in, field_ou)
 
       endif
 
@@ -249,34 +255,38 @@ end subroutine apply
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine iinterp_apply(self, f_comm, ngrid_in, field_in, ngrid_ou, field_ou)
+subroutine unsinterp_integer_apply(unsinterp, field_in, field_ou)
 
-type(field2field_interp), intent(in)    :: self
-type(fckit_mpi_comm),     intent(in)    :: f_comm
-integer,                  intent(in)    :: ngrid_in           !Input grid dimensions
-real(kind=kind_real),     intent(in)    :: field_in(ngrid_in) !Integer field in
-integer,                  intent(in)    :: ngrid_ou           !Output grid dimensions
-real(kind=kind_real),     intent(inout) :: field_ou(ngrid_ou) !Integer field out
+type(unstrc_interp),      intent(in)    :: unsinterp
+real(kind=kind_real),     intent(in)    :: field_in(:) !Integer field in
+real(kind=kind_real),     intent(inout) :: field_ou(:) !Integer field out
 
 ! Locals
-integer :: maxtypel, mintypel, maxtype, mintype
+integer :: maxtypel, mintypel, maxtype, mintype, ngrid_ou
 integer :: i, j, k, n, index
 real(kind=kind_real), allocatable :: interp_w(:,:)
+real(kind=kind_real), allocatable :: field_ou_tmp(:)
 real(kind=kind_real), allocatable :: field_neighbours(:,:)
 real(kind=kind_real), allocatable :: field_types(:)
 
+! Inteprolation of integer fields
+
+! Size of output
+! --------------
+ngrid_ou = size(field_ou)
+
 ! Get nearest neighbours
 ! ----------------------
-allocate(field_neighbours(self%nnearest,ngrid_ou))
-call self%unsinterp%apply(field_in, field_ou, field_neighbours)
-
+allocate(field_neighbours(unsinterp%nn,ngrid_ou))
+allocate(field_ou_tmp(ngrid_ou))
+call unsinterp%apply(field_in, field_ou_tmp, field_neighbours)
 
 ! Global min and max integers in field
 ! ------------------------------------
 maxtypel = int(maxval(field_in))
 mintypel = int(minval(field_in))
-call f_comm%allreduce(maxtypel,maxtype,fckit_mpi_max())
-call f_comm%allreduce(mintypel,mintype,fckit_mpi_min())
+call unsinterp%comm%allreduce(maxtypel,maxtype,fckit_mpi_max())
+call unsinterp%comm%allreduce(mintypel,mintype,fckit_mpi_min())
 
 
 ! Put weights into field type array and pick max for interpolated value
@@ -286,14 +296,47 @@ allocate(field_types(mintype:maxtype))
 field_ou = 0.0_kind_real
 do i = 1,ngrid_ou
   field_types = 0.0
-  do n = 1, self%nnearest
+  do n = 1, unsinterp%nn
     index = int(field_neighbours(n,i))
-    field_types(index) = field_types(index) + self%unsinterp%interp_w(n,i)
+    field_types(index) = field_types(index) + unsinterp%interp_w(n,i)
   enddo
   field_ou(i) = real(maxloc(field_types,1)+(mintype-1),kind_real)
 enddo
 
-end subroutine iinterp_apply
+end subroutine unsinterp_integer_apply
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine unsinterp_nearest_apply(unsinterp, field_in, field_ou)
+
+type(unstrc_interp),      intent(in)    :: unsinterp
+real(kind=kind_real),     intent(in)    :: field_in(:) !Integer field in
+real(kind=kind_real),     intent(inout) :: field_ou(:) !Integer field out
+
+integer :: n, ngrid_ou
+real(kind=kind_real), allocatable :: field_ou_tmp(:)
+real(kind=kind_real), allocatable :: field_neighbours(:,:)
+
+! Inteprolation using the nearest neighbour
+
+! Size of output
+! --------------
+ngrid_ou = size(field_ou)
+
+! Get nearest neighbours
+! ----------------------
+allocate(field_neighbours(unsinterp%nn,ngrid_ou))
+allocate(field_ou_tmp(ngrid_ou))
+call unsinterp%apply(field_in, field_ou_tmp, field_neighbours)
+
+! Find nearest neighbour
+! ----------------------
+do n = 1, ngrid_ou
+  field_ou(n) = field_neighbours(minloc(unsinterp%interp_w(:,n),1),n)
+enddo
+
+
+end subroutine unsinterp_nearest_apply
 
 ! --------------------------------------------------------------------------------------------------
 

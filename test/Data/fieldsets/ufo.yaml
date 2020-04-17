@@ -6,7 +6,7 @@
 
 
 # Field definitions for the UFO observation operators
-# *** Do not add FieldIONames or LongName, ufo only uses one name ***
+# *** Do not add different FieldIONames or LongName, ufo only uses one name ***
 
 Geometry: fv3
 
@@ -18,6 +18,14 @@ Fields:
   - FieldName: geopotential_height_levels
     Units: m
     Levels: full
+
+  - FieldName: height
+    Units: none
+    Levels: full
+
+  - FieldName: surface_altitude
+    Units: none
+    Levels: 1
 
   - FieldName: humidity_mixing_ratio
     Units: 1
@@ -147,22 +155,17 @@ Fields:
   - FieldName: land_type_index
     Units: none
     Levels: 1
+    Kind: integer
 
   - FieldName: vegetation_type_index
     Units: none
     Levels: 1
+    Kind: integer
 
   - FieldName: soil_type
     Units: none
     Levels: 1
-
-  - FieldName: height
-    Units: none
-    Levels: full
-
-  - FieldName: surface_altitude
-    Units: none
-    Levels: 1
+    Kind: integer
 
   - FieldName: surface_roughness_length
     Units: none

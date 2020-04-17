@@ -26,7 +26,6 @@ use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
-use fv3jedi_getvalues_mod,       only: getvalues_tl, getvalues_ad
 
 use wind_vt_mod, only: d2a
 
@@ -38,8 +37,7 @@ public :: fv3jedi_increment, create, delete, zeros, random, set_atlas, to_atlas,
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
           dot_prod, diff_incr, &
           read_file, write_file, gpnorm, rms, &
-          change_resol, getvalues_tl, getvalues_ad, &
-          dirac, jnormgrad, &
+          change_resol, dirac, jnormgrad, &
           fv3jedi_increment_serialize, fv3jedi_increment_deserialize, &
           fv3jedi_getpoint, fv3jedi_setpoint, &
           increment_print

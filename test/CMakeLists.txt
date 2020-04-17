@@ -226,7 +226,10 @@ testinput/forecast_gfs-fv3.yaml
 testinput/forecast_gfs.yaml
 testinput/geometry_geos.yaml
 testinput/geometry_gfs.yaml
+testinput/getvalues_geos.yaml
+testinput/getvalues_gfs.yaml
 testinput/hofx_geos.yaml
+testinput/hofx_gfs_p12.yaml
 testinput/hofx_gfs.yaml
 testinput/hyb-3dvar_geos_p12.yaml
 testinput/hyb-3dvar_geos.yaml
@@ -243,6 +246,8 @@ testinput/increment_geos.yaml
 testinput/increment_gfs.yaml
 testinput/geometry_iterator_gfs.yaml
 testinput/geometry_iterator_geos.yaml
+testinput/lineargetvalues_geos.yaml
+testinput/lineargetvalues_gfs.yaml
 testinput/letkf_geos.yaml
 testinput/letkf_gfs.yaml
 testinput/linearmodel_geos.yaml
@@ -315,7 +320,8 @@ LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # Field sets
 # ----------
 list( APPEND fv3jedi_field_sets
-Data/fieldsets/aerosols.yaml
+Data/fieldsets/aerosols_gfs.yaml
+Data/fieldsets/aerosols_geos.yaml
 Data/fieldsets/dynamics.yaml
 Data/fieldsets/ufo.yaml
 )
@@ -452,63 +458,59 @@ execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
 # Executables
 ecbuild_add_executable( TARGET  test_fv3jedi_errorcovariance.x
                         SOURCES mains/TestErrorCovariance.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_geometry.x
                         SOURCES mains/TestGeometry.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_getvalues.x
+                        SOURCES mains/TestGetValues.cc
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_geometryiterator.x
                         SOURCES mains/TestGeometryIterator.cc
-                        LIBS    fv3jedi
-                      )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_increment.x
                         SOURCES mains/TestIncrement.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
+
+ecbuild_add_executable( TARGET  test_fv3jedi_lineargetvalues.x
+                        SOURCES mains/TestLinearGetValues.cc
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_linearmodel.x
                         SOURCES mains/TestLinearModel.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_linvarcha.x
                         SOURCES mains/TestLinVarCha.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_localization.x
                         SOURCES mains/TestLocalization.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcontrol.x
                         SOURCES mains/TestModelAuxControl.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcovariance.x
                         SOURCES mains/TestModelAuxCovariance.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_model.x
                         SOURCES mains/TestModel.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_state.x
                         SOURCES mains/TestState.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_varcha.x
                         SOURCES mains/TestVarCha.cc
-                        LIBS    fv3jedi
-                       )
+                        LIBS    fv3jedi )
 
 #Make some output directories for test data
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
@@ -581,6 +583,26 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_geos
                   MPI     6
                   LIBS    fv3jedi
                   TEST_DEPENDS test_fv3jedi_crtm_surface_for_geos )
+
+ecbuild_add_test( TARGET  test_fv3jedi_getvalues_gfs
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_getvalues.x
+                  ARGS    testinput/getvalues_gfs.yaml
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_getvalues_geos
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_getvalues.x
+                  ARGS    testinput/getvalues_geos.yaml
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_lineargetvalues_gfs
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_lineargetvalues.x
+                  ARGS    testinput/lineargetvalues_gfs.yaml
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_lineargetvalues_geos
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_lineargetvalues.x
+                  ARGS    testinput/lineargetvalues_geos.yaml
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_model_gfs-fv3
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
@@ -696,6 +718,19 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_gfs_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hofx_gfs.run testoutput/hofx_gfs.ref 1.0e-3 ${idif}
                   TEST_DEPENDS test_fv3jedi_hofx_gfs )
+
+# Hofx tests are a bit slow so leave off except for testing
+# ecbuild_add_test( TARGET  test_fv3jedi_hofx_gfs_p12
+#                   TYPE    EXE
+#                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
+#                   ARGS    testinput/hofx_gfs_p12.yaml testoutput/hofx_gfs_p12.run
+#                   MPI     12  )
+#
+# ecbuild_add_test( TARGET       test_fv3jedi_hofx_gfs_compare_p12
+#                   TYPE         SCRIPT
+#                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+#                   ARGS         testoutput/hofx_gfs_p12.run testoutput/hofx_gfs.run.ref 0.0 0
+#                   TEST_DEPENDS test_fv3jedi_hofx_gfs )
 
 ecbuild_add_test( TARGET  test_fv3jedi_hofx_geos
                   TYPE    EXE
@@ -1072,7 +1107,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_geos_p12.run testoutput/hyb-3dvar_geos.run.ref 1.0e-1 0
+                  ARGS         testoutput/hyb-3dvar_geos_p12.run testoutput/hyb-3dvar_geos.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos_p12 )
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_gfs_p12
@@ -1110,7 +1145,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12
 ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/hyb-3dvar_gfs_p12.run testoutput/hyb-3dvar_gfs.run.ref 1.0e-1 0
+                  ARGS         testoutput/hyb-3dvar_gfs_p12.run testoutput/hyb-3dvar_gfs.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs_p12 )
 
 # Aerosol tests

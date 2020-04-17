@@ -20,13 +20,6 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment, fv3jedi_increment_registry
 
-!GetValues
-use ufo_locs_mod
-use ufo_locs_mod_c, only: ufo_locs_registry
-use ufo_geovals_mod
-use ufo_geovals_mod_c, only: ufo_geovals_registry
-use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj, fv3jedi_getvalues_traj_registry
-
 private
 public :: fv3jedi_state_registry
 
@@ -287,64 +280,6 @@ call rms(state, zz)
 prms = zz
 
 end subroutine fv3jedi_state_rms_c
-
-! ------------------------------------------------------------------------------
-
-subroutine fv3jedi_state_getvalues_notraj_c(c_key_geom, c_key_state,c_key_loc,c_vars,c_key_gom) bind(c,name='fv3jedi_state_getvalues_notraj_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_state !< State to be interpolated
-integer(c_int), intent(in) :: c_key_loc   !< List of requested locations
-type(c_ptr), value, intent(in) :: c_vars  !< List of requested variables
-integer(c_int), intent(in) :: c_key_gom   !< Interpolated values
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-type(fv3jedi_state), pointer :: state
-type(ufo_locs),  pointer :: locs
-type(ufo_geovals),  pointer :: gom
-type(oops_variables) :: vars
-type(fv3jedi_geom),  pointer :: geom
-
-vars = oops_variables(c_vars)
-
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state, state)
-call ufo_locs_registry%get(c_key_loc, locs)
-call ufo_geovals_registry%get(c_key_gom, gom)
-
-call getvalues(geom, state, locs, vars, gom)
-
-end subroutine fv3jedi_state_getvalues_notraj_c
-
-! ------------------------------------------------------------------------------
-
-subroutine fv3jedi_state_getvalues_c(c_key_geom, c_key_state,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_state_getvalues_f90')
-
-implicit none
-integer(c_int), intent(in)     :: c_key_state  !< State to be interpolated
-integer(c_int), intent(in)     :: c_key_loc  !< List of requested locations
-type(c_ptr), value, intent(in) :: c_vars     !< List of requested variables
-integer(c_int), intent(in)     :: c_key_gom  !< Interpolated values
-integer(c_int), intent(in)     :: c_key_traj !< Trajectory for interpolation/transforms
-integer(c_int), intent(in)     :: c_key_geom  !< Geometry
-
-type(fv3jedi_state), pointer :: state
-type(ufo_locs),  pointer :: locs
-type(ufo_geovals),  pointer :: gom
-type(oops_variables) :: vars
-type(fv3jedi_getvalues_traj), pointer :: traj
-type(fv3jedi_geom),  pointer :: geom
-
-vars = oops_variables(c_vars)
-
-call fv3jedi_state_registry%get(c_key_state, state)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call ufo_locs_registry%get(c_key_loc, locs)
-call ufo_geovals_registry%get(c_key_gom, gom)
-call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
-
-call getvalues(geom, state, locs, vars, gom, traj)
-
-end subroutine fv3jedi_state_getvalues_c
 
 ! ------------------------------------------------------------------------------
 

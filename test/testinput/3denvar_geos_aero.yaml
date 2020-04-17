@@ -118,8 +118,9 @@ resolution:
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
   Levels: 72
   FieldSets:
-    - FieldSet: Data/fieldsets/aerosols.yaml
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/aerosols_geos.yaml
+  - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/ufo.yaml
 variational:
   iteration:
   - diagnostics:
@@ -141,8 +142,9 @@ variational:
       pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
       Levels: 72
       FieldSets:
-        - FieldSet: Data/fieldsets/aerosols.yaml
-        - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/aerosols_geos.yaml
+      - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/ufo.yaml
     test: 'on'
   - diagnostics:
       departures: ombg
@@ -163,6 +165,7 @@ variational:
       pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
       Levels: 72
       FieldSets:
-        - FieldSet: Data/fieldsets/aerosols.yaml
-        - FieldSet: Data/fieldsets/dynamics.yaml  
+      - FieldSet: Data/fieldsets/aerosols_geos.yaml
+      - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/ufo.yaml
     test: 'on'

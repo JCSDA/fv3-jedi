@@ -38,7 +38,6 @@ namespace oops {
 namespace fv3jedi {
   class Geometry;
   class Increment;
-  class GetValuesTrajMatrix;
 
 // FV3JEDI model state
 
@@ -49,10 +48,8 @@ class State : public util::Printable,
   static const std::string classname() {return "fv3jedi::State";}
 
 // Constructor, destructor and basic operators
-  State(const Geometry &, const oops::Variables &,
-               const util::DateTime &);
-  State(const Geometry &, const oops::Variables &,
-               const eckit::Configuration &);
+  State(const Geometry &, const oops::Variables &, const util::DateTime &);
+  State(const Geometry &, const oops::Variables &, const eckit::Configuration &);
   State(const Geometry &, const State &);
   State(const State &);
   virtual ~State();
@@ -60,12 +57,6 @@ class State : public util::Printable,
   State & operator=(const State &);
   void zero();
   void accumul(const double &, const State &);
-
-// Get state values at observation locations
-  void getValues(const ufo::Locations &, const oops::Variables &,
-                  ufo::GeoVaLs &) const;
-  void getValues(const ufo::Locations &, const oops::Variables &,
-                  ufo::GeoVaLs &, const GetValuesTrajMatrix &) const;
 
 // Interpolate state
   void changeResolution(const State & xx);

@@ -13,7 +13,8 @@
 #include "fv3jedi/ErrorCovariance/ErrorCovariance.h"
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
-#include "fv3jedi/GetValues/GetValuesTraj.h"
+#include "fv3jedi/GetValues/GetValues.h"
+#include "fv3jedi/GetValues/LinearGetValues.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/Localization/LocalizationMatrix.h"
 #include "fv3jedi/State/State.h"
@@ -46,24 +47,25 @@ struct Traits {
   typedef fv3jedi::Increment            Increment;
   typedef fv3jedi::Geometry             Geometry;
   typedef fv3jedi::GeometryIterator     GeometryIterator;
-  typedef fv3jedi::GetValuesTrajMatrix        InterpolatorTraj;
+  typedef fv3jedi::GetValues            GetValues;
+  typedef fv3jedi::LinearGetValues      LinearGetValues;
   typedef fv3jedi::LocalizationMatrix   LocalizationMatrix;
   typedef fv3jedi::ModelBias            ModelAuxControl;
   typedef fv3jedi::ModelBiasIncrement   ModelAuxIncrement;
   typedef fv3jedi::ModelBiasCovariance  ModelAuxCovariance;
   typedef fv3jedi::State                State;
 
-  typedef ufo::GeoVaLs                         GeoVaLs;
-  typedef ufo::LinearObsOperator               LinearObsOperator;
-  typedef ufo::Locations                       Locations;
-  typedef ufo::ObsBias                         ObsAuxControl;
-  typedef ufo::ObsBiasCovariance               ObsAuxCovariance;
-  typedef ufo::ObsBiasIncrement                ObsAuxIncrement;
-  typedef ufo::ObsDiagnostics                  ObsDiagnostics;
-  typedef ufo::ObsOperator                     ObsOperator;
+  typedef ufo::GeoVaLs                  GeoVaLs;
+  typedef ufo::LinearObsOperator        LinearObsOperator;
+  typedef ufo::Locations                Locations;
+  typedef ufo::ObsBias                  ObsAuxControl;
+  typedef ufo::ObsBiasCovariance        ObsAuxCovariance;
+  typedef ufo::ObsBiasIncrement         ObsAuxIncrement;
+  typedef ufo::ObsDiagnostics           ObsDiagnostics;
+  typedef ufo::ObsOperator              ObsOperator;
 
-  typedef ioda::ObsSpace                       ObsSpace;
-  typedef ioda::ObsVector                      ObsVector;
+  typedef ioda::ObsSpace                ObsSpace;
+  typedef ioda::ObsVector               ObsVector;
   template <typename DATA> using ObsDataVector = ioda::ObsDataVector<DATA>;
 };
 

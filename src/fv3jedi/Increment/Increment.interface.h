@@ -87,20 +87,6 @@ extern "C" {
                                         const eckit::Configuration * const *,
                                         const util::DateTime * const *);
 
-  void fv3jedi_increment_getvalues_tl_f90(const F90geom &,
-                                          const F90inc &,
-                                          const F90locs &,
-                                          const oops::Variables &,
-                                          const F90goms &,
-                                          const F90ootrj &);
-
-  void fv3jedi_increment_getvalues_ad_f90(const F90geom &,
-                                          const F90inc &,
-                                          const F90locs &,
-                                          const oops::Variables &,
-                                          const F90goms &,
-                                          const F90ootrj &);
-
   void fv3jedi_increment_gpnorm_f90(const F90inc &,
                                     const int &,
                                     double &);

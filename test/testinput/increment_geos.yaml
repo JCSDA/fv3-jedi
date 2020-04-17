@@ -13,30 +13,4 @@ State:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
-  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4InterpTest:
-  tolerance: 1.0e-12
-  Locations:
-    window_begin: 2018-04-14T21:00:00Z
-    window_end: 2018-04-15T03:00:00Z
-    ObsSpace:
-      name: Random Locations
-      simulate:
-        variables: []
-      Generate:
-        Random:
-          nobs: 10
-          lat1: -90
-          lat2: 90
-          lon1: 0
-          lon2: 360
-          random_seed: 560921
-        obs_errors: []
-  GeoVaLs:
-    variables:
-    - eastward_wind
-    - northward_wind
-    - temperature
-    - specific_humidity
-    - virtual_temperature
-    - mole_fraction_of_ozone_in_air
-    - humidity_mixing_ratio
+  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4

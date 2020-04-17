@@ -25,7 +25,6 @@
 
 #include "fv3jedi/ErrorCovariance/ErrorCovariance.h"
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/GetValues/GetValuesTraj.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/State/State.h"
 
@@ -179,33 +178,6 @@ void Increment::setPoint(const oops::GridPoint & values,
                          const GeometryIterator & iter) {
   const std::vector<double> vals = values.getVals();
   fv3jedi_increment_setpoint_f90(keyInc_, iter.toFortran(), vals[0], vals.size());
-}
-
-
-// -----------------------------------------------------------------------------
-/// Get increment values at observation locations
-// -----------------------------------------------------------------------------
-void Increment::getValuesTL(const ufo::Locations & locs,
-                                   const oops::Variables & vars,
-                                   ufo::GeoVaLs & gom,
-                                   const GetValuesTrajMatrix & traj) const {
-  fv3jedi_increment_getvalues_tl_f90(geom_->toFortran(),
-                                     keyInc_,
-                                     locs.toFortran(),
-                                     vars,
-                                     gom.toFortran(),
-                                     traj.toFortran());
-}
-// -----------------------------------------------------------------------------
-void Increment::getValuesAD(const ufo::Locations & locs,
-                             const oops::Variables & vars,
-                             const ufo::GeoVaLs & gom,
-                             const GetValuesTrajMatrix & traj) {
-  fv3jedi_increment_getvalues_ad_f90(geom_->toFortran(),
-                                     keyInc_, locs.toFortran(),
-                                     vars,
-                                     gom.toFortran(),
-                                     traj.toFortran());
 }
 // -----------------------------------------------------------------------------
 /// ATLAS

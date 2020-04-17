@@ -8,7 +8,8 @@ Geometry:
   pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
   Levels: 72
   FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/ufo.yaml
 Initial Condition:
   filetype: geos
   datapath: Data/inputs/geos_c12

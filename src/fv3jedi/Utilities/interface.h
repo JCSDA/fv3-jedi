@@ -48,10 +48,15 @@ typedef int F90lvcnmcbal;
 typedef int F90vca2m;
 typedef int F90vcc2a;
 typedef int F90vcd2a;
+typedef int F90m2g;
+typedef int F90lm2g;
 // State key
 typedef int F90state;
 // Increment key
 typedef int F90inc;
+// GetValues key
+typedef int F90getvalues;
+typedef int F90lineargetvalues;
 
 }  // namespace fv3jedi
 #endif  // FV3JEDI_UTILITIES_INTERFACE_H_

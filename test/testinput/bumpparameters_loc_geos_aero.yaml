@@ -6,7 +6,7 @@ resolution:
   Levels: 72
   FieldSets:
     - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/aerosols.yaml
+    - FieldSet: Data/fieldsets/aerosols_geos.yaml
 variables: ["DU001", "DU002", "DU003", "DU004", "DU005",
                 "SS001", "SS002", "SS003", "SS004", "SS005",
                 "BCPHOBIC", "BCPHILIC", "OCPHOBIC", "OCPHILIC",
@@ -41,7 +41,7 @@ bump:
   rv: 0.3
 # Write C matrix
 # --------------
-  write_cmat: 0  
+  write_cmat: 0
 # Diagnostic based on ens
 # -----------------------
   new_hdiag: 0

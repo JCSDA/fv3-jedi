@@ -14,6 +14,8 @@
 #include "fv3jedi/VariableChanges/Control2Analysis/LinVarChaC2A.h"
 #include "fv3jedi/VariableChanges/Control2Analysis/VarChaC2A.h"
 #include "fv3jedi/VariableChanges/GEOSRstToBkg/VarChaGeosRst2Bkg.h"
+#include "fv3jedi/VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h"
+#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
 #include "fv3jedi/VariableChanges/NMCBalance/LinVarChaNMCBal.h"
 
 #include "oops/interface/LinearVariableChange.h"
@@ -22,6 +24,7 @@
 namespace fv3jedi {
 
 void instantiateVarChangeFactories() {
+  // Control to Analysis
   static oops::VariableChangeMaker<fv3jedi::Traits,
                oops::VariableChange<fv3jedi::Traits,
                fv3jedi::VarChaC2A> >
@@ -30,10 +33,12 @@ void instantiateVarChangeFactories() {
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaC2A> >
                    makerLinVarChaC2A_("Control2Analysis");
+  // NMC Balance
   static oops::LinearVariableChangeMaker<fv3jedi::Traits,
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaNMCBal> >
                    makerLinVarChaNMCBal_("NMCBalance");
+  // Analysis to Model
   static oops::VariableChangeMaker<fv3jedi::Traits,
                oops::VariableChange<fv3jedi::Traits,
                fv3jedi::VarChaA2M> >
@@ -42,10 +47,20 @@ void instantiateVarChangeFactories() {
                oops::LinearVariableChange<fv3jedi::Traits,
                fv3jedi::LinVarChaA2M> >
                    makerLinVarChaA2M_("Analysis2Model");
+  // GEOS Restart to GEOS eta (background)
   static oops::VariableChangeMaker<fv3jedi::Traits,
               oops::VariableChange<fv3jedi::Traits,
               fv3jedi::VarChaGeosRst2Bkg> >
                   makerVarChaGeosRst2Bkg_("GeosRst2Bkg");
+  // Model to GeoVaLs
+  static oops::VariableChangeMaker<fv3jedi::Traits,
+              oops::VariableChange<fv3jedi::Traits,
+              fv3jedi::VarChaModel2GeoVaLs> >
+                  makerVarChaModel2GeoVaLs_("Model2GeoVaLs");
+  static oops::LinearVariableChangeMaker<fv3jedi::Traits,
+              oops::LinearVariableChange<fv3jedi::Traits,
+              fv3jedi::LinVarChaModel2GeoVaLs> >
+                  makerLinVarChaModel2GeoVaLs_("Model2GeoVaLs");
 }
 
 }  // namespace fv3jedi

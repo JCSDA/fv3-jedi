@@ -5,7 +5,7 @@ resolution:
   pathfile_akbk: Data/inputs/gfs_aero_c12/akbk.nc
   Levels: 64
   FieldSets:
-    - FieldSet: Data/fieldsets/aerosols.yaml
+    - FieldSet: Data/fieldsets/aerosols_gfs.yaml
     - FieldSet: Data/fieldsets/dynamics.yaml
 variables: ["sulf","bc1","bc2","oc1","oc2",
             "dust1","dust2","dust3","dust4","dust5",
@@ -41,7 +41,7 @@ bump:
   rv: 0.3
 # Write C matrix
 # --------------
-  write_cmat: 0  
+  write_cmat: 0
 # Diagnostic based on ens
 # -----------------------
   new_hdiag: 0

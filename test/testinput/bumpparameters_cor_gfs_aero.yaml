@@ -6,7 +6,7 @@ resolution:
   Levels: 64
   FieldSets:
     - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/aerosols.yaml
+    - FieldSet: Data/fieldsets/aerosols_gfs.yaml
 variables: ["bc1",bc2","dust1","dust5","seas1","seas4"]
 date: '2018-04-15T00:00:00Z'
 background:
@@ -56,7 +56,7 @@ bump:
   rv: 0.3
 # Write C matrix
 # --------------
-  write_cmat: 0  
+  write_cmat: 0
 # Diagnostic based on ens
 # -----------------------
   new_hdiag: 0

@@ -46,7 +46,6 @@ namespace fv3jedi {
   class ModelBiasIncrement;
   class ErrorCovariance;
   class State;
-  class GetValuesTrajMatrix;
 
 // FV3JEDI increment
 
@@ -83,13 +82,6 @@ class Increment : public oops::GeneralizedDepartures,
 /// Get/Set increment values at grid points
   oops::GridPoint getPoint(const GeometryIterator &) const;
   void setPoint(const oops::GridPoint &, const GeometryIterator &);
-
-
-/// Get increment values at observation locations
-  void getValuesTL(const ufo::Locations &, const oops::Variables &,
-                   ufo::GeoVaLs &, const GetValuesTrajMatrix &) const;
-  void getValuesAD(const ufo::Locations &, const oops::Variables &,
-                   const ufo::GeoVaLs &, const GetValuesTrajMatrix &);
 
 /// ATLAS
   void setAtlas(atlas::FieldSet *) const;

@@ -118,8 +118,8 @@ do index_mod = 1, xmod%nf
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     failed = .false.
     if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M ChangeVar: analysis state "//xana%fields(index_ana_found)%fv3jedi_name&
-        //" => model state "//xmod%fields(index_mod)%fv3jedi_name
+        "A2M ChangeVar: analysis state "//xana%fields(index_ana_found)%fv3jedi_name(1:10)&
+        //" => model state "//xmod%fields(index_mod)%fv3jedi_name(1:10)
 
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
 
@@ -166,7 +166,7 @@ do index_mod = 1, xmod%nf
   if (failed) then
 
     if (xmod%f_comm%rank() == 0) write(*,"(A)") &
-        "Found no way of getting "//xmod%fields(index_mod)%fv3jedi_name//" from the analysis state."//&
+        "Found no way of getting "//trim(xmod%fields(index_mod)%fv3jedi_name)//" from the analysis state."//&
         "Attempting to read from file"
 
     if (trim(self%filetype) == 'gfs') then
@@ -228,8 +228,8 @@ do index_ana = 1, xana%nf
     failed = .false.
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
     if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M ChangeVarInverse: model state "//xmod%fields(index_mod_found)%fv3jedi_name&
-        //" => analysis state "//xana%fields(index_ana)%fv3jedi_name
+        "A2M ChangeVarInverse: model state "//xmod%fields(index_mod_found)%fv3jedi_name(1:10)&
+        //" => analysis state "//xana%fields(index_ana)%fv3jedi_name(1:10)
 
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
 
@@ -272,7 +272,7 @@ do index_ana = 1, xana%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.changevarinverse: found no way of getting "//&
-                             xana%fields(index_ana)%fv3jedi_name//" from the model state" )
+                             trim(xana%fields(index_ana)%fv3jedi_name)//" from the model state" )
 
 enddo
 

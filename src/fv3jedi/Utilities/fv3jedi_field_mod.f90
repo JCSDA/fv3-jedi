@@ -18,23 +18,28 @@ public :: fv3jedi_field, &
           pointer_field_array, &
           copy_field_array, &
           allocate_copy_field_array, &
+          copy_field_array_ad, &
           fields_rms, &
           fields_gpnorm, &
           fields_print, &
           checksame, &
           flip_array_vertical, &
-          copy_subset
+          copy_subset, &
+          copy_subset_ad, &
+          long_name_to_fv3jedi_name
+
+integer, parameter, public :: field_clen = 2048
 
 !Field type
 type :: fv3jedi_field
  logical :: lalloc = .false.
- character(len=32) :: short_name = "null"   !Short name (to match file name)
- character(len=10) :: fv3jedi_name = "null" !Common name
- character(len=64) :: long_name = "null"    !More descriptive name
- character(len=32) :: units = "null"        !Units for the field
- logical :: tracer = .false.                !Whether field is classified as tracer (pos. def.)
- character(len=64) :: space                 !One of vector, magnitude, direction
- character(len=64) :: staggerloc            !One of center, eastwest, northsouth, corner
+ character(len=field_clen) :: short_name = "null"   !Short name (to match file name)
+ character(len=field_clen) :: fv3jedi_name = "null" !Common name
+ character(len=field_clen) :: long_name = "null"    !More descriptive name
+ character(len=field_clen) :: units = "null"        !Units for the field
+ logical                   :: tracer = .false.                !Whether field is classified as tracer (pos. def.)
+ character(len=field_clen) :: space                 !One of vector, magnitude, direction
+ character(len=field_clen) :: staggerloc            !One of center, eastwest, northsouth, corner
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
  logical :: integerfield = .false.
@@ -72,8 +77,9 @@ self%jsc = jsc
 self%jec = jec
 self%npz = npz
 
-if (len(fv3jedi_name) > 10) call abor1_ftn("fv3jedi_field_mod.allocate_field: fv3jedi_name " &
-                                        //fv3jedi_name//" should not be longer than ten characters")
+if (len(trim(fv3jedi_name)) > field_clen) &
+  call abor1_ftn("fv3jedi_field_mod.allocate_field: fv3jedi_name " //trim(fv3jedi_name)// &
+                 " should not be longer than 2048 characters")
 
 if(.not.self%lalloc) then
 
@@ -136,10 +142,11 @@ end subroutine equals
 
 ! --------------------------------------------------------------------------------------------------
 
-logical function has_field(fields, fv3jedi_name)
+logical function has_field(fields, fv3jedi_name, index)
 
 type(fv3jedi_field), target,  intent(in)  :: fields(:)
 character(len=*),             intent(in)  :: fv3jedi_name
+integer, optional,            intent(out) :: index
 
 integer :: var
 
@@ -147,6 +154,7 @@ has_field = .false.
 do var = 1, size(fields)
   if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
     has_field = .true.
+    if (present(index)) index = var
     exit
   endif
 enddo
@@ -205,6 +213,31 @@ if (.not.found) call abor1_ftn("fv3jedi_field.copy_field_array: field "&
                                 //trim(fv3jedi_name)//" not found in fields")
 
 end subroutine copy_field_array
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine copy_field_array_ad(fields, fv3jedi_name, field_array)
+
+type(fv3jedi_field),  intent(in)  :: fields(:)
+character(len=*),     intent(in)  :: fv3jedi_name
+real(kind=kind_real), intent(out) :: field_array(:,:,:)
+
+integer :: var
+logical :: found
+
+found = .false.
+do var = 1,size(fields)
+  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
+    field_array = field_array + fields(var)%array
+    found = .true.
+    exit
+  endif
+enddo
+
+if (.not.found) call abor1_ftn("fv3jedi_field.copy_field_array: field "&
+                                //trim(fv3jedi_name)//" not found in fields")
+
+end subroutine copy_field_array_ad
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -351,9 +384,9 @@ sngrid = nint(sqrt(real(sngrid,kind_real)/6.0_kind_real))
 printname = "|     "//trim(name)//" print"
 
 if (f_comm%rank() == 0) then
-  write(*,"(A70)") "----------------------------------------------------------------------"
+  write(*,"(A90)") "------------------------------------------------------------------------------------------"
   write(*,"(A34)") printname
-  write(*,"(A70)") "----------------------------------------------------------------------"
+  write(*,"(A90)") "------------------------------------------------------------------------------------------"
   write(*,"(A70)") " "
   write(*,"(A27,I5)") "    Cube sphere face size: ", sngrid
   write(*,"(A70)") " "
@@ -373,8 +406,8 @@ do var = 1,nf
   call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
   pstat(3) = sqrt(pstat(3)/gs3g)
 
-  if (f_comm%rank() == 0) write(*,"(A10,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &
-                                   trim(fields(var)%short_name),&
+  if (f_comm%rank() == 0) write(*,"(A30,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &
+                                   fields(var)%short_name(1:30),&
                                    "| Min=",real(pstat(1),4),&
                                    ", Max=",real(pstat(2),4),&
                                    ", RMS=",real(pstat(3),4)
@@ -382,7 +415,7 @@ do var = 1,nf
 enddo
 
 if (f_comm%rank() == 0) &
-  write(*,"(A70)") "---------------------------------------------------------------------"
+  write(*,"(A90)") "-----------------------------------------------------------------------------------------"
 
 end subroutine fields_print
 
@@ -452,35 +485,97 @@ end subroutine flip_array_vertical
 
 ! ------------------------------------------------------------------------------
 
-subroutine copy_subset(rhs,lhs,not_copied)
+subroutine copy_subset(field_in,field_ou,not_copied)
 
 implicit none
-type(fv3jedi_field),                      intent(in)    :: rhs(:)
-type(fv3jedi_field),                      intent(inout) :: lhs(:)
-character(len=10), allocatable, optional, intent(out)   :: not_copied(:)
+type(fv3jedi_field),                             intent(in)    :: field_in(:)
+type(fv3jedi_field),                             intent(inout) :: field_ou(:)
+character(len=field_clen), allocatable, optional, intent(out)   :: not_copied(:)
 
 integer :: var
-character(len=10) :: not_copied_(10000)
+character(len=field_clen) :: not_copied_(10000)
 integer :: num_not_copied
 
 ! Loop over fields and copy if existing in both
 num_not_copied = 0
-do var = 1, size(lhs)
-  if (has_field(rhs, lhs(var)%fv3jedi_name )) then
-    call copy_field_array(rhs, lhs(var)%fv3jedi_name, lhs(var)%array)
+do var = 1, size(field_ou)
+  if (has_field(field_in, field_ou(var)%fv3jedi_name )) then
+    call copy_field_array(field_in, field_ou(var)%fv3jedi_name, field_ou(var)%array)
   else
     num_not_copied = num_not_copied + 1
-    not_copied_(num_not_copied) = lhs(var)%fv3jedi_name
+    not_copied_(num_not_copied) = field_ou(var)%fv3jedi_name
   endif
 enddo
 
-! Send back list of variables not retrivable from rhs
+! Send back list of variables not retrivable from field_in
 if (present(not_copied) .and. num_not_copied > 0) then
   allocate(not_copied(num_not_copied))
   not_copied(1:num_not_copied) = not_copied_(1:num_not_copied)
 endif
 
 end subroutine copy_subset
+
+! ------------------------------------------------------------------------------
+
+subroutine copy_subset_ad(field_in,field_ou,not_copied)
+
+implicit none
+type(fv3jedi_field),                             intent(in)    :: field_in(:)
+type(fv3jedi_field),                             intent(inout) :: field_ou(:)
+character(len=field_clen), allocatable, optional, intent(out)   :: not_copied(:)
+
+integer :: var
+character(len=field_clen) :: not_copied_(10000)
+integer :: num_not_copied
+
+! Loop over fields and copy if existing in both
+num_not_copied = 0
+do var = 1, size(field_ou)
+  if (has_field(field_in, field_ou(var)%fv3jedi_name )) then
+    call copy_field_array_ad(field_in, field_ou(var)%fv3jedi_name, field_ou(var)%array)
+  else
+    num_not_copied = num_not_copied + 1
+    not_copied_(num_not_copied) = field_ou(var)%fv3jedi_name
+  endif
+enddo
+
+! Send back list of variables not retrivable from field_in
+if (present(not_copied) .and. num_not_copied > 0) then
+  allocate(not_copied(num_not_copied))
+  not_copied(1:num_not_copied) = not_copied_(1:num_not_copied)
+endif
+
+end subroutine copy_subset_ad
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine long_name_to_fv3jedi_name(fields, long_name, fv3jedi_name)
+
+type(fv3jedi_field), intent(in)  :: fields(:)
+character(len=*),    intent(in)  :: long_name
+character(len=*),    intent(out) :: fv3jedi_name
+
+integer :: n
+
+do n = 1, size(fields)
+  if (trim(long_name) == trim(fields(n)%long_name)) then
+    fv3jedi_name = trim(fields(n)%fv3jedi_name)
+    return
+  endif
+enddo
+
+! Try with increment_of_ prepended to long_name
+do n = 1, size(fields)
+  if ("increment_of_"//trim(long_name) == trim(fields(n)%long_name)) then
+    fv3jedi_name = trim(fields(n)%fv3jedi_name)
+    return
+  endif
+enddo
+
+call abor1_ftn("fv3jedi_field_mod.long_name_to_fv3jedi_name long_name "//trim(long_name)//&
+               " not found in fields.")
+
+end subroutine long_name_to_fv3jedi_name
 
 ! --------------------------------------------------------------------------------------------------
 

@@ -36,22 +36,22 @@ Fields:
     Space: vector
     StaggerLoc: northsouth
 
-  - FieldIONames: [ua]
+  - FieldIONames: [ua, eastward_wind]
     FieldName: ua
     LongName: eastward_wind
     Units: ms-1
 
-  - FieldIONames: [va]
+  - FieldIONames: [va, northward_wind]
     FieldName: va
     LongName: northward_wind
     Units: ms-1
 
-  - FieldIONames: [t, T]
+  - FieldIONames: [t, T, air_temperature, temperature]
     FieldName: t
     LongName: air_temperature
     Units: K
 
-  - FieldIONames: [tv, Tv]
+  - FieldIONames: [tv, Tv, virtual_temperature]
     FieldName: tv
     LongName: virtual_temperature
     Units: K
@@ -61,7 +61,7 @@ Fields:
     LongName: potential_temperature
     Units: K
 
-  - FieldIONames: [delp, DELP]
+  - FieldIONames: [delp, DELP, air_pressure_thickness]
     FieldName: delp
     LongName: air_pressure_thickness
     Units: pa
@@ -71,31 +71,31 @@ Fields:
     LongName: air_pressure_to_kappa
     Units: Pa
 
-  - FieldIONames: [pe, PE]
+  - FieldIONames: [pe, PE, air_pressure_levels]
     FieldName: pe
     LongName: air_pressure_levels
     Units: Pa
     Levels: half
 
-  - FieldIONames: [p, P]
+  - FieldIONames: [p, P, air_pressure]
     FieldName: p
     LongName: air_pressure
     Units: Pa
     Levels: full
 
-  - FieldIONames: [ps]
+  - FieldIONames: [ps, surface_pressure]
     FieldName: ps
     LongName: surface_pressure
     Units: Pa
     Levels: 1
 
-  - FieldIONames: [q, sphum, Q]
+  - FieldIONames: [q, sphum, Q, specific_humidity]
     FieldName: q
     LongName: specific_humidity
     Units: kgkg-1
     Tracer: true
 
-  - FieldIONames: [rh, RH]
+  - FieldIONames: [rh, RH, relative_humidity]
     FieldName: rh
     LongName: relative_humidity
     Units: 1
@@ -232,9 +232,9 @@ Fields:
     Units: none
     Levels: 1
 
-  - FieldIONames: [tsea, ts]
+  - FieldIONames: [tsea, ts, sea_surface_temperature]
     FieldName: tsea
-    LongName: tsea
+    LongName: sea_surface_temperature
     Units: K
     Levels: 1
 
@@ -306,7 +306,7 @@ Fields:
     Units: none
     Levels: 1
 
-  - FieldIONames: [sss]
+  - FieldIONames: [sss, sea_surface_salinity]
     FieldName: sss
     LongName: sea_surface_salinity
     Units: none

@@ -236,16 +236,6 @@ do var = 1,size(fields)
 
   select case (trim(fields(var)%short_name))
 
-    ! Standard background history file
-    case("ud","vd","u","v","ua","va","t","q","delp","rh","qi","ql","qs","qr","o3mr","qls","qcn","cfcn","ps","phis",&
-         "qilsf","qicnf",&
-         "hs_stdv","frland","frlandice","frlake","frocean","frseaice","kcbl","tsm","khl","khu",&
-         "varflt","ustar","bstar","zpbl","cm","ct","cq","u10m","v10m","ts","sheleg","soilt","soilm",&
-         "DU001","DU002","DU003","DU004","DU005","SS001","SS002","SS003","SS004","SS005",&
-         "BCPHOBIC","BCPHILIC","OCPHOBIC","OCPHILIC","NO3AN1","NO3AN2","NO3AN3","SO4",&
-         "T","DELP","RH","sphum","ice_wat","liq_wat")
-      call set_file_names(self,var,1)
-
     ! CRTM surface quantities, usually from GFS output
     case("vtype","stype","vfrac")
       call set_file_names(self,var,2)
@@ -262,9 +252,9 @@ do var = 1,size(fields)
     case("PHIS")
       call set_file_names(self,var,5)
 
-    ! Default to abort
+    ! If not a restart file then use generic background file
     case default
-      call abor1_ftn("fv3jedi_io_geos_mod.create: geos restart file for "//trim(fields(var)%short_name)//" not defined")
+      call set_file_names(self,var,1)
 
   endselect
 

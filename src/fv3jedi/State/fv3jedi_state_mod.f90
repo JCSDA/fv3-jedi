@@ -22,7 +22,6 @@ use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
-use fv3jedi_getvalues_mod,       only: getvalues
 
 use wind_vt_mod, only: a2d
 
@@ -30,7 +29,7 @@ implicit none
 private
 public :: fv3jedi_state, create, delete, zeros, copy, axpy, add_incr, &
           read_file, write_file, gpnorm, rms, &
-          change_resol, getvalues, analytic_IC, state_print
+          change_resol, analytic_IC, state_print
 
 ! ------------------------------------------------------------------------------
 

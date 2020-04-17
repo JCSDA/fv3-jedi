@@ -294,7 +294,8 @@ resolution:
   pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
   Levels: 64
   FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/ufo.yaml
 variational:
   iteration:
   - ninner: '10'
@@ -306,7 +307,8 @@ variational:
       pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
       Levels: 64
       FieldSets:
-        - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
     linearmodel:
@@ -324,7 +326,8 @@ variational:
       pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
       Levels: 64
       FieldSets:
-        - FieldSet: Data/fieldsets/dynamics.yaml  
+      - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
     linearmodel:

@@ -66,19 +66,6 @@ extern "C" {
                                     const eckit::Configuration * const *,
                                     const util::DateTime * const *);
 
-  void fv3jedi_state_getvalues_notraj_f90(const F90geom &,
-                                          const F90state &,
-                                          const F90locs &,
-                                          const oops::Variables &,
-                                          const F90goms &);
-
-  void fv3jedi_state_getvalues_f90(const F90geom &,
-                                   const F90state &,
-                                   const F90locs &,
-                                   const oops::Variables &,
-                                   const F90goms &,
-                                   const F90ootrj &);
-
   void fv3jedi_state_gpnorm_f90(const F90state &,
                                 const int &,
                                 double &);

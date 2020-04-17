@@ -22,13 +22,6 @@ use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
 use fv3jedi_geom_iter_mod, only: fv3jedi_geom_iter, fv3jedi_geom_iter_registry
 use fv3jedi_state_utils_mod, only: fv3jedi_state, fv3jedi_state_registry
 
-!GetValues
-use ufo_locs_mod
-use ufo_locs_mod_c, only: ufo_locs_registry
-use ufo_geovals_mod
-use ufo_geovals_mod_c, only: ufo_geovals_registry
-use fv3jedi_getvalues_traj_mod, only: fv3jedi_getvalues_traj, fv3jedi_getvalues_traj_registry
-
 implicit none
 private
 
@@ -497,68 +490,6 @@ call rms(inc, zz)
 prms = zz
 
 end subroutine fv3jedi_increment_rms_c
-
-! ------------------------------------------------------------------------------
-
-subroutine fv3jedi_increment_getvalues_tl_c(c_key_geom, c_key_inc,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_increment_getvalues_tl_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_inc  !< Increment to be interpolated
-integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
-type(c_ptr), value, intent(in) :: c_vars !< List of requested variables
-integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
-integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-type(fv3jedi_increment), pointer :: inc
-type(ufo_locs),  pointer :: locs
-type(ufo_geovals),  pointer :: gom
-type(oops_variables) :: vars
-type(fv3jedi_getvalues_traj), pointer :: traj
-type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration)    :: f_conf
-
-vars = oops_variables(c_vars)
-
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_increment_registry%get(c_key_inc, inc)
-call ufo_locs_registry%get(c_key_loc, locs)
-call ufo_geovals_registry%get(c_key_gom, gom)
-call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
-
-call getvalues_tl(geom, inc, locs, vars, gom, traj)
-
-end subroutine fv3jedi_increment_getvalues_tl_c
-
-! ------------------------------------------------------------------------------
-
-subroutine fv3jedi_increment_getvalues_ad_c(c_key_geom, c_key_inc,c_key_loc,c_vars,c_key_gom,c_key_traj) bind(c,name='fv3jedi_increment_getvalues_ad_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_inc  !< Increment to be interpolated
-integer(c_int), intent(in) :: c_key_loc  !< List of requested locations
-type(c_ptr), value, intent(in) :: c_vars !< List of requested variables
-integer(c_int), intent(in) :: c_key_gom  !< Interpolated values
-integer(c_int), intent(in) :: c_key_traj !< Trajectory for interpolation/transforms
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-type(fv3jedi_increment), pointer :: inc
-type(ufo_locs),  pointer :: locs
-type(ufo_geovals),  pointer :: gom
-type(oops_variables) :: vars
-type(fv3jedi_getvalues_traj), pointer :: traj
-type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration)    :: f_conf
-
-vars = oops_variables(c_vars)
-
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_increment_registry%get(c_key_inc, inc)
-call ufo_locs_registry%get(c_key_loc, locs)
-call ufo_geovals_registry%get(c_key_gom, gom)
-call fv3jedi_getvalues_traj_registry%get(c_key_traj, traj)
-
-call getvalues_ad(geom, inc, locs, vars, gom, traj)
-
-end subroutine fv3jedi_increment_getvalues_ad_c
 
 ! ------------------------------------------------------------------------------
 
