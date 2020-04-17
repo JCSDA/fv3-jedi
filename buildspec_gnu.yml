@@ -167,7 +167,7 @@ phases:
         && CC=mpicc CXX=mpicxx FC=mpifort
         && ecbuild /jcsda/fv3-bundle/
         && cd fv3-jedi
-        && make -j4"
+        && make -j8"
 
       - export BUILD_STATUS="0"
       - echo $BUILD_STATUS
