@@ -4,9 +4,16 @@ Test     : H(x):
 Test     : Aircraft nobs= 6294 Min=-27.5038, Max=300.802, RMS=146.342
 Test     : Radiosonde nobs= 2922 Min=-32.4306, Max=301.248, RMS=139.199
 Test     : GnssroRef nobs= 20 Min=0.220756, Max=343.629, RMS=130.282
-Test     : AMSUA-NOAA19 nobs= 1500 Min=148.717, Max=291.44, RMS=230.094
-Test     : MHS-N18 nobs= 500 Min=165.91, Max=287.382, RMS=252.972
-Test     : MHS-METOP-A nobs= 500 Min=158.732, Max=288.615, RMS=253.579
-Test     : MHS-METOP-B nobs= 500 Min=157.309, Max=293.676, RMS=252.365
-Test     : AIRS-AQUA nobs= 11800 Min=206.408, Max=298.956, RMS=243.699
+Test     : AMSUA-NOAA19 nobs= 1500 Min=149.785, Max=291.508, RMS=231.033
+Test     : MHS-N18 nobs= 500 Min=166.548, Max=287.227, RMS=252.815
+Test     : MHS-METOP-A nobs= 500 Min=158.456, Max=288.704, RMS=253.451
+Test     : MHS-METOP-B nobs= 500 Min=156.959, Max=293.714, RMS=252.167
+Test     : SNDRD1-GOES15 nobs= 1100 Min=217.153, Max=293.943, RMS=253.985
+Test     : SNDRD2-GOES15 nobs= 1100 Min=216.943, Max=294.122, RMS=254.037
+Test     : SNDRD3-GOES15 nobs= 1100 Min=217.105, Max=293.803, RMS=253.738
+Test     : SNDRD4-GOES15 nobs= 1100 Min=217.065, Max=293.782, RMS=253.66
+Test     : AIRS-AQUA nobs= 11800 Min=206.408, Max=299.072, RMS=243.68
+Test     : IASI-METOPA nobs= 14100 Min=206.282, Max=298.955, RMS=239.714
+Test     : IASI-METOPB nobs= 14100 Min=206.247, Max=296.59, RMS=238.902
+Test     : CRIS-NPP nobs= 4700 Min=208.341, Max=297.964, RMS=257.363
 Test     : End H(x)

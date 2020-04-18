@@ -38,8 +38,8 @@ Observations:
       name: Aircraft
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/aircraft_enshofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/aircraft_enshofx_geos_2018041500_m.nc4
       simulate:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
@@ -48,8 +48,8 @@ Observations:
       name: Radiosonde
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/sondes_enshofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/sondes_enshofx_geos_2018041500_m.nc4
       simulate:
         variables: [eastward_wind, northward_wind, air_temperature]
     ObsOperator:
@@ -58,8 +58,8 @@ Observations:
       name: GnssroRef
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/gnssro_enshofx_geos_2018041500_s.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/gnssro_enshofx_geos_2018041500_s.nc4
       simulate:
         variables: [refractivity]
     ObsOperator:
@@ -69,8 +69,8 @@ Observations:
       name: AMSUA-NOAA19
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/amsua_n19_hofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/amsua_n19_hofx_geos_2018041500_m.nc4
       simulate:
         variables: [brightness_temperature]
         channels: 1-15
@@ -87,8 +87,8 @@ Observations:
       name: MHS-N18
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/mhs_n18_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/mhs_n18_hofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/mhs_n18_hofx_geos_2018041500_m.nc4
       simulate:
         variables: [brightness_temperature]
         channels: 1-5
@@ -105,8 +105,8 @@ Observations:
       name: MHS-METOP-A
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/mhs_metop-a_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/mhs_metop-a_hofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/mhs_metop-a_hofx_geos_2018041500_m.nc4
       simulate:
         variables: [brightness_temperature]
         channels: 1-5
@@ -123,8 +123,8 @@ Observations:
       name: MHS-METOP-B
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/mhs_metop-b_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/mhs_metop-b_hofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/mhs_metop-b_hofx_geos_2018041500_m.nc4
       simulate:
         variables: [brightness_temperature]
         channels: 1-5
@@ -138,11 +138,75 @@ Observations:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
   - ObsSpace:
+      name: SNDRD1-GOES15
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/sndrd1_g15_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/sndrd1_g15_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-8,10-12
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: sndrD1_g15
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: SNDRD2-GOES15
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/sndrd2_g15_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/sndrd2_g15_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-8,10-12
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: sndrD2_g15
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: SNDRD3-GOES15
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/sndrd3_g15_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/sndrd3_g15_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-8,10-12
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: sndrD3_g15
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: SNDRD4-GOES15
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/sndrd4_g15_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/sndrd4_g15_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 1-8,10-12
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: sndrD4_g15
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
       name: AIRS-AQUA
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2018041500_m.nc4
-      ObsDataOut:
-        obsfile: Data/hofx/eda/geos/%{member}%/airs_aqua_hofx_geos_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/airs_aqua_hofx_geos_2018041500_m.nc4
       simulate:
         variables: [brightness_temperature]
         channels: 7,15,20,21,22,27,28,40,52,69      
@@ -162,6 +226,86 @@ Observations:
       Absorbers: [H2O,O3,CO2]
       ObsOptions:
         Sensor_ID: airs_aqua
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: IASI-METOPA
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/iasi_metop-a_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 16,38,49,51,55,57,59,61,63,66,
+                  70,72,74,79,81,83,85,87,104,106,
+                  109,111,113,116,119,122,125,128,131,133,
+                  135,138,141,144,146,148,151,154,157,159,
+                  161,163,167,170,173,176,180,185,187,193,
+                  199,205,207,210,212,214,217,219,222,224,
+                  226,230,232,236,239,243,246,249,252,254,
+                  260,262,275,282,294,296,299,303,306,323,
+                  327,329,335,345,347,350,354,356,360,366,
+                  371,373,375,377,379,381,383,386,389,398,
+                  401,404,407,410,414,416,426,428,432,434,
+                  439,445,457,515,546,552,559,566,571,573,                     
+                  646,662,668,756,867,906,921,1027,1046,1121,
+                  1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
+                  1671                     
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: iasi_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: IASI-METOPB
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/iasi_metop-b_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/iasi_metop-b_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 16,38,49,51,55,57,59,61,63,66,
+                  70,72,74,79,81,83,85,87,104,106,
+                  109,111,113,116,119,122,125,128,131,133,
+                  135,138,141,144,146,148,151,154,157,159,
+                  161,163,167,170,173,176,180,185,187,193,
+                  199,205,207,210,212,214,217,219,222,224,
+                  226,230,232,236,239,243,246,249,252,254,
+                  260,262,275,282,294,296,299,303,306,323,
+                  327,329,335,345,347,350,354,356,360,366,
+                  371,373,375,377,379,381,383,386,389,398,
+                  401,404,407,410,414,416,426,428,432,434,
+                  439,445,457,515,546,552,559,566,571,573,                     
+                  646,662,668,756,867,906,921,1027,1046,1121,
+                  1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
+                  1671          
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: iasi_metop-b
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: CRIS-NPP
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/eda/geos/%{member}%/cris-fsr_npp_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 27,83,89,95,99,104,107,116,120,123,
+                  126,130,133,136,138,142,145,150,153,157,
+                  160,163,166,170,173,198,208,211,216,224,
+                  236,242,248,266,279,283,311,342,404,427,
+                  464,473,529,596,626,646,659                                      
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      ObsOptions:
+        Sensor_ID: cris-fsr_npp
         EndianType: little_endian
         CoefficientPath: Data/crtm/
 Prints:

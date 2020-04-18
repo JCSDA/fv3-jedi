@@ -1265,5 +1265,4 @@ ecbuild_add_test( TARGET       test_fv3jedi_enshofx_geos_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/enshofx_geos.run testoutput/hofx_geos.ref 1.0e-2 ${idif}
-
                   TEST_DEPENDS test_fv3jedi_enshofx_geos )
