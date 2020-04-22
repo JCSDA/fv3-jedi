@@ -59,6 +59,74 @@ Observations:
       name: GnssroRef
       ObsOptions:
   - ObsSpace:
+      name: AMSUA-METOP-A
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/amsua_metop-a_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/amsua_metop-a_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 4-6,9-14 
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: amsua_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: AMSUA-METOP-B
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/amsua_metop-b_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/amsua_metop-b_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 7-14
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: amsua_metop-b
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: AMSUA-NOAA15
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/amsua_n15_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/amsua_n15_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 4,5,7-10,12,13
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: amsua_n15
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: AMSUA-NOAA18
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/amsua_n18_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/amsua_n18_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 4,6,7,10-14
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: amsua_n18
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - ObsSpace:
       name: AMSUA-NOAA19
       ObsDataIn:
         obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
@@ -74,6 +142,41 @@ Observations:
       Cloud_Fraction: 1.0
       ObsOptions:
         Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+#  - ObsSpace:
+#      name: ATMS-NPP
+#      ObsDataIn:
+#        obsfile: Data/obs/testinput_tier_1/atms_npp_obs_2018041500_m.nc4
+#      ObsDataOut:
+#        obsfile: Data/hofx/atms_npp_hofx_geos_2018041500_m.nc4
+#      simulate:
+#        variables: [brightness_temperature]
+#        channels: 5-15,17-22
+#    ObsOperator:
+#      name: CRTM
+#      Absorbers: [H2O,O3,CO2]
+#      Cloud_Fraction: 1.0
+#      ObsOptions:
+#        Sensor_ID: atms_npp
+#        EndianType: little_endian
+#        CoefficientPath: Data/crtm/
+  - ObsSpace:
+      name: GMI-GPM
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/gmi_gpm_obs_2018041500_m.nc4
+      ObsDataOut:
+        obsfile: Data/hofx/gmi_gpm_hofx_geos_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 5,6,7,10,12,13
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: gmi_gpm
         EndianType: little_endian
         CoefficientPath: Data/crtm/
   - ObsSpace:
