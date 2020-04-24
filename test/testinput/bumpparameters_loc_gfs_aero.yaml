@@ -13,7 +13,7 @@ variables: ["sulf","bc1","bc2","oc1","oc2",
 date: '2018-04-15T00:00:00Z'
 background:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_aero_c12/ensmean/
+  datapath_tile: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res

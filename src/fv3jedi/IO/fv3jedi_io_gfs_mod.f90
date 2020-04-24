@@ -256,7 +256,7 @@ do var = 1,size(fields)
     indexof_delp = var
   case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh",&
        "o3mr","sulf","bc1","bc2","oc1","oc2",&
-       "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
+       "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4","seas5")
     filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.
@@ -386,7 +386,7 @@ do var = 1,size(fields)
     read_core = .true.
   case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh",&
        "o3mr","sulf","bc1","bc2","oc1","oc2",&
-       "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4")
+       "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4","seas5")
     filename = self%filename_trcr
     restart => restart_trcr
     read_trcr = .true.

@@ -3,7 +3,7 @@ cost_function:
     Background:
       state:
       - filetype: gfs
-        datapath_tile: Data/inputs/gfs_aero_c12/ensmean/
+        datapath_tile: Data/inputs/gfs_aero_c12/bkg/
         filename_core: 20180415.000000.fv_core.res.nc
         filename_trcr: 20180415.000000.fv_tracer.res.nc
         filename_cplr: 20180415.000000.coupler.res
@@ -56,10 +56,6 @@ cost_function:
           datapath_tile: Data/inputs/gfs_aero_c12/mem008/
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath_tile: Data/inputs/gfs_aero_c12/mem009/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
         localization:
           timeslots: ['2018-04-15T00:00:00Z']
           variables: ["sulf","bc1","bc2","oc1","oc2",
@@ -78,9 +74,9 @@ cost_function:
     - ObsSpace:
         name: Aod
         ObsDataIn:
-          obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_m.nc4
+          obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
         ObsDataOut:
-          obsfile: Data/hofx/aod_viirs_fmo_2018041500_m.nc4
+          obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
         simulate:
           variables: [aerosol_optical_depth]
           channels: 4
@@ -102,7 +98,7 @@ cost_function:
   window_length: PT6H
   varchange: Analysis2Model
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_aero_c12/ensmean/
+  datapath_tile: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res
