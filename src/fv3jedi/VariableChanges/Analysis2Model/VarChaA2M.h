@@ -45,6 +45,7 @@ class VarChaA2M: public util::Printable {
   boost::shared_ptr<const Geometry> geom_;
   F90vca2m keyFtnConfig_;
   void print(std::ostream &) const override;
+  eckit::LocalConfiguration conf_;
 };
 // -----------------------------------------------------------------------------
 }  // namespace fv3jedi

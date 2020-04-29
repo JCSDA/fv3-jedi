@@ -18,10 +18,10 @@
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
 VarChaA2M::VarChaA2M(const Geometry & resol, const eckit::Configuration & conf):
-    geom_(new Geometry(resol))
+    geom_(new Geometry(resol)), conf_(conf)
 {
   oops::Log::trace() << "VarChaA2M::VarChaA2M start" << std::endl;
-  const eckit::Configuration * configc = &conf;
+  const eckit::LocalConfiguration * configc = &conf_;
     fv3jedi_varcha_a2m_create_f90(keyFtnConfig_, geom_->toFortran(), &configc);
   oops::Log::trace() << "VarChaA2M::VarChaA2M done" << std::endl;
 }

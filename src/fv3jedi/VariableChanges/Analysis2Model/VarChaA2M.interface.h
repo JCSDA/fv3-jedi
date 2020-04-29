@@ -26,7 +26,7 @@ extern "C" {
 
   void fv3jedi_varcha_a2m_create_f90(const F90vca2m &,
                                      const F90geom &,
-                                     const eckit::Configuration * const *);
+                                     const eckit::LocalConfiguration * const *);
   void fv3jedi_varcha_a2m_delete_f90(F90vca2m &);
   void fv3jedi_varcha_a2m_changevar_f90(const F90vca2m &,
                                         const F90geom &,
