@@ -265,6 +265,7 @@ testinput/state_geos.yaml
 testinput/state_gfs.yaml
 testinput/varcha_geos.yaml
 testinput/varcha_gfs.yaml
+testinput/test_time.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -1296,3 +1297,21 @@ ecbuild_add_test( TARGET       test_fv3jedi_enshofx_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/enshofx_geos.run testoutput/hofx_geos.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_enshofx_geos )
+
+####################################################################
+# test time
+####################################################################
+if ( DEFINED TEST_TIME_REF_FV3 )
+  execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+          ${CMAKE_CURRENT_SOURCE_DIR}/testoutput/${TEST_TIME_REF_FV3}
+          ${CMAKE_CURRENT_BINARY_DIR}/testoutput/${TEST_TIME_REF_FV3} )
+
+  ecbuild_add_test( TARGET test_fv3_time
+                  TYPE SCRIPT
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/run_time_test.py
+                  ARGS testoutput/${TEST_TIME_REF_FV3}
+                  ${CMAKE_BINARY_DIR}/fv3-jedi/Testing/Temporary/CTestCostData.txt
+                  testinput/test_time.yaml)
+else()
+  message ( STATUS "TEST_TIME not built")
+endif()

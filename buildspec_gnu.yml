@@ -164,7 +164,7 @@ phases:
         && echo $CXX
         && echo $FC
         && CC=mpicc CXX=mpicxx FC=mpifort
-        && ecbuild /jcsda/fv3-bundle/
+        && ecbuild /jcsda/fv3-bundle/ -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test
         && cd fv3-jedi
         && make -j8"
 
@@ -180,7 +180,20 @@ phases:
 
       - su - jcsdauser -c "CC=mpicc CXX=mpicxx FC=mpifort
         && cd /build_container/fv3-jedi
-        && ctest"
+        && ctest -E test_fv3_time"
+
+      - cat /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
+
+      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+        then echo "All tests passed; Run time test";
+        su - jcsdauser -c "cd /build_container/fv3-jedi 
+        && ls
+        && export FC=mpifort
+        && export CC=mpicc
+        && export CXX=mpicxx
+        && ctest -VV -R test_fv3_time";
+        fi
+
   post_build:
     commands:
       - echo Executing post_build phase
