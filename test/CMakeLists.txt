@@ -227,9 +227,11 @@ testinput/geometry_gfs.yaml
 testinput/getvalues_geos.yaml
 testinput/getvalues_gfs.yaml
 testinput/hofx_geos.yaml
+testinput/hofx_gfs_aero.yaml
 testinput/hofx_gfs_p12.yaml
 testinput/hofx_gfs.yaml
-testinput/hofx_gfs_aero.yaml
+testinput/hofx_nomodel_geos.yaml
+testinput/hofx_nomodel_gfs.yaml
 testinput/hyb-3dvar_geos_p12.yaml
 testinput/hyb-3dvar_geos.yaml
 testinput/hyb-3dvar_gfs_p12.yaml
@@ -286,7 +288,9 @@ testoutput/dirac_gfs_c2a.ref
 #testoutput/forecast_geos.ref
 #testoutput/forecast_gfs-fv3.ref
 #testoutput/forecast_gfs.ref
+testoutput/hofx_nomodel_geos.ref
 testoutput/hofx_geos.ref
+testoutput/hofx_nomodel_gfs.ref
 testoutput/hofx_gfs.ref
 testoutput/hyb-3dvar_geos.ref
 testoutput/hyb-3dvar_gfs.ref
@@ -389,7 +393,7 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       OUTPUT_VARIABLE GIT_BRANCH_FV3
       OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3}) 
+    message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3})
 
   else()
     message(STATUS "Branch name provided by user")
@@ -423,7 +427,7 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
   message(STATUS "Save data to " ${FV3_IODA_TESTFILES_PATH})
   file(MAKE_DIRECTORY ${FV3_IODA_TESTFILES_PATH})
 
-  # Create download script for get_ioda_test_data test 
+  # Create download script for get_ioda_test_data test
   set ( FILENAME fv3_ioda_data_downloader.py)
   set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
   set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
@@ -719,19 +723,6 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_gfs_compare
                   ARGS         testoutput/hofx_gfs.run testoutput/hofx_gfs.ref 1.0e-3 ${idif}
                   TEST_DEPENDS test_fv3jedi_hofx_gfs )
 
-# Hofx tests are a bit slow so leave off except for testing
-# ecbuild_add_test( TARGET  test_fv3jedi_hofx_gfs_p12
-#                   TYPE    EXE
-#                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
-#                   ARGS    testinput/hofx_gfs_p12.yaml testoutput/hofx_gfs_p12.run
-#                   MPI     12  )
-#
-# ecbuild_add_test( TARGET       test_fv3jedi_hofx_gfs_compare_p12
-#                   TYPE         SCRIPT
-#                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-#                   ARGS         testoutput/hofx_gfs_p12.run testoutput/hofx_gfs.run.ref 0.0 0
-#                   TEST_DEPENDS test_fv3jedi_hofx_gfs )
-
 ecbuild_add_test( TARGET  test_fv3jedi_hofx_geos
                   TYPE    EXE
                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
@@ -743,6 +734,33 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hofx_geos.run testoutput/hofx_geos.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_hofx_geos )
+
+# H(x) no model
+# -------------
+
+ecbuild_add_test( TARGET       test_fv3jedi_hofx_nomodel_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx_nomodel.x
+                  ARGS         testinput/hofx_nomodel_gfs.yaml testoutput/hofx_nomodel_gfs.run
+                  MPI          6 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hofx_nomodel_gfs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/hofx_nomodel_gfs.run testoutput/hofx_nomodel_gfs.ref 1.0e-3 ${idif}
+                  TEST_DEPENDS test_fv3jedi_hofx_nomodel_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hofx_nomodel_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx_nomodel.x
+                  ARGS         testinput/hofx_nomodel_geos.yaml testoutput/hofx_nomodel_geos.run
+                  MPI          6 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hofx_nomodel_geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/hofx_nomodel_geos.run testoutput/hofx_nomodel_geos.ref 1.0e-2 ${idif}
+                  TEST_DEPENDS test_fv3jedi_hofx_nomodel_geos )
 
 # B Matrix tests
 # --------------
@@ -1177,7 +1195,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_aero
 
 ecbuild_add_test( TARGET       test_fv3jedi_hofx_gfs_aero
                   TYPE         EXE
-                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx_no_model.x
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx_nomodel.x
                   ARGS         testinput/hofx_gfs_aero.yaml testoutput/hofx_gfs_aero.run
                   MPI          6 )
 

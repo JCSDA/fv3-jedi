@@ -1,0 +1,47 @@
+Assimilation Window:
+  window_begin: '2018-04-14T21:00:00Z'
+  window_length: PT6H
+Geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+  Levels: 72
+  FieldSets:
+  - FieldSet: Data/fieldsets/dynamics.yaml
+  - FieldSet: Data/fieldsets/ufo.yaml
+Forecasts:
+  state:
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.bkg.20180415_000000z.nc4
+    filename_crtm: geos.bkg.crtmsrf.20180415_000000z.nc4
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis","frocean","frlake",
+              "frseaice","vtype","stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
+Observations:
+  ObsTypes:
+  - ObsSpace:
+      name: Aircraft
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      simulate:
+        variables: [eastward_wind, northward_wind, air_temperature]
+    ObsOperator:
+      name: VertInterp
+  - ObsSpace:
+      name: AMSUA-METOP-A
+      ObsDataIn:
+        obsfile: Data/obs/testinput_tier_1/amsua_metop-a_obs_2018041500_m.nc4
+      simulate:
+        variables: [brightness_temperature]
+        channels: 4-6,9-14
+    ObsOperator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Cloud_Fraction: 1.0
+      ObsOptions:
+        Sensor_ID: amsua_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+Prints:
+  frequency: PT3H
