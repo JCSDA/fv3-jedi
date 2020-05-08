@@ -184,16 +184,17 @@ phases:
 
       - cat /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
 
-      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
-        then echo "All tests passed; Run time test";
-        su - jcsdauser -c "cd /build_container/fv3-jedi 
-        && ls
-        && export FC=mpifort
-        && export CC=mpicc
-        && export CXX=mpicxx
-        && ctest -VV -R test_fv3_time";
-        fi
-
+#  disable for now
+#    commands:
+#      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+#        then echo "All tests passed; Run time test";
+#        su - jcsdauser -c "cd /build_container/fv3-jedi 
+#        && ls
+#        && export FC=mpifort
+#        && export CC=mpicc
+#        && export CXX=mpicxx
+#        && ctest -VV -R test_fv3_time";
+#        fi
   post_build:
     commands:
       - echo Executing post_build phase
@@ -204,3 +205,8 @@ phases:
         && ctest -VV --rerun-failed";
         else echo "Build failed";
         fi
+artifacts:
+  files:
+    - /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
+  name: CTestCost-gnu-$(date +%Y-%m-%d-%k_%M) 
+
