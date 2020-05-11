@@ -8,10 +8,9 @@
 #ifndef FV3JEDI_VARIABLECHANGES_ANALYSIS2MODEL_LINVARCHAA2M_H_
 #define FV3JEDI_VARIABLECHANGES_ANALYSIS2MODEL_LINVARCHAA2M_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
@@ -46,7 +45,7 @@ class LinVarChaA2M: public util::Printable {
   void multiplyInverseAD(const Increment &, Increment &) const;
 
  private:
-  boost::shared_ptr<const Geometry> geom_;
+  std::shared_ptr<const Geometry> geom_;
   F90lvca2m keyFtnConfig_;
   void print(std::ostream &) const override;
 };

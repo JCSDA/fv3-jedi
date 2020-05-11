@@ -11,9 +11,6 @@
 #include <ostream>
 #include <string>
 
-#include <boost/noncopyable.hpp>
-#include <boost/scoped_ptr.hpp>
-
 #include "oops/base/ModelBase.h"
 #include "oops/base/Variables.h"
 #include "oops/util/Duration.h"

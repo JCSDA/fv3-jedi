@@ -8,10 +8,9 @@
 #ifndef FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_H_
 #define FV3JEDI_VARIABLECHANGES_CONTROL2ANALYSIS_VARCHAC2A_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
@@ -42,7 +41,7 @@ class VarChaC2A: public util::Printable {
   void changeVarInverse(const State &, State &) const;
 
  private:
-  boost::shared_ptr<const Geometry> geom_;
+  std::shared_ptr<const Geometry> geom_;
   F90vcc2a keyFtnConfig_;
   void print(std::ostream &) const override;
 };

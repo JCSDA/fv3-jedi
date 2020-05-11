@@ -10,8 +10,6 @@
 #include <ostream>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
-
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"

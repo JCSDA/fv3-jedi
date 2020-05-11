@@ -8,10 +8,10 @@
 #ifndef FV3JEDI_ERRORCOVARIANCE_ERRORCOVARIANCE_H_
 #define FV3JEDI_ERRORCOVARIANCE_ERRORCOVARIANCE_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include "fv3jedi/ErrorCovariance/ErrorCovariance.interface.h"
 
@@ -54,7 +54,7 @@ class ErrorCovariance : public util::Printable,
  private:
   void print(std::ostream &) const;
   F90bmat keyFtnConfig_;
-  boost::scoped_ptr<const Geometry> geom_;
+  std::unique_ptr<const Geometry> geom_;
   util::DateTime time_;
 };
 // -----------------------------------------------------------------------------

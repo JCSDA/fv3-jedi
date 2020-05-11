@@ -11,7 +11,6 @@
 #include <ostream>
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
