@@ -36,8 +36,6 @@ typedef int F90goms;
 typedef int F90traj;
 // Background error covariance key type
 typedef int F90bmat;
-// Localization matrix
-typedef int F90lclz;
 // ObOp trajectory
 typedef int F90ootrj;
 // LinearVariableChange keys

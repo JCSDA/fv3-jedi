@@ -16,7 +16,6 @@
 #include "fv3jedi/GetValues/GetValues.h"
 #include "fv3jedi/GetValues/LinearGetValues.h"
 #include "fv3jedi/Increment/Increment.h"
-#include "fv3jedi/Localization/LocalizationMatrix.h"
 #include "fv3jedi/State/State.h"
 
 #include "fv3jedi/ModelBias/ModelBias.h"
@@ -49,7 +48,6 @@ struct Traits {
   typedef fv3jedi::GeometryIterator     GeometryIterator;
   typedef fv3jedi::GetValues            GetValues;
   typedef fv3jedi::LinearGetValues      LinearGetValues;
-  typedef fv3jedi::LocalizationMatrix   LocalizationMatrix;
   typedef fv3jedi::ModelBias            ModelAuxControl;
   typedef fv3jedi::ModelBiasIncrement   ModelAuxIncrement;
   typedef fv3jedi::ModelBiasCovariance  ModelAuxCovariance;

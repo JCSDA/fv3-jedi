@@ -49,10 +49,6 @@ Increment/fv3jedi_increment_utils_mod.F90
 IO/fv3jedi_io_geos_mod.f90
 IO/fv3jedi_io_gfs_mod.f90
 IO/fv3jedi_io_latlon_mod.f90
-Localization/LocalizationMatrix.cc
-Localization/LocalizationMatrix.h
-Localization/LocalizationMatrix.interface.h
-Localization/instantiateLocalizationFactory.h
 Model/fv3/fv3jedi_fv3_interface_mod.F90
 Model/fv3/fv3jedi_fv3_mod.f90
 Model/fv3/ModelFV3.cc
