@@ -14,6 +14,7 @@ Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem002.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem003.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem004.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem005.nc4
+Data/inputs/geos_c12/geos.aero.bkg.ext.20180415_000000z.nc4
 Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
 Data/inputs/geos_c12/geos.bkg.20180414_220000z.nc4
 Data/inputs/geos_c12/geos.bkg.20180414_230000z.nc4
@@ -261,6 +262,7 @@ testinput/model_geos-fv3.yaml
 testinput/model_geos-pseudo.yaml
 testinput/model_gfs-fv3.yaml
 testinput/state_geosaero.yaml
+testinput/state_geosaero_ext.yaml
 testinput/state_geos.yaml
 testinput/state_gfs.yaml
 testinput/varcha_geos.yaml
@@ -1173,6 +1175,13 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_state.x
                   ARGS    testinput/state_geosaero.yaml
                   MPI     6 )
+
+
+ecbuild_add_test( TARGET  test_fv3jedi_state_geos_aerosol_ext
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_state.x
+                  ARGS    testinput/state_geosaero_ext.yaml
+                  MPI     6 )
+
 
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_loc_gfs_aero
                   TYPE         EXE

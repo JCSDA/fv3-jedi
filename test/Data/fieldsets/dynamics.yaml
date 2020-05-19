@@ -425,3 +425,10 @@ Fields:
     LongName: upper_index_where_Kh_greater_than_2
     Units: 1
     Levels: 1
+
+  - FieldIONames: [airdens, AIRDENS]
+    FieldName: airdens
+    LongName: moist_air_density
+    Units: kgm-3
+
+
