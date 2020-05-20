@@ -543,7 +543,7 @@ foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs/${MEM})
 endforeach()
 
-set(members mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem009;mem010)
+set(members mem000;mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem009;mem010)
 foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos/${MEM})
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs/${MEM})

@@ -70,6 +70,7 @@ Prints:
   frequency: PT3H
 
 letkf:
+  solver: LETKF_OOPS
   inflation:
     rtpp: 0.0
     mult: 1.0

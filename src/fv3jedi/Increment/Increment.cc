@@ -150,7 +150,7 @@ void Increment::random() {
 // -----------------------------------------------------------------------------
 /// Get increment values at grid locations
 // -----------------------------------------------------------------------------
-oops::GridPoint Increment::getPoint(const GeometryIterator & iter) const {
+oops::LocalIncrement Increment::getLocal(const GeometryIterator & iter) const {
   int ist, iend, jst, jend, npz;
   fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, npz);
 
@@ -169,12 +169,12 @@ oops::GridPoint Increment::getPoint(const GeometryIterator & iter) const {
   fv3jedi_increment_getpoint_f90(keyInc_, iter.toFortran(), values[0],
                                   values.size());
 
-  return oops::GridPoint(oops::Variables(fieldNames), values, varlens);
+  return oops::LocalIncrement(oops::Variables(fieldNames), values, varlens);
 }
 
 
 // -----------------------------------------------------------------------------
-void Increment::setPoint(const oops::GridPoint & values,
+void Increment::setLocal(const oops::LocalIncrement & values,
                          const GeometryIterator & iter) {
   const std::vector<double> vals = values.getVals();
   fv3jedi_increment_setpoint_f90(keyInc_, iter.toFortran(), vals[0], vals.size());
