@@ -32,6 +32,7 @@
 #include "ufo/Locations.h"
 #include "ufo/ObsBias.h"
 #include "ufo/ObsBiasCovariance.h"
+#include "ufo/ObsBiasIncrement.h"
 #include "ufo/ObsDiagnostics.h"
 #include "ufo/ObsOperator.h"
 
