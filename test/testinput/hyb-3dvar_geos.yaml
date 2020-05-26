@@ -158,6 +158,134 @@ cost_function:
         variable: refractivity
         errmodel: GSI
     - ObsSpace:
+        name: AMSUA-METOP-A
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/amsua_metop-a_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/amsua_metop-a_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 4-6,9-14 
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: amsua_metop-a
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 4-6,9-14 
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 4-6,9-14 
+        threshold: 3.0
+    - ObsSpace:
+        name: AMSUA-METOP-B
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/amsua_metop-b_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/amsua_metop-b_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 7-14 
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: amsua_metop-b
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 7-14 
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 7-14 
+        threshold: 3.0
+    - ObsSpace:
+        name: AMSUA-NOAA15
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/amsua_n15_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/amsua_n15_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 4,5,7-10,12,13
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: amsua_n15
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 4,5,7-10,12,13
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 4,5,7-10,12,13
+        threshold: 3.0
+    - ObsSpace:
+        name: AMSUA-NOAA18
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/amsua_n18_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/amsua_n18_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 4,6,7,10-14
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: amsua_n18
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 4,6,7,10-14
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 4,6,7,10-14
+        threshold: 3.0
+    - ObsSpace:
         name: AMSUA-NOAA19
         ObsDataIn:
           obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
@@ -188,6 +316,230 @@ cost_function:
         filter variables:
         - name: brightness_temperature
           channels: 1-15
+        threshold: 3.0
+    - ObsSpace:
+        name: MHS-NOAA18
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/mhs_n18_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/mhs_n18_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-5
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: mhs_n18
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-5
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-5
+        threshold: 3.0
+    - ObsSpace:
+        name: MHS-METOP-A
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/mhs_metop-a_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/mhs_metop-a_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-5
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: mhs_metop-a
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-5
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-5
+        threshold: 3.0
+    - ObsSpace:
+        name: MHS-METOP-B
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/mhs_metop-b_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/mhs_metop-b_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-5
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: mhs_metop-b
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-5
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-5
+        threshold: 3.0
+    - ObsSpace:
+        name: SNDRD1-GOES15
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/sndrd1_g15_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sndrd1_g15.hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-8,10-12
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: sndrD1_g15
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        threshold: 3.0
+    - ObsSpace:
+        name: SNDRD2-GOES15
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/sndrd2_g15_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sndrd2_g15.hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-8,10-12
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: sndrD2_g15
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        threshold: 3.0
+    - ObsSpace:
+        name: SNDRD3-GOES15
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/sndrd3_g15_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sndrd3_g15.hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-8,10-12
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: sndrD3_g15
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        threshold: 3.0
+    - ObsSpace:
+        name: SNDRD4-GOES15
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/sndrd4_g15_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/sndrd4_g15.hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 1-8,10-12
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: sndrD4_g15
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
+        minvalue: 100.0
+        maxvalue: 500.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-8,10-12
         threshold: 3.0
     - ObsSpace:
         name: AIRS-AQUA
@@ -352,7 +704,7 @@ cost_function:
         name: CRTM
         Absorbers: [H2O,O3]
         ObsOptions:
-          Sensor_ID: iasi_metop-a
+          Sensor_ID: iasi_metop-b
           EndianType: little_endian
           CoefficientPath: Data/crtm/
       Covariance:
