@@ -42,7 +42,7 @@ phases:
       - mkdir -p /jcsda/.openmpi
       - mkdir -p /home/jcsdauser/.openmpi
 
-      - cp default-mca-params.conf /home/jcsdauser/.openmpi/mca-params.conf
+      - cp CI/default-mca-params.conf /home/jcsdauser/.openmpi/mca-params.conf
       - cat /home/jcsdauser/.openmpi/mca-params.conf
       - chown -R jcsdauser:jcsda /jcsda/
 
@@ -117,6 +117,7 @@ phases:
       - cd /jcsda/fv3-bundle
       - sed -i 's/BRANCH dev\/master-ecbuild UPDATE  //' CMakeLists.txt
       - sed -i 's/BRANCH develop UPDATE //' CMakeLists.txt
+      - sed -i 's/BRANCH release-stable UPDATE//' CMakeLists.txt
       - sed -i '/PROJECT eckit/d' CMakeLists.txt
 #      - sed -i -e '/ecbuild_bundle( PROJECT crtm/i\
 #        ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/JCSDA/geos-aero.git" )' CMakeLists.txt
