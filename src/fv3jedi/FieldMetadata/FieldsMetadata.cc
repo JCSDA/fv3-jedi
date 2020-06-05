@@ -20,6 +20,7 @@
       StaggerLoc: northsouth
       Tracer: false
       Units: ms-1
+      IOFile: core
 
     - FieldName: t
       FieldIONames: [t, T, air_temperature]
@@ -30,6 +31,7 @@
       StaggerLoc: center
       Tracer: false
       Units: K
+      IOFile: core
 
   FieldName:    The name that the interface recognizes a field as. E.g. if a field needs to be
                 accessed in a variable change this is the name that is used to do so.
@@ -44,6 +46,8 @@
                 'corner' (default: center)
   Tracer:       Boolean of whether or nor the field is a tracer (default: false)
   Units:        Units of the field, can be 1 for dimensionless
+  IOFile:       Optional; can be core, tracer, sfcd, sfcw; determines which restart file to
+                read the field from. Default will be defined in IO/fv3jedi_io_<gfs|geos>_mod.f90
 
   If no default the metadata must be provided below.
 */
@@ -73,6 +77,7 @@ namespace fv3jedi {
     std::string staggerLoc;
     bool tracer;
     std::string units;
+    std::string io_file;
 
     //  List of field sets
     std::vector<eckit::LocalConfiguration> confFieldSets;
@@ -130,6 +135,7 @@ namespace fv3jedi {
           staggerLoc = confFields[jm].getString("StaggerLoc", "center");
           tracer = confFields[jm].getBool("Tracer", false);
           units = confFields[jm].getString("Units");
+          io_file = confFields[jm].getString("IOFile", "default");
 
           // Check for valid choices
           fieldmetadata.checkKindValid(fieldIOName, kind);
@@ -156,6 +162,7 @@ namespace fv3jedi {
           fieldmetadata.setStaggerLoc(staggerLoc);
           fieldmetadata.setTracer(tracer);
           fieldmetadata.setUnits(units);
+          fieldmetadata.setIOFile(io_file);
         }  // End loop over potential field names
       }  // End loop over fields
     }  // End loop over field sets

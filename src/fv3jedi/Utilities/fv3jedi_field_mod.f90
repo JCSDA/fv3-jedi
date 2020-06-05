@@ -37,7 +37,8 @@ type :: fv3jedi_field
  character(len=field_clen) :: fv3jedi_name = "null" !Common name
  character(len=field_clen) :: long_name = "null"    !More descriptive name
  character(len=field_clen) :: units = "null"        !Units for the field
- logical                   :: tracer = .false.                !Whether field is classified as tracer (pos. def.)
+ character(len=field_clen) :: io_file = "null"      !Which restart to read/write if not the default
+ logical                   :: tracer = .false.      !Whether field is classified as tracer (pos. def.)
  character(len=field_clen) :: space                 !One of vector, magnitude, direction
  character(len=field_clen) :: staggerloc            !One of center, eastwest, northsouth, corner
  integer :: isc, iec, jsc, jec, npz
@@ -57,7 +58,7 @@ contains
 ! --------------------------------------------------------------------------------------------------
 
 subroutine allocate_field(self,isc,iec,jsc,jec,npz,short_name,long_name,&
-                          fv3jedi_name,units,space,staggerloc,tracer,integerfield)
+                          fv3jedi_name,units,io_file,space,staggerloc,tracer,integerfield)
 
 implicit none
 class(fv3jedi_field), target,  intent(inout) :: self
@@ -66,6 +67,7 @@ character(len=*),              intent(in)    :: short_name
 character(len=*),              intent(in)    :: long_name
 character(len=*),              intent(in)    :: fv3jedi_name
 character(len=*),              intent(in)    :: units
+character(len=*),              intent(in)    :: io_file
 character(len=*),              intent(in)    :: space
 character(len=*),              intent(in)    :: staggerloc
 logical,                       intent(in)    :: tracer
@@ -99,6 +101,7 @@ self%short_name   = trim(short_name)
 self%long_name    = trim(long_name)
 self%fv3jedi_name = trim(fv3jedi_name)
 self%units        = trim(units)
+self%io_file      = trim(io_file)
 self%space        = space
 self%staggerloc   = staggerloc
 self%tracer       = tracer
@@ -131,6 +134,7 @@ call self%allocate_field( rhs%isc,rhs%iec,rhs%jsc,rhs%jec,rhs%npz, &
                           long_name    = rhs%long_name, &
                           fv3jedi_name = rhs%fv3jedi_name, &
                           units        = rhs%units, &
+                          io_file      = rhs%io_file, &
                           space        = rhs%space, &
                           staggerloc   = rhs%staggerloc, &
                           tracer       = rhs%tracer, &

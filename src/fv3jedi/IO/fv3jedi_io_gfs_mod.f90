@@ -244,42 +244,63 @@ do var = 1,size(fields)
 
   compute_ps = 0
 
-  select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg","tv")
-    filename = self%filename_core
-    restart => restart_core
-    read_core = .true.
-  case("DELP","delp")
-    filename = self%filename_core
-    restart => restart_core
-    read_core = .true.
-    indexof_delp = var
-  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh",&
-       "o3mr","sulf","bc1","bc2","oc1","oc2",&
-       "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4","seas5")
-    filename = self%filename_trcr
-    restart => restart_trcr
-    read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
-    filename = self%filename_sfcd
-    restart => restart_sfcd
-    read_sfcd = .true.
-  case("u_srf","v_srf")
-    filename = self%filename_sfcw
-    restart => restart_sfcw
-    read_sfcw = .true.
-  case("ps")
-    filename = self%filename_core
-    restart => restart_core
-    read_core = .true.
-    compute_ps = compute_ps_type
-    if (compute_ps .ne. 0) then
-      indexof_ps = var
-      if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-    endif
-  case default
-    call abor1_ftn("read_gfs: filename not set for "//trim(fields(var)%short_name))
-  end select
+  if (trim(fields(var)%io_file) == "default") then
+    select case (trim(fields(var)%short_name))
+    case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg","tv")
+      filename = self%filename_core
+      restart => restart_core
+      read_core = .true.
+    case("DELP","delp")
+      filename = self%filename_core
+      restart => restart_core
+      read_core = .true.
+      indexof_delp = var
+    case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh","o3mr")
+      filename = self%filename_trcr
+      restart => restart_trcr
+      read_trcr = .true.
+    case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
+      filename = self%filename_sfcd
+      restart => restart_sfcd
+      read_sfcd = .true.
+    case("u_srf","v_srf")
+      filename = self%filename_sfcw
+      restart => restart_sfcw
+      read_sfcw = .true.
+    case("ps")
+      filename = self%filename_core
+      restart => restart_core
+      read_core = .true.
+      compute_ps = compute_ps_type
+      if (compute_ps .ne. 0) then
+        indexof_ps = var
+        if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+      endif
+    case default
+      call abor1_ftn("read_gfs: default filename not set for "//trim(fields(var)%short_name))
+    end select
+  else
+    select case (trim(fields(var)%io_file))
+    case("core")
+      filename = self%filename_core
+      restart => restart_core
+      read_core = .true.
+    case("tracer")
+      filename = self%filename_trcr
+      restart => restart_trcr
+      read_trcr = .true.
+    case("sfcd")
+      filename = self%filename_sfcd
+      restart => restart_sfcd
+      read_sfcd = .true.
+    case("sfcw")
+      filename = self%filename_sfcw
+      restart => restart_sfcw
+      read_sfcw = .true.
+    case default
+      call abor1_ftn("read_gfs: "//trim(fields(var)%io_file//" is not a valid IOFile"))
+    end select
+  end if
 
   position = center
   if (fields(var)%staggerloc == 'northsouth') then
@@ -379,28 +400,49 @@ read_sfcd = .false.
 read_sfcw = .false.
 do var = 1,size(fields)
 
-  select case (trim(fields(var)%short_name))
-  case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ","psi","chi","vort","divg","tv")
-    filename = self%filename_core
-    restart => restart_core
-    read_core = .true.
-  case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh",&
-       "o3mr","sulf","bc1","bc2","oc1","oc2",&
-       "dust1","dust2","dust3","dust4","dust5","seas1","seas2","seas3","seas4","seas5")
-    filename = self%filename_trcr
-    restart => restart_trcr
-    read_trcr = .true.
-  case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
-    filename = self%filename_sfcd
-    restart => restart_sfcd
-    read_sfcd = .true.
-  case("u_srf","v_srf")
-    filename = self%filename_sfcw
-    restart => restart_sfcw
-    read_sfcw = .true.
-  case default
-    call abor1_ftn("write_gfs: filename not set for "//trim(fields(var)%short_name))
-  end select
+  if (trim(fields(var)%io_file) == "default") then
+    select case (trim(fields(var)%short_name))
+    case("u","v","ud","vd","ua","va","phis","T","ps","DELP","delp","W","DZ","psi","chi","vort","divg","tv")
+      filename = self%filename_core
+      restart => restart_core
+      read_core = .true.
+    case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh","o3mr")
+      filename = self%filename_trcr
+      restart => restart_trcr
+      read_trcr = .true.
+    case("slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph","f10m","sss")
+      filename = self%filename_sfcd
+      restart => restart_sfcd
+      read_sfcd = .true.
+    case("u_srf","v_srf")
+      filename = self%filename_sfcw
+      restart => restart_sfcw
+      read_sfcw = .true.
+    case default
+      call abor1_ftn("write_gfs: default filename not set for "//trim(fields(var)%short_name))
+    end select
+  else
+    select case (trim(fields(var)%io_file))
+    case("core")
+      filename = self%filename_core
+      restart => restart_core
+      read_core = .true.
+    case("tracer")
+      filename = self%filename_trcr
+      restart => restart_trcr
+      read_trcr = .true.
+    case("sfcd")
+      filename = self%filename_sfcd
+      restart => restart_sfcd
+      read_sfcd = .true.
+    case("sfcw")
+      filename = self%filename_sfcw
+      restart => restart_sfcw
+      read_sfcw = .true.
+    case default
+      call abor1_ftn("write_gfs: "//trim(fields(var)%io_file//" is not a valid IOFile"))
+    end Select
+  end if
 
   position = center
   if (fields(var)%staggerloc == 'northsouth') then

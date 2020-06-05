@@ -72,6 +72,10 @@ namespace fv3jedi {
     std::string getUnits() const {return units_;}
     void setUnits(std::string units) {units_ = units;}
 
+    // IO file
+    std::string getIOFile() const {return io_file_;}
+    void setIOFile(std::string io_file) {io_file_ = io_file;}
+
     // Validity check on kind
     void checkKindValid(const std::string fieldIOName, const std::string kind) const {
       auto result = std::find(kindVal_.begin(), kindVal_.end(), kind);
@@ -129,6 +133,7 @@ namespace fv3jedi {
     std::string space_;
     bool tracer_;
     std::string units_;
+    std::string io_file_;
 
     const std::vector<std::string> kindVal_ = {"double", "integer"};
     const std::vector<std::string> levelVal_ = {"full", "half"};
@@ -145,6 +150,7 @@ namespace fv3jedi {
       os << " StaggerLocation: " << staggerLoc_ << "\n";
       os << " Tracer: " << tracer_ << "\n";
       os << " Units: " << units_ << "\n";
+      os << " IOFile: " << io_file_ << "\n";
     }
   };
 

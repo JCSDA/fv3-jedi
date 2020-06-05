@@ -15,7 +15,7 @@ extern "C" {
   void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata, const char fieldIONameC[],
                                    char fieldNameC[], char kindC[], int& levels,
                                    char longNameC[], char SpaceC[], char staggerLocC[],
-                                   bool& tracer, char unitsC[]);
+                                   bool& tracer, char unitsC[], char io_fileC[]);
 }
 
 }  // namespace fv3jedi

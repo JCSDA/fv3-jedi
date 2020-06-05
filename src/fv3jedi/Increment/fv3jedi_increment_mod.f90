@@ -77,6 +77,7 @@ do var = 1, vars%nvars()
                                       long_name    = "increment_of_"//trim(fmd%long_name), &
                                       fv3jedi_name = trim(fmd%field_name), &
                                       units        = fmd%units, &
+                                      io_file      = trim(fmd%io_file), &
                                       space        = trim(fmd%space), &
                                       staggerloc   = trim(fmd%stagger_loc), &
                                       tracer       = fmd%tracer, &
