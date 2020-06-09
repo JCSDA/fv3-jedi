@@ -7,7 +7,6 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
 # GEOS test files
 # ---------------
 list( APPEND fv3jedi_geos_test_data
-Data/inputs/geos_c12/akbk72.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem001.nc4
 Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem002.nc4
@@ -60,7 +59,6 @@ LINK_FILES( "${fv3jedi_geos_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURR
 
 # GFS test files
 # --------------
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/akbk.nc)
 GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180414.210000)
 GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180414.220000)
 GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180414.230000)
@@ -115,7 +113,6 @@ LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 
 # GFS AERO test files
 # -------------------
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_aero_c12/akbk.nc)
 GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180415.000000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180415.000000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180415.000000)
@@ -143,6 +140,8 @@ LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 # ----------------
 
 list( APPEND fv3jedi_test_fv3files
+Data/fv3files/akbk64.nc4
+Data/fv3files/akbk72.nc4
 Data/fv3files/field_table
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_gfs_c6.nml

@@ -33,16 +33,19 @@ Geometry::Geometry(const eckit::Configuration & conf,
 
   static bool initialized = false;
   if (!initialized) {
-    stageFMSFiles(conf);
+    stageFMSFiles(conf, comm);
     fv3jedi_setup_f(&configc, &comm_);
-    removeFv3Files();
+    removeFv3Files(comm);
     initialized = true;
     oops::Log::debug() << "FMS MPP initialized on " << comm_.name() << std::endl;
   }
 
-  stageFv3Files(conf);
+  stageFv3Files(conf, comm);
+  if ( !conf.has("nml_file") ) {
+    generateGeomFv3Conf(conf, comm);
+  }
   fv3jedi_geom_setup_f90(keyGeom_, &configc, &comm_, &fieldsMeta_);
-  removeFv3Files();
+  removeFv3Files(comm);
 
   // Set ATLAS lon/lat field
   atlasFieldSet_.reset(new atlas::FieldSet());

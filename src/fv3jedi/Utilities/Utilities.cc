@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
@@ -28,7 +29,7 @@ namespace eckit {
 namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
-void stageFMSFiles(const eckit::Configuration & conf) {
+void stageFMSFiles(const eckit::Configuration & conf, const eckit::mpi::Comm & comm) {
   // Get processor ID
   int world_rank = oops::mpi::comm().rank();
 
@@ -49,7 +50,7 @@ void stageFMSFiles(const eckit::Configuration & conf) {
 }
 // -----------------------------------------------------------------------------
 
-void stageFv3Files(const eckit::Configuration &conf) {
+void stageFv3Files(const eckit::Configuration &conf, const eckit::mpi::Comm & comm) {
   // Get processor ID
   int world_rank = oops::mpi::comm().rank();
 
@@ -63,8 +64,6 @@ void stageFv3Files(const eckit::Configuration &conf) {
       std::string nml_file = conf.getString("nml_file");
       if (symlink(nml_file.c_str(), "./input.nml"))
         ABORT("Unable to symlink input.nml");
-    } else {
-      ABORT("nml_file not in configuration");
     }
 
     // User may also be requesting the field_table to be staged
@@ -92,7 +91,7 @@ void stageFv3Files(const eckit::Configuration &conf) {
 
 // -----------------------------------------------------------------------------
 
-void removeFv3Files() {
+void removeFv3Files(const eckit::mpi::Comm & comm) {
   // Get processor ID
   int world_rank = oops::mpi::comm().rank();
 
@@ -118,6 +117,106 @@ void delete_file(const char *fileName)
     oops::Log::debug() << "Removing: " << fileName << std::endl;
     std::remove(fileName);
   }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void generateGeomFv3Conf(const eckit::Configuration & conf, const eckit::mpi::Comm & comm) {
+  // Trace
+  // -----
+  oops::Log::trace() << "generateGeomFv3Conf starting" << std::endl;
+
+  // Barrier
+  // -------
+  oops::mpi::comm().barrier();
+
+  // Only root
+  // ---------
+  if (oops::mpi::comm().rank() == 0) {
+    // Delete the file if it exists
+    // ----------------------------
+    delete_file("input.nml");
+
+    // Parse config
+    // ------------
+    std::vector<std::string> layout = conf.getStringVector("layout", {"1", "1"});
+    std::vector<std::string> io_layout = conf.getStringVector("io_layout", {"1", "1"});
+    std::string npx = conf.getString("npx");
+    std::string npy = conf.getString("npy", npx);
+    std::string npz = conf.getString("npz");
+    std::string ntiles = conf.getString("ntiles", "6");
+
+    // Vector of config
+    // ----------------
+    std::vector<std::string> inputnml;
+
+    inputnml.push_back("&fv_core_nml\n");
+    inputnml.push_back("       layout = "+layout[0]+","+layout[1]+"\n");
+    inputnml.push_back("       io_layout = "+io_layout[0]+","+io_layout[1]+"\n");
+    inputnml.push_back("       npx = "+npx+"\n");
+    inputnml.push_back("       npy = "+npy+"\n");
+    inputnml.push_back("       npz = "+npz+"\n");
+    inputnml.push_back("       ntiles = "+ntiles+"\n");
+
+    // Parse config for optional fields
+    // --------------------------------
+    if (conf.has("regional")) {
+      bool regional = conf.getBool("regional");
+      if (regional) {
+        inputnml.push_back("       regional = .T.\n");
+      }
+    }
+
+    if (conf.has("nested")) {
+      bool nested = conf.getBool("nested");
+      if (nested) {
+        inputnml.push_back("       nested = .T.\n");
+      }
+    }
+
+    if (conf.has("do_schmidt")) {
+      bool do_schmidt = conf.getBool("do_schmidt");
+      if (do_schmidt) {
+        inputnml.push_back("       do_schmidt = .T.\n");
+      }
+    }
+
+    if (conf.has("target_lat")) {
+      std::string target_lat = conf.getString("target_lat");
+      inputnml.push_back("       target_lat = "+target_lat+"\n");
+    }
+
+    if (conf.has("target_lon")) {
+      std::string target_lon = conf.getString("target_lon");
+      inputnml.push_back("       target_lon = "+target_lon+"\n");
+    }
+
+    if (conf.has("stretch_fac")) {
+      std::string stretch_fac = conf.getString("stretch_fac");
+      inputnml.push_back("       stretch_fac = "+stretch_fac+"\n");
+    }
+
+    // End of section marker
+    // ---------------------
+    inputnml.push_back("/");
+
+    // Write the config to the input.nml file
+    // --------------------------------------
+    std::string file = "input.nml";
+    std::ofstream out(file);
+    for (int km = 0; km < static_cast<int>(inputnml.size()); ++km) {
+      out << inputnml[km];
+    }
+    out.close();
+  }
+
+  // Barrier
+  // -------
+  oops::mpi::comm().barrier();
+
+  // Trace
+  // -----
+  oops::Log::trace() << "generateGeomFv3Conf done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

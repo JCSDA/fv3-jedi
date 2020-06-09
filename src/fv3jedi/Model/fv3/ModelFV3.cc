@@ -30,9 +30,9 @@ ModelFV3::ModelFV3(const Geometry & resol,
   oops::Log::trace() << "ModelFV3::ModelFV3" << std::endl;
   tstep_ = util::Duration(mconf.getString("tstep"));
   const eckit::Configuration * configc = &mconf;
-  stageFv3Files(mconf);
+  stageFv3Files(mconf, geom_.getComm());
   fv3jedi_fv3_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  removeFv3Files();
+  removeFv3Files(geom_.getComm());
   oops::Log::trace() << "ModelFV3 created" << std::endl;
 }
 // -----------------------------------------------------------------------------

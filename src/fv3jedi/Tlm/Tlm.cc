@@ -37,9 +37,9 @@ Tlm::Tlm(const Geometry & resol,
 
   const eckit::Configuration * configc = &tlConf;
 
-  stageFv3Files(tlConf);
+  stageFv3Files(tlConf, resol_.getComm());
   fv3jedi_tlm_create_f90(&configc, resol_.toFortran(), keyConfig_, linvars_);
-  removeFv3Files();
+  removeFv3Files(resol_.getComm());
   oops::Log::trace() << "Tlm created" << std::endl;
 }
 // -----------------------------------------------------------------------------

@@ -109,7 +109,7 @@ character(len=256)                    :: pathfile_akbk
 type(fv_atmos_type), allocatable      :: FV_Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
 integer                               :: i, j, jj
-integer                               :: p_split = 1, levels
+integer                               :: p_split = 1
 integer                               :: ncstat, ncid, akvarid, bkvarid, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
 
@@ -125,7 +125,7 @@ self%f_comm = comm
 
 ! Set path/filename for ak and bk
 ! -------------------------------
-call conf%get_or_die("pathfile_akbk",str)
+call conf%get_or_die("akbk",str)
 pathfile_akbk = str
 deallocate(str)
 
@@ -137,10 +137,6 @@ if (conf%has("interp_method")) then
   self%interp_method = str
   deallocate(str)
 endif
-
-! Get Levels from conf
-! --------------------
-call conf%get_or_die("Levels", levels)
 
 ! Local pointer to field meta data
 ! --------------------------------
@@ -332,14 +328,6 @@ call setup_domain( self%domain_fix, self%npx-1, self%npx-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
 
 self%domain => self%domain_fix
-
-! Check on Levels
-! ---------------
-if (levels .ne. self%npz) then
-  print*, 'Levels: ', levels
-  print*, 'npz: ', self%npz
-  call abor1_ftn("Levels from config does not match levels from input.nml")
-endif
 
 ! Optionally write the geometry to file
 ! -------------------------------------

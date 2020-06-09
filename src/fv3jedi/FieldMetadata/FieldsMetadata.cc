@@ -85,7 +85,7 @@ namespace fv3jedi {
     int confFieldSetsSize = confFieldSets.size();
 
     // Get number of vertical levels
-    const int nlev = confFull.getInt("Levels");
+    const int nlev = confFull.getInt("npz");
 
     //  Loop over sets of fields, i.e. each yaml file
     for (int km = 0; km < confFieldSetsSize; ++km) {

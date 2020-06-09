@@ -130,9 +130,9 @@ void State::analytic_init(const eckit::Configuration & config,
   oops::Log::trace() << "State analytic init starting" << std::endl;
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
-  stageFv3Files(config);
+  stageFv3Files(config, geom.getComm());
   fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), &conf, &dtp);
-  removeFv3Files();
+  removeFv3Files(geom.getComm());
   oops::Log::trace() << "State analytic init done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

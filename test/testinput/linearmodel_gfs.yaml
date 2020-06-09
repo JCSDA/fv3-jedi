@@ -7,12 +7,16 @@ Covariance:
   vertical_correlation: '0.2'
 Geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
-  nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
-  Levels: 64
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
   FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml  
+    - FieldSet: Data/fieldsets/dynamics.yaml
 LinearModel:
   name: 'FV3JEDITLM'
   version: FV3JEDITLM

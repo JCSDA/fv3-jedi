@@ -1,10 +1,15 @@
 forecast_length: PT6H
 resolution:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
-  nml_file: Data/fv3files/input_geos_c90_np96.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
-  Levels: 72
+  akbk: Data/fv3files/akbk72.nc4
+  # input.nml
+  layout: [4,4]
+  io_layout: [1,1]
+  npx: 91
+  npy: 91
+  npz: 72
+  ntiles: 6
   FieldSets:
     - FieldSet: Data/fieldsets/dynamics.yaml
 model:

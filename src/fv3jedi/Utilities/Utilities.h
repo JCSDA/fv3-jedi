@@ -9,6 +9,7 @@
 #define FV3JEDI_UTILITIES_UTILITIES_H_
 
 #include "eckit/config/Configuration.h"
+#include "eckit/mpi/Comm.h"
 
 namespace eckit {
   class Configuration;
@@ -16,9 +17,11 @@ namespace eckit {
 
 namespace fv3jedi {
 
-  void stageFMSFiles(const eckit::Configuration &);
-  void stageFv3Files(const eckit::Configuration &);
-  void removeFv3Files();
+  void stageFMSFiles(const eckit::Configuration &, const eckit::mpi::Comm & comm);
+  void stageFv3Files(const eckit::Configuration &, const eckit::mpi::Comm & comm);
+  void removeFv3Files(const eckit::mpi::Comm & comm);
+
+  void generateGeomFv3Conf(const eckit::Configuration &, const eckit::mpi::Comm & comm);
 
   void delete_file(const char *);
 

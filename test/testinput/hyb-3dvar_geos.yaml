@@ -165,7 +165,7 @@ cost_function:
           obsfile: Data/hofx/amsua_metop-a_hyb-3dvar-geos_2018041500_m.nc4
         simulate:
           variables: [brightness_temperature]
-          channels: 4-6,9-14 
+          channels: 4-6,9-14
       ObsOperator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -181,13 +181,13 @@ cost_function:
       - Filter: Bounds Check
         filter variables:
         - name: brightness_temperature
-          channels: 4-6,9-14 
+          channels: 4-6,9-14
         minvalue: 100.0
         maxvalue: 500.0
       - Filter: Background Check
         filter variables:
         - name: brightness_temperature
-          channels: 4-6,9-14 
+          channels: 4-6,9-14
         threshold: 3.0
     - ObsSpace:
         name: AMSUA-METOP-B
@@ -197,7 +197,7 @@ cost_function:
           obsfile: Data/hofx/amsua_metop-b_hyb-3dvar-geos_2018041500_m.nc4
         simulate:
           variables: [brightness_temperature]
-          channels: 7-14 
+          channels: 7-14
       ObsOperator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -213,13 +213,13 @@ cost_function:
       - Filter: Bounds Check
         filter variables:
         - name: brightness_temperature
-          channels: 7-14 
+          channels: 7-14
         minvalue: 100.0
         maxvalue: 500.0
       - Filter: Background Check
         filter variables:
         - name: brightness_temperature
-          channels: 7-14 
+          channels: 7-14
         threshold: 3.0
     - ObsSpace:
         name: AMSUA-NOAA15
@@ -560,7 +560,7 @@ cost_function:
                     950,1012,1088,1111,1120,1301,1304,1329,1371,1382,
                     1415,1424,1449,1455,1477,1500,1519,1565,1574,1627,
                     1669,1694,1766,1800,1826,1865,1866,1868,1869,1872,
-                    1873,1876,1881,1882,1911,1917,1918,1924,1928 
+                    1873,1876,1881,1882,1911,1917,1918,1924,1928
       ObsOperator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -603,7 +603,7 @@ cost_function:
                     1415,1424,1449,1455,1477,1500,1519,1565,1574,1627,
                     1669,1694,1766,1800,1826,1865,1866,1868,1869,1872,
                     1873,1876,1881,1882,1911,1917,1918,1924,1928
-  
+
         threshold: 3.0
     - ObsSpace:
         name: IASI-METOPA
@@ -627,7 +627,7 @@ cost_function:
                     439,445,457,515,546,552,559,566,571,573,
                     646,662,668,756,867,906,921,1027,1046,1121,
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-                    1671 
+                    1671
       ObsOperator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -655,7 +655,7 @@ cost_function:
                     439,445,457,515,546,552,559,566,571,573,
                     646,662,668,756,867,906,921,1027,1046,1121,
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-                    1671 
+                    1671
         minvalue: 100.0
         maxvalue: 500.0
       - Filter: Background Check
@@ -675,7 +675,7 @@ cost_function:
                     439,445,457,515,546,552,559,566,571,573,
                     646,662,668,756,867,906,921,1027,1046,1121,
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-                    1671 
+                    1671
         threshold: 3.0
     - ObsSpace:
         name: IASI-METOPB
@@ -699,7 +699,7 @@ cost_function:
                     439,445,457,515,546,552,559,566,571,573,
                     646,662,668,756,867,906,921,1027,1046,1121,
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-                    1671 
+                    1671
       ObsOperator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -727,7 +727,7 @@ cost_function:
                     439,445,457,515,546,552,559,566,571,573,
                     646,662,668,756,867,906,921,1027,1046,1121,
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-                    1671 
+                    1671
         minvalue: 100.0
         maxvalue: 500.0
       - Filter: Background Check
@@ -747,7 +747,7 @@ cost_function:
                     439,445,457,515,546,552,559,566,571,573,
                     646,662,668,756,867,906,921,1027,1046,1121,
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-                    1671 
+                    1671
         threshold: 3.0
     - ObsSpace:
         name: CRIS-NPP
@@ -841,11 +841,16 @@ output:
   frequency: PT1H
 resolution:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
-  nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
-  pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+  akbk: Data/fv3files/akbk72.nc4
   interp_method: bump
-  Levels: 72
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
   FieldSets:
   - FieldSet: Data/fieldsets/dynamics.yaml
   - FieldSet: Data/fieldsets/ufo.yaml
@@ -855,11 +860,16 @@ variational:
     gradient_norm_reduction: 1e-10
     test: 'on'
     resolution:
-      nml_file: Data/fv3files/input_geos_c12.nml
       trc_file: Data/fv3files/field_table
-      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+      akbk: Data/fv3files/akbk72.nc4
       interp_method: bump
-      Levels: 72
+      # input.nml
+      layout: [1,1]
+      io_layout: [1,1]
+      npx: 13
+      npy: 13
+      npz: 72
+      ntiles: 6
       FieldSets:
       - FieldSet: Data/fieldsets/dynamics.yaml
       - FieldSet: Data/fieldsets/ufo.yaml
@@ -875,11 +885,16 @@ variational:
     gradient_norm_reduction: 1e-10
     test: 'on'
     resolution:
-      nml_file: Data/fv3files/input_geos_c12.nml
       trc_file: Data/fv3files/field_table
-      pathfile_akbk: Data/inputs/geos_c12/akbk72.nc4
+      akbk: Data/fv3files/akbk72.nc4
       interp_method: bump
-      Levels: 72
+      # input.nml
+      layout: [1,1]
+      io_layout: [1,1]
+      npx: 13
+      npy: 13
+      npz: 72
+      ntiles: 6
       FieldSets:
       - FieldSet: Data/fieldsets/dynamics.yaml
       - FieldSet: Data/fieldsets/ufo.yaml
