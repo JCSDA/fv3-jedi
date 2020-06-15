@@ -1,3 +1,12 @@
+# (C) Copyright 2017-2020 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+# Option not to run with large tests
+# ----------------------------------
+option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" OFF)
+
 # Create the Data/ and Data/inputs/ directories
 # ---------------------------------------------
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
@@ -1092,6 +1101,8 @@ ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_compare
 
 # Test with 12 (instead of 6) processors
 
+if (NOT SKIP_LARGE_TESTS)
+
 ecbuild_add_test( TARGET       test_fv3jedi_bumpparameters_cor_geos_p12
                   TYPE         EXE
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_parameters.x
@@ -1167,6 +1178,8 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_gfs_p12_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-3dvar_gfs_p12.run testoutput/hyb-3dvar_gfs.run.ref 0.0 0
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs_p12 )
+
+endif()
 
 # Aerosol tests
 
@@ -1255,6 +1268,8 @@ endif()
 
 
 
+if (NOT SKIP_LARGE_TESTS)
+
 # EDA tests
 
 ecbuild_add_test( TARGET       test_fv3jedi_eda_3dvar_geos
@@ -1305,6 +1320,8 @@ ecbuild_add_test( TARGET       test_fv3jedi_enshofx_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/enshofx_geos.run testoutput/hofx_geos.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_enshofx_geos )
+
+endif()
 
 ####################################################################
 # test time
