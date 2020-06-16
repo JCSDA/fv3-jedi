@@ -19,13 +19,13 @@ StateTest:
     filename_sfcd: 20180414.210000.sfc_data.nc
     filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.coupler.res
-    variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+    variables: ["u","v","ua","va","T","DELP","ps","sphum","ice_wat","liq_wat","o3mr"]
   StateGenerate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
     nml_file: Data/fv3files/input_gfs_c12.nml
     variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
   date: '2018-04-14T21:00:00Z'
-  norm-file: '618.80103341818926'
+  norm-file: '3959.836162631429'
   norm-gen: '626.8522218535677'
   tolerance: 1.0e-08

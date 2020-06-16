@@ -6,7 +6,7 @@ use string_utils, only: swap_name_member
 
 use fv3jedi_constants_mod,      only: rad2deg
 use fv3jedi_geom_mod,           only: fv3jedi_geom
-use fv3jedi_field_mod,          only: fv3jedi_field
+use fv3jedi_field_mod,          only: fv3jedi_field, has_field
 use fv3jedi_kinds_mod,          only: kind_real
 use mpp_mod,                    only: mpp_pe, mpp_root_pe
 use fms_io_mod,                 only: restart_file_type, register_restart_field, &
@@ -224,17 +224,17 @@ read_trcr = .false.
 read_sfcd = .false.
 read_sfcw = .false.
 
-assocdelp = .false.
-assocps   = .false.
-do var = 1,size(fields)
-  if (trim(fields(var)%short_name) == 'DELP') assocdelp = .true.
-  if (trim(fields(var)%short_name) == 'ps')   assocps   = .true.
-enddo
+assocdelp = has_field(fields, 'delp', indexof_delp)
+assocps   = has_field(fields, 'ps'  , indexof_ps  )
 
+! Options for compute_ps_type
+! 0: ps is in the file
+! 1: ps not in file, dont otherwise need delp
+! 2: ps not in file, need delp anyway
+
+compute_ps_type = 0
 if (assocps) then
-  if (self%ps_in_file) then
-    compute_ps_type = 0
-  else
+  if (.not. self%ps_in_file) then
     compute_ps_type = 1
     if (assocdelp) compute_ps_type = 2
   endif
@@ -246,15 +246,10 @@ do var = 1,size(fields)
 
   if (trim(fields(var)%io_file) == "default") then
     select case (trim(fields(var)%short_name))
-    case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg","tv")
+    case("u","v","ud","vd","ua","va","phis","T","W","DZ","psi","chi","vort","divg","tv","DELP","delp")
       filename = self%filename_core
       restart => restart_core
       read_core = .true.
-    case("DELP","delp")
-      filename = self%filename_core
-      restart => restart_core
-      read_core = .true.
-      indexof_delp = var
     case("sphum","ice_wat","liq_wat","rainwat","snowwat","graupel","cld_amt","rh","o3mr")
       filename = self%filename_trcr
       restart => restart_trcr
@@ -272,10 +267,7 @@ do var = 1,size(fields)
       restart => restart_core
       read_core = .true.
       compute_ps = compute_ps_type
-      if (compute_ps .ne. 0) then
-        indexof_ps = var
-        if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-      endif
+      if (compute_ps == 1) allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
     case default
       call abor1_ftn("read_gfs: default filename not set for "//trim(fields(var)%short_name))
     end select
@@ -339,10 +331,10 @@ if (read_sfcw) then
 endif
 
 !Compute ps from DELP
-if (compute_ps > 0) then
-  if (compute_ps == 2) then
+if (compute_ps_type > 0) then
+  if (compute_ps_type == 2) then
     fields(indexof_ps)%array(:,:,1) = sum(fields(indexof_delp)%array,3)
-  elseif (compute_ps == 1) then
+  elseif (compute_ps_type == 1) then
     fields(indexof_ps)%array(:,:,1) = sum(delp,3)
     deallocate(delp)
   endif

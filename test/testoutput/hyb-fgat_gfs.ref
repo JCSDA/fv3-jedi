@@ -6,17 +6,17 @@ Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 814.198, nobs = 747, Jo/n = 1
 Test     : CostFunction: Nonlinear J = 8449.76
 Test     : DRIPCGMinimizer: reduction in residual norm = 0.100003
 Test     : CostFunction::addIncrement: Analysis: 
-Test     : CostJb   : Nonlinear Jb = 0.00461262
-Test     : CostJo   : Nonlinear Jo(Aircraft) = 4016.82, nobs = 1120, Jo/n = 3.58644, err = 2.74408
+Test     : CostJb   : Nonlinear Jb = 0.000326677
+Test     : CostJo   : Nonlinear Jo(Aircraft) = 4016.82, nobs = 1120, Jo/n = 3.58645, err = 2.74408
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 3601.88, nobs = 915, Jo/n = 3.93648, err = 2.01766
 Test     : CostJo   : Nonlinear Jo(GnssroRef) = 0 --- No Observations
 Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 639.743, nobs = 738, Jo/n = 0.86686, err = 1.90842
-Test     : CostFunction: Nonlinear J = 8258.45
+Test     : CostFunction: Nonlinear J = 8258.44
 Test     : DRIPCGMinimizer: reduction in residual norm = 0.371411
 Test     : CostFunction::addIncrement: Analysis: 
-Test     : CostJb   : Nonlinear Jb = 0.00727201
+Test     : CostJb   : Nonlinear Jb = 0.000549479
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 4003.3, nobs = 1119, Jo/n = 3.57757, err = 2.74428
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 3608.48, nobs = 915, Jo/n = 3.94369, err = 2.01766
 Test     : CostJo   : Nonlinear Jo(GnssroRef) = 0 --- No Observations
 Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 601.673, nobs = 732, Jo/n = 0.821958, err = 1.91159
-Test     : CostFunction: Nonlinear J = 8213.46
+Test     : CostFunction: Nonlinear J = 8213.45
