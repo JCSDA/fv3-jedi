@@ -542,6 +542,38 @@ cost_function:
           channels: 1-8,10-12
         threshold: 3.0
     - ObsSpace:
+        name: GMI-GPM
+        ObsDataIn:
+          obsfile: Data/obs/testinput_tier_1/gmi_gpm_obs_2018041500_m.nc4
+        ObsDataOut:
+          obsfile: Data/hofx/gmi_gpm_hyb-3dvar-geos_2018041500_m.nc4
+        simulate:
+          variables: [brightness_temperature]
+          channels: 5,6,7,10,12,13
+      ObsOperator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        Clouds: [Water, Ice]
+        Cloud_Fraction: 1.0
+        ObsOptions:
+          Sensor_ID: gmi_gpm
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      Covariance:
+        covariance: diagonal
+      ObsFilters:
+      - Filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 5,6,7,10,12,13
+        minvalue: 50.0
+        maxvalue: 320.0
+      - Filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 5,6,7,10,12,13
+        threshold: 3.0
+    - ObsSpace:
         name: AIRS-AQUA
         ObsDataIn:
           obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2018041500_m.nc4
