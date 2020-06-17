@@ -75,10 +75,11 @@ Prints:
   frequency: PT3H
 
 letkf:
-  solver: LETKF_OOPS
+  solver: LETKF
   inflation:
-    rtpp: 0.0
-    mult: 1.0
+    rtps: 0.5
+    rtpp: 0.6
+    mult: 1.1
 
 output:
   filetype: geos

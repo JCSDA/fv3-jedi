@@ -1083,7 +1083,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_letkf_geos_run
 ecbuild_add_test( TARGET       test_fv3jedi_letkf_geos_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/letkf_geos.run testoutput/letkf_geos.ref 1.0e-2 ${idif}
+                  ARGS         testoutput/letkf_geos.run testoutput/letkf_geos.ref 1.0e-3 ${idif}
                   TEST_DEPENDS test_fv3jedi_letkf_geos_run )
 
 ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_run
@@ -1095,7 +1095,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_run
 ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/letkf_gfs.run testoutput/letkf_gfs.ref 1.0e-2 ${idif}
+                  ARGS         testoutput/letkf_gfs.run testoutput/letkf_gfs.ref 1.0e-3 ${idif}
                   TEST_DEPENDS test_fv3jedi_letkf_gfs_run )
 
 
