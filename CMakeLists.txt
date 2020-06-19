@@ -55,6 +55,7 @@ include_directories( ${NETCDF_INCLUDE_DIRS} )
 
 # atlas
 ecbuild_use_package( PROJECT atlas VERSION 0.18.1 REQUIRED )
+include_directories( ${ATLAS_INCLUDE_DIRS} )
 
 # fv3-jedi-lm
 ecbuild_use_package( PROJECT fv3jedilm REQUIRED )

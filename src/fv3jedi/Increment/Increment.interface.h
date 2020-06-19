@@ -8,7 +8,7 @@
 #ifndef FV3JEDI_INCREMENT_INCREMENT_INTERFACE_H_
 #define FV3JEDI_INCREMENT_INCREMENT_INTERFACE_H_
 
-#include "atlas/field/FieldSet.h"
+#include "atlas/field.h"
 #include "fv3jedi/Utilities/interface.h"
 #include "oops/base/Variables.h"
 

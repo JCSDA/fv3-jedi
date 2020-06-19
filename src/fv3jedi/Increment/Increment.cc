@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "atlas/functionspace.h"
+#include "atlas/field.h"
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"

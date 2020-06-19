@@ -203,7 +203,7 @@ type(oops_variables),    intent(in)    :: vars
 type(datetime),          intent(in)    :: vdate
 type(atlas_fieldset),    intent(inout) :: afieldset
 
-integer :: jvar, jf, jl
+integer :: jvar, jf
 logical :: var_found
 character(len=20) :: sdate
 character(len=1024) :: fieldname
@@ -216,29 +216,25 @@ do jvar = 1,vars%nvars()
   var_found = .false.
   do jf = 1,self%nf
     if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      ! Get or create field
       fieldname = trim(vars%variable(jvar))//'_'//sdate
-      if (afieldset%has_field(trim(fieldname))) then
-        ! Get field
-        afield = afieldset%field(trim(fieldname))
-      else
+      if (.not.afieldset%has_field(trim(fieldname))) then
         ! Create field
         afield = geom%afunctionspace%create_field(name=trim(fieldname),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
 
         ! Add field
         call afieldset%add(afield)
-      endif
 
-      ! Release pointer
-      call afield%final()
+        ! Release pointer
+        call afield%final()
+      endif
 
       ! Set flag
       var_found = .true.
       exit
-    end if
-  end do
+    endif
+  enddo
   if (.not.var_found) call abor1_ftn('variable '//trim(vars%variable(jvar))//' not found in increment')
-end do
+enddo
 
 end subroutine set_atlas
 
@@ -267,7 +263,6 @@ do jvar = 1,vars%nvars()
   var_found = .false.
   do jf = 1,self%nf
     if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      ! Get or create field
       fieldname = trim(vars%variable(jvar))//'_'//sdate
       if (afieldset%has_field(trim(fieldname))) then
         ! Get field
@@ -292,10 +287,10 @@ do jvar = 1,vars%nvars()
       ! Set flag
       var_found = .true.
       exit
-    end if
-  end do
+    endif
+  enddo
   if (.not.var_found) call abor1_ftn('variable '//trim(vars%variable(jvar))//' not found in increment')
-end do
+enddo
 
 end subroutine to_atlas
 
@@ -344,10 +339,10 @@ do jvar = 1,vars%nvars()
       ! Set flag
       var_found = .true.
       exit
-    end if
-  end do
+    endif
+  enddo
   if (.not.var_found) call abor1_ftn('variable '//trim(vars%variable(jvar))//' not found in increment')
-end do
+enddo
 
 end subroutine from_atlas
 
@@ -1034,10 +1029,10 @@ do var = 1, self%nf
       do i = self%fields(var)%isc,self%fields(var)%iec
         ind = ind + 1
         vect_inc(ind) = self%fields(var)%array(i, j, k)
-      end do
-    end do
-  end do
-end do
+      enddo
+    enddo
+  enddo
+enddo
 
 
 
@@ -1065,10 +1060,10 @@ do var = 1, self%nf
       do i = self%fields(var)%isc,self%fields(var)%iec
         self%fields(var)%array(i, j, k) = vect_inc(index + 1)
         index = index + 1
-      end do
-    end do
-  end do
-end do
+      enddo
+    enddo
+  enddo
+enddo
 
 
 end subroutine fv3jedi_increment_deserialize

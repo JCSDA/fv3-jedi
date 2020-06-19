@@ -545,55 +545,41 @@ class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
-integer :: i,j,node
-real(kind_real),pointer :: real_ptr(:,:)
+real(kind_real), pointer :: real_ptr(:,:)
 type(atlas_field) :: afield
 
 ! Create lon/lat field
-afield = atlas_field(name="lonlat",kind=atlas_real(kind_real),shape=(/2,(self%iec-self%isc+1)*(self%jec-self%jsc+1)/))
+afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,(self%iec-self%isc+1)*(self%jec-self%jsc+1)/))
 call afield%data(real_ptr)
-
-node = 0
-do j=self%jsc,self%jec
-  do i=self%isc,self%iec
-    node = node+1
-    real_ptr(1,node) = rad2deg*self%grid_lon(i,j)
-    real_ptr(2,node) = rad2deg*self%grid_lat(i,j)
-  enddo
-enddo
+real_ptr(1,:) = rad2deg*pack(self%grid_lon(self%isc:self%iec,self%jsc:self%jec),.true.)
+real_ptr(2,:) = rad2deg*pack(self%grid_lat(self%isc:self%iec,self%jsc:self%jec),.true.)
 call afieldset%add(afield)
 
 end subroutine set_atlas_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fill_atlas_fieldset(self,afieldset)
+subroutine fill_atlas_fieldset(self, afieldset)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
-integer :: i, j, jl, node
+integer :: jl
 real(kind=kind_real) :: sigmaup, sigmadn
-real(kind=kind_real),pointer :: real_ptr_1(:), real_ptr_2(:,:)
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 
 ! Add area
-afield = self%afunctionspace%create_field(name='area',kind=atlas_real(kind_real),levels=0)
+afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
 call afield%data(real_ptr_1)
-node = 0
-do j=self%jsc,self%jec
-  do i=self%isc,self%iec
-    node = node+1
-    real_ptr_1(node) = self%area(i,j)
-  enddo
-enddo
+real_ptr_1 = pack(self%area(self%isc:self%iec,self%jsc:self%jec),.true.)
 call afieldset%add(afield)
 call afield%final()
 
 ! Add vertical unit
-afield = self%afunctionspace%create_field(name='vunit',kind=atlas_real(kind_real),levels=self%npz)
+afield = self%afunctionspace%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
 call afield%data(real_ptr_2)
 do jl=1,self%npz
   sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas

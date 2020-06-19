@@ -69,6 +69,7 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), fieldsMeta_(oth
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, &fieldsMeta_);
   atlasFunctionSpace_.reset(new atlas::functionspace::PointCloud(
                             other.atlasFunctionSpace_->lonlat()));
+  fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
   atlasFieldSet_.reset(new atlas::FieldSet());
   for (int jfield = 0; jfield < other.atlasFieldSet_->size(); ++jfield) {
     atlas::Field atlasField = other.atlasFieldSet_->field(jfield);

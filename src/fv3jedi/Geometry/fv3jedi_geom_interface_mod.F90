@@ -155,7 +155,7 @@ end subroutine c_fv3jedi_geom_print
 ! --------------------------------------------------------------------------------------------------
 
 subroutine c_fv3jedi_geom_set_atlas_lonlat(c_key_self, c_afieldset) &
-                                             bind(c,name='fv3jedi_geom_set_atlas_lonlat_f90')
+                                           bind(c,name='fv3jedi_geom_set_atlas_lonlat_f90')
 
 implicit none
 
@@ -183,7 +183,7 @@ end subroutine c_fv3jedi_geom_set_atlas_lonlat
 ! --------------------------------------------------------------------------------------------------
 
 subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace) &
-                                    bind(c,name='fv3jedi_geom_set_atlas_functionspace_pointer_f90')
+                                                          bind(c,name='fv3jedi_geom_set_atlas_functionspace_pointer_f90')
 
 integer(c_int), intent(in)     :: c_key_self
 type(c_ptr), intent(in), value :: c_afunctionspace
@@ -203,7 +203,7 @@ end subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer
 ! --------------------------------------------------------------------------------------------------
 
 subroutine c_fv3jedi_geom_fill_atlas_fieldset(c_key_self, c_afieldset) &
- & bind(c,name='fv3jedi_geom_fill_atlas_fieldset_f90')
+                                              bind(c,name='fv3jedi_geom_fill_atlas_fieldset_f90')
 
 implicit none
 
