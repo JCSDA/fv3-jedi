@@ -77,6 +77,12 @@ phases:
 
       - cd CI
 
+      - if [ "$CODEBUILD_GIT_BRANCH" = "develop"];
+        then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
+        else export CODEBUILD_GIT_BRANCH_FORK=$CODEBUILD_GIT_BRANCH;
+        echo "fork branch is set to: ${CODEBUILD_GIT_BRANCH_FORK}";
+        fi
+
       # fv3-bundle
       - ./clone.sh $GIT_USER $GIT_PASS fv3-bundle $CODEBUILD_GIT_BRANCH fv3-bundle /jcsda develop
 
@@ -111,10 +117,10 @@ phases:
       - ./clone.sh $GIT_USER $GIT_PASS FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle dev/master-ecbuild
 
       # fckit
-      - ./clone.sh $GIT_USER $GIT_PASS fckit $CODEBUILD_GIT_BRANCH fckit /jcsda/fv3-bundle release-stable
+      - ./clone.sh $GIT_USER $GIT_PASS fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
 
       # atlas
-      - ./clone.sh $GIT_USER $GIT_PASS atlas $CODEBUILD_GIT_BRANCH atlas /jcsda/fv3-bundle release-stable
+      - ./clone.sh $GIT_USER $GIT_PASS atlas $CODEBUILD_GIT_BRANCH_FORK atlas /jcsda/fv3-bundle release-stable
 
       # geos-aero
       - ./clone.sh $GIT_USER $GIT_PASS geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
