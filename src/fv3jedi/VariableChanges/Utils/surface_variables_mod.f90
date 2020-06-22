@@ -9,8 +9,6 @@ use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
 use crtm_module, only: crtm_irlandcoeff_classification
 use fv3jedi_constants_mod, only: rad2deg, deg2rad, pi
-use fckit_geometry_module, only: sphere_distance
-use fckit_kdtree_module, only: kdtree,kdtree_create,kdtree_destroy,kdtree_k_nearest_neighbors
 
 use unstructured_interpolation_mod, only: unstrc_interp
 

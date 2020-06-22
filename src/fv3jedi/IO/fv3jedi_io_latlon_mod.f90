@@ -5,7 +5,7 @@
 
 module fv3jedi_io_latlon_mod
 
-use atlas_module
+use atlas_module, only: atlas_field, atlas_fieldset
 use fckit_configuration_module, only: fckit_configuration
 use iso_c_binding
 use datetime_mod

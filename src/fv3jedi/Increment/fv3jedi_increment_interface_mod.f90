@@ -7,7 +7,7 @@
 
 module fv3jedi_increment_interface_mod
 
-use atlas_module
+use atlas_module, only: atlas_fieldset
 use fv3jedi_kinds_mod
 use datetime_mod
 use duration_mod

@@ -5,7 +5,7 @@
 
 module fv3jedi_increment_mod
 
-use atlas_module
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real
 use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
@@ -809,8 +809,7 @@ character(len=32), allocatable :: ifdir(:)
 logical :: found
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
-character(kind=c_char,len=255), allocatable :: ifdir_array(:)
-integer(c_size_t),parameter :: csize = 255
+character(len=:), allocatable :: str_array(:)
 
 f_conf = fckit_configuration(c_conf)
 
@@ -834,9 +833,9 @@ call f_conf%get_or_die("iydir",iydir)
 call f_conf%get_or_die("ildir",ildir)
 call f_conf%get_or_die("itdir",itdir)
 
-call f_conf%get_or_die("ifdir",csize,ifdir_array)
-ifdir = ifdir_array
-deallocate(ifdir_array)
+call f_conf%get_or_die("ifdir",str_array)
+ifdir = str_array
+deallocate(str_array)
 
 ! Setup Diracs
 call zeros(self)

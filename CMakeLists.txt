@@ -56,6 +56,7 @@ include_directories( ${NETCDF_INCLUDE_DIRS} )
 # atlas
 ecbuild_use_package( PROJECT atlas VERSION 0.18.1 REQUIRED )
 include_directories( ${ATLAS_INCLUDE_DIRS} )
+add_definitions(-DATLASIFIED=1)
 
 # fv3-jedi-lm
 ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
@@ -64,7 +65,6 @@ include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
 # oops
 ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )
 include_directories( ${OOPS_INCLUDE_DIRS} )
-add_definitions(-DATLASIFIED=1)
 
 # saber
 ecbuild_use_package( PROJECT saber VERSION 0.0.1 REQUIRED )

@@ -7,7 +7,6 @@ module fv3jedi_interpolation_mod
 
 use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 
-use atlas_module
 use fv3jedi_bump_mod,      only: bump_init, bump_apply
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_field_mod,     only: fv3jedi_field, pointer_field, has_field

@@ -12,7 +12,7 @@ use netcdf
 use mpi
 use string_f_c_mod
 
-use atlas_module
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace, atlas_functionspace_nodecolumns
 
 use fckit_mpi_module, only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
