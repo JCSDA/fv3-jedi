@@ -64,10 +64,10 @@ phases:
 
       - cd CI
 
-      - if [ "$CODEBUILD_GIT_BRANCH" = "develop"];
+      - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
         then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
-        else export CODEBUILD_GIT_BRANCH_FORK=$CODEBUILD_GIT_BRANCH;
-        echo "fork branch is set to: ${CODEBUILD_GIT_BRANCH_FORK}";
+        else export CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH};
+        echo "CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH_FORK}";
         fi
 
       # fv3-bundle
