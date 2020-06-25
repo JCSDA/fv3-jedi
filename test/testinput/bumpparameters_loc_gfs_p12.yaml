@@ -15,7 +15,7 @@ variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
 date: '2018-04-14T21:00:00Z'
 background:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.sfc_data.nc
@@ -72,7 +72,7 @@ bump:
 output:
 - parameter: loc_coef
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_core: bumpparameters_loc_gfs_p12.loc_coef.fv_core.res.nc
   filename_trcr: bumpparameters_loc_gfs_p12.loc_coef.fv_tracer.res.nc
   filename_sfcd: bumpparameters_loc_gfs_p12.loc_coef.sfc_data.nc
@@ -81,7 +81,7 @@ output:
   date: '2018-04-14T21:00:00Z'
 - parameter: loc_rh
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_core: bumpparameters_loc_gfs_p12.loc_rh.fv_core.res.nc
   filename_trcr: bumpparameters_loc_gfs_p12.loc_rh.fv_tracer.res.nc
   filename_sfcd: bumpparameters_loc_gfs_p12.loc_rh.sfc_data.nc
@@ -90,7 +90,7 @@ output:
   date: '2018-04-14T21:00:00Z'
 - parameter: loc_rv
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_core: bumpparameters_loc_gfs_p12.loc_rv.fv_core.res.nc
   filename_trcr: bumpparameters_loc_gfs_p12.loc_rv.fv_tracer.res.nc
   filename_sfcd: bumpparameters_loc_gfs_p12.loc_rv.sfc_data.nc
@@ -99,7 +99,7 @@ output:
   date: '2018-04-14T21:00:00Z'
 - parameter: hyb_coef
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_core: bumpparameters_loc_gfs_p12.hyb_coef.fv_core.res.nc
   filename_trcr: bumpparameters_loc_gfs_p12.hyb_coef.fv_tracer.res.nc
   filename_sfcd: bumpparameters_loc_gfs_p12.hyb_coef.sfc_data.nc

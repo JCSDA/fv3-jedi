@@ -5,14 +5,19 @@
 
 module fv3jedi_state_mod
 
+! iso
 use iso_c_binding
-use fckit_configuration_module, only: fckit_configuration
+
+! oops uses
 use datetime_mod
-use fckit_mpi_module
 use oops_variables_mod
 
-use fields_metadata_mod, only: field_metadata
+! fckit uses
+use fckit_configuration_module, only: fckit_configuration
+use fckit_log_module, only : log
 
+! fv3jedi uses
+use fields_metadata_mod,         only: field_metadata
 use fv3jedi_field_mod
 use fv3jedi_constants_mod,       only: rad2deg, constoz
 use fv3jedi_geom_mod,            only: fv3jedi_geom
@@ -411,12 +416,6 @@ end subroutine change_resol
 !! \date May, 2018: Added dcmip-test-3-1
 !! \date June, 2018: Added dcmip-test-4-0
 !!
-!! \warning This routine initializes the fv3jedi_state object.  However, since the fv_atmos_type
-!! component of fv3jedi_state is a subset of the corresponding object in the fv3 model,
-!! this initialization routine is not sufficient to comprehensively define the full fv3 state.
-!! So, this intitialization can be used for interpolation and other tests within JEDI but it is
-!! cannot currently be used to initiate a forecast with gfs.
-!!
 !! \warning This routine does not initialize the fv3jedi_interp member of the fv3jedi_state object
 !!
 !! \warning Though an input state file is not required for these analytic initialization routines,
@@ -424,25 +423,12 @@ end subroutine change_resol
 !! is still read in from an input file when creating the geometry object that is a required
 !! member of fv3jedi_state; see c_fv3jedi_geo_setup() in fv3jedi_geom_mod.F90.
 !!
-!! \warning It's unclear whether the pt member of the fv_atmos_type structure is potential temperature
-!! or temperature.  This routine assumes the latter.  If this is not correct, then we will need to
-!! implement a conversion
 !!
 subroutine analytic_IC(self, geom, c_conf, vdate)
 
-  use fv3jedi_kinds_mod
-  use iso_c_binding
-  use datetime_mod
-  use fckit_log_module, only : log
-  use constants_mod, only: pi=>pi_8
   use dcmip_initial_conditions_test_1_2_3, only : test1_advection_deformation, &
-       test1_advection_hadley, test3_gravity_wave
-  use dcmip_initial_conditions_test_4, only : test4_baroclinic_wave
-
-  !FV3 Test Cases
-  use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
-  use test_cases_nlm_mod, only: init_case, test_case
-  use fv_control_nlm_mod, only: fv_init, pelist_all
+                                                  test1_advection_hadley, test3_gravity_wave
+  use dcmip_initial_conditions_test_4,     only : test4_baroclinic_wave
 
   implicit none
 
@@ -458,11 +444,6 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
   real(kind=kind_real) :: rlat, rlon
   real(kind=kind_real) :: pk,pe1,pe2,ps
   real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
-
-  type(fv_atmos_type), allocatable :: FV_AtmIC(:)
-  real(kind=kind_real)             :: DTdummy = 900.0
-  logical, allocatable             :: grids_on_this_pe(:)
-  integer                          :: p_split = 1
 
   type(fckit_configuration) :: f_conf
   character(len=:), allocatable :: str
@@ -498,15 +479,15 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
   call datetime_set(sdate, vdate)
 
   !Pointers to states
-  call pointer_field_array(self%fields, 'ud'  , ud  )
-  call pointer_field_array(self%fields, 'vd'  , vd  )
-  call pointer_field_array(self%fields, 't'   , t   )
-  call pointer_field_array(self%fields, 'delp', delp)
-  call pointer_field_array(self%fields, 'q'   , q   )
-  call pointer_field_array(self%fields, 'qi'  , qi  )
-  call pointer_field_array(self%fields, 'ql'  , ql  )
-  call pointer_field_array(self%fields, 'o3'  , o3  )
-  call pointer_field_array(self%fields, 'phis', phis)
+  call pointer_field_array(self%fields, 'ud'     , ud  )
+  call pointer_field_array(self%fields, 'vd'     , vd  )
+  call pointer_field_array(self%fields, 't'      , t   )
+  call pointer_field_array(self%fields, 'delp'   , delp)
+  call pointer_field_array(self%fields, 'sphum'  , q   )
+  call pointer_field_array(self%fields, 'ice_wat', qi  )
+  call pointer_field_array(self%fields, 'liq_wat', ql  )
+  call pointer_field_array(self%fields, 'o3mr'   , o3  )
+  call pointer_field_array(self%fields, 'phis'   , phis)
   if (.not.self%hydrostatic) then
     call pointer_field_array(self%fields, 'w'   , w   )
     call pointer_field_array(self%fields, 'delz', delz)
@@ -514,49 +495,6 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
 
   !===================================================================
   int_option: Select Case (IC)
-
-     Case("fv3_init_case")
-
-        !Initialize temporary FV_Atm fv3 construct
-        call fv_init(FV_AtmIC, DTdummy, grids_on_this_pe, p_split)
-        deallocate(pelist_all)
-
-        !Test case to run, see fv3: /tools/test_cases.F90 for possibilities
-        call f_conf%get_or_die("fv3_test_case",test_case)
-
-        call init_case( FV_AtmIC(1)%u,FV_AtmIC(1)%v,FV_AtmIC(1)%w,FV_AtmIC(1)%pt,FV_AtmIC(1)%delp,FV_AtmIC(1)%q, &
-                        FV_AtmIC(1)%phis, FV_AtmIC(1)%ps,FV_AtmIC(1)%pe, FV_AtmIC(1)%peln,FV_AtmIC(1)%pk,FV_AtmIC(1)%pkz, &
-                        FV_AtmIC(1)%uc,FV_AtmIC(1)%vc, FV_AtmIC(1)%ua,FV_AtmIC(1)%va,        &
-                        FV_AtmIC(1)%ak, FV_AtmIC(1)%bk, FV_AtmIC(1)%gridstruct, FV_AtmIC(1)%flagstruct,&
-                        FV_AtmIC(1)%npx, FV_AtmIC(1)%npy, FV_AtmIC(1)%npz, FV_AtmIC(1)%ng, &
-                        FV_AtmIC(1)%flagstruct%ncnst, FV_AtmIC(1)%flagstruct%nwat,  &
-                        FV_AtmIC(1)%flagstruct%ndims, FV_AtmIC(1)%flagstruct%ntiles, &
-                        FV_AtmIC(1)%flagstruct%dry_mass, &
-                        FV_AtmIC(1)%flagstruct%mountain,       &
-                        FV_AtmIC(1)%flagstruct%moist_phys, FV_AtmIC(1)%flagstruct%hydrostatic, &
-                        FV_AtmIC(1)%flagstruct%hybrid_z, FV_AtmIC(1)%delz, FV_AtmIC(1)%ze0, &
-                        FV_AtmIC(1)%flagstruct%adiabatic, FV_AtmIC(1)%ks, FV_AtmIC(1)%neststruct%npx_global, &
-                        FV_AtmIC(1)%ptop, FV_AtmIC(1)%domain, FV_AtmIC(1)%tile, FV_AtmIC(1)%bd )
-
-        !Copy from temporary structure into state
-        ud = FV_AtmIC(1)%u
-        vd = FV_AtmIC(1)%v
-        t = FV_AtmIC(1)%pt
-        delp = FV_AtmIC(1)%delp
-        q = FV_AtmIC(1)%q(:,:,:,1)
-        phis(:,:,1) = FV_AtmIC(1)%phis
-        geom%ak = FV_AtmIC(1)%ak
-        geom%ak = FV_AtmIC(1)%ak
-        geom%ptop = FV_AtmIC(1)%ptop
-        if (.not. self%hydrostatic) then
-           w = FV_AtmIC(1)%w
-           delz = FV_AtmIC(1)%delz
-        endif
-
-        !Deallocate temporary FV_Atm fv3 structure
-        call deallocate_fv_atmos_type(FV_AtmIC(1))
-        deallocate(FV_AtmIC)
-        deallocate(grids_on_this_pe)
 
      Case ("dcmip-test-1-1")
 
@@ -734,7 +672,7 @@ deallocate(str)
 
 if (trim(filetype) == 'gfs') then
 
-  call gfs%setup(f_conf)
+  call gfs%setup_conf(f_conf)
   call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
   call gfs%read_fields(geom, self%fields)
 
@@ -746,8 +684,8 @@ if (trim(filetype) == 'gfs') then
 
 elseif (trim(filetype) == 'geos') then
 
-  call geos%setup(geom, self%fields, vdate, 'read', f_conf)
-  call geos%read_meta(geom, vdate, self%calendar_type, self%date_init)
+  call geos%setup_conf(geom, f_conf)
+  call geos%read_meta(geom, vdate, self%calendar_type, self%date_init, self%fields)
   call geos%read_fields(geom, self%fields)
   call geos%delete()
 
@@ -798,15 +736,17 @@ subroutine write_file(geom, self, c_conf, vdate)
     endif
     if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
-    call gfs%setup(f_conf)
-    call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
+    call gfs%setup_conf(f_conf)
+    call gfs%setup_date(vdate)
+    call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
 
     if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
   elseif (trim(filetype) == 'geos') then
 
-    call geos%setup(geom, self%fields, vdate, 'write', f_conf)
-    call geos%write_all(geom, self%fields, vdate)
+    call geos%setup_conf(geom, f_conf)
+    call geos%setup_date(vdate)
+    call geos%write(geom, self%fields, vdate)
     call geos%delete()
 
   else

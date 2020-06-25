@@ -62,8 +62,34 @@ void stageFv3Files(const eckit::Configuration &conf, const eckit::mpi::Comm & co
     if (conf.has("nml_file")) {
       oops::Log::debug() << "Staging input.nml" << std::endl;
       std::string nml_file = conf.getString("nml_file");
-      if (symlink(nml_file.c_str(), "./input.nml"))
-        ABORT("Unable to symlink input.nml");
+
+      // Create empty file
+      std::ifstream startNml(nml_file);
+      std::ofstream finalNml("./input.nml");
+
+      std::string startStr("layout = $LAYOUTX,$LAYOUTY");
+      std::string finalStr("layout = 1,1");
+
+      std::string line;
+      std::size_t len = startStr.length();
+      while (getline(startNml, line))
+      {
+          while (true)
+          {
+              size_t pos = line.find(startStr);
+              if (pos != std::string::npos)
+                  line.replace(pos, len, finalStr);
+              else
+                  break;
+          }
+
+          finalNml << line << '\n';
+      }
+
+      finalNml.close();
+
+      //  if (symlink(nml_file.c_str(), "./input.nml"))
+      //  ABORT("Unable to symlink input.nml");
     }
 
     // User may also be requesting the field_table to be staged

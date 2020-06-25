@@ -45,7 +45,7 @@ Locations:
       obs_errors: []
 State:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.sfc_data.nc

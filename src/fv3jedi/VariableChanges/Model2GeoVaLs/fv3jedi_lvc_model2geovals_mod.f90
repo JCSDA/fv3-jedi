@@ -70,9 +70,9 @@ self%jec = geom%jec
 self%npz = geom%npz
 
 ! Trajectory fields
-if (has_field(bg%fields,'t' )) call allocate_copy_field_array(bg%fields, "t" , self%t )
-if (has_field(bg%fields,'q' )) call allocate_copy_field_array(bg%fields, "q" , self%q )
-if (has_field(bg%fields,'o3')) call allocate_copy_field_array(bg%fields, "o3", self%o3)
+if (has_field(bg%fields,'t'    )) call allocate_copy_field_array(bg%fields, 't'     , self%t )
+if (has_field(bg%fields,'sphum')) call allocate_copy_field_array(bg%fields, 'sphum' , self%q )
+if (has_field(bg%fields,'o3mr' )) call allocate_copy_field_array(bg%fields, 'o3mr'  , self%o3)
 
 end subroutine create
 
@@ -183,9 +183,9 @@ endif
 ! -------------------
 have_tv = .false.
 if (allocated(self%t) .and. allocated(self%t) .and. &
-    has_field(dxm%fields,'t') .and. has_field(dxm%fields,'q')) then
+    has_field(dxm%fields,'t') .and. has_field(dxm%fields,'sphum')) then
   call pointer_field_array(dxm%fields, 't', t)
-  call pointer_field_array(dxm%fields, 'q', q)
+  call pointer_field_array(dxm%fields, 'sphum', q)
   allocate(tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call T_to_Tv_tl(geom, self%t, t, self%q, q, tv )
   have_tv = .true.
@@ -195,8 +195,8 @@ endif
 ! Humidity mixing ratio
 ! ---------------------
 have_qmr = .false.
-if (allocated(self%q) .and. has_field(dxm%fields,'q')) then
-  call pointer_field_array(dxm%fields, 'q', q)
+if (allocated(self%q) .and. has_field(dxm%fields,'sphum')) then
+  call pointer_field_array(dxm%fields, 'sphum', q)
   allocate(qmr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call crtm_mixratio_tl(geom, self%q, q, qmr)
   have_qmr = .true.
@@ -206,8 +206,8 @@ endif
 ! Ozone
 ! -----
 have_o3 = .false.
-if (allocated(self%o3) .and. has_field(dxm%fields, 'o3')) then
-  call allocate_copy_field_array(dxm%fields, 'o3', o3)
+if (allocated(self%o3) .and. has_field(dxm%fields, 'o3mr')) then
+  call allocate_copy_field_array(dxm%fields, 'o3mr', o3)
   have_o3 = .true.
   do jk = 1, self%npz
     do jj = self%jsc, self%jec
@@ -531,7 +531,7 @@ do fm = 1, size(fields_to_do)
       field_ptr = field_ptr + delp
     endif
 
-  case ("o3")
+  case ("o3mr")
 
     if (have_o3) then
       field_passed(mfo3_index) = .true.
@@ -563,7 +563,7 @@ do fg = 1, size(dxg%fields)
       if (.not. have_tv) call field_fail(trim(dxg%fields(fg)%fv3jedi_name))
       field_passed(tv_index) = .true.
       call pointer_field_array(dxm%fields, "t", tptr)
-      call pointer_field_array(dxm%fields, "q", qptr)
+      call pointer_field_array(dxm%fields, "sphum", qptr)
       tptr = tptr + t_tv
       qptr = qptr + q_tv
 
@@ -571,7 +571,7 @@ do fg = 1, size(dxg%fields)
 
       if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%fv3jedi_name))
       field_passed(qmr_index) = .true.
-      call pointer_field_array(dxm%fields, "q", qptr)
+      call pointer_field_array(dxm%fields, "sphum", qptr)
       qptr = qptr + q_qmr
 
     case default

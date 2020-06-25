@@ -31,7 +31,7 @@ phases:
       - mkdir /build_container
       - mkdir /jcsda
       - cd CI
- 
+
       - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
         then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
         else export CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH};
@@ -72,6 +72,9 @@ phases:
 
       # FV3 based model and/or FMS
       - ./clone.sh $GIT_USER $GIT_PASS FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle dev/master-ecbuild
+
+      # GFDL_atmos_cubed_sphere
+      - ./clone.sh $GIT_USER $GIT_PASS GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH GFDL_atmos_cubed_sphere /jcsda/fv3-bundle release-stable
 
       # fckit
       - ./clone.sh $GIT_USER $GIT_PASS fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable

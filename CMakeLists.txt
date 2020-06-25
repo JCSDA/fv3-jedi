@@ -58,10 +58,6 @@ ecbuild_use_package( PROJECT atlas VERSION 0.18.1 REQUIRED )
 include_directories( ${ATLAS_INCLUDE_DIRS} )
 add_definitions(-DATLASIFIED=1)
 
-# fv3-jedi-lm
-ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
-include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
-
 # oops
 ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )
 include_directories( ${OOPS_INCLUDE_DIRS} )
@@ -71,33 +67,63 @@ ecbuild_use_package( PROJECT saber VERSION 0.0.1 REQUIRED )
 include_directories( ${SABER_INCLUDE_DIRS} )
 
 # ufo
-ecbuild_use_package( PROJECT ufo )
+ecbuild_use_package( PROJECT ufo REQUIRED )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
 # femps
 ecbuild_use_package( PROJECT femps )
 include_directories( ${FEMPS_INCLUDE_DIRS} )
 
-#gfs or geos
-if( ${FV3BASEDMODEL_FOUND} )
-    if ( ${GFS_FOUND} )
-      message("GFS FOUND: Including GFS interface")
-    elseif( ${GEOS_FOUND} )
-      message("GEOS FOUND: Including GEOS interface")
-      include( geos_compiler_flags )
-    endif()
-    include_directories( ${FV3BASEDMODEL_INCLUDE_DIRS} )
-else()
-   message("GFS AND GEOS NOT FOUND: Including only FV3-JEDI-LM interface and using local FMS")
-   ecbuild_use_package( PROJECT fms REQUIRED )
+# fms
+if (NOT ${BUILD_WITH_MODEL} MATCHES "GEOS" AND NOT ${BUILD_WITH_MODEL} MATCHES "UFS")
+  ecbuild_use_package( PROJECT fms )
+  include_directories( ${FMS_INCLUDE_DIRS} )
 endif()
-
-include_directories( ${FMS_INCLUDE_DIRS} )
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
 ecbuild_include_mpi()
 link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+
+# Optional package - linear model
+if (${BUILD_WITH_LINEARMODEL})
+  ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
+  include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
+endif()
+
+# Check for sensible model choice
+# -------------------------------
+if (NOT ${BUILD_WITH_MODEL} MATCHES "FV3CORE" AND NOT ${BUILD_WITH_MODEL} MATCHES "GEOS" AND
+    NOT ${BUILD_WITH_MODEL} MATCHES "GFS")
+  message( FATAL_ERROR "BUILD_WITH_MODEL must be FV3CORE, GEOS or GFS" )
+endif()
+
+# fv3
+if (${BUILD_WITH_MODEL} MATCHES "FV3CORE")
+  ecbuild_use_package( PROJECT fv3 )
+  include_directories( ${FV3_INCLUDE_DIRS} )
+endif()
+
+# geos
+if (${BUILD_WITH_MODEL} MATCHES "GEOS")
+  if (NOT DEFINED GEOSgcm_FOUND)
+    find_package(MAPL REQUIRED PATHS ${GEOS_PATH}/lib/cmake/MAPL )
+    find_package(GEOSgcm REQUIRED PATHS ${GEOS_PATH}/lib/cmake/GEOSgcm )
+  endif()
+  find_package(FARGPARSE QUIET)
+  find_package(FLAP REQUIRED)
+  find_package(GFTL REQUIRED)
+  find_package(GFTL_SHARED REQUIRED)
+  find_package(PFLOGGER REQUIRED)
+  find_package(YAFYAML REQUIRED)
+  link_libraries(GEOSgcm_GridComp)
+endif()
+
+# gfs
+if (${BUILD_WITH_MODEL} MATCHES "GFS")
+  #ToDo
+endif()
+
 
 ################################################################################
 # Export package info

@@ -16,7 +16,7 @@ variables: ["bc1",bc2","dust1","dust5","seas1","seas4"]
 date: '2018-04-15T00:00:00Z'
 background:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_aero_c12/ensmean/
+  datapath: Data/inputs/gfs_aero_c12/ensmean/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res
@@ -96,21 +96,21 @@ bump:
 output:
 #- parameter: stddev
 #  filetype: gfs
-#  datapath_tile: Data/bump/
+#  datapath: Data/bump/
 #  filename_core: bumpparameters_cor_gfs_aero.stddev.fv_core.res.nc
 #  filename_trcr: bumpparameters_cor_gfs_aero.stddev.fv_tracer.res.nc
 #  filename_cplr: bumpparameters_cor_gfs_aero.stddev.coupler.res
 #  date: '2018-04-15T00:00:00Z'
 - parameter: cor_rh
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_core: bumpparameters_cor_gfs_aero.cor_rh.fv_core.res.nc
   filename_trcr: bumpparameters_cor_gfs_aero.cor_rh.fv_tracer.res.nc
   filename_cplr: bumpparameters_cor_gfs_aero.cor_rh.coupler.res
   date: '2018-04-15T00:00:00Z'
 - parameter: cor_rv
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_core: bumpparameters_cor_gfs_aero.cor_rv.fv_core.res.nc
   filename_trcr: bumpparameters_cor_gfs_aero.cor_rv.fv_tracer.res.nc
   filename_cplr: bumpparameters_cor_gfs_aero.cor_rv.coupler.res

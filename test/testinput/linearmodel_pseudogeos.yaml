@@ -38,7 +38,7 @@ Model:
   name: 'PSEUDO'
   tstep: PT15M
   pseudo_type: 'geos'
-  pseudo_path: 'Data/inputs/geos_c12'
+  datapath: 'Data/inputs/geos_c12'
   filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
   filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
   variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",

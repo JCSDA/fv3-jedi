@@ -17,14 +17,14 @@ Geometry:
     - FieldSet: Data/fieldsets/ufo.yaml
 Initial Condition:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.sfc_data.nc
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
 Model:
-  name: 'FV3'
+  name: 'FV3LM'
   nml_file: Data/fv3files/input_gfs_c12.nml
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M

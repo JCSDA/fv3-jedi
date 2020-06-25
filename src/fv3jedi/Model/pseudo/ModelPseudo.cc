@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 UCAR
+ * (C) Copyright 2019-2020 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,46 +19,41 @@
 #include "fv3jedi/Model/pseudo/ModelPseudo.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
-// -----------------------------------------------------------------------------
-static oops::ModelMaker<Traits, ModelPseudo>
-                        makermodel_("PSEUDO");
-// -----------------------------------------------------------------------------
-ModelPseudo::ModelPseudo(const Geometry & resol,
-                            const eckit::Configuration & mconf)
+// -------------------------------------------------------------------------------------------------
+static oops::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
+// -------------------------------------------------------------------------------------------------
+ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & mconf)
   : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf)
 {
   oops::Log::trace() << "ModelPseudo::ModelPseudo" << std::endl;
   tstep_ = util::Duration(mconf.getString("tstep"));
   const eckit::Configuration * configc = &mconf;
-  fv3jedi_pseudo_create_f90(&configc, geom_.toFortran(), keyConfig_, vars_);
+  fv3jedi_pseudo_create_f90(&configc, geom_.toFortran(), keyConfig_);
   if (mconf.has("RunStageCheck")) {
     runstagecheck_ = mconf.getInt("RunStageCheck");
   }
   oops::Log::trace() << "ModelPseudo created" << std::endl;
 }
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 ModelPseudo::~ModelPseudo() {
   fv3jedi_pseudo_delete_f90(keyConfig_);
   oops::Log::trace() << "ModelPseudo destructed" << std::endl;
 }
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 void ModelPseudo::initialize(State & xx) const {
   if (runstage_) {
     fv3jedi_pseudo_initialize_f90(keyConfig_, xx.toFortran());
   }
-  oops::Log::debug() << "ModelPseudo::initialize" << std::endl;
+  oops::Log::trace() << "ModelPseudo::initialize" << std::endl;
 }
-// -----------------------------------------------------------------------------
-void ModelPseudo::step(State & xx,
-                              const ModelBias &) const {
+// -------------------------------------------------------------------------------------------------
+void ModelPseudo::step(State & xx, const ModelBias &) const {
   xx.validTime() += tstep_;
   util::DateTime * dtp = &xx.validTime();
   if (runstage_) {
-    fv3jedi_pseudo_step_f90(keyConfig_, xx.toFortran(),
-                            geom_.toFortran(), &dtp);
+    fv3jedi_pseudo_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran(), &dtp);
   } else {
     int world_rank = oops::mpi::comm().rank();
     if (world_rank == 0) {
@@ -67,25 +62,25 @@ void ModelPseudo::step(State & xx,
                             " clock." << std::endl;
     }
   }
-  oops::Log::debug() << "ModelPseudo::step" << std::endl;
+  oops::Log::trace() << "ModelPseudo::step" << xx.validTime() << std::endl;
 }
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 void ModelPseudo::finalize(State & xx) const {
   if (runstage_) {
     fv3jedi_pseudo_finalize_f90(keyConfig_, xx.toFortran());
   }
   if (runstagecheck_ == 1) {runstage_ = false;}
-  oops::Log::debug() << "ModelPseudo::finalize" << std::endl;
+  oops::Log::trace() << "ModelPseudo::finalize" << std::endl;
 }
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 int ModelPseudo::saveTrajectory(State & xx,
                                  const ModelBias &) const {
   ABORT("Model: pseudo should not be used for the trajecotry");
   return -1;
 }
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 void ModelPseudo::print(std::ostream & os) const {
   os << "ModelPseudo::print not implemented";
 }
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 }  // namespace fv3jedi

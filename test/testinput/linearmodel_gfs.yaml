@@ -30,14 +30,6 @@ LinearModel:
   fsoi_mode: 0
   variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
   trajectory:
-    name: 'FV3'
-    nml_file: Data/fv3files/input_gfs_c12.nml
-    trc_file: Data/fv3files/field_table
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT15M
-    lm_do_dyn: 1
-    lm_do_trb: 0
-    lm_do_mst: 0
     variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
 LinearModelTest:
   fclength: PT30M
@@ -46,7 +38,7 @@ LinearModelTest:
   toleranceAD: '1.0e-11'
   toleranceTL: '1.0'
 Model:
-  name: 'FV3'
+  name: 'FV3LM'
   nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -58,7 +50,7 @@ Model:
 ModelBias: null
 State:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
@@ -68,7 +60,7 @@ Variables:
   variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
 varchange: Analysis2Model
 filetype: 'gfs'
-datapath_tile: Data/inputs/gfs_c12/bkg/
+datapath: Data/inputs/gfs_c12/bkg/
 filename_core: 20180415.000000.fv_core.res.nc
 filename_trcr: 20180415.000000.fv_tracer.res.nc
 filename_sfcd: 20180415.000000.sfc_data.nc

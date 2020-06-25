@@ -14,8 +14,6 @@ use fckit_log_module, only : fckit_log
 use fv3jedi_kinds_mod,   only: kind_real
 use fv3jedi_geom_mod,    only: fv3jedi_geom
 use fv3jedi_state_mod,   only: fv3jedi_state
-use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
-use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 
 use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
 
@@ -205,8 +203,8 @@ if (self%do_clds) then
   call pointer_field_array(xr%fields, 'qlls', qlls)
   call pointer_field_array(xr%fields, 'qlcn', qlcn)
 
-  call pointer_field_array(xb%fields, 'qi', qi)
-  call pointer_field_array(xb%fields, 'ql', ql)
+  call pointer_field_array(xb%fields, 'ice_wat', qi)
+  call pointer_field_array(xb%fields, 'liq_wat', ql)
 
   have_fractions = .true.
   if (.not.has_field(xb%fields, 'qilsf')) have_fractions = .false.
@@ -358,8 +356,8 @@ if (self%do_clds) then
   call pointer_field_array(xr%fields, 'qlls', qlls)
   call pointer_field_array(xr%fields, 'qlcn', qlcn)
 
-  call pointer_field_array(xb%fields, 'qi', qi)
-  call pointer_field_array(xb%fields, 'ql', ql)
+  call pointer_field_array(xb%fields, 'ice_wat', qi)
+  call pointer_field_array(xb%fields, 'liq_wat', ql)
   call pointer_field_array(xb%fields, 'qilsf', qilsf)
   call pointer_field_array(xb%fields, 'qicnf', qicnf)
 

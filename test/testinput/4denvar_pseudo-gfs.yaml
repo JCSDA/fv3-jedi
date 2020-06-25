@@ -3,7 +3,7 @@ cost_function:
     Background:
       state:
       - filetype: gfs
-        datapath_tile: Data/inputs/gfs_c12/bkg/
+        datapath: Data/inputs/gfs_c12/bkg/
         filename_core: 20180414.210000.fv_core.res.nc
         filename_trcr: 20180414.210000.fv_tracer.res.nc
         filename_sfcd: 20180414.210000.sfc_data.nc
@@ -11,7 +11,7 @@ cost_function:
         filename_cplr: 20180414.210000.coupler.res
         variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
       - filetype: gfs
-        datapath_tile: Data/inputs/gfs_c12/bkg/
+        datapath: Data/inputs/gfs_c12/bkg/
         filename_core: 20180415.000000.fv_core.res.nc
         filename_trcr: 20180415.000000.fv_tracer.res.nc
         filename_sfcd: 20180415.000000.sfc_data.nc
@@ -19,7 +19,7 @@ cost_function:
         filename_cplr: 20180415.000000.coupler.res
         variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
       - filetype: gfs
-        datapath_tile: Data/inputs/gfs_c12/bkg/
+        datapath: Data/inputs/gfs_c12/bkg/
         filename_core: 20180415.030000.fv_core.res.nc
         filename_trcr: 20180415.030000.fv_tracer.res.nc
         filename_sfcd: 20180415.030000.sfc_data.nc
@@ -43,21 +43,21 @@ cost_function:
       members:
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem001/
+          datapath: Data/inputs/gfs_c12/mem001/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem001/
+          datapath: Data/inputs/gfs_c12/mem001/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem001/
+          datapath: Data/inputs/gfs_c12/mem001/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -65,21 +65,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem002/
+          datapath: Data/inputs/gfs_c12/mem002/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem002/
+          datapath: Data/inputs/gfs_c12/mem002/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem002/
+          datapath: Data/inputs/gfs_c12/mem002/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -87,21 +87,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem003/
+          datapath: Data/inputs/gfs_c12/mem003/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem003/
+          datapath: Data/inputs/gfs_c12/mem003/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem003/
+          datapath: Data/inputs/gfs_c12/mem003/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -109,21 +109,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem004/
+          datapath: Data/inputs/gfs_c12/mem004/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem004/
+          datapath: Data/inputs/gfs_c12/mem004/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem004/
+          datapath: Data/inputs/gfs_c12/mem004/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -131,21 +131,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem005/
+          datapath: Data/inputs/gfs_c12/mem005/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem005/
+          datapath: Data/inputs/gfs_c12/mem005/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem005/
+          datapath: Data/inputs/gfs_c12/mem005/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -153,21 +153,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem006/
+          datapath: Data/inputs/gfs_c12/mem006/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem006/
+          datapath: Data/inputs/gfs_c12/mem006/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem006/
+          datapath: Data/inputs/gfs_c12/mem006/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -175,21 +175,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem007/
+          datapath: Data/inputs/gfs_c12/mem007/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem007/
+          datapath: Data/inputs/gfs_c12/mem007/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem007/
+          datapath: Data/inputs/gfs_c12/mem007/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -197,21 +197,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem008/
+          datapath: Data/inputs/gfs_c12/mem008/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem008/
+          datapath: Data/inputs/gfs_c12/mem008/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem008/
+          datapath: Data/inputs/gfs_c12/mem008/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -219,21 +219,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem009/
+          datapath: Data/inputs/gfs_c12/mem009/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem009/
+          datapath: Data/inputs/gfs_c12/mem009/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem009/
+          datapath: Data/inputs/gfs_c12/mem009/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -241,21 +241,21 @@ cost_function:
           filename_cplr: 20180415.030000.coupler.res
       - state:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem010/
+          datapath: Data/inputs/gfs_c12/mem010/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_sfcd: 20180414.210000.sfc_data.nc
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem010/
+          datapath: Data/inputs/gfs_c12/mem010/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem010/
+          datapath: Data/inputs/gfs_c12/mem010/
           filename_core: 20180415.030000.fv_core.res.nc
           filename_trcr: 20180415.030000.fv_tracer.res.nc
           filename_sfcd: 20180415.030000.sfc_data.nc
@@ -395,7 +395,7 @@ cost_function:
   window_sub: PT3H
   varchange: Analysis2Model
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.sfc_data.nc
@@ -409,7 +409,12 @@ minimizer:
 model:
   name: 'PSEUDO'
   pseudo_type: 'gfs'
-  pseudo_path: 'Data/inputs/gfs_c12/bkg/'
+  datapath: 'Data/inputs/gfs_c12/bkg/'
+  filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
+  filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
+  filename_sfcd: %yyyy%mm%dd.%hh%MM%ss.sfc_data.nc
+  filename_sfcw: %yyyy%mm%dd.%hh%MM%ss.fv_srf_wnd.res.nc
+  filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
   RunStageCheck: 1
   tstep: PT3H
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
@@ -417,7 +422,7 @@ model:
               "u_srf","v_srf","f10m"]
 output:
   filetype: gfs
-  datapath_tile: Data/analysis/
+  datapath: Data/analysis/
   filename_core: 4denvar-gfs.fv_core.res.nc
   filename_trcr: 4denvar-gfs.fv_tracer.res.nc
   filename_sfcd: 4denvar-gfs.sfc_data.nc

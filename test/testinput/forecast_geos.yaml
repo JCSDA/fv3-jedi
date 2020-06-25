@@ -1,4 +1,4 @@
-forecast_length: PT6H
+forecast_length: PT1H
 resolution:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
@@ -15,15 +15,14 @@ resolution:
 model:
   name: 'GEOS'
   tstep: PT15M
-  GEOSSCRDIR: '/gpfsm/dnb31/drholdaw/jason-jedi-c90/scratch'
-  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar",
-              "bstar","zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
-member:
-  -filetype: geos
-   filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
-  -filetype: geos
-   filename: Data/INPUTS/GEOS_c90/GEOS.bkg.c90.eta.20180415_00z.nc4
+  geos_run_directory: '/gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch'
+  variables: ["U","V","PT","PE","Q","QICN","QLCN","QILS","QLLS"]
+initial:
+  filetype: geos
+  datapath: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
+  filename_core: fvcore_internal_rst
+  filename_mois: moist_internal_rst
+  filename_surf: fvcore_internal_rst
 output:
   filetype: geos
   datapath: Data/

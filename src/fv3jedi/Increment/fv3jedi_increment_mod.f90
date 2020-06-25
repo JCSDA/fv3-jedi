@@ -673,7 +673,6 @@ subroutine read_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
-  integer :: psinfile
   type(fckit_configuration) :: f_conf
   character(len=:), allocatable :: str
 
@@ -683,21 +682,16 @@ subroutine read_file(geom, self, c_conf, vdate)
   filetype = str
   deallocate(str)
 
-  psinfile = 0
-  if (f_conf%has("psinfile")) then
-    call f_conf%get_or_die("psinfile",psinfile)
-  endif
-
   if (trim(filetype) == 'gfs') then
 
-    call gfs%setup(f_conf,psinfile = psinfile)
+    call gfs%setup_conf(f_conf)
     call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
     call gfs%read_fields(geom, self%fields)
 
   elseif (trim(filetype) == 'geos') then
 
-    call geos%setup(geom, self%fields, vdate, 'read', f_conf)
-    call geos%read_meta(geom, vdate, self%calendar_type, self%date_init)
+    call geos%setup_conf(geom, f_conf)
+    call geos%read_meta(geom, vdate, self%calendar_type, self%date_init, self%fields)
     call geos%read_fields(geom, self%fields)
     call geos%delete()
 
@@ -735,13 +729,15 @@ subroutine write_file(geom, self, c_conf, vdate)
 
   if (trim(filetype) == 'gfs') then
 
-    call gfs%setup(f_conf)
-    call gfs%write_all(geom, self%fields, vdate, self%calendar_type, self%date_init)
+    call gfs%setup_conf(f_conf)
+    call gfs%setup_date(vdate)
+    call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
 
   elseif (trim(filetype) == 'geos') then
 
-    call geos%setup(geom, self%fields, vdate, 'write', f_conf)
-    call geos%write_all(geom, self%fields, vdate)
+    call geos%setup_conf(geom, f_conf)
+    call geos%setup_date(vdate)
+    call geos%write(geom, self%fields, vdate)
     call geos%delete()
 
   else
@@ -931,7 +927,7 @@ global_area = mpp_global_sum(geom%domain, geom%area, flags=bitwise_efp_sum)
 call pointer_field_array(ref%fields, 'ua'  , ref_ua)
 call pointer_field_array(ref%fields, 'va'  , ref_va)
 call pointer_field_array(ref%fields, 't'   , ref_t)
-call pointer_field_array(ref%fields, 'q'   , ref_q)
+call pointer_field_array(ref%fields, 'sphum'   , ref_q)
 call pointer_field_array(ref%fields, 'delp', ref_delp)
 
 allocate(ref_ps(isc:iec,jsc:jec))
@@ -977,7 +973,7 @@ do k = 1, npz
 enddo
 
 !q
-call pointer_field_array(self%fields, 'q', q)
+call pointer_field_array(self%fields, 'sphum', q)
 do k = 1, npz
   do j = jsc,jec
     do i = isc,iec

@@ -37,7 +37,7 @@ ModelGEOS::ModelGEOS(const Geometry & resol,
   // JEDI to GEOS directory
   getcwd(jedidir_, 10000);
 
-  std::string sGEOSSCRDIR = mconf.getString("GEOSSCRDIR");
+  std::string sGEOSSCRDIR = mconf.getString("geos_run_directory");
   strcpy(geosscrdir_, sGEOSSCRDIR.c_str());
   chdir(geosscrdir_);
 
@@ -61,23 +61,24 @@ void ModelGEOS::initialize(State & xx) const {
   chdir(geosscrdir_);
   fv3jedi_geos_initialize_f90(keyConfig_, xx.toFortran());
   chdir(jedidir_);
-  oops::Log::debug() << "ModelGEOS::initialize" << std::endl;
+  oops::Log::trace() << "ModelGEOS::initialize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelGEOS::step(State & xx, const ModelBias &) const {
+  oops::Log::trace() << "ModelGEOS::step starting" << xx.validTime() << std::endl;
   xx.validTime() += tstep_;
   util::DateTime * dtp = &xx.validTime();
   chdir(geosscrdir_);
   fv3jedi_geos_step_f90(keyConfig_, xx.toFortran(), &dtp);
   chdir(jedidir_);
-  oops::Log::debug() << "ModelGEOS::step" << std::endl;
+  oops::Log::trace() << "ModelGEOS::step done" << xx.validTime() << std::endl;
 }
 // -----------------------------------------------------------------------------
 void ModelGEOS::finalize(State & xx) const {
   chdir(geosscrdir_);
   fv3jedi_geos_finalize_f90(keyConfig_, xx.toFortran());
   chdir(jedidir_);
-  oops::Log::debug() << "ModelGEOS::finalize" << std::endl;
+  oops::Log::trace() << "ModelGEOS::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------
 int ModelGEOS::saveTrajectory(State & xx,

@@ -15,8 +15,6 @@ use fckit_configuration_module, only: fckit_configuration
 use fv3jedi_kinds_mod,   only: kind_real
 use fv3jedi_geom_mod,    only: fv3jedi_geom
 use fv3jedi_state_mod,   only: fv3jedi_state
-use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
-use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 
 use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
 
@@ -253,7 +251,7 @@ endif
 ! Temperature to virtual temperature
 ! ----------------------------------
 call pointer_field_array(xana%fields, 't' , xana_t)
-call pointer_field_array(xana%fields, 'q' , xana_q)
+call pointer_field_array(xana%fields, 'sphum' , xana_q)
 call pointer_field_array(xctl%fields, 'tv', xctl_tv)
 call t_to_tv(geom, xana_t, xana_q, xctl_tv)
 
@@ -261,7 +259,7 @@ call t_to_tv(geom, xana_t, xana_q, xctl_tv)
 ! --------------------------------------
 call pointer_field_array(xana%fields, 'delp', xana_delp)
 call pointer_field_array(xana%fields, 't'   , xana_t)
-call pointer_field_array(xana%fields, 'q'   , xana_q)
+call pointer_field_array(xana%fields, 'sphum'   , xana_q)
 call pointer_field_array(xctl%fields, 'rh'  , xctl_rh)
 call get_qsat(geom, xana_delp, xana_t, xana_q, qsat)
 call q_to_rh(geom, qsat, xana_q, xctl_rh)

@@ -93,22 +93,22 @@ logical :: have_rh
 real(kind=kind_real), allocatable :: rh    (:,:,:)         !Relative humidity
 real(kind=kind_real), pointer     :: qsat   (:,:,:)        !Saturation specific humidity
 
-! Temperature fields
-logical :: have_t
-real(kind=kind_real), allocatable :: t     (:,:,:)         !Temperature
-real(kind=kind_real), pointer     :: pt    (:,:,:)         !Potential temperature
-real(kind=kind_real), pointer     :: pkz   (:,:,:)         !Pressure to the kapaa
-
-! Vitual temperature
-logical :: have_tv
-real(kind=kind_real), allocatable :: tv    (:,:,:)         !Virtual temperature
-
 ! Pressure fields
 logical :: have_pressures
 real(kind=kind_real), allocatable :: ps    (:,:,:)         !Surface pressure
 real(kind=kind_real), allocatable :: delp  (:,:,:)         !Pressure thickness
 real(kind=kind_real), allocatable :: prsi  (:,:,:)         !Pressure, interfaces
 real(kind=kind_real), allocatable :: prs   (:,:,:)         !Pressure, midpoint
+
+! Temperature fields
+logical :: have_t
+real(kind=kind_real), allocatable :: t     (:,:,:)         !Temperature
+real(kind=kind_real), pointer     :: pt    (:,:,:)         !Potential temperature
+real(kind=kind_real), allocatable :: pkz   (:,:,:)         !Pressure to the kapaa
+
+! Vitual temperature
+logical :: have_tv
+real(kind=kind_real), allocatable :: tv    (:,:,:)         !Virtual temperature
 
 ! Geopotential heights
 logical :: have_geoph
@@ -140,11 +140,18 @@ real(kind=kind_real), pointer     :: tsea    (:,:,:)       !Surface temperature
 !f10m
 logical :: have_f10m
 real(kind=kind_real), allocatable :: f10m    (:,:,:)       !Land-sea mask
-real(kind=kind_real), pointer     :: uap     (:,:,:)       !Eastward wind
-real(kind=kind_real), pointer     :: vap     (:,:,:)       !Northward wind
 real(kind=kind_real), pointer     :: u_srf   (:,:,:)
 real(kind=kind_real), pointer     :: v_srf   (:,:,:)
 real(kind=kind_real) :: wspd
+
+!qiql
+logical :: have_qiql
+real(kind=kind_real), allocatable :: qi      (:,:,:)
+real(kind=kind_real), allocatable :: ql      (:,:,:)
+real(kind=kind_real), pointer     :: qils    (:,:,:)
+real(kind=kind_real), pointer     :: qicn    (:,:,:)
+real(kind=kind_real), pointer     :: qlls    (:,:,:)
+real(kind=kind_real), pointer     :: qlcn    (:,:,:)
 
 !CRTM mixing ratio
 logical :: have_qmr
@@ -157,8 +164,6 @@ real(kind=kind_real), allocatable :: qi_ade  (:,:,:)
 real(kind=kind_real), allocatable :: ql_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qi_efr  (:,:,:)
 real(kind=kind_real), allocatable :: watercov(:,:)
-real(kind=kind_real), pointer     :: ql      (:,:,:)
-real(kind=kind_real), pointer     :: qi      (:,:,:)
 
 !Salinity
 logical :: have_sss
@@ -216,24 +221,6 @@ call copy_subset(xm%fields, xg%fields, fields_to_do)
 if (.not.allocated(fields_to_do)) return
 
 
-! Temperature
-! -----------
-have_t = .false.
-
-if (has_field(xm%fields, 't')) then
-  call allocate_copy_field_array(xm%fields, 't', t)
-  have_t = .true.
-elseif (has_field(xm%fields, 'pt')) then
-  if (.not. has_field(xm%fields, 'pkz')) &
-    call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar: a state with pt needs pkz")
-  allocate(t(self%isc:self%iec, self%jsc:self%jec, self%npz))
-  call pointer_field_array(xm%fields, 'pt',  pt)
-  call pointer_field_array(xm%fields, 'pkz', pkz)
-  call pt_to_t(geom, pkz, pt, t)
-  have_t = .true.
-endif
-
-
 ! Get pressures at edge, center & log center
 ! ------------------------------------------
 have_pressures = .false.
@@ -268,11 +255,30 @@ if (have_pressures) then
 endif
 
 
+! Temperature
+! -----------
+have_t = .false.
+
+if (has_field(xm%fields, 't')) then
+  call allocate_copy_field_array(xm%fields, 't', t)
+  have_t = .true.
+elseif (has_field(xm%fields, 'pt')) then
+  if (.not. have_pressures) &
+    call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar: a state with pt needs pressures")
+  allocate(t  (self%isc:self%iec, self%jsc:self%jec, self%npz))
+  allocate(pkz(self%isc:self%iec, self%jsc:self%jec, self%npz))
+  call pointer_field_array(xm%fields, 'pt',  pt)
+  call pe_to_pkz(geom, prsi, pkz)
+  call pt_to_t(geom, pkz, pt, t)
+  have_t = .true.
+endif
+
+
 ! Specific humidity
 ! -----------------
 have_q = .false.
-if (has_field(xm%fields, 'q')) then
-  call pointer_field_array(xm%fields, 'q',  q)
+if (has_field(xm%fields, 'sphum')) then
+  call pointer_field_array(xm%fields, 'sphum',  q)
   have_q = .true.
 endif
 
@@ -321,8 +327,8 @@ endif
 ! Ozone
 ! -----
 have_o3 = .false.
-if (has_field(xm%fields, 'o3')) then
-  call allocate_copy_field_array(xm%fields, 'o3', o3)
+if (has_field(xm%fields, 'o3mr')) then
+  call allocate_copy_field_array(xm%fields, 'o3mr', o3)
   have_o3 = .true.
   do k = 1, self%npz
     do j = self%jsc, self%jec
@@ -393,10 +399,7 @@ have_f10m = .false.
 if (has_field(xm%fields,'f10m')) then
   call allocate_copy_field_array(xm%fields, 'f10m', f10m)
   have_f10m = .true.
-elseif ( has_field(xm%fields, 'ua'   ) .and. has_field(xm%fields, 'va'   ) .and. &
-         has_field(xm%fields, 'u_srf') .and. has_field(xm%fields, 'v_srf') ) then
-  call pointer_field_array(xm%fields, 'ua'    , uap  )
-  call pointer_field_array(xm%fields, 'va'    , vap  )
+elseif ( has_field(xm%fields, 'u_srf') .and. has_field(xm%fields, 'v_srf') .and. have_winds ) then
   call pointer_field_array(xm%fields, 'u_srf' , u_srf)
   call pointer_field_array(xm%fields, 'v_srf' , v_srf)
 
@@ -405,7 +408,7 @@ elseif ( has_field(xm%fields, 'ua'   ) .and. has_field(xm%fields, 'va'   ) .and.
 
   do j = self%jsc,self%jec
     do i = self%isc,self%iec
-      wspd = sqrt(uap(i,j,self%npz)**2 +  vap(i,j,self%npz)**2)
+      wspd = sqrt(ua(i,j,self%npz)**2 +  va(i,j,self%npz)**2)
       if (f10m(i,j,1) > 0.0_kind_real) then
         f10m(i,j,1) = f10m(i,j,1)/wspd
       else
@@ -427,11 +430,31 @@ if (have_q) then
 endif
 
 
+! Clouds
+! ------
+have_qiql = .false.
+if (has_field(xm%fields, 'ice_wat') .and. has_field(xm%fields, 'liq_wat')) then
+  call allocate_copy_field_array(xm%fields, 'ice_wat', qi)
+  call allocate_copy_field_array(xm%fields, 'liq_wat', ql)
+  have_qiql = .true.
+elseif (has_field(xm%fields, 'qils') .and. has_field(xm%fields, 'qicn') .and. &
+        has_field(xm%fields, 'qlls') .and. has_field(xm%fields, 'qlcn')) then
+  call pointer_field_array(xm%fields, 'qils', qils)
+  call pointer_field_array(xm%fields, 'qicn', qicn)
+  call pointer_field_array(xm%fields, 'qlls', qlls)
+  call pointer_field_array(xm%fields, 'qlcn', qlcn)
+  allocate(qi(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  allocate(ql(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  qi = qils + qicn
+  ql = qlls + qlcn
+  have_qiql = .true.
+endif
+
+
 ! Get CRTM moisture fields
 ! ------------------------
 have_crtm_cld = .false.
-if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. &
-    has_field(xm%fields, 'qi') .and. has_field(xm%fields, 'ql')) then
+if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) then
   allocate(ql_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(qi_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(ql_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -449,8 +472,6 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. &
       if (slmsk(i,j,1) == 0) watercov(i,j) = 1.0_kind_real
     enddo
   enddo
-  call pointer_field_array(xm%fields, 'ql', ql)
-  call pointer_field_array(xm%fields, 'qi', qi)
   call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
                      ql_ade, qi_ade, ql_efr, qi_efr )
   have_crtm_cld = .true.
@@ -563,6 +584,11 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_pressures) call field_fail(fields_to_do(f))
     field_ptr = ps
+
+  case ("t")
+
+    if (.not. have_t) call field_fail(fields_to_do(f))
+    field_ptr = t
 
   case ("tv")
 
@@ -739,7 +765,6 @@ if (associated(field_ptr)) nullify(field_ptr)
 if (associated(q)) nullify(q)
 if (associated(qsat)) nullify(qsat)
 if (associated(pt)) nullify(pt)
-if (associated(pkz)) nullify(pkz)
 if (associated(phis)) nullify(phis)
 if (associated(ud)) nullify(ud)
 if (associated(vd)) nullify(vd)
@@ -747,12 +772,12 @@ if (associated(frocean)) nullify(frocean)
 if (associated(frlake)) nullify(frlake)
 if (associated(frseaice)) nullify(frseaice)
 if (associated(tsea)) nullify(tsea)
-if (associated(uap)) nullify(uap)
-if (associated(vap)) nullify(vap)
 if (associated(u_srf)) nullify(u_srf)
 if (associated(v_srf)) nullify(v_srf)
-if (associated(ql)) nullify(ql)
-if (associated(qi)) nullify(qi)
+if (associated(qils)) nullify(qils)
+if (associated(qlls)) nullify(qlls)
+if (associated(qicn)) nullify(qicn)
+if (associated(qlcn)) nullify(qlcn)
 
 if (allocated(fields_to_do)) deallocate(fields_to_do)
 if (allocated(rh)) deallocate(rh)
@@ -762,6 +787,7 @@ if (allocated(ps)) deallocate(ps)
 if (allocated(delp)) deallocate(delp)
 if (allocated(prsi)) deallocate(prsi)
 if (allocated(prs)) deallocate(prs)
+if (allocated(pkz)) deallocate(pkz)
 if (allocated(geophi)) deallocate(geophi)
 if (allocated(geoph)) deallocate(geoph)
 if (allocated(suralt)) deallocate(suralt)
@@ -770,6 +796,8 @@ if (allocated(ua)) deallocate(ua)
 if (allocated(va)) deallocate(va)
 if (allocated(slmsk)) deallocate(slmsk)
 if (allocated(f10m)) deallocate(f10m)
+if (allocated(ql)) deallocate(ql)
+if (allocated(qi)) deallocate(qi)
 if (allocated(qmr)) deallocate(qmr)
 if (allocated(ql_ade)) deallocate(ql_ade)
 if (allocated(qi_ade)) deallocate(qi_ade)

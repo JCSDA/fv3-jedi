@@ -103,6 +103,9 @@ phases:
       # FV3 based model and/or FMS
       - ./clone.sh $GIT_USER $GIT_PASS FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle dev/master-ecbuild
 
+      # GFDL_atmos_cubed_sphere
+      - ./clone.sh $GIT_USER $GIT_PASS GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH GFDL_atmos_cubed_sphere /jcsda/fv3-bundle release-stable
+
       # fckit
       - ./clone.sh $GIT_USER $GIT_PASS fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
 
@@ -154,7 +157,7 @@ phases:
 #    commands:
 #      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
 #        then echo "All tests passed; Run time test";
-#        su - jcsdauser -c "cd /build_container/fv3-jedi 
+#        su - jcsdauser -c "cd /build_container/fv3-jedi
 #        && ls
 #        && export FC=mpifort
 #        && export CC=mpicc
@@ -175,5 +178,4 @@ phases:
 artifacts:
   files:
     - /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
-  name: CTestCost-gnu-$(date +%Y-%m-%d-%k_%M) 
-
+  name: CTestCost-gnu-$(date +%Y-%m-%d-%k_%M)

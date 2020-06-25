@@ -1,5 +1,3 @@
-EnsembleApplication:
-  members: 2
 cost_function:
   Jb:
     Background:
@@ -7,7 +5,7 @@ cost_function:
       - filetype: geos
         datapath: Data/inputs/geos_c12
         filename_bkgd: geos.bkg.20180414_210000z.nc4
-        variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr"]
+        variables: &fgatvars ["ua","va","t","ps","q","qi","ql","o3mr"]
     Covariance:
       covariance: hybrid
       static_weight: '0.1'
@@ -24,7 +22,7 @@ cost_function:
           verbosity: main
       ensemble:
         date: '2018-04-14T21:00:00Z'
-        variables: &incvars ["ua","va","t","ps","q","qi","ql","o3mr"]
+        variables: *fgatvars
         members:
           - filetype: geos
             datapath: Data/inputs/geos_c12
@@ -58,7 +56,7 @@ cost_function:
             filename_bkgd: geos.mem010.20180414_210000z.nc4
         localization:
           timeslots: ['2018-04-14T21:00:00Z']
-          variables: *incvars
+          variables: *fgatvars
           localization: BUMP
           bump:
             prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
@@ -74,14 +72,13 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/hofx/eda/geos/%{member}%/aircraft_eda-4dvar-geos_2018041500_m.nc4
+          obsfile: Data/hofx/aircraft_hyb-fgat-geos_2018041500_m.nc4
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
         name: VertInterp
       Covariance:
         covariance: diagonal
-        random_amplitude: 0.4
       ObsFilters:
       - Filter: PreQC
         maxvalue: 3
@@ -97,14 +94,13 @@ cost_function:
         ObsDataIn:
           obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
         ObsDataOut:
-          obsfile: Data/hofx/eda/geos/%{member}%/sondes_eda-4dvar-geos_2018041500_m.nc4
+          obsfile: Data/hofx/sondes_hyb-fgat-geos_2018041500_m.nc4
         simulate:
           variables: [eastward_wind, northward_wind, air_temperature]
       ObsOperator:
         name: VertInterp
       Covariance:
         covariance: diagonal
-        random_amplitude: 0.5
       ObsFilters:
       - Filter: PreQC
         maxvalue: 3
@@ -118,18 +114,17 @@ cost_function:
     - ObsSpace:
         name: GnssroRef
         ObsDataIn:
-          obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
         ObsDataOut:
-          obsfile: Data/hofx/eda/geos/%{member}%/gnssro_eda-4dvar-geos_2018041500_s.nc4
+         obsfile: Data/hofx/gnssro_hyb-fgat-geos_2018041500_s.nc4
         simulate:
-          variables: [refractivity]
+         variables: [refractivity]
       ObsOperator:
         name: GnssroRef
         ObsOptions:
           use_compress: 1
       Covariance:
         covariance: diagonal
-        random_amplitude: 0.2
       ObsFilters:
       - Filter: Thinning
         filter variables:
@@ -163,33 +158,34 @@ cost_function:
         variable: refractivity
         errmodel: GSI
   cost_type: 4D-Var
-  variables: *incvars
+  variables: *fgatvars
   window_begin: '2018-04-14T21:00:00Z'
   window_length: PT6H
   varchange: Analysis2Model
   filetype: 'geos'
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 final:
   diagnostics:
     departures: oman
 minimizer:
   algorithm: DRIPCG
 model:
-  name: 'PSEUDO'
-  pseudo_type: 'geos'
-  pseudo_path: 'Data/inputs/geos_c12/'
-  filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
-  filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
-  RunStageCheck: 1
+  name: 'FV3LM'
+  nml_file: Data/fv3files/input_geos_c12.nml
+  trc_file: Data/fv3files/field_table
+  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
   tstep: PT1H
-  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis","frocean","frlake",
+              "frseaice","vtype","stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
 output:
   filetype: geos
-  datapath: Data/analysis/eda/geos/%{member}%
-  filename_bkgd: eda-fgat-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  datapath: Data/analysis
+  filename_bkgd: hyb-fgat-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
 resolution:
@@ -208,7 +204,7 @@ resolution:
   - FieldSet: Data/fieldsets/ufo.yaml
 variational:
   iteration:
-  - ninner: '2'
+  - ninner: '15'
     gradient_norm_reduction: 1e-10
     test: 'on'
     resolution:
@@ -227,18 +223,32 @@ variational:
     diagnostics:
       departures: ombg
     linearmodel:
-      varchange: 'Analysis2Model'
-      name: 'FV3JEDITLM'
-      version: FV3JEDITLM
-      nml_file: Data/fv3files/input_geos_c12.nml
-      trc_file: Data/fv3files/field_table
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
       tstep: PT1H
-      variables: ["u","vd","ua","va","t","delp","q","qi","ql","o3mr"]
-      lm_do_dyn: 1
-      lm_do_trb: 1
-      lm_do_mst: 1
-      trajectory:
-        variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
-                    "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-                    "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
+      variables: *fgatvars
+  - ninner: '5'
+    gradient_norm_reduction: 1e-10
+    test: 'on'
+    resolution:
+      trc_file: Data/fv3files/field_table
+      akbk: Data/fv3files/akbk72.nc4
+      # input.nml
+      layout: [1,1]
+      io_layout: [1,1]
+      npx: 13
+      npy: 13
+      npz: 72
+      ntiles: 6
+      FieldSets:
+      - FieldSet: Data/fieldsets/dynamics.yaml
+      - FieldSet: Data/fieldsets/ufo.yaml
+    diagnostics:
+      departures: ombg
+    linearmodel:
+      varchange: 'Identity'
+      name: 'FV3JEDIIdTLM'
+      version: FV3JEDIIdTLM
+      tstep: PT1H
+      variables: *fgatvars

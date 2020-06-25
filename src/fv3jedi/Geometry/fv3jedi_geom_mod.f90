@@ -7,34 +7,34 @@
 
 module fv3jedi_geom_mod
 
-!General JEDI uses
 use netcdf
 use mpi
 use string_f_c_mod
 
+! atlas uses
 use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace, atlas_functionspace_nodecolumns
 
-use fckit_mpi_module, only: fckit_mpi_comm
+! fckit uses
+use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
-use fields_metadata_mod, only: fields_metadata, field_metadata
+! fms uses
+use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain
+use mpp_domains_mod,            only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
+use mpp_mod,                    only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 
-use fv3jedi_kinds_mod
-use fv3jedi_netcdf_utils_mod, only: nccheck
-use fv3jedi_constants_mod,    only: ps, rad2deg
-use fv3geom_create_grid_mod,  only: create_fv3_grid
+! fv3 uses
+use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 
-!FMS/MPP uses
-use mpp_domains_mod,    only: domain2D, mpp_deallocate_domain
-use mpp_domains_mod,    only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
-use mpp_mod,            only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
-
-!Uses for generating geometry using FV3 routines
-use fv_arrays_nlm_mod,  only: fv_atmos_type, deallocate_fv_atmos_type
-use fv_control_nlm_mod, only: fv_init, pelist_all
+! fv3jedi uses
+use fields_metadata_mod,         only: fields_metadata, field_metadata
+use fv3jedi_constants_mod,       only: ps, rad2deg
+use fv3geom_create_grid_mod,     only: create_fv3_grid
+use fv3jedi_kinds_mod,           only: kind_real
+use fv3jedi_netcdf_utils_mod,    only: nccheck
+use fv_init_mod,                 only: fv_init
 
 implicit none
-
 private
 public :: fv3jedi_geom
 
@@ -106,9 +106,9 @@ type(fields_metadata),       intent(in)    :: fields
 
 !Locals
 character(len=256)                    :: pathfile_akbk
-type(fv_atmos_type), allocatable      :: FV_Atm(:)
+type(fv_atmos_type), allocatable      :: Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
-integer                               :: i, j, jj
+integer                               :: i, j, jj, gtile
 integer                               :: p_split = 1
 integer                               :: ncstat, ncid, akvarid, bkvarid, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
@@ -144,29 +144,28 @@ self%fields = fields
 
 !Intialize using the model setup routine
 ! --------------------------------------
-call fv_init(FV_Atm, 300.0_kind_real, grids_on_this_pe, p_split)
-deallocate(pelist_all)
+call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile)
 
-self%isd = FV_Atm(1)%bd%isd
-self%ied = FV_Atm(1)%bd%ied
-self%jsd = FV_Atm(1)%bd%jsd
-self%jed = FV_Atm(1)%bd%jed
-self%isc = FV_Atm(1)%bd%isc
-self%iec = FV_Atm(1)%bd%iec
-self%jsc = FV_Atm(1)%bd%jsc
-self%jec = FV_Atm(1)%bd%jec
+self%isd = Atm(1)%bd%isd
+self%ied = Atm(1)%bd%ied
+self%jsd = Atm(1)%bd%jsd
+self%jed = Atm(1)%bd%jed
+self%isc = Atm(1)%bd%isc
+self%iec = Atm(1)%bd%iec
+self%jsc = Atm(1)%bd%jsc
+self%jec = Atm(1)%bd%jec
 
-self%ntile  = FV_Atm(1)%tile
+self%ntile  = gtile
 self%ntiles = 6
 
-self%npx = FV_Atm(1)%npx
-self%npy = FV_Atm(1)%npy
-self%npz = FV_Atm(1)%npz
+self%npx = Atm(1)%npx
+self%npy = Atm(1)%npy
+self%npz = Atm(1)%npz
 
-self%layout(1) = FV_Atm(1)%layout(1)
-self%layout(2) = FV_Atm(1)%layout(2)
-self%io_layout(1) = FV_Atm(1)%io_layout(1)
-self%io_layout(2) = FV_Atm(1)%io_layout(2)
+self%layout(1) = Atm(1)%layout(1)
+self%layout(2) = Atm(1)%layout(2)
+self%io_layout(1) = Atm(1)%io_layout(1)
+self%io_layout(2) = Atm(1)%io_layout(2)
 
 !Allocatable arrays
 allocate(self%ak(self%npz+1) )
@@ -256,50 +255,50 @@ call nccheck( nf90_get_var(ncid, akvarid, self%ak), "fv3jedi_geom, nf90_get_var 
 call nccheck( nf90_get_var(ncid, bkvarid, self%bk), "fv3jedi_geom, nf90_get_var bk" )
 
 
-! Arrays from the FV_Atm Structure
+! Arrays from the Atm Structure
 ! --------------------------------
 
-self%grid_lon  = real(FV_Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
-self%grid_lat  = real(FV_Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
-self%egrid_lon = real(FV_Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
-self%egrid_lat = real(FV_Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
-self%area      = real(FV_Atm(1)%gridstruct%area_64,kind_real)
-self%dx        = real(Fv_Atm(1)%gridstruct%dx ,kind_real)
-self%dy        = real(Fv_Atm(1)%gridstruct%dy ,kind_real)
-self%dxc       = real(Fv_Atm(1)%gridstruct%dxc,kind_real)
-self%dyc       = real(Fv_Atm(1)%gridstruct%dyc,kind_real)
+self%grid_lon  = real(Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
+self%grid_lat  = real(Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
+self%egrid_lon = real(Atm(1)%gridstruct%grid_64(:,:,1),kind_real)
+self%egrid_lat = real(Atm(1)%gridstruct%grid_64(:,:,2),kind_real)
+self%area      = real(Atm(1)%gridstruct%area_64,kind_real)
+self%dx        = real(Atm(1)%gridstruct%dx ,kind_real)
+self%dy        = real(Atm(1)%gridstruct%dy ,kind_real)
+self%dxc       = real(Atm(1)%gridstruct%dxc,kind_real)
+self%dyc       = real(Atm(1)%gridstruct%dyc,kind_real)
 
-self%grid      = real(FV_Atm(1)%gridstruct%grid,kind_real)
-self%vlon      = real(Fv_Atm(1)%gridstruct%vlon,kind_real)
-self%vlat      = real(Fv_Atm(1)%gridstruct%vlat,kind_real)
+self%grid      = real(Atm(1)%gridstruct%grid,kind_real)
+self%vlon      = real(Atm(1)%gridstruct%vlon,kind_real)
+self%vlat      = real(Atm(1)%gridstruct%vlat,kind_real)
 
-self%edge_vect_n = real(Fv_Atm(1)%gridstruct%edge_vect_n,kind_real)
-self%edge_vect_e = real(Fv_Atm(1)%gridstruct%edge_vect_e,kind_real)
-self%edge_vect_s = real(Fv_Atm(1)%gridstruct%edge_vect_s,kind_real)
-self%edge_vect_w = real(Fv_Atm(1)%gridstruct%edge_vect_w,kind_real)
+self%edge_vect_n = real(Atm(1)%gridstruct%edge_vect_n,kind_real)
+self%edge_vect_e = real(Atm(1)%gridstruct%edge_vect_e,kind_real)
+self%edge_vect_s = real(Atm(1)%gridstruct%edge_vect_s,kind_real)
+self%edge_vect_w = real(Atm(1)%gridstruct%edge_vect_w,kind_real)
 
-self%es = real(Fv_Atm(1)%gridstruct%es,kind_real)
-self%ew = real(Fv_Atm(1)%gridstruct%ew,kind_real)
+self%es = real(Atm(1)%gridstruct%es,kind_real)
+self%ew = real(Atm(1)%gridstruct%ew,kind_real)
 
-self%a11 = real(Fv_Atm(1)%gridstruct%a11,kind_real)
-self%a12 = real(Fv_Atm(1)%gridstruct%a12,kind_real)
-self%a21 = real(Fv_Atm(1)%gridstruct%a21,kind_real)
-self%a22 = real(Fv_Atm(1)%gridstruct%a22,kind_real)
+self%a11 = real(Atm(1)%gridstruct%a11,kind_real)
+self%a12 = real(Atm(1)%gridstruct%a12,kind_real)
+self%a21 = real(Atm(1)%gridstruct%a21,kind_real)
+self%a22 = real(Atm(1)%gridstruct%a22,kind_real)
 
-self%rarea     = real(Fv_Atm(1)%gridstruct%rarea ,kind_real)
-self%sin_sg    = real(Fv_Atm(1)%gridstruct%sin_sg,kind_real)
-self%cosa_u    = real(Fv_Atm(1)%gridstruct%cosa_u,kind_real)
-self%cosa_v    = real(Fv_Atm(1)%gridstruct%cosa_v,kind_real)
-self%cosa_s    = real(Fv_Atm(1)%gridstruct%cosa_s,kind_real)
-self%rsin_u    = real(Fv_Atm(1)%gridstruct%rsin_u,kind_real)
-self%rsin_v    = real(Fv_Atm(1)%gridstruct%rsin_v,kind_real)
-self%rsin2     = real(Fv_Atm(1)%gridstruct%rsin2 ,kind_real)
-self%dxa       = real(Fv_Atm(1)%gridstruct%dxa   ,kind_real)
-self%dya       = real(Fv_Atm(1)%gridstruct%dya   ,kind_real)
-self%ne_corner = Fv_Atm(1)%gridstruct%ne_corner
-self%se_corner = Fv_Atm(1)%gridstruct%se_corner
-self%sw_corner = Fv_Atm(1)%gridstruct%sw_corner
-self%nw_corner = Fv_Atm(1)%gridstruct%nw_corner
+self%rarea     = real(Atm(1)%gridstruct%rarea ,kind_real)
+self%sin_sg    = real(Atm(1)%gridstruct%sin_sg,kind_real)
+self%cosa_u    = real(Atm(1)%gridstruct%cosa_u,kind_real)
+self%cosa_v    = real(Atm(1)%gridstruct%cosa_v,kind_real)
+self%cosa_s    = real(Atm(1)%gridstruct%cosa_s,kind_real)
+self%rsin_u    = real(Atm(1)%gridstruct%rsin_u,kind_real)
+self%rsin_v    = real(Atm(1)%gridstruct%rsin_v,kind_real)
+self%rsin2     = real(Atm(1)%gridstruct%rsin2 ,kind_real)
+self%dxa       = real(Atm(1)%gridstruct%dxa   ,kind_real)
+self%dya       = real(Atm(1)%gridstruct%dya   ,kind_real)
+self%ne_corner = Atm(1)%gridstruct%ne_corner
+self%se_corner = Atm(1)%gridstruct%se_corner
+self%sw_corner = Atm(1)%gridstruct%sw_corner
+self%nw_corner = Atm(1)%gridstruct%nw_corner
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -318,9 +317,9 @@ enddo
 !Set Ptop
 self%ptop = self%ak(1)
 
-!Done with the FV_Atm stucture here
-call deallocate_fv_atmos_type(FV_Atm(1))
-deallocate(FV_Atm)
+!Done with the Atm stucture here
+call deallocate_fv_atmos_type(Atm(1))
+deallocate(Atm)
 deallocate(grids_on_this_pe)
 
 !Resetup domain to avoid risk of copied pointers

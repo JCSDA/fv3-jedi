@@ -61,7 +61,7 @@ real(kind=kind_real), pointer :: delp(:,:,:)
 
 !> Pointers to the background state
 call pointer_field_array(bg%fields, 't'   , t)
-call pointer_field_array(bg%fields, 'q'   , q)
+call pointer_field_array(bg%fields, 'sphum'   , q)
 call pointer_field_array(bg%fields, 'delp', delp)
 
 !> Virtual temperature trajectory
@@ -131,7 +131,7 @@ call pointer_field_array(xctl%fields, 'rh' , xctl_rh)
 call pointer_field_array(xana%fields, 'ua' , xana_ua)
 call pointer_field_array(xana%fields, 'va' , xana_va)
 call pointer_field_array(xana%fields, 't'  , xana_t)
-call pointer_field_array(xana%fields, 'q'  , xana_q)
+call pointer_field_array(xana%fields, 'sphum'  , xana_q)
 
 call control_to_analysis_tlm(geom, xctl_psi, xctl_chi, xctl_tv, xctl_rh, &
                                    xana_ua,  xana_va,  xana_t,  xana_q,  &
@@ -176,7 +176,7 @@ call pointer_field_array(xctl%fields, 'rh' , xctl_rh)
 call pointer_field_array(xana%fields, 'ua' , xana_ua)
 call pointer_field_array(xana%fields, 'va' , xana_va)
 call pointer_field_array(xana%fields, 't'  , xana_t)
-call pointer_field_array(xana%fields, 'q'  , xana_q)
+call pointer_field_array(xana%fields, 'sphum'  , xana_q)
 call control_to_analysis_adm(geom, xctl_psi, xctl_chi, xctl_tv, xctl_rh, &
                                    xana_ua,  xana_va,  xana_t,  xana_q,  &
                                    self%tvtraj,self%qtraj,self%qsattraj )

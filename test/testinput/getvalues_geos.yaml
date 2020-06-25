@@ -2,7 +2,6 @@ GetValuesTest:
   StateGenerate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
-    nml_file: Data/fv3files/input_gfs_c12.nml
     variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   interp_tolerance: 1.0e-2
 Geometry:

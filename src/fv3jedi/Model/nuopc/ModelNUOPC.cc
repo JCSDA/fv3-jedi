@@ -28,7 +28,7 @@ ModelNUOPC::ModelNUOPC(const Geometry & resol,
                             const eckit::Configuration & model)
   : keyConfig_(0), tstep_(0), geom_(resol),
   vars_(std::vector<std::string>{"ud", "vd", "ua", "va", "t", "delp",
-                                 "q", "qi", "ql", "o3"})
+                                 "q", "qi", "ql", "o3mr"})
 {
   oops::Log::trace() << "ModelNUOPC::ModelNUOPC" << std::endl;
   tstep_ = util::Duration(model.getString("tstep"));

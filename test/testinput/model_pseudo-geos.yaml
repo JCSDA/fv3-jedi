@@ -13,23 +13,28 @@ Geometry:
     - FieldSet: Data/fieldsets/dynamics.yaml
 Model:
   name: 'PSEUDO'
-  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
   tstep: PT1H
   pseudo_type: 'geos'
-  pseudo_path: 'Data/inputs/geos_c12'
+  datapath: 'Data/inputs/geos_c12'
   filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
   filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
-  pseudo_file:
+  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
+              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
+              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu","frlake","frseaice","vtype",
+              "stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
 ModelBias: null
 ModelBiasCovariance: null
 ModelTest:
   fclength: PT2H
-  finalnorm: '595.84034406483318'
+  finalnorm: '38346657026646.617'
   tolerance: '1.0e-4'
 State:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
+  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
   variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
               "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
+              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu","frlake","frseaice","vtype",
+              "stype","vfrac","sheleg","ts","soilt","soilm","u10m","v10m"]
+

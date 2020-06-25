@@ -245,14 +245,14 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: o3
 real(kind=kind_real), pointer, dimension(:,:,:) :: w
 real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 
-call pointer_field_array(inc%fields, 'ud',   ud  )
-call pointer_field_array(inc%fields, 'vd',   vd  )
-call pointer_field_array(inc%fields, 't',    t   )
-call pointer_field_array(inc%fields, 'delp', delp)
-call pointer_field_array(inc%fields, 'q',    q   )
-call pointer_field_array(inc%fields, 'qi',   qi  )
-call pointer_field_array(inc%fields, 'ql',   ql  )
-call pointer_field_array(inc%fields, 'o3',   o3  )
+call pointer_field_array(inc%fields, 'ud'     , ud  )
+call pointer_field_array(inc%fields, 'vd'     , vd  )
+call pointer_field_array(inc%fields, 't'      , t   )
+call pointer_field_array(inc%fields, 'delp'   , delp)
+call pointer_field_array(inc%fields, 'sphum'  , q   )
+call pointer_field_array(inc%fields, 'ice_wat', qi  )
+call pointer_field_array(inc%fields, 'liq_wat', ql  )
+call pointer_field_array(inc%fields, 'o3mr'   , o3  )
 
 lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
 lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
@@ -292,14 +292,14 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: o3
 real(kind=kind_real), pointer, dimension(:,:,:) :: w
 real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 
-call pointer_field_array(inc%fields, 'ud',   ud  )
-call pointer_field_array(inc%fields, 'vd',   vd  )
-call pointer_field_array(inc%fields, 't',    t   )
-call pointer_field_array(inc%fields, 'delp', delp)
-call pointer_field_array(inc%fields, 'q',    q   )
-call pointer_field_array(inc%fields, 'qi',   qi  )
-call pointer_field_array(inc%fields, 'ql',   ql  )
-call pointer_field_array(inc%fields, 'o3',   o3  )
+call pointer_field_array(inc%fields, 'ud'     , ud  )
+call pointer_field_array(inc%fields, 'vd'     , vd  )
+call pointer_field_array(inc%fields, 't'      , t   )
+call pointer_field_array(inc%fields, 'delp'   , delp)
+call pointer_field_array(inc%fields, 'sphum'  , q   )
+call pointer_field_array(inc%fields, 'ice_wat', qi  )
+call pointer_field_array(inc%fields, 'liq_wat', ql  )
+call pointer_field_array(inc%fields, 'o3mr'   , o3  )
 
 ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%u
 vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%v

@@ -17,7 +17,7 @@ date:
   date: '2018-04-15T00:00:00Z'
 Background:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
@@ -26,7 +26,7 @@ Background:
   variables: *incvars
 VarianceOut:
   filetype: gfs
-  datapath_tile: Data/
+  datapath: Data/
   filename_core: ensemblevariance.fv_core.res.nc
   filename_trcr: ensemblevariance.fv_tracer.res.nc
   filename_sfcd: ensemblevariance.sfc_data.nc
@@ -36,70 +36,70 @@ Ensemble:
   variables: *incvars
   members:
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem001/
+    datapath: Data/inputs/gfs_c12/mem001/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem002/
+    datapath: Data/inputs/gfs_c12/mem002/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem003/
+    datapath: Data/inputs/gfs_c12/mem003/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem004/
+    datapath: Data/inputs/gfs_c12/mem004/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem005/
+    datapath: Data/inputs/gfs_c12/mem005/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem006/
+    datapath: Data/inputs/gfs_c12/mem006/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem007/
+    datapath: Data/inputs/gfs_c12/mem007/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem008/
+    datapath: Data/inputs/gfs_c12/mem008/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem009/
+    datapath: Data/inputs/gfs_c12/mem009/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/mem010/
+    datapath: Data/inputs/gfs_c12/mem010/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc

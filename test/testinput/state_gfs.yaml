@@ -13,7 +13,7 @@ Geometry:
 StateTest:
   StateFile:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc
     filename_sfcd: 20180414.210000.sfc_data.nc
@@ -23,7 +23,6 @@ StateTest:
   StateGenerate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
-    nml_file: Data/fv3files/input_gfs_c12.nml
     variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
   date: '2018-04-14T21:00:00Z'
   norm-file: '3959.836162631429'

@@ -18,7 +18,7 @@ variables: ["sulf","bc1","bc2","oc1","oc2",
 date: '2018-04-15T00:00:00Z'
 background:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_aero_c12/bkg/
+  datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res
@@ -75,25 +75,25 @@ bump:
 output:
 - parameter: loc_coef
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_trcr: bumpparameters_loc_gfs_aero.loc_coef.fv_tracer.res.nc
   filename_cplr: bumpparameters_loc_gfs_aero.loc_coef.coupler.res
   date: '2018-04-15T00:00:00Z'
 - parameter: loc_rh
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_trcr: bumpparameters_loc_gfs_aero.loc_rh.fv_tracer.res.nc
   filename_cplr: bumpparameters_loc_gfs_aero.loc_rh.coupler.res
   date: '2018-04-15T00:00:00Z'
 - parameter: loc_rv
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_trcr: bumpparameters_loc_gfs_aero.loc_rv.fv_tracer.res.nc
   filename_cplr: bumpparameters_loc_gfs_aero.loc_rv.coupler.res
   date: '2018-04-15T00:00:00Z'
 - parameter: hyb_coef
   filetype: gfs
-  datapath_tile: Data/bump/
+  datapath: Data/bump/
   filename_trcr: bumpparameters_loc_gfs_aero.hyb_coef.fv_tracer.res.nc
   filename_cplr: bumpparameters_loc_gfs_aero.hyb_coef.coupler.res
   date: '2018-04-15T00:00:00Z'

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 UCAR
+ * (C) Copyright 2020 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -31,14 +31,9 @@ namespace fv3jedi {
   class Increment;
   class State;
 
-// -----------------------------------------------------------------------------
-/// FV3JEDI model definition.
-/*!
- *  FV3JEDI nonlinear model definition and configuration parameters.
- */
+// -------------------------------------------------------------------------------------------------
 
-class ModelFV3: public oops::ModelBase<Traits>,
-                       private util::ObjectCounter<ModelFV3> {
+class ModelFV3: public oops::ModelBase<Traits>, private util::ObjectCounter<ModelFV3> {
  public:
   static const std::string classname() {return "fv3jedi::ModelFV3";}
 
@@ -66,7 +61,7 @@ class ModelFV3: public oops::ModelBase<Traits>,
   const Geometry geom_;
   const oops::Variables vars_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 #endif  // FV3JEDI_MODEL_FV3_MODELFV3_H_

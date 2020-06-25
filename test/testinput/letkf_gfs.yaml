@@ -21,70 +21,70 @@ Background:
    variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
    members:
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem001/
+          datapath: Data/inputs/gfs_c12/mem001/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem002/
+          datapath: Data/inputs/gfs_c12/mem002/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem003/
+          datapath: Data/inputs/gfs_c12/mem003/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem004/
+          datapath: Data/inputs/gfs_c12/mem004/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem005/
+          datapath: Data/inputs/gfs_c12/mem005/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem006/
+          datapath: Data/inputs/gfs_c12/mem006/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem007/
+          datapath: Data/inputs/gfs_c12/mem007/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem008/
+          datapath: Data/inputs/gfs_c12/mem008/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem009/
+          datapath: Data/inputs/gfs_c12/mem009/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
-          datapath_tile: Data/inputs/gfs_c12/mem010/
+          datapath: Data/inputs/gfs_c12/mem010/
           filename_core: 20180415.000000.fv_core.res.nc
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_sfcd: 20180415.000000.sfc_data.nc
@@ -122,7 +122,7 @@ letkf:
 
 output:
   filetype: gfs
-  datapath_tile: Data/analysis/letkf/gfs/%{member}%/
+  datapath: Data/analysis/letkf/gfs/%{member}%/
   filename_core: letkf.fv_core.res.nc
   filename_trcr: letkf.fv_tracer.res.nc
   filename_sfcd: letkf.sfc_data.nc

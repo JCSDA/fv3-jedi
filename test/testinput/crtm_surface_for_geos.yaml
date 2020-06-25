@@ -30,7 +30,7 @@ inputVariables:
 states:
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc
     filename_sfcd: 20180414.210000.sfc_data.nc
@@ -42,7 +42,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.220000.fv_core.res.nc
     filename_trcr: 20180414.220000.fv_tracer.res.nc
     filename_sfcd: 20180414.220000.sfc_data.nc
@@ -54,7 +54,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.230000.fv_core.res.nc
     filename_trcr: 20180414.230000.fv_tracer.res.nc
     filename_sfcd: 20180414.230000.sfc_data.nc
@@ -66,7 +66,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
@@ -78,7 +78,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.010000.fv_core.res.nc
     filename_trcr: 20180415.010000.fv_tracer.res.nc
     filename_sfcd: 20180415.010000.sfc_data.nc
@@ -90,7 +90,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.020000.fv_core.res.nc
     filename_trcr: 20180415.020000.fv_tracer.res.nc
     filename_sfcd: 20180415.020000.sfc_data.nc
@@ -102,7 +102,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
-    datapath_tile: Data/inputs/gfs_c12/bkg/
+    datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.030000.fv_core.res.nc
     filename_trcr: 20180415.030000.fv_tracer.res.nc
     filename_sfcd: 20180415.030000.sfc_data.nc

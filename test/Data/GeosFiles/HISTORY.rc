@@ -1,0 +1,67 @@
+VERSION: 1
+EXPID:  jedi-geos-c90
+EXPDSC: jedi-geos-c90
+EXPSRC: GEOSgcm-v10.12.3
+
+
+COLLECTIONS: 'geosgcm_traj'
+             ::
+
+##################################################
+# The GRID_LABELS section must be after the main #
+#  list of COLLECTIONS for scripting purposes.   #
+##################################################
+
+GRID_LABELS: PE90x540-CF
+::
+
+PE90x540-CF.GRID_TYPE: Cubed-Sphere
+PE90x540-CF.IM_WORLD: 90
+PE90x540-CF.JM_WORLD: 540
+PE90x540-CF.POLE: PC
+PE90x540-CF.DATELINE: DC
+PE90x540-CF.LM: 72
+
+geosgcm_traj.format:     'CFIO' ,
+geosgcm_traj.template:   '%y4%m2%d2_%h2%n2z.nc4',
+geosgcm_traj.frequency:   010000      ,
+geosgcm_traj.duration:    010000      ,
+geosgcm_traj.mode:       'instantaneous',
+geosgcm_traj.grid_label:  PE90x540-CF ,
+geosgcm_traj.fields:      'U_DGRID;V_DGRID'  , 'DYN'         , 'u;v'        ,
+                          'U;V'              , 'DYN'         , 'ua;va'      ,
+                          'T'                , 'DYN'         , 't'          ,
+                          'Q'                , 'MOIST'       , 'q'          ,
+                          'DELP'             , 'DYN'         , 'delp'       ,
+                          'QITOT'            , 'AGCM'        , 'qi'         ,
+                          'QLTOT'            , 'AGCM'        , 'ql'         ,
+                          'QSTOT'            , 'MOIST'       , 'qs'         ,
+                          'QRTOT'            , 'MOIST'       , 'qr'         ,
+                          'O3PPMV'           , 'CHEMISTRY'   , 'o3mr'       ,
+                          'QCLSX0'           , 'MOIST'       , 'qls'        ,
+                          'QCCNX0'           , 'MOIST'       , 'qcn'        ,
+                          'CLCNX0'           , 'MOIST'       , 'cfcn'       ,
+                          'PS'               , 'DYN'         , 'ps'         ,
+                          'PHIS'             , 'AGCM'        , 'phis'       ,
+                          'FRLAND'           , 'SURFACE'     , 'frland'     ,
+                          'FRLANDICE'        , 'SURFACE'     , 'frlandice'  ,
+                          'FRLAKE'           , 'SURFACE'     , 'frlake'     ,
+                          'FROCEAN'          , 'SURFACE'     , 'frocean'    ,
+                          'FRACI'            , 'SURFACE'     , 'frseaice'   ,
+                          'KCBL_moist'       , 'MOIST'       , 'kcbl'       ,
+                          'TS_moist'         , 'MOIST'       , 'tsm'        ,
+                          'KHl_moist'        , 'MOIST'       , 'khl'        ,
+                          'KHu_moist'        , 'MOIST'       , 'khu'        ,
+                          'VARFLT'           , 'AGCM'        , 'varflt'     ,
+                          'USTAR'            , 'SURFACE'     , 'ustar'      ,
+                          'BSTAR'            , 'SURFACE'     , 'bstar'      ,
+                          'ZPBL'             , 'TURBULENCE'  , 'zpbl'       ,
+                          'CM'               , 'SURFACE'     , 'cm'         ,
+                          'CT'               , 'SURFACE'     , 'ct'         ,
+                          'CQ'               , 'SURFACE'     , 'cq'         ,
+                          'U10N;V10N'        , 'SURFACE'     , 'u10m;v10m'  ,
+                          'TA'               , 'DYN'         , 'ts'         ,
+                          'SNOMAS'           , 'SURFACE'     , 'sheleg'     ,
+                          'TSOIL1'           , 'SURFACE'     , 'soilt'      ,
+                          'WET1'             , 'SURFACE'     , 'soilm'      ,
+                          ::

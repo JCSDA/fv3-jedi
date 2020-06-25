@@ -12,7 +12,7 @@ Geometry:
     - FieldSet: Data/fieldsets/dynamics.yaml
 Model:
   name: 'FV3'
-  nml_file: Data/fv3files/input_gfs_c12.nml
+  nml_file: Data/fv3files/input_gfs.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
@@ -28,7 +28,7 @@ ModelTest:
   tolerance: '1.0e-4'
 State:
   filetype: gfs
-  datapath_tile: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.sfc_data.nc

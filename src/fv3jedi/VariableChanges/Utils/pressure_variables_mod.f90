@@ -16,6 +16,7 @@ public compute_fv3_pressures
 public compute_fv3_pressures_tlm
 public compute_fv3_pressures_bwd
 public delp_to_pe_p_logp
+public pe_to_pkz
 public pe_to_delp
 public delp_to_pe
 public pe_to_pk
@@ -245,6 +246,28 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp)
  endif
 
 end subroutine delp_to_pe_p_logp
+
+!----------------------------------------------------------------------------
+
+subroutine pe_to_pkz(geom,pe,pkz)
+
+implicit none
+type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
+real(kind=kind_real), intent(in ) ::  pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !Pressure edge/interface
+real(kind=kind_real), intent(out) :: pkz(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !Pressure to the kappa
+
+integer :: k
+real(kind=kind_real) :: peln(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1)
+real(kind=kind_real) ::   pk(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1)
+
+peln = log(pe)
+pk = exp(kappa*peln)
+
+do k=1,geom%npz
+  pkz(:,:,k) = (pk(:,:,k+1)-pk(:,:,k)) / (kappa*(peln(:,:,k+1)-peln(:,:,k)))
+enddo
+
+end subroutine pe_to_pkz
 
 !----------------------------------------------------------------------------
 

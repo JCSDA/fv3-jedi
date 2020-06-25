@@ -3,7 +3,7 @@ cost_function:
     Background:
       state:
       - filetype: gfs
-        datapath_tile: Data/
+        datapath: Data/
         filename_core: 20180415.000000.c24.fv_core.res.nc
         filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
         filename_sfcd: 20180415.000000.c24.sfc_data.nc
@@ -158,7 +158,7 @@ cost_function:
   window_length: PT6H
   varchange: Analysis2Model
   filetype: gfs
-  datapath_tile: Data/
+  datapath: Data/
   filename_core: 20180415.000000.c24.fv_core.res.nc
   filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.c24.sfc_data.nc
@@ -170,19 +170,22 @@ final:
 minimizer:
   algorithm: DRIPCG
 model:
-  name: 'FV3'
-  nml_file: Data/fv3files/input_gfs_c24.nml
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  name: 'PSEUDO'
+  pseudo_type: 'gfs'
+  datapath: 'Data/inputs/gfs_c12/bkg/'
+  filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
+  filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
+  filename_sfcd: %yyyy%mm%dd.%hh%MM%ss.sfc_data.nc
+  filename_sfcw: %yyyy%mm%dd.%hh%MM%ss.fv_srf_wnd.res.nc
+  filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
+  RunStageCheck: 1
   tstep: PT3H
-  lm_do_dyn: 1
-  lm_do_trb: 0
-  lm_do_mst: 0
   variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
               "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
               "u_srf","v_srf","f10m"]
 output:
   filetype: gfs
-  datapath_tile: Data/analysis/
+  datapath: Data/analysis/
   filename_core: 3dvar-gfs_bal.fv_core.res.nc
   filename_trcr: 3dvar-gfs_bal.fv_tracer.res.nc
   filename_sfcd: 3dvar-gfs_bal.sfc_data.nc

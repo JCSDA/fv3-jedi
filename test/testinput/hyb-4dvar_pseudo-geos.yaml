@@ -206,7 +206,7 @@ minimizer:
 model:
   name: 'PSEUDO'
   pseudo_type: 'geos'
-  pseudo_path: 'Data/inputs/geos_c12'
+  datapath: 'Data/inputs/geos_c12'
   filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
   filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
   RunStageCheck: 1
