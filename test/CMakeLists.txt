@@ -545,7 +545,7 @@ endforeach()
 
 # Stage directory with directories for running the models
 # -------------------------------------------------------
-if( ${BUILD_WITH_MODEL} MATCHES "GEOS" OR ${BUILD_WITH_MODEL} MATCHES "GFS" OR ${BUILD_WITH_MODEL} MATCHES "UFS")
+if(BUILD_WITH_MODEL MATCHES GEOS OR BUILD_WITH_MODEL MATCHES GFS OR BUILD_WITH_MODEL MATCHES UFS)
   execute_process( COMMAND ln -sf ${MODELDIRS_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Data )
 endif()
 
