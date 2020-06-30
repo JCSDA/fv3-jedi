@@ -57,9 +57,9 @@ bump%nam%verbosity = "none"
 
 bump%nam%nl = geom_in%npz+1
 bump%nam%nv = 1
-bump%nam%varname(1) = "var"
+bump%nam%variables(1) = "var"
 bump%nam%nts = 1
-bump%nam%timeslot(1) = "0"
+bump%nam%timeslots(1) = "0"
 
 !Empty atlas field set
 afieldset = atlas_fieldset()
