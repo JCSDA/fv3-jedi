@@ -10,11 +10,12 @@
 #include "oops/runs/LETKF.h"
 #include "oops/runs/Run.h"
 #include "ufo/instantiateObsFilterFactory.h"
+#include "ufo/ObsTraits.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  ioda::instantiateObsLocFactory<fv3jedi::Traits>();
-  ufo::instantiateObsFilterFactory<fv3jedi::Traits>();
-  oops::LETKF<fv3jedi::Traits> letkf;
+  ioda::instantiateObsLocFactory<ufo::ObsTraits>();
+  ufo::instantiateObsFilterFactory<ufo::ObsTraits>();
+  oops::LETKF<fv3jedi::Traits, ufo::ObsTraits> letkf;
   return run.execute(letkf);
 }
