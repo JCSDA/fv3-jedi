@@ -145,6 +145,9 @@ if (has_field(fields_in,'ud')) then
   ud_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,:) = ua_in
   vd_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,:) = va_in
 
+  ud_in%space = 'magnitude'
+  vd_in%space = 'magnitude'
+
   deallocate(ua_in, va_in)
 
 endif
@@ -238,13 +241,16 @@ if (do_d2a) then
   allocate(ud_ou(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
   allocate(vd_ou(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
 
-  call d2a(geom_ou, ua_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,:), &
+  call a2d(geom_ou, ua_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,:), &
                     va_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,:), &
                     ud_ou, vd_ou)
 
   ! Overwrite field with A-Grid for doing interpolation
   ua_ou%array = ud_ou
   va_ou%array = vd_ou
+
+  ua_ou%space = 'vector'
+  va_ou%space = 'vector'
 
   deallocate(ud_ou, vd_ou)
 
