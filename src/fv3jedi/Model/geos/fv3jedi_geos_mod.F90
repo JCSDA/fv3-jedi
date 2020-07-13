@@ -21,10 +21,13 @@ use fv3jedi_field_mod,     only: fv3jedi_field, pointer_field, field_clen, has_f
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state
+use fckit_mpi_module,      only: fckit_mpi_comm
 
 use MPI
 use ESMF
 use MAPL_CapMod, only: MAPL_Cap
+use MAPL_ApplicationSupport
+
 use MAPL_Mod
 use MAPL_Profiler, only: get_global_time_profiler, BaseProfiler, TimeProfiler
 use GEOS_GcmGridCompMod, only: GEOS_Gcm => SetServices
@@ -45,7 +48,7 @@ public :: geos_finalize
 type :: geos_model
   type(MAPL_Cap) :: cap
   integer :: GEOSsubsteps
-  class(BaseProfiler), pointer :: t_p
+  type(fckit_mpi_comm) :: f_comm
   integer :: isc, iec, jsc, jec, npz
 end type geos_model
 
@@ -85,6 +88,7 @@ self%iec = geom%iec
 self%jsc = geom%jsc
 self%jec = geom%jec
 self%npz = geom%npz
+self%f_comm = geom%f_comm
 
 ! Set up options for the cap
 ! --------------------------
@@ -117,12 +121,6 @@ call fill_comm(mapl_comm%io)
 ! -----------------------------------------
 subcommunicator = self%cap%create_member_subcommunicator(self%cap%get_comm_world(), rc=rc)
 call self%cap%initialize_io_clients_servers(subcommunicator, rc = rc)
-
-! Initialize profiler
-! -------------------
-self%t_p => get_global_time_profiler()
-self%t_p = TimeProfiler('All', comm_world = mapl_comm%esmf%comm)
-call self%t_p%start()
 
 ! Initialize ESMF
 ! ---------------
@@ -182,17 +180,14 @@ integer :: rc
 
 ! Finalize GEOS
 ! -------------
-!call self%cap%cap_gc%finalize(rc = rc);
-!if (rc.ne.0) call abor1_ftn("geos_mod: finalize failed")
+call self%cap%cap_gc%finalize(rc = rc);
+if (rc.ne.0) call abor1_ftn("geos_mod: finalize failed")
+call self%cap%finalize_io_clients_servers()
+call MAPL_Finalize(comm=self%f_comm%communicator())
 
 ! Finalize ESMF
 ! -------------
-!call ESMF_Finalize(endflag=ESMF_END_KEEPMPI,rc=rc)
-
-! Finalize profiler
-! -----------------
-!call self%t_p%stop()
-!call report_profiling() !Private to MAPL_Cap
+call ESMF_Finalize(endflag=ESMF_END_KEEPMPI,rc=rc)
 
 end subroutine geos_delete
 
