@@ -144,6 +144,18 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem007)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem008)
 LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# FV3-LAM-CMAQ test files
+LAM_CMAQ_FILES_BKG(Data/inputs/lam_cmaq/bkg 20190917.000000)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq/bkg)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq/INPUT)
+LINK_FILES( "${fv3jedi_lam_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
+list( APPEND fv3jedi_test_lamfiles
+Data/inputs/lam_cmaq/INPUT/grid_spec.nc
+Data/inputs/lam_cmaq/INPUT/C48_grid.tile7.nc
+)
+LINK_FILES( "${fv3jedi_test_lamfiles}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # FV3 config files
 # ----------------
@@ -152,6 +164,7 @@ list( APPEND fv3jedi_test_fv3files
 Data/fv3files/akbk64.nc4
 Data/fv3files/akbk72.nc4
 Data/fv3files/field_table
+Data/fv3files/field_table_lam_cmaq
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_gfs_c12.nml
 Data/fv3files/input_gfs_c12_p12.nml
@@ -160,6 +173,7 @@ Data/fv3files/input_gfs_c24_p12.nml
 Data/fv3files/input_geos_c12.nml
 Data/fv3files/input_geos_c12_p12.nml
 Data/fv3files/input_geos_c24.nml
+Data/fv3files/input_lam_cmaq.nml
 Data/fv3files/inputpert_4dvar.nml
 Data/fv3files/inputpert_fsoi.nml
 )
@@ -220,8 +234,10 @@ list( APPEND fv3jedi_test_input
   testinput/forecast_gfs.yaml
   testinput/geometry_geos.yaml
   testinput/geometry_gfs.yaml
+  testinput/geometry_lam_cmaq.yaml
   testinput/geometry_iterator_geos.yaml
   testinput/geometry_iterator_gfs.yaml
+  testinput/geometry_iterator_lam_cmaq.yaml
   testinput/getvalues_geos.yaml
   testinput/getvalues_gfs.yaml
   testinput/hofx_fv3-geos.yaml
@@ -261,6 +277,7 @@ list( APPEND fv3jedi_test_input
   testinput/state_geosaero.yaml
   testinput/state_geos.yaml
   testinput/state_gfs.yaml
+  testinput/state_lam_cmaq.yaml
   testinput/test_time.yaml
   testinput/varcha_geos.yaml
   testinput/varcha_gfs.yaml
@@ -324,7 +341,9 @@ LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 list( APPEND fv3jedi_field_sets
 Data/fieldsets/aerosols_gfs.yaml
 Data/fieldsets/aerosols_geos.yaml
+Data/fieldsets/lam_cmaq.yaml
 Data/fieldsets/dynamics.yaml
+Data/fieldsets/dynamics_lam_cmaq.yaml
 Data/fieldsets/ufo.yaml
 )
 
@@ -571,6 +590,11 @@ ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
                   ARGS    testinput/geometry_geos.yaml
                   MPI     6 )
 
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_lam_cmaq
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
+                  ARGS    testinput/geometry_lam_cmaq.yaml
+                  MPI     6 )
+
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_gfs
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometryiterator.x
                   ARGS    testinput/geometry_iterator_gfs.yaml
@@ -579,6 +603,11 @@ ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_gfs
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_geos
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometryiterator.x
                   ARGS    testinput/geometry_iterator_geos.yaml
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_lam_cmaq
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometryiterator.x
+                  ARGS    testinput/geometry_iterator_lam_cmaq.yaml
                   MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_crtm_surface_for_geos
@@ -599,6 +628,11 @@ ecbuild_add_test( TARGET  test_fv3jedi_state_geos
                   MPI     6
                   LIBS    fv3jedi
                   TEST_DEPENDS test_fv3jedi_crtm_surface_for_geos )
+
+ecbuild_add_test( TARGET  test_fv3jedi_state_lam_cmaq
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_state.x
+                  ARGS    testinput/state_lam_cmaq.yaml
+                  MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_increment_gfs
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_increment.x

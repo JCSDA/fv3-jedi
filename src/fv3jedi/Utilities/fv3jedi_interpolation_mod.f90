@@ -156,7 +156,6 @@ endif
 ! Interpolate all fields
 ! ---------------------
 do var = 1,nf
-
   if (.not. fields_in(var)%integerfield .and. trim(fields_in(var)%space) == 'magnitude' .and. &
       trim(self%interp_type) == 'bump') then
 
@@ -245,7 +244,7 @@ if (do_d2a) then
                     va_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,:), &
                     ud_ou, vd_ou)
 
-  ! Overwrite field with A-Grid for doing interpolation
+  ! Put new D grid back into arrays
   ua_ou%array = ud_ou
   va_ou%array = vd_ou
 

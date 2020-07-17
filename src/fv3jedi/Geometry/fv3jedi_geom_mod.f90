@@ -156,7 +156,7 @@ self%jsc = Atm(1)%bd%jsc
 self%jec = Atm(1)%bd%jec
 
 self%ntile  = gtile
-self%ntiles = 6
+self%ntiles = Atm(1)%flagstruct%ntiles
 
 self%npx = Atm(1)%npx
 self%npy = Atm(1)%npy
@@ -323,7 +323,7 @@ deallocate(Atm)
 deallocate(grids_on_this_pe)
 
 !Resetup domain to avoid risk of copied pointers
-call setup_domain( self%domain_fix, self%npx-1, self%npx-1, &
+call setup_domain( self%domain_fix, self%npx-1, self%npy-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
 
 self%domain => self%domain_fix
@@ -602,7 +602,7 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
  integer,          intent(in)    :: halo
 
  integer                              :: pe, npes, npes_per_tile, tile
- integer                              :: num_contact
+ integer                              :: num_contact, num_alloc
  integer                              :: n, layout(2)
  integer, allocatable, dimension(:,:) :: global_indices, layout2D
  integer, allocatable, dimension(:)   :: pe_start, pe_end
@@ -636,67 +636,83 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
        "setup_domain: layout(2) must be divided by io_layout(2)")
 
   allocate(global_indices(4,ntiles), layout2D(2,ntiles), pe_start(ntiles), pe_end(ntiles) )
+
+  ! select case based off of 1 or 6 tiles
+  select case(ntiles)
+  case ( 1 ) ! FV3-SAR
+    num_contact = 0
+  case ( 6 ) ! FV3 global
+    num_contact = 12
+  case default
+    call mpp_error(FATAL, "setup_domain: ntiles != 1 or 6")
+  end select
+
   do n = 1, ntiles
      global_indices(:,n) = (/1,nx,1,ny/)
      layout2D(:,n)       = layout
      pe_start(n)         = (n-1)*npes_per_tile
      pe_end(n)           = n*npes_per_tile-1
   enddo
-
+  num_alloc = max(1, num_contact)
   ! this code copied from domain_decomp in fv_mp_mod.f90
-  num_contact = 12
-  allocate(tile1(num_contact), tile2(num_contact) )
+  allocate(tile1(num_alloc), tile2(num_alloc) )
   allocate(tile_id(ntiles))
-  allocate(istart1(num_contact), iend1(num_contact), jstart1(num_contact), jend1(num_contact) )
-  allocate(istart2(num_contact), iend2(num_contact), jstart2(num_contact), jend2(num_contact) )
-  !--- Contact line 1, between tile 1 (EAST) and tile 2 (WEST)
-  tile1(1) = 1; tile2(1) = 2
-  istart1(1) = nx; iend1(1) = nx; jstart1(1) = 1;  jend1(1) = ny
-  istart2(1) = 1;  iend2(1) = 1;  jstart2(1) = 1;  jend2(1) = ny
-  !--- Contact line 2, between tile 1 (NORTH) and tile 3 (WEST)
-  tile1(2) = 1; tile2(2) = 3
-  istart1(2) = 1;  iend1(2) = nx; jstart1(2) = ny; jend1(2) = ny
-  istart2(2) = 1;  iend2(2) = 1;  jstart2(2) = ny; jend2(2) = 1
-  !--- Contact line 3, between tile 1 (WEST) and tile 5 (NORTH)
-  tile1(3) = 1; tile2(3) = 5
-  istart1(3) = 1;  iend1(3) = 1;  jstart1(3) = 1;  jend1(3) = ny
-  istart2(3) = nx; iend2(3) = 1;  jstart2(3) = ny; jend2(3) = ny
-  !--- Contact line 4, between tile 1 (SOUTH) and tile 6 (NORTH)
-  tile1(4) = 1; tile2(4) = 6
-  istart1(4) = 1;  iend1(4) = nx; jstart1(4) = 1;  jend1(4) = 1
-  istart2(4) = 1;  iend2(4) = nx; jstart2(4) = ny; jend2(4) = ny
-  !--- Contact line 5, between tile 2 (NORTH) and tile 3 (SOUTH)
-  tile1(5) = 2; tile2(5) = 3
-  istart1(5) = 1;  iend1(5) = nx; jstart1(5) = ny; jend1(5) = ny
-  istart2(5) = 1;  iend2(5) = nx; jstart2(5) = 1;  jend2(5) = 1
-  !--- Contact line 6, between tile 2 (EAST) and tile 4 (SOUTH)
-  tile1(6) = 2; tile2(6) = 4
-  istart1(6) = nx; iend1(6) = nx; jstart1(6) = 1;  jend1(6) = ny
-  istart2(6) = nx; iend2(6) = 1;  jstart2(6) = 1;  jend2(6) = 1
-  !--- Contact line 7, between tile 2 (SOUTH) and tile 6 (EAST)
-  tile1(7) = 2; tile2(7) = 6
-  istart1(7) = 1;  iend1(7) = nx; jstart1(7) = 1;  jend1(7) = 1
-  istart2(7) = nx; iend2(7) = nx; jstart2(7) = ny; jend2(7) = 1
-  !--- Contact line 8, between tile 3 (EAST) and tile 4 (WEST)
-  tile1(8) = 3; tile2(8) = 4
-  istart1(8) = nx; iend1(8) = nx; jstart1(8) = 1;  jend1(8) = ny
-  istart2(8) = 1;  iend2(8) = 1;  jstart2(8) = 1;  jend2(8) = ny
-  !--- Contact line 9, between tile 3 (NORTH) and tile 5 (WEST)
-  tile1(9) = 3; tile2(9) = 5
-  istart1(9) = 1;  iend1(9) = nx; jstart1(9) = ny; jend1(9) = ny
-  istart2(9) = 1;  iend2(9) = 1;  jstart2(9) = ny; jend2(9) = 1
-  !--- Contact line 10, between tile 4 (NORTH) and tile 5 (SOUTH)
-  tile1(10) = 4; tile2(10) = 5
-  istart1(10) = 1;  iend1(10) = nx; jstart1(10) = ny; jend1(10) = ny
-  istart2(10) = 1;  iend2(10) = nx; jstart2(10) = 1;  jend2(10) = 1
-  !--- Contact line 11, between tile 4 (EAST) and tile 6 (SOUTH)
-  tile1(11) = 4; tile2(11) = 6
-  istart1(11) = nx; iend1(11) = nx; jstart1(11) = 1;  jend1(11) = ny
-  istart2(11) = nx; iend2(11) = 1;  jstart2(11) = 1;  jend2(11) = 1
-  !--- Contact line 12, between tile 5 (EAST) and tile 6 (WEST)
-  tile1(12) = 5; tile2(12) = 6
-  istart1(12) = nx; iend1(12) = nx; jstart1(12) = 1;  jend1(12) = ny
-  istart2(12) = 1;  iend2(12) = 1;  jstart2(12) = 1;  jend2(12) = ny
+  allocate(istart1(num_alloc), iend1(num_alloc), jstart1(num_alloc), jend1(num_alloc) )
+  allocate(istart2(num_alloc), iend2(num_alloc), jstart2(num_alloc), jend2(num_alloc) )
+  ! select case based off of 1 or 6 tiles
+  select case(ntiles)
+  case ( 1 ) ! FV3-SAR
+    ! No contacts, do nothing
+  case ( 6 ) ! FV3 global
+    !--- Contact line 1, between tile 1 (EAST) and tile 2 (WEST)
+    tile1(1) = 1; tile2(1) = 2
+    istart1(1) = nx; iend1(1) = nx; jstart1(1) = 1;  jend1(1) = ny
+    istart2(1) = 1;  iend2(1) = 1;  jstart2(1) = 1;  jend2(1) = ny
+    !--- Contact line 2, between tile 1 (NORTH) and tile 3 (WEST)
+    tile1(2) = 1; tile2(2) = 3
+    istart1(2) = 1;  iend1(2) = nx; jstart1(2) = ny; jend1(2) = ny
+    istart2(2) = 1;  iend2(2) = 1;  jstart2(2) = ny; jend2(2) = 1
+    !--- Contact line 3, between tile 1 (WEST) and tile 5 (NORTH)
+    tile1(3) = 1; tile2(3) = 5
+    istart1(3) = 1;  iend1(3) = 1;  jstart1(3) = 1;  jend1(3) = ny
+    istart2(3) = nx; iend2(3) = 1;  jstart2(3) = ny; jend2(3) = ny
+    !--- Contact line 4, between tile 1 (SOUTH) and tile 6 (NORTH)
+    tile1(4) = 1; tile2(4) = 6
+    istart1(4) = 1;  iend1(4) = nx; jstart1(4) = 1;  jend1(4) = 1
+    istart2(4) = 1;  iend2(4) = nx; jstart2(4) = ny; jend2(4) = ny
+    !--- Contact line 5, between tile 2 (NORTH) and tile 3 (SOUTH)
+    tile1(5) = 2; tile2(5) = 3
+    istart1(5) = 1;  iend1(5) = nx; jstart1(5) = ny; jend1(5) = ny
+    istart2(5) = 1;  iend2(5) = nx; jstart2(5) = 1;  jend2(5) = 1
+    !--- Contact line 6, between tile 2 (EAST) and tile 4 (SOUTH)
+    tile1(6) = 2; tile2(6) = 4
+    istart1(6) = nx; iend1(6) = nx; jstart1(6) = 1;  jend1(6) = ny
+    istart2(6) = nx; iend2(6) = 1;  jstart2(6) = 1;  jend2(6) = 1
+    !--- Contact line 7, between tile 2 (SOUTH) and tile 6 (EAST)
+    tile1(7) = 2; tile2(7) = 6
+    istart1(7) = 1;  iend1(7) = nx; jstart1(7) = 1;  jend1(7) = 1
+    istart2(7) = nx; iend2(7) = nx; jstart2(7) = ny; jend2(7) = 1
+    !--- Contact line 8, between tile 3 (EAST) and tile 4 (WEST)
+    tile1(8) = 3; tile2(8) = 4
+    istart1(8) = nx; iend1(8) = nx; jstart1(8) = 1;  jend1(8) = ny
+    istart2(8) = 1;  iend2(8) = 1;  jstart2(8) = 1;  jend2(8) = ny
+    !--- Contact line 9, between tile 3 (NORTH) and tile 5 (WEST)
+    tile1(9) = 3; tile2(9) = 5
+    istart1(9) = 1;  iend1(9) = nx; jstart1(9) = ny; jend1(9) = ny
+    istart2(9) = 1;  iend2(9) = 1;  jstart2(9) = ny; jend2(9) = 1
+    !--- Contact line 10, between tile 4 (NORTH) and tile 5 (SOUTH)
+    tile1(10) = 4; tile2(10) = 5
+    istart1(10) = 1;  iend1(10) = nx; jstart1(10) = ny; jend1(10) = ny
+    istart2(10) = 1;  iend2(10) = nx; jstart2(10) = 1;  jend2(10) = 1
+    !--- Contact line 11, between tile 4 (EAST) and tile 6 (SOUTH)
+    tile1(11) = 4; tile2(11) = 6
+    istart1(11) = nx; iend1(11) = nx; jstart1(11) = 1;  jend1(11) = ny
+    istart2(11) = nx; iend2(11) = 1;  jstart2(11) = 1;  jend2(11) = 1
+    !--- Contact line 12, between tile 5 (EAST) and tile 6 (WEST)
+    tile1(12) = 5; tile2(12) = 6
+    istart1(12) = nx; iend1(12) = nx; jstart1(12) = 1;  jend1(12) = ny
+    istart2(12) = 1;  iend2(12) = 1;  jstart2(12) = 1;  jend2(12) = ny
+  end select
   is_symmetry = .true.
   do n = 1, ntiles
      tile_id(n) = n

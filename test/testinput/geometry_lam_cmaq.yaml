@@ -1,0 +1,11 @@
+Geometry:
+  nml_file: Data/fv3files/input_lam_cmaq.nml
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table_lam_cmaq
+  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
+  akbk: Data/fv3files/akbk64.nc4
+  npz: 64
+  FieldSets:
+    - FieldSet: Data/fieldsets/lam_cmaq.yaml
+    - FieldSet: Data/fieldsets/dynamics_lam_cmaq.yaml
+    - FieldSet: Data/fieldsets/ufo.yaml

@@ -109,6 +109,16 @@ void stageFv3Files(const eckit::Configuration &conf, const eckit::mpi::Comm & co
       if (symlink(nml_file_pert.c_str(), "./inputpert.nml"))
         ABORT("Unable to symlink inputpert.nml");
     }
+
+    // User may also want the INPUT directory linked (regional grid for example)
+    delete_file("INPUT");
+    if (conf.has("fv3_input_dir")) {
+      oops::Log::debug() << "Staging INPUT directory" << std::endl;
+      std::string fv3_input_dir = conf.getString("fv3_input_dir");
+      oops::Log::debug() << "INPUT/ --> " << fv3_input_dir << std::endl;
+      if (symlink(fv3_input_dir.c_str(), "./INPUT"))
+        ABORT("Unable to symlink INPUT");
+    }
   }
 
   // Nobody moves until files are in place

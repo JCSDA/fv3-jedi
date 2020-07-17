@@ -329,7 +329,6 @@ enddo
 !Get global values
 call f_comm%allreduce(zz,rms,fckit_mpi_sum())
 call f_comm%allreduce(ii,iisum,fckit_mpi_sum())
-
 rms = sqrt(rms/real(iisum,kind_real))
 
 end subroutine fields_rms
