@@ -1,34 +1,34 @@
 Test     : Initial state for member 1:
+Test     : Initial state for member 2:
+Test     : Initial state for member 3:
+Test     : Initial state for member 4:
+Test     : Initial state for member 5:
+Test     : Initial state for member 6:
+Test     : Initial state for member 7:
+Test     : Initial state for member 8:
+Test     : Initial state for member 9:
+Test     : Initial state for member 10:
+Test     : Background mean :
 Test     : H(x) for member 1:
 Test     : Radiosonde nobs= 2 Min=-6.90484, Max=-2.16022, RMS=5.11583
-Test     : Initial state for member 2:
 Test     : H(x) for member 2:
 Test     : Radiosonde nobs= 2 Min=-6.23055, Max=-2.04117, RMS=4.63606
-Test     : Initial state for member 3:
 Test     : H(x) for member 3:
 Test     : Radiosonde nobs= 2 Min=-6.39035, Max=-2.21036, RMS=4.78133
-Test     : Initial state for member 4:
 Test     : H(x) for member 4:
 Test     : Radiosonde nobs= 2 Min=-6.70063, Max=-1.89589, RMS=4.92407
-Test     : Initial state for member 5:
 Test     : H(x) for member 5:
 Test     : Radiosonde nobs= 2 Min=-6.16918, Max=-1.90565, RMS=4.56565
-Test     : Initial state for member 6:
 Test     : H(x) for member 6:
 Test     : Radiosonde nobs= 2 Min=-6.87396, Max=-1.5581, RMS=4.98392
-Test     : Initial state for member 7:
 Test     : H(x) for member 7:
 Test     : Radiosonde nobs= 2 Min=-6.35024, Max=-1.52916, RMS=4.61865
-Test     : Initial state for member 8:
 Test     : H(x) for member 8:
 Test     : Radiosonde nobs= 2 Min=-6.70284, Max=-1.60208, RMS=4.87313
-Test     : Initial state for member 9:
 Test     : H(x) for member 9:
 Test     : Radiosonde nobs= 2 Min=-6.73085, Max=-1.72271, RMS=4.91284
-Test     : Initial state for member 10:
 Test     : H(x) for member 10:
 Test     : Radiosonde nobs= 2 Min=-7.20947, Max=-1.8822, RMS=5.26873
-Test     : Background mean :
 Test     : H(x) ensemble background mean: 
 Test     : Radiosonde nobs= 2 Min=-6.62629, Max=-1.85075, RMS=4.86482
 Test     : background y - H(x): 
