@@ -526,11 +526,13 @@ if ( have_slmsk .and. have_f10m .and. has_field(xm%fields, 'sheleg') .and. &
   endif
 
   call crtm_surface( geom, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, u_srf, v_srf, &
-                      f10m, sss, land_type_index, vegetation_type_index, soil_type, water_area_fraction, &
-                      land_area_fraction, ice_area_fraction, surface_snow_area_fraction, leaf_area_index, surface_temperature_where_sea, &
-                      surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, volume_fraction_of_condensed_water_in_soil, &
-                      vegetation_area_fraction, soil_temperature, surface_snow_thickness, surface_wind_speed, &
-                      surface_wind_from_direction, sea_surface_salinity)
+                      f10m, sss, land_type_index, vegetation_type_index, soil_type, &
+                      water_area_fraction, land_area_fraction, ice_area_fraction, &
+                      surface_snow_area_fraction, leaf_area_index, surface_temperature_where_sea, &
+                      surface_temperature_where_land, surface_temperature_where_ice, &
+                      surface_temperature_where_snow, volume_fraction_of_condensed_water_in_soil, &
+                      vegetation_area_fraction, soil_temperature, surface_snow_thickness, &
+                      surface_wind_speed, surface_wind_from_direction, sea_surface_salinity)
 
   have_crtm_surface = .true.
 
@@ -817,7 +819,8 @@ if (allocated(surface_temperature_where_sea)) deallocate(surface_temperature_whe
 if (allocated(surface_temperature_where_land)) deallocate(surface_temperature_where_land)
 if (allocated(surface_temperature_where_ice)) deallocate(surface_temperature_where_ice)
 if (allocated(surface_temperature_where_snow)) deallocate(surface_temperature_where_snow)
-if (allocated(volume_fraction_of_condensed_water_in_soil)) deallocate(volume_fraction_of_condensed_water_in_soil)
+if (allocated(volume_fraction_of_condensed_water_in_soil)) &
+                                              deallocate(volume_fraction_of_condensed_water_in_soil)
 if (allocated(vegetation_area_fraction)) deallocate(vegetation_area_fraction)
 if (allocated(soil_temperature)) deallocate(soil_temperature)
 if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)

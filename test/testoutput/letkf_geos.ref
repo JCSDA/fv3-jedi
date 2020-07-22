@@ -34,28 +34,28 @@ Test     : Radiosonde nobs= 2 Min=-6.62629, Max=-1.85075, RMS=4.86482
 Test     : background y - H(x): 
 Test     : Radiosonde nobs= 2 Min=-1.14925, Max=1.22629, RMS=1.18839
 Test     : H(x) for member 1:
-Test     : Radiosonde nobs= 2 Min=-6.89464, Max=-2.17055, RMS=5.11113
+Test     : Radiosonde nobs= 2 Min=-6.8972, Max=-2.17321, RMS=5.11342
 Test     : H(x) for member 2:
-Test     : Radiosonde nobs= 2 Min=-6.21471, Max=-2.05031, RMS=4.62744
+Test     : Radiosonde nobs= 2 Min=-6.21105, Max=-2.05181, RMS=4.62531
 Test     : H(x) for member 3:
-Test     : Radiosonde nobs= 2 Min=-6.37588, Max=-2.22105, RMS=4.77414
+Test     : Radiosonde nobs= 2 Min=-6.37369, Max=-2.22415, RMS=4.77341
 Test     : H(x) for member 4:
-Test     : Radiosonde nobs= 2 Min=-6.68869, Max=-1.90378, RMS=4.91746
+Test     : Radiosonde nobs= 2 Min=-6.68935, Max=-1.90396, RMS=4.91795
 Test     : H(x) for member 5:
-Test     : Radiosonde nobs= 2 Min=-6.15276, Max=-1.91343, RMS=4.55619
+Test     : Radiosonde nobs= 2 Min=-6.14858, Max=-1.91377, RMS=4.55343
 Test     : H(x) for member 6:
-Test     : Radiosonde nobs= 2 Min=-6.86337, Max=-1.56293, RMS=4.97738
+Test     : Radiosonde nobs= 2 Min=-6.86566, Max=-1.55997, RMS=4.97849
 Test     : H(x) for member 7:
-Test     : Radiosonde nobs= 2 Min=-6.33532, Max=-1.53362, RMS=4.60913
+Test     : Radiosonde nobs= 2 Min=-6.33274, Max=-1.53038, RMS=4.60683
 Test     : H(x) for member 8:
-Test     : Radiosonde nobs= 2 Min=-6.69089, Max=-1.60725, RMS=4.86576
+Test     : Radiosonde nobs= 2 Min=-6.69154, Max=-1.60473, RMS=4.86579
 Test     : H(x) for member 9:
-Test     : Radiosonde nobs= 2 Min=-6.71917, Max=-1.72903, RMS=4.90595
+Test     : Radiosonde nobs= 2 Min=-6.72006, Max=-1.72759, RMS=4.90631
 Test     : H(x) for member 10:
-Test     : Radiosonde nobs= 2 Min=-7.20183, Max=-1.89002, RMS=5.26491
+Test     : Radiosonde nobs= 2 Min=-7.20711, Max=-1.89013, RMS=5.26854
 Test     : H(x) ensemble analysis mean: 
-Test     : Radiosonde nobs= 2 Min=-6.61372, Max=-1.8582, RMS=4.85769
+Test     : Radiosonde nobs= 2 Min=-6.6137, Max=-1.85797, RMS=4.85763
 Test     : analysis y - H(x): 
-Test     : Radiosonde nobs= 2 Min=-1.1418, Max=1.21372, RMS=1.17831
+Test     : Radiosonde nobs= 2 Min=-1.14203, Max=1.2137, RMS=1.17841
 Test     : ombg RMS: 1.18839
-Test     : oman RMS: 1.17831
+Test     : oman RMS: 1.17841

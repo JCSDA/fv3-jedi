@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 module fv3jedi_state_interface_mod
 
@@ -23,13 +23,14 @@ use fv3jedi_increment_utils_mod, only: fv3jedi_increment, fv3jedi_increment_regi
 private
 public :: fv3jedi_state_registry
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) bind(c,name='fv3jedi_state_create_f90')
+subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) &
+           bind(c,name='fv3jedi_state_create_f90')
 
 implicit none
 integer(c_int), intent(inout)  :: c_key_self
@@ -50,7 +51,7 @@ call create(self, geom, vars)
 
 end subroutine fv3jedi_state_create_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_delete_c(c_key_self) bind(c,name='fv3jedi_state_delete_f90')
 
@@ -66,7 +67,7 @@ call fv3jedi_state_registry%remove(c_key_self)
 
 end subroutine fv3jedi_state_delete_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_zero_c(c_key_self) bind(c,name='fv3jedi_state_zero_f90')
 
@@ -79,7 +80,7 @@ call zeros(self)
 
 end subroutine fv3jedi_state_zero_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_copy_c(c_key_self,c_key_rhs) bind(c,name='fv3jedi_state_copy_f90')
 
@@ -96,7 +97,7 @@ call copy(self, rhs)
 
 end subroutine fv3jedi_state_copy_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_axpy_c(c_key_self,c_zz,c_key_rhs) bind(c,name='fv3jedi_state_axpy_f90')
 
@@ -117,9 +118,10 @@ call axpy(self,zz,rhs)
 
 end subroutine fv3jedi_state_axpy_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_add_incr_c(c_key_geom,c_key_self,c_key_rhs) bind(c,name='fv3jedi_state_add_incr_f90')
+subroutine fv3jedi_state_add_incr_c(c_key_geom,c_key_self,c_key_rhs) &
+           bind(c,name='fv3jedi_state_add_incr_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_geom
@@ -137,9 +139,10 @@ call add_incr(geom,self,rhs)
 
 end subroutine fv3jedi_state_add_incr_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_change_resol_c(c_key_state,c_key_geom,c_key_rhs,c_key_geom_rhs) bind(c,name='fv3jedi_state_change_resol_f90')
+subroutine fv3jedi_state_change_resol_c(c_key_state,c_key_geom,c_key_rhs,c_key_geom_rhs) &
+           bind(c,name='fv3jedi_state_change_resol_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_state
@@ -159,9 +162,10 @@ call change_resol(state,geom,rhs,geom_rhs)
 
 end subroutine fv3jedi_state_change_resol_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_read_file_c(c_key_geom, c_key_state, c_conf, c_dt) bind(c,name='fv3jedi_state_read_file_f90')
+subroutine fv3jedi_state_read_file_c(c_key_geom, c_key_state, c_conf, c_dt) &
+           bind(c,name='fv3jedi_state_read_file_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State
@@ -180,9 +184,10 @@ call read_file(geom, state, c_conf, fdate)
 
 end subroutine fv3jedi_state_read_file_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf, c_dt) bind(c,name='fv3jedi_state_analytic_init_f90')
+subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf, c_dt) &
+           bind(c,name='fv3jedi_state_analytic_init_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State
@@ -201,9 +206,10 @@ call analytic_IC(state, geom, c_conf, fdate)
 
 end subroutine fv3jedi_state_analytic_init_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_write_file_c(c_key_geom, c_key_state, c_conf, c_dt) bind(c,name='fv3jedi_state_write_file_f90')
+subroutine fv3jedi_state_write_file_c(c_key_geom, c_key_state, c_conf, c_dt) &
+           bind(c,name='fv3jedi_state_write_file_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_state  !< State
@@ -222,7 +228,7 @@ call write_file(geom, state, c_conf, fdate)
 
 end subroutine fv3jedi_state_write_file_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_gpnorm_c(c_key_state, kf, pstat) bind(c,name='fv3jedi_state_gpnorm_f90')
 
@@ -248,7 +254,7 @@ enddo
 
 end subroutine fv3jedi_state_gpnorm_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_print_c(c_key_self) bind(c,name='fv3jedi_state_print_f90')
 
@@ -262,7 +268,7 @@ call state_print(self)
 
 end subroutine fv3jedi_state_print_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_rms_c(c_key_state, prms) bind(c,name='fv3jedi_state_rms_f90')
 
@@ -281,7 +287,7 @@ prms = zz
 
 end subroutine fv3jedi_state_rms_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_state_sizes_f90')
 
@@ -298,6 +304,6 @@ ny = self%npy
 
 end subroutine fv3jedi_state_sizes_c
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_state_interface_mod

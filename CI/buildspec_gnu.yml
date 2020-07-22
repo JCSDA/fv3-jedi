@@ -133,7 +133,7 @@ phases:
         && echo $CXX
         && echo $FC
         && CC=mpicc CXX=mpicxx FC=mpifort
-        && ecbuild /jcsda/fv3-bundle/ -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test
+        && ecbuild /jcsda/fv3-bundle/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test
         && cd fv3-jedi
         && make -j8"
 

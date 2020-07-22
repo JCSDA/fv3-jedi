@@ -62,8 +62,10 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
  real(kind=kind_real) :: windangle, windratio
  real(kind=kind_real), parameter :: windscale = 999999.0_kind_real
  real(kind=kind_real), parameter :: windlimit = 0.0001_kind_real
- real(kind=kind_real), parameter :: quadcof(4,2) = reshape((/ 0.0_kind_real,  1.0_kind_real, 1.0_kind_real,  2.0_kind_real,  &
-                                                              1.0_kind_real, -1.0_kind_real, 1.0_kind_real, -1.0_kind_real /), (/4, 2/))
+ real(kind=kind_real), parameter :: quadcof(4,2) = reshape((/ 0.0_kind_real,  1.0_kind_real, &
+                                                              1.0_kind_real,  2.0_kind_real, &
+                                                              1.0_kind_real, -1.0_kind_real, &
+                                                              1.0_kind_real, -1.0_kind_real /), (/4, 2/))
 
  !In GSI these calculations are done after interpolation to obs location
 

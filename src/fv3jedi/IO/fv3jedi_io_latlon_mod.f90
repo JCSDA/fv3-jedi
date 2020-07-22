@@ -342,11 +342,12 @@ call nccheck( nf90_inq_dimid(ncid, "time", t_dimid), "nf90_inq_dimid time" )
 dimids =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
 
 ! Write field to the file
-call nccheck( nf90_def_var( ncid, trim(fieldname), NF90_DOUBLE, dimids, varid), "nf90_def_var"//trim(fieldname)   )
+call nccheck( nf90_def_var( ncid, trim(fieldname), NF90_DOUBLE, dimids, varid), "nf90_def_var"//trim(fieldname) )
 call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
 if (llgeom%thispe) then
-  call nccheck( nf90_put_var( ncid, varid, llfield, start = llgeom%istart3, count = llgeom%icount3 ), "nf90_put_var"//trim(fieldname) )
+  call nccheck( nf90_put_var( ncid, varid, llfield, start = llgeom%istart3, count = llgeom%icount3 ), &
+                "nf90_put_var"//trim(fieldname) )
 endif
 
 ! Close file

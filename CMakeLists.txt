@@ -39,8 +39,15 @@ set( FV3JEDI_LINKER_LANGUAGE CXX )
 # Standard compiler flags
 ################################################################################
 
-include( fv3jedi_compiler_flags )
 include( fv3jedi_extra_macros )
+
+################################################################################
+# Set default model to GFDL_atmos_cubed_sphere
+################################################################################
+
+if (NOT FV3_FORECAST_MODEL MATCHES GEOS AND NOT FV3_FORECAST_MODEL MATCHES UFS)
+  set(FV3_FORECAST_MODEL "FV3CORE")
+endif()
 
 ################################################################################
 # Dependencies
@@ -74,38 +81,28 @@ include_directories( ${UFO_INCLUDE_DIRS} )
 ecbuild_use_package( PROJECT femps )
 include_directories( ${FEMPS_INCLUDE_DIRS} )
 
-# fms
-if (NOT ${BUILD_WITH_MODEL} MATCHES "GEOS" AND NOT ${BUILD_WITH_MODEL} MATCHES "UFS")
-  ecbuild_use_package( PROJECT fms )
-  include_directories( ${FMS_INCLUDE_DIRS} )
-endif()
+#OpenMP
+find_package( OpenMP COMPONENTS Fortran )
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
 ecbuild_include_mpi()
 link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 
-# Optional package - linear model
-if (${BUILD_WITH_LINEARMODEL})
-  ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
-  include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
-endif()
-
-# Check for sensible model choice
-# -------------------------------
-if (NOT ${BUILD_WITH_MODEL} MATCHES "FV3CORE" AND NOT ${BUILD_WITH_MODEL} MATCHES "GEOS" AND
-    NOT ${BUILD_WITH_MODEL} MATCHES "GFS")
-  message( FATAL_ERROR "BUILD_WITH_MODEL must be FV3CORE, GEOS or GFS" )
+# fms
+if (FV3_FORECAST_MODEL MATCHES "FV3CORE") # OR FV3_FORECAST_MODEL MATCHES "UFS")
+  ecbuild_use_package( PROJECT fms REQUIRED )
+  include_directories( ${FMS_INCLUDE_DIRS} )
 endif()
 
 # fv3
-if (${BUILD_WITH_MODEL} MATCHES "FV3CORE")
-  ecbuild_use_package( PROJECT fv3 )
+if (FV3_FORECAST_MODEL MATCHES "FV3CORE" OR NOT FV3_FORECAST_MODEL)
+  ecbuild_use_package( PROJECT fv3 REQUIRED )
   include_directories( ${FV3_INCLUDE_DIRS} )
 endif()
 
 # geos
-if (${BUILD_WITH_MODEL} MATCHES "GEOS")
+if (FV3_FORECAST_MODEL MATCHES "GEOS")
   if (NOT DEFINED GEOSgcm_FOUND)
     find_package(MAPL REQUIRED PATHS ${GEOS_PATH}/lib/cmake/MAPL )
     find_package(GEOSgcm REQUIRED PATHS ${GEOS_PATH}/lib/cmake/GEOSgcm )
@@ -119,11 +116,14 @@ if (${BUILD_WITH_MODEL} MATCHES "GEOS")
   link_libraries(GEOSgcm_GridComp)
 endif()
 
-# gfs
-if (${BUILD_WITH_MODEL} MATCHES "GFS")
+# ufs
+if (FV3_FORECAST_MODEL MATCHES "UFS")
   #ToDo
 endif()
 
+# Linear model
+ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
+include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
 
 ################################################################################
 # Export package info

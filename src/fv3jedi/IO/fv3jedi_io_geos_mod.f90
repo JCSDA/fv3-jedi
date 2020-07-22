@@ -261,11 +261,16 @@ if (.not. f_conf%get('tiledim',self%tiledim(2))) self%tiledim(2) = .true.
 ! User can optionally specify the file names
 ! ------------------------------------------
 n = 0
-n = n+1; call string_from_conf(f_conf,"filename_bkgd",self%filenames_conf(1),self%filenames_default(1),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_crtm",self%filenames_conf(2),self%filenames_default(2),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_core",self%filenames_conf(3),self%filenames_default(3),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_mois",self%filenames_conf(4),self%filenames_default(4),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_surf",self%filenames_conf(5),self%filenames_default(5),memberswap=.true.)
+n = n+1; call string_from_conf(f_conf,"filename_bkgd",self%filenames_conf(1), &
+                               self%filenames_default(1),memberswap=.true.)
+n = n+1; call string_from_conf(f_conf,"filename_crtm",self%filenames_conf(2), &
+                               self%filenames_default(2),memberswap=.true.)
+n = n+1; call string_from_conf(f_conf,"filename_core",self%filenames_conf(3), &
+                               self%filenames_default(3),memberswap=.true.)
+n = n+1; call string_from_conf(f_conf,"filename_mois",self%filenames_conf(4), &
+                               self%filenames_default(4),memberswap=.true.)
+n = n+1; call string_from_conf(f_conf,"filename_surf",self%filenames_conf(5), &
+                               self%filenames_default(5),memberswap=.true.)
 
 ! Sanity check
 ! ------------
@@ -340,8 +345,10 @@ if (self%iam_io_proc) then
   enddo
 
   call nccheck ( nf90_inq_varid(self%ncid(df), "time", varid), "nf90_inq_varid time" )
-  call nccheck ( nf90_get_att(self%ncid(df), varid, "begin_date", intdate), "nf90_get_att begin_date" )
-  call nccheck ( nf90_get_att(self%ncid(df), varid, "begin_time", inttime), "nf90_get_att begin_time" )
+  call nccheck ( nf90_get_att(self%ncid(df), varid, "begin_date", intdate), &
+                 "nf90_get_att begin_date" )
+  call nccheck ( nf90_get_att(self%ncid(df), varid, "begin_time", inttime), &
+                 "nf90_get_att begin_time" )
 
   ! Pad with leading zeros if need be
   write(cdate,"(I0.8)") intdate
@@ -486,9 +493,11 @@ do var = 1,size(fields)
       endif
     else
       if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, 1, arrayg, fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+        call scatter_tile(geom, self%tcomm, 1, arrayg, &
+                          fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
       else
-        fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+        fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = &
+                                                         arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
       endif
     endif
 
@@ -642,13 +651,15 @@ if (self%iam_io_proc) then
       endif
 
       ! Main dimensions
-      call nccheck ( nf90_def_dim(self%ncid(n), trim(XdimVar), geom%npx-1,         self%x_dimid), "nf90_def_dim "//trim(XdimVar) )
-      call nccheck ( nf90_def_dim(self%ncid(n), trim(YdimVar), ymult*(geom%npy-1), self%y_dimid), "nf90_def_dim "//trim(YdimVar) )
+      call nccheck ( nf90_def_dim(self%ncid(n), trim(XdimVar), geom%npx-1,         self%x_dimid), &
+                     "nf90_def_dim "//trim(XdimVar) )
+      call nccheck ( nf90_def_dim(self%ncid(n), trim(YdimVar), ymult*(geom%npy-1), self%y_dimid), &
+                     "nf90_def_dim "//trim(YdimVar) )
       if (self%tiledim(n)) &
-        call nccheck ( nf90_def_dim(self%ncid(n), "n",   geom%ntiles, self%n_dimid),  "nf90_def_dim n"   )
-      call nccheck ( nf90_def_dim(self%ncid(n), "lev",  geom%npz,    self%z_dimid),  "nf90_def_dim lev"  )
+        call nccheck ( nf90_def_dim(self%ncid(n), "n",  geom%ntiles, self%n_dimid), "nf90_def_dim n"    )
+      call nccheck ( nf90_def_dim(self%ncid(n), "lev",  geom%npz,    self%z_dimid), "nf90_def_dim lev"  )
       call nccheck ( nf90_def_dim(self%ncid(n), "edge", geom%npz+1,  self%e_dimid), "nf90_def_dim edge" )
-      call nccheck ( nf90_def_dim(self%ncid(n), "time", 1,           self%t_dimid),  "nf90_def_dim time" )
+      call nccheck ( nf90_def_dim(self%ncid(n), "time", 1,           self%t_dimid), "nf90_def_dim time" )
 
       ! In case the four level surface fields need to be written
       do var = 1,size(fields)
@@ -659,8 +670,10 @@ if (self%iam_io_proc) then
       enddo
 
       !Needed by GEOS for ingesting cube sphere field
-      call nccheck ( nf90_def_dim(self%ncid(n), "ncontact",          4, self%c_dimid), "nf90_def_dim ncontact" )
-      call nccheck ( nf90_def_dim(self%ncid(n), "orientationStrLen", 5, self%o_dimid), "nf90_def_dim orientationStrLend" )
+      call nccheck ( nf90_def_dim(self%ncid(n), "ncontact",          4, self%c_dimid), &
+                     "nf90_def_dim ncontact" )
+      call nccheck ( nf90_def_dim(self%ncid(n), "orientationStrLen", 5, self%o_dimid), &
+                     "nf90_def_dim orientationStrLend" )
 
       ! Dimension ID array for lat/lon arrays
       if (allocated(dimidsg)) deallocate(dimidsg)
@@ -684,12 +697,14 @@ if (self%iam_io_proc) then
       endif
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(XdimVar), NF90_DOUBLE, self%x_dimid, varid(vc)), "nf90_def_var "//trim(XdimVar) )
+      call nccheck( nf90_def_var(self%ncid(n), trim(XdimVar), NF90_DOUBLE, self%x_dimid, varid(vc)), &
+                    "nf90_def_var "//trim(XdimVar) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", "Fake Longitude for GrADS Compatibility") )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "units", "degrees_east") )
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(YdimVar), NF90_DOUBLE, self%y_dimid, varid(vc)), "nf90_def_var "//trim(YdimVar) )
+      call nccheck( nf90_def_var(self%ncid(n), trim(YdimVar), NF90_DOUBLE, self%y_dimid, varid(vc)), &
+                    "nf90_def_var "//trim(YdimVar) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", "Fake Latitude for GrADS Compatibility") )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "units", "degrees_north") )
 
@@ -726,11 +741,16 @@ if (self%iam_io_proc) then
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
 
       vc=vc+1; !(Needed by GEOS to ingest cube sphere analysis)
-      call nccheck( nf90_def_var(self%ncid(n), "cubed_sphere", NF90_CHAR, varid(vc)), "nf90_def_var cubed_sphere" )
-      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "grid_mapping_name", "gnomonic cubed-sphere"), "nf90_def_var time grid_mapping_name" )
-      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "file_format_version", "2.90"), "nf90_def_var time file_format_version" )
-      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "additional_vars", "contacts,orientation,anchor"), "nf90_def_var time additional_vars" )
-      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "gridspec_file", "C"//trim(cubesize)//"_gridspec.nc4"), "nf90_def_var gridspec_file" )
+      call nccheck( nf90_def_var(self%ncid(n), "cubed_sphere", NF90_CHAR, varid(vc)), &
+                    "nf90_def_var cubed_sphere" )
+      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "grid_mapping_name", "gnomonic cubed-sphere"), &
+                    "nf90_def_var time grid_mapping_name" )
+      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "file_format_version", "2.90"), &
+                    "nf90_def_var time file_format_version" )
+      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "additional_vars", "contacts,orientation,anchor"), &
+                    "nf90_def_var time additional_vars" )
+      call nccheck( nf90_put_att(self%ncid(n), varid(vc), "gridspec_file", "C"//trim(cubesize)//"_gridspec.nc4"), &
+                    "nf90_def_var gridspec_file" )
 
       !vc=vc+1; !(Needed by GEOS to ingest cube sphere analysis)
       !call nccheck( nf90_def_var(self%ncid(n), "ncontact", NF90_INT, varid(vc)), "nf90_def_var ncontact" )

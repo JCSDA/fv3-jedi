@@ -50,11 +50,21 @@ list( APPEND fv3jedi_src_files
   IO/fv3jedi_io_gfs_mod.f90
   IO/fv3jedi_io_latlon_mod.f90
   IO/fv3jedi_io_utils_mod.f90
+  Model/fv3lm/fv3jedi_fv3lm_interface_mod.F90
+  Model/fv3lm/fv3jedi_fv3lm_mod.f90
+  Model/fv3lm/ModelFV3LM.cc
+  Model/fv3lm/ModelFV3LM.h
+  Model/fv3lm/ModelFV3LM.interface.h
   Model/pseudo/fv3jedi_pseudo_interface_mod.F90
   Model/pseudo/fv3jedi_pseudo_mod.f90
   Model/pseudo/ModelPseudo.cc
   Model/pseudo/ModelPseudo.h
   Model/pseudo/ModelPseudo.interface.h
+  Model/traj/fv3jedi_traj_interface_mod.F90
+  Model/traj/fv3jedi_traj_mod.f90
+  Model/traj/ModelTraj.cc
+  Model/traj/ModelTraj.h
+  Model/traj/ModelTraj.interface.h
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h
@@ -126,34 +136,21 @@ list( APPEND fv3jedi_src_files
   VariableChanges/Utils/temperature_variables_mod.f90
   VariableChanges/Utils/wind_variables_mod.f90
   VariableChanges/instantiateVarChangeFactories.h
-  Tlm/TlmId.cc
-  Tlm/TlmId.h
-)
-
-# Precision of fv3 (needs a CMake flag)
-list( APPEND fv3jedi_src_files
-  Geometry/fv_prec_r8_mod.f90
-  #Geometry/fv_prec_r4_mod.f90
-)
-
-# Source files when building with fv3-jedi-linearmodel
-list( APPEND fv3jedi_linearmodel_src_files
-  Model/fv3lm/fv3jedi_fv3lm_interface_mod.F90
-  Model/fv3lm/fv3jedi_fv3lm_mod.f90
-  Model/fv3lm/ModelFV3LM.cc
-  Model/fv3lm/ModelFV3LM.h
-  Model/fv3lm/ModelFV3LM.interface.h
-  Model/traj/fv3jedi_traj_interface_mod.F90
-  Model/traj/fv3jedi_traj_mod.f90
-  Model/traj/ModelTraj.cc
-  Model/traj/ModelTraj.h
-  Model/traj/ModelTraj.interface.h
-  Tlm/Tlm.cc
-  Tlm/Tlm.interface.h
-  Tlm/Tlm.h
   Tlm/fv3jedi_tlm_interface_mod.F90
   Tlm/fv3jedi_tlm_mod.f90
+  Tlm/Tlm.cc
+  Tlm/Tlm.h
+  Tlm/TlmId.cc
+  Tlm/TlmId.h
+  Tlm/Tlm.interface.h
 )
+
+# Precision of fv3
+IF(FV3_PRECISION MATCHES "DOUBLE" OR NOT FV3_PRECISION)
+  list( APPEND fv3jedi_src_files Geometry/fv_prec_r8_mod.f90 )
+ELSE()
+  list( APPEND fv3jedi_src_files Geometry/fv_prec_r4_mod.f90 )
+ENDIF()
 
 # Source files when building with stand alone fv3 (GFDL_atmos_cubed_sphere)
 list( APPEND fv3jedi_fv3_src_files
@@ -176,7 +173,7 @@ list( APPEND fv3jedi_geos_src_files
 )
 
 # Source files when building with GFS
-list( APPEND fv3jedi_gfs_src_files
+list( APPEND fv3jedi_ufs_src_files
   Geometry/fv_init_mod.f90
   Model/gfs/fv3jedi_gfs_interface_mod.F90
   Model/gfs/fv3jedi_gfs_mod.f90
@@ -203,33 +200,31 @@ list( APPEND fv3jedi_nuopc_src_files
 )
 
 #Requirement libraries
-set(FV3JEDI_LIB_DEP oops saber ufo femps atlas atlas_f ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES})
+set(FV3JEDI_LIB_DEP oops saber ufo femps atlas atlas_f fv3jedilm ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES})
+
+# Optional openMP
+if(OpenMP_Fortran_FOUND)
+  list( APPEND FV3JEDI_LIB_DEP OpenMP::OpenMP_Fortran)
+endif()
 
 #Requirement sources
 set(FV3JEDI_SRC_DEP ${fv3jedi_src_files} )
 
 # Optional model - fv3
-if( ${BUILD_WITH_MODEL} MATCHES "FV3CORE" )
+if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
   list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_fv3_src_files} )
   list( APPEND FV3JEDI_LIB_DEP fv3 )
 endif()
 
 # Optional model - geos
-if( ${BUILD_WITH_MODEL} MATCHES "GEOS" )
+if( FV3_FORECAST_MODEL MATCHES "GEOS" )
   list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_geos_src_files} )
   list( APPEND FV3JEDI_LIB_DEP MPI::MPI_Fortran )
 endif()
 
-# Optional model - gfs
-if( ${BUILD_WITH_MODEL} MATCHES "GFS" )
-  list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_gfs_src_files} )
-  list( APPEND FV3JEDI_LIB_DEP gfs )
-endif()
-
-# Optional linear model
-if (${BUILD_WITH_LINEARMODEL})
-  list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_linearmodel_src_files} )
-  list( APPEND FV3JEDI_LIB_DEP ${FV3JEDILM_LIBRARIES} )
+# Optional model - ufs
+if( FV3_FORECAST_MODEL MATCHES "UFS" )
+  list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
 endif()
 
 
