@@ -112,9 +112,9 @@ if (n .ne. numfiles) &
 ! --------------------------------------
 self%tiledim(1) = .true.  ! History defult tile dim
 self%tiledim(2) = .true.  ! History defult tile dim
-self%restart(3) = .false. ! Restarts do not use tiledim
-self%restart(4) = .false. ! Restarts do not use tiledim
-self%restart(5) = .false. ! Restarts do not use tiledim
+self%tiledim(3) = .false. ! Restarts do not use tiledim
+self%tiledim(4) = .false. ! Restarts do not use tiledim
+self%tiledim(5) = .false. ! Restarts do not use tiledim
 
 self%restart(1) = .false. !Is not a restart file
 self%restart(2) = .false. !Is not a restart file
@@ -1210,30 +1210,33 @@ integer :: n, fileopts
 
 self%ncid = -1
 
-if (self%clobber) then
+if (self%iam_io_proc) then
 
-  fileopts = ior(NF90_NETCDF4, NF90_MPIIO)
+  if (self%clobber) then
 
-  ! Create/open files for writing
-  do n = 1,numfiles
-    if (self%ncid_isneeded(n)) then
+    fileopts = ior(NF90_NETCDF4, NF90_MPIIO)
 
-      call nccheck( nf90_create( trim(self%datapath)//'/'//trim(self%filenames(n)), fileopts, &
-                                 self%ncid(n), comm = self%ocomm, info = MPI_INFO_NULL), &
-                                 "nf90_create"//trim(self%filenames(n)) )
-    endif
-  enddo
+    ! Create/open files for writing
+    do n = 1,numfiles
+      if (self%ncid_isneeded(n)) then
+        call nccheck( nf90_create( trim(self%datapath)//'/'//trim(self%filenames(n)), fileopts, &
+                                   self%ncid(n), comm = self%ocomm, info = MPI_INFO_NULL), &
+                                   "nf90_create"//trim(self%filenames(n)) )
+      endif
+    enddo
 
-else
+  else
 
-  ! Open files for writing
-  do n = 1,numfiles
+    ! Open files for writing
+    do n = 1,numfiles
 
-    if (self%ncid_isneeded(n)) then
-      call nccheck ( nf90_open( trim(self%datapath)//'/'//trim(self%filenames(n)), NF90_WRITE, &
-                     self%ncid(n) ), "nf90_open"//trim(self%filenames(n)) )
-    endif
-  enddo
+      if (self%ncid_isneeded(n)) then
+        call nccheck ( nf90_open( trim(self%datapath)//'/'//trim(self%filenames(n)), NF90_WRITE, &
+                       self%ncid(n) ), "nf90_open"//trim(self%filenames(n)) )
+      endif
+    enddo
+
+  endif
 
 endif
 
