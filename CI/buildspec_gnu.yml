@@ -133,7 +133,7 @@ phases:
         && echo $CXX
         && echo $FC
         && CC=mpicc CXX=mpicxx FC=mpifort
-        && cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test /jcsda/fv3-bundle	
+        && cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test /jcsda/fv3-bundle
         && cd fv3-jedi
         && make -j8"
 
@@ -175,7 +175,10 @@ phases:
         && ctest -VV --rerun-failed";
         else echo "Build failed";
         fi
-      - echo 'Connect to CodeCov'	
+      - echo 'Connect to CodeCov'
+      - cd /build_container/fv3-jedi
+      - pwd
+      - ls
       - bash /jcsda/fv3-bundle/fv3-jedi/CI/codecov_script.sh
 artifacts:
   files:
