@@ -1,4 +1,4 @@
-resolution:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   pathfile_akbk: Data/inputs/gfs_aero_c12/akbk.nc
@@ -9,10 +9,10 @@ resolution:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/aerosols_gfs.yaml
-variables: ["bc1",bc2","dust1","dust5","seas1","seas4"]
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+input variables: [bc1,bc2,dust1,dust5,seas1,seas4]
 date: '2018-04-15T00:00:00Z'
 background:
   filetype: gfs
@@ -20,7 +20,7 @@ background:
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  variables: ["bc1",bc2","dust1","dust3","dust5","seas1","seas3","seas4"]
+  state variables: [bc1,bc2,dust1,dust3,dust5,seas1,seas3,seas4]
 ensemble:
   members:
   - date: 2018-04-15T00:00:00Z

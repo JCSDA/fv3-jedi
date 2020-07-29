@@ -1,4 +1,4 @@
-stateResol:
+state geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -9,9 +9,9 @@ stateResol:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-incrementResol:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+increment geometry:
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
   # input.nml
@@ -21,18 +21,18 @@ incrementResol:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
 state1: #Analysis
   filetype: geos
   datapath: Data/analysis
   filename_bkgd: hyb-3dvar-geos.ana.20180415_000000z.nc4
-  variables: ["ua","va","t","q","qi","ql","o3mr"]
-state2: #Background
+  state variables: [ua,va,t,q,qi,ql,o3mr]
+state2: #background
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180415_000000z.nc4
-  variables: ["ua","va","t","q","qi","ql","o3mr"]
+  state variables: [ua,va,t,q,qi,ql,o3mr]
 output:
   filetype: geos
   datapath: Data/increment

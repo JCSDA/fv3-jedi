@@ -132,8 +132,8 @@ deallocate(str)
 ! Interpolation type
 ! ------------------
 self%interp_method = 'barycent'
-if (conf%has("interp_method")) then
-  call conf%get_or_die("interp_method",str)
+if (conf%has("interpolation method")) then
+  call conf%get_or_die("interpolation method",str)
   self%interp_method = str
   deallocate(str)
 endif

@@ -1,14 +1,14 @@
-GetValuesTest:
-  StateGenerate:
+getvalues test:
+  state generate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
-    variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
-  interp_tolerance: 1.0e-2
-Geometry:
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
+  interpolation tolerance: 1.0e-2
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
-  #interp_method: bump
+  #interpolation method: bump
   # input.nml
   layout: [1,1]
   io_layout: [1,1]
@@ -16,25 +16,21 @@ Geometry:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-GeoVaLsVariables:
-  variables: # Has to be virtual_temperature and air_pressure
-  - virtual_temperature
-  - air_pressure
-Locations:
-  window_begin: 2018-04-14T21:00:00Z
-  window_end: 2018-04-15T03:00:00Z
-  ObsSpace:
-    name: Random Locations
-    simulate:
-      variables: []
-    Generate:
-      Random:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+state variables: [virtual_temperature,air_pressure] # Has to be virtual_temperature and air_pressure
+locations:
+  window begin: 2018-04-14T21:00:00Z
+  window end: 2018-04-15T03:00:00Z
+  obs space:
+    name: Random Locations 
+    simulated variables: [virtual_temperature,air_pressure]
+    generate:
+      random:
         nobs: 100
         lat1: -90
         lat2: 90
         lon1: 0
         lon2: 360
-        random_seed: 560921
-      obs_errors: []
+        random seed: 560921
+      obs errors: [1.5,2.1]

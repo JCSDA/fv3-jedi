@@ -49,7 +49,7 @@ class State : public util::Printable,
 
 // Constructor, destructor and basic operators
   State(const Geometry &, const oops::Variables &, const util::DateTime &);
-  State(const Geometry &, const oops::Variables &, const eckit::Configuration &);
+  State(const Geometry &, const eckit::Configuration &);
   State(const Geometry &, const State &);
   State(const State &);
   virtual ~State();
@@ -72,6 +72,7 @@ class State : public util::Printable,
 
 // Utilities
   boost::shared_ptr<const Geometry> geometry() const {return geom_;}
+  const oops::Variables & variables() const {return vars_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}

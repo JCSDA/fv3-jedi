@@ -35,19 +35,15 @@ State::State(const Geometry & geom, const oops::Variables & vars, const util::Da
   oops::Log::trace() << "State::State created." << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-State::State(const Geometry & geom, const oops::Variables & vars, const eckit::Configuration & conf)
+State::State(const Geometry & geom, const eckit::Configuration & conf)
   : geom_(new Geometry(geom)), time_(util::DateTime())
 {
-  oops::Log::trace() << "State::State create from analytical or"
-                        " from file." << std::endl;
-  // Optionally user can overwrite incoming variables from config
-  oops::Variables lvars;
-  if (conf.has("variables")) {
-    oops::Variables lvars(conf);
-    this->vars_ = lvars;
-  } else {
-    this->vars_ = vars;
-  }
+  oops::Log::trace() << "State::State create from analytical or from file." << std::endl;
+
+// Should check if this can be done inside read
+  oops::Variables lvars(conf, "state variables");
+  this->vars_ = lvars;
+
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
 
   // Analytical or read from file
@@ -57,8 +53,7 @@ State::State(const Geometry & geom, const oops::Variables & vars, const eckit::C
     this->read(conf);
   }
 
-  oops::Log::trace() << "State::State create from analytical or"
-                        " from file done." << std::endl;
+  oops::Log::trace() << "State::State create from analytical or from file done." << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 State::State(const Geometry & resol, const State & other):
@@ -67,8 +62,7 @@ State::State(const Geometry & resol, const State & other):
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
-  oops::Log::trace() << "State::State created by interpolation."
-                     << std::endl;
+  oops::Log::trace() << "State::State created by interpolation." << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 State::State(const State & other):

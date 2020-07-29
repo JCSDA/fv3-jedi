@@ -1,5 +1,5 @@
-forecast_length: PT6H
-resolution:
+forecast length: PT6H
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -11,7 +11,7 @@ resolution:
   npz: 64
   ntiles: 6
 model:
-  name: 'FV3LM'
+  name: FV3LM
   nml_file: Data/fv3files/input_gfs_c12.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -19,7 +19,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-initial:
+initial condition:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
@@ -27,7 +27,7 @@ initial:
   filename_sfcd: 20180414.210000.sfc_data.nc
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
+  variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 output:
   filetype: gfs
   datapath: Data/

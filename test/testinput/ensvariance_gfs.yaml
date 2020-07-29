@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -9,13 +9,9 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-Variables:
-  variables:  &incvars ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
-date:
-  date: '2018-04-15T00:00:00Z'
-Background:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+background:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
@@ -23,8 +19,8 @@ Background:
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  variables: *incvars
-VarianceOut:
+  state variables: &incvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+variance output:
   filetype: gfs
   datapath: Data/
   filename_core: ensemblevariance.fv_core.res.nc
@@ -32,10 +28,11 @@ VarianceOut:
   filename_sfcd: ensemblevariance.sfc_data.nc
   filename_sfcw: ensemblevariance.fv_srf_wnd.res.nc
   filename_cplr: ensemblevariance.coupler.res
-Ensemble:
-  variables: *incvars
+ensemble: 
+  output variables: *incvars
   members:
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem001/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -43,13 +40,15 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
-    datapath: Data/inputs/gfs_c12/mem002/
+    state variables: *incvars
+    datapath: Data/inputs/gfs_c12/mem001/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem003/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -57,6 +56,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem004/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -64,6 +64,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem005/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -71,6 +72,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem006/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -78,6 +80,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem007/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -85,6 +88,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem008/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -92,6 +96,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem009/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -99,6 +104,7 @@ Ensemble:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   - filetype: gfs
+    state variables: *incvars
     datapath: Data/inputs/gfs_c12/mem010/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc

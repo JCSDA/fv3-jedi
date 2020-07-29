@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -9,51 +9,57 @@ Geometry:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-Variables:
-  variables:  &incvars ["ua","va","t","delp","q","qi","ql"]
-date:
-  date: '2018-04-15T00:00:00Z'
-Background:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+background:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180415_000000z.nc4
-  variables: *incvars
-VarianceOut:
+  state variables: &incvars [ua,va,t,delp,q,qi,ql]
+variance output:
   filetype: geos
   datapath: Data/
   filename_bkgd: geos.ensemblevariance.%yyyy%mm%dd_%hh%MM%ssz.nc4
-Ensemble:
-  variables: *incvars
+ensemble:
+  output variables: *incvars
   members:
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem001.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem002.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem003.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem004.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem005.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem006.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem007.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem008.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem009.20180415_000000z.nc4
   - filetype: geos
     datapath: Data/inputs/geos_c12
+    state variables: *incvars
     filename_bkgd: geos.mem010.20180415_000000z.nc4

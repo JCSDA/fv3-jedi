@@ -12,7 +12,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 LinearGetValues::LinearGetValues(const Geometry & geom, const ufo::Locations & locs) : locs_(locs),
-  geom_(new Geometry(geom)), model2geovals_(), linearmodel2geovals_() {
+  geom_(new Geometry(geom)), linearmodel2geovals_(), model2geovals_() {
   oops::Log::trace() << "LinearGetValues::LinearGetValues starting" << std::endl;
 
   // Create the variable change object

@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -8,12 +8,11 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-TestDate: '2018-04-15T00:00:00Z'
-Variables:
-  variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
-State:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+test date: '2018-04-15T00:00:00Z'
+inc variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+initial condition:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
@@ -21,25 +20,24 @@ State:
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-InterpTest:
+interp test:
   tolerance: 1.0e-12
-  Locations:
-    window_begin: 2018-04-14T21:00:00Z
-    window_end: 2018-04-15T03:00:00Z
-    ObsSpace:
+  locations:
+    window begin: 2018-04-14T21:00:00Z
+    window end: 2018-04-15T03:00:00Z
+    obs space:
       name: Random Locations
-      simulate:
-        variables: []
-      Generate:
-        Random:
+      simulated variables: []
+      generate:
+        random:
           nobs: 100
           lat1: -90
           lat2: 90
           lon1: 0
           lon2: 360
-          random_seed: 560921
-        obs_errors: []
-  GeoVaLs:
+          random seed: 560921
+        obs errors: []
+  geovals:
     variables:
     - eastward_wind
     - northward_wind

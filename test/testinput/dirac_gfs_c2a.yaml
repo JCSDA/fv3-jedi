@@ -1,4 +1,4 @@
-resolution:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -9,9 +9,9 @@ resolution:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-initial:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+initial condition:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
@@ -19,18 +19,15 @@ initial:
   filename_sfcd: 20180414.210000.sfc_data.nc
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
-  variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
-variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-Covariance:
-  covariance: GSIRF # Identity yet
+  state variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
+background error:
+  covariance model: GSIRF # Identity yet
   date: '2018-04-14T21:00:00Z'
-  variable_changes:
-  - varchange: Control2Analysis
-    inputVariables:
-      variables: ["ua","va","T","ps","sphum","ice_wat","liq_wat","o3mr"]
-    outputVariables:
-      variables: ["psi","chi","tv","ps","rh","ice_wat","liq_wat","o3mr"]
-output_B:
+  variable changes:
+  - variable change: Control2Analysis
+    input variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
+    output variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+output B:
   filetype: gfs
   datapath: Data/gsirf/
   filename_core: dirac_gfs_c2a.B.fv_core.res.nc

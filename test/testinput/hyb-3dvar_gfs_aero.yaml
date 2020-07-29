@@ -1,127 +1,139 @@
-cost_function:
-  Jb:
-    Background:
-      state:
+cost function:
+  background:
+    filetype: gfs
+    datapath: Data/inputs/gfs_aero_c12/bkg/
+    filename_core: 20180415.000000.fv_core.res.nc
+    filename_trcr: 20180415.000000.fv_tracer.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    state variables: [T,DELP,sphum,
+                      sulf,bc1,bc2,oc1,oc2,
+                      dust1,dust2,dust3,dust4,dust5,
+                      seas1,seas2,seas3,seas4]
+  background error:
+    covariance model: hybrid
+    static weight: 0.01
+    ensemble weight: 0.99
+    static:
+      date: '2018-04-15T00:00:00Z'
+      covariance model: FV3JEDIstatic
+    ensemble:
+      date: '2018-04-15T00:00:00Z'
+      members:
       - filetype: gfs
-        datapath: Data/inputs/gfs_aero_c12/bkg/
-        filename_core: 20180415.000000.fv_core.res.nc
+        state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
+                                    dust1,dust2,dust3,dust4,dust5,
+                                    seas1,seas2,seas3,seas4]
+        datapath: Data/inputs/gfs_aero_c12/mem001/
         filename_trcr: 20180415.000000.fv_tracer.res.nc
         filename_cplr: 20180415.000000.coupler.res
-        variables: ["T","DELP","sphum",
-                    "sulf","bc1","bc2","oc1","oc2",
-                    "dust1","dust2","dust3","dust4","dust5",
-                    "seas1","seas2","seas3","seas4"]
-    Covariance:
-      covariance: hybrid
-      static_weight: '0.01'
-      ensemble_weight: '0.99'
-      static:
-        date: '2018-04-15T00:00:00Z'
-        covariance: FV3JEDIstatic
-      ensemble:
-        date: '2018-04-15T00:00:00Z'
-        variables: ["sulf","bc1","bc2","oc1","oc2",
-                    "dust1","dust2","dust3","dust4","dust5",
-                    "seas1","seas2","seas3","seas4"]
-        members:
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem001/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem002/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem003/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem004/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem005/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem006/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem007/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          datapath: Data/inputs/gfs_aero_c12/mem008/
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        localization:
-          timeslots: ['2018-04-15T00:00:00Z']
-          variables: ["sulf","bc1","bc2","oc1","oc2",
-                      "dust1","dust2","dust3","dust4","dust5",
-                      "seas1","seas2","seas3","seas4"]
-          localization: BUMP
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs_aero
-            method: loc
-            strategy: common
-            load_nicas: 1
-            mpicom: 2
-            verbosity: main
-  Jo:
-    ObsTypes:
-    - ObsSpace:
-        name: Aod
-        ObsDataIn:
-          obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
-        ObsDataOut:
-          obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
-        simulate:
-          variables: [aerosol_optical_depth]
-          channels: 4
-      ObsOperator:
-        name: Aod
-        Absorbers: [H2O,O3]
-        ObsOptions:
-          Sensor_ID: v.viirs-m_npp
-          EndianType: little_endian
-          CoefficientPath: Data/crtm/
-          AerosolOption: aerosols_gocart_default
-      Covariance:
-        covariance: diagonal
-  cost_type: 3D-Var
-  variables: ["sulf","bc1","bc2","oc1","oc2",
-              "dust1","dust2","dust3","dust4","dust5",
-              "seas1","seas2","seas3","seas4"]
-  window_begin: '2018-04-14T21:00:00Z'
-  window_length: PT6H
-  varchange: Analysis2Model
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem002/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem003/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem004/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem005/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem006/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem007/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      - filetype: gfs
+        state variables: *aerovars
+        datapath: Data/inputs/gfs_aero_c12/mem008/
+        filename_trcr: 20180415.000000.fv_tracer.res.nc
+        filename_cplr: 20180415.000000.coupler.res
+      localization:
+        timeslots: ['2018-04-15T00:00:00Z']
+        localization variables: *aerovars
+        localization method: BUMP
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs_aero
+          method: loc
+          strategy: common
+          load_nicas: 1
+          mpicom: 2
+          verbosity: main
+  observations:
+  - obs space:
+      name: Aod
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
+      obsdataout:
+        obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
+      simulated variables: [aerosol_optical_depth]
+      channels: 4
+    obs operator:
+      name: Aod
+      Absorbers: [H2O,O3]
+      obs options:
+        Sensor_ID: v.viirs-m_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+        AerosolOption: aerosols_gocart_default
+    obs error:
+      covariance model: diagonal
+  cost type: 3D-Var
+  analysis variables: *aerovars
+  window begin: '2018-04-14T21:00:00Z'
+  window length: PT6H
+  variable change: Analysis2Model
   filetype: gfs
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res
+  model:
+    name: PSEUDO
+    pseudo_type: gfs
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
+    filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
+    filename_sfcd: %yyyy%mm%dd.%hh%MM%ss.sfc_data.nc
+    filename_sfcw: %yyyy%mm%dd.%hh%MM%ss.fv_srf_wnd.res.nc
+    filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
+    run stage check: 1
+    tstep: PT3H
+    model variables: [T,DELP,sphum,
+                      sulf,bc1,bc2,oc1,oc2,
+                      dust1,dust2,dust3,dust4,dust5,
+                      seas1,seas2,seas3,seas4]
+  geometry:
+    nml_file_mpp: Data/fv3files/fmsmpp.nml
+    trc_file: Data/fv3files/field_table
+    akbk: Data/fv3files/akbk64.nc4
+    # input.nml
+    layout: [1,1]
+    io_layout: [1,1]
+    npx: 13
+    npy: 13
+    npz: 64
+    ntiles: 6
+    fieldsets:
+      - fieldset: Data/fieldsets/dynamics.yaml
+      - fieldset: Data/fieldsets/aerosols_gfs.yaml
+      - fieldset: Data/fieldsets/ufo.yaml
 final:
   diagnostics:
     departures: oman
-minimizer:
-  algorithm: DRIPCG
-model:
-  name: 'PSEUDO'
-  pseudo_type: 'gfs'
-  datapath: 'Data/inputs/gfs_c12/bkg/'
-  filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
-  filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
-  filename_sfcd: %yyyy%mm%dd.%hh%MM%ss.sfc_data.nc
-  filename_sfcw: %yyyy%mm%dd.%hh%MM%ss.fv_srf_wnd.res.nc
-  filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
-  RunStageCheck: 1
-  tstep: PT3H
-  variables: ["T","DELP","sphum",
-              "sulf","bc1","bc2","oc1","oc2",
-              "dust1","dust2","dust3","dust4","dust5",
-              "seas1","seas2","seas3","seas4"]
 output:
   filetype: gfs
   datapath: Data/analysis/
@@ -130,27 +142,14 @@ output:
   filename_cplr: hyb-3dvar-gfs_aero.coupler.res
   first: PT0H
   frequency: PT1H
-resolution:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  akbk: Data/fv3files/akbk64.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
-  npx: 13
-  npy: 13
-  npz: 64
-  ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/aerosols_gfs.yaml
-    - FieldSet: Data/fieldsets/ufo.yaml
 variational:
-  iteration:
-  - ninner: '10'
-    gradient_norm_reduction: 1e-10
-    test: 'on'
-    resolution:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 10
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
       trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk64.nc4
       # input.nml
@@ -160,24 +159,21 @@ variational:
       npy: 13
       npz: 64
       ntiles: 6
-      FieldSets:
-        - FieldSet: Data/fieldsets/dynamics.yaml
-        - FieldSet: Data/fieldsets/aerosols_gfs.yaml
-        - FieldSet: Data/fieldsets/ufo.yaml
+      fieldsets:
+        - fieldset: Data/fieldsets/dynamics.yaml
+        - fieldset: Data/fieldsets/aerosols_gfs.yaml
+        - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linearmodel:
-      varchange: 'Identity'
-      name: 'FV3JEDIIdTLM'
-      version: FV3JEDIIdTLM
+    linear model:
+      variable change: Identity
+      name: FV3JEDIIdTLM
       tstep: PT3H
-      variables: ["sulf","bc1","bc2","oc1","oc2",
-                  "dust1","dust2","dust3","dust4","dust5",
-                  "seas1","seas2","seas3","seas4"]
-  - ninner: '5'
-    gradient_norm_reduction: 1e-10
-    test: 'on'
-    resolution:
+      tlm variables: *aerovars
+  - ninner: 5
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
       trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk64.nc4
       # input.nml
@@ -187,17 +183,14 @@ variational:
       npy: 13
       npz: 64
       ntiles: 6
-      FieldSets:
-        - FieldSet: Data/fieldsets/dynamics.yaml
-        - FieldSet: Data/fieldsets/aerosols_gfs.yaml
-        - FieldSet: Data/fieldsets/ufo.yaml
+      fieldsets:
+        - fieldset: Data/fieldsets/dynamics.yaml
+        - fieldset: Data/fieldsets/aerosols_gfs.yaml
+        - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linearmodel:
-      varchange: 'Identity'
-      name: 'FV3JEDIIdTLM'
-      version: FV3JEDIIdTLM
+    linear model:
+      variable change: Identity
+      name: FV3JEDIIdTLM
       tstep: PT3H
-      variables: ["sulf","bc1","bc2","oc1","oc2",
-                  "dust1","dust2","dust3","dust4","dust5",
-                  "seas1","seas2","seas3","seas4"]
+      tlm variables: *aerovars

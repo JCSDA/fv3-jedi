@@ -81,7 +81,7 @@ namespace fv3jedi {
 
     //  List of field sets
     std::vector<eckit::LocalConfiguration> confFieldSets;
-    confFull.get("FieldSets", confFieldSets);
+    confFull.get("fieldsets", confFieldSets);
     int confFieldSetsSize = confFieldSets.size();
 
     // Get number of vertical levels
@@ -90,7 +90,7 @@ namespace fv3jedi {
     //  Loop over sets of fields, i.e. each yaml file
     for (int km = 0; km < confFieldSetsSize; ++km) {
       // Create new config for each field set
-      eckit::PathName pathNameFieldSet(confFieldSets[km].getString("FieldSet"));
+      eckit::PathName pathNameFieldSet(confFieldSets[km].getString("fieldset"));
       const eckit::YAMLConfiguration confFieldSet(pathNameFieldSet);
 
       //  List of fields

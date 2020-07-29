@@ -1,4 +1,4 @@
-inputresolution:
+input geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -9,9 +9,9 @@ inputresolution:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-outputresolution:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+output geometry:
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
   # input.nml
@@ -21,15 +21,17 @@ outputresolution:
   npy: 25
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-inputVariables:
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis",
-              "slmsk","sheleg","tsea","vtype","stype","vfrac","stc","smc","snwdph",
-              "u_srf","v_srf","f10m"]
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+output variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                  slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                  u_srf,v_srf,f10m]
 states:
 - input:
     filetype: gfs
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc

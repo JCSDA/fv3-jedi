@@ -28,7 +28,7 @@ static oops::ModelMaker<Traits, ModelGEOS> makermodel_("GEOS");
 // -----------------------------------------------------------------------------
 ModelGEOS::ModelGEOS(const Geometry & resol,
                             const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
 {
   oops::Log::trace() << "ModelGEOS::ModelGEOS" << std::endl;
   tstep_ = util::Duration(mconf.getString("tstep"));

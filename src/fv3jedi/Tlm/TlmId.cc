@@ -22,12 +22,11 @@
 namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
-static oops::LinearModelMaker<Traits, TlmId>
-                                      makerIdTLM_("FV3JEDIIdTLM");
+static oops::LinearModelMaker<Traits, TlmId> makerIdTLM_("FV3JEDIIdTLM");
 // -----------------------------------------------------------------------------
 TlmId::TlmId(const Geometry & resol,
                             const eckit::Configuration & tlConf)
-  : tstep_(), resol_(resol), linvars_(tlConf)
+  : tstep_(), resol_(resol), linvars_(tlConf, "tlm variables")
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
   oops::Log::trace() << "TlmId created" << std::endl;

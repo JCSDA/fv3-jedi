@@ -1,5 +1,5 @@
-forecast_length: PT1H
-resolution:
+forecast length: PT6H
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -10,14 +10,14 @@ resolution:
   npy: 91
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
 model:
-  name: 'GEOS'
+  name: GEOS
   tstep: PT15M
-  geos_run_directory: '/gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch'
-  variables: ["U","V","PT","PE","Q","QICN","QLCN","QILS","QLLS"]
-initial:
+  geos_run_directory: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
+  variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
+initial condition:
   filetype: geos
   datapath: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
   filename_core: fvcore_internal_rst

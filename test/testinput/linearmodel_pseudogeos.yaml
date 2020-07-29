@@ -1,7 +1,7 @@
-Covariance:
-  covariance: FV3JEDIstatic
-  date: '2018-04-14T21:00:00Z'
-Geometry:
+background error:
+  covariance model: FV3JEDIstatic
+  date: 2018-04-14T21:00:00Z
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -12,11 +12,10 @@ Geometry:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-LinearModel:
-  name: 'FV3JEDITLM'
-  version: FV3JEDITLM
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+linear model:
+  name: FV3JEDITLM
   nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -25,31 +24,30 @@ LinearModel:
   lm_do_trb: 1
   lm_do_mst: 1
   trajectory:
-    variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
-                "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-                "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
-LinearModelTest:
-  fclength: PT30M
-  firstmulTL: '0.01'
-  testiterTL: '10'
-  toleranceAD: '1.0e-13'
-  toleranceTL: '1.0'
-Model:
-  name: 'PSEUDO'
+    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+                      qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
+                      zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+linear model test:
+  forecast length: PT30M
+  first multiplier TL: 0.01
+  iterations TL: 10
+  tolerance AD: 1.0e-13
+  tolerance TL: 1.0
+model:
+  name: PSEUDO
   tstep: PT15M
-  pseudo_type: 'geos'
-  datapath: 'Data/inputs/geos_c12'
-  filename_bkgd: 'geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4'
-  filename_crtm: 'geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4'
-  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
-ModelBias: null
-State:
+  pseudo_type: geos
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
+                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+model aux control: null
+initial condition:
   filetype: geos
   filename: Data/INPUTS/GEOS_c24/GEOS.bkg.c48.eta.20180414_21z.nc4
-  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis",
-              "qls","qcn","cfcn","frocean","frland","varflt","ustar","bstar",
-              "zpbl","cm","ct","cq","kcbl","tsm","khl","khu"]
-Variables:
-  variables: ['ua','va','t','ps','q','qi','ql','o3']
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
+                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+analysis variables: [ua,va,t,ps,q,qi,ql,o3]

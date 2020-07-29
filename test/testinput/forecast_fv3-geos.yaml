@@ -1,5 +1,5 @@
-forecast_length: PT6H
-resolution:
+forecast length: PT6H
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -10,10 +10,10 @@ resolution:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
 model:
-  name: 'FV3LM'
+  name: FV3LM
   nml_file: Data/fv3files/input_geos_c12.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -21,10 +21,10 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-initial:
+initial condition:
   filetype: geos
   filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
-  variables: ["u","v","ua","va","t","delp","q","qi","ql","o3mr","phis"]
+  variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
 output:
   geos_tile_dim: 1
   filetype: geos

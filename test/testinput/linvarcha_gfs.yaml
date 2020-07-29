@@ -1,8 +1,6 @@
-LinearVariableChangeTests:
-- varchange: StatsVariableChange
-  toleranceInverse: 1.0e-12
-  variables:
-    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
+linear variable change tests:
+- variable change: StatsVariableChange
+  tolerance inverse: 1.0e-12
   bump:
     check_vbal: 0
     nc1: 1000
@@ -13,47 +11,30 @@ LinearVariableChangeTests:
     prefix: 'statsvariablechange_geos'
     sam_read: 1
     strategy: common
-    vbal_block:
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
+    vbal_block: [0,0,0,0,0,0,0,0,0]
     vbal_rad: 3000.0e3
     verbosity: 'none'
-  inputVariables:
-    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
-  outputVariables:
-    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
-- varchange: Control2Analysis
-  toleranceInverse: 1000
+  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+  output variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+- variable change: Control2Analysis
+  tolerance inverse: 1000
   testinverse: 1
-  inputVariables:
-    variables: ["ua","va","t","ps","q","qi","ql","o3"]
-  outputVariables:
-    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
-- varchange: NMCBalance
+  input variables: [ua,va,t,ps,q,qi,ql,o3]
+  output variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+- variable change: NMCBalance
   layoutx: 3
   layouty: 2
   path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
-  toleranceInverse: 1000
+  tolerance inverse: 1000
   testinverse: 1
-  inputVariables:
-    variables: ["ua","va","t","ps","q","qi","ql","o3"]
-  outputVariables:
-    variables: ["psi","chi","tv","ps","rh","qi","ql","o3"]
-- varchange: Analysis2Model
-  toleranceInverse: 1000
+  input variables: [ua,va,t,ps,q,qi,ql,o3]
+  output variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+- variable change: Analysis2Model
+  tolerance inverse: 1000
   testinverse: 1
-  inputVariables:
-    variables: ["ud","vd","t","delp","q","qi","ql","o3"]
-  outputVariables:
-    variables: ["ua","va","t","ps","q","qi","ql","o3"]
-Geometry:
+  input variables: [ud,vd,t,delp,q,qi,ql,o3]
+  output variables: [ua,va,t,ps,q,qi,ql,o3]
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -63,9 +44,9 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-State:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+background:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
@@ -73,6 +54,4 @@ State:
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
-Variables:
-  variables: ["ua","va","t","ps","q","qi","ql","o3"]
+  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]

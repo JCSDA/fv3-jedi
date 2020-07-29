@@ -23,7 +23,7 @@ namespace fv3jedi {
 static oops::ModelMaker<Traits, ModelTraj> makermodel_("TRAJ");
 // -------------------------------------------------------------------------------------------------
 ModelTraj::ModelTraj(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
 {
   oops::Log::trace() << "ModelTraj created" << std::endl;
 }

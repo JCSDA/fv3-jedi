@@ -1,4 +1,4 @@
-resolution:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -9,22 +9,20 @@ resolution:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-initial:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+initial condition:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
-variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
-Covariance:
-  covariance: ensemble
-  date: '2018-04-14T21:00:00Z'
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+background error:
+  covariance model: ensemble
+  date: '2018-04-14T21:00:00Z' 
   localization:
     timeslots: ['2018-04-14T21:00:00Z']
-    variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
-    localization: BUMP
+    localization variables: [ua,va,t,ps,q,qi,ql,o3mr]
+    localization method: BUMP
     bump:
       prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
       method: loc
@@ -36,29 +34,30 @@ Covariance:
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem001.20180414_210000z.nc4
-      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem002.20180414_210000z.nc4
-      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem003.20180414_210000z.nc4
-      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem004.20180414_210000z.nc4
-      variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem005.20180414_210000z.nc4
-output_B:
+      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+output B:
   filetype: geos
   datapath: Data/bump/
   filename: dirac.B.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
-output_localization:
+output localization:
   filetype: geos
   datapath: Data/bump/
   filename: dirac.loc.%yyyy%mm%dd_%hh%MM%ssz.nc4

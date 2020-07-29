@@ -1,4 +1,4 @@
-inputresolution:
+input geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -9,10 +9,10 @@ inputresolution:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/ufo.yaml
-outputresolution:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+output geometry:
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
   # input.nml
@@ -22,14 +22,14 @@ outputresolution:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/ufo.yaml
-inputVariables:
-  variables: ["vtype","stype","vfrac"]
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+output variables: [vtype,stype,vfrac]
 states:
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -37,11 +37,12 @@ states:
     filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.coupler.res
   output:
-   filetype: geos
+   filetype: geos 
    datapath: Data/inputs/geos_c12/
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.220000.fv_core.res.nc
     filename_trcr: 20180414.220000.fv_tracer.res.nc
@@ -49,11 +50,12 @@ states:
     filename_sfcw: 20180414.220000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.220000.coupler.res
   output:
-   filetype: geos
+   filetype: geos 
    datapath: Data/inputs/geos_c12/
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.230000.fv_core.res.nc
     filename_trcr: 20180414.230000.fv_tracer.res.nc
@@ -66,6 +68,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -78,6 +81,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.010000.fv_core.res.nc
     filename_trcr: 20180415.010000.fv_tracer.res.nc
@@ -90,6 +94,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.020000.fv_core.res.nc
     filename_trcr: 20180415.020000.fv_tracer.res.nc
@@ -102,6 +107,7 @@ states:
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.030000.fv_core.res.nc
     filename_trcr: 20180415.030000.fv_tracer.res.nc

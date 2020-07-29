@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -9,15 +9,15 @@ Geometry:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/aerosols_geos.yaml
-    - FieldSet: Data/fieldsets/dynamics.yaml
-StateTest:
-  StateFile:
+  fieldsets:
+    - fieldset: Data/fieldsets/aerosols_geos.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+state test:
+  statefile:
     filetype: geos
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.aero.bkg.ext.20180415_000000z.nc4
-    variables: ["ext1", "ext2" ]
+    state variables: [ext1, ext2 ]
   date: '2018-04-15T00:00:00Z'
-  norm-file: '0.034495309744047402'
+  norm file: 0.034495309744047402
   tolerance: 1.0e-8

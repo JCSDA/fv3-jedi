@@ -1,4 +1,4 @@
-stateResol:
+state geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -9,9 +9,9 @@ stateResol:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-incrementResol:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+increment geometry:
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
   # input.nml
@@ -21,8 +21,8 @@ incrementResol:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
 state1: #Analysis
   filetype: gfs
   datapath: Data/analysis
@@ -31,8 +31,8 @@ state1: #Analysis
   filename_sfcd: 20180415.000000.hyb-3dvar-gfs.sfc_data.nc
   filename_sfcw: 20180415.000000.hyb-3dvar-gfs.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.hyb-3dvar-gfs.coupler.res
-  variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
-state2: #Background
+  state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+state2: #background
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
@@ -40,7 +40,7 @@ state2: #Background
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  variables: ["ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
+  state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 output:
   filetype: geos
   datapath: Data/increment

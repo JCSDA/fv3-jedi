@@ -24,14 +24,13 @@
 namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
-static oops::LinearModelMaker<Traits, Tlm>
-                                     makerTLM_("FV3JEDITLM");
+static oops::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -----------------------------------------------------------------------------
 Tlm::Tlm(const Geometry & resol,
                         const eckit::Configuration & tlConf)
   : keyConfig_(0), tstep_(), resol_(resol), traj_(),
     lrmodel_(resol_, eckit::LocalConfiguration(tlConf, "trajectory")),
-    linvars_(tlConf)
+    linvars_(tlConf, "tlm variables")
 {
   tstep_ = util::Duration(tlConf.getString("tstep"));
 

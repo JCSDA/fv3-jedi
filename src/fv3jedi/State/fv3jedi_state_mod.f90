@@ -399,7 +399,7 @@ end subroutine change_resol
 !! several alternative idealized analytic models.  This is intended to facilitate testing by
 !! eliminating the need to read in the initial state from a file and by providing exact expressions
 !! to test interpolations.  This function is activated by setting the "analytic_init" state in the
-!! "initial" or "StateFile" section of the configuration file.
+!! "initial" or "statefile" section of the configuration file.
 !!
 !! Initialization options that begin with "dcmip" refer to tests defined by the multi-institutional
 !! 2012 [Dynamical Core Intercomparison Project](https://earthsystealcmcog.org/projects/dcmip-2012)

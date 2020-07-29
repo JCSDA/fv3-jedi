@@ -1,4 +1,4 @@
-resolution:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
@@ -9,16 +9,16 @@ resolution:
   npy: 13
   npz: 72
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+input variables: [ua,va,t,ps,q,qi,ql,o3mr]
 date: '2018-04-14T21:00:00Z'
 background:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
   filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-  variables: ["ua","va","t","ps","q","qi","ql","o3mr"]
+  state variables: [ua,va,t,ps,q,qi,ql,o3mr]
 bump:
   prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
   verbosity: main

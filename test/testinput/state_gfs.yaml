@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -8,10 +8,10 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-StateTest:
-  StateFile:
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+state test:
+  statefile:
     filetype: gfs
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
@@ -19,12 +19,12 @@ StateTest:
     filename_sfcd: 20180414.210000.sfc_data.nc
     filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.coupler.res
-    variables: ["u","v","ua","va","T","DELP","ps","sphum","ice_wat","liq_wat","o3mr"]
-  StateGenerate:
+    state variables: [u,v,ua,va,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr]
+  state generate:
     analytic_init: dcmip-test-4-0
-    date: '2018-04-14T21:00:00Z'
-    variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
-  date: '2018-04-14T21:00:00Z'
-  norm-file: '3959.836162631429'
-  norm-gen: '626.8522218535677'
+    date: 2018-04-14T21:00:00Z
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+  date: 2018-04-14T21:00:00Z
+  norm file: 3959.836162631429
+  norm generated state: 626.8522218535677
   tolerance: 1.0e-08

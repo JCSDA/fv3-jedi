@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -8,10 +8,10 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-VariableChangeTests:
-  - varchange: Control2Analysis
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+variable change tests:
+  - variable change: Control2Analysis
     state:
       filetype: gfs
       datapath: Data/inputs/gfs_c12/bkg/
@@ -20,14 +20,11 @@ VariableChangeTests:
       filename_sfcd: 20180415.000000.sfc_data.nc
       filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
       filename_cplr: 20180415.000000.coupler.res
-      variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
-    toleranceInverse: 1.0e-4
+      state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+    tolerance inverse: 1.0e-4
     femps_iterations: 50
     femps_ngrids: 2
     femps_levelprocs: -1
     femps_path2fv3gridfiles: Data/femps
-    inverseFirst: true #Switched input and output variables
-    inputVariables:
-      variables: ["u","v","T","DELP","sphum","ice_wat","liq_wat","o3mr"]
-    outputVariables:
-      variables: ["psi","chi","t","tv","delp","ps","q","rh","qi","ql","o3"]
+    inverse first: true #Switched input and output variables
+    output variables: [psi,chi,t,tv,delp,ps,q,rh,qi,ql,o3]

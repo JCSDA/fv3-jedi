@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -9,7 +9,7 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/aerosols_gfs.yaml
-    - FieldSet: Data/fieldsets/dynamics.yaml
-    - FieldSet: Data/fieldsets/ufo.yaml
+  fieldsets:
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml

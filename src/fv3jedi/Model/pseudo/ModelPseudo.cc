@@ -25,14 +25,14 @@ namespace fv3jedi {
 static oops::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
 {
   oops::Log::trace() << "ModelPseudo::ModelPseudo" << std::endl;
   tstep_ = util::Duration(mconf.getString("tstep"));
   const eckit::Configuration * configc = &mconf;
   fv3jedi_pseudo_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  if (mconf.has("RunStageCheck")) {
-    runstagecheck_ = mconf.getInt("RunStageCheck");
+  if (mconf.has("run stage check")) {
+    runstagecheck_ = mconf.getInt("run stage check");
   }
   oops::Log::trace() << "ModelPseudo created" << std::endl;
 }

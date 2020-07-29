@@ -1,4 +1,4 @@
-Geometry:
+geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
@@ -8,10 +8,10 @@ Geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  FieldSets:
-    - FieldSet: Data/fieldsets/dynamics.yaml
-Model:
-  name: 'FV3'
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+model:
+  name: FV3
   nml_file: Data/fv3files/input_gfs.nml
   trc_file: Data/fv3files/field_table
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
@@ -19,15 +19,16 @@ Model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  variables: ["u","v","ua","va","T","DELP","sphum","ice_wat","liq_wat","o3mr","phis"]
-ModelBias: null
-ModelBiasCovariance: null
-ModelTest:
-  fclength: PT1H
-  finalnorm: '661.54831136916323'
-  tolerance: '1.0e-4'
-State:
+  model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+model aux control: null
+model aux error: null
+model test:
+  forecast length: PT1H
+  final norm: 661.54831136916323
+  tolerance: 1.0e-4
+initial condition:
   filetype: gfs
+  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
