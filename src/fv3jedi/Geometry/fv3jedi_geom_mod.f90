@@ -12,7 +12,7 @@ use mpi
 use string_f_c_mod
 
 ! atlas uses
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace, atlas_functionspace_nodecolumns
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace, atlas_functionspace_pointcloud
 
 ! fckit uses
 use fckit_mpi_module,           only: fckit_mpi_comm
@@ -469,7 +469,7 @@ self%nw_corner = other%nw_corner
 
 self%domain => other%domain
 
-self%afunctionspace = atlas_functionspace_nodecolumns(other%afunctionspace%c_ptr())
+self%afunctionspace = atlas_functionspace_pointcloud(other%afunctionspace%c_ptr())
 
 self%fields = fields
 
