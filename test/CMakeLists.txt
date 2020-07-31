@@ -564,8 +564,10 @@ endforeach()
 
 # Stage directory with directories for running the models
 # -------------------------------------------------------
-if(BUILD_WITH_MODEL MATCHES GEOS OR BUILD_WITH_MODEL MATCHES GFS OR BUILD_WITH_MODEL MATCHES UFS)
-  execute_process( COMMAND ln -sf ${MODELDIRS_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Data )
+if(FV3_FORECAST_MODEL MATCHES "GEOS" OR FV3_FORECAST_MODEL MATCHES "UFS")
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL})
+  file(GLOB model_files "${FV3_FORECAST_MODEL_RUNDIR}/*")
+  LINK_FILES_DIR("${model_files}" ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/)
 endif()
 
 #Tolerances for compare script
@@ -713,28 +715,19 @@ ecbuild_add_test( TARGET  test_fv3jedi_model_pseudo-geos
                   MPI     6
                   TEST_DEPENDS test_fv3jedi_crtm_surface_for_geos )
 
-#if( ${BUILD_WITH_MODEL} MATCHES "FV3CORE" )
-#  ecbuild_add_test( TARGET  test_fv3jedi_model_fv3-gfs
-#                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
-#                    ARGS    testinput/model_fv3-gfs.yaml
-#                    MPI     6 )
-#endif()
+ecbuild_add_test( TARGET  test_fv3jedi_model_fv3lm-geos
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
+                  ARGS    testinput/model_fv3lm-geos.yaml
+                  MPI     6 )
 
-if (${BUILD_WITH_LINEARMODEL})
-  ecbuild_add_test( TARGET  test_fv3jedi_model_fv3lm-geos
-                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
-                    ARGS    testinput/model_fv3lm-geos.yaml
-                    MPI     6 )
-endif()
-
-if( ${BUILD_WITH_MODEL} MATCHES "GFS" )
+if( FV3_FORECAST_MODEL MATCHES "GFS" )
   ecbuild_add_test( TARGET  test_fv3jedi_model_gfs
                     COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
                     ARGS    testinput/model_gfs.yaml
                     MPI     6 )
 endif()
 
-if( ${BUILD_WITH_MODEL} MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
   ecbuild_add_test( TARGET  test_fv3jedi_model_geos
                     COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
                     ARGS    testinput/model_geos.yaml
@@ -763,7 +756,6 @@ endif()
 
 # Linear model tests
 # ------------------
-if (${BUILD_WITH_LINEARMODEL})
 ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_gfs
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linearmodel.x
                   ARGS    testinput/linearmodel_gfs.yaml
@@ -773,7 +765,6 @@ ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_geos
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linearmodel.x
                   ARGS    testinput/linearmodel_geos.yaml
                   MPI     6 )
-endif()
 
 
 # H(x)

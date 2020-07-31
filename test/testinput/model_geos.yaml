@@ -13,7 +13,7 @@ geometry:
 model:
   name: GEOS
   tstep: PT30M
-  geos_run_directory: Data/ModelDirs/geos/c90/
+  geos_run_directory: Data/ModelRunDirs/GEOS/
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
@@ -23,10 +23,10 @@ model test:
   forecast length: PT1H
   final norm: 599.65263610307625
   tolerance: 1.0e-4
-  testreforecast: false
+  test reforecast: false
 initial condition:
   filetype: geos
-  datapath: Data/ModelDirs/geos/c90/
+  datapath: Data/ModelRunDirs/GEOS
   filename_bkgd: jedi-geos-c90.geosgcm_traj.20180414_2100z.nc4
   filename_crtm: geos.crtmsrf.c90.nc4
   filename_core: fvcore_internal_rst
