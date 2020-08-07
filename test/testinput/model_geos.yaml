@@ -4,8 +4,8 @@ geometry:
   akbk: Data/fv3files/akbk72.nc4
   layout: [2,2]
   io_layout: [1,1]
-  npx: 91
-  npy: 91
+  npx: 25
+  npy: 25
   npz: 72
   ntiles: 6
   fieldsets:
@@ -14,24 +14,18 @@ model:
   name: GEOS
   tstep: PT30M
   geos_run_directory: Data/ModelRunDirs/GEOS/
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
-                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+  model variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]
 model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
-  final norm: 599.65263610307625
+  final norm: 15017.619595736662
   tolerance: 1.0e-4
   test reforecast: false
 initial condition:
   filetype: geos
   datapath: Data/ModelRunDirs/GEOS
-  filename_bkgd: jedi-geos-c90.geosgcm_traj.20180414_2100z.nc4
-  filename_crtm: geos.crtmsrf.c90.nc4
   filename_core: fvcore_internal_rst
   filename_mois: moist_internal_rst
   filename_surf: fvcore_internal_rst
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
-                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+  state variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]
