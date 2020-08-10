@@ -128,6 +128,9 @@ phases:
       # geos-aero
       - ./clone.sh $GIT_USER $GIT_PASS geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
 
+      # ropp
+      - ./clone.sh $GIT_USER $GIT_PASS ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+
       - ls
       - pwd
       - cd /jcsda/fv3-bundle
@@ -157,7 +160,7 @@ phases:
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
         && cd /build_container
         && ls
-        && ecbuild /jcsda/fv3-bundle/ -DTEST_TIME_REF_FV3=CTestCostData.txt.awsintel.test
+        && ecbuild /jcsda/fv3-bundle/ -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsintel.test
         && cd fv3-jedi
         && make -j8"
 

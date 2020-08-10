@@ -85,6 +85,9 @@ phases:
       # geos-aero
       - ./clone.sh $GIT_USER $GIT_PASS geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
 
+      # ropp
+      - ./clone.sh $GIT_USER $GIT_PASS ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+     
       - cd /jcsda/fv3-bundle
       - sed -i 's/BRANCH develop UPDATE//' CMakeLists.txt
       - sed -i 's/BRANCH dev\/master-ecbuild UPDATE//' CMakeLists.txt
@@ -102,7 +105,7 @@ phases:
       - echo $BUILD_STATUS
 
       - cd /build_container
-      - ecbuild -DSKIP_LARGE_TESTS=ON /jcsda/fv3-bundle/
+      - ecbuild -DSKIP_LARGE_TESTS=ON -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF /jcsda/fv3-bundle/
       - cd fv3-jedi
       - make -j8
 

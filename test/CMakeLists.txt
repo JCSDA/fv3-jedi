@@ -243,6 +243,8 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_fv3-geos.yaml
   testinput/hofx_fv3-gfs.yaml
   testinput/hofx_gfs_aero.yaml
+  testinput/hofx_fv3-gfs_gnssro_ropp1d.yaml
+  testinput/hofx_fv3-gfs_gnssro_ropp2d.yaml
   testinput/hofx_nomodel_geos.yaml
   testinput/hofx_nomodel_gfs.yaml
   testinput/hyb-3dvar_geos_p12.yaml
@@ -799,6 +801,21 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_fv3-geos_compare
                   ARGS         testoutput/hofx_fv3-geos.run testoutput/hofx_fv3-geos.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_hofx_fv3-geos )
 
+# H(x) when ROPP is enabled
+# -------------------------
+
+if ( NOT SKIP_ROPP-UFO )
+
+ecbuild_add_test( TARGET  test_fv3jedi_hofx_fv3-gfs_gnssro_ropp1d
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
+                  ARGS    testinput/hofx_fv3-gfs_gnssro_ropp1d.yaml testoutput/hofx_fv3-gfs_gnssro_ropp1d.run
+                  MPI     6 )
+ecbuild_add_test( TARGET  test_fv3jedi_hofx_fv3-gfs_gnssro_ropp2d
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
+                  ARGS    testinput/hofx_fv3-gfs_gnssro_ropp2d.yaml testoutput/hofx_fv3-gfs_gnssro_ropp2d.run
+                  MPI     6 )
+endif()
+
 # H(x) no model
 # -------------
 
@@ -825,6 +842,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_nomodel_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hofx_nomodel_geos.run testoutput/hofx_nomodel_geos.ref 1.0e-2 ${idif}
                 TEST_DEPENDS test_fv3jedi_hofx_nomodel_geos )
+
 
 # B Matrix tests
 # --------------
@@ -1318,7 +1336,6 @@ ecbuild_add_test( TARGET       test_fv3jedi_3denvar_geos_aero
                  )
 
 endif()
-
 
 
 if (NOT SKIP_LARGE_TESTS)
