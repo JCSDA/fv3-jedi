@@ -189,21 +189,21 @@ phases:
 
       - cat /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
 
-        #      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
-        #        then echo "All tests passed; Run time test";
-        #        su - jcsdauser -c "export COMPILERVARS_ARCHITECTURE=intel64
-        #        && export COMPILERVARS_PLATFORM=linux
-        #        && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
-        #        && export FC=mpiifort
-        #        && export CC=mpiicc
-        #        && export CXX=mpiicpc
-        #        && export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-        #        && export LD_LIBRARY_PATH=/usr/local/lib
-        #        && export LIBRARY_PATH=/usr/local/lib
-        #        && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
-        #        && cd /build_container/fv3-jedi/
-        #        && ctest -VV -R test_fv3_time";
-        #        fi
+      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+        then echo "All tests passed; Run time test";
+        su - jcsdauser -c "export COMPILERVARS_ARCHITECTURE=intel64
+        && export COMPILERVARS_PLATFORM=linux
+        && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
+        && export FC=mpiifort
+        && export CC=mpiicc
+        && export CXX=mpiicpc
+        && export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        && export LD_LIBRARY_PATH=/usr/local/lib
+        && export LIBRARY_PATH=/usr/local/lib
+        && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
+        && cd /build_container/fv3-jedi/
+        && ctest -VV -R test_fv3_time";
+        fi
 
   post_build:
     commands:

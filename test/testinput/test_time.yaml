@@ -1,38 +1,26 @@
-- TestName: test_fv3jedi_hyb3dvar_gfs
-  Tolerance: 40
+- TestName: test_fv3jedi_hofx_fv3-gfs
+  Tolerance: 50
 
-- TestName: test_fv3jedi_hybfgat_gfs
-  Tolerance: 40
+- TestName: test_fv3jedi_hofx_fv3-geos
+  Tolerance: 50
+
+- TestName: test_fv3jedi_hyb3dvar_geos
+  Tolerance: 50
+
+- TestName: test_fv3jedi_hyb4dvar_fv3-gfs
+  Tolerance: 50
+
+- TestName: test_fv3jedi_hyb4dvar_pseudo-geos
+  Tolerance: 50
 
 - TestName: test_fv3jedi_hyb3dvar_geos_p12
-  Tolerance: 40
-
-- TestName: test_fv3jedi_eda_3dvar_geos
-  Tolerance: 40
-
-- TestName: test_fv3jedi_eda_3dvar_gfs
-  Tolerance: 40
-
-- TestName: test_fv3jedi_eda_3dvar_gfs_member2
-  Tolerance: 40
-
-- TestName: test_fv3jedi_eda_4dvar_geos
   Tolerance: 50
 
-- TestName: test_fv3jedi_eda_4dvar_gfs
+- TestName: test_fv3jedi_eda_4dvar_fv3-geos
   Tolerance: 50
 
-- TestName: test_fv3jedi_enshofx_geos
+- TestName: test_fv3jedi_eda_4dvar_fv3-gfs
   Tolerance: 50
 
-- TestName: test_fv3jedi_hyb4dvar_gfs
-  Tolerance: 40
-
-- TestName: test_fv3jedi_hyb4dvar_geos
-  Tolerance: 40
-
-- TestName: test_fv3jedi_hybfgat_geos
-  Tolerance: 40
-
-- TestName: test_fv3jedi_hybfgat_gfs
-  Tolerance: 40
+- TestName: test_fv3jedi_enshofx_fv3-geos
+  Tolerance: 50
