@@ -1,10 +1,6 @@
 background error:
   covariance model: FV3JEDIstatic
   date: '2018-04-15T00:00:00Z'
-  horizontal_length_scale: 1e6
-  maximum_condition_number: 1.0e6
-  standard_deviation: 0.8
-  vertical_correlation: 0.2
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
@@ -26,15 +22,14 @@ linear model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  fsoi_mode: 0
   tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   trajectory:
     model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 linear model test:
-  forecast length: PT30M
+  forecast length: PT1H
   first multiplier TL: 0.01
   iterations TL: 10
-  tolerance AD: 1.0e-11
+  tolerance AD: 1.0e-12
   tolerance TL: 1.0
 model:
   name: FV3LM
@@ -45,7 +40,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr, phis]
+  model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 model aux control: null
 initial condition:
   filetype: gfs
@@ -56,5 +51,4 @@ initial condition:
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
   state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
-variable change: Analysis2Model
 analysis variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]

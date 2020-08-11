@@ -1,11 +1,10 @@
 background error:
   covariance model: FV3JEDIstatic
-  date: '2018-04-14T21:00:00Z'
+  date: '2018-04-15T00:00:00Z'
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
-  # input.nml
   layout: [1,1]
   io_layout: [1,1]
   npx: 13
@@ -27,10 +26,10 @@ linear model:
   trajectory:
     model variables: [u,v,t,delp,q,qi,ql,o3mr]
 linear model test:
-  forecast length: PT30M
+  forecast length: PT1H
   first multiplier TL: 0.01
   iterations TL: 10
-  tolerance AD: 1.0e-13
+  tolerance AD: 1.0e-12
   tolerance TL: 1.0
 model:
   name: FV3LM
@@ -41,15 +40,12 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,t,delp,q,qi,ql,o3mr,phis,
-              qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-              zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+  model variables: [u,v,t,delp,q,qi,ql,o3mr,phis]
 model aux control: null
 initial condition:
   filetype: geos
   state variables: [u,v,t,delp,q,qi,ql,o3mr,phis]
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
-  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  filename_bkgd: geos.bkg.20180415_000000z.nc4
+  filename_crtm: geos.bkg.crtmsrf.20180415_000000z.nc4
 analysis variables: [u,v,t,delp,q,qi,ql,o3mr]
-variable change: Analysis2Model

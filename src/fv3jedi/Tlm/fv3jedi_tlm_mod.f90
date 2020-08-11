@@ -1,232 +1,192 @@
-! (C) Copyright 2017 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_tlm_mod
 
+! iso
 use iso_c_binding
+
+! fckit
 use fckit_configuration_module, only: fckit_configuration
+
+! oops
 use duration_mod
 use oops_variables_mod
 
-use fv3jedi_kinds_mod
-use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_state_mod, only: fv3jedi_state
+! fv3-jedi-linearmodel
+use fv3jedi_lm_mod,        only: fv3jedi_lm_type
+
+! fv3-jedi
+use fv3jedi_field_mod,     only: copy_subset, has_field, pointer_field_array
+use fv3jedi_geom_mod,      only: fv3jedi_geom
+use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_increment_mod, only: fv3jedi_increment, create_inc=>create
-use fv3jedi_traj_mod, only: fv3jedi_traj
-
-use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
-
-use fv3jedi_lm_mod, only: fv3jedi_lm_type
-
-use fv3jedi_linvarcha_a2m_mod
+use fv3jedi_state_mod,     only: fv3jedi_state
+use fv3jedi_traj_mod,      only: fv3jedi_traj
 
 implicit none
 private
-
 public :: fv3jedi_tlm
-public :: tlm_create
-public :: tlm_delete
-public :: tlm_initialize_tl
-public :: tlm_initialize_ad
-public :: tlm_step_tl
-public :: tlm_step_ad
-public :: tlm_finalize_tl
-public :: tlm_finalize_ad
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 !> Fortran derived type to hold tlm definition
 type:: fv3jedi_tlm
   type(fv3jedi_lm_type) :: fv3jedi_lm  !<Linearized model object
-  type(fv3jedi_linvarcha_a2m) :: lvc
-  type(fv3jedi_increment) :: xmod
+  contains
+    procedure :: create
+    procedure :: delete
+    procedure :: initialize_tl
+    procedure :: initialize_ad
+    procedure :: step_tl
+    procedure :: step_ad
+    procedure :: finalize_tl
+    procedure :: finalize_ad
 end type fv3jedi_tlm
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine tlm_create(self, geom, c_conf, vars)
+subroutine create(self, geom, conf)
 
 implicit none
-type(fv3jedi_tlm),    intent(inout) :: self
-type(fv3jedi_geom),   intent(in)    :: geom
-type(c_ptr),          intent(in)    :: c_conf
-type(oops_variables), intent(in)    :: vars
+class(fv3jedi_tlm),        intent(inout) :: self
+type(fv3jedi_geom),        intent(in)    :: geom
+type(fckit_configuration), intent(in)    :: conf
 
 !Locals
 character(len=20) :: ststep
 type(duration) :: dtstep
 real(kind=kind_real) :: dt
-integer :: tmp
-
-type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
-
-
-! Fortran configuration
-! ---------------------
-f_conf = fckit_configuration(c_conf)
 
 ! Model time step
 ! ---------------
-call f_conf%get_or_die("tstep",str)
+call conf%get_or_die("tstep",str)
 ststep = str
 deallocate(str)
 dtstep = trim(ststep)
 dt = real(duration_seconds(dtstep),kind_real)
 
-
 ! Model configuration and creation
 ! --------------------------------
-call f_conf%get_or_die("lm_do_dyn",self%fv3jedi_lm%conf%do_dyn)
-call f_conf%get_or_die("lm_do_trb",self%fv3jedi_lm%conf%do_phy_trb)
-call f_conf%get_or_die("lm_do_mst",self%fv3jedi_lm%conf%do_phy_mst)
+call conf%get_or_die("lm_do_dyn",self%fv3jedi_lm%conf%do_dyn)
+call conf%get_or_die("lm_do_trb",self%fv3jedi_lm%conf%do_phy_trb)
+call conf%get_or_die("lm_do_mst",self%fv3jedi_lm%conf%do_phy_mst)
 
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
 
-call create_inc(self%xmod, geom, vars)
+end subroutine create
 
-end subroutine tlm_create
+! --------------------------------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine tlm_delete(self)
+subroutine delete(self)
 
 implicit none
-type(fv3jedi_tlm), intent(inout) :: self
+class(fv3jedi_tlm), intent(inout) :: self
 
 !Delete the model
 !----------------
 call self%fv3jedi_lm%delete()
 
-end subroutine tlm_delete
+end subroutine delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine tlm_initialize_ad(geom, self, inc)
+subroutine initialize_ad(self, inc)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_tlm),       intent(inout) :: self
+class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
-
-call multiplyinverseadjoint(self%lvc,geom,inc,self%xmod)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
-call multiplyadjoint(self%lvc,geom,self%xmod,inc)
+end subroutine initialize_ad
 
-end subroutine tlm_initialize_ad
+! --------------------------------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine tlm_initialize_tl(geom, self, inc)
+subroutine initialize_tl(self, inc)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_tlm),       intent(inout) :: self
+class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
-
-call multiply(self%lvc,geom,inc,self%xmod)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
-call multiplyinverse(self%lvc,geom,self%xmod,inc)
+end subroutine initialize_tl
 
-end subroutine tlm_initialize_tl
+! --------------------------------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine tlm_step_ad(geom, self, inc, traj)
+subroutine step_ad(self, inc, traj)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_tlm),       intent(inout) :: self
+class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
-
-call multiplyinverseadjoint(self%lvc,geom,inc,self%xmod)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
-call multiplyadjoint(self%lvc,geom,self%xmod,inc)
+end subroutine step_ad
 
-end subroutine tlm_step_ad
+! --------------------------------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine tlm_step_tl(geom, self, inc, traj)
+subroutine step_tl(self, inc, traj)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_tlm),       intent(inout) :: self
+class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_traj),      intent(in)    :: traj
 
 call traj_to_traj(traj,self%fv3jedi_lm)
 
-call multiply(self%lvc,geom,inc,self%xmod)
-
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
-call multiplyinverse(self%lvc,geom,self%xmod,inc)
+end subroutine step_tl
 
-end subroutine tlm_step_tl
+! --------------------------------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine tlm_finalize_ad(geom, self, inc)
+subroutine finalize_ad(self, inc)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_tlm),       intent(inout) :: self
+class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
-
-call multiplyinverseadjoint(self%lvc,geom,inc,self%xmod)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_ad()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
-call multiplyadjoint(self%lvc,geom,self%xmod,inc)
+end subroutine finalize_ad
 
-end subroutine tlm_finalize_ad
+! --------------------------------------------------------------------------------------------------
 
-! ------------------------------------------------------------------------------
-
-subroutine tlm_finalize_tl(geom, self, inc)
+subroutine finalize_tl(self, inc)
 
 implicit none
-type(fv3jedi_geom),      intent(inout) :: geom
-type(fv3jedi_tlm),       intent(inout) :: self
+class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
-
-call multiply(self%lvc,geom,inc,self%xmod)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
 call self%fv3jedi_lm%final_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
-call multiplyinverse(self%lvc,geom,self%xmod,inc)
+end subroutine finalize_tl
 
-end subroutine tlm_finalize_tl
-
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine inc_to_lm(inc, lm)
 
@@ -273,7 +233,7 @@ endif
 
 end subroutine inc_to_lm
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine lm_to_inc(lm, inc)
 
@@ -318,7 +278,7 @@ endif
 
 end subroutine lm_to_inc
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine traj_to_traj( traj, lm )
 
@@ -366,6 +326,6 @@ lm%traj%khu     = traj%khu
 
 end subroutine traj_to_traj
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_tlm_mod

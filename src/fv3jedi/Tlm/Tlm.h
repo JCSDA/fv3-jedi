@@ -27,37 +27,33 @@ namespace eckit {
 
 namespace fv3jedi {
 
-// -----------------------------------------------------------------------------
-/// FV3JEDI linear model definition.
-/*!
- *  FV3JEDI linear model definition and configuration parameters.
- */
+// -------------------------------------------------------------------------------------------------
+
+// Linear model definition.
 
 class Tlm: public oops::LinearModelBase<Traits>,
                 private util::ObjectCounter<Tlm> {
  public:
   static const std::string classname() {return "fv3jedi::Tlm";}
 
+  // Constructor/destructor
   Tlm(const Geometry &, const eckit::Configuration &);
   ~Tlm();
 
-/// Model trajectory computation
-  void setTrajectory(const State &, State &,
-                     const ModelBias &) override;
+  // Set the trajectory
+  void setTrajectory(const State &, State &, const ModelBias &) override;
 
-/// Run TLM and its adjoint
+  // Run TLM and its adjoint
   void initializeTL(Increment &) const override;
-  void stepTL(Increment &, const ModelBiasIncrement &)
-               const override;
+  void stepTL(Increment &, const ModelBiasIncrement &) const override;
   void finalizeTL(Increment &) const override;
 
   void initializeAD(Increment &) const override;
   void stepAD(Increment &, ModelBiasIncrement &) const override;
   void finalizeAD(Increment &) const override;
 
-/// Other utilities
+  // Accessor functions
   const util::Duration & timeResolution() const override {return tstep_;}
-  const Geometry & resolution() const {return resol_;}
   const oops::Variables & variables() const override {return linvars_;}
 
  private:
@@ -66,14 +62,13 @@ class Tlm: public oops::LinearModelBase<Traits>,
   typedef std::map< util::DateTime, int >::const_iterator trajICst;
 
 // Data
-  F90model keyConfig_;
+  F90model keySelf_;
   util::Duration tstep_;
-  const Geometry resol_;
   std::map< util::DateTime, F90traj> traj_;
   const ModelTraj lrmodel_;
   const oops::Variables linvars_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 #endif  // FV3JEDI_TLM_TLM_H_
