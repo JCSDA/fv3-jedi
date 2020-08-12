@@ -10,7 +10,6 @@ use fckit_mpi_module,              only: fckit_mpi_comm
 
 ! oops
 use datetime_mod,                   only: datetime
-use type_bump,                      only: bump_type
 use unstructured_interpolation_mod, only: unstrc_interp
 
 ! ufo

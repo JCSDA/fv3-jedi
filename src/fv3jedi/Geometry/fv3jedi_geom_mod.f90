@@ -12,7 +12,7 @@ use mpi
 use string_f_c_mod
 
 ! atlas uses
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace, atlas_functionspace_pointcloud
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace_pointcloud
 
 ! fckit uses
 use fckit_mpi_module,           only: fckit_mpi_comm
@@ -79,7 +79,7 @@ type :: fv3jedi_geom
   logical :: nested = .false.
   integer :: grid_type = 0
   logical :: dord4 = .true.
-  type(atlas_functionspace) :: afunctionspace
+  type(atlas_functionspace_pointcloud) :: afunctionspace
   contains
     procedure, public :: create
     procedure, public :: clone

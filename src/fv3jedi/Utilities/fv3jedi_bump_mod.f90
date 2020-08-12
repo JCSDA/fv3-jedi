@@ -33,6 +33,7 @@ integer, optional,          intent(in)    :: bumpid
 !Locals
 character(len=5)    :: cbumpcount
 character(len=1024) :: bump_nam_prefix
+type(atlas_functionspace) :: afunctionspace
 type(atlas_fieldset) :: afieldset
 
 ! Each bump%nam%prefix must be distinct
@@ -61,12 +62,12 @@ bump%nam%variables(1) = "var"
 bump%nam%nts = 1
 bump%nam%timeslots(1) = "0"
 
-!Empty atlas field set
-afieldset = atlas_fieldset()
+!Generic function space
+afunctionspace = atlas_functionspace(geom_in%afunctionspace%c_ptr())
 
 ! Initialize BUMP
 ! -------------------
-call bump%setup( geom_in%f_comm,geom_in%afunctionspace,afieldset,nobs=ngrid_ou,lonobs=lon_ou_us,latobs=lat_ou_us)
+call bump%setup( geom_in%f_comm,afunctionspace,nobs=ngrid_ou,lonobs=lon_ou_us,latobs=lat_ou_us)
 
 !Run BUMP drivers
 call bump%run_drivers
@@ -76,7 +77,7 @@ call bump%partial_dealloc
 
 ! Release memory
 ! --------------
-call afieldset%final()
+call afunctionspace%final()
 
 end subroutine bump_init
 
