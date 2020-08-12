@@ -33,14 +33,6 @@ ensemble:
     filename: Data/inputs/gfs_aero_c12/mem004/20180415.000000.fv_tracer.res.nc
   - date: 2018-04-15T00:00:00Z
     filename: Data/inputs/gfs_aero_c12/mem005/20180415.000000.fv_tracer.res.nc
-  - date: 2018-04-15T00:00:00Z
-    filename: Data/inputs/gfs_aero_c12/mem006/20180415.000000.fv_tracer.res.nc
-  - date: 2018-04-15T00:00:00Z
-    filename: Data/inputs/gfs_aero_c12/mem007/20180415.000000.fv_tracer.res.nc
-  - date: 2018-04-15T00:00:00Z
-    filename: Data/inputs/gfs_aero_c12/mem008/20180415.000000.fv_tracer.res.nc
-  - date: 2018-04-15T00:00:00Z
-    filename: Data/inputs/gfs_aero_c12/mem009/20180415.000000.fv_tracer.res.nc
 bump:
   prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs_aero
   verbosity: main

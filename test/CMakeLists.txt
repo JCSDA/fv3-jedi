@@ -122,15 +122,24 @@ LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 
 # GFS AERO test files
 # -------------------
+GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180414.210000)
 GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180415.000000)
+GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180415.030000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180414.210000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180415.000000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180415.030000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180414.210000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180415.000000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180415.030000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem003 20180414.210000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem003 20180415.000000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem003 20180415.030000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem004 20180414.210000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem004 20180415.000000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem004 20180415.030000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem005 20180414.210000)
 GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem005 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem006 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem007 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem008 20180415.000000)
+GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem005 20180415.030000)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/bkg)
@@ -139,9 +148,6 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem002)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem003)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem004)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem005)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem006)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem007)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem008)
 LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # FV3-LAM-CMAQ test files
@@ -258,6 +264,7 @@ list( APPEND fv3jedi_test_input
   testinput/hyb-4dvar_fv3-gfs.yaml
   testinput/hyb-fgat_fv3-geos.yaml
   testinput/hyb-fgat_fv3-gfs.yaml
+  testinput/hyb-fgat_gfs_aero.yaml
   testinput/increment_geos.yaml
   testinput/increment_gfs.yaml
   testinput/letkf_geos.yaml
@@ -1291,6 +1298,14 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_gfs_aero
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx_nomodel.x
                   ARGS         testinput/hofx_gfs_aero.yaml testoutput/hofx_gfs_aero.run
                   MPI          6 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_gfs_aero
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
+                  ARGS         testinput/hyb-fgat_gfs_aero.yaml testoutput/hyb-fgat_gfs_aero.run
+                  MPI          6
+                  TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
+
 
 if( ${GEOS-AERO_FOUND} )
 
