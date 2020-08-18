@@ -1,0 +1,6 @@
+Test     : Initial state: 
+Test     : Final state: 
+Test     : H(x): 
+Test     : GnssroBndROPP1D nobs= 150 Min=0.000312039, Max=0.0234079, RMS=0.00819232
+Test     : GnssroBndROPP2D nobs= 150 Min=0.000312039, Max=0.0234047, RMS=0.0081914
+Test     : End H(x)

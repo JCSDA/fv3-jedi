@@ -1,0 +1,16 @@
+Test     : CostJb   : Nonlinear Jb = 0
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 48.863, nobs = 148, Jo/n = 0.330155, err = 0.000316607
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 47.6049, nobs = 148, Jo/n = 0.321655, err = 0.000316607
+Test     : CostFunction: Nonlinear J = 96.4679
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.666099
+Test     : CostFunction::addIncrement: Analysis: 
+Test     : CostJb   : Nonlinear Jb = 2.02064e-06
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 40.1255, nobs = 148, Jo/n = 0.271118, err = 0.000316607
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 39.4377, nobs = 148, Jo/n = 0.266471, err = 0.000316607
+Test     : CostFunction: Nonlinear J = 79.5633
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.699005
+Test     : CostFunction::addIncrement: Analysis: 
+Test     : CostJb   : Nonlinear Jb = 6.028e-06
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 39.0299, nobs = 148, Jo/n = 0.263716, err = 0.000316607
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 38.2994, nobs = 148, Jo/n = 0.25878, err = 0.000316607
+Test     : CostFunction: Nonlinear J = 77.3294

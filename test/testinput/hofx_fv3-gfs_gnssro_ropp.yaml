@@ -39,6 +39,36 @@ model:
                     u_srf,v_srf,f10m,sss]
 observations:
 - obs space:
+    name: GnssroBndROPP1D
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+      obsgrouping:
+        group_variable: "record_number"
+    obsdataout:
+      obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2018041500_m.nc4
+    simulated variables: [bending_angle]
+  obs operator:
+    name:  GnssroBndROPP1D
+    obs options:
+  obs filters:
+  - filter: Domain Check
+    filter variables:
+    - name: bending_angle
+    where :
+    - variable:
+        name: impact_height@MetaData
+      minvalue: 0
+      maxvalue: 50000
+  - filter: ROobserror
+    filter variables:
+    - name: bending_angle
+    errmodel: NRL
+    variable: bending_angle
+  - filter: Background Check
+    filter variables:
+    - name: bending_angle
+    threshold: 3
+- obs space:
     name: GnssroBndROPP2D
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
@@ -60,8 +90,8 @@ observations:
     where :
     - variable:
         name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
+      minvalue: 0
+      maxvalue: 50000
   - filter: ROobserror
     filter variables:
     - name: bending_angle

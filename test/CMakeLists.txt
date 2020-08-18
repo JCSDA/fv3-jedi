@@ -249,8 +249,7 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_fv3-geos.yaml
   testinput/hofx_fv3-gfs.yaml
   testinput/hofx_gfs_aero.yaml
-  testinput/hofx_fv3-gfs_gnssro_ropp1d.yaml
-  testinput/hofx_fv3-gfs_gnssro_ropp2d.yaml
+  testinput/hofx_fv3-gfs_gnssro_ropp.yaml
   testinput/hofx_nomodel_geos.yaml
   testinput/hofx_nomodel_gfs.yaml
   testinput/hyb-3dvar_geos_p12.yaml
@@ -260,6 +259,7 @@ list( APPEND fv3jedi_test_input
   testinput/hyb-3dvar_gfs_aero.yaml
   testinput/hyb-3dvar_gfs_p12.yaml
   testinput/hyb-3dvar_gfs.yaml
+  testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
   testinput/hyb-4dvar_pseudo-geos.yaml
   testinput/hyb-4dvar_fv3-gfs.yaml
   testinput/hyb-fgat_fv3-geos.yaml
@@ -812,15 +812,21 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_fv3-geos_compare
 # -------------------------
 
 if ( NOT SKIP_ROPP-UFO )
+list( APPEND ropp_hofx_testoutput
+  testoutput/hofx_fv3-gfs_gnssro_ropp.ref
+)
+LINK_FILES( "${ropp_hofx_testoutput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-ecbuild_add_test( TARGET  test_fv3jedi_hofx_fv3-gfs_gnssro_ropp1d
+ecbuild_add_test( TARGET  test_fv3jedi_hofx_fv3-gfs_gnssro_ropp
                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
-                  ARGS    testinput/hofx_fv3-gfs_gnssro_ropp1d.yaml testoutput/hofx_fv3-gfs_gnssro_ropp1d.run
+                  ARGS    testinput/hofx_fv3-gfs_gnssro_ropp.yaml testoutput/hofx_fv3-gfs_gnssro_ropp.run
                   MPI     6 )
-ecbuild_add_test( TARGET  test_fv3jedi_hofx_fv3-gfs_gnssro_ropp2d
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx.x
-                  ARGS    testinput/hofx_fv3-gfs_gnssro_ropp2d.yaml testoutput/hofx_fv3-gfs_gnssro_ropp2d.run
-                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_hofx_fv3-gfs_gnssro_ropp_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/hofx_fv3-gfs_gnssro_ropp.run  testoutput/hofx_fv3-gfs_gnssro_ropp.ref 1.0e-1 ${idif}
+                  TEST_DEPENDS test_fv3jedi_hofx_fv3-gfs_gnssro_ropp )
 endif()
 
 # H(x) no model
@@ -1052,6 +1058,26 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hyb-3dvar_geos.run testoutput/hyb-3dvar_geos.ref 1.0e-1 1
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
+
+# 3DVar when ROPP is enabled
+# -------------------------
+if ( NOT SKIP_ROPP-UFO )
+list( APPEND ropp_var_testoutput
+  testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
+)
+LINK_FILES( "${ropp_var_testoutput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
+ecbuild_add_test( TARGET  test_fv3jedi_hyb-3dvar_gfs_gnssro_ropp
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x 
+                  ARGS    testinput/hyb-3dvar_gfs_gnssro_ropp.yaml testoutput/hyb-3dvar_gfs_gnssro_ropp.run
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_hyb-3dvar_gfs_gnssro_ropp_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/hyb-3dvar_gfs_gnssro_ropp.run testoutput/hyb-3dvar_gfs_gnssro_ropp.ref 1.0e-1 ${idif}
+                  TEST_DEPENDS test_fv3jedi_hyb-3dvar_gfs_gnssro_ropp )
+endif()
 
 # Diff states
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs
