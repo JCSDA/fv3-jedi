@@ -9,16 +9,6 @@ cost function:
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  model:
-    name: FV3LM
-    nml_file: Data/fv3files/input_geos_c12.nml
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT3H
-    lm_do_dyn: 1
-    lm_do_trb: 0
-    lm_do_mst: 0
-    model variables: [ua,va,t,ps,q,qi,ql,o3mr,phis,frocean,frlake,frseaice,vtype,
-                      stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -229,11 +219,6 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
   - ninner: 1
     gradient norm reduction: 1e-10
     test: on
@@ -253,8 +238,3 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars

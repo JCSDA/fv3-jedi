@@ -80,24 +80,11 @@ cost function:
   analysis variables: *aerovars
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
-  variable change: Analysis2Model
   filetype: gfs
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_cplr: 20180415.000000.coupler.res
-  model:
-    name: PSEUDO
-    pseudo_type: gfs
-    datapath: Data/inputs/gfs_aero_c12/bkg/
-    filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
-    filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
-    filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
-    tstep: PT3H
-    model variables: [T,DELP,sphum,
-                      sulf,bc1,bc2,oc1,oc2,
-                      dust1,dust2,dust3,dust4,dust5,
-                      seas1,seas2,seas3,seas4]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -147,8 +134,4 @@ variational:
         - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *aerovars
+

@@ -877,7 +877,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_fv3-geos_compare
 # H(x) when ROPP is enabled
 # -------------------------
 
-if ( NOT SKIP_ROPP-UFO )
+if ( NOT BUNDLE_SKIP_ROPP-UFO )
 list( APPEND ropp_hofx_testoutput
   testoutput/hofx_fv3-gfs_gnssro_ropp.ref
 )
@@ -1132,14 +1132,14 @@ ecbuild_add_test( TARGET       test_fv3jedi_hyb3dvar_geos_compare
 
 # 3DVar when ROPP is enabled
 # -------------------------
-if ( NOT SKIP_ROPP-UFO )
+if ( NOT BUNDLE_SKIP_ROPP-UFO )
 list( APPEND ropp_var_testoutput
   testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
 )
 LINK_FILES( "${ropp_var_testoutput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 ecbuild_add_test( TARGET  test_fv3jedi_hyb-3dvar_gfs_gnssro_ropp
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x 
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_var.x
                   ARGS    testinput/hyb-3dvar_gfs_gnssro_ropp.yaml testoutput/hyb-3dvar_gfs_gnssro_ropp.run
                   MPI     6 )
 
@@ -1423,7 +1423,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_gfs_aero
                   TEST_DEPENDS test_fv3jedi_bumpparameters_loc_gfs_aero )
 
 
-if( ${GEOS-AERO_FOUND} )
+if( NOT ${BUNDLE_SKIP_GEOS-AERO} )
 
 ###
 #files needed

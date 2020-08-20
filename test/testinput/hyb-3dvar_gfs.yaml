@@ -3,7 +3,6 @@ cost function:
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
   analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-  variable change: Analysis2Model
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -18,17 +17,6 @@ cost function:
     fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
-  model:
-    name: FV3LM
-    nml_file: Data/fv3files/input_gfs_c24.nml
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT3H
-    lm_do_dyn: 1
-    lm_do_trb: 0
-    lm_do_mst: 0
-    model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
   background:
     filetype: gfs
     datapath: Data/
@@ -37,10 +25,9 @@ cost function:
     filename_sfcd: 20180415.000000.c24.sfc_data.nc
     filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.c24.coupler.res
-    #state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-    #                  slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-    #                  u_srf,v_srf,f10m]
-    state variables: *3dvars
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
   background error:
     covariance model: hybrid
     static:
@@ -312,11 +299,6 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -335,11 +317,6 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
 final:
   diagnostics:
     departures: oman

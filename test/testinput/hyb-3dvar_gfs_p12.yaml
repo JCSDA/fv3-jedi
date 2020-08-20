@@ -1,4 +1,8 @@
 cost function:
+  cost type: 3D-Var
+  window begin: '2018-04-14T21:00:00Z'
+  window length: PT6H
+  analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   background:
     filetype: gfs
     datapath: Data/
@@ -7,7 +11,9 @@ cost function:
     filename_sfcd: 20180415.000000.c24.sfc_data.nc
     filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.c24.coupler.res
-    state variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
   background error:
     covariance model: hybrid
     static weight: 0.1
@@ -250,11 +256,6 @@ cost function:
     obs filters:
     - filter: Background Check
       threshold: 1000
-  cost type: 3D-Var
-  analysis variables: *3dvars
-  window begin: '2018-04-14T21:00:00Z'
-  window length: PT6H
-  variable change: Analysis2Model
   filetype: gfs
   datapath: Data/
   filename_core: 20180415.000000.c24.fv_core.res.nc
@@ -262,20 +263,6 @@ cost function:
   filename_sfcd: 20180415.000000.c24.sfc_data.nc
   filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.c24.coupler.res
-  model:
-    name: PSEUDO
-    pseudo_type: gfs
-    datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
-    filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
-    filename_sfcd: %yyyy%mm%dd.%hh%MM%ss.sfc_data.nc
-    filename_sfcw: %yyyy%mm%dd.%hh%MM%ss.fv_srf_wnd.res.nc
-    filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
-    run stage check: 1
-    tstep: PT3H
-    model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-                slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                u_srf,v_srf,f10m]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -325,11 +312,6 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -348,8 +330,3 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars

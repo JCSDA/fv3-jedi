@@ -1,9 +1,34 @@
 cost function:
+  cost type: 3D-Var
+  analysis variables: &3dvars [ua,va,t,ps,q,qi,ql,o3mr]
+  window begin: '2018-04-14T21:00:00Z'
+  window length: PT6H
+  filetype: geos
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  geometry:
+    nml_file_mpp: Data/fv3files/fmsmpp.nml
+    trc_file: Data/fv3files/field_table
+    akbk: Data/fv3files/akbk72.nc4
+    interpolation method: bump
+    # input.nml
+    layout: [1,2]
+    io_layout: [1,1]
+    npx: 13
+    npy: 13
+    npz: 72
+    ntiles: 6
+    fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
   background:
     filetype: geos
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.bkg.20180415_000000z.nc4
-    state variables: &3dvars [ua,va,t,ps,q,qi,ql,o3mr]
+    filename_crtm: geos.bkg.crtmsrf.20180415_000000z.nc4
+    state variables: [ua,va,t,ps,q,qi,ql,o3mr,phis,frocean,frlake,frseaice,vtype,
+                      stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   background error:
     covariance model: hybrid
     static weight: '0.1'
@@ -826,39 +851,6 @@ cost function:
     obs filters:
     - filter: Background Check
       threshold: 1000
-  cost type: 3D-Var
-  analysis variables: *3dvars
-  window begin: '2018-04-14T21:00:00Z'
-  window length: PT6H
-  variable change: Analysis2Model
-  filetype: 'geos'
-  datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  model:
-    name: PSEUDO
-    tstep: PT1H
-    pseudo_type: geos
-    datapath: Data/inputs/geos_c12'
-    filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    model variables: [ua,va,t,ps,q,qi,ql,o3mr,phis,frocean,frlake,frseaice,vtype,
-                stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
-  geometry:
-    nml_file_mpp: Data/fv3files/fmsmpp.nml
-    trc_file: Data/fv3files/field_table
-    akbk: Data/fv3files/akbk72.nc4
-    interpolation method: bump
-    # input.nml
-    layout: [1,2]
-    io_layout: [1,1]
-    npx: 13
-    npy: 13
-    npz: 72
-    ntiles: 6
-    fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
 output:
   filetype: geos
   datapath: Data/analysis
@@ -891,11 +883,6 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -915,8 +902,3 @@ variational:
       interpolation method: bump
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars

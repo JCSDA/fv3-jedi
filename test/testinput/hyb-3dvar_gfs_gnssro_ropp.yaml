@@ -2,8 +2,7 @@ cost function:
   cost type: 3D-Var
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
-  analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-  variable change: Analysis2Model
+  analysis variables: &3dvars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -11,33 +10,24 @@ cost function:
     # input.nml
     layout: [1,1]
     io_layout: [1,1]
-    npx: 25
-    npy: 25
+    npx: 13
+    npy: 13
     npz: 64
     ntiles: 6
     fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
-  model:
-    name: FV3LM
-    nml_file: Data/fv3files/input_gfs_c24.nml
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT3H
-    lm_do_dyn: 1
-    lm_do_trb: 0
-    lm_do_mst: 0
-    model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
   background:
     filetype: gfs
-    datapath: Data/
-    filename_core: 20180415.000000.c24.fv_core.res.nc
-    filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.c24.sfc_data.nc
-    filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.c24.coupler.res
-    state variables: *3dvars
+    datapath: Data/inputs/gfs_c12/bkg
+    filename_core: 20180415.000000.fv_core.res.nc
+    filename_trcr: 20180415.000000.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.sfc_data.nc
+    filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
   background error:
     covariance model: hybrid
     static:
@@ -230,18 +220,11 @@ cost function:
       filter variables:
       - name: bending_angle
       threshold: 3
-  filetype: gfs
-  datapath: Data/
-  filename_core: 20180415.000000.c24.fv_core.res.nc
-  filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.c24.sfc_data.nc
-  filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.c24.coupler.res
 variational:
   minimizer:
     algorithm: DRIPCG
   iterations:
-  - ninner: 15
+  - ninner: 5
     gradient norm reduction: 1e-10
     test: on
     geometry:
@@ -259,44 +242,16 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
-  - ninner: 15
-    gradient norm reduction: 1e-10
-    test: on
-    geometry:
-      trc_file: Data/fv3files/field_table
-      akbk: Data/fv3files/akbk64.nc4
-      # input.nml
-      layout: [1,1]
-      io_layout: [1,1]
-      npx: 13
-      npy: 13
-      npz: 64
-      ntiles: 6
-      fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
-    diagnostics:
-      departures: ombg
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *3dvars
 final:
   diagnostics:
     departures: oman
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs.ropp.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs.ropp.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs.ropp.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs.ropp.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs.ropp.coupler.res
+  filename_core: hyb-3dvar-gfs_ropp.fv_core.res.nc
+  filename_trcr: hyb-3dvar-gfs_ropp.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar-gfs_ropp.sfc_data.nc
+  filename_sfcw: hyb-3dvar-gfs_ropp.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar-gfs_ropp.coupler.res
   first: PT0H
   frequency: PT1H

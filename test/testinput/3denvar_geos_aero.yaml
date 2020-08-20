@@ -3,10 +3,8 @@ cost function:
     filetype: geos
     datapath : Data/inputs/geos_c12
     filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
-    state variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
-                                SS001, SS002, SS003, SS004, SS005,
-                                BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
-                                NO3AN1, NO3AN2, NO3AN3, SO4 ]
+    state variables: [DELP, RH, DU001, DU002, DU003, DU004, DU005, SS001, SS002, SS003, SS004,
+                      SS005, BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC, NO3AN1, NO3AN2, NO3AN3, SO4 ]
   background error:
     covariance model: hybrid
     static weight: 0.01
@@ -16,7 +14,10 @@ cost function:
       covariance model: ID
     ensemble:
       date: ['2018-04-15T00:00:00Z']
-      state variables: *aerovars
+      state variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
+                                  SS001, SS002, SS003, SS004, SS005,
+                                  BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
+                                  NO3AN1, NO3AN2, NO3AN3, SO4 ]
       localization:
         localization method: BUMP
         bump:
@@ -76,21 +77,9 @@ cost function:
   analysis variables: *aerovars
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
-  variable change: Analysis2Model
   filetype: geos
   datapath: Data/inputs/geos_c12/
   filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
-  model:
-    name: PSEUDO
-    pseudo_type: geos
-    datapath: Data/inputs/geos_c12
-    filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
-    run stage check: 1
-    tstep: PT3H
-    model variables: [DELP, RH, DU001, DU002, DU003, DU004, DU005,
-                      SS001, SS002, SS003, SS004, SS005,
-                      BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
-                      NO3AN1, NO3AN2, NO3AN3, SO4 ]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -122,12 +111,7 @@ variational:
   - diagnostics:
       departures: ombg
     gradient norm reduction: 1e-10
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *aerovars
-    ninner: 10
+    ninner: 3
     geometry:
       trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk72.nc4
@@ -146,12 +130,7 @@ variational:
   - diagnostics:
       departures: ombg
     gradient norm reduction: 1e-10
-    linear model:
-      variable change: Identity
-      name: FV3JEDIIdTLM
-      tstep: PT3H
-      tlm variables: *aerovars
-    ninner: 10
+    ninner: 3
     geometry:
       trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk72.nc4
