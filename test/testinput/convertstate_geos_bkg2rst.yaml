@@ -1,0 +1,51 @@
+# Input and output Geometry
+# -------------------------
+input geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  interpolation method: bump
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+output geometry:
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  interpolation method: bump
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+
+# Variable change
+# ----------------
+variable change: GeosRst2Bkg
+do inverse: true  #Actualy going from Bkg2Rst so its the inverse
+input variables: [u,v,t,delp,q,qi,ql]
+output variables: [U,V,PT,PKZ,PE,Q]
+do_wind: false
+do_clouds: false
+
+# States to convert
+# ---------------
+states:
+- input:
+    filetype: geos
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.bkg.20180414_210000z.nc4
+    state variables: [u,v,t,delp,q]
+  output:
+   filetype: geos
+   datapath: Data/inputs/geos_c12
+   filename_core: fvcore_internal_rst
+   filename_mois: moist_internal_rst
+   filename_surf: surf_import_rst

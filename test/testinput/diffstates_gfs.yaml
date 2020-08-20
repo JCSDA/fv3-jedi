@@ -5,8 +5,8 @@ state geometry:
   # input.nml
   layout: [1,1]
   io_layout: [1,1]
-  npx: 13
-  npy: 13
+  npx: 25
+  npy: 25
   npz: 64
   ntiles: 6
   fieldsets:
@@ -17,8 +17,8 @@ increment geometry:
   # input.nml
   layout: [1,1]
   io_layout: [1,1]
-  npx: 13
-  npy: 13
+  npx: 25
+  npy: 25
   npz: 64
   ntiles: 6
   fieldsets:
@@ -34,12 +34,12 @@ state1: #Analysis
   state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 state2: #background
   filetype: gfs
-  datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
+  datapath: Data/
+  filename_core: 20180415.000000.c24.fv_core.res.nc
+  filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.c24.sfc_data.nc
+  filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.c24.coupler.res
   state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 output:
   filetype: geos

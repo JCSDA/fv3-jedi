@@ -528,29 +528,6 @@ end subroutine fv3jedi_increment_sizes_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_jnormgrad_c(c_key_self,c_key_geom,c_key_state,c_conf) &
-           bind(c,name='fv3jedi_increment_jnormgrad_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_state
-type(c_ptr),    intent(in) :: c_conf
-
-type(fv3jedi_increment), pointer :: self
-type(fv3jedi_geom), pointer :: geom
-type(fv3jedi_state), pointer :: state
-
-call fv3jedi_increment_registry%get(c_key_self, self)
-call fv3jedi_geom_registry%get(c_key_geom,geom)
-call fv3jedi_state_registry%get(c_key_state,state)
-
-call jnormgrad(self,geom,state,c_conf)
-
-end subroutine fv3jedi_increment_jnormgrad_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_increment_serialize_c(c_key_self,c_vsize,c_vect_inc) &
            bind(c,name='fv3jedi_increment_serialize_f90')
 

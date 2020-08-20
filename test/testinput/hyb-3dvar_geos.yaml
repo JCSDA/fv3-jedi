@@ -8,7 +8,7 @@ cost function:
   filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
   model:
-    name: FV3
+    name: FV3LM
     nml_file: Data/fv3files/input_geos_c12.nml
     nml_file_pert: Data/fv3files/inputpert_4dvar.nml
     tstep: PT3H
@@ -44,7 +44,7 @@ cost function:
     static weight: 0.1
     static:
       date: &adate '2018-04-15T00:00:00Z'
-      covariance model: FV3JEDIstatic
+      covariance model: FV3JEDI-ID
       bump:
         prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
         method: cor

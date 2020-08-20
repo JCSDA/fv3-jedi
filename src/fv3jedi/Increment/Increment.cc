@@ -23,7 +23,6 @@
 #include "ufo/GeoVaLs.h"
 #include "ufo/Locations.h"
 
-#include "fv3jedi/ErrorCovariance/ErrorCovariance.h"
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/State/State.h"
@@ -242,15 +241,6 @@ void Increment::print(std::ostream & os) const {
 void Increment::dirac(const eckit::Configuration & config) {
   const eckit::Configuration * conf = &config;
   fv3jedi_increment_dirac_f90(keyInc_, &conf, geom_->toFortran());
-}
-// -----------------------------------------------------------------------------
-void Increment::jnormgrad(const State & xxf,
-                              const eckit::Configuration & config) {
-  oops::Log::trace() << "Increment jnormgrad starting" << std::endl;
-  const eckit::Configuration * conf = &config;
-  fv3jedi_increment_jnormgrad_f90(keyInc_, geom_->toFortran(),
-                               xxf.toFortran(), &conf);
-  oops::Log::trace() << "Increment jnormgrad done" << std::endl;
 }
 // -----------------------------------------------------------------------------
 size_t Increment::serialSize() const {

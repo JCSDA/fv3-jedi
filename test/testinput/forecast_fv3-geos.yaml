@@ -1,4 +1,4 @@
-forecast length: PT6H
+forecast length: PT1H
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
@@ -21,10 +21,12 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
+  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
 initial condition:
   filetype: geos
-  filename: Data/INPUTS/GEOS_c48/GEOS.bkg.c48.eta.20180415_00z.nc4
-  variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
 output:
   geos_tile_dim: 1
   filetype: geos

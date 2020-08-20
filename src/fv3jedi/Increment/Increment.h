@@ -44,7 +44,6 @@ namespace oops {
 
 namespace fv3jedi {
   class ModelBiasIncrement;
-  class ErrorCovariance;
   class State;
 
 // FV3JEDI increment

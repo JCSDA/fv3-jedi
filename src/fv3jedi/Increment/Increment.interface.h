@@ -119,11 +119,6 @@ extern "C" {
                                    const eckit::Configuration * const *,
                                    const F90geom &);
 
-  void fv3jedi_increment_jnormgrad_f90(const F90inc &,
-                                       const F90geom &,
-                                       const F90state &,
-                                       const eckit::Configuration * const *);
-
   void fv3jedi_increment_print_f90(const F90inc &);
 
   void fv3jedi_increment_serialize_f90(const F90inc &,

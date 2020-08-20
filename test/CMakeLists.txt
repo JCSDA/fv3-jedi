@@ -205,6 +205,8 @@ list( APPEND fv3jedi_test_input
   testinput/3dvar_gfs_bal.yaml
   testinput/4denvar_pseudo-geos.yaml
   testinput/4denvar_pseudo-gfs.yaml
+  testinput/addincrement_geos.yaml
+  testinput/addincrement_gfs.yaml
   testinput/bumpparameters_cor_geos_p12.yaml
   testinput/bumpparameters_cor_geos.yaml
   testinput/bumpparameters_cor_gfs_aero.yaml
@@ -216,6 +218,7 @@ list( APPEND fv3jedi_test_input
   testinput/bumpparameters_loc_gfs_aero.yaml
   testinput/bumpparameters_loc_gfs_p12.yaml
   testinput/bumpparameters_loc_gfs.yaml
+  testinput/convertstate_geos_bkg2rst.yaml
   testinput/convertstate_geos.yaml
   testinput/convertstate_gfs.yaml
   testinput/crtm_surface_for_geos.yaml
@@ -234,6 +237,7 @@ list( APPEND fv3jedi_test_input
   testinput/ensvariance_geos.yaml
   testinput/ensvariance_gfs.yaml
   testinput/errorcov.yaml
+  testinput/errorcov_id.yaml
   testinput/forecast_fv3-geos.yaml
   testinput/forecast_fv3-gfs.yaml
   testinput/forecast_geos.yaml
@@ -273,12 +277,12 @@ list( APPEND fv3jedi_test_input
   testinput/lineargetvalues_gfs.yaml
   testinput/linearmodel_geos.yaml
   testinput/linearmodel_gfs.yaml
-  testinput/linearmodel_pseudogeos.yaml
+  testinput/linearmodel-physics_geos.yaml
   testinput/linvarcha_geos.yaml
   testinput/linvarcha_gfs.yaml
   testinput/localization.yaml
   testinput/model_fv3-gfs.yaml
-  testinput/model_fv3lm-geos.yaml
+  testinput/model_fv3-geos.yaml
   testinput/model_geos.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
@@ -312,6 +316,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/dirac_gfs_bal.ref
   testoutput/dirac_gfs_c2a.ref
   testoutput/dirac_gfs.ref
+  testoutput/forecast_fv3-geos.ref
+  testoutput/forecast_fv3-gfs.ref
   testoutput/hofx_fv3-geos.ref
   testoutput/hofx_fv3-gfs.ref
   testoutput/hofx_nomodel_geos.ref
@@ -521,13 +527,13 @@ ecbuild_add_executable( TARGET  test_fv3jedi_localization.x
                         SOURCES mains/TestLocalization.cc
                         LIBS    fv3jedi )
 
-ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcontrol.x
-                        SOURCES mains/TestModelAuxControl.cc
-                        LIBS    fv3jedi )
-
-ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcovariance.x
-                        SOURCES mains/TestModelAuxCovariance.cc
-                        LIBS    fv3jedi )
+#ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcontrol.x
+#                        SOURCES mains/TestModelAuxControl.cc
+#                        LIBS    fv3jedi )
+#
+#ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcovariance.x
+#                        SOURCES mains/TestModelAuxCovariance.cc
+#                        LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_model.x
                         SOURCES mains/TestModel.cc
@@ -686,6 +692,12 @@ ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs
                   ARGS    testinput/convertstate_gfs.yaml
                   MPI     6 )
 
+ecbuild_add_test( TARGET  test_fv3jedi_convertstate_geos_bkg2rst
+                  TYPE    EXE
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
+                  ARGS    testinput/convertstate_geos_bkg2rst.yaml
+                  MPI     6 )
+
 ecbuild_add_test( TARGET  test_fv3jedi_convertstate_geos
                   TYPE    EXE
                   COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
@@ -729,12 +741,12 @@ ecbuild_add_test( TARGET  test_fv3jedi_model_pseudo-geos
                   MPI     6
                   TEST_DEPENDS test_fv3jedi_crtm_surface_for_geos )
 
-ecbuild_add_test( TARGET  test_fv3jedi_model_fv3lm-geos
+ecbuild_add_test( TARGET  test_fv3jedi_model_fv3-geos
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
-                  ARGS    testinput/model_fv3lm-geos.yaml
+                  ARGS    testinput/model_fv3-geos.yaml
                   MPI     6 )
 
-if( FV3_FORECAST_MODEL MATCHES "GFS" )
+if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
   ecbuild_add_test( TARGET  test_fv3jedi_model_gfs
                     COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
                     ARGS    testinput/model_gfs.yaml
@@ -780,6 +792,60 @@ ecbuild_add_test( TARGET  test_fv3jedi_linearmodel_geos
                   ARGS    testinput/linearmodel_geos.yaml
                   MPI     6 )
 
+ecbuild_add_test( TARGET  test_fv3jedi_linearmodel-physics_geos
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_linearmodel.x
+                  ARGS    testinput/linearmodel-physics_geos.yaml
+                  MPI     6 )
+
+# Forecast tests
+# --------------
+ecbuild_add_test( TARGET  test_fv3jedi_forecast_fv3-gfs
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_forecast.x
+                  ARGS    testinput/forecast_fv3-gfs.yaml testoutput/forecast_fv3-gfs.run
+                  MPI     6 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_forecast_fv3-gfs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/forecast_fv3-gfs.run testoutput/forecast_fv3-gfs.ref 1.0e-3 ${idif}
+                  TEST_DEPENDS test_fv3jedi_forecast_fv3-gfs )
+
+ecbuild_add_test( TARGET  test_fv3jedi_forecast_fv3-geos
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_forecast.x
+                  ARGS    testinput/forecast_fv3-geos.yaml testoutput/forecast_fv3-geos.run
+                  MPI     6 )
+
+ecbuild_add_test( TARGET       test_fv3jedi_forecast_fv3-geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/forecast_fv3-geos.run testoutput/forecast_fv3-geos.ref 1.0e-3 ${idif}
+                TEST_DEPENDS test_fv3jedi_forecast_fv3-geos )
+
+if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
+  ecbuild_add_test( TARGET  test_fv3jedi_forecast_gfs
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_forecast.x
+                    ARGS    testinput/forecast_gfs.yaml testoutput/forecast_gfs.run
+                    MPI     6 )
+
+  ecbuild_add_test( TARGET       test_fv3jedi_forecast_gfs_compare
+                    TYPE         SCRIPT
+                    COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                    ARGS         testoutput/forecast_gfs.run testoutput/forecast_gfs.ref 1.0e-3 ${idif}
+                    TEST_DEPENDS test_fv3jedi_forecast_gfs )
+endif()
+
+if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
+  ecbuild_add_test( TARGET  test_fv3jedi_forecast_geos
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_forecast.x
+                    ARGS    testinput/forecast_geos.yaml testoutput/forecast_geos.run
+                    MPI     24 )
+
+  ecbuild_add_test( TARGET       test_fv3jedi_forecast_geos_compare
+                    TYPE         SCRIPT
+                    COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                    ARGS         testoutput/forecast_geos.run testoutput/forecast_geos.ref 1.0e-3 ${idif}
+                    TEST_DEPENDS test_fv3jedi_forecast_geos )
+endif()
 
 # H(x)
 # ----
@@ -917,6 +983,11 @@ ecbuild_add_test( TARGET       test_fv3jedi_errorcovariance
                   ARGS         testinput/errorcov.yaml
                   MPI          6
                   TEST_DEPENDS test_fv3jedi_bumpparameters_cor_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_errorcovariance_id
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_errorcovariance.x
+                  ARGS         testinput/errorcov_id.yaml
+                  MPI          6 )
 
 # Localization
 ecbuild_add_test( TARGET       test_fv3jedi_localization
@@ -1095,6 +1166,25 @@ ecbuild_add_test( TARGET       test_fv3jedi_diffstates_geos
                   MPI          6
                   LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
+
+# Add increment
+ecbuild_add_test( TARGET       test_fv3jedi_addincrement_gfs
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_addincrement.x
+                  ARGS         testinput/addincrement_gfs.yaml
+                  MPI          6
+                  LIBS         fv3jedi
+                  TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs test_fv3jedi_diffstates_gfs )
+
+ecbuild_add_test( TARGET       test_fv3jedi_addincrement_geos
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_addincrement.x
+                  ARGS         testinput/addincrement_geos.yaml
+                  MPI          6
+                  LIBS         fv3jedi
+                  TEST_DEPENDS test_fv3jedi_hyb3dvar_geos test_fv3jedi_diffstates_geos )
+
+
 
 #Hybrid FGAT
 ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_fv3-gfs

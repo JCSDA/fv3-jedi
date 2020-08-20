@@ -15,7 +15,7 @@ cost function:
     ensemble weight: 0.9
     static:
       date: '2018-04-14T21:00:00Z'
-      covariance model: FV3JEDIstatic
+      covariance model: 'FV3JEDI-ID'
     ensemble:
       date: '2018-04-14T21:00:00Z'
       members:

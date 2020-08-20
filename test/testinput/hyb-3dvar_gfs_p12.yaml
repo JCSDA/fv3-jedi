@@ -122,7 +122,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_p12_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -143,7 +143,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sondes_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/sondes_hyb-3dvar-gfs_p12_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -164,7 +164,7 @@ cost function:
       obsdatain:
        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
       obsdataout:
-       obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_2018041500_s.nc4
+       obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_p12_2018041500_s.nc4
       simulated variables: [refractivity]
     obs operator:
       name: GnssroRef
@@ -209,7 +209,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/amsua_n19_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/amsua_n19_hyb-3dvar-gfs_p12_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs operator:
@@ -238,7 +238,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sfc_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sfc_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/sfc_hyb-3dvar-gfs_p12_2018041500_m.nc4
       simulated variables: [surface_pressure]
     obs operator:
       name: SfcPCorrected
@@ -296,11 +296,11 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs.coupler.res
+  filename_core: hyb-3dvar-gfs_p12.fv_core.res.nc
+  filename_trcr: hyb-3dvar-gfs_p12.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar-gfs_p12.sfc_data.nc
+  filename_sfcw: hyb-3dvar-gfs_p12.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar-gfs_p12.coupler.res
   first: PT0H
   frequency: PT1H
 variational:

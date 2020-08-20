@@ -1,4 +1,4 @@
-# (C) Copyright 2017-2019 UCAR.
+# (C) Copyright 2017-2020 UCAR.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,9 +8,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 list( APPEND fv3jedi_src_files
   ErrorCovariance/ErrorCovariance.cc
   ErrorCovariance/ErrorCovariance.h
-  ErrorCovariance/ErrorCovariance.interface.h
-  ErrorCovariance/fv3jedi_covariance_interface_mod.F90
-  ErrorCovariance/fv3jedi_covariance_mod.f90
   FieldMetadata/FieldsMetadata.cc
   FieldMetadata/FieldsMetadata.h
   FieldMetadata/FieldsMetadata.interface.cc
@@ -21,10 +18,6 @@ list( APPEND fv3jedi_src_files
   Geometry/Geometry.interface.h
   Geometry/fv3jedi_geom_interface_mod.F90
   Geometry/fv3jedi_geom_mod.f90
-  Geometry/fv3geom/fv3geom_constants_mod.f90
-  Geometry/fv3geom/fv3geom_create_grid.f90
-  Geometry/fv3geom/fv3geom_gnomonicgrids_mod.f90
-  Geometry/fv3geom/fv3geom_utils_mod.F90
   GeometryIterator/GeometryIterator.cc
   GeometryIterator/GeometryIterator.h
   GeometryIterator/GeometryIterator.interface.h
@@ -155,11 +148,6 @@ ENDIF()
 # Source files when building with stand alone fv3 (GFDL_atmos_cubed_sphere)
 list( APPEND fv3jedi_fv3_src_files
   Geometry/fv_init_control_mod.f90
-  Model/fv3/fv3jedi_fv3_interface_mod.F90
-  Model/fv3/fv3jedi_fv3_mod.f90
-  Model/fv3/ModelFV3.cc
-  Model/fv3/ModelFV3.h
-  Model/fv3/ModelFV3.interface.h
 )
 
 # Source files when building with GEOS

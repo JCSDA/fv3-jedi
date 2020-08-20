@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 UCAR
+ * (C) Copyright 2017-2020 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,8 +12,6 @@
 #include <ostream>
 #include <string>
 #include <boost/noncopyable.hpp>
-
-#include "fv3jedi/ErrorCovariance/ErrorCovariance.interface.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 
@@ -31,19 +29,14 @@ namespace fv3jedi {
   class Increment;
   class State;
 
-// -----------------------------------------------------------------------------
-/// Background error covariance matrix for FV3JEDI
-
-class ErrorCovariance : public util::Printable,
-                           private boost::noncopyable,
-                           private util::ObjectCounter<ErrorCovariance> {
+// -------------------------------------------------------------------------------------------------
+class ErrorCovariance : public util::Printable, private boost::noncopyable,
+                        private util::ObjectCounter<ErrorCovariance> {
  public:
-  static const std::string classname()
-                                  {return "fv3jedi::ErrorCovariance";}
+  static const std::string classname() {return "fv3jedi::ErrorCovariance";}
 
-  ErrorCovariance(const Geometry &, const oops::Variables &,
-                         const eckit::Configuration &, const State &,
-                         const State &);
+  ErrorCovariance(const Geometry &, const oops::Variables &, const eckit::Configuration &,
+                  const State &, const State &);
   ~ErrorCovariance();
 
   void linearize(const State &, const Geometry &);
@@ -53,11 +46,8 @@ class ErrorCovariance : public util::Printable,
 
  private:
   void print(std::ostream &) const;
-  F90bmat keyFtnConfig_;
-  std::unique_ptr<const Geometry> geom_;
-  util::DateTime time_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 #endif  // FV3JEDI_ERRORCOVARIANCE_ERRORCOVARIANCE_H_
