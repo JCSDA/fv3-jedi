@@ -79,6 +79,22 @@ observations:
   obs operator:
     name: VertInterp
 - obs space:
+    name: SBUV2-NOAA19-OZ
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2018041500_m.nc4
+      obsgrouping:
+        group variable: "longitude"
+        sort variable: "air_pressure"
+        sort order: "ascending"
+    obsdataout:
+      obsfile: Data/hofx/sbuv2_n19_obs_2018041500_m_out.nc4
+    simulated variables: [integrated_layer_ozone_in_air]
+  obs operator:
+    name: AtmVertInterpLay
+    geovals: [mole_fraction_of_ozone_in_air]
+    coefficients: [0.007886131] # convert from ppmv to DU
+    nlevels: [22]
+- obs space:
     name: AMSUA-NOAA19
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
