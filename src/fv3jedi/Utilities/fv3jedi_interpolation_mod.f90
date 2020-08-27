@@ -117,14 +117,14 @@ integer :: var, i, j, k, n
 real(kind=kind_real), allocatable :: field_in(:), field_ou(:), field_ou_2d(:,:)
 
 logical :: do_d2a
-real(kind=kind_real), allocatable :: ua_in(:,:,:)
-real(kind=kind_real), allocatable :: va_in(:,:,:)
-real(kind=kind_real), allocatable :: ud_ou(:,:,:)
-real(kind=kind_real), allocatable :: vd_ou(:,:,:)
-type(fv3jedi_field), pointer :: ud_in
-type(fv3jedi_field), pointer :: vd_in
-type(fv3jedi_field), pointer :: ua_ou
-type(fv3jedi_field), pointer :: va_ou
+real(kind=kind_real), allocatable :: ua(:,:,:)
+real(kind=kind_real), allocatable :: va(:,:,:)
+real(kind=kind_real), allocatable :: ud(:,:,:)
+real(kind=kind_real), allocatable :: vd(:,:,:)
+type(fv3jedi_field), pointer :: u_in
+type(fv3jedi_field), pointer :: v_in
+type(fv3jedi_field), pointer :: u_ou
+type(fv3jedi_field), pointer :: v_ou
 
 ! Special case of D-grid winds
 ! ----------------------------
@@ -133,22 +133,37 @@ if (has_field(fields_in,'ud')) then
 
   do_d2a = .true.
 
-  call pointer_field(fields_in,'ud',ud_in)
-  call pointer_field(fields_in,'vd',vd_in)
+  call pointer_field(fields_in, 'ud', u_in)
+  call pointer_field(fields_in, 'vd', v_in)
 
-  allocate(ua_in(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
-  allocate(va_in(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
+  allocate(ua(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
+  allocate(va(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
 
-  call d2a(geom_in, ud_in%array, vd_in%array, ua_in, va_in)
+  call d2a(geom_in, u_in%array, v_in%array, ua, va)
+
+  ! Reallocate without staggering
+  deallocate(u_in%array)
+  deallocate(v_in%array)
+  allocate(u_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:geom_in%npz))
+  allocate(v_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:geom_in%npz))
+
+  ! Reallocate output
+  call pointer_field(fields_ou, 'ud', u_ou)
+  call pointer_field(fields_ou, 'vd', v_ou)
+  deallocate(u_ou%array)
+  deallocate(v_ou%array)
+  allocate(u_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,1:geom_ou%npz))
+  allocate(v_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,1:geom_ou%npz))
 
   ! Overwrite field with A-Grid for doing interpolation
-  ud_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,:) = ua_in
-  vd_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,:) = va_in
+  u_in%array = ua
+  v_in%array = va
 
-  ud_in%space = 'magnitude'
-  vd_in%space = 'magnitude'
+  ! Change field type
+  u_in%space = 'magnitude'
+  v_in%space = 'magnitude'
 
-  deallocate(ua_in, va_in)
+  deallocate(ua, va)
 
 endif
 
@@ -163,7 +178,8 @@ do var = 1,nf
     allocate(field_ou_2d(geom_ou%ngrid,1:fields_ou(var)%npz))
 
     ! Interpolate
-    call bump_apply(fields_ou(var)%npz, geom_in, fields_in(var)%array, geom_ou%ngrid, field_ou_2d, self%bump)
+    call bump_apply(fields_ou(var)%npz, geom_in, fields_in(var)%array, geom_ou%ngrid, field_ou_2d, &
+                    self%bump)
 
     ! Back to structured
     n = 0
@@ -234,24 +250,28 @@ enddo
 ! --------------
 if (do_d2a) then
 
-  call pointer_field(fields_ou,'ud',ua_ou)
-  call pointer_field(fields_ou,'vd',va_ou)
+  call pointer_field(fields_ou, 'ud', u_ou)
+  call pointer_field(fields_ou, 'vd', v_ou)
 
-  allocate(ud_ou(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
-  allocate(vd_ou(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
+  allocate(ud(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
+  allocate(vd(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
 
-  call a2d(geom_ou, ua_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,:), &
-                    va_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,:), &
-                    ud_ou, vd_ou)
+  call a2d(geom_ou, u_ou%array, v_ou%array, ud, vd)
+
+  ! Reallocate with staggering
+  deallocate(u_ou%array)
+  deallocate(v_ou%array)
+  allocate(u_ou%array(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,1:geom_ou%npz))
+  allocate(v_ou%array(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,1:geom_ou%npz))
 
   ! Put new D grid back into arrays
-  ua_ou%array = ud_ou
-  va_ou%array = vd_ou
+  u_ou%array = ud
+  v_ou%array = vd
 
-  ua_ou%space = 'vector'
-  va_ou%space = 'vector'
+  u_ou%space = 'vector'
+  v_ou%space = 'vector'
 
-  deallocate(ud_ou, vd_ou)
+  deallocate(ud, vd)
 
 endif
 

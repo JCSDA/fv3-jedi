@@ -488,8 +488,8 @@ subroutine udvd_to_psichi(geom,grid,oprs,u_in,v_in,psi,chi,lsize,lev_start,lev_f
      divu = divu*grid%farea(:,grid%ngrids)
 
      ! Solve poisson equation (\psi=\nabla^{-2}\zeta, \chi=\nabla^{-2}D)
-     call inverselaplace(grid,oprs,grid%ngrids,voru,psiu)
-     call inverselaplace(grid,oprs,grid%ngrids,divu,chiu)
+     call inverselaplace(grid,oprs,grid%ngrids,voru,psiu,level=k)
+     call inverselaplace(grid,oprs,grid%ngrids,divu,chiu,level=k)
 
      ! Convert from area integrals
      psiu = psiu/grid%farea(:,grid%ngrids)

@@ -156,16 +156,16 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [qicnf, QICNF]
-    FieldName: qicnf
-    LongName: fraction_of_large_scale_cloud_ice_water_in_total
+  - FieldIONames: [qilsf]
+    FieldName: qilsf
+    LongName: fraction_of_large_scale_cloud_that_is_ice
     Units: 1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [qlcnf, QLCNF]
-    FieldName: qlcnf
-    LongName: fraction_of_large_scale_cloud_liquid_water_in_total
+  - FieldIONames: [qicnf]
+    FieldName: qicnf
+    LongName: fraction_of_convective_cloud_that_is_ice
     Units: 1
     Tracer: true
     IOFile: tracer
