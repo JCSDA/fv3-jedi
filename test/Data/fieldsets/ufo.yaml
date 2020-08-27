@@ -17,7 +17,7 @@ Fields:
 
   - FieldName: geopotential_height_levels
     Units: m
-    Levels: full
+    Levels: half
 
   - FieldName: height
     Units: none
