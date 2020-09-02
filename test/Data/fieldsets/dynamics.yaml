@@ -194,7 +194,14 @@ Fields:
   - FieldIONames: [cld_amt]
     FieldName: cld_amt
     LongName: cld_amt
-    Units: kgkg-1
+    Units: 1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [sgs_tke]
+    FieldName: sgs_tke
+    LongName: sgs_tke
+    Units: m2/s2
     Tracer: true
     IOFile: tracer
 

@@ -92,6 +92,11 @@ list( APPEND fv3jedi_src_files
   VariableChanges/Analysis2Model/VarChaA2M.interface.h
   VariableChanges/Analysis2Model/fv3jedi_varcha_a2m.interface.F90
   VariableChanges/Analysis2Model/fv3jedi_varcha_a2m_mod.f90
+  VariableChanges/ColdStartWinds/fv3jedi_vc_coldstartwinds.interface.F90
+  VariableChanges/ColdStartWinds/fv3jedi_vc_coldstartwinds_mod.f90
+  VariableChanges/ColdStartWinds/VarChaColdStartWinds.cc
+  VariableChanges/ColdStartWinds/VarChaColdStartWinds.h
+  VariableChanges/ColdStartWinds/VarChaColdStartWinds.interface.h
   VariableChanges/Control2Analysis/LinVarChaC2A.cc
   VariableChanges/Control2Analysis/LinVarChaC2A.h
   VariableChanges/Control2Analysis/LinVarChaC2A.interface.h
@@ -129,6 +134,11 @@ list( APPEND fv3jedi_src_files
   VariableChanges/Utils/temperature_variables_mod.f90
   VariableChanges/Utils/wind_variables_mod.f90
   VariableChanges/instantiateVarChangeFactories.h
+  VariableChanges/VertRemap/fv3jedi_vc_vertremap.interface.F90
+  VariableChanges/VertRemap/fv3jedi_vc_vertremap_mod.f90
+  VariableChanges/VertRemap/VarChaVertRemap.cc
+  VariableChanges/VertRemap/VarChaVertRemap.h
+  VariableChanges/VertRemap/VarChaVertRemap.interface.h
   Tlm/fv3jedi_tlm_interface_mod.F90
   Tlm/fv3jedi_tlm_mod.f90
   Tlm/Tlm.cc

@@ -23,9 +23,6 @@ output geometry:
   ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-output variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-                  slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                  u_srf,v_srf,f10m]
 states:
 - input:
     filetype: gfs

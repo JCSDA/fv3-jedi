@@ -25,7 +25,6 @@ output geometry:
   ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-output variables: [u,v,t,delp,q,qi,ql,o3mr]
 states:
 - input:
     filetype: geos

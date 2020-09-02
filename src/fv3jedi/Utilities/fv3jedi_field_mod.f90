@@ -26,7 +26,9 @@ public :: fv3jedi_field, &
           flip_array_vertical, &
           copy_subset, &
           copy_subset_ad, &
-          long_name_to_fv3jedi_name
+          long_name_to_fv3jedi_name, &
+          number_tracers, &
+          zero_fields
 
 integer, parameter, public :: field_clen = 2048
 
@@ -579,6 +581,35 @@ call abor1_ftn("fv3jedi_field_mod.long_name_to_fv3jedi_name long_name "//trim(lo
                " not found in fields.")
 
 end subroutine long_name_to_fv3jedi_name
+
+! --------------------------------------------------------------------------------------------------
+
+integer function number_tracers(fields)
+
+type(fv3jedi_field), intent(in) :: fields(:)
+
+integer :: var
+
+number_tracers = 0
+do var = 1, size(fields)
+  if (fields(var)%tracer) number_tracers = number_tracers + 1
+enddo
+
+end function number_tracers
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine zero_fields(fields)
+
+type(fv3jedi_field), intent(inout) :: fields(:)
+
+integer :: var
+
+do var = 1, size(fields)
+  fields(var)%array = 0.0_kind_real
+enddo
+
+end subroutine zero_fields
 
 ! --------------------------------------------------------------------------------------------------
 

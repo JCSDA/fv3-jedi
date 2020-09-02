@@ -30,19 +30,24 @@ private
 public fv3jedi_io_gfs
 
 ! If adding a new file it is added here and object and config in setup
-integer, parameter :: numfiles = 6
+integer, parameter :: numfiles = 9
 
 type fv3jedi_io_gfs
  character(len=128) :: datapath
  character(len=128) :: filenames(numfiles)
  character(len=128) :: filenames_conf(numfiles)
- integer :: index_core = 1
- integer :: index_trcr = 2
- integer :: index_sfcd = 3
- integer :: index_sfcw = 4
- integer :: index_cplr = 5
- integer :: index_spec = 6
+ integer :: index_core = 1  ! Files like fv_core.res.tile<n>.nc
+ integer :: index_trcr = 2  ! Files like fv_tracer.res.tile<n>.nc
+ integer :: index_sfcd = 3  ! Files like sfc_data.tile<n>.nc
+ integer :: index_sfcw = 4  ! Files like fv_srf_wnd.res.tile<n>.nc
+ integer :: index_cplr = 5  ! Files like coupler.res
+ integer :: index_spec = 6  ! Files like grid_spec.res.tile<n>.nc
+ integer :: index_phys = 7  ! Files like phy_data.tile<n>.nc
+ integer :: index_orog = 8  ! Files like C<npx-1>_oro_data.tile<n>.nc
+ integer :: index_cold = 9  ! Files like gfs_data.tile<n>.nc
  logical :: ps_in_file
+ logical :: skip_coupler
+ logical :: prepend_date
  contains
   procedure :: setup_conf  ! Setup for when config is available, called from constructors
   procedure :: setup_date  ! Setup when datetime is available
@@ -89,6 +94,9 @@ self%filenames_conf(self%index_sfcd) = 'sfc_data.nc'
 self%filenames_conf(self%index_sfcw) = 'srf_wnd.nc'
 self%filenames_conf(self%index_cplr) = 'coupler.res'
 self%filenames_conf(self%index_spec) = 'null'
+self%filenames_conf(self%index_phys) = 'phy_data.nc'
+self%filenames_conf(self%index_orog) = 'oro_data.nc'
+self%filenames_conf(self%index_cold) = 'gfs_data.nc'
 
 ! Configuration to parse for the filenames
 ! ----------------------------------------
@@ -98,6 +106,9 @@ fileconf(self%index_sfcd) = "filename_sfcd"
 fileconf(self%index_sfcw) = "filename_sfcw"
 fileconf(self%index_cplr) = "filename_cplr"
 fileconf(self%index_spec) = "filename_spec"
+fileconf(self%index_phys) = "filename_phys"
+fileconf(self%index_orog) = "filename_orog"
+fileconf(self%index_cold) = "filename_cold"
 
 
 ! Set files names based on user input
@@ -123,6 +134,19 @@ enddo
 self%ps_in_file = .false.
 if (f_conf%has("psinfile")) then
   call f_conf%get_or_die("psinfile",self%ps_in_file)
+endif
+
+! Option to skip read/write of coupler file
+! -----------------------------------------
+self%skip_coupler = .false.
+if (f_conf%has("skip coupler file")) then
+  call f_conf%get_or_die("skip coupler file",self%skip_coupler)
+endif
+
+! Option to turn off prepending file with date
+! --------------------------------------------
+if (.not.f_conf%get("prepend files with date", self%prepend_date)) then
+  self%prepend_date = .true.
 endif
 
 end subroutine setup_conf
@@ -208,13 +232,20 @@ endif
 
 ! Get dates from coupler.res
 !---------------------------
-open(101, file=trim(adjustl(self%datapath))//'/'//self%filenames(self%index_cplr), form='formatted')
-read(101, '(i6)')  calendar_type
-read(101, '(6i6)') date_init
-read(101, '(6i6)') date
-close(101)
-idate=date(1)*10000+date(2)*100+date(3)
-isecs=date(4)*3600+date(5)*60+date(6)
+if (.not. self%skip_coupler) then
+  open(101, file=trim(adjustl(self%datapath))//'/'//self%filenames(self%index_cplr), form='formatted')
+  read(101, '(i6)')  calendar_type
+  read(101, '(6i6)') date_init
+  read(101, '(6i6)') date
+  close(101)
+  idate=date(1)*10000+date(2)*100+date(3)
+  isecs=date(4)*3600+date(5)*60+date(6)
+else
+  idate = 20000101
+  isecs = 0
+endif
+
+! Set datetime
 call datetime_from_ifs(vdate, idate, isecs)
 
 end subroutine read_meta
@@ -268,9 +299,16 @@ do var = 1,size(fields)
       indexrst = self%index_sfcd
     case("surface_wind")
       indexrst = self%index_sfcw
+    case("physics")
+      indexrst = self%index_phys
+    case("orography")
+      indexrst = self%index_orog
+    case("cold")
+      indexrst = self%index_cold
     case("default")
       call abor1_ftn("fv3jedi_io_gfs_mod: Abort, field "//trim(fields(var)%short_name)//&
-                      " does not have IOFile specified in the FieldSets metadata")
+                      " does not have IOFile specified in the FieldSets metadata or it"&
+                      " does not match options in gfs IO module")
   end select
 
   ! Convert fv3jedi position to fms position
@@ -349,9 +387,11 @@ date(6) = isecs - (date(4)*3600 + date(5)*60)
 write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2,A1)') date(1),date(2),date(3),".",&
                                                       date(4),date(5),date(6),"."
 
-do n = 1, numfiles
-  self%filenames(n) = trim(datefile)//trim(self%filenames(n))
-enddo
+if (self%prepend_date) then
+  do n = 1, numfiles
+    self%filenames(n) = trim(datefile)//trim(self%filenames(n))
+  enddo
+endif
 
 rstflag = .false.
 
@@ -368,6 +408,12 @@ do var = 1,size(fields)
       indexrst = self%index_sfcd
     case("surface_wind")
       indexrst = self%index_sfcw
+    case("physics")
+      indexrst = self%index_phys
+    case("orography")
+      indexrst = self%index_orog
+    case("cold")
+      indexrst = self%index_cold
     case("default")
       call abor1_ftn("fv3jedi_io_gfs_mod: Abort, field "//trim(fields(var)%short_name)//&
                       " does not have IOFile specified in the FieldSets metadata")
@@ -405,7 +451,7 @@ enddo
 
 !Write date/time info in coupler.res
 !-----------------------------------
-if (mpp_pe() == mpp_root_pe()) then
+if (mpp_pe() == mpp_root_pe() .and. .not. self%skip_coupler) then
    open(101, file = trim(adjustl(self%datapath))//'/'// &
         trim(adjustl(self%filenames(self%index_cplr))), form='formatted')
    write( 101, '(i6,8x,a)' ) calendar_type, &

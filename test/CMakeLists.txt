@@ -106,8 +106,28 @@ GFS_FILES_ENS(Data/inputs/gfs_c12/mem010 20180414.210000)
 GFS_FILES_ENS(Data/inputs/gfs_c12/mem010 20180415.000000)
 GFS_FILES_ENS(Data/inputs/gfs_c12/mem010 20180415.030000)
 
+# Orography data
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile1.nc )
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile2.nc )
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile3.nc )
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile4.nc )
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile5.nc )
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile6.nc )
+
+# Cold start test data
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.coupler.res)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile1.nc)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile2.nc)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile3.nc)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile4.nc)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile5.nc)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile6.nc)
+list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/rename_cold_start_variables.py)
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/bkg)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/cold)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/oro)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem001)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem002)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem003)
@@ -169,7 +189,9 @@ LINK_FILES( "${fv3jedi_test_lamfiles}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 list( APPEND fv3jedi_test_fv3files
 Data/fv3files/akbk64.nc4
 Data/fv3files/akbk72.nc4
+Data/fv3files/akbk127.nc4
 Data/fv3files/field_table
+Data/fv3files/field_table_cold_starts
 Data/fv3files/field_table_lam_cmaq
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_gfs_c12.nml
@@ -220,6 +242,7 @@ list( APPEND fv3jedi_test_input
   testinput/bumpparameters_loc_gfs.yaml
   testinput/convertstate_geos_bkg2rst.yaml
   testinput/convertstate_geos.yaml
+  testinput/convertstate_gfs_cold2fv3.yaml
   testinput/convertstate_gfs.yaml
   testinput/crtm_surface_for_geos.yaml
   testinput/diffstates_geos.yaml
@@ -244,6 +267,7 @@ list( APPEND fv3jedi_test_input
   testinput/forecast_gfs.yaml
   testinput/geometry_geos.yaml
   testinput/geometry_gfs.yaml
+  testinput/geometry_gfs127.yaml
   testinput/geometry_lam_cmaq.yaml
   testinput/geometry_iterator_geos.yaml
   testinput/geometry_iterator_gfs.yaml
@@ -359,11 +383,14 @@ LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # Field sets
 # ----------
 list( APPEND fv3jedi_field_sets
-Data/fieldsets/aerosols_gfs.yaml
 Data/fieldsets/aerosols_geos.yaml
-Data/fieldsets/lam_cmaq.yaml
-Data/fieldsets/dynamics.yaml
+Data/fieldsets/aerosols_gfs.yaml
+Data/fieldsets/cold_start_64.yaml
+Data/fieldsets/cold_start_127.yaml
 Data/fieldsets/dynamics_lam_cmaq.yaml
+Data/fieldsets/dynamics.yaml
+Data/fieldsets/lam_cmaq.yaml
+Data/fieldsets/oro_data.yaml
 Data/fieldsets/ufo.yaml
 )
 
@@ -612,6 +639,11 @@ ecbuild_add_test( TARGET  test_fv3jedi_geometry_gfs
                   ARGS    testinput/geometry_gfs.yaml
                   MPI     6 )
 
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_gfs127
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
+                  ARGS    testinput/geometry_gfs127.yaml
+                  MPI     6 )
+
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
                   ARGS    testinput/geometry_geos.yaml
@@ -689,6 +721,12 @@ ecbuild_add_test( TARGET  test_fv3jedi_lineargetvalues_gfs
 ecbuild_add_test( TARGET  test_fv3jedi_lineargetvalues_geos
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_lineargetvalues.x
                   ARGS    testinput/lineargetvalues_geos.yaml
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs_cold2fv3
+                  TYPE    EXE
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
+                  ARGS    testinput/convertstate_gfs_cold2fv3.yaml
                   MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs

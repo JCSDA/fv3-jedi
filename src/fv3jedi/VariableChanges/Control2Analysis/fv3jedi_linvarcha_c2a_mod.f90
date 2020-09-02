@@ -1,20 +1,20 @@
-! (C) Copyright 2018 UCAR
+! (C) Copyright 2018-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_linvarcha_c2a_mod
 
+! fckit
 use fckit_configuration_module, only: fckit_configuration
 
-use fv3jedi_state_mod, only: fv3jedi_state
+! fv3jedi
+use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
+                                 copy_subset, field_clen, zero_fields
+use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_increment_mod, only: fv3jedi_increment
-use fv3jedi_geom_mod, only: fv3jedi_geom
-use iso_c_binding
-use fckit_configuration_module, only: fckit_configuration
-use fv3jedi_kinds_mod
-
-use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+use fv3jedi_kinds_mod,     only: kind_real
+use fv3jedi_state_mod,     only: fv3jedi_state
 
 use pressure_vt_mod
 use temperature_vt_mod
@@ -40,11 +40,11 @@ type :: fv3jedi_linvarcha_c2a
  real(kind=kind_real), allocatable :: qsattraj(:,:,:)
 end type fv3jedi_linvarcha_c2a
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine create(self, geom, bg, fg, conf)
 
@@ -84,7 +84,7 @@ call get_qsat(geom,delp,t,q,self%qsattraj)
 
 end subroutine create
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine delete(self)
 
@@ -98,138 +98,308 @@ if (allocated(self%qsattraj)) deallocate(self%qsattraj)
 
 end subroutine delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine multiply(self,geom,xctl,xana)
+subroutine multiply(self, geom, dxc, dxa)
 
 implicit none
 type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),          intent(inout) :: geom
-type(fv3jedi_increment),     intent(in)    :: xctl
-type(fv3jedi_increment),     intent(inout) :: xana
+type(fv3jedi_increment),     intent(in)    :: dxc
+type(fv3jedi_increment),     intent(inout) :: dxa
 
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_t
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_q
+integer :: f
+character(len=field_clen), allocatable :: fields_to_do(:)
+real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_psi
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_chi
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_tv
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_rh
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_ps
+! Winds
+logical :: have_uava
+real(kind=kind_real), pointer,     dimension(:,:,:) :: psip
+real(kind=kind_real), pointer,     dimension(:,:,:) :: chip
+real(kind=kind_real), allocatable, dimension(:,:,:) :: psi
+real(kind=kind_real), allocatable, dimension(:,:,:) :: chi
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ua
+real(kind=kind_real), allocatable, dimension(:,:,:) :: va
 
-! Copy fields that are the same in both
+! Specific humidity
+logical :: have_q
+real(kind=kind_real), pointer,     dimension(:,:,:) :: rh
+real(kind=kind_real), allocatable, dimension(:,:,:) :: q
+
+! Temperature
+logical :: have_t
+real(kind=kind_real), pointer,     dimension(:,:,:) :: tv
+real(kind=kind_real), allocatable, dimension(:,:,:) :: t
+
+! Identity part of the change of fields
 ! -------------------------------------
-call copy_subset(xctl%fields,xana%fields)
+call copy_subset(dxc%fields, dxa%fields, fields_to_do)
 
-!Tangent linear of control to analysis variables
-call pointer_field_array(xctl%fields, 'psi', xctl_psi)
-call pointer_field_array(xctl%fields, 'chi', xctl_chi)
-call pointer_field_array(xctl%fields, 'tv' , xctl_tv)
-call pointer_field_array(xctl%fields, 'rh' , xctl_rh)
-call pointer_field_array(xana%fields, 'ua' , xana_ua)
-call pointer_field_array(xana%fields, 'va' , xana_va)
-call pointer_field_array(xana%fields, 't'  , xana_t)
-call pointer_field_array(xana%fields, 'sphum'  , xana_q)
+! If variable change is the identity early exit
+! ---------------------------------------------
+if (.not.allocated(fields_to_do)) return
 
-call control_to_analysis_tlm(geom, xctl_psi, xctl_chi, xctl_tv, xctl_rh, &
-                                   xana_ua,  xana_va,  xana_t,  xana_q,  &
-                                   self%tvtraj,self%qtraj,self%qsattraj )
+! Winds
+! -----
+have_uava = .false.
+if (has_field(dxc%fields,'psi') .and. has_field(dxc%fields,'chi')) then
+  call pointer_field_array(dxc%fields, 'psi', psip)
+  call pointer_field_array(dxc%fields, 'chi', chip)
+  allocate(psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+  allocate(chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+  psi = 0.0_kind_real
+  chi = 0.0_kind_real
+  psi(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psip(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+  chi(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chip(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+  allocate(ua(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+  allocate(va(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+  call psichi_to_uava(geom, psi, chi, ua, va)
+  have_uava = .true.
+endif
+
+! Specific humidity
+!------------------
+have_q = .false.
+if (has_field(dxc%fields,'rh')) then
+  call pointer_field_array(dxc%fields, 'rh', rh)
+  allocate(q(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+  call rh_to_q_tl(geom, self%qsattraj, rh, q)
+  have_q = .true.
+endif
+
+! Temperature
+! -----------
+have_t = .false.
+if (has_field(dxc%fields,'t')) then
+  call allocate_copy_field_array(dxc%fields, 't', t)
+  have_t = .true.
+elseif (has_field(dxc%fields,'tv') .and. have_q) then
+  call pointer_field_array(dxc%fields, 'tv', tv)
+  allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+  call Tv_to_T_tl(geom, self%tvtraj, tv, self%qtraj, q, t)
+  have_t = .true.
+endif
+
+
+! Loop over the fields not found in the input state and work through cases
+! ------------------------------------------------------------------------
+do f = 1, size(fields_to_do)
+
+  call pointer_field_array(dxa%fields, trim(fields_to_do(f)),  field_ptr)
+
+  select case (trim(fields_to_do(f)))
+
+  case ("ua")
+
+    if (.not. have_uava) call field_fail(fields_to_do(f))
+    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = ua(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+
+  case ("va")
+
+    if (.not. have_uava) call field_fail(fields_to_do(f))
+    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = va(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+
+  case ("t")
+
+    if (.not. have_t) call field_fail(fields_to_do(f))
+    field_ptr = t
+
+  case ("sphum")
+
+    if (.not. have_q) call field_fail(fields_to_do(f))
+    field_ptr = q
+
+  case default
+
+    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiply unknown field: "//trim(fields_to_do(f)) &
+                   //". Not in input field and no transform case specified.")
+
+  end select
+
+enddo
 
 ! Copy calendar infomation
-xana%calendar_type = xctl%calendar_type
-xana%date_init = xctl%date_init
+! ------------------------
+dxa%calendar_type = dxc%calendar_type
+dxa%date_init = dxc%date_init
 
 end subroutine multiply
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine multiplyadjoint(self,geom,xana,xctl)
+subroutine multiplyadjoint(self,geom,dxa,dxc)
 
 implicit none
 type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),          intent(inout) :: geom
-type(fv3jedi_increment),     intent(inout) :: xana
-type(fv3jedi_increment),     intent(inout) :: xctl
+type(fv3jedi_increment),     intent(inout) :: dxa
+type(fv3jedi_increment),     intent(inout) :: dxc
 
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_t
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_q
+integer :: f
+character(len=field_clen), allocatable :: fields_to_do(:)
+real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_psi
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_chi
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_tv
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_rh
-real(kind=kind_real), pointer, dimension(:,:,:) :: xctl_ps
+! Winds
+logical :: have_psichi
+real(kind=kind_real), pointer,     dimension(:,:,:) :: ua
+real(kind=kind_real), pointer,     dimension(:,:,:) :: va
+real(kind=kind_real), allocatable, dimension(:,:,:) :: psi
+real(kind=kind_real), allocatable, dimension(:,:,:) :: chi
 
-! Copy fields that are the same in both
+! Relative humidity
+logical :: have_rh
+real(kind=kind_real), pointer,     dimension(:,:,:) :: q
+real(kind=kind_real), allocatable, dimension(:,:,:) :: rh
+
+! Virtual temperature
+logical :: have_tv
+real(kind=kind_real), pointer,     dimension(:,:,:) :: t
+real(kind=kind_real), allocatable, dimension(:,:,:) :: tv
+
+! Zero output
+! -----------
+call zero_fields(dxc%fields)
+
+! Identity part of the change of fields
 ! -------------------------------------
-call copy_subset(xana%fields,xctl%fields)
+call copy_subset(dxa%fields, dxc%fields, fields_to_do)
 
-!Adjoint of control to analysis variables
-call pointer_field_array(xctl%fields, 'psi', xctl_psi)
-call pointer_field_array(xctl%fields, 'chi', xctl_chi)
-call pointer_field_array(xctl%fields, 'tv' , xctl_tv)
-call pointer_field_array(xctl%fields, 'rh' , xctl_rh)
-call pointer_field_array(xana%fields, 'ua' , xana_ua)
-call pointer_field_array(xana%fields, 'va' , xana_va)
-call pointer_field_array(xana%fields, 't'  , xana_t)
-call pointer_field_array(xana%fields, 'sphum'  , xana_q)
-call control_to_analysis_adm(geom, xctl_psi, xctl_chi, xctl_tv, xctl_rh, &
-                                   xana_ua,  xana_va,  xana_t,  xana_q,  &
-                                   self%tvtraj,self%qtraj,self%qsattraj )
+! If variable change is the identity early exit
+! ---------------------------------------------
+if (.not.allocated(fields_to_do)) return
+
+! Virtual temperature
+! -------------------
+have_tv = .false.
+if (has_field(dxa%fields,'t') .and. has_field(dxa%fields,'sphum')) then
+  call pointer_field_array(dxa%fields, 't', t)
+  call pointer_field_array(dxa%fields, 'sphum', q)
+  allocate(tv(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+  tv = 0.0_kind_real
+  call Tv_to_T_ad(geom, self%tvtraj, tv, self%qtraj, q, t)
+  have_tv = .true.
+endif
+
+! Relative humidity
+!------------------
+have_rh = .false.
+if (has_field(dxa%fields,'sphum')) then
+  call pointer_field_array(dxa%fields, 'sphum', q)
+  allocate(rh(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
+  rh = 0.0_kind_real
+  call rh_to_q_ad(geom, self%qsattraj, rh, q)
+  have_rh = .true.
+endif
+
+! Winds
+! -----
+have_psichi = .false.
+if (has_field(dxa%fields,'ua') .and. has_field(dxa%fields,'va')) then
+  call pointer_field_array(dxa%fields, 'ua', ua)
+  call pointer_field_array(dxa%fields, 'va', va)
+  allocate(psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+  allocate(chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+  psi = 0.0_kind_real
+  chi = 0.0_kind_real
+  call psichi_to_uava_adm(geom, psi, chi, ua, va)
+  have_psichi = .true.
+endif
+
+! Loop over the fields not found in the input state and work through cases
+! ------------------------------------------------------------------------
+do f = 1, size(fields_to_do)
+
+  call pointer_field_array(dxc%fields, trim(fields_to_do(f)),  field_ptr)
+
+  select case (trim(fields_to_do(f)))
+
+  case ("psi")
+
+    if (.not. have_psichi) call field_fail(fields_to_do(f))
+    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psi(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+
+  case ("chi")
+
+    if (.not. have_psichi) call field_fail(fields_to_do(f))
+    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chi(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+
+  case ("tv")
+
+    if (.not. have_tv) call field_fail(fields_to_do(f))
+    field_ptr = tv
+
+  case ("rh")
+
+    if (.not. have_rh) call field_fail(fields_to_do(f))
+    field_ptr = rh
+
+  case default
+
+    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiplyadjoint unknown field: "//trim(fields_to_do(f)) &
+                   //". Not in input field and no transform case specified.")
+
+  end select
+
+enddo
 
 ! Copy calendar infomation
-xctl%calendar_type = xana%calendar_type
-xctl%date_init = xana%date_init
+! ------------------------
+dxc%calendar_type = dxa%calendar_type
+dxc%date_init = dxa%date_init
 
 end subroutine multiplyadjoint
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine multiplyinverse(self,geom,xana,xctl)
+subroutine multiplyinverse(self,geom,dxa,dxc)
 
 implicit none
 type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),          intent(inout) :: geom
-type(fv3jedi_increment),     intent(in)    :: xana
-type(fv3jedi_increment),     intent(inout) :: xctl
+type(fv3jedi_increment),     intent(in)    :: dxa
+type(fv3jedi_increment),     intent(inout) :: dxc
 
-real(kind=kind_real), allocatable, dimension(:,:,:) :: vort, divg, ua, va
+integer :: f
 
-! Copy fields that are the same in both
-! -------------------------------------
-call copy_subset(xana%fields,xctl%fields)
+! Forced identity
+! ---------------
+do f = 1, size(dxc%fields)
+  dxc%fields(f)%array = dxa%fields(f)%array
+enddo
 
 ! Copy calendar infomation
-xctl%calendar_type = xana%calendar_type
-xctl%date_init = xana%date_init
+! ------------------------
+dxc%calendar_type = dxa%calendar_type
+dxc%date_init = dxa%date_init
 
 end subroutine multiplyinverse
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine multiplyinverseadjoint(self,geom,xctl,xana)
+subroutine multiplyinverseadjoint(self,geom,dxc,dxa)
 
 implicit none
 type(fv3jedi_linvarcha_c2a), intent(in)    :: self
 type(fv3jedi_geom),          intent(inout) :: geom
-type(fv3jedi_increment),     intent(in)    :: xctl
-type(fv3jedi_increment),     intent(inout) :: xana
+type(fv3jedi_increment),     intent(in)    :: dxc
+type(fv3jedi_increment),     intent(inout) :: dxa
 
-! Copy fields that are the same in both
-! -------------------------------------
-call copy_subset(xctl%fields,xana%fields)
+integer :: f
+
+! Forced identity
+! ---------------
+do f = 1, size(dxc%fields)
+  dxa%fields(f)%array = dxc%fields(f)%array
+enddo
 
 ! Copy calendar infomation
-xana%calendar_type = xctl%calendar_type
-xana%date_init = xctl%date_init
+! ------------------------
+dxa%calendar_type = dxc%calendar_type
+dxa%date_init = dxc%date_init
 
 end subroutine multiplyinverseadjoint
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine control_to_analysis_tlm(geom,psi, chi, tv, rh, &
                                         ua , va , t , q, &
@@ -286,7 +456,7 @@ subroutine control_to_analysis_tlm(geom,psi, chi, tv, rh, &
 
 endsubroutine control_to_analysis_tlm
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 !> Control variables to state variables - Adjoint
 
@@ -345,6 +515,18 @@ subroutine control_to_analysis_adm(geom,psi, chi, tv, rh, &
 
 endsubroutine control_to_analysis_adm
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+subroutine field_fail(field)
+
+implicit none
+character(len=*), intent(in) :: field
+
+call abor1_ftn("fv3jedi_lvc_model2geovals_mod.field_fail: Field "//trim(field)//&
+               " cannot be obtained from input fields.")
+
+end subroutine field_fail
+
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_linvarcha_c2a_mod

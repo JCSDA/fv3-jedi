@@ -26,7 +26,7 @@ background error:
   variable changes:
   - variable change: Control2Analysis
     input variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
-    output variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+    output variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
 output B:
   filetype: gfs
   datapath: Data/gsirf/

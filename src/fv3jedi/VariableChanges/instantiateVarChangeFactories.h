@@ -11,12 +11,14 @@
 #include "fv3jedi/Utilities/Traits.h"
 #include "fv3jedi/VariableChanges/Analysis2Model/LinVarChaA2M.h"
 #include "fv3jedi/VariableChanges/Analysis2Model/VarChaA2M.h"
+#include "fv3jedi/VariableChanges/ColdStartWinds/VarChaColdStartWinds.h"
 #include "fv3jedi/VariableChanges/Control2Analysis/LinVarChaC2A.h"
 #include "fv3jedi/VariableChanges/Control2Analysis/VarChaC2A.h"
 #include "fv3jedi/VariableChanges/GEOSRstToBkg/VarChaGeosRst2Bkg.h"
 #include "fv3jedi/VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h"
 #include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
 #include "fv3jedi/VariableChanges/NMCBalance/LinVarChaNMCBal.h"
+#include "fv3jedi/VariableChanges/VertRemap/VarChaVertRemap.h"
 
 #include "oops/interface/LinearVariableChange.h"
 #include "oops/interface/VariableChange.h"
@@ -61,6 +63,16 @@ void instantiateVarChangeFactories() {
               oops::LinearVariableChange<fv3jedi::Traits,
               fv3jedi::LinVarChaModel2GeoVaLs> >
                   makerLinVarChaModel2GeoVaLs_("Model2GeoVaLs");
+  // Cold start winds
+  static oops::VariableChangeMaker<fv3jedi::Traits,
+              oops::VariableChange<fv3jedi::Traits,
+              fv3jedi::VarChaColdStartWinds> >
+                  makerVarChaColdStartWinds_("ColdStartWinds");
+  // Vertical remapping
+  static oops::VariableChangeMaker<fv3jedi::Traits,
+              oops::VariableChange<fv3jedi::Traits,
+              fv3jedi::VarChaVertRemap> >
+                  makerVarChaVertRemap_("VertRemap");
 }
 
 }  // namespace fv3jedi

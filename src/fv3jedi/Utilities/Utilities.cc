@@ -187,49 +187,61 @@ void generateGeomFv3Conf(const eckit::Configuration & conf, const eckit::mpi::Co
     std::vector<std::string> inputnml;
 
     inputnml.push_back("&fv_core_nml\n");
-    inputnml.push_back("       layout = "+layout[0]+","+layout[1]+"\n");
-    inputnml.push_back("       io_layout = "+io_layout[0]+","+io_layout[1]+"\n");
-    inputnml.push_back("       npx = "+npx+"\n");
-    inputnml.push_back("       npy = "+npy+"\n");
-    inputnml.push_back("       npz = "+npz+"\n");
-    inputnml.push_back("       ntiles = "+ntiles+"\n");
+    inputnml.push_back("\tlayout = "+layout[0]+","+layout[1]+"\n");
+    inputnml.push_back("\tio_layout = "+io_layout[0]+","+io_layout[1]+"\n");
+    inputnml.push_back("\tnpx = "+npx+"\n");
+    inputnml.push_back("\tnpy = "+npy+"\n");
+    inputnml.push_back("\tnpz = "+npz+"\n");
+    inputnml.push_back("\tntiles = "+ntiles+"\n");
 
     // Parse config for optional fields
     // --------------------------------
     if (conf.has("regional")) {
       bool regional = conf.getBool("regional");
       if (regional) {
-        inputnml.push_back("       regional = .T.\n");
+        inputnml.push_back("\tregional = .T.\n");
       }
     }
 
     if (conf.has("nested")) {
       bool nested = conf.getBool("nested");
       if (nested) {
-        inputnml.push_back("       nested = .T.\n");
+        inputnml.push_back("\tnested = .T.\n");
       }
     }
 
     if (conf.has("do_schmidt")) {
       bool do_schmidt = conf.getBool("do_schmidt");
       if (do_schmidt) {
-        inputnml.push_back("       do_schmidt = .T.\n");
+        inputnml.push_back("\tdo_schmidt = .T.\n");
       }
     }
 
     if (conf.has("target_lat")) {
       std::string target_lat = conf.getString("target_lat");
-      inputnml.push_back("       target_lat = "+target_lat+"\n");
+      inputnml.push_back("\ttarget_lat = "+target_lat+"\n");
     }
 
     if (conf.has("target_lon")) {
       std::string target_lon = conf.getString("target_lon");
-      inputnml.push_back("       target_lon = "+target_lon+"\n");
+      inputnml.push_back("\ttarget_lon = "+target_lon+"\n");
     }
 
     if (conf.has("stretch_fac")) {
       std::string stretch_fac = conf.getString("stretch_fac");
-      inputnml.push_back("       stretch_fac = "+stretch_fac+"\n");
+      inputnml.push_back("\tstretch_fac = "+stretch_fac+"\n");
+    }
+
+    if (conf.has("hydrostatic")) {
+      bool hydrostatic = conf.getBool("hydrostatic");
+      if (!hydrostatic) {
+        inputnml.push_back("\thydrostatic = .false.\n");
+      }
+    }
+
+    if (conf.has("nwat")) {
+      std::string nwat = conf.getString("nwat");
+      inputnml.push_back("\tnwat = "+nwat+"\n");
     }
 
     // End of section marker

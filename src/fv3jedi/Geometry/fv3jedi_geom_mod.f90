@@ -104,13 +104,13 @@ type(fckit_mpi_comm),        intent(in)    :: comm
 type(fields_metadata),       intent(in)    :: fields
 
 !Locals
-character(len=256)                    :: pathfile_akbk
+character(len=256)                    :: file_akbk
 type(fv_atmos_type), allocatable      :: Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
 integer                               :: i, j, jj, gtile
 integer                               :: p_split = 1
 integer                               :: ncstat, ncid, akvarid, bkvarid, readdim, dcount
-integer, dimension(nf90_max_var_dims) :: dimIDs, dimLens
+integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
@@ -122,7 +122,7 @@ self%f_comm = comm
 ! Set path/filename for ak and bk
 ! -------------------------------
 call conf%get_or_die("akbk",str)
-pathfile_akbk = str
+file_akbk = str
 deallocate(str)
 
 ! Interpolation type
@@ -209,47 +209,36 @@ allocate(self%dya   (self%isd:self%ied  ,self%jsd:self%jed  ))
 ! ----------------------------------------
 
 !Open file
-call nccheck ( nf90_open(pathfile_akbk, nf90_nowrite, ncid), "fv3jedi_geom, nf90_open "//pathfile_akbk )
+call nccheck ( nf90_open(file_akbk, nf90_nowrite, ncid), "nf90_open "//file_akbk )
 
 !Search for ak in the file
-ncstat = nf90_inq_varid(ncid, "AK", akvarid)
-if(ncstat /= nf90_noerr) &
 ncstat = nf90_inq_varid(ncid, "ak", akvarid)
-if(ncstat /= nf90_noerr) &
-ncstat = nf90_inq_varid(ncid, "Ak", akvarid)
-if(ncstat /= nf90_noerr) &
-call abor1_ftn("Failed to find ak in file "//pathfile_akbk//", tried AK, ak, Ak")
+if(ncstat /= nf90_noerr) call abor1_ftn("Failed to find ak in file "//file_akbk)
 
 !Search for bk in the file
-ncstat = nf90_inq_varid(ncid, "BK", bkvarid)
-if(ncstat /= nf90_noerr) &
 ncstat = nf90_inq_varid(ncid, "bk", bkvarid)
-if(ncstat /= nf90_noerr) &
-ncstat = nf90_inq_varid(ncid, "Bk", bkvarid)
-if(ncstat /= nf90_noerr) &
-call abor1_ftn("Failed to find bk in file "//pathfile_akbk//", tried BK, bk, Bk")
+if(ncstat /= nf90_noerr) call abor1_ftn("Failed to find bk in file "//file_akbk)
 
+! Check that dimension of ak/bk in the file match vertical levels of model
 dimids = 0
-call nccheck ( nf90_inquire_variable(ncid, akvarid, dimids = dimids), "fv3jedi_geom, nf90_inquire_variable ak" )
-
+call nccheck ( nf90_inquire_variable(ncid, akvarid, dimids = dimids), "nf90_inq_var ak" )
 readdim = -1
 dcount = 0
 do i = 1,nf90_max_var_dims
-  if (dimIDs(i) > 0) then
-     call nccheck( nf90_inquire_dimension(ncid, dimIDs(i), len = dimlens(i)), "fv3jedi_geom, nf90_inquire_dimension" )
+  if (dimids(i) > 0) then
+     call nccheck( nf90_inquire_dimension(ncid, dimids(i), len = dimlens(i)), &
+                   "nf90_inquire_dimension" )
      if (dimlens(i) == self%npz+1) then
         readdim = i
      endif
      dcount = dcount + 1
   endif
 enddo
-
-if (readdim == -1) call abor1_ftn("fv3-jedi geometry: ak/bk in file does not match dimension of npz from input.nml")
+if (readdim == -1) call abor1_ftn("ak/bk in file does not match dimension of npz from input.nml")
 
 !Read ak and bk from the file
 call nccheck( nf90_get_var(ncid, akvarid, self%ak), "fv3jedi_geom, nf90_get_var ak" )
 call nccheck( nf90_get_var(ncid, bkvarid, self%bk), "fv3jedi_geom, nf90_get_var bk" )
-
 
 ! Arrays from the Atm Structure
 ! --------------------------------
