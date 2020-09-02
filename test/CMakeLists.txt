@@ -273,6 +273,8 @@ list( APPEND fv3jedi_test_input
   testinput/increment_gfs.yaml
   testinput/letkf_geos.yaml
   testinput/letkf_gfs.yaml
+  testinput/lgetkf_geos.yaml
+  testinput/lgetkf_gfs.yaml
   testinput/lineargetvalues_geos.yaml
   testinput/lineargetvalues_gfs.yaml
   testinput/linearmodel_geos.yaml
@@ -333,6 +335,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-fgat_fv3-gfs.ref
   testoutput/letkf_geos.ref
   testoutput/letkf_gfs.ref
+  testoutput/lgetkf_geos.ref
+  testoutput/lgetkf_gfs.ref
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testoutput)
@@ -1291,6 +1295,31 @@ ecbuild_add_test( TARGET       test_fv3jedi_letkf_gfs_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/letkf_gfs.run testoutput/letkf_gfs.ref 1.0e-2 ${idif}
                   TEST_DEPENDS test_fv3jedi_letkf_gfs_run )
+
+#LGETKF
+ecbuild_add_test( TARGET       test_fv3jedi_lgetkf_gfs_run
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_letkf.x
+                  ARGS         testinput/lgetkf_gfs.yaml testoutput/lgetkf_gfs.run
+                  MPI          6)
+
+ecbuild_add_test( TARGET       test_fv3jedi_lgetkf_gfs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/lgetkf_gfs.run testoutput/lgetkf_gfs.ref 1.0e-2 ${idif}
+                  TEST_DEPENDS test_fv3jedi_lgetkf_gfs_run )
+
+ecbuild_add_test( TARGET       test_fv3jedi_lgetkf_geos_run
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_letkf.x
+                  ARGS         testinput/lgetkf_geos.yaml testoutput/lgetkf_geos.run
+                  MPI          6)
+
+ecbuild_add_test( TARGET       test_fv3jedi_lgetkf_geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/lgetkf_geos.run testoutput/lgetkf_geos.ref 1.0e-2 ${idif}
+                  TEST_DEPENDS test_fv3jedi_lgetkf_geos_run )
 
 
 # Test with 12 (instead of 6) processors

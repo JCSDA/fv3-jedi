@@ -1,0 +1,61 @@
+Test     : Initial state for member 1:
+Test     : Initial state for member 2:
+Test     : Initial state for member 3:
+Test     : Initial state for member 4:
+Test     : Initial state for member 5:
+Test     : Initial state for member 6:
+Test     : Initial state for member 7:
+Test     : Initial state for member 8:
+Test     : Initial state for member 9:
+Test     : Initial state for member 10:
+Test     : Background mean :
+Test     : H(x) for member 1:
+Test     : Radiosonde nobs= 2 Min=-7.24641, Max=-2.79931, RMS=5.49303
+Test     : H(x) for member 2:
+Test     : Radiosonde nobs= 2 Min=-7.67173, Max=-2.76565, RMS=5.76647
+Test     : H(x) for member 3:
+Test     : Radiosonde nobs= 2 Min=-6.0268, Max=-1.67025, RMS=4.42222
+Test     : H(x) for member 4:
+Test     : Radiosonde nobs= 2 Min=-7.13259, Max=-2.13771, RMS=5.26515
+Test     : H(x) for member 5:
+Test     : Radiosonde nobs= 2 Min=-7.1313, Max=-2.00879, RMS=5.23883
+Test     : H(x) for member 6:
+Test     : Radiosonde nobs= 2 Min=-8.07252, Max=-2.9914, RMS=6.08745
+Test     : H(x) for member 7:
+Test     : Radiosonde nobs= 2 Min=-6.70858, Max=-1.74224, RMS=4.90105
+Test     : H(x) for member 8:
+Test     : Radiosonde nobs= 2 Min=-7.49953, Max=-2.0608, RMS=5.49954
+Test     : H(x) for member 9:
+Test     : Radiosonde nobs= 2 Min=-7.88657, Max=-2.56944, RMS=5.86515
+Test     : H(x) for member 10:
+Test     : Radiosonde nobs= 2 Min=-7.47117, Max=-2.46218, RMS=5.56241
+Test     : H(x) ensemble background mean: 
+Test     : Radiosonde nobs= 2 Min=-7.28472, Max=-2.32078, RMS=5.40616
+Test     : background y - H(x): 
+Test     : Radiosonde nobs= 2 Min=-0.679222, Max=1.88472, RMS=1.4166
+Test     : H(x) for member 1:
+Test     : Radiosonde nobs= 2 Min=-7.24464, Max=-2.699, RMS=5.46669
+Test     : H(x) for member 2:
+Test     : Radiosonde nobs= 2 Min=-7.58477, Max=-2.67145, RMS=5.68618
+Test     : H(x) for member 3:
+Test     : Radiosonde nobs= 2 Min=-6.27063, Max=-1.79696, RMS=4.61247
+Test     : H(x) for member 4:
+Test     : Radiosonde nobs= 2 Min=-7.15407, Max=-2.16983, RMS=5.28625
+Test     : H(x) for member 5:
+Test     : Radiosonde nobs= 2 Min=-7.15322, Max=-2.06686, RMS=5.265
+Test     : H(x) for member 6:
+Test     : Radiosonde nobs= 2 Min=-7.9047, Max=-2.85155, RMS=5.94204
+Test     : H(x) for member 7:
+Test     : Radiosonde nobs= 2 Min=-6.81605, Max=-1.85395, RMS=4.99478
+Test     : H(x) for member 8:
+Test     : Radiosonde nobs= 2 Min=-7.44769, Max=-2.10827, RMS=5.47325
+Test     : H(x) for member 9:
+Test     : Radiosonde nobs= 2 Min=-7.75633, Max=-2.51448, RMS=5.76556
+Test     : H(x) for member 10:
+Test     : Radiosonde nobs= 2 Min=-7.42466, Max=-2.429, RMS=5.52384
+Test     : H(x) ensemble analysis mean: 
+Test     : Radiosonde nobs= 2 Min=-7.27568, Max=-2.31614, RMS=5.39907
+Test     : analysis y - H(x): 
+Test     : Radiosonde nobs= 2 Min=-0.683864, Max=1.87568, RMS=1.41171
+Test     : ombg RMS: 1.4166
+Test     : oman RMS: 1.41171
