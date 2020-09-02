@@ -256,6 +256,7 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_fv3-gfs_gnssro_ropp.yaml
   testinput/hofx_nomodel_geos.yaml
   testinput/hofx_nomodel_gfs.yaml
+  testinput/hofx_save_geovals.yaml
   testinput/hyb-3dvar_geos_p12.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
@@ -925,6 +926,13 @@ ecbuild_add_test( TARGET       test_fv3jedi_hofx_nomodel_geos_compare
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
                   ARGS         testoutput/hofx_nomodel_geos.run testoutput/hofx_nomodel_geos.ref 1.0e-2 ${idif}
                 TEST_DEPENDS test_fv3jedi_hofx_nomodel_geos )
+
+# Test to save GeoVaLs to file
+ecbuild_add_test( TARGET       test_fv3jedi_hofx_save_geovals
+                  TYPE         EXE
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_hofx_nomodel.x
+                  ARGS         testinput/hofx_save_geovals.yaml
+                  MPI          6 )
 
 
 # B Matrix tests
