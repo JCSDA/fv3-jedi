@@ -11,7 +11,7 @@ cost function:
     filename_sfcd: 20180415.000000.c24.sfc_data.nc
     filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.c24.coupler.res
-    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+    state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
   background error:

@@ -114,13 +114,13 @@ self%f_comm = geom%f_comm
 
 ! Check winds
 if (has_field(self%fields, 'ua') .and. .not.has_field(self%fields, 'va')) &
-call abor1_ftn("fv3jedi_state_mod create: found A-Grid u but not v")
+call abor1_ftn("fv3jedi_increment_mod create: found A-Grid u but not v")
 if (.not.has_field(self%fields, 'ua') .and. has_field(self%fields, 'va')) &
-call abor1_ftn("fv3jedi_state_mod create: found A-Grid v but not u")
+call abor1_ftn("fv3jedi_increment_mod create: found A-Grid v but not u")
 if (has_field(self%fields, 'ud') .and. .not.has_field(self%fields, 'vd')) &
-call abor1_ftn("fv3jedi_state_mod create: found D-Grid u but not v")
+call abor1_ftn("fv3jedi_increment_mod create: found D-Grid u but not v")
 if (.not.has_field(self%fields, 'ud') .and. has_field(self%fields, 'vd')) &
-call abor1_ftn("fv3jedi_state_mod create: found D-Grid v but not u")
+call abor1_ftn("fv3jedi_increment_mod create: found D-Grid v but not u")
 
 self%have_agrid = .false.
 self%have_dgrid = .false.
@@ -617,6 +617,10 @@ if (allocated(x2_ua)) deallocate(x2_ua)
 if (allocated(x2_va)) deallocate(x2_va)
 if (allocated(x1_ps)) deallocate(x1_ps)
 if (allocated(x2_ps)) deallocate(x2_ps)
+
+! Datetime
+self%calendar_type  = x1%calendar_type
+self%date_init      = x1%date_init
 
 end subroutine diff_incr
 
