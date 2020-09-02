@@ -15,13 +15,14 @@ model:
   tstep: PT30M
   geos_run_directory: Data/ModelRunDirs/GEOS/
   model variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]
+  reforecast: true
 model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
   final norm: 15017.619595736662
   tolerance: 1.0e-4
-  test reforecast: false
+  test reforecast: true
 initial condition:
   filetype: geos
   datapath: Data/ModelRunDirs/GEOS

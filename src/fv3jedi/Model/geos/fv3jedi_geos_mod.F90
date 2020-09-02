@@ -50,6 +50,9 @@ type :: geos_model
   integer :: GEOSsubsteps
   type(fckit_mpi_comm) :: f_comm
   integer :: isc, iec, jsc, jec, npz
+  type(ESMF_TIme) :: start_Time
+  logical :: saved_state
+  logical :: reforecast
 end type geos_model
 
 ! --------------------------------------------------------------------------------------------------
@@ -80,6 +83,8 @@ type(duration) :: dtstep
 integer :: geos_dt, jedi_dt
 character(len=20) :: ststep
 character(len=:), allocatable :: str
+logical :: esmf_logging
+type(ESMF_LOGKIND_FLAG) :: esmf_logkind
 
 ! Grid dimensions
 ! ---------------
@@ -122,9 +127,15 @@ call fill_comm(mapl_comm%io)
 subcommunicator = self%cap%create_member_subcommunicator(self%cap%get_comm_world(), rc=rc)
 call self%cap%initialize_io_clients_servers(subcommunicator, rc = rc)
 
+if (conf%has('ESMF_Logging')) call conf%get_or_die('ESMF_Logging',esmf_logging)
 ! Initialize ESMF
 ! ---------------
-call ESMF_Initialize (vm=vm, logKindFlag=ESMF_LOGKIND_NONE, mpiCommunicator=mapl_comm%esmf%comm, rc=rc)
+if (esmf_logging) then
+   esmf_logkind = ESMF_LOGKIND_MULTI
+else
+   esmf_logkind = ESMF_LOGKIND_NONE
+end if
+call ESMF_Initialize (vm=vm, logKindFlag=esmf_logkind, mpiCommunicator=mapl_comm%esmf%comm, rc=rc)
 
 ! Intialize the Cap GridComp
 ! --------------------------
@@ -167,6 +178,10 @@ if (geom%f_comm%rank() == 0) then
    print*, "There are ", int(self%GEOSsubsteps,2), " time steps of GEOS for each time step of JEDI"
 endif
 
+self%start_time = self%cap%cap_gc%get_current_time(rc=rc)
+self%saved_state = .false.
+if (conf%has('reforecast')) call conf%get_or_die('reforecast',self%reforecast)
+
 end subroutine geos_create
 
 ! --------------------------------------------------------------------------------------------------
@@ -180,6 +195,7 @@ integer :: rc
 
 ! Finalize GEOS
 ! -------------
+call self%cap%cap_gc%destroy_state(rc = rc)
 call self%cap%cap_gc%finalize(rc = rc);
 if (rc.ne.0) call abor1_ftn("geos_mod: finalize failed")
 call self%cap%finalize_io_clients_servers()
@@ -198,10 +214,20 @@ subroutine geos_initialize(self, state)
 implicit none
 type(geos_model), target :: self
 type(fv3jedi_state)      :: state
-
+integer :: rc
 !There is no GEOS equivalent to JEDI initialize
 
-!Could be where replay mode is activated for outer loops
+if (self%saved_state) then
+   call self%cap%rewind_model(self%start_time,rc=rc)
+   call self%cap%cap_gc%refresh_state(rc=rc)
+end if
+
+if (self%reforecast .and. (.not.self%saved_state) ) then
+   call self%cap%cap_gc%record_state(rc=rc)
+   self%saved_state = .true.
+end if
+
+
 
 end subroutine geos_initialize
 
