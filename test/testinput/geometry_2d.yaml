@@ -1,0 +1,14 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 1
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/aerosols_geos.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml

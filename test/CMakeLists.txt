@@ -265,6 +265,7 @@ list( APPEND fv3jedi_test_input
   testinput/forecast_fv3-gfs.yaml
   testinput/forecast_geos.yaml
   testinput/forecast_gfs.yaml
+  testinput/geometry_2d.yaml
   testinput/geometry_geos.yaml
   testinput/geometry_gfs.yaml
   testinput/geometry_gfs127.yaml
@@ -652,6 +653,11 @@ ecbuild_add_test( TARGET  test_fv3jedi_geometry_geos
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_lam_cmaq
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
                   ARGS    testinput/geometry_lam_cmaq.yaml
+                  MPI     6 )
+
+ecbuild_add_test( TARGET  test_fv3jedi_geometry_2d
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_geometry.x
+                  ARGS    testinput/geometry_2d.yaml
                   MPI     6 )
 
 ecbuild_add_test( TARGET  test_fv3jedi_geometry_iterator_gfs

@@ -119,12 +119,6 @@ logical :: do_write_geom = .false.
 ! ------------------------------------
 self%f_comm = comm
 
-! Set path/filename for ak and bk
-! -------------------------------
-call conf%get_or_die("akbk",str)
-file_akbk = str
-deallocate(str)
-
 ! Interpolation type
 ! ------------------
 self%interp_method = 'barycent'
@@ -207,38 +201,47 @@ allocate(self%dya   (self%isd:self%ied  ,self%jsd:self%jed  ))
 
 ! ak and bk hybrid coordinate coefficients
 ! ----------------------------------------
+if (self%npz > 1) then
 
-!Open file
-call nccheck ( nf90_open(file_akbk, nf90_nowrite, ncid), "nf90_open "//file_akbk )
+  ! Set path/filename for ak and bk file
+  call conf%get_or_die("akbk",str)
+  file_akbk = str
 
-!Search for ak in the file
-ncstat = nf90_inq_varid(ncid, "ak", akvarid)
-if(ncstat /= nf90_noerr) call abor1_ftn("Failed to find ak in file "//file_akbk)
+  !Open file
+  call nccheck ( nf90_open(file_akbk, nf90_nowrite, ncid), "nf90_open "//file_akbk )
 
-!Search for bk in the file
-ncstat = nf90_inq_varid(ncid, "bk", bkvarid)
-if(ncstat /= nf90_noerr) call abor1_ftn("Failed to find bk in file "//file_akbk)
+  !Search for ak in the file
+  ncstat = nf90_inq_varid(ncid, "ak", akvarid)
+  if(ncstat /= nf90_noerr) call abor1_ftn("Failed to find ak in file "//file_akbk)
 
-! Check that dimension of ak/bk in the file match vertical levels of model
-dimids = 0
-call nccheck ( nf90_inquire_variable(ncid, akvarid, dimids = dimids), "nf90_inq_var ak" )
-readdim = -1
-dcount = 0
-do i = 1,nf90_max_var_dims
-  if (dimids(i) > 0) then
-     call nccheck( nf90_inquire_dimension(ncid, dimids(i), len = dimlens(i)), &
-                   "nf90_inquire_dimension" )
-     if (dimlens(i) == self%npz+1) then
-        readdim = i
-     endif
-     dcount = dcount + 1
-  endif
-enddo
-if (readdim == -1) call abor1_ftn("ak/bk in file does not match dimension of npz from input.nml")
+  !Search for bk in the file
+  ncstat = nf90_inq_varid(ncid, "bk", bkvarid)
+  if(ncstat /= nf90_noerr) call abor1_ftn("Failed to find bk in file "//file_akbk)
 
-!Read ak and bk from the file
-call nccheck( nf90_get_var(ncid, akvarid, self%ak), "fv3jedi_geom, nf90_get_var ak" )
-call nccheck( nf90_get_var(ncid, bkvarid, self%bk), "fv3jedi_geom, nf90_get_var bk" )
+  ! Check that dimension of ak/bk in the file match vertical levels of model
+  dimids = 0
+  call nccheck ( nf90_inquire_variable(ncid, akvarid, dimids = dimids), "nf90_inq_var ak" )
+  readdim = -1
+  dcount = 0
+  do i = 1,nf90_max_var_dims
+    if (dimids(i) > 0) then
+       call nccheck( nf90_inquire_dimension(ncid, dimids(i), len = dimlens(i)), &
+                     "nf90_inquire_dimension" )
+       if (dimlens(i) == self%npz+1) then
+          readdim = i
+       endif
+       dcount = dcount + 1
+    endif
+  enddo
+  if (readdim == -1) call abor1_ftn("ak/bk in file does not match dimension of npz from input.nml")
+
+  !Read ak and bk from the file
+  call nccheck( nf90_get_var(ncid, akvarid, self%ak), "fv3jedi_geom, nf90_get_var ak" )
+  call nccheck( nf90_get_var(ncid, bkvarid, self%bk), "fv3jedi_geom, nf90_get_var bk" )
+else
+  self%ak = 0.0_kind_real
+  self%bk = 0.0_kind_real
+endif
 
 ! Arrays from the Atm Structure
 ! --------------------------------
