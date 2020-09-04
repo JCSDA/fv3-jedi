@@ -1,0 +1,13 @@
+geometry:
+  nml_file_mpp: '$(expdir)/{{current_cycle}}/Data/fv3files/fmsmpp.nml'
+  trc_file: '$(expdir)/{{current_cycle}}/Data/fv3files/field_table'
+  akbk: '$(expdir)/{{current_cycle}}/Data/fv3files/akbk64.nc4'
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: '$(expdir)/{{current_cycle}}/Data/fieldsets/dynamics.yaml'
