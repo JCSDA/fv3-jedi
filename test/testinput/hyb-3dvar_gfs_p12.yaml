@@ -22,12 +22,30 @@ cost function:
       date: '2018-04-15T00:00:00Z'
       covariance model: BUMP
       bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_cor_gfs_p12
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_p12
         method: cor
         strategy: specific_univariate
         load_nicas: 1
         mpicom: 2
         verbosity: main
+        io_keys:
+        - "ua_2018-04-15T00:00:00Z-ua_2018-04-15T00:00:00Z"
+        - "va_2018-04-15T00:00:00Z-va_2018-04-15T00:00:00Z"
+        - "T_2018-04-15T00:00:00Z-T_2018-04-15T00:00:00Z"
+        - "DELP_2018-04-15T00:00:00Z-DELP_2018-04-15T00:00:00Z"
+        - "sphum_2018-04-15T00:00:00Z-sphum_2018-04-15T00:00:00Z"
+        - "ice_wat_2018-04-15T00:00:00Z-ice_wat_2018-04-15T00:00:00Z"
+        - "liq_wat_2018-04-15T00:00:00Z-liq_wat_2018-04-15T00:00:00Z"
+        - "o3mr_2018-04-15T00:00:00Z-o3mr_2018-04-15T00:00:00Z"
+        io_values:
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
+        - "fixed_2500km_0.3"
     ensemble:
       date: '2018-04-15T00:00:00Z'
       members:
@@ -116,12 +134,14 @@ cost function:
         localization variables: *3dvars
         localization method: BUMP
         bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs_p12
+          prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_p12
           method: loc
           strategy: common
           load_nicas: 1
           mpicom: 2
           verbosity: main
+          io_keys: ["common"]
+          io_values: ["fixed_2500km_0.3"]
   observations:
   - obs space:
       name: Aircraft

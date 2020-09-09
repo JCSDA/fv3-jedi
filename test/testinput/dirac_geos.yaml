@@ -24,12 +24,14 @@ background error:
     localization variables: [ua,va,t,ps,q,qi,ql,o3mr]
     localization method: BUMP
     bump:
-      prefix: Data/bump/fv3jedi_bumpparameters_loc_geos
+      prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
       method: loc
       strategy: common
       load_nicas: 1
       mpicom: 2
-      verbosity: 'main'
+      verbosity: main
+      io_keys: ["common"]
+      io_values: ["fixed_2500km_0.3"]
   members:
     - filetype: geos
       datapath: Data/inputs/geos_c12

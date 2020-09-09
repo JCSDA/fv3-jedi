@@ -51,12 +51,14 @@ cost function:
         localization variables: *aerovars
         localization method: BUMP
         bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_loc_gfs_aero
+          prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
           method: loc
           strategy: common
           load_nicas: 1
           mpicom: 2
           verbosity: main
+          io_keys: ["common"]
+          io_values: ["fixed_2500km_0.3"]
   observations:
   - obs space:
       name: Aod

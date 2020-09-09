@@ -11,27 +11,24 @@ geometry:
   ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-input variables: [ua,va,t,ps,q,qi,ql,o3mr]
+input variables: [t,ps]
 date: '2018-04-14T21:00:00Z'
 background:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
   filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-  state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+  state variables: [t,ps]
 bump:
-  prefix: Data/bump/fv3jedi_bumpparameters_cor_geos
+  prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
   verbosity: main
-  method: cor
+  universe_rad: 2500000.0
   strategy: specific_univariate
   new_nicas: 1
   ntry: 3
   nrep: 2
-  lsqrt: 1
   resol: 6
-  network: 0
   mpicom: 2
-  default_seed: 1
 # Forced length-scales
 # --------------------
   forced_radii: 1
@@ -40,50 +37,25 @@ bump:
 # Write C matrix
 # --------------
   write_cmat: 0
-# Diagnostic based on ens
-# -----------------------
-  new_hdiag: 0
-  nc1: 2000
-  nc2: 500
-  nc3: 15
-  dc: 200000.0
-  nl0r: 11
-  ne: 5
-  #local_diag: 1
-  #local_rad: 1000000
-  minim_algo: hooke
-  #diag_rhflt: 3000000
-# Variance filter
-# ---------------
-#  new_var: 1
-#  var_filter: 1
-#  var_niter: 10
-#  var_rhflt: 1000000.0
-#  Dirac gridded output
-#  --------------------
-#  load_nicas: 1
-  check_dirac: 0
-  ndir: 1
-#  londir: [0.0]
-#  latdir: [0.0]
-#  levdir: [50]
-  ivdir: [1]
-  itsdir: [1]
-  grid_output: 1
-  grid_resol: 200000.0
+  io_keys:
+  - "t_2018-04-14T21:00:00Z-t_2018-04-14T21:00:00Z"
+  - "ps_2018-04-14T21:00:00Z-ps_2018-04-14T21:00:00Z"
+  io_values:
+  - "fixed_2500km_0.3"
+  - "fixed_2500km"
 output:
 #- parameter: stddev
 #  filetype: geos
 #  datapath: Data/bump/
-#  filename: bumpparameters_cor_geos.stddev.%yyyy%mm%dd_%hh%MM%ssz.nc4
+#  filename: bumpparameters_nicas_geos.stddev.%yyyy%mm%dd_%hh%MM%ssz.nc4
 #  date: '2018-04-14T21:00:00Z'
 - parameter: cor_rh
   filetype: geos
   datapath: Data/bump/
-  filename: bumpparameters_cor_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
   date: '2018-04-14T21:00:00Z'
 - parameter: cor_rv
   filetype: geos
   datapath: Data/bump/
-  filename: bumpparameters_cor_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
   date: '2018-04-14T21:00:00Z'
