@@ -17,7 +17,7 @@
 
 #include "eckit/mpi/Comm.h"
 
-#include "oops/parallel/mpi/mpi.h"
+#include "oops/mpi/mpi.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 

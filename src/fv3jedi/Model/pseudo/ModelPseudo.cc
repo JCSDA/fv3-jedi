@@ -10,7 +10,7 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
-#include "oops/parallel/mpi/mpi.h"
+#include "oops/mpi/mpi.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
@@ -55,7 +55,7 @@ void ModelPseudo::step(State & xx, const ModelBias &) const {
   if (runstage_) {
     fv3jedi_pseudo_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran(), &dtp);
   } else {
-    int world_rank = oops::mpi::comm().rank();
+    int world_rank = oops::mpi::world().rank();
     if (world_rank == 0) {
       oops::Log::warning() << "Pseudo model has already run through "
                             "once so not re-reading states, just ticking the"

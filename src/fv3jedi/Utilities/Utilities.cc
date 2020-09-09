@@ -16,7 +16,7 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
-#include "oops/parallel/mpi/mpi.h"
+#include "oops/mpi/mpi.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 
@@ -31,7 +31,7 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 void stageFMSFiles(const eckit::Configuration & conf, const eckit::mpi::Comm & comm) {
   // Get processor ID
-  int world_rank = oops::mpi::comm().rank();
+  int world_rank = oops::mpi::world().rank();
 
   if (world_rank == 0) {
     // User provided input files for this geom/state/model etc
@@ -46,13 +46,13 @@ void stageFMSFiles(const eckit::Configuration & conf, const eckit::mpi::Comm & c
     }
   }
   // Nobody moves until files are in place
-  oops::mpi::comm().barrier();
+  oops::mpi::world().barrier();
 }
 // -----------------------------------------------------------------------------
 
 void stageFv3Files(const eckit::Configuration &conf, const eckit::mpi::Comm & comm) {
   // Get processor ID
-  int world_rank = oops::mpi::comm().rank();
+  int world_rank = oops::mpi::world().rank();
 
   // Only one processor needs to move the files
   // When we use several backgrounds, this lines will have to change
@@ -122,17 +122,17 @@ void stageFv3Files(const eckit::Configuration &conf, const eckit::mpi::Comm & co
   }
 
   // Nobody moves until files are in place
-  oops::mpi::comm().barrier();
+  oops::mpi::world().barrier();
 }
 
 // -----------------------------------------------------------------------------
 
 void removeFv3Files(const eckit::mpi::Comm & comm) {
   // Get processor ID
-  int world_rank = oops::mpi::comm().rank();
+  int world_rank = oops::mpi::world().rank();
 
   // No file deletion until everyone catches up
-  oops::mpi::comm().barrier();
+  oops::mpi::world().barrier();
 
   // Only one processor needs to move the files
   if (world_rank == 0) {
@@ -141,7 +141,7 @@ void removeFv3Files(const eckit::mpi::Comm & comm) {
     delete_file("inputpert.nml");
   }
   // Nobody moves until files are deleted
-  oops::mpi::comm().barrier();
+  oops::mpi::world().barrier();
 }
 
 // -----------------------------------------------------------------------------
@@ -164,11 +164,11 @@ void generateGeomFv3Conf(const eckit::Configuration & conf, const eckit::mpi::Co
 
   // Barrier
   // -------
-  oops::mpi::comm().barrier();
+  oops::mpi::world().barrier();
 
   // Only root
   // ---------
-  if (oops::mpi::comm().rank() == 0) {
+  if (oops::mpi::world().rank() == 0) {
     // Delete the file if it exists
     // ----------------------------
     delete_file("input.nml");
@@ -260,7 +260,7 @@ void generateGeomFv3Conf(const eckit::Configuration & conf, const eckit::mpi::Co
 
   // Barrier
   // -------
-  oops::mpi::comm().barrier();
+  oops::mpi::world().barrier();
 
   // Trace
   // -----
