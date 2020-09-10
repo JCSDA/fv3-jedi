@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2017 UCAR
+ * (C) Copyright 2017-2020 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -26,19 +28,16 @@
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
-/// Constructor, destructor
-// -------------------------------------------------------------------------------------------------
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time):
-  geom_(new Geometry(geom)), vars_(vars), time_(time)
-{
+             geom_(new Geometry(geom)), vars_(vars), time_(time) {
+  oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
-  oops::Log::trace() << "State::State created." << std::endl;
+  oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-State::State(const Geometry & geom, const eckit::Configuration & conf)
-  : geom_(new Geometry(geom)), time_(util::DateTime())
-{
-  oops::Log::trace() << "State::State create from analytical or from file." << std::endl;
+State::State(const Geometry & geom, const eckit::Configuration & conf): geom_(new Geometry(geom)),
+             time_(util::DateTime()) {
+  oops::Log::trace() << "State::State (from geom and config) starting" << std::endl;
 
 // Should check if this can be done inside read
   oops::Variables lvars(conf, "state variables");
@@ -53,32 +52,28 @@ State::State(const Geometry & geom, const eckit::Configuration & conf)
     this->read(conf);
   }
 
-  oops::Log::trace() << "State::State create from analytical or from file done." << std::endl;
+  oops::Log::trace() << "State::State (from geom and config) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-State::State(const Geometry & resol, const State & other):
-  geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_)
-{
+State::State(const Geometry & resol, const State & other): geom_(new Geometry(resol)),
+             vars_(other.vars_), time_(other.time_) {
+  oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
-  oops::Log::trace() << "State::State created by interpolation." << std::endl;
+  oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-State::State(const State & other):
-  geom_(other.geom_), vars_(other.vars_), time_(other.time_)
-{
+State::State(const State & other): geom_(other.geom_), vars_(other.vars_), time_(other.time_) {
+  oops::Log::trace() << "State::State (from other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_copy_f90(keyState_, other.keyState_);
-  oops::Log::trace() << "State::State copied." << std::endl;
+  oops::Log::trace() << "State::State (from other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 State::~State() {
   fv3jedi_state_delete_f90(keyState_);
-  oops::Log::trace() << "State::State destructed." << std::endl;
 }
-// -------------------------------------------------------------------------------------------------
-/// Basic operators
 // -------------------------------------------------------------------------------------------------
 State & State::operator=(const State & rhs) {
   fv3jedi_state_copy_f90(keyState_, rhs.keyState_);
@@ -86,95 +81,83 @@ State & State::operator=(const State & rhs) {
   return *this;
 }
 // -------------------------------------------------------------------------------------------------
-/// Interpolate full state
-// -------------------------------------------------------------------------------------------------
 void State::changeResolution(const State & other) {
-  oops::Log::trace() << "State change resolution starting" << std::endl;
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
-  oops::Log::trace() << "State change resolution done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-/// Interactions with Increments
-// -------------------------------------------------------------------------------------------------
 State & State::operator+=(const Increment & dx) {
-  oops::Log::trace() << "State add increment starting" << std::endl;
   ASSERT(this->validTime() == dx.validTime());
   // Interpolate increment to state resolution
   Increment dx_sr(*geom_, dx);
   // Call transform and add
   fv3jedi_state_add_incr_f90(geom_->toFortran(), keyState_, dx_sr.toFortran());
-  oops::Log::trace() << "State add increment done" << std::endl;
   return *this;
 }
 // -------------------------------------------------------------------------------------------------
-/// I/O and diagnostics
-// -------------------------------------------------------------------------------------------------
 void State::read(const eckit::Configuration & config) {
-  oops::Log::trace() << "State read starting" << std::endl;
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
   fv3jedi_state_read_file_f90(geom_->toFortran(), keyState_, &conf, &dtp);
-  oops::Log::trace() << "State read done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void State::analytic_init(const eckit::Configuration & config,
-                                 const Geometry & geom) {
-  oops::Log::trace() << "State analytic init starting" << std::endl;
+void State::analytic_init(const eckit::Configuration & config, const Geometry & geom) {
   const eckit::Configuration * conf = &config;
   util::DateTime * dtp = &time_;
   fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), &conf, &dtp);
-  oops::Log::trace() << "State analytic init done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void State::write(const eckit::Configuration & config) const {
-  oops::Log::trace() << "State write starting" << std::endl;
   const eckit::Configuration * conf = &config;
   const util::DateTime * dtp = &time_;
   fv3jedi_state_write_file_f90(geom_->toFortran(), keyState_, &conf, &dtp);
-  oops::Log::trace() << "State write done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void State::print(std::ostream & os) const {
-  oops::Log::trace() << "State print starting" << std::endl;
-  fv3jedi_state_print_f90(keyState_);
-//  oops::Log::debug() << "  Valid time: " << validTime() << std::endl;
-//  int nx = 0;
-//  int ny = 0;
-//  int nf = 8;
-//  fv3jedi_state_sizes_f90(keyState_, nx, ny, nf);
-//  oops::Log::debug() << "Cube faces = " << nx << "x" << ny
-//     << ", Number of state fields = " << nf << std::endl;
-//  std::vector<double> zstat(3*nf);
-//  fv3jedi_state_gpnorm_f90(keyState_, nf, zstat[0]);
-//  for (int jj = 0; jj < nf; ++jj) {
-//    oops::Log::debug() << "State=" << jj+1 <<"  Min=" << zstat[3*jj]
-//       << ", Max=" << zstat[3*jj+1] << ", RMS=" << zstat[3*jj+2] << std::endl;
-//  }
-  oops::Log::trace() << "State print done" << std::endl;
+  // Get the number of fields
+  int numberFields;
+  int cubeSize;
+  fv3jedi_state_getnfieldsncube_f90(keyState_, numberFields, cubeSize);
+
+  // Header
+  os << std::endl
+     << " --------------------------------------------------------------------------------";
+  os << std::endl << " State print | number of fields = " << numberFields
+                  << " | cube sphere face size: C" << cubeSize;
+
+  // Print info field by field
+  const int FieldNameLen = 15;
+  char fieldName[FieldNameLen];
+  std::vector<double> minMaxRms(3);
+  for (int f = 0; f < numberFields; f++) {
+    int fp1 = f+1;
+    fv3jedi_state_getminmaxrms_f90(keyState_, fp1, FieldNameLen, fieldName, minMaxRms[0]);
+    std::string fieldNameStr(fieldName);
+    os << std::endl << std::scientific << std::showpos << "   "
+                    << fieldNameStr.substr(0, FieldNameLen-1) << ": Min = " << minMaxRms[0]
+                    << ", Max = " << minMaxRms[1] << ", RMS = " << minMaxRms[2]
+                    << std::noshowpos;  //  << std::defaultfloat;
+  }
+
+  os.unsetf(std::ios_base::floatfield);
+
+  // Footer
+  os << std::endl
+     << " --------------------------------------------------------------------------------";
 }
 // -------------------------------------------------------------------------------------------------
-/// For accumulator
-// -------------------------------------------------------------------------------------------------
 void State::zero() {
-  oops::Log::trace() << "State zero starting" << std::endl;
   fv3jedi_state_zero_f90(keyState_);
-  oops::Log::trace() << "State zero done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void State::accumul(const double & zz, const State & xx) {
-  oops::Log::trace() << "State accumul starting" << std::endl;
   fv3jedi_state_axpy_f90(keyState_, zz, xx.keyState_);
-  oops::Log::trace() << "State accumul done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 double State::norm() const {
-  oops::Log::trace() << "State norm starting" << std::endl;
   double zz = 0.0;
   fv3jedi_state_rms_f90(keyState_, zz);
   return zz;
-  oops::Log::trace() << "State norm done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-
 }  // namespace fv3jedi

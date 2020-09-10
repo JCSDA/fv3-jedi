@@ -21,7 +21,7 @@ public :: fv3jedi_field, &
           copy_field_array_ad, &
           fields_rms, &
           fields_gpnorm, &
-          fields_print, &
+          field_getminmaxrms, &
           checksame, &
           flip_array_vertical, &
           copy_subset, &
@@ -368,61 +368,44 @@ end subroutine fields_gpnorm
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fields_print(nf, fields, name, f_comm)
+subroutine field_getminmaxrms(fields, field_num, field_name, minmaxrms, f_comm)
 
 implicit none
-integer,              intent(in)    :: nf
-type(fv3jedi_field),  intent(in)    :: fields(nf)
-character(len=*),     intent(in)    :: name
+type(fv3jedi_field),  intent(in)    :: fields(:)
+integer,              intent(in)    :: field_num
+character(len=*),     intent(inout) :: field_name
+real(kind=kind_real), intent(inout) :: minmaxrms(3)
 type(fckit_mpi_comm), intent(in)    :: f_comm
 
-integer :: var
-real(kind=kind_real) :: tmp(3), pstat(3), gs3, gs3g
-character(len=34) :: printname
+integer :: isc, iec, jsc, jec, npz
+real(kind=kind_real) :: tmp(3), gs3, gs3g
 
-integer :: ngrid, sngrid
+isc = fields(field_num)%isc
+iec = fields(field_num)%iec
+jsc = fields(field_num)%jsc
+jec = fields(field_num)%jec
+npz = fields(field_num)%npz
 
-ngrid = (fields(1)%iec-fields(1)%isc+1)*(fields(1)%iec-fields(1)%isc+1)
-call f_comm%allreduce(ngrid,sngrid,fckit_mpi_sum())
-sngrid = nint(sqrt(real(sngrid,kind_real)/6.0_kind_real))
+field_name = fields(field_num)%short_name
 
-printname = "|     "//trim(name)//" print"
+! Compute global sum over the field
+gs3 = real((iec-isc+1)*(jec-jsc+1)*npz, kind_real)
+call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
-if (f_comm%rank() == 0) then
-  write(*,"(A90)") "------------------------------------------------------------------------------------------"
-  write(*,"(A34)") printname
-  write(*,"(A90)") "------------------------------------------------------------------------------------------"
-  write(*,"(A70)") " "
-  write(*,"(A27,I5)") "    Cube sphere face size: ", sngrid
-  write(*,"(A70)") " "
-endif
+! Min/Max/SumSquares
+tmp(1) = minval(fields(field_num)%array(isc:iec,jsc:jec,1:npz))
+tmp(2) = maxval(fields(field_num)%array(isc:iec,jsc:jec,1:npz))
+tmp(3) =    sum(fields(field_num)%array(isc:iec,jsc:jec,1:npz)**2)
 
-do var = 1,nf
+! Get global min/max/sum
+call f_comm%allreduce(tmp(1), minmaxrms(1), fckit_mpi_min())
+call f_comm%allreduce(tmp(2), minmaxrms(2), fckit_mpi_max())
+call f_comm%allreduce(tmp(3), minmaxrms(3), fckit_mpi_sum())
 
-  gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
-  call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
+! SumSquares to rms
+minmaxrms(3) = sqrt(minmaxrms(3)/gs3g)
 
-  tmp(1) = minval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(2) = maxval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(3) =    sum(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
-
-  call f_comm%allreduce(tmp(1),pstat(1),fckit_mpi_min())
-  call f_comm%allreduce(tmp(2),pstat(2),fckit_mpi_max())
-  call f_comm%allreduce(tmp(3),pstat(3),fckit_mpi_sum())
-  pstat(3) = sqrt(pstat(3)/gs3g)
-
-  if (f_comm%rank() == 0) write(*,"(A30,A6,ES14.7,A6,ES14.7,A6,ES14.7)") &
-                                   fields(var)%short_name(1:30),&
-                                   "| Min=",real(pstat(1),4),&
-                                   ", Max=",real(pstat(2),4),&
-                                   ", RMS=",real(pstat(3),4)
-
-enddo
-
-if (f_comm%rank() == 0) &
-  write(*,"(A90)") "-----------------------------------------------------------------------------------------"
-
-end subroutine fields_print
+end subroutine field_getminmaxrms
 
 ! --------------------------------------------------------------------------------------------------
 

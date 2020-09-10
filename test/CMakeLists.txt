@@ -326,10 +326,14 @@ LINK_FILES( "${fv3jedi_test_input}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 list( APPEND fv3jedi_testoutput
   testoutput/4denvar_pseudo-geos.ref
   testoutput/4denvar_pseudo-gfs.ref
+  testoutput/addincrement_geos.ref
+  testoutput/addincrement_gfs.ref
   testoutput/bumpparameters_nicas_geos.ref
   testoutput/bumpparameters_nicas_gfs.ref
   testoutput/CTestCostData.txt.awsgnu.test
   testoutput/CTestCostData.txt.awsintel.test
+  testoutput/diffstates_geos.ref
+  testoutput/diffstates_gfs.ref
   testoutput/dirac_geos.ref
   testoutput/dirac_gfs_bal.ref
   testoutput/dirac_gfs_c2a.ref
@@ -1174,37 +1178,59 @@ endif()
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs
                   TYPE         EXE
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_diffstates.x
-                  ARGS         testinput/diffstates_gfs.yaml
+                  ARGS         testinput/diffstates_gfs.yaml testoutput/diffstates_gfs.run
                   MPI          6
                   LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs )
 
+ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/diffstates_gfs.run testoutput/diffstates_gfs.ref  1.0e-4 ${idif}
+                  TEST_DEPENDS test_fv3jedi_diffstates_gfs )
+
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_geos
                   TYPE         EXE
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_diffstates.x
-                  ARGS         testinput/diffstates_geos.yaml
+                  ARGS         testinput/diffstates_geos.yaml testoutput/diffstates_geos.run
                   MPI          6
                   LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos )
+
+ecbuild_add_test( TARGET       test_fv3jedi_diffstates_geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/diffstates_geos.run testoutput/diffstates_geos.ref  1.0e-4 ${idif}
+                  TEST_DEPENDS test_fv3jedi_diffstates_geos )
 
 # Add increment
 ecbuild_add_test( TARGET       test_fv3jedi_addincrement_gfs
                   TYPE         EXE
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_addincrement.x
-                  ARGS         testinput/addincrement_gfs.yaml
+                  ARGS         testinput/addincrement_gfs.yaml testoutput/addincrement_gfs.run
                   MPI          6
                   LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_gfs test_fv3jedi_diffstates_gfs )
 
+ecbuild_add_test( TARGET       test_fv3jedi_addincrement_gfs_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/addincrement_gfs.run testoutput/addincrement_gfs.ref  1.0e-4 ${idif}
+                  TEST_DEPENDS test_fv3jedi_addincrement_gfs )
+
 ecbuild_add_test( TARGET       test_fv3jedi_addincrement_geos
                   TYPE         EXE
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/fv3jedi_addincrement.x
-                  ARGS         testinput/addincrement_geos.yaml
+                  ARGS         testinput/addincrement_geos.yaml testoutput/addincrement_geos.run
                   MPI          6
                   LIBS         fv3jedi
                   TEST_DEPENDS test_fv3jedi_hyb3dvar_geos test_fv3jedi_diffstates_geos )
 
-
+ecbuild_add_test( TARGET       test_fv3jedi_addincrement_geos_compare
+                  TYPE         SCRIPT
+                  COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
+                  ARGS         testoutput/addincrement_geos.run testoutput/addincrement_geos.ref  1.0e-4 ${idif}
+                  TEST_DEPENDS test_fv3jedi_addincrement_geos )
 
 #Hybrid FGAT
 ecbuild_add_test( TARGET       test_fv3jedi_hybfgat_fv3-gfs

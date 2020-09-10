@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 UCAR
+ * (C) Copyright 2017-2020 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -41,9 +41,8 @@ namespace fv3jedi {
 
 // FV3JEDI model state
 
-// -----------------------------------------------------------------------------
-class State : public util::Printable,
-                private util::ObjectCounter<State> {
+// -------------------------------------------------------------------------------------------------
+class State : public util::Printable, private util::ObjectCounter<State> {
  public:
   static const std::string classname() {return "fv3jedi::State";}
 
@@ -90,7 +89,8 @@ class State : public util::Printable,
   oops::Variables vars_;
   util::DateTime time_;
 };
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 

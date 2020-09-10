@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 UCAR
+ * (C) Copyright 2017-2020 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -48,11 +48,10 @@ namespace fv3jedi {
 
 // FV3JEDI increment
 
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
-class Increment : public oops::GeneralizedDepartures,
-                        public util::Printable,
-                        private util::ObjectCounter<Increment> {
+class Increment : public oops::GeneralizedDepartures, public util::Printable,
+                  private util::ObjectCounter<Increment> {
  public:
   static const std::string classname() {return "fv3jedi::Increment";}
 
@@ -122,7 +121,7 @@ class Increment : public oops::GeneralizedDepartures,
   oops::Variables vars_;
   util::DateTime time_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
 

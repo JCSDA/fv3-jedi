@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -32,15 +32,14 @@ use wind_vt_mod, only: a2d
 
 implicit none
 private
-public :: fv3jedi_state, create, delete, zeros, copy, axpy, add_incr, &
-          read_file, write_file, gpnorm, rms, &
-          change_resol, analytic_IC, state_print
+public :: fv3jedi_state, create, delete, zeros, copy, axpy, add_incr, read_file, write_file, rms, &
+          change_resol, analytic_IC, getminmaxrms
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine create(self, geom, vars)
 
@@ -119,7 +118,7 @@ if (has_field(self%fields, 'ud')) self%have_dgrid = .true.
 
 end subroutine create
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine delete(self)
 
@@ -134,7 +133,7 @@ deallocate(self%fields)
 
 end subroutine delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine zeros(self)
 
@@ -148,7 +147,7 @@ enddo
 
 end subroutine zeros
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine copy(self,rhs)
 
@@ -169,7 +168,7 @@ self%date_init = rhs%date_init
 
 end subroutine copy
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine axpy(self,zz,rhs)
 
@@ -188,7 +187,7 @@ enddo
 
 end subroutine axpy
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine add_incr(geom,self,rhs)
 
@@ -353,7 +352,7 @@ enddo
 
 end subroutine add_incr
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine change_resol(self,geom,rhs,geom_rhs)
 
@@ -392,7 +391,7 @@ endif
 
 end subroutine change_resol
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 !> Analytic Initialization for the FV3 Model
 !!
 !! \details **analytic_IC()** initializes the FV3JEDI state and State objects using one of
@@ -493,7 +492,6 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
     call pointer_field_array(self%fields, 'delz', delz)
   endif
 
-  !===================================================================
   int_option: Select Case (IC)
 
      Case ("dcmip-test-1-1")
@@ -640,7 +638,7 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
 
 end subroutine analytic_IC
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine read_file(geom, self, c_conf, vdate)
 use string_utils
@@ -697,7 +695,7 @@ endif
 
 end subroutine read_file
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine write_file(geom, self, c_conf, vdate)
 
@@ -757,35 +755,21 @@ subroutine write_file(geom, self, c_conf, vdate)
 
 end subroutine write_file
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-subroutine state_print(self)
-
-implicit none
-type(fv3jedi_state), intent(in) :: self
-
-call fields_print(self%nf, self%fields, "State", self%f_comm)
-
-end subroutine state_print
-
-! ------------------------------------------------------------------------------
-
-subroutine gpnorm(self, nf, pstat)
+subroutine getminmaxrms(self, field_num, field_name, minmaxrms)
 
 implicit none
 type(fv3jedi_state),  intent(in)    :: self
-integer,              intent(in)    :: nf
-real(kind=kind_real), intent(inout) :: pstat(3, nf)
+integer,              intent(in)    :: field_num
+character(len=*),     intent(inout) :: field_name
+real(kind=kind_real), intent(inout) :: minmaxrms(3)
 
-if (nf .ne. self%nf) then
-  call abor1_ftn("fv3jedi_state: gpnorm | nf passed in does not match expeted nf")
-endif
+call field_getminmaxrms(self%fields, field_num, field_name, minmaxrms, self%f_comm)
 
-call fields_gpnorm(nf, self%fields, pstat, self%f_comm)
+end subroutine getminmaxrms
 
-end subroutine gpnorm
-
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine rms(self, prms)
 
@@ -797,6 +781,6 @@ call fields_rms(self%nf, self%fields, prms, self%f_comm)
 
 end subroutine rms
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_state_mod

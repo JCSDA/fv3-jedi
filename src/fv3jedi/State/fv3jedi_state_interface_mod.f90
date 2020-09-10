@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,6 +14,7 @@ use iso_c_binding
 use oops_variables_mod
 use fckit_configuration_module, only: fckit_configuration
 
+use fv3jedi_field_mod, only: field_clen
 use fv3jedi_state_mod
 use fv3jedi_state_utils_mod, only: fv3jedi_state_registry
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -230,46 +231,6 @@ end subroutine fv3jedi_state_write_file_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_gpnorm_c(c_key_state, kf, pstat) bind(c,name='fv3jedi_state_gpnorm_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_state
-integer(c_int), intent(in) :: kf
-real(c_double), intent(inout) :: pstat(3*kf)
-
-type(fv3jedi_state), pointer :: state
-real(kind=kind_real) :: zstat(3, kf)
-integer :: jj, js, jf
-
-call fv3jedi_state_registry%get(c_key_state,state)
-
-call gpnorm(state, kf, zstat)
-jj=0
-do jf = 1, kf
-  do js = 1, 3
-    jj=jj+1
-    pstat(jj) = zstat(js,jf)
-  enddo
-enddo
-
-end subroutine fv3jedi_state_gpnorm_c
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine fv3jedi_state_print_c(c_key_self) bind(c,name='fv3jedi_state_print_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_self
-type(fv3jedi_state), pointer :: self
-
-call fv3jedi_state_registry%get(c_key_self,self)
-
-call state_print(self)
-
-end subroutine fv3jedi_state_print_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_state_rms_c(c_key_state, prms) bind(c,name='fv3jedi_state_rms_f90')
 
 implicit none
@@ -289,20 +250,48 @@ end subroutine fv3jedi_state_rms_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_sizes_c(c_key_self,nx,ny,nf) bind(c,name='fv3jedi_state_sizes_f90')
+subroutine fv3jedi_state_getnfieldsncube_c(c_key_self, c_number_fields, c_cube_size) &
+           bind(c,name='fv3jedi_state_getnfieldsncube_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(inout) :: nx,ny,nf
+integer(c_int), intent(in)  :: c_key_self
+integer(c_int), intent(out) :: c_number_fields
+integer(c_int), intent(out) :: c_cube_size
+
 type(fv3jedi_state), pointer :: self
 
 call fv3jedi_state_registry%get(c_key_self,self)
 
-nf = self%nf
-nx = self%npx
-ny = self%npy
+c_number_fields = self%nf
+c_cube_size = self%npx-1
 
-end subroutine fv3jedi_state_sizes_c
+end subroutine fv3jedi_state_getnfieldsncube_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_getminmaxrms_c(c_key_self, c_f_num, c_f_name_len, c_f_name, c_minmaxrms ) &
+           bind(c,name='fv3jedi_state_getminmaxrms_f90')
+
+implicit none
+integer(c_int),               intent(in)    :: c_key_self
+integer(c_int),               intent(in)    :: c_f_num
+integer(c_int),               intent(in)    :: c_f_name_len
+character(len=1,kind=c_char), intent(inout) :: c_f_name(c_f_name_len)
+real(c_double),               intent(inout) :: c_minmaxrms(3)
+
+type(fv3jedi_state), pointer :: self
+character(len=field_clen) :: field_name
+integer :: n
+
+call fv3jedi_state_registry%get(c_key_self,self)
+
+call getminmaxrms(self, c_f_num, field_name, c_minmaxrms)
+
+do n = 1,c_f_name_len
+  c_f_name(n) = field_name(n:n)
+enddo
+
+end subroutine fv3jedi_state_getminmaxrms_c
 
 ! --------------------------------------------------------------------------------------------------
 

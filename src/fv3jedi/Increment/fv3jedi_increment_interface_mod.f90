@@ -15,6 +15,7 @@ use iso_c_binding
 use oops_variables_mod
 use fckit_configuration_module, only: fckit_configuration
 
+use fv3jedi_field_mod, only: field_clen
 use fv3jedi_increment_mod
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment_registry
 use fv3jedi_geom_mod, only: fv3jedi_geom
@@ -474,20 +475,6 @@ end subroutine fv3jedi_increment_gpnorm_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_print_c(c_key_self) bind(c,name='fv3jedi_increment_print_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_self
-type(fv3jedi_increment), pointer :: self
-
-call fv3jedi_increment_registry%get(c_key_self, self)
-
-call increment_print(self)
-
-end subroutine fv3jedi_increment_print_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_increment_rms_c(c_key_inc, prms) bind(c,name='fv3jedi_increment_rms_f90')
 
 implicit none
@@ -614,6 +601,52 @@ call fv3jedi_geom_iter_registry%get(c_key_iter,iter)
 call fv3jedi_setpoint(self, iter, values)
 
 end subroutine fv3jedi_increment_setpoint_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_getnfieldsncube_c(c_key_self, c_number_fields, c_cube_size) &
+           bind(c,name='fv3jedi_increment_getnfieldsncube_f90')
+
+implicit none
+integer(c_int), intent(in)  :: c_key_self
+integer(c_int), intent(out) :: c_number_fields
+integer(c_int), intent(out) :: c_cube_size
+
+type(fv3jedi_increment), pointer :: self
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+
+c_number_fields = self%nf
+c_cube_size = self%npx-1
+
+end subroutine fv3jedi_increment_getnfieldsncube_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_getminmaxrms_c(c_key_self, c_f_num, c_f_name_len, c_f_name, &
+                                            c_minmaxrms ) &
+           bind(c,name='fv3jedi_increment_getminmaxrms_f90')
+
+implicit none
+integer(c_int),               intent(in)    :: c_key_self
+integer(c_int),               intent(in)    :: c_f_num
+integer(c_int),               intent(in)    :: c_f_name_len
+character(len=1,kind=c_char), intent(inout) :: c_f_name(c_f_name_len)
+real(c_double),               intent(inout) :: c_minmaxrms(3)
+
+type(fv3jedi_increment), pointer :: self
+character(len=field_clen) :: field_name
+integer :: n
+
+call fv3jedi_increment_registry%get(c_key_self,self)
+
+call getminmaxrms(self, c_f_num, field_name, c_minmaxrms)
+
+do n = 1,c_f_name_len
+  c_f_name(n) = field_name(n:n)
+enddo
+
+end subroutine fv3jedi_increment_getminmaxrms_c
 
 ! --------------------------------------------------------------------------------------------------
 

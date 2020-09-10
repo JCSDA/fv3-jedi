@@ -6,6 +6,19 @@ Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 812.58, nobs = 748, Jo/n = 1.
 Test     : CostFunction: Nonlinear J = 8444.16
 Test     : DRIPCGMinimizer: reduction in residual norm = 0.528406
 Test     : CostFunction::addIncrement: Analysis: 
+Test     :  --------------------------------------------------------------------------------
+Test     :  State print | number of fields = 10 | cube sphere face size: C12
+Test     :    u             : Min = -7.998311e+01, Max = +7.443785e+01, RMS = +1.269962e+01
+Test     :    v             : Min = -8.004184e+01, Max = +8.021624e+01, RMS = +1.274250e+01
+Test     :    ua            : Min = -4.631079e+01, Max = +9.136981e+01, RMS = +1.640422e+01
+Test     :    va            : Min = -6.112540e+01, Max = +7.380732e+01, RMS = +8.406592e+00
+Test     :    T             : Min = +1.847640e+02, Max = +3.102424e+02, RMS = +2.484510e+02
+Test     :    DELP          : Min = +4.424700e+01, Max = +3.728065e+03, RMS = +1.940813e+03
+Test     :    sphum         : Min = +0.000000e+00, Max = +2.178335e-02, RMS = +5.110824e-03
+Test     :    ice_wat       : Min = +0.000000e+00, Max = +6.371114e-04, RMS = +1.478967e-05
+Test     :    liq_wat       : Min = +0.000000e+00, Max = +1.054128e-03, RMS = +2.772812e-05
+Test     :    o3mr          : Min = +2.759108e-08, Max = +1.754712e-05, RMS = +5.601335e-06
+Test     :  --------------------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 0.00681197
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 3788.88, nobs = 1119, Jo/n = 3.38595, err = 2.74428
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 3226.88, nobs = 912, Jo/n = 3.53825, err = 2.01959

@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -34,19 +34,15 @@ use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north,
 implicit none
 private
 public :: fv3jedi_increment, create, delete, zeros, random, set_atlas, to_atlas, from_atlas, copy, &
-          self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, &
-          dot_prod, diff_incr, &
-          read_file, write_file, gpnorm, rms, &
-          change_resol, dirac, &
-          fv3jedi_increment_serialize, fv3jedi_increment_deserialize, &
-          fv3jedi_getpoint, fv3jedi_setpoint, &
-          increment_print
+          self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, dot_prod, diff_incr, &
+          read_file, write_file, gpnorm, rms, change_resol, dirac, fv3jedi_increment_serialize, &
+          fv3jedi_increment_deserialize, fv3jedi_getpoint, fv3jedi_setpoint, getminmaxrms
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine create(self, geom, vars)
 
@@ -129,7 +125,7 @@ if (has_field(self%fields, 'ud')) self%have_dgrid = .true.
 
 end subroutine create
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine delete(self)
 
@@ -146,7 +142,7 @@ deallocate(self%fields)
 
 end subroutine delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine zeros(self)
 
@@ -161,7 +157,7 @@ enddo
 
 end subroutine zeros
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine ones(self)
 
@@ -176,7 +172,7 @@ enddo
 
 end subroutine ones
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine random(self)
 
@@ -192,7 +188,7 @@ enddo
 
 end subroutine random
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine set_atlas(self, geom, vars, vdate, afieldset)
 
@@ -238,7 +234,7 @@ enddo
 
 end subroutine set_atlas
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine to_atlas(self, geom, vars, vdate, afieldset)
 
@@ -294,7 +290,7 @@ enddo
 
 end subroutine to_atlas
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine from_atlas(self, geom, vars, vdate, afieldset)
 
@@ -346,7 +342,7 @@ enddo
 
 end subroutine from_atlas
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine copy(self,rhs)
 
@@ -365,7 +361,7 @@ self%date_init      = rhs%date_init
 
 end subroutine copy
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine self_add(self,rhs)
 
@@ -383,7 +379,7 @@ enddo
 
 end subroutine self_add
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine self_schur(self,rhs)
 
@@ -401,7 +397,7 @@ enddo
 
 end subroutine self_schur
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine self_sub(self,rhs)
 
@@ -419,7 +415,7 @@ enddo
 
 end subroutine self_sub
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine self_mul(self,zz)
 
@@ -435,7 +431,7 @@ enddo
 
 end subroutine self_mul
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine axpy_inc(self,zz,rhs)
 
@@ -454,7 +450,7 @@ enddo
 
 end subroutine axpy_inc
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine axpy_state(self,zz,rhs)
 
@@ -473,7 +469,7 @@ enddo
 
 end subroutine axpy_state
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine dot_prod(self,other,zprod)
 
@@ -507,7 +503,7 @@ call self%f_comm%allreduce(zp,zprod,fckit_mpi_sum())
 
 end subroutine dot_prod
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine diff_incr(self,x1,x2,geom)
 
@@ -624,7 +620,7 @@ self%date_init      = x1%date_init
 
 end subroutine diff_incr
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine change_resol(self,geom,rhs,geom_rhs)
 
@@ -663,7 +659,7 @@ endif
 
 end subroutine change_resol
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine read_file(geom, self, c_conf, vdate)
 
@@ -707,7 +703,7 @@ subroutine read_file(geom, self, c_conf, vdate)
 
 end subroutine read_file
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine write_file(geom, self, c_conf, vdate)
 
@@ -752,18 +748,7 @@ subroutine write_file(geom, self, c_conf, vdate)
 
 end subroutine write_file
 
-! ------------------------------------------------------------------------------
-
-subroutine increment_print(self)
-
-implicit none
-type(fv3jedi_increment), intent(in) :: self
-
-call fields_print(self%nf, self%fields, "Increment", self%f_comm)
-
-end subroutine increment_print
-
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine gpnorm(self, nf, pstat)
 
@@ -780,7 +765,7 @@ call fields_gpnorm(nf, self%fields, pstat, self%f_comm)
 
 end subroutine gpnorm
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine rms(self, prms)
 
@@ -792,7 +777,7 @@ call fields_rms(self%nf, self%fields, prms, self%f_comm)
 
 end subroutine rms
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine dirac(self, c_conf, geom)
 
@@ -866,7 +851,7 @@ enddo
 
 end subroutine dirac
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_increment_serialize(self,vsize,vect_inc)
 
@@ -899,7 +884,7 @@ enddo
 
 end subroutine fv3jedi_increment_serialize
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_increment_deserialize(self,vsize,vect_inc,index)
 
@@ -929,7 +914,8 @@ enddo
 
 end subroutine fv3jedi_increment_deserialize
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
 subroutine fv3jedi_getpoint(self, geoiter, values)
 
 implicit none
@@ -949,7 +935,8 @@ enddo
 
 end subroutine fv3jedi_getpoint
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
 subroutine fv3jedi_setpoint(self, geoiter, values)
 
 implicit none
@@ -970,5 +957,20 @@ enddo
 
 end subroutine fv3jedi_setpoint
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+subroutine getminmaxrms(self, field_num, field_name, minmaxrms)
+
+implicit none
+type(fv3jedi_increment), intent(in)    :: self
+integer,                 intent(in)    :: field_num
+character(len=*),        intent(inout) :: field_name
+real(kind=kind_real),    intent(inout) :: minmaxrms(3)
+
+call field_getminmaxrms(self%fields, field_num, field_name, minmaxrms, self%f_comm)
+
+end subroutine getminmaxrms
+
+! --------------------------------------------------------------------------------------------------
+
 end module fv3jedi_increment_mod
