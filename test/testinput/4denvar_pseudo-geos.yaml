@@ -5,7 +5,7 @@ cost function:
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.bkg.20180414_210000z.nc4
       filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-      state variables: &bkgvars [ua,va,t,ps,q,qi,ql,o3mr,phis,frocean,frlake,frseaice,vtype,
+      state variables: &bkgvars [ua,va,t,ps,q,qi,ql,o3ppmv,phis,frocean,frlake,frseaice,vtype,
                       stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
     - filetype: geos
       datapath: Data/inputs/geos_c12
@@ -32,7 +32,7 @@ cost function:
         io_values: ["fixed_2500km_0.3"]
       localization method: BUMP
       timeslots: ['2018-04-14T21:00:00Z','2018-04-15T00:00:00Z','2018-04-15T03:00:00Z']
-      localization variables: &4denvars [ua,va,t,ps,q,qi,ql,o3mr]
+      localization variables: &4denvars [ua,va,t,ps,q,qi,ql,o3ppmv]
     members:
     - states:
       - filetype: geos

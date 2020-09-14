@@ -55,6 +55,7 @@ real(kind=kind_real), parameter, public :: rho_seawater  = 1026.0_kind_real
 real(kind=kind_real), parameter, public :: rho_seaice    = 917.0_kind_real
 real(kind=kind_real), parameter, public :: rho_snow      = 330.0_kind_real
 real(kind=kind_real), parameter, public :: f_coriolis_angle = 0.0_kind_real
-real(kind=kind_real), parameter, public :: constoz = 604229.0_kind_real
+!real(kind=kind_real), parameter, public :: kg_kg_to_ppmv_o3 = 1.0e6_kind_real*airmw/o3mw ! kg/kg -> ppmv 
+real(kind=kind_real), parameter, public :: constoz = 604229.0_kind_real ! kg/kg -> ppmv (what the GSI uses, but of unknown origin) 
 
 end module fv3jedi_constants_mod

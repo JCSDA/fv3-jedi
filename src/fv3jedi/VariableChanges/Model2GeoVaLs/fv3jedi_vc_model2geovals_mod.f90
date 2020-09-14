@@ -120,8 +120,8 @@ logical,  parameter :: use_compress = .true.
 
 ! Ozone
 logical :: have_o3
+logical :: have_mass
 real(kind=kind_real), allocatable :: o3    (:,:,:)         !Ozone mixing ratio
-
 ! Winds
 logical :: have_winds
 real(kind=kind_real), allocatable :: ua    (:,:,:)         !Eastward wind
@@ -327,15 +327,18 @@ endif
 ! Ozone
 ! -----
 have_o3 = .false.
-if (has_field(xm%fields, 'o3mr')) then
-  call allocate_copy_field_array(xm%fields, 'o3mr', o3)
+have_mass = .false.
+if (has_field(xm%fields, 'o3mr') .or. has_field(xm%fields, 'o3ppmv')) then
+  if (has_field(xm%fields, 'o3mr')) call allocate_copy_field_array(xm%fields, 'o3mr', o3)
+  if (has_field(xm%fields, 'o3ppmv')) call allocate_copy_field_array(xm%fields, 'o3ppmv', o3)
+  have_mass = has_field(xm%fields, 'o3mr')
   have_o3 = .true.
   do k = 1, self%npz
     do j = self%jsc, self%jec
       do i = self%isc, self%iec
-        if (o3(i,j,k) >= 0.0_kind_real) then
+        if (o3(i,j,k) >= 0.0_kind_real .and. have_mass) then
           o3(i,j,k) = o3(i,j,k) * constoz
-        else
+        else if (o3(i,j,k) < 0.0_kind_real ) then
           o3(i,j,k) = 0.0_kind_real
         endif
       enddo
@@ -598,7 +601,6 @@ do f = 1, size(fields_to_do)
     field_ptr = tv
 
   case ("mole_fraction_of_ozone_in_air")
-
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3
 

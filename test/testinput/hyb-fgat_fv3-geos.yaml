@@ -1,6 +1,6 @@
 cost function:
   cost type: 4D-Var
-  analysis variables: &fgatvars [ua,va,t,ps,q,qi,ql,o3mr]
+  analysis variables: &fgatvars [ua,va,t,ps,q,qi,ql,o3ppmv]
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
   variable change: Analysis2Model
@@ -17,7 +17,7 @@ cost function:
     lm_do_trb: 0
     lm_do_mst: 0
     tstep: PT1H
-    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,frocean,frlake,
+    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
                       frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
@@ -38,7 +38,7 @@ cost function:
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.bkg.20180414_210000z.nc4
     filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-    state variables: *fgatvars #[ua,va,t,ps,q,qi,ql,o3mr]
+    state variables: *fgatvars #[ua,va,t,ps,q,qi,ql,o3ppmv]
   background error:
     covariance model: hybrid
     static weight: 0.1
@@ -61,7 +61,7 @@ cost function:
         - "q_2018-04-14T21:00:00Z-q_2018-04-14T21:00:00Z"
         - "qi_2018-04-14T21:00:00Z-qi_2018-04-14T21:00:00Z"
         - "ql_2018-04-14T21:00:00Z-ql_2018-04-14T21:00:00Z"
-        - "o3mr_2018-04-14T21:00:00Z-o3mr_2018-04-14T21:00:00Z"
+        - "o3ppmv_2018-04-14T21:00:00Z-o3ppmv_2018-04-14T21:00:00Z"
         io_values:
         - "fixed_2500km_0.3"
         - "fixed_2500km_0.3"

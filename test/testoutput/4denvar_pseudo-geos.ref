@@ -14,7 +14,7 @@ Test     :    ps            : Min = +5.450125e+04, Max = +1.038103e+05, RMS = +9
 Test     :    q             : Min = +0.000000e+00, Max = +1.964027e-02, RMS = +4.015913e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +4.413215e-04, RMS = +6.853142e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +5.971134e-04, RMS = +2.502564e-05
-Test     :    o3mr          : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
+Test     :    o3ppmv        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
 Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
 Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
 Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
@@ -38,7 +38,7 @@ Test     :    ps            : Min = +5.448238e+04, Max = +1.037373e+05, RMS = +9
 Test     :    q             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.016470e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +2.853743e-04, RMS = +5.428476e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +7.431794e-04, RMS = +2.469690e-05
-Test     :    o3mr          : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
+Test     :    o3ppmv        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
 Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
 Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
 Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
@@ -62,7 +62,7 @@ Test     :    ps            : Min = +5.454835e+04, Max = +1.037547e+05, RMS = +9
 Test     :    q             : Min = +0.000000e+00, Max = +1.937301e-02, RMS = +4.024554e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +3.505665e-04, RMS = +5.738308e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +6.030921e-04, RMS = +2.717859e-05
-Test     :    o3mr          : Min = +1.895992e-02, Max = +3.647467e+01, RMS = +3.815751e+00
+Test     :    o3ppmv        : Min = +1.895992e-02, Max = +3.647467e+01, RMS = +3.815751e+00
 Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
 Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
 Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02

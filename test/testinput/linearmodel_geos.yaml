@@ -22,9 +22,9 @@ linear model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  tlm variables: [u,v,t,delp,q,qi,ql,o3mr]
+  tlm variables: [u,v,t,delp,q,qi,ql,o3ppmv]
   trajectory:
-    model variables: [u,v,t,delp,q,qi,ql,o3mr]
+    model variables: [u,v,t,delp,q,qi,ql,o3ppmv]
 linear model test:
   forecast length: PT1H
   first multiplier TL: 0.01
@@ -40,12 +40,12 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,t,delp,q,qi,ql,o3mr,phis]
+  model variables: [u,v,t,delp,q,qi,ql,o3ppmv,phis]
 model aux control: null
 initial condition:
   filetype: geos
-  state variables: [u,v,t,delp,q,qi,ql,o3mr,phis]
+  state variables: [u,v,t,delp,q,qi,ql,o3ppmv,phis]
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180415_000000z.nc4
   filename_crtm: geos.bkg.crtmsrf.20180415_000000z.nc4
-analysis variables: [u,v,t,delp,q,qi,ql,o3mr]
+analysis variables: [u,v,t,delp,q,qi,ql,o3ppmv]

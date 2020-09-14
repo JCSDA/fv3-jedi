@@ -10,7 +10,7 @@ Test     :    delp          : Min = +1.000000e+00, Max = +5.128172e+03, RMS = +1
 Test     :    q             : Min = +2.239481e-08, Max = +1.948509e-02, RMS = +4.016779e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
-Test     :    o3mr          : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
+Test     :    o3ppmv        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
 Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
 Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
 Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
@@ -37,7 +37,7 @@ Test     :    delp          : Min = +1.000000e+00, Max = +5.128172e+03, RMS = +1
 Test     :    q             : Min = +2.239481e-08, Max = +1.948509e-02, RMS = +4.016779e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
-Test     :    o3mr          : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
+Test     :    o3ppmv        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
 Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
 Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
 Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02

@@ -15,13 +15,13 @@ initial condition:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
-  state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+  state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: ensemble
   date: '2018-04-14T21:00:00Z' 
   localization:
     timeslots: ['2018-04-14T21:00:00Z']
-    localization variables: [ua,va,t,ps,q,qi,ql,o3mr]
+    localization variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
     localization method: BUMP
     bump:
       prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
@@ -36,23 +36,23 @@ background error:
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem001.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem002.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem003.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem004.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem005.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3mr]
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
 output B:
   filetype: geos
   datapath: Data/bump/

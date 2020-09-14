@@ -73,6 +73,7 @@ self%npz = geom%npz
 if (has_field(bg%fields,'t'    )) call allocate_copy_field_array(bg%fields, 't'     , self%t )
 if (has_field(bg%fields,'sphum')) call allocate_copy_field_array(bg%fields, 'sphum' , self%q )
 if (has_field(bg%fields,'o3mr' )) call allocate_copy_field_array(bg%fields, 'o3mr'  , self%o3)
+if (has_field(bg%fields,'o3ppmv' )) call allocate_copy_field_array(bg%fields, 'o3ppmv'  , self%o3)
 
 end subroutine create
 
@@ -206,7 +207,7 @@ endif
 ! Ozone
 ! -----
 have_o3 = .false.
-if (allocated(self%o3) .and. has_field(dxm%fields, 'o3mr')) then
+if (allocated(self%o3) .and. has_field(dxm%fields, 'o3mr') ) then
   call allocate_copy_field_array(dxm%fields, 'o3mr', o3)
   have_o3 = .true.
   do jk = 1, self%npz
@@ -221,6 +222,23 @@ if (allocated(self%o3) .and. has_field(dxm%fields, 'o3mr')) then
     enddo
   enddo
 endif
+if (allocated(self%o3) .and. has_field(dxm%fields, 'o3ppmv') ) then
+  call allocate_copy_field_array(dxm%fields, 'o3ppmv', o3)
+  have_o3 = .true.
+  do jk = 1, self%npz
+    do jj = self%jsc, self%jec
+      do ji = self%isc, self%iec
+        if (self%o3(ji,jj,jk) >= 0.0_kind_real) then
+          continue
+        else
+          o3(ji,jj,jk) = 0.0_kind_real
+        endif
+      enddo
+    enddo
+  enddo
+endif
+
+
 
 
 ! Surface pressure
@@ -271,7 +289,6 @@ do f = 1, size(fields_to_do)
     field_ptr = qmr
 
   case ("mole_fraction_of_ozone_in_air")
-
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3
 
@@ -337,7 +354,7 @@ real(kind=kind_real), allocatable :: q_qmr(:,:,:)         !Specific humidity
 real(kind=kind_real), pointer     :: qptr (:,:,:)         !Specific humidity
 
 !Ozone mixing ratio
-logical :: have_o3
+logical :: have_o3, have_o3_mass, have_o3_ppmv, have_mfo3
 integer :: mfo3_index
 real(kind=kind_real), pointer     :: mfo3 (:,:,:)         !Ozone mole frac
 real(kind=kind_real), allocatable :: o3   (:,:,:)         !Ozone mixing ratio
@@ -449,16 +466,28 @@ endif
 
 ! Ozone
 ! -----
+!!!
+! Ozone
+! -----
 have_o3 = .false.
-if (allocated(self%o3) .and. has_field(dxg%fields, "mole_fraction_of_ozone_in_air", mfo3_index)) then
+have_o3_mass = .false.
+have_o3_ppmv = .false.
+have_mfo3 = .false.
+have_o3_mass = has_field(dxm%fields, 'o3mr')
+have_o3_ppmv = has_field(dxm%fields, 'o3ppmv')
+have_mfo3 = has_field(dxg%fields, "mole_fraction_of_ozone_in_air", mfo3_index)
+
+if (allocated(self%o3) .and. have_mfo3 .and. (have_o3_mass .or. have_o3_ppmv) ) then
   call pointer_field_array(dxg%fields, 'mole_fraction_of_ozone_in_air', mfo3)
   allocate(o3(self%isc:self%iec,self%jsc:self%jec,self%npz))
   o3 = mfo3
   do jk = 1, self%npz
     do jj = self%jsc, self%jec
       do ji = self%isc, self%iec
-        if (self%o3(ji,jj,jk) >= 0.0_kind_real) then
-          o3(ji,jj,jk) = o3(ji,jj,jk)  * constoz
+        if (self%o3(ji,jj,jk) >= 0.0_kind_real .and. have_o3_mass) then
+          o3(ji,jj,jk) = o3(ji,jj,jk)  * constoz ! I think this needs to be division if you want to go from mole fraction expressed in ppmv (what is used in UFOs) to kg/kg (Model) here
+        else if (have_o3_ppmv .and. self%o3(ji,jj,jk) >= 0.0_kind_real ) then
+          continue
         else
           o3(ji,jj,jk) = 0.0_kind_real
         endif
@@ -537,6 +566,13 @@ do fm = 1, size(fields_to_do)
       field_passed(mfo3_index) = .true.
       field_ptr = field_ptr + o3
     endif
+  case ("o3ppmv")
+
+    if (have_o3) then
+      field_passed(mfo3_index) = .true.
+      field_ptr = field_ptr + o3
+    endif
+
 
   end select
 

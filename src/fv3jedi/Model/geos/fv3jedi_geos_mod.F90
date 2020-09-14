@@ -399,7 +399,7 @@ do i = 1, num_items
 
     ! CHEMISTRY
     case ("O3")
-      fv3jedi_name = 'o3mr'
+      fv3jedi_name = 'o3ppmv'
 
     ! SURFACE
     case ("FRLAND")

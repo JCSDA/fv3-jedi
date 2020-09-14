@@ -27,12 +27,12 @@ state1: #Analysis
   filetype: geos
   datapath: Data/analysis
   filename_bkgd: hyb-3dvar-geos.ana.20180415_000000z.nc4
-  state variables: [ua,va,t,q,qi,ql,o3mr]
+  state variables: [ua,va,t,q,qi,ql,o3ppmv]
 state2: #background
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180415_000000z.nc4
-  state variables: [ua,va,t,q,qi,ql,o3mr]
+  state variables: [ua,va,t,q,qi,ql,o3ppmv]
 output:
   filetype: geos
   datapath: Data/increment

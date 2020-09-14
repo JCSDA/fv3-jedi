@@ -212,8 +212,8 @@ call pointer_field_array(inc%fields, 'delp'   , delp)
 call pointer_field_array(inc%fields, 'sphum'  , q   )
 call pointer_field_array(inc%fields, 'ice_wat', qi  )
 call pointer_field_array(inc%fields, 'liq_wat', ql  )
-call pointer_field_array(inc%fields, 'o3mr'   , o3  )
-
+if (has_field(inc%fields, 'o3mr') ) call pointer_field_array(inc%fields, 'o3mr'   , o3  )
+if (has_field(inc%fields, 'o3ppmv') ) call pointer_field_array(inc%fields, 'o3ppmv'   , o3  )
 lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
 lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
 lm%pert%ua   = 0.0_kind_real
@@ -259,8 +259,8 @@ call pointer_field_array(inc%fields, 'delp'   , delp)
 call pointer_field_array(inc%fields, 'sphum'  , q   )
 call pointer_field_array(inc%fields, 'ice_wat', qi  )
 call pointer_field_array(inc%fields, 'liq_wat', ql  )
-call pointer_field_array(inc%fields, 'o3mr'   , o3  )
-
+if (has_field(inc%fields, 'o3mr') ) call pointer_field_array(inc%fields, 'o3mr'   , o3  )
+if (has_field(inc%fields, 'o3ppmv') ) call pointer_field_array(inc%fields, 'o3ppmv'   , o3  )
 ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%u
 vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%v
 t    = lm%pert%t

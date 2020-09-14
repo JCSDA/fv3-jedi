@@ -18,7 +18,7 @@ variable change tests:
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.bkg.20180414_210000z.nc4
       filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-      state variables: [u,v,t,delp,q,qi,ql,o3mr]
+      state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
     tolerance inverse: 1.0e-4
     femps_iterations: 50
     femps_ngrids: 2

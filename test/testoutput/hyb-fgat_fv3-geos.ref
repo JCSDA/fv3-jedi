@@ -14,7 +14,7 @@ Test     :    ps            : Min = +5.450189e+04, Max = +1.038103e+05, RMS = +9
 Test     :    q             : Min = +0.000000e+00, Max = +1.495728e-01, RMS = +5.256909e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +4.413215e-04, RMS = +6.879247e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +5.278866e-04, RMS = +2.491646e-05
-Test     :    o3mr          : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
+Test     :    o3ppmv        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
 Test     :  --------------------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 2.73401
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 3114.1, nobs = 1358, Jo/n = 2.29315, err = 2.69863
@@ -32,7 +32,7 @@ Test     :    ps            : Min = +5.450181e+04, Max = +1.038103e+05, RMS = +9
 Test     :    q             : Min = +0.000000e+00, Max = +5.742860e-02, RMS = +4.486053e-03
 Test     :    qi            : Min = +0.000000e+00, Max = +4.413215e-04, RMS = +6.897139e-06
 Test     :    ql            : Min = +0.000000e+00, Max = +5.102851e-04, RMS = +2.489713e-05
-Test     :    o3mr          : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
+Test     :    o3ppmv        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
 Test     :  --------------------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 51.9616
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2355.88, nobs = 1358, Jo/n = 1.73482, err = 2.69863

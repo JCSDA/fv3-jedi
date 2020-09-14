@@ -13,7 +13,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 model:
   name: PSEUDO
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
@@ -33,7 +33,7 @@ initial condition:
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
   filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]

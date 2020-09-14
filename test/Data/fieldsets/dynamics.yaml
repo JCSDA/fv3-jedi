@@ -205,12 +205,20 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [o3, o3mr]
+  - FieldIONames: [o3mr]
     FieldName: o3mr
     LongName: ozone_mass_mixing_ratio
     Units: kgkg-1
     Tracer: true
     IOFile: tracer
+
+  - FieldIONames: [o3,o3ppmv]
+    FieldName: o3ppmv
+    LongName: mole_fraction_of_ozone_in_air
+    Units: mole_fraction_of_ozone_in_air
+    Tracer: true
+    IOFile: tracer
+
 
   - FieldIONames: [ox, OX]
     FieldName: ox

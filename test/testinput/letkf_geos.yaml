@@ -21,43 +21,43 @@ background:
    date: *date
    members:
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem001.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem002.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem003.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem004.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem005.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem006.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem007.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem008.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem009.20180415_000000z.nc4
    - filetype: geos
-     state variables: [ua,va,t,delp,q,qi,ql,o3mr]
+     state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
      filename_bkgd: geos.mem010.20180415_000000z.nc4
 

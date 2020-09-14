@@ -3,7 +3,7 @@ cost function:
     filetype: geos
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.bkg.20180414_210000z.nc4
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr]
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
   background error:
     covariance model: hybrid
     static weight: 0.1
@@ -26,7 +26,7 @@ cost function:
         - "q_2018-04-14T21:00:00Z-q_2018-04-14T21:00:00Z"
         - "qi_2018-04-14T21:00:00Z-qi_2018-04-14T21:00:00Z"
         - "ql_2018-04-14T21:00:00Z-ql_2018-04-14T21:00:00Z"
-        - "o3mr_2018-04-14T21:00:00Z-o3mr_2018-04-14T21:00:00Z"
+        - "o3ppmv_2018-04-14T21:00:00Z-o3ppmv_2018-04-14T21:00:00Z"
         io_values:
         - "fixed_2500km_0.3"
         - "fixed_2500km_0.3"
@@ -40,7 +40,7 @@ cost function:
       date: '2018-04-14T21:00:00Z'
       members:
         - filetype: geos
-          state variables: &incvars [ua,va,t,ps,q,qi,ql,o3mr]
+          state variables: &incvars [ua,va,t,ps,q,qi,ql,o3ppmv]
           datapath: Data/inputs/geos_c12
           filename_bkgd: geos.mem001.20180414_210000z.nc4
         - filetype: geos
@@ -215,7 +215,7 @@ cost function:
     filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
     run stage check: 1
     tstep: PT1H
-    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                       qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                       zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
                       stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
@@ -271,11 +271,11 @@ variational:
       trc_file: Data/fv3files/field_table
       nml_file_pert: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr]
+      tlm variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
       lm_do_dyn: 1
       lm_do_trb: 1
       lm_do_mst: 1
       trajectory:
-        model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+        model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                           qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                           zpbl,cm,ct,cq,kcbl,tsm,khl,khu]

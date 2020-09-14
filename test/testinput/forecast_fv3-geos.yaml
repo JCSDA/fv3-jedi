@@ -21,12 +21,12 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
+  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
 initial condition:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis]
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
 output:
   geos_tile_dim: 1
   filetype: geos

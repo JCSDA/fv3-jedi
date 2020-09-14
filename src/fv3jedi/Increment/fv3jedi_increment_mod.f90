@@ -118,6 +118,10 @@ call abor1_ftn("fv3jedi_increment_mod create: found D-Grid u but not v")
 if (.not.has_field(self%fields, 'ud') .and. has_field(self%fields, 'vd')) &
 call abor1_ftn("fv3jedi_increment_mod create: found D-Grid v but not u")
 
+!Check User's choice of ozone variables.
+if (has_field(self%fields, 'o3mr') .and. has_field(self%fields, 'o3ppmv')) &
+call abor1_ftn("fv3jedi_increment_mod create: found both o3mr and o3ppmv there can only be o3 in kgkg-1 or ppmv")
+
 self%have_agrid = .false.
 self%have_dgrid = .false.
 if (has_field(self%fields, 'ua')) self%have_agrid = .true.

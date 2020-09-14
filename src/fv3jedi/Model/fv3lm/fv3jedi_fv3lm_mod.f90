@@ -19,7 +19,7 @@ use fv3jedi_lm_mod,        only: fv3jedi_lm_type
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_state_mod,     only: fv3jedi_state
-use fv3jedi_field_mod,     only: pointer_field_array
+use fv3jedi_field_mod,     only: pointer_field_array, has_field
 
 implicit none
 private
@@ -171,8 +171,8 @@ call pointer_field_array(state%fields, 'delp'   , delp)
 call pointer_field_array(state%fields, 'sphum'  , q   )
 call pointer_field_array(state%fields, 'ice_wat', qi  )
 call pointer_field_array(state%fields, 'liq_wat', ql  )
-call pointer_field_array(state%fields, 'o3mr'   , o3  )
-
+if ( has_field(state%fields, 'o3mr' ) )call pointer_field_array(state%fields, 'o3mr'   , o3  )
+if ( has_field(state%fields, 'o3ppmv' ) )call pointer_field_array(state%fields, 'o3ppmv'   , o3  )
 lm%traj%ua = 0.0_kind_real
 lm%traj%va = 0.0_kind_real
 
@@ -233,8 +233,8 @@ call pointer_field_array(state%fields, 'delp'   , delp)
 call pointer_field_array(state%fields, 'sphum'  , q   )
 call pointer_field_array(state%fields, 'ice_wat', qi  )
 call pointer_field_array(state%fields, 'liq_wat', ql  )
-call pointer_field_array(state%fields, 'o3mr'   , o3  )
-
+if ( has_field(state%fields, 'o3mr' ) )call pointer_field_array(state%fields, 'o3mr'   , o3  )
+if ( has_field(state%fields, 'o3ppmv' ) )call pointer_field_array(state%fields, 'o3ppmv'   , o3  )
 ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
 vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
 t       = lm%traj%t

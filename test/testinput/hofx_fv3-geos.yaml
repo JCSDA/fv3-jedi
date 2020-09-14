@@ -17,7 +17,7 @@ geometry:
   - fieldset: Data/fieldsets/ufo.yaml
 initial condition:
   filetype: geos
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,frocean,frlake,
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
                     frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
@@ -30,7 +30,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,frocean,frlake,
+  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
                     frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
 observations:
 - obs space:
@@ -65,6 +65,22 @@ observations:
       vertlayer: full
       compress: 1
       super_ref_qc: NBAM
+- obs space:
+    name: SBUV2-NOAA19-OZ
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2018041500_m.nc4
+      obsgrouping:
+        group variable: "longitude"
+        sort variable: "air_pressure"
+        sort order: "ascending"
+    obsdataout:
+      obsfile: Data/hofx/sbuv2_n19_hofx_geos_2018041500_m_out.nc4
+    simulated variables: [integrated_layer_ozone_in_air]
+  obs operator:
+    name: AtmVertInterpLay
+    geovals: [mole_fraction_of_ozone_in_air]
+    coefficients: [0.007886131] # convert from ppmv to DU
+    nlevels: [22]
 - obs space:
     name: AMSUA-METOP-A
     obsdatain:

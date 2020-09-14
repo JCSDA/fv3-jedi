@@ -19,7 +19,7 @@ use fckit_log_module, only : log
 ! fv3jedi uses
 use fields_metadata_mod,         only: field_metadata
 use fv3jedi_field_mod
-use fv3jedi_constants_mod,       only: rad2deg, constoz
+use fv3jedi_constants_mod,       only: rad2deg
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_increment_utils_mod, only: fv3jedi_increment
 use fv3jedi_interpolation_mod,   only: field2field_interp
@@ -110,6 +110,11 @@ if (has_field(self%fields, 'ud') .and. .not.has_field(self%fields, 'vd')) &
 call abor1_ftn("fv3jedi_state_mod create: found D-Grid u but not v")
 if (.not.has_field(self%fields, 'ud') .and. has_field(self%fields, 'vd')) &
 call abor1_ftn("fv3jedi_state_mod create: found D-Grid v but not u")
+
+!Check User's choice of ozone variables.
+if (has_field(self%fields, 'o3mr') .and. has_field(self%fields, 'o3ppmv')) &
+call abor1_ftn("fv3jedi_state_mod create: found both o3mr and o3ppmv there can only be o3 in kgkg-1 or ppmv")
+
 
 self%have_agrid = .false.
 self%have_dgrid = .false.
@@ -485,7 +490,8 @@ subroutine analytic_IC(self, geom, c_conf, vdate)
   call pointer_field_array(self%fields, 'sphum'  , q   )
   call pointer_field_array(self%fields, 'ice_wat', qi  )
   call pointer_field_array(self%fields, 'liq_wat', ql  )
-  call pointer_field_array(self%fields, 'o3mr'   , o3  )
+  if ( has_field(self%fields, 'o3mr') ) call pointer_field_array(self%fields, 'o3mr'   , o3  )
+  if ( has_field(self%fields, 'o3ppmv') ) call pointer_field_array(self%fields, 'o3ppmv'   , o3  )
   call pointer_field_array(self%fields, 'phis'   , phis)
   if (.not.self%hydrostatic) then
     call pointer_field_array(self%fields, 'w'   , w   )

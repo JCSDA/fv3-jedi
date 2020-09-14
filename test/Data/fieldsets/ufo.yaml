@@ -35,6 +35,10 @@ Fields:
     Units: none
     Levels: full
 
+  - FieldName: integrated_layer_ozone_in air
+    Units: none
+    Levels: full
+
   - FieldName: mole_fraction_of_carbon_dioxide_in_air
     Units: none
     Levels: full
