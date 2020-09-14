@@ -46,7 +46,7 @@ class LinVarChaModel2GeoVaLs: public util::Printable,
 
  private:
   std::shared_ptr<const Geometry> geom_;
-  F90lm2g keyFtnConfig_;
+  F90lvc_M2G keyFtnConfig_;
   void print(std::ostream &) const override;
 };
 // -------------------------------------------------------------------------------------------------

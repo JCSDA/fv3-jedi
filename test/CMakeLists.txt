@@ -723,11 +723,13 @@ ecbuild_add_test( TARGET  test_fv3jedi_lineargetvalues_geos
                   ARGS    testinput/lineargetvalues_geos.yaml
                   MPI     6 )
 
-ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs_cold2fv3
-                  TYPE    EXE
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
-                  ARGS    testinput/convertstate_gfs_cold2fv3.yaml
-                  MPI     6 )
+if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
+  ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs_cold2fv3
+                    TYPE    EXE
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/fv3jedi_convertstate.x
+                    ARGS    testinput/convertstate_gfs_cold2fv3.yaml
+                    MPI     6 )
+endif()
 
 ecbuild_add_test( TARGET  test_fv3jedi_convertstate_gfs
                   TYPE    EXE

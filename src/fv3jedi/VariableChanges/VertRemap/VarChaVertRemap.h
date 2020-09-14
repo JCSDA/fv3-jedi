@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2020 UCAR
+ * (C) Copyright 2017-2020  UCAR.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,15 +16,10 @@
 #include "oops/util/Printable.h"
 #include "VarChaVertRemap.interface.h"
 
-namespace eckit {
-  class Configuration;
-}
-
 namespace fv3jedi {
-  class Geometry;
-  class State;
 
 // -------------------------------------------------------------------------------------------------
+
 class VarChaVertRemap: public util::Printable {
  public:
   static const std::string classname() {return "fv3jedi::VarChaVertRemap";}
@@ -38,5 +33,7 @@ class VarChaVertRemap: public util::Printable {
   F90vc_VR keyFtn_;
   void print(std::ostream &) const override;
 };
+
 // -------------------------------------------------------------------------------------------------
+
 }  // namespace fv3jedi

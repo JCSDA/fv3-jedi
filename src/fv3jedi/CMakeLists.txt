@@ -133,12 +133,6 @@ list( APPEND fv3jedi_src_files
   VariableChanges/Utils/surface_variables_mod.f90
   VariableChanges/Utils/temperature_variables_mod.f90
   VariableChanges/Utils/wind_variables_mod.f90
-  VariableChanges/instantiateVarChangeFactories.h
-  VariableChanges/VertRemap/fv3jedi_vc_vertremap.interface.F90
-  VariableChanges/VertRemap/fv3jedi_vc_vertremap_mod.f90
-  VariableChanges/VertRemap/VarChaVertRemap.cc
-  VariableChanges/VertRemap/VarChaVertRemap.h
-  VariableChanges/VertRemap/VarChaVertRemap.interface.h
   Tlm/fv3jedi_tlm_interface_mod.F90
   Tlm/fv3jedi_tlm_mod.f90
   Tlm/Tlm.cc
@@ -158,6 +152,11 @@ ENDIF()
 # Source files when building with stand alone fv3 (GFDL_atmos_cubed_sphere)
 list( APPEND fv3jedi_fv3_src_files
   Geometry/fv_init_control_mod.f90
+  VariableChanges/VertRemap/fv3jedi_vc_vertremap.interface.F90
+  VariableChanges/VertRemap/fv3jedi_vc_vertremap_mod.f90
+  VariableChanges/VertRemap/VarChaVertRemap.cc
+  VariableChanges/VertRemap/VarChaVertRemap.h
+  VariableChanges/VertRemap/VarChaVertRemap.interface.h
 )
 
 # Source files when building with GEOS

@@ -55,13 +55,15 @@ void GetValues::fillGeoVaLs(const State & state, const util::DateTime & t1,
   model2geovals_->changeVar(state, stategeovalvars);
   }
 
+  oops::Log::trace() << "GetValues::fillGeovals changeVar done" << stategeovalvars << std::endl;
+
   // Fill GeoVaLs
   util::Timer timergv(classname(), "fillGeoVaLs");
   fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(),
                                      stategeovalvars.toFortran(), &t1p, &t2p, locs_.toFortran(),
                                      geovals.toFortran());
 
-  oops::Log::trace() << "GetValues::fillGeovals done" << std::endl;
+  oops::Log::trace() << "GetValues::fillGeovals done" << geovals << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
