@@ -1188,7 +1188,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/diffstates_gfs.run testoutput/diffstates_gfs.ref  1.0e-4 ${idif}
+                  ARGS         testoutput/diffstates_gfs.run testoutput/diffstates_gfs.ref  1.0e-3 ${idif}
                   TEST_DEPENDS test_fv3jedi_diffstates_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_diffstates_geos
@@ -1217,7 +1217,7 @@ ecbuild_add_test( TARGET       test_fv3jedi_addincrement_gfs
 ecbuild_add_test( TARGET       test_fv3jedi_addincrement_gfs_compare
                   TYPE         SCRIPT
                   COMMAND      ${CMAKE_BINARY_DIR}/bin/compare.py
-                  ARGS         testoutput/addincrement_gfs.run testoutput/addincrement_gfs.ref  1.0e-4 ${idif}
+                  ARGS         testoutput/addincrement_gfs.run testoutput/addincrement_gfs.ref  1.0e-3 ${idif}
                   TEST_DEPENDS test_fv3jedi_addincrement_gfs )
 
 ecbuild_add_test( TARGET       test_fv3jedi_addincrement_geos

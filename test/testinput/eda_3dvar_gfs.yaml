@@ -190,51 +190,37 @@ cost function:
       - name: air_temperature
       threshold: 6.0
   - obs space:
-      name: GnssroRef
+      name: GnssroBndNBAM
       obsdatain:
-       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_s.nc4
+        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsdataout:
-       obsfile: Data/hofx/eda/gfs/%{member}%/gnssro_eda-3dvar-gfs_2018041500_s.nc4
-      simulated variables: [refractivity]
+        obsfile: Data/hofx/eda/gfs/%{member}%/gnssro_eda-3dvar-gfs_2018041500_m.nc4
+      simulated variables: [bending_angle]
     obs operator:
-      name: GnssroRef
+      name: GnssroBndNBAM
       obs options:
-        use_compress: 1
+        sr_steps: 2
+        vertlayer: full
+        compress: 1
+        super_ref_qc: NBAM
     obs error:
       covariance model: diagonal
-      random amplitude: 0.2
     obs filters:
-    - filter: Thinning
-      filter variables:
-      - name: refractivity
-      random seed: 123
-      amount: 0.96
-      apply at iterations: 0
     - filter: Domain Check
       filter variables:
-      - name: refractivity
+      - name: [bending_angle]
       where:
       - variable:
-          name: altitude@MetaData
-          minvalue: 0
-          maxvalue: 30000
-      - variable:
-          name: earth_radius_of_curvature@MetaData
-          minvalue: 6250000
-          maxvalue: 6450000
-      - variable:
-          name: geoid_height_above_reference_ellipsoid@MetaData
-          minvalue: -200
-          maxvalue: 200
-    - filter: Background Check
-      filter variables:
-      - name: refractivity
-      threshold: 3.0
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
     - filter: ROobserror
       filter variables:
-      - name: refractivity
-      variable: refractivity
-      errmodel: GSI
+      - name: bending_angle
+      errmodel: NBAM
+    - filter: Background Check RONBAM
+      filter variables:
+      - name: [bending_angle]
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
