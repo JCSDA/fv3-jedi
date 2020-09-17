@@ -35,7 +35,7 @@ use fv_init_mod,                 only: fv_init
 
 implicit none
 private
-public :: fv3jedi_geom
+public :: fv3jedi_geom, getVerticalCoordLogP
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -816,6 +816,44 @@ subroutine write_geom(self)
 
 end subroutine write_geom
 
+!--------------------------------------------------------------------------------------------------
+
+subroutine getVerticalCoordLogP(self, vc, npz, psurf)
+  ! returns log(pressure) at mid level of the vertical column with surface prsssure of psurf
+  ! coded using an example from Jeff Whitaker used in GSI ENKF pacakge
+
+  implicit none
+
+  type(fv3jedi_geom),   intent(in) :: self
+  integer,              intent(in) :: npz
+  real(kind=kind_real), intent(in) :: psurf
+  real(kind=kind_real), intent(out) :: vc(npz)
+
+  real :: plevli(npz+1), plevlm
+  real :: rd, cp, kap, kapr, kap1
+  integer :: k
+
+  ! constants
+  rd = 2.8705e+2
+  cp = 1.0046e+3
+  kap = rd/cp
+  kapr = cp/rd
+  kap1 = kap + 1.0
+
+  ! compute interface pressure
+  do k=1,self%npz+1
+    plevli(k) = self%ak(k) + self%bk(k)*psurf
+  enddo
+
+  ! compute presure at mid level and convert it to logp
+  do k=1,self%npz
+    ! phillips vertical interpolation from guess_grids.F90 in GSI 
+    ! (used for global model)
+    plevlm = ((plevli(k)**kap1-plevli(k+1)**kap1)/(kap1*(plevli(k)-plevli(k+1))))**kapr
+    vc(k) = - log(plevlm)
+  enddo
+
+end subroutine getVerticalCoordLogP
 ! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_geom_mod

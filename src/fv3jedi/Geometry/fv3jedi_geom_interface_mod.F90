@@ -248,6 +248,30 @@ npz  = self%npz
 
 end subroutine c_fv3jedi_geom_start_end
 
+!--------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_verticalCoord(c_key_self, vc, npz, psurf) &
+                                    bind(c, name='fv3jedi_geom_verticalCoord_f90')
+
+implicit none
+
+integer(c_int),    intent( in) :: c_key_self
+integer(c_int),    intent( in) :: npz
+real(c_double), intent( in) :: psurf
+real(c_double), intent(out) :: vc(npz)
+
+type(fv3jedi_geom), pointer :: self
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self, self)
+
+! Call implementation
+! -------------------
+call getVerticalCoordLogP(self, vc, npz, psurf)
+
+end subroutine c_fv3jedi_geom_verticalCoord
+
 ! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_geom_interface_mod

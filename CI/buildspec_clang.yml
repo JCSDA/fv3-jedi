@@ -43,6 +43,9 @@ phases:
       # fv3-bundle
       - ./clone.sh $GIT_USER $GIT_PASS fv3-bundle $CODEBUILD_GIT_BRANCH fv3-bundle /jcsda develop
 
+      # jedi-cmake
+      - ./clone.sh $GIT_USER $GIT_PASS jedi-cmake $CODEBUILD_GIT_BRANCH jedicmake /jcsda/fv3-bundle develop
+
       # FV3-JEDI (testing repo)
       - ./clone.sh $GIT_USER $GIT_PASS fv3-jedi $CODEBUILD_GIT_BRANCH fv3-jedi /jcsda/fv3-bundle develop
 

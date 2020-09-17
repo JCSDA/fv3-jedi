@@ -11,6 +11,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
@@ -47,6 +48,7 @@ class Geometry : public util::Printable,
 
   GeometryIterator begin() const;
   GeometryIterator end() const;
+  std::vector<double> verticalCoord(std::string &) const;
 
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
