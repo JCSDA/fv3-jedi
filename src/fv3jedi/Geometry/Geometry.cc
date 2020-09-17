@@ -7,6 +7,8 @@
 
 #include <mpi.h>
 
+#include <sstream>
+
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
 #include "atlas/grid.h"
@@ -14,6 +16,7 @@
 
 #include "eckit/config/Configuration.h"
 
+#include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
@@ -99,6 +102,30 @@ GeometryIterator Geometry::end() const {
   // (returns index out of bounds for the iterator loops to work)
 
   return GeometryIterator(*this, -1, -1);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+std::vector<double> Geometry::verticalCoord(std::string & vcUnits) const {
+  // returns vertical coordinate in untis of vcUnits
+  // to enable initial comparisons with GSI, verticalCoord is valid for psurf=1e5
+  // TODO(TBD) implement interface where vertical coordinate is valid for state[gridIterator].psurf
+
+  int ist, iend, jst, jend, npz;
+  fv3jedi_geom_start_end_f90(keyGeom_, ist, iend, jst, jend, npz);
+  std::vector<double> vc(npz);
+  double psurf = 100000.0;
+  if (vcUnits == "logp") {
+    fv3jedi_geom_verticalCoord_f90(keyGeom_, vc[0], npz, psurf);
+  } else if (vcUnits == "levels") {
+    for (int i=0; i < npz; ++i) {vc[i]=i+1;}
+  } else {
+    std::stringstream errorMsg;
+    errorMsg << "Uknown vertical coordinate unit " << vcUnits << std::endl;
+    ABORT(errorMsg.str());
+  }
+  oops::Log::debug() << "fv3 vert coord: " << vc << std::endl;
+  return vc;
 }
 
 // -------------------------------------------------------------------------------------------------

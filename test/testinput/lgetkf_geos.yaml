@@ -87,6 +87,7 @@ letkf:
   vertical localization:
     fraction of retained variance: .5
     lengthscale: 10
+    lengthscale units: levels
     nlevels: 72
   inflation:
     rtps: 0.5
