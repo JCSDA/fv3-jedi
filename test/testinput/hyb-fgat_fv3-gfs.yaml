@@ -151,7 +151,6 @@ cost function:
     obs filters:
     - filter: PreQC
       maxvalue: 3
-      apply at iterations: 0
     - filter: Background Check
       filter variables:
       - name: eastward_wind
@@ -176,7 +175,6 @@ cost function:
     obs filters:
     - filter: PreQC
       maxvalue: 3
-      apply at iterations: 0
     - filter: Background Check
       filter variables:
        - name: eastward_wind
@@ -240,6 +238,7 @@ cost function:
       minvalue: 100.0
       maxvalue: 500.0
     - filter: Background Check
+      apply at iterations: 0, 1
       filter variables:
       - name: brightness_temperature
         channels: 1-15

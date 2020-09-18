@@ -107,8 +107,8 @@ cost function:
     obs filters:
     - filter: PreQC
       maxvalue: 3
-      apply at iterations: 0
     - filter: Background Check
+      apply at iterations: 0, 1
       filter variables:
       - name: eastward_wind
       - name: northward_wind
@@ -128,8 +128,8 @@ cost function:
     obs filters:
     - filter: PreQC
       maxvalue: 3
-      apply at iterations: 0
     - filter: Background Check
+      apply at iterations: 0, 1
       filter variables:
       - name: eastward_wind
       - name: northward_wind

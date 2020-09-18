@@ -142,8 +142,8 @@ cost function:
     obs filters:
     - filter: PreQC
       maxvalue: 3
-      apply at iterations: 0
     - filter: Background Check
+      apply at iterations: 0, 1
       filter variables:
       - name: eastward_wind
       - name: northward_wind
@@ -163,8 +163,8 @@ cost function:
     obs filters:
     - filter: PreQC
       maxvalue: 3
-      apply at iterations: 0
     - filter: Background Check
+      apply at iterations: 0, 1, 2
       filter variables:
       - name: eastward_wind
       - name: northward_wind
@@ -196,10 +196,12 @@ cost function:
         minvalue: 0
         maxvalue: 50000
     - filter: ROobserror
+      apply at iterations: 0, 1
       filter variables:
       - name: bending_angle
       errmodel: NBAM
     - filter: Background Check RONBAM
+      apply at iterations: 0, 1
       filter variables:
       - name: [bending_angle]
 final:
