@@ -288,6 +288,9 @@ do jj = geom%jsc, geom%jec
 
     ! Stage 2 - like crtm_interface from GSI
     ! --------------------------------------
+    ! If vty/sty will give maximum values, that will be out of range for CRTM, set to 1
+    if (vty == 15) vty = 1
+    if (sty == 16) sty = 1
 
     itype  = vty
     istype = sty
