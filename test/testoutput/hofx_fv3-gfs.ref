@@ -62,7 +62,7 @@ Test     : Radiosonde nobs= 2922 Min=-35.9671, Max=301.631, RMS=139.269
 Test     : SBUV2-NOAA19-OZ nobs= 1408 Min=0, Max=492.536, RMS=79.0961
 Test     : AMSUA-NOAA19 nobs= 1500 Min=146.996, Max=294.881, RMS=229.927
 Test     : AIRS-AQUA nobs= 300 Min=206.686, Max=226.022, RMS=217.63
-Test     : GnssroBndNBAM nobs= 150 Min=0.000312258, Max=0.0233368, RMS=0.00819923
+Test     : GnssroBndNBAM nobs= 150 Min=0.00031228, Max=0.0233366, RMS=0.00819924
 Test     : HIRS4-METOPA nobs= 1500 Min=213.502, Max=295.489, RMS=248.5
 Test     : CRIS-NPP nobs= 9900 Min=210.302, Max=300.561, RMS=247.653
 Test     : Satwind nobs= 198 Min=-13.5331, Max=41.8085, RMS=9.93665
@@ -70,5 +70,5 @@ Test     : MHS-N19 nobs= 500 Min=161.937, Max=294.438, RMS=254.211
 Test     : IASI-METOPA nobs= 700 Min=205.466, Max=237.483, RMS=221.606
 Test     : MHS-NOAA19 nobs= 500 Min=161.937, Max=294.438, RMS=254.211
 Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.698, Max=247.576, RMS=237.471
-Test     : RADIOMETER-SMAP nobs= 400 Min=2.68747, Max=224.778, RMS=132.039
+Test     : RADIOMETER-SMAP nobs= 400 Min=2.68747, Max=225.386, RMS=132.872
 Test     : End H(x)
