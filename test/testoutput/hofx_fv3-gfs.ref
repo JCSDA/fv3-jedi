@@ -70,5 +70,5 @@ Test     : MHS-N19 nobs= 500 Min=161.937, Max=294.438, RMS=254.211
 Test     : IASI-METOPA nobs= 700 Min=205.466, Max=237.483, RMS=221.606
 Test     : MHS-NOAA19 nobs= 500 Min=161.937, Max=294.438, RMS=254.211
 Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.698, Max=247.576, RMS=237.471
-Test     : RADIOMETER-SMAP nobs= 400 Min=2.68747, Max=225.386, RMS=132.872
+Test     : RADIOMETER-SMAP nobs= 400 Min=2.68747, Max=224.778, RMS=132.039
 Test     : End H(x)
