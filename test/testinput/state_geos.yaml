@@ -23,12 +23,12 @@ state test:
     tiledim: true
     geosingestmeta: false
     clobber: false
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,vfrac,vtype,stype]
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   state generate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   date: '2018-04-14T21:00:00Z'
-  norm file: 660.01454469137059
+  norm file: 661.38618820428508
   norm generated state: 630.85428384947306
   tolerance: 1.0e-08
