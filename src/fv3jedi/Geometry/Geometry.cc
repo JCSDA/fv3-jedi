@@ -21,7 +21,7 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.interface.h"
-#include "fv3jedi/Run/Run.h"
+#include "fv3jedi/Run/Run.interface.h"
 #include "fv3jedi/Utilities/Utilities.h"
 
 // -------------------------------------------------------------------------------------------------
