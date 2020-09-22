@@ -61,8 +61,6 @@ list( APPEND fv3jedi_src_files
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h
-  Run/Run.cc
-  Run/Run.h
   Run/Run.interface.h
   Run/fv3jedi_setup_mod.f90
   State/State.cc

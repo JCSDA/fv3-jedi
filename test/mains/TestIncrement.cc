@@ -6,11 +6,11 @@
  */
 
 #include "fv3jedi/Utilities/Traits.h"
-#include "fv3jedi/Run/Run.h"
+#include "oops/runs/Run.h"
 #include "test/interface/Increment.h"
 
 int main(int argc,  char ** argv) {
-  fv3jedi::Run run(argc, argv);
+  oops::Run run(argc, argv);
   test::Increment<fv3jedi::Traits> tests;
   return run.execute(tests);
 }
