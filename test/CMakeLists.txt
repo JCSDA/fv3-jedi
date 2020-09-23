@@ -171,7 +171,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem005)
 LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # FV3-LAM-CMAQ test files
-LAM_CMAQ_FILES_BKG(Data/inputs/lam_cmaq/bkg 20190917.000000)
+LAM_CMAQ_FILES_BKG(Data/inputs/lam_cmaq/bkg 20200903.180000)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq/bkg)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq/INPUT)
@@ -272,6 +272,7 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_gfs_aero.yaml
   testinput/hofx_gnssro_ropp.yaml
   testinput/hofx_nomodel.yaml
+  testinput/hofx_nomodel_lam-cmaq.yaml
   testinput/hofx_save_geovals.yaml
   testinput/hyb-3dvar_geos_p12.yaml
   testinput/hyb-3dvar_geos.yaml
@@ -350,6 +351,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_fv3-gfs.ref
   testoutput/hofx_gfs_aero.ref
   testoutput/hofx_gnssro_ropp.ref
+  testoutput/hofx_nomodel_lam-cmaq.ref
   testoutput/hofx_nomodel_gfs.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
@@ -986,6 +988,10 @@ endif()
 # H(x) no model
 # -------------
 fv3jedi_add_test( NAME    hofx_nomodel
+                  EXE     fv3jedi_hofx_nomodel.x
+                  TOL     1e-3 0)
+
+fv3jedi_add_test( NAME    hofx_nomodel_lam-cmaq
                   EXE     fv3jedi_hofx_nomodel.x
                   TOL     1e-3 0)
 
