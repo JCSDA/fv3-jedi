@@ -1,20 +1,20 @@
 Test     : CostJb   : Nonlinear Jb = 0
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2752.8, nobs = 1430, Jo/n = 1.92504, err = 2.6781
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 2124.48, nobs = 1131, Jo/n = 1.87841, err = 2.0616
-Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 370.229, nobs = 148, Jo/n = 2.50155, err = 0.000298811
+Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 369.246, nobs = 148, Jo/n = 2.4949, err = 0.000298811
 Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 950.279, nobs = 947, Jo/n = 1.00346, err = 1.71878
-Test     : CostFunction: Nonlinear J = 6197.8
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.00108411
+Test     : CostFunction: Nonlinear J = 6196.81
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.00108595
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  --------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C12
 Test     :    ua            : Min = -4.631736e+01, Max = +9.077097e+01, RMS = +1.641242e+01
-Test     :    va            : Min = -6.246850e+01, Max = +7.386570e+01, RMS = +8.412873e+00
+Test     :    va            : Min = -6.246850e+01, Max = +7.386570e+01, RMS = +8.412876e+00
 Test     :    T             : Min = +1.847544e+02, Max = +3.102138e+02, RMS = +2.484493e+02
 Test     :    DELP          : Min = +5.450955e+04, Max = +1.038105e+05, RMS = +9.902721e+04
 Test     :    sphum         : Min = +0.000000e+00, Max = +1.906352e-02, RMS = +4.763803e-03
-Test     :    ice_wat       : Min = +0.000000e+00, Max = +6.422759e-04, RMS = +1.468513e-05
-Test     :    liq_wat       : Min = +0.000000e+00, Max = +1.422288e-03, RMS = +2.840212e-05
+Test     :    ice_wat       : Min = +0.000000e+00, Max = +6.422759e-04, RMS = +1.468512e-05
+Test     :    liq_wat       : Min = +0.000000e+00, Max = +1.422288e-03, RMS = +2.840211e-05
 Test     :    o3mr          : Min = +2.736389e-08, Max = +1.754712e-05, RMS = +5.601060e-06
 Test     :    phis          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
 Test     :    slmsk         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
@@ -33,11 +33,11 @@ Test     :  --------------------------------------------------------------------
 Test     :  --------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C12
 Test     :    ua            : Min = -4.532126e+01, Max = +9.355589e+01, RMS = +1.647724e+01
-Test     :    va            : Min = -5.560119e+01, Max = +6.513937e+01, RMS = +8.303524e+00
+Test     :    va            : Min = -5.560119e+01, Max = +6.513937e+01, RMS = +8.303526e+00
 Test     :    T             : Min = +1.845502e+02, Max = +3.082040e+02, RMS = +2.484189e+02
 Test     :    DELP          : Min = +5.447648e+04, Max = +1.037921e+05, RMS = +9.902524e+04
 Test     :    sphum         : Min = +0.000000e+00, Max = +1.878779e-02, RMS = +4.752706e-03
-Test     :    ice_wat       : Min = +0.000000e+00, Max = +5.408544e-04, RMS = +1.464014e-05
+Test     :    ice_wat       : Min = +0.000000e+00, Max = +5.408544e-04, RMS = +1.464015e-05
 Test     :    liq_wat       : Min = +0.000000e+00, Max = +9.161694e-04, RMS = +2.848085e-05
 Test     :    o3mr          : Min = +2.996880e-08, Max = +1.752456e-05, RMS = +5.608840e-06
 Test     :    phis          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
@@ -57,7 +57,7 @@ Test     :  --------------------------------------------------------------------
 Test     :  --------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C12
 Test     :    ua            : Min = -4.459514e+01, Max = +8.954974e+01, RMS = +1.644926e+01
-Test     :    va            : Min = -5.514258e+01, Max = +6.497483e+01, RMS = +8.243305e+00
+Test     :    va            : Min = -5.514258e+01, Max = +6.497483e+01, RMS = +8.243303e+00
 Test     :    T             : Min = +1.847991e+02, Max = +3.085491e+02, RMS = +2.484078e+02
 Test     :    DELP          : Min = +5.455834e+04, Max = +1.037192e+05, RMS = +9.902129e+04
 Test     :    sphum         : Min = +0.000000e+00, Max = +1.859293e-02, RMS = +4.743794e-03
@@ -78,9 +78,9 @@ Test     :    u_srf         : Min = -1.973487e+01, Max = +2.514699e+01, RMS = +6
 Test     :    v_srf         : Min = -1.758323e+01, Max = +2.023139e+01, RMS = +5.484483e+00
 Test     :    f10m          : Min = +6.157255e-01, Max = +1.123031e+00, RMS = +9.048770e-01
 Test     :  --------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 53.7803
+Test     : CostJb   : Nonlinear Jb = 53.7617
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 1907.14, nobs = 1430, Jo/n = 1.33367, err = 2.6781
-Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1448.07, nobs = 1131, Jo/n = 1.28035, err = 2.0616
-Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 234.459, nobs = 148, Jo/n = 1.58418, err = 0.000298811
+Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1448.08, nobs = 1131, Jo/n = 1.28035, err = 2.0616
+Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 234.337, nobs = 148, Jo/n = 1.58336, err = 0.000298811
 Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 837.135, nobs = 947, Jo/n = 0.883986, err = 1.71878
-Test     : CostFunction: Nonlinear J = 4480.59
+Test     : CostFunction: Nonlinear J = 4480.46
