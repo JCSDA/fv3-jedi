@@ -149,13 +149,6 @@ cost function:
   analysis variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
-  filetype: gfs
-  datapath: Data/
-  filename_core: 20180415.000000.c24.fv_core.res.nc
-  filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.c24.sfc_data.nc
-  filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.c24.coupler.res
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table

@@ -160,6 +160,7 @@ phases:
         && export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         && export LD_LIBRARY_PATH=/usr/local/lib
         && export LIBRARY_PATH=/usr/local/lib
+        && export FV3JEDI_TEST_TIER=2
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
         && cd /build_container
         && ls
@@ -188,7 +189,7 @@ phases:
         && export LIBRARY_PATH=/usr/local/lib
         && . /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh
         && cd /build_container/fv3-jedi
-        && ctest -E test_fv3_time"
+        && ctest -E fv3jedi_test_tier1_run_times"
 
       - cat /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
 
@@ -232,4 +233,4 @@ phases:
 artifacts:
   files:
     - /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
-  name: CTestCost-intel-$(date +%Y-%m-%d-%k_%M)
+  name: CTestCost-intel-tier-2-$(date +%Y-%m-%d-%k_%M)

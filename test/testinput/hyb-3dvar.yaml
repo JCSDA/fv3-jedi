@@ -178,31 +178,9 @@ cost function:
       - name: air_temperature
       threshold: 6.0
   - obs space:
-      name: Radiosonde
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/sondes_hyb-3dvar-gfs_2018041500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
-    obs operator:
-      name: VertInterp
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    - filter: PreQC
-      maxvalue: 3
-    - filter: Background Check
-      filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
-      threshold: 6.0
-  - obs space:
       name: GnssroBndNBAM
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -233,8 +211,6 @@ cost function:
       name: AMSUA-NOAA19
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/amsua_n19_hyb-3dvar-gfs_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs operator:
@@ -262,8 +238,6 @@ cost function:
       name: SfcObs
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sfc_obs_2018041500_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/sfc_hyb-3dvar-gfs_2018041500_m.nc4
       simulated variables: [surface_pressure]
     obs operator:
       name: SfcPCorrected
@@ -321,10 +295,10 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs.c24.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs.c24.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs.c24.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs.c24.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs.c24.coupler.res
+  filename_core: hyb-3dvar.c24.fv_core.res.nc
+  filename_trcr: hyb-3dvar.c24.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar.c24.sfc_data.nc
+  filename_sfcw: hyb-3dvar.c24.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar.c24.coupler.res
   first: PT0H
   frequency: PT1H

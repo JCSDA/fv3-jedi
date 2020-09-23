@@ -33,7 +33,7 @@ initial condition:
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 output:
   filetype: gfs
-  datapath: Data/
+  datapath: Data/forecast
   filename_core: forecast_fv3.fv_core.res.nc
   filename_trcr: forecast_fv3.fv_tracer.res.nc
   filename_sfcd: forecast_fv3.sfc_data.nc

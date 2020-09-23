@@ -22,13 +22,13 @@ background:
   state variables: &incvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 variance output:
   filetype: gfs
-  datapath: Data/
+  datapath: Data/ensvariance
   filename_core: ensemblevariance.fv_core.res.nc
   filename_trcr: ensemblevariance.fv_tracer.res.nc
   filename_sfcd: ensemblevariance.sfc_data.nc
   filename_sfcw: ensemblevariance.fv_srf_wnd.res.nc
   filename_cplr: ensemblevariance.coupler.res
-ensemble: 
+ensemble:
   output variables: *incvars
   members:
   - filetype: gfs

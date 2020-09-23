@@ -1,7 +1,7 @@
 Test     : CostJb   : Nonlinear Jb = 0
 Test     : CostJo   : Nonlinear Jo(GnssroRef) = 13.3676, nobs = 1, Jo/n = 13.3676, err = 3.5151
 Test     : CostFunction: Nonlinear J = 13.3676
-Test     : DRIPCGMinimizer: reduction in residual norm = 1.67625e-16
+Test     : DRIPCGMinimizer: reduction in residual norm = 8.17927e-17
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  --------------------------------------------------------------------------------
 Test     :  State print | number of fields = 23 | cube sphere face size: C12
@@ -32,7 +32,7 @@ Test     :  --------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 4.26455e-05
 Test     : CostJo   : Nonlinear Jo(GnssroRef) = 2.7426e-05, nobs = 1, Jo/n = 2.7426e-05, err = 3.5151
 Test     : CostFunction: Nonlinear J = 7.00715e-05
-Test     : DRIPCGMinimizer: reduction in residual norm = 1.6572e-23
+Test     : DRIPCGMinimizer: reduction in residual norm = 4.88155e-24
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  --------------------------------------------------------------------------------
 Test     :  State print | number of fields = 23 | cube sphere face size: C12

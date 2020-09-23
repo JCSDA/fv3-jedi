@@ -155,7 +155,7 @@ phases:
 
       - su - jcsdauser -c "CC=mpicc CXX=mpicxx FC=mpifort
         && cd /build_container/fv3-jedi
-        && ctest -E test_fv3_time"
+        && ctest -E fv3jedi_test_tier1_run_times"
 
       - cat /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
 
@@ -189,4 +189,4 @@ phases:
 artifacts:
   files:
     - /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
-  name: CTestCost-gnu-$(date +%Y-%m-%d-%k_%M)
+  name: CTestCost-gnu-tier-1-$(date +%Y-%m-%d-%k_%M)

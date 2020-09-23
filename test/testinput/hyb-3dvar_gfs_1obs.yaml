@@ -169,13 +169,6 @@ cost function:
         use_compress: 1
     obs error:
       covariance model: diagonal
-  filetype: gfs
-  datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
 variational:
   minimizer:
     algorithm: DRIPCG

@@ -26,7 +26,7 @@ initial condition:
   state variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
 output:
   filetype: geos
-  datapath: Data/
+  datapath: Data/forecast
   filename: forecast.jediex.
   first: PT0H
   frequency: PT15H

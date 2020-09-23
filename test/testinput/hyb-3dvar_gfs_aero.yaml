@@ -82,11 +82,6 @@ cost function:
   analysis variables: *aerovars
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
-  filetype: gfs
-  datapath: Data/inputs/gfs_aero_c12/bkg/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_cplr: 20180415.000000.coupler.res
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
@@ -136,4 +131,3 @@ variational:
         - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-

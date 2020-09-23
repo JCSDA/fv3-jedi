@@ -18,7 +18,7 @@ background:
   state variables: &incvars [ua,va,t,delp,q,qi,ql]
 variance output:
   filetype: geos
-  datapath: Data/
+  datapath: Data/ensvariance
   filename_bkgd: geos.ensemblevariance.%yyyy%mm%dd_%hh%MM%ssz.nc4
 ensemble:
   output variables: *incvars
