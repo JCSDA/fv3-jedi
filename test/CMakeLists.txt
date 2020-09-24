@@ -301,6 +301,7 @@ list( APPEND fv3jedi_test_input
   testinput/state_geos.yaml
   testinput/state_gfs.yaml
   testinput/state_lam_cmaq.yaml
+  testinput/state_lam_atmos.yaml
   testinput/test_time.yaml
   testinput/variablechange_geos.yaml
   testinput/variablechange_gfs.yaml
@@ -860,6 +861,10 @@ fv3jedi_add_test( NAME    state_geos
                   INTERFACETEST )
 
 fv3jedi_add_test( NAME    state_lam_cmaq
+                  EXE     test_fv3jedi_state.x
+                  INTERFACETEST )
+
+fv3jedi_add_test( NAME    state_lam_atmos
                   EXE     test_fv3jedi_state.x
                   INTERFACETEST )
 
