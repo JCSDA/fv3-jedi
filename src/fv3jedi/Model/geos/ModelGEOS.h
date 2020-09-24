@@ -50,7 +50,6 @@ class ModelGEOS: public oops::ModelBase<Traits>,
 
 /// Model integration
   void step(State &, const ModelBias &) const;
-  int saveTrajectory(State &, const ModelBias &) const;
 
 /// Finish model integration
   void finalize(State &) const;

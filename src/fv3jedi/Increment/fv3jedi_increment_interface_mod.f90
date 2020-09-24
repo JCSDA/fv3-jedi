@@ -461,33 +461,6 @@ end subroutine fv3jedi_increment_write_file_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_gpnorm_c(c_key_inc, kf, pstat) &
-           bind(c,name='fv3jedi_increment_gpnorm_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_inc
-integer(c_int), intent(in) :: kf
-real(c_double), intent(inout) :: pstat(3*kf)
-
-type(fv3jedi_increment), pointer :: inc
-real(kind=kind_real) :: zstat(3, kf)
-integer :: jj, js, jf
-
-call fv3jedi_increment_registry%get(c_key_inc,inc)
-
-call gpnorm(inc, kf, zstat)
-jj=0
-do jf = 1, kf
-  do js = 1, 3
-    jj=jj+1
-    pstat(jj) = zstat(js,jf)
-  enddo
-enddo
-
-end subroutine fv3jedi_increment_gpnorm_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_increment_rms_c(c_key_inc, prms) bind(c,name='fv3jedi_increment_rms_f90')
 
 implicit none

@@ -64,10 +64,6 @@ void ModelNUOPC::finalize(State & xx) const {
   oops::Log::debug() << "ModelNUOPC::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------
-int ModelNUOPC::saveTrajectory(State & xx,
-                                 const ModelBias &) const {
-}
-// -----------------------------------------------------------------------------
 void ModelNUOPC::print(std::ostream & os) const {
   os << "ModelNUOPC::print not implemented";
 }

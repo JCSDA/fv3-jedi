@@ -21,7 +21,6 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.interface.h"
-#include "fv3jedi/Run/Run.interface.h"
 #include "fv3jedi/Utilities/Utilities.h"
 
 // -------------------------------------------------------------------------------------------------
@@ -34,10 +33,11 @@ Geometry::Geometry(const eckit::Configuration & conf,
                    const eckit::mpi::Comm & comm) : comm_(comm), fieldsMeta_(conf) {
   const eckit::Configuration * configc = &conf;
 
+  // Call the initialize phase, done only once.
   static bool initialized = false;
   if (!initialized) {
     stageFMSFiles(conf, comm);
-    fv3jedi_setup_f(&configc, &comm_);
+    fv3jedi_geom_initialize_f90(&configc, &comm_);
     removeFv3Files(comm);
     initialized = true;
     oops::Log::debug() << "FMS MPP initialized on " << comm_.name() << std::endl;

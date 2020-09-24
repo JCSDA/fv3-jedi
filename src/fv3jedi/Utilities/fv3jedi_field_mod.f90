@@ -18,16 +18,11 @@ public :: fv3jedi_field, &
           pointer_field_array, &
           copy_field_array, &
           allocate_copy_field_array, &
-          copy_field_array_ad, &
           fields_rms, &
-          fields_gpnorm, &
           field_getminmaxrms, &
           checksame, &
-          flip_array_vertical, &
           copy_subset, &
-          copy_subset_ad, &
           long_name_to_fv3jedi_name, &
-          number_tracers, &
           zero_fields
 
 integer, parameter, public :: field_clen = 2048
@@ -222,31 +217,6 @@ end subroutine copy_field_array
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine copy_field_array_ad(fields, fv3jedi_name, field_array)
-
-type(fv3jedi_field),  intent(in)  :: fields(:)
-character(len=*),     intent(in)  :: fv3jedi_name
-real(kind=kind_real), intent(out) :: field_array(:,:,:)
-
-integer :: var
-logical :: found
-
-found = .false.
-do var = 1,size(fields)
-  if ( trim(fields(var)%fv3jedi_name) == trim(fv3jedi_name)) then
-    field_array = field_array + fields(var)%array
-    found = .true.
-    exit
-  endif
-enddo
-
-if (.not.found) call abor1_ftn("fv3jedi_field.copy_field_array: field "&
-                                //trim(fv3jedi_name)//" not found in fields")
-
-end subroutine copy_field_array_ad
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine pointer_field(fields, fv3jedi_name, field_pointer)
 
 type(fv3jedi_field), target,  intent(in)  :: fields(:)
@@ -337,37 +307,6 @@ end subroutine fields_rms
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fields_gpnorm(nf, fields, pstat, f_comm)
-
-implicit none
-integer,              intent(in)    :: nf
-type(fv3jedi_field),  intent(in)    :: fields(nf)
-real(kind=kind_real), intent(inout) :: pstat(3, nf)
-type(fckit_mpi_comm), intent(in)    :: f_comm
-
-integer :: var
-real(kind=kind_real) :: tmp(3),  gs3, gs3g
-
-do var = 1,nf
-
-  gs3 = real((fields(var)%iec-fields(var)%isc+1)*(fields(var)%jec-fields(var)%jsc+1)*fields(var)%npz, kind_real)
-  call f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
-
-  tmp(1) = minval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(2) = maxval(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz))
-  tmp(3) =    sum(fields(var)%array(fields(var)%isc:fields(var)%iec,fields(var)%jsc:fields(var)%jec,1:fields(var)%npz)**2)
-
-  call f_comm%allreduce(tmp(1),pstat(1,var),fckit_mpi_min())
-  call f_comm%allreduce(tmp(2),pstat(2,var),fckit_mpi_max())
-  call f_comm%allreduce(tmp(3),pstat(3,var),fckit_mpi_sum())
-  pstat(3,var) = sqrt(pstat(3,var)/gs3g)
-
-enddo
-
-end subroutine fields_gpnorm
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine field_getminmaxrms(fields, field_num, field_name, minmaxrms, f_comm)
 
 implicit none
@@ -431,46 +370,6 @@ enddo
 
 end subroutine checksame
 
-! --------------------------------------------------------------------------------------------------
-
-subroutine flip_array_vertical(nf,fields)
-
-implicit none
-integer,             intent(in)    :: nf
-type(fv3jedi_field), intent(inout) :: fields(nf)
-
-integer :: n, lev_in, lev_out
-real(kind=kind_real), allocatable :: array_tmp(:,:,:)
-
-do n = 1, nf
-
-  if (fields(n)%npz > 1) then
-
-    if (trim(fields(n)%staggerloc) == 'center') then
-      allocate(array_tmp(fields(n)%isc:fields(n)%iec,fields(n)%jsc:fields(n)%jec,1:fields(n)%npz))
-    elseif (trim(fields(n)%staggerloc) == 'northsouth') then
-      allocate(array_tmp(fields(n)%isc:fields(n)%iec,fields(n)%jsc:fields(n)%jec+1,1:fields(n)%npz))
-    elseif (trim(fields(n)%staggerloc) == 'eastwest') then
-      allocate(array_tmp(fields(n)%isc:fields(n)%iec+1,fields(n)%jsc:fields(n)%jec,1:fields(n)%npz))
-    endif
-
-    do lev_in = 1,fields(n)%npz
-
-      lev_out = fields(n)%npz-lev_in+1
-      array_tmp(:,:,lev_out) = fields(n)%array(:,:,lev_in)
-
-    enddo
-
-    fields(n)%array = array_tmp
-
-    deallocate(array_tmp)
-
-  endif
-
-enddo
-
-end subroutine flip_array_vertical
-
 ! ------------------------------------------------------------------------------
 
 subroutine copy_subset(field_in,field_ou,not_copied)
@@ -503,38 +402,6 @@ endif
 
 end subroutine copy_subset
 
-! ------------------------------------------------------------------------------
-
-subroutine copy_subset_ad(field_in,field_ou,not_copied)
-
-implicit none
-type(fv3jedi_field),                             intent(in)    :: field_in(:)
-type(fv3jedi_field),                             intent(inout) :: field_ou(:)
-character(len=field_clen), allocatable, optional, intent(out)   :: not_copied(:)
-
-integer :: var
-character(len=field_clen) :: not_copied_(10000)
-integer :: num_not_copied
-
-! Loop over fields and copy if existing in both
-num_not_copied = 0
-do var = 1, size(field_ou)
-  if (has_field(field_in, field_ou(var)%fv3jedi_name )) then
-    call copy_field_array_ad(field_in, field_ou(var)%fv3jedi_name, field_ou(var)%array)
-  else
-    num_not_copied = num_not_copied + 1
-    not_copied_(num_not_copied) = field_ou(var)%fv3jedi_name
-  endif
-enddo
-
-! Send back list of variables not retrivable from field_in
-if (present(not_copied) .and. num_not_copied > 0) then
-  allocate(not_copied(num_not_copied))
-  not_copied(1:num_not_copied) = not_copied_(1:num_not_copied)
-endif
-
-end subroutine copy_subset_ad
-
 ! --------------------------------------------------------------------------------------------------
 
 subroutine long_name_to_fv3jedi_name(fields, long_name, fv3jedi_name)
@@ -564,21 +431,6 @@ call abor1_ftn("fv3jedi_field_mod.long_name_to_fv3jedi_name long_name "//trim(lo
                " not found in fields.")
 
 end subroutine long_name_to_fv3jedi_name
-
-! --------------------------------------------------------------------------------------------------
-
-integer function number_tracers(fields)
-
-type(fv3jedi_field), intent(in) :: fields(:)
-
-integer :: var
-
-number_tracers = 0
-do var = 1, size(fields)
-  if (fields(var)%tracer) number_tracers = number_tracers + 1
-enddo
-
-end function number_tracers
 
 ! --------------------------------------------------------------------------------------------------
 

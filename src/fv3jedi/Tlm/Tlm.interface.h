@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_TLM_TLM_INTERFACE_H_
-#define FV3JEDI_TLM_TLM_INTERFACE_H_
+#pragma once
 
 #include "fv3jedi/Utilities/interface.h"
 
@@ -32,9 +31,7 @@ extern "C" {
   void fv3jedi_tlm_step_ad_f90(const F90tlm &, const F90inc &, const F90traj &);
   void fv3jedi_tlm_finalize_tl_f90(const F90tlm &, const F90inc &);
   void fv3jedi_tlm_finalize_ad_f90(const F90tlm &, const F90inc &);
-  void fv3jedi_traj_wipe_f90(F90traj &);
 
 }  // extern "C"
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_TLM_TLM_INTERFACE_H_

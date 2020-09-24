@@ -56,11 +56,6 @@ void ModelGFS::finalize(State & xx) const {
   oops::Log::debug() << "ModelGFS::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------
-int ModelGFS::saveTrajectory(State & xx,
-                                 const ModelBias &) const {
-  ABORT("Model:GFS should not be used for the trajecotry");
-}
-// -----------------------------------------------------------------------------
 void ModelGFS::print(std::ostream & os) const {
   os << "ModelGFS::print not implemented";
 }

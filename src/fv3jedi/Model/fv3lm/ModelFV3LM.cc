@@ -57,12 +57,6 @@ void ModelFV3LM::finalize(State & xx) const {
   oops::Log::debug() << "ModelFV3LM::finalize" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-int ModelFV3LM::saveTrajectory(State & xx,
-                                 const ModelBias &) const {
-  ABORT("Model FV3LM should not be used for the trajectory");
-  abort(); /* Prevent g++ missing return statement warning */
-}
-// -------------------------------------------------------------------------------------------------
 void ModelFV3LM::print(std::ostream & os) const {
   os << "ModelFV3LM::print not implemented";
 }

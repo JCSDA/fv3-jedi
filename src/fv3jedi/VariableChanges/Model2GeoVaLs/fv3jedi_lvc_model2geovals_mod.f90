@@ -15,7 +15,7 @@ use datetime_mod
 use fv3jedi_constants_mod, only: constoz
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
-                                 copy_subset, copy_subset_ad, field_clen
+                                 copy_subset, field_clen
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state

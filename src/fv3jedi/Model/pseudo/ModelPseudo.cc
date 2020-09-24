@@ -73,12 +73,6 @@ void ModelPseudo::finalize(State & xx) const {
   oops::Log::trace() << "ModelPseudo::finalize" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-int ModelPseudo::saveTrajectory(State & xx,
-                                 const ModelBias &) const {
-  ABORT("Model: pseudo should not be used for the trajecotry");
-  return -1;
-}
-// -------------------------------------------------------------------------------------------------
 void ModelPseudo::print(std::ostream & os) const {
   os << "ModelPseudo::print not implemented";
 }

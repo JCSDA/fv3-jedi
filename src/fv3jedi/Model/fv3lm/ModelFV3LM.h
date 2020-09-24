@@ -45,7 +45,6 @@ class ModelFV3LM: public oops::ModelBase<Traits>, private util::ObjectCounter<Mo
 
 /// Model integration
   void step(State &, const ModelBias &) const;
-  int saveTrajectory(State &, const ModelBias &) const;
 
 /// Finish model integration
   void finalize(State &) const;

@@ -37,7 +37,6 @@ extern "C" {
   void fv3jedi_increment_write_file_f90(const F90geom &, const F90inc &,
                                         const eckit::Configuration * const *,
                                         const util::DateTime * const *);
-  void fv3jedi_increment_gpnorm_f90(const F90inc &, const int &, double &);
   void fv3jedi_increment_sizes_f90(const F90inc &, int &);
   void fv3jedi_increment_rms_f90(const F90inc &, double &);
   void fv3jedi_increment_set_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,

@@ -26,7 +26,7 @@ use fv_prec_mod,        only: kind_fv3
 use fv_init_mod,        only: fv_init
 use fv3jedi_geom_mod,   only: fv3jedi_geom
 use fv3jedi_field_mod,  only: copy_subset, has_field, allocate_copy_field_array, field_clen, &
-                              number_tracers, pointer_field, fv3jedi_field
+                              pointer_field, fv3jedi_field
 use fv3jedi_kinds_mod,  only: kind_real
 use fv3jedi_state_mod,  only: fv3jedi_state
 

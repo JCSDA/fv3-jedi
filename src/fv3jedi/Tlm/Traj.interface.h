@@ -5,11 +5,9 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_RUN_RUN_INTERFACE_H_
-#define FV3JEDI_RUN_RUN_INTERFACE_H_
+#pragma once
 
-#include "eckit/mpi/Comm.h"
-#include "Run.interface.h"
+#include "fv3jedi/Utilities/interface.h"
 
 // Forward declarations
 namespace eckit {
@@ -25,12 +23,10 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_setup_f(const eckit::Configuration * const *,
-                       const eckit::mpi::Comm *);
-  void fv3jedi_finalize_f();
+  void fv3jedi_traj_set_f90(F90traj &, const F90state &);
+  void fv3jedi_traj_wipe_f90(F90traj &);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_RUN_RUN_INTERFACE_H_

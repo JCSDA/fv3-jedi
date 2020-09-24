@@ -19,9 +19,12 @@ use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain
-use mpp_domains_mod,            only: mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain
-use mpp_mod,                    only: mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
+use fms_io_mod,                 only: fms_io_init, fms_io_exit
+use fms_mod,                    only: fms_init
+use mpp_mod,                    only: mpp_init, mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
+use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_domains_init, &
+                                      mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain, &
+                                      mpp_domains_exit, mpp_domains_set_stack_size
 
 ! fv3 uses
 use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
@@ -35,7 +38,7 @@ use fv_init_mod,                 only: fv_init
 
 implicit none
 private
-public :: fv3jedi_geom, getVerticalCoordLogP
+public :: fv3jedi_geom, getVerticalCoordLogP, initialize
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -93,9 +96,28 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, conf, comm, fields)
+subroutine initialize(conf, comm)
 
-implicit none
+type(fckit_configuration), intent(in) :: conf
+type(fckit_mpi_comm),      intent(in) :: comm
+
+
+integer :: stackmax = 4000000
+
+call mpp_init(localcomm=comm%communicator())
+call mpp_domains_init
+call fms_io_init
+call fms_init()
+
+if (conf%has("stackmax")) call conf%get_or_die("stackmax",stackmax)
+
+call mpp_domains_set_stack_size(stackmax)
+
+end subroutine initialize
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine create(self, conf, comm, fields)
 
 !Arguments
 class(fv3jedi_geom), target, intent(inout) :: self
@@ -332,8 +354,6 @@ end subroutine create
 
 subroutine clone(self, other, fields)
 
-implicit none
-
 class(fv3jedi_geom),        intent(inout) :: self
 type(fv3jedi_geom), target, intent(in)    :: other
 type(fields_metadata),      intent(in)    :: fields
@@ -456,8 +476,6 @@ end subroutine clone
 
 subroutine delete(self)
 
-implicit none
-
 class(fv3jedi_geom), intent(inout) :: self
 
 ! Deallocate
@@ -505,13 +523,16 @@ deallocate(self%lon_us)
 
 call self%afunctionspace%final()
 
+! Could finalize the fms routines. Possibly needs to be done only when key = 0
+!call fms_io_exit
+!call mpp_domains_exit
+!call mpp_exit
+
 end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
 subroutine set_atlas_lonlat(self, afieldset)
-
-implicit none
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
@@ -567,8 +588,6 @@ end subroutine fill_atlas_fieldset
 ! --------------------------------------------------------------------------------------------------
 
 subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
-
- implicit none
 
  type(domain2D),   intent(inout) :: domain
  integer,          intent(in)    :: nx, ny, ntiles
@@ -712,7 +731,6 @@ end subroutine setup_domain
 
 subroutine write_geom(self)
 
-  implicit none
   type(fv3jedi_geom), intent(in) :: self
 
   type(fckit_mpi_comm) :: f_comm
@@ -822,8 +840,6 @@ subroutine getVerticalCoordLogP(self, vc, npz, psurf)
   ! returns log(pressure) at mid level of the vertical column with surface prsssure of psurf
   ! coded using an example from Jeff Whitaker used in GSI ENKF pacakge
 
-  implicit none
-
   type(fv3jedi_geom),   intent(in) :: self
   integer,              intent(in) :: npz
   real(kind=kind_real), intent(in) :: psurf
@@ -847,7 +863,7 @@ subroutine getVerticalCoordLogP(self, vc, npz, psurf)
 
   ! compute presure at mid level and convert it to logp
   do k=1,self%npz
-    ! phillips vertical interpolation from guess_grids.F90 in GSI 
+    ! phillips vertical interpolation from guess_grids.F90 in GSI
     ! (used for global model)
     plevlm = ((plevli(k)**kap1-plevli(k+1)**kap1)/(kap1*(plevli(k)-plevli(k+1))))**kapr
     vc(k) = - log(plevlm)

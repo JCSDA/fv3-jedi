@@ -53,16 +53,9 @@ list( APPEND fv3jedi_src_files
   Model/pseudo/ModelPseudo.cc
   Model/pseudo/ModelPseudo.h
   Model/pseudo/ModelPseudo.interface.h
-  Model/traj/fv3jedi_traj_interface_mod.F90
-  Model/traj/fv3jedi_traj_mod.f90
-  Model/traj/ModelTraj.cc
-  Model/traj/ModelTraj.h
-  Model/traj/ModelTraj.interface.h
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h
-  Run/Run.interface.h
-  Run/fv3jedi_setup_mod.f90
   State/State.cc
   State/State.h
   State/State.interface.h
@@ -131,13 +124,16 @@ list( APPEND fv3jedi_src_files
   VariableChanges/Utils/surface_variables_mod.f90
   VariableChanges/Utils/temperature_variables_mod.f90
   VariableChanges/Utils/wind_variables_mod.f90
-  Tlm/fv3jedi_tlm_interface_mod.F90
   Tlm/fv3jedi_tlm_mod.f90
+  Tlm/fv3jedi_traj_mod.f90
   Tlm/Tlm.cc
   Tlm/Tlm.h
   Tlm/TlmId.cc
   Tlm/TlmId.h
+  Tlm/Tlm.interface.F90
   Tlm/Tlm.interface.h
+  Tlm/Traj.interface.F90
+  Tlm/Traj.interface.h
 )
 
 # Precision of fv3

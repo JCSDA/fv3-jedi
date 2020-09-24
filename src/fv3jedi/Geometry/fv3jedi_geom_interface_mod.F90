@@ -44,6 +44,27 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine c_fv3jedi_geom_initialize(c_conf, c_comm) bind(c,name='fv3jedi_geom_initialize_f90')
+
+implicit none
+
+type(c_ptr), intent(in)        :: c_conf
+type(c_ptr), value, intent(in) :: c_comm
+
+type(fckit_mpi_comm)        :: f_comm
+type(fckit_configuration)   :: f_conf
+
+! Fortran APIs
+! ------------
+f_conf = fckit_configuration(c_conf)
+f_comm = fckit_mpi_comm(c_comm)
+
+call initialize(f_conf, f_comm)
+
+end subroutine c_fv3jedi_geom_initialize
+
+! --------------------------------------------------------------------------------------------------
+
 subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_fields_meta) &
                                bind(c, name='fv3jedi_geom_setup_f90')
 

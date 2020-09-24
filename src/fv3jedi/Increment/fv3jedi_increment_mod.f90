@@ -35,7 +35,7 @@ implicit none
 private
 public :: fv3jedi_increment, create, delete, zero, ones, random, set_atlas, to_atlas, from_atlas, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, dot_prod, diff_incr, &
-          read_file, write_file, gpnorm, rms, change_resol, dirac, fv3jedi_increment_serialize, &
+          read_file, write_file, rms, change_resol, dirac, fv3jedi_increment_serialize, &
           fv3jedi_increment_deserialize, fv3jedi_getpoint, fv3jedi_setpoint, getminmaxrms
 
 ! --------------------------------------------------------------------------------------------------
@@ -751,23 +751,6 @@ subroutine write_file(geom, self, c_conf, vdate)
   endif
 
 end subroutine write_file
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine gpnorm(self, nf, pstat)
-
-implicit none
-type(fv3jedi_increment), intent(in)    :: self
-integer,                 intent(in)    :: nf
-real(kind=kind_real),    intent(inout) :: pstat(3, nf)
-
-if (nf .ne. self%nf) then
-  call abor1_ftn("fv3jedi_increment.gpnorm: nf passed in does not match expeted nf")
-endif
-
-call fields_gpnorm(nf, self%fields, pstat, self%f_comm)
-
-end subroutine gpnorm
 
 ! --------------------------------------------------------------------------------------------------
 

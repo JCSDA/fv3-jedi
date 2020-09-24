@@ -660,7 +660,6 @@ type(fv3jedi_io_gfs)  :: gfs
 type(fv3jedi_io_geos) :: geos
 
 character(len=10) :: filetype
-integer :: flipvert
 type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
 
@@ -679,12 +678,6 @@ if (trim(filetype) == 'gfs') then
   call gfs%setup_conf(f_conf)
   call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
   call gfs%read_fields(geom, self%fields)
-
-  flipvert = 0
-  if (f_conf%has("flip_vertically")) then
-     call f_conf%get_or_die("flip_vertically",flipvert)
-  endif
-  if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
 elseif (trim(filetype) == 'geos') then
 
@@ -718,7 +711,6 @@ subroutine write_file(geom, self, c_conf, vdate)
   type(fv3jedi_io_geos) :: geos
 
   character(len=10) :: filetype
-  integer :: flipvert
   type(fckit_configuration) :: f_conf
   character(len=:), allocatable :: str
 
@@ -734,17 +726,9 @@ subroutine write_file(geom, self, c_conf, vdate)
 
   if (trim(filetype) == 'gfs') then
 
-    flipvert = 0
-    if (f_conf%has("flip_vertically")) then
-      call f_conf%get_or_die("flip_vertically",flipvert)
-    endif
-    if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
-
     call gfs%setup_conf(f_conf)
     call gfs%setup_date(vdate)
     call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
-
-    if (flipvert==1) call flip_array_vertical(self%nf, self%fields)
 
   elseif (trim(filetype) == 'geos') then
 

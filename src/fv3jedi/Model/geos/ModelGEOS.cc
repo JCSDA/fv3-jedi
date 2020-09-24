@@ -81,11 +81,6 @@ void ModelGEOS::finalize(State & xx) const {
   oops::Log::trace() << "ModelGEOS::finalize" << std::endl;
 }
 // -----------------------------------------------------------------------------
-int ModelGEOS::saveTrajectory(State & xx,
-                                 const ModelBias &) const {
-  ABORT("Model:GEOS should not be used for the trajecotry");
-}
-// -----------------------------------------------------------------------------
 void ModelGEOS::print(std::ostream & os) const {
   os << "ModelGEOS::print not implemented";
 }

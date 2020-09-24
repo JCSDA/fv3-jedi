@@ -15,9 +15,10 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
-#include "fv3jedi/Model/traj/ModelTraj.h"
 #include "fv3jedi/State/State.h"
 #include "fv3jedi/Tlm/Tlm.h"
+#include "fv3jedi/Tlm/Tlm.interface.h"
+#include "fv3jedi/Tlm/Traj.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
 #include "fv3jedi/Utilities/Utilities.h"
 
@@ -26,11 +27,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
-Tlm::Tlm(const Geometry & resol,
-                        const eckit::Configuration & tlConf)
-  : keySelf_(0), tstep_(), traj_(),
-    lrmodel_(resol, eckit::LocalConfiguration(tlConf, "trajectory")),
-    linvars_(tlConf, "tlm variables")
+Tlm::Tlm(const Geometry & resol, const eckit::Configuration & tlConf) : keySelf_(0), tstep_(),
+  trajmap_(), linvars_(tlConf, "tlm variables")
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 
@@ -55,7 +53,7 @@ Tlm::~Tlm() {
   fv3jedi_tlm_delete_f90(keySelf_);
 
   // Clear trajecotory
-  for (trajIter jtra = traj_.begin(); jtra != traj_.end(); ++jtra) {
+  for (trajIter jtra = trajmap_.begin(); jtra != trajmap_.end(); ++jtra) {
     fv3jedi_traj_wipe_f90(jtra->second);
   }
   oops::Log::trace() << "Tlm::~Tlm done" << std::endl;
@@ -67,18 +65,11 @@ void Tlm::setTrajectory(const State & xx, State & xlr, const ModelBias & bias) {
   // Interpolate to resolution of the trajectory
   xlr.changeResolution(xx);
 
-  // Save position in map
-  int ftraj = lrmodel_.saveTrajectory(xlr, bias);
-  traj_[xx.validTime()] = ftraj;
-
-  // Print method needs implementing
-  // std::vector<double> zstat(15);
-  // fv3jedi_traj_minmaxrms_f90(ftraj, zstat[0]);
-  // oops::Log::debug() << "Tlm trajectory at time " << xx.validTime() << std::endl;
-  // for (unsigned int jj = 0; jj < 5; ++jj) {
-  //   oops::Log::debug() << "  Min=" << zstat[3*jj] << ", Max=" << zstat[3*jj+1]
-  //                      << ", RMS=" << zstat[3*jj+2] << std::endl;
-  // }
+  // Set trajecotry
+  int keyTraj = 0;
+  fv3jedi_traj_set_f90(keyTraj, xlr.toFortran());
+  ASSERT(keyTraj != 0);
+  trajmap_[xx.validTime()] = keyTraj;
 
   oops::Log::trace() << "Tlm::setTrajectory done" << std::endl;
 }
@@ -96,10 +87,10 @@ void Tlm::stepTL(Increment & dx, const ModelBiasIncrement &) const {
   oops::Log::trace() << "Tlm::stepTL starting" << std::endl;
 
   // Get traj index
-  trajICst itra = traj_.find(dx.validTime());
+  trajICst itra = trajmap_.find(dx.validTime());
 
   // Check traj is available
-  if (itra == traj_.end()) {
+  if (itra == trajmap_.end()) {
     oops::Log::error() << "Tlm: trajectory not available at time " << dx.validTime() << std::endl;
     ABORT("Tlm: trajectory not available");
   }
@@ -138,10 +129,10 @@ void Tlm::stepAD(Increment & dx, ModelBiasIncrement &) const {
   dx.validTime() -= tstep_;
 
   // Get traj index
-  trajICst itra = traj_.find(dx.validTime());
+  trajICst itra = trajmap_.find(dx.validTime());
 
   // Check traj is available
-  if (itra == traj_.end()) {
+  if (itra == trajmap_.end()) {
     oops::Log::error() << "Tlm: trajectory not available at time " << dx.validTime() << std::endl;
     ABORT("Tlm: trajectory not available");
   }
@@ -165,11 +156,11 @@ void Tlm::print(std::ostream & os) const {
   oops::Log::trace() << "Tlm::print starting" << std::endl;
 
   // Print information about the Tlm object
-  os << "FV3JEDI TLM Trajectory, nstep=" << traj_.size() << std::endl;
+  os << "FV3JEDI TLM Trajectory, nstep=" << trajmap_.size() << std::endl;
   typedef std::map< util::DateTime, int >::const_iterator trajICst;
-  if (traj_.size() > 0) {
+  if (trajmap_.size() > 0) {
     os << "FV3JEDI TLM Trajectory: times are:";
-    for (trajICst jtra = traj_.begin(); jtra != traj_.end(); ++jtra) {
+    for (trajICst jtra = trajmap_.begin(); jtra != trajmap_.end(); ++jtra) {
       os << "  " << jtra->first;
     }
   }

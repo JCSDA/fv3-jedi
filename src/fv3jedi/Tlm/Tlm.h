@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_TLM_TLM_H_
-#define FV3JEDI_TLM_TLM_H_
+#pragma once
 
 #include <map>
 #include <ostream>
@@ -17,7 +16,6 @@
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
-#include "fv3jedi/Tlm/Tlm.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
 
 // Forward declarations
@@ -64,11 +62,9 @@ class Tlm: public oops::LinearModelBase<Traits>,
 // Data
   F90model keySelf_;
   util::Duration tstep_;
-  std::map< util::DateTime, F90traj> traj_;
-  const ModelTraj lrmodel_;
+  std::map< util::DateTime, F90traj> trajmap_;
   const oops::Variables linvars_;
 };
 // -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_TLM_TLM_H_
