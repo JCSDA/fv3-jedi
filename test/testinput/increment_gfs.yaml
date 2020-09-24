@@ -11,38 +11,4 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 test date: '2018-04-15T00:00:00Z'
-inc variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-initial condition:
-  filetype: gfs
-  datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
-interp test:
-  tolerance: 1.0e-12
-  locations:
-    window begin: 2018-04-14T21:00:00Z
-    window end: 2018-04-15T03:00:00Z
-    obs space:
-      name: Random Locations
-      simulated variables: []
-      generate:
-        random:
-          nobs: 100
-          lat1: -90
-          lat2: 90
-          lon1: 0
-          lon2: 360
-          random seed: 560921
-        obs errors: []
-  geovals:
-    variables:
-    - eastward_wind
-    - northward_wind
-    - temperature
-    - specific_humidity
-    - virtual_temperature
-    - mole_fraction_of_ozone_in_air
-    - humidity_mixing_ratio
+inc variables: [u,v,T,DELP]

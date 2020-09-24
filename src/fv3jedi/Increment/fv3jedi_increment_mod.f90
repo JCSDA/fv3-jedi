@@ -33,7 +33,7 @@ use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north,
 
 implicit none
 private
-public :: fv3jedi_increment, create, delete, zeros, random, set_atlas, to_atlas, from_atlas, copy, &
+public :: fv3jedi_increment, create, delete, zero, ones, random, set_atlas, to_atlas, from_atlas, copy, &
           self_add, self_schur, self_sub, self_mul, axpy_inc, axpy_state, dot_prod, diff_incr, &
           read_file, write_file, gpnorm, rms, change_resol, dirac, fv3jedi_increment_serialize, &
           fv3jedi_increment_deserialize, fv3jedi_getpoint, fv3jedi_setpoint, getminmaxrms
@@ -88,7 +88,7 @@ self%hydrostatic = .true.
 if (has_field(self%fields, 'delz') .and. has_field(self%fields, 'w')) self%hydrostatic = .false.
 
 ! Initialize all domain arrays to zero
-call zeros(self)
+call zero(self)
 
 ! For convenience
 self%isc    = geom%isc
@@ -148,7 +148,7 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine zeros(self)
+subroutine zero(self)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
@@ -159,7 +159,7 @@ do var = 1,self%nf
   self%fields(var)%array = 0.0_kind_real
 enddo
 
-end subroutine zeros
+end subroutine zero
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -827,7 +827,7 @@ ifdir = str_array
 deallocate(str_array)
 
 ! Setup Diracs
-call zeros(self)
+call zero(self)
 
 ! only u, v, T, ps and tracers allowed
 do idir=1,ndir

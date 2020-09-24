@@ -82,9 +82,22 @@ integer(c_int), intent(in) :: c_key_self
 type(fv3jedi_increment), pointer :: self
 
 call fv3jedi_increment_registry%get(c_key_self, self)
-call zeros(self)
+call zero(self)
 
 end subroutine fv3jedi_increment_zero_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_ones_c(c_key_self) bind(c,name='fv3jedi_increment_ones_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+type(fv3jedi_increment), pointer :: self
+
+call fv3jedi_increment_registry%get(c_key_self, self)
+call ones(self)
+
+end subroutine fv3jedi_increment_ones_c
 
 ! --------------------------------------------------------------------------------------------------
 

@@ -18,6 +18,7 @@ extern "C" {
   void fv3jedi_increment_delete_f90(F90inc &);
   void fv3jedi_increment_copy_f90(const F90inc &, const F90inc &);
   void fv3jedi_increment_zero_f90(const F90inc &);
+  void fv3jedi_increment_ones_f90(const F90inc &);
   void fv3jedi_increment_self_add_f90(const F90inc &, const F90inc &);
   void fv3jedi_increment_self_sub_f90(const F90inc &, const F90inc &);
   void fv3jedi_increment_self_mul_f90(const F90inc &, const double &);

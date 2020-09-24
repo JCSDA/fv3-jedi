@@ -63,14 +63,6 @@ Increment::Increment(const Increment & other, const bool copy): geom_(other.geom
   oops::Log::trace() << "Increment::Increment (from other and bool copy) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-Increment::Increment(const Increment & other) : geom_(other.geom_), vars_(other.vars_),
-                     time_(other.time_) {
-  oops::Log::trace() << "Increment::Increment (from other) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
-  fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
-  oops::Log::trace() << "Increment::Increment (from other) done" << std::endl;
-}
-// -------------------------------------------------------------------------------------------------
 Increment::~Increment() {
   fv3jedi_increment_delete_f90(keyInc_);
 }
@@ -115,6 +107,10 @@ void Increment::zero() {
 void Increment::zero(const util::DateTime & vt) {
   fv3jedi_increment_zero_f90(keyInc_);
   time_ = vt;
+}
+// -------------------------------------------------------------------------------------------------
+void Increment::ones() {
+  fv3jedi_increment_ones_f90(keyInc_);
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::axpy(const double & zz, const Increment & dx, const bool check) {

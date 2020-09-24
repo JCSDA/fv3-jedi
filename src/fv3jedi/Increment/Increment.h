@@ -56,17 +56,16 @@ class Increment : public oops::GeneralizedDepartures, public util::Printable,
   static const std::string classname() {return "fv3jedi::Increment";}
 
 /// Constructor, destructor
-  Increment(const Geometry &, const oops::Variables &,
-                   const util::DateTime &);
+  Increment(const Geometry &, const oops::Variables &, const util::DateTime &);
   Increment(const Geometry &, const Increment &);
   Increment(const Increment &, const bool);
-  Increment(const Increment &);
   virtual ~Increment();
 
 /// Basic operators
   void diff(const State &, const State &);
   void zero();
   void zero(const util::DateTime &);
+  void ones();
   Increment & operator =(const Increment &);
   Increment & operator+=(const Increment &);
   Increment & operator-=(const Increment &);
