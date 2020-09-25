@@ -235,6 +235,7 @@ list( APPEND fv3jedi_test_input
   testinput/convertstate_geos.yaml
   testinput/convertstate_gfs_cold2fv3.yaml
   testinput/convertstate_gfs.yaml
+  testinput/convertstate_gfs_c2ll.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
   testinput/dirac_geos.yaml
@@ -327,6 +328,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_geos.ref
   testoutput/convertstate_gfs_cold2fv3.ref
   testoutput/convertstate_gfs.ref
+  testoutput/convertstate_gfs_c2ll.ref
   testoutput/CTestCostData.txt.awsgnu.test
   testoutput/CTestCostData.txt.awsintel.test
   testoutput/diffstates_geos.ref
@@ -909,6 +911,10 @@ fv3jedi_add_test( NAME    errorcovariance
 fv3jedi_add_test( NAME    convertstate_gfs
                   EXE     fv3jedi_convertstate.x
                   TOL     1.0e-4 0)
+
+fv3jedi_add_test( NAME    convertstate_gfs_c2ll
+                  EXE     fv3jedi_convertstate.x
+                  TOL     1.0e-4 0 )
 
 fv3jedi_add_test( NAME    convertstate_geos
                   EXE     fv3jedi_convertstate.x )

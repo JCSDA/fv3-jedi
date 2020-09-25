@@ -26,6 +26,7 @@ use fv3jedi_interpolation_mod,   only: field2field_interp
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod,         only: fv3jedi_io_geos
+use fv3jedi_io_latlon_mod,       only: fv3jedi_llgeom
 use fv3jedi_state_utils_mod,     only: fv3jedi_state
 
 use wind_vt_mod, only: a2d
@@ -698,8 +699,6 @@ end subroutine read_file
 
 subroutine write_file(geom, self, c_conf, vdate)
 
-  use fv3jedi_io_latlon_mod
-
   implicit none
 
   type(fv3jedi_geom),  intent(inout) :: geom     !< Geometry
@@ -709,6 +708,7 @@ subroutine write_file(geom, self, c_conf, vdate)
 
   type(fv3jedi_io_gfs)  :: gfs
   type(fv3jedi_io_geos) :: geos
+  type(fv3jedi_llgeom)  :: latlon
 
   character(len=10) :: filetype
   type(fckit_configuration) :: f_conf
@@ -736,6 +736,12 @@ subroutine write_file(geom, self, c_conf, vdate)
     call geos%setup_date(vdate)
     call geos%write(geom, self%fields, vdate)
     call geos%delete()
+
+  elseif (trim(filetype) == 'latlon') then
+
+    call latlon%setup_conf(geom)
+    call latlon%setup_date(vdate)
+    call latlon%write(geom, self%fields, f_conf, vdate)
 
   else
 

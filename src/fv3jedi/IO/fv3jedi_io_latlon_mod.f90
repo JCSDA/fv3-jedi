@@ -1,26 +1,32 @@
-! (C) Copyright 2017-2018 UCAR
+! (C) Copyright 2017-2020 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_io_latlon_mod
 
-use atlas_module, only: atlas_field, atlas_fieldset
-use fckit_configuration_module, only: fckit_configuration
 use iso_c_binding
-use datetime_mod
-use fckit_log_module, only : log
-use fckit_mpi_module
-use fv3jedi_constants_mod, only: rad2deg
-!use fv3jedi_bump_interp_mod,      only: bump_init, bump_apply
-
-use type_bump, only: bump_type
-
-use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_kinds_mod, only: kind_int, kind_real
 
 use netcdf
 use mpi
+
+use atlas_module, only: atlas_field, atlas_fieldset
+
+use datetime_mod
+
+use fckit_configuration_module, only: fckit_configuration
+use fckit_log_module, only : log
+use fckit_mpi_module
+use fv3jedi_constants_mod, only: rad2deg
+
+use type_bump, only: bump_type
+
+use fv3jedi_constants_mod,   only: rad2deg
+use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
+use fv3jedi_field_mod,       only: fv3jedi_field
+use fv3jedi_geom_mod,        only: fv3jedi_geom
+use fv3jedi_kinds_mod,       only: kind_int, kind_real
+use fv3jedi_io_utils_mod,    only: vdate_to_datestring, replace_text
 
 implicit none
 
@@ -33,9 +39,11 @@ interface write_latlon_field
  module procedure write_latlon_field_r2
 end interface
 
+
 !Module level type
 type fv3jedi_llgeom
  type(fckit_mpi_comm) :: f_comm
+ type(fv3jedi_bump_interp) :: bump
  integer :: llcomm
  integer :: layout(2)
  logical :: thispe = .false.
@@ -43,25 +51,109 @@ type fv3jedi_llgeom
  integer :: npes
  real(kind=kind_real), allocatable :: lons(:)
  real(kind=kind_real), allocatable :: lats(:)
- type(bump_type) :: bump
  character(len=1024) :: filename
  integer, allocatable :: istart2(:), icount2(:)
  integer, allocatable :: istart3(:), icount3(:)
  contains
+  procedure :: setup_conf
+  procedure :: setup_date
+  procedure :: write
+  procedure :: delete
   final :: dummy_final
 end type fv3jedi_llgeom
 
 contains
 
 ! ------------------------------------------------------------------------------
-
-subroutine create_latlon(geom, llgeom)
+subroutine setup_conf(self, geom)
 
 implicit none
 
 !Arguments
-type(fv3jedi_geom),   intent(in)    :: geom     !< Geometry
+class(fv3jedi_llgeom),     intent(inout) :: self
+type(fv3jedi_geom),        intent(in)    :: geom          !< Geometry
+
+call log%debug("fv3jedi_io_latlon_mod%setup_conf starting")
+
+call create_latlon(self, geom)
+
+call log%debug("fv3jedi_io_latlon_mod%setup_conf done")
+
+end subroutine setup_conf
+
+! ------------------------------------------------------------------------------
+
+subroutine setup_date(self, vdate)
+
+implicit none
+
+!Arguments
+class(fv3jedi_llgeom),     intent(inout) :: self
+type(datetime),            intent(in)    :: vdate         !< DateTime
+
+integer :: n
+character(len=4) :: yyyy
+character(len=2) :: mm, dd, hh, min, ss
+
+call log%debug("fv3jedi_io_latlon_mod%setup_date starting")
+
+call log%debug("fv3jedi_io_latlon_mod%setup_date done")
+
+end subroutine setup_date
+
+! ------------------------------------------------------------------------------
+
+subroutine delete(self)
+
+implicit none
+class(fv3jedi_llgeom), intent(inout) :: self
+
+call log%debug("fv3jedi_io_latlon_mod%delete starting")
+
+call delete_latlon(self)
+
+call log%debug("fv3jedi_io_latlon_mod%delete done")
+
+end subroutine delete
+
+! ------------------------------------------------------------------------------
+
+subroutine write(self, geom, fields, f_conf, vdate)
+
+implicit none
+class(fv3jedi_llgeom),     intent(inout) :: self
+type(fv3jedi_geom),        intent(in)    :: geom          !< Geom
+type(fv3jedi_field),       intent(in)    :: fields(:)     !< Fields to be written
+type(fckit_configuration), intent(in)    :: f_conf        !< Configuration
+type(datetime),            intent(in)    :: vdate         !< DateTime
+
+integer :: var
+
+call log%debug("fv3jedi_io_latlon_mod%write starting")
+
+call write_latlon_metadata(self, geom, f_conf, vdate)
+
+! Loop over fields and register their restart file
+! ------------------------------------------------
+do var = 1, size(fields)
+
+   call write_latlon_field(self, geom, fields(var)%array, trim(fields(var)%short_name), f_conf, vdate)
+
+enddo
+
+call log%debug("fv3jedi_io_latlon_mod%write done")
+
+end subroutine write
+
+! ------------------------------------------------------------------------------
+
+subroutine create_latlon(llgeom, geom)
+
+implicit none
+
+!Arguments
 type(fv3jedi_llgeom), intent(inout) :: llgeom   !< LatLon Geometry
+type(fv3jedi_geom),   intent(in)    :: geom     !< Geometry
 
 integer :: color
 
@@ -82,7 +174,7 @@ elseif (llgeom%f_comm%size() >= 6) then
   llgeom%layout(1) = 6
   llgeom%layout(2) = 1
 else
-  call abor1_ftn("creat_latlon error: fewer than 6 npes not anticipated")
+  call abor1_ftn("create_latlon error: fewer than 6 npes not anticipated")
 endif
 llgeom%npes = llgeom%layout(1) * llgeom%layout(2)
 
@@ -148,7 +240,10 @@ else
 
 endif
 
-!call bump_init(geom, locs_nlocs, locs_lat, locs_lon, llgeom%bump)
+call llgeom%bump%setup(geom%f_comm, geom%isc, geom%iec, geom%jsc, geom%jec, geom%npz, &
+                       geom%grid_lon(geom%isc:geom%iec, geom%jsc:geom%jec), &
+                       geom%grid_lat(geom%isc:geom%iec, geom%jsc:geom%jec), &
+                       locs_nlocs, locs_lon, locs_lat)
 
 deallocate(locs_lon)
 deallocate(locs_lat)
@@ -186,22 +281,22 @@ if (llgeom%thispe) then
   deallocate ( llgeom%istart3, llgeom%icount3 )
 endif
 
-call llgeom%bump%dealloc
+call llgeom%bump%delete()
 
 
 end subroutine delete_latlon
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_latlon_metadata(geom, llgeom, c_conf, vdate)
+subroutine write_latlon_metadata(llgeom, geom, f_conf, vdate)
 
 implicit none
 
 !Arguments
-type(fv3jedi_geom),   intent(in)    :: geom     !< Geometry
-type(fv3jedi_llgeom), intent(inout) :: llgeom   !< LatLon Geometry
-type(c_ptr),          intent(in)    :: c_conf   !< Configuration
-type(datetime),       intent(in)    :: vdate    !< DateTime
+type(fv3jedi_llgeom),      intent(inout) :: llgeom   !< LatLon Geometry
+type(fv3jedi_geom),        intent(in)    :: geom     !< Geometry
+type(fckit_configuration), intent(in)    :: f_conf   !< Configuration
+type(datetime),            intent(in)    :: vdate    !< DateTime
 
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
@@ -209,14 +304,7 @@ character(len=64)   :: datefile
 
 integer :: ncid, varid(2)
 integer :: x_dimid, y_dimid, z_dimid, t_dimid
-type(fckit_configuration) :: f_conf
 character(len=:), allocatable :: str
-
-
-! Fortran configuration
-! ---------------------
-f_conf = fckit_configuration(c_conf)
-
 
 ! Current date
 call datetime_to_ifs(vdate, idate, isecs)
@@ -274,17 +362,17 @@ end subroutine write_latlon_metadata
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_latlon_field_r3(geom, llgeom, csfield, fieldname, c_conf, vdate)
+subroutine write_latlon_field_r3(llgeom, geom, csfield, fieldname, f_conf, vdate)
 
 implicit none
 
 !Arguments
-type(fv3jedi_geom),   intent(in)    :: geom           !< Geometry
-type(fv3jedi_llgeom), intent(inout) :: llgeom         !< LatLon Geometry
-real(kind=kind_real), intent(in)    :: csfield(:,:,:) !< Field to write
-character(len=*),     intent(in)    :: fieldname      !< Name for field
-type(c_ptr),          intent(in)    :: c_conf         !< Configuration
-type(datetime),       intent(in)    :: vdate          !< DateTime
+type(fv3jedi_llgeom), intent(inout)   :: llgeom         !< LatLon Geometry
+type(fv3jedi_geom),   intent(in)      :: geom           !< Geometry
+real(kind=kind_real), intent(in)      :: csfield(:,:,:) !< Field to write
+character(len=*),     intent(in)      :: fieldname      !< Name for field
+type(fckit_configuration), intent(in) :: f_conf         !< Configuration
+type(datetime),       intent(in)      :: vdate          !< DateTime
 
 integer :: ji, jj, jk, csngrid, llngrid, ii, i, j, k, n
 real(kind=kind_real), allocatable :: llfield_bump(:,:)
@@ -315,7 +403,7 @@ llngrid = llgeom%nx*llgeom%ny
 allocate(llfield_bump(llngrid,geom%npz))
 
 !Bilinear interpolation to latlon grid
-!call bump_apply(geom%npz,geom,csfield,llngrid,llfield_bump,llgeom%bump)
+call llgeom%bump%apply(geom%npz, csfield, llngrid, llfield_bump)
 
 !Unpack BUMP latlon field
 if (llgeom%thispe) then
