@@ -23,10 +23,11 @@ initial condition:
 background error:
   covariance model: GSIRF # Identity yet
   date: '2018-04-14T21:00:00Z'
+  analysis variables: 
   variable changes:
   - variable change: Control2Analysis
-    input variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
-    output variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
+    input variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
+    output variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
 output B:
   filetype: gfs
   datapath: Data/gsirf/
