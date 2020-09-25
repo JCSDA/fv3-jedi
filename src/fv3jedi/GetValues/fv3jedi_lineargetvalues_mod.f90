@@ -17,7 +17,6 @@ use ufo_locs_mod,                   only: ufo_locs, ufo_locs_time_mask
 use ufo_geovals_mod,                only: ufo_geovals
 
 ! fv3jedi uses
-use fv3jedi_bump_mod,               only: bump_apply_ad
 use fv3jedi_field_mod,              only: fv3jedi_field, pointer_field, field_clen, &
                                           long_name_to_fv3jedi_name
 use fv3jedi_geom_mod,               only: fv3jedi_geom
@@ -94,8 +93,7 @@ do gv = 1, geovals%nvar
   if ( trim(self%interp_method) == 'bump' .and. &
        .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
 
-    call bump_apply_ad(field%npz, geom, field%array, locs%nlocs, geovals_all(:,1:field%npz), &
-                       self%bump)
+    call self%bump%apply_ad(field%npz, field%array, locs%nlocs, geovals_all(:,1:field%npz))
 
   else ! Otherwise use unstructured interpolation
 

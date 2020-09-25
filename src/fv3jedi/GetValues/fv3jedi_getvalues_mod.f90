@@ -19,7 +19,7 @@ use ufo_geovals_mod,                only: ufo_geovals
 
 ! fv3jedi uses
 use fv3jedi_constants_mod,          only: rad2deg
-use fv3jedi_bump_mod,               only: bump_init, bump_apply
+use fv3jedi_bump_interp_mod,        only: fv3jedi_bump_interp
 use fv3jedi_field_mod,              only: fv3jedi_field, pointer_field, field_clen, &
                                           long_name_to_fv3jedi_name
 use fv3jedi_geom_mod,               only: fv3jedi_geom
@@ -34,12 +34,12 @@ private
 public :: fv3jedi_getvalues, fv3jedi_getvalues_base
 
 type, abstract :: fv3jedi_getvalues_base
-  integer              :: isc, iec, jsc, jec, npz, ngrid
-  character(len=2048)  :: interp_method
-  type(bump_type)      :: bump
-  integer              :: nnear = 4
-  type(unstrc_interp)  :: unsinterp
-  type(fckit_mpi_comm) :: comm
+  integer                   :: isc, iec, jsc, jec, npz, ngrid
+  character(len=2048)       :: interp_method
+  integer                   :: nnear = 4
+  type(unstrc_interp)       :: unsinterp
+  type(fckit_mpi_comm)      :: comm
+  type(fv3jedi_bump_interp) :: bump
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -77,7 +77,10 @@ self%comm = geom%f_comm
 ! ----------------------------
 self%interp_method = trim(geom%interp_method)
 if (trim(self%interp_method) == 'bump') then
-  call bump_init(geom, locs%nlocs, locs%lat, locs%lon, self%bump, 55555)
+  call self%bump%setup(geom%f_comm, geom%isc, geom%iec, geom%jsc, geom%jec, geom%npz, &
+                       geom%grid_lon(geom%isc:geom%iec, geom%jsc:geom%jec), &
+                       geom%grid_lat(geom%isc:geom%iec, geom%jsc:geom%jec), &
+                       locs%nlocs, locs%lon, locs%lat, 55555)
 endif
 
 ! Always create unstructured interpolation as it is used for special case fields, e.g. integers
@@ -93,7 +96,7 @@ subroutine delete(self)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
 
-if (trim(self%interp_method) == 'bump') call self%bump%dealloc
+if (trim(self%interp_method) == 'bump') call self%bump%delete()
 
 call self%unsinterp%delete()
 
@@ -157,7 +160,7 @@ do gv = 1, geovals%nvar
   if ( trim(self%interp_method) == 'bump' .and. &
        .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
 
-    call bump_apply(field%npz, geom, field%array, locs%nlocs, geovals_all(:,1:field%npz), self%bump)
+    call self%bump%apply(field%npz, field%array, locs%nlocs, geovals_all(:,1:field%npz))
 
   else ! Otherwise use unstructured interpolation
 

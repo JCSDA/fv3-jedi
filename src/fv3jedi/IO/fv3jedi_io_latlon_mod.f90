@@ -12,7 +12,7 @@ use datetime_mod
 use fckit_log_module, only : log
 use fckit_mpi_module
 use fv3jedi_constants_mod, only: rad2deg
-use fv3jedi_bump_mod,      only: bump_init, bump_apply
+!use fv3jedi_bump_interp_mod,      only: bump_init, bump_apply
 
 use type_bump, only: bump_type
 
@@ -148,7 +148,7 @@ else
 
 endif
 
-call bump_init(geom, locs_nlocs, locs_lat, locs_lon, llgeom%bump)
+!call bump_init(geom, locs_nlocs, locs_lat, locs_lon, llgeom%bump)
 
 deallocate(locs_lon)
 deallocate(locs_lat)
@@ -315,7 +315,7 @@ llngrid = llgeom%nx*llgeom%ny
 allocate(llfield_bump(llngrid,geom%npz))
 
 !Bilinear interpolation to latlon grid
-call bump_apply(geom%npz,geom,csfield,llngrid,llfield_bump,llgeom%bump)
+!call bump_apply(geom%npz,geom,csfield,llngrid,llfield_bump,llgeom%bump)
 
 !Unpack BUMP latlon field
 if (llgeom%thispe) then
