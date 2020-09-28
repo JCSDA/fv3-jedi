@@ -1,0 +1,20 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  nested: false
+  do_schmidt: true
+  target_lat: 39.50
+  target_lon: -98.35
+  stretch_fac: 2.0
+  hydrostatic: false
+  nwat: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml

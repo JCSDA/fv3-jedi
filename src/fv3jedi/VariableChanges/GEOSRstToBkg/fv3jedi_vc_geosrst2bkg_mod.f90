@@ -57,25 +57,16 @@ character(len=:), allocatable :: str
 ! Select which variables to transform
 ! -----------------------------------
 
-if( .not. conf%get('do_wind', self%do_wind) ) then
-  self%do_wind = .true.
-endif
+if( .not. conf%get('do_wind',        self%do_wind) ) self%do_wind = .true.
 
-if( .not. conf%get('do_temperature', self%do_temp) ) then
-  self%do_temp = .true.
-endif
+if( .not. conf%get('do_temperature', self%do_temp) ) self%do_temp = .true.
 
-if( .not. conf%get('do_pressure', self%do_pres) ) then
-  self%do_pres = .true.
-endif
+if( .not. conf%get('do_pressure',    self%do_pres) ) self%do_pres = .true.
 
-if( .not. conf%get('do_clouds', self%do_clds) ) then
-  self%do_clds = .true.
-endif
+if( .not. conf%get('do_clouds',      self%do_clds) ) self%do_clds = .true.
 
-if( .not. conf%has('pres_var') ) then
-  self%pres_var = 'delp' ! Default to ps
-else
+self%pres_var = 'delp'
+if( conf%has('pres_var') ) then
   call conf%get_or_die("pres_var",str)
   self%pres_var = str
   deallocate(str)

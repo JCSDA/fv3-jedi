@@ -56,8 +56,7 @@ void LinVarChaModel2GeoVaLs::multiply(const Increment & dxin, Increment & dxout)
 void LinVarChaModel2GeoVaLs::multiplyInverse(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiplyInverse");
   oops::Log::trace() << classname() << " multiplyInverse starting" << std::endl;
-  fv3jedi_lvc_model2geovals_multiplyinverse_f90(keyFtnConfig_, geom_->toFortran(),
-                                            dxin.toFortran(), dxout.toFortran());
+  dxout = dxin;
   oops::Log::trace() << classname() << " multiplyInverse done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -72,8 +71,7 @@ void LinVarChaModel2GeoVaLs::multiplyAD(const Increment & dxin, Increment & dxou
 void LinVarChaModel2GeoVaLs::multiplyInverseAD(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiplyInverseAD");
   oops::Log::trace() << classname() << " multiplyInverseAD starting" << std::endl;
-  fv3jedi_lvc_model2geovals_multiplyinverseadjoint_f90(keyFtnConfig_, geom_->toFortran(),
-                                                       dxin.toFortran(), dxout.toFortran());
+  dxout = dxin;
   oops::Log::trace() << classname() << " multiplyInverseAD done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

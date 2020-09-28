@@ -15,7 +15,5 @@ namespace fv3jedi {
   void fv3jedi_vc_model2geovals_delete_f90(F90vc_M2G &);
   void fv3jedi_vc_model2geovals_changevar_f90(const F90vc_M2G &, const F90geom &, const F90state &,
                                               const F90state &);
-  void fv3jedi_vc_model2geovals_changevarinverse_f90(const F90vc_M2G &, const F90geom &,
-                                                     const F90state &, const F90state &);
   }  // extern "C"
 }  // namespace fv3jedi

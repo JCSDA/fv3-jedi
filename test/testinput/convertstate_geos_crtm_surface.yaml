@@ -37,8 +37,9 @@ states:
     filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.coupler.res
   output:
-   filetype: geos 
+   filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
@@ -50,8 +51,9 @@ states:
     filename_sfcw: 20180414.220000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.220000.coupler.res
   output:
-   filetype: geos 
+   filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
@@ -65,6 +67,7 @@ states:
   output:
    filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
@@ -78,6 +81,7 @@ states:
   output:
    filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
@@ -91,6 +95,7 @@ states:
   output:
    filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
@@ -104,6 +109,7 @@ states:
   output:
    filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
@@ -117,4 +123,5 @@ states:
   output:
    filetype: geos
    datapath: Data/inputs/geos_c12/
+   filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4

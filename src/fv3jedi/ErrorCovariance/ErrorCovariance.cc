@@ -33,10 +33,6 @@ ErrorCovariance::~ErrorCovariance() {
 
 // -------------------------------------------------------------------------------------------------
 
-void ErrorCovariance::linearize(const State &, const Geometry & resol) {}
-
-// -------------------------------------------------------------------------------------------------
-
 void ErrorCovariance::multiply(const Increment & dxin, Increment & dxout) const {
   dxout = dxin;  // Identity
 }
@@ -51,12 +47,6 @@ void ErrorCovariance::inverseMultiply(const Increment & dxin, Increment & dxout)
 
 void ErrorCovariance::randomize(Increment & dx) const {
   dx.random();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void ErrorCovariance::print(std::ostream & os) const {
-  os << "ErrorCovariance::print not implemented";
 }
 
 // -------------------------------------------------------------------------------------------------

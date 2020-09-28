@@ -57,6 +57,7 @@ states:
     filename_cold: cold/20200101.000000.gfs_data.nc
     filename_cplr: cold/20200101.000000.coupler.res
     filename_orog: oro/C12_oro_data.nc
+    skip coupler file: true
   output:
     filetype: gfs
     datapath: Data/inputs/gfs_c12/cold

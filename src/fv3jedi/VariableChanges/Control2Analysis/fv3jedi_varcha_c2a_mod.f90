@@ -22,10 +22,11 @@ use femps_solve_mod
 use femps_fv3_mod
 
 ! fv3jedi
-use fv3jedi_kinds_mod,   only: kind_real
-use fv3jedi_geom_mod,    only: fv3jedi_geom
-use fv3jedi_state_mod,   only: fv3jedi_state
-use fv3jedi_field_mod,   only: copy_subset, has_field, pointer_field_array, field_clen, allocate_copy_field_array
+use fv3jedi_kinds_mod,     only: kind_real
+use fv3jedi_fieldfail_mod, only: field_fail
+use fv3jedi_geom_mod,      only: fv3jedi_geom
+use fv3jedi_state_mod,     only: fv3jedi_state
+use fv3jedi_field_mod,     only: copy_subset, has_field, pointer_field_array, field_clen, allocate_copy_field_array
 
 use pressure_vt_mod
 use temperature_vt_mod
@@ -596,18 +597,6 @@ xctl%calendar_type = xana%calendar_type
 xctl%date_init = xana%date_init
 
 end subroutine changevarinverse
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine field_fail(field)
-
-implicit none
-character(len=*), intent(in) :: field
-
-call abor1_ftn("fv3jedi_vc_model2geovals_mod.field_fail: Field "//trim(field)//&
-               " cannot be obtained from input fields.")
-
-end subroutine field_fail
 
 ! ------------------------------------------------------------------------------
 

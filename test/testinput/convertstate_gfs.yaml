@@ -43,3 +43,11 @@ states:
     filename_sfcd: c24.sfc_data.nc
     filename_sfcw: c24.fv_srf_wnd.res.nc
     filename_cplr: c24.coupler.res
+- input:
+    analytic_init: dcmip-test-4-0
+    date: 2018-04-14T21:00:00Z
+    state variables: [u,v,ua,va,T,DELP,w,delz,sphum,ice_wat,liq_wat,o3mr,phis]
+  output:
+    filetype: geos
+    datapath: Data/
+    filename_bkgd: dcmip-test-4-0.%yyyy%mm%dd_%hh%MM%ssz.nc4

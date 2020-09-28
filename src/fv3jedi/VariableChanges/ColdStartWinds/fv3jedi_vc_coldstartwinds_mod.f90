@@ -9,14 +9,15 @@ module fv3jedi_vc_coldstartwinds_mod
 use fckit_configuration_module, only: fckit_configuration
 
 ! fv3
-use fv_arrays_mod,     only: R_GRID
-use fv_grid_utils_mod, only: mid_pt_sphere, get_unit_vect2, get_latlon_vector, inner_prod
+use fv_arrays_mod,        only: R_GRID
+use fv_grid_utils_mod,    only: mid_pt_sphere, get_unit_vect2, get_latlon_vector, inner_prod
 
 ! fv3jedi
-use fv3jedi_geom_mod,  only: fv3jedi_geom
-use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array, field_clen
-use fv3jedi_kinds_mod, only: kind_real
-use fv3jedi_state_mod, only: fv3jedi_state
+use fv3jedi_geom_mod,      only: fv3jedi_geom
+use fv3jedi_fieldfail_mod, only: field_fail
+use fv3jedi_field_mod,     only: copy_subset, has_field, pointer_field_array, field_clen
+use fv3jedi_kinds_mod,     only: kind_real
+use fv3jedi_state_mod,     only: fv3jedi_state
 
 implicit none
 private
@@ -175,17 +176,6 @@ xout%calendar_type = xin%calendar_type
 xout%date_init = xin%date_init
 
 end subroutine changevar
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine field_fail(field)
-
-character(len=*), intent(in) :: field
-
-call abor1_ftn("fv3jedi_vc_model2geovals_mod.field_fail: Field "//trim(field)//&
-               " cannot be obtained from input fields.")
-
-end subroutine field_fail
 
 ! --------------------------------------------------------------------------------------------------
 

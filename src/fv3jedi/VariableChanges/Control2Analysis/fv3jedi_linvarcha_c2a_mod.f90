@@ -9,6 +9,7 @@ module fv3jedi_linvarcha_c2a_mod
 use fckit_configuration_module, only: fckit_configuration
 
 ! fv3jedi
+use fv3jedi_fieldfail_mod, only: field_fail
 use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
                                  copy_subset, field_clen, zero_fields
 use fv3jedi_geom_mod,      only: fv3jedi_geom
@@ -514,18 +515,6 @@ subroutine control_to_analysis_adm(geom,psi, chi, tv, rh, &
  deallocate(psi_dom, chi_dom)
 
 endsubroutine control_to_analysis_adm
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine field_fail(field)
-
-implicit none
-character(len=*), intent(in) :: field
-
-call abor1_ftn("fv3jedi_lvc_model2geovals_mod.field_fail: Field "//trim(field)//&
-               " cannot be obtained from input fields.")
-
-end subroutine field_fail
 
 ! --------------------------------------------------------------------------------------------------
 

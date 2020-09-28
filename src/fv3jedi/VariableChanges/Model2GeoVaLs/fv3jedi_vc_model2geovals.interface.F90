@@ -129,33 +129,4 @@ end subroutine c_fv3jedi_vc_model2geovals_changevar
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_vc_model2geovals_changevarinverse(c_key_self, c_key_geom, c_key_xg, c_key_xm) &
-           bind (c, name='fv3jedi_vc_model2geovals_changevarinverse_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_xg
-integer(c_int), intent(in) :: c_key_xm
-
-type(fv3jedi_vc_model2geovals), pointer :: self
-type(fv3jedi_geom),             pointer :: geom
-type(fv3jedi_state),            pointer :: xm
-type(fv3jedi_state),            pointer :: xg
-
-! Linked list
-! -----------
-call fv3jedi_vc_model2geovals_registry%get(c_key_self,self)
-call fv3jedi_state_registry%get(c_key_xg,xg)
-call fv3jedi_state_registry%get(c_key_xm,xm)
-call fv3jedi_geom_registry%get(c_key_geom,geom)
-
-! Implementation
-! --------------
-call self%changevarinverse(geom, xg, xm)
-
-end subroutine c_fv3jedi_vc_model2geovals_changevarinverse
-
-! --------------------------------------------------------------------------------------------------
-
 end module fv3jedi_vc_model2geovals_interface_mod

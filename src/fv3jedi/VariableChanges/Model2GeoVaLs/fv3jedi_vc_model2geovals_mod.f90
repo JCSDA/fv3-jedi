@@ -14,6 +14,7 @@ use datetime_mod
 
 use fv3jedi_constants_mod, only: constoz, grav
 use fv3jedi_geom_mod,      only: fv3jedi_geom
+use fv3jedi_fieldfail_mod, only: field_fail
 use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
                                  copy_subset, field_clen
 use fv3jedi_kinds_mod,     only: kind_real
@@ -37,7 +38,6 @@ type :: fv3jedi_vc_model2geovals
     procedure, public :: create
     procedure, public :: delete
     procedure, public :: changevar
-    procedure, public :: changevarinverse
 end type fv3jedi_vc_model2geovals
 
 ! --------------------------------------------------------------------------------------------------
@@ -831,42 +831,6 @@ if (allocated(surface_wind_from_direction)) deallocate(surface_wind_from_directi
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
 
 end subroutine changevar
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine changevarinverse(self, geom, xg, xm)
-
-class(fv3jedi_vc_model2geovals), intent(inout) :: self
-type(fv3jedi_geom),              intent(inout) :: geom
-type(fv3jedi_state),             intent(in)    :: xg
-type(fv3jedi_state),             intent(inout) :: xm
-
-character(len=field_clen), allocatable :: fields_to_do(:)
-
-! Identity part of the change of fields
-! -------------------------------------
-call copy_subset(xg%fields, xm%fields, fields_to_do)
-
-! Not implemented, not needed
-
-! Copy calendar infomation
-! ------------------------
-xm%calendar_type = xg%calendar_type
-xm%date_init = xg%date_init
-
-end subroutine changevarinverse
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine field_fail(field)
-
-implicit none
-character(len=*), intent(in) :: field
-
-call abor1_ftn("fv3jedi_vc_model2geovals_mod.field_fail: Field "//trim(field)//&
-               " cannot be obtained from input fields.")
-
-end subroutine field_fail
 
 ! --------------------------------------------------------------------------------------------------
 

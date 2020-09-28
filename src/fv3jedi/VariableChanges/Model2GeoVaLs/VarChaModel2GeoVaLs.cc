@@ -54,8 +54,7 @@ void VarChaModel2GeoVaLs::changeVar(const State & xin, State & xout) const {
 void VarChaModel2GeoVaLs::changeVarInverse(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVarInverse");
   oops::Log::trace() << classname() << " changeVarInverse starting" << std::endl;
-  fv3jedi_vc_model2geovals_changevarinverse_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
-                                                xout.toFortran());
+  xout = xin;
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVarInverse done" << std::endl;
 }

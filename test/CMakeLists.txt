@@ -15,50 +15,53 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
 # GEOS test files
 # ---------------
 list( APPEND fv3jedi_geos_test_data
-Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem001.nc4
-Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem002.nc4
-Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem003.nc4
-Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem004.nc4
-Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem005.nc4
-Data/inputs/geos_c12/geos.aero.bkg.ext.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180414_220000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180414_230000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180415_010000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180415_020000z.nc4
-Data/inputs/geos_c12/geos.bkg.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem001.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem002.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem003.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem004.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem005.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem006.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem007.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem008.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem009.20180415_030000z.nc4
-Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
-Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
-Data/inputs/geos_c12/geos.mem010.20180415_030000z.nc4
+  Data/inputs/geos_c12/fvcore_internal_rst.20180414_21z.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem001.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem002.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem003.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem004.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem005.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.aero.bkg.ext.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180414_220000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180414_230000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180415_010000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180415_020000z.nc4
+  Data/inputs/geos_c12/geos.bkg.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem001.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem002.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem003.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem004.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem005.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem006.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem007.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem008.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem009.20180415_030000z.nc4
+  Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
+  Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
+  Data/inputs/geos_c12/geos.mem010.20180415_030000z.nc4
+  Data/inputs/geos_c12/moist_internal_rst.20180414_21z.nc4
+  Data/inputs/geos_c12/surf_import_rst.20180414_21z.nc4
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/geos_c12)
@@ -230,7 +233,6 @@ list( APPEND fv3jedi_test_input
   testinput/bumpparameters_nicas_geos.yaml
   testinput/bumpparameters_nicas_gfs_p12.yaml
   testinput/bumpparameters_nicas_gfs.yaml
-  testinput/convertstate_geos_bkg2rst.yaml
   testinput/convertstate_geos_crtm_surface.yaml
   testinput/convertstate_geos.yaml
   testinput/convertstate_gfs_cold2fv3.yaml
@@ -261,6 +263,7 @@ list( APPEND fv3jedi_test_input
   testinput/geometry_iterator_gfs.yaml
   testinput/geometry_iterator_lam_cmaq.yaml
   testinput/geometry_lam_cmaq.yaml
+  testinput/geometry_nested.yaml
   testinput/getvalues_geos.yaml
   testinput/getvalues_gfs.yaml
   testinput/hofx_fv3-geos.yaml
@@ -323,7 +326,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/addincrement_gfs.ref
   testoutput/bumpparameters_nicas_geos.ref
   testoutput/bumpparameters_nicas_gfs.ref
-  testoutput/convertstate_geos_bkg2rst.ref
   testoutput/convertstate_geos_crtm_surface.ref
   testoutput/convertstate_geos.ref
   testoutput/convertstate_gfs_cold2fv3.ref
@@ -842,6 +844,10 @@ fv3jedi_add_test( NAME    geometry_2d
                   EXE     test_fv3jedi_geometry.x
                   INTERFACETEST )
 
+fv3jedi_add_test( NAME    geometry_nested
+                  EXE     test_fv3jedi_geometry.x
+                  INTERFACETEST )
+
 fv3jedi_add_test( NAME    geometry_iterator_gfs
                   EXE     test_fv3jedi_geometryiterator.x
                   INTERFACETEST )
@@ -910,16 +916,13 @@ fv3jedi_add_test( NAME    errorcovariance
 # -------------------------------------------------------
 fv3jedi_add_test( NAME    convertstate_gfs
                   EXE     fv3jedi_convertstate.x
-                  TOL     1.0e-4 0)
+                  TOL     1.0e-3 0)
 
 fv3jedi_add_test( NAME    convertstate_gfs_c2ll
                   EXE     fv3jedi_convertstate.x
                   TOL     1.0e-4 0 )
 
 fv3jedi_add_test( NAME    convertstate_geos
-                  EXE     fv3jedi_convertstate.x )
-
-fv3jedi_add_test( NAME    convertstate_geos_bkg2rst
                   EXE     fv3jedi_convertstate.x )
 
 fv3jedi_add_test( NAME    convertstate_geos_crtm_surface

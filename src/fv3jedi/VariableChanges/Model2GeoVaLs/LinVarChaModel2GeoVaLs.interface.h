@@ -17,9 +17,5 @@ namespace fv3jedi {
                                               const F90inc &);
   void fv3jedi_lvc_model2geovals_multiplyadjoint_f90(const F90lvc_M2G &, const F90geom &,
                                                      const F90inc &, const F90inc &);
-  void fv3jedi_lvc_model2geovals_multiplyinverse_f90(const F90lvc_M2G &, const F90geom &,
-                                                     const F90inc &, const F90inc &);
-  void fv3jedi_lvc_model2geovals_multiplyinverseadjoint_f90(const F90lvc_M2G &, const F90geom &,
-                                                            const F90inc &, const F90inc &);
   }  // extern "C"
 }  // namespace fv3jedi

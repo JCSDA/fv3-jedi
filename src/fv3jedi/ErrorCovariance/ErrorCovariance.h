@@ -45,7 +45,7 @@ class ErrorCovariance : public util::Printable, private boost::noncopyable,
   void randomize(Increment &) const;
 
  private:
-  void print(std::ostream &) const;
+  void print(std::ostream & os) const {os << "ErrorCovariance::print not implemented";}
 };
 // -------------------------------------------------------------------------------------------------
 

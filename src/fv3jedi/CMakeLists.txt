@@ -118,6 +118,7 @@ list( APPEND fv3jedi_src_files
   #VariableChanges/NMCBalance/LinVarChaNMCBal.interface.h
   #VariableChanges/NMCBalance/fv3jedi_linvarcha_nmcbal.interface.F90
   #VariableChanges/NMCBalance/fv3jedi_linvarcha_nmcbal_mod.f90
+  VariableChanges/Utils/fv3jedi_fieldfail_mod.f90
   VariableChanges/Utils/height_variables_mod.f90
   VariableChanges/Utils/moisture_variables_mod.f90
   VariableChanges/Utils/pressure_variables_mod.f90

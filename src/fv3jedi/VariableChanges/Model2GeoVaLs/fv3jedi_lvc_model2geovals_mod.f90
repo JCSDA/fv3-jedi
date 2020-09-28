@@ -14,6 +14,7 @@ use datetime_mod
 
 use fv3jedi_constants_mod, only: constoz
 use fv3jedi_geom_mod,      only: fv3jedi_geom
+use fv3jedi_fieldfail_mod, only: field_fail
 use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
                                  copy_subset, field_clen
 use fv3jedi_increment_mod, only: fv3jedi_increment
@@ -42,8 +43,6 @@ type :: fv3jedi_lvc_model2geovals
     procedure, public :: delete
     procedure, public :: multiply
     procedure, public :: multiplyadjoint
-    procedure, public :: multiplyinverse
-    procedure, public :: multiplyinverseadjoint
 end type fv3jedi_lvc_model2geovals
 
 ! --------------------------------------------------------------------------------------------------
@@ -647,66 +646,6 @@ dxm%date_init = dxg%date_init
 ! endif
 
 end subroutine multiplyadjoint
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine multiplyinverse(self, geom, dxg, dxm)
-
-class(fv3jedi_lvc_model2geovals), intent(inout) :: self
-type(fv3jedi_geom),               intent(inout) :: geom
-type(fv3jedi_increment),          intent(in)    :: dxg
-type(fv3jedi_increment),          intent(inout) :: dxm
-
-character(len=field_clen), allocatable :: fields_to_do(:)
-
-! Identity part of the change of fields
-! -------------------------------------
-call copy_subset(dxg%fields, dxm%fields, fields_to_do)
-
-! Not implemented, not needed
-
-! Copy calendar infomation
-! ------------------------
-dxm%calendar_type = dxg%calendar_type
-dxm%date_init = dxg%date_init
-
-end subroutine multiplyinverse
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine multiplyinverseadjoint(self, geom, dxm, dxg)
-
-class(fv3jedi_lvc_model2geovals), intent(inout) :: self
-type(fv3jedi_geom),               intent(inout) :: geom
-type(fv3jedi_increment),          intent(in)    :: dxm
-type(fv3jedi_increment),          intent(inout) :: dxg
-
-character(len=field_clen), allocatable :: fields_to_do(:)
-
-! Identity part of the change of fields
-! -------------------------------------
-call copy_subset(dxm%fields, dxg%fields, fields_to_do)
-
-! Not implemented, not needed
-
-! Copy calendar infomation
-! ------------------------
-dxg%calendar_type = dxm%calendar_type
-dxg%date_init = dxm%date_init
-
-end subroutine multiplyinverseadjoint
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine field_fail(field)
-
-implicit none
-character(len=*), intent(in) :: field
-
-call abor1_ftn("fv3jedi_lvc_model2geovals_mod.field_fail: Field "//trim(field)//&
-               " cannot be obtained from input fields.")
-
-end subroutine field_fail
 
 ! --------------------------------------------------------------------------------------------------
 
