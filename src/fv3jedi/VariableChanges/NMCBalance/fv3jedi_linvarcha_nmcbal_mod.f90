@@ -25,10 +25,9 @@ use temperature_vt_mod
 use moisture_vt_mod
 use wind_vt_mod
 
-use type_bump, only: bump_type
 use type_gaugrid, only: gaussian_grid
 use fv3jedi_field_mod
-!use fv3jedi_bump_mod, only: bump_init, bump_apply, bump_apply_ad
+use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
 
 implicit none
 private
@@ -56,11 +55,7 @@ type :: fv3jedi_linvarcha_nmcbal
  integer :: ngrid_cs ! data size for grid interpolation
  type(fv3jedi_geom) :: geom_cs
  ! increments
- real(kind=kind_real), allocatable :: wnd1(:,:,:)    ! ua/psi
- real(kind=kind_real), allocatable :: wnd2(:,:,:)    ! va/chi
- real(kind=kind_real), allocatable :: temp(:,:,:)    ! t/tv
- real(kind=kind_real), allocatable :: psrf(:,:,:)    ! ps
- real(kind=kind_real), allocatable :: ugfld(:,:,:) ! unstrucrtured grid field
+ real(kind=kind_real), allocatable :: fld(:,:,:,:)
 
  ! trajectores for varchange
  real(kind=kind_real), allocatable :: ttraj(:,:,:)    ! tempature
@@ -78,7 +73,7 @@ type :: fv3jedi_linvarcha_nmcbal
  integer :: hx,hy       ! halo size
  integer :: layout(2)   ! domain layout
  integer,allocatable :: istrx(:),jstry(:) ! start index at each subdomain
- integer :: ngrid_gg, ngrid_gg1 ! data size for grid interpolation
+ integer :: ngrid_ggh, ngrid_gg ! data size for grid interpolation (with and without halo)
  ! regression coeffs for GSI unbalanced variables
  character(len=256) :: path_to_nmcbalance_coeffs  ! path to netcdf file
  integer :: read_latlon_from_nc                   ! 1: read rlats/rlons of
@@ -94,10 +89,10 @@ type :: fv3jedi_linvarcha_nmcbal
  real(kind=kind_real), pointer :: ps (:,:)   => null() ! surface pressure 
 
  !
- ! bump for grid interpolations
+ ! bump interpolation
  !
- type(bump_type) :: bump_c2g ! bump for cubed-sphere to Gaussian grid
- type(bump_type) :: bump_g2c ! bump for Gaussian to cubed-sphere grid
+ type(fv3jedi_bump_interp) :: c2g ! bump_interpolation from cubed-sphere to Gaussian grid
+ type(fv3jedi_bump_interp) :: g2c ! bump interpolation from Gaussian to cubed-sphere grid
 
 end type fv3jedi_linvarcha_nmcbal
 
@@ -156,16 +151,9 @@ call get_qsat(geom,delp,t,q,self%qsattraj)
 self%isc = geom%isc; self%iec = geom%iec
 self%jsc = geom%jsc; self%jec = geom%jec
 self%npz = geom%npz
-! ua/psi
-allocate(self%wnd1(self%isc:self%iec,self%jsc:self%jec,self%npz))
-! va/chi
-allocate(self%wnd2(self%isc:self%iec,self%jsc:self%jec,self%npz))
-! t/tv
-allocate(self%temp(self%isc:self%iec,self%jsc:self%jec,self%npz))
-! ps
-allocate(self%psrf(self%isc:self%iec,self%jsc:self%jec,       1))
-self%wnd1 = 0.0_kind_real; self%wnd2 = 0.0_kind_real
-self%temp = 0.0_kind_real; self%psrf = 0.0_kind_real
+! fields
+allocate(self%fld(self%isc:self%iec,self%jsc:self%jec,self%npz,4))
+self%fld = 0.0_kind_real
 
 ! 2. Read balance operator grid from NetCDF
 if (conf%has("path_to_nmcbalance_coeffs")) then
@@ -283,11 +271,7 @@ if (allocated(self%agvz))     deallocate(self%agvz)
 if (allocated(self%wgvz))     deallocate(self%wgvz)
 if (allocated(self%bvz))      deallocate(self%bvz)
 
-if (allocated(self%wnd1))     deallocate(self%wnd1)
-if (allocated(self%wnd2))     deallocate(self%wnd2)
-if (allocated(self%temp))     deallocate(self%temp)
-if (allocated(self%psrf))     deallocate(self%psrf)
-if (allocated(self%ugfld))    deallocate(self%ugfld)
+if (allocated(self%fld))     deallocate(self%fld)
 
 ! Nullify pointers
 if (associated(self%psi))     nullify(self%psi)
@@ -298,8 +282,8 @@ if (associated(self%ps))      nullify(self%ps)
 call self%glb%delete()
 call self%gg%delete()
 
-call self%bump_c2g%dealloc()
-call self%bump_g2c%dealloc()
+call self%c2g%delete()
+call self%g2c%delete()
 
 end subroutine delete
 
@@ -346,10 +330,10 @@ call pointer_field_array(xbal%fields, 'ps' , xbal_ps)
 ! Apply Balance operator to psi,chi,tv(,ps)
 
 ! input cubed-sphere fields
-self%wnd1 = xuba_psi
-self%wnd2 = xuba_chi
-self%temp = xuba_tv
-self%psrf = xuba_ps
+self%fld(:,:,:,1) = xuba_psi
+self%fld(:,:,:,2) = xuba_chi
+self%fld(:,:,:,3) = xuba_tv
+self%fld(:,:,1:1,4) = xuba_ps
 
 ! 1. Intep to Gaussian grid (using bump)
 call field_interp_to_gaugrid(self)
@@ -365,8 +349,8 @@ call field_interp_from_gaugrid(self)
 allocate(psi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
 allocate(chi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
 psi_d = 0.0_kind_real; chi_d = 0.0_kind_real
-psi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:) = self%wnd1
-chi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:) = self%wnd2
+psi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:) = self%fld(:,:,:,1)
+chi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:) = self%fld(:,:,:,2)
 call psichi_to_uava(geom,psi_d,chi_d,xbal_ua,xbal_va)
 deallocate(psi_d,chi_d)
 
@@ -374,10 +358,10 @@ deallocate(psi_d,chi_d)
 call rh_to_q_tl(geom,self%qsattraj,xuba_rh,xbal_q)
 
 !Tv -> T
-call tv_to_t_tl(geom,self%tvtraj,self%temp,self%qtraj,xbal_q,xbal_t)
+call tv_to_t_tl(geom,self%tvtraj,self%fld(:,:,:,3),self%qtraj,xbal_q,xbal_t)
 
 !Ps
-xbal_ps = self%psrf
+xbal_ps = self%fld(:,:,1:1,4)
 
 ! Copy calendar infomation
 xbal%calendar_type = xuba%calendar_type
@@ -431,17 +415,14 @@ call pointer_field_array(xuba%fields, 'ps' , xuba_ps)
 xuba_ps(:,:,1) = ps_not_copied(:,:,1)
 deallocate(ps_not_copied)
 
-self%wnd1 = 0.0_kind_real
-self%wnd2 = 0.0_kind_real
-self%temp = 0.0_kind_real
-self%psrf = 0.0_kind_real
+self%fld = 0.0_kind_real
 
 ! 1. Adjoint of linear variable changes (Control to Analysis)
 !Ps
-self%psrf = xbal_ps; xbal_ps = 0.0_kind_real
+self%fld(:,:,1:1,4) = xbal_ps; xbal_ps = 0.0_kind_real
 
 !Tv -> T
-call tv_to_t_ad(geom,self%tvtraj,self%temp,self%qtraj,xbal_q,xbal_t)
+call tv_to_t_ad(geom,self%tvtraj,self%fld(:,:,:,3),self%qtraj,xbal_q,xbal_t)
 
 !rh -> q
 call rh_to_q_ad(geom,self%qsattraj,xuba_rh,xbal_q)
@@ -451,8 +432,8 @@ allocate(psi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
 allocate(chi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
 psi_d = 0.0_kind_real; chi_d = 0.0_kind_real
 call psichi_to_uava_adm(geom,psi_d,chi_d,xbal_ua,xbal_va)
-self%wnd1 = psi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-self%wnd2 = chi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+self%fld(:,:,:,1) = psi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+self%fld(:,:,:,2) = chi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:)
 deallocate(psi_d,chi_d)
 
 ! 2. Adjoint of intep. back to cubed-sphere grid
@@ -464,10 +445,11 @@ call tbalance(self)
 ! 4. Adjoint of intep. to Gaussian grid
 call field_interp_to_gaugrid_ad(self)
 
-xuba_ps   = xuba_ps  + self%psrf; self%psrf = 0.0_kind_real
-xuba_tv   = xuba_tv  + self%temp; self%temp = 0.0_kind_real
-xuba_psi  = xuba_psi + self%wnd1; self%wnd1 = 0.0_kind_real
-xuba_chi  = xuba_chi + self%wnd2; self%wnd2 = 0.0_kind_real
+xuba_ps   = xuba_ps  + self%fld(:,:,1:1,4)
+xuba_tv   = xuba_tv  + self%fld(:,:,:,3)
+xuba_psi  = xuba_psi + self%fld(:,:,:,1)
+xuba_chi  = xuba_chi + self%fld(:,:,:,2)
+self%fld = 0.0_kind_real
 
 ! Copy calendar infomation
 xuba%calendar_type = xbal%calendar_type
@@ -768,100 +750,72 @@ implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 type(fv3jedi_geom), target,     intent(in)    :: geom
 
-real(kind=kind_real), allocatable :: lon_cs(:,:) ! Cubed-sphere longitudes
-real(kind=kind_real), allocatable :: lat_cs(:,:) ! Cubed-sphere latitudes
-real(kind=kind_real), allocatable :: lon_gg(:,:) ! Gaussian longitudes
-real(kind=kind_real), allocatable :: lat_gg(:,:) ! Gaussian latitudes
-real(kind=kind_real), allocatable :: area(:),vunit(:,:)
-logical, allocatable :: lmask(:,:)
+integer :: jx,jy,jnode
+real(kind=kind_real), pointer :: real_ptr(:,:)
+real(kind=kind_real), allocatable :: lon_cs(:)  ! Cubed-sphere longitudes
+real(kind=kind_real), allocatable :: lat_cs(:)  ! Cubed-sphere latitudes
+real(kind=kind_real), allocatable :: lon_ggh(:) ! Gaussian longitudes with halo
+real(kind=kind_real), allocatable :: lat_ggh(:) ! Gaussian latitudes with halo
+real(kind=kind_real), allocatable :: lon_gg(:,:)  ! Gaussian longitudes without halo
+real(kind=kind_real), allocatable :: lat_gg(:,:)  ! Gaussian latitudes without halo
 
-integer :: i,j,ij
-
+! Check grid size
 if(  (geom%isc/=self%isc).or.(geom%iec/=self%iec) &
 &.or.(geom%jsc/=self%jsc).or.(geom%jec/=self%jec)) then
   call abor1_ftn("fv3jedi_linvarcha_nmcbal_mod.bump_init_gaugrid:&
 & grid does not match that in the geometry")
 end if
 
+! Cubed-sphere grid
 self%ngrid_cs = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
-allocate(lon_cs(self%ngrid_cs,1))
-allocate(lat_cs(self%ngrid_cs,1))
-ij=0
-do j=geom%jsc,geom%jec
-  do i=geom%isc,geom%iec
-    ij = ij+1
-    lon_cs(ij,1)=geom%grid_lon(i,j)*rad2deg
-    lat_cs(ij,1)=geom%grid_lat(i,j)*rad2deg
+allocate(lon_cs(self%ngrid_cs))
+allocate(lat_cs(self%ngrid_cs))
+jnode = 0
+do jy=geom%jsc,geom%jec
+  do jx=geom%isc,geom%iec
+    jnode = jnode+1
+    lon_cs(jnode) = geom%grid_lon(jx,jy)*rad2deg
+    lat_cs(jnode) = geom%grid_lat(jx,jy)*rad2deg
   end do
 end do
 
-! bump setup for cubed-shere to Gaussian grid
-self%ngrid_gg=self%gg%nlat*self%gg%nlon ! packed data size with halo
-allocate(lon_gg(self%ngrid_gg,1))
-allocate(lat_gg(self%ngrid_gg,1))
-ij=0
-do j=1,self%gg%nlat
-  do i=1,self%gg%nlon
-    ij = ij+1
-    lon_gg(ij,1)=self%gg%rlons(i)*rad2deg
-    lat_gg(ij,1)=self%gg%rlats(j)*rad2deg
+! Gaussian grid with and without halo
+self%ngrid_ggh = self%gg%nlat*self%gg%nlon
+self%ngrid_gg = (self%gg%nlat-self%hy*2)*(self%gg%nlon-self%hx*2)
+allocate(lon_ggh(self%ngrid_ggh))
+allocate(lat_ggh(self%ngrid_ggh))
+allocate(lon_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy))
+allocate(lat_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy))
+jnode = 0
+do jy=1,self%gg%nlat
+  do jx=1,self%gg%nlon
+    jnode = jnode+1
+    lon_ggh(jnode) = self%gg%rlons(jx)*rad2deg
+    lat_ggh(jnode) = self%gg%rlats(jy)*rad2deg
+  end do
+end do
+do jy=1+self%hy,self%gg%nlat-self%hy
+  do jx=1+self%hx,self%gg%nlon-self%hx
+    lon_gg(jx,jy) = self%gg%rlons(jx)
+    lat_gg(jx,jy) = self%gg%rlats(jy)
   end do
 end do
 
-! allocate unstructured gird field
-allocate(self%ugfld(self%ngrid_cs,self%npz,4))
-self%ugfld = 0.0_kind_real
+! BUMP setup
+call self%c2g%setup(geom%f_comm,                                        &
+&                   geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz,       &
+&                   geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), &
+&                   geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), &
+&                   self%ngrid_ggh,lon_ggh,lat_ggh)
+call self%g2c%setup(geom%f_comm,                                                            &
+&                   1+self%hx,self%gg%nlon-self%hx,1+self%hy,self%gg%nlat-self%hy,geom%npz, &
+&                   lon_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy),  &
+&                   lat_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy),  &
+&                   self%ngrid_cs,lon_cs,lat_cs)
 
-!call bump_init(geom,self%ngrid_gg,lat_gg,lon_gg,self%bump_c2g)
-call self%bump_c2g%nam%init(self%npe)
-self%bump_c2g%nam%prefix = trim("dummy")
-self%bump_c2g%nam%default_seed = .true.
-self%bump_c2g%nam%new_obsop = .true.
-self%bump_c2g%nam%write_obsop = .false.
-self%bump_c2g%nam%verbosity = "none"
-allocate(area(self%ngrid_cs))          ; area  = 1.0_kind_real
-allocate(vunit(self%ngrid_cs,self%npz)); vunit = 1.0_kind_real
-allocate(lmask(self%ngrid_cs,self%npz)); lmask = .true.
-call self%bump_c2g%setup_online(              &
-&     geom%f_comm,self%ngrid_cs,self%npz,1,1, &
-&     lon_cs,lat_cs,area,vunit,lmask,         &
-&     nobs=self%ngrid_gg,                     &
-&     lonobs=lon_gg(:,1),latobs=lat_gg(:,1))
-call self%bump_c2g%run_drivers()
-deallocate(area,vunit,lmask)
-deallocate(lon_gg,lat_gg)
-
-! bump setup for Gaussian to cubed-sphere grid
-self%ngrid_gg1=(self%gg%nlat-self%hy*2)*(self%gg%nlon-self%hx*2) ! paked data size without halo
-allocate(lon_gg(self%ngrid_gg1,1))
-allocate(lat_gg(self%ngrid_gg1,1))
-ij=0
-do j=1+self%hy,self%gg%nlat-self%hy
-  do i=1+self%hx,self%gg%nlon-self%hx
-    ij = ij+1
-    lon_gg(ij,1)=self%gg%rlons(i)*rad2deg
-    lat_gg(ij,1)=self%gg%rlats(j)*rad2deg
-  end do
-end do
-
-!call bump_init(geom_gg1,self%ngrid_cs,lat_cs,lon_cs,self%bump_g2c)
-call self%bump_g2c%nam%init(self%npe)
-self%bump_g2c%nam%prefix = trim("dummy")
-self%bump_g2c%nam%default_seed = .true.
-self%bump_g2c%nam%new_obsop = .true.
-self%bump_g2c%nam%write_obsop = .false.
-self%bump_g2c%nam%verbosity = "none"
-allocate(area(self%ngrid_gg1))         ; area  = 1.0_kind_real
-allocate(vunit(self%ngrid_gg1,self%nz)); vunit = 1.0_kind_real
-allocate(lmask(self%ngrid_gg1,self%nz)); lmask = .true.
-call self%bump_g2c%setup_online(              &
-&     geom%f_comm,self%ngrid_gg1,self%nz,1,1, &
-&     lon_gg,lat_gg,area,vunit,lmask,         &
-&     nobs=self%ngrid_cs,                     &
-&     lonobs=lon_cs(:,1),latobs=lat_cs(:,1))
-call self%bump_g2c%run_drivers()
-deallocate(area,vunit,lmask)
+! Release memory
 deallocate(lon_cs,lat_cs)
+deallocate(lon_ggh,lat_ggh)
 deallocate(lon_gg,lat_gg)
 
 end subroutine bump_init_gaugrid
@@ -1019,108 +973,41 @@ deallocate(agvin,wgvin,bvin)
 end subroutine read_nmcbalance_coeffs
 
 ! ------------------------------------------------------------------------------
-! Pack increments
-subroutine pack_inc_all(self,input_to_zero)
-
-implicit none
-type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
-logical,                        intent(in)    :: input_to_zero
-
-integer :: imga,jx,jy,jl
-
-if(.not.allocated(self%ugfld)) allocate(self%ugfld(self%ngrid_cs,self%npz,4))
-self%ugfld = 0.0_kind_real
-imga = 0
-do jy=self%jsc,self%jec
-  do jx=self%isc,self%iec
-    imga = imga+1
-    do jl=1,self%npz
-      self%ugfld(imga,jl,1) = self%wnd1(jx,jy,jl)
-      self%ugfld(imga,jl,2) = self%wnd2(jx,jy,jl)
-      self%ugfld(imga,jl,3) = self%temp(jx,jy,jl)
-    end do
-    self%ugfld(imga,1,4) = self%psrf(jx,jy,1)
-  end do
-end do
-
-if(input_to_zero)then
-  self%wnd1 = 0.0_kind_real
-  self%wnd2 = 0.0_kind_real
-  self%temp = 0.0_kind_real
-  self%psrf = 0.0_kind_real
-end if
-
-end subroutine pack_inc_all
-
-! ------------------------------------------------------------------------------
-! Unpack increments
-subroutine unpack_inc_all(self,input_to_zero,do_adj)
-
-implicit none
-type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
-logical,                        intent(in)    :: input_to_zero
-logical,                        intent(in)    :: do_adj
-
-integer :: imga,jx,jy,jl
-
-if(.not.allocated(self%ugfld)) then
-  call abor1_ftn("fv3jedi_linvarcha_nmcbal_mod.unpack_inc_all:&
-& ugfld is not allocated")
-end if
-
-if(.not.do_adj) then
-  self%wnd1 = 0.0_kind_real
-  self%wnd2 = 0.0_kind_real
-  self%temp = 0.0_kind_real
-  self%psrf = 0.0_kind_real
-end if
-
-imga = 0
-do jy=self%jsc,self%jec
-  do jx=self%isc,self%iec
-    imga = imga+1
-    do jl=1,self%npz
-      self%wnd1(jx,jy,jl) = self%wnd1(jx,jy,jl) + self%ugfld(imga,jl,1)
-      self%wnd2(jx,jy,jl) = self%wnd2(jx,jy,jl) + self%ugfld(imga,jl,2)
-      self%temp(jx,jy,jl) = self%temp(jx,jy,jl) + self%ugfld(imga,jl,3)
-    end do
-    self%psrf(jx,jy,1) = self%psrf(jx,jy,1) + self%ugfld(imga,1,4)
-  end do
-end do
-
-if(input_to_zero) self%ugfld = 0.0_kind_real
-
-end subroutine unpack_inc_all
-
-! ------------------------------------------------------------------------------
 ! Interpolate cubed-sphere grid field to Gaussian gird using bump
 subroutine field_interp_to_gaugrid(self)
 
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-real(kind_real),allocatable :: ugfld_g(:,:) ! packed Gaussian gird field
-integer :: i,j,k,n,ij
+integer :: jvar,jnode,jx,jy,jz
+real(kind_real),allocatable :: vec(:,:)
 
-! Pack cubed-sphere field to unstrucured grid field
-call pack_inc_all(self,.false.)
+! Allocation
+allocate(vec(self%ngrid_ggh,self%gg%nlev))
 
-allocate(ugfld_g(self%ngrid_gg,self%gg%nlev))
-do n=1,4
-  ugfld_g=0.0_kind_real
-  call self%bump_c2g%apply_obsop(self%ugfld(:,:,n),ugfld_g(:,:))
-  do k=1,self%gg%nlev
-    ij=0
-    do j=1,self%gg%nlat
-      do i=1,self%gg%nlon
-        ij = ij+1
-        self%gg%fld(j,i,k,n)=ugfld_g(ij,k)
+do jvar=1,4
+  ! Initialization
+  vec = 0.0_kind_real
+
+  ! Apply interpolation
+  call self%c2g%apply(self%npz,                                                      & 
+ &                    self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
+ &                    self%ngrid_ggh,vec)
+
+  ! Copy to Gaussian grid structure
+  do jz=1,self%gg%nlev
+    jnode = 0
+    do jy=1,self%gg%nlat
+      do jx=1,self%gg%nlon
+        jnode = jnode+1
+        self%gg%fld(jy,jx,jz,jvar) = vec(jnode,jz)
       end do
     end do
   end do
 end do
 
-deallocate(ugfld_g)
+! Release memory
+deallocate(vec)
 
 end subroutine field_interp_to_gaugrid
 
@@ -1131,28 +1018,45 @@ subroutine field_interp_from_gaugrid(self)
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-real(kind_real),allocatable :: ugfld_g(:,:) ! packed Gaussian grid field
-integer :: i,j,k,n,ij
+integer :: jvar,jx,jy,jz,jnode
+real(kind_real),allocatable :: fld(:,:,:),vec(:,:)
 
-allocate(ugfld_g(self%ngrid_gg1,self%gg%nlev))
-do n=1,4
-  ugfld_g=0.0_kind_real
-  do k=1,self%gg%nlev
-    ij=0
-    do j=1+self%hy,self%gg%nlat-self%hy
-      do i=1+self%hx,self%gg%nlon-self%hx
-        ij = ij+1
-        ugfld_g(ij,k)=self%gg%fld(j,i,k,n)
+! Allocation
+allocate(fld(self%gg%nlon,self%gg%nlat,self%gg%nlev))
+allocate(vec(self%ngrid_cs,self%npz))
+
+do jvar=1,4
+  ! Copy from Gaussian grid structure
+  fld = 0.0_kind_real
+  do jz=1,self%gg%nlev
+    do jy=1+self%hy,self%gg%nlat-self%hy
+      do jx=1+self%hx,self%gg%nlon-self%hx
+        fld(jx,jy,jz) = self%gg%fld(jy,jx,jz,jvar)
       end do
     end do
   end do
-  call self%bump_g2c%apply_obsop(ugfld_g(:,:),self%ugfld(:,:,n))
+
+
+  ! Apply interpolation
+  call self%g2c%apply(self%gg%nlev,                                                                      &
+ &                    fld(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy,1:self%gg%nlev), &
+ &                    self%ngrid_cs,vec)
+
+  ! Copy to cubed-spere structure
+  do jz=1,self%npz
+    jnode = 0
+    do jy=self%jsc,self%jec
+       do jx=self%isc,self%iec
+         jnode = jnode+1
+         self%fld(jx,jy,jz,jvar) = vec(jnode,jz)
+       end do
+    end do
+  end do
 end do
 
-! Unack unstrucured grid field to cubed-sphere field
-call unpack_inc_all(self,.false.,.false.)
-
-deallocate(ugfld_g)
+! Release memory
+deallocate(fld)
+deallocate(vec)
 
 end subroutine field_interp_from_gaugrid
 
@@ -1163,28 +1067,39 @@ subroutine field_interp_to_gaugrid_ad(self)
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-real(kind_real),allocatable :: ugfld_g(:,:) ! packed Gaussian grid field
-integer :: i,j,k,n,ij
+integer :: jvar,jnode,jx,jy,jz
+real(kind_real),allocatable :: vec(:,:)
 
-allocate(ugfld_g(self%ngrid_gg,self%gg%nlev))
-do n=1,4
-  ugfld_g=0.0_kind_real
-  do k=1,self%gg%nlev
-    ij=0
-    do j=1,self%gg%nlat
-      do i=1,self%gg%nlon
-        ij = ij+1
-        ugfld_g(ij,k)=self%gg%fld(j,i,k,n)
+! Allocation
+allocate(vec(self%ngrid_ggh,self%gg%nlev))
+
+do jvar=1,4
+  ! Initialization
+  vec = 0.0_kind_real
+
+  ! Copy to Gaussian grid structure
+  do jz=1,self%gg%nlev
+    jnode = 0
+    do jy=1,self%gg%nlat
+      do jx=1,self%gg%nlon
+        jnode = jnode+1
+        vec(jnode,jz) = self%gg%fld(jy,jx,jz,jvar)
       end do
     end do
   end do
-  call self%bump_c2g%apply_obsop_ad(ugfld_g(:,:),self%ugfld(:,:,n))
+
+  ! Apply interpolation
+  call self%c2g%apply_ad(self%npz,                                                      &
+ &                       self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
+ &                       self%ngrid_ggh,vec)
+
 end do
 
-! Adjoint of paking
-call unpack_inc_all(self,.true.,.true.)
+! Reset input field
+self%gg%fld = 0.0_kind_real
 
-deallocate(ugfld_g)
+! Release memory
+deallocate(vec)
 
 end subroutine field_interp_to_gaugrid_ad
 
@@ -1195,30 +1110,51 @@ subroutine field_interp_from_gaugrid_ad(self)
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-real(kind_real),allocatable :: ugfld_g(:,:) ! paked Gaussian grid field
-integer :: i,j,k,n,ij
 
-! Adjoint of unpaking
-call pack_inc_all(self,.true.)
+integer :: jvar,jx,jy,jz,jnode
+real(kind_real),allocatable :: fld(:,:,:),vec(:,:)
 
-allocate(ugfld_g(self%ngrid_gg1,self%gg%nlev))
-self%gg%fld=0.0_kind_real
-do n=1,4
-  ugfld_g=0.0_kind_real
-  call self%bump_g2c%apply_obsop_ad(self%ugfld(:,:,n),ugfld_g(:,:))
-  do k=1,self%gg%nlev
-    ij=0
-    do j=1+self%hy,self%gg%nlat-self%hy
-      do i=1+self%hx,self%gg%nlon-self%hx
-        ij = ij+1
-!        self%gg%fld(j,i,k,n)=self%gg%fld(j,i,k,n)+ugfld_g(ij,k)
-        self%gg%fld(j,i,k,n)=ugfld_g(ij,k)
+! Allocation
+allocate(fld(self%gg%nlon,self%gg%nlat,self%gg%nlev))
+allocate(vec(self%ngrid_cs,self%npz))
+
+! Initialization
+self%gg%fld = 0.0_kind_real
+
+do jvar=1,4
+  ! Copy to cubed-spere structure
+  do jz=1,self%npz
+    jnode = 0
+    do jy=self%jsc,self%jec
+       do jx=self%isc,self%iec
+         jnode = jnode+1
+         vec(jnode,jz) = self%fld(jx,jy,jz,jvar)
+       end do
+    end do
+  end do
+
+  ! Apply interpolation
+  call self%g2c%apply_ad(self%gg%nlev,                                                                      &
+ &                       fld(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy,1:self%gg%nlev), &
+ &                       self%ngrid_cs,vec)
+
+  ! Copy from Gaussian grid structure
+  do jz=1,self%gg%nlev
+    do jy=1+self%hy,self%gg%nlat-self%hy
+      do jx=1+self%hx,self%gg%nlon-self%hx
+        self%gg%fld(jy,jx,jz,jvar) = self%gg%fld(jy,jx,jz,jvar)+fld(jx,jy,jz)
       end do
     end do
   end do
+  fld = 0.0_kind_real
 end do
 
-deallocate(ugfld_g)
+! Reset input field
+self%fld = 0.0_kind_real
+
+! Release memory
+deallocate(fld)
+deallocate(vec)
 
 end subroutine field_interp_from_gaugrid_ad
 

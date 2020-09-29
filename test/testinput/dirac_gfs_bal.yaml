@@ -25,8 +25,8 @@ background error:
   date: '2018-04-14T21:00:00Z'
   variable changes:
   - variable change: NMCBalance
-    input variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
-    output variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+    input variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+    output variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
     layoutx: 3
     layouty: 2
     path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
