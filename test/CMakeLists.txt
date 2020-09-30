@@ -1123,7 +1123,7 @@ endif()
 if( NOT ${BUNDLE_SKIP_GEOS-AERO} )
   fv3jedi_add_test( NAME         3denvar_geos_aero
                     EXE          fv3jedi_var.x
-                    TOL          0.0 0
+                    NOCOMPARE 
                     TEST_DEPENDS test_fv3jedi_bumpparameters_nicas_geos )
 endif()
 
