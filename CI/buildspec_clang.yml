@@ -74,7 +74,7 @@ phases:
       - ./clone.sh $GIT_USER $GIT_PASS femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
 
       # fms
-      - ./clone.sh $GIT_USER $GIT_PASS FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable
+      - ./clone.sh $GIT_USER $GIT_PASS FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable-ecbuild
 
       # GFDL_atmos_cubed_sphere
       - ./clone.sh $GIT_USER $GIT_PASS GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
@@ -90,7 +90,7 @@ phases:
 
       # ropp
       - ./clone.sh $GIT_USER $GIT_PASS ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
-     
+
       - cd /jcsda/fv3-bundle
       - sed -i 's/BRANCH develop UPDATE//' CMakeLists.txt
       - sed -i 's/BRANCH dev\/master-ecbuild UPDATE//' CMakeLists.txt
