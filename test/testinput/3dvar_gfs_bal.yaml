@@ -19,14 +19,14 @@ cost function:
       mpicom: 2
       verbosity: main
       io_keys:
-      - "psi_2018-04-15T00:00:00Z-psi_2018-04-15T00:00:00Z"
-      - "chi_2018-04-15T00:00:00Z-chi_2018-04-15T00:00:00Z"
-      - "tv_2018-04-15T00:00:00Z-tv_2018-04-15T00:00:00Z"
-      - "ps_2018-04-15T00:00:00Z-ps_2018-04-15T00:00:00Z"
-      - "rh_2018-04-15T00:00:00Z-rh_2018-04-15T00:00:00Z"
-      - "ice_wat_2018-04-15T00:00:00Z-ice_wat_2018-04-15T00:00:00Z"
-      - "liq_wat_2018-04-15T00:00:00Z-liq_wat_2018-04-15T00:00:00Z"
-      - "o3mr_2018-04-15T00:00:00Z-o3mr_2018-04-15T00:00:00Z"
+      - "psi-psi"
+      - "chi-chi"
+      - "tv-tv"
+      - "ps-ps"
+      - "rh-rh"
+      - "ice_wat-ice_wat"
+      - "liq_wat-liq_wat"
+      - "o3mr-o3mr"
       io_values:
       - "fixed_2500km_0.3"
       - "fixed_2500km_0.3"

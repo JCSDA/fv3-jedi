@@ -29,6 +29,14 @@ extern "C" {
   void fv3jedi_state_write_file_f90(const F90geom &, const F90state &,
                                     const eckit::Configuration * const *,
                                     const util::DateTime * const *);
+
+  void fv3jedi_state_sersize_f90(const F90state &, int &);
+
+  void fv3jedi_state_serialize_f90(const F90state &, const std::size_t &, double[]);
+
+  void fv3jedi_state_deserialize_f90(const F90state &, const std::size_t &, const double[],
+                                     const std::size_t &);
+
   void fv3jedi_state_rms_f90(const F90state &, double &);
   void fv3jedi_state_getnfieldsncube_f90(const F90state &, int &, int &);
   void fv3jedi_state_getminmaxrms_f90(const F90state &, int &, const int &, char*, double &);

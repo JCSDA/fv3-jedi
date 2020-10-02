@@ -164,18 +164,15 @@ void Increment::setLocal(const oops::LocalIncrement & values, const GeometryIter
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::setAtlas(atlas::FieldSet * afieldset) const {
-  const util::DateTime * dtp = &time_;
-  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars_, &dtp, afieldset->get());
+  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::toAtlas(atlas::FieldSet * afieldset) const {
-  const util::DateTime * dtp = &time_;
-  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars_, &dtp, afieldset->get());
+  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::fromAtlas(atlas::FieldSet * afieldset) {
-  const util::DateTime * dtp = &time_;
-  fv3jedi_increment_from_atlas_f90(keyInc_, geom_->toFortran(), vars_, &dtp, afieldset->get());
+  fv3jedi_increment_from_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::read(const eckit::Configuration & config) {

@@ -319,8 +319,6 @@ LINK_FILES( "${fv3jedi_test_input}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # -------------------
 list( APPEND fv3jedi_testoutput
   testoutput/3denvar_geos_aero.ref
-  testoutput/4denvar_geos.ref
-  testoutput/4denvar_gfs.ref
   testoutput/4denvar.ref
   testoutput/addincrement_geos.ref
   testoutput/addincrement_gfs.ref
@@ -1141,6 +1139,7 @@ fv3jedi_add_test( NAME         hyb-fgat_gfs_aero
 # -------
 fv3jedi_add_test( NAME         4denvar
                   EXE          fv3jedi_var.x
+                  MPI          18
                   TEST_DEPENDS bumpparameters_nicas_gfs )
 
 # Hybrid 4DVar

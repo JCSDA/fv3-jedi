@@ -381,11 +381,6 @@ real(kind=kind_real), allocatable :: llfield(:,:,:)
 integer :: ncid, varid
 integer :: x_dimid, y_dimid, z_dimid, t_dimid, dimids(4)
 
-integer :: jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
-type(atlas_field) :: afield
-type(atlas_fieldset) :: afieldset
-
 ! Interpolate the field to the lat-lon grid
 ! -----------------------------------------
 

@@ -194,32 +194,25 @@ end subroutine random
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_atlas(self, geom, vars, vdate, afieldset)
+subroutine set_atlas(self, geom, vars, afieldset)
 
 implicit none
 type(fv3jedi_increment), intent(in)    :: self
 type(fv3jedi_geom),      intent(in)    :: geom
 type(oops_variables),    intent(in)    :: vars
-type(datetime),          intent(in)    :: vdate
 type(atlas_fieldset),    intent(inout) :: afieldset
 
 integer :: jvar, jf
 logical :: var_found
-character(len=20) :: sdate
-character(len=1024) :: fieldname
 type(atlas_field) :: afield
-
-! Set date
-call datetime_to_string(vdate,sdate)
 
 do jvar = 1,vars%nvars()
   var_found = .false.
   do jf = 1,self%nf
     if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      fieldname = trim(vars%variable(jvar))//'_'//sdate
-      if (.not.afieldset%has_field(trim(fieldname))) then
+      if (.not.afieldset%has_field(vars%variable(jvar))) then
         ! Create field
-        afield = geom%afunctionspace%create_field(name=trim(fieldname),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
+        afield = geom%afunctionspace%create_field(name=vars%variable(jvar),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
 
         ! Add field
         call afieldset%add(afield)
@@ -240,36 +233,29 @@ end subroutine set_atlas
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine to_atlas(self, geom, vars, vdate, afieldset)
+subroutine to_atlas(self, geom, vars, afieldset)
 
 implicit none
 type(fv3jedi_increment), intent(in)    :: self
 type(fv3jedi_geom),      intent(in)    :: geom
 type(oops_variables),    intent(in)    :: vars
-type(datetime),          intent(in)    :: vdate
 type(atlas_fieldset),    intent(inout) :: afieldset
 
 integer :: jvar, jf, jl
 real(kind=kind_real), pointer :: real_ptr_2(:,:)
 logical :: var_found
-character(len=20) :: sdate
-character(len=1024) :: fieldname
 type(atlas_field) :: afield
-
-! Set date
-call datetime_to_string(vdate,sdate)
 
 do jvar = 1,vars%nvars()
   var_found = .false.
   do jf = 1,self%nf
     if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      fieldname = trim(vars%variable(jvar))//'_'//sdate
-      if (afieldset%has_field(trim(fieldname))) then
+      if (afieldset%has_field(vars%variable(jvar))) then
         ! Get field
-        afield = afieldset%field(trim(fieldname))
+        afield = afieldset%field(vars%variable(jvar))
       else
         ! Create field
-        afield = geom%afunctionspace%create_field(name=trim(fieldname),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
+        afield = geom%afunctionspace%create_field(name=vars%variable(jvar),kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
 
         ! Add field
         call afieldset%add(afield)
@@ -296,24 +282,18 @@ end subroutine to_atlas
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine from_atlas(self, geom, vars, vdate, afieldset)
+subroutine from_atlas(self, geom, vars, afieldset)
 
 implicit none
 type(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_geom),      intent(in)    :: geom
 type(oops_variables),    intent(in)    :: vars
-type(datetime),          intent(in)    :: vdate
 type(atlas_fieldset),    intent(in)    :: afieldset
 
 integer :: jvar, jf, jl
 real(kind=kind_real), pointer :: real_ptr_2(:,:)
 logical :: umask(geom%isc:geom%iec,geom%jsc:geom%jec),var_found
-character(len=20) :: sdate
-character(len=1024) :: fieldname
 type(atlas_field) :: afield
-
-! Set date
-call datetime_to_string(vdate,sdate)
 
 ! Initialization
 umask = .true.
@@ -323,8 +303,7 @@ do jvar = 1,vars%nvars()
   do jf = 1,self%nf
     if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
       ! Get field
-      fieldname = trim(vars%variable(jvar))//'_'//sdate
-      afield = afieldset%field(trim(fieldname))
+      afield = afieldset%field(vars%variable(jvar))
 
       ! Copy data
       call afield%data(real_ptr_2)

@@ -34,7 +34,8 @@ use wind_vt_mod, only: a2d
 implicit none
 private
 public :: fv3jedi_state, create, delete, zeros, copy, axpy, add_incr, read_file, write_file, rms, &
-          change_resol, analytic_IC, getminmaxrms
+          change_resol, analytic_IC, getminmaxrms, &
+          fv3jedi_state_serialize, fv3jedi_state_deserialize
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -778,5 +779,65 @@ call fields_rms(self%nf, self%fields, prms, self%f_comm)
 end subroutine rms
 
 ! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_serialize(self,vsize,vect_inc)
+
+implicit none
+
+! Passed variables
+type(fv3jedi_state),intent(in) :: self           !< State
+integer,intent(in) :: vsize                      !< Size
+real(kind_real),intent(out) :: vect_inc(vsize)   !< Vector
+
+! Local variables
+integer :: ind, var, i, j, k
+
+! Initialize
+ind = 0
+
+! Copy
+do var = 1, self%nf
+  do k = 1,self%fields(var)%npz
+    do j = self%fields(var)%jsc,self%fields(var)%jec
+      do i = self%fields(var)%isc,self%fields(var)%iec
+        ind = ind + 1
+        vect_inc(ind) = self%fields(var)%array(i, j, k)
+      enddo
+    enddo
+  enddo
+enddo
+
+end subroutine fv3jedi_state_serialize
+
+! ------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_deserialize(self,vsize,vect_inc,index)
+
+implicit none
+
+! Passed variables
+type(fv3jedi_state),intent(inout) :: self             !< State
+integer,intent(in) :: vsize                           !< Size
+real(kind_real),intent(in) :: vect_inc(vsize)         !< Vector
+integer,intent(inout) :: index                        !< Index
+
+! Local variables
+integer :: ind, var, i, j, k
+
+! Copy
+do var = 1, self%nf
+  do k = 1,self%fields(var)%npz
+    do j = self%fields(var)%jsc,self%fields(var)%jec
+      do i = self%fields(var)%isc,self%fields(var)%iec
+        self%fields(var)%array(i, j, k) = vect_inc(index + 1)
+        index = index + 1
+      enddo
+    enddo
+  enddo
+enddo
+
+end subroutine fv3jedi_state_deserialize
+
+! ------------------------------------------------------------------------------
 
 end module fv3jedi_state_mod

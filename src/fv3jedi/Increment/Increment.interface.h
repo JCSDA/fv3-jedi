@@ -40,12 +40,10 @@ extern "C" {
   void fv3jedi_increment_sizes_f90(const F90inc &, int &);
   void fv3jedi_increment_rms_f90(const F90inc &, double &);
   void fv3jedi_increment_set_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                       const util::DateTime * const *,
                                        atlas::field::FieldSetImpl *);
   void fv3jedi_increment_to_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                      const util::DateTime * const *, atlas::field::FieldSetImpl *);
+                                      atlas::field::FieldSetImpl *);
   void fv3jedi_increment_from_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                        const util::DateTime * const *,
                                         atlas::field::FieldSetImpl *);
   void fv3jedi_increment_dirac_f90(const F90inc &, const eckit::Configuration * const *,
                                    const F90geom &);

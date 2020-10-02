@@ -99,8 +99,6 @@ self%bump%nam%verbosity = "none"
 self%bump%nam%nl = npz+1
 self%bump%nam%nv = 1
 self%bump%nam%variables(1) = "var"
-self%bump%nam%nts = 1
-self%bump%nam%timeslots(1) = "0"
 
 ! Pack lonlat into atlas function space
 ! -------------------------------------
@@ -169,7 +167,7 @@ self%bump%geom%nl0 = npz
 
 ! Define ATLAS fieldset
 afieldset = atlas_fieldset()
-afield = self%afunctionspace%create_field(name='var_0', kind=atlas_real(kind_real), levels=npz)
+afield = self%afunctionspace%create_field(name='var', kind=atlas_real(kind_real), levels=npz)
 call afieldset%add(afield)
 
 ! Put input field into ATLAS fieldset
@@ -212,7 +210,7 @@ self%bump%geom%nl0 = npz
 
 ! Define ATLAS fieldset
 afieldset = atlas_fieldset()
-afield = self%afunctionspace%create_field(name='var_0', kind=atlas_real(kind_real), levels=npz)
+afield = self%afunctionspace%create_field(name='var', kind=atlas_real(kind_real), levels=npz)
 call afieldset%add(afield)
 
 ! Apply BUMP interpolation adjoint
@@ -242,4 +240,3 @@ end subroutine dummy_final
 ! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_bump_interp_mod
-

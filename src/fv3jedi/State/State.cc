@@ -145,19 +145,57 @@ void State::print(std::ostream & os) const {
   os << std::endl
      << " --------------------------------------------------------------------------------";
 }
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 void State::zero() {
   fv3jedi_state_zero_f90(keyState_);
 }
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 void State::accumul(const double & zz, const State & xx) {
   fv3jedi_state_axpy_f90(keyState_, zz, xx.keyState_);
 }
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 double State::norm() const {
   double zz = 0.0;
   fv3jedi_state_rms_f90(keyState_, zz);
   return zz;
 }
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+size_t State::serialSize() const {
+  oops::Log::trace() << "State serialSize starting" << std::endl;
+  size_t nn = 1;
+  int sz = 0;
+  fv3jedi_state_sersize_f90(keyState_, sz);
+  nn += sz;
+  nn += time_.serialSize();
+  return nn;
+  oops::Log::trace() << "State serialSize done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void State::serialize(std::vector<double> & vect) const {
+  oops::Log::trace() << "State serialize starting" << std::endl;
+  int size_fld = this->serialSize() - 3;
+  std::vector<double> v_fld(size_fld, 0);
+
+  fv3jedi_state_serialize_f90(keyState_, size_fld, v_fld.data());
+  vect.insert(vect.end(), v_fld.begin(), v_fld.end());
+
+  // Serialize the date and time
+  vect.push_back(-54321.56789);
+  time_.serialize(vect);
+
+  oops::Log::trace() << "State serialize done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void State::deserialize(const std::vector<double> & vect, size_t & index) {
+  oops::Log::trace() << "State deserialize starting" << std::endl;
+  fv3jedi_state_deserialize_f90(keyState_, vect.size(), vect.data(), index);
+
+  ASSERT(vect.at(index) == -54321.56789);
+  ++index;
+
+  time_.deserialize(vect, index);
+  oops::Log::trace() << "State deserialize done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+
 }  // namespace fv3jedi

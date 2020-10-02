@@ -295,4 +295,68 @@ end subroutine fv3jedi_state_getminmaxrms_c
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine fv3jedi_state_sersize_c(c_key_self,inc_size) bind(c,name='fv3jedi_state_sersize_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(inout) :: inc_size
+type(fv3jedi_state), pointer :: self
+integer var, i, j, k
+
+call fv3jedi_state_registry%get(c_key_self, self)
+
+inc_size = 0
+do var = 1, self%nf
+  inc_size = inc_size + (self%fields(var)%iec-self%fields(var)%isc+1)*&
+                        (self%fields(var)%jec-self%fields(var)%jsc+1)*&
+                         self%fields(var)%npz
+end do
+
+end subroutine fv3jedi_state_sersize_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_serialize_c(c_key_self,c_vsize,c_vect_inc) &
+           bind(c,name='fv3jedi_state_serialize_f90')
+
+implicit none
+
+! Passed variables
+integer(c_int),intent(in) :: c_key_self           !< State
+integer(c_int),intent(in) :: c_vsize              !< Size
+real(c_double),intent(out) :: c_vect_inc(c_vsize) !< Vector
+
+type(fv3jedi_state),pointer :: self
+
+call fv3jedi_state_registry%get(c_key_self, self)
+! Call Fortran
+call fv3jedi_state_serialize(self,c_vsize,c_vect_inc)
+
+end subroutine fv3jedi_state_serialize_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_deserialize_c(c_key_self,c_vsize,c_vect_inc,c_index) &
+           bind(c,name='fv3jedi_state_deserialize_f90')
+
+implicit none
+
+! Passed variables
+integer(c_int),intent(in) :: c_key_self          !< State
+integer(c_int),intent(in) :: c_vsize             !< Size
+real(c_double),intent(in) :: c_vect_inc(c_vsize) !< Vector
+integer(c_int), intent(inout):: c_index          !< Index
+
+type(fv3jedi_state),pointer :: self
+
+call fv3jedi_state_registry%get(c_key_self, self)
+
+! Call Fortran
+call fv3jedi_state_deserialize(self,c_vsize,c_vect_inc,c_index)
+
+
+end subroutine fv3jedi_state_deserialize_c
+
+! --------------------------------------------------------------------------------------------------
+
 end module fv3jedi_state_interface_mod

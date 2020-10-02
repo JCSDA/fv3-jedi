@@ -28,7 +28,6 @@ namespace fv3jedi {
 struct Traits {
   static std::string name() {return "FV3JEDI";}
   static std::string nameCovar() {return "FV3JEDI-ID";}
-  static std::string nameCovar4D() {return "FV3JEDI-ID";}
 
   typedef fv3jedi::ErrorCovariance      Covariance;
   typedef fv3jedi::Increment            Increment;

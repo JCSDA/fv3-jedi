@@ -10,8 +10,7 @@
 
 #include <ostream>
 #include <string>
-
-#include <boost/scoped_ptr.hpp>
+#include <vector>
 
 #include "oops/base/Variables.h"
 #include "oops/util/DateTime.h"
@@ -68,6 +67,11 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   void analytic_init(const eckit::Configuration &, const Geometry &);
   void write(const eckit::Configuration &) const;
   double norm() const;
+
+/// Serialize and deserialize
+  size_t serialSize() const;
+  void serialize(std::vector<double> &) const;
+  void deserialize(const std::vector<double> &, size_t &);
 
 // Utilities
   boost::shared_ptr<const Geometry> geometry() const {return geom_;}
