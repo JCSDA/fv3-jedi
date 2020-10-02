@@ -199,8 +199,8 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
+#     Clouds: [Water, Ice]
+#     Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_metop-a
         EndianType: little_endian
@@ -219,6 +219,39 @@ cost function:
       - name: brightness_temperature
         channels: 4-6,9-14
       threshold: 3.0
+    - filter: Domain Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 4-6,9-14
+      where:
+      - variable:
+          name: scan_position@MetaData
+        minvalue: 4
+        maxvalue: 27
+      - variable:
+          name: brightness_temperature_1@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_2@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_3@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_4@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_6@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_15@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
   - obs space:
       name: AMSUA-METOP-B
       obsdatain:
@@ -230,8 +263,8 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
+#     Clouds: [Water, Ice]
+#     Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_metop-b
         EndianType: little_endian
@@ -250,6 +283,40 @@ cost function:
       - name: brightness_temperature
         channels: 7-14
       threshold: 3.0
+    - filter: Domain Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 7-14
+      where:
+      - variable:
+          name: scan_position@MetaData
+        minvalue: 4
+        maxvalue: 27
+      - variable:
+          name: brightness_temperature_1@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_2@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_3@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_4@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_6@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+### All ch5 are missing in current obs file.
+#2      - variable:
+#2          name: brightness_temperature_15@ObsValue
+#2        minvalue: 50.0
+#2        maxvalue: 550.0
   - obs space:
       name: AMSUA-NOAA15
       obsdatain:
@@ -261,8 +328,8 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
+#     Clouds: [Water, Ice]
+#     Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n15
         EndianType: little_endian
@@ -281,6 +348,39 @@ cost function:
       - name: brightness_temperature
         channels: 4,5,7-10,12,13
       threshold: 3.0
+    - filter: Domain Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 4,5,7-10,12,13
+      where:
+      - variable:
+          name: scan_position@MetaData
+        minvalue: 4
+        maxvalue: 27
+      - variable:
+          name: brightness_temperature_1@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_2@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_3@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_4@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_6@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_15@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
   - obs space:
       name: AMSUA-NOAA18
       obsdatain:
@@ -292,8 +392,8 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
+#     Clouds: [Water, Ice]
+#     Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n18
         EndianType: little_endian
@@ -312,6 +412,39 @@ cost function:
       - name: brightness_temperature
         channels: 4,6,7,10-14
       threshold: 3.0
+    - filter: Domain Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 4,6,7,10-14
+      where:
+      - variable:
+          name: scan_position@MetaData
+        minvalue: 4
+        maxvalue: 27
+      - variable:
+          name: brightness_temperature_1@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_2@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_3@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_4@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_6@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_15@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
@@ -319,12 +452,12 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/amsua_n19_hyb-3dvar-geos_2018041500_m.nc4
       simulated variables: [brightness_temperature]
-      channels: 1-15
+      channels: 4-6,9-14
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
+#     Clouds: [Water, Ice]
+#     Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n19
         EndianType: little_endian
@@ -335,14 +468,47 @@ cost function:
     - filter: Bounds Check
       filter variables:
       - name: brightness_temperature
-        channels: 1-15
+        channels: 4-6,9-14
       minvalue: 100.0
       maxvalue: 500.0
     - filter: Background Check
       filter variables:
       - name: brightness_temperature
-        channels: 1-15
+        channels: 4-6,9-14
       threshold: 3.0
+    - filter: Domain Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 4-6,9-14
+      where:
+      - variable:
+          name: scan_position@MetaData
+        minvalue: 4
+        maxvalue: 27
+      - variable:
+          name: brightness_temperature_1@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_2@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_3@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_4@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_6@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_15@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
   - obs space:
       name: MHS-NOAA18
       obsdatain:
@@ -450,8 +616,6 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: sndrD1_g15
         EndianType: little_endian
@@ -481,8 +645,6 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: sndrD2_g15
         EndianType: little_endian
@@ -512,8 +674,6 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: sndrD3_g15
         EndianType: little_endian
@@ -543,8 +703,6 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
-      Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: sndrD4_g15
         EndianType: little_endian
@@ -564,6 +722,57 @@ cost function:
         channels: 1-8,10-12
       threshold: 3.0
   - obs space:
+      name: ATMS-NPP
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/atms_npp_obs_2018041500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/atms_npp_hyb-3dvar-geos_2018041500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 5-15,17-22
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3]
+      obs options:
+        Sensor_ID: atms_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+    obs error:
+      covariance model: diagonal
+    obs filters:
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 5-15,17-22
+      minvalue: 50.0
+      maxvalue: 550.0
+    - filter: Domain Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 5-15,17-22
+      where:
+      - variable:
+          name: brightness_temperature_1@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_2@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_16@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+      - variable:
+          name: brightness_temperature_17@ObsValue
+        minvalue: 50.0
+        maxvalue: 550.0
+    - filter: Background Check
+      apply at iterations: 0, 1
+      filter variables:
+      - name: brightness_temperature
+        channels: 5-15,17-22
+      threshold: 3.0
+  - obs space:
       name: GMI-GPM
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/gmi_gpm_obs_2018041500_m.nc4
@@ -571,8 +780,9 @@ cost function:
         obsfile: Data/hofx/gmi_gpm_hyb-3dvar-geos_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 5,6,7,10,12,13
-#1      GeoVaLs:
-#1          filename: Data/atmosphere/gmi_gpm_geoval_2018041500_m.nc4
+    obs operator:
+      name: ObsAtmSfcInterp
+      geovals: [surface_temperature_where_sea,water_area_fraction]
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
@@ -620,9 +830,9 @@ cost function:
       - variable:
           name: height@MetaData
         maxvalue: 2000
-#1      - variable:
-#1          name: water_area_fraction@GeoVaLs
-#1        minvalue: 1
+      - variable:
+          name: water_area_fraction@GeoVaLs
+        minvalue: 1
 #2      - variable:
 #2          name: surface_temperature_where_sea@GeoVaLs
 #2        minvalue: 275

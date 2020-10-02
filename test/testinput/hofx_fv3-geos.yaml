@@ -162,22 +162,21 @@ observations:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/crtm/
-#- obs space:
-#    name: ATMS-NPP
-#    obsdatain:
-#      obsfile: Data/obs/testinput_tier_1/atms_npp_obs_2018041500_m.nc4
-#    obsdataout:
-#      obsfile: Data/hofx/atms_npp_hofx_geos_2018041500_m.nc4
-#    simulated variables: [brightness_temperature]
-#    channels: 5-15,17-22
-#  obs operator:
-#    name: CRTM
-#    Absorbers: [H2O,O3,CO2]
-#    Cloud_Fraction: 1.0
-#    obs options:
-#      Sensor_ID: atms_npp
-#      EndianType: little_endian
-#      CoefficientPath: Data/crtm/
+- obs space:
+    name: ATMS-NPP
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/atms_npp_obs_2018041500_m.nc4
+    obsdataout:
+      obsfile: Data/hofx/atms_npp_hofx_geos_2018041500_m.nc4
+    simulated variables: [brightness_temperature]
+    channels: 5-15,17-22
+  obs operator:
+    name: CRTM
+    Absorbers: [H2O,O3]
+    obs options:
+      Sensor_ID: atms_npp
+      EndianType: little_endian
+      CoefficientPath: Data/crtm/
 - obs space:
     name: GMI-GPM
     obsdatain:

@@ -55,13 +55,14 @@ Test     :  --------------------------------------------------------------------
 Test     : H(x): 
 Test     : Aircraft nobs= 6294 Min=-27.5297, Max=300.972, RMS=146.353
 Test     : Radiosonde nobs= 2922 Min=-32.4325, Max=301.348, RMS=139.16
-Test     : GnssroBndNBAM nobs= 150 Min=0.000306219, Max=0.0232152, RMS=0.00813937
+Test     : GnssroBndNBAM nobs= 150 Min=0.000306242, Max=0.0232147, RMS=0.00813938
 Test     : SBUV2-NOAA19-OZ nobs= 1408 Min=0.02205, Max=495.463, RMS=79.0909
 Test     : AMSUA-METOP-A nobs= 900 Min=201.689, Max=271.7, RMS=234.267
 Test     : AMSUA-METOP-B nobs= 800 Min=201.754, Max=258.349, RMS=226.084
 Test     : AMSUA-NOAA15 nobs= 800 Min=201.341, Max=272.111, RMS=230.558
 Test     : AMSUA-NOAA18 nobs= 792 Min=206.448, Max=272.744, RMS=233.055
 Test     : AMSUA-NOAA19 nobs= 1500 Min=148.714, Max=291.454, RMS=229.975
+Test     : ATMS-NPP nobs= 1700 Min=201.713, Max=289.584, RMS=240.656
 Test     : GMI-GPM nobs= 72 Min=163.755, Max=260.713, RMS=231.715
 Test     : MHS-N18 nobs= 500 Min=165.91, Max=287.474, RMS=252.992
 Test     : MHS-METOP-A nobs= 500 Min=158.732, Max=288.67, RMS=253.602
