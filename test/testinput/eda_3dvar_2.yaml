@@ -1,6 +1,5 @@
-ensemble application:
-  current member: 2
 cost function:
+  obs perturbations seed: 2
   cost type: 3D-Var
   window begin: '2018-04-14T21:00:00Z'
   window length: PT6H
@@ -150,7 +149,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/eda/gfs/%{member}%/aircraft_eda-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/eda/gfs/mem002/aircraft_eda-3dvar-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -171,7 +170,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/eda/gfs/%{member}%/sondes_eda-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/eda/gfs/mem002/sondes_eda-3dvar-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -192,7 +191,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/eda/gfs/%{member}%/gnssro_eda-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/eda/gfs/mem002/gnssro_eda-3dvar-gfs_2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -224,7 +223,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/eda/gfs/%{member}%/amsua_n19_eda-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/eda/gfs/mem002/amsua_n19_eda-3dvar-gfs_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs operator:
@@ -272,12 +271,12 @@ cost function:
     - fieldset: Data/fieldsets/ufo.yaml
 output:
   filetype: gfs
-  datapath: Data/analysis/eda/gfs/%{member}%
-  filename_core: eda-3dvar-gfs.membertest.fv_core.res.nc
-  filename_trcr: eda-3dvar-gfs.membertest.fv_tracer.res.nc
-  filename_sfcd: eda-3dvar-gfs.membertest.sfc_data.nc
-  filename_sfcw: eda-3dvar-gfs.membertest.fv_srf_wnd.res.nc
-  filename_cplr: eda-3dvar-gfs.membertest.coupler.res
+  datapath: Data/analysis/eda/gfs/mem002
+  filename_core: eda-3dvar-gfs.fv_core.res.nc
+  filename_trcr: eda-3dvar-gfs.fv_tracer.res.nc
+  filename_sfcd: eda-3dvar-gfs.sfc_data.nc
+  filename_sfcw: eda-3dvar-gfs.fv_srf_wnd.res.nc
+  filename_cplr: eda-3dvar-gfs.coupler.res
   first: PT0H
   frequency: PT1H
 final:
@@ -305,6 +304,7 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
+    obs perturbations: true
   - ninner: 1
     gradient norm reduction: 1e-10
     test: on

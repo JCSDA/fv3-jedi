@@ -12,8 +12,9 @@
 #include "ufo/instantiateObsFilterFactory.h"
 #include "ufo/ObsTraits.h"
 
-#include "oops/runs/EDA.h"
+#include "oops/runs/EnsembleApplication.h"
 #include "oops/runs/Run.h"
+#include "oops/runs/Variational.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
@@ -21,6 +22,6 @@ int main(int argc,  char ** argv) {
   saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   ufo::instantiateObsFilterFactory<ufo::ObsTraits>();
-  oops::EDA<fv3jedi::Traits, ufo::ObsTraits> eda;
+  oops::EnsembleApplication<oops::Variational <fv3jedi::Traits, ufo::ObsTraits> > eda;
   return run.execute(eda);
 }

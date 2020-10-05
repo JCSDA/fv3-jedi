@@ -244,9 +244,14 @@ list( APPEND fv3jedi_test_input
   testinput/dirac_gfs_bal.yaml
   testinput/dirac_gfs_c2a.yaml
   testinput/dirac_gfs.yaml
-  testinput/eda_3dvar_member.yaml
+  testinput/eda_3dvar_1.yaml
+  testinput/eda_3dvar_2.yaml
   testinput/eda_3dvar.yaml
+  testinput/eda_4dvar_fv3lm_1.yaml
+  testinput/eda_4dvar_fv3lm_2.yaml
   testinput/eda_4dvar_fv3lm.yaml
+  testinput/enshofx_fv3lm_1.yaml
+  testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
   testinput/ensvariance_geos.yaml
   testinput/ensvariance_gfs.yaml
@@ -1204,12 +1209,6 @@ if (NOT SKIP_LARGE_TESTS)
                     NOCOMPARE
                     TEST_DEPENDS bumpparameters_nicas_gfs )
 
-  # One member of the 3DVar
-  fv3jedi_add_test( NAME         eda_3dvar_member
-                    EXE          fv3jedi_eda.x
-                    MPI          6
-                    NOCOMPARE
-                    TEST_DEPENDS bumpparameters_nicas_gfs )
 endif()
 
 # Test of time taken

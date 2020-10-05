@@ -6,7 +6,8 @@
  */
 
 #include "fv3jedi/Utilities/Traits.h"
-#include "oops/runs/EnsHofX.h"
+#include "oops/runs/EnsembleApplication.h"
+#include "oops/runs/HofX.h"
 #include "oops/runs/Run.h"
 #include "ufo/instantiateObsFilterFactory.h"
 #include "ufo/ObsTraits.h"
@@ -14,6 +15,6 @@
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   ufo::instantiateObsFilterFactory<ufo::ObsTraits>();
-  oops::EnsHofX<fv3jedi::Traits, ufo::ObsTraits> enshofx;
+  oops::EnsembleApplication<oops::HofX <fv3jedi::Traits, ufo::ObsTraits> > enshofx;
   return run.execute(enshofx);
 }

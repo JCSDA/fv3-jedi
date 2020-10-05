@@ -109,7 +109,7 @@ observations:
     simulated variables: [eastward_wind, northward_wind]
   obs operator:
     name: VertInterp
-  obs error: 
+  obs error:
     covariance model: localized diagonal
     localization:
       localization method: Gaspari-Cohn
@@ -128,12 +128,11 @@ letkf:
 
 output:
   filetype: gfs
-  datapath: Data/analysis/letkf/gfs/%{member}%/
+  datapath: Data/analysis/letkf/gfs/mem%{member}%/
   filename_core: letkf.fv_core.res.nc
   filename_trcr: letkf.fv_tracer.res.nc
   filename_sfcd: letkf.sfc_data.nc
   filename_sfcw: letkf.fv_srf_wnd.res.nc
   first: PT0H
   frequency: PT1H
-  type: ens
   date: *date

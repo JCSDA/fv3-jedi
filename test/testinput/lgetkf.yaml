@@ -74,7 +74,7 @@ observations:
     name: VertInterp
   obs error:
     covariance model: localized diagonal
-    localization: 
+    localization:
       localization method: Gaspari-Cohn
       lengthscale: 5000e3
       max_nobs: 1000
@@ -96,10 +96,9 @@ letkf:
 
 output:
   filetype: geos
-  datapath: Data/analysis/letkf/geos/%{member}%/
+  datapath: Data/analysis/letkf/geos/mem%{member}%/
   filename_bkgd: lgetkf.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
   type: ens
   date: *date
-
