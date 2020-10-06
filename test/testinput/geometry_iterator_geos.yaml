@@ -11,8 +11,6 @@ geometry:
   ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-test date: '2018-04-14T21:00:00Z'
 inc variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
-#initial condition:
-#  filetype: geos
-#  filename: Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
+increment test:
+  date: '2018-04-14T21:00:00Z'

@@ -11,14 +11,6 @@ geometry:
   ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-test date: '2018-04-15T00:00:00Z'
 inc variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-#initial condition:
-#  filetype: gfs
-#  datapath: Data/inputs/gfs_c12/bkg/
-#  filename_core: 20180415.000000.fv_core.res.nc
-#  filename_trcr: 20180415.000000.fv_tracer.res.nc
-#  filename_sfcd: 20180415.000000.sfc_data.nc
-#  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-#  filename_cplr: 20180415.000000.coupler.res
-
+increment test:
+  date: '2018-04-14T21:00:00Z'
