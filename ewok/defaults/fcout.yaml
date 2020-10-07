@@ -6,4 +6,5 @@ filename_sfcd: 'forecast_fv3.sfc_data.nc'
 filename_sfcw: 'forecast_fv3.fv_srf_wnd.res.nc'
 filename_cplr: 'forecast_fv3.coupler.res'
 first: PT0H
-frequency: PT15M
+frequency: PT1H
+execcmd: 'mpiexec -n 6'

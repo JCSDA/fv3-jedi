@@ -5,3 +5,4 @@
 Testing/
 /.vs
 /out/build/x64-Debug
+__pycache__/
