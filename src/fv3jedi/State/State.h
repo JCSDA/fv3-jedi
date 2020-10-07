@@ -81,6 +81,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   util::DateTime & time() {return time_;}
   const util::DateTime & validTime() const {return time_;}
   util::DateTime & validTime() {return time_;}
+  void updateTime(const util::Duration & dt) {time_ += dt;}
 
   int & toFortran() {return keyState_;}
   const int & toFortran() const {return keyState_;}
