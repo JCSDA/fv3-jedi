@@ -86,9 +86,8 @@ letkf:
   solver: GETKF
   vertical localization:
     fraction of retained variance: .5
-    lengthscale: 10
-    lengthscale units: levels
-    nlevels: 72
+    lengthscale: 1.5
+    lengthscale units: logp 
   inflation:
     rtps: 0.5
     rtpp: 0.6
