@@ -10,9 +10,10 @@
 
 #include <ostream>
 #include <string>
-#include <boost/noncopyable.hpp>
 
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/memory/NonCopyable.h"
+
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
@@ -24,7 +25,7 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 
 class ModelBiasCovariance : public util::Printable,
-                       private boost::noncopyable,
+                       private eckit::NonCopyable,
                        private util::ObjectCounter<ModelBiasCovariance> {
  public:
   static const std::string classname()

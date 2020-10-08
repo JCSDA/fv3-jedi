@@ -8,14 +8,12 @@
 #ifndef FV3JEDI_INCREMENT_INCREMENT_H_
 #define FV3JEDI_INCREMENT_INCREMENT_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "atlas/field.h"
-
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.interface.h"
@@ -102,7 +100,7 @@ class Increment : public oops::GeneralizedDepartures, public util::Printable,
   void deserialize(const std::vector<double> &, size_t &);
 
 // Utilities
-  boost::shared_ptr<const Geometry> geometry() const {return geom_;}
+  std::shared_ptr<const Geometry> geometry() const {return geom_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}
@@ -116,7 +114,7 @@ class Increment : public oops::GeneralizedDepartures, public util::Printable,
  private:
   void print(std::ostream &) const;
   F90inc keyInc_;
-  boost::shared_ptr<const Geometry> geom_;
+  std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
   util::DateTime time_;
 };

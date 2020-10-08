@@ -53,9 +53,6 @@ endif()
 # Dependencies
 ################################################################################
 
-# Boost
-include_directories( ${Boost_INCLUDE_DIR} )
-
 # NetCDF
 find_package( NetCDF REQUIRED COMPONENTS Fortran )
 include_directories( ${NETCDF_INCLUDE_DIRS} )

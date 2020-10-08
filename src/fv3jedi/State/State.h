@@ -8,6 +8,7 @@
 #ifndef FV3JEDI_STATE_STATE_H_
 #define FV3JEDI_STATE_STATE_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -74,7 +75,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   void deserialize(const std::vector<double> &, size_t &);
 
 // Utilities
-  boost::shared_ptr<const Geometry> geometry() const {return geom_;}
+  std::shared_ptr<const Geometry> geometry() const {return geom_;}
   const oops::Variables & variables() const {return vars_;}
 
   const util::DateTime & time() const {return time_;}
@@ -90,7 +91,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
  private:
   void print(std::ostream &) const;
   F90state keyState_;
-  boost::shared_ptr<const Geometry> geom_;
+  std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
   util::DateTime time_;
 };

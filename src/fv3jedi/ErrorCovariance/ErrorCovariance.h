@@ -11,14 +11,15 @@
 #include <memory>
 #include <ostream>
 #include <string>
-#include <boost/noncopyable.hpp>
-
-#include "fv3jedi/Geometry/Geometry.h"
 
 #include "eckit/config/Configuration.h"
+#include "eckit/memory/NonCopyable.h"
+
 #include "oops/util/DateTime.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
+
+#include "fv3jedi/Geometry/Geometry.h"
 
 // Forward declarations
 namespace oops {
@@ -30,7 +31,7 @@ namespace fv3jedi {
   class State;
 
 // -------------------------------------------------------------------------------------------------
-class ErrorCovariance : public util::Printable, private boost::noncopyable,
+class ErrorCovariance : public util::Printable, private eckit::NonCopyable,
                         private util::ObjectCounter<ErrorCovariance> {
  public:
   static const std::string classname() {return "fv3jedi::ErrorCovariance";}
