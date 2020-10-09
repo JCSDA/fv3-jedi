@@ -130,4 +130,10 @@ Fields:
     Units: km-1
     Tracer: true
    
+  - FieldIONames: [ext3, EXT3, volume_extinction_in_air_due_to_aerosol_particles_lambda3]
+    FieldName: ext3
+    LongName: volume_extinction_in_air_due_to_aerosol_particles_lambda3
+    Units: km-1
+    Tracer: true
+   
 
