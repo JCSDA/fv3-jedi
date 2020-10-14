@@ -60,7 +60,6 @@ include_directories( ${NETCDF_INCLUDE_DIRS} )
 # atlas
 ecbuild_use_package( PROJECT atlas VERSION 0.18.1 REQUIRED )
 include_directories( ${ATLAS_INCLUDE_DIRS} )
-add_definitions(-DATLASIFIED=1)
 
 # oops
 ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )
