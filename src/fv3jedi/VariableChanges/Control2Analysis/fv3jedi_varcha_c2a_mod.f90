@@ -26,7 +26,7 @@ use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_fieldfail_mod, only: field_fail
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_state_mod,     only: fv3jedi_state
-use fv3jedi_field_mod,     only: copy_subset, has_field, pointer_field_array, field_clen, allocate_copy_field_array
+use fv3jedi_field_mod,     only: copy_subset, field_clen
 
 use pressure_vt_mod
 use temperature_vt_mod
@@ -220,9 +220,9 @@ if (.not.allocated(fields_to_do)) return
 ! --------------
 have_udvd = .false.
 have_vodi = .false.
-if (has_field(xctl%fields, 'psi') .and. has_field(xctl%fields, 'chi')) then
-  call pointer_field_array(xctl%fields, 'psi', psi)
-  call pointer_field_array(xctl%fields, 'chi', chi)
+if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
+  call xctl%get_field('psi', psi)
+  call xctl%get_field('chi', chi)
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
   call psichi_to_udvd(geom, psi, chi, ud, vd)
@@ -237,8 +237,8 @@ endif
 ! Pressure
 ! --------
 have_pres = .false.
-if (has_field(xctl%fields, 'ps')) then
-  call pointer_field_array(xctl%fields, 'ps', ps)
+if (xctl%has_field('ps')) then
+  call xctl%get_field('ps', ps)
   allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(  pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
   allocate(   p(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -253,8 +253,8 @@ endif
 ! -----------
 have_t  = .false.
 have_pt = .false.
-if (has_field(xctl%fields, 't')) then
-  call pointer_field_array(xctl%fields, 't', t)
+if (xctl%has_field('t')) then
+  call xctl%get_field('t', t)
   have_t = .true.
   if (have_pres) then
     allocate(pt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -266,12 +266,12 @@ endif
 ! Clouds
 ! ------
 have_cld4 = .false.
-if ( has_field(xctl%fields, 'ice_wat') .and. has_field(xctl%fields, 'liq_wat') .and. &
-     has_field(xctl%fields, 'qilsf') .and. has_field(xctl%fields, 'qicnf')) then
-  call pointer_field_array(xctl%fields, 'ice_wat', qi)
-  call pointer_field_array(xctl%fields, 'liq_wat', ql)
-  call pointer_field_array(xctl%fields, 'qilsf', qilsf)
-  call pointer_field_array(xctl%fields, 'qicnf', qicnf)
+if ( xctl%has_field('ice_wat') .and. xctl%has_field('liq_wat') .and. &
+     xctl%has_field('qilsf') .and. xctl%has_field('qicnf')) then
+  call xctl%get_field('ice_wat', qi)
+  call xctl%get_field('liq_wat', ql)
+  call xctl%get_field('qilsf', qilsf)
+  call xctl%get_field('qicnf', qicnf)
   allocate(qils(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(qicn(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(qlls(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -284,7 +284,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(xana%fields, trim(fields_to_do(f)),  field_ptr)
+  call xana%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
 
@@ -421,9 +421,9 @@ if (.not.allocated(fields_to_do)) return
 ! Wind variables
 ! --------------
 have_pcvd = .false.
-if (has_field(xana%fields, 'ud') .and. has_field(xana%fields, 'vd')) then
-  call pointer_field_array(xana%fields, 'ud', ud)
-  call pointer_field_array(xana%fields, 'vd', vd)
+if (xana%has_field('ud') .and. xana%has_field('vd')) then
+  call xana%get_field('ud', ud)
+  call xana%get_field('vd', vd)
   allocate( psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate( chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -436,13 +436,13 @@ endif
 ! Pressure
 ! --------
 have_pres = .false.
-if (has_field(xana%fields, 'delp')) then
-  call allocate_copy_field_array(xana%fields, 'delp', delp)
+if (xana%has_field('delp')) then
+  call xana%get_field('delp', delp)
   allocate(ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
   ps(:,:,1) = sum(delp,3)
   have_pres = .true.
-elseif (has_field(xana%fields, 'pe')) then
-  call pointer_field_array(xana%fields, 'pe', pe )
+elseif (xana%has_field('pe')) then
+  call xana%get_field('pe', pe )
   allocate(  ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
   allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   call pe_to_delp(geom, pe, delp)
@@ -453,14 +453,14 @@ endif
 ! Temperature
 ! -----------
 have_temp = .false.
-if (has_field(xana%fields, 't')) then
-  call allocate_copy_field_array(xana%fields, 't', t)
+if (xana%has_field('t')) then
+  call xana%get_field('t', t)
   have_temp = .true.
-elseif (has_field(xana%fields, 'pt')) then
+elseif (xana%has_field('pt')) then
   allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call pointer_field_array(xana%fields, 'pt', pt)
-  if (has_field(xana%fields, 'pkz')) then
-    call allocate_copy_field_array(xana%fields, 'pkz', pkz)
+  call xana%get_field('pt', pt)
+  if (xana%has_field('pkz')) then
+    call xana%get_field('pkz', pkz)
     have_temp = .true.
   elseif (have_pres) then
     allocate( pkz(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -473,10 +473,10 @@ endif
 ! Humidity
 ! --------
 have_rhum = .false.
-if (has_field(xana%fields, 'sphum') .and. have_temp .and. have_pres) then
+if (xana%has_field('sphum') .and. have_temp .and. have_pres) then
   allocate(qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(  rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call pointer_field_array(xana%fields, 'sphum', q)
+  call xana%get_field('sphum', q)
   call get_qsat(geom, delp, t, q, qsat)
   call q_to_rh(geom, qsat, q, rh)
   have_rhum = .true.
@@ -486,16 +486,16 @@ endif
 ! ------
 have_qiql = .false.
 have_cfrc = .false.
-if (has_field(xana%fields, 'ice_wat') .and. has_field(xana%fields, 'liq_wat')) then
-  call allocate_copy_field_array(xana%fields, 'ice_wat', qi)
-  call allocate_copy_field_array(xana%fields, 'liq_wat', ql)
+if (xana%has_field('ice_wat') .and. xana%has_field('liq_wat')) then
+  call xana%get_field('ice_wat', qi)
+  call xana%get_field('liq_wat', ql)
   have_qiql = .true.
-elseif (has_field(xana%fields, 'qils') .and. has_field(xana%fields, 'qicn') .and. &
-        has_field(xana%fields, 'qlls') .and. has_field(xana%fields, 'qlcn')) then
-  call pointer_field_array(xana%fields, 'qils', qils)
-  call pointer_field_array(xana%fields, 'qicn', qicn)
-  call pointer_field_array(xana%fields, 'qlls', qlls)
-  call pointer_field_array(xana%fields, 'qlcn', qlcn)
+elseif (xana%has_field('qils') .and. xana%has_field('qicn') .and. &
+        xana%has_field('qlls') .and. xana%has_field('qlcn')) then
+  call xana%get_field('qils', qils)
+  call xana%get_field('qicn', qicn)
+  call xana%get_field('qlls', qlls)
+  call xana%get_field('qlcn', qlcn)
   allocate(qi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(ql(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(qilsf(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -508,9 +508,9 @@ endif
 ! Virtual temperature
 ! -------------------
 have_virt = .false.
-if (have_temp .and. has_field(xana%fields, 'sphum')) then
+if (have_temp .and. xana%has_field('sphum')) then
   allocate(tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call pointer_field_array(xana%fields, 'sphum', q)
+  call xana%get_field('sphum', q)
   call t_to_tv(geom, t, q, tv)
   have_virt = .true.
 endif
@@ -519,7 +519,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(xctl%fields, trim(fields_to_do(f)),  field_ptr)
+  call xctl%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
 

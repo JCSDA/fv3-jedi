@@ -26,8 +26,7 @@ use fv_prec_mod,           only: kind_fv3
 use fv_init_mod,           only: fv_init
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_fieldfail_mod, only: field_fail
-use fv3jedi_field_mod,     only: copy_subset, has_field, allocate_copy_field_array, field_clen, &
-                                 pointer_field, fv3jedi_field
+use fv3jedi_field_mod,     only: copy_subset, field_clen, fv3jedi_field
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state
 
@@ -191,10 +190,10 @@ endif
 ! Remap to new Lagrangian vertical coordinate
 ! -------------------------------------------
 have_remapped = .false.
-if ( has_field(xin%fields,ps_fname) .and. has_field(xin%fields,zh_fname) .and. &
-     has_field(xin%fields,w_fname) .and. &
-     has_field(xin%fields,'orog_filt') .and. &
-     has_field(xin%fields,ud_fname) .and. has_field(xin%fields,vd_fname) ) then
+if ( xin%has_field(ps_fname) .and. xin%has_field(zh_fname) .and. &
+     xin%has_field(w_fname) .and. &
+     xin%has_field('orog_filt') .and. &
+     xin%has_field(ud_fname) .and. xin%has_field(vd_fname) ) then
 
   ! Shortcuts
   Atm => self%Atm(1)
@@ -205,13 +204,13 @@ if ( has_field(xin%fields,ps_fname) .and. has_field(xin%fields,zh_fname) .and. &
   npz = Atm%npz
 
   ! Orography
-  call allocate_copy_field_array(xin%fields, 'orog_filt', orog_filt)
+  call xin%get_field('orog_filt', orog_filt)
   Atm%phis(isc:iec,jsc:jec) = real(orog_filt(isc:iec,jsc:jec,1),kind_fv3)*grav  ! Convert to phis
 
   ! Dynamics fields
-  call allocate_copy_field_array(xin%fields, ps_fname, ps_cold)
-  call allocate_copy_field_array(xin%fields, zh_fname, zh_cold)
-  call allocate_copy_field_array(xin%fields,  w_fname,  w_cold)
+  call xin%get_field(ps_fname, ps_cold)
+  call xin%get_field(zh_fname, zh_cold)
+  call xin%get_field( w_fname,  w_cold)
 
   ! akbk from cold starts have different levels (for now extra levels are zero)
   levp = size(w_cold,3)
@@ -249,16 +248,16 @@ if ( has_field(xin%fields,ps_fname) .and. has_field(xin%fields,zh_fname) .and. &
   do nt = 1, ntracers
     call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
     if (self%from_cold_start) tracer_name = trim(tracer_name)//"_cold"
-    if (has_field(xin%fields,trim(tracer_name))) then
-      call allocate_copy_field_array(xin%fields, trim(tracer_name), q_tmp)
+    if (xin%has_field(trim(tracer_name))) then
+      call xin%get_field(trim(tracer_name), q_tmp)
       q_cold(:,:,:,nt) = real(q_tmp, kind_fv3)
     endif
   enddo
 
   ! Call remapping non-wind variables
   ! ---------------------------------
-  if (has_field(xin%fields,t_fname)) then
-    call allocate_copy_field_array(xin%fields,  t_fname,  t_cold)
+  if (xin%has_field(t_fname)) then
+    call xin%get_field( t_fname,  t_cold)
     call remap_scalar(Atm, levp, npz, ntracers, ak, bk, real(ps_cold(:,:,1),kind_fv3), q_cold, &
                       real(zh_cold,kind_fv3), real(w_cold,kind_fv3), real(t_cold,kind_fv3))
   else
@@ -268,8 +267,8 @@ if ( has_field(xin%fields,ps_fname) .and. has_field(xin%fields,zh_fname) .and. &
 
   ! Call remapping wind variables
   ! -----------------------------
-  call allocate_copy_field_array(xin%fields, ud_fname, ud_cold)
-  call allocate_copy_field_array(xin%fields, vd_fname, vd_cold)
+  call xin%get_field(ud_fname, ud_cold)
+  call xin%get_field(vd_fname, vd_cold)
 
   call remap_dwinds(levp, npz, ak, bk, real(ps_cold(:,:,1),kind_fv3), real(ud_cold,kind_fv3), &
                     real(vd_cold,kind_fv3), Atm)
@@ -345,7 +344,7 @@ do f = 1, size(fields_to_do)
   ! Remapping needs to have happened in order to copy anything
   if (.not. have_remapped) call field_fail(fields_to_do(f))
 
-  call pointer_field(xout%fields, trim(fields_to_do(f)), field_ptr)
+  call xout%get_field(trim(fields_to_do(f)), field_ptr)
 
   select case (trim(fields_to_do(f)))
 

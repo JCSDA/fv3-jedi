@@ -15,8 +15,7 @@ use datetime_mod
 use fv3jedi_constants_mod, only: constoz
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_fieldfail_mod, only: field_fail
-use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
-                                 copy_subset, field_clen
+use fv3jedi_field_mod,     only: copy_subset, field_clen
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state
@@ -69,10 +68,10 @@ self%jec = geom%jec
 self%npz = geom%npz
 
 ! Trajectory fields
-if (has_field(bg%fields,'t'    )) call allocate_copy_field_array(bg%fields, 't'     , self%t )
-if (has_field(bg%fields,'sphum')) call allocate_copy_field_array(bg%fields, 'sphum' , self%q )
-if (has_field(bg%fields,'o3mr' )) call allocate_copy_field_array(bg%fields, 'o3mr'  , self%o3)
-if (has_field(bg%fields,'o3ppmv' )) call allocate_copy_field_array(bg%fields, 'o3ppmv'  , self%o3)
+if (bg%has_field('t'     )) call bg%get_field('t'     , self%t )
+if (bg%has_field('sphum' )) call bg%get_field('sphum' , self%q )
+if (bg%has_field('o3mr'  )) call bg%get_field('o3mr'  , self%o3)
+if (bg%has_field('o3ppmv')) call bg%get_field('o3ppmv', self%o3)
 
 end subroutine create
 
@@ -139,7 +138,7 @@ call copy_subset(dxm%fields, dxg%fields, fields_to_do_)
 nf2do = 0
 if (allocated(fields_to_do_)) nf2do = size(fields_to_do_)
 
-if (dxg%have_agrid) then
+if (dxg%has_field('ua')) then
   allocate(fields_to_do(nf2do+2))
   if (allocated(fields_to_do_)) fields_to_do(1:nf2do) = fields_to_do_
   fields_to_do(nf2do+1) = 'ua'
@@ -159,22 +158,22 @@ if (.not.allocated(fields_to_do)) return
 
 ! Assertion on D-Grid winds
 ! -------------------------
-if (dxg%have_dgrid) call abor1_ftn("GeoVaLs state should not have D-Grid winds")
+if (dxg%has_field('ud')) call abor1_ftn("GeoVaLs state should not have D-Grid winds")
 
 
 ! Winds
 ! -----
 have_winds = .false.
-if (dxm%have_dgrid) then
-  call pointer_field_array(dxm%fields, 'ud', ud)
-  call pointer_field_array(dxm%fields, 'vd', vd)
+if (dxm%has_field('ud')) then
+  call dxm%get_field('ud', ud)
+  call dxm%get_field('vd', vd)
   allocate(ua(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call d2a(geom, ud, vd, ua, va)
   have_winds = .true.
-elseif (dxm%have_agrid) then
-    call allocate_copy_field_array(dxm%fields, 'ua', ua)
-    call allocate_copy_field_array(dxm%fields, 'va', va)
+elseif (dxm%has_field('ua')) then
+    call dxm%get_field('ua', ua)
+    call dxm%get_field('va', va)
     have_winds = .true.
 endif
 
@@ -183,9 +182,9 @@ endif
 ! -------------------
 have_tv = .false.
 if (allocated(self%t) .and. allocated(self%t) .and. &
-    has_field(dxm%fields,'t') .and. has_field(dxm%fields,'sphum')) then
-  call pointer_field_array(dxm%fields, 't', t)
-  call pointer_field_array(dxm%fields, 'sphum', q)
+    dxm%has_field('t') .and. dxm%has_field('sphum')) then
+  call dxm%get_field('t', t)
+  call dxm%get_field('sphum', q)
   allocate(tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call T_to_Tv_tl(geom, self%t, t, self%q, q, tv )
   have_tv = .true.
@@ -195,8 +194,8 @@ endif
 ! Humidity mixing ratio
 ! ---------------------
 have_qmr = .false.
-if (allocated(self%q) .and. has_field(dxm%fields,'sphum')) then
-  call pointer_field_array(dxm%fields, 'sphum', q)
+if (allocated(self%q) .and. dxm%has_field('sphum')) then
+  call dxm%get_field('sphum', q)
   allocate(qmr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call crtm_mixratio_tl(geom, self%q, q, qmr)
   have_qmr = .true.
@@ -206,8 +205,8 @@ endif
 ! Ozone
 ! -----
 have_o3 = .false.
-if (allocated(self%o3) .and. has_field(dxm%fields, 'o3mr') ) then
-  call allocate_copy_field_array(dxm%fields, 'o3mr', o3)
+if (allocated(self%o3) .and. dxm%has_field( 'o3mr') ) then
+  call dxm%get_field('o3mr', o3)
   have_o3 = .true.
   do jk = 1, self%npz
     do jj = self%jsc, self%jec
@@ -221,8 +220,8 @@ if (allocated(self%o3) .and. has_field(dxm%fields, 'o3mr') ) then
     enddo
   enddo
 endif
-if (allocated(self%o3) .and. has_field(dxm%fields, 'o3ppmv') ) then
-  call allocate_copy_field_array(dxm%fields, 'o3ppmv', o3)
+if (allocated(self%o3) .and. dxm%has_field( 'o3ppmv') ) then
+  call dxm%get_field('o3ppmv', o3)
   have_o3 = .true.
   do jk = 1, self%npz
     do jj = self%jsc, self%jec
@@ -243,11 +242,11 @@ endif
 ! Surface pressure
 ! ----------------
 have_ps = .false.
-if (has_field(dxm%fields, 'ps')) then
-  call allocate_copy_field_array(dxm%fields, 'ps', ps)
+if (dxm%has_field( 'ps')) then
+  call dxm%get_field('ps', ps)
   have_ps = .true.
-elseif (has_field(dxm%fields,'delp')) then
-  call pointer_field_array(dxm%fields, 'delp', delp)
+elseif (dxm%has_field('delp')) then
+  call dxm%get_field('delp', delp)
   allocate(ps(self%isc:self%iec,self%jsc:self%jec,1))
   ps(:,:,1) = sum(delp,3)
   have_ps = .true.
@@ -258,7 +257,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(dxg%fields, trim(fields_to_do(f)),  field_ptr)
+  call dxg%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
 
@@ -386,8 +385,8 @@ do fm = 1, size(dxm%fields)
   ! Identity if found and not winds
   if (.not.trim(dxm%fields(fm)%fv3jedi_name) == 'ua' .and. &
       .not.trim(dxm%fields(fm)%fv3jedi_name) == 'va' .and. &
-      has_field(dxg%fields, dxm%fields(fm)%fv3jedi_name, dxg_index)) then
-    call pointer_field_array(dxg%fields, dxm%fields(fm)%fv3jedi_name, field_ptr)
+      dxg%has_field( dxm%fields(fm)%fv3jedi_name, dxg_index)) then
+    call dxg%get_field(dxm%fields(fm)%fv3jedi_name, field_ptr)
     dxm%fields(fm)%array = dxm%fields(fm)%array + field_ptr
     field_passed(dxg_index) = .true.
   else
@@ -404,17 +403,17 @@ fields_to_do(1:num_not_copied) = not_copied_(1:num_not_copied)
 ! -----
 have_awinds = .false.
 have_dwinds = .false.
-if (has_field(dxg%fields, "ua", ua_index) .and. has_field(dxg%fields, "va", va_index)) then
-  call pointer_field_array(dxg%fields, 'ua', ua)
-  call pointer_field_array(dxg%fields, 'va', va)
-  if (dxm%have_dgrid) then
+if (dxg%has_field( "ua", ua_index) .and. dxg%has_field( "va", va_index)) then
+  call dxg%get_field('ua', ua)
+  call dxg%get_field('va', va)
+  if (dxm%has_field('ud')) then
     allocate(ud(self%isc:self%iec  ,self%jsc:self%jec+1,self%npz))
     allocate(vd(self%isc:self%iec+1,self%jsc:self%jec  ,self%npz))
     ud = 0.0_kind_real
     vd = 0.0_kind_real
     call d2a_ad(geom, ud, vd, ua, va)
     have_dwinds = .true.
-  elseif (dxm%have_agrid) then
+  elseif (dxm%has_field('ua')) then
     have_awinds = .true.
   else
     call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiplyadjoint: Winds found in GeoVaLs but"// &
@@ -426,8 +425,8 @@ endif
 ! Virtual temperature
 ! -------------------
 have_tv = .false.
-if (allocated(self%t) .and. allocated(self%t) .and. has_field(dxg%fields,'tv', tv_index)) then
-  call pointer_field_array(dxg%fields, 'tv', tv)
+if (allocated(self%t) .and. allocated(self%t) .and. dxg%has_field('tv', tv_index)) then
+  call dxg%get_field('tv', tv)
   allocate(t_tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(q_tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   t_tv = 0.0_kind_real
@@ -440,8 +439,8 @@ endif
 ! Humidity mixing ratio
 ! ---------------------
 have_qmr = .false.
-if (allocated(self%q) .and. has_field(dxg%fields,'humidity_mixing_ratio', qmr_index)) then
-  call pointer_field_array(dxg%fields, 'humidity_mixing_ratio', qmr)
+if (allocated(self%q) .and. dxg%has_field('humidity_mixing_ratio', qmr_index)) then
+  call dxg%get_field('humidity_mixing_ratio', qmr)
   allocate(q_qmr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   q_qmr = 0.0_kind_real
   call crtm_mixratio_ad(geom, self%q, q_qmr, qmr)
@@ -452,8 +451,8 @@ endif
 ! Pressure
 ! --------
 have_ps = .false.
-if (has_field(dxg%fields, "ps", ps_index)) then
-  call pointer_field_array(dxg%fields, 'ps', ps)
+if (dxg%has_field( "ps", ps_index)) then
+  call dxg%get_field('ps', ps)
   allocate(delp(self%isc:self%iec,self%jsc:self%jec,self%npz))
   delp = 0.0_kind_real
   do jk = 1, self%npz
@@ -472,12 +471,12 @@ have_o3 = .false.
 have_o3_mass = .false.
 have_o3_ppmv = .false.
 have_mfo3 = .false.
-have_o3_mass = has_field(dxm%fields, 'o3mr')
-have_o3_ppmv = has_field(dxm%fields, 'o3ppmv')
-have_mfo3 = has_field(dxg%fields, "mole_fraction_of_ozone_in_air", mfo3_index)
+have_o3_mass = dxm%has_field( 'o3mr')
+have_o3_ppmv = dxm%has_field( 'o3ppmv')
+have_mfo3 = dxg%has_field( "mole_fraction_of_ozone_in_air", mfo3_index)
 
 if (allocated(self%o3) .and. have_mfo3 .and. (have_o3_mass .or. have_o3_ppmv) ) then
-  call pointer_field_array(dxg%fields, 'mole_fraction_of_ozone_in_air', mfo3)
+  call dxg%get_field('mole_fraction_of_ozone_in_air', mfo3)
   allocate(o3(self%isc:self%iec,self%jsc:self%jec,self%npz))
   o3 = mfo3
   do jk = 1, self%npz
@@ -497,13 +496,13 @@ if (allocated(self%o3) .and. have_mfo3 .and. (have_o3_mass .or. have_o3_ppmv) ) 
 endif
 
 ! Simulated but not assimilated
-if (has_field(dxg%fields, "mass_content_of_cloud_liquid_water_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( "mass_content_of_cloud_liquid_water_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (has_field(dxg%fields, "mass_content_of_cloud_ice_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( "mass_content_of_cloud_ice_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (has_field(dxg%fields, "p", noassim_index)) &
+if (dxg%has_field( "p", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (has_field(dxg%fields, "pe", noassim_index)) &
+if (dxg%has_field( "pe", noassim_index)) &
   field_passed(noassim_index) = .true.
 
 
@@ -520,7 +519,7 @@ if (has_field(dxg%fields, "pe", noassim_index)) &
 ! --------------------------------------------------
 do fm = 1, size(fields_to_do)
 
-  call pointer_field_array(dxm%fields, trim(fields_to_do(fm)), field_ptr)
+  call dxm%get_field(trim(fields_to_do(fm)), field_ptr)
 
   select case(trim(fields_to_do(fm)))
 
@@ -597,8 +596,8 @@ do fg = 1, size(dxg%fields)
 
       if (.not. have_tv) call field_fail(trim(dxg%fields(fg)%fv3jedi_name))
       field_passed(tv_index) = .true.
-      call pointer_field_array(dxm%fields, "t", tptr)
-      call pointer_field_array(dxm%fields, "sphum", qptr)
+      call dxm%get_field("t", tptr)
+      call dxm%get_field("sphum", qptr)
       tptr = tptr + t_tv
       qptr = qptr + q_tv
 
@@ -606,7 +605,7 @@ do fg = 1, size(dxg%fields)
 
       if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%fv3jedi_name))
       field_passed(qmr_index) = .true.
-      call pointer_field_array(dxm%fields, "sphum", qptr)
+      call dxm%get_field("sphum", qptr)
       qptr = qptr + q_qmr
 
     case default

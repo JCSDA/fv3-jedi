@@ -17,13 +17,12 @@ use ufo_locs_mod,                   only: ufo_locs, ufo_locs_time_mask
 use ufo_geovals_mod,                only: ufo_geovals
 
 ! fv3jedi uses
-use fv3jedi_field_mod,              only: fv3jedi_field, pointer_field, field_clen, &
+use fv3jedi_field_mod,              only: fv3jedi_field, get_field, field_clen, &
                                           long_name_to_fv3jedi_name
 use fv3jedi_geom_mod,               only: fv3jedi_geom
 use fv3jedi_getvalues_mod,          only: fv3jedi_getvalues_base
 use fv3jedi_increment_mod,          only: fv3jedi_increment
 use fv3jedi_kinds_mod,              only: kind_real
-use fv3jedi_state_utils_mod,        only: fv3jedi_state
 
 implicit none
 
@@ -80,7 +79,7 @@ do gv = 1, geovals%nvar
   ! Get GeoVaLs field
   ! -----------------
   call long_name_to_fv3jedi_name(fields, trim(geovals%variables(gv)), fv3jedi_name)
-  call pointer_field(fields, fv3jedi_name, field)
+  call get_field(fields, fv3jedi_name, field)
 
   ! Adjoint of fill GeoVaLs relevant to this window
   ! -----------------------------------------------

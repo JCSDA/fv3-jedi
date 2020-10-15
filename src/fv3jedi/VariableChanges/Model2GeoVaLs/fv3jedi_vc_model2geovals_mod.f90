@@ -15,8 +15,7 @@ use datetime_mod
 use fv3jedi_constants_mod, only: constoz, grav
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_fieldfail_mod, only: field_fail
-use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
-                                 copy_subset, field_clen
+use fv3jedi_field_mod,     only: copy_subset, field_clen
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state
 
@@ -225,20 +224,20 @@ if (.not.allocated(fields_to_do)) return
 ! ------------------------------------------
 have_pressures = .false.
 
-if (has_field(xm%fields,'delp')) then
-  call allocate_copy_field_array(xm%fields, 'delp', delp)
+if (xm%has_field('delp')) then
+  call xm%get_field('delp', delp)
   allocate(ps(self%isc:self%iec, self%jsc:self%jec, 1))
   ps(:,:,1) = sum(delp,3)
   have_pressures = .true.
-elseif (has_field(xm%fields,'ps')) then
-  call allocate_copy_field_array(xm%fields, 'ps', ps)
+elseif (xm%has_field('ps')) then
+  call xm%get_field('ps', ps)
   allocate(delp(self%isc:self%iec, self%jsc:self%jec, self%npz))
   do jlev = 1,self%npz
     delp(:,:,jlev) = (geom%ak(jlev+1)-geom%ak(jlev))+(geom%bk(jlev+1)-geom%bk(jlev))*ps(:,:,1)
   enddo
   have_pressures = .true.
-elseif (has_field(xm%fields,'pe')) then
-  call allocate_copy_field_array(xm%fields, 'pe', prsi)
+elseif (xm%has_field('pe')) then
+  call xm%get_field('pe', prsi)
   allocate(ps(self%isc:self%iec, self%jsc:self%jec, 1))
   ps(:,:,1) = prsi(:,:,self%npz+1)
   allocate(delp(self%isc:self%iec, self%jsc:self%jec, self%npz))
@@ -259,15 +258,15 @@ endif
 ! -----------
 have_t = .false.
 
-if (has_field(xm%fields, 't')) then
-  call allocate_copy_field_array(xm%fields, 't', t)
+if (xm%has_field( 't')) then
+  call xm%get_field('t', t)
   have_t = .true.
-elseif (has_field(xm%fields, 'pt')) then
+elseif (xm%has_field( 'pt')) then
   if (.not. have_pressures) &
     call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar: a state with pt needs pressures")
   allocate(t  (self%isc:self%iec, self%jsc:self%jec, self%npz))
   allocate(pkz(self%isc:self%iec, self%jsc:self%jec, self%npz))
-  call pointer_field_array(xm%fields, 'pt',  pt)
+  call xm%get_field('pt',  pt)
   call pe_to_pkz(geom, prsi, pkz)
   call pt_to_t(geom, pkz, pt, t)
   have_t = .true.
@@ -277,8 +276,8 @@ endif
 ! Specific humidity
 ! -----------------
 have_q = .false.
-if (has_field(xm%fields, 'sphum')) then
-  call pointer_field_array(xm%fields, 'sphum',  q)
+if (xm%has_field( 'sphum')) then
+  call xm%get_field('sphum',  q)
   have_q = .true.
 endif
 
@@ -286,8 +285,8 @@ endif
 ! Relative humidity
 ! -----------------
 have_rh = .false.
-if (has_field(xm%fields,'rh')) then
-  call allocate_copy_field_array(xm%fields, 'rh', rh)
+if (xm%has_field('rh')) then
+  call xm%get_field('rh', rh)
   have_rh = .true.
 elseif (have_t .and. have_pressures .and. have_q) then
   allocate(qsat(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -302,8 +301,8 @@ endif
 ! Geopotential height
 ! -------------------
 have_geoph = .false.
-if (have_t .and. have_pressures .and. have_q .and. has_field(xm%fields, 'phis')) then
-  call pointer_field_array(xm%fields, 'phis',  phis)
+if (have_t .and. have_pressures .and. have_q .and. xm%has_field( 'phis')) then
+  call xm%get_field('phis',  phis)
   if (.not.allocated(geophi)) allocate(geophi(self%isc:self%iec,self%jsc:self%jec,self%npz+1))
   if (.not.allocated(geoph )) allocate(geoph (self%isc:self%iec,self%jsc:self%jec,self%npz  ))
   if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,self%npz  ))
@@ -328,10 +327,10 @@ endif
 ! -----
 have_o3 = .false.
 have_mass = .false.
-if (has_field(xm%fields, 'o3mr') .or. has_field(xm%fields, 'o3ppmv')) then
-  if (has_field(xm%fields, 'o3mr')) call allocate_copy_field_array(xm%fields, 'o3mr', o3)
-  if (has_field(xm%fields, 'o3ppmv')) call allocate_copy_field_array(xm%fields, 'o3ppmv', o3)
-  have_mass = has_field(xm%fields, 'o3mr')
+if (xm%has_field( 'o3mr') .or. xm%has_field( 'o3ppmv')) then
+  if (xm%has_field( 'o3mr')) call xm%get_field('o3mr', o3)
+  if (xm%has_field( 'o3ppmv')) call xm%get_field('o3ppmv', o3)
+  have_mass = xm%has_field( 'o3mr')
   have_o3 = .true.
   do k = 1, self%npz
     do j = self%jsc, self%jec
@@ -350,13 +349,13 @@ endif
 ! Wind transforms
 ! ---------------
 have_winds = .false.
-if (xm%have_agrid) then
-  call allocate_copy_field_array(xm%fields, 'ua', ua)
-  call allocate_copy_field_array(xm%fields, 'va', va)
+if (xm%has_field('ua')) then
+  call xm%get_field('ua', ua)
+  call xm%get_field('va', va)
   have_winds = .true.
-elseif (xm%have_dgrid) then
-  call pointer_field_array(xm%fields, 'ud', ud)
-  call pointer_field_array(xm%fields, 'vd', vd)
+elseif (xm%has_field('ud')) then
+  call xm%get_field('ud', ud)
+  call xm%get_field('vd', vd)
   allocate(ua(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call d2a(geom, ud, vd, ua, va)
@@ -367,15 +366,15 @@ endif
 ! Land sea mask
 ! -------------
 have_slmsk = .false.
-if (has_field(xm%fields, 'slmsk')) then
-  call allocate_copy_field_array(xm%fields, 'slmsk', slmsk)
+if (xm%has_field( 'slmsk')) then
+  call xm%get_field('slmsk', slmsk)
   have_slmsk = .true.
-elseif ( has_field(xm%fields,'frocean' ) .and. has_field(xm%fields,'frlake'  ) .and. &
-         has_field(xm%fields,'frseaice') .and. has_field(xm%fields,'tsea'    ) ) then
-  call pointer_field_array(xm%fields, 'frocean' , frocean )
-  call pointer_field_array(xm%fields, 'frlake'  , frlake  )
-  call pointer_field_array(xm%fields, 'frseaice', frseaice)
-  call pointer_field_array(xm%fields, 'tsea'    , tsea    )
+elseif ( xm%has_field('frocean' ) .and. xm%has_field('frlake'  ) .and. &
+         xm%has_field('frseaice') .and. xm%has_field('tsea'    ) ) then
+  call xm%get_field('frocean' , frocean )
+  call xm%get_field('frlake'  , frlake  )
+  call xm%get_field('frseaice', frseaice)
+  call xm%get_field('tsea'    , tsea    )
 
   allocate(slmsk(self%isc:self%iec,self%jsc:self%jec,1))
   slmsk = 1.0_kind_real !Land
@@ -399,12 +398,12 @@ endif
 ! f10m
 ! ----
 have_f10m = .false.
-if (has_field(xm%fields,'f10m')) then
-  call allocate_copy_field_array(xm%fields, 'f10m', f10m)
+if (xm%has_field('f10m')) then
+  call xm%get_field('f10m', f10m)
   have_f10m = .true.
-elseif ( has_field(xm%fields, 'u_srf') .and. has_field(xm%fields, 'v_srf') .and. have_winds ) then
-  call pointer_field_array(xm%fields, 'u_srf' , u_srf)
-  call pointer_field_array(xm%fields, 'v_srf' , v_srf)
+elseif ( xm%has_field( 'u_srf') .and. xm%has_field( 'v_srf') .and. have_winds ) then
+  call xm%get_field('u_srf' , u_srf)
+  call xm%get_field('v_srf' , v_srf)
 
   allocate(f10m(self%isc:self%iec,self%jsc:self%jec,1))
   f10m = sqrt(u_srf**2 + v_srf**2)
@@ -436,16 +435,16 @@ endif
 ! Clouds
 ! ------
 have_qiql = .false.
-if (has_field(xm%fields, 'ice_wat') .and. has_field(xm%fields, 'liq_wat')) then
-  call allocate_copy_field_array(xm%fields, 'ice_wat', qi)
-  call allocate_copy_field_array(xm%fields, 'liq_wat', ql)
+if (xm%has_field( 'ice_wat') .and. xm%has_field( 'liq_wat')) then
+  call xm%get_field('ice_wat', qi)
+  call xm%get_field('liq_wat', ql)
   have_qiql = .true.
-elseif (has_field(xm%fields, 'qils') .and. has_field(xm%fields, 'qicn') .and. &
-        has_field(xm%fields, 'qlls') .and. has_field(xm%fields, 'qlcn')) then
-  call pointer_field_array(xm%fields, 'qils', qils)
-  call pointer_field_array(xm%fields, 'qicn', qicn)
-  call pointer_field_array(xm%fields, 'qlls', qlls)
-  call pointer_field_array(xm%fields, 'qlcn', qlcn)
+elseif (xm%has_field( 'qils') .and. xm%has_field( 'qicn') .and. &
+        xm%has_field( 'qlls') .and. xm%has_field( 'qlcn')) then
+  call xm%get_field('qils', qils)
+  call xm%get_field('qicn', qicn)
+  call xm%get_field('qlls', qlls)
+  call xm%get_field('qlcn', qlcn)
   allocate(qi(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(ql(self%isc:self%iec,self%jsc:self%jec,self%npz))
   qi = qils + qicn
@@ -485,21 +484,21 @@ endif
 ! --------------------
 have_crtm_surface = .false.
 have_sss = .false.
-if ( have_slmsk .and. have_f10m .and. has_field(xm%fields, 'sheleg') .and. &
-     has_field(xm%fields, 'tsea'  ) .and. has_field(xm%fields, 'vtype' ) .and. &
-     has_field(xm%fields, 'stype' ) .and. has_field(xm%fields, 'vfrac' ) .and. &
-     has_field(xm%fields, 'stc'   ) .and. has_field(xm%fields, 'smc'   ) .and. &
-     has_field(xm%fields, 'u_srf' ) .and. has_field(xm%fields, 'v_srf' ) ) then
+if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
+     xm%has_field( 'tsea'  ) .and. xm%has_field( 'vtype' ) .and. &
+     xm%has_field( 'stype' ) .and. xm%has_field( 'vfrac' ) .and. &
+     xm%has_field( 'stc'   ) .and. xm%has_field( 'smc'   ) .and. &
+     xm%has_field( 'u_srf' ) .and. xm%has_field( 'v_srf' ) ) then
 
-  call pointer_field_array(xm%fields, 'sheleg', sheleg)
-  call pointer_field_array(xm%fields, 'tsea'  , tsea  )
-  call pointer_field_array(xm%fields, 'vtype' , vtype )
-  call pointer_field_array(xm%fields, 'stype' , stype )
-  call pointer_field_array(xm%fields, 'vfrac' , vfrac )
-  call pointer_field_array(xm%fields, 'stc'   , stc   )
-  call pointer_field_array(xm%fields, 'smc'   , smc   )
-  call pointer_field_array(xm%fields, 'u_srf' , u_srf )
-  call pointer_field_array(xm%fields, 'v_srf' , v_srf )
+  call xm%get_field('sheleg', sheleg)
+  call xm%get_field('tsea'  , tsea  )
+  call xm%get_field('vtype' , vtype )
+  call xm%get_field('stype' , stype )
+  call xm%get_field('vfrac' , vfrac )
+  call xm%get_field('stc'   , stc   )
+  call xm%get_field('smc'   , smc   )
+  call xm%get_field('u_srf' , u_srf )
+  call xm%get_field('v_srf' , v_srf )
 
   allocate(land_type_index                           (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(vegetation_type_index                     (self%isc:self%iec,self%jsc:self%jec,1))
@@ -523,8 +522,8 @@ if ( have_slmsk .and. have_f10m .and. has_field(xm%fields, 'sheleg') .and. &
 
   allocate(sss(self%isc:self%iec,self%jsc:self%jec,1))
   sss = 0.0_kind_real
-  if (has_field(xm%fields, 'sss')) then
-    call allocate_copy_field_array(xm%fields, 'sss', sss)
+  if (xm%has_field( 'sss')) then
+    call xm%get_field('sss', sss)
     have_sss = .true.
   endif
 
@@ -546,7 +545,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(xg%fields, trim(fields_to_do(f)),  field_ptr)
+  call xg%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
 

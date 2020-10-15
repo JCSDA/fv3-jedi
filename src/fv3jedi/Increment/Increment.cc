@@ -189,7 +189,7 @@ void Increment::write(const eckit::Configuration & config) const {
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {
   double zz = 0.0;
-  fv3jedi_increment_rms_f90(keyInc_, zz);
+  fv3jedi_increment_norm_f90(keyInc_, zz);
   return zz;
 }
 // -------------------------------------------------------------------------------------------------

@@ -14,7 +14,7 @@ use unstructured_interpolation_mod, only: unstrc_interp
 ! fv3jedi
 use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
 use fv3jedi_kinds_mod,       only: kind_real
-use fv3jedi_field_mod,       only: fv3jedi_field, pointer_field, has_field
+use fv3jedi_field_mod,       only: fv3jedi_field, get_field, has_field
 use fv3jedi_geom_mod,        only: fv3jedi_geom
 use fv3jedi_constants_mod,   only: rad2deg
 use wind_vt_mod,             only: d2a, a2d
@@ -140,8 +140,8 @@ if (has_field(fields_in,'ud')) then
 
   do_d2a = .true.
 
-  call pointer_field(fields_in, 'ud', u_in)
-  call pointer_field(fields_in, 'vd', v_in)
+  call get_field(fields_in, 'ud', u_in)
+  call get_field(fields_in, 'vd', v_in)
 
   allocate(ua(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
   allocate(va(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
@@ -155,8 +155,8 @@ if (has_field(fields_in,'ud')) then
   allocate(v_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:geom_in%npz))
 
   ! Reallocate output
-  call pointer_field(fields_ou, 'ud', u_ou)
-  call pointer_field(fields_ou, 'vd', v_ou)
+  call get_field(fields_ou, 'ud', u_ou)
+  call get_field(fields_ou, 'vd', v_ou)
   deallocate(u_ou%array)
   deallocate(v_ou%array)
   allocate(u_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,1:geom_ou%npz))
@@ -256,8 +256,8 @@ enddo
 ! --------------
 if (do_d2a) then
 
-  call pointer_field(fields_ou, 'ud', u_ou)
-  call pointer_field(fields_ou, 'vd', v_ou)
+  call get_field(fields_ou, 'ud', u_ou)
+  call get_field(fields_ou, 'vd', v_ou)
 
   allocate(ud(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
   allocate(vd(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))

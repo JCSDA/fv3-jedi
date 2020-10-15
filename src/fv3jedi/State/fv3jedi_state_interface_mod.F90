@@ -7,26 +7,46 @@
 
 module fv3jedi_state_interface_mod
 
-use fv3jedi_kinds_mod
+! iso
+use iso_c_binding
+
+! fckit
+use fckit_configuration_module,     only: fckit_configuration
+
+! oops
 use datetime_mod
 use duration_mod
-use iso_c_binding
 use oops_variables_mod
-use fckit_configuration_module, only: fckit_configuration
 
-use fv3jedi_field_mod, only: field_clen
-use fv3jedi_state_mod
-use fv3jedi_state_utils_mod, only: fv3jedi_state_registry
-use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_geom_interface_mod, only: fv3jedi_geom_registry
-use fv3jedi_increment_utils_mod, only: fv3jedi_increment, fv3jedi_increment_registry
+! fv3jedi
+use fv3jedi_field_mod,               only: field_clen
+use fv3jedi_kinds_mod,               only: kind_real
+use fv3jedi_geom_mod,                only: fv3jedi_geom
+use fv3jedi_geom_interface_mod,      only: fv3jedi_geom_registry
+use fv3jedi_increment_mod,           only: fv3jedi_increment, fv3jedi_increment_registry
+use fv3jedi_state_mod,               only: fv3jedi_state
 
 private
 public :: fv3jedi_state_registry
 
 ! --------------------------------------------------------------------------------------------------
 
+#define LISTED_TYPE fv3jedi_state
+
+!> Linked list interface - defines registry_t type
+#include "oops/util/linkedList_i.f"
+
+!> Global registry
+type(registry_t) :: fv3jedi_state_registry
+
+! --------------------------------------------------------------------------------------------------
+
 contains
+
+! --------------------------------------------------------------------------------------------------
+
+!> Linked list implementation
+#include "oops/util/linkedList_c.f"
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -48,7 +68,7 @@ call fv3jedi_state_registry%add(c_key_self)
 call fv3jedi_state_registry%get(c_key_self,self)
 
 vars = oops_variables(c_vars)
-call create(self, geom, vars)
+call self%create(geom, vars)
 
 end subroutine fv3jedi_state_create_c
 
@@ -62,7 +82,7 @@ type(fv3jedi_state), pointer :: self
 
 call fv3jedi_state_registry%get(c_key_self,self)
 
-call delete(self)
+call self%delete()
 
 call fv3jedi_state_registry%remove(c_key_self)
 
@@ -77,7 +97,7 @@ integer(c_int), intent(in) :: c_key_self
 type(fv3jedi_state), pointer :: self
 
 call fv3jedi_state_registry%get(c_key_self,self)
-call zeros(self)
+call self%zero()
 
 end subroutine fv3jedi_state_zero_c
 
@@ -90,11 +110,11 @@ integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
 
 type(fv3jedi_state), pointer :: self
-type(fv3jedi_state), pointer :: rhs
+type(fv3jedi_state), pointer :: other
 call fv3jedi_state_registry%get(c_key_self,self)
-call fv3jedi_state_registry%get(c_key_rhs,rhs)
+call fv3jedi_state_registry%get(c_key_rhs,other)
 
-call copy(self, rhs)
+call self%copy(other)
 
 end subroutine fv3jedi_state_copy_c
 
@@ -115,7 +135,7 @@ call fv3jedi_state_registry%get(c_key_self,self)
 call fv3jedi_state_registry%get(c_key_rhs,rhs)
 zz = c_zz
 
-call axpy(self,zz,rhs)
+call self%accumul(zz,rhs)
 
 end subroutine fv3jedi_state_axpy_c
 
@@ -136,7 +156,7 @@ call fv3jedi_state_registry%get(c_key_self,self)
 call fv3jedi_increment_registry%get(c_key_rhs,rhs)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call add_incr(geom,self,rhs)
+call self%add_incr(geom,rhs%fields)
 
 end subroutine fv3jedi_state_add_incr_c
 
@@ -151,15 +171,15 @@ integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_rhs
 integer(c_int), intent(in) :: c_key_geom_rhs
 
-type(fv3jedi_state), pointer :: state, rhs
-type(fv3jedi_geom),  pointer :: geom, geom_rhs
+type(fv3jedi_state), pointer :: self, other
+type(fv3jedi_geom),  pointer :: geom, geom_other
 
-call fv3jedi_state_registry%get(c_key_state,state)
+call fv3jedi_state_registry%get(c_key_state,self)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_rhs,rhs)
-call fv3jedi_geom_registry%get(c_key_geom_rhs, geom_rhs)
+call fv3jedi_state_registry%get(c_key_rhs, other)
+call fv3jedi_geom_registry%get(c_key_geom_rhs, geom_other)
 
-call change_resol(state,geom,rhs,geom_rhs)
+call self%change_resol(geom, other, geom_other)
 
 end subroutine fv3jedi_state_change_resol_c
 
@@ -174,14 +194,17 @@ type(c_ptr), intent(in)    :: c_conf !< Configuration
 type(c_ptr), intent(inout) :: c_dt   !< DateTime
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 
-type(fv3jedi_state), pointer :: state
+type(fv3jedi_state), pointer :: self
 type(datetime) :: fdate
 type(fv3jedi_geom),  pointer :: geom
+type(fckit_configuration) :: f_conf
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,state)
+call fv3jedi_state_registry%get(c_key_state,self)
 call c_f_datetime(c_dt, fdate)
-call read_file(geom, state, c_conf, fdate)
+f_conf = fckit_configuration(c_conf)
+
+call self%read(geom, f_conf, fdate)
 
 end subroutine fv3jedi_state_read_file_c
 
@@ -196,14 +219,16 @@ integer(c_int), intent(in) :: c_key_geom  !< Geometry
 type(c_ptr), intent(in)    :: c_conf !< Configuration
 type(c_ptr), intent(inout) :: c_dt   !< DateTime
 
-type(fv3jedi_state), pointer :: state
+type(fv3jedi_state), pointer :: self
 type(fv3jedi_geom), pointer :: geom
 type(datetime) :: fdate
+type(fckit_configuration) :: f_conf
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,state)
+call fv3jedi_state_registry%get(c_key_state,self)
 call c_f_datetime(c_dt, fdate)
-call analytic_IC(state, geom, c_conf, fdate)
+f_conf = fckit_configuration(c_conf)
+call self%analytic_IC(geom, f_conf, fdate)
 
 end subroutine fv3jedi_state_analytic_init_c
 
@@ -218,35 +243,38 @@ type(c_ptr), intent(in) :: c_conf !< Configuration
 type(c_ptr), intent(in) :: c_dt   !< DateTime
 integer(c_int), intent(in) :: c_key_geom  !< Geometry
 
-type(fv3jedi_state), pointer :: state
+type(fv3jedi_state), pointer :: self
 type(datetime) :: fdate
 type(fv3jedi_geom),  pointer :: geom
+type(fckit_configuration) :: f_conf
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,state)
+call fv3jedi_state_registry%get(c_key_state,self)
 call c_f_datetime(c_dt, fdate)
-call write_file(geom, state, c_conf, fdate)
+f_conf = fckit_configuration(c_conf)
+
+call self%write(geom, f_conf, fdate)
 
 end subroutine fv3jedi_state_write_file_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_rms_c(c_key_state, prms) bind(c,name='fv3jedi_state_rms_f90')
+subroutine fv3jedi_state_norm_c(c_key_state, prms) bind(c,name='fv3jedi_state_norm_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_state
 real(c_double), intent(inout) :: prms
 
-type(fv3jedi_state), pointer :: state
+type(fv3jedi_state), pointer :: self
 real(kind=kind_real) :: zz
 
-call fv3jedi_state_registry%get(c_key_state,state)
+call fv3jedi_state_registry%get(c_key_state,self)
 
-call rms(state, zz)
+call self%norm(zz)
 
 prms = zz
 
-end subroutine fv3jedi_state_rms_c
+end subroutine fv3jedi_state_norm_c
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -285,7 +313,7 @@ integer :: n
 
 call fv3jedi_state_registry%get(c_key_self,self)
 
-call getminmaxrms(self, c_f_num, field_name, c_minmaxrms)
+call self%minmaxrms(c_f_num, field_name, c_minmaxrms)
 
 do n = 1,c_f_name_len
   c_f_name(n) = field_name(n:n)
@@ -330,7 +358,7 @@ type(fv3jedi_state),pointer :: self
 
 call fv3jedi_state_registry%get(c_key_self, self)
 ! Call Fortran
-call fv3jedi_state_serialize(self,c_vsize,c_vect_inc)
+call self%serialize(c_vsize,c_vect_inc)
 
 end subroutine fv3jedi_state_serialize_c
 
@@ -352,7 +380,7 @@ type(fv3jedi_state),pointer :: self
 call fv3jedi_state_registry%get(c_key_self, self)
 
 ! Call Fortran
-call fv3jedi_state_deserialize(self,c_vsize,c_vect_inc,c_index)
+call self%deserialize(c_vsize,c_vect_inc,c_index)
 
 
 end subroutine fv3jedi_state_deserialize_c

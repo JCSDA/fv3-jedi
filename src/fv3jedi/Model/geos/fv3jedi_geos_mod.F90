@@ -17,7 +17,7 @@ use netcdf
 use fckit_configuration_module, only: fckit_configuration
 
 use fv3jedi_geom_mod,      only: fv3jedi_geom
-use fv3jedi_field_mod,     only: fv3jedi_field, pointer_field, field_clen, has_field
+use fv3jedi_field_mod,     only: fv3jedi_field, field_clen
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state
@@ -446,7 +446,7 @@ do i = 1, num_items
 
   ! Only need to extract field from GEOS if fv3-jedi needs it
   ! ---------------------------------------------------------
-  if (has_field(state%fields, trim(fv3jedi_name))) then
+  if (state%has_field(trim(fv3jedi_name))) then
 
     !Get field from the state
     call ESMF_StateGet(self%cap%cap_gc%export_state, item_names(i), field, rc = rc)
@@ -492,7 +492,7 @@ do i = 1, num_items
     endif
 
     ! Get pointer to fv3-jedi side field
-    call pointer_field(state%fields, trim(fv3jedi_name), field_ptr)
+    call state%get_field(trim(fv3jedi_name), field_ptr)
 
     if (field_ptr%npz .ne. fnpz) &
       call abor1_ftn("geos_to_state: dimension mismatch between JEDI and GEOS vertical grid")

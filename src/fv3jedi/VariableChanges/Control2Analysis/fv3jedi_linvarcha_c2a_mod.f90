@@ -10,8 +10,7 @@ use fckit_configuration_module, only: fckit_configuration
 
 ! fv3jedi
 use fv3jedi_fieldfail_mod, only: field_fail
-use fv3jedi_field_mod,     only: has_field, pointer_field_array, allocate_copy_field_array, &
-                                 copy_subset, field_clen, zero_fields
+use fv3jedi_field_mod,     only: copy_subset, field_clen
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_kinds_mod,     only: kind_real
@@ -61,9 +60,9 @@ real(kind=kind_real), pointer :: q   (:,:,:)
 real(kind=kind_real), pointer :: delp(:,:,:)
 
 !> Pointers to the background state
-call pointer_field_array(bg%fields, 't'   , t)
-call pointer_field_array(bg%fields, 'sphum'   , q)
-call pointer_field_array(bg%fields, 'delp', delp)
+call bg%get_field('t'   , t)
+call bg%get_field('sphum'   , q)
+call bg%get_field('delp', delp)
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -143,9 +142,9 @@ if (.not.allocated(fields_to_do)) return
 ! Winds
 ! -----
 have_uava = .false.
-if (has_field(dxc%fields,'psi') .and. has_field(dxc%fields,'chi')) then
-  call pointer_field_array(dxc%fields, 'psi', psip)
-  call pointer_field_array(dxc%fields, 'chi', chip)
+if (dxc%has_field('psi') .and. dxc%has_field('chi')) then
+  call dxc%get_field('psi', psip)
+  call dxc%get_field('chi', chip)
   allocate(psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
   allocate(chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
   psi = 0.0_kind_real
@@ -161,8 +160,8 @@ endif
 ! Specific humidity
 !------------------
 have_q = .false.
-if (has_field(dxc%fields,'rh')) then
-  call pointer_field_array(dxc%fields, 'rh', rh)
+if (dxc%has_field('rh')) then
+  call dxc%get_field('rh', rh)
   allocate(q(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   call rh_to_q_tl(geom, self%qsattraj, rh, q)
   have_q = .true.
@@ -171,11 +170,11 @@ endif
 ! Temperature
 ! -----------
 have_t = .false.
-if (has_field(dxc%fields,'t')) then
-  call allocate_copy_field_array(dxc%fields, 't', t)
+if (dxc%has_field('t')) then
+  call dxc%get_field('t', t)
   have_t = .true.
-elseif (has_field(dxc%fields,'tv') .and. have_q) then
-  call pointer_field_array(dxc%fields, 'tv', tv)
+elseif (dxc%has_field('tv') .and. have_q) then
+  call dxc%get_field('tv', tv)
   allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   call Tv_to_T_tl(geom, self%tvtraj, tv, self%qtraj, q, t)
   have_t = .true.
@@ -186,7 +185,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(dxa%fields, trim(fields_to_do(f)),  field_ptr)
+  call dxa%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
 
@@ -259,7 +258,7 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: tv
 
 ! Zero output
 ! -----------
-call zero_fields(dxc%fields)
+call dxc%zero()
 
 ! Identity part of the change of fields
 ! -------------------------------------
@@ -272,9 +271,9 @@ if (.not.allocated(fields_to_do)) return
 ! Virtual temperature
 ! -------------------
 have_tv = .false.
-if (has_field(dxa%fields,'t') .and. has_field(dxa%fields,'sphum')) then
-  call pointer_field_array(dxa%fields, 't', t)
-  call pointer_field_array(dxa%fields, 'sphum', q)
+if (dxa%has_field('t') .and. dxa%has_field('sphum')) then
+  call dxa%get_field('t', t)
+  call dxa%get_field('sphum', q)
   allocate(tv(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   tv = 0.0_kind_real
   call Tv_to_T_ad(geom, self%tvtraj, tv, self%qtraj, q, t)
@@ -284,8 +283,8 @@ endif
 ! Relative humidity
 !------------------
 have_rh = .false.
-if (has_field(dxa%fields,'sphum')) then
-  call pointer_field_array(dxa%fields, 'sphum', q)
+if (dxa%has_field('sphum')) then
+  call dxa%get_field('sphum', q)
   allocate(rh(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   rh = 0.0_kind_real
   call rh_to_q_ad(geom, self%qsattraj, rh, q)
@@ -295,9 +294,9 @@ endif
 ! Winds
 ! -----
 have_psichi = .false.
-if (has_field(dxa%fields,'ua') .and. has_field(dxa%fields,'va')) then
-  call pointer_field_array(dxa%fields, 'ua', ua)
-  call pointer_field_array(dxa%fields, 'va', va)
+if (dxa%has_field('ua') .and. dxa%has_field('va')) then
+  call dxa%get_field('ua', ua)
+  call dxa%get_field('va', va)
   allocate(psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
   allocate(chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
   psi = 0.0_kind_real
@@ -310,7 +309,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(dxc%fields, trim(fields_to_do(f)),  field_ptr)
+  call dxc%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
 
