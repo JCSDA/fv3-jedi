@@ -118,18 +118,6 @@ Test     :    qi            : Min = +0.000000e+00, Max = +3.833685e-04, RMS = +7
 Test     :    ql            : Min = +0.000000e+00, Max = +5.516281e-04, RMS = +2.339478e-05
 Test     :    o3ppmv        : Min = +2.940750e-08, Max = +5.748485e-05, RMS = +6.268882e-06
 Test     :  --------------------------------------------------------------------------------
-Test     : Background mean :
-Test     :  --------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua            : Min = -4.979848e+01, Max = +9.422192e+01, RMS = +1.969686e+01
-Test     :    va            : Min = -6.568660e+01, Max = +6.394783e+01, RMS = +8.545029e+00
-Test     :    t             : Min = +1.695835e+02, Max = +3.082663e+02, RMS = +2.464151e+02
-Test     :    delp          : Min = +1.000000e+00, Max = +5.131772e+03, RMS = +1.953822e+03
-Test     :    q             : Min = +3.391868e-07, Max = +2.032063e-02, RMS = +4.090622e-03
-Test     :    qi            : Min = +0.000000e+00, Max = +2.902276e-04, RMS = +6.466769e-06
-Test     :    ql            : Min = +0.000000e+00, Max = +3.410393e-04, RMS = +2.091212e-05
-Test     :    o3ppmv        : Min = +2.849704e-08, Max = +5.663026e-05, RMS = +6.269728e-06
-Test     :  --------------------------------------------------------------------------------
 Test     : H(x) for member 1:
 Test     : Radiosonde nobs= 2 Min=-6.90484, Max=-2.16022, RMS=5.11583
 Test     : H(x) for member 2:
@@ -150,10 +138,102 @@ Test     : H(x) for member 9:
 Test     : Radiosonde nobs= 2 Min=-6.73085, Max=-1.72271, RMS=4.91284
 Test     : H(x) for member 10:
 Test     : Radiosonde nobs= 2 Min=-7.20947, Max=-1.8822, RMS=5.26873
+Test     : H(Zx) - ymean for member 1 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.368808, Max=-0.331967, RMS=0.350872
+Test     : H(Zx) - ymean for member 1 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.129903, Max=-0.116926, RMS=0.123585
+Test     : H(Zx) - ymean for member 1 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0555836, Max=-0.0500312, RMS=0.0528803
+Test     : H(Zx) - ymean for member 1 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.046007, Max=-0.0414113, RMS=0.0437695
+Test     : H(Zx) - ymean for member 2 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.226929, Max=0.471629, RMS=0.370089
+Test     : H(Zx) - ymean for member 2 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0799295, Max=0.166118, RMS=0.130353
+Test     : H(Zx) - ymean for member 2 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0342008, Max=0.0710798, RMS=0.0557765
+Test     : H(Zx) - ymean for member 2 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0283083, Max=0.0588334, RMS=0.0461667
+Test     : H(Zx) - ymean for member 3 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.428562, Max=0.281183, RMS=0.362443
+Test     : H(Zx) - ymean for member 3 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.150949, Max=0.0990389, RMS=0.12766
+Test     : H(Zx) - ymean for member 3 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0645891, Max=0.0423774, RMS=0.0546242
+Test     : H(Zx) - ymean for member 3 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.053461, Max=0.0350762, RMS=0.0452129
+Test     : H(Zx) - ymean for member 4 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0885947, Max=-0.0537969, RMS=0.073291
+Test     : H(Zx) - ymean for member 4 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.031205, Max=-0.0189485, RMS=0.0258147
+Test     : H(Zx) - ymean for member 4 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0133522, Max=-0.0081078, RMS=0.0110458
+Test     : H(Zx) - ymean for member 4 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0110518, Max=-0.0067109, RMS=0.00914268
+Test     : H(Zx) - ymean for member 5 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0654239, Max=0.544769, RMS=0.387978
+Test     : H(Zx) - ymean for member 5 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0230438, Max=0.19188, RMS=0.136654
+Test     : H(Zx) - ymean for member 5 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.00986012, Max=0.0821027, RMS=0.0584726
+Test     : H(Zx) - ymean for member 5 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.00816131, Max=0.0679572, RMS=0.0483983
+Test     : H(Zx) - ymean for member 6 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.295163, Max=0.348779, RMS=0.323085
+Test     : H(Zx) - ymean for member 6 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.103963, Max=0.122848, RMS=0.113798
+Test     : H(Zx) - ymean for member 6 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0444844, Max=0.0525649, RMS=0.0486926
+Test     : H(Zx) - ymean for member 6 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0368202, Max=0.0435085, RMS=0.0403033
+Test     : H(Zx) - ymean for member 7 eig 1 :
+Test     : Radiosonde nobs= 2 Min=0.328987, Max=0.383262, RMS=0.357157
+Test     : H(Zx) - ymean for member 7 eig 2 :
+Test     : Radiosonde nobs= 2 Min=0.115876, Max=0.134993, RMS=0.125799
+Test     : H(Zx) - ymean for member 7 eig 3 :
+Test     : Radiosonde nobs= 2 Min=0.049582, Max=0.0577619, RMS=0.0538275
+Test     : H(Zx) - ymean for member 7 eig 4 :
+Test     : Radiosonde nobs= 2 Min=0.0410395, Max=0.0478101, RMS=0.0445536
+Test     : H(Zx) - ymean for member 8 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0912276, Max=0.296362, RMS=0.219264
+Test     : H(Zx) - ymean for member 8 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0321324, Max=0.104385, RMS=0.0772295
+Test     : H(Zx) - ymean for member 8 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.013749, Max=0.0446651, RMS=0.0330455
+Test     : H(Zx) - ymean for member 8 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0113802, Max=0.0369697, RMS=0.0273521
+Test     : H(Zx) - ymean for member 9 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.124606, Max=0.152596, RMS=0.139306
+Test     : H(Zx) - ymean for member 9 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.043889, Max=0.0537478, RMS=0.0490667
+Test     : H(Zx) - ymean for member 9 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0187795, Max=0.022998, RMS=0.020995
+Test     : H(Zx) - ymean for member 9 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.015544, Max=0.0190356, RMS=0.0173777
+Test     : H(Zx) - ymean for member 10 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.695009, Max=-0.0374793, RMS=0.492159
+Test     : H(Zx) - ymean for member 10 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.244797, Max=-0.013201, RMS=0.173349
+Test     : H(Zx) - ymean for member 10 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.104746, Max=-0.00564855, RMS=0.0741739
+Test     : H(Zx) - ymean for member 10 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0866989, Max=-0.00467536, RMS=0.0613945
 Test     : H(x) ensemble background mean: 
 Test     : Radiosonde nobs= 2 Min=-6.62629, Max=-1.85075, RMS=4.86482
 Test     : background y - H(x): 
 Test     : Radiosonde nobs= 2 Min=-1.14925, Max=1.22629, RMS=1.18839
+Test     : Background mean :
+Test     :  --------------------------------------------------------------------------------
+Test     :  State print | number of fields = 8 | cube sphere face size: C12
+Test     :    ua            : Min = -4.979848e+01, Max = +9.422192e+01, RMS = +1.969686e+01
+Test     :    va            : Min = -6.568660e+01, Max = +6.394783e+01, RMS = +8.545029e+00
+Test     :    t             : Min = +1.695835e+02, Max = +3.082663e+02, RMS = +2.464151e+02
+Test     :    delp          : Min = +1.000000e+00, Max = +5.131772e+03, RMS = +1.953822e+03
+Test     :    q             : Min = +3.391868e-07, Max = +2.032063e-02, RMS = +4.090622e-03
+Test     :    qi            : Min = +0.000000e+00, Max = +2.902276e-04, RMS = +6.466769e-06
+Test     :    ql            : Min = +0.000000e+00, Max = +3.410393e-04, RMS = +2.091212e-05
+Test     :    o3ppmv        : Min = +2.849704e-08, Max = +5.663026e-05, RMS = +6.269728e-06
+Test     :  --------------------------------------------------------------------------------
 Test     : H(x) for member 1:
 Test     : Radiosonde nobs= 2 Min=-6.8297, Max=-2.10896, RMS=5.05433
 Test     : H(x) for member 2:
@@ -174,6 +254,86 @@ Test     : H(x) for member 9:
 Test     : Radiosonde nobs= 2 Min=-6.69093, Max=-1.75932, RMS=4.89202
 Test     : H(x) for member 10:
 Test     : Radiosonde nobs= 2 Min=-7.07274, Max=-1.88682, RMS=5.17608
+Test     : H(Zx) - ymean for member 1 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.294857, Max=-0.264827, RMS=0.280245
+Test     : H(Zx) - ymean for member 1 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.103855, Max=-0.0932779, RMS=0.0987084
+Test     : H(Zx) - ymean for member 1 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0444383, Max=-0.0399124, RMS=0.042236
+Test     : H(Zx) - ymean for member 1 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.036782, Max=-0.0330358, RMS=0.0349591
+Test     : H(Zx) - ymean for member 2 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.181274, Max=0.376075, RMS=0.295206
+Test     : H(Zx) - ymean for member 2 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0638489, Max=0.132462, RMS=0.103978
+Test     : H(Zx) - ymean for member 2 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0273201, Max=0.0566787, RMS=0.0444908
+Test     : H(Zx) - ymean for member 2 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0226131, Max=0.0469135, RMS=0.0368254
+Test     : H(Zx) - ymean for member 3 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.342402, Max=0.224126, RMS=0.289371
+Test     : H(Zx) - ymean for member 3 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.120602, Max=0.0789422, RMS=0.101923
+Test     : H(Zx) - ymean for member 3 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0516038, Max=0.0337783, RMS=0.0436115
+Test     : H(Zx) - ymean for member 3 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0427129, Max=0.0279586, RMS=0.0360976
+Test     : H(Zx) - ymean for member 4 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0706575, Max=-0.0430735, RMS=0.0585141
+Test     : H(Zx) - ymean for member 4 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0248871, Max=-0.0151715, RMS=0.02061
+Test     : H(Zx) - ymean for member 4 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0106489, Max=-0.00649166, RMS=0.00881874
+Test     : H(Zx) - ymean for member 4 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.00881417, Max=-0.00537321, RMS=0.00729935
+Test     : H(Zx) - ymean for member 5 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0518529, Max=0.434593, RMS=0.309483
+Test     : H(Zx) - ymean for member 5 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0182637, Max=0.153073, RMS=0.109007
+Test     : H(Zx) - ymean for member 5 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.00781481, Max=0.065498, RMS=0.0466426
+Test     : H(Zx) - ymean for member 5 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.00646839, Max=0.0542133, RMS=0.0386065
+Test     : H(Zx) - ymean for member 6 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.235179, Max=0.278551, RMS=0.257779
+Test     : H(Zx) - ymean for member 6 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0828353, Max=0.0981119, RMS=0.0907955
+Test     : H(Zx) - ymean for member 6 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0354441, Max=0.0419808, RMS=0.0388502
+Test     : H(Zx) - ymean for member 6 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0293374, Max=0.0347479, RMS=0.0321567
+Test     : H(Zx) - ymean for member 7 eig 1 :
+Test     : Radiosonde nobs= 2 Min=0.262501, Max=0.306354, RMS=0.285271
+Test     : H(Zx) - ymean for member 7 eig 2 :
+Test     : Radiosonde nobs= 2 Min=0.0924585, Max=0.107905, RMS=0.100479
+Test     : H(Zx) - ymean for member 7 eig 3 :
+Test     : Radiosonde nobs= 2 Min=0.0395618, Max=0.046171, RMS=0.0429936
+Test     : H(Zx) - ymean for member 7 eig 4 :
+Test     : Radiosonde nobs= 2 Min=0.0327457, Max=0.0382161, RMS=0.0355862
+Test     : H(Zx) - ymean for member 8 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0727157, Max=0.236851, RMS=0.175194
+Test     : H(Zx) - ymean for member 8 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0256121, Max=0.0834242, RMS=0.0617072
+Test     : H(Zx) - ymean for member 8 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0109591, Max=0.0356961, RMS=0.0264037
+Test     : H(Zx) - ymean for member 8 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.00907093, Max=0.029546, RMS=0.0218546
+Test     : H(Zx) - ymean for member 9 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.0994431, Max=0.121825, RMS=0.111199
+Test     : H(Zx) - ymean for member 9 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.0350261, Max=0.0429096, RMS=0.0391667
+Test     : H(Zx) - ymean for member 9 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0149872, Max=0.0183604, RMS=0.0167589
+Test     : H(Zx) - ymean for member 9 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.012405, Max=0.0151971, RMS=0.0138715
+Test     : H(Zx) - ymean for member 10 eig 1 :
+Test     : Radiosonde nobs= 2 Min=-0.554472, Max=-0.0301214, RMS=0.392649
+Test     : H(Zx) - ymean for member 10 eig 2 :
+Test     : Radiosonde nobs= 2 Min=-0.195297, Max=-0.0106094, RMS=0.1383
+Test     : H(Zx) - ymean for member 10 eig 3 :
+Test     : Radiosonde nobs= 2 Min=-0.0835651, Max=-0.00453963, RMS=0.0591766
+Test     : H(Zx) - ymean for member 10 eig 4 :
+Test     : Radiosonde nobs= 2 Min=-0.0691676, Max=-0.00375749, RMS=0.048981
 Test     : H(x) ensemble analysis mean: 
 Test     : Radiosonde nobs= 2 Min=-6.60749, Max=-1.86155, RMS=4.85408
 Test     : analysis y - H(x): 
