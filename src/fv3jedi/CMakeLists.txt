@@ -13,6 +13,8 @@ list( APPEND fv3jedi_src_files
   FieldMetadata/FieldsMetadata.interface.cc
   FieldMetadata/FieldsMetadata.interface.h
   FieldMetadata/fields_metadata_mod.f90
+  Fields/fv3jedi_field_mod.f90
+  Fields/fv3jedi_fields_mod.f90
   Geometry/Geometry.cc
   Geometry/Geometry.h
   Geometry/Geometry.interface.h
@@ -36,9 +38,8 @@ list( APPEND fv3jedi_src_files
   Increment/Increment.cc
   Increment/Increment.h
   Increment/Increment.interface.h
-  Increment/fv3jedi_increment_interface_mod.f90
-  Increment/fv3jedi_increment_mod.f90
-  Increment/fv3jedi_increment_utils_mod.F90
+  Increment/fv3jedi_increment_interface_mod.F90
+  Increment/fv3jedi_increment_mod.F90
   IO/fv3jedi_io_geos_mod.f90
   IO/fv3jedi_io_gfs_mod.f90
   IO/fv3jedi_io_latlon_mod.f90
@@ -59,9 +60,8 @@ list( APPEND fv3jedi_src_files
   State/State.cc
   State/State.h
   State/State.interface.h
-  State/fv3jedi_state_interface_mod.f90
-  State/fv3jedi_state_mod.f90
-  State/fv3jedi_state_utils_mod.F90
+  State/fv3jedi_state_interface_mod.F90
+  State/fv3jedi_state_mod.F90
   Utilities/Traits.h
   Utilities/interface.h
   Utilities/Utilities.cc
@@ -69,7 +69,6 @@ list( APPEND fv3jedi_src_files
   Utilities/fv3jedi_bump_interp_mod.f90
   Utilities/fv3jedi_communication_mod.f90
   Utilities/fv3jedi_constants_mod.f90
-  Utilities/fv3jedi_field_mod.f90
   Utilities/fv3jedi_interpolation_mod.f90
   Utilities/fv3jedi_kinds_mod.f90
   Utilities/fv3jedi_netcdf_utils_mod.F90

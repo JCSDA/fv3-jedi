@@ -20,12 +20,11 @@ use ufo_geovals_mod,                only: ufo_geovals
 ! fv3jedi uses
 use fv3jedi_constants_mod,          only: rad2deg
 use fv3jedi_bump_interp_mod,        only: fv3jedi_bump_interp
-use fv3jedi_field_mod,              only: fv3jedi_field, pointer_field, field_clen, &
+use fv3jedi_field_mod,              only: fv3jedi_field, get_field, field_clen, &
                                           long_name_to_fv3jedi_name
 use fv3jedi_geom_mod,               only: fv3jedi_geom
 use fv3jedi_interpolation_mod,      only: unsinterp_integer_apply, unsinterp_nearest_apply
 use fv3jedi_kinds_mod,              only: kind_real
-use fv3jedi_state_utils_mod,        only: fv3jedi_state
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -149,7 +148,7 @@ do gv = 1, geovals%nvar
   ! Get GeoVaLs field
   ! -----------------
   call long_name_to_fv3jedi_name(fields, trim(geovals%variables(gv)), fv3jedi_name)
-  call pointer_field(fields, fv3jedi_name, field)
+  call get_field(fields, fv3jedi_name, field)
 
   ! Interpolation
   ! -------------

@@ -20,7 +20,7 @@ use fv3jedi_geom_mod,    only: fv3jedi_geom
 use fv3jedi_state_mod,   only: fv3jedi_state
 use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
-use fv3jedi_field_mod,   only: copy_subset, has_field, pointer_field_array
+use fv3jedi_field_mod,   only: copy_subset
 use wind_vt_mod,         only: a2d, d2a
 
 implicit none
@@ -127,11 +127,11 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (xana%have_agrid) then
-      call pointer_field_array(xana%fields, 'ua', xana_ua)
-      call pointer_field_array(xana%fields, 'va', xana_va)
-      call pointer_field_array(xmod%fields, 'ud', xmod_ud)
-      call pointer_field_array(xmod%fields, 'vd', xmod_vd)
+    if (xana%has_field('ua')) then
+      call xana%get_field('ua', xana_ua)
+      call xana%get_field('va', xana_va)
+      call xmod%get_field('ud', xmod_ud)
+      call xmod%get_field('vd', xmod_vd)
       call a2d(geom, xana_ua, xana_va, xmod_ud, xmod_vd)
       xmod_ud(:,geom%jec+1,:) = 0.0_kind_real
       xmod_vd(geom%iec+1,:,:) = 0.0_kind_real
@@ -143,7 +143,7 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (xana%have_agrid) then
+    if (xana%has_field('ua')) then
       !Already done above
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
@@ -153,9 +153,9 @@ do index_mod = 1, xmod%nf
   elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
 
     !Special case: ps in analysis, delp in model
-    if (has_field(xana%fields, 'ps')) then
-      call pointer_field_array(xana%fields, 'ps',   xana_ps)
-      call pointer_field_array(xmod%fields, 'delp', xmod_delp)
+    if (xana%has_field('ps')) then
+      call xana%get_field('ps',   xana_ps)
+      call xmod%get_field('delp', xmod_delp)
       do k = 1,geom%npz
         xmod_delp(:,:,k) = (geom%ak(k+1)-geom%ak(k)) + (geom%bk(k+1)-geom%bk(k))*xana_ps(:,:,1)
       enddo
@@ -237,11 +237,11 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (xmod%have_dgrid) then
-      call pointer_field_array(xana%fields, 'ua', xana_ua)
-      call pointer_field_array(xana%fields, 'va', xana_va)
-      call pointer_field_array(xmod%fields, 'ud', xmod_ud)
-      call pointer_field_array(xmod%fields, 'vd', xmod_vd)
+    if (xmod%has_field('ud')) then
+      call xana%get_field('ua', xana_ua)
+      call xana%get_field('va', xana_va)
+      call xmod%get_field('ud', xmod_ud)
+      call xmod%get_field('vd', xmod_vd)
       xmod_ud(:,geom%jec+1,:) = 0.0_kind_real
       xmod_vd(geom%iec+1,:,:) = 0.0_kind_real
       call d2a(geom, xmod_ud, xmod_vd, xana_ua, xana_va)
@@ -253,7 +253,7 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
 
     !Special case: A-grid analysis, D-Grid model
-    if (xmod%have_dgrid) then
+    if (xmod%has_field('ud')) then
       !Already done above
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &
@@ -263,9 +263,9 @@ do index_ana = 1, xana%nf
   elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
 
     !Special case: ps in analysis, delp in model
-    if (has_field(xmod%fields, 'delp')) then
-      call pointer_field_array(xana%fields, 'ps',   xana_ps)
-      call pointer_field_array(xmod%fields, 'delp', xmod_delp)
+    if (xmod%has_field('delp')) then
+      call xana%get_field('ps',   xana_ps)
+      call xmod%get_field('delp', xmod_delp)
       xana_ps(:,:,1) = sum(xmod_delp,3)
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &

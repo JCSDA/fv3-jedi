@@ -19,7 +19,6 @@ use fv3jedi_lm_mod,        only: fv3jedi_lm_type
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_state_mod,     only: fv3jedi_state
-use fv3jedi_field_mod,     only: pointer_field_array, has_field
 
 implicit none
 private
@@ -164,15 +163,15 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: w
 real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 real(kind=kind_real), pointer, dimension(:,:,:) :: phis
 
-call pointer_field_array(state%fields, 'ud'     , ud  )
-call pointer_field_array(state%fields, 'vd'     , vd  )
-call pointer_field_array(state%fields, 't'      , t   )
-call pointer_field_array(state%fields, 'delp'   , delp)
-call pointer_field_array(state%fields, 'sphum'  , q   )
-call pointer_field_array(state%fields, 'ice_wat', qi  )
-call pointer_field_array(state%fields, 'liq_wat', ql  )
-if ( has_field(state%fields, 'o3mr' ) )call pointer_field_array(state%fields, 'o3mr'   , o3  )
-if ( has_field(state%fields, 'o3ppmv' ) )call pointer_field_array(state%fields, 'o3ppmv'   , o3  )
+call state%get_field('ud'     , ud  )
+call state%get_field('vd'     , vd  )
+call state%get_field('t'      , t   )
+call state%get_field('delp'   , delp)
+call state%get_field('sphum'  , q   )
+call state%get_field('ice_wat', qi  )
+call state%get_field('liq_wat', ql  )
+if (state%has_field('o3mr'  )) call state%get_field('o3mr'  , o3)
+if (state%has_field('o3ppmv')) call state%get_field('o3ppmv', o3)
 lm%traj%ua = 0.0_kind_real
 lm%traj%va = 0.0_kind_real
 
@@ -185,21 +184,21 @@ lm%traj%qi      = qi
 lm%traj%ql      = ql
 lm%traj%o3      = o3
 
-if (state%have_agrid) then
-  call pointer_field_array(state%fields, 'ua',   ua  )
-  call pointer_field_array(state%fields, 'va',   va  )
+if (state%has_field('ua')) then
+  call state%get_field('ua',   ua  )
+  call state%get_field('va',   va  )
   lm%traj%ua = ua
   lm%traj%va = va
 endif
 
 if (.not. lm%conf%hydrostatic) then
-  call pointer_field_array(state%fields, 'w   ', w   )
-  call pointer_field_array(state%fields, 'delz', delz)
+  call state%get_field('w   ', w   )
+  call state%get_field('delz', delz)
   lm%traj%w       = w
   lm%traj%delz    = delz
 endif
 
-call pointer_field_array(state%fields, 'phis', phis )
+call state%get_field('phis', phis )
 lm%traj%phis = phis(:,:,1)
 
 end subroutine state_to_lm
@@ -226,15 +225,15 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: w
 real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 real(kind=kind_real), pointer, dimension(:,:,:) :: phis
 
-call pointer_field_array(state%fields, 'ud'     , ud  )
-call pointer_field_array(state%fields, 'vd'     , vd  )
-call pointer_field_array(state%fields, 't'      , t   )
-call pointer_field_array(state%fields, 'delp'   , delp)
-call pointer_field_array(state%fields, 'sphum'  , q   )
-call pointer_field_array(state%fields, 'ice_wat', qi  )
-call pointer_field_array(state%fields, 'liq_wat', ql  )
-if ( has_field(state%fields, 'o3mr' ) )call pointer_field_array(state%fields, 'o3mr'   , o3  )
-if ( has_field(state%fields, 'o3ppmv' ) )call pointer_field_array(state%fields, 'o3ppmv'   , o3  )
+call state%get_field('ud'     , ud  )
+call state%get_field('vd'     , vd  )
+call state%get_field('t'      , t   )
+call state%get_field('delp'   , delp)
+call state%get_field('sphum'  , q   )
+call state%get_field('ice_wat', qi  )
+call state%get_field('liq_wat', ql  )
+if ( state%has_field('o3mr' ) )call state%get_field('o3mr'   , o3  )
+if ( state%has_field('o3ppmv' ) )call state%get_field('o3ppmv'   , o3  )
 ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
 vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
 t       = lm%traj%t
@@ -244,21 +243,21 @@ qi      = lm%traj%qi
 ql      = lm%traj%ql
 o3      = lm%traj%o3
 
-if (state%have_agrid) then
-  call pointer_field_array(state%fields, 'ua',   ua  )
-  call pointer_field_array(state%fields, 'va',   va  )
+if (state%has_field('ua')) then
+  call state%get_field('ua',   ua  )
+  call state%get_field('va',   va  )
   ua = lm%traj%ua
   va = lm%traj%va
 endif
 
 if (.not. lm%conf%hydrostatic) then
-  call pointer_field_array(state%fields, 'w   ', w   )
-  call pointer_field_array(state%fields, 'delz', delz)
+  call state%get_field('w   ', w   )
+  call state%get_field('delz', delz)
   w       = lm%traj%w
   delz    = lm%traj%delz
 endif
 
-call pointer_field_array(state%fields, 'phis', phis )
+call state%get_field('phis', phis )
 phis(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state

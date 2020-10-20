@@ -19,10 +19,9 @@ use oops_variables_mod
 use fv3jedi_lm_mod,        only: fv3jedi_lm_type
 
 ! fv3-jedi
-use fv3jedi_field_mod,     only: copy_subset, has_field, pointer_field_array
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_kinds_mod,     only: kind_real
-use fv3jedi_increment_mod, only: fv3jedi_increment, create_inc=>create
+use fv3jedi_increment_mod, only: fv3jedi_increment
 use fv3jedi_state_mod,     only: fv3jedi_state
 use fv3jedi_traj_mod,      only: fv3jedi_traj
 
@@ -196,40 +195,24 @@ type(fv3jedi_lm_type),   intent(inout) :: lm
 
 real(kind=kind_real), pointer, dimension(:,:,:) :: ud
 real(kind=kind_real), pointer, dimension(:,:,:) :: vd
-real(kind=kind_real), pointer, dimension(:,:,:) :: t
-real(kind=kind_real), pointer, dimension(:,:,:) :: delp
-real(kind=kind_real), pointer, dimension(:,:,:) :: q
-real(kind=kind_real), pointer, dimension(:,:,:) :: qi
-real(kind=kind_real), pointer, dimension(:,:,:) :: ql
-real(kind=kind_real), pointer, dimension(:,:,:) :: o3
-real(kind=kind_real), pointer, dimension(:,:,:) :: w
-real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 
-call pointer_field_array(inc%fields, 'ud'     , ud  )
-call pointer_field_array(inc%fields, 'vd'     , vd  )
-call pointer_field_array(inc%fields, 't'      , t   )
-call pointer_field_array(inc%fields, 'delp'   , delp)
-call pointer_field_array(inc%fields, 'sphum'  , q   )
-call pointer_field_array(inc%fields, 'ice_wat', qi  )
-call pointer_field_array(inc%fields, 'liq_wat', ql  )
-if (has_field(inc%fields, 'o3mr') ) call pointer_field_array(inc%fields, 'o3mr'   , o3  )
-if (has_field(inc%fields, 'o3ppmv') ) call pointer_field_array(inc%fields, 'o3ppmv'   , o3  )
-lm%pert%u    = ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
-lm%pert%v    = vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
-lm%pert%ua   = 0.0_kind_real
-lm%pert%va   = 0.0_kind_real
-lm%pert%t    = t
-lm%pert%delp = delp
-lm%pert%qv   = q
-lm%pert%qi   = qi
-lm%pert%ql   = ql
-lm%pert%o3   = o3
-if (.not. inc%hydrostatic) then
-  call pointer_field_array(inc%fields, 'delz', delz)
-  call pointer_field_array(inc%fields, 'delz', w)
-   lm%pert%delz = delz
-   lm%pert%w    = w
-endif
+! Bounds mismatch for D-Grid winds so first get pointer
+call inc%get_field('ud', ud  )
+call inc%get_field('vd', vd  )
+lm%pert%u = ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
+lm%pert%v = vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)
+
+call inc%get_field('t'      , lm%pert%t   )
+call inc%get_field('delp'   , lm%pert%delp)
+call inc%get_field('sphum'  , lm%pert%qv  )
+call inc%get_field('ice_wat', lm%pert%qi  )
+call inc%get_field('liq_wat', lm%pert%ql  )
+
+! Optional fields
+if (inc%has_field('o3mr'   )) call inc%get_field('o3mr'   , lm%pert%o3  )
+if (inc%has_field('o3ppmv' )) call inc%get_field('o3ppmv' , lm%pert%o3  )
+if (inc%has_field('w'      )) call inc%get_field('w'      , lm%pert%w   )
+if (inc%has_field('delz'   )) call inc%get_field('delz'   , lm%pert%delz)
 
 end subroutine inc_to_lm
 
@@ -243,38 +226,24 @@ type(fv3jedi_increment), intent(inout) :: inc
 
 real(kind=kind_real), pointer, dimension(:,:,:) :: ud
 real(kind=kind_real), pointer, dimension(:,:,:) :: vd
-real(kind=kind_real), pointer, dimension(:,:,:) :: t
-real(kind=kind_real), pointer, dimension(:,:,:) :: delp
-real(kind=kind_real), pointer, dimension(:,:,:) :: q
-real(kind=kind_real), pointer, dimension(:,:,:) :: qi
-real(kind=kind_real), pointer, dimension(:,:,:) :: ql
-real(kind=kind_real), pointer, dimension(:,:,:) :: o3
-real(kind=kind_real), pointer, dimension(:,:,:) :: w
-real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 
-call pointer_field_array(inc%fields, 'ud'     , ud  )
-call pointer_field_array(inc%fields, 'vd'     , vd  )
-call pointer_field_array(inc%fields, 't'      , t   )
-call pointer_field_array(inc%fields, 'delp'   , delp)
-call pointer_field_array(inc%fields, 'sphum'  , q   )
-call pointer_field_array(inc%fields, 'ice_wat', qi  )
-call pointer_field_array(inc%fields, 'liq_wat', ql  )
-if (has_field(inc%fields, 'o3mr') ) call pointer_field_array(inc%fields, 'o3mr'   , o3  )
-if (has_field(inc%fields, 'o3ppmv') ) call pointer_field_array(inc%fields, 'o3ppmv'   , o3  )
+! Bounds mismatch for D-Grid winds so first get pointer
+call inc%get_field('ud'     , ud  )
+call inc%get_field('vd'     , vd  )
 ud(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%u
 vd(inc%isc:inc%iec,inc%jsc:inc%jec,1:inc%npz)   = lm%pert%v
-t    = lm%pert%t
-delp = lm%pert%delp
-q    = lm%pert%qv
-qi   = lm%pert%qi
-ql   = lm%pert%ql
-o3   = lm%pert%o3
-if (.not. inc%hydrostatic) then
-  call pointer_field_array(inc%fields, 'delz', delz)
-  call pointer_field_array(inc%fields, 'delz', w)
-  delz = lm%pert%delz
-  w    = lm%pert%w
-endif
+
+call inc%put_field('t'      , lm%pert%t   )
+call inc%put_field('delp'   , lm%pert%delp)
+call inc%put_field('sphum'  , lm%pert%qv  )
+call inc%put_field('ice_wat', lm%pert%qi  )
+call inc%put_field('liq_wat', lm%pert%ql  )
+
+! Optional fields
+if (inc%has_field('o3mr'   )) call inc%put_field('o3mr'   , lm%pert%o3  )
+if (inc%has_field('o3ppmv' )) call inc%put_field('o3ppmv' , lm%pert%o3  )
+if (inc%has_field('w'      )) call inc%put_field('w'      , lm%pert%w   )
+if (inc%has_field('delz'   )) call inc%put_field('delz'   , lm%pert%delz)
 
 end subroutine lm_to_inc
 

@@ -350,6 +350,7 @@ if (indexof_ps > 0) then
     delp = fields(indexof_delp)%array
   endif
   fields(indexof_ps)%array(:,:,1) = sum(delp,3)
+  fields(indexof_ps)%short_name = 'ps'
 endif
 
 end subroutine read_fields

@@ -11,7 +11,6 @@ use fv3jedi_lm_utils_mod, only: fv3jedi_traj => fv3jedi_lm_traj, deallocate_traj
 ! fv3-jedi
 use fv3jedi_kinds_mod,    only: kind_real
 use fv3jedi_state_mod,    only: fv3jedi_state
-use fv3jedi_field_mod,    only: has_field, copy_field_array, pointer_field_array
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -126,11 +125,11 @@ self%khu     = 0.0_kind_real
 allocate(u_tmp(isc:iec  , jsc:jec+1, npz))
 allocate(v_tmp(isc:iec+1, jsc:jec  , npz))
 
-call copy_field_array(state%fields, 'ud'  , u_tmp     )
-call copy_field_array(state%fields, 'vd'  , v_tmp     )
-call copy_field_array(state%fields, 't'   , self%t    )
-call copy_field_array(state%fields, 'delp', self%delp )
-call copy_field_array(state%fields, 'sphum'   , self%qv   )
+call state%get_field('ud'  , u_tmp     )
+call state%get_field('vd'  , v_tmp     )
+call state%get_field('t'   , self%t    )
+call state%get_field('delp', self%delp )
+call state%get_field('sphum'   , self%qv   )
 
 self%u = u_tmp(isc:iec, jsc:jec, :)
 self%v = v_tmp(isc:iec, jsc:jec, :)
@@ -138,72 +137,72 @@ self%v = v_tmp(isc:iec, jsc:jec, :)
 deallocate(u_tmp, v_tmp)
 
 ! Copy optional parts of the trajecotry (Rank 3)
-if (has_field(state%fields, 'ua'     )) call copy_field_array(state%fields, 'ua'     , self%ua  )
-if (has_field(state%fields, 'va'     )) call copy_field_array(state%fields, 'va'     , self%va  )
-if (has_field(state%fields, 'ice_wat')) call copy_field_array(state%fields, 'ice_wat', self%qi  )
-if (has_field(state%fields, 'liq_wat')) call copy_field_array(state%fields, 'liq_wat', self%ql  )
-if (has_field(state%fields, 'o3mr'   )) call copy_field_array(state%fields, 'o3mr'   , self%o3  )
-if (has_field(state%fields, 'w'      )) call copy_field_array(state%fields, 'w'      , self%w   )
-if (has_field(state%fields, 'delz'   )) call copy_field_array(state%fields, 'delz'   , self%delz)
-if (has_field(state%fields, 'qls'    )) call copy_field_array(state%fields, 'qls'    , self%qls )
-if (has_field(state%fields, 'qcn'    )) call copy_field_array(state%fields, 'qcn'    , self%qcn )
-if (has_field(state%fields, 'cfcn'   )) call copy_field_array(state%fields, 'cfcn'   , self%cfcn)
+if (state%has_field('ua'     )) call state%get_field('ua'     , self%ua  )
+if (state%has_field('va'     )) call state%get_field('va'     , self%va  )
+if (state%has_field('ice_wat')) call state%get_field('ice_wat', self%qi  )
+if (state%has_field('liq_wat')) call state%get_field('liq_wat', self%ql  )
+if (state%has_field('o3mr'   )) call state%get_field('o3mr'   , self%o3  )
+if (state%has_field('w'      )) call state%get_field('w'      , self%w   )
+if (state%has_field('delz'   )) call state%get_field('delz'   , self%delz)
+if (state%has_field('qls'    )) call state%get_field('qls'    , self%qls )
+if (state%has_field('qcn'    )) call state%get_field('qcn'    , self%qcn )
+if (state%has_field('cfcn'   )) call state%get_field('cfcn'   , self%cfcn)
 
 ! Copy optional parts of the trajecotry (Rank 2)
-if (has_field(state%fields, 'phis')) then
-  call pointer_field_array(state%fields, 'phis', phis)
+if (state%has_field('phis')) then
+  call state%get_field('phis', phis)
   self%phis = phis(:,:,1)
 endif
-if (has_field(state%fields, 'frocean')) then
-  call pointer_field_array(state%fields, 'frocean', frocean)
+if (state%has_field('frocean')) then
+  call state%get_field('frocean', frocean)
   self%frocean = frocean(:,:,1)
 endif
-if (has_field(state%fields, 'frland')) then
-  call pointer_field_array(state%fields, 'frland', frland)
+if (state%has_field('frland')) then
+  call state%get_field('frland', frland)
   self%frland = frland(:,:,1)
 endif
-if (has_field(state%fields, 'varflt')) then
-  call pointer_field_array(state%fields, 'varflt', varflt)
+if (state%has_field('varflt')) then
+  call state%get_field('varflt', varflt)
   self%varflt = varflt(:,:,1)
 endif
-if (has_field(state%fields, 'ustar')) then
-  call pointer_field_array(state%fields, 'ustar', ustar)
+if (state%has_field('ustar')) then
+  call state%get_field('ustar', ustar)
   self%ustar = ustar(:,:,1)
 endif
-if (has_field(state%fields, 'bstar')) then
-  call pointer_field_array(state%fields, 'bstar', bstar)
+if (state%has_field('bstar')) then
+  call state%get_field('bstar', bstar)
   self%bstar = bstar(:,:,1)
 endif
-if (has_field(state%fields, 'zpbl')) then
-  call pointer_field_array(state%fields, 'zpbl', zpbl)
+if (state%has_field('zpbl')) then
+  call state%get_field('zpbl', zpbl)
   self%zpbl = zpbl(:,:,1)
 endif
-if (has_field(state%fields, 'cm')) then
-  call pointer_field_array(state%fields, 'cm', cm)
+if (state%has_field('cm')) then
+  call state%get_field('cm', cm)
   self%cm = cm(:,:,1)
 endif
-if (has_field(state%fields, 'ct')) then
-  call pointer_field_array(state%fields, 'ct', ct)
+if (state%has_field('ct')) then
+  call state%get_field('ct', ct)
   self%ct = ct(:,:,1)
 endif
-if (has_field(state%fields, 'cq')) then
-  call pointer_field_array(state%fields, 'cq', cq)
+if (state%has_field('cq')) then
+  call state%get_field('cq', cq)
   self%cq = cq(:,:,1)
 endif
-if (has_field(state%fields, 'kcbl')) then
-  call pointer_field_array(state%fields, 'kcbl', kcbl)
+if (state%has_field('kcbl')) then
+  call state%get_field('kcbl', kcbl)
   self%kcbl = kcbl(:,:,1)
 endif
-if (has_field(state%fields, 'tsm')) then
-  call pointer_field_array(state%fields, 'tsm', tsm)
+if (state%has_field('tsm')) then
+  call state%get_field('tsm', tsm)
   self%ts = tsm(:,:,1)
 endif
-if (has_field(state%fields, 'khl')) then
-  call pointer_field_array(state%fields, 'khl', khl)
+if (state%has_field('khl')) then
+  call state%get_field('khl', khl)
   self%khl = khl(:,:,1)
 endif
-if (has_field(state%fields, 'khu')) then
-  call pointer_field_array(state%fields, 'khu', khu)
+if (state%has_field('khu')) then
+  call state%get_field('khu', khu)
   self%khu = khu(:,:,1)
 endif
 

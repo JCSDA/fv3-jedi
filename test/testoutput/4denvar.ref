@@ -10,7 +10,7 @@ Test     :  State print | number of fields = 21 | cube sphere face size: C12
 Test     :    ua            : Min = -4.631576e+01, Max = +9.076969e+01, RMS = +1.640675e+01
 Test     :    va            : Min = -6.231231e+01, Max = +7.383769e+01, RMS = +8.409973e+00
 Test     :    T             : Min = +1.847626e+02, Max = +3.102424e+02, RMS = +2.484538e+02
-Test     :    DELP          : Min = +5.451063e+04, Max = +1.038098e+05, RMS = +9.902588e+04
+Test     :    ps            : Min = +5.451063e+04, Max = +1.038098e+05, RMS = +9.902588e+04
 Test     :    sphum         : Min = +0.000000e+00, Max = +1.906352e-02, RMS = +4.762267e-03
 Test     :    ice_wat       : Min = +0.000000e+00, Max = +6.551050e-04, RMS = +1.472890e-05
 Test     :    liq_wat       : Min = +0.000000e+00, Max = +1.408016e-03, RMS = +2.826662e-05
@@ -34,7 +34,7 @@ Test     :  State print | number of fields = 21 | cube sphere face size: C12
 Test     :    ua            : Min = -4.531613e+01, Max = +9.352439e+01, RMS = +1.647076e+01
 Test     :    va            : Min = -5.549092e+01, Max = +6.517403e+01, RMS = +8.298429e+00
 Test     :    T             : Min = +1.845473e+02, Max = +3.082121e+02, RMS = +2.484244e+02
-Test     :    DELP          : Min = +5.447668e+04, Max = +1.037932e+05, RMS = +9.902464e+04
+Test     :    ps            : Min = +5.447668e+04, Max = +1.037932e+05, RMS = +9.902464e+04
 Test     :    sphum         : Min = +0.000000e+00, Max = +1.878881e-02, RMS = +4.752193e-03
 Test     :    ice_wat       : Min = +0.000000e+00, Max = +5.096674e-04, RMS = +1.460062e-05
 Test     :    liq_wat       : Min = +0.000000e+00, Max = +9.161694e-04, RMS = +2.850722e-05
@@ -58,7 +58,7 @@ Test     :  State print | number of fields = 21 | cube sphere face size: C12
 Test     :    ua            : Min = -4.458961e+01, Max = +8.877047e+01, RMS = +1.644544e+01
 Test     :    va            : Min = -5.514258e+01, Max = +6.500185e+01, RMS = +8.236571e+00
 Test     :    T             : Min = +1.848022e+02, Max = +3.085399e+02, RMS = +2.484132e+02
-Test     :    DELP          : Min = +5.456032e+04, Max = +1.037196e+05, RMS = +9.902084e+04
+Test     :    ps            : Min = +5.456032e+04, Max = +1.037196e+05, RMS = +9.902084e+04
 Test     :    sphum         : Min = +0.000000e+00, Max = +1.864022e-02, RMS = +4.740887e-03
 Test     :    ice_wat       : Min = +0.000000e+00, Max = +4.711386e-04, RMS = +1.589382e-05
 Test     :    liq_wat       : Min = +0.000000e+00, Max = +9.739983e-04, RMS = +2.894678e-05

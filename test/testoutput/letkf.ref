@@ -118,18 +118,6 @@ Test     :    ice_wat       : Min = -5.607927e-21, Max = +2.696131e-04, RMS = +1
 Test     :    liq_wat       : Min = -1.347585e-20, Max = +7.361283e-04, RMS = +2.773310e-05
 Test     :    o3mr          : Min = +2.585135e-08, Max = +1.753470e-05, RMS = +5.614625e-06
 Test     :  --------------------------------------------------------------------------------
-Test     : Background mean :
-Test     :  --------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua            : Min = -4.533925e+01, Max = +9.395765e+01, RMS = +1.645286e+01
-Test     :    va            : Min = -5.498630e+01, Max = +6.551181e+01, RMS = +8.248288e+00
-Test     :    T             : Min = +1.843349e+02, Max = +3.082446e+02, RMS = +2.484119e+02
-Test     :    DELP          : Min = +4.424700e+01, Max = +3.726002e+03, RMS = +1.939886e+03
-Test     :    sphum         : Min = +5.096306e-08, Max = +1.889726e-02, RMS = +4.733671e-03
-Test     :    ice_wat       : Min = -2.026864e-22, Max = +2.265190e-04, RMS = +1.199095e-05
-Test     :    liq_wat       : Min = -3.609793e-21, Max = +5.681655e-04, RMS = +2.346770e-05
-Test     :    o3mr          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608180e-06
-Test     :  --------------------------------------------------------------------------------
 Test     : H(x) for member 1:
 Test     : Radiosonde nobs= 2 Min=-7.24641, Max=-2.79931, RMS=5.49303
 Test     : H(x) for member 2:
@@ -154,6 +142,18 @@ Test     : H(x) ensemble background mean:
 Test     : Radiosonde nobs= 2 Min=-7.28472, Max=-2.32078, RMS=5.40616
 Test     : background y - H(x): 
 Test     : Radiosonde nobs= 2 Min=-0.679222, Max=1.88472, RMS=1.4166
+Test     : Background mean :
+Test     :  --------------------------------------------------------------------------------
+Test     :  State print | number of fields = 8 | cube sphere face size: C12
+Test     :    ua            : Min = -4.533925e+01, Max = +9.395765e+01, RMS = +1.645286e+01
+Test     :    va            : Min = -5.498630e+01, Max = +6.551181e+01, RMS = +8.248288e+00
+Test     :    T             : Min = +1.843349e+02, Max = +3.082446e+02, RMS = +2.484119e+02
+Test     :    DELP          : Min = +4.424700e+01, Max = +3.726002e+03, RMS = +1.939886e+03
+Test     :    sphum         : Min = +5.096306e-08, Max = +1.889726e-02, RMS = +4.733671e-03
+Test     :    ice_wat       : Min = -2.026864e-22, Max = +2.265190e-04, RMS = +1.199095e-05
+Test     :    liq_wat       : Min = -3.609793e-21, Max = +5.681655e-04, RMS = +2.346770e-05
+Test     :    o3mr          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608180e-06
+Test     :  --------------------------------------------------------------------------------
 Test     : H(x) for member 1:
 Test     : Radiosonde nobs= 2 Min=-7.20163, Max=-2.78551, RMS=5.45997
 Test     : H(x) for member 2:

@@ -15,7 +15,7 @@ use fv_grid_utils_mod,    only: mid_pt_sphere, get_unit_vect2, get_latlon_vector
 ! fv3jedi
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_fieldfail_mod, only: field_fail
-use fv3jedi_field_mod,     only: copy_subset, has_field, pointer_field_array, field_clen
+use fv3jedi_field_mod,     only: copy_subset, field_clen
 use fv3jedi_kinds_mod,     only: kind_real
 use fv3jedi_state_mod,     only: fv3jedi_state
 
@@ -102,13 +102,13 @@ if (.not.allocated(fields_to_do)) return
 ! D-Grid winds
 ! ------------
 have_d_winds = .false.
-if ( has_field(xin%fields,'u_w_cold') .and. has_field(xin%fields,'v_w_cold') .and. &
-     has_field(xin%fields,'u_s_cold') .and. has_field(xin%fields,'v_s_cold') ) then
+if ( xin%has_field('u_w_cold') .and. xin%has_field('v_w_cold') .and. &
+     xin%has_field('u_s_cold') .and. xin%has_field('v_s_cold') ) then
 
-  call pointer_field_array(xin%fields, 'u_w_cold', u_w_cold)
-  call pointer_field_array(xin%fields, 'v_w_cold', v_w_cold)
-  call pointer_field_array(xin%fields, 'u_s_cold', u_s_cold)
-  call pointer_field_array(xin%fields, 'v_s_cold', v_s_cold)
+  call xin%get_field('u_w_cold', u_w_cold)
+  call xin%get_field('v_w_cold', v_w_cold)
+  call xin%get_field('u_s_cold', u_s_cold)
+  call xin%get_field('v_s_cold', v_s_cold)
 
   levp = size(u_w_cold,3)
 
@@ -147,7 +147,7 @@ endif
 ! ------------------------------------------------------------------------
 do f = 1, size(fields_to_do)
 
-  call pointer_field_array(xout%fields, trim(fields_to_do(f)), field_ptr)
+  call xout%get_field(trim(fields_to_do(f)), field_ptr)
 
   select case (trim(fields_to_do(f)))
 

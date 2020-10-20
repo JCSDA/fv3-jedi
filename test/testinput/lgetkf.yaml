@@ -82,7 +82,9 @@ observations:
 prints:
   frequency: PT3H
 
-letkf:
+driver: 
+
+local ensemble DA:
   solver: GETKF
   vertical localization:
     fraction of retained variance: .5

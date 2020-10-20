@@ -26,7 +26,7 @@ use moisture_vt_mod
 use wind_vt_mod
 
 use type_gaugrid, only: gaussian_grid
-use fv3jedi_field_mod
+use fv3jedi_field_mod, only: copy_subset
 use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
 
 implicit none
@@ -79,14 +79,14 @@ type :: fv3jedi_linvarcha_nmcbal
  integer :: read_latlon_from_nc                   ! 1: read rlats/rlons of
                                                   !    global gaugrid from
                                                   !    netcdf
- real(kind=kind_real), allocatable :: agvz(:,:,:) ! coeffs. for psi and t 
+ real(kind=kind_real), allocatable :: agvz(:,:,:) ! coeffs. for psi and t
  real(kind=kind_real), allocatable :: wgvz(:,:)   ! coeffs. for psi and ps
  real(kind=kind_real), allocatable :: bvz(:,:)    ! coeffs. for psi and chi
  ! data pointer
- real(kind=kind_real), pointer :: psi(:,:,:) => null() ! stream function 
- real(kind=kind_real), pointer :: chi(:,:,:) => null() ! velocity potential 
- real(kind=kind_real), pointer :: tv (:,:,:) => null() ! virtual tempature 
- real(kind=kind_real), pointer :: ps (:,:)   => null() ! surface pressure 
+ real(kind=kind_real), pointer :: psi(:,:,:) => null() ! stream function
+ real(kind=kind_real), pointer :: chi(:,:,:) => null() ! velocity potential
+ real(kind=kind_real), pointer :: tv (:,:,:) => null() ! virtual tempature
+ real(kind=kind_real), pointer :: ps (:,:)   => null() ! surface pressure
 
  !
  ! bump interpolation
@@ -125,9 +125,9 @@ self%mype = geom%f_comm%rank()
 
 ! 1. Get trajectores
 !> Pointers to the background state
-call pointer_field_array(bg%fields, 't'   , t)
-call pointer_field_array(bg%fields, 'sphum'   , q)
-call pointer_field_array(bg%fields, 'delp', delp)
+call bg%get_field('t'   , t)
+call bg%get_field('sphum'   , q)
+call bg%get_field('delp', delp)
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -185,7 +185,7 @@ if(conf%has("layoutx").and.conf%has("layouty")) then
   call conf%get_or_die("layouty",layouty)
   if(layoutx*layouty/=self%npe) then
     call abor1_ftn("fv3jedi_linvarcha_nmcbal_mod.create:&
-& invalid layout values") 
+& invalid layout values")
   end if
   self%layout(1) = layoutx
   self%layout(2) = layouty
@@ -316,16 +316,16 @@ real(kind_real), allocatable :: psi_d(:,:,:), chi_d(:,:,:) ! psi/chi on D-grid
 call copy_subset(xuba%fields,xbal%fields)
 
 !Tangent linear of control to analysis variables
-call pointer_field_array(xuba%fields, 'psi', xuba_psi)
-call pointer_field_array(xuba%fields, 'chi', xuba_chi)
-call pointer_field_array(xuba%fields, 'tv' , xuba_tv)
-call pointer_field_array(xuba%fields, 'rh' , xuba_rh)
-call pointer_field_array(xuba%fields, 'ps' , xuba_ps)
-call pointer_field_array(xbal%fields, 'ua' , xbal_ua)
-call pointer_field_array(xbal%fields, 'va' , xbal_va)
-call pointer_field_array(xbal%fields, 't'  , xbal_t)
-call pointer_field_array(xbal%fields, 'sphum'  , xbal_q)
-call pointer_field_array(xbal%fields, 'ps' , xbal_ps)
+call xuba%get_field('psi', xuba_psi)
+call xuba%get_field('chi', xuba_chi)
+call xuba%get_field('tv' , xuba_tv)
+call xuba%get_field('rh' , xuba_rh)
+call xuba%get_field('ps' , xuba_ps)
+call xbal%get_field('ua' , xbal_ua)
+call xbal%get_field('va' , xbal_va)
+call xbal%get_field('t'  , xbal_t)
+call xbal%get_field('sphum'  , xbal_q)
+call xbal%get_field('ps' , xbal_ps)
 
 ! Apply Balance operator to psi,chi,tv(,ps)
 
@@ -397,20 +397,20 @@ real(kind_real), allocatable :: ps_not_copied(:,:,:)
 ! Copy fields that are the same in both
 ! -------------------------------------
 allocate(ps_not_copied(geom%isc:geom%iec,geom%jsc:geom%jec,1))
-call copy_field_array(xuba%fields, 'ps', ps_not_copied) ! temporary copy
+call xuba%get_field('ps', ps_not_copied) ! temporary copy
 call copy_subset(xbal%fields,xuba%fields)
 
 !Tangent linear of control to analysis variables
-call pointer_field_array(xbal%fields, 'ua' , xbal_ua)
-call pointer_field_array(xbal%fields, 'va' , xbal_va)
-call pointer_field_array(xbal%fields, 't'  , xbal_t)
-call pointer_field_array(xbal%fields, 'sphum'  , xbal_q)
-call pointer_field_array(xbal%fields, 'ps' , xbal_ps)
-call pointer_field_array(xuba%fields, 'psi', xuba_psi)
-call pointer_field_array(xuba%fields, 'chi', xuba_chi)
-call pointer_field_array(xuba%fields, 'tv' , xuba_tv)
-call pointer_field_array(xuba%fields, 'rh' , xuba_rh)
-call pointer_field_array(xuba%fields, 'ps' , xuba_ps)
+call xbal%get_field('ua' , xbal_ua)
+call xbal%get_field('va' , xbal_va)
+call xbal%get_field('t'  , xbal_t)
+call xbal%get_field('sphum'  , xbal_q)
+call xbal%get_field('ps' , xbal_ps)
+call xuba%get_field('psi', xuba_psi)
+call xuba%get_field('chi', xuba_chi)
+call xuba%get_field('tv' , xuba_tv)
+call xuba%get_field('rh' , xuba_rh)
+call xuba%get_field('ps' , xuba_ps)
 
 xuba_ps(:,:,1) = ps_not_copied(:,:,1)
 deallocate(ps_not_copied)
@@ -483,14 +483,14 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: xuba_rh
 call copy_subset(xbal%fields,xuba%fields)
 
 !Tangent linear of control to analysis variables
-call pointer_field_array(xbal%fields, 'ua' , xbal_ua)
-call pointer_field_array(xbal%fields, 'va' , xbal_va)
-call pointer_field_array(xbal%fields, 't'  , xbal_t)
-call pointer_field_array(xbal%fields, 'sphum'  , xbal_q)
-call pointer_field_array(xuba%fields, 'psi', xuba_psi)
-call pointer_field_array(xuba%fields, 'chi', xuba_chi)
-call pointer_field_array(xuba%fields, 'tv' , xuba_tv)
-call pointer_field_array(xuba%fields, 'rh' , xuba_rh)
+call xbal%get_field('ua' , xbal_ua)
+call xbal%get_field('va' , xbal_va)
+call xbal%get_field('t'  , xbal_t)
+call xbal%get_field('sphum'  , xbal_q)
+call xuba%get_field('psi', xuba_psi)
+call xuba%get_field('chi', xuba_chi)
+call xuba%get_field('tv' , xuba_tv)
+call xuba%get_field('rh' , xuba_rh)
 
 xuba_psi = xbal_ua
 xuba_chi = xbal_va
@@ -528,14 +528,14 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: xbal_q
 call copy_subset(xuba%fields,xbal%fields)
 
 !Tangent linear of control to analysis variables
-call pointer_field_array(xuba%fields, 'psi', xuba_psi)
-call pointer_field_array(xuba%fields, 'chi', xuba_chi)
-call pointer_field_array(xuba%fields, 'tv' , xuba_tv)
-call pointer_field_array(xuba%fields, 'rh' , xuba_rh)
-call pointer_field_array(xbal%fields, 'ua' , xbal_ua)
-call pointer_field_array(xbal%fields, 'va' , xbal_va)
-call pointer_field_array(xbal%fields, 't'  , xbal_t)
-call pointer_field_array(xbal%fields, 'sphum'  , xbal_q)
+call xuba%get_field('psi', xuba_psi)
+call xuba%get_field('chi', xuba_chi)
+call xuba%get_field('tv' , xuba_tv)
+call xuba%get_field('rh' , xuba_rh)
+call xbal%get_field('ua' , xbal_ua)
+call xbal%get_field('va' , xbal_va)
+call xbal%get_field('t'  , xbal_t)
+call xbal%get_field('sphum'  , xbal_q)
 
 xbal_ua = xuba_psi
 xbal_va = xuba_chi
@@ -549,7 +549,7 @@ xbal%date_init = xuba%date_init
 end subroutine multiplyinverseadjoint
 
 ! ------------------------------------------------------------------------------
-! Determine subdomain settings 
+! Determine subdomain settings
 ! This subroutine was migrated from  gsi/general_sub2grid_mod.F90
 subroutine deter_subdomain(self)
 
@@ -990,7 +990,7 @@ do jvar=1,4
   vec = 0.0_kind_real
 
   ! Apply interpolation
-  call self%c2g%apply(self%npz,                                                      & 
+  call self%c2g%apply(self%npz,                                                      &
  &                    self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
  &                    self%ngrid_ggh,vec)
 

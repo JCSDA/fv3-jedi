@@ -156,7 +156,7 @@ void State::accumul(const double & zz, const State & xx) {
 // -----------------------------------------------------------------------------
 double State::norm() const {
   double zz = 0.0;
-  fv3jedi_state_rms_f90(keyState_, zz);
+  fv3jedi_state_norm_f90(keyState_, zz);
   return zz;
 }
 // -----------------------------------------------------------------------------

@@ -15,7 +15,7 @@ use fv3jedi_kinds_mod,   only: kind_real
 use fv3jedi_geom_mod,    only: fv3jedi_geom
 use fv3jedi_state_mod,   only: fv3jedi_state
 
-use fv3jedi_field_mod, only: copy_subset, has_field, pointer_field_array
+use fv3jedi_field_mod, only: copy_subset
 
 use wind_vt_mod, only: a2d, d2a
 use temperature_vt_mod, only: pt_to_t, t_to_pt
@@ -130,11 +130,11 @@ call copy_subset(xr%fields,xb%fields)
 
 if (self%do_wind) then
 
-  call pointer_field_array(xr%fields, 'ud', ud)
-  call pointer_field_array(xr%fields, 'vd', vd)
+  call xr%get_field('ud', ud)
+  call xr%get_field('vd', vd)
 
-  call pointer_field_array(xb%fields, 'ua', ua)
-  call pointer_field_array(xb%fields, 'va', va)
+  call xb%get_field('ua', ua)
+  call xb%get_field('va', va)
 
   call d2a(geom, ud, vd, ua, va)
 
@@ -144,12 +144,12 @@ endif
 ! ------------------------------------
 if (self%do_temp) then
 
-  call pointer_field_array(xr%fields, 'pt', pt)
-  call pointer_field_array(xb%fields, 't' , t )
+  call xr%get_field('pt', pt)
+  call xb%get_field('t' , t )
 
-  if (.not. has_field(xr%fields,'pkz')) then
-    if (has_field(xr%fields, 'delp')) then
-      call pointer_field_array(xr%fields, 'delp' , delp )
+  if (.not. xr%has_field('pkz')) then
+    if (xr%has_field( 'delp')) then
+      call xr%get_field('delp' , delp )
       allocate(pe_tmp (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
       allocate(pkz_tmp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
       call delp_to_pe(geom, delp, pe_tmp)
@@ -159,7 +159,7 @@ if (self%do_temp) then
       call abor1_ftn("No way of getting pressures needed to convert temperature")
     endif
   else
-    call pointer_field_array(xr%fields, 'pkz' , pkz )
+    call xr%get_field('pkz' , pkz )
   endif
 
   call pt_to_t(geom, pkz, pt, t)
@@ -170,15 +170,15 @@ endif
 ! ------------------------------
 if (self%do_pres) then
 
-  call pointer_field_array(xr%fields, 'pe'  , pe)
+  call xr%get_field('pe'  , pe)
 
-  if (has_field(xb%fields, 'delp')) then
-    call pointer_field_array(xb%fields, 'delp', delp)
+  if (xb%has_field( 'delp')) then
+    call xb%get_field('delp', delp)
     call pe_to_delp(geom,pe,delp)
   endif
 
-  if (has_field(xb%fields, 'ps')) then
-    call pointer_field_array(xb%fields, 'ps'  , ps)
+  if (xb%has_field( 'ps')) then
+    call xb%get_field('ps'  , ps)
     ps(:,:,1) = pe(:,:,geom%npz+1)
   endif
 
@@ -189,21 +189,21 @@ endif
 
 if (self%do_clds) then
 
-  call pointer_field_array(xr%fields, 'qils', qils)
-  call pointer_field_array(xr%fields, 'qicn', qicn)
-  call pointer_field_array(xr%fields, 'qlls', qlls)
-  call pointer_field_array(xr%fields, 'qlcn', qlcn)
+  call xr%get_field('qils', qils)
+  call xr%get_field('qicn', qicn)
+  call xr%get_field('qlls', qlls)
+  call xr%get_field('qlcn', qlcn)
 
-  call pointer_field_array(xb%fields, 'ice_wat', qi)
-  call pointer_field_array(xb%fields, 'liq_wat', ql)
+  call xb%get_field('ice_wat', qi)
+  call xb%get_field('liq_wat', ql)
 
   have_fractions = .true.
-  if (.not.has_field(xb%fields, 'qilsf')) have_fractions = .false.
-  if (.not.has_field(xb%fields, 'qicnf')) have_fractions = .false.
+  if (.not.xb%has_field( 'qilsf')) have_fractions = .false.
+  if (.not.xb%has_field( 'qicnf')) have_fractions = .false.
 
   if (have_fractions) then
-    call pointer_field_array(xb%fields, 'qilsf', qilsf)
-    call pointer_field_array(xb%fields, 'qicnf', qicnf)
+    call xb%get_field('qilsf', qilsf)
+    call xb%get_field('qicnf', qicnf)
   endif
 
   if (have_fractions) then
@@ -269,11 +269,11 @@ call copy_subset(xb%fields, xr%fields)
 
 if (self%do_wind) then
 
-  call pointer_field_array(xr%fields, 'ud', ud)
-  call pointer_field_array(xr%fields, 'vd', vd)
+  call xr%get_field('ud', ud)
+  call xr%get_field('vd', vd)
 
-  call pointer_field_array(xb%fields, 'ua', ua)
-  call pointer_field_array(xb%fields, 'va', va)
+  call xb%get_field('ua', ua)
+  call xb%get_field('va', va)
 
   call a2d(geom, ua, va, ud, vd)
 
@@ -283,17 +283,17 @@ endif
 ! ------------------------------
 if (self%do_pres) then
 
-  call pointer_field_array(xr%fields, 'pe'  , pe )
-  call pointer_field_array(xr%fields, 'pkz' , pkz )
+  call xr%get_field('pe'  , pe )
+  call xr%get_field('pkz' , pkz )
 
   if (trim(self%pres_var) == 'delp') then
 
-    call pointer_field_array(xb%fields, 'delp' , delp )
+    call xb%get_field('delp' , delp )
     call delp_to_pe(geom, delp, pe)
 
   elseif (trim(self%pres_var) == 'ps') then
 
-    call pointer_field_array(xb%fields, 'ps' , ps )
+    call xb%get_field('ps' , ps )
 
     call ps_to_pe(geom, ps, pe)
 
@@ -312,15 +312,15 @@ endif
 ! ------------------------------------
 if (self%do_temp) then
 
-  call pointer_field_array(xr%fields, 'pt', pt)
-  call pointer_field_array(xb%fields, 't' , t )
+  call xr%get_field('pt', pt)
+  call xb%get_field('t' , t )
 
   if (.not. self%do_pres) then
 
     allocate(pe_tmp (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
     allocate(pkz_tmp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
 
-    call pointer_field_array(xb%fields, 'delp' , delp )
+    call xb%get_field('delp' , delp )
 
     call delp_to_pe(geom, delp, pe_tmp)
     call pe_to_pk(geom, pe_tmp, pkz_tmp)
@@ -342,15 +342,15 @@ endif
 
 if (self%do_clds) then
 
-  call pointer_field_array(xr%fields, 'qils', qils)
-  call pointer_field_array(xr%fields, 'qicn', qicn)
-  call pointer_field_array(xr%fields, 'qlls', qlls)
-  call pointer_field_array(xr%fields, 'qlcn', qlcn)
+  call xr%get_field('qils', qils)
+  call xr%get_field('qicn', qicn)
+  call xr%get_field('qlls', qlls)
+  call xr%get_field('qlcn', qlcn)
 
-  call pointer_field_array(xb%fields, 'ice_wat', qi)
-  call pointer_field_array(xb%fields, 'liq_wat', ql)
-  call pointer_field_array(xb%fields, 'qilsf', qilsf)
-  call pointer_field_array(xb%fields, 'qicnf', qicnf)
+  call xb%get_field('ice_wat', qi)
+  call xb%get_field('liq_wat', ql)
+  call xb%get_field('qilsf', qilsf)
+  call xb%get_field('qicnf', qicnf)
 
   call q2_to_q4(geom, qi, ql, qilsf, qicnf, qils, qicn, qlls, qlcn)
 
