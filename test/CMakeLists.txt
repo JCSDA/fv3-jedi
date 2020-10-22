@@ -308,95 +308,35 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 # Set remote URL for test files
 set(TESTDATA_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com)
 
+# Get the current git branch used by fv3-jedi source code
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3JEDI_OF_SRC})
 
-# Perform Ioda test data download
-# -------------------------------
-
-list( APPEND fv3_ioda_test_data testinput_tier_1.tar.gz )
-
-if (DEFINED ENV{LOCAL_PATH_TESTFILES_IODA})
-  set(LOCAL_PATH_TESTFILES_IODA "$ENV{LOCAL_PATH_TESTFILES_IODA}")
-endif()
-
-if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
-
-  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
-  if ( NOT DEFINED FV3_IODA_TESTFILES_BRANCH)
-
-    # Get the current git branch in fv3-jedi
-    execute_process(
-      COMMAND git rev-parse --abbrev-ref HEAD
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      OUTPUT_VARIABLE GIT_BRANCH_FV3
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3})
-
-  else()
-    message(STATUS "Branch name provided by user")
-    set(GIT_BRANCH_FV3 ${FV3_IODA_TESTFILES_BRANCH})
-  endif()
-
-  # Check whether the URL exists or not
-  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/ioda)
-
-  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3}/${fv3_ioda_test_data}
-                     RESULT  FV3_SPECIFIC_TEST_FILES)
-
-  # Set distant directory
-  if(${FV3_SPECIFIC_TEST_FILES} MATCHES 0)
-    # Download and extract new test files (distant directory = git branch)
-    set(DIRNAME ${GIT_BRANCH_FV3})
-    message(STATUS "GIT_BRANCH_FV3 found, will download " ${GIT_BRANCH_FV3})
-  else()
-    # Download and extract develop test files (distant directory = develop)
-    message(STATUS "GIT_BRANCH_FV3 not found on S3, will download develop")
-    set(DIRNAME "develop")
-  endif()
-
-  message(STATUS "Test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
-
-  set(FV3JEDI_REP_NAME ioda)
-  set(FV3JEDI_TESTFILES_NAME ${fv3_ioda_test_data})
-  set(FV3JEDI_BRANCH_NAME ${DIRNAME})
-  set(FV3JEDI_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
-  message(STATUS "Save data to " ${FV3JEDI_TESTFILES_PATH})
-  file(MAKE_DIRECTORY ${FV3JEDI_TESTFILES_PATH})
-
-  # Create download script for get_test_data test
-  set ( FILENAME fv3jedi_testdata_downloader.py)
-  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
-  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
-  list( APPEND bin_fv3jedi_test_download_scripts_deps ${DEST_FILE} )
-
-  if( EXISTS "${SOURCE_FILE}.in" )
-    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
-  else()
-    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
-  endif()
-
-  add_custom_target( bin_fv3jedi_test_download_scripts ALL
-      COMMAND chmod +x ${bin_fv3jedi_test_download_scripts_deps}
-      DEPENDS ${bin_fv3jedi_test_download_scripts_deps})
-
-  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_ioda_test_data
-                    TYPE      SCRIPT
-                    COMMAND    ${CMAKE_BINARY_DIR}/bin/${FILENAME}
-                    ARGS      testoutput/fv3jedi_test_tier1_get_ioda_test_data.log )
+# Override with branch from user if necessary
+if ( NOT DEFINED FV3JEDI_TESTFILES_BRANCH)
+  message(STATUS "Branch name not provided by user")
+  set(GIT_BRANCH_FV3JEDI ${GIT_BRANCH_FV3JEDI_OF_SRC})
 else()
-  set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_IODA})
-  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : " ${FV3JEDI_TESTFILES_PATH})
+  message(STATUS "Branch name provided by user")
+  set(GIT_BRANCH_FV3JEDI ${FV3JEDI_TESTFILES_BRANCH})
 endif()
+message(STATUS "Branch to use to obtain data " ${GIT_BRANCH_FV3JEDI})
 
+# Test data downloader
+set ( DOWNLOADER fv3jedi_testdata_downloader.py)
 
-execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${FV3JEDI_TESTFILES_PATH}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
+# Executable to bin dir
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
 
 
 # Perform FV3JEDI test data download
 # ----------------------------------
 
-list( APPEND fv3jedi_testdatainput fv3jedi_testdatainput_tier_1.tar.gz )
+list( APPEND fv3jedi_test_data fv3jedi_testdatainput_tier_1.tar.gz )
 
 if (DEFINED ENV{LOCAL_PATH_TESTFILES_FV3JEDI})
   set(LOCAL_PATH_TESTFILES_FV3JEDI "$ENV{LOCAL_PATH_TESTFILES_FV3JEDI}")
@@ -405,76 +345,101 @@ endif()
 if( NOT DEFINED LOCAL_PATH_TESTFILES_FV3JEDI )
 
   message(STATUS "LOCAL_PATH_TESTFILES_FV3JEDI is not defined, download test files")
-  if ( NOT DEFINED FV3JEDI_TESTFILES_BRANCH)
-
-    # Get the current git branch in fv3-jedi
-    execute_process(
-      COMMAND git rev-parse --abbrev-ref HEAD
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3JEDI})
-
-  else()
-    message(STATUS "Branch name provided by user")
-    set(GIT_BRANCH_FV3JEDI ${FV3JEDI_TESTFILES_BRANCH})
-  endif()
 
   # Check whether the URL exists or not
   set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/fv3-jedi)
 
-  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${fv3jedi_testdatainput}
-                     RESULT  FV3_SPECIFIC_TEST_FILES)
+  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data}
+                     RESULT FV3JEDI_SPECIFIC_TEST_FILES)
 
   # Set distant directory
-  if(${FV3_SPECIFIC_TEST_FILES} MATCHES 0)
+  if(${FV3JEDI_SPECIFIC_TEST_FILES} MATCHES 0)
     # Download and extract new test files (distant directory = git branch)
     set(DIRNAME ${GIT_BRANCH_FV3JEDI})
     message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
   else()
     # Download and extract develop test files (distant directory = develop)
-    message(STATUS "GIT_BRANCH_FV3JEDI not found on S3, will download develop")
+    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download develop")
     set(DIRNAME "develop")
   endif()
 
-  message(STATUS "Test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+  message(STATUS "fv3-jedi test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
 
-  set(FV3JEDI_REP_NAME fv3-jedi)
-  set(FV3JEDI_TESTFILES_NAME ${fv3jedi_testdatainput})
-  set(FV3JEDI_BRANCH_NAME ${DIRNAME})
+  # Set target directory for the downloaded data
   set(FV3JEDI_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/fv3-jedi/${DIRNAME})
-  message(STATUS "Save data to " ${FV3JEDI_TESTFILES_PATH})
+  message(STATUS "Save fv3-jedi data to " ${FV3JEDI_TESTFILES_PATH})
   file(MAKE_DIRECTORY ${FV3JEDI_TESTFILES_PATH})
 
-  # Create download script for get_test_data test
-  set ( FILENAME fv3jedi_testdata_downloader.py)
-  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
-  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
-  list( APPEND bin_fv3jedi_test_download_scripts_deps ${DEST_FILE} )
-
-  if( EXISTS "${SOURCE_FILE}.in" )
-    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
-  else()
-    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
-  endif()
-
-  add_custom_target( bin_fv3jedi_test_download_scripts ALL
-      COMMAND chmod +x ${bin_fv3jedi_test_download_scripts_deps}
-      DEPENDS ${bin_fv3jedi_test_download_scripts_deps})
-
+  # Add test for downloading IODA data
   ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data
                     TYPE      SCRIPT
-                    COMMAND    ${CMAKE_BINARY_DIR}/bin/${FILENAME}
-                    ARGS      testoutput/fv3jedi_test_tier1_get_test_data.log )
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
+                    ARGS      fv3-jedi ${fv3jedi_test_data} ${DIRNAME}
+                              ${FV3JEDI_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
+                              testoutput/fv3jedi_test_tier1_get_test_data.log )
 else()
   set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_FV3JEDI})
   message(STATUS "use LOCAL_PATH_TESTFILES_FV3JEDI : " ${FV3JEDI_TESTFILES_PATH})
 endif()
 
-# fv3-jedi Data/inputs
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                ${FV3JEDI_INPUTS_TESTFILES_PATH}
-                ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs )
+                 ${FV3JEDI_TESTFILES_PATH}
+                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs )
+
+# Perform ioda test data download
+# -------------------------------
+
+# Data file
+list( APPEND ioda_test_data testinput_tier_1.tar.gz )
+
+# Check for local path for the data
+if (DEFINED ENV{LOCAL_PATH_TESTFILES_IODA})
+  set(LOCAL_PATH_TESTFILES_IODA "$ENV{LOCAL_PATH_TESTFILES_IODA}")
+endif()
+
+if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
+
+  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
+
+  # Check whether the URL exists or not
+  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/ioda)
+
+  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${ioda_test_data}
+                    RESULT IODA_SPECIFIC_TEST_FILES)
+
+  # Set distant directory
+  if(${IODA_SPECIFIC_TEST_FILES} MATCHES 0)
+    # Download and extract new test files (distant directory = git branch)
+    set(DIRNAME ${GIT_BRANCH_FV3JEDI})
+    message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
+  else()
+    # Download and extract develop test files (distant directory = develop)
+    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download develop")
+    set(DIRNAME "develop")
+  endif()
+
+  message(STATUS "ioda test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+
+  # Set target directory for the downloaded data
+  set(IODA_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
+  message(STATUS "Save ioda data to " ${IODA_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${IODA_TESTFILES_PATH})
+
+  # Add test for downloading IODA data
+  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_ioda
+                    TYPE      SCRIPT
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
+                    ARGS      ioda ${ioda_test_data} ${DIRNAME}
+                              ${IODA_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
+                              testoutput/fv3jedi_test_tier1_get_test_data_ioda.log )
+else()
+  set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_IODA})
+  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : " ${IODA_TESTFILES_PATH})
+endif()
+
+execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+                ${IODA_TESTFILES_PATH}
+                ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
 
 # --------------------------------------------------------------------------------------------------
 
@@ -1120,6 +1085,12 @@ if ( DEFINED TEST_TIME_REF_FV3 )
   execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
           ${CMAKE_CURRENT_SOURCE_DIR}/testoutput/${TEST_TIME_REF_FV3}
           ${CMAKE_CURRENT_BINARY_DIR}/testoutput/${TEST_TIME_REF_FV3} )
+
+  ecbuild_add_test( TARGET fv3jedi_test_tier1_run_times
+                    TYPE SCRIPT
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/run_time_test.py
+                    ARGS testoutput/${TEST_TIME_REF_FV3}
+                    ${CMAKE__REF_FV3} )
 
   ecbuild_add_test( TARGET fv3jedi_test_tier1_run_times
                     TYPE SCRIPT
