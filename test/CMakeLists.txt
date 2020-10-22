@@ -1090,12 +1090,6 @@ if ( DEFINED TEST_TIME_REF_FV3 )
                     TYPE SCRIPT
                     COMMAND ${CMAKE_BINARY_DIR}/bin/run_time_test.py
                     ARGS testoutput/${TEST_TIME_REF_FV3}
-                    ${CMAKE__REF_FV3} )
-
-  ecbuild_add_test( TARGET fv3jedi_test_tier1_run_times
-                    TYPE SCRIPT
-                    COMMAND ${CMAKE_BINARY_DIR}/bin/run_time_test.py
-                    ARGS testoutput/${TEST_TIME_REF_FV3}
                     ${CMAKE_BINARY_DIR}/fv3-jedi/Testing/Temporary/CTestCostData.txt
                     testinput/test_time.yaml)
 else()
