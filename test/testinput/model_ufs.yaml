@@ -1,0 +1,35 @@
+geometry:
+  nml_file_mpp: Data/ModelDirs/ufs/cime/input.nml
+  trc_file: Data/ModelDirs/ufs/cime/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 97
+  npy: 97
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+model:
+  name: UFS 
+  tstep: PT2H
+  ufs_run_directory: Data/ModelDirs/ufs/cime
+  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
+                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
+                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+model aux control: null
+model aux error: null
+model test:
+  forecast length: PT4H
+  final norm: 144.55226995514263 
+  tolerance: 1.0e-4
+  testreforecast: false
+initial condition:
+  filetype: gfs
+  datapath: Data/ModelDirs/ufs/cime/INPUT
+  filename_core: fv_core.res.nc
+  filename_trcr: fv_tracer.res.nc
+  filename_sfcd: sfc_data.nc
+  filename_sfcw: fv_srf_wnd.res.nc
+  filename_cplr: coupler.res
+  state variables: [T,U,V]

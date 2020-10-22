@@ -1,0 +1,42 @@
+test_framework_runtime_config: --log_level=test_suite
+nml_file: Data/fv3files/fmsmpp.nml
+Geometry:
+  nml_file: Data/fv3files/input_gfs_c96.nml
+  trc_file: Data/gfs_run/field_table
+  pathfile_akbk: Data/inputs/gfs_c12/akbk.nc
+Model:
+  name: 'GFS'
+  date_start: '2018-04-15T00:00:00Z'
+  tstep: PT450S
+  model_configure: Data/gfs_run/model_configure
+  gfs_run_dir: Data/gfs_run/
+  write_gfs_restart: 0
+  variables: ["u","v","W","DZ","T","delp","phis","ua","va",
+              "sphum","liq_wat","rainwat","ice_wat","snowwat","graupel","o3mr","cld_amt",
+              "u_srf","v_srf",
+              "slmsk","tsea","sheleg","tg3","zorl","alvsf","alvwf","alnsf","alnwf","facsf","facwf",
+              "vfrac","canopy","f10m","t2m","q2m","vtype","stype","uustar","ffmm","ffhh","hice",
+              "fice","tisfc","tprcp","srflag","snwdph","shdmin","shdmax","slope","snoalb","sncovr",
+              "tref","z_c","c_0","c_d","w_0","w_d","xt","xs","xu","xv","xz","zm","xtts","xzts",
+              "d_conv","ifd","dt_cool","qrain","stc","smc","slc",
+              "cv","cvt","cvb","phy_f2d_01","phy_f3d_01","phy_f3d_02"]
+  model_configure:
+    dt_atmos:                450
+    calendar:                'julian'
+    restart_interval:        1
+ModelBias: null
+ModelBiasCovariance: null
+ModelTest:
+  fclength: PT1H
+  finalnorm: '2329.1320626421648'
+  tolerance: '1.0e-4'
+  #testreforecast: false
+State:
+  filetype: gfs
+  datapath_tile: Data/gfs_run/INPUT/
+  filename_core: fv_core.res.nc
+  filename_trcr: fv_tracer.res.nc
+  filename_sfcd: sfc_data.nc
+  filename_sfcw: fv_srf_wnd.res.nc
+  filename_phys: phy_data.nc
+  filename_cplr: coupler.res

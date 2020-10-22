@@ -75,7 +75,7 @@ ecbuild_use_package( PROJECT ufo REQUIRED )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
 # femps
-ecbuild_use_package( PROJECT femps )
+ecbuild_use_package( PROJECT femps REQUIRED )
 include_directories( ${FEMPS_INCLUDE_DIRS} )
 
 #OpenMP
@@ -86,8 +86,14 @@ ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
 ecbuild_include_mpi()
 link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 
+# Set default forecast model
+# --------------------------
+if (NOT FV3_FORECAST_MODEL MATCHES GEOS AND NOT FV3_FORECAST_MODEL MATCHES UFS)
+  set(FV3_FORECAST_MODEL "FV3CORE")
+endif()
+
 # fms
-if (FV3_FORECAST_MODEL MATCHES "FV3CORE") # OR FV3_FORECAST_MODEL MATCHES "UFS")
+if (FV3_FORECAST_MODEL MATCHES "FV3CORE" OR NOT FV3_FORECAST_MODEL) # OR FV3_FORECAST_MODEL MATCHES "UFS")
   ecbuild_use_package( PROJECT fms REQUIRED )
   include_directories( ${FMS_INCLUDE_DIRS} )
 endif()
@@ -110,12 +116,44 @@ if (FV3_FORECAST_MODEL MATCHES "GEOS")
   find_package(GFTL_SHARED REQUIRED)
   find_package(PFLOGGER REQUIRED)
   find_package(YAFYAML REQUIRED)
+  find_package(OpenMP REQUIRED)
   link_libraries(GEOSgcm_GridComp)
 endif()
 
 # ufs
-if (FV3_FORECAST_MODEL MATCHES "UFS")
-  #ToDo
+if (FV3_FORECAST_MODEL MATCHES UFS)
+  # TODO: fms will be seperated from UFS at some point
+  # set CMAKE_PREFIX_PATH to include location of hpc-stack install and ufs install using
+  # semi-colon separated lists in quotes e.g.--
+  # ecbuild -DCMAKE_PREFIX_PATH="path-to/ufs-weather-model/build/install;/home/mpotts/hpc-stack/install" ...
+  find_package(bacio REQUIRED )
+  find_package(sigio REQUIRED )
+  find_package(sp REQUIRED )
+  find_package(w3emc REQUIRED )
+  find_package(w3nco REQUIRED )
+  find_package(nemsio REQUIRED )
+  find_package(fms REQUIRED )
+  find_package(fv3atm REQUIRED )
+  find_package(ufs REQUIRED )
+  # Link all the libraries
+  link_libraries(nemsio::nemsio)
+  link_libraries(w3emc::w3emc_d)
+  link_libraries(w3nco::w3nco_d)
+  link_libraries(sp::sp_d)
+  link_libraries(bacio::bacio_4)
+  link_libraries(cpl)
+  link_libraries(fms)
+  link_libraries(fv3atm)
+  link_libraries(cpl)
+  link_libraries(ccppdriver)
+  link_libraries(ufs)
+  link_libraries(gfsphysics)
+  link_libraries(io)
+  link_libraries(ipd)
+  link_libraries(stochastic_physics)
+  link_libraries(NetCDF::NetCDF_Fortran)
+  find_package(ESMF MODULE REQUIRED)
+  include_directories( ${ESMF_F90COMPILEPATHS} )
 endif()
 
 # Linear model
@@ -146,7 +184,8 @@ endforeach()
 ################################################################################
 # Sources
 ################################################################################
-
+add_definitions("-DFRONT_FV3=fv3gfs_cap_mod")
+set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fdec -fno-range-check -ffree-form ")
 include_directories( ${FV3JEDI_INCLUDE_DIRS}
                      ${FV3JEDI_EXTRA_INCLUDE_DIRS} )
 

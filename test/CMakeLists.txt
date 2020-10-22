@@ -303,6 +303,8 @@ list( APPEND fv3jedi_test_input
   testinput/localization_bump.yaml
   testinput/model_fv3lm.yaml
   testinput/model_geos.yaml
+  testinput/model_ufs.yaml
+  testinput/model_gfs.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
   testinput/state_geos_aerosol_ext.yaml
@@ -802,10 +804,10 @@ endforeach()
 
 # Stage directory with directories for running the models
 # -------------------------------------------------------
-if(FV3_FORECAST_MODEL MATCHES "GEOS" OR FV3_FORECAST_MODEL MATCHES "UFS")
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL})
-  file(GLOB model_files "${FV3_FORECAST_MODEL_RUNDIR}/*")
-  LINK_FILES_DIR("${model_files}" ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/)
+if(BUILD_WITH_MODEL MATCHES GEOS )
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDir)
+  file(GLOB RUNDIRFILES "${FV3_FORECAST_MODEL_RUNDIR}/*")
+  LINK_FILES_DIR("${RUNDIRFILES}" ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDir/)
   if (FV3_FORECAST_MODEL MATCHES "GEOS")
     execute_process( COMMAND rm ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/cap_restart )
     execute_process( COMMAND cp ${FV3_FORECAST_MODEL_RUNDIR}/cap_restart ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/cap_restart )
@@ -966,16 +968,16 @@ fv3jedi_add_test( NAME    model_fv3lm
                   EXE     test_fv3jedi_model.x
                   INTERFACETEST )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
-fv3jedi_add_test( NAME    model_ufs
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
-endif()
-
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
 fv3jedi_add_test( NAME    model_geos
                   EXE     test_fv3jedi_model.x
                   INTERFACETEST )
+endif()
+if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
+  ecbuild_add_test( TARGET  test_fv3jedi_model_ufs
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
+                    ARGS    testinput/model_ufs.yaml
+                    MPI     6 )
 endif()
 
 fv3jedi_add_test( NAME    linearmodel
