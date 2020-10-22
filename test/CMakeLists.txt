@@ -232,35 +232,57 @@ LINK_FILES( "${fv3jedi_field_sets}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # ---------------------------------
 
 # CRTM coefficient files
+list( APPEND crtm_coeff_files
+AerosolCoeff/Little_Endian/AerosolCoeff.bin
+CloudCoeff/Little_Endian/CloudCoeff.bin
+EmisCoeff/MW_Water/Little_Endian/FASTEM6.MWwater.EmisCoeff.bin
+EmisCoeff/IR_Ice/SEcategory/Little_Endian/NPOESS.IRice.EmisCoeff.bin
+EmisCoeff/IR_Land/SEcategory/Little_Endian/NPOESS.IRland.EmisCoeff.bin
+EmisCoeff/IR_Snow/SEcategory/Little_Endian/NPOESS.IRsnow.EmisCoeff.bin
+EmisCoeff/VIS_Ice/SEcategory/Little_Endian/NPOESS.VISice.EmisCoeff.bin
+EmisCoeff/VIS_Land/SEcategory/Little_Endian/NPOESS.VISland.EmisCoeff.bin
+EmisCoeff/VIS_Snow/SEcategory/Little_Endian/NPOESS.VISsnow.EmisCoeff.bin
+EmisCoeff/VIS_Water/SEcategory/Little_Endian/NPOESS.VISwater.EmisCoeff.bin
+EmisCoeff/IR_Water/Little_Endian/Nalli.IRwater.EmisCoeff.bin
+EmisCoeff/IR_Land/SEcategory/Little_Endian/USGS.IRland.EmisCoeff.bin
+EmisCoeff/VIS_Land/SEcategory/Little_Endian/USGS.VISland.EmisCoeff.bin
+SpcCoeff/Little_Endian/hirs4_metop-a.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/hirs4_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/amsua_n19.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsua_n19.TauCoeff.bin
+SpcCoeff/Little_Endian/atms_npp.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/atms_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/gmi_gpm.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/gmi_gpm.TauCoeff.bin
+SpcCoeff/Little_Endian/seviri_m08.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/seviri_m08.TauCoeff.bin
+SpcCoeff/Little_Endian/cris-fsr_npp.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/cris-fsr_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/iasi_metop-a.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/iasi_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/mhs_n19.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/mhs_n19.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD1_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD1_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD2_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD2_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD3_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD3_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD4_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD4_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/airs_aqua.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/airs_aqua.TauCoeff.bin
+SpcCoeff/Little_Endian/v.viirs-m_npp.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/v.viirs-m_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/abi_g16.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/abi_g16.TauCoeff.bin
+SpcCoeff/Little_Endian/ahi_himawari8.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/ahi_himawari8.TauCoeff.bin
+SpcCoeff/Little_Endian/radiometer_smap.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/radiometer_smap.TauCoeff.bin
+)
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-file(GLOB crtm_spc_coeffs "${crtm_SOURCE_DIR}/fix/SpcCoeff/Little_Endian/*bin")
-file(GLOB crtm_tau_coeffs "${crtm_SOURCE_DIR}/fix/TauCoeff/ODAS/Little_Endian/*bin")
-file(GLOB crtm_tap_coeffs "${crtm_SOURCE_DIR}/fix/TauCoeff/ODPS/Little_Endian/*bin")
-file(GLOB crtm_cld_coeffs "${crtm_SOURCE_DIR}/fix/CloudCoeff/Little_Endian/*bin")
-file(GLOB crtm_aer_coeffs "${crtm_SOURCE_DIR}/fix/AerosolCoeff/Little_Endian/*bin")
-file(GLOB crtm_iri_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_irl_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_irs_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_irw_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Water/Little_Endian/*bin")
-file(GLOB crtm_mww_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/MW_Water/Little_Endian/*bin")
-file(GLOB crtm_vii_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Ice/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_vil_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Land/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_vis_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Snow/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_viw_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Water/SEcategory/Little_Endian/*bin")
-LINK_FILES_DIR("${crtm_spc_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_tau_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_tap_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_cld_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_aer_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_iri_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_irl_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_irs_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_irw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_mww_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_vii_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_vil_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_vis_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_viw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 
 # Files needed for GEOS aerosol testing
 if( NOT ${BUNDLE_SKIP_GEOS-AERO} )
@@ -332,19 +354,19 @@ set ( DOWNLOADER fv3jedi_testdata_downloader.py)
 # Executable to bin dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
 
+# Check for local path to data
+if (DEFINED ENV{LOCAL_PATH_TESTFILES})
+  set(LOCAL_PATH_TESTFILES "$ENV{LOCAL_PATH_TESTFILES}")
+endif()
 
 # Perform FV3JEDI test data download
 # ----------------------------------
 
 list( APPEND fv3jedi_test_data fv3jedi_testdatainput_tier_1.tar.gz )
 
-if (DEFINED ENV{LOCAL_PATH_TESTFILES_FV3JEDI})
-  set(LOCAL_PATH_TESTFILES_FV3JEDI "$ENV{LOCAL_PATH_TESTFILES_FV3JEDI}")
-endif()
+if( NOT DEFINED LOCAL_PATH_TESTFILES )
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES_FV3JEDI )
-
-  message(STATUS "LOCAL_PATH_TESTFILES_FV3JEDI is not defined, download test files")
+  message(STATUS "LOCAL_PATH_TESTFILES is not defined, download test files")
 
   # Check whether the URL exists or not
   set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/fv3-jedi)
@@ -378,8 +400,8 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_FV3JEDI )
                               ${FV3JEDI_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data.log )
 else()
-  set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_FV3JEDI})
-  message(STATUS "use LOCAL_PATH_TESTFILES_FV3JEDI : " ${FV3JEDI_TESTFILES_PATH})
+  set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES})
+  message(STATUS "use LOCAL_PATH_TESTFILES : " ${FV3JEDI_TESTFILES_PATH})
 endif()
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
@@ -392,14 +414,9 @@ execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
 # Data file
 list( APPEND ioda_test_data testinput_tier_1.tar.gz )
 
-# Check for local path for the data
-if (DEFINED ENV{LOCAL_PATH_TESTFILES_IODA})
-  set(LOCAL_PATH_TESTFILES_IODA "$ENV{LOCAL_PATH_TESTFILES_IODA}")
-endif()
+if( NOT DEFINED LOCAL_PATH_TESTFILES )
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
-
-  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
+  message(STATUS "LOCAL_PATH_TESTFILES is not defined, download test files")
 
   # Check whether the URL exists or not
   set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/ioda)
@@ -433,13 +450,64 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
                               ${IODA_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data_ioda.log )
 else()
-  set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_IODA})
-  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : " ${IODA_TESTFILES_PATH})
+  set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES})
+  message(STATUS "use LOCAL_PATH_TESTFILES : " ${IODA_TESTFILES_PATH})
 endif()
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
                 ${IODA_TESTFILES_PATH}
                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
+
+
+# Perform crtm test data download
+# -------------------------------
+
+# Data file
+list( APPEND crtm_test_data crtm_coefficients.tar.gz )
+
+if( NOT DEFINED LOCAL_PATH_TESTFILES )
+
+  message(STATUS "LOCAL_PATH_TESTFILES is not defined, download test files")
+
+  # Check whether the URL exists or not
+  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/crtm)
+
+  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${crtm_test_data}
+  RESULT CRTM_SPECIFIC_TEST_FILES)
+
+  # Set distant directory
+  if(${CRTM_SPECIFIC_TEST_FILES} MATCHES 0)
+    # Download and extract new test files (distant directory = git branch)
+    set(DIRNAME ${GIT_BRANCH_FV3JEDI})
+    message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
+  else()
+    # Download and extract develop test files (distant directory = develop)
+    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download develop")
+    set(DIRNAME "2.3.0")
+  endif()
+
+  message(STATUS "crtn test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+
+  # Set target directory for the downloaded data
+  set(CRTM_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/crtm/${DIRNAME})
+  message(STATUS "Save crtm data to " ${CRTM_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${CRTM_TESTFILES_PATH})
+
+  # Add test for downloading crtm data
+  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_crtm
+                    TYPE      SCRIPT
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
+                    ARGS      crtm ${crtm_test_data} ${DIRNAME}
+                              ${CRTM_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
+                            testoutput/fv3jedi_test_tier1_get_test_data_crtm.log )
+else()
+  set(CRTM_TESTFILES_PATH ${LOCAL_PATH_TESTFILES})
+  message(STATUS "use LOCAL_PATH_TESTFILES : " ${CRTM_TESTFILES_PATH})
+endif()
+
+create_symlink_filename( ${CRTM_TESTFILES_PATH}
+                         ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
+                         ${crtm_coeff_files} )
 
 # --------------------------------------------------------------------------------------------------
 
