@@ -12,7 +12,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 model:
   name: UFS 
-  tstep: PT2H
+  tstep: PT1H
   ufs_run_directory: Data/ModelDirs/ufs/cime
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
@@ -20,7 +20,7 @@ model:
 model aux control: null
 model aux error: null
 model test:
-  forecast length: PT4H
+  forecast length: PT2H
   final norm: 144.55226995514263 
   tolerance: 1.0e-4
   testreforecast: false

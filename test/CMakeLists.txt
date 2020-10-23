@@ -974,10 +974,10 @@ fv3jedi_add_test( NAME    model_geos
                   INTERFACETEST )
 endif()
 if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
-  ecbuild_add_test( TARGET  test_fv3jedi_model_ufs
-                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_fv3jedi_model.x
-                    ARGS    testinput/model_ufs.yaml
-                    MPI     6 )
+fv3jedi_add_test( NAME model_ufs
+                  EXE test_fv3jedi_model.x
+                  ARGS    testinput/model_ufs.yaml
+                  MPI     6 )
 endif()
 
 fv3jedi_add_test( NAME    linearmodel

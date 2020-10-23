@@ -67,11 +67,6 @@ ecbuild_add_executable( TARGET  fv3jedi_var.x
                         LIBS    fv3jedi
                                 saber
                       )
-ecbuild_add_executable( TARGET  fv3jedi_nems.x
-                        SOURCES MAIN_NEMS.F90
-                        LIBS    fv3jedi
-                      )
-
 #ecbuild_add_executable( TARGET  fv3jedi_linearforecast.x
 #                        SOURCES fv3jediLinearForecast.cc
 #                        LIBS    fv3jedi

@@ -165,43 +165,9 @@ list( APPEND fv3jedi_geos_src_files
 # Source files when building with UFS
 list( APPEND fv3jedi_ufs_src_files
   Geometry/fv_init_control_mod.f90
-# Model/gfs/fv3jedi_cldprop_type_mod.f90
-# Model/gfs/fv3jedi_gfs_interface_mod.F90
-# Model/gfs/fv3jedi_gfs_mod.f90
-# Model/gfs/fv3jedi_sfcprop_type_mod.f90
-# Model/gfs/fv3jedi_tbdprop_type_mod.f90
-# Model/gfs/ModelGFS.cc
-# Model/gfs/ModelGFS.h
-# Model/gfs/ModelGFS.interface.h
   # ufs
   Model/ufs/fv3jedi_ufs_interface_mod.F90
   Model/ufs/fv3jedi_ufs_mod.F90
-# Model/ufs/module_NEMS_Rusage.F90
-# Model/ufs/nems_c_rusage.c
-# Model/ufs/module_NEMS_UTILS.F90
-# Model/ufs/module_NEMS_GRID_COMP.F90
-# Model/ufs/module_EARTH_GRID_COMP.F90
-# Model/ufs/module_EARTH_INTERNAL_STATE.F90
-# Model/ufs/module_NEMS_INTERNAL_STATE.F90
-# Model/ufs/module_MEDIATOR_methods.F90
-# Model/ufs/module_MEDIATOR.F90
-# Model/ufs/module_MEDIATOR_SpaceWeather.F90
-# Model/ufs/ENS_Cpl/Cal_Sto_Coef.F90
-# Model/ufs/ENS_Cpl/DistributeForStep1.F90
-# Model/ufs/ENS_Cpl/ENS_bcst_global.F90
-# Model/ufs/ENS_Cpl/ENS_CplComp_ESMFMod.F90
-# Model/ufs/ENS_Cpl/ENS_Cpl_ESMFMod.F90
-# Model/ufs/ENS_Cpl/ENS_Cpl_InternalState_ESMFMod.F90
-# Model/ufs/ENS_Cpl/ENS_Cpl_Run_ESMFMod.F90
-# Model/ufs/ENS_Cpl/ENS_CplState_ESMFMod.F90
-# Model/ufs/ENS_Cpl/ENS_GetParameterFromStateMod.F90
-# Model/ufs/ENS_Cpl/ENS_Sto_Per_Scheme_Step1.F90
-# Model/ufs/ENS_Cpl/ENS_Sto_Per_Scheme_Step2.F90
-# Model/ufs/ENS_Cpl/ens_kinds.F90
-# Model/ufs/ENS_Cpl/Lib_ESMFStateAddGetMod.F90
-# Model/ufs/ENS_Cpl/peuc.F90
-# Model/ufs/ENS_Cpl/prana.F90
-# Model/ufs/ENS_Cpl/pran.F90
   Model/ufs/ModelUFS.cc
   Model/ufs/ModelUFS.h
   Model/ufs/ModelUFS.interface.h
