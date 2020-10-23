@@ -400,8 +400,12 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES )
                               ${FV3JEDI_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data.log )
 else()
-  set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES})
-  message(STATUS "use LOCAL_PATH_TESTFILES : " ${FV3JEDI_TESTFILES_PATH})
+  if(EXISTS ${LOCAL_PATH_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data})
+    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI})
+  else()
+    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/fv3-jedi/develop)
+  endif()
+  message(STATUS "Use local test files for fv3-jedi : " ${FV3JEDI_TESTFILES_PATH})
 endif()
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
@@ -450,8 +454,12 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES )
                               ${IODA_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data_ioda.log )
 else()
-  set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES})
-  message(STATUS "use LOCAL_PATH_TESTFILES : " ${IODA_TESTFILES_PATH})
+  if(EXISTS ${LOCAL_PATH_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI}/${ioda_test_data})
+    set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI})
+  else()
+    set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/ioda/develop)
+  endif()
+  message(STATUS "Use local test files for ioda : " ${IODA_TESTFILES_PATH})
 endif()
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
@@ -501,8 +509,12 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES )
                               ${CRTM_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                             testoutput/fv3jedi_test_tier1_get_test_data_crtm.log )
 else()
-  set(CRTM_TESTFILES_PATH ${LOCAL_PATH_TESTFILES})
-  message(STATUS "use LOCAL_PATH_TESTFILES : " ${CRTM_TESTFILES_PATH})
+  if(EXISTS ${LOCAL_PATH_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI}/${crtm_test_data})
+    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI})
+  else()
+    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/crtm/2.3.0)
+  endif()
+  message(STATUS "Use local test files for crtm : " ${CRTM_TESTFILES_PATH})
 endif()
 
 create_symlink_filename( ${CRTM_TESTFILES_PATH}
