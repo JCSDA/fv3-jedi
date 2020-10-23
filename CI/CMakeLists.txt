@@ -31,9 +31,9 @@ option("BUNDLE_SKIP_ECKIT" "Don't build eckit" "ON" ) # Skip eckit build unless 
 option("BUNDLE_SKIP_FCKIT" "Don't build fckit" "OFF") # Build fckit unless user passes -DBUNDLE_SKIP_FCKIT=ON
 option("BUNDLE_SKIP_ATLAS" "Don't build atlas" "OFF") # Build atlas unless user passes -DBUNDLE_SKIP_ATLAS=ON
 
-ecbuild_bundle( PROJECT eckit GIT "https://github.com/JCSDA/eckit.git" BRANCH release-stable UPDATE )
-ecbuild_bundle( PROJECT fckit GIT "https://github.com/JCSDA/fckit.git" BRANCH release-stable UPDATE )
-ecbuild_bundle( PROJECT atlas GIT "https://github.com/JCSDA/atlas.git" BRANCH release-stable UPDATE )
+ecbuild_bundle( PROJECT eckit GIT "https://github.com/JCSDA-internal/eckit.git" BRANCH release-stable UPDATE )
+ecbuild_bundle( PROJECT fckit GIT "https://github.com/JCSDA-internal/fckit.git" BRANCH release-stable UPDATE )
+ecbuild_bundle( PROJECT atlas GIT "https://github.com/JCSDA-internal/atlas.git" BRANCH release-stable UPDATE )
 
 # External (optional) observation operators
 # ------------------------------
@@ -41,9 +41,9 @@ option("BUNDLE_SKIP_GEOS-AERO" "Don't build GEOS-AERO" "ON") # Skip geos-aero bu
 option("BUNDLE_SKIP_GSW"       "Don't build GSW"       "ON") # Skip gsw build unless user passes -DBUNDLE_SKIP_GSW=OFF
 option("BUNDLE_SKIP_ROPP-UFO"  "Don't build ROPP-UFO"  "ON") # Skip ropp-ufo build unless user passes -DBUNDLE_SKIP_ROPP-UFO=OFF
 
-ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda/geos-aero.git" BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT gsw GIT "https://github.com/jcsda/GSW-Fortran.git"     BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda/ropp-test.git"  BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda-internal/geos-aero.git" BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT gsw GIT "https://github.com/jcsda-internal/GSW-Fortran.git"     BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-test.git"  BRANCH develop UPDATE )
 
 # External (required) observation operators
 # ------------------------------
