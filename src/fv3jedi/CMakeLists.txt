@@ -212,3 +212,24 @@ ecbuild_add_library( TARGET          fv3jedi
                      INSTALL_HEADERS LISTED
                      LINKER_LANGUAGE ${FV3JEDI_LINKER_LANGUAGE}
                    )
+
+# Link all the libraries
+target_link_libraries( fv3jedi nemsio::nemsio)
+target_link_libraries( fv3jedi w3emc::w3emc_d)
+target_link_libraries( fv3jedi w3nco::w3nco_d)
+target_link_libraries( fv3jedi sp::sp_d)
+target_link_libraries( fv3jedi bacio::bacio_4)
+target_link_libraries( fv3jedi cpl)
+target_link_libraries( fv3jedi fms)
+target_link_libraries( fv3jedi fv3atm)
+target_link_libraries( fv3jedi cpl)
+target_link_libraries( fv3jedi ccppdriver)
+target_link_libraries( fv3jedi ufs)
+target_link_libraries( fv3jedi gfsphysics)
+target_link_libraries( fv3jedi io)
+target_link_libraries( fv3jedi ipd)
+target_link_libraries( fv3jedi stochastic_physics)
+target_link_libraries( fv3jedi NetCDF::NetCDF_Fortran)
+find_package(ESMF MODULE REQUIRED)
+target_include_directories( fv3jedi PRIVATE ${ESMF_F90COMPILEPATHS} )
+target_compile_definitions( fv3jedi PRIVATE "-DFRONT_FV3=fv3gfs_cap_mod")
