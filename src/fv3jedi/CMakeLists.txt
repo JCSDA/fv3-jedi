@@ -199,12 +199,9 @@ endif()
 # Optional model - ufs
 if( FV3_FORECAST_MODEL MATCHES "UFS" )
   list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
-  list( APPEND FV3JEDI_LIB_DEP sp::sp_d)
-  list( APPEND FV3JEDI_LIB_DEP w3nco::w3nco_d)
   include_directories(${FV3_FORECAST_MODEL_ROOT}/include)
 endif()
 
-message("fv3jedi deps are ${FV3JEDI_LIB_DEP}")
 #Add the library
 ecbuild_add_library( TARGET          fv3jedi
                      SOURCES         ${FV3JEDI_SRC_DEP}
@@ -213,23 +210,25 @@ ecbuild_add_library( TARGET          fv3jedi
                      LINKER_LANGUAGE ${FV3JEDI_LINKER_LANGUAGE}
                    )
 
-# Link all the libraries
-target_link_libraries( fv3jedi nemsio::nemsio)
-target_link_libraries( fv3jedi w3emc::w3emc_d)
-target_link_libraries( fv3jedi w3nco::w3nco_d)
-target_link_libraries( fv3jedi sp::sp_d)
-target_link_libraries( fv3jedi bacio::bacio_4)
-target_link_libraries( fv3jedi cpl)
-target_link_libraries( fv3jedi fms)
-target_link_libraries( fv3jedi fv3atm)
-target_link_libraries( fv3jedi cpl)
-target_link_libraries( fv3jedi ccppdriver)
-target_link_libraries( fv3jedi ufs)
-target_link_libraries( fv3jedi gfsphysics)
-target_link_libraries( fv3jedi io)
-target_link_libraries( fv3jedi ipd)
-target_link_libraries( fv3jedi stochastic_physics)
-target_link_libraries( fv3jedi NetCDF::NetCDF_Fortran)
+# ESMF
 find_package(ESMF MODULE REQUIRED)
-target_include_directories( fv3jedi PRIVATE ${ESMF_F90COMPILEPATHS} )
-target_compile_definitions( fv3jedi PRIVATE "-DFRONT_FV3=fv3gfs_cap_mod")
+
+# Link all the libraries
+target_link_libraries( fv3jedi PUBLIC nemsio::nemsio)
+target_link_libraries( fv3jedi PUBLIC w3emc::w3emc_d)
+target_link_libraries( fv3jedi PUBLIC w3nco::w3nco_d)
+target_link_libraries( fv3jedi PUBLIC sp::sp_d)
+target_link_libraries( fv3jedi PUBLIC bacio::bacio_4)
+target_link_libraries( fv3jedi PUBLIC cpl)
+target_link_libraries( fv3jedi PUBLIC fms)
+target_link_libraries( fv3jedi PUBLIC fv3atm)
+target_link_libraries( fv3jedi PUBLIC cpl)
+target_link_libraries( fv3jedi PUBLIC ccppdriver)
+target_link_libraries( fv3jedi PUBLIC ufs)
+target_link_libraries( fv3jedi PUBLIC gfsphysics)
+target_link_libraries( fv3jedi PUBLIC io)
+target_link_libraries( fv3jedi PUBLIC ipd)
+target_link_libraries( fv3jedi PUBLIC stochastic_physics)
+target_link_libraries( fv3jedi PUBLIC NetCDF::NetCDF_Fortran)
+target_include_directories( fv3jedi PUBLIC ${ESMF_F90COMPILEPATHS} )
+target_compile_definitions( fv3jedi PUBLIC "-DFRONT_FV3=fv3gfs_cap_mod")
