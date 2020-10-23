@@ -135,7 +135,6 @@ list( APPEND fv3jedi_test_input
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
 LINK_FILES( "${fv3jedi_test_input}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-
 # Test output scripts
 # -------------------
 list( APPEND fv3jedi_testoutput
@@ -355,8 +354,8 @@ set ( DOWNLOADER fv3jedi_testdata_downloader.py)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
 
 # Check for local path to data
-if (DEFINED ENV{LOCAL_PATH_TESTFILES})
-  set(LOCAL_PATH_TESTFILES "$ENV{LOCAL_PATH_TESTFILES}")
+if (DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES})
+  set(LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}")
 endif()
 
 # Perform FV3JEDI test data download
@@ -364,9 +363,9 @@ endif()
 
 list( APPEND fv3jedi_test_data fv3jedi_testdatainput_tier_1.tar.gz )
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES )
+if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
 
-  message(STATUS "LOCAL_PATH_TESTFILES is not defined, download test files")
+  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
 
   # Check whether the URL exists or not
   set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/fv3-jedi)
@@ -400,10 +399,10 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES )
                               ${FV3JEDI_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data.log )
 else()
-  if(EXISTS ${LOCAL_PATH_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data})
-    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI})
+  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data})
+    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI})
   else()
-    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/fv3-jedi/develop)
+    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/develop)
   endif()
   message(STATUS "Use local test files for fv3-jedi : " ${FV3JEDI_TESTFILES_PATH})
 endif()
@@ -418,9 +417,9 @@ execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
 # Data file
 list( APPEND ioda_test_data testinput_tier_1.tar.gz )
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES )
+if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
 
-  message(STATUS "LOCAL_PATH_TESTFILES is not defined, download test files")
+  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
 
   # Check whether the URL exists or not
   set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/ioda)
@@ -454,10 +453,10 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES )
                               ${IODA_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data_ioda.log )
 else()
-  if(EXISTS ${LOCAL_PATH_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI}/${ioda_test_data})
-    set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI})
+  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI}/${ioda_test_data})
+    set(IODA_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI})
   else()
-    set(IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/ioda/develop)
+    set(IODA_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/ioda/develop)
   endif()
   message(STATUS "Use local test files for ioda : " ${IODA_TESTFILES_PATH})
 endif()
@@ -473,9 +472,9 @@ execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
 # Data file
 list( APPEND crtm_test_data crtm_coefficients.tar.gz )
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES )
+if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
 
-  message(STATUS "LOCAL_PATH_TESTFILES is not defined, download test files")
+  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
 
   # Check whether the URL exists or not
   set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/crtm)
@@ -509,10 +508,10 @@ if( NOT DEFINED LOCAL_PATH_TESTFILES )
                               ${CRTM_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                             testoutput/fv3jedi_test_tier1_get_test_data_crtm.log )
 else()
-  if(EXISTS ${LOCAL_PATH_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI}/${crtm_test_data})
-    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI})
+  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI}/${crtm_test_data})
+    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI})
   else()
-    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_TESTFILES}/crtm/2.3.0)
+    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/crtm/2.3.0)
   endif()
   message(STATUS "Use local test files for crtm : " ${CRTM_TESTFILES_PATH})
 endif()
