@@ -152,14 +152,9 @@ endforeach()
 include_directories( ${FV3JEDI_INCLUDE_DIRS}
                      ${FV3JEDI_EXTRA_INCLUDE_DIRS} )
 
-set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fdec -fno-range-check -ffree-form ")
-add_subdirectory( src )
 # ufs
 if (FV3_FORECAST_MODEL MATCHES UFS)
-  if(POLICY CMP0079)
-    cmake_policy(PUSH)
-    cmake_policy(SET CMP0079 NEW)
-  endif()
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fdec -fno-range-check -ffree-form ")
   # TODO: fms will be seperated from UFS at some point
   # set CMAKE_PREFIX_PATH to include location of hpc-stack install and ufs install using
   # semi-colon separated lists in quotes e.g.--
@@ -173,6 +168,15 @@ if (FV3_FORECAST_MODEL MATCHES UFS)
   find_package(fms REQUIRED )
   find_package(fv3atm REQUIRED )
   find_package(ufs REQUIRED )
+endif()
+
+add_subdirectory( src )
+# ufs
+if (FV3_FORECAST_MODEL MATCHES UFS)
+  if(POLICY CMP0079)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0079 NEW)
+  endif()
   # Link all the libraries
   target_link_libraries( fv3jedi nemsio::nemsio)
   target_link_libraries( fv3jedi w3emc::w3emc_d)

@@ -198,8 +198,6 @@ endif()
 
 # Optional model - ufs
 if( FV3_FORECAST_MODEL MATCHES "UFS" )
-  find_package(sp REQUIRED)
-  find_package(w3nco REQUIRED)
   list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
   list( APPEND FV3JEDI_LIB_DEP sp::sp_d)
   list( APPEND FV3JEDI_LIB_DEP w3nco::w3nco_d)
