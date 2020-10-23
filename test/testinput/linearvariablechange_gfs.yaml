@@ -21,14 +21,14 @@ linear variable change tests:
   testinverse: 1
   input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
   output variables: [ua,va,t,ps,q,qi,ql,o3]
-- variable change: NMCBalance
-  layoutx: 3
-  layouty: 2
-  path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
-  tolerance inverse: 1000
-  testinverse: 1
-  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-  output variables: [ua,va,t,ps,q,qi,ql,o3]
+#- variable change: NMCBalance
+#  layoutx: 3
+#  layouty: 2
+#  path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
+#  tolerance inverse: 1000
+#  testinverse: 1
+#  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+#  output variables: [ua,va,t,ps,q,qi,ql,o3]
 - variable change: Analysis2Model
   tolerance inverse: 1000
   testinverse: 1
