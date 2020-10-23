@@ -86,7 +86,6 @@ phases:
       # GFDL_atmos_cubed_sphere
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
 
-      #  internal repos
       # fckit
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
 
