@@ -9,17 +9,27 @@ phases:
   install:
     commands:
       - echo Executing install phase
-      - echo $CODEBUILD_WEBHOOK_TRIGGER
-      - echo $CODEBUILD_WEBHOOK_BASE_REF
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_SOURCE_REPO_URL
+      - echo $CODEBUILD_SOURCE_VERSION
+
+      - echo $CODEBUILD_WEBHOOK_MERGE_COMMIT
+      - echo $CODEBUILD_WEBHOOK_PREV_COMMIT
+      - echo $CODEBUILD_WEBHOOK_HEAD_REF
       - echo $CODEBUILD_WEBHOOK_ACTOR_ACCOUNT_ID
       - echo $CODEBUILD_WEBHOOK_EVENT
-      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_WEBHOOK_TRIGGER
+      - echo $CODEBUILD_WEBHOOK_BASE_REF
 
-      - if [ "$CODEBUILD_WEBHOOK_EVENT" = "PULL_REQUEST_MERGED" ];
+
+      # Codebuild only runs on PUSH events if HEAD_REF
+      # is refs/heads/develop (merge to develop). In this
+      # case CODEBUILD_GIT_BRANCH="develop"
+
+      - if [ "$CODEBUILD_WEBHOOK_EVENT" = "PUSH" ];
         then export CODEBUILD_GIT_BRANCH="develop";
         echo "Merging to develop";
-        else CODEBUILD_GIT_BRANCH="$(git branch -a --contains $CODEBUILD_RESOLVED_SOURCE_VERSION | sed -n 2p | awk '{ printf $1 }')";
-        export CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH#remotes/origin/};
+        else export CODEBUILD_GIT_BRANCH=${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/};
         fi
 
       - echo "CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH}"
@@ -40,59 +50,60 @@ phases:
 
       - git lfs install # creates .gitconfig
 
-      # fv3-bundle
-      - ./clone.sh $GIT_USER $GIT_PASS fv3-bundle $CODEBUILD_GIT_BRANCH fv3-bundle /jcsda develop
-
       # jedi-cmake
-      - ./clone.sh $GIT_USER $GIT_PASS jedi-cmake $CODEBUILD_GIT_BRANCH jedicmake /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/jedi-cmake $CODEBUILD_GIT_BRANCH jedicmake /jcsda/fv3-bundle develop
 
       # FV3-JEDI (testing repo)
-      - ./clone.sh $GIT_USER $GIT_PASS fv3-jedi $CODEBUILD_GIT_BRANCH fv3-jedi /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/fv3-jedi $CODEBUILD_GIT_BRANCH fv3-jedi /jcsda/fv3-bundle develop
 
       # fv3-jedi-lm
-      - ./clone.sh $GIT_USER $GIT_PASS fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH fv3-jedi-lm /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH fv3-jedi-lm /jcsda/fv3-bundle develop
 
       # crtm
-      - ./clone.sh $GIT_USER $GIT_PASS crtm $CODEBUILD_GIT_BRANCH crtm /jcsda/fv3-bundle develop
-
-      # ioda-engines
-      - ./clone.sh $GIT_USER $GIT_PASS ioda-engines $CODEBUILD_GIT_BRANCH ioda_engines /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/crtm $CODEBUILD_GIT_BRANCH crtm /jcsda/fv3-bundle release/crtm_jedi
 
       # ioda
-      - ./clone.sh $GIT_USER $GIT_PASS ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
 
       # disable git-lfs
       - git lfs install --skip-smudge
 
       # saber
-      - ./clone.sh $GIT_USER $GIT_PASS saber $CODEBUILD_GIT_BRANCH saber /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/saber $CODEBUILD_GIT_BRANCH saber /jcsda/fv3-bundle develop
 
       # oops
-      - ./clone.sh $GIT_USER $GIT_PASS oops $CODEBUILD_GIT_BRANCH oops /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/oops $CODEBUILD_GIT_BRANCH oops /jcsda/fv3-bundle develop
 
       # ufo
-      - ./clone.sh $GIT_USER $GIT_PASS ufo $CODEBUILD_GIT_BRANCH ufo /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/ufo $CODEBUILD_GIT_BRANCH ufo /jcsda/fv3-bundle develop
 
       # femps
-      - ./clone.sh $GIT_USER $GIT_PASS femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
 
       # fms
-      - ./clone.sh $GIT_USER $GIT_PASS FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable-ecbuild
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable-ecbuild
 
       # GFDL_atmos_cubed_sphere
-      - ./clone.sh $GIT_USER $GIT_PASS GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
 
+      #  internal repos
       # fckit
-      - ./clone.sh $GIT_USER $GIT_PASS fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
 
       # atlas
-      - ./clone.sh $GIT_USER $GIT_PASS atlas $CODEBUILD_GIT_BRANCH_FORK atlas /jcsda/fv3-bundle release-stable
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/atlas $CODEBUILD_GIT_BRANCH_FORK atlas /jcsda/fv3-bundle release-stable
 
       # geos-aero
-      - ./clone.sh $GIT_USER $GIT_PASS geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
 
       # ropp
-      - ./clone.sh $GIT_USER $GIT_PASS ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+
+      #gsw
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH gsw /jcsda/fv3-bundle develop
+
+      # move CMakeLists.txt
+      - cp CMakeLists.txt /jcsda/fv3-bundle
 
       - cd /jcsda/fv3-bundle
       - sed -i 's/BRANCH develop UPDATE//' CMakeLists.txt
