@@ -7,183 +7,9 @@
 # ----------------------------------
 option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" OFF)
 
-# Create the Data/ and Data/inputs/ directories
-# ---------------------------------------------
+# Create the Data/ directory
+# --------------------------
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
-
-# GEOS test files
-# ---------------
-list( APPEND fv3jedi_geos_test_data
-  Data/inputs/geos_c12/fvcore_internal_rst.20180414_21z.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem001.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem002.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem003.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem004.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.mem005.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.aero.bkg.ext.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180414_220000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180414_230000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180415_010000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180415_020000z.nc4
-  Data/inputs/geos_c12/geos.bkg.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem001.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem001.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem001.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem002.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem002.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem002.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem003.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem003.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem003.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem004.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem004.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem004.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem005.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem005.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem005.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem006.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem006.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem006.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem007.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem007.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem007.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem008.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem008.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem008.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem009.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem009.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem009.20180415_030000z.nc4
-  Data/inputs/geos_c12/geos.mem010.20180414_210000z.nc4
-  Data/inputs/geos_c12/geos.mem010.20180415_000000z.nc4
-  Data/inputs/geos_c12/geos.mem010.20180415_030000z.nc4
-  Data/inputs/geos_c12/moist_internal_rst.20180414_21z.nc4
-  Data/inputs/geos_c12/surf_import_rst.20180414_21z.nc4
-)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/geos_c12)
-LINK_FILES( "${fv3jedi_geos_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-
-# GFS test files
-# --------------
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180414.210000)
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180414.220000)
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180414.230000)
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180415.000000)
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180415.010000)
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180415.020000)
-GFS_FILES_BKG(Data/inputs/gfs_c12/bkg 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem001 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem001 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem001 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem002 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem002 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem002 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem003 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem003 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem003 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem004 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem004 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem004 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem005 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem005 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem005 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem006 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem006 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem006 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem007 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem007 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem007 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem008 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem008 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem008 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem009 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem009 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem009 20180415.030000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem010 20180414.210000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem010 20180415.000000)
-GFS_FILES_ENS(Data/inputs/gfs_c12/mem010 20180415.030000)
-
-# Orography data
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile1.nc )
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile2.nc )
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile3.nc )
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile4.nc )
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile5.nc )
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/oro/C12_oro_data.tile6.nc )
-
-# Cold start test data
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.coupler.res)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile1.nc)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile2.nc)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile3.nc)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile4.nc)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile5.nc)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/20200101.000000.gfs_data.tile6.nc)
-list( APPEND fv3jedi_gfs_test_data Data/inputs/gfs_c12/cold/rename_cold_start_variables.py)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/bkg)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/cold)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/oro)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem001)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem002)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem003)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem004)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem005)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem006)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem007)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem008)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem009)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem010)
-LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-# GFS AERO test files
-# -------------------
-GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180414.210000)
-GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180415.000000)
-GFS_AERO_FILES_BKG(Data/inputs/gfs_aero_c12/bkg 20180415.030000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180414.210000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem001 20180415.030000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180414.210000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem002 20180415.030000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem003 20180414.210000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem003 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem003 20180415.030000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem004 20180414.210000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem004 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem004 20180415.030000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem005 20180414.210000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem005 20180415.000000)
-GFS_AERO_FILES_ENS(Data/inputs/gfs_aero_c12/mem005 20180415.030000)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/bkg)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem001)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem002)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem003)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem004)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_aero_c12/mem005)
-LINK_FILES( "${fv3jedi_gfs_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-# FV3-LAM-CMAQ test files
-LAM_CMAQ_FILES_BKG(Data/inputs/lam_cmaq/bkg 20200903.180000)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq/bkg)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/lam_cmaq/INPUT)
-LINK_FILES( "${fv3jedi_lam_test_data}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-list( APPEND fv3jedi_test_lamfiles
-Data/inputs/lam_cmaq/INPUT/grid_spec.nc
-Data/inputs/lam_cmaq/INPUT/C48_grid.tile7.nc
-)
-LINK_FILES( "${fv3jedi_test_lamfiles}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # FV3 config files
 # ----------------
@@ -209,16 +35,6 @@ Data/fv3files/inputpert_fsoi.nml
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fv3files)
 LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-# NMC balance coefficient files
-# -----------------------------
-
-list( APPEND fv3jedi_test_nmcbalance
-Data/inputs/nmcbalance/global_berror.l64y192.nc
-)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/nmcbalance)
-LINK_FILES( "${fv3jedi_test_nmcbalance}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Test input scripts
@@ -319,7 +135,6 @@ list( APPEND fv3jedi_test_input
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
 LINK_FILES( "${fv3jedi_test_input}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-
 # Test output scripts
 # -------------------
 list( APPEND fv3jedi_testoutput
@@ -416,35 +231,57 @@ LINK_FILES( "${fv3jedi_field_sets}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # ---------------------------------
 
 # CRTM coefficient files
+list( APPEND crtm_coeff_files
+AerosolCoeff/Little_Endian/AerosolCoeff.bin
+CloudCoeff/Little_Endian/CloudCoeff.bin
+EmisCoeff/MW_Water/Little_Endian/FASTEM6.MWwater.EmisCoeff.bin
+EmisCoeff/IR_Ice/SEcategory/Little_Endian/NPOESS.IRice.EmisCoeff.bin
+EmisCoeff/IR_Land/SEcategory/Little_Endian/NPOESS.IRland.EmisCoeff.bin
+EmisCoeff/IR_Snow/SEcategory/Little_Endian/NPOESS.IRsnow.EmisCoeff.bin
+EmisCoeff/VIS_Ice/SEcategory/Little_Endian/NPOESS.VISice.EmisCoeff.bin
+EmisCoeff/VIS_Land/SEcategory/Little_Endian/NPOESS.VISland.EmisCoeff.bin
+EmisCoeff/VIS_Snow/SEcategory/Little_Endian/NPOESS.VISsnow.EmisCoeff.bin
+EmisCoeff/VIS_Water/SEcategory/Little_Endian/NPOESS.VISwater.EmisCoeff.bin
+EmisCoeff/IR_Water/Little_Endian/Nalli.IRwater.EmisCoeff.bin
+EmisCoeff/IR_Land/SEcategory/Little_Endian/USGS.IRland.EmisCoeff.bin
+EmisCoeff/VIS_Land/SEcategory/Little_Endian/USGS.VISland.EmisCoeff.bin
+SpcCoeff/Little_Endian/hirs4_metop-a.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/hirs4_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/amsua_n19.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsua_n19.TauCoeff.bin
+SpcCoeff/Little_Endian/atms_npp.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/atms_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/gmi_gpm.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/gmi_gpm.TauCoeff.bin
+SpcCoeff/Little_Endian/seviri_m08.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/seviri_m08.TauCoeff.bin
+SpcCoeff/Little_Endian/cris-fsr_npp.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/cris-fsr_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/iasi_metop-a.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/iasi_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/mhs_n19.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/mhs_n19.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD1_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD1_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD2_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD2_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD3_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD3_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/sndrD4_g15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/sndrD4_g15.TauCoeff.bin
+SpcCoeff/Little_Endian/airs_aqua.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/airs_aqua.TauCoeff.bin
+SpcCoeff/Little_Endian/v.viirs-m_npp.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/v.viirs-m_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/abi_g16.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/abi_g16.TauCoeff.bin
+SpcCoeff/Little_Endian/ahi_himawari8.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/ahi_himawari8.TauCoeff.bin
+SpcCoeff/Little_Endian/radiometer_smap.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/radiometer_smap.TauCoeff.bin
+)
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-file(GLOB crtm_spc_coeffs "${crtm_SOURCE_DIR}/fix/SpcCoeff/Little_Endian/*bin")
-file(GLOB crtm_tau_coeffs "${crtm_SOURCE_DIR}/fix/TauCoeff/ODAS/Little_Endian/*bin")
-file(GLOB crtm_tap_coeffs "${crtm_SOURCE_DIR}/fix/TauCoeff/ODPS/Little_Endian/*bin")
-file(GLOB crtm_cld_coeffs "${crtm_SOURCE_DIR}/fix/CloudCoeff/Little_Endian/*bin")
-file(GLOB crtm_aer_coeffs "${crtm_SOURCE_DIR}/fix/AerosolCoeff/Little_Endian/*bin")
-file(GLOB crtm_iri_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_irl_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_irs_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_irw_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/IR_Water/Little_Endian/*bin")
-file(GLOB crtm_mww_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/MW_Water/Little_Endian/*bin")
-file(GLOB crtm_vii_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Ice/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_vil_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Land/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_vis_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Snow/SEcategory/Little_Endian/*bin")
-file(GLOB crtm_viw_coeffs "${crtm_SOURCE_DIR}/fix/EmisCoeff/VIS_Water/SEcategory/Little_Endian/*bin")
-LINK_FILES_DIR("${crtm_spc_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_tau_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_tap_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_cld_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_aer_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_iri_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_irl_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_irs_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_irw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_mww_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_vii_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_vil_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_vis_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-LINK_FILES_DIR("${crtm_viw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 
 # Files needed for GEOS aerosol testing
 if( ${GEOS-AERO_FOUND} )
@@ -486,92 +323,202 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # --------------------------------------------------------------------------------------------------
 
-# IODA observation files
-list( APPEND fv3_ioda_test_data testinput_tier_1.tar.gz )
+# Get test data from local path or remote URL
+# -------------------------------------------
 
-# Set URL for IODA test files
-set(FV3_IODA_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com)
+# Set remote URL for test files
+set(TESTDATA_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com)
 
+# Get the current git branch used by fv3-jedi source code
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3JEDI_OF_SRC})
 
-# If local path to testfiles is defined don't download
-if (DEFINED ENV{LOCAL_PATH_TESTFILES_IODA})
-        set(LOCAL_PATH_TESTFILES_IODA "$ENV{LOCAL_PATH_TESTFILES_IODA}")
+# Override with branch from user if necessary
+if ( NOT DEFINED FV3JEDI_TESTFILES_BRANCH)
+  message(STATUS "Branch name not provided by user")
+  set(GIT_BRANCH_FV3JEDI ${GIT_BRANCH_FV3JEDI_OF_SRC})
+else()
+  message(STATUS "Branch name provided by user")
+  set(GIT_BRANCH_FV3JEDI ${FV3JEDI_TESTFILES_BRANCH})
+endif()
+message(STATUS "Branch to use to obtain data " ${GIT_BRANCH_FV3JEDI})
+
+# Test data downloader
+set ( DOWNLOADER fv3jedi_testdata_downloader.py)
+
+# Executable to bin dir
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
+
+# Check for local path to data
+if (DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES})
+  set(LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}")
 endif()
 
-if( NOT DEFINED LOCAL_PATH_TESTFILES_IODA )
+# Perform FV3JEDI test data download
+# ----------------------------------
 
-  message(STATUS "LOCAL_PATH_TESTFILES_IODA is not defined, download test files")
-  if ( NOT DEFINED FV3_IODA_TESTFILES_BRANCH)
+list( APPEND fv3jedi_test_data fv3jedi_testdatainput_tier_1.tar.gz )
 
-    # Get the current git branch in fv3-jedi
-    execute_process(
-      COMMAND git rev-parse --abbrev-ref HEAD
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      OUTPUT_VARIABLE GIT_BRANCH_FV3
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3})
+if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
 
-  else()
-    message(STATUS "Branch name provided by user")
-    set(GIT_BRANCH_FV3 ${FV3_IODA_TESTFILES_BRANCH})
-  endif()
+  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
 
   # Check whether the URL exists or not
-  set( ECBUILD_DOWNLOAD_BASE_URL ${FV3_IODA_DOWNLOAD_BASE_URL}/ioda)
+  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/fv3-jedi)
 
-  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3}/${fv3_ioda_test_data}
-                     RESULT  FV3_SPECIFIC_TEST_FILES)
+  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data}
+                     RESULT FV3JEDI_SPECIFIC_TEST_FILES)
 
   # Set distant directory
-  if(${FV3_SPECIFIC_TEST_FILES} MATCHES 0)
+  if(${FV3JEDI_SPECIFIC_TEST_FILES} MATCHES 0)
     # Download and extract new test files (distant directory = git branch)
-    set(DIRNAME ${GIT_BRANCH_FV3})
-    message(STATUS "GIT_BRANCH_FV3 found, will download " ${GIT_BRANCH_FV3})
+    set(DIRNAME ${GIT_BRANCH_FV3JEDI})
+    message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
   else()
     # Download and extract develop test files (distant directory = develop)
-    message(STATUS "GIT_BRANCH_FV3 not found on S3, will download develop")
+    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download develop")
     set(DIRNAME "develop")
   endif()
 
-  message(STATUS "Test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+  message(STATUS "fv3-jedi test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
 
-  set(FV3_IODA_REP_NAME ioda)
-  set(FV3_IODA_TESTFILES_NAME ${fv3_ioda_test_data})
-  set(FV3_IODA_BRANCH_NAME ${DIRNAME})
-  set(FV3_IODA_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
-  message(STATUS "Save data to " ${FV3_IODA_TESTFILES_PATH})
-  file(MAKE_DIRECTORY ${FV3_IODA_TESTFILES_PATH})
+  # Set target directory for the downloaded data
+  set(FV3JEDI_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/fv3-jedi/${DIRNAME})
+  message(STATUS "Save fv3-jedi data to " ${FV3JEDI_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${FV3JEDI_TESTFILES_PATH})
 
-  # Create download script for get_ioda_test_data test
-  set ( FILENAME fv3_ioda_data_downloader.py)
-  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
-  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
-  list( APPEND bin_fv3_ioda_test_download_scripts_deps ${DEST_FILE} )
-
-  if( EXISTS "${SOURCE_FILE}.in" )
-    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
-  else()
-    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
-  endif()
-
-  add_custom_target( bin_fv3_ioda_test_download_scripts ALL
-      COMMAND chmod +x ${bin_fv3_ioda_test_download_scripts_deps}
-      DEPENDS ${bin_fv3_ioda_test_download_scripts_deps})
-
-  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_ioda_test_data
+  # Add test for downloading IODA data
+  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data
                     TYPE      SCRIPT
-                    COMMAND    ${CMAKE_BINARY_DIR}/bin/${FILENAME}
-                    ARGS      testoutput/download_test_fv3.log )
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
+                    ARGS      fv3-jedi ${fv3jedi_test_data} ${DIRNAME}
+                              ${FV3JEDI_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
+                              testoutput/fv3jedi_test_tier1_get_test_data.log )
 else()
-  set(FV3_IODA_TESTFILES_PATH ${LOCAL_PATH_TESTFILES_IODA})
-  message(STATUS "use LOCAL_PATH_TESTFILES_IODA : " ${FV3_IODA_TESTFILES_PATH})
+  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data})
+    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI})
+  else()
+    set(FV3JEDI_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/develop)
+  endif()
+  message(STATUS "Use local test files for fv3-jedi : " ${FV3JEDI_TESTFILES_PATH})
 endif()
 
-# --------------------------------------------------------------------------------------------------
+execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+                 ${FV3JEDI_TESTFILES_PATH}
+                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs )
+
+# Perform ioda test data download
+# -------------------------------
+
+# Data file
+list( APPEND ioda_test_data testinput_tier_1.tar.gz )
+
+if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
+
+  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
+
+  # Check whether the URL exists or not
+  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/ioda)
+
+  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${ioda_test_data}
+                    RESULT IODA_SPECIFIC_TEST_FILES)
+
+  # Set distant directory
+  if(${IODA_SPECIFIC_TEST_FILES} MATCHES 0)
+    # Download and extract new test files (distant directory = git branch)
+    set(DIRNAME ${GIT_BRANCH_FV3JEDI})
+    message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
+  else()
+    # Download and extract develop test files (distant directory = develop)
+    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download develop")
+    set(DIRNAME "develop")
+  endif()
+
+  message(STATUS "ioda test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+
+  # Set target directory for the downloaded data
+  set(IODA_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/ioda/${DIRNAME})
+  message(STATUS "Save ioda data to " ${IODA_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${IODA_TESTFILES_PATH})
+
+  # Add test for downloading IODA data
+  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_ioda
+                    TYPE      SCRIPT
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
+                    ARGS      ioda ${ioda_test_data} ${DIRNAME}
+                              ${IODA_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
+                              testoutput/fv3jedi_test_tier1_get_test_data_ioda.log )
+else()
+  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI}/${ioda_test_data})
+    set(IODA_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/ioda/${GIT_BRANCH_FV3JEDI})
+  else()
+    set(IODA_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/ioda/develop)
+  endif()
+  message(STATUS "Use local test files for ioda : " ${IODA_TESTFILES_PATH})
+endif()
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${FV3_IODA_TESTFILES_PATH}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
+                ${IODA_TESTFILES_PATH}
+                ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
+
+
+# Perform crtm test data download
+# -------------------------------
+
+# Data file
+list( APPEND crtm_test_data crtm_coefficients.tar.gz )
+
+if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
+
+  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
+
+  # Check whether the URL exists or not
+  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/crtm)
+
+  ecbuild_check_urls(NAMES ${GIT_BRANCH_FV3JEDI}/${crtm_test_data}
+  RESULT CRTM_SPECIFIC_TEST_FILES)
+
+  # Set distant directory
+  if(${CRTM_SPECIFIC_TEST_FILES} MATCHES 0)
+    # Download and extract new test files (distant directory = git branch)
+    set(DIRNAME ${GIT_BRANCH_FV3JEDI})
+    message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
+  else()
+    # Download and extract develop test files (distant directory = develop)
+    set(DIRNAME "2.3.0")
+    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download ${DIRNAME}")
+  endif()
+
+  message(STATUS "crtn test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
+
+  # Set target directory for the downloaded data
+  set(CRTM_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/crtm/${DIRNAME})
+  message(STATUS "Save crtm data to " ${CRTM_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${CRTM_TESTFILES_PATH})
+
+  # Add test for downloading crtm data
+  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_crtm
+                    TYPE      SCRIPT
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
+                    ARGS      crtm ${crtm_test_data} ${DIRNAME}
+                              ${CRTM_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
+                            testoutput/fv3jedi_test_tier1_get_test_data_crtm.log )
+else()
+  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI}/${crtm_test_data})
+    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI})
+  else()
+    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/crtm/2.3.0)
+  endif()
+  message(STATUS "Use local test files for crtm : " ${CRTM_TESTFILES_PATH})
+endif()
+
+create_symlink_filename( ${CRTM_TESTFILES_PATH}
+                         ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
+                         ${crtm_coeff_files} )
 
 # --------------------------------------------------------------------------------------------------
 

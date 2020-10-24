@@ -8,11 +8,11 @@ import urllib.request
 
 bucket_name = "jedi-test-files"
 
-repository_name = "@FV3_IODA_REP_NAME@"
-testfiles_name = "@FV3_IODA_TESTFILES_NAME@"
-branch_name = "@FV3_IODA_BRANCH_NAME@"
-testfiles_path = "@FV3_IODA_TESTFILES_PATH@"
-download_base_url="@FV3_IODA_DOWNLOAD_BASE_URL@"
+repository_name = sys.argv[1]
+testfiles_name = sys.argv[2]
+branch_name = sys.argv[3]
+testfiles_path = sys.argv[4]
+download_base_url = sys.argv[5]
 
 s3_file_name = repository_name+"/"+branch_name+"/"+testfiles_name
 
@@ -23,7 +23,7 @@ def DownloadUntar(download_base_url, s3_file_name, testfiles_path, testfiles_nam
   tar_file.extractall(testfiles_path)
   tar_file.close()
 
-#  if .tar.gz and .tar.gz.md5 exist 
+#  if .tar.gz and .tar.gz.md5 exist
 #  then download s3 md5
 #  and compare with local md5
 if os.path.isfile(testfiles_path+"/"+testfiles_name) and os.path.isfile(testfiles_path+"/"+testfiles_name+".md5") :
