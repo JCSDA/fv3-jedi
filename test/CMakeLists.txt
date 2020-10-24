@@ -447,7 +447,7 @@ LINK_FILES_DIR("${crtm_vis_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 LINK_FILES_DIR("${crtm_viw_coeffs}" ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
 
 # Files needed for GEOS aerosol testing
-if( NOT ${BUNDLE_SKIP_GEOS-AERO} )
+if( ${GEOS-AERO_FOUND} )
   list( APPEND geos-aero_test_data
   Data/optics_BC.v1_3_.nc
   Data/optics_BRC.v1_5_.nc
@@ -1012,7 +1012,7 @@ fv3jedi_add_test( NAME    hofx_fv3lm
 
 # H(x) when ROPP is enabled
 # -------------------------
-if ( NOT BUNDLE_SKIP_ROPP-UFO )
+if( ${ROPP-UFO_FOUND} )
 fv3jedi_add_test( NAME    hofx_gnssro_ropp
                   EXE     fv3jedi_hofx.x
                   TOL     1e-1 0)
@@ -1116,17 +1116,17 @@ fv3jedi_add_test( NAME         hyb-3dvar_gfs_aero
                   TOL          1.0e-1 0
                   TEST_DEPENDS bumpparameters_nicas_gfs )
 
-if ( NOT BUNDLE_SKIP_ROPP-UFO )
+if( ${ROPP-UFO_FOUND} )
   fv3jedi_add_test( NAME         hyb-3dvar_gfs_gnssro_ropp
                     EXE          fv3jedi_var.x
                     TOL          1.0e-1 0
                     TEST_DEPENDS bumpparameters_nicas_gfs )
 endif()
 
-if( NOT ${BUNDLE_SKIP_GEOS-AERO} )
+if( ${GEOS-AERO_FOUND} )
   fv3jedi_add_test( NAME         3denvar_geos_aero
                     EXE          fv3jedi_var.x
-                    NOCOMPARE 
+                    NOCOMPARE
                     TEST_DEPENDS test_fv3jedi_bumpparameters_nicas_geos )
 endif()
 
