@@ -20,8 +20,7 @@ phases:
       - echo $CODEBUILD_WEBHOOK_EVENT
       - echo $CODEBUILD_WEBHOOK_TRIGGER
       - echo $CODEBUILD_WEBHOOK_BASE_REF
-
-
+   
       # Codebuild only runs on PUSH events if HEAD_REF
       # is refs/heads/develop (merge to develop). In this
       # case CODEBUILD_GIT_BRANCH="develop"
@@ -74,9 +73,14 @@ phases:
 
       - cd CI
 
+      #  Set crtm branch name
+      - export CRTM_JEDI_BRANCH="release/crtm_jedi"
+
       - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
         then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
+        export CODEBUILD_GIT_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
         else export CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH};
+        export CODEBUILD_GIT_BRANCH_CRTM=${CODEBUILD_GIT_BRANCH};
         echo "CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH_FORK}";
         fi
 
@@ -90,7 +94,7 @@ phases:
       - ./clone.sh $GIT_USER $GIT_PASS jcsda/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH fv3-jedi-lm /jcsda/fv3-bundle develop
 
       # crtm
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda/crtm $CODEBUILD_GIT_BRANCH crtm /jcsda/fv3-bundle release/crtm_jedi
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/crtm $CODEBUILD_GIT_BRANCH_CRTM crtm /jcsda/fv3-bundle $CRTM_JEDI_BRANCH
 
       # ioda
       - ./clone.sh $GIT_USER $GIT_PASS jcsda/ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
