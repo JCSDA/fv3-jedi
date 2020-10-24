@@ -69,6 +69,15 @@ include_directories( ${OOPS_INCLUDE_DIRS} )
 ecbuild_use_package( PROJECT saber VERSION 0.0.1 REQUIRED )
 include_directories( ${SABER_INCLUDE_DIRS} )
 
+# crtm
+ecbuild_use_package( PROJECT crtm VERSION 2.2.3 REQUIRED )
+
+# ropp
+ecbuild_use_package( PROJECT ropp-ufo QUIET )
+
+# geos-aero
+ecbuild_use_package( PROJECT geos-aero QUIET )
+
 # ufo
 ecbuild_use_package( PROJECT ufo REQUIRED )
 include_directories( ${UFO_INCLUDE_DIRS} )
