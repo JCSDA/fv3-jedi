@@ -1072,8 +1072,8 @@ fv3jedi_add_test( NAME    dirac_geos
 fv3jedi_add_test( NAME    dirac_gfs
                   EXE     fv3jedi_dirac.x)
 
-fv3jedi_add_test( NAME    dirac_gfs_bal
-                  EXE     fv3jedi_dirac.x)
+#fv3jedi_add_test( NAME    dirac_gfs_bal
+#                  EXE     fv3jedi_dirac.x)
 
 fv3jedi_add_test( NAME    dirac_gfs_c2a
                   EXE     fv3jedi_dirac.x)
