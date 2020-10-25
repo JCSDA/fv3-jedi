@@ -40,6 +40,7 @@ set( FV3JEDI_LINKER_LANGUAGE CXX )
 ################################################################################
 
 include( fv3jedi_extra_macros )
+option( ENABLE_FV3JEDI_DOC "Build FV3-JEDI documentation" OFF )
 
 ################################################################################
 # Set default model to GFDL_atmos_cubed_sphere
@@ -179,6 +180,10 @@ endif()
 
 add_subdirectory( src )
 add_subdirectory( test )
+
+if( ENABLE_FV3JEDI_DOC )
+    add_subdirectory( Documents )
+endif()
 
 ################################################################################
 # Finalise configuration
