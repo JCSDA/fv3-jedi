@@ -49,6 +49,7 @@ type fv3jedi_llgeom
  character(len=1024) :: filename
  integer, allocatable :: istart2(:), icount2(:)
  integer, allocatable :: istart3(:), icount3(:)
+ integer, allocatable :: istarte(:), icounte(:)
  contains
   procedure :: setup_conf
   procedure :: setup_date
@@ -242,6 +243,7 @@ deallocate(locs_lat)
 
 ! NC arrays
 allocate(llgeom%istart3(4),llgeom%icount3(4))
+allocate(llgeom%istarte(4),llgeom%icounte(4))
 allocate(llgeom%istart2(3),llgeom%icount2(3))
 llgeom%istart3(1) = llgeom%nx * llgeom%f_comm%rank() + 1;  llgeom%icount3(1) = llgeom%nx
 llgeom%istart3(2) = 1;                                     llgeom%icount3(2) = llgeom%ny
@@ -250,6 +252,10 @@ llgeom%istart3(4) = 1;                                     llgeom%icount3(4) = 1
 llgeom%istart2(1) = llgeom%istart3(1);                     llgeom%icount2(1) = llgeom%icount3(1)
 llgeom%istart2(2) = llgeom%istart3(2);                     llgeom%icount2(2) = llgeom%icount3(2)
 llgeom%istart2(3) = llgeom%istart3(4);                     llgeom%icount2(3) = llgeom%icount3(4)
+
+llgeom%istarte = llgeom%istarte
+llgeom%icounte = llgeom%icount3
+llgeom%istarte(3) = geom%npz + 1
 
 end subroutine create_latlon
 
@@ -268,6 +274,7 @@ if (llgeom%thispe) then
 
   deallocate ( llgeom%istart2, llgeom%icount2 )
   deallocate ( llgeom%istart3, llgeom%icount3 )
+  deallocate ( llgeom%istarte, llgeom%icounte )
 endif
 
 call llgeom%bump%delete()
@@ -292,7 +299,7 @@ integer(kind=c_int) :: idate, isecs
 character(len=64)   :: datefile
 
 integer :: ncid, varid(2)
-integer :: x_dimid, y_dimid, z_dimid, t_dimid
+integer :: x_dimid, y_dimid, z_dimid, e_dimid, t_dimid
 character(len=:), allocatable :: str
 
 ! Current date
@@ -323,6 +330,7 @@ call nccheck( nf90_create( llgeom%filename, ior(NF90_NETCDF4, NF90_MPIIO), ncid,
 call nccheck ( nf90_def_dim(ncid, "lon" , llgeom%nxg , x_dimid), "nf90_def_dim lon" )
 call nccheck ( nf90_def_dim(ncid, "lat" , llgeom%nyg , y_dimid), "nf90_def_dim lat" )
 call nccheck ( nf90_def_dim(ncid, "lev" , geom%npz   , z_dimid), "nf90_def_dim lev" )
+call nccheck ( nf90_def_dim(ncid, "edge", geom%npz+1 , e_dimid), "nf90_def_dim lev" )
 call nccheck ( nf90_def_dim(ncid, "time", 1          , t_dimid), "nf90_def_dim time" )
 
 ! Define fields to be written (geom)
@@ -356,9 +364,9 @@ subroutine write_latlon_fields(llgeom, geom, fields)
 implicit none
 
 !Arguments
-type(fv3jedi_llgeom), intent(inout)   :: llgeom         !< LatLon Geometry
-type(fv3jedi_geom),   intent(in)      :: geom           !< Geometry
-type(fv3jedi_field),  intent(in)      :: fields(:)      !< Field to write
+type(fv3jedi_llgeom), target, intent(inout)   :: llgeom         !< LatLon Geometry
+type(fv3jedi_geom),           intent(in)      :: geom           !< Geometry
+type(fv3jedi_field),          intent(in)      :: fields(:)      !< Field to write
 
 integer :: var, ji, jj, jk, csngrid, llngrid, ii, i, j, k, n
 real(kind=kind_real), allocatable :: llfield_bump(:,:)
@@ -367,7 +375,7 @@ real(kind=kind_real), allocatable :: llfield(:,:,:)
 integer :: ncid, varid
 integer :: x_dimid, y_dimid, z_dimid, e_dimid, t_dimid
 integer, target  :: dimids3(4), dimids2(3), dimidse(4)
-integer, pointer :: dimids(:)
+integer, pointer :: dimids(:), istart(:), icount(:)
 
 ! Loop over fields
 ! ----------------
@@ -427,9 +435,21 @@ do var = 1, size(fields)
 
     ! Pointer to dimensions based on number of levels
     if (associated(dimids)) nullify(dimids)
-    if (fields(var)%npz == geom%npz)   dimids => dimids3
-    if (fields(var)%npz == 1)          dimids => dimids2
-    if (fields(var)%npz == geom%npz+1) dimids => dimidse
+    if (associated(istart)) nullify(istart)
+    if (associated(icount)) nullify(icount)
+    if (fields(var)%npz == geom%npz) then
+      dimids => dimids3
+      istart => llgeom%istart3
+      icount => llgeom%icount3
+    elseif (fields(var)%npz == 1) then
+      dimids => dimids2
+      istart => llgeom%istart2
+      icount => llgeom%icount2
+    elseif (fields(var)%npz == geom%npz+1) then
+      dimids => dimidse
+      istart => llgeom%istarte
+      icount => llgeom%icounte
+    endif
 
     if (associated(dimids)) then
 
@@ -440,7 +460,7 @@ do var = 1, size(fields)
       call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
       if (llgeom%thispe) then
-       call nccheck( nf90_put_var( ncid, varid, llfield, start = llgeom%istart3, count = llgeom%icount3 ), &
+       call nccheck( nf90_put_var( ncid, varid, llfield, start = istart, count = icount), &
                      "nf90_put_var"//trim(fields(var)%short_name) )
       endif
 

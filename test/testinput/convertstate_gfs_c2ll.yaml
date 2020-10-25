@@ -37,5 +37,4 @@ states:
     filename_cplr: 20180415.000000.coupler.res
   output:
     filetype: latlon
-    datapath: Data/
-    filename: gfs.bkg.lonlat.
+    filename: Data/gfs.bkg.lonlat.
