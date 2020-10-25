@@ -330,12 +330,12 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 set(TESTDATA_DOWNLOAD_BASE_URL https://jedi-test-files.s3.amazonaws.com)
 
 # Get the current git branch used by fv3-jedi source code
-execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3JEDI_OF_SRC})
+execute_process( COMMAND bash "-c" "git symbolic-ref -q --short HEAD || git describe --tags --exact-match"
+                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                 OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
+                 OUTPUT_STRIP_TRAILING_WHITESPACE )
+
+message(STATUS "fv3-jedi is in branch/tag " ${GIT_BRANCH_FV3JEDI_OF_SRC})
 
 # Override with branch from user if necessary
 if ( NOT DEFINED FV3JEDI_TESTFILES_BRANCH)
@@ -345,7 +345,7 @@ else()
   message(STATUS "Branch name provided by user")
   set(GIT_BRANCH_FV3JEDI ${FV3JEDI_TESTFILES_BRANCH})
 endif()
-message(STATUS "Branch to use to obtain data " ${GIT_BRANCH_FV3JEDI})
+message(STATUS "Git branch/tag to use to obtain data " ${GIT_BRANCH_FV3JEDI})
 
 # Test data downloader
 set ( DOWNLOADER fv3jedi_testdata_downloader.py)
