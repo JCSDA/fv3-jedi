@@ -38,8 +38,4 @@ states:
   output:
     filetype: latlon
     datapath: Data/
-    filename_core: c24.fv_core.res.nc
-    filename_trcr: c24.fv_tracer.res.nc
-    filename_sfcd: c24.sfc_data.nc
-    filename_sfcw: c24.fv_srf_wnd.res.nc
-    filename_cplr: c24.coupler.res
+    filename: gfs.bkg.lonlat.

@@ -21,23 +21,18 @@ use fv3jedi_constants_mod, only: rad2deg
 
 use type_bump, only: bump_type
 
-use fv3jedi_constants_mod,   only: rad2deg
-use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
-use fv3jedi_field_mod,       only: fv3jedi_field
-use fv3jedi_geom_mod,        only: fv3jedi_geom
-use fv3jedi_kinds_mod,       only: kind_int, kind_real
-use fv3jedi_io_utils_mod,    only: vdate_to_datestring, replace_text
+use fv3jedi_constants_mod,    only: rad2deg
+use fv3jedi_bump_interp_mod,  only: fv3jedi_bump_interp
+use fv3jedi_field_mod,        only: fv3jedi_field
+use fv3jedi_geom_mod,         only: fv3jedi_geom
+use fv3jedi_kinds_mod,        only: kind_int, kind_real
+use fv3jedi_io_utils_mod,     only: vdate_to_datestring, replace_text
+use fv3jedi_netcdf_utils_mod, only: nccheck
 
 implicit none
 
 private
-public fv3jedi_llgeom, create_latlon, delete_latlon, &
-       write_latlon_metadata, write_latlon_field
-
-interface write_latlon_field
- module procedure write_latlon_field_r3
- module procedure write_latlon_field_r2
-end interface
+public fv3jedi_llgeom!, create_latlon, delete_latlon, write_latlon_metadata, write_latlon_fields, &
 
 
 !Module level type
@@ -133,13 +128,7 @@ call log%debug("fv3jedi_io_latlon_mod%write starting")
 
 call write_latlon_metadata(self, geom, f_conf, vdate)
 
-! Loop over fields and register their restart file
-! ------------------------------------------------
-do var = 1, size(fields)
-
-   call write_latlon_field(self, geom, fields(var)%array, trim(fields(var)%short_name), f_conf, vdate)
-
-enddo
+call write_latlon_fields(self, geom, fields)
 
 call log%debug("fv3jedi_io_latlon_mod%write done")
 
@@ -362,137 +351,121 @@ end subroutine write_latlon_metadata
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_latlon_field_r3(llgeom, geom, csfield, fieldname, f_conf, vdate)
+subroutine write_latlon_fields(llgeom, geom, fields)
 
 implicit none
 
 !Arguments
 type(fv3jedi_llgeom), intent(inout)   :: llgeom         !< LatLon Geometry
 type(fv3jedi_geom),   intent(in)      :: geom           !< Geometry
-real(kind=kind_real), intent(in)      :: csfield(:,:,:) !< Field to write
-character(len=*),     intent(in)      :: fieldname      !< Name for field
-type(fckit_configuration), intent(in) :: f_conf         !< Configuration
-type(datetime),       intent(in)      :: vdate          !< DateTime
+type(fv3jedi_field),  intent(in)      :: fields(:)      !< Field to write
 
-integer :: ji, jj, jk, csngrid, llngrid, ii, i, j, k, n
+integer :: var, ji, jj, jk, csngrid, llngrid, ii, i, j, k, n
 real(kind=kind_real), allocatable :: llfield_bump(:,:)
 real(kind=kind_real), allocatable :: llfield(:,:,:)
 
 integer :: ncid, varid
-integer :: x_dimid, y_dimid, z_dimid, t_dimid, dimids(4)
+integer :: x_dimid, y_dimid, z_dimid, e_dimid, t_dimid
+integer, target  :: dimids3(4), dimids2(3), dimidse(4)
+integer, pointer :: dimids(:)
 
-! Interpolate the field to the lat-lon grid
-! -----------------------------------------
+! Loop over fields
+! ----------------
+do var = 1, size(fields)
 
-if (llgeom%thispe) then
-  allocate(llfield(1:llgeom%nx,1:llgeom%ny,1:geom%npz))
-else
-  allocate(llfield(0,0,0))
-endif
-llfield = 0.0_kind_real
+  ! Only certain fields can be written for now
+  ! ------------------------------------------
+  if ( trim(fields(var)%space) == 'magnitude' .and. &
+       trim(fields(var)%staggerloc) == 'center' .and. &
+       .not. fields(var)%integerfield ) then
 
-csngrid = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
-llngrid = llgeom%nx*llgeom%ny
+    ! Interpolate the field to the lat-lon grid
+    ! -----------------------------------------
+    if (llgeom%thispe) then
+     allocate(llfield(1:llgeom%nx,1:llgeom%ny,1:geom%npz))
+    else
+     allocate(llfield(0,0,0))
+    endif
+    llfield = 0.0_kind_real
 
-!Allocate fields with BUMP arrangement
-allocate(llfield_bump(llngrid,geom%npz))
+    csngrid = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
+    llngrid = llgeom%nx*llgeom%ny
 
-!Bilinear interpolation to latlon grid
-call llgeom%bump%apply(geom%npz, csfield, llngrid, llfield_bump)
+    !Allocate fields with BUMP arrangement
+    allocate(llfield_bump(llngrid,geom%npz))
 
-!Unpack BUMP latlon field
-if (llgeom%thispe) then
-  do jk = 1, geom%npz
-    ii = 0
-    do jj = 1,llgeom%ny
-      do ji = 1,llgeom%nx
-        ii = ii + 1
-        llfield(ji,jj,jk) = llfield_bump(ii,jk)
-      enddo
-    enddo
-  enddo
-endif
+    !Bilinear interpolation to latlon grid
+    call llgeom%bump%apply(geom%npz, fields(var)%array, llngrid, llfield_bump)
 
-!Open file
-call nccheck( nf90_open( llgeom%filename, ior(NF90_WRITE, NF90_MPIIO), ncid, &
-                         comm = llgeom%f_comm%communicator(), info = MPI_INFO_NULL), "nf90_open" )
+    !Unpack BUMP latlon field
+    if (llgeom%thispe) then
+     do jk = 1, geom%npz
+       ii = 0
+       do jj = 1,llgeom%ny
+         do ji = 1,llgeom%nx
+           ii = ii + 1
+           llfield(ji,jj,jk) = llfield_bump(ii,jk)
+         enddo
+       enddo
+     enddo
+    endif
 
-!Dimension ID
-call nccheck( nf90_inq_dimid(ncid, "lon" , x_dimid), "nf90_inq_dimid lon" )
-call nccheck( nf90_inq_dimid(ncid, "lat" , y_dimid), "nf90_inq_dimid lat" )
-call nccheck( nf90_inq_dimid(ncid, "lev" , z_dimid), "nf90_inq_dimid lev" )
-call nccheck( nf90_inq_dimid(ncid, "time", t_dimid), "nf90_inq_dimid time" )
-dimids =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
+    !Open file
+    call nccheck( nf90_open( llgeom%filename, ior(NF90_WRITE, NF90_MPIIO), ncid, &
+                            comm = llgeom%f_comm%communicator(), info = MPI_INFO_NULL), "nf90_open" )
 
-! Write field to the file
-call nccheck( nf90_def_var( ncid, trim(fieldname), NF90_DOUBLE, dimids, varid), "nf90_def_var"//trim(fieldname) )
-call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+    !Dimension ID
+    call nccheck( nf90_inq_dimid(ncid, "lon" , x_dimid), "nf90_inq_dimid lon" )
+    call nccheck( nf90_inq_dimid(ncid, "lat" , y_dimid), "nf90_inq_dimid lat" )
+    call nccheck( nf90_inq_dimid(ncid, "lev" , z_dimid), "nf90_inq_dimid lev" )
+    call nccheck( nf90_inq_dimid(ncid, "edge", e_dimid), "nf90_inq_dimid edge" )
+    call nccheck( nf90_inq_dimid(ncid, "time", t_dimid), "nf90_inq_dimid time" )
 
-if (llgeom%thispe) then
-  call nccheck( nf90_put_var( ncid, varid, llfield, start = llgeom%istart3, count = llgeom%icount3 ), &
-                "nf90_put_var"//trim(fieldname) )
-endif
+    dimids3 =  (/ x_dimid, y_dimid, z_dimid, t_dimid /)
+    dimidse =  (/ x_dimid, y_dimid, e_dimid, t_dimid /)
+    dimids2 =  (/ x_dimid, y_dimid, t_dimid /)
 
-! Close file
-call nccheck( nf90_close(ncid), "nf90_close" )
+    ! Pointer to dimensions based on number of levels
+    if (associated(dimids)) nullify(dimids)
+    if (fields(var)%npz == geom%npz)   dimids => dimids3
+    if (fields(var)%npz == 1)          dimids => dimids2
+    if (fields(var)%npz == geom%npz+1) dimids => dimidse
 
-!Let LatLon PEs catch up
-call llgeom%f_comm%barrier()
+    if (associated(dimids)) then
 
-deallocate(llfield)
-deallocate(llfield_bump)
+      ! Write field to the file
+      call nccheck( nf90_def_var( ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), "nf90_def_var"//trim(fields(var)%short_name) )
+      call nccheck( nf90_put_att(ncid, varid, "long_name", trim(fields(var)%long_name) ), "nf90_put_att" )
+      call nccheck( nf90_put_att(ncid, varid, "units"    , trim(fields(var)%units)     ), "nf90_put_att" )
+      call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
-end subroutine write_latlon_field_r3
+      if (llgeom%thispe) then
+       call nccheck( nf90_put_var( ncid, varid, llfield, start = llgeom%istart3, count = llgeom%icount3 ), &
+                     "nf90_put_var"//trim(fields(var)%short_name) )
+      endif
 
-! ------------------------------------------------------------------------------
+    endif
 
-subroutine write_latlon_field_r2(geom, llgeom, field, c_conf, vdate)
+    ! Close file
+    call nccheck( nf90_close(ncid), "nf90_close" )
 
-implicit none
+    !Let LatLon PEs catch up
+    call llgeom%f_comm%barrier()
 
-!Arguments
-type(fv3jedi_geom),   intent(in)    :: geom         !< Geometry
-type(fv3jedi_llgeom), intent(inout) :: llgeom       !< LatLon Geometry
-real(kind=kind_real), intent(in)    :: field(:,:)   !< Field to write
-type(c_ptr),          intent(in)    :: c_conf       !< Configuration
-type(datetime),       intent(in)    :: vdate        !< DateTime
+    deallocate(llfield)
+    deallocate(llfield_bump)
 
-if (llgeom%thispe) then
-endif
+  endif
 
-end subroutine write_latlon_field_r2
+enddo
+
+end subroutine write_latlon_fields
 
 ! ------------------------------------------------------------------------------
 
 subroutine dummy_final(self)
 type(fv3jedi_llgeom), intent(inout) :: self
 end subroutine dummy_final
-
-! ------------------------------------------------------------------------------
-
-subroutine nccheck(status,iam)
-
-implicit none
-integer, intent ( in) :: status
-character(len=*), optional :: iam
-
-character(len=1024) :: error_descr
-
- if(status /= nf90_noerr) then
-
-   error_descr = "fv3jedi_io_latlon_mod: NetCDF error, aborting"
-
-   if (present(iam)) then
-     error_descr = trim(error_descr)//", "//trim(iam)
-   endif
-
-   error_descr = trim(error_descr)//". Error code: "//trim(nf90_strerror(status))
-
-   call abor1_ftn(trim(error_descr))
-
- end if
-
-end subroutine nccheck
 
 ! ------------------------------------------------------------------------------
 
