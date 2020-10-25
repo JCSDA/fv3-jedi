@@ -331,12 +331,20 @@ set(TESTDATA_DOWNLOAD_BASE_URL_AWS https://jedi-test-files.s3.amazonaws.com)
 set(TESTDATA_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file/)
 
 # Get the current git branch used by fv3-jedi source code
-execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-message(STATUS "fv3-jedi is in branch " ${GIT_BRANCH_FV3JEDI_OF_SRC})
+execute_process( COMMAND git rev-parse --abbrev-ref HEAD
+                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                 OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
+                 OUTPUT_STRIP_TRAILING_WHITESPACE )
+
+if (${GIT_BRANCH_FV3JEDI_OF_SRC} MATCHES HEAD)
+  # Looks like a tag is checked out, search for most recent tag
+  execute_process( COMMAND git describe --exact-match --tags
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                   OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
+                   OUTPUT_STRIP_TRAILING_WHITESPACE )
+endif()
+
+message(STATUS "fv3-jedi is on branch " ${GIT_BRANCH_FV3JEDI_OF_SRC})
 
 # Override with branch from user if necessary
 if ( NOT DEFINED FV3JEDI_TESTFILES_BRANCH)
@@ -362,6 +370,8 @@ endif()
 # Perform FV3JEDI test data download
 # ----------------------------------
 
+set(DEFAULTBRANCH develop)
+
 list( APPEND fv3jedi_test_data fv3jedi_testdatainput_tier_1.tar.gz )
 
 if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
@@ -378,11 +388,11 @@ if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
   if(${FV3JEDI_SPECIFIC_TEST_FILES} MATCHES 0)
     # Download and extract new test files (distant directory = git branch)
     set(DIRNAME ${GIT_BRANCH_FV3JEDI})
-    message(STATUS "GIT_BRANCH_FV3JEDI found, will download " ${GIT_BRANCH_FV3JEDI})
+    message(STATUS "fv3-jedi data corresponding to current branch (${GIT_BRANCH_FV3JEDI}) found, will download" )
   else()
     # Download and extract develop test files (distant directory = develop)
-    message(STATUS "Branch ${GIT_BRANCH_FV3JEDI} not found on remote, will download develop")
-    set(DIRNAME "1.0.0")
+    message(STATUS "fv3-jedi data corresponding to current branch (${GIT_BRANCH_FV3JEDI}) not found, will download from default (${DEFAULTBRANCH})" )
+    set(DIRNAME ${DEFAULTBRANCH})
   endif()
 
   set(DIRNAMELOCAL ${DIRNAME})
