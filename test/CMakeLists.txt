@@ -330,21 +330,13 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 set(TESTDATA_DOWNLOAD_BASE_URL_AWS https://jedi-test-files.s3.amazonaws.com)
 set(TESTDATA_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file/)
 
-# Get the current git branch used by fv3-jedi source code
-execute_process( COMMAND git rev-parse --abbrev-ref HEAD
+# Get the current git branch/tag used by fv3-jedi source code
+execute_process( COMMAND bash "-c" "git symbolic-ref -q --short HEAD || git describe --tags --exact-match"
                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                  OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 
-if (${GIT_BRANCH_FV3JEDI_OF_SRC} MATCHES HEAD)
-  # Looks like a tag is checked out, search for most recent tag
-  execute_process( COMMAND git describe --exact-match --tags
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                   OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI_OF_SRC
-                   OUTPUT_STRIP_TRAILING_WHITESPACE )
-endif()
-
-message(STATUS "fv3-jedi is on branch " ${GIT_BRANCH_FV3JEDI_OF_SRC})
+message(STATUS "fv3-jedi is on branch/tag " ${GIT_BRANCH_FV3JEDI_OF_SRC})
 
 # Override with branch from user if necessary
 if ( NOT DEFINED FV3JEDI_TESTFILES_BRANCH)
