@@ -103,6 +103,8 @@ list( APPEND fv3jedi_test_input
   testinput/hyb-3dvar_gfs.yaml
   testinput/hyb-3dvar_p12.yaml
   testinput/hyb-3dvar.yaml
+  testinput/hyb-3dvar_varbc.yaml
+  testinput/hyb-3dvar_varbc_no_priors.yaml
   testinput/hyb-4dvar_pseudo-geos.yaml
   testinput/hyb-fgat_fv3lm.yaml
   testinput/hyb-fgat_gfs_aero.yaml
@@ -179,6 +181,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
   testoutput/hyb-3dvar_gfs.ref
   testoutput/hyb-3dvar.ref
+  testoutput/hyb-3dvar_varbc.ref
+  testoutput/hyb-3dvar_varbc_no_priors.ref
   testoutput/hyb-4dvar_fv3-gfs.ref
   testoutput/hyb-4dvar_pseudo-geos.ref
   testoutput/hyb-fgat_fv3-geos.ref
@@ -1047,6 +1051,18 @@ if (NOT SKIP_LARGE_TESTS)
                     REF   hyb-3dvar.run
                     TEST_DEPENDS bumpparameters_nicas_gfs_p12 hyb-3dvar)
 endif()
+
+# 3DVar with Variational Bias Correction
+# --------------------------------------
+fv3jedi_add_test( NAME         hyb-3dvar_varbc
+                  EXE          fv3jedi_var.x
+                  TOL          1.0e-1 0
+                  TEST_DEPENDS bumpparameters_nicas_gfs )
+
+fv3jedi_add_test( NAME         hyb-3dvar_varbc_no_priors
+                  EXE          fv3jedi_var.x
+                  TOL          1.0e-1 0
+                  TEST_DEPENDS bumpparameters_nicas_gfs )
 
 # 3DVar with GSI balance operator
 #fv3jedi_add_test( NAME    3dvar_gfs_bal
