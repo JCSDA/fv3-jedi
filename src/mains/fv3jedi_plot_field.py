@@ -121,7 +121,7 @@ def main(inputfile, fieldname, layer, showfig):
     ax.set_xticks(np.linspace(-180, 180, 5), crs=projection)
     ax.set_yticks(np.linspace(-90, 90, 5), crs=projection)
     ax.set_xlabel('Longitude')
-    ax.set_ylabel('Latitide')
+    ax.set_ylabel('Latitude')
     ax.set_title(title)
     ax.set_global()
 
