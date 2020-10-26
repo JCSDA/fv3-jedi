@@ -27,7 +27,7 @@ static oops::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & mconf)
   : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables") {
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
-  char tmpdir[10000]; 
+  char tmpdir[10000];
   getcwd(tmpdir, 10000);
   tstep_ = util::Duration(mconf.getString("tstep"));
   strcpy(ufsdir_, mconf.getString("ufs_run_directory").c_str());
@@ -47,7 +47,7 @@ ModelUFS::~ModelUFS() {
 void ModelUFS::initialize(State & xx) const {
   oops::Log::trace() << "ModelUFS::initialize starting" << std::endl;
   oops::Log::trace() << "ModelUFS::cd to " << ufsdir_ << std::endl;
-  
+
   chdir(ufsdir_);
   util::DateTime * dtp = &xx.validTime();
   fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), &dtp);
@@ -58,16 +58,16 @@ void ModelUFS::step(State & xx, const ModelBias &) const
 {
   oops::Log::trace() << "ModelUFS::step starting" << std::endl;
   oops::Log::trace() << "ModelUFS::cd to " << ufsdir_ << std::endl;
-  char tmpdir[10000]; 
+  char tmpdir[10000];
   chdir(ufsdir_);
   getcwd(tmpdir, 10000);
   oops::Log::trace() << "ModelUFS::PWD is  " << tmpdir << std::endl;
-  
+
   util::DateTime start = xx.validTime();
   util::DateTime * dtp1 = &start;
-  oops::Log::trace() << "Model start time is " << xx.validTime() << std::endl; 
-  oops::Log::trace() << "Forecast time step is " << tstep_ << std::endl; 
-  xx.validTime() += tstep_ ;
+  oops::Log::trace() << "Model start time is " << xx.validTime() << std::endl;
+  oops::Log::trace() << "Forecast time step is " << tstep_ << std::endl;
+  xx.validTime() += tstep_;
   util::DateTime * dtp2 = &xx.validTime();
   fv3jedi_ufs_step_f90(keyConfig_, xx.toFortran(), &dtp1, &dtp2);
   oops::Log::trace() << "ModelUFS::step done" << std::endl;
