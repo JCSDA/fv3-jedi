@@ -312,6 +312,12 @@ if( ${GEOS-AERO_FOUND} )
                            ${geos-aero_test_input} )
 endif()
 
+# UFO test data
+if ( DEFINED UFO_TEST_DATA_LIST )
+   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ufo/)
+   LINK_FILES_DIR("${UFO_TEST_DATA_LIST}" ${CMAKE_CURRENT_BINARY_DIR}/Data/ufo/)
+endif()
+
 # --------------------------------------------------------------------------------------------------
 
 # Set the test tiering
