@@ -60,7 +60,7 @@ end type fv3jedi_llgeom
 
 contains
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 subroutine setup_conf(self, geom)
 
 implicit none
@@ -77,7 +77,7 @@ call log%debug("fv3jedi_io_latlon_mod%setup_conf done")
 
 end subroutine setup_conf
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine setup_date(self, vdate)
 
@@ -97,7 +97,7 @@ call log%debug("fv3jedi_io_latlon_mod%setup_date done")
 
 end subroutine setup_date
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine delete(self)
 
@@ -112,7 +112,7 @@ call log%debug("fv3jedi_io_latlon_mod%delete done")
 
 end subroutine delete
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine write(self, geom, fields, f_conf, vdate)
 
@@ -135,7 +135,7 @@ call log%debug("fv3jedi_io_latlon_mod%write done")
 
 end subroutine write
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine create_latlon(llgeom, geom)
 
@@ -259,7 +259,7 @@ llgeom%istarte(3) = geom%npz + 1
 
 end subroutine create_latlon
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine delete_latlon(llgeom)
 
@@ -282,7 +282,7 @@ call llgeom%bump%delete()
 
 end subroutine delete_latlon
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine write_latlon_metadata(llgeom, geom, f_conf, vdate)
 
@@ -357,7 +357,7 @@ call llgeom%f_comm%barrier()
 
 end subroutine write_latlon_metadata
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine write_latlon_fields(llgeom, geom, fields)
 
@@ -454,7 +454,8 @@ do var = 1, size(fields)
     if (associated(dimids)) then
 
       ! Write field to the file
-      call nccheck( nf90_def_var( ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), "nf90_def_var"//trim(fields(var)%short_name) )
+      call nccheck( nf90_def_var( ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), &
+                    "nf90_def_var"//trim(fields(var)%short_name) )
       call nccheck( nf90_put_att(ncid, varid, "long_name", trim(fields(var)%long_name) ), "nf90_put_att" )
       call nccheck( nf90_put_att(ncid, varid, "units"    , trim(fields(var)%units)     ), "nf90_put_att" )
       call nccheck( nf90_enddef(ncid), "nf90_enddef" )
@@ -481,12 +482,12 @@ enddo
 
 end subroutine write_latlon_fields
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 subroutine dummy_final(self)
 type(fv3jedi_llgeom), intent(inout) :: self
 end subroutine dummy_final
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_io_latlon_mod
