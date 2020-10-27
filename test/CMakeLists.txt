@@ -452,65 +452,6 @@ create_symlink_filename( ${LINKNG_PATH}
                          ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
                          ${crtm_coeff_files} )
 
-
-## Perform crtm test data download
-## -------------------------------
-#
-## Data file
-#list( APPEND crtm_test_data crtm_coefficients.tar.gz )
-#set(CRTMVERSION "2.3.0")
-#
-#set(REPO crtm)
-#if(${GIT_BRANCH_FV3JEDI} STREQUAL "1.0.0")
-#  set(REPOPATH "/")
-#else()
-#  set(REPOPATH crtm)
-#endif()
-#
-#if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
-#
-#  message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
-#
-#  # Check whether the URL exists or not
-#  set( ECBUILD_DOWNLOAD_BASE_URL ${TESTDATA_DOWNLOAD_BASE_URL}/${REPOPATH})
-#
-#
-#  set(DIRNAMELOCAL ${CRTMVERSION})
-#
-#  if(${GIT_BRANCH_FV3JEDI} STREQUAL "1.0.0")
-#    set(DIRNAMEREMOTE "/")
-#  else()
-#    set(DIRNAMEREMOTE ${CRTMVERSION})
-#  endif()
-#
-#  message(STATUS "crtm test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAMEREMOTE})
-#
-#  # Set target directory for the downloaded data
-#  set(CRTM_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/crtm/${DIRNAMELOCAL})
-#  message(STATUS "Save crtm data to " ${CRTM_TESTFILES_PATH})
-#  file(MAKE_DIRECTORY ${CRTM_TESTFILES_PATH})
-#
-#  # Add test for downloading crtm data
-#  set(REPO_REMOTE "/")
-#  ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_crtm
-#                    TYPE      SCRIPT
-#                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
-#                    ARGS      ${REPO_REMOTE} ${crtm_test_data} ${DIRNAMEREMOTE}
-#                              ${CRTM_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
-#                              testoutput/fv3jedi_test_tier1_get_test_data_crtm.log )
-#else()
-#  if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI}/${crtm_test_data})
-#    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/crtm/${GIT_BRANCH_FV3JEDI})
-#  else()
-#    set(CRTM_TESTFILES_PATH ${LOCAL_PATH_JEDI_TESTFILES}/crtm/2.3.0)
-#  endif()
-#  message(STATUS "Use local test files for crtm : " ${CRTM_TESTFILES_PATH})
-#endif()
-#
-#create_symlink_filename( ${CRTM_TESTFILES_PATH}
-#                         ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
-#                         ${crtm_coeff_files} )
-
 # --------------------------------------------------------------------------------------------------
 
 # The following is a wrapper to simplify the generation of tests.
