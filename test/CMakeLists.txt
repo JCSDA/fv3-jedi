@@ -349,10 +349,8 @@ endif()
 
 message(STATUS "Git branch/tag path to use to obtain data " ${BRANCHPATH})
 
-# Test data downloader
+# Copy test data downloader script to bin
 set ( DOWNLOADER fv3jedi_testdata_downloader.py)
-
-# Executable to bin dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
 
 # Check for local path to data
@@ -395,7 +393,9 @@ function(fv3jedi_data_download_test REPO DEFAULTBRANCH test_data_file LINKNG_PAT
       message(STATUS "  ... data not found, will download from defaults: ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file}" )
     endif()
 
-    message(STATUS " ${REPO} test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file})
+    # Note: do we at some point need to force the path using an ENV variable? Could be useful when
+    # building where internet access is not available but tests run where it is. E.g. in SLURM.
+    #message(STATUS " ${REPO} test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file})
 
     # Set target directory for the downloaded data
     set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/${BRANCHPATHREMOTE})
