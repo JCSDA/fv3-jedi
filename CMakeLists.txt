@@ -59,7 +59,7 @@ find_package( NetCDF REQUIRED COMPONENTS Fortran )
 include_directories( ${NETCDF_INCLUDE_DIRS} )
 
 # atlas
-ecbuild_use_package( PROJECT atlas VERSION 0.20 REQUIRED )
+ecbuild_use_package( PROJECT atlas VERSION 0.20.2 REQUIRED )
 include_directories( ${ATLAS_INCLUDE_DIRS} )
 
 # oops
