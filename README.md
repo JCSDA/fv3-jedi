@@ -6,7 +6,7 @@
 | GNU           | [![AWS-gnu](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUEFLOXlGNjI2OUYybE9RTncyWS9hRjhXMGVXOXdKTUh1aVNuempFRHRMRjA1dmd5UDRienNaa2x6MDFHcWhhYmwvUmtRcnA5Y0FsbG8zS0xib3NtYTkwPSIsIml2UGFyYW1ldGVyU3BlYyI6Iks4Zkx2S3FKZGhwbXZzeEwiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=develop)](https://us-east-1.console.aws.amazon.com/codesuite/codebuild/projects/automated-testing-fv3-gnu/history)  |
 | Intel         | [![AWS-intel](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVHRMaWZsV1VSd2luTzM1eEhwS0VjRWx3ajNHSTBkRThLZzFaWnJVQ3VBTkJGY0wwazllSHJXVVRVM3BLTlo5YUtWZ0N5Z2hNWTlOU1M1WWJMVklBeEZNPSIsIml2UGFyYW1ldGVyU3BlYyI6IlFpOVlIWFFGOXo3UlhnQlAiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=develop)](https://us-east-1.console.aws.amazon.com/codesuite/codebuild/projects/automated-testing-fv3-intel/history)  |
 | CLANG         | [![AWS-clang](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVVFhVEwxbmo1YVBXUWVYT3lJR3hla1hmd2Z3dG51dWplTHF3QzRMblVZamFnNGhneWd5MnhqL1B2VnpCdW9QQ3llYWhNMDFLMGNCY0lDejZqSXJzOTBRPSIsIml2UGFyYW1ldGVyU3BlYyI6IlhRR21ITDh2NjlaVTFpaUMiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=develop)](https://us-east-1.console.aws.amazon.com/codesuite/codebuild/projects/automated-testing-fv3-clang/history)  |
-| Code Coverage | [![codecov](https://codecov.io/gh/JCSDA/fv3-jedi/branch/develop/graph/badge.svg?token=J1JLNjQGYx)](https://codecov.io/gh/JCSDA/fv3-jedi) |
+| Code Coverage | [![codecov](https://codecov.io/gh/JCSDA/fv3-jedi/branch/develop/graph/badge.svg?token=Y2B418LACJ)](https://codecov.io/gh/JCSDA/fv3-jedi) |
 
 
 
