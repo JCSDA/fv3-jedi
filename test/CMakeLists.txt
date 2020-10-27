@@ -363,11 +363,6 @@ endif()
 
 list( APPEND fv3jedi_test_data fv3jedi_testdatainput_tier_1.tar.gz )
 
-# Set target directory for the downloaded data
-set(FV3JEDI_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/fv3-jedi/${DIRNAME})
-message(STATUS "Save fv3-jedi data to " ${FV3JEDI_TESTFILES_PATH})
-file(MAKE_DIRECTORY ${FV3JEDI_TESTFILES_PATH})
-
 if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
 
   message(STATUS "LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
@@ -391,6 +386,11 @@ if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
 
   message(STATUS "fv3-jedi test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${DIRNAME})
 
+  # Set target directory for the downloaded data
+  set(FV3JEDI_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/fv3-jedi/${DIRNAME})
+  message(STATUS "Save fv3-jedi data to " ${FV3JEDI_TESTFILES_PATH})
+  file(MAKE_DIRECTORY ${FV3JEDI_TESTFILES_PATH})
+
   # Add test for downloading IODA data
   ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data
                     TYPE      SCRIPT
@@ -399,6 +399,7 @@ if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
                               ${FV3JEDI_TESTFILES_PATH} ${TESTDATA_DOWNLOAD_BASE_URL}
                               testoutput/fv3jedi_test_tier1_get_test_data.log )
 else()
+  set(FV3JEDI_TESTFILES_PATH ${CMAKE_BINARY_DIR}/test_data/fv3-jedi/local)
   set(FV3JEDI_TESTFILES_INPUT ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/develop)
   if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI}/${fv3jedi_test_data})
     set(FV3JEDI_TESTFILES_INPUT ${LOCAL_PATH_JEDI_TESTFILES}/fv3-jedi/${GIT_BRANCH_FV3JEDI})
