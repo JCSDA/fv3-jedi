@@ -41,21 +41,21 @@ option("BUNDLE_SKIP_GEOS-AERO" "Don't build GEOS-AERO" "ON") # Skip geos-aero bu
 option("BUNDLE_SKIP_GSW"       "Don't build GSW"       "ON") # Skip gsw build unless user passes -DBUNDLE_SKIP_GSW=OFF
 option("BUNDLE_SKIP_ROPP-UFO"  "Don't build ROPP-UFO"  "ON") # Skip ropp-ufo build unless user passes -DBUNDLE_SKIP_ROPP-UFO=OFF
 
-ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda-internal/geos-aero.git" BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT gsw GIT "https://github.com/jcsda-internal/GSW-Fortran.git"     BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-test.git"  BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda-internal/geos-aero.git" )
+ecbuild_bundle( PROJECT gsw GIT "https://github.com/jcsda-internal/GSW-Fortran.git" )
+ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-test.git" )
 
 # External (required) observation operators
 # ------------------------------
 option("BUNDLE_SKIP_CRTM" "Don't build CRTM" "OFF") # Skip crtm build unless user passes -DBUNDLE_SKIP_CRTM=ON
-ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda/crtm.git" BRANCH release/crtm_jedi UPDATE )
+ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda/crtm.git" )
 
 # Core JEDI repositories
 # ----------------------
-ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda/oops.git"  BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda/saber.git" BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda/ioda.git"  BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda/ufo.git"   BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda/oops.git" )
+ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda/saber.git" )
+ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda/ioda.git" )
+ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda/ufo.git" )
 
 # Options for building with certain models
 # ----------------------------------------
@@ -70,18 +70,18 @@ ecbuild_info("Building with FV3-based model: ${FV3_FORECAST_MODEL}")
 # -------------------------------------------------------
 if (FV3_FORECAST_MODEL MATCHES "FV3CORE")
   option("BUNDLE_SKIP_FMS" "Don't build FMS" "OFF")
-  ecbuild_bundle( PROJECT fms GIT "https://github.com/jcsda/FMS.git" BRANCH release-stable-ecbuild UPDATE )
-  ecbuild_bundle( PROJECT fv3 GIT "https://github.com/jcsda/GFDL_atmos_cubed_sphere.git" BRANCH release-stable UPDATE )
+  ecbuild_bundle( PROJECT fms GIT "https://github.com/jcsda/FMS.git" )
+  ecbuild_bundle( PROJECT fv3 GIT "https://github.com/jcsda/GFDL_atmos_cubed_sphere.git" )
 endif()
 
 # fv3-jedi linear model
 # ---------------------
-ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda/fv3-jedi-linearmodel.git" BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda/fv3-jedi-linearmodel.git" )
 
 # fv3-jedi and associated repositories
 # ------------------------------------
-ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda/femps.git"    BRANCH develop UPDATE )
-ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda/fv3-jedi.git" BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda/femps.git" )
+ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda/fv3-jedi.git" )
 
 # Build Doxygen documentation
 # ---------------------------
