@@ -59,15 +59,15 @@ find_package( NetCDF REQUIRED COMPONENTS Fortran )
 include_directories( ${NETCDF_INCLUDE_DIRS} )
 
 # atlas
-ecbuild_use_package( PROJECT atlas VERSION 0.18.1 REQUIRED )
+ecbuild_use_package( PROJECT atlas VERSION 0.20.2 REQUIRED )
 include_directories( ${ATLAS_INCLUDE_DIRS} )
 
 # oops
-ecbuild_use_package( PROJECT oops VERSION 0.2.1 REQUIRED )
+ecbuild_use_package( PROJECT oops VERSION 1.0.0 REQUIRED )
 include_directories( ${OOPS_INCLUDE_DIRS} )
 
 # saber
-ecbuild_use_package( PROJECT saber VERSION 0.0.1 REQUIRED )
+ecbuild_use_package( PROJECT saber VERSION 1.0.0 REQUIRED )
 include_directories( ${SABER_INCLUDE_DIRS} )
 
 # crtm
@@ -80,11 +80,11 @@ ecbuild_use_package( PROJECT ropp-ufo QUIET )
 ecbuild_use_package( PROJECT geos-aero QUIET )
 
 # ufo
-ecbuild_use_package( PROJECT ufo REQUIRED )
+ecbuild_use_package( PROJECT ufo VERSION 1.0.0 REQUIRED )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
 # femps
-ecbuild_use_package( PROJECT femps )
+ecbuild_use_package( PROJECT femps VERSION 1.0.0 REQUIRED )
 include_directories( ${FEMPS_INCLUDE_DIRS} )
 
 #OpenMP
@@ -128,7 +128,7 @@ if (FV3_FORECAST_MODEL MATCHES "UFS")
 endif()
 
 # Linear model
-ecbuild_use_package( PROJECT fv3jedilm REQUIRED )
+ecbuild_use_package( PROJECT fv3jedilm VERSION 1.0.0 REQUIRED )
 include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
 
 ################################################################################
