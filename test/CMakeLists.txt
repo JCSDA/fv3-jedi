@@ -804,10 +804,6 @@ fv3jedi_add_test( NAME    convertstate_gfs
                   EXE     fv3jedi_convertstate.x
                   TOL     1.0e-3 0)
 
-fv3jedi_add_test( NAME    convertstate_gfs_c2ll
-                  EXE     fv3jedi_convertstate.x
-                  TOL     1.0e-4 0 )
-
 fv3jedi_add_test( NAME    convertstate_geos
                   EXE     fv3jedi_convertstate.x )
 
