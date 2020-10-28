@@ -5,7 +5,7 @@
 
 # Option not to run with large tests
 # ----------------------------------
-option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" OFF)
+option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" ON)
 
 # Create the Data/ directory
 # --------------------------
@@ -1021,10 +1021,12 @@ fv3jedi_add_test( NAME         hyb-fgat_gfs_aero
 
 # 4DEnVar
 # -------
-fv3jedi_add_test( NAME         4denvar
-                  EXE          fv3jedi_var.x
-                  MPI          18
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
+if (NOT SKIP_LARGE_TESTS)
+  fv3jedi_add_test( NAME         4denvar
+                    EXE          fv3jedi_var.x
+                    MPI          18
+                    TEST_DEPENDS bumpparameters_nicas_gfs )
+endif()
 
 # Hybrid 4DVar
 # ------------
@@ -1051,11 +1053,13 @@ fv3jedi_add_test( NAME         addincrement_gfs
                   TOL          1.0e-3 0
                   TEST_DEPENDS diffstates_gfs )
 
-fv3jedi_add_test( NAME         addincrement_geos
-                  EXE          fv3jedi_addincrement.x
-                  MPI          12
-                  TOL          1.0e-4 0
-                  TEST_DEPENDS diffstates_geos )
+if (NOT SKIP_LARGE_TESTS)
+  fv3jedi_add_test( NAME         addincrement_geos
+                    EXE          fv3jedi_addincrement.x
+                    MPI          12
+                    TOL          1.0e-4 0
+                    TEST_DEPENDS diffstates_geos )
+endif()
 
 # LETKF / LGETKF
 # --------------
