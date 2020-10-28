@@ -807,12 +807,6 @@ cost function:
         channels: 10,12,13
       minvalue: 70.0
       maxvalue: 320.0
-    - filter: Background Check
-      apply at iterations: 0, 1
-      filter variables:
-      - name: brightness_temperature
-        channels: 5,6,7,10,12,13
-      threshold: 2.0
     - filter: Domain Check
       filter variables:
       - name: brightness_temperature
@@ -849,6 +843,76 @@ cost function:
           name: longitude@MetaData
         minvalue: 25.0
         maxvalue: 40.0
+    #  CLW Retrieval Check from ObsValue
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 5,6,7,10,12,13
+      test variables:
+      - name: CLWRetMW@ObsFunction
+        options:
+          clwret_ch37v: 6
+          clwret_ch37h: 7
+          clwret_types: [ObsValue]
+      maxvalue: 999.0
+      action:
+        name: reject
+    #  CLW Retrieval Check from HofX
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 5,6,7,10,12,13
+      test variables:
+      - name: CLWRetMW@ObsFunction
+        options:
+          clwret_ch37v: 6
+          clwret_ch37h: 7
+          clwret_types: [HofX]
+      maxvalue: 999.0
+      action:
+        name: reject
+    # Assign observational error in all-sky DA.
+    - filter: BlackList
+      filter variables:
+      - name: brightness_temperature
+        channels: 5,6,7,10,12,13
+      action:
+        name: assign error
+        error function:
+          name: ObsErrorModelRamp@ObsFunction
+          channels: 5,6,7,10,12,13
+          options:
+            channels: 5,6,7,10,12,13
+            xvar:
+              name: CLWRetSymmetricMW@ObsFunction
+              options:
+                clwret_ch37v: 6
+                clwret_ch37h: 7
+                clwret_types: [ObsValue, HofX]
+            x0:    [ 0.050,
+                     0.050,  0.050,
+                     0.050,  0.050,  0.050]
+            x1:    [ 0.200,
+                     0.200,  0.200,
+                     0.200,  0.300,  0.300]
+            x2:    [ 0.500,
+                     0.500,  0.500,
+                     0.500,  0.500,  0.500]
+            err0:  [ 4.000,
+                     3.800,300.000,
+                     5.000,  2.500,  3.000]
+            err1:  [11.000,
+                    13.300, 23.000, 
+                    20.000,  8.000, 13.000]
+            err2:  [35.000,
+                    25.300,500.000,
+                    50.000, 30.000, 40.000]
+    - filter: Background Check
+      apply at iterations: 0, 1
+      filter variables:
+      - name: brightness_temperature
+        channels: 5,6,7,10,12,13
+      threshold: 2.0
   - obs space:
       name: AIRS-AQUA
       obsdatain:
