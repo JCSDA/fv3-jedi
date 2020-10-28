@@ -1,0 +1,65 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+background:
+  filetype: geos
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180415_000000z.nc4
+  state variables: &incvars [ua,va,t,delp,q,qi,ql]
+variance output:
+  filetype: geos
+  datapath: Data/ensvariance
+  filename_bkgd: geos.ensemblevariance.%yyyy%mm%dd_%hh%MM%ssz.nc4
+ensemble:
+  output variables: *incvars
+  members:
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem001.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem002.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem003.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem004.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem005.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem006.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem007.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem008.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem009.20180415_000000z.nc4
+  - filetype: geos
+    datapath: Data/inputs/geos_c12
+    state variables: *incvars
+    filename_bkgd: geos.mem010.20180415_000000z.nc4

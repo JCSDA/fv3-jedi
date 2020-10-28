@@ -1,0 +1,210 @@
+version: 0.2
+
+env:
+  parameter-store:
+    GIT_USER: "/CodeBuild/Git_USER"
+    GIT_PASS: "/CodeBuild/Git_PASS"
+
+phases:
+  install:
+    commands:
+      - echo Executing install phase
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_SOURCE_REPO_URL
+      - echo $CODEBUILD_SOURCE_VERSION
+
+      - echo $CODEBUILD_WEBHOOK_MERGE_COMMIT
+      - echo $CODEBUILD_WEBHOOK_PREV_COMMIT
+      - echo $CODEBUILD_WEBHOOK_HEAD_REF
+      - echo $CODEBUILD_WEBHOOK_ACTOR_ACCOUNT_ID
+      - echo $CODEBUILD_WEBHOOK_EVENT
+      - echo $CODEBUILD_WEBHOOK_TRIGGER
+      - echo $CODEBUILD_WEBHOOK_BASE_REF
+   
+      # Codebuild only runs on PUSH events if HEAD_REF
+      # is refs/heads/develop (merge to develop). In this
+      # case CODEBUILD_GIT_BRANCH="develop"
+
+      - if [ "$CODEBUILD_WEBHOOK_EVENT" = "PUSH" ];
+        then export CODEBUILD_GIT_BRANCH="develop";
+        echo "Merging to develop";
+        else export CODEBUILD_GIT_BRANCH=${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/};
+        fi
+
+      - echo "CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH}"
+      - echo "CODEBUILD_SOURCE_VERSION=${CODEBUILD_SOURCE_VERSION}"
+
+      - echo MPI setup for Docker
+      - mkdir -p /var/run/sshd
+      - ssh-keygen -A
+      - sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config
+      - sed -i 's/#RSAAuthentication yes/RSAAuthentication yes/g' /etc/ssh/sshd_config
+      - sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
+
+      - groupadd jcsda -g 9999
+      - useradd jcsdauser
+      - mkdir -p /jcsda /build_container
+      - chown -R jcsdauser:jcsda /build_container  /usr/local
+      - chmod 6755 /jcsda /build_container /usr/local
+
+      - mkdir /jcsda/.ssh ; echo "StrictHostKeyChecking no" > /jcsda/.ssh/config
+      - mkdir -p /jcsda/.openmpi
+      - mkdir -p /home/jcsdauser/.openmpi
+
+      - cp CI/default-mca-params.conf /home/jcsdauser/.openmpi/mca-params.conf
+      - cat /home/jcsdauser/.openmpi/mca-params.conf
+      - chown -R jcsdauser:jcsda /jcsda/
+
+      - su - jcsdauser -c "ssh-keygen -f /jcsda/.ssh/id_rsa -t rsa -N ''
+        && chmod 600 /jcsda/.ssh/config
+        && chmod 700 /jcsda/.ssh
+        && cp /jcsda/.ssh/id_rsa.pub /jcsda/.ssh/authorized_keys
+        && echo MPI setup for Docker done"
+      - su - jcsdauser -c "echo $CC
+        && echo $CXX
+        && echo $FC
+        && whereis mpicc"
+
+  pre_build:
+    commands:
+      - echo Executing pre_build phase
+      - git lfs install # creates .gitconfig
+      - cp ~/.gitconfig /home/jcsdauser/
+
+      - cd CI
+
+      #  Set crtm branch name
+      - export CRTM_JEDI_BRANCH="v2.3-jedi"
+
+      - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
+        then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
+        export CODEBUILD_GIT_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
+        else export CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH};
+        export CODEBUILD_GIT_BRANCH_CRTM=${CODEBUILD_GIT_BRANCH};
+        echo "CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH_FORK}";
+        fi
+
+      # jedi-cmake
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/jedi-cmake $CODEBUILD_GIT_BRANCH jedicmake /jcsda/fv3-bundle develop
+
+      # FV3-JEDI (testing repo)
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/fv3-jedi $CODEBUILD_GIT_BRANCH fv3-jedi /jcsda/fv3-bundle develop
+
+      # fv3-jedi-lm
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH fv3-jedi-lm /jcsda/fv3-bundle develop
+
+      # crtm
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/crtm $CODEBUILD_GIT_BRANCH_CRTM crtm /jcsda/fv3-bundle $CRTM_JEDI_BRANCH
+
+      # ioda
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
+
+      # disable git-lfs
+      - git lfs install --skip-smudge
+
+      # saber
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/saber $CODEBUILD_GIT_BRANCH saber /jcsda/fv3-bundle develop
+
+      # oops
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/oops $CODEBUILD_GIT_BRANCH oops /jcsda/fv3-bundle develop
+
+      # ufo
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/ufo $CODEBUILD_GIT_BRANCH ufo /jcsda/fv3-bundle develop
+
+      # femps
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
+
+      # fms
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable-ecbuild
+
+      # GFDL_atmos_cubed_sphere
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
+
+      #  internal repos
+      # fckit
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
+
+      # atlas
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/atlas $CODEBUILD_GIT_BRANCH_FORK atlas /jcsda/fv3-bundle release-stable
+
+      # geos-aero
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
+
+      # ropp
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+
+      #gsw
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH gsw /jcsda/fv3-bundle develop
+ 
+      # move CMakeLists.txt
+      - cp CMakeLists.txt /jcsda/fv3-bundle
+
+      - cd /jcsda/fv3-bundle
+      - sed -i 's/BRANCH develop UPDATE//' CMakeLists.txt
+      - sed -i 's/BRANCH dev\/master-ecbuild UPDATE//' CMakeLists.txt
+      - sed -i 's/BRANCH release-stable UPDATE//' CMakeLists.txt
+      - sed -i '/PROJECT eckit/d' CMakeLists.txt
+#      - sed -i -e '/ecbuild_bundle( PROJECT crtm/i\
+#        ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/JCSDA/geos-aero.git" )' CMakeLists.txt
+      - cat CMakeLists.txt
+
+  build:
+    commands:
+      - echo Executing build phase
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - su - jcsdauser -c "cd /build_container
+        && echo $CC
+        && echo $CXX
+        && echo $FC
+        && CC=mpicc CXX=mpicxx FC=mpifort
+        && cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test /jcsda/fv3-bundle
+        && cd fv3-jedi
+        && make -j8"
+
+      - export BUILD_STATUS="0"
+      - echo $BUILD_STATUS
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+
+      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+        then export BUILD_STATUS="1";
+        echo "Build passed";
+        fi
+      - echo $BUILD_STATUS
+
+      - su - jcsdauser -c "CC=mpicc CXX=mpicxx FC=mpifort
+        && cd /build_container/fv3-jedi
+        && ctest -E fv3jedi_test_tier1_run_times"
+
+      - cat /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
+
+#  disable for now
+#    commands:
+#      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+#        then echo "All tests passed; Run time test";
+#        su - jcsdauser -c "cd /build_container/fv3-jedi
+#        && ls
+#        && export FC=mpifort
+#        && export CC=mpicc
+#        && export CXX=mpicxx
+#        && ctest -VV -R test_fv3_time";
+#        fi
+
+  post_build:
+    commands:
+      - echo Executing post_build phase
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
+        then echo "Build passed, rerun failed tests";
+        su - jcsdauser -c "cd /build_container/fv3-jedi
+        && ctest -VV --rerun-failed";
+        else echo "Build failed";
+        fi
+      - echo 'Connect to CodeCov'
+      - cd /build_container/fv3-jedi
+      - pwd
+      - ls
+      - bash /jcsda/fv3-bundle/fv3-jedi/CI/codecov_script.sh
+artifacts:
+  files:
+    - /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
+  name: CTestCost-gnu-tier-1-$(date +%Y-%m-%d-%k_%M)

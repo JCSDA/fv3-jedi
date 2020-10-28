@@ -1,0 +1,16 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  do_write_geom: true #Output the grid so it can be read by e.g. femps
+  fieldsets:
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml

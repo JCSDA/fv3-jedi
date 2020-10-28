@@ -1,0 +1,32 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [2,2]
+  io_layout: [1,1]
+  npx: 25
+  npy: 25
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+model:
+  name: GEOS
+  tstep: PT30M
+  geos_run_directory: Data/ModelRunDirs/GEOS/
+  model variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]
+  reforecast: true
+model aux control: null
+model aux error: null
+model test:
+  forecast length: PT1H
+  final norm: 15017.619595736662
+  tolerance: 1.0e-4
+  test reforecast: true
+initial condition:
+  filetype: geos
+  datapath: Data/ModelRunDirs/GEOS
+  filename_core: fvcore_internal_rst
+  filename_mois: moist_internal_rst
+  filename_surf: fvcore_internal_rst
+  state variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]

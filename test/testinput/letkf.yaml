@@ -1,0 +1,142 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+
+window begin: &date '2018-04-14T21:00:00Z'
+window length: PT6H
+
+background:
+ date: *date
+ members:
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem001/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem002/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem003/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem004/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem005/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem006/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem007/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem008/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem009/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+   - filetype: gfs
+     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+     datapath: Data/inputs/gfs_c12/mem010/
+     filename_core: 20180415.000000.fv_core.res.nc
+     filename_trcr: 20180415.000000.fv_tracer.res.nc
+     filename_sfcd: 20180415.000000.sfc_data.nc
+     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+     filename_cplr: 20180415.000000.coupler.res
+
+observations:
+- obs space:
+    name: Radiosonde
+    distribution: InefficientDistribution
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/scatwind_obs_2018041500_s.nc4
+#    obsdataout:
+#      obsfile: Data/analysis/letkf/gfs/scatwind_obs_2018041500_s.nc4
+    #simulated variables: [eastward_wind, northward_wind, air_temperature]
+    simulated variables: [eastward_wind, northward_wind]
+  obs operator:
+    name: VertInterp
+  obs error:
+    covariance model: localized diagonal
+    localization:
+      localization method: Gaspari-Cohn
+      lengthscale: 5000e3
+      max_nobs: 1000
+
+prints:
+  frequency: PT3H
+
+driver: 
+
+local ensemble DA:
+  solver: LETKF
+  inflation:
+    rtps: 0.5
+    rtpp: 0.6
+    mult: 1.1
+
+output:
+  filetype: gfs
+  datapath: Data/analysis/letkf/gfs/mem%{member}%/
+  filename_core: letkf.fv_core.res.nc
+  filename_trcr: letkf.fv_tracer.res.nc
+  filename_sfcd: letkf.sfc_data.nc
+  filename_sfcw: letkf.fv_srf_wnd.res.nc
+  first: PT0H
+  frequency: PT1H
+  date: *date

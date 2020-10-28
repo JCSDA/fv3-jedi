@@ -1,0 +1,63 @@
+input geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  interpolation method: bump
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+output geometry:
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  interpolation method: bump
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 25
+  npy: 25
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+states:
+- input:
+    filetype: geos
+    datapath: Data/inputs/geos_c12
+    filename_bkgd: geos.bkg.20180414_210000z.nc4
+    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+    state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
+  output:
+   filetype: geos
+   datapath: Data/
+   filename_bkgd: geos.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+# Analytic initial conditions
+- input:
+    analytic_init: dcmip-test-1-1
+    date: 2018-04-14T21:00:00Z
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
+  output:
+    filetype: geos
+    datapath: Data/
+    filename_bkgd: geos.dcmip-test-1-1.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+- input:
+    analytic_init: dcmip-test-1-2
+    date: 2018-04-14T21:00:00Z
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
+  output:
+    filetype: geos
+    datapath: Data/
+    filename_bkgd: geos.dcmip-test-1-2.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+- input:
+    analytic_init: dcmip-test-3-1
+    date: 2018-04-14T21:00:00Z
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
+  output:
+    filetype: geos
+    datapath: Data/
+    filename_bkgd: dcmip-test-3-1.%yyyy%mm%dd_%hh%MM%ssz.nc4

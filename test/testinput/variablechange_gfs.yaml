@@ -1,0 +1,55 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: &layoutout [1,1]
+  io_layout: &io_layoutout [1,1]
+  npx: &npxout 13
+  npy: &npyout 13
+  npz: &npzout 64
+  ntiles: &ntilesout 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/oro_data.yaml
+variable change tests:
+
+  # Analysis2Model
+  - variable change: Analysis2Model
+    tolerance inverse: 1.0e1
+    # Possible to read variable with this variable change
+    filetype: gfs
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20180415.000000.fv_core.res.nc
+    filename_trcr: 20180415.000000.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.sfc_data.nc
+    filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    output variables: [u,v,ua,va,delp,t,sphum,vtype,u_srf,v_srf]
+    state:
+      filetype: gfs
+      datapath: Data/inputs/gfs_c12/bkg/
+      filename_core: 20180415.000000.fv_core.res.nc
+      filename_trcr: 20180415.000000.fv_tracer.res.nc
+      filename_sfcd: 20180415.000000.sfc_data.nc
+      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20180415.000000.coupler.res
+      state variables: [ua,va,t,ps]
+
+  # Control2Analysis
+  - variable change: Control2Analysis
+    tolerance inverse: 1.0e-4
+    femps_iterations: 50
+    femps_ngrids: 2
+    femps_levelprocs: -1
+    femps_path2fv3gridfiles: Data/femps
+    inverse first: true #Switched input and output variables
+    input variables: [psi,chi,t,tv,delp,ps,q,rh,qi,ql,o3]
+    state:
+      filetype: gfs
+      datapath: Data/inputs/gfs_c12/bkg/
+      filename_core: 20180415.000000.fv_core.res.nc
+      filename_trcr: 20180415.000000.fv_tracer.res.nc
+      filename_sfcd: 20180415.000000.sfc_data.nc
+      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20180415.000000.coupler.res
+      state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]

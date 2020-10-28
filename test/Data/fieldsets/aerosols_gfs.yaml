@@ -1,0 +1,137 @@
+#
+# (C) Copyright 2020 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Field definitions for the Aerosols
+#
+
+Geometry: fv3
+
+Fields:
+  - FieldIONames: [du001, DU001, dust1]
+    FieldName: du001
+    LongName: dust1
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [du002, DU002, dust2]
+    FieldName: du002
+    LongName: dust2
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [du003, DU003, dust3]
+    FieldName: du003
+    LongName: dust3
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [du004, DU004, dust4]
+    FieldName: du004
+    LongName: dust4
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [du005, DU005, dust5]
+    FieldName: du005
+    LongName: dust5
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ss001, SS001, seas1]
+    FieldName: ss001
+    LongName: seas1
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ss002, SS002, seas2]
+    FieldName: ss002
+    LongName: seas2
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ss003, SS003, seas3]
+    FieldName: ss003
+    LongName: seas3
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ss004, SS004, seas4]
+    FieldName: ss004
+    LongName: seas4
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ss005,SS005,seas5]
+    FieldName: ss005
+    LongName: seas5
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [bcphobic, BCPHOBIC, bc1]
+    FieldName: bcphobic
+    LongName: bc1
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [bcphilic, BCPHILIC, bc2]
+    FieldName: bcphilic
+    LongName: bc2
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ocphobic, OCPHOBIC, oc1]
+    FieldName: ocphobic
+    LongName: oc1
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ocphilic, OCPHILIC, oc2]
+    FieldName: ocphilic
+    LongName: oc2
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [no3an1, NO3AN1]
+    FieldName: no3an1
+    LongName: no3an1
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [no3an2, NO3AN2]
+    FieldName: no3an2
+    LongName: no3an2
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [no3an3, NO3AN3]
+    FieldName: no3an3
+    LongName: no3an3
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [so4, SO4, sulf]
+    FieldName: so4
+    LongName: sulf
+    Units: gkg-1
+    Tracer: true
+    IOFile: tracer

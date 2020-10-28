@@ -1,0 +1,47 @@
+linear variable change tests:
+- variable change: StatsVariableChange
+  tolerance inverse: 1.0e-12
+  bump:
+    check_vbal: 0
+    nc1: 1000
+    nc2: 100
+    new_vbal: 0
+    nrep: 2
+    ntry: 3
+    prefix: 'statsvariablechange_geos'
+    sam_read: 1
+    strategy: common
+    vbal_block: [0,0,0,0,0,0,0,0,0]
+    vbal_rad: 3000.0e3
+    verbosity: 'none'
+  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+  output variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+- variable change: Control2Analysis
+  tolerance inverse: 1000
+  testinverse: 1
+  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+  output variables: [ua,va,t,ps,q,qi,ql,o3]
+- variable change: Analysis2Model
+  tolerance inverse: 1000
+  testinverse: 1
+  input variables: [ua,va,t,ps,q,qi,ql,o3]
+  output variables: [u,v,t,delp,q,qi,ql,o3]
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+background:
+  filetype: geos
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]

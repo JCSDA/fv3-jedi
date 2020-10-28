@@ -1,0 +1,74 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+initial condition:
+  filetype: geos
+  datapath: Data/inputs/geos_c12
+  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+background error:
+  covariance model: ensemble
+  date: '2018-04-14T21:00:00Z' 
+  localization:
+    timeslots: ['2018-04-14T21:00:00Z']
+    localization variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+    localization method: BUMP
+    bump:
+      prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+      method: loc
+      strategy: common
+      load_nicas: 1
+      mpicom: 2
+      verbosity: main
+      io_keys: ["common"]
+      io_values: ["fixed_2500km_0.3"]
+  members:
+    - filetype: geos
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem001.20180414_210000z.nc4
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+    - filetype: geos
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem002.20180414_210000z.nc4
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+    - filetype: geos
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem003.20180414_210000z.nc4
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+    - filetype: geos
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem004.20180414_210000z.nc4
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+    - filetype: geos
+      datapath: Data/inputs/geos_c12
+      filename_bkgd: geos.mem005.20180414_210000z.nc4
+      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+output B:
+  filetype: geos
+  datapath: Data/bump/
+  filename: dirac.B.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  first: PT0H
+  frequency: PT1H
+output localization:
+  filetype: geos
+  datapath: Data/bump/
+  filename: dirac.loc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  first: PT0H
+  frequency: PT1H
+dirac:
+  ndir: 1
+  ixdir: [1]    #Xdir
+  iydir: [1]    #Ydir
+  ildir: [50]   #Level
+  itdir: [1]    #Tile
+  ifdir: ['ua'] #Field

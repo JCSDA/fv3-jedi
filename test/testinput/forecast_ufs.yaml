@@ -1,0 +1,35 @@
+forecast length: PT6H
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+model:
+  name: GFS
+  variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+initial condition:
+  filetype: gfs
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_sfcd: 20180414.210000.sfc_data.nc
+  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+output:
+  filetype: gfs
+  datapath_write: Data/forecast
+  filename_core: fv_core.res.nc
+  filename_trcr: fv_tracer.res.nc
+  filename_sfcd: sfc_data.nc
+  filename_sfcw: fv_srf_wnd.res.nc
+  filename_cplr: coupler.res
+  first: PT0H
+  frequency: PT15M

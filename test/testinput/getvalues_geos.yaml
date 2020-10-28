@@ -1,0 +1,36 @@
+getvalues test:
+  state generate:
+    analytic_init: dcmip-test-4-0
+    date: '2018-04-14T21:00:00Z'
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
+  interpolation tolerance: 1.0e-2
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk72.nc4
+  #interpolation method: bump
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 72
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+state variables: [virtual_temperature,air_pressure] # Has to be virtual_temperature and air_pressure
+locations:
+  window begin: 2018-04-14T21:00:00Z
+  window end: 2018-04-15T03:00:00Z
+  obs space:
+    name: Random Locations 
+    simulated variables: [virtual_temperature,air_pressure]
+    generate:
+      random:
+        nobs: 100
+        lat1: -90
+        lat2: 90
+        lon1: 0
+        lon2: 360
+        random seed: 560921
+      obs errors: [1.5,2.1]
