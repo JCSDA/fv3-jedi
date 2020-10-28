@@ -423,7 +423,6 @@ function(fv3jedi_data_download_test REPO DEFAULTBRANCH test_data_file LINKNG_PAT
     message(STATUS " Use local test files from ${INPUT_PATH}")
     message(STATUS "  ... copy test files to ${OUTPUT_PATH}")
     execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${INPUT_PATH} ${OUTPUT_PATH} )
-    #message(STATUS "Use local test files for ${REPO} test data: " ${OUTPUT_PATH})
   endif()
 
   set(${LINKNG_PATH} ${OUTPUT_PATH} PARENT_SCOPE)
