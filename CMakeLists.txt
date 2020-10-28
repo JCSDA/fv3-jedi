@@ -84,7 +84,7 @@ ecbuild_use_package( PROJECT ufo VERSION 1.0.0 REQUIRED )
 include_directories( ${UFO_INCLUDE_DIRS} )
 
 # femps
-ecbuild_use_package( PROJECT VERSION 1.0.0 femps )
+ecbuild_use_package( PROJECT femps VERSION 1.0.0 REQUIRED )
 include_directories( ${FEMPS_INCLUDE_DIRS} )
 
 #OpenMP
