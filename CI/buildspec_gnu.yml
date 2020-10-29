@@ -20,7 +20,7 @@ phases:
       - echo $CODEBUILD_WEBHOOK_EVENT
       - echo $CODEBUILD_WEBHOOK_TRIGGER
       - echo $CODEBUILD_WEBHOOK_BASE_REF
-   
+
       # Codebuild only runs on PUSH events if HEAD_REF
       # is refs/heads/develop (merge to develop). In this
       # case CODEBUILD_GIT_BRANCH="develop"
@@ -74,7 +74,7 @@ phases:
       - cd CI
 
       #  Set crtm branch name
-      - export CRTM_JEDI_BRANCH="release/crtm_jedi"
+      - export CRTM_JEDI_BRANCH="v2.3-jedi"
 
       - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
         then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
@@ -135,7 +135,7 @@ phases:
 
       #gsw
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH gsw /jcsda/fv3-bundle develop
- 
+
       # move CMakeLists.txt
       - cp CMakeLists.txt /jcsda/fv3-bundle
 
@@ -157,7 +157,7 @@ phases:
         && echo $CXX
         && echo $FC
         && CC=mpicc CXX=mpicxx FC=mpifort
-        && cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test /jcsda/fv3-bundle
+        && cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DSKIP_LARGE_TESTS=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test /jcsda/fv3-bundle
         && cd fv3-jedi
         && make -j8"
 
