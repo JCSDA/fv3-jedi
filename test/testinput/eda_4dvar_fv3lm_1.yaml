@@ -1,5 +1,4 @@
 cost function:
-  obs perturbations seed: 1
   background:
     filetype: gfs
     datapath: Data/inputs/gfs_c12/bkg/
@@ -145,6 +144,7 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/eda/gfs/mem001/aircraft_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
+      obs perturbations seed: 1
     obs operator:
       name: VertInterp
     obs error:
@@ -170,6 +170,7 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/eda/gfs/mem001/sondes_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
+      obs perturbations seed: 1
     obs operator:
       name: VertInterp
     obs error:
@@ -191,6 +192,7 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/eda/gfs/mem001/gnssro_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [bending_angle]
+      obs perturbations seed: 1
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -224,6 +226,7 @@ cost function:
         obsfile: Data/hofx/eda/gfs/mem001/amsua_n19_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
+      obs perturbations seed: 1
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
