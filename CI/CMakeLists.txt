@@ -48,14 +48,14 @@ ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-tes
 # External (required) observation operators
 # ------------------------------
 option("BUNDLE_SKIP_CRTM" "Don't build CRTM" "OFF") # Skip crtm build unless user passes -DBUNDLE_SKIP_CRTM=ON
-ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda/crtm.git" )
+ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda-internal/crtm.git" )
 
 # Core JEDI repositories
 # ----------------------
-ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda/oops.git" )
-ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda/saber.git" )
-ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda/ioda.git" )
-ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda/ufo.git" )
+ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda-internal/oops.git" )
+ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda-internal/saber.git" )
+ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda-internal/ioda.git" )
+ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda-internal/ufo.git" )
 
 # Options for building with certain models
 # ----------------------------------------
@@ -70,18 +70,18 @@ ecbuild_info("Building with FV3-based model: ${FV3_FORECAST_MODEL}")
 # -------------------------------------------------------
 if (FV3_FORECAST_MODEL MATCHES "FV3CORE")
   option("BUNDLE_SKIP_FMS" "Don't build FMS" "OFF")
-  ecbuild_bundle( PROJECT fms GIT "https://github.com/jcsda/FMS.git" )
-  ecbuild_bundle( PROJECT fv3 GIT "https://github.com/jcsda/GFDL_atmos_cubed_sphere.git" )
+  ecbuild_bundle( PROJECT fms GIT "https://github.com/jcsda-internal/FMS.git" )
+  ecbuild_bundle( PROJECT fv3 GIT "https://github.com/jcsda-internal/GFDL_atmos_cubed_sphere.git" )
 endif()
 
 # fv3-jedi linear model
 # ---------------------
-ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda/fv3-jedi-linearmodel.git" )
+ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda-internal/fv3-jedi-linearmodel.git" )
 
 # fv3-jedi and associated repositories
 # ------------------------------------
-ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda/femps.git" )
-ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda/fv3-jedi.git" )
+ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda-internal/femps.git" )
+ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda-internal/fv3-jedi.git" )
 
 # Build Doxygen documentation
 # ---------------------------
