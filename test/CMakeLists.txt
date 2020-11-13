@@ -337,7 +337,7 @@ message(STATUS "fv3-jedi is on branch/tag ${GIT_BRANCH_FV3JEDI}")
 # For releases data is obtained for UCAR dash
 set(ECBUILD_DOWNLOAD_BASE_URL_DEFAULT https://jedi-test-files.s3.amazonaws.com)
 
-if(${GIT_BRANCH_FV3JEDI} STREQUAL "1.0.0")
+if(GIT_BRANCH_FV3JEDI STREQUAL "1.0.0")
   set(ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file/)
   set(BRANCHPATH "/")
   set(MD5CHECK 0)
@@ -364,7 +364,7 @@ endif()
 function(fv3jedi_data_download_test REPO DEFAULTBRANCH test_data_file LINKNG_PATH)
 
   # Special case of data structure for UCAR DASH release data
-  if(${GIT_BRANCH_FV3JEDI} STREQUAL "1.0.0")
+  if(GIT_BRANCH_FV3JEDI STREQUAL "1.0.0")
     set(REPOPATH "/")
   else()
     set(REPOPATH ${REPO})
