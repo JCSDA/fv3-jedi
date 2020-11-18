@@ -240,7 +240,7 @@ type(fv3jedi_field),                             intent(inout) :: field_ou(:)
 character(len=field_clen), allocatable, optional, intent(out)   :: not_copied(:)
 
 integer :: var
-character(len=field_clen) :: not_copied_(10000)
+character(len=field_clen) :: not_copied_(size(field_ou))
 integer :: num_not_copied
 
 ! Loop over fields and copy if existing in both

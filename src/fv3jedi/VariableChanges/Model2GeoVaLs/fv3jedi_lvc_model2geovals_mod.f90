@@ -324,7 +324,7 @@ type(fv3jedi_increment),          intent(inout) :: dxm
 integer :: fg, fm, ji, jj, jk, dxg_index, num_not_copied
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 character(len=field_clen), allocatable :: fields_to_do(:)
-character(len=field_clen) :: not_copied_(10000)
+character(len=field_clen) :: not_copied_(size(dxm%fields))
 logical, allocatable :: field_passed(:)
 integer :: noassim_index
 
