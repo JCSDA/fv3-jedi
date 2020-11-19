@@ -64,7 +64,7 @@ observations:
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/tropomi_no2_2020090318_m.nc4
     obsdataout:
-      obsfile: Data/hofx/tropomi_no2_hofx_lam-cmaq_2020090318_m.nc4
+      obsfile: Data/hofx/tropomi_no2_hofx_lam_cmaq_2020090318_m.nc4
     simulated variables: [nitrogen_dioxide_in_tropospheric_column]
   obs operator:
     name: AvgKernel
