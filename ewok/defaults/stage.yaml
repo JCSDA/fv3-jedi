@@ -1,0 +1,16 @@
+# files to copy
+copy_files:
+    # source is relative to the model root (fv3-jedi)
+    - source: test/Data/fieldsets
+      target: fieldsets
+      files:
+        - dynamics.yaml
+    - source: test/Data/fv3files
+      target: fv3files
+      files: 
+        - akbk$(vertical_resolution).nc4
+        - field_table
+        - fmsmpp.nml
+        - input_gfs_c$(horizontal_resolution).nml
+        - inputpert_4dvar.nml
+

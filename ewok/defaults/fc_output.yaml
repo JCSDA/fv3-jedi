@@ -1,0 +1,11 @@
+filetype: gfs
+datapath: '$(experiment_dir)/{{current_cycle}}'
+filename_core: 'fv_core.res.nc'
+filename_trcr: 'fv_tracer.res.nc'
+filename_sfcd: 'sfc_data.nc'
+filename_sfcw: 'fv_srf_wnd.res.nc'
+filename_cplr: 'coupler.res'
+first: PT0H
+frequency: PT1H
+execcmd: 'mpiexec -n 6'
+type: fc

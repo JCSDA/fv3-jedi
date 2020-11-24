@@ -1,1 +1,1 @@
-filename: $(experiment_dir)/{{current_cycle}}/$(date).$(file_type).tile$(tiles).nc
+filename: $(experiment_dir)/{{current_cycle}}/$(date).$(file_type).tile$(tile).nc
