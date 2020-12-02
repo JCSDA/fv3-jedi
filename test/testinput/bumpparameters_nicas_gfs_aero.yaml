@@ -1,0 +1,102 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+input variables: [sulf,bc1,bc2,oc1,oc2,dust1, dust2, dust3, dust4, dust5,seas1, seas2, seas3, seas4]
+date: '2018-04-14T21:00:00Z'
+background:
+  filetype: gfs
+#  datapath: Data/inputs/gfs_c12/bkg/
+  datapath: Data/inputs/gfs_aero_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+#  filename_sfcd: 20180414.210000.sfc_data.nc
+#  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  state variables: [sulf,bc1,bc2,oc1,oc2,dust1, dust2, dust3, dust4, dust5,seas1, seas2, seas3, seas4]
+bump:
+  prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aer
+  verbosity: main
+  universe_rad: 2500000.0
+  strategy: specific_univariate
+  new_nicas: 1
+  ntry: 3
+  nrep: 2
+  resol: 6
+  mpicom: 2
+# Forced length-scales
+# --------------------
+  forced_radii: 1
+  rh: 2500000.0
+  rv: 0.3
+# Write C matrix
+# --------------
+  write_cmat: 0
+  io_keys:
+  - "sulf-sulf"
+  - "bc1-bc1"
+  - "bc2-bc2"
+  - "oc1-oc1"
+  - "oc2-oc2"
+  - "dust1-dust1"
+  - "dust2-dust2"
+  - "dust3-dust3"
+  - "dust4-dust4"
+  - "dust5-dust5"
+  - "seas1-seas1"
+  - "seas2-seas2"
+  - "seas3-seas3"
+  - "seas4-seas4"
+  io_values:
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+  - "fixed_2500km_0.3"
+output:
+#- parameter: stddev
+#  filetype: gfs
+#  datapath: Data/bump/
+#  filename_core: bumpparameters_nicas_gfs.stddev.fv_core.res.nc
+#  filename_trcr: bumpparameters_nicas_gfs.stddev.fv_tracer.res.nc
+#  filename_sfcd: bumpparameters_nicas_gfs.stddev.sfc_data.nc
+#  filename_sfcw: bumpparameters_nicas_gfs.stddev.fv_srf_wnd.res.nc
+#  filename_cplr: bumpparameters_nicas_gfs.stddev.coupler.res
+#  date: '2018-04-14T21:00:00Z'
+- parameter: cor_rh
+  filetype: gfs
+  datapath: Data/bump/
+  filename_core: bumpparameters_nicas_gfs_aero.cor_rh.fv_core.res.nc
+  filename_trcr: bumpparameters_nicas_gfs_aero.cor_rh.fv_tracer.res.nc
+#  filename_sfcd: bumpparameters_nicas_gfs_aero.cor_rh.sfc_data.nc
+#  filename_sfcw: bumpparameters_nicas_gfs_aero.cor_rh.fv_srf_wnd.res.nc
+#  filename_cplr: bumpparameters_nicas_gfs_aero.cor_rh.coupler.res
+  date: '2018-04-14T21:00:00Z'
+- parameter: cor_rv
+  filetype: gfs
+  datapath: Data/bump/
+  filename_core: bumpparameters_nicas_gfs_aero.cor_rv.fv_core.res.nc
+  filename_trcr: bumpparameters_nicas_gfs_aero.cor_rv.fv_tracer.res.nc
+#  filename_sfcd: bumpparameters_nicas_gfs_aero.cor_rv.sfc_data.nc
+#  filename_sfcw: bumpparameters_nicas_gfs_aero.cor_rv.fv_srf_wnd.res.nc
+#  filename_cplr: bumpparameters_nicas_gfs_aero.cor_rv.coupler.res
+  date: '2018-04-14T21:00:00Z'
