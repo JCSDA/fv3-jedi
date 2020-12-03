@@ -33,6 +33,7 @@ public :: fv3jedi_vc_model2geovals
 
 type :: fv3jedi_vc_model2geovals
   integer :: isc, iec, jsc, jec, npz
+  character(len=10) :: tropprs_method
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -45,13 +46,17 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, geom, dummyconf)
+subroutine create(self, geom, conf)
 
 class(fv3jedi_vc_model2geovals), intent(inout) :: self
 type(fv3jedi_geom),              intent(in)    :: geom
-type(fckit_configuration),       intent(in)    :: dummyconf
+type(fckit_configuration),       intent(in)    :: conf
 
-!!! DO NOT USE CONF !!!
+character(len=:), allocatable :: str
+
+! Method to use for tropopause pressure ([gsi] or thompson)
+if (.not. conf%get("tropopause pressure method", str)) str = 'gsi'
+self%tropprs_method = trim(str)
 
 ! Grid convenience
 self%isc = geom%isc
@@ -196,6 +201,15 @@ real(kind=kind_real), allocatable :: surface_wind_speed                        (
 real(kind=kind_real), allocatable :: surface_wind_from_direction               (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
 
+! Vorticity
+logical :: have_vort
+real(kind=kind_real), allocatable :: vort     (:,:,:)
+
+! Tropopause pressure
+logical :: have_tropprs
+real(kind=kind_real), allocatable :: tprs     (:,:,:)
+
+
 
 ! Identity part of the change of fields
 ! -------------------------------------
@@ -257,7 +271,6 @@ endif
 ! Temperature
 ! -----------
 have_t = .false.
-
 if (xm%has_field( 't')) then
   call xm%get_field('t', t)
   have_t = .true.
@@ -360,6 +373,7 @@ elseif (xm%has_field('ud')) then
   allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call d2a(geom, ud, vd, ua, va)
   have_winds = .true.
+  nullify(ud,vd)
 endif
 
 
@@ -480,8 +494,8 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
 endif
 
 
-! CRTM moisture fields
-! --------------------
+! CRTM surface fields
+! -------------------
 have_crtm_surface = .false.
 have_sss = .false.
 if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
@@ -538,6 +552,43 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
 
   have_crtm_surface = .true.
 
+endif
+
+
+! Vorticity
+! ---------
+have_vort = .false.
+if (xm%has_field('ud') .and. xm%has_field('vd')) then
+  call xm%get_field('ud', ud)
+  call xm%get_field('vd', vd)
+  allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call udvd_to_vort(geom, ud, vd, vort)
+  have_vort = .true.
+  nullify(ud, vd)
+elseif (xm%has_field('ua') .and. xm%has_field('va')) then
+  allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call xm%get_field('ua', ua)
+  call xm%get_field('va', va)
+  call uava_to_vort(geom, ua, va, vort)
+  have_vort = .true.
+endif
+
+
+! Tropopuase pressure
+! -------------------
+have_tropprs = .false.
+if (trim(self%tropprs_method) == "gsi") then
+  if (have_vort .and. have_tv .and. have_pressures .and. have_o3) then
+    allocate(tprs(self%isc:self%iec,self%jsc:self%jec,1))
+    call tropprs(geom, ps, prs, tv, o3, vort, tprs)
+    have_tropprs = .true.
+  endif
+elseif (trim(self%tropprs_method) == "thompson") then
+  if (have_pressures .and. have_geoph .and. have_t) then
+    allocate(tprs(self%isc:self%iec,self%jsc:self%jec,1))
+    call tropprs_th(geom, prs, geoph, t, tprs)
+    have_tropprs = .true.
+  endif
 endif
 
 
@@ -742,6 +793,16 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = soil_type
 
+  case ("vorticity", "vort")
+
+    if (.not. have_vort) call field_fail(fields_to_do(f))
+    field_ptr = vort
+
+  case ("tropopuase_pressure")
+
+    if (.not. have_tropprs) call field_fail(fields_to_do(f))
+    field_ptr = tprs
+
   case default
 
     call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar unknown field: "//trim(fields_to_do(f)) &
@@ -828,6 +889,8 @@ if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
 if (allocated(surface_wind_speed)) deallocate(surface_wind_speed)
 if (allocated(surface_wind_from_direction)) deallocate(surface_wind_from_direction)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
+if (allocated(vort)) deallocate(vort)
+if (allocated(tprs)) deallocate(tprs)
 
 end subroutine changevar
 

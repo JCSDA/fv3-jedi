@@ -11,6 +11,10 @@
 Geometry: fv3
 
 Fields:
+  - FieldName: tropopuase_pressure
+    Units: Pa
+    Levels: 1
+
   - FieldName: geopotential_height
     Units: m
     Levels: full

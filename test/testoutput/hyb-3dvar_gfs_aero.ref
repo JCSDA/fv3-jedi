@@ -1,28 +1,28 @@
 Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 205, nobs = 6, Jo/n = 34.1666, err = 0.212603
-Test     : CostFunction: Nonlinear J = 205
-Test     : DRIPCGMinimizer: reduction in residual norm = 2.67619e-12
+Test     : CostJo   : Nonlinear Jo(Aod) = 204.999, nobs = 6, Jo/n = 34.1665, err = 0.212603
+Test     : CostFunction: Nonlinear J = 204.999
+Test     : DRIPCGMinimizer: reduction in residual norm = 2.67618e-12
 Test     : CostFunction::addIncrement: Analysis: 
-Test     :  --------------------------------------------------------------------------------
+Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 17 | cube sphere face size: C12
-Test     :    T             : Min = +1.845368e+02, Max = +3.080446e+02, RMS = +2.481242e+02
-Test     :    DELP          : Min = +4.424700e+01, Max = +3.724811e+03, RMS = +1.937828e+03
-Test     :    sphum         : Min = +1.174081e-07, Max = +1.831856e-02, RMS = +4.624708e-03
-Test     :    sulf          : Min = +2.816072e-05, Max = +8.037314e+00, RMS = +3.327146e-01
-Test     :    bc1           : Min = +7.295911e-09, Max = +3.962690e+00, RMS = +6.103952e-02
-Test     :    bc2           : Min = +8.272125e-09, Max = +6.273580e-01, RMS = +2.754686e-02
-Test     :    oc1           : Min = +7.226193e-09, Max = +2.835925e+01, RMS = +4.318300e-01
-Test     :    oc2           : Min = +8.488171e-09, Max = +4.253998e+00, RMS = +2.138572e-01
-Test     :    dust1         : Min = +1.000000e-16, Max = +4.924362e+01, RMS = +1.683232e+00
-Test     :    dust2         : Min = +1.000000e-16, Max = +4.842455e+01, RMS = +1.610137e+00
-Test     :    dust3         : Min = +1.000000e-16, Max = +9.528946e+01, RMS = +2.956456e+00
-Test     :    dust4         : Min = +1.000000e-16, Max = +1.870387e+02, RMS = +4.706411e+00
-Test     :    dust5         : Min = +1.000000e-16, Max = +2.299576e+01, RMS = +4.385723e-01
-Test     :    seas1         : Min = +1.000000e-16, Max = +8.585639e-02, RMS = +4.209629e-03
-Test     :    seas2         : Min = +1.000000e-16, Max = +2.806269e+00, RMS = +1.368821e-01
-Test     :    seas3         : Min = +1.000000e-16, Max = +2.932068e+01, RMS = +1.347002e+00
-Test     :    seas4         : Min = +1.000000e-16, Max = +1.135203e+02, RMS = +3.895213e+00
-Test     :  --------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 0.0753169
-Test     : CostJo   : Nonlinear Jo(Aod) = 204.721, nobs = 6, Jo/n = 34.1202, err = 0.212603
+Test     :    T                             : Min = +1.845368e+02, Max = +3.080446e+02, RMS = +2.481242e+02
+Test     :    DELP                          : Min = +4.424700e+01, Max = +3.724811e+03, RMS = +1.937828e+03
+Test     :    sphum                         : Min = +1.174081e-07, Max = +1.831856e-02, RMS = +4.624708e-03
+Test     :    sulf                          : Min = +2.816072e-05, Max = +8.037314e+00, RMS = +3.327146e-01
+Test     :    bc1                           : Min = +7.295911e-09, Max = +3.962690e+00, RMS = +6.103952e-02
+Test     :    bc2                           : Min = +8.272125e-09, Max = +6.273580e-01, RMS = +2.754687e-02
+Test     :    oc1                           : Min = +7.226193e-09, Max = +2.835925e+01, RMS = +4.318300e-01
+Test     :    oc2                           : Min = +8.488171e-09, Max = +4.253998e+00, RMS = +2.138572e-01
+Test     :    dust1                         : Min = +1.000000e-16, Max = +4.924378e+01, RMS = +1.683233e+00
+Test     :    dust2                         : Min = +1.000000e-16, Max = +4.842471e+01, RMS = +1.610138e+00
+Test     :    dust3                         : Min = +1.000000e-16, Max = +9.528978e+01, RMS = +2.956458e+00
+Test     :    dust4                         : Min = +1.000000e-16, Max = +1.870394e+02, RMS = +4.706415e+00
+Test     :    dust5                         : Min = +1.000000e-16, Max = +2.299587e+01, RMS = +4.385730e-01
+Test     :    seas1                         : Min = +1.000000e-16, Max = +8.585639e-02, RMS = +4.209630e-03
+Test     :    seas2                         : Min = +1.000000e-16, Max = +2.806269e+00, RMS = +1.368821e-01
+Test     :    seas3                         : Min = +1.000000e-16, Max = +2.932068e+01, RMS = +1.347002e+00
+Test     :    seas4                         : Min = +1.000000e-16, Max = +1.135203e+02, RMS = +3.895213e+00
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : CostJb   : Nonlinear Jb = 0.0753258
+Test     : CostJo   : Nonlinear Jo(Aod) = 204.721, nobs = 6, Jo/n = 34.1201, err = 0.212603
 Test     : CostFunction: Nonlinear J = 204.796

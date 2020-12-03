@@ -1,0 +1,65 @@
+input geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+output geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  # input.nml
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+
+variable changes:
+
+  - variable change: Model2GeoVaLs
+    tropopause pressure method: thompson
+    input variables: &inputvars [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN,PHIS,frocean,frlake,frseaice,
+                                 vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+    output variables: [rh,ps,tv,geopotential_height,
+                       surface_altitude,mole_fraction_of_carbon_dioxide_in_air,
+                       humidity_mixing_ratio,
+                       mass_content_of_cloud_liquid_water_in_atmosphere_layer,
+                       mass_content_of_cloud_ice_in_atmosphere_layer,
+                       effective_radius_of_cloud_liquid_water_particle,
+                       effective_radius_of_cloud_ice_particle,water_area_fraction,
+                       land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
+                       surface_temperature_where_sea, surface_temperature_where_land,
+                       surface_temperature_where_ice,surface_temperature_where_snow,
+                       surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
+                       surface_wind_from_direction,leaf_area_index,
+                       volume_fraction_of_condensed_water_in_soil,soil_temperature,
+                       land_type_index,vegetation_type_index,soil_type,
+                       vort,tropopuase_pressure]
+states:
+- input:
+    filetype: gfs
+    state variables: *inputvars
+    filetype: geos
+    datapath: Data/inputs/geos_c12
+    filename_core: fvcore_internal_rst.20180414_21z.nc4
+    filename_mois: moist_internal_rst.20180414_21z.nc4
+    filename_surf: surf_import_rst.20180414_21z.nc4
+    filename_bkgd: geos.bkg.20180414_210000z.nc4
+    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  output:
+   filetype: geos # GFS can only handle specific names of output
+   datapath: Data/
+   filename_bkgd: geovals.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4

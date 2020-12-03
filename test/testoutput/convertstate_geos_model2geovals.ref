@@ -1,0 +1,97 @@
+Test     : Input state: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 23 | cube sphere face size: C12
+Test     :    U                             : Min = -7.726178e+01, Max = +8.818330e+01, RMS = +1.539428e+01
+Test     :    V                             : Min = -6.537877e+01, Max = +8.216024e+01, RMS = +1.589400e+01
+Test     :    PT                            : Min = +9.567282e+00, Max = +2.032111e+02, RMS = +6.044146e+01
+Test     :    PKZ                           : Min = +1.105895e+00, Max = +2.606343e+01, RMS = +1.505770e+01
+Test     :    PE                            : Min = +1.000000e+00, Max = +9.118178e+04, RMS = +3.773547e+04
+Test     :    Q                             : Min = +1.723674e-16, Max = +1.561707e-02, RMS = +2.492987e-03
+Test     :    QILS                          : Min = +0.000000e+00, Max = +4.828294e-04, RMS = +6.792385e-06
+Test     :    QLLS                          : Min = +0.000000e+00, Max = +4.169050e-04, RMS = +1.271173e-05
+Test     :    QICN                          : Min = +0.000000e+00, Max = +1.092174e-04, RMS = +1.747608e-06
+Test     :    QLCN                          : Min = +0.000000e+00, Max = +5.262767e-04, RMS = +1.817314e-05
+Test     :    PHIS                          : Min = -2.658390e+02, Max = +4.987826e+04, RMS = +5.978285e+03
+Test     :    frocean                       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
+Test     :    frlake                        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
+Test     :    frseaice                      : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +1.376009e-01
+Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
+Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
+Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.667599e-01, RMS = +2.046357e-01
+Test     :    sheleg                        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +8.336657e+14
+Test     :    ts                            : Min = +2.116139e+02, Max = +3.091393e+02, RMS = +2.875429e+02
+Test     :    soilt                         : Min = +2.483151e+02, Max = +1.000000e+15, RMS = +8.474193e+14
+Test     :    soilm                         : Min = +2.588957e-02, Max = +1.000000e+00, RMS = +9.120438e-01
+Test     :    u10m                          : Min = -1.466123e+01, Max = +1.836334e+01, RMS = +5.609328e+00
+Test     :    v10m                          : Min = -1.476750e+01, Max = +1.637945e+01, RMS = +4.856806e+00
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : State after fv3jedi::VarChaModel2GeoVaLs variable change transform: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 31 | cube sphere face size: C12
+Test     :    rh                            : Min = +1.821913e-14, Max = +1.088486e+00, RMS = +3.344203e-01
+Test     :    ps                            : Min = +5.003798e+04, Max = +9.118178e+04, RMS = +8.716449e+04
+Test     :    tv                            : Min = +1.853106e+02, Max = +4.816163e+02, RMS = +2.635743e+02
+Test     :    geopotential_height           : Min = +4.247447e+01, Max = +6.141520e+04, RMS = +3.174963e+04
+Test     :    surface_altitude              : Min = -2.710803e+01, Max = +5.086167e+03, RMS = +6.096154e+02
+Test     :    mole_fraction_of_carbon_dioxid: Min = +4.070000e+02, Max = +4.070000e+02, RMS = +4.070000e+02
+Test     :    humidity_mixing_ratio         : Min = +1.723674e-13, Max = +1.586483e+01, RMS = +2.515187e+00
+Test     :    mass_content_of_cloud_liquid_w: Min = +0.000000e+00, Max = +1.085082e-01, RMS = +4.347132e-03
+Test     :    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.449932e-01, RMS = +2.209436e-03
+Test     :    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.501658e+00
+Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +9.827405e+01, RMS = +3.155263e+01
+Test     :    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.108066e-01
+Test     :    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
+Test     :    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+Test     :    surface_snow_area_fraction    : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +3.648313e-01
+Test     :    surface_temperature_where_sea : Min = +2.700000e+02, Max = +3.091393e+02, RMS = +2.886331e+02
+Test     :    surface_temperature_where_land: Min = +2.116139e+02, Max = +3.091393e+02, RMS = +2.875429e+02
+Test     :    surface_temperature_where_ice : Min = +2.116139e+02, Max = +2.800000e+02, RMS = +2.771323e+02
+Test     :    surface_temperature_where_snow: Min = +2.116139e+02, Max = +2.800000e+02, RMS = +2.771323e+02
+Test     :    surface_snow_thickness        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +2.073261e+14
+Test     :    vegetation_area_fraction      : Min = +0.000000e+00, Max = +8.667599e-01, RMS = +2.000949e-01
+Test     :    surface_wind_speed            : Min = +1.543586e-04, Max = +6.755239e+01, RMS = +9.515480e+00
+Test     :    surface_wind_from_direction   : Min = +2.780543e-01, Max = +3.600000e+02, RMS = +2.168674e+02
+Test     :    leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+Test     :    volume_fraction_of_condensed_w: Min = +2.588957e-02, Max = +1.000000e+00, RMS = +9.282758e-01
+Test     :    soil_temperature              : Min = +0.000000e+00, Max = +3.105186e+02, RMS = +1.339793e+02
+Test     :    land_type_index               : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
+Test     :    vegetation_type_index         : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
+Test     :    soil_type                     : Min = +1.000000e+00, Max = +8.000000e+00, RMS = +2.718890e+00
+Test     :    vort                          : Min = -1.196988e-04, Max = +1.136487e-04, RMS = +1.588322e-05
+Test     :    tropopuase_pressure           : Min = +1.638461e+04, Max = +4.635351e+04, RMS = +2.249808e+04
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : Output state: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 31 | cube sphere face size: C12
+Test     :    rh                            : Min = +1.821913e-14, Max = +1.088486e+00, RMS = +3.344203e-01
+Test     :    ps                            : Min = +5.003798e+04, Max = +9.118178e+04, RMS = +8.716449e+04
+Test     :    tv                            : Min = +1.853106e+02, Max = +4.816163e+02, RMS = +2.635743e+02
+Test     :    geopotential_height           : Min = +4.247447e+01, Max = +6.141520e+04, RMS = +3.174963e+04
+Test     :    surface_altitude              : Min = -2.710803e+01, Max = +5.086167e+03, RMS = +6.096154e+02
+Test     :    mole_fraction_of_carbon_dioxid: Min = +4.070000e+02, Max = +4.070000e+02, RMS = +4.070000e+02
+Test     :    humidity_mixing_ratio         : Min = +1.723674e-13, Max = +1.586483e+01, RMS = +2.515187e+00
+Test     :    mass_content_of_cloud_liquid_w: Min = +0.000000e+00, Max = +1.085082e-01, RMS = +4.347132e-03
+Test     :    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.449932e-01, RMS = +2.209436e-03
+Test     :    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.501658e+00
+Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +9.827405e+01, RMS = +3.155263e+01
+Test     :    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.108066e-01
+Test     :    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
+Test     :    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+Test     :    surface_snow_area_fraction    : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +3.648313e-01
+Test     :    surface_temperature_where_sea : Min = +2.700000e+02, Max = +3.091393e+02, RMS = +2.886331e+02
+Test     :    surface_temperature_where_land: Min = +2.116139e+02, Max = +3.091393e+02, RMS = +2.875429e+02
+Test     :    surface_temperature_where_ice : Min = +2.116139e+02, Max = +2.800000e+02, RMS = +2.771323e+02
+Test     :    surface_temperature_where_snow: Min = +2.116139e+02, Max = +2.800000e+02, RMS = +2.771323e+02
+Test     :    surface_snow_thickness        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +2.073261e+14
+Test     :    vegetation_area_fraction      : Min = +0.000000e+00, Max = +8.667599e-01, RMS = +2.000949e-01
+Test     :    surface_wind_speed            : Min = +1.543586e-04, Max = +6.755239e+01, RMS = +9.515480e+00
+Test     :    surface_wind_from_direction   : Min = +2.780543e-01, Max = +3.600000e+02, RMS = +2.168674e+02
+Test     :    leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+Test     :    volume_fraction_of_condensed_w: Min = +2.588957e-02, Max = +1.000000e+00, RMS = +9.282758e-01
+Test     :    soil_temperature              : Min = +0.000000e+00, Max = +3.105186e+02, RMS = +1.339793e+02
+Test     :    land_type_index               : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
+Test     :    vegetation_type_index         : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
+Test     :    soil_type                     : Min = +1.000000e+00, Max = +8.000000e+00, RMS = +2.718890e+00
+Test     :    vort                          : Min = -1.196988e-04, Max = +1.136487e-04, RMS = +1.588322e-05
+Test     :    tropopuase_pressure           : Min = +1.638461e+04, Max = +4.635351e+04, RMS = +2.249808e+04
+Test     :  -----------------------------------------------------------------------------------------------

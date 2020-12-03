@@ -258,7 +258,7 @@ Fields:
     Units: m+2s
     IOFile: core
 
-  - FieldIONames: [vort]
+  - FieldIONames: [vort, vorticity]
     FieldName: vort
     LongName: vorticity
     Units: m+2s

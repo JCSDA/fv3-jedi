@@ -4,67 +4,67 @@ Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 286.316, nobs = 148, Jo/n = 
 Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 976.364, nobs = 968, Jo/n = 1.00864, err = 1.74802
 Test     : CostJo   : Nonlinear Jo(SfcObs) = 39.8888, nobs = 53, Jo/n = 0.752619, err = 143.514
 Test     : CostFunction: Nonlinear J = 4184.56
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.761452
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.761446
 Test     : CostFunction::addIncrement: Analysis: 
-Test     :  --------------------------------------------------------------------------------
+Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C24
-Test     :    ua            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550384e+01
-Test     :    va            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707478e+00
-Test     :    T             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484150e+02
-Test     :    DELP          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939525e+03
-Test     :    sphum         : Min = +0.000000e+00, Max = +1.841109e-02, RMS = +4.648019e-03
-Test     :    ice_wat       : Min = +0.000000e+00, Max = +2.392256e-04, RMS = +9.094106e-06
-Test     :    liq_wat       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809585e-05
-Test     :    o3mr          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603559e-06
-Test     :    phis          : Min = +0.000000e+00, Max = +3.753800e+04, RMS = +5.030367e+03
-Test     :    slmsk         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +5.718015e-01
-Test     :    sheleg        : Min = +0.000000e+00, Max = +1.439450e+02, RMS = +2.073467e+01
-Test     :    tsea          : Min = +2.163794e+02, Max = +3.094686e+02, RMS = +2.885459e+02
-Test     :    vtype         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.593921e+00
-Test     :    stype         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +3.993810e+00
-Test     :    vfrac         : Min = +0.000000e+00, Max = +8.204034e-01, RMS = +1.756376e-01
-Test     :    stc           : Min = +2.205464e+02, Max = +3.088920e+02, RMS = +2.892425e+02
-Test     :    smc           : Min = +4.815572e-02, Max = +1.000000e+00, RMS = +8.483376e-01
-Test     :    snwdph        : Min = +0.000000e+00, Max = +1.432708e+03, RMS = +1.719883e+02
-Test     :    u_srf         : Min = -1.385039e+01, Max = +2.045508e+01, RMS = +5.337246e+00
-Test     :    v_srf         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110528e+00
-Test     :    f10m          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009489e-01
-Test     :  --------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 0.000283161
+Test     :    ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550384e+01
+Test     :    va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707478e+00
+Test     :    T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484150e+02
+Test     :    DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939525e+03
+Test     :    sphum                         : Min = +0.000000e+00, Max = +1.841109e-02, RMS = +4.648021e-03
+Test     :    ice_wat                       : Min = +0.000000e+00, Max = +2.392256e-04, RMS = +9.094106e-06
+Test     :    liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809585e-05
+Test     :    o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603559e-06
+Test     :    phis                          : Min = +0.000000e+00, Max = +3.753800e+04, RMS = +5.030367e+03
+Test     :    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +5.718015e-01
+Test     :    sheleg                        : Min = +0.000000e+00, Max = +1.439450e+02, RMS = +2.073467e+01
+Test     :    tsea                          : Min = +2.163794e+02, Max = +3.094686e+02, RMS = +2.885459e+02
+Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.593921e+00
+Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +3.993810e+00
+Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.204034e-01, RMS = +1.756376e-01
+Test     :    stc                           : Min = +2.205464e+02, Max = +3.088920e+02, RMS = +2.892425e+02
+Test     :    smc                           : Min = +4.815572e-02, Max = +1.000000e+00, RMS = +8.483376e-01
+Test     :    snwdph                        : Min = +0.000000e+00, Max = +1.432708e+03, RMS = +1.719883e+02
+Test     :    u_srf                         : Min = -1.385039e+01, Max = +2.045508e+01, RMS = +5.337246e+00
+Test     :    v_srf                         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110528e+00
+Test     :    f10m                          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009489e-01
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : CostJb   : Nonlinear Jb = 0.00028314
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2881.95, nobs = 1403, Jo/n = 2.05414, err = 2.68074
-Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 268.808, nobs = 148, Jo/n = 1.81627, err = 0.000298811
-Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 851.478, nobs = 968, Jo/n = 0.879626, err = 1.74802
+Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 268.809, nobs = 148, Jo/n = 1.81628, err = 0.000298811
+Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 851.481, nobs = 968, Jo/n = 0.879629, err = 1.74802
 Test     : CostJo   : Nonlinear Jo(SfcObs) = 39.8634, nobs = 53, Jo/n = 0.75214, err = 143.514
-Test     : CostFunction: Nonlinear J = 4042.1
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.85515
+Test     : CostFunction: Nonlinear J = 4042.11
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.855146
 Test     : CostFunction::addIncrement: Analysis: 
-Test     :  --------------------------------------------------------------------------------
+Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C24
-Test     :    ua            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550384e+01
-Test     :    va            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707478e+00
-Test     :    T             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484150e+02
-Test     :    DELP          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939525e+03
-Test     :    sphum         : Min = +0.000000e+00, Max = +1.841109e-02, RMS = +4.648719e-03
-Test     :    ice_wat       : Min = +0.000000e+00, Max = +2.392256e-04, RMS = +9.094106e-06
-Test     :    liq_wat       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809585e-05
-Test     :    o3mr          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603559e-06
-Test     :    phis          : Min = +0.000000e+00, Max = +3.753800e+04, RMS = +5.030367e+03
-Test     :    slmsk         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +5.718015e-01
-Test     :    sheleg        : Min = +0.000000e+00, Max = +1.439450e+02, RMS = +2.073467e+01
-Test     :    tsea          : Min = +2.163794e+02, Max = +3.094686e+02, RMS = +2.885459e+02
-Test     :    vtype         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.593921e+00
-Test     :    stype         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +3.993810e+00
-Test     :    vfrac         : Min = +0.000000e+00, Max = +8.204034e-01, RMS = +1.756376e-01
-Test     :    stc           : Min = +2.205464e+02, Max = +3.088920e+02, RMS = +2.892425e+02
-Test     :    smc           : Min = +4.815572e-02, Max = +1.000000e+00, RMS = +8.483376e-01
-Test     :    snwdph        : Min = +0.000000e+00, Max = +1.432708e+03, RMS = +1.719883e+02
-Test     :    u_srf         : Min = -1.385039e+01, Max = +2.045508e+01, RMS = +5.337246e+00
-Test     :    v_srf         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110528e+00
-Test     :    f10m          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009489e-01
-Test     :  --------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 0.000290503
+Test     :    ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550384e+01
+Test     :    va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707478e+00
+Test     :    T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484150e+02
+Test     :    DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939525e+03
+Test     :    sphum                         : Min = +0.000000e+00, Max = +1.841109e-02, RMS = +4.648720e-03
+Test     :    ice_wat                       : Min = +0.000000e+00, Max = +2.392256e-04, RMS = +9.094106e-06
+Test     :    liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809585e-05
+Test     :    o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603559e-06
+Test     :    phis                          : Min = +0.000000e+00, Max = +3.753800e+04, RMS = +5.030367e+03
+Test     :    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +5.718015e-01
+Test     :    sheleg                        : Min = +0.000000e+00, Max = +1.439450e+02, RMS = +2.073467e+01
+Test     :    tsea                          : Min = +2.163794e+02, Max = +3.094686e+02, RMS = +2.885459e+02
+Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.593921e+00
+Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +3.993810e+00
+Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.204034e-01, RMS = +1.756376e-01
+Test     :    stc                           : Min = +2.205464e+02, Max = +3.088920e+02, RMS = +2.892425e+02
+Test     :    smc                           : Min = +4.815572e-02, Max = +1.000000e+00, RMS = +8.483376e-01
+Test     :    snwdph                        : Min = +0.000000e+00, Max = +1.432708e+03, RMS = +1.719883e+02
+Test     :    u_srf                         : Min = -1.385039e+01, Max = +2.045508e+01, RMS = +5.337246e+00
+Test     :    v_srf                         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110528e+00
+Test     :    f10m                          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009489e-01
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : CostJb   : Nonlinear Jb = 0.000290481
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2881.95, nobs = 1403, Jo/n = 2.05414, err = 2.68074
-Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 268.767, nobs = 148, Jo/n = 1.81599, err = 0.000298811
-Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 848.666, nobs = 968, Jo/n = 0.876721, err = 1.74802
+Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 268.768, nobs = 148, Jo/n = 1.816, err = 0.000298811
+Test     : CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 848.669, nobs = 968, Jo/n = 0.876724, err = 1.74802
 Test     : CostJo   : Nonlinear Jo(SfcObs) = 39.8625, nobs = 53, Jo/n = 0.752123, err = 143.514
 Test     : CostFunction: Nonlinear J = 4039.25

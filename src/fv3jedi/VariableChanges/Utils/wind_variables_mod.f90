@@ -33,6 +33,9 @@ public udvd_to_psichi
 
 public psichi_to_vortdivg
 
+public udvd_to_vort
+public uava_to_vort
+
 public a2d
 public a2d_ad
 public d2a
@@ -622,6 +625,77 @@ subroutine psichi_to_vortdivg(geom,grid,oprs,psi,chi,lsize,lev_start,lev_final,v
  deallocate(vorgcomm,divgcomm)
 
 end subroutine psichi_to_vortdivg
+
+! ------------------------------------------------------------------------------
+
+subroutine udvd_to_vort(geom, ud_in, vd_in, vort)
+
+ implicit none
+ type(fv3jedi_geom),   intent(inout) :: geom
+ real(kind=kind_real), intent(inout) :: ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) ! Dgrid winds (u)
+ real(kind=kind_real), intent(inout) :: vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) ! Dgrid winds (v)
+ real(kind=kind_real), intent(inout) ::  vort(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) ! Vorticity
+
+ real(kind=kind_real), allocatable :: ud(:,:,:)
+ real(kind=kind_real), allocatable :: vd(:,:,:)
+ integer :: i, j, k
+
+ ! --------------------------------- !
+ ! Convert D-grid winds to vorticity !
+ ! --------------------------------- !
+
+ ! Fill edge of D-grid winds
+ ! -------------------------
+ allocate(ud(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz))
+ allocate(vd(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz))
+
+ ! Copy internal part
+ ud(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) = ud_in(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ vd(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) = vd_in(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+ call fill_dgrid_winds(geom, ud, vd, fillhalo=.true.)
+
+ !D-grid u and v to A-grid vorticity
+ !----------------------------------
+ vort = 0.0_kind_real
+ do k=1,geom%npz
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
+       vort(i,j,k) = geom%rarea(i,j)*( ud(i,j,k)*geom%dx(i,j)-ud(i,j+1,k)*geom%dx(i,j+1) - &
+                                       vd(i,j,k)*geom%dy(i,j)+vd(i+1,j,k)*geom%dy(i+1,j))
+     enddo
+   enddo
+ enddo
+
+end subroutine udvd_to_vort
+
+! ------------------------------------------------------------------------------
+
+subroutine uava_to_vort(geom, ua, va, vort)
+
+ implicit none
+ type(fv3jedi_geom),   intent(inout) :: geom
+ real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! Dgrid winds (u)
+ real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! Dgrid winds (v)
+ real(kind=kind_real), intent(inout) :: vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! Vorticity
+
+ real(kind=kind_real) :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
+ real(kind=kind_real) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
+ integer :: i, j, k
+
+ ! --------------------------------- !
+ ! Convert A-grid winds to vorticity !
+ ! --------------------------------- !
+
+ ! A to D grid winds
+ ! -----------------
+ call a2d(geom, ua, va, ud, vd)
+
+ ! Compute vorticity
+ ! -----------------
+ call udvd_to_vort(geom, ud, vd, vort)
+
+end subroutine uava_to_vort
 
 ! ------------------------------------------------------------------------------
 
