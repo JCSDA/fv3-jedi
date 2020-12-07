@@ -1115,7 +1115,6 @@ real(kind=kind_real) :: ue(geom%isc-1:geom%iec+1,geom%jsc  :geom%jec+1,3)    ! 3
 real(kind=kind_real) :: ve(geom%isc  :geom%iec+1,geom%jsc-1:geom%jec+1,3)    ! 3D winds at edges
 real(kind=kind_real), dimension(geom%isc:geom%iec):: ut1, ut2, ut3
 real(kind=kind_real), dimension(geom%jsc:geom%jec):: vt1, vt2, vt3
-
 npx = geom%npx
 npy = geom%npy
 npz = geom%npz
@@ -1161,7 +1160,7 @@ do k=1, npz
       ve(i,j,3) = v3(i-1,j,3) + v3(i,j,3)
     enddo
   enddo
-
+ if (.not. geom%bounded_domain) then
   if ( is==1 ) then
     i = 1
     do j=js,je
@@ -1241,6 +1240,8 @@ do k=1, npz
       ue(i,j,3) = ut3(i)
     enddo
   endif
+
+ endif ! .not. bounded_domain
 
   do j=js,je+1
     do i=is,ie
@@ -1336,7 +1337,7 @@ do k=npz,1,-1
       ud_ad(i, j, k) = 0.0_8
     end do
   end do
-
+ if (.not. geom%bounded_domain) then
   if (je + 1 .eq. npy) then
     do i=ie,is,-1
       ut3_ad(i) = ut3_ad(i) + ue_ad(i, npy, 3)
@@ -1472,7 +1473,8 @@ do k=npz,1,-1
       end if
     end do
   end if
-
+ end if  !clt bounded=.false.
+ 
   do j=je+1,js-1,-1
     do i=ie+1,is,-1
       v3_ad(i-1, j, 3) = v3_ad(i-1, j, 3) + ve_ad(i, j, 3)

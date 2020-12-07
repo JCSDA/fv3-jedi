@@ -79,6 +79,8 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxa, dya
   logical :: ne_corner, se_corner, sw_corner, nw_corner
   logical :: nested = .false.
+  logical :: bounded_domain = .false.
+
   integer :: grid_type = 0
   logical :: dord4 = .true.
   type(atlas_functionspace_pointcloud) :: afunctionspace
@@ -309,6 +311,8 @@ self%ne_corner = Atm(1)%gridstruct%ne_corner
 self%se_corner = Atm(1)%gridstruct%se_corner
 self%sw_corner = Atm(1)%gridstruct%sw_corner
 self%nw_corner = Atm(1)%gridstruct%nw_corner
+self%nested    = Atm(1)%gridstruct%nested
+self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -469,6 +473,9 @@ self%fields = fields
 
 self%lat_us = other%lat_us
 self%lon_us = other%lon_us
+
+self%nested = other%nested
+self%bounded_domain = other%bounded_domain
 
 end subroutine clone
 
