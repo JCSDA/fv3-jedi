@@ -12,6 +12,8 @@ phases:
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo $CODEBUILD_SOURCE_REPO_URL
       - echo $CODEBUILD_SOURCE_VERSION
+      - org_name=$(echo $CODEBUILD_SOURCE_REPO_URL | awk '{split($0,org,"/"); print org[4]}')
+      - echo $org_name
 
       - echo $CODEBUILD_WEBHOOK_MERGE_COMMIT
       - echo $CODEBUILD_WEBHOOK_PREV_COMMIT
@@ -203,7 +205,8 @@ phases:
       - cd /build_container/fv3-jedi
       - pwd
       - ls
-      - bash /jcsda/fv3-bundle/fv3-jedi/CI/codecov_script.sh
+      - bash /jcsda/fv3-bundle/fv3-jedi/CI/codecov_script_$org_name.sh
+
 artifacts:
   files:
     - /build_container/fv3-jedi/Testing/Temporary/CTestCostData.txt
