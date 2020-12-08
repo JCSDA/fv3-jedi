@@ -66,7 +66,6 @@ list( APPEND fv3jedi_src_files
   Utilities/interface.h
   Utilities/Utilities.cc
   Utilities/Utilities.h
-  Utilities/fv3jedi_bump_interp_mod.f90
   Utilities/fv3jedi_communication_mod.f90
   Utilities/fv3jedi_constants_mod.f90
   Utilities/fv3jedi_interpolation_mod.f90

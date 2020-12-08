@@ -6,18 +6,20 @@
 module fv3jedi_interpolation_mod
 
 ! fckit
-use fckit_mpi_module, only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
+use fckit_mpi_module,               only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 
 ! oops
 use unstructured_interpolation_mod, only: unstrc_interp
 
+! saber
+use interpolatorbump_mod,         only: bump_interpolator
+
 ! fv3jedi
-use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
-use fv3jedi_kinds_mod,       only: kind_real
-use fv3jedi_field_mod,       only: fv3jedi_field, get_field, has_field
-use fv3jedi_geom_mod,        only: fv3jedi_geom
-use fv3jedi_constants_mod,   only: rad2deg
-use wind_vt_mod,             only: d2a, a2d
+use fv3jedi_kinds_mod,              only: kind_real
+use fv3jedi_field_mod,              only: fv3jedi_field, get_field, has_field
+use fv3jedi_geom_mod,               only: fv3jedi_geom
+use fv3jedi_constants_mod,          only: rad2deg
+use wind_vt_mod,                    only: d2a, a2d
 
 implicit none
 private
@@ -28,7 +30,7 @@ public :: field2field_interp, unsinterp_integer_apply, unsinterp_nearest_apply
 type field2field_interp
 
   character(len=32) :: interp_type
-  type(fv3jedi_bump_interp) :: bump
+  type(bump_interpolator) :: bumpinterp
   type(unstrc_interp) :: unsinterp
   logical :: need_bump, need_bary
   integer :: nnearest
@@ -72,18 +74,11 @@ else
   call abor1_ftn("In fv3jedi_interpolation_mod.create: interp_type should be bump or barycent")
 endif
 
-if (integer_interp) then
-  self%need_bary = .true.
-  if (us_interp_type == '') us_interp_type = 'barycent'
-endif
-
-! Initialize bump object
-! ----------------------
+! Initialize bump interpolator
+! ----------------------------
 if (self%need_bump) then
-  call self%bump%setup(geom_in%f_comm, geom_in%isc, geom_in%iec, geom_in%jsc, geom_in%jec, geom_in%npz, &
-                       geom_in%grid_lon(geom_in%isc:geom_in%iec, geom_in%jsc:geom_in%jec), &
-                       geom_in%grid_lat(geom_in%isc:geom_in%iec, geom_in%jsc:geom_in%jec), &
-                       geom_ou%ngrid, rad2deg*geom_ou%lon_us, rad2deg*geom_ou%lat_us )
+  call self%bumpinterp%init(geom_in%f_comm, afunctionspace_in=geom_in%afunctionspace, afunctionspace_out=geom_ou%afunctionspace, &
+     & nl=geom_in%npz)
 endif
 
 ! Initialize unstructured interpolation object
@@ -103,7 +98,7 @@ subroutine delete(self)
 
 class(field2field_interp), intent(inout) :: self           ! field2field_interp
 
-if (self%need_bump) call self%bump%delete()
+if (self%need_bump) call self%bumpinterp%delete()
 if (self%need_bary) call self%unsinterp%delete()
 
 end subroutine delete
@@ -121,7 +116,7 @@ type(fv3jedi_field),       intent(inout) :: fields_ou(nf)  !Output fields
 
 !Locals
 integer :: var, i, j, k, n
-real(kind=kind_real), allocatable :: field_in(:), field_ou(:), field_ou_2d(:,:)
+real(kind=kind_real), allocatable :: field_in(:), field_ou(:)
 
 logical :: do_d2a
 real(kind=kind_real), allocatable :: ua(:,:,:)
@@ -178,26 +173,12 @@ endif
 ! Interpolate all fields
 ! ---------------------
 do var = 1,nf
-  if (.not. fields_in(var)%integerfield .and. trim(fields_in(var)%space) == 'magnitude' .and. &
-      trim(self%interp_type) == 'bump') then
+  if (trim(self%interp_type) == 'bump') then
 
-    ! Allocation
-    allocate(field_ou_2d(geom_ou%ngrid,1:fields_ou(var)%npz))
-
-    ! Interpolate
-    call self%bump%apply(fields_ou(var)%npz, fields_in(var)%array, geom_ou%ngrid, field_ou_2d)
-
-    ! Back to structured
-    n = 0
-    do j = geom_ou%jsc,geom_ou%jec
-      do i = geom_ou%isc,geom_ou%iec
-          n = n + 1
-          fields_ou(var)%array(i,j,1:fields_ou(var)%npz) = field_ou_2d(n,1:fields_ou(var)%npz)
-      enddo
-    enddo
-
-    ! Release memory
-    deallocate(field_ou_2d)
+    ! Use BUMP
+    call self%bumpinterp%apply(fields_in(var)%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:fields_in(var)%npz), &
+       & fields_ou(var)%array(:,:,1:fields_ou(var)%npz), &
+       & nn=(fields_in(var)%integerfield .or. trim(fields_in(var)%space) == 'direction'))
 
   else
 

@@ -6,11 +6,14 @@
 module fv3jedi_lineargetvalues_mod
 
 ! fckit
-use fckit_mpi_module,              only: fckit_mpi_comm
+use fckit_mpi_module,               only: fckit_mpi_comm
 
 ! oops
 use datetime_mod,                   only: datetime
 use unstructured_interpolation_mod, only: unstrc_interp
+
+! saber
+use interpolatorbump_mod,         only: bump_interpolator
 
 ! ufo
 use ufo_locs_mod,                   only: ufo_locs, ufo_locs_time_mask
@@ -92,7 +95,8 @@ do gv = 1, geovals%nvar
   if ( trim(self%interp_method) == 'bump' .and. &
        .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
 
-    call self%bump%apply_ad(field%npz, field%array, locs%nlocs, geovals_all(:,1:field%npz))
+    ! Interpolate
+    call self%bumpinterp%apply_ad(geovals_all(:,1:field%npz),field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz))
 
   else ! Otherwise use unstructured interpolation
 

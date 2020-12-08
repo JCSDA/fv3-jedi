@@ -10,8 +10,6 @@ use iso_c_binding
 use netcdf
 use mpi
 
-use atlas_module, only: atlas_field, atlas_fieldset
-
 use datetime_mod
 
 use fckit_configuration_module, only: fckit_configuration
@@ -19,10 +17,9 @@ use fckit_log_module, only : log
 use fckit_mpi_module
 use fv3jedi_constants_mod, only: rad2deg
 
-use type_bump, only: bump_type
+use interpolatorbump_mod,         only: bump_interpolator
 
 use fv3jedi_constants_mod,    only: rad2deg
-use fv3jedi_bump_interp_mod,  only: fv3jedi_bump_interp
 use fv3jedi_field_mod,        only: fv3jedi_field
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use fv3jedi_kinds_mod,        only: kind_int, kind_real
@@ -38,7 +35,7 @@ public fv3jedi_llgeom!, create_latlon, delete_latlon, write_latlon_metadata, wri
 !Module level type
 type fv3jedi_llgeom
  type(fckit_mpi_comm) :: f_comm
- type(fv3jedi_bump_interp) :: bump
+ type(bump_interpolator) :: bumpinterp
  integer :: llcomm
  integer :: layout(2)
  logical :: thispe = .false.
@@ -148,8 +145,7 @@ type(fv3jedi_geom),   intent(in)    :: geom     !< Geometry
 integer :: color
 
 real(kind=kind_real) :: dx, dy
-integer :: i, j, ji, jj, ii, locs_nlocs, ierr
-real(kind=kind_real), allocatable :: locs_lat(:), locs_lon(:)
+integer :: i, ierr
 
 ! Create lat lon grid and interpolation object for going from cube to lat-lon
 ! --------------------------------------------------------------------------
@@ -209,34 +205,18 @@ if (llgeom%f_comm%rank() <= llgeom%npes-1) then
     llgeom%lats(i) = llgeom%lats(i-1) + dy
   enddo
 
-  locs_nlocs = llgeom%nx*llgeom%ny
-  allocate(locs_lon(locs_nlocs))
-  allocate(locs_lat(locs_nlocs))
-
-  ii = 0
-  do jj = 1,llgeom%ny
-    do ji = 1,llgeom%nx
-      ii = ii + 1
-      locs_lon(ii) = llgeom%lons(ji)
-      locs_lat(ii) = llgeom%lats(jj)
-    enddo
-  enddo
-
 else
 
-  locs_nlocs = 0
-  allocate(locs_lon(0))
-  allocate(locs_lat(0))
+  llgeom%nx = 0
+  llgeom%ny = 0
+  allocate(llgeom%lons(llgeom%nx))
+  allocate(llgeom%lats(llgeom%ny))
 
 endif
 
-call llgeom%bump%setup(geom%f_comm, geom%isc, geom%iec, geom%jsc, geom%jec, geom%npz, &
-                       geom%grid_lon(geom%isc:geom%iec, geom%jsc:geom%jec), &
-                       geom%grid_lat(geom%isc:geom%iec, geom%jsc:geom%jec), &
-                       locs_nlocs, locs_lon, locs_lat)
-
-deallocate(locs_lon)
-deallocate(locs_lat)
+! Initialize bump interpolator
+call llgeom%bumpinterp%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon1d_out=llgeom%lons, lat1d_out=llgeom%lats, &
+   & nl=geom%npz)
 
 !IO communicator
 !call MPI_Comm_split(llgeom%f_comm%communicator(), color, llgeom%f_comm%rank(), llgeom%llcomm, ierr)
@@ -277,7 +257,7 @@ if (llgeom%thispe) then
   deallocate ( llgeom%istarte, llgeom%icounte )
 endif
 
-call llgeom%bump%delete()
+call llgeom%bumpinterp%delete()
 
 
 end subroutine delete_latlon
@@ -369,7 +349,6 @@ type(fv3jedi_geom),           intent(in)      :: geom           !< Geometry
 type(fv3jedi_field),          intent(in)      :: fields(:)      !< Field to write
 
 integer :: var, ji, jj, jk, csngrid, llngrid, ii, i, j, k, n
-real(kind=kind_real), allocatable :: llfield_bump(:,:)
 real(kind=kind_real), allocatable :: llfield(:,:,:)
 
 integer :: ncid, varid
@@ -399,23 +378,10 @@ do var = 1, size(fields)
     csngrid = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
     llngrid = llgeom%nx*llgeom%ny
 
-    !Allocate fields with BUMP arrangement
-    allocate(llfield_bump(llngrid,geom%npz))
-
-    !Bilinear interpolation to latlon grid
-    call llgeom%bump%apply(geom%npz, fields(var)%array, llngrid, llfield_bump)
-
-    !Unpack BUMP latlon field
     if (llgeom%thispe) then
-     do jk = 1, geom%npz
-       ii = 0
-       do jj = 1,llgeom%ny
-         do ji = 1,llgeom%nx
-           ii = ii + 1
-           llfield(ji,jj,jk) = llfield_bump(ii,jk)
-         enddo
-       enddo
-     enddo
+      ! Interpolate
+      call llgeom%bumpinterp%apply(fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(var)%npz), &
+         & llfield(:,:,1:fields(var)%npz))
     endif
 
     !Open file
@@ -474,7 +440,6 @@ do var = 1, size(fields)
     call llgeom%f_comm%barrier()
 
     deallocate(llfield)
-    deallocate(llfield_bump)
 
   endif
 

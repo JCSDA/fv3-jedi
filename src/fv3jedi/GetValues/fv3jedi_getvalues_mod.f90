@@ -6,12 +6,14 @@
 module fv3jedi_getvalues_mod
 
 ! fckit
-use fckit_mpi_module,              only: fckit_mpi_comm
+use fckit_mpi_module,               only: fckit_mpi_comm
 
 ! oops
 use datetime_mod,                   only: datetime
-use type_bump,                      only: bump_type
 use unstructured_interpolation_mod, only: unstrc_interp
+
+! saber
+use interpolatorbump_mod,         only: bump_interpolator
 
 ! ufo
 use ufo_locs_mod,                   only: ufo_locs, ufo_locs_time_mask
@@ -19,7 +21,6 @@ use ufo_geovals_mod,                only: ufo_geovals
 
 ! fv3jedi uses
 use fv3jedi_constants_mod,          only: rad2deg
-use fv3jedi_bump_interp_mod,        only: fv3jedi_bump_interp
 use fv3jedi_field_mod,              only: fv3jedi_field, get_field, field_clen, &
                                           long_name_to_fv3jedi_name
 use fv3jedi_geom_mod,               only: fv3jedi_geom
@@ -33,12 +34,12 @@ private
 public :: fv3jedi_getvalues, fv3jedi_getvalues_base
 
 type, abstract :: fv3jedi_getvalues_base
-  integer                   :: isc, iec, jsc, jec, npz, ngrid
-  character(len=2048)       :: interp_method
-  integer                   :: nnear = 4
-  type(unstrc_interp)       :: unsinterp
-  type(fckit_mpi_comm)      :: comm
-  type(fv3jedi_bump_interp) :: bump
+  integer                 :: isc, iec, jsc, jec, npz, ngrid
+  character(len=2048)     :: interp_method
+  integer                 :: nnear = 4
+  type(bump_interpolator) :: bumpinterp
+  type(unstrc_interp)     :: unsinterp
+  type(fckit_mpi_comm)    :: comm
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -72,14 +73,11 @@ self%npz = geom%npz
 self%ngrid = geom%ngrid
 self%comm = geom%f_comm
 
-! Create interpolation weights
+! Initialize bump interpolator
 ! ----------------------------
 self%interp_method = trim(geom%interp_method)
 if (trim(self%interp_method) == 'bump') then
-  call self%bump%setup(geom%f_comm, geom%isc, geom%iec, geom%jsc, geom%jec, geom%npz, &
-                       geom%grid_lon(geom%isc:geom%iec, geom%jsc:geom%jec), &
-                       geom%grid_lat(geom%isc:geom%iec, geom%jsc:geom%jec), &
-                       locs%nlocs, locs%lon, locs%lat, 55555)
+  call self%bumpinterp%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon_out=locs%lon, lat_out=locs%lat, nl=geom%npz)
 endif
 
 ! Always create unstructured interpolation as it is used for special case fields, e.g. integers
@@ -95,7 +93,7 @@ subroutine delete(self)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
 
-if (trim(self%interp_method) == 'bump') call self%bump%delete()
+if (trim(self%interp_method) == 'bump') call self%bumpinterp%delete()
 
 call self%unsinterp%delete()
 
@@ -107,11 +105,11 @@ subroutine fill_geovals(self, geom, fields, t1, t2, locs, geovals)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
 type(fv3jedi_geom),            intent(in)    :: geom
-type(fv3jedi_field),          intent(in)    :: fields(:)
-type(datetime),               intent(in)    :: t1
-type(datetime),               intent(in)    :: t2
-type(ufo_locs),               intent(in)    :: locs
-type(ufo_geovals),            intent(inout) :: geovals
+type(fv3jedi_field),           intent(in)    :: fields(:)
+type(datetime),                intent(in)    :: t1
+type(datetime),                intent(in)    :: t2
+type(ufo_locs),                intent(in)    :: locs
+type(ufo_geovals),             intent(inout) :: geovals
 
 integer :: gv, n, ji, jj, jlev
 type(fv3jedi_field), pointer :: field
@@ -159,7 +157,8 @@ do gv = 1, geovals%nvar
   if ( trim(self%interp_method) == 'bump' .and. &
        .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
 
-    call self%bump%apply(field%npz, field%array, locs%nlocs, geovals_all(:,1:field%npz))
+    ! Interpolate
+    call self%bumpinterp%apply(field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz),geovals_all(:,1:field%npz))
 
   else ! Otherwise use unstructured interpolation
 
