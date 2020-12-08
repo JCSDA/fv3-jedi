@@ -35,8 +35,12 @@ bump:
 # Forced length-scales
 # --------------------
   forced_radii: 1
-  rh: 2500000.0
-  rv: 0.3
+  rh:
+    T: [2500000.0]
+    ps: [2500000.0]
+  rv: 
+    T: [0.3]
+    ps: [0.3]
 # Write C matrix
 # --------------
   write_cmat: 0

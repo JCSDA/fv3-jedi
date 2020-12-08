@@ -24,30 +24,30 @@ Test     : CostJo   : Nonlinear Jo(SfcObs) = 50.627, nobs = 53, Jo/n = 0.955226,
 Test     : CostFunction: Nonlinear J = 34208.9
 Test     : DRIPCGMinimizer: reduction in residual norm = 0.252471
 Test     : CostFunction::addIncrement: Analysis: 
-Test     :  --------------------------------------------------------------------------------
+Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C12
-Test     :    ua            : Min = -5.087701e+01, Max = +9.150653e+01, RMS = +2.024237e+01
-Test     :    va            : Min = -5.619865e+01, Max = +6.495247e+01, RMS = +8.579122e+00
-Test     :    t             : Min = +1.852996e+02, Max = +3.081416e+02, RMS = +2.471427e+02
-Test     :    ps            : Min = +5.448240e+04, Max = +1.037373e+05, RMS = +9.900788e+04
-Test     :    q             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.016855e-03
-Test     :    qi            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
-Test     :    ql            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
-Test     :    o3ppmv        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
-Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
-Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
-Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
-Test     :    frseaice      : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +1.375539e-01
-Test     :    vtype         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
-Test     :    stype         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
-Test     :    vfrac         : Min = +0.000000e+00, Max = +8.665497e-01, RMS = +2.046822e-01
-Test     :    sheleg        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +8.336657e+14
-Test     :    ts            : Min = +2.114021e+02, Max = +3.052997e+02, RMS = +2.873585e+02
-Test     :    soilt         : Min = +2.490014e+02, Max = +1.000000e+15, RMS = +8.474193e+14
-Test     :    soilm         : Min = +2.728177e-02, Max = +1.000000e+00, RMS = +9.121987e-01
-Test     :    u10m          : Min = -1.541011e+01, Max = +2.004475e+01, RMS = +5.677292e+00
-Test     :    v10m          : Min = -1.646713e+01, Max = +1.457106e+01, RMS = +4.830783e+00
-Test     :  --------------------------------------------------------------------------------
+Test     :    ua                            : Min = -5.087701e+01, Max = +9.150653e+01, RMS = +2.024237e+01
+Test     :    va                            : Min = -5.619865e+01, Max = +6.495247e+01, RMS = +8.579122e+00
+Test     :    t                             : Min = +1.852996e+02, Max = +3.081416e+02, RMS = +2.471427e+02
+Test     :    ps                            : Min = +5.448240e+04, Max = +1.037373e+05, RMS = +9.900788e+04
+Test     :    q                             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.016855e-03
+Test     :    qi                            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
+Test     :    ql                            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
+Test     :    o3ppmv                        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
+Test     :    phis                          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
+Test     :    frocean                       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
+Test     :    frlake                        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
+Test     :    frseaice                      : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +1.375539e-01
+Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
+Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
+Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.665497e-01, RMS = +2.046822e-01
+Test     :    sheleg                        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +8.336657e+14
+Test     :    ts                            : Min = +2.114021e+02, Max = +3.052997e+02, RMS = +2.873585e+02
+Test     :    soilt                         : Min = +2.490014e+02, Max = +1.000000e+15, RMS = +8.474193e+14
+Test     :    soilm                         : Min = +2.728177e-02, Max = +1.000000e+00, RMS = +9.121987e-01
+Test     :    u10m                          : Min = -1.541011e+01, Max = +2.004475e+01, RMS = +5.677292e+00
+Test     :    v10m                          : Min = -1.646713e+01, Max = +1.457106e+01, RMS = +4.830783e+00
+Test     :  -----------------------------------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 5.93662e-05
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2947.35, nobs = 1450, Jo/n = 2.03266, err = 2.66942
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1989.05, nobs = 1119, Jo/n = 1.77752, err = 2.0597
@@ -74,30 +74,30 @@ Test     : CostJo   : Nonlinear Jo(SfcObs) = 50.627, nobs = 53, Jo/n = 0.955226,
 Test     : CostFunction: Nonlinear J = 32742.6
 Test     : DRIPCGMinimizer: reduction in residual norm = 0.546518
 Test     : CostFunction::addIncrement: Analysis: 
-Test     :  --------------------------------------------------------------------------------
+Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 21 | cube sphere face size: C12
-Test     :    ua            : Min = -5.087701e+01, Max = +9.150653e+01, RMS = +2.024237e+01
-Test     :    va            : Min = -5.619865e+01, Max = +6.495247e+01, RMS = +8.579122e+00
-Test     :    t             : Min = +1.852996e+02, Max = +3.081416e+02, RMS = +2.471427e+02
-Test     :    ps            : Min = +5.448240e+04, Max = +1.037373e+05, RMS = +9.900788e+04
-Test     :    q             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.016859e-03
-Test     :    qi            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
-Test     :    ql            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
-Test     :    o3ppmv        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
-Test     :    phis          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
-Test     :    frocean       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
-Test     :    frlake        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
-Test     :    frseaice      : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +1.375539e-01
-Test     :    vtype         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
-Test     :    stype         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
-Test     :    vfrac         : Min = +0.000000e+00, Max = +8.665497e-01, RMS = +2.046822e-01
-Test     :    sheleg        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +8.336657e+14
-Test     :    ts            : Min = +2.114021e+02, Max = +3.052997e+02, RMS = +2.873585e+02
-Test     :    soilt         : Min = +2.490014e+02, Max = +1.000000e+15, RMS = +8.474193e+14
-Test     :    soilm         : Min = +2.728177e-02, Max = +1.000000e+00, RMS = +9.121987e-01
-Test     :    u10m          : Min = -1.541011e+01, Max = +2.004475e+01, RMS = +5.677292e+00
-Test     :    v10m          : Min = -1.646713e+01, Max = +1.457106e+01, RMS = +4.830783e+00
-Test     :  --------------------------------------------------------------------------------
+Test     :    ua                            : Min = -5.087701e+01, Max = +9.150653e+01, RMS = +2.024237e+01
+Test     :    va                            : Min = -5.619865e+01, Max = +6.495247e+01, RMS = +8.579122e+00
+Test     :    t                             : Min = +1.852996e+02, Max = +3.081416e+02, RMS = +2.471427e+02
+Test     :    ps                            : Min = +5.448240e+04, Max = +1.037373e+05, RMS = +9.900788e+04
+Test     :    q                             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.016859e-03
+Test     :    qi                            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
+Test     :    ql                            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
+Test     :    o3ppmv                        : Min = +1.890741e-02, Max = +3.613508e+01, RMS = +3.813928e+00
+Test     :    phis                          : Min = -2.658390e+02, Max = +4.989882e+04, RMS = +5.981687e+03
+Test     :    frocean                       : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.353951e-01
+Test     :    frlake                        : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +6.364239e-02
+Test     :    frseaice                      : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +1.375539e-01
+Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
+Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
+Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.665497e-01, RMS = +2.046822e-01
+Test     :    sheleg                        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +8.336657e+14
+Test     :    ts                            : Min = +2.114021e+02, Max = +3.052997e+02, RMS = +2.873585e+02
+Test     :    soilt                         : Min = +2.490014e+02, Max = +1.000000e+15, RMS = +8.474193e+14
+Test     :    soilm                         : Min = +2.728177e-02, Max = +1.000000e+00, RMS = +9.121987e-01
+Test     :    u10m                          : Min = -1.541011e+01, Max = +2.004475e+01, RMS = +5.677292e+00
+Test     :    v10m                          : Min = -1.646713e+01, Max = +1.457106e+01, RMS = +4.830783e+00
+Test     :  -----------------------------------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 6.52482e-05
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2947.35, nobs = 1450, Jo/n = 2.03266, err = 2.66942
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1989.05, nobs = 1119, Jo/n = 1.77752, err = 2.0597
