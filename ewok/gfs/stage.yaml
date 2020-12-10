@@ -11,6 +11,6 @@ copy_files:
         - akbk$(vertical_resolution).nc4
         - field_table
         - fmsmpp.nml
-        - input_gfs_c$(horizontal_resolution).nml
+        - input_gfs_$(horizontal_resolution).nml
         - inputpert_4dvar.nml
 

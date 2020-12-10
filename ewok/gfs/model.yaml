@@ -1,5 +1,5 @@
 name: FV3LM
-nml_file: '$(experiment_dir)/model/fv3files/input_gfs_c12.nml'
+nml_file: '$(experiment_dir)/model/fv3files/input_gfs_$(horizontal_resolution).nml'
 trc_file: '$(experiment_dir)/model/fv3files/field_table'
 nml_file_pert: '$(experiment_dir)/model/fv3files/inputpert_4dvar.nml'
 tstep: PT15M

@@ -1,2 +1,0 @@
-filename: $(current_dir)/$(file_type).tile$(tile).nc
-type: an
