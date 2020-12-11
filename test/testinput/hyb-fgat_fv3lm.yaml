@@ -164,7 +164,7 @@ cost function:
     obs filters:
     - filter: Domain Check
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
       where:
       - variable:
           name: impact_height@MetaData
@@ -178,7 +178,7 @@ cost function:
     - filter: Background Check RONBAM
       apply at iterations: 0, 1
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
 final:
   diagnostics:
     departures: oman

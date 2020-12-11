@@ -205,7 +205,7 @@ cost function:
     obs filters:
     - filter: Domain Check
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
       where:
       - variable:
           name: impact_height@MetaData
@@ -217,7 +217,7 @@ cost function:
       errmodel: NBAM
     - filter: Background Check RONBAM
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
