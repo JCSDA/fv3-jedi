@@ -1,12 +1,12 @@
 /*
- * (C) Copyright 2017 UCAR
+ * (C) Copyright 2020 NOAA
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_NUOPC_MODELNUOPC_H_
-#define FV3JEDI_MODEL_NUOPC_MODELNUOPC_H_
+#ifndef FV3JEDI_MODEL_UFS_MODELUFS_H_
+#define FV3JEDI_MODEL_UFS_MODELUFS_H_
 
 #include <ostream>
 #include <string>
@@ -19,7 +19,7 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "ModelNUOPC.interface.h"
+#include "ModelUFS.interface.h"
 
 // Forward declarations
 namespace eckit {
@@ -32,29 +32,22 @@ namespace fv3jedi {
   class State;
 
 // -----------------------------------------------------------------------------
-/// FV3JEDI model definition.
-/*!
- *  FV3JEDI nonlinear model definition and configuration parameters.
- */
 
-class ModelNUOPC: public oops::ModelBase<Traits>,
-                        private util::ObjectCounter<ModelNUOPC> {
+class ModelUFS: public oops::ModelBase<Traits>,
+                        private util::ObjectCounter<ModelUFS> {
  public:
-  static const std::string classname() {return "fv3jedi::ModelNUOPC";}
+  static const std::string classname() {return "fv3jedi::ModelUFS";}
 
-  ModelNUOPC(const Geometry &, const eckit::Configuration &);
-  ~ModelNUOPC();
+  ModelUFS(const Geometry &, const eckit::Configuration &);
+  ~ModelUFS();
 
-/// Prepare model integration
   void initialize(State &) const;
-
-/// Model integration
   void step(State &, const ModelBias &) const;
 
 /// Finish model integration
   void finalize(State &) const;
+  int saveTrajectory(State &, const ModelBias &) const;
 
-/// Utilities
   const util::Duration & timeResolution() const {return tstep_;}
   const oops::Variables & variables() const {return vars_;}
 
@@ -64,8 +57,10 @@ class ModelNUOPC: public oops::ModelBase<Traits>,
   util::Duration tstep_;
   const Geometry geom_;
   const oops::Variables vars_;
+  char jedidir_[10000];
+  char ufsdir_[10000];
 };
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_NUOPC_MODELNUOPC_H_
+#endif  // FV3JEDI_MODEL_UFS_MODELUFS_H_

@@ -125,6 +125,7 @@ list( APPEND fv3jedi_test_input
   testinput/localization_bump.yaml
   testinput/model_fv3lm.yaml
   testinput/model_geos.yaml
+  testinput/model_ufs.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
   testinput/state_geos_aerosol_ext.yaml
@@ -879,11 +880,11 @@ fv3jedi_add_test( NAME    model_fv3lm
                   EXE     test_fv3jedi_model.x
                   INTERFACETEST )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
-fv3jedi_add_test( NAME    model_ufs
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
-endif()
+#if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
+#fv3jedi_add_test( NAME    model_ufs
+#                  EXE     test_fv3jedi_model.x
+#                  INTERFACETEST )
+#endif()
 
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
 fv3jedi_add_test( NAME    model_geos

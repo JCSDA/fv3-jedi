@@ -95,8 +95,14 @@ ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
 ecbuild_include_mpi()
 link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 
+# Set default forecast model
+# --------------------------
+if (NOT FV3_FORECAST_MODEL MATCHES GEOS AND NOT FV3_FORECAST_MODEL MATCHES UFS)
+  set(FV3_FORECAST_MODEL "FV3CORE")
+endif()
+
 # fms
-if (FV3_FORECAST_MODEL MATCHES "FV3CORE") # OR FV3_FORECAST_MODEL MATCHES "UFS")
+if (FV3_FORECAST_MODEL MATCHES "FV3CORE" OR NOT FV3_FORECAST_MODEL) # OR FV3_FORECAST_MODEL MATCHES "UFS")
   ecbuild_use_package( PROJECT fms REQUIRED )
   include_directories( ${FMS_INCLUDE_DIRS} )
 endif()
@@ -122,10 +128,6 @@ if (FV3_FORECAST_MODEL MATCHES "GEOS")
   link_libraries(GEOSgcm_GridComp)
 endif()
 
-# ufs
-if (FV3_FORECAST_MODEL MATCHES "UFS")
-  #ToDo
-endif()
 
 # Linear model
 ecbuild_use_package( PROJECT fv3jedilm VERSION 1.0.0 REQUIRED )
@@ -155,9 +157,28 @@ endforeach()
 ################################################################################
 # Sources
 ################################################################################
-
 include_directories( ${FV3JEDI_INCLUDE_DIRS}
                      ${FV3JEDI_EXTRA_INCLUDE_DIRS} )
+
+# ufs
+if (FV3_FORECAST_MODEL MATCHES UFS)
+  # TODO: fms will be seperated from UFS at some point
+  # Requires an installion of ufs-weather-model built with -DJEDI_CONTROL=ON and setting 
+  # environment variable CMAKE_Platform to linux.custom to ensure INLINE_POST=OFF
+  # set CMAKE_PREFIX_PATH to include location of hpc-stack install and ufs install using
+  # semi-colon separated lists in quotes e.g.--
+  # ecbuild -DCMAKE_PREFIX_PATH="path-to/ufs-weather-model/build/install;path-to/hpc-stack/install" ...
+  find_package(ESMF MODULE REQUIRED STATIC)
+  find_package(bacio REQUIRED )
+  find_package(sigio REQUIRED )
+  find_package(sp REQUIRED )
+  find_package(w3emc REQUIRED )
+  find_package(w3nco REQUIRED )
+  find_package(nemsio REQUIRED )
+  find_package(fms REQUIRED )
+  find_package(fv3atm REQUIRED )
+  find_package(ufs REQUIRED )
+endif()
 
 add_subdirectory( src )
 add_subdirectory( test )
