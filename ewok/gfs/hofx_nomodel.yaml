@@ -8,5 +8,5 @@ model:
   $(MODEL)
 observations:
   $(OBSERVATIONS)
-window begin: $(window begin)
+window begin: '{{window_begin}}'
 window length: $(window length)

@@ -5,6 +5,7 @@ copy_files:
       target: fieldsets
       files:
         - dynamics.yaml
+        - ufo.yaml
     - source: test/Data/fv3files
       target: fv3files
       files: 

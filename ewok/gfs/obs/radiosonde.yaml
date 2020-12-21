@@ -1,9 +1,9 @@
 obs space:
   name: Radiosonde
   obsdatain:
-    obsfile: $(experiment_dir)/{{current_cycle}}/.radiosonde.$(date).nc4
+    obsfile: $(experiment_dir)/{{current_cycle}}/radiosonde.{{window_begin}}.nc4
   obsdataout:
-    obsfile: $(experiment_dir)/{{current_cycle}}/$(experiment).radiosonde.$(date).nc4
+    obsfile: $(experiment_dir)/{{current_cycle}}/$(experiment).radiosonde.{{window_begin}}.nc4
   simulated variables:
     - eastward_wind
     - northward_wind

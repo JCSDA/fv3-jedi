@@ -1,17 +1,27 @@
-'an': 
-  - file_type: ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data' ]
-    tile: [1, 2, 3, 4, 5, 6]
-    user_date_format: '%Y%m%d.%H%M%S'
-  - model: gfs_metadata
-    target_file: $(current_dir)/{{local_current_cycle}}.coupler.res
-    user_date_format: '%Y%m%d.%H%M%S'
-'fc':
-    # step is unused but required
-  - file_type: ['fv_core.res', 'fv_tracer.res']
-    tile: [1, 2, 3, 4, 5, 6]
-    user_date_format: '%Y%m%d.%H%M%S'
-  - model: gfs_metadata
-    source_file: $(current_dir)/{{local_current_cycle}}.coupler.res
-    user_date_format: '%Y%m%d.%H%M%S'
-    step: 'PT00H'
+fetch:
+  an: 
+    - file_type: [fv_core.res, fv_srf_wnd.res, fv_tracer.res, sfc_data]
+      tile: [1, 2, 3, 4, 5, 6]
+      user_date_format: '%Y%m%d.%H%M%S'
+    - model: gfs_metadata
+      target_file: $(current_dir)/{{local_current_cycle}}.coupler.res
+      user_date_format: '%Y%m%d.%H%M%S'
+  fc:
+    - file_type: [fv_core.res, fv_srf_wnd.res, fv_tracer.res, sfc_data]
+      tile: [1, 2, 3, 4, 5, 6]
+      user_date_format: '%Y%m%d.%H%M%S'
+    - model: gfs_metadata
+      target_file: $(current_dir)/{{local_current_cycle}}.coupler.res
+      user_date_format: '%Y%m%d.%H%M%S'
+      step: 'PT00H'
+store:
+  fc:
+    - file_type: [fv_core.res, fv_tracer.res]
+      tile: [1, 2, 3, 4, 5, 6]
+      user_date_format: '%Y%m%d.%H%M%S'
+    - model: gfs_metadata
+      source_file: $(current_dir)/{{local_current_cycle}}.coupler.res
+      user_date_format: '%Y%m%d.%H%M%S'
+      # step is unused but required
+      step: 'PT00H'
 

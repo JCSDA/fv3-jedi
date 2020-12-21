@@ -10,3 +10,4 @@ npz: 64
 ntiles: 6
 fieldsets:
   - fieldset: '$(experiment_dir)/model/fieldsets/dynamics.yaml'
+  - fieldset: '$(experiment_dir)/model/fieldsets/ufo.yaml'

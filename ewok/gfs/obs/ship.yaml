@@ -1,9 +1,9 @@
 obs space:
   name: Ship
   obsdatain:
-    obsfile: $(experiment_dir)/{{current_cycle}}/.ship.$(date).nc4
+    obsfile: $(experiment_dir)/{{current_cycle}}/ship.{{window_begin}}.nc4
   obsdataout:
-    obsfile: $(experiment_dir)/{{current_cycle}}/$(experiment).ship.$(date).nc4
+    obsfile: $(experiment_dir)/{{current_cycle}}/$(experiment).ship.{{window_begin}}.nc4
   simulated variables:
     - surface_pressure
 obs operator:
