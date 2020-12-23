@@ -926,11 +926,11 @@ fv3jedi_add_test( NAME    hofx_fv3lm
 
 # H(x) when ROPP is enabled
 # -------------------------
-if( ${ROPP-UFO_FOUND} )
-fv3jedi_add_test( NAME    hofx_gnssro_ropp
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-1 0)
-endif()
+#if( ${ROPP-UFO_FOUND} )
+#fv3jedi_add_test( NAME    hofx_gnssro_ropp
+#                  EXE     fv3jedi_hofx.x
+#                  TOL     1e-1 0)
+#endif()
 
 # H(x) no model
 # -------------
@@ -1031,12 +1031,12 @@ endif()
 #                  EXE          fv3jedi_var.x
 #                  TEST_DEPENDS bumpparameters_nicas_gfs)
 
-if( ${ROPP-UFO_FOUND} )
-  fv3jedi_add_test( NAME         hyb-3dvar_gfs_gnssro_ropp
-                    EXE          fv3jedi_var.x
-                    TOL          1.0e-1 0
-                    TEST_DEPENDS bumpparameters_nicas_gfs )
-endif()
+#if( ${ROPP-UFO_FOUND} )
+#  fv3jedi_add_test( NAME         hyb-3dvar_gfs_gnssro_ropp
+#                    EXE          fv3jedi_var.x
+#                    TOL          1.0e-1 0
+#                    TEST_DEPENDS bumpparameters_nicas_gfs )
+#endif()
 
 # Chemistry / AQ Variational Tests
 # -----------
