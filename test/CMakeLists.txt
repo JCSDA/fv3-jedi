@@ -50,7 +50,7 @@ list( APPEND fv3jedi_test_input
   testinput/bumpparameters_nicas_geos.yaml
   testinput/bumpparameters_nicas_gfs_p12.yaml
   testinput/bumpparameters_nicas_gfs.yaml
-  testinput/bumpparameters_nicas_gfs_aero.yaml 
+  testinput/bumpparameters_nicas_gfs_aero.yaml
   testinput/bumpparameters_nicas_lam_cmaq.yaml
   testinput/convertstate_geos_crtm_surface.yaml
   testinput/convertstate_geos_model2geovals.yaml
@@ -72,6 +72,9 @@ list( APPEND fv3jedi_test_input
   testinput/eda_4dvar_fv3lm_1.yaml
   testinput/eda_4dvar_fv3lm_2.yaml
   testinput/eda_4dvar_fv3lm.yaml
+  testinput/eda_block_3dvar_1.yaml
+  testinput/eda_block_3dvar_2.yaml
+  testinput/eda_block_3dvar.yaml
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
@@ -152,7 +155,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/addincrement_gfs.ref
   testoutput/bumpparameters_nicas_geos.ref
   testoutput/bumpparameters_nicas_gfs.ref
-  testoutput/bumpparameters_nicas_gfs_aero.ref 
+  testoutput/bumpparameters_nicas_gfs_aero.ref
   testoutput/bumpparameters_nicas_lam_cmaq.ref
   testoutput/convertstate_geos_crtm_surface.ref
   testoutput/convertstate_geos_model2geovals.ref
@@ -170,6 +173,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/dirac_gfs_bal.ref
   testoutput/dirac_gfs_c2a.ref
   testoutput/dirac_gfs.ref
+  testoutput/eda_block_3dvar.ref
   testoutput/ensvariance_geos.ref
   testoutput/ensvariance_gfs.ref
   testoutput/forecast_fv3-geos.ref
@@ -1143,6 +1147,11 @@ if (NOT SKIP_LARGE_TESTS)
                     EXE          fv3jedi_eda.x
                     MPI          12
                     NOCOMPARE
+                    TEST_DEPENDS bumpparameters_nicas_gfs )
+
+  fv3jedi_add_test( NAME       eda_block_3dvar
+                    EXE          fv3jedi_eda.x
+                    MPI          12
                     TEST_DEPENDS bumpparameters_nicas_gfs )
 
 endif()
