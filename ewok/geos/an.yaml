@@ -1,0 +1,2 @@
+filename: $(experiment_dir)/Data/GeosRunDir/$(file_type)
+type: an

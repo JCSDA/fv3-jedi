@@ -1,5 +1,0 @@
-forecast length: $(forecast_length)
-initial condition: $(FC_INPUT)
-output: $(FC_OUTPUT)
-geometry: $(GEOMETRY)
-model: $(MODEL)

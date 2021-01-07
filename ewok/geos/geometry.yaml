@@ -1,0 +1,12 @@
+nml_file_mpp: '$(experiment_dir)/Data/fv3files/fmsmpp.nml'
+trc_file: '$(experiment_dir)/Data/fv3files/field_table'
+akbk: '$(experiment_dir)/Data/fv3files/akbk72.nc4'
+# input.nml
+layout: [2,2]
+io_layout: [1,1]
+npx: 25
+npy: 25
+npz: 72
+ntiles: 6
+fieldsets:
+  - fieldset: '$(experiment_dir)/Data/fieldsets/dynamics.yaml'

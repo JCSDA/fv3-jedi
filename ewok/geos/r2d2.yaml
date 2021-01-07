@@ -1,0 +1,16 @@
+fetch:
+  'an':
+    - file_type: ['catch_internal_rst','fvcore_internal_rst','lake_internal_rst',
+                  'landice_internal_rst','moist_internal_rst','openwater_internal_rst',
+                  'pchem_internal_rst','seaicethermo_internal_rst']
+      user_date_format: '%Y%m%d.%H%M%S'
+  'fc':
+    - file_type: ['catch_internal_rst','fvcore_internal_rst','lake_internal_rst',
+                  'landice_internal_rst','moist_internal_rst','openwater_internal_rst',
+                  'pchem_internal_rst','seaicethermo_internal_rst']
+      user_date_format: '%Y%m%d.%H%M%S'
+
+store:
+  'fc':
+    - file_type: ['catch_internal_rst']
+      user_date_format: '%Y%m%d.%H%M%S'
