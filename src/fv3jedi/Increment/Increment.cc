@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include <numeric>
 #include <sstream>
 #include <string>
 #include <vector>

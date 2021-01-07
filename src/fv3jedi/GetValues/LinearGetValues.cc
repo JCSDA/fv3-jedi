@@ -26,7 +26,7 @@ LinearGetValues::LinearGetValues(const Geometry & geom, const ufo::Locations & l
   // Call GetValues consructor
   {
   util::Timer timergv(classname(), "LinearGetValues");
-  fv3jedi_lineargetvalues_create_f90(keyLinearGetValues_, geom.toFortran(), locs.toFortran());
+  fv3jedi_lineargetvalues_create_f90(keyLinearGetValues_, geom.toFortran(), locs);
   }
   oops::Log::trace() << "LinearGetValues::LinearGetValues done" << std::endl;
 }
@@ -84,14 +84,11 @@ void LinearGetValues::setTrajectory(const State & state, const util::DateTime & 
   linearmodel2geovals_[t1] = linearmodel2geovals;
   }
 
-  const util::DateTime * t1p = &t1;
-  const util::DateTime * t2p = &t2;
-
   {
   util::Timer timergv(classname(), "SetTrajectory");
   fv3jedi_lineargetvalues_set_trajectory_f90(keyLinearGetValues_, geom_->toFortran(),
-                                             stategeovalvars.toFortran(), &t1p, &t2p,
-                                             locs_.toFortran(), geovals.toFortran());
+                                             stategeovalvars.toFortran(), t1, t2, locs_,
+                                             geovals.toFortran());
   }
   oops::Log::trace() << "LinearGetValues::setTrajectory done" << std::endl;
 }
@@ -111,13 +108,11 @@ void LinearGetValues::fillGeoVaLsTL(const Increment & inc, const util::DateTime 
   linearmodel2geovals->multiply(inc, incgeovalvars);
   }
 
-  const util::DateTime * t1p = &t1;
-  const util::DateTime * t2p = &t2;
   {
   util::Timer timergv(classname(), "fillGeoVaLsTL");
   fv3jedi_lineargetvalues_fill_geovals_tl_f90(keyLinearGetValues_, geom_->toFortran(),
-                                              incgeovalvars.toFortran(), &t1p, &t2p,
-                                              locs_.toFortran(), geovals.toFortran());
+                                              incgeovalvars.toFortran(), t1, t2, locs_,
+                                              geovals.toFortran());
   }
   oops::Log::trace() << "LinearGetValues::fillGeovalsTL done" << std::endl;
 }
@@ -131,13 +126,11 @@ void LinearGetValues::fillGeoVaLsAD(Increment & inc, const util::DateTime & t1,
   // Create increment with geovals variables
   Increment incgeovalvars(*geom_, geovals.getVars(), inc.validTime());
 
-  const util::DateTime * t1p = &t1;
-  const util::DateTime * t2p = &t2;
   {
   util::Timer timergv(classname(), "fillGeoVaLsAD");
   fv3jedi_lineargetvalues_fill_geovals_ad_f90(keyLinearGetValues_, geom_->toFortran(),
-                                              incgeovalvars.toFortran(), &t1p, &t2p,
-                                              locs_.toFortran(), geovals.toFortran());
+                                              incgeovalvars.toFortran(), t1, t2, locs_,
+                                              geovals.toFortran());
   }
 
   // Change variables

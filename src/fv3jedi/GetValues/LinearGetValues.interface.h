@@ -15,31 +15,35 @@ namespace eckit {
 
 namespace util {
   class DateTime;
-  class Duration;
+}
+
+namespace ufo {
+  class Locations;
 }
 
 namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_lineargetvalues_create_f90(F90lineargetvalues &, const F90geom &, const F90locs &);
+  void fv3jedi_lineargetvalues_create_f90(F90lineargetvalues &, const F90geom &,
+                                          const ufo::Locations &);
 
   void fv3jedi_lineargetvalues_delete_f90(F90lineargetvalues &);
 
   void fv3jedi_lineargetvalues_set_trajectory_f90(const F90lineargetvalues &, const F90geom &,
-                                                  const F90state &, const util::DateTime **,
-                                                  const util::DateTime **, const F90locs &,
-                                                  const F90goms &);
+                                                  const F90state &,
+                                                  const util::DateTime &, const util::DateTime &,
+                                                  const ufo::Locations &, const F90goms &);
 
   void fv3jedi_lineargetvalues_fill_geovals_tl_f90(const F90lineargetvalues &, const F90geom &,
-                                                   const F90inc &, const util::DateTime **,
-                                                   const util::DateTime **, const F90locs &,
-                                                   const F90goms &);
+                                                   const F90inc &,
+                                                   const util::DateTime &, const util::DateTime &,
+                                                   const ufo::Locations &, const F90goms &);
 
   void fv3jedi_lineargetvalues_fill_geovals_ad_f90(const F90lineargetvalues &, const F90geom &,
-                                                   const F90inc &, const util::DateTime **,
-                                                   const util::DateTime **, const F90locs &,
-                                                   const F90goms &);
+                                                   const F90inc &,
+                                                   const util::DateTime &, const util::DateTime &,
+                                                   const ufo::Locations &, const F90goms &);
 
 };  // extern "C"
 
