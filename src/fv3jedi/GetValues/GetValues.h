@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/util/DateTime.h"
@@ -51,7 +50,7 @@ class GetValues : public util::Printable, private util::ObjectCounter<GetValues>
  public:
   static const std::string classname() {return "fv3jedi::GetValues";}
 
-  GetValues(const Geometry &, const ufo::Locations &);
+  GetValues(const Geometry &, const ufo::Locations &, const eckit::Configuration &);
   virtual ~GetValues();
 
   void fillGeoVaLs(const State &, const util::DateTime &, const util::DateTime &,

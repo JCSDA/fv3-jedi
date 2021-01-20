@@ -11,8 +11,9 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-GetValues::GetValues(const Geometry & geom, const ufo::Locations & locs) : locs_(locs),
-  geom_(new Geometry(geom)), model2geovals_() {
+GetValues::GetValues(const Geometry & geom, const ufo::Locations & locs,
+                     const eckit::Configuration &)
+  : locs_(locs), geom_(new Geometry(geom)), model2geovals_() {
   oops::Log::trace() << "GetValues::GetValues starting" << std::endl;
 
   // Create the variable change object
