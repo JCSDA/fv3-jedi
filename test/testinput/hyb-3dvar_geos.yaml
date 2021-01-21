@@ -27,92 +27,69 @@ cost function:
                       stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   background error:
     covariance model: hybrid
-    static weight: 0.1
-    static:
-      date: &adate '2018-04-15T00:00:00Z'
-      covariance model: FV3JEDI-ID
-      bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
-        method: cor
-        strategy: specific_univariate
-        load_nicas: 1
-        mpicom: 2
-        verbosity: main
-        io_keys:
-        - "ua-ua"
-        - "va-va"
-        - "t-t"
-        - "ps-ps"
-        - "q-q"
-        - "qi-qi"
-        - "ql-ql"
-        - "o3ppmv-o3ppmv"
-        io_values:
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-    ensemble weight: 0.9
-    ensemble:
-      date: *adate
-      members:
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem001.20180415_000000z.nc4
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem002.20180415_000000z.nc4
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem003.20180415_000000z.nc4
-        - filetype: geos
-          datapath: Data/inputs/geos_c12
-          state variables: *3dvars
-          filename_bkgd: geos.mem004.20180415_000000z.nc4
-        - filetype: geos
-          datapath: Data/inputs/geos_c12
-          state variables: *3dvars
-          filename_bkgd: geos.mem005.20180415_000000z.nc4
-        - filetype: geos
-          datapath: Data/inputs/geos_c12
-          state variables: *3dvars
-          filename_bkgd: geos.mem006.20180415_000000z.nc4
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem007.20180415_000000z.nc4
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem008.20180415_000000z.nc4
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem009.20180415_000000z.nc4
-        - filetype: geos
-          state variables: *3dvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem010.20180415_000000z.nc4
-      localization:
-        timeslots: ['2018-04-15T00:00:00Z']
-        localization variables: *3dvars
-        localization method: ID
-        bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
-          method: loc
-          strategy: common
-          load_nicas: 1
-          mpicom: 2
-          verbosity: main
-          io_keys: ["common"]
-          io_values: ["fixed_2500km_0.3"]
+    components:
+    - covariance:
+        covariance model: FV3JEDI-ID
+        date: &adate '2018-04-15T00:00:00Z'
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members:
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem001.20180415_000000z.nc4
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem002.20180415_000000z.nc4
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem003.20180415_000000z.nc4
+          - filetype: geos
+            datapath: Data/inputs/geos_c12
+            state variables: *3dvars
+            filename_bkgd: geos.mem004.20180415_000000z.nc4
+          - filetype: geos
+            datapath: Data/inputs/geos_c12
+            state variables: *3dvars
+            filename_bkgd: geos.mem005.20180415_000000z.nc4
+          - filetype: geos
+            datapath: Data/inputs/geos_c12
+            state variables: *3dvars
+            filename_bkgd: geos.mem006.20180415_000000z.nc4
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem007.20180415_000000z.nc4
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem008.20180415_000000z.nc4
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem009.20180415_000000z.nc4
+          - filetype: geos
+            state variables: *3dvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem010.20180415_000000z.nc4
+        localization:
+          localization variables: *3dvars
+          localization method: ID
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+            io_keys: ["common"]
+            io_values: ["fixed_2500km_0.3"]
+      weight:
+        value: 0.9
   observations:
   - obs space:
       name: Aircraft

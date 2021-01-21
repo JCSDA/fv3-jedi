@@ -11,59 +11,61 @@ cost function:
                       seas1,seas2,seas3,seas4]
   background error:
     covariance model: hybrid
-    static weight: 0.1
-    ensemble weight: 0.9
-    static:
-      date: '2018-04-14T21:00:00Z'
-      covariance model: 'FV3JEDI-ID'
-    ensemble:
-      date: '2018-04-14T21:00:00Z'
-      members:
-      - filetype: gfs
-        state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
-                                    dust1,dust2,dust3,dust4,dust5,
-                                    seas1,seas2,seas3,seas4]   
-        datapath: Data/inputs/gfs_aero_c12/mem001/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *aerovars
-        datapath: Data/inputs/gfs_aero_c12/mem002/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *aerovars
-        datapath: Data/inputs/gfs_aero_c12/mem003/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *aerovars
-        datapath: Data/inputs/gfs_aero_c12/mem004/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *aerovars
-        datapath: Data/inputs/gfs_aero_c12/mem005/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      localization:
-        timeslots: ['2018-04-14T21:00:00Z']
-        localization variables: *aerovars
-        localization method: BUMP
-        bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-          method: loc
-          strategy: common
-          load_nicas: 1
-          mpicom: 2
-          verbosity: main
-          io_keys: ["common"]
-          io_values: ["fixed_2500km_0.3"]
+    components:
+    - covariance:
+        covariance model: FV3JEDI-ID
+        date: '2018-04-14T21:00:00Z'
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members:
+        - filetype: gfs
+          state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
+                                      dust1,dust2,dust3,dust4,dust5,
+                                      seas1,seas2,seas3,seas4]   
+          datapath: Data/inputs/gfs_aero_c12/mem001/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *aerovars
+          datapath: Data/inputs/gfs_aero_c12/mem002/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *aerovars
+          datapath: Data/inputs/gfs_aero_c12/mem003/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *aerovars
+          datapath: Data/inputs/gfs_aero_c12/mem004/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *aerovars
+          datapath: Data/inputs/gfs_aero_c12/mem005/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        localization:
+          localization variables: *aerovars
+          localization method: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+            io_keys: ["common"]
+            io_values: ["fixed_2500km_0.3"]
+      weight:
+        value: 0.9
   observations:
   - obs space:
       name: Aod
