@@ -1,6 +1,6 @@
-nml_file_mpp: '$(experiment_dir)/model/fv3files/fmsmpp.nml'
-trc_file: '$(experiment_dir)/model/fv3files/field_table'
-akbk: '$(experiment_dir)/model/fv3files/akbk64.nc4'
+nml_file_mpp: '$(stage_dir)/fv3files/fmsmpp.nml'
+trc_file: '$(stage_dir)/fv3files/field_table'
+akbk: '$(stage_dir)/fv3files/akbk64.nc4'
 # input.nml
 layout: [1,1]
 io_layout: [1,1]
@@ -9,5 +9,5 @@ npy: 13
 npz: 64
 ntiles: 6
 fieldsets:
-  - fieldset: '$(experiment_dir)/model/fieldsets/dynamics.yaml'
-  - fieldset: '$(experiment_dir)/model/fieldsets/ufo.yaml'
+  - fieldset: '$(stage_dir)/fieldsets/dynamics.yaml'
+  - fieldset: '$(stage_dir)/fieldsets/ufo.yaml'
