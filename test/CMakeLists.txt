@@ -1052,7 +1052,7 @@ fv3jedi_add_test( NAME         3dvar_lam_cmaq
 fv3jedi_add_test( NAME         hyb-3dvar_gfs_aero
                   EXE          fv3jedi_var.x
                   TOL          1.0e-1 0
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
+                  TEST_DEPENDS bumpparameters_nicas_gfs_aero )
 
 if( ${GEOS-AERO_FOUND} )
   fv3jedi_add_test( NAME         3denvar_geos_aero
@@ -1069,7 +1069,7 @@ fv3jedi_add_test( NAME         hyb-fgat_fv3lm
 
 fv3jedi_add_test( NAME         hyb-fgat_gfs_aero
                   EXE          fv3jedi_var.x
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
+                  TEST_DEPENDS bumpparameters_nicas_gfs_aero )
 
 # 4DEnVar
 # -------
