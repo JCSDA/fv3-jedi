@@ -63,7 +63,7 @@ cost function:
         obsfile: Data/hofx/geos_aero_aod_550_3dvar_20180415_00z.nc4
       simulated variables: [Total_Aerosol_Optical_Depth_550]
     obs operator:
-      name: GeosAod
+      name: AodGeos
       tracer_geovals: [mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
                        mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
                        mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
