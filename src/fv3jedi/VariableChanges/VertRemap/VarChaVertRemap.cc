@@ -10,7 +10,6 @@
 
 #include "eckit/config/Configuration.h"
 
-#include "oops/interface/VariableChange.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
 
@@ -22,8 +21,7 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::VariableChangeMaker<Traits, oops::VariableChange<Traits, VarChaVertRemap>>
-       makerVarChaVertRemap_("VertRemap");
+static oops::VariableChangeMaker<Traits, VarChaVertRemap> makerVarChaVertRemap_("VertRemap");
 // -------------------------------------------------------------------------------------------------
 VarChaVertRemap::VarChaVertRemap(const Geometry & resol, const eckit::Configuration & conf):
     geom_(new Geometry(resol))

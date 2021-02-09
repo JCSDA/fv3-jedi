@@ -27,7 +27,6 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GetValues/GetValues.interface.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
 
 // -------------------------------------------------------------------------------------------------
 
@@ -43,6 +42,7 @@ namespace ufo {
 namespace fv3jedi {
   class State;
   class Geometry;
+  class VarChaModel2GeoVaLs;
 
 // -------------------------------------------------------------------------------------------------
 

@@ -7,6 +7,9 @@
 
 #include "fv3jedi/GetValues/LinearGetValues.h"
 
+#include "fv3jedi/VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h"
+#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
+
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------

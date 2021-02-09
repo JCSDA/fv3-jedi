@@ -7,6 +7,8 @@
 
 #include "fv3jedi/GetValues/GetValues.h"
 
+#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
+
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------

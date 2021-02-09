@@ -25,7 +25,10 @@ Test     :    soilm                         : Min = +2.588957e-02, Max = +1.0000
 Test     :    u10m                          : Min = -1.466123e+01, Max = +1.836334e+01, RMS = +5.609328e+00
 Test     :    v10m                          : Min = -1.476750e+01, Max = +1.637945e+01, RMS = +4.856806e+00
 Test     :  -----------------------------------------------------------------------------------------------
-Test     : State after fv3jedi::VarChaModel2GeoVaLs variable change transform: 
+Test     : Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
+Test     : Variable change from: 23 variables: U, V, PT, PKZ, PE, Q, QILS, QLLS, QICN, QLCN, PHIS, frocean, frlake, frseaice, vtype, stype, vfrac, sheleg, ts, soilt, soilm, u10m, v10m
+Test     : Variable change to: 31 variables: rh, ps, tv, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index, vegetation_type_index, soil_type, vort, tropopuase_pressure
+Test     : State after variable transform: 
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 31 | cube sphere face size: C12
 Test     :    rh                            : Min = +1.821913e-14, Max = +1.088486e+00, RMS = +3.344203e-01

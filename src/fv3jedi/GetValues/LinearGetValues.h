@@ -29,8 +29,6 @@
 #include "fv3jedi/GetValues/LinearGetValues.interface.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h"
-#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
 
 // -------------------------------------------------------------------------------------------------
 
@@ -42,6 +40,8 @@ namespace ufo {
 namespace fv3jedi {
   class State;
   class Geometry;
+  class VarChaModel2GeoVaLs;
+  class LinVarChaModel2GeoVaLs;
 
 // -------------------------------------------------------------------------------------------------
 

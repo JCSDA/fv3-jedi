@@ -13,20 +13,21 @@
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
-#include "oops/util/Printable.h"
+#include "fv3jedi/Utilities/Traits.h"
+#include "oops/base/VariableChangeBase.h"
 #include "VarChaC2A.interface.h"
 
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class VarChaC2A: public util::Printable {
+class VarChaC2A: public oops::VariableChangeBase<Traits> {
  public:
   static const std::string classname() {return "fv3jedi::VarChaC2A";}
-  explicit VarChaC2A(const Geometry &, const eckit::Configuration &);
+  VarChaC2A(const Geometry &, const eckit::Configuration &);
   ~VarChaC2A();
-  void changeVar(const State &, State &) const;
-  void changeVarInverse(const State &, State &) const;
+  void changeVar(const State &, State &) const override;
+  void changeVarInverse(const State &, State &) const override;
 
  private:
   std::shared_ptr<const Geometry> geom_;
