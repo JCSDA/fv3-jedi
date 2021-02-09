@@ -1,7 +1,7 @@
 Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(NO2) = 817.846, nobs = 277, Jo/n = 2.95251, err = 1.12853e-05
-Test     : CostFunction: Nonlinear J = 817.846
-Test     : PCGMinimizer: reduction in residual norm = 0.0201011
+Test     : CostJo   : Nonlinear Jo(NO2) = 804.599, nobs = 272, Jo/n = 2.95808, err = 1.1313e-05
+Test     : CostFunction: Nonlinear J = 804.599
+Test     : PCGMinimizer: reduction in residual norm = 0.0194914
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 8 | cube sphere face size: C45
@@ -12,8 +12,8 @@ Test     :    DELP                          : Min = +4.424700e+01, Max = +3.6283
 Test     :    ps                            : Min = +7.008338e+04, Max = +1.016514e+05, RMS = +9.426137e+04
 Test     :    sphum                         : Min = +9.893754e-07, Max = +2.116033e-02, RMS = +5.550789e-03
 Test     :    phis                          : Min = +0.000000e+00, Max = +3.108395e+04, RMS = +9.714241e+03
-Test     :    no2                           : Min = +0.000000e+00, Max = +5.339019e-02, RMS = +1.696806e-03
+Test     :    no2                           : Min = +0.000000e+00, Max = +5.343396e-02, RMS = +1.688826e-03
 Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 2.14311e-05
-Test     : CostJo   : Nonlinear Jo(NO2) = 2883.73, nobs = 277, Jo/n = 10.4106, err = 1.12853e-05
-Test     : CostFunction: Nonlinear J = 2883.73
+Test     : CostJb   : Nonlinear Jb = 2.27286e-05
+Test     : CostJo   : Nonlinear Jo(NO2) = 3136.99, nobs = 272, Jo/n = 11.5331, err = 1.1313e-05
+Test     : CostFunction: Nonlinear J = 3136.99

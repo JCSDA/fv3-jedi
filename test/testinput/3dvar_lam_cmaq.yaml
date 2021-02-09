@@ -51,6 +51,25 @@ cost function:
       - variable:
           name: quality_assurance_value@MetaData
         minvalue: 0.9
+    - filter: Bounds Check
+      filter variables:
+      - name: nitrogen_dioxide_in_tropospheric_column
+      test variables:
+      - name: LAMDomainCheck@ObsFunction
+        options:
+          map_projection: gnomonic_ed # only option currently supported
+          save: true # will save the DerivedValue to IODA output file
+          # the size of the FV3-LAM grid (mass, not staggered)
+          npx: 45
+          npy: 24
+          # below comes from the global attributes in the FV3-LAM grid netCDF file
+          plat: 33.5
+          plon: -97.5
+          a: 0.21423
+          k: -0.23209
+          dx: 0.4995731519
+          dy: 0.4995731519
+      minvalue: 1.0 # will filter all obs outside of the specified limited area domain
     obs operator:
       name: AvgKernel
       obs options:
