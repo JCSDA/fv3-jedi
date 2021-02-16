@@ -574,7 +574,7 @@ elseif (xm%has_field('ua') .and. xm%has_field('va')) then
 endif
 
 
-! Tropopuase pressure
+! Tropopause pressure
 ! -------------------
 have_tropprs = .false.
 if (trim(self%tropprs_method) == "gsi") then
@@ -798,7 +798,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_vort) call field_fail(fields_to_do(f))
     field_ptr = vort
 
-  case ("tropopuase_pressure")
+  case ("tropopause_pressure")
 
     if (.not. have_tropprs) call field_fail(fields_to_do(f))
     field_ptr = tprs

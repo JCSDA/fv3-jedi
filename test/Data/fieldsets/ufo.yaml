@@ -11,7 +11,7 @@
 Geometry: fv3
 
 Fields:
-  - FieldName: tropopuase_pressure
+  - FieldName: tropopause_pressure
     Units: Pa
     Levels: 1
 
