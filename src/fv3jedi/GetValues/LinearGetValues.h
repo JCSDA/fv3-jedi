@@ -49,7 +49,7 @@ class LinearGetValues : public util::Printable, private util::ObjectCounter<Line
  public:
   static const std::string classname() {return "fv3jedi::LinearGetValues";}
 
-  LinearGetValues(const Geometry &, const ufo::Locations &);
+  LinearGetValues(const Geometry &, const ufo::Locations &, const eckit::Configuration &);
   virtual ~LinearGetValues();
 
   void setTrajectory(const State & state, const util::DateTime & t1, const util::DateTime & t2,
