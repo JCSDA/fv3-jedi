@@ -13,7 +13,7 @@ fetch:
     - model: gfs_metadata
       target_file: $(current_dir)/{{local_current_cycle}}.coupler.res
       user_date_format: '%Y%m%d.%H%M%S'
-      step: 'PT00H'
+      step: 'PT06H'
 store:
   fc:
     - file_type: [fv_core.res, fv_tracer.res]
@@ -23,5 +23,5 @@ store:
       source_file: $(current_dir)/{{local_current_cycle}}.coupler.res
       user_date_format: '%Y%m%d.%H%M%S'
       # step is unused but required
-      step: 'PT00H'
+      step: 'PT06H'
 
