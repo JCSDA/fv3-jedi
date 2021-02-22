@@ -1,59 +1,59 @@
 Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 146.917, nobs = 100, Jo/n = 1.46917, err = 0.05
-Test     : CostFunction: Nonlinear J = 146.917
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.00303649
+Test     : CostJo   : Nonlinear Jo(Aod) = 68.54, nobs = 100, Jo/n = 0.6854, err = 0.05
+Test     : CostFunction: Nonlinear J = 68.54
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.00741583
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 20 | cube sphere face size: C12
 Test     :    DELP                          : Min = +1.000000e+00, Max = +5.114039e+03, RMS = +1.952166e+03
 Test     :    RH                            : Min = +1.856580e-06, Max = +1.009854e+00, RMS = +4.529769e-01
-Test     :    DU001                         : Min = +0.000000e+00, Max = +1.671863e-07, RMS = +4.399199e-09
-Test     :    DU002                         : Min = +0.000000e+00, Max = +5.424880e-07, RMS = +1.422609e-08
-Test     :    DU003                         : Min = +0.000000e+00, Max = +6.062894e-07, RMS = +1.562929e-08
-Test     :    DU004                         : Min = +0.000000e+00, Max = +4.159743e-07, RMS = +6.840284e-09
-Test     :    DU005                         : Min = +0.000000e+00, Max = +2.168439e-07, RMS = +2.881162e-09
-Test     :    SS001                         : Min = +0.000000e+00, Max = +1.612505e-10, RMS = +7.230042e-12
-Test     :    SS002                         : Min = +0.000000e+00, Max = +4.497960e-09, RMS = +2.157171e-10
-Test     :    SS003                         : Min = +0.000000e+00, Max = +4.337923e-08, RMS = +2.136887e-09
-Test     :    SS004                         : Min = +0.000000e+00, Max = +1.239630e-07, RMS = +6.883708e-09
-Test     :    SS005                         : Min = +0.000000e+00, Max = +4.274278e-08, RMS = +1.638609e-09
-Test     :    BCPHOBIC                      : Min = +0.000000e+00, Max = +4.632864e-09, RMS = +5.919143e-11
-Test     :    BCPHILIC                      : Min = +0.000000e+00, Max = +3.265045e-09, RMS = +7.673792e-11
-Test     :    OCPHOBIC                      : Min = +0.000000e+00, Max = +6.050151e-08, RMS = +4.715607e-10
-Test     :    OCPHILIC                      : Min = +0.000000e+00, Max = +7.834458e-08, RMS = +1.203078e-09
-Test     :    NO3AN1                        : Min = +0.000000e+00, Max = +3.425501e-09, RMS = +5.339370e-11
-Test     :    NO3AN2                        : Min = +0.000000e+00, Max = +4.572676e-09, RMS = +1.859934e-10
-Test     :    NO3AN3                        : Min = +0.000000e+00, Max = +6.087553e-11, RMS = +1.723035e-12
-Test     :    SO4                           : Min = +0.000000e+00, Max = +1.028447e-08, RMS = +5.341186e-10
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 9.8017, nobs = 100, Jo/n = 0.098017, err = 0.05
-Test     : CostFunction: Nonlinear J = 9.8017
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.134607
-Test     : CostFunction::addIncrement: Analysis: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 20 | cube sphere face size: C12
-Test     :    DELP                          : Min = +1.000000e+00, Max = +5.114039e+03, RMS = +1.952166e+03
-Test     :    RH                            : Min = +1.856580e-06, Max = +1.009854e+00, RMS = +4.529769e-01
-Test     :    DU001                         : Min = +0.000000e+00, Max = +1.671863e-07, RMS = +4.399190e-09
+Test     :    DU001                         : Min = +0.000000e+00, Max = +1.671863e-07, RMS = +4.399194e-09
 Test     :    DU002                         : Min = +0.000000e+00, Max = +5.424880e-07, RMS = +1.422608e-08
 Test     :    DU003                         : Min = +0.000000e+00, Max = +6.062894e-07, RMS = +1.562929e-08
 Test     :    DU004                         : Min = +0.000000e+00, Max = +4.159743e-07, RMS = +6.840284e-09
 Test     :    DU005                         : Min = +0.000000e+00, Max = +2.168439e-07, RMS = +2.881162e-09
-Test     :    SS001                         : Min = +0.000000e+00, Max = +4.769100e-10, RMS = +7.904861e-12
-Test     :    SS002                         : Min = +0.000000e+00, Max = +4.497960e-09, RMS = +2.156525e-10
-Test     :    SS003                         : Min = +0.000000e+00, Max = +4.337923e-08, RMS = +2.136856e-09
-Test     :    SS004                         : Min = +0.000000e+00, Max = +1.239630e-07, RMS = +6.883697e-09
-Test     :    SS005                         : Min = +0.000000e+00, Max = +4.274278e-08, RMS = +1.638607e-09
-Test     :    BCPHOBIC                      : Min = +0.000000e+00, Max = +4.632864e-09, RMS = +5.921525e-11
-Test     :    BCPHILIC                      : Min = +0.000000e+00, Max = +3.265045e-09, RMS = +7.662795e-11
-Test     :    OCPHOBIC                      : Min = +0.000000e+00, Max = +6.050151e-08, RMS = +4.715295e-10
-Test     :    OCPHILIC                      : Min = +0.000000e+00, Max = +7.834458e-08, RMS = +1.203078e-09
-Test     :    NO3AN1                        : Min = +0.000000e+00, Max = +3.425501e-09, RMS = +5.375934e-11
-Test     :    NO3AN2                        : Min = +0.000000e+00, Max = +4.572676e-09, RMS = +1.859906e-10
-Test     :    NO3AN3                        : Min = +0.000000e+00, Max = +6.087553e-11, RMS = +1.723870e-12
-Test     :    SO4                           : Min = +0.000000e+00, Max = +1.028447e-08, RMS = +5.336486e-10
+Test     :    SS001                         : Min = +0.000000e+00, Max = +1.424937e-10, RMS = +7.032485e-12
+Test     :    SS002                         : Min = +0.000000e+00, Max = +4.497960e-09, RMS = +2.156344e-10
+Test     :    SS003                         : Min = +0.000000e+00, Max = +4.337923e-08, RMS = +2.136878e-09
+Test     :    SS004                         : Min = +0.000000e+00, Max = +1.239630e-07, RMS = +6.883704e-09
+Test     :    SS005                         : Min = +0.000000e+00, Max = +4.274278e-08, RMS = +1.638608e-09
+Test     :    BCPHOBIC                      : Min = +0.000000e+00, Max = +4.632864e-09, RMS = +5.894882e-11
+Test     :    BCPHILIC                      : Min = +0.000000e+00, Max = +3.265045e-09, RMS = +7.644737e-11
+Test     :    OCPHOBIC                      : Min = +0.000000e+00, Max = +6.050151e-08, RMS = +4.715456e-10
+Test     :    OCPHILIC                      : Min = +0.000000e+00, Max = +7.834458e-08, RMS = +1.203074e-09
+Test     :    NO3AN1                        : Min = +0.000000e+00, Max = +3.425501e-09, RMS = +5.301489e-11
+Test     :    NO3AN2                        : Min = +0.000000e+00, Max = +4.572676e-09, RMS = +1.859913e-10
+Test     :    NO3AN3                        : Min = +0.000000e+00, Max = +6.087553e-11, RMS = +1.720084e-12
+Test     :    SO4                           : Min = +0.000000e+00, Max = +1.028447e-08, RMS = +5.338721e-10
 Test     :  -----------------------------------------------------------------------------------------------
 Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 11.8626, nobs = 100, Jo/n = 0.118626, err = 0.05
-Test     : CostFunction: Nonlinear J = 11.8626
+Test     : CostJo   : Nonlinear Jo(Aod) = 11.0225, nobs = 100, Jo/n = 0.110225, err = 0.05
+Test     : CostFunction: Nonlinear J = 11.0225
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.0401943
+Test     : CostFunction::addIncrement: Analysis: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 20 | cube sphere face size: C12
+Test     :    DELP                          : Min = +1.000000e+00, Max = +5.114039e+03, RMS = +1.952166e+03
+Test     :    RH                            : Min = +1.856580e-06, Max = +1.009854e+00, RMS = +4.529769e-01
+Test     :    DU001                         : Min = +0.000000e+00, Max = +1.671863e-07, RMS = +4.399179e-09
+Test     :    DU002                         : Min = +0.000000e+00, Max = +5.424880e-07, RMS = +1.422608e-08
+Test     :    DU003                         : Min = +0.000000e+00, Max = +6.062894e-07, RMS = +1.562929e-08
+Test     :    DU004                         : Min = +0.000000e+00, Max = +4.159743e-07, RMS = +6.840284e-09
+Test     :    DU005                         : Min = +0.000000e+00, Max = +2.168439e-07, RMS = +2.881162e-09
+Test     :    SS001                         : Min = +0.000000e+00, Max = +5.394212e-10, RMS = +7.870223e-12
+Test     :    SS002                         : Min = +0.000000e+00, Max = +4.497960e-09, RMS = +2.155307e-10
+Test     :    SS003                         : Min = +0.000000e+00, Max = +4.337923e-08, RMS = +2.136830e-09
+Test     :    SS004                         : Min = +0.000000e+00, Max = +1.239630e-07, RMS = +6.883687e-09
+Test     :    SS005                         : Min = +0.000000e+00, Max = +4.274278e-08, RMS = +1.638604e-09
+Test     :    BCPHOBIC                      : Min = +0.000000e+00, Max = +4.632864e-09, RMS = +5.901999e-11
+Test     :    BCPHILIC                      : Min = +0.000000e+00, Max = +3.265045e-09, RMS = +7.634226e-11
+Test     :    OCPHOBIC                      : Min = +0.000000e+00, Max = +6.050151e-08, RMS = +4.715002e-10
+Test     :    OCPHILIC                      : Min = +0.000000e+00, Max = +7.834458e-08, RMS = +1.202698e-09
+Test     :    NO3AN1                        : Min = +0.000000e+00, Max = +3.425501e-09, RMS = +5.344851e-11
+Test     :    NO3AN2                        : Min = +0.000000e+00, Max = +4.572676e-09, RMS = +1.859873e-10
+Test     :    NO3AN3                        : Min = +0.000000e+00, Max = +6.087553e-11, RMS = +1.721425e-12
+Test     :    SO4                           : Min = +0.000000e+00, Max = +1.028447e-08, RMS = +5.332111e-10
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : CostJb   : Nonlinear Jb = 0
+Test     : CostJo   : Nonlinear Jo(Aod) = 17.5628, nobs = 100, Jo/n = 0.175628, err = 0.05
+Test     : CostFunction: Nonlinear J = 17.5628

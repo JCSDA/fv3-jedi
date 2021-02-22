@@ -56,5 +56,5 @@ Test     :    sss                           : Min = +1.246751e+01, Max = +3.9013
 Test     :  -----------------------------------------------------------------------------------------------
 Test     : H(x): 
 Test     : Aircraft nobs= 6294 Min=-49.9152, Max=301.364, RMS=146.666
-Test     : AMSUA-NOAA19 nobs= 1500 Min=146.397, Max=293.417, RMS=230.098
+Test     : AMSUA-NOAA19 nobs= 1500 Min=146.426, Max=293.417, RMS=230.097
 Test     : End H(x)

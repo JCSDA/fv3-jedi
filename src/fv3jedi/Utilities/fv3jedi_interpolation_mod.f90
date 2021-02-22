@@ -343,9 +343,8 @@ call unsinterp%apply(field_in, field_ou_tmp, field_neighbours)
 ! Find nearest neighbour
 ! ----------------------
 do n = 1, ngrid_ou
-  field_ou(n) = field_neighbours(minloc(unsinterp%interp_w(:,n),1),n)
+  field_ou(n) = field_neighbours(maxloc(unsinterp%interp_w(:,n),1),n)
 enddo
-
 
 end subroutine unsinterp_nearest_apply
 

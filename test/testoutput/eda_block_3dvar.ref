@@ -3,7 +3,7 @@ Test     : CostJo   : Nonlinear Jo(Aircraft) = 2882.22, nobs = 1435, Jo/n = 2.00
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 2158.46, nobs = 1134, Jo/n = 1.90341, err = 2.06099
 Test     : CostFunction: Nonlinear J = 5040.68
 Test     : BlockBLanczosMinimizer: reduction in residual norm = 0.262872
-Test     : CostFunction::addIncrement: Analysis:
+Test     : CostFunction::addIncrement: Analysis: 
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 8 | cube sphere face size: C12
 Test     :    ua                            : Min = -4.474895e+01, Max = +9.525416e+01, RMS = +1.652233e+01

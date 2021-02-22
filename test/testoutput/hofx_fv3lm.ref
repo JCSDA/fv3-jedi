@@ -56,5 +56,5 @@ Test     : H(x):
 Test     : Aircraft nobs= 6294 Min=-27.4436, Max=300.955, RMS=146.37
 Test     : GnssroBndNBAM nobs= 150 Min=0.000306193, Max=0.0232271, RMS=0.00813699
 Test     : SBUV2-NOAA19-OZ nobs= 1408 Min=0.0220698, Max=495.592, RMS=79.1039
-Test     : AMSUA-NOAA19 nobs= 1500 Min=148.697, Max=291.46, RMS=230.038
+Test     : AMSUA-NOAA19 nobs= 1500 Min=148.659, Max=291.46, RMS=230.04
 Test     : End H(x)
