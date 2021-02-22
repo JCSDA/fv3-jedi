@@ -157,6 +157,15 @@ real(kind=kind_real), pointer     :: qicn    (:,:,:)
 real(kind=kind_real), pointer     :: qlls    (:,:,:)
 real(kind=kind_real), pointer     :: qlcn    (:,:,:)
 
+!qrqs
+logical :: have_qrqs
+real(kind=kind_real), allocatable :: qr      (:,:,:)
+real(kind=kind_real), allocatable :: qs      (:,:,:)
+real(kind=kind_real), pointer     :: qrls    (:,:,:)
+real(kind=kind_real), pointer     :: qrcn    (:,:,:)
+real(kind=kind_real), pointer     :: qsls    (:,:,:)
+real(kind=kind_real), pointer     :: qscn    (:,:,:)
+
 !CRTM mixing ratio
 logical :: have_qmr
 real(kind=kind_real), allocatable :: qmr     (:,:,:)       !Land-sea mask
@@ -165,8 +174,12 @@ real(kind=kind_real), allocatable :: qmr     (:,:,:)       !Land-sea mask
 logical :: have_crtm_cld
 real(kind=kind_real), allocatable :: ql_ade  (:,:,:)
 real(kind=kind_real), allocatable :: qi_ade  (:,:,:)
+real(kind=kind_real), allocatable :: qr_ade  (:,:,:)
+real(kind=kind_real), allocatable :: qs_ade  (:,:,:)
 real(kind=kind_real), allocatable :: ql_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qi_efr  (:,:,:)
+real(kind=kind_real), allocatable :: qr_efr  (:,:,:)
+real(kind=kind_real), allocatable :: qs_efr  (:,:,:)
 real(kind=kind_real), allocatable :: watercov(:,:)
 
 !Salinity
@@ -465,6 +478,24 @@ elseif (xm%has_field( 'qils') .and. xm%has_field( 'qicn') .and. &
   ql = qlls + qlcn
   have_qiql = .true.
 endif
+! ------
+have_qrqs = .false.
+if (xm%has_field( 'rainwat') .and. xm%has_field( 'snowwat')) then
+  call xm%get_field('rainwat', qr)
+  call xm%get_field('snowwat', qs)
+  have_qrqs = .true.
+elseif (xm%has_field( 'qrls') .and. xm%has_field( 'qrcn') .and. &
+        xm%has_field( 'qsls') .and. xm%has_field( 'qscn')) then
+  call xm%get_field('qrls', qrls)
+  call xm%get_field('qrcn', qrcn)
+  call xm%get_field('qsls', qsls)
+  call xm%get_field('qscn', qscn)
+  allocate(qr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  allocate(qs(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  qr = qrls + qrcn
+  qs = qsls + qscn
+  have_qrqs = .true.
+endif
 
 
 ! Get CRTM moisture fields
@@ -488,8 +519,22 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
       if (slmsk(i,j,1) == 0) watercov(i,j) = 1.0_kind_real
     enddo
   enddo
-  call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
+  if (have_qrqs ) then
+    allocate(qr_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qs_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qr_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qs_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    qr_ade = 0.0_kind_real
+    qs_ade = 0.0_kind_real
+    qr_efr = 0.0_kind_real
+    qs_efr = 0.0_kind_real
+    call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
+                     ql_ade, qi_ade, ql_efr, qi_efr, &
+                     qr, qs, qr_ade, qs_ade, qr_efr, qs_efr )
+  else
+    call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
                      ql_ade, qi_ade, ql_efr, qi_efr )
+  endif
   have_crtm_cld = .true.
 endif
 
@@ -688,6 +733,16 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qi_ade
 
+  case ("mass_content_of_rain_in_atmosphere_layer")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qr_ade
+
+  case ("mass_content_of_snow_in_atmosphere_layer")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qs_ade
+
   case ("effective_radius_of_cloud_liquid_water_particle")
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
@@ -697,6 +752,16 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qi_efr
+
+  case ("effective_radius_of_rain_particle")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qr_efr
+
+  case ("effective_radius_of_snow_particle")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qs_efr
 
   case ("water_area_fraction")
 
@@ -840,8 +905,12 @@ if (associated(u_srf)) nullify(u_srf)
 if (associated(v_srf)) nullify(v_srf)
 if (associated(qils)) nullify(qils)
 if (associated(qlls)) nullify(qlls)
+if (associated(qrls)) nullify(qrls)
+if (associated(qsls)) nullify(qsls)
 if (associated(qicn)) nullify(qicn)
 if (associated(qlcn)) nullify(qlcn)
+if (associated(qrcn)) nullify(qrcn)
+if (associated(qscn)) nullify(qscn)
 
 if (allocated(fields_to_do)) deallocate(fields_to_do)
 if (allocated(rh)) deallocate(rh)
@@ -862,11 +931,17 @@ if (allocated(slmsk)) deallocate(slmsk)
 if (allocated(f10m)) deallocate(f10m)
 if (allocated(ql)) deallocate(ql)
 if (allocated(qi)) deallocate(qi)
+if (allocated(qr)) deallocate(qr)
+if (allocated(qs)) deallocate(qs)
 if (allocated(qmr)) deallocate(qmr)
 if (allocated(ql_ade)) deallocate(ql_ade)
 if (allocated(qi_ade)) deallocate(qi_ade)
+if (allocated(qr_ade)) deallocate(qr_ade)
+if (allocated(qs_ade)) deallocate(qs_ade)
 if (allocated(ql_efr)) deallocate(ql_efr)
 if (allocated(qi_efr)) deallocate(qi_efr)
+if (allocated(qr_efr)) deallocate(qr_efr)
+if (allocated(qs_efr)) deallocate(qs_efr)
 if (allocated(watercov)) deallocate(watercov)
 if (allocated(sss)) deallocate(sss)
 if (allocated(land_type_index)) deallocate(land_type_index)

@@ -34,7 +34,8 @@ contains
 !> Compute cloud area density and effective radius for the crtm --------------
 !>----------------------------------------------------------------------------
 
-subroutine crtm_ade_efr( geom,p,T,delp,sea_frac,q,ql,qi,ql_ade,qi_ade,ql_efr,qi_efr)
+subroutine crtm_ade_efr( geom,p,T,delp,sea_frac,q,ql,qi,ql_ade,qi_ade,ql_efr,qi_efr, &
+                         qr,qs,qr_ade,qs_ade,qr_efr,qs_efr)
 
 implicit none
 
@@ -47,18 +48,36 @@ real(kind=kind_real), intent(in)  :: sea_frac(geom%isc:geom%iec,geom%jsc:geom%je
 real(kind=kind_real), intent(in)  :: q(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)     !Specific humidity | kg/kg
 real(kind=kind_real), intent(in)  :: ql(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of cloud liquid water | kg/kg
 real(kind=kind_real), intent(in)  :: qi(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of cloud ice water | kg/kg
+real(kind=kind_real), intent(in), optional  :: qr(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of cloud rain water | kg/kg
+real(kind=kind_real), intent(in), optional  :: qs(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of cloud snow water | kg/kg
 
 real(kind=kind_real), intent(out) :: ql_ade(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !area density for cloud liquid water | kg/m^2
 real(kind=kind_real), intent(out) :: qi_ade(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !area density for cloud ice water | kg/m^2
 real(kind=kind_real), intent(out) :: ql_efr(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !efr for cloud liquid water | microns
 real(kind=kind_real), intent(out) :: qi_efr(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !efr for cloud ice | microns
+real(kind=kind_real), intent(out), optional :: qr_ade(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !area density for cloud rain water | kg/m^2
+real(kind=kind_real), intent(out), optional :: qs_ade(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !area density for cloud snow water | kg/m^2
+real(kind=kind_real), intent(out), optional :: qr_efr(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !efr for cloud rain water | microns
+real(kind=kind_real), intent(out), optional :: qs_efr(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !efr for cloud snow water | microns
 
 !Locals
 integer :: isc,iec,jsc,jec,npz
 integer :: i,j,k
 logical, allocatable :: seamask(:,:)
 real(kind=kind_real) :: tem1, tem2, tem3, kgkg_to_kgm2
+real(kind=kind_real) :: wc_in_g_m3, xqq
+logical :: have_qr, have_qs
 
+if(present(qr)) then
+  have_qr = .true.
+else
+  have_qr = .false.
+endif
+if(present(qs)) then
+  have_qs = .true.
+else
+  have_qs = .false.
+endif
 
 ! Grid convenience
 ! ----------------
@@ -75,7 +94,14 @@ ql_ade = 0.0_kind_real
 qi_ade = 0.0_kind_real
 ql_efr = 0.0_kind_real
 qi_efr = 0.0_kind_real
-
+if(have_qr) then
+  qr_ade = 0.0_kind_real
+  qr_efr = 0.0_kind_real
+endif
+if(have_qs) then
+  qs_ade = 0.0_kind_real
+  qs_efr = 0.0_kind_real
+endif
 
 ! Sea mask
 ! --------
@@ -159,6 +185,59 @@ ql_ade = max(0.0_kind_real,ql_ade)
 qi_ade = max(0.0_kind_real,qi_ade)
 ql_efr = max(0.0_kind_real,ql_efr)
 qi_efr = max(0.0_kind_real,qi_efr)
+
+
+! Rain water effective radius (Taken from set_crtm_cloudmod.f90 in GSI for GEOS qr & qs .)
+! ---------------------------------
+if( have_qr ) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+
+        if (seamask(i,j)) then
+          kgkg_to_kgm2 = delp(i,j,k) / grav
+          qr_ade(i,j,k) = max(qr(i,j,k),0.0_kind_real) * kgkg_to_kgm2
+          tem1 = grav/rdry
+          wc_in_g_m3 = 1000.0_kind_real * tem1 * qr_ade(i,j,k) * (p(i,j,k)/delp(i,j,k)) &
+                             /t(i,j,k) * (1.0_kind_real + zvir * max(q(i,j,k),0.0_kind_real))
+          xqq = log10(wc_in_g_m3)
+          qr_efr(i,j,k) = 7.934_kind_real*xqq*xqq*xqq + 90.858_kind_real*xqq*xqq &
+                        + 387.807_kind_real*xqq + 679.939_kind_real
+          qr_efr(i,j,k) = max(qr_efr(i,j,k), 100.0_kind_real)
+        endif
+
+      enddo
+    enddo
+  enddo
+  qr_ade = max(0.0_kind_real,qr_ade)
+  qr_efr = max(0.0_kind_real,qr_efr)
+endif
+
+! Snow water effective radius (Taken from set_crtm_cloudmod.f90 in GSI for GEOS qr & qs.)
+! ---------------------------------
+if( have_qs ) then
+  do k = 1,npz
+    do j = jsc,jec
+      do i = isc,iec
+
+        if (seamask(i,j)) then
+          kgkg_to_kgm2 = delp(i,j,k) / grav
+          qs_ade(i,j,k) = max(qs(i,j,k),0.0_kind_real) * kgkg_to_kgm2
+          tem1 = grav/rdry
+          wc_in_g_m3 = 1000.0_kind_real * tem1 * qs_ade(i,j,k) * (p(i,j,k)/delp(i,j,k)) &
+                             /t(i,j,k) * (1.0_kind_real + zvir * max(q(i,j,k),0.0_kind_real))
+          xqq = log10(wc_in_g_m3)
+          qs_efr(i,j,k) = 9.33_kind_real*xqq*xqq*xqq +  84.779_kind_real*xqq*xqq &
+                        + 351.1345_kind_real*xqq + 691.391_kind_real !Liu DDA_type5
+          qs_efr(i,j,k) = max(qs_efr(i,j,k), 100.0_kind_real)
+        endif
+
+      enddo
+    enddo
+  enddo
+  qs_ade = max(0.0_kind_real,qs_ade)
+  qs_efr = max(0.0_kind_real,qs_efr)
+endif
 
 deallocate(seamask)
 
