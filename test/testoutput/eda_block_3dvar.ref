@@ -2,7 +2,11 @@ Test     : CostJb   : Nonlinear Jb = 0
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2882.22, nobs = 1435, Jo/n = 2.00852, err = 2.67815
 Test     : CostJo   : Nonlinear Jo(Radiosonde) = 2158.46, nobs = 1134, Jo/n = 1.90341, err = 2.06099
 Test     : CostFunction: Nonlinear J = 5040.68
-Test     : BlockBLanczosMinimizer: reduction in residual norm = 0.262872
+Test     :    Norm reduction all members ( 1) = 0.501304 0.512433
+Test     :    Quadratic cost function all members: J ( 1) = 4034.81 4247.29
+Test     :    Norm reduction all members ( 2) = 0.262872 0.284881
+Test     :    Quadratic cost function all members: J ( 2) = 3794.52 3998.69
+Test     : DRPBlockLanczosMinimizer: reduction in residual norm = 0.262872
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 8 | cube sphere face size: C12

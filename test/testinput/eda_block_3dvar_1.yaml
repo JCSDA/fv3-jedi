@@ -222,7 +222,7 @@ final:
     departures: oman
 variational:
   minimizer:
-    algorithm: BlockBLanczos
+    algorithm: DRPBlockLanczos
     members: 2
   iterations:
   - ninner: 2
