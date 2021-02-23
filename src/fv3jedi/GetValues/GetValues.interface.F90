@@ -10,6 +10,9 @@ module fv3jedi_getvalues_interface_mod
 ! Intrinsic
 use iso_c_binding
 
+! fckit
+use fckit_configuration_module, only: fckit_configuration
+
 ! oops dependencies
 use datetime_mod
 
@@ -50,15 +53,17 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_getvalues_create_c(c_key_self, c_key_geom, c_locs) &
+subroutine fv3jedi_getvalues_create_c(c_key_self, c_key_geom, c_locs, c_conf) &
            bind (c, name='fv3jedi_getvalues_create_f90')
 integer(c_int),     intent(inout) :: c_key_self      !< Key to self
 integer(c_int),     intent(in)    :: c_key_geom      !< Key to geometry
 type(c_ptr), value, intent(in)    :: c_locs          !< Observation locations
+type(c_ptr),        intent(in)    :: c_conf
 
 type(fv3jedi_getvalues), pointer :: self
 type(fv3jedi_geom),      pointer :: geom
 type(ufo_locations)              :: locs
+type(fckit_configuration)        :: f_conf
 
 ! Create object
 call fv3jedi_getvalues_registry%init()
@@ -69,8 +74,10 @@ call fv3jedi_getvalues_registry%get(c_key_self, self)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 locs = ufo_locations(c_locs)
 
+f_conf = fckit_configuration(c_conf)
+
 ! Call method
-call self%create(geom, locs)
+call self%create(geom, locs, f_conf)
 
 end subroutine fv3jedi_getvalues_create_c
 

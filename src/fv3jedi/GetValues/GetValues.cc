@@ -14,22 +14,24 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 GetValues::GetValues(const Geometry & geom, const ufo::Locations & locs,
-                     const eckit::Configuration &)
+                     const eckit::Configuration & conf)
   : locs_(locs), geom_(new Geometry(geom)), model2geovals_() {
   oops::Log::trace() << "GetValues::GetValues starting" << std::endl;
 
   // Create the variable change object
   {
   util::Timer timervc(classname(), "VarChaModel2GeoVaLs");
-  char sep = '.';
-  eckit::LocalConfiguration dummyconfig(sep);
-  model2geovals_.reset(new VarChaModel2GeoVaLs(geom, dummyconfig));
+  model2geovals_.reset(new VarChaModel2GeoVaLs(geom, conf));
   }
 
   // Call GetValues consructor
   {
   util::Timer timergv(classname(), "GetValues");
-  fv3jedi_getvalues_create_f90(keyGetValues_, geom.toFortran(), locs_);
+
+  // Pointer to configuration
+  const eckit::Configuration * pconf = &conf;
+
+  fv3jedi_getvalues_create_f90(keyGetValues_, geom.toFortran(), locs_, &pconf);
   oops::Log::trace() << "GetValues::GetValues done" << std::endl;
   }
 }

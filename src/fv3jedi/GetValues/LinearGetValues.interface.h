@@ -26,7 +26,8 @@ namespace fv3jedi {
 extern "C" {
 
   void fv3jedi_lineargetvalues_create_f90(F90lineargetvalues &, const F90geom &,
-                                          const ufo::Locations &);
+                                          const ufo::Locations &,
+                                          const eckit::Configuration * const *);
 
   void fv3jedi_lineargetvalues_delete_f90(F90lineargetvalues &);
 

@@ -8,6 +8,7 @@ module fv3jedi_getvalues_mod
 use iso_c_binding
 
 ! fckit
+use fckit_configuration_module,     only: fckit_configuration
 use fckit_mpi_module,               only: fckit_mpi_comm
 
 ! oops
@@ -15,7 +16,7 @@ use datetime_mod,                   only: datetime
 use unstructured_interpolation_mod, only: unstrc_interp
 
 ! saber
-use interpolatorbump_mod,         only: bump_interpolator
+use interpolatorbump_mod,           only: bump_interpolator
 
 ! ufo
 use ufo_locations_mod
@@ -59,14 +60,16 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, geom, locs)
+subroutine create(self, geom, locs, conf)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
 type(fv3jedi_geom),            intent(in)    :: geom
 type(ufo_locations),           intent(in)    :: locs
+type(fckit_configuration),     intent(in)    :: conf
 
 real(8), allocatable, dimension(:) :: lons, lats
 integer :: nlocs
+character(len=:), allocatable :: str
 
 ! Geometry
 ! --------
@@ -83,9 +86,17 @@ allocate(lons(nlocs), lats(nlocs))
 call locs%get_lons(lons)
 call locs%get_lats(lats)
 
+! Get interpolation method
+! ------------------------
+self%interp_method = geom%interp_method
+if (conf%has("interpolation method")) then
+    call conf%get_or_die("interpolation method",str)
+    self%interp_method = str
+    deallocate(str)
+endif
+
 ! Initialize bump interpolator
 ! ----------------------------
-self%interp_method = trim(geom%interp_method)
 if (trim(self%interp_method) == 'bump') then
   call self%bumpinterp%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon_out=lons, lat_out=lats, nl=geom%npz)
 endif
