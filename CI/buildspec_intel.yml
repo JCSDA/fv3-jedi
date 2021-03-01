@@ -125,7 +125,7 @@ phases:
         && export PATH=/usr/local/lib:$PATH
         && ecbuild /jcsda/fv3-bundle/ -DSKIP_LARGE_TESTS=OFF -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsintel.test
         && cd /home/jedi/fv3-jedi
-        && make -j8"
+        && make -j4"
 
       - export BUILD_STATUS="0"
       - echo $BUILD_STATUS
