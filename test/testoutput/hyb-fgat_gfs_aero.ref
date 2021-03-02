@@ -17,7 +17,7 @@ Test     :    dust1                         : Min = +1.000000e-16, Max = +3.4712
 Test     :    dust2                         : Min = +1.000000e-16, Max = +3.342335e+01, RMS = +1.085052e+00
 Test     :    dust3                         : Min = +1.000000e-16, Max = +6.227086e+01, RMS = +2.001046e+00
 Test     :    dust4                         : Min = +1.000000e-16, Max = +1.018720e+02, RMS = +3.150253e+00
-Test     :    dust5                         : Min = +0.000000e+00, Max = +8.654918e+00, RMS = +2.178883e-01
+Test     :    dust5                         : Min = +0.000000e+00, Max = +8.654917e+00, RMS = +2.178883e-01
 Test     :    seas1                         : Min = +1.000000e-16, Max = +4.416554e-02, RMS = +3.463818e-03
 Test     :    seas2                         : Min = +1.000000e-16, Max = +1.441013e+00, RMS = +1.122091e-01
 Test     :    seas3                         : Min = +1.000000e-16, Max = +1.472093e+01, RMS = +1.107190e+00
