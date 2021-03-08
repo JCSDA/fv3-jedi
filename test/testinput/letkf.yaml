@@ -131,12 +131,5 @@ local ensemble DA:
     mult: 1.1
 
 output:
-  filetype: gfs
-  datapath: Data/analysis/letkf/gfs/mem%{member}%/
-  filename_core: letkf.fv_core.res.nc
-  filename_trcr: letkf.fv_tracer.res.nc
-  filename_sfcd: letkf.sfc_data.nc
-  filename_sfcw: letkf.fv_srf_wnd.res.nc
-  first: PT0H
-  frequency: PT1H
-  date: *date
+  filetype: latlon
+  filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
