@@ -30,6 +30,7 @@ bump:
   universe_rad: 3000000.0
   strategy: specific_univariate
   new_nicas: 1
+  interp_type: mesh_based
   ntry: 3
   nrep: 2
   resol: 6
