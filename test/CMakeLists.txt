@@ -943,7 +943,7 @@ fv3jedi_add_test( NAME    hofx_nomodel
                   TOL     1e-3 0)
 
 fv3jedi_add_test( NAME    hofx_gfs_aero
-                  EXE     fv3jedi_hofx_nomodel.x
+                  EXE     fv3jedi_hofx.x
                   TOL     1e-3 0)
 
 fv3jedi_add_test( NAME    hofx_nomodel_lam_cmaq
