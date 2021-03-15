@@ -191,9 +191,9 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [cld_amt]
+  - FieldIONames: [cld_amt,cloud_area_fraction_in_atmosphere_layer]
     FieldName: cld_amt
-    LongName: cld_amt
+    LongName: cloud_area_fraction_in_atmosphere_layer 
     Units: 1
     Tracer: true
     IOFile: tracer

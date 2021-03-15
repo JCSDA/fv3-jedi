@@ -95,10 +95,6 @@ Fields:
     Units: none
     Levels: full
 
-  - FieldName: cloud_area_fraction_in_atmosphere_layer
-    Units: none
-    Levels: full
-
   - FieldName: water_area_fraction
     Units: none
     Levels: 1
