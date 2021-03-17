@@ -868,6 +868,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_tropprs) call field_fail(fields_to_do(f))
     field_ptr = tprs
 
+  case ("average_surface_temperature_within_field_of_view")
+
+    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
+    field_ptr = surface_temperature_where_sea
+
   case default
 
     call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar unknown field: "//trim(fields_to_do(f)) &
