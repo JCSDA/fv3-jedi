@@ -23,6 +23,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::VariableChangeMaker<Traits, VarChaModel2GeoVaLs>
        makerVarChaModel2GeoVaLs_("Model2GeoVaLs");
+static oops::VariableChangeMaker<Traits, VarChaModel2GeoVaLs> makerVarChaDefault_("default");
 // -------------------------------------------------------------------------------------------------
 VarChaModel2GeoVaLs::VarChaModel2GeoVaLs(const Geometry & geom, const eckit::Configuration & conf) :
   geom_(new Geometry(geom))

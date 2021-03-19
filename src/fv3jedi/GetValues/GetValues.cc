@@ -50,21 +50,25 @@ void GetValues::fillGeoVaLs(const State & state, const util::DateTime & t1,
                             const util::DateTime & t2, ufo::GeoVaLs & geovals) const {
   oops::Log::trace() << "GetValues::fillGeovals starting" << std::endl;
 
-  // Create state with geovals variables
-  State stategeovalvars(*geom_, geovals.getVars(), state.validTime());
+  if (geovals.getVars() <= state.variables()) {
+    util::Timer timergv(classname(), "fillGeoVaLs");
+    fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(), state.toFortran(),
+                                       t1, t2, locs_, geovals.toFortran());
+  } else {
+    // Create state with geovals variables
+    State stategeovalvars(*geom_, geovals.getVars(), state.validTime());
 
-  {
-  util::Timer timervc(classname(), "changeVar");
-  model2geovals_->changeVar(state, stategeovalvars);
+    {
+    util::Timer timervc(classname(), "changeVar");
+    model2geovals_->changeVar(state, stategeovalvars);
+    }
+
+    // Fill GeoVaLs
+    util::Timer timergv(classname(), "fillGeoVaLs");
+    fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(),
+                                       stategeovalvars.toFortran(), t1, t2, locs_,
+                                       geovals.toFortran());
   }
-
-  oops::Log::trace() << "GetValues::fillGeovals changeVar done" << stategeovalvars << std::endl;
-
-  // Fill GeoVaLs
-  util::Timer timergv(classname(), "fillGeoVaLs");
-  fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(),
-                                     stategeovalvars.toFortran(), t1, t2, locs_,
-                                     geovals.toFortran());
 
   oops::Log::trace() << "GetValues::fillGeovals done" << geovals << std::endl;
 }

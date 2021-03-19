@@ -139,7 +139,7 @@ type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
 logical(c_bool), allocatable :: time_mask(:)
 real(kind=kind_real), allocatable :: field_us(:)
-real(kind=kind_real), allocatable :: geovals_all(:,:), geovals_tmp(:)
+real(kind=kind_real), allocatable :: geovals_all(:,:)
 
 ! Get mask for locations in this time window
 ! ------------------------------------------
@@ -147,23 +147,10 @@ nlocs = locs%nlocs()
 allocate(time_mask(nlocs))
 call locs%get_timemask(t1, t2, time_mask)
 
-! Allocate geovals
-! ----------------
-if (.not. geovals%linit) then
-  do gv = 1, geovals%nvar
-    geovals%geovals(gv)%nval = fields(gv)%npz
-    allocate(geovals%geovals(gv)%vals(geovals%geovals(gv)%nval, geovals%geovals(gv)%nlocs))
-    geovals%geovals(gv)%vals = 0.0_kind_real
-  enddo
-endif
-geovals%linit = .true.
-
-
 ! Loop over GeoVaLs
 ! -----------------
 allocate(field_us(self%ngrid))
 allocate(geovals_all(nlocs, self%npz+1))
-allocate(geovals_tmp(nlocs))
 
 do gv = 1, geovals%nvar
 
@@ -172,9 +159,14 @@ do gv = 1, geovals%nvar
   call long_name_to_fv3jedi_name(fields, trim(geovals%variables(gv)), fv3jedi_name)
   call get_field(fields, fv3jedi_name, field)
 
+  if (geovals%geovals(gv)%nval /= field%npz) then
+    geovals%geovals(gv)%nval = field%npz
+    if (allocated(geovals%geovals(gv)%vals)) deallocate(geovals%geovals(gv)%vals)
+    allocate(geovals%geovals(gv)%vals(geovals%geovals(gv)%nval, geovals%geovals(gv)%nlocs))
+  endif
+
   ! Interpolation
   ! -------------
-  geovals_all = 0.0_kind_real
 
   ! Can optionally interpolate real valued magnitude fields with bump
   ! -----------------------------------------------------------------
@@ -198,16 +190,15 @@ do gv = 1, geovals%nvar
       ! Conditions for integer and directional fields
       ! ---------------------------------------------
       if (.not. field%integerfield .and. trim(field%space)=='magnitude') then
-        call self%unsinterp%apply(field_us, geovals_tmp)
+        call self%unsinterp%apply(field_us, geovals_all(:, jlev))
       elseif (field%integerfield) then
-        call unsinterp_integer_apply(self%unsinterp, field_us, geovals_tmp)
+        call unsinterp_integer_apply(self%unsinterp, field_us, geovals_all(:, jlev))
       elseif (trim(field%space)=='direction') then
-        call unsinterp_nearest_apply(self%unsinterp, field_us, geovals_tmp)
+        call unsinterp_nearest_apply(self%unsinterp, field_us, geovals_all(:, jlev))
       else
         call abor1_ftn("fv3jedi_getvalues_mod.fill_geovals: interpolation for this kind of "// &
                        "field is not supported. FieldName: "// trim(field%fv3jedi_name))
       endif
-      geovals_all(1:nlocs, jlev) = geovals_tmp(1:nlocs)
     enddo
 
   endif
@@ -222,8 +213,8 @@ enddo
 
 deallocate(field_us)
 deallocate(geovals_all)
-deallocate(geovals_tmp)
 deallocate(time_mask)
+geovals%linit = .true.
 
 end subroutine fill_geovals
 
