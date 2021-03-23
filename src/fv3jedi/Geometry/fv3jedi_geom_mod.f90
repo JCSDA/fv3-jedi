@@ -19,7 +19,7 @@ use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use fms_io_mod,                 only: fms_io_init, fms_io_exit
+use fms_io_mod,                 only: fms_io_init, fms_io_exit, set_domain
 use fms_mod,                    only: fms_init
 use mpp_mod,                    only: mpp_init, mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_domains_init, &
@@ -726,6 +726,7 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
   if (io_layout(1) /= 1 .or. io_layout(2) /= 1) call mpp_define_io_domain(domain, io_layout)
 
+  call set_domain(domain)
   deallocate(pe_start, pe_end)
   deallocate(layout2D, global_indices)
   deallocate(tile1, tile2, tile_id)

@@ -164,7 +164,6 @@ list( APPEND fv3jedi_geos_src_files
 # Source files when building with UFS
 list( APPEND fv3jedi_ufs_src_files
   Geometry/fv_init_control_mod.f90
-  # ufs
   Model/ufs/fv3jedi_ufs_interface_mod.F90
   Model/ufs/fv3jedi_ufs_mod.F90
   Model/ufs/ModelUFS.cc
@@ -197,11 +196,10 @@ endif()
 
 # Optional model - ufs
 if( FV3_FORECAST_MODEL MATCHES "UFS" )
+  list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
   if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) 
     set_source_files_properties(${fv3jedi_ufs_src_files} PROPERTIES COMPILE_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fdec -fno-range-check -ffree-form ")
   endif()
-  list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
-  include_directories(${FV3_FORECAST_MODEL_ROOT}/include)
 endif()
 
 #Add the library
@@ -214,6 +212,8 @@ ecbuild_add_library( TARGET          fv3jedi
 
 if( FV3_FORECAST_MODEL MATCHES "UFS" ) 
   # ESMF
+  find_package(ESMF MODULE REQUIRED STATIC)
+
   # Link all the libraries
   target_link_libraries( fv3jedi PUBLIC nemsio::nemsio)
   target_link_libraries( fv3jedi PUBLIC w3emc::w3emc_d)
@@ -228,7 +228,6 @@ if( FV3_FORECAST_MODEL MATCHES "UFS" )
   target_link_libraries( fv3jedi PUBLIC ufs)
   target_link_libraries( fv3jedi PUBLIC gfsphysics)
   target_link_libraries( fv3jedi PUBLIC io)
-  target_link_libraries( fv3jedi PUBLIC ipd)
   target_link_libraries( fv3jedi PUBLIC stochastic_physics)
   target_link_libraries( fv3jedi PUBLIC NetCDF::NetCDF_Fortran)
   target_include_directories( fv3jedi PUBLIC ${ESMF_F90COMPILEPATHS} )

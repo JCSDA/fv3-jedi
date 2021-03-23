@@ -79,6 +79,7 @@ void ModelUFS::finalize(State & xx) const {
 // -------------------------------------------------------------------------------------------------
 int ModelUFS::saveTrajectory(State & xx, const ModelBias &) const {
   ABORT("Model:UFS should not be used for the trajectory");
+  return 0;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelUFS::print(std::ostream & os) const {

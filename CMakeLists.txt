@@ -128,7 +128,6 @@ if (FV3_FORECAST_MODEL MATCHES "GEOS")
   link_libraries(GEOSgcm_GridComp)
 endif()
 
-
 # Linear model
 ecbuild_use_package( PROJECT fv3jedilm VERSION 1.0.0 REQUIRED )
 include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
@@ -168,7 +167,6 @@ if (FV3_FORECAST_MODEL MATCHES UFS)
   # set CMAKE_PREFIX_PATH to include location of hpc-stack install and ufs install using
   # semi-colon separated lists in quotes e.g.--
   # ecbuild -DCMAKE_PREFIX_PATH="path-to/ufs-weather-model/build/install;path-to/hpc-stack/install" ...
-  find_package(ESMF MODULE REQUIRED STATIC)
   find_package(bacio REQUIRED )
   find_package(sigio REQUIRED )
   find_package(sp REQUIRED )
