@@ -122,6 +122,7 @@ prints:
   frequency: PT3H
 
 driver: 
+  update obs config with geometry info: true
 
 local ensemble DA:
   solver: LETKF
