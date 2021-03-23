@@ -224,6 +224,11 @@ variational:
   minimizer:
     algorithm: DRPBlockLanczos
     members: 2
+    online diagnostics:
+      write basis: true
+    krylov basis:
+      filetype: latlon
+      filename: Data/analysis/eda/gfs/mem001/krylov.
   iterations:
   - ninner: 2
     gradient norm reduction: 1e-10

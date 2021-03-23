@@ -24,7 +24,7 @@ use fv3jedi_constants_mod,    only: rad2deg
 use fv3jedi_field_mod,        only: fv3jedi_field
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use fv3jedi_kinds_mod,        only: kind_int, kind_real
-use fv3jedi_io_utils_mod,     only: vdate_to_datestring, replace_text
+use fv3jedi_io_utils_mod,     only: vdate_to_datestring, replace_text, add_iteration
 use fv3jedi_netcdf_utils_mod, only: nccheck
 
 implicit none
@@ -298,6 +298,7 @@ llgeom%filename = 'Data/fv3jedi.latlon.'
 if (f_conf%has("filename")) then
    call f_conf%get_or_die("filename",str)
    call swap_name_member(f_conf, str)
+   call add_iteration(f_conf, str)
    llgeom%filename = str
    deallocate(str)
 endif
