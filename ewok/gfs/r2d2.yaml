@@ -14,6 +14,12 @@ fetch:
       target_file: $(current_dir)/{{local_current_cycle}}.coupler.res
       user_date_format: '%Y%m%d.%H%M%S'
       step: 'PT06H'
+  bc: 
+    - file_type: satbias
+      target_file: $(current_dir)/$(obs_type).$(date).$(file_type).nc4
+    - file_type: tlapse
+      target_file: $(current_dir)/$(obs_type).$(date).$(file_type).txt
+
 store:
   fc:
     - file_type: [fv_core.res, fv_tracer.res]
