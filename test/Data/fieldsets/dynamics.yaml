@@ -515,3 +515,18 @@ Fields:
     LongName: moist_air_density
     Units: kgm-3
     IOFile: core
+
+  - FieldIONames: [zorl, surface_roughness_length]
+    FieldName: zorl
+    LongName: surface_roughness_length
+    Units: cm
+    Levels: 1
+    IOFile: surface
+
+  - FieldIONames: [t2m, surface_temperature]
+    FieldName: t2m
+    LongName: surface_temperature
+    Units: K
+    Levels: 1
+    IOFile: surface
+

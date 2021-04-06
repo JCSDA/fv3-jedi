@@ -171,14 +171,6 @@ Fields:
     Levels: 1
     Kind: integer
 
-  - FieldName: surface_roughness_length
-    Units: none
-    Levels: 1
-
-  - FieldName: surface_temperature
-    Units: K
-    Levels: 1
-
   - FieldName: wind_reduction_factor_at_10m
     Units: none
     Levels: 1
