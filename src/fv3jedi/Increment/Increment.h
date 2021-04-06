@@ -18,7 +18,6 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.interface.h"
 #include "fv3jedi/State/State.h"
-#include "oops/base/GeneralizedDepartures.h"
 #include "oops/base/LocalIncrement.h"
 #include "oops/base/Variables.h"
 #include "oops/util/DateTime.h"
@@ -48,7 +47,7 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class Increment : public oops::GeneralizedDepartures, public util::Printable,
+class Increment : public util::Printable,
                   private util::ObjectCounter<Increment> {
  public:
   static const std::string classname() {return "fv3jedi::Increment";}

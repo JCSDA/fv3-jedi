@@ -44,7 +44,7 @@ VarChaModel2GeoVaLs::~VarChaModel2GeoVaLs() {
 // -------------------------------------------------------------------------------------------------
 void VarChaModel2GeoVaLs::changeVar(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVar");
-  oops::Log::trace() << classname() << " changeVar done" << std::endl;
+  oops::Log::trace() << classname() << " changeVar start" << std::endl;
   fv3jedi_vc_model2geovals_changevar_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
                                          xout.toFortran());
   xout.validTime() = xin.validTime();

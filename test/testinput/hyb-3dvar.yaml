@@ -255,8 +255,7 @@ cost function:
     obs filters:
     - filter: Background Check
       threshold: 1000
-  - monitoring only: true
-    obs space:
+  - obs space:
       name: Radiosonde
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
@@ -274,6 +273,7 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
+    monitoring only: true
 variational:
   minimizer:
     algorithm: DRIPCG
