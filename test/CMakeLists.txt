@@ -51,6 +51,7 @@ list( APPEND fv3jedi_test_input
   testinput/bumpparameters_nicas_gfs_p12.yaml
   testinput/bumpparameters_nicas_gfs.yaml
   testinput/bumpparameters_nicas_gfs_aero.yaml
+  testinput/bumpparameters_nicas_gfs_aero_logp.yaml
   testinput/bumpparameters_nicas_lam_cmaq.yaml
   testinput/convertstate_geos_crtm_surface.yaml
   testinput/convertstate_geos_model2geovals.yaml
@@ -156,6 +157,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/bumpparameters_nicas_geos.ref
   testoutput/bumpparameters_nicas_gfs.ref
   testoutput/bumpparameters_nicas_gfs_aero.ref
+  testoutput/bumpparameters_nicas_gfs_aero_logp.ref
   testoutput/bumpparameters_nicas_lam_cmaq.ref
   testoutput/convertstate_geos_crtm_surface.ref
   testoutput/convertstate_geos_model2geovals.ref
@@ -965,6 +967,9 @@ fv3jedi_add_test( NAME    bumpparameters_nicas_gfs
                   EXE     fv3jedi_parameters.x)
 
 fv3jedi_add_test( NAME    bumpparameters_nicas_gfs_aero
+                  EXE     fv3jedi_parameters.x)
+
+fv3jedi_add_test( NAME    bumpparameters_nicas_gfs_aero_logp
                   EXE     fv3jedi_parameters.x)
 
 fv3jedi_add_test( NAME    bumpparameters_nicas_lam_cmaq

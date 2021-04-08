@@ -31,7 +31,7 @@ use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 
 ! fv3jedi uses
 use fields_metadata_mod,         only: fields_metadata, field_metadata
-use fv3jedi_constants_mod,       only: ps, rad2deg
+use fv3jedi_constants_mod,       only: ps, rad2deg, kappa
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
@@ -80,6 +80,7 @@ type :: fv3jedi_geom
   logical :: ne_corner, se_corner, sw_corner, nw_corner
   logical :: nested = .false.
   logical :: bounded_domain = .false.
+  logical :: logp = .false.
 
   integer :: grid_type = 0
   logical :: dord4 = .true.
@@ -138,6 +139,7 @@ integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
+logical :: logp = .false.
 
 ! Add the communicator to the geometry
 ! ------------------------------------
@@ -314,6 +316,14 @@ self%nw_corner = Atm(1)%gridstruct%nw_corner
 self%nested    = Atm(1)%gridstruct%nested
 self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
+if (conf%has("logp")) then
+  call conf%get_or_die("logp",logp)
+  self%logp = logp
+else
+  self%logp =.false.
+endif
+
+
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
 allocate(self%lat_us(self%ngrid))
@@ -477,6 +487,8 @@ self%lon_us = other%lon_us
 self%nested = other%nested
 self%bounded_domain = other%bounded_domain
 
+self%logp = other%logp
+
 end subroutine clone
 
 ! --------------------------------------------------------------------------------------------------
@@ -571,6 +583,8 @@ integer :: jl
 real(kind=kind_real) :: sigmaup, sigmadn
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
+real(kind=kind_real) :: plevli(self%npz+1)
+real(kind=kind_real) :: kapr, kap1
 
 ! Add area
 afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
@@ -582,11 +596,24 @@ call afield%final()
 ! Add vertical unit
 afield = self%afunctionspace%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
 call afield%data(real_ptr_2)
-do jl=1,self%npz
-  sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
-  sigmadn = self%ak(jl  )/ps+self%bk(jl  )
-  real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
-enddo
+
+if (.not. self%logp) then
+   do jl=1,self%npz
+      sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
+      sigmadn = self%ak(jl  )/ps+self%bk(jl  )
+      real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+   enddo
+else
+   kapr = 1.0/kappa
+   kap1 = kappa + 1.0
+   do jl=1,self%npz+1
+      plevli(jl) = self%ak(jl) + self%bk(jl)*ps
+   enddo
+   do jl=1,self%npz
+      real_ptr_2(jl,:) = -log(((plevli(jl)**kap1-plevli(jl+1)**kap1)/(kap1*(plevli(jl)-plevli(jl+1))))**kapr)
+   enddo
+endif
+
 call afieldset%add(afield)
 call afield%final()
 
