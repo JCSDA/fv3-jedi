@@ -23,7 +23,7 @@ cost function:
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.bkg.20180415_000000z.nc4
     filename_crtm: geos.bkg.crtmsrf.20180415_000000z.nc4
-    state variables: [ua,va,t,ps,q,qi,ql,o3ppmv,phis,frocean,frlake,frseaice,vtype,
+    state variables: [ua,va,t,ps,q,qi,ql,qr,qs,o3ppmv,phis,frocean,frlake,frseaice,vtype,
                       stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   background error:
     covariance model: hybrid
@@ -795,7 +795,7 @@ cost function:
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]
-      Clouds: [Water, Ice]
+      Clouds: [Water, Ice, Rain, Snow]
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: gmi_gpm

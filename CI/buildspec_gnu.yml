@@ -161,7 +161,7 @@ phases:
         && CC=mpicc CXX=mpicxx FC=mpifort
         && cmake -DCMAKE_MODULE_PATH=/usr/local/share/ecbuild/cmake/ -DSKIP_LARGE_TESTS=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_GPROF=ON -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsgnu.test /jcsda/fv3-bundle
         && cd fv3-jedi
-        && make -j8"
+        && make -j4"
 
       - export BUILD_STATUS="0"
       - echo $BUILD_STATUS
