@@ -266,6 +266,8 @@ EmisCoeff/IR_Land/SEcategory/Little_Endian/USGS.IRland.EmisCoeff.bin
 EmisCoeff/VIS_Land/SEcategory/Little_Endian/USGS.VISland.EmisCoeff.bin
 SpcCoeff/Little_Endian/hirs4_metop-a.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/hirs4_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/amsr2_gcom-w1.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsr2_gcom-w1.TauCoeff.bin
 SpcCoeff/Little_Endian/amsua_metop-a.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/amsua_metop-a.TauCoeff.bin
 SpcCoeff/Little_Endian/amsua_metop-b.SpcCoeff.bin
