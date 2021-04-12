@@ -105,6 +105,7 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_nomodel.yaml
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_save_geovals.yaml
+  testinput/hofx4d.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
   testinput/hyb-3dvar_gfs_1obs.yaml
@@ -191,6 +192,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel_gfs.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
+  testoutput/hofx4d.ref
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_gfs_0obs.ref
   testoutput/hyb-3dvar_gfs_1obs.ref
@@ -952,6 +954,11 @@ fv3jedi_add_test( NAME    hofx_gfs_aero
 
 fv3jedi_add_test( NAME    hofx_nomodel_lam_cmaq
                   EXE     fv3jedi_hofx_nomodel.x
+                  TOL     1e-3 0)
+
+fv3jedi_add_test( NAME    hofx4d
+                  EXE     fv3jedi_hofx4d.x
+                  MPI     18
                   TOL     1e-3 0)
 
 # Test to save GeoVaLs to file
