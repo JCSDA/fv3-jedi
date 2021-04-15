@@ -68,10 +68,7 @@ phases:
 
       # ioda
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
-
-      # disable git-lfs
-      - git lfs install --skip-smudge
-
+ 
       # saber
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/saber $CODEBUILD_GIT_BRANCH saber /jcsda/fv3-bundle develop
 
@@ -105,6 +102,9 @@ phases:
 
       #gsw
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH gsw /jcsda/fv3-bundle develop
+
+      # fv3-jedi-test
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH fv3-jedi-data /jcsda/fv3-bundle develop
 
       # move CMakeLists.txt
       - cp CMakeLists.txt /jcsda/fv3-bundle

@@ -3,6 +3,8 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
+include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
+
 # Option not to run with large tests
 # ----------------------------------
 option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" ON)
@@ -320,8 +322,6 @@ SpcCoeff/Little_Endian/radiometer_smap.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/radiometer_smap.TauCoeff.bin
 )
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-
 # Files needed for GEOS aerosol testing
 if( ${GEOS-AERO_FOUND} )
   list( APPEND geos-aero_test_data
@@ -364,134 +364,117 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # Repo wide configuration for getting test data
 # ---------------------------------------------
+# Currently only use 2.3.0 CRTM coefficients
+set( CRTM_COEFFS_BRANCH "2.3.0" )
 
-# Get the current git branch/tag used by fv3-jedi source code
-execute_process( COMMAND bash "-c" "git symbolic-ref -q --short HEAD || git describe --tags --exact-match"
-                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                 OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI
-                 OUTPUT_STRIP_TRAILING_WHITESPACE )
-
-message(STATUS "fv3-jedi is on branch/tag ${GIT_BRANCH_FV3JEDI}")
-
-# For releases data is obtained for UCAR dash
-set(ECBUILD_DOWNLOAD_BASE_URL_DEFAULT https://jedi-test-files.s3.amazonaws.com)
-
-if(GIT_BRANCH_FV3JEDI STREQUAL "1.0.0")
-  set(ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file/)
-  set(BRANCHPATH "/")
-  set(MD5CHECK 0)
-else()
-  set(ECBUILD_DOWNLOAD_BASE_URL ${ECBUILD_DOWNLOAD_BASE_URL_DEFAULT})
-  set(BRANCHPATH ${GIT_BRANCH_FV3JEDI})
-  set(MD5CHECK 1)
-endif()
-
-message(STATUS "Git branch/tag path to use to obtain data " ${BRANCHPATH})
-
-# Copy test data downloader script to bin
-set ( DOWNLOADER fv3jedi_testdata_downloader.py)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
-
-# Check for local path to data
-if (DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES})
-  set(LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}")
-endif()
-
-# Function for getting test data for different repos
-# --------------------------------------------------
-
-function(fv3jedi_data_download_test REPO DEFAULTBRANCH test_data_file LINKNG_PATH)
-
-  # Special case of data structure for UCAR DASH release data
-  if(GIT_BRANCH_FV3JEDI STREQUAL "1.0.0")
-    set(REPOPATH "/")
-  else()
-    set(REPOPATH ${REPO})
+function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
+  # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
+  # If a tagged version of REPO is being built set GIT_TAG_FUNC to REPO's current tag.
+  find_branch_name(REPO_DIR_NAME ${repo})
+  if( DEFINED GIT_BRANCH_FUNC )
+    set( REPO_GIT_BRANCH ${GIT_BRANCH_FUNC} )
+  elseif( DEFINED GIT_TAG_FUNC )
+    set( REPO_GIT_BRANCH ${GIT_TAG_FUNC} )
   endif()
 
-  message(STATUS "Searching for test data for ${REPO}")
-
-  if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
-
-    message(STATUS " LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
-
-    # Check whether the URL exists
-    ecbuild_check_urls(NAMES ${REPOPATH}/${BRANCHPATH}/${test_data_file}
-                       RESULT SPECIFIC_TEST_FILES)
-
-    # Check whether data exists at the remote path, if not use defaults
-    message(STATUS " Looking for data at ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATH}/${BRANCHPATH}/${test_data_file} ... ")
-    if(${SPECIFIC_TEST_FILES} MATCHES 0)
-      set(REPOPATHREMOTE   ${REPOPATH})
-      set(BRANCHPATHREMOTE ${BRANCHPATH})
-      message(STATUS "  ... data found, will download this" )
-    else()
-      set(ECBUILD_DOWNLOAD_BASE_URL  ${ECBUILD_DOWNLOAD_BASE_URL_DEFAULT})
-      set(REPOPATHREMOTE             ${REPO})
-      set(BRANCHPATHREMOTE           ${DEFAULTBRANCH})
-      message(STATUS "  ... data not found, will download from defaults: ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file}" )
-    endif()
-
-    # Note: do we at some point need to force the path using an ENV variable? Could be useful when
-    # building where internet access is not available but tests run where it is. E.g. in SLURM.
-    #message(STATUS " ${REPO} test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file})
-
-    # Set target directory for the downloaded data
-    set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/${BRANCHPATHREMOTE})
-    message(STATUS " will save ${REPO} test data to " ${OUTPUT_PATH})
-    file(MAKE_DIRECTORY ${OUTPUT_PATH})
-
-    # Add test for downloading IODA data
-    ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_${REPO}
-                      TYPE      SCRIPT
-                      COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
-                      ARGS      ${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file}  # Part after URL
-                                ${test_data_file}                                        # Filename
-                                ${OUTPUT_PATH}                                           # Output path
-                                ${ECBUILD_DOWNLOAD_BASE_URL}                             # Url
-                                ${MD5CHECK}                                              # Check for md5 match
-                                testoutput/fv3jedi_test_tier1_get_test_data_${REPO}.log )
-  else()
-    if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/${REPO}/${GIT_BRANCH_FV3JEDI}/${test_data_file})
-      set(INPUT_PATH ${LOCAL_PATH_JEDI_TESTFILES}/${REPO}/${GIT_BRANCH_FV3JEDI})
-      set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/${GIT_BRANCH_FV3JEDI})
-    else()
-      set(INPUT_PATH ${LOCAL_PATH_JEDI_TESTFILES}/${REPO}/develop)
-      set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/develop)
-    endif()
-    message(STATUS " Use local test files from ${INPUT_PATH}")
-    message(STATUS "  ... copy test files to ${OUTPUT_PATH}")
-    execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${INPUT_PATH} ${OUTPUT_PATH} )
+  if ( ${repo} STREQUAL "crtm" )
+    set( GIT_TAG_FUNC ${CRTM_COEFFS_BRANCH} )
   endif()
 
-  set(${LINKNG_PATH} ${OUTPUT_PATH} PARENT_SCOPE)
+  # When env veriable LOCAL_PATH_JEDI_TESTFILES is set, simply link test files
+  # to build directory. get_${repo}_test_data checks the existence of test file directory.
+  # ${repo} test data must be stored in
+  # ${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${BRANCH}/testinput_tier_1
+  if( DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES} )
+    set( LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}" )
+    message( STATUS "use LOCAL_PATH_JEDI_TESTFILES: ${LOCAL_PATH_JEDI_TESTFILES}" )
+    # If test data specific to testing branch exists locally use it.
+    # If not use test data specific to develop branch.
+    if( EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${REPO_GIT_BRANCH} )
+      set( TESTFILE_DIR_REPO "${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${REPO_GIT_BRANCH}" )
+    else()
+      set( TESTFILE_DIR_REPO "${LOCAL_PATH_JEDI_TESTFILES}/${repo}/develop" )
+    endif()
+
+    message( STATUS "Test data in ${TESTFILE_DIR_REPO} is linked to build directory" )
+    list( APPEND REPO_DATA_DOWNLOADER_ARGS
+    ${TESTFILE_DIR_REPO} )
+    set ( REPO_DATA_DOWNLOADER fv3jedi_data_checker.py )
+
+  # Any tagged version of REPO is being built.
+  # Build fv3jedi_get_{repo}_test_data test to download test data from DASH.
+  elseif( DEFINED GIT_TAG_FUNC)
+    message( STATUS "Tagged version of ${repo} is used" )
+    # set ARGS for get_${repo}_test_data
+    set( ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file )
+    set( DIRNAME ${GIT_TAG_FUNC} )
+    set( checksum "0" )
+    set( TESTFILE_DIR_REPO "${CMAKE_SOURCE_DIR}/test-data-release/${repo}/${DIRNAME}" )
+
+    list( APPEND REPO_DATA_DOWNLOADER_ARGS
+          ${ECBUILD_DOWNLOAD_BASE_URL}
+          ${TESTFILE_DIR_REPO}
+          ${test_files_dirname}
+          ${checksum} )
+    # Create test-data-release in source directory
+    file( MAKE_DIRECTORY ${TESTFILE_DIR_REPO} )
+    set ( REPO_DATA_DOWNLOADER fv3jedi_testdata_downloader.py )
+    message( STATUS "Test data will be downloaded from: ${ECBUILD_DOWNLOAD_BASE_URL}" )
+
+  # Any branch of REPO is being built.
+  # repo-data repository is already cloned by bundle/CMakeLists.txt.
+  # Link test files in repo-data repo to build directory.
+  # get_repo_test_data checks the existence of test file directory
+  else()
+    set( TESTFILE_DIR_REPO ${CMAKE_SOURCE_DIR}/${repo}-data )
+    list( APPEND REPO_DATA_DOWNLOADER_ARGS
+          ${TESTFILE_DIR_REPO} )
+    set (REPO_DATA_DOWNLOADER fv3jedi_data_checker.py )
+  endif()
+
+  # add test for downloading data
+  ecbuild_add_test( TARGET    fv3jedi_get_${repo}_test_data
+                    TYPE      SCRIPT
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${REPO_DATA_DOWNLOADER}
+                    ARGS  ${REPO_DATA_DOWNLOADER_ARGS} )
+
+  # pass output data path back to calling code
+  set(${output_data_path} ${TESTFILE_DIR_REPO} PARENT_SCOPE)
+
+  # Create download script for fv3jedi_get_*_test_data test
+  set ( FILENAME ${REPO_DATA_DOWNLOADER})
+  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
+  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
+
+  if( EXISTS "${SOURCE_FILE}.in" )
+    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
+  else()
+    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
+  endif()
+
+
+  add_custom_target( bin_fv3jedi_${repo}_test_download_scripts ALL
+    COMMAND chmod +x ${DEST_FILE}
+    DEPENDS ${DEST_FILE} )
 
 endfunction()
+#############################################
+# add tests to download fv3-jedi & crtm data
 
-# Perform fv3-jedi test data download
-# -----------------------------------
-
-fv3jedi_data_download_test( fv3-jedi develop fv3jedi_testdatainput_tier_1.tar.gz LINKNG_PATH)
-
-execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${LINKNG_PATH}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs )
-
-# Perform ioda test data download
-# -------------------------------
-
-fv3jedi_data_download_test( ioda develop ioda_testinput_tier_1.tar.gz LINKNG_PATH)
+ADD_DOWNLOAD_TEST( "fv3-jedi" fv3jedi_testdatainput_tier_1.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
+ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${LINKNG_PATH}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
+                 ${FV3JEDI_FV3JEDI_TESTFILES_PATH}/testinput_tier_1/inputs
+                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
 
-# Perform crtm test data download
-# -------------------------------
+execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+                 ${FV3JEDI_FV3JEDI_TESTFILES_PATH}/testinput_tier_1/obs
+               ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/testinput_tier_1)
 
-fv3jedi_data_download_test( crtm 2.3.0 crtm_coefficients.tar.gz LINKNG_PATH)
-
-create_symlink_filename( ${LINKNG_PATH}
+create_symlink_filename( ${CRTM_FV3JEDI_TESTFILES_PATH}
                          ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
                          ${crtm_coeff_files} )
 

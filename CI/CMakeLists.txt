@@ -23,7 +23,8 @@ set( ENABLE_MPI ON CACHE BOOL "Compile with MPI" )
 
 # Initialize
 ecbuild_bundle_initialize()
-ecbuild_bundle( PROJECT jedicmake GIT "https://github.com/JCSDA/jedi-cmake.git" )
+ecbuild_bundle( PROJECT jedicmake GIT "https://github.com/jcsda-internal/jedi-cmake.git" )
+include( jedicmake/cmake/Functions/git_functions.cmake  )
 
 # ECMWF libs
 # ----------
@@ -31,9 +32,9 @@ option("BUNDLE_SKIP_ECKIT" "Don't build eckit" "ON" ) # Skip eckit build unless 
 option("BUNDLE_SKIP_FCKIT" "Don't build fckit" "OFF") # Build fckit unless user passes -DBUNDLE_SKIP_FCKIT=ON
 option("BUNDLE_SKIP_ATLAS" "Don't build atlas" "OFF") # Build atlas unless user passes -DBUNDLE_SKIP_ATLAS=ON
 
-ecbuild_bundle( PROJECT eckit GIT "https://github.com/JCSDA-internal/eckit.git" )
-ecbuild_bundle( PROJECT fckit GIT "https://github.com/JCSDA-internal/fckit.git" )
-ecbuild_bundle( PROJECT atlas GIT "https://github.com/JCSDA-internal/atlas.git" )
+ecbuild_bundle( PROJECT eckit GIT "https://github.com/jcsda-internal/eckit.git" )
+ecbuild_bundle( PROJECT fckit GIT "https://github.com/jcsda-internal/fckit.git" )
+ecbuild_bundle( PROJECT atlas GIT "https://github.com/jcsda-internal/atlas.git" )
 
 # External (optional) observation operators
 # ------------------------------
@@ -82,6 +83,21 @@ ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda-internal/fv3-j
 # ------------------------------------
 ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda-internal/femps.git" )
 ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda-internal/fv3-jedi.git" )
+
+# ioda, ufo, and fv3-jedi test data
+#---------------------------------
+
+# If IODA branch is being built set GIT_BRANCH_FUNC to IODA's current branch.
+# If a tagged version of IODA is being built set GIT_TAG_FUNC to ioda's current tag. In this case,
+# IODA test files will be download from UCAR DASH and ioda-data repo will not be cloned.
+# When LOCAL_PATH_JEDI_TESTFILES is set to the directory of IODA test files stored
+# in a local directory, ioda-data repo will not be cloned
+
+# same procedure for fv3-jedi-data
+find_branch_name(REPO_DIR_NAME fv3-jedi)
+if( NOT DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES} AND NOT DEFINED ${GIT_TAG_FUNC} )
+  ecbuild_bundle( PROJECT fv3-jedi-data GIT "https://github.com/JCSDA-internal/fv3-jedi-data.git" )
+endif()
 
 # Build Doxygen documentation
 # ---------------------------
