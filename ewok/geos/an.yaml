@@ -1,2 +1,2 @@
-filename: $(experiment_dir)/Data/GeosRunDir/$(file_type)
+filename: $(current_dir)/{{local_current_cycle}}.$(file_type).nc4
 type: an

@@ -1,16 +1,17 @@
 fetch:
-  'an':
-    - file_type: ['catch_internal_rst','fvcore_internal_rst','lake_internal_rst',
-                  'landice_internal_rst','moist_internal_rst','openwater_internal_rst',
-                  'pchem_internal_rst','seaicethermo_internal_rst']
+  an:
+    - file_type: [bkg]
       user_date_format: '%Y%m%d.%H%M%S'
-  'fc':
-    - file_type: ['catch_internal_rst','fvcore_internal_rst','lake_internal_rst',
-                  'landice_internal_rst','moist_internal_rst','openwater_internal_rst',
-                  'pchem_internal_rst','seaicethermo_internal_rst']
+  fc:
+    - file_type: [bkg]
       user_date_format: '%Y%m%d.%H%M%S'
+  bc:
+    - file_type: satbias
+      target_file: $(current_dir)/$(obs_type).$(date).$(file_type).nc4
+    - file_type: tlapse
+      target_file: $(current_dir)/$(obs_type).$(date).$(file_type).txt
 
 store:
-  'fc':
-    - file_type: ['catch_internal_rst']
+  fc:
+    - file_type: [bkg]
       user_date_format: '%Y%m%d.%H%M%S'

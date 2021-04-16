@@ -8,3 +8,8 @@ copy_files:
 link_files:
   directories:
     - [/discover/nobackup/drholdaw/JediData/GEOS_CRTM_Surface/geos.crtmsrf.$(horizontal_resolution).nc4, $(stage_dir)/Data/bkg/]
+
+# Model scratch directory (NB should not be part of stage but a lot of work needed otherwise)
+link_files:
+    directories:
+    - [/discover/nobackup/drholdaw/JediEwok/ModelRunDir/geos-$(horizontal_resolution)/*, $(stage_dir)/GeosRunDir/]
