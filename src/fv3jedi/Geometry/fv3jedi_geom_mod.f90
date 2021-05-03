@@ -20,11 +20,11 @@ use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
 use fms_io_mod,                 only: fms_io_init, fms_io_exit, set_domain
-use fms_mod,                    only: fms_init
-use mpp_mod,                    only: mpp_init, mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
-use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_domains_init, &
-                                      mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain, &
-                                      mpp_domains_exit, mpp_domains_set_stack_size
+use fms_mod,                    only: fms_init, check_nml_error
+use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE, input_nml_file
+use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
+                                      mpp_define_mosaic, mpp_define_io_domain, mpp_domains_exit, &
+                                      mpp_domains_set_stack_size
 
 ! fv3 uses
 use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
@@ -104,16 +104,13 @@ subroutine initialize(conf, comm)
 type(fckit_configuration), intent(in) :: conf
 type(fckit_mpi_comm),      intent(in) :: comm
 
-
 integer :: stackmax = 4000000
 
-call mpp_init(localcomm=comm%communicator())
-call mpp_domains_init
-call fms_io_init
-call fms_init()
+! Initialize fms, mpp, etc.
+call fms_init(localcomm=comm%communicator())
 
+! Set max stacksize
 if (conf%has("stackmax")) call conf%get_or_die("stackmax",stackmax)
-
 call mpp_domains_set_stack_size(stackmax)
 
 end subroutine initialize
@@ -141,6 +138,18 @@ character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
 logical :: logp = .false.
 
+! Namelist for geometry
+integer :: nmls, ios, ierr
+logical :: skip_nml_read = .false.
+integer :: npx, npy, npz, ntiles, nwat
+integer, allocatable :: layout(:), io_layout(:)
+logical :: nested, regional, do_schmidt, hydrostatic
+real(kind=kind_real) :: stretch_fac, target_lat, target_lon
+
+namelist /fv_core_nml/ npx, npy, npz, ntiles, layout, io_layout, regional, nested, do_schmidt, &
+                       target_lat, target_lon, stretch_fac, hydrostatic, nwat
+
+
 ! Add the communicator to the geometry
 ! ------------------------------------
 self%f_comm = comm
@@ -158,9 +167,44 @@ endif
 ! --------------------------------
 self%fields = fields
 
+! Replace FMS namelist file
+! -------------------------
+if (.not. conf%has("nml_file") .and. .not. conf%has("prepare external nml file")) then
+  ! Set namelist variables using JEDI config
+
+  allocate(layout(2))
+  allocate(io_layout(2))
+
+  nmls = 1
+  nmls = nmls + 1; if (.not. conf%get('npx',         npx        )) npx         = 1
+  nmls = nmls + 1; if (.not. conf%get('npy',         npy        )) npy         = 1
+  nmls = nmls + 1; if (.not. conf%get('npz'        , npz        )) npz         = 1
+  nmls = nmls + 1; if (.not. conf%get('ntiles'     , ntiles     )) ntiles      = 1
+  nmls = nmls + 1; if (.not. conf%get('nwat'       , nwat       )) nwat        = 1
+  nmls = nmls + 1; if (.not. conf%get('layout'     , layout     )) layout      = (/1,1/)
+  nmls = nmls + 1; if (.not. conf%get('io_layout'  , io_layout  )) io_layout   = (/1,1/)
+  nmls = nmls + 1; if (.not. conf%get('nested'     , nested     )) nested      = .false.
+  nmls = nmls + 1; if (.not. conf%get('regional'   , regional   )) regional    = .false.
+  nmls = nmls + 1; if (.not. conf%get('do_schmidt' , do_schmidt )) do_schmidt  = .false.
+  nmls = nmls + 1; if (.not. conf%get('hydrostatic', hydrostatic)) hydrostatic = .true.
+  nmls = nmls + 1; if (.not. conf%get('stretch_fac', stretch_fac)) stretch_fac = 0.0_kind_real
+  nmls = nmls + 1; if (.not. conf%get('target_lat' , target_lat )) target_lat  = 0.0_kind_real
+  nmls = nmls + 1; if (.not. conf%get('target_lon' , target_lon )) target_lon  = 0.0_kind_real
+
+  ! Deallocate existing FMS namelist array and reallocate
+  if (allocated(input_nml_file)) deallocate(input_nml_file)
+  allocate(input_nml_file(nmls))
+
+  ! Write new namelist to internal FMS namelist
+  write (input_nml_file, fv_core_nml, iostat=ios)
+  ierr = check_nml_error(ios,'fv3jedi geom writing input_nml_file')
+
+  skip_nml_read = .true.
+endif
+
 !Intialize using the model setup routine
 ! --------------------------------------
-call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile)
+call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, skip_nml_read)
 
 self%isd = Atm(1)%bd%isd
 self%ied = Atm(1)%bd%ied

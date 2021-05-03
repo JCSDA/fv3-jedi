@@ -43,8 +43,10 @@ Geometry::Geometry(const eckit::Configuration & conf,
     oops::Log::debug() << "FMS MPP initialized on " << comm_.name() << std::endl;
   }
 
+  // Prepare input.nml and other FV3 files
+  bool prep_nml = conf.getBool("prepare external nml file", false);
   stageFv3Files(conf, comm);
-  if ( !conf.has("nml_file") ) {
+  if ( !conf.has("nml_file") && prep_nml ) {
     generateGeomFv3Conf(conf, comm);
   }
   fv3jedi_geom_setup_f90(keyGeom_, &configc, &comm_, &fieldsMeta_);
