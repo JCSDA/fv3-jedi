@@ -83,6 +83,7 @@ prints:
   frequency: PT3H
 
 driver: 
+  save posterior ensemble: false
 
 local ensemble DA:
   solver: GETKF

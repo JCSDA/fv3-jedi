@@ -123,6 +123,8 @@ prints:
 
 driver: 
   update obs config with geometry info: true
+  save posterior ensemble: false
+  save posterior mean increment: false
 
 local ensemble DA:
   solver: LETKF
@@ -134,3 +136,8 @@ local ensemble DA:
 output:
   filetype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
+
+output increment:
+  filetype: latlon
+  filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
+

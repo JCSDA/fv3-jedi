@@ -123,6 +123,7 @@ list( APPEND fv3jedi_test_input
   testinput/increment_gfs.yaml
   testinput/letkf.yaml
   testinput/lgetkf.yaml
+  testinput/letkf_snow.yaml
   testinput/lineargetvalues_geos.yaml
   testinput/lineargetvalues_gfs.yaml
   testinput/linearmodel_physics.yaml
@@ -211,6 +212,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/letkf_geos.ref
   testoutput/letkf_gfs.ref
   testoutput/letkf.ref
+  testoutput/letkf_snow.ref
   testoutput/lgetkf_geos.ref
   testoutput/lgetkf_gfs.ref
   testoutput/lgetkf.ref
@@ -688,6 +690,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs_land)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/increment)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ensvariance)
 
@@ -703,6 +706,7 @@ set(members mem000;mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem00
 foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos/${MEM})
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs_land/${MEM})
 endforeach()
 
 # Stage directory with directories for running the models
@@ -1122,6 +1126,12 @@ fv3jedi_add_test( NAME         letkf
                   TOL          1.0e-2 0 )
 
 fv3jedi_add_test( NAME         lgetkf
+                  EXE          fv3jedi_letkf.x
+                  TOL          1.0e-2 0 )
+
+# Land DA
+# --------------
+fv3jedi_add_test( NAME         letkf_snow
                   EXE          fv3jedi_letkf.x
                   TOL          1.0e-2 0 )
 
