@@ -1074,12 +1074,10 @@ fv3jedi_add_test( NAME         hyb-fgat_gfs_aero
 
 # 4DEnVar
 # -------
-if (NOT SKIP_LARGE_TESTS)
   fv3jedi_add_test( NAME         4denvar
                     EXE          fv3jedi_var.x
                     MPI          18
                     TEST_DEPENDS bumpparameters_nicas_gfs )
-endif()
 
 # Hybrid 4DVar
 # ------------
@@ -1148,20 +1146,18 @@ endif()
 # Ensemble data assimilation tests
 # --------------------------------
 if (NOT SKIP_LARGE_TESTS)
-
   # 3DVar
   fv3jedi_add_test( NAME         eda_3dvar
                     EXE          fv3jedi_eda.x
                     MPI          12
                     NOCOMPARE
                     TEST_DEPENDS bumpparameters_nicas_gfs )
+endif()
 
   fv3jedi_add_test( NAME       eda_block_3dvar
                     EXE          fv3jedi_eda.x
                     MPI          12
                     TEST_DEPENDS bumpparameters_nicas_gfs )
-
-endif()
 
 # Test of time taken
 # ------------------
