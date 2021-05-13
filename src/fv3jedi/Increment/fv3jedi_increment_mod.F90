@@ -16,7 +16,7 @@ use fckit_mpi_module
 
 use fields_metadata_mod, only: field_metadata
 
-use fv3jedi_field_mod,           only: fv3jedi_field, checksame, has_field, get_field
+use fv3jedi_field_mod,           only: fv3jedi_field, checksame, hasfield, get_field
 use fv3jedi_fields_mod,          only: fv3jedi_fields
 use fv3jedi_constants_mod,       only: constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
@@ -375,12 +375,12 @@ if (self%has_field('ua')) then
   allocate(x1_va(isc:iec,jsc:jec,1:npz))
   allocate(x2_ua(isc:iec,jsc:jec,1:npz))
   allocate(x2_va(isc:iec,jsc:jec,1:npz))
-  if (has_field(x1_fields, 'ua')) then
+  if (hasfield(x1_fields, 'ua')) then
     call get_field(x1_fields, 'ua', x1_ua)
     call get_field(x1_fields, 'va', x1_va)
     call get_field(x2_fields, 'ua', x2_ua)
     call get_field(x2_fields, 'va', x2_va)
-  elseif (has_field(x1_fields, 'ud')) then
+  elseif (hasfield(x1_fields, 'ud')) then
     call get_field(x1_fields, 'ud', x1_ud)
     call get_field(x1_fields, 'vd', x1_vd)
     call get_field(x2_fields, 'ud', x2_ud)
@@ -398,19 +398,19 @@ if (self%has_field('ps')) then
   allocate(x1_ps(isc:iec,jsc:jec,1))
   allocate(x2_ps(isc:iec,jsc:jec,1))
 
-  if (has_field(x1_fields, 'delp')) then
+  if (hasfield(x1_fields, 'delp')) then
     call get_field(x1_fields, 'delp', x1_delp)
     x1_ps(:,:,1) = sum(x1_delp,3)
-  elseif (has_field(x1_fields, 'ps')) then
+  elseif (hasfield(x1_fields, 'ps')) then
     call get_field(x1_fields, 'ps', x1_ps)
   else
     call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x1")
   endif
 
-  if (has_field(x2_fields, 'delp')) then
+  if (hasfield(x2_fields, 'delp')) then
     call get_field(x2_fields, 'delp', x2_delp)
     x2_ps(:,:,1) = sum(x2_delp,3)
-  elseif (has_field(x2_fields, 'ps')) then
+  elseif (hasfield(x2_fields, 'ps')) then
     call get_field(x2_fields, 'ps', x2_ps)
   else
     call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x2")

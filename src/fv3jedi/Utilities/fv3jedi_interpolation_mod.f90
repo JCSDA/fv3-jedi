@@ -16,7 +16,7 @@ use interpolatorbump_mod,         only: bump_interpolator
 
 ! fv3jedi
 use fv3jedi_kinds_mod,              only: kind_real
-use fv3jedi_field_mod,              only: fv3jedi_field, get_field, has_field
+use fv3jedi_field_mod,              only: fv3jedi_field, get_field, hasfield
 use fv3jedi_geom_mod,               only: fv3jedi_geom
 use fv3jedi_constants_mod,          only: rad2deg
 use wind_vt_mod,                    only: d2a, a2d
@@ -131,7 +131,7 @@ type(fv3jedi_field), pointer :: v_ou
 ! Special case of D-grid winds
 ! ----------------------------
 do_d2a = .false.
-if (has_field(fields_in,'ud')) then
+if (hasfield(fields_in,'ud')) then
 
   do_d2a = .true.
 
