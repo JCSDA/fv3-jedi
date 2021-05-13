@@ -83,7 +83,7 @@ phases:
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
 
       # fms
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable-ecbuild
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable
 
       # GFDL_atmos_cubed_sphere
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable

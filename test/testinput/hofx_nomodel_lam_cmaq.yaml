@@ -21,7 +21,7 @@ state:
   filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
   filename_cplr: 20200903.180000.coupler.res
   state variables: [u,v,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr,
-                    no2, no,o3,no3,h2o2,n2o5,
+                    no2,'no',o3,no3,h2o2,n2o5,
                     hno3,hono,pna,so2,sulf,
                     pan,pacd,aacd,ald2,panx,
                     form,mepx,meoh,rooh,ntr1,
