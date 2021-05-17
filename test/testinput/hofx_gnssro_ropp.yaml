@@ -93,6 +93,7 @@ observations:
       minvalue: 0
       maxvalue: 50000
   - filter: ROobserror
+    n_horiz: 3
     filter variables:
     - name: bending_angle
     errmodel: NRL

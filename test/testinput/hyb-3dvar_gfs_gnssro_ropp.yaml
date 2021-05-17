@@ -61,7 +61,7 @@ cost function:
       weight:
         value: 0.1
     - covariance:
-        covariance mode: ensemble
+        covariance model: ensemble
         members:
         - filetype: gfs
           state variables: *3dvars
@@ -158,6 +158,7 @@ cost function:
       weight:
         value: 0.9
   observations:
+
   - obs space:
       name: GnssroBndROPP1D
       obsdatain:
@@ -165,13 +166,11 @@ cost function:
         obsgrouping:
           group_variable: "record_number"
       obsdataout:
-        obsfile: Data/hofx/gnssro_ropp1d_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
-      name: GnssroBndROPP1D
+      name:  GnssroBndROPP1D
       obs options:
-    obs error:
-      covariance model: diagonal
     obs filters:
     - filter: Domain Check
       filter variables:
@@ -181,14 +180,6 @@ cost function:
           name: impact_height@MetaData
         minvalue: 0
         maxvalue: 50000
-      - variable:
-          name: earth_radius_of_curvature@MetaData
-        minvalue: 6250000
-        maxvalue: 6450000
-      - variable:
-          name: geoid_height_above_reference_ellipsoid@MetaData
-        minvalue: -200
-        maxvalue: 200
     - filter: ROobserror
       filter variables:
       - name: bending_angle
@@ -205,16 +196,14 @@ cost function:
         obsgrouping:
           group_variable: "record_number"
       obsdataout:
-        obsfile: Data/hofx/gnssro_ropp2d_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
-      name: GnssroBndROPP2D
+      name:  GnssroBndROPP2D
       obs options:
-        n_horiz: 31
+        n_horiz: 3
         res: 40.0
         top_2d: 10.0
-    obs error:
-      covariance model: diagonal
     obs filters:
     - filter: Domain Check
       filter variables:
@@ -224,15 +213,8 @@ cost function:
           name: impact_height@MetaData
         minvalue: 0
         maxvalue: 50000
-      - variable:
-          name: earth_radius_of_curvature@MetaData
-        minvalue: 6250000
-        maxvalue: 6450000
-      - variable:
-          name: geoid_height_above_reference_ellipsoid@MetaData
-        minvalue: -200
-        maxvalue: 200
     - filter: ROobserror
+      n_horiz: 3
       filter variables:
       - name: bending_angle
       errmodel: NRL
@@ -241,11 +223,12 @@ cost function:
       filter variables:
       - name: bending_angle
       threshold: 3
+
 variational:
   minimizer:
     algorithm: DRIPCG
   iterations:
-  - ninner: 5
+  - ninner: 10
     gradient norm reduction: 1e-10
     test: on
     geometry:

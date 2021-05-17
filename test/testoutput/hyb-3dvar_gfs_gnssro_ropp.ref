@@ -1,8 +1,8 @@
 Test     : CostJb   : Nonlinear Jb = 0
 Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 52.1168, nobs = 148, Jo/n = 0.352141, err = 0.000316607
-Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 51.9212, nobs = 148, Jo/n = 0.350819, err = 0.000316607
-Test     : CostFunction: Nonlinear J = 104.038
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.736329
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 52.3312, nobs = 148, Jo/n = 0.353589, err = 0.000316607
+Test     : CostFunction: Nonlinear J = 104.448
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.705685
 Test     : CostFunction::addIncrement: Analysis: 
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 23 | cube sphere face size: C12
@@ -12,7 +12,7 @@ Test     :    ua                            : Min = -4.531172e+01, Max = +9.3124
 Test     :    va                            : Min = -5.410470e+01, Max = +6.517229e+01, RMS = +8.290366e+00
 Test     :    T                             : Min = +1.845484e+02, Max = +3.082121e+02, RMS = +2.484225e+02
 Test     :    DELP                          : Min = +4.424700e+01, Max = +3.727271e+03, RMS = +1.940802e+03
-Test     :    sphum                         : Min = +0.000000e+00, Max = +1.886247e-02, RMS = +4.751722e-03
+Test     :    sphum                         : Min = +0.000000e+00, Max = +1.886247e-02, RMS = +4.751834e-03
 Test     :    ice_wat                       : Min = +0.000000e+00, Max = +5.096676e-04, RMS = +1.457056e-05
 Test     :    liq_wat                       : Min = +0.000000e+00, Max = +9.161694e-04, RMS = +2.823004e-05
 Test     :    o3mr                          : Min = +3.012987e-08, Max = +1.752379e-05, RMS = +5.609118e-06
@@ -30,7 +30,7 @@ Test     :    u_srf                         : Min = -1.811848e+01, Max = +2.2482
 Test     :    v_srf                         : Min = -1.956833e+01, Max = +1.854067e+01, RMS = +5.532443e+00
 Test     :    f10m                          : Min = +6.137456e-01, Max = +1.147246e+00, RMS = +9.020324e-01
 Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 3.56971e-07
-Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 40.3517, nobs = 148, Jo/n = 0.272647, err = 0.000316607
-Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 40.3444, nobs = 148, Jo/n = 0.272597, err = 0.000316607
-Test     : CostFunction: Nonlinear J = 80.6961
+Test     : CostJb   : Nonlinear Jb = 1.24022e-06
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 39.452, nobs = 148, Jo/n = 0.266567, err = 0.000316607
+Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 39.7426, nobs = 148, Jo/n = 0.268531, err = 0.000316607
+Test     : CostFunction: Nonlinear J = 79.1945
