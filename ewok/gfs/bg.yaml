@@ -6,4 +6,4 @@ filename_sfcd: '{{local_current_cycle}}.sfc_data.nc'
 filename_sfcw: '{{local_current_cycle}}.fv_srf_wnd.res.nc'
 filename_cplr: '{{local_current_cycle}}.coupler.res'
 state variables: [u, v, ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m, zorl, t2m]
-filename: $(current_dir)/{{local_current_cycle}}.$(file_type).tile$(tile).nc
+filename: $(current_dir)/$(valid_date).$(file_type).tile$(tile).nc
