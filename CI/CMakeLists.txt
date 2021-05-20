@@ -107,3 +107,6 @@ if(BUILD_FV3_BUNDLE_DOC)
 endif(BUILD_FV3_BUNDLE_DOC)
 
 ecbuild_bundle_finalize()
+
+include(cmake/cdash-integration.cmake)
+include(CTest)
