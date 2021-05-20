@@ -789,6 +789,7 @@ cost function:
         obsfile: Data/hofx/amsr2_gcom-w1_hyb-3dvar-geos_2018041500_geos.nc4
       simulated variables: [brightness_temperature]
       channels: 1-14
+      # amsr2_sys_bias is taken from the subroutine retrieval_amsr2() in GSI.
       sys_bias: &amsr2_sys_bias [0.4800, 3.0737, 0.7433, 3.6430,
                                  3.5304, 4.4270, 5.1448, 5.0785,
                                  4.9763, 9.3215, 2.5789, 5.5274,
@@ -832,6 +833,13 @@ cost function:
           name: latitude@MetaData
         minvalue: -60.0
         maxvalue: 60.0
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 1-14
+      test variables:
+      - name: TotalColumnVaporGuess@ObsFunction
+      minvalue: 10.0
     #  Ckeck CLW retrievals from observations 
     - filter: Bounds Check
       filter variables:
