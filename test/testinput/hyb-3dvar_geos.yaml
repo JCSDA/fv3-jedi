@@ -789,11 +789,6 @@ cost function:
         obsfile: Data/hofx/amsr2_gcom-w1_hyb-3dvar-geos_2018041500_geos.nc4
       simulated variables: [brightness_temperature]
       channels: 1-14
-      # amsr2_sys_bias is taken from the subroutine retrieval_amsr2() in GSI.
-      sys_bias: &amsr2_sys_bias [0.4800, 3.0737, 0.7433, 3.6430,
-                                 3.5304, 4.4270, 5.1448, 5.0785,
-                                 4.9763, 9.3215, 2.5789, 5.5274,
-                                 0.6641, 1.3674]
     obs operator:
       name: ObsAtmSfcInterp
       geovals: [surface_temperature_where_sea,water_area_fraction,surface_wind_speed]
@@ -852,7 +847,11 @@ cost function:
           clwret_ch18h: 8
           clwret_ch36v: 11
           clwret_ch36h: 12
-          sys_bias: *amsr2_sys_bias
+          # amsr2_sys_bias is taken from the subroutine retrieval_amsr2() in GSI.
+          sys_bias: &amsr2_sys_bias [0.4800, 3.0737, 0.7433, 3.6430,
+                                     3.5304, 4.4270, 5.1448, 5.0785,
+                                     4.9763, 9.3215, 2.5789, 5.5274,
+                                     0.6641, 1.3674]
           clwret_types: [ObsValue]
       maxvalue: 1.0
     #  Ckeck CLW retrievals from HofX
