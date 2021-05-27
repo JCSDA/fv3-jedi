@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-project( fv3-bundle LANGUAGES C CXX Fortran )
+project( fv3-bundle VERSION 1.0.0 LANGUAGES C CXX Fortran )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -29,8 +29,8 @@ include( jedicmake/cmake/Functions/git_functions.cmake  )
 # ECMWF libs
 # ----------
 option("BUNDLE_SKIP_ECKIT" "Don't build eckit" "ON" ) # Skip eckit build unless user passes -DBUNDLE_SKIP_ECKIT=OFF
-option("BUNDLE_SKIP_FCKIT" "Don't build fckit" "OFF") # Build fckit unless user passes -DBUNDLE_SKIP_FCKIT=ON
-option("BUNDLE_SKIP_ATLAS" "Don't build atlas" "OFF") # Build atlas unless user passes -DBUNDLE_SKIP_ATLAS=ON
+option("BUNDLE_SKIP_FCKIT" "Don't build fckit" "ON") # Skip eckit build unless user passes -DBUNDLE_SKIP_FCKIT=OFF
+option("BUNDLE_SKIP_ATLAS" "Don't build atlas" "ON") #Skip eckit build unless user passes -DBUNDLE_SKIP_ATLAS=OFF
 
 ecbuild_bundle( PROJECT eckit GIT "https://github.com/jcsda-internal/eckit.git" )
 ecbuild_bundle( PROJECT fckit GIT "https://github.com/jcsda-internal/fckit.git" )

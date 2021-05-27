@@ -45,7 +45,7 @@ phases:
       - git lfs install # creates .gitconfig
 
       #  Set crtm branch name
-      - export CRTM_JEDI_BRANCH="v2.3-jedi"
+      - export CRTM_JEDI_BRANCH="release/crtm_jedi"
 
       - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
         then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
@@ -94,12 +94,6 @@ phases:
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
 
       #  internal repos
-      # fckit
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fckit $CODEBUILD_GIT_BRANCH_FORK fckit /jcsda/fv3-bundle release-stable
-
-      # atlas
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/atlas $CODEBUILD_GIT_BRANCH_FORK atlas /jcsda/fv3-bundle release-stable
-
       # geos-aero
       - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
 
