@@ -68,7 +68,6 @@ Test     : CRIS-NPP nobs= 9900 Min=210.302, Max=300.561, RMS=247.653
 Test     : Satwind nobs= 198 Min=-13.5331, Max=41.8085, RMS=9.93665
 Test     : MHS-N19 nobs= 500 Min=161.937, Max=294.438, RMS=254.212
 Test     : IASI-METOPA nobs= 700 Min=205.466, Max=237.483, RMS=221.606
-Test     : MHS-NOAA19 nobs= 500 Min=161.937, Max=294.438, RMS=254.212
 Test     : SEVIRI-METEOSAT8 nobs= 100 Min=228.703, Max=247.579, RMS=237.692
-Test     : RADIOMETER-SMAP nobs= 400 Min=2.68747, Max=224.778, RMS=132.039
+Test     : RADIOMETER-SMAP nobs= 400 Min=2.68747, Max=224.81, RMS=132.073
 Test     : End H(x)

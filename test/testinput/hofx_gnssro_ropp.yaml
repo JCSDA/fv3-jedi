@@ -44,9 +44,8 @@ observations:
       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsgrouping:
         group variables: ["record_number"]
-# Code fails on writing out these files
-#    obsdataout:
-#      obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2018041500_m.nc4
+    obsdataout:
+      obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2018041500_m.nc4
     simulated variables: [bending_angle]
   obs operator:
     name:  GnssroBndROPP1D
@@ -75,9 +74,8 @@ observations:
       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsgrouping:
         group variables: ["record_number"]
-# Code fails on writing out these files
-#    obsdataout:
-#      obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
+    obsdataout:
+      obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
     simulated variables: [bending_angle]
   obs operator:
     name:  GnssroBndROPP2D
