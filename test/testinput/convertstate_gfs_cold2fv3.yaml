@@ -60,7 +60,7 @@ states:
     skip coupler file: true
   output:
     filetype: gfs
-    datapath: Data/inputs/gfs_c12/cold
+    datapath: Data/convertstate/
     filename_cold: cold2fv3.gfs_data.nc
     filename_cplr: cold2fv3.coupler.res
     filename_orog: cold2fv3.oro_data.nc
