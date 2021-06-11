@@ -408,18 +408,29 @@ function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
   elseif( DEFINED GIT_TAG_FUNC)
     message( STATUS "Tagged version of ${repo} is used" )
     # set ARGS for get_${repo}_test_data
-    set( ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file )
+    set( ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/api/v1/dataset/147_miesch/version/1.1.0/file )
     set( DIRNAME ${GIT_TAG_FUNC} )
     set( checksum "0" )
     set( TESTFILE_DIR_REPO "${CMAKE_SOURCE_DIR}/test-data-release/${repo}/${DIRNAME}" )
 
-    list( APPEND REPO_DATA_DOWNLOADER_ARGS
-          ${ECBUILD_DOWNLOAD_BASE_URL}
-          ${TESTFILE_DIR_REPO}
-          ${test_files_dirname}
-          ${checksum} )
     # Create test-data-release in source directory
-    file( MAKE_DIRECTORY ${TESTFILE_DIR_REPO} )
+    file( MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/test-data-release )
+    # temporary solution for release 1.1.0
+    if ( ${repo} STREQUAL "crtm" )
+      list( APPEND REPO_DATA_DOWNLOADER_ARGS
+            ${ECBUILD_DOWNLOAD_BASE_URL}
+            ${TESTFILE_DIR_REPO}
+            ${test_files_dirname}
+            ${checksum} )
+            file( MAKE_DIRECTORY ${TESTFILE_DIR_REPO} )
+    else()
+      list( APPEND REPO_DATA_DOWNLOADER_ARGS
+            ${ECBUILD_DOWNLOAD_BASE_URL}
+            ${CMAKE_SOURCE_DIR}/test-data-release
+            ${test_files_dirname}
+            ${checksum} )
+    endif()
+
     set ( REPO_DATA_DOWNLOADER fv3jedi_testdata_downloader.py )
     message( STATUS "Test data will be downloaded from: ${ECBUILD_DOWNLOAD_BASE_URL}" )
 
