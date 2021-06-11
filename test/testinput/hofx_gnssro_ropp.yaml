@@ -43,7 +43,7 @@ observations:
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsgrouping:
-        group_variable: "record_number"
+        group variables: ["record_number"]
     obsdataout:
       obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2018041500_m.nc4
     simulated variables: [bending_angle]
@@ -73,7 +73,7 @@ observations:
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsgrouping:
-        group_variable: "record_number"
+        group variables: ["record_number"]
     obsdataout:
       obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
     simulated variables: [bending_angle]
@@ -93,6 +93,7 @@ observations:
       minvalue: 0
       maxvalue: 50000
   - filter: ROobserror
+    n_horiz: 3
     filter variables:
     - name: bending_angle
     errmodel: NRL

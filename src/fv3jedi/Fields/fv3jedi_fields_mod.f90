@@ -15,7 +15,7 @@ use oops_variables_mod
 use string_utils
 
 ! fv3jedi
-use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, has_field
+use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, hasfield
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_io_gfs_mod,        only: fv3jedi_io_gfs
@@ -520,7 +520,7 @@ class(fv3jedi_fields), intent(in)  :: self
 character(len=*),      intent(in)  :: field_name
 integer, optional,     intent(out) :: field_index
 
-has_field_ = has_field(self%fields, field_name, field_index)
+has_field_ = hasfield(self%fields, field_name, field_index)
 
 end function has_field_
 

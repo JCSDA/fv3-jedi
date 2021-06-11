@@ -13,21 +13,22 @@
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
-#include "oops/util/Printable.h"
+#include "fv3jedi/Utilities/Traits.h"
+#include "oops/base/VariableChangeBase.h"
 #include "VarChaModel2GeoVaLs.interface.h"
 
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class VarChaModel2GeoVaLs: public util::Printable,
+class VarChaModel2GeoVaLs: public oops::VariableChangeBase<Traits>,
                            private util::ObjectCounter<VarChaModel2GeoVaLs> {
  public:
   static const std::string classname() {return "fv3jedi::VarChaModel2GeoVaLs";}
-  explicit VarChaModel2GeoVaLs(const Geometry &, const eckit::Configuration &);
+  VarChaModel2GeoVaLs(const Geometry &, const eckit::Configuration &);
   ~VarChaModel2GeoVaLs();
-  void changeVar(const State &, State &) const;
-  void changeVarInverse(const State &, State &) const;
+  void changeVar(const State &, State &) const override;
+  void changeVarInverse(const State &, State &) const override;
 
  private:
   F90vc_M2G keyFtnConfig_;

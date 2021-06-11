@@ -30,147 +30,147 @@ cost function:
                       u_srf,v_srf,f10m]
   background error:
     covariance model: hybrid
-    static:
-      date: '2018-04-15T00:00:00Z'
-      covariance model: BUMP
-      bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-        method: cor
-        strategy: specific_univariate
-        load_nicas: 1
-        mpicom: 2
-        verbosity: main
-        io_keys:
-        - "ua-ua"
-        - "va-va"
-        - "T-T"
-        - "ps-ps"
-        - "sphum-sphum"
-        - "ice_wat-ice_wat"
-        - "liq_wat-liq_wat"
-        - "o3mr-o3mr"
-        io_values:
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-    static weight: 0.1
-    ensemble:
-      date: '2018-04-15T00:00:00Z'
-      members:
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem001/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem002/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem003/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem004/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem005/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem006/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem007/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem008/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem009/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      - filetype: gfs
-        state variables: *3dvars
-        datapath: Data/inputs/gfs_c12/mem010/
-        filename_core: 20180415.000000.fv_core.res.nc
-        filename_trcr: 20180415.000000.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.sfc_data.nc
-        filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.coupler.res
-      localization:
-        timeslots: ['2018-04-15T00:00:00Z']
-        localization method: BUMP
-        localization variables: *3dvars
+    components:
+    - covariance:
+        covariance model: BUMP
         bump:
           prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-          method: loc
-          strategy: common
+          method: cor
+          strategy: specific_univariate
           load_nicas: 1
           mpicom: 2
           verbosity: main
-          io_keys: ["common"]
-          io_values: ["fixed_2500km_0.3"]
-    ensemble weight: 0.9
+          io_keys:
+          - "ua-ua"
+          - "va-va"
+          - "T-T"
+          - "ps-ps"
+          - "sphum-sphum"
+          - "ice_wat-ice_wat"
+          - "liq_wat-liq_wat"
+          - "o3mr-o3mr"
+          io_values:
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members:
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem001/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem002/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem003/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem004/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem005/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem006/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem007/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem008/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem009/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem010/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        localization:
+          localization method: BUMP
+          localization variables: *3dvars
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+            io_keys: ["common"]
+            io_values: ["fixed_2500km_0.3"]
+      weight:
+        value: 0.9
   observations:
+
   - obs space:
       name: GnssroBndROPP1D
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
         obsgrouping:
-          group_variable: "record_number"
+          group variables: ["record_number"]
       obsdataout:
-        obsfile: Data/hofx/gnssro_ropp1d_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/GnssroBndROPP1D_hyb-3dvar_gfs2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
-      name: GnssroBndROPP1D
+      name:  GnssroBndROPP1D
       obs options:
-    obs error:
-      covariance model: diagonal
     obs filters:
     - filter: Domain Check
       filter variables:
@@ -180,14 +180,6 @@ cost function:
           name: impact_height@MetaData
         minvalue: 0
         maxvalue: 50000
-      - variable:
-          name: earth_radius_of_curvature@MetaData
-        minvalue: 6250000
-        maxvalue: 6450000
-      - variable:
-          name: geoid_height_above_reference_ellipsoid@MetaData
-        minvalue: -200
-        maxvalue: 200
     - filter: ROobserror
       filter variables:
       - name: bending_angle
@@ -202,18 +194,16 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
         obsgrouping:
-          group_variable: "record_number"
+          group variables: ["record_number"]
       obsdataout:
-        obsfile: Data/hofx/gnssro_ropp2d_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
-      name: GnssroBndROPP2D
+      name:  GnssroBndROPP2D
       obs options:
-        n_horiz: 31
+        n_horiz: 3
         res: 40.0
         top_2d: 10.0
-    obs error:
-      covariance model: diagonal
     obs filters:
     - filter: Domain Check
       filter variables:
@@ -223,15 +213,8 @@ cost function:
           name: impact_height@MetaData
         minvalue: 0
         maxvalue: 50000
-      - variable:
-          name: earth_radius_of_curvature@MetaData
-        minvalue: 6250000
-        maxvalue: 6450000
-      - variable:
-          name: geoid_height_above_reference_ellipsoid@MetaData
-        minvalue: -200
-        maxvalue: 200
     - filter: ROobserror
+      n_horiz: 3
       filter variables:
       - name: bending_angle
       errmodel: NRL
@@ -240,11 +223,12 @@ cost function:
       filter variables:
       - name: bending_angle
       threshold: 3
+
 variational:
   minimizer:
     algorithm: DRIPCG
   iterations:
-  - ninner: 5
+  - ninner: 10
     gradient norm reduction: 1e-10
     test: on
     geometry:

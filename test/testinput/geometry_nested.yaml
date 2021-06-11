@@ -16,5 +16,6 @@ geometry:
   stretch_fac: 2.0
   hydrostatic: false
   nwat: 6
+  prepare external nml file: true
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml

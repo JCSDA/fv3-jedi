@@ -1,6 +1,6 @@
 window begin: '2018-04-14T21:00:00Z'
 window length: PT6H
-forecast length: PT3H
+forecast length: PT6H
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
@@ -15,32 +15,27 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/aerosols_gfs.yaml
     - fieldset: Data/fieldsets/ufo.yaml
-forecasts:
-  states:
-  - date: '2018-04-14T21:00:00Z'
-    filetype: gfs
-    datapath: Data/inputs/gfs_aero_c12/bkg/
-    filename_core: 20180414.210000.fv_core.res.nc
-    filename_trcr: 20180414.210000.fv_tracer.res.nc
-    filename_cplr: 20180414.210000.coupler.res
-    state variables: [T,DELP,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,
-                dust5,seas1,seas2,seas3,seas4]
-  - date: '2018-04-15T00:00:00Z'
-    filetype: gfs
-    datapath: Data/inputs/gfs_aero_c12/bkg/
-    filename_core: 20180415.000000.fv_core.res.nc
-    filename_trcr: 20180415.000000.fv_tracer.res.nc
-    filename_cplr: 20180415.000000.coupler.res
-    state variables: [T,DELP,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,
-                dust5,seas1,seas2,seas3,seas4]
-  - date: '2018-04-15T03:00:00Z'
-    filetype: gfs
-    datapath: Data/inputs/gfs_aero_c12/bkg/
-    filename_core: 20180415.030000.fv_core.res.nc
-    filename_trcr: 20180415.030000.fv_tracer.res.nc
-    filename_cplr: 20180415.030000.coupler.res
-    state variables: [T,DELP,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,
-                dust5,seas1,seas2,seas3,seas4]
+model:
+  name: PSEUDO
+  pseudo_type: gfs
+  datapath: Data/inputs/gfs_aero_c12/bkg/
+  filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
+  filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
+  filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
+  tstep: PT3H
+  model variables: [T,DELP,sphum,
+                    sulf,bc1,bc2,oc1,oc2,
+                    dust1,dust2,dust3,dust4,dust5,
+                    seas1,seas2,seas3,seas4]
+initial condition:
+  date: '2018-04-14T21:00:00Z'
+  filetype: gfs
+  datapath: Data/inputs/gfs_aero_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  state variables: [T,DELP,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,
+              dust5,seas1,seas2,seas3,seas4]
 observations:
 - obs space:
     name: Aod

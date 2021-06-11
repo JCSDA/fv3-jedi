@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include <numeric>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -201,12 +202,13 @@ void Increment::print(std::ostream & os) const {
 
   // Header
   os << std::endl
-     << " --------------------------------------------------------------------------------";
+     << " -----------------------------------------------"
+        "------------------------------------------------";
   os << std::endl << " Increment print | number of fields = " << numberFields
                   << " | cube sphere face size: C" << cubeSize;
 
   // Print info field by field
-  const int FieldNameLen = 15;
+  const int FieldNameLen = 31;
   char fieldName[FieldNameLen];
   std::vector<double> minMaxRms(3);
   for (int f = 0; f < numberFields; f++) {
@@ -223,7 +225,8 @@ void Increment::print(std::ostream & os) const {
 
   // Footer
   os << std::endl
-     << " --------------------------------------------------------------------------------";
+     << " -----------------------------------------------"
+        "------------------------------------------------";
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::dirac(const eckit::Configuration & config) {

@@ -24,20 +24,21 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv_init(Atm, dt_atmos_in, grids_on_this_pe, p_split, gtile)
+subroutine fv_init(Atm, dt_atmos_in, grids_on_this_pe, p_split, gtile, skip_nml_read)
 
 type(fv_atmos_type), allocatable, intent(inout) :: Atm(:)
 real(kind=kind_real),             intent(in)    :: dt_atmos_in
 logical, allocatable,             intent(out)   :: grids_on_this_pe(:)
 integer,                          intent(inout) :: p_split
 integer, optional,                intent(out)   :: gtile
+logical,                          intent(in)    :: skip_nml_read
 
 integer :: this_grid
 real(kind_fv3) :: dt_atmos
 
 dt_atmos = dt_atmos_in
 
-call fv_control_init(Atm, dt_atmos, this_grid, grids_on_this_pe, p_split)
+call fv_control_init(Atm, dt_atmos, this_grid, grids_on_this_pe, p_split, skip_nml_read)
 
 if (this_grid .ne. 1) call abor1_ftn("Geometry not ready for ngrid > 1")
 

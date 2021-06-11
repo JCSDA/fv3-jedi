@@ -1,0 +1,67 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  npx: 49
+  npy: 49
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+
+window begin: '2019-12-15T09:00:00Z'
+window length: PT6H
+
+background:
+ date: &date '2019-12-15T12:00:00Z' 
+ members:
+   - filetype: gfs
+     state variables: [snwdph] 
+     datapath: Data/inputs/gfs_land_c48/mem001/
+     filename_sfcd: 20191215.120000.sfc_data.nc
+     filename_cplr: 20191215.120000.coupler.res
+   - filetype: gfs
+     state variables: [snwdph]
+     datapath: Data/inputs/gfs_land_c48/mem002/
+     filename_sfcd: 20191215.120000.sfc_data.nc
+     filename_cplr: 20191215.120000.coupler.res
+
+observations:
+- obs space:
+    name: 'Simulate'
+    distribution: InefficientDistribution
+    simulated variables: [snwdph]
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/ghcn_20191215_maskout.nc
+  obs operator:
+    name: 'Identity'
+  obs error:
+    covariance model: diagonal
+  obs localization:
+      localization method: Gaspari-Cohn
+      lengthscale: 250e3
+      max_nobs: 50
+
+driver: 
+  save posterior mean: true 
+  save posterior mean increment: true
+  save posterior ensemble: false
+
+local ensemble DA:
+  solver: LETKF
+  inflation:
+    rtps: 0.0
+    rtpp: 0.0
+    mult: 1.0
+
+output:
+  filetype: latlon
+  filename: Data/analysis/letkf/gfs_land/mem%{member}%/letkf.
+
+output increment:
+  filetype: latlon
+  filename: Data/analysis/letkf/gfs_land/mem%{member}%/xainc.
+
+prints:
+  frequency: PT3H

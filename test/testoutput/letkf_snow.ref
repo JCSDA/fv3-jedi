@@ -1,0 +1,43 @@
+Test     : Initial state for member 1:
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 1 | cube sphere face size: C48
+Test     :    snwdph                        : Min = +2.121320e+01, Max = +1.654773e+03, RMS = +1.903302e+02
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : Initial state for member 2:
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 1 | cube sphere face size: C48
+Test     :    snwdph                        : Min = -2.121320e+01, Max = +1.612347e+03, RMS = +1.793604e+02
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : H(x) for member 1:
+Test     : Simulate nobs= 9519 Min=21.2132, Max=1044.71, RMS=156.3
+Test     : H(x) for member 2:
+Test     : Simulate nobs= 9519 Min=-21.2132, Max=1002.28, RMS=130.617
+Test     : H(x) ensemble background mean: 
+Test     : Simulate nobs= 9519 Min=0, Max=1023.5, RMS=142.461
+Test     : background y - H(x): 
+Test     : Simulate nobs= 9519 Min=-572.216, Max=2654.57, RMS=175.022
+Test     : Background mean :
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 1 | cube sphere face size: C48
+Test     :    snwdph                        : Min = +0.000000e+00, Max = +1.633560e+03, RMS = +1.837059e+02
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : Analysis mean :
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 1 | cube sphere face size: C48
+Test     :    snwdph                        : Min = -1.754930e+02, Max = +1.633560e+03, RMS = +1.834846e+02
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : Analysis mean increment :
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  Increment print | number of fields = 1 | cube sphere face size: C48
+Test     :    snwdph                        : Min = -2.416680e+02, Max = +4.172912e+02, RMS = +1.608519e+01
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : H(x) for member 1:
+Test     : Simulate nobs= 9519 Min=-40.2464, Max=1082.12, RMS=175.407
+Test     : H(x) for member 2:
+Test     : Simulate nobs= 9519 Min=-66.8053, Max=1041.72, RMS=165.962
+Test     : H(x) ensemble analysis mean: 
+Test     : Simulate nobs= 9519 Min=-53.5258, Max=1061.92, RMS=170.576
+Test     : analysis y - H(x): 
+Test     : Simulate nobs= 9519 Min=-470.105, Max=2343.89, RMS=150.213
+Test     : ombg RMS: 175.022
+Test     : oman RMS: 150.213

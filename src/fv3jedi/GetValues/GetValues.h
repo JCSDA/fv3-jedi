@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/util/DateTime.h"
@@ -28,7 +27,6 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GetValues/GetValues.interface.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
 
 // -------------------------------------------------------------------------------------------------
 
@@ -44,6 +42,7 @@ namespace ufo {
 namespace fv3jedi {
   class State;
   class Geometry;
+  class VarChaModel2GeoVaLs;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -51,7 +50,7 @@ class GetValues : public util::Printable, private util::ObjectCounter<GetValues>
  public:
   static const std::string classname() {return "fv3jedi::GetValues";}
 
-  GetValues(const Geometry &, const ufo::Locations &);
+  GetValues(const Geometry &, const ufo::Locations &, const eckit::Configuration &);
   virtual ~GetValues();
 
   void fillGeoVaLs(const State &, const util::DateTime &, const util::DateTime &,

@@ -48,25 +48,25 @@ real(kind=kind_real), intent(in)  :: field_u_srf          (geom%isc:geom%iec,geo
 real(kind=kind_real), intent(in)  :: field_v_srf          (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_f10m           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_sss            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: vegetation_type      (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: land_type            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: soil_type            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: water_coverage       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: land_coverage        (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: ice_coverage         (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: snow_coverage        (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: lai                  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: water_temperature    (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: land_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: ice_temperature      (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: snow_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: soil_moisture_content(geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: vegetation_fraction  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: soil_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: snow_depth           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: wind_speed           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: wind_direction       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(out) :: sea_surface_salinity (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: vegetation_type      (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: land_type            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: soil_type            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: water_coverage       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: land_coverage        (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: ice_coverage         (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: snow_coverage        (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: lai                  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: water_temperature    (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: land_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: ice_temperature      (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: snow_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: soil_moisture_content(geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: vegetation_fraction  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: soil_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: snow_depth           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: wind_speed           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: wind_direction       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: sea_surface_salinity (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 
 !Locals
 real(kind=kind_real), parameter :: minsnow = 1.0_kind_real / 10.0_kind_real
@@ -77,7 +77,6 @@ real(kind=kind_real), parameter :: quadcof  (4, 2  ) =      &
 
 integer              :: itype, istype
 integer              :: istyp00
-integer              :: isflg
 integer              :: lai_type, iquadrant
 logical              :: lwind
 real(kind=kind_real) :: sfcpct(0:3), ts(0:3), wgtavg(0:3), dtskin(0:3)
@@ -141,27 +140,6 @@ real(kind=kind_real) :: v_srf
 real(kind=kind_real) :: f10m
 real(kind=kind_real) :: sss
 
-! Zero outputs
-vegetation_type       = 0.0_kind_real
-land_type             = 0.0_kind_real
-soil_type             = 0.0_kind_real
-water_coverage        = 0.0_kind_real
-land_coverage         = 0.0_kind_real
-ice_coverage          = 0.0_kind_real
-snow_coverage         = 0.0_kind_real
-lai                   = 0.0_kind_real
-water_temperature     = 0.0_kind_real
-land_temperature      = 0.0_kind_real
-ice_temperature       = 0.0_kind_real
-snow_temperature      = 0.0_kind_real
-soil_moisture_content = 0.0_kind_real
-vegetation_fraction   = 0.0_kind_real
-soil_temperature      = 0.0_kind_real
-snow_depth            = 0.0_kind_real
-wind_speed            = 0.0_kind_real
-wind_direction        = 0.0_kind_real
-sea_surface_salinity  = 0.0_kind_real
-
 ! Vegetation maps
 allocate(map_to_crtm_ir   (nvege_type))
 allocate(map_to_crtm_mwave(nvege_type))
@@ -177,6 +155,7 @@ map_to_crtm_mwave = igbp_to_gfs
 do jj = geom%jsc, geom%jec
   do ji = geom%isc, geom%iec
 
+!   Why copy to scalars?
     slmsk  = nint(field_slmsk (ji,jj,1))
     vtype  = nint(field_vtype (ji,jj,1))
     stype  = nint(field_stype (ji,jj,1))
@@ -209,19 +188,6 @@ do jj = geom%jsc, geom%jec
     sfcpct = 0.0_kind_real
     sfcpct(istyp00) = 1.0
 
-    isflg = 0
-    if(sfcpct(0) > 0.99_kind_real)then
-       isflg = 0
-    else if(sfcpct(1) > 0.99_kind_real)then
-       isflg = 1
-    else if(sfcpct(2) > 0.99_kind_real)then
-       isflg = 2
-    else if(sfcpct(3) > 0.99_kind_real)then
-       isflg = 3
-    else
-       isflg = 4
-    end if
-
     ts(0:3)=0.0_kind_real
     wgtavg(0:3)=0.0_kind_real
     vfr=0.0_kind_real
@@ -235,22 +201,22 @@ do jj = geom%jsc, geom%jec
     if(istyp00 == 1)then
        vty  = vtype
        sty  = stype
-       wgtavg(1) = wgtavg(1) + 1.0
-       ts(1)=ts(1)+sst00
-       vfr  =vfr  + vfrac
-       stp  =stp  +   stc
-       sm   =sm   +   smc
+       wgtavg(1) = 1.0
+       ts(1)= sst00
+       vfr  = vfrac
+       stp  = stc
+       sm   = smc
     else if(istyp00 == 2)then
-       wgtavg(2) = wgtavg(2) + 1.0
-       ts(2)=ts(2)+sst00
+       wgtavg(2) = 1.0
+       ts(2)=sst00
     else if(istyp00 == 3)then
-       wgtavg(3) = wgtavg(3) + 1.0
-       ts(3)=ts(3)+sst00
-       sn = sn + sno00
+       wgtavg(3) = 1.0
+       ts(3)=sst00
+       sn = sno00
     else
-       wgtavg(0) = wgtavg(0) + 1.0
-       ts(0)=ts(0)+sst00
-       ss   =ss   +ss00
+       wgtavg(0) = 1.0
+       ts(0)=sst00
+       ss   =ss00
     end if
 
     if(wgtavg(0) > 0.0_kind_real)then
@@ -355,6 +321,7 @@ do jj = geom%jsc, geom%jec
 
     endif
 
+!   Why copy from scalars?
     water_temperature(ji,jj,1)     = max(ts(0) + dtskin(0), 270._kind_real)
     sea_surface_salinity(ji,jj,1)  = ss
 
@@ -363,6 +330,7 @@ do jj = geom%jsc, geom%jec
        !water_temperature(ji,jj,1)  = max(data_s(itref)+data_s(idtw)-data_s(idtc) + dtskin(0), 271._kind_real)
     !endif
 
+!   Why copy from scalars?
     land_temperature(ji,jj,1)      = ts(1) + dtskin(1)
     ice_temperature(ji,jj,1)       = min(ts(2) + dtskin(2), 280._kind_real)
     snow_temperature(ji,jj,1)      = min(ts(3) + dtskin(3), 280._kind_real)

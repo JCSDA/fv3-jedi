@@ -10,7 +10,6 @@
 
 #include "eckit/config/Configuration.h"
 
-#include "oops/interface/VariableChange.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
 
@@ -22,8 +21,7 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::VariableChangeMaker<Traits, oops::VariableChange<Traits, VarChaA2M> >
-       makerVarChaA2M_("Analysis2Model");
+static oops::VariableChangeMaker<Traits, VarChaA2M> makerVarChaA2M_("Analysis2Model");
 // -------------------------------------------------------------------------------------------------
 VarChaA2M::VarChaA2M(const Geometry & resol, const eckit::Configuration & conf) :
 geom_(new Geometry(resol)), conf_(conf)

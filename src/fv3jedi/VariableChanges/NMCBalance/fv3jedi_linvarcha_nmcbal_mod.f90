@@ -5,7 +5,7 @@
 
 module fv3jedi_linvarcha_nmcbal_mod
 
-use fckit_configuration_module, only: fckit_configuration
+use interpolatorbump_mod,         only: bump_interpolator
 
 use netcdf
 use fv3jedi_netcdf_utils_mod, only: nccheck
@@ -27,7 +27,6 @@ use wind_vt_mod
 
 use type_gaugrid, only: gaussian_grid
 use fv3jedi_field_mod, only: copy_subset
-use fv3jedi_bump_interp_mod, only: fv3jedi_bump_interp
 
 implicit none
 private
@@ -73,7 +72,6 @@ type :: fv3jedi_linvarcha_nmcbal
  integer :: hx,hy       ! halo size
  integer :: layout(2)   ! domain layout
  integer,allocatable :: istrx(:),jstry(:) ! start index at each subdomain
- integer :: ngrid_ggh, ngrid_gg ! data size for grid interpolation (with and without halo)
  ! regression coeffs for GSI unbalanced variables
  character(len=256) :: path_to_nmcbalance_coeffs  ! path to netcdf file
  integer :: read_latlon_from_nc                   ! 1: read rlats/rlons of
@@ -91,8 +89,8 @@ type :: fv3jedi_linvarcha_nmcbal
  !
  ! bump interpolation
  !
- type(fv3jedi_bump_interp) :: c2g ! bump_interpolation from cubed-sphere to Gaussian grid
- type(fv3jedi_bump_interp) :: g2c ! bump interpolation from Gaussian to cubed-sphere grid
+ type(bump_interpolator) :: c2g ! bump interpolation from cubed-sphere to Gaussian grid
+ type(bump_interpolator) :: g2c ! bump interpolation from Gaussian to cubed-sphere grid
 
 end type fv3jedi_linvarcha_nmcbal
 
@@ -214,8 +212,8 @@ self%nv = 4 ! psi,chi,tv,ps
 self%z2 = self%nz
 !self%z2 = (nz*3+1)/self%npe
 !if(mod(nz*3+1,self%npe)/=0) self%z2 = self%z2 + 1
-self%glb%nlat = self%ny; self%gg%nlat = self%y2
 self%glb%nlon = self%nx; self%gg%nlon = self%x2
+self%glb%nlat = self%ny; self%gg%nlat = self%y2
 self%glb%nlev = self%nz; self%gg%nlev = self%z2
 self%glb%nvar = self%nv; self%gg%nvar = self%nv
 
@@ -715,7 +713,7 @@ end do
 end subroutine get_local_dims_
 
 ! ------------------------------------------------------------------------------
-! Set local Gausisan latitudes and longitudes
+! Set local Gaussian latitudes and longitudes
 subroutine set_gaugrid_latlon(self)
 
 implicit none
@@ -750,15 +748,6 @@ implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 type(fv3jedi_geom), target,     intent(in)    :: geom
 
-integer :: jx,jy,jnode
-real(kind=kind_real), pointer :: real_ptr(:,:)
-real(kind=kind_real), allocatable :: lon_cs(:)  ! Cubed-sphere longitudes
-real(kind=kind_real), allocatable :: lat_cs(:)  ! Cubed-sphere latitudes
-real(kind=kind_real), allocatable :: lon_ggh(:) ! Gaussian longitudes with halo
-real(kind=kind_real), allocatable :: lat_ggh(:) ! Gaussian latitudes with halo
-real(kind=kind_real), allocatable :: lon_gg(:,:)  ! Gaussian longitudes without halo
-real(kind=kind_real), allocatable :: lat_gg(:,:)  ! Gaussian latitudes without halo
-
 ! Check grid size
 if(  (geom%isc/=self%isc).or.(geom%iec/=self%iec) &
 &.or.(geom%jsc/=self%jsc).or.(geom%jec/=self%jec)) then
@@ -766,57 +755,11 @@ if(  (geom%isc/=self%isc).or.(geom%iec/=self%iec) &
 & grid does not match that in the geometry")
 end if
 
-! Cubed-sphere grid
-self%ngrid_cs = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
-allocate(lon_cs(self%ngrid_cs))
-allocate(lat_cs(self%ngrid_cs))
-jnode = 0
-do jy=geom%jsc,geom%jec
-  do jx=geom%isc,geom%iec
-    jnode = jnode+1
-    lon_cs(jnode) = geom%grid_lon(jx,jy)*rad2deg
-    lat_cs(jnode) = geom%grid_lat(jx,jy)*rad2deg
-  end do
-end do
-
-! Gaussian grid with and without halo
-self%ngrid_ggh = self%gg%nlat*self%gg%nlon
-self%ngrid_gg = (self%gg%nlat-self%hy*2)*(self%gg%nlon-self%hx*2)
-allocate(lon_ggh(self%ngrid_ggh))
-allocate(lat_ggh(self%ngrid_ggh))
-allocate(lon_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy))
-allocate(lat_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy))
-jnode = 0
-do jy=1,self%gg%nlat
-  do jx=1,self%gg%nlon
-    jnode = jnode+1
-    lon_ggh(jnode) = self%gg%rlons(jx)*rad2deg
-    lat_ggh(jnode) = self%gg%rlats(jy)*rad2deg
-  end do
-end do
-do jy=1+self%hy,self%gg%nlat-self%hy
-  do jx=1+self%hx,self%gg%nlon-self%hx
-    lon_gg(jx,jy) = self%gg%rlons(jx)
-    lat_gg(jx,jy) = self%gg%rlats(jy)
-  end do
-end do
-
-! BUMP setup
-call self%c2g%setup(geom%f_comm,                                        &
-&                   geom%isc,geom%iec,geom%jsc,geom%jec,geom%npz,       &
-&                   geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), &
-&                   geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), &
-&                   self%ngrid_ggh,lon_ggh,lat_ggh)
-call self%g2c%setup(geom%f_comm,                                                            &
-&                   1+self%hx,self%gg%nlon-self%hx,1+self%hy,self%gg%nlat-self%hy,geom%npz, &
-&                   lon_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy),  &
-&                   lat_gg(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy),  &
-&                   self%ngrid_cs,lon_cs,lat_cs)
-
-! Release memory
-deallocate(lon_cs,lat_cs)
-deallocate(lon_ggh,lat_ggh)
-deallocate(lon_gg,lat_gg)
+! Initialize bump interpolator
+call self%c2g%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon1d_out=self%gg%rlons(1:self%gg%nlon)*rad2deg, &
+ & lat1d_out=self%gg%rlats(1:self%gg%nlat)*rad2deg, nl=geom%npz)
+call self%g2c%init(geom%f_comm, lon1d_in=self%gg%rlons(1+self%hx:self%gg%nlon-self%hx)*rad2deg, &
+ & lat1d_in=self%gg%rlats(1+self%hy:self%gg%nlat-self%hy)*rad2deg, afunctionspace_out=geom%afunctionspace, nl=geom%npz)
 
 end subroutine bump_init_gaugrid
 
@@ -979,84 +922,30 @@ subroutine field_interp_to_gaugrid(self)
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-integer :: jvar,jnode,jx,jy,jz
-real(kind_real),allocatable :: vec(:,:)
-
-! Allocation
-allocate(vec(self%ngrid_ggh,self%gg%nlev))
+integer :: jvar
 
 do jvar=1,4
-  ! Initialization
-  vec = 0.0_kind_real
-
-  ! Apply interpolation
-  call self%c2g%apply(self%npz,                                                      &
- &                    self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
- &                    self%ngrid_ggh,vec)
-
-  ! Copy to Gaussian grid structure
-  do jz=1,self%gg%nlev
-    jnode = 0
-    do jy=1,self%gg%nlat
-      do jx=1,self%gg%nlon
-        jnode = jnode+1
-        self%gg%fld(jy,jx,jz,jvar) = vec(jnode,jz)
-      end do
-    end do
-  end do
+  ! Interpolate
+  call self%c2g%apply(self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
+     & self%gg%fld(1:self%gg%nlon,1:self%gg%nlat,1:self%gg%nlev,jvar))
 end do
-
-! Release memory
-deallocate(vec)
 
 end subroutine field_interp_to_gaugrid
 
 ! ------------------------------------------------------------------------------
-! Interpolate Gaussian gird filed to cubed-sphere grid using bump
+! Interpolate Gaussian grid filed to cubed-sphere grid using bump
 subroutine field_interp_from_gaugrid(self)
 
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-integer :: jvar,jx,jy,jz,jnode
-real(kind_real),allocatable :: fld(:,:,:),vec(:,:)
-
-! Allocation
-allocate(fld(self%gg%nlon,self%gg%nlat,self%gg%nlev))
-allocate(vec(self%ngrid_cs,self%npz))
+integer :: jvar
 
 do jvar=1,4
-  ! Copy from Gaussian grid structure
-  fld = 0.0_kind_real
-  do jz=1,self%gg%nlev
-    do jy=1+self%hy,self%gg%nlat-self%hy
-      do jx=1+self%hx,self%gg%nlon-self%hx
-        fld(jx,jy,jz) = self%gg%fld(jy,jx,jz,jvar)
-      end do
-    end do
-  end do
-
-
-  ! Apply interpolation
-  call self%g2c%apply(self%gg%nlev,                                                                      &
- &                    fld(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy,1:self%gg%nlev), &
- &                    self%ngrid_cs,vec)
-
-  ! Copy to cubed-spere structure
-  do jz=1,self%npz
-    jnode = 0
-    do jy=self%jsc,self%jec
-       do jx=self%isc,self%iec
-         jnode = jnode+1
-         self%fld(jx,jy,jz,jvar) = vec(jnode,jz)
-       end do
-    end do
-  end do
+  ! Interpolate
+  call self%g2c%apply(self%gg%fld(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy,1:self%gg%nlev,jvar), &
+     & self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar))
 end do
-
-! Release memory
-deallocate(fld)
-deallocate(vec)
 
 end subroutine field_interp_from_gaugrid
 
@@ -1067,39 +956,19 @@ subroutine field_interp_to_gaugrid_ad(self)
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-integer :: jvar,jnode,jx,jy,jz
-real(kind_real),allocatable :: vec(:,:)
+integer :: jvar
 
-! Allocation
-allocate(vec(self%ngrid_ggh,self%gg%nlev))
+! Initialization
+self%fld = 0.0
 
 do jvar=1,4
-  ! Initialization
-  vec = 0.0_kind_real
-
-  ! Copy to Gaussian grid structure
-  do jz=1,self%gg%nlev
-    jnode = 0
-    do jy=1,self%gg%nlat
-      do jx=1,self%gg%nlon
-        jnode = jnode+1
-        vec(jnode,jz) = self%gg%fld(jy,jx,jz,jvar)
-      end do
-    end do
-  end do
-
-  ! Apply interpolation
-  call self%c2g%apply_ad(self%npz,                                                      &
- &                       self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
- &                       self%ngrid_ggh,vec)
-
+  ! Interpolate
+  call self%c2g%apply_ad(self%gg%fld(1:self%gg%nlon,1:self%gg%nlat,1:self%gg%nlev,jvar), &
+     & self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar))
 end do
 
 ! Reset input field
 self%gg%fld = 0.0_kind_real
-
-! Release memory
-deallocate(vec)
 
 end subroutine field_interp_to_gaugrid_ad
 
@@ -1110,51 +979,19 @@ subroutine field_interp_from_gaugrid_ad(self)
 implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 
-
-integer :: jvar,jx,jy,jz,jnode
-real(kind_real),allocatable :: fld(:,:,:),vec(:,:)
-
-! Allocation
-allocate(fld(self%gg%nlon,self%gg%nlat,self%gg%nlev))
-allocate(vec(self%ngrid_cs,self%npz))
+integer :: jvar
 
 ! Initialization
 self%gg%fld = 0.0_kind_real
 
 do jvar=1,4
-  ! Copy to cubed-spere structure
-  do jz=1,self%npz
-    jnode = 0
-    do jy=self%jsc,self%jec
-       do jx=self%isc,self%iec
-         jnode = jnode+1
-         vec(jnode,jz) = self%fld(jx,jy,jz,jvar)
-       end do
-    end do
-  end do
-
-  ! Apply interpolation
-  call self%g2c%apply_ad(self%gg%nlev,                                                                      &
- &                       fld(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy,1:self%gg%nlev), &
- &                       self%ngrid_cs,vec)
-
-  ! Copy from Gaussian grid structure
-  do jz=1,self%gg%nlev
-    do jy=1+self%hy,self%gg%nlat-self%hy
-      do jx=1+self%hx,self%gg%nlon-self%hx
-        self%gg%fld(jy,jx,jz,jvar) = self%gg%fld(jy,jx,jz,jvar)+fld(jx,jy,jz)
-      end do
-    end do
-  end do
-  fld = 0.0_kind_real
+  ! Interpolate
+  call self%g2c%apply_ad(self%fld(self%isc:self%iec,self%jsc:self%jec,1:self%npz,jvar), &
+     & self%gg%fld(1+self%hx:self%gg%nlon-self%hx,1+self%hy:self%gg%nlat-self%hy,1:self%gg%nlev,jvar))
 end do
 
 ! Reset input field
 self%fld = 0.0_kind_real
-
-! Release memory
-deallocate(fld)
-deallocate(vec)
 
 end subroutine field_interp_from_gaugrid_ad
 
@@ -1170,26 +1007,26 @@ integer :: i,j,k,l
 ! Add contribution from streamfunction and unbalanced vp
 ! to surface pressure.
 do k=1,self%gg%nlev
-  do i=1,self%gg%nlon
-    do j=1,self%gg%nlat
-      self%ps(j,i)=self%ps(j,i)+self%wgvz(j,k)*self%psi(j,i,k)
+  do j=1,self%gg%nlat
+    do i=1,self%gg%nlon
+      self%ps(i,j)=self%ps(i,j)+self%wgvz(j,k)*self%psi(i,j,k)
     end do
   end do
 end do
 
 do k=1,self%gg%nlev
 ! Add contribution from streamfunction to veloc. potential
-  do i=1,self%gg%nlon
-    do j=1,self%gg%nlat
-      self%chi(j,i,k)=self%chi(j,i,k)+self%bvz(j,k)*self%psi(j,i,k)
+  do j=1,self%gg%nlat
+    do i=1,self%gg%nlon
+      self%chi(i,j,k)=self%chi(i,j,k)+self%bvz(j,k)*self%psi(i,j,k)
     end do
   end do
 
 ! Add contribution from streamfunction to unbalanced temperature.
   do l=1,self%gg%nlev
-    do i=1,self%gg%nlon
-      do j=1,self%gg%nlat
-        self%tv(j,i,k)=self%tv(j,i,k)+self%agvz(j,k,l)*self%psi(j,i,l)
+    do j=1,self%gg%nlat
+      do i=1,self%gg%nlon
+        self%tv(i,j,k)=self%tv(i,j,k)+self%agvz(j,k,l)*self%psi(i,j,l)
       end do
     end do
   end do
@@ -1208,17 +1045,17 @@ integer :: i,j,k,l
 do k=1,self%gg%nlev
 ! Adjoint of contribution to temperature from streamfunction.
   do l=1,self%gg%nlev
-    do i=1,self%gg%nlon
-      do j=1,self%gg%nlat
-        self%psi(j,i,k)=self%psi(j,i,k)+self%agvz(j,l,k)*self%tv(j,i,l)
+    do j=1,self%gg%nlat
+      do i=1,self%gg%nlon
+        self%psi(i,j,k)=self%psi(i,j,k)+self%agvz(j,l,k)*self%tv(i,j,l)
       end do
     end do
   end do
 
 ! Adjoint of contribution to velocity potential from streamfunction.
-  do i=1,self%gg%nlon
-    do j=1,self%gg%nlat
-      self%psi(j,i,k)=self%psi(j,i,k)+self%bvz(j,k)*self%chi(j,i,k)
+  do j=1,self%gg%nlat
+    do i=1,self%gg%nlon
+      self%psi(i,j,k)=self%psi(i,j,k)+self%bvz(j,k)*self%chi(i,j,k)
     end do
   end do
 end do
@@ -1226,9 +1063,9 @@ end do
 ! Adjoint of streamfunction and unbalanced velocity potential
 ! contribution to surface pressure.
 do k=1,self%gg%nlev
-  do i=1,self%gg%nlon
-    do j=1,self%gg%nlat
-      self%psi(j,i,k)=self%psi(j,i,k)+self%wgvz(j,k)*self%ps(j,i)
+  do j=1,self%gg%nlat
+    do i=1,self%gg%nlon
+      self%psi(i,j,k)=self%psi(i,j,k)+self%wgvz(j,k)*self%ps(i,j)
     end do
   end do
 end do

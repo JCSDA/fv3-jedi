@@ -13,20 +13,21 @@
 
 #include "eckit/config/Configuration.h"
 #include "fv3jedi/Geometry/Geometry.h"
-#include "oops/util/Printable.h"
+#include "fv3jedi/Utilities/Traits.h"
+#include "oops/base/VariableChangeBase.h"
 #include "VarChaColdStartWinds.interface.h"
 
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class VarChaColdStartWinds: public util::Printable {
+class VarChaColdStartWinds: public oops::VariableChangeBase<Traits> {
  public:
   static const std::string classname() {return "fv3jedi::VarChaColdStartWinds";}
-  explicit VarChaColdStartWinds(const Geometry &, const eckit::Configuration &);
+  VarChaColdStartWinds(const Geometry &, const eckit::Configuration &);
   ~VarChaColdStartWinds();
-  void changeVar(const State &, State &) const;
-  void changeVarInverse(const State &, State &) const;
+  void changeVar(const State &, State &) const override;
+  void changeVarInverse(const State &, State &) const override;
 
  private:
   F90vc_CSW keyFtn_;

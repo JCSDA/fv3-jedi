@@ -102,7 +102,7 @@ background:
 observations:
 - obs space:
     name: Radiosonde
-    distribution: InefficientDistribution
+    distribution: Halo 
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/scatwind_obs_2018041500_s.nc4
 #    obsdataout:
@@ -112,16 +112,19 @@ observations:
   obs operator:
     name: VertInterp
   obs error:
-    covariance model: localized diagonal
-    localization:
-      localization method: Gaspari-Cohn
-      lengthscale: 5000e3
-      max_nobs: 1000
+    covariance model: diagonal
+  obs localization:
+    localization method: Gaspari-Cohn
+    lengthscale: 5000e3
+    max_nobs: 1000
 
 prints:
   frequency: PT3H
 
 driver: 
+  update obs config with geometry info: true
+  save posterior ensemble: false
+  save posterior mean increment: false
 
 local ensemble DA:
   solver: LETKF
@@ -131,12 +134,10 @@ local ensemble DA:
     mult: 1.1
 
 output:
-  filetype: gfs
-  datapath: Data/analysis/letkf/gfs/mem%{member}%/
-  filename_core: letkf.fv_core.res.nc
-  filename_trcr: letkf.fv_tracer.res.nc
-  filename_sfcd: letkf.sfc_data.nc
-  filename_sfcw: letkf.fv_srf_wnd.res.nc
-  first: PT0H
-  frequency: PT1H
-  date: *date
+  filetype: latlon
+  filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
+
+output increment:
+  filetype: latlon
+  filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
+

@@ -33,6 +33,9 @@ public udvd_to_psichi
 
 public psichi_to_vortdivg
 
+public udvd_to_vort
+public uava_to_vort
+
 public a2d
 public a2d_ad
 public d2a
@@ -625,6 +628,77 @@ end subroutine psichi_to_vortdivg
 
 ! ------------------------------------------------------------------------------
 
+subroutine udvd_to_vort(geom, ud_in, vd_in, vort)
+
+ implicit none
+ type(fv3jedi_geom),   intent(inout) :: geom
+ real(kind=kind_real), intent(inout) :: ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) ! Dgrid winds (u)
+ real(kind=kind_real), intent(inout) :: vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) ! Dgrid winds (v)
+ real(kind=kind_real), intent(inout) ::  vort(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) ! Vorticity
+
+ real(kind=kind_real), allocatable :: ud(:,:,:)
+ real(kind=kind_real), allocatable :: vd(:,:,:)
+ integer :: i, j, k
+
+ ! --------------------------------- !
+ ! Convert D-grid winds to vorticity !
+ ! --------------------------------- !
+
+ ! Fill edge of D-grid winds
+ ! -------------------------
+ allocate(ud(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz))
+ allocate(vd(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz))
+
+ ! Copy internal part
+ ud(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) = ud_in(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ vd(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) = vd_in(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+
+ call fill_dgrid_winds(geom, ud, vd, fillhalo=.true.)
+
+ !D-grid u and v to A-grid vorticity
+ !----------------------------------
+ vort = 0.0_kind_real
+ do k=1,geom%npz
+   do j=geom%jsc,geom%jec
+     do i=geom%isc,geom%iec
+       vort(i,j,k) = geom%rarea(i,j)*( ud(i,j,k)*geom%dx(i,j)-ud(i,j+1,k)*geom%dx(i,j+1) - &
+                                       vd(i,j,k)*geom%dy(i,j)+vd(i+1,j,k)*geom%dy(i+1,j))
+     enddo
+   enddo
+ enddo
+
+end subroutine udvd_to_vort
+
+! ------------------------------------------------------------------------------
+
+subroutine uava_to_vort(geom, ua, va, vort)
+
+ implicit none
+ type(fv3jedi_geom),   intent(inout) :: geom
+ real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! Dgrid winds (u)
+ real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! Dgrid winds (v)
+ real(kind=kind_real), intent(inout) :: vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) ! Vorticity
+
+ real(kind=kind_real) :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
+ real(kind=kind_real) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
+ integer :: i, j, k
+
+ ! --------------------------------- !
+ ! Convert A-grid winds to vorticity !
+ ! --------------------------------- !
+
+ ! A to D grid winds
+ ! -----------------
+ call a2d(geom, ua, va, ud, vd)
+
+ ! Compute vorticity
+ ! -----------------
+ call udvd_to_vort(geom, ud, vd, vort)
+
+end subroutine uava_to_vort
+
+! ------------------------------------------------------------------------------
+
 subroutine udvd_to_ucvc(geom,u,v,uc,vc,ua_out,va_out)
 
 implicit none
@@ -1041,7 +1115,6 @@ real(kind=kind_real) :: ue(geom%isc-1:geom%iec+1,geom%jsc  :geom%jec+1,3)    ! 3
 real(kind=kind_real) :: ve(geom%isc  :geom%iec+1,geom%jsc-1:geom%jec+1,3)    ! 3D winds at edges
 real(kind=kind_real), dimension(geom%isc:geom%iec):: ut1, ut2, ut3
 real(kind=kind_real), dimension(geom%jsc:geom%jec):: vt1, vt2, vt3
-
 npx = geom%npx
 npy = geom%npy
 npz = geom%npz
@@ -1087,7 +1160,7 @@ do k=1, npz
       ve(i,j,3) = v3(i-1,j,3) + v3(i,j,3)
     enddo
   enddo
-
+ if (.not. geom%bounded_domain) then
   if ( is==1 ) then
     i = 1
     do j=js,je
@@ -1167,6 +1240,8 @@ do k=1, npz
       ue(i,j,3) = ut3(i)
     enddo
   endif
+
+ endif ! .not. bounded_domain
 
   do j=js,je+1
     do i=is,ie
@@ -1262,7 +1337,7 @@ do k=npz,1,-1
       ud_ad(i, j, k) = 0.0_8
     end do
   end do
-
+ if (.not. geom%bounded_domain) then
   if (je + 1 .eq. npy) then
     do i=ie,is,-1
       ut3_ad(i) = ut3_ad(i) + ue_ad(i, npy, 3)
@@ -1398,7 +1473,8 @@ do k=npz,1,-1
       end if
     end do
   end if
-
+ end if  !clt bounded=.false.
+ 
   do j=je+1,js-1,-1
     do i=ie+1,is,-1
       v3_ad(i-1, j, 3) = v3_ad(i-1, j, 3) + ve_ad(i, j, 3)

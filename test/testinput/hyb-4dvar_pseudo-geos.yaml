@@ -6,92 +6,93 @@ cost function:
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
   background error:
     covariance model: hybrid
-    static weight: 0.1
-    ensemble weight: 0.9
-    static:
-      date: '2018-04-14T21:00:00Z'
-      covariance model: BUMP
-      bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
-        method: cor
-        strategy: specific_univariate
-        load_nicas: 1
-        mpicom: 2
-        verbosity: main
-        io_keys:
-        - "ua-ua"
-        - "va-va"
-        - "t-t"
-        - "ps-ps"
-        - "q-q"
-        - "qi-qi"
-        - "ql-ql"
-        - "o3ppmv-o3ppmv"
-        io_values:
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-    ensemble:
-      date: '2018-04-14T21:00:00Z'
-      members:
-        - filetype: geos
-          state variables: &incvars [ua,va,t,ps,q,qi,ql,o3ppmv]
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem001.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem002.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem003.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem004.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem005.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem006.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem007.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem008.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem009.20180414_210000z.nc4
-        - filetype: geos
-          state variables: *incvars
-          datapath: Data/inputs/geos_c12
-          filename_bkgd: geos.mem010.20180414_210000z.nc4
-      localization:
-        timeslots: ['2018-04-14T21:00:00Z']
-        localization variables: *incvars
-        localization method: BUMP
+    components:
+    - covariance:
+        covariance model: BUMP
         bump:
           prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
-          method: loc
-          strategy: common
+          method: cor
+          strategy: specific_univariate
           load_nicas: 1
           mpicom: 2
           verbosity: main
-          io_keys: ["common"]
-          io_values: ["fixed_2500km_0.3"]
+          io_keys:
+          - "ua-ua"
+          - "va-va"
+          - "t-t"
+          - "ps-ps"
+          - "q-q"
+          - "qi-qi"
+          - "ql-ql"
+          - "o3ppmv-o3ppmv"
+          io_values:
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members:
+          - filetype: geos
+            state variables: &incvars [ua,va,t,ps,q,qi,ql,o3ppmv]
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem001.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem002.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem003.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem004.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem005.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem006.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem007.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem008.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem009.20180414_210000z.nc4
+          - filetype: geos
+            state variables: *incvars
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.mem010.20180414_210000z.nc4
+        localization:
+          localization variables: *incvars
+          localization method: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+            io_keys: ["common"]
+            io_values: ["fixed_2500km_0.3"]
+      weight:
+         value: 0.9
   observations:
   - obs space:
       name: Aircraft
@@ -129,7 +130,7 @@ cost function:
     obs filters:
     - filter: Domain Check
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
       where:
       - variable:
           name: impact_height@MetaData
@@ -141,7 +142,7 @@ cost function:
       errmodel: NBAM
     - filter: Background Check RONBAM
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
 #  - obs space:
 #      name: AMSUA-NOAA19
 #      obsdatain:

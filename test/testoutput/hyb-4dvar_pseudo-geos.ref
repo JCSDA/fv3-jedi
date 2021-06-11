@@ -2,22 +2,22 @@ Test     : CostJb   : Nonlinear Jb = 0
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2872.45, nobs = 1426, Jo/n = 2.01434, err = 2.67924
 Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 450.17, nobs = 148, Jo/n = 3.04169, err = 0.000298811
 Test     : CostFunction: Nonlinear J = 3322.62
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.690003
+Test     : DRIPCGMinimizer: reduction in residual norm = 0.690463
 Test     : CostFunction::addIncrement: Analysis: 
-Test     :  --------------------------------------------------------------------------------
+Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 10 | cube sphere face size: C12
-Test     :    u             : Min = -7.725947e+01, Max = +8.819493e+01, RMS = +1.464986e+01
-Test     :    v             : Min = -6.536877e+01, Max = +8.223094e+01, RMS = +1.514855e+01
-Test     :    ua            : Min = -5.705249e+01, Max = +9.875590e+01, RMS = +2.014244e+01
-Test     :    va            : Min = -6.313937e+01, Max = +7.476113e+01, RMS = +8.568433e+00
-Test     :    t             : Min = +1.851981e+02, Max = +3.090463e+02, RMS = +2.471528e+02
-Test     :    delp          : Min = +1.000000e+00, Max = +5.131812e+03, RMS = +1.954845e+03
-Test     :    q             : Min = +0.000000e+00, Max = +1.964079e-02, RMS = +4.017236e-03
-Test     :    qi            : Min = +0.000000e+00, Max = +4.412692e-04, RMS = +7.011225e-06
-Test     :    ql            : Min = +0.000000e+00, Max = +5.802482e-04, RMS = +2.476114e-05
-Test     :    o3ppmv        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
-Test     :  --------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 6.11785e-07
+Test     :    u                             : Min = -7.725947e+01, Max = +8.819493e+01, RMS = +1.464986e+01
+Test     :    v                             : Min = -6.536877e+01, Max = +8.223094e+01, RMS = +1.514855e+01
+Test     :    ua                            : Min = -5.705249e+01, Max = +9.875590e+01, RMS = +2.014244e+01
+Test     :    va                            : Min = -6.313937e+01, Max = +7.476113e+01, RMS = +8.568433e+00
+Test     :    t                             : Min = +1.851981e+02, Max = +3.090463e+02, RMS = +2.471528e+02
+Test     :    delp                          : Min = +1.000000e+00, Max = +5.131812e+03, RMS = +1.954845e+03
+Test     :    q                             : Min = +0.000000e+00, Max = +1.964044e-02, RMS = +4.017258e-03
+Test     :    qi                            : Min = +0.000000e+00, Max = +4.413006e-04, RMS = +7.128450e-06
+Test     :    ql                            : Min = +0.000000e+00, Max = +5.822458e-04, RMS = +2.494012e-05
+Test     :    o3ppmv                        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : CostJb   : Nonlinear Jb = 1.04377e-06
 Test     : CostJo   : Nonlinear Jo(Aircraft) = 2660.55, nobs = 1407, Jo/n = 1.89094, err = 2.68158
-Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 313.601, nobs = 148, Jo/n = 2.11893, err = 0.000298811
-Test     : CostFunction: Nonlinear J = 2974.15
+Test     : CostJo   : Nonlinear Jo(GnssroBndNBAM) = 316.509, nobs = 148, Jo/n = 2.13858, err = 0.000298811
+Test     : CostFunction: Nonlinear J = 2977.06

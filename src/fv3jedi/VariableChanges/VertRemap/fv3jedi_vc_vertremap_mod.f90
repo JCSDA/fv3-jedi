@@ -62,7 +62,7 @@ logical :: checks_passed
 character(len=:), allocatable :: str
 
 ! Create Atm structure
-call fv_init(self%Atm, 300.0_kind_real, self%grids_on_this_pe, p_split, gtile)
+call fv_init(self%Atm, 300.0_kind_real, self%grids_on_this_pe, p_split, gtile, .false.)
 
 ! Flag to use cold starts
 if( .not. conf%get('input is cold starts', self%from_cold_start) ) self%from_cold_start = .true.

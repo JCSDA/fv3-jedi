@@ -7,51 +7,53 @@ cost function:
                       SS005, BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC, NO3AN1, NO3AN2, NO3AN3, SO4 ]
   background error:
     covariance model: hybrid
-    static weight: 0.01
-    ensemble weight: 0.99
-    static:
-      date: '2018-04-15T00:00:00Z'
-      covariance model: ID
-    ensemble:
-      date: ['2018-04-15T00:00:00Z']
-      state variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
-                                  SS001, SS002, SS003, SS004, SS005,
-                                  BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
-                                  NO3AN1, NO3AN2, NO3AN3, SO4 ]
-      localization:
-        localization method: BUMP
-        bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
-          method: loc
-          strategy: common
-          load_nicas: 1
-          mpicom: 2
-          verbosity: main
-          io_keys: ["common"]
-          io_values: ["fixed_2500km_0.3"]
-        timeslots: ['2018-04-15T00:00:00Z']
-        localization variables: *aerovars
-      members:
-        - filetype: geos
-          state variables: *aerovars
-          datapath: Data/inputs/geos_c12/
-          filename_bkgd: geos.aero.bkg.20180415_000000z.mem001.nc4
-        - filetype: geos
-          state variables: *aerovars
-          datapath: Data/inputs/geos_c12/
-          filename_bkgd: geos.aero.bkg.20180415_000000z.mem002.nc4
-        - filetype: geos
-          state variables: *aerovars
-          datapath: Data/inputs/geos_c12/
-          filename_bkgd: geos.aero.bkg.20180415_000000z.mem003.nc4
-        - filetype: geos
-          state variables: *aerovars
-          datapath: Data/inputs/geos_c12/
-          filename_bkgd: geos.aero.bkg.20180415_000000z.mem004.nc4
-        - filetype: geos
-          state variables: *aerovars
-          datapath: Data/inputs/geos_c12/
-          filename_bkgd: geos.aero.bkg.20180415_000000z.mem005.nc4
+    components:
+    - covariance:
+        covariance model: ID        
+        date: '2018-04-15T00:00:00Z'
+      weight:
+        value: 0.01
+    - covariance:
+        covariance model: ensemble
+        state variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
+                                    SS001, SS002, SS003, SS004, SS005,
+                                    BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
+                                    NO3AN1, NO3AN2, NO3AN3, SO4 ]
+        members:
+          - filetype: geos
+            state variables: *aerovars
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem001.nc4
+          - filetype: geos
+            state variables: *aerovars
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem002.nc4
+          - filetype: geos
+            state variables: *aerovars
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem003.nc4
+          - filetype: geos
+            state variables: *aerovars
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem004.nc4
+          - filetype: geos
+            state variables: *aerovars
+            datapath: Data/inputs/geos_c12/
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem005.nc4
+        localization:
+          localization method: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+            io_keys: ["common"]
+            io_values: ["fixed_2500km_0.3"]
+          localization variables: *aerovars
+      weight:
+        value: 0.99
   observations:
   - obs space:
       name: Aod
@@ -61,7 +63,7 @@ cost function:
         obsfile: Data/hofx/geos_aero_aod_550_3dvar_20180415_00z.nc4
       simulated variables: [Total_Aerosol_Optical_Depth_550]
     obs operator:
-      name: GeosAod
+      name: AodGeos
       tracer_geovals: [mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
                        mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
                        mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,

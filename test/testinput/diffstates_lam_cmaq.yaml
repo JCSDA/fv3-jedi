@@ -1,0 +1,48 @@
+state geometry:
+  nml_file: Data/fv3files/input_lam_cmaq.nml
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  npz: 64
+  fieldsets:
+  - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
+  - fieldset: Data/fieldsets/lam_cmaq.yaml
+  - fieldset: Data/fieldsets/ufo.yaml
+increment geometry:
+  nml_file: Data/fv3files/input_lam_cmaq.nml
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  npz: 64
+  fieldsets:
+  - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
+  - fieldset: Data/fieldsets/lam_cmaq.yaml
+  - fieldset: Data/fieldsets/ufo.yaml
+state1: #Analysis
+  filetype: gfs
+  datapath: Data/analysis
+  filename_core: 20200903.180000.3dvar_lam_cmaq_no2.fv_core.res.nc
+  filename_trcr: 20200903.180000.3dvar_lam_cmaq_no2.fv_tracer.res.nc
+  filename_sfcd: 20200903.180000.3dvar_lam_cmaq_no2.sfc_data.nc
+  filename_sfcw: 20200903.180000.3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
+  filename_cplr: 20200903.180000.3dvar_lam_cmaq_no2.coupler.res
+  state variables: [no2]
+state2: #background
+  filetype: gfs
+  datapath: Data/inputs/lam_cmaq/bkg/
+  filename_core: 20200903.180000.fv_core.res.tile1.nc
+  filename_trcr: 20200903.180000.fv_tracer.res.tile1.nc
+  filename_sfcd: 20200903.180000.sfc_data.res.tile1.nc
+  filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
+  filename_cplr: 20200903.180000.coupler.res
+  state variables: [no2]
+output:
+  filetype: gfs
+  datapath: Data/increment/
+  filename_core: 3dvar_lam_cmaq_no2.fv_core.res.nc
+  filename_trcr: 3dvar_lam_cmaq_no2.fv_tracer.res.nc
+  filename_sfcd: 3dvar_lam_cmaq_no2.sfc_data.nc
+  filename_sfcw: 3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
+  filename_cplr: 3dvar_lam_cmaq_no2.coupler.res

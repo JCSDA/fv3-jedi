@@ -7,26 +7,31 @@
 
 #include "fv3jedi/GetValues/GetValues.h"
 
+#include "fv3jedi/VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h"
+
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-GetValues::GetValues(const Geometry & geom, const ufo::Locations & locs) : locs_(locs),
-  geom_(new Geometry(geom)), model2geovals_() {
+GetValues::GetValues(const Geometry & geom, const ufo::Locations & locs,
+                     const eckit::Configuration & conf)
+  : locs_(locs), geom_(new Geometry(geom)), model2geovals_() {
   oops::Log::trace() << "GetValues::GetValues starting" << std::endl;
 
   // Create the variable change object
   {
   util::Timer timervc(classname(), "VarChaModel2GeoVaLs");
-  char sep = '.';
-  eckit::LocalConfiguration dummyconfig(sep);
-  model2geovals_.reset(new VarChaModel2GeoVaLs(geom, dummyconfig));
+  model2geovals_.reset(new VarChaModel2GeoVaLs(geom, conf));
   }
 
   // Call GetValues consructor
   {
   util::Timer timergv(classname(), "GetValues");
-  fv3jedi_getvalues_create_f90(keyGetValues_, geom.toFortran(), locs_.toFortran());
+
+  // Pointer to configuration
+  const eckit::Configuration * pconf = &conf;
+
+  fv3jedi_getvalues_create_f90(keyGetValues_, geom.toFortran(), locs_, &pconf);
   oops::Log::trace() << "GetValues::GetValues done" << std::endl;
   }
 }
@@ -44,24 +49,26 @@ GetValues::~GetValues() {
 void GetValues::fillGeoVaLs(const State & state, const util::DateTime & t1,
                             const util::DateTime & t2, ufo::GeoVaLs & geovals) const {
   oops::Log::trace() << "GetValues::fillGeovals starting" << std::endl;
-  const util::DateTime * t1p = &t1;
-  const util::DateTime * t2p = &t2;
 
-  // Create state with geovals variables
-  State stategeovalvars(*geom_, geovals.getVars(), state.validTime());
+  if (geovals.getVars() <= state.variables()) {
+    util::Timer timergv(classname(), "fillGeoVaLs");
+    fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(), state.toFortran(),
+                                       t1, t2, locs_, geovals.toFortran());
+  } else {
+    // Create state with geovals variables
+    State stategeovalvars(*geom_, geovals.getVars(), state.validTime());
 
-  {
-  util::Timer timervc(classname(), "changeVar");
-  model2geovals_->changeVar(state, stategeovalvars);
+    {
+    util::Timer timervc(classname(), "changeVar");
+    model2geovals_->changeVar(state, stategeovalvars);
+    }
+
+    // Fill GeoVaLs
+    util::Timer timergv(classname(), "fillGeoVaLs");
+    fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(),
+                                       stategeovalvars.toFortran(), t1, t2, locs_,
+                                       geovals.toFortran());
   }
-
-  oops::Log::trace() << "GetValues::fillGeovals changeVar done" << stategeovalvars << std::endl;
-
-  // Fill GeoVaLs
-  util::Timer timergv(classname(), "fillGeoVaLs");
-  fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(),
-                                     stategeovalvars.toFortran(), &t1p, &t2p, locs_.toFortran(),
-                                     geovals.toFortran());
 
   oops::Log::trace() << "GetValues::fillGeovals done" << geovals << std::endl;
 }

@@ -11,6 +11,10 @@
 Geometry: fv3
 
 Fields:
+  - FieldName: tropopause_pressure
+    Units: Pa
+    Levels: 1
+
   - FieldName: geopotential_height
     Units: m
     Levels: full
@@ -91,10 +95,6 @@ Fields:
     Units: none
     Levels: full
 
-  - FieldName: cloud_area_fraction_in_atmosphere_layer
-    Units: none
-    Levels: full
-
   - FieldName: water_area_fraction
     Units: none
     Levels: 1
@@ -170,14 +170,6 @@ Fields:
     Units: none
     Levels: 1
     Kind: integer
-
-  - FieldName: surface_roughness_length
-    Units: none
-    Levels: 1
-
-  - FieldName: surface_temperature
-    Units: K
-    Levels: 1
 
   - FieldName: wind_reduction_factor_at_10m
     Units: none

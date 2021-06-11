@@ -3,6 +3,8 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
+include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
+
 # Option not to run with large tests
 # ----------------------------------
 option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" ON)
@@ -42,6 +44,7 @@ LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 list( APPEND fv3jedi_test_input
   testinput/3denvar_geos_aero.yaml
   testinput/3dvar_gfs_bal.yaml
+  testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
   testinput/addincrement_geos.yaml
   testinput/addincrement_gfs.yaml
@@ -49,13 +52,19 @@ list( APPEND fv3jedi_test_input
   testinput/bumpparameters_nicas_geos.yaml
   testinput/bumpparameters_nicas_gfs_p12.yaml
   testinput/bumpparameters_nicas_gfs.yaml
+  testinput/bumpparameters_nicas_gfs_aero.yaml
+  testinput/bumpparameters_nicas_gfs_aero_logp.yaml
+  testinput/bumpparameters_nicas_lam_cmaq.yaml
   testinput/convertstate_geos_crtm_surface.yaml
+  testinput/convertstate_geos_model2geovals.yaml
   testinput/convertstate_geos.yaml
   testinput/convertstate_gfs_cold2fv3.yaml
+  testinput/convertstate_gfs_model2geovals.yaml
   testinput/convertstate_gfs.yaml
   testinput/convertstate_gfs_c2ll.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
+  testinput/diffstates_lam_cmaq.yaml
   testinput/dirac_geos.yaml
   testinput/dirac_gfs_bal.yaml
   testinput/dirac_gfs_c2a.yaml
@@ -66,6 +75,9 @@ list( APPEND fv3jedi_test_input
   testinput/eda_4dvar_fv3lm_1.yaml
   testinput/eda_4dvar_fv3lm_2.yaml
   testinput/eda_4dvar_fv3lm.yaml
+  testinput/eda_block_3dvar_1.yaml
+  testinput/eda_block_3dvar_2.yaml
+  testinput/eda_block_3dvar.yaml
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
@@ -93,8 +105,9 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_gfs_aero.yaml
   testinput/hofx_gnssro_ropp.yaml
   testinput/hofx_nomodel.yaml
-  testinput/hofx_nomodel_lam-cmaq.yaml
+  testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_save_geovals.yaml
+  testinput/hofx4d.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
   testinput/hyb-3dvar_gfs_1obs.yaml
@@ -110,6 +123,7 @@ list( APPEND fv3jedi_test_input
   testinput/increment_gfs.yaml
   testinput/letkf.yaml
   testinput/lgetkf.yaml
+  testinput/letkf_snow.yaml
   testinput/lineargetvalues_geos.yaml
   testinput/lineargetvalues_gfs.yaml
   testinput/linearmodel_physics.yaml
@@ -119,6 +133,7 @@ list( APPEND fv3jedi_test_input
   testinput/localization_bump.yaml
   testinput/model_fv3lm.yaml
   testinput/model_geos.yaml
+  testinput/model_ufs.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
   testinput/state_geos_aerosol_ext.yaml
@@ -138,25 +153,33 @@ LINK_FILES( "${fv3jedi_test_input}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # Test output scripts
 # -------------------
 list( APPEND fv3jedi_testoutput
+  testoutput/3dvar_lam_cmaq.ref
   testoutput/3denvar_geos_aero.ref
   testoutput/4denvar.ref
   testoutput/addincrement_geos.ref
   testoutput/addincrement_gfs.ref
   testoutput/bumpparameters_nicas_geos.ref
   testoutput/bumpparameters_nicas_gfs.ref
+  testoutput/bumpparameters_nicas_gfs_aero.ref
+  testoutput/bumpparameters_nicas_gfs_aero_logp.ref
+  testoutput/bumpparameters_nicas_lam_cmaq.ref
   testoutput/convertstate_geos_crtm_surface.ref
+  testoutput/convertstate_geos_model2geovals.ref
   testoutput/convertstate_geos.ref
   testoutput/convertstate_gfs_cold2fv3.ref
+  testoutput/convertstate_gfs_model2geovals.ref
   testoutput/convertstate_gfs.ref
   testoutput/convertstate_gfs_c2ll.ref
   testoutput/CTestCostData.txt.awsgnu.test
   testoutput/CTestCostData.txt.awsintel.test
   testoutput/diffstates_geos.ref
   testoutput/diffstates_gfs.ref
+  testoutput/diffstates_lam_cmaq.ref
   testoutput/dirac_geos.ref
   testoutput/dirac_gfs_bal.ref
   testoutput/dirac_gfs_c2a.ref
   testoutput/dirac_gfs.ref
+  testoutput/eda_block_3dvar.ref
   testoutput/ensvariance_geos.ref
   testoutput/ensvariance_gfs.ref
   testoutput/forecast_fv3-geos.ref
@@ -168,10 +191,11 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_fv3lm.ref
   testoutput/hofx_gfs_aero.ref
   testoutput/hofx_gnssro_ropp.ref
-  testoutput/hofx_nomodel_lam-cmaq.ref
+  testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_gfs.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
+  testoutput/hofx4d.ref
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_gfs_0obs.ref
   testoutput/hyb-3dvar_gfs_1obs.ref
@@ -188,6 +212,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/letkf_geos.ref
   testoutput/letkf_gfs.ref
   testoutput/letkf.ref
+  testoutput/letkf_snow.ref
   testoutput/lgetkf_geos.ref
   testoutput/lgetkf_gfs.ref
   testoutput/lgetkf.ref
@@ -247,6 +272,16 @@ EmisCoeff/IR_Land/SEcategory/Little_Endian/USGS.IRland.EmisCoeff.bin
 EmisCoeff/VIS_Land/SEcategory/Little_Endian/USGS.VISland.EmisCoeff.bin
 SpcCoeff/Little_Endian/hirs4_metop-a.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/hirs4_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/amsr2_gcom-w1.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsr2_gcom-w1.TauCoeff.bin
+SpcCoeff/Little_Endian/amsua_metop-a.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsua_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/amsua_metop-b.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsua_metop-b.TauCoeff.bin
+SpcCoeff/Little_Endian/amsua_n15.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsua_n15.TauCoeff.bin
+SpcCoeff/Little_Endian/amsua_n18.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/amsua_n18.TauCoeff.bin
 SpcCoeff/Little_Endian/amsua_n19.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/amsua_n19.TauCoeff.bin
 SpcCoeff/Little_Endian/atms_npp.SpcCoeff.bin
@@ -259,6 +294,14 @@ SpcCoeff/Little_Endian/cris-fsr_npp.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/cris-fsr_npp.TauCoeff.bin
 SpcCoeff/Little_Endian/iasi_metop-a.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/iasi_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/iasi_metop-b.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/iasi_metop-b.TauCoeff.bin
+SpcCoeff/Little_Endian/mhs_metop-a.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/mhs_metop-a.TauCoeff.bin
+SpcCoeff/Little_Endian/mhs_metop-b.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/mhs_metop-b.TauCoeff.bin
+SpcCoeff/Little_Endian/mhs_n18.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/mhs_n18.TauCoeff.bin
 SpcCoeff/Little_Endian/mhs_n19.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/mhs_n19.TauCoeff.bin
 SpcCoeff/Little_Endian/sndrD1_g15.SpcCoeff.bin
@@ -281,10 +324,8 @@ SpcCoeff/Little_Endian/radiometer_smap.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/radiometer_smap.TauCoeff.bin
 )
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm/)
-
 # Files needed for GEOS aerosol testing
-if( ${GEOS-AERO_FOUND} )
+if( ${geos-aero_FOUND} )
   list( APPEND geos-aero_test_data
   Data/optics_BC.v1_3_.nc
   Data/optics_BRC.v1_5_.nc
@@ -325,134 +366,128 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # Repo wide configuration for getting test data
 # ---------------------------------------------
+# Currently only use 2.3.0 CRTM coefficients
+set( CRTM_COEFFS_BRANCH "2.3.0" )
 
-# Get the current git branch/tag used by fv3-jedi source code
-execute_process( COMMAND bash "-c" "git symbolic-ref -q --short HEAD || git describe --tags --exact-match"
-                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                 OUTPUT_VARIABLE GIT_BRANCH_FV3JEDI
-                 OUTPUT_STRIP_TRAILING_WHITESPACE )
-
-message(STATUS "fv3-jedi is on branch/tag ${GIT_BRANCH_FV3JEDI}")
-
-# For releases data is obtained for UCAR dash
-set(ECBUILD_DOWNLOAD_BASE_URL_DEFAULT https://jedi-test-files.s3.amazonaws.com)
-
-if(${GIT_BRANCH_FV3JEDI} STREQUAL "1.0.0")
-  set(ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/dataset/147_miesch/file/)
-  set(BRANCHPATH "/")
-  set(MD5CHECK 0)
-else()
-  set(ECBUILD_DOWNLOAD_BASE_URL ${ECBUILD_DOWNLOAD_BASE_URL_DEFAULT})
-  set(BRANCHPATH ${GIT_BRANCH_FV3JEDI})
-  set(MD5CHECK 1)
-endif()
-
-message(STATUS "Git branch/tag path to use to obtain data " ${BRANCHPATH})
-
-# Copy test data downloader script to bin
-set ( DOWNLOADER fv3jedi_testdata_downloader.py)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${DOWNLOADER} ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER} COPYONLY)
-
-# Check for local path to data
-if (DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES})
-  set(LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}")
-endif()
-
-# Function for getting test data for different repos
-# --------------------------------------------------
-
-function(fv3jedi_data_download_test REPO DEFAULTBRANCH test_data_file LINKNG_PATH)
-
-  # Special case of data structure for UCAR DASH release data
-  if(${GIT_BRANCH_FV3JEDI} STREQUAL "1.0.0")
-    set(REPOPATH "/")
-  else()
-    set(REPOPATH ${REPO})
+function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
+  # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
+  # If a tagged version of REPO is being built set GIT_TAG_FUNC to REPO's current tag.
+  find_branch_name(REPO_DIR_NAME ${repo})
+  if( DEFINED GIT_BRANCH_FUNC )
+    set( REPO_GIT_BRANCH ${GIT_BRANCH_FUNC} )
+  elseif( DEFINED GIT_TAG_FUNC )
+    set( REPO_GIT_BRANCH ${GIT_TAG_FUNC} )
   endif()
 
-  message(STATUS "Searching for test data for ${REPO}")
-
-  if( NOT DEFINED LOCAL_PATH_JEDI_TESTFILES )
-
-    message(STATUS " LOCAL_PATH_JEDI_TESTFILES is not defined, download test files")
-
-    # Check whether the URL exists
-    ecbuild_check_urls(NAMES ${REPOPATH}/${BRANCHPATH}/${test_data_file}
-                       RESULT SPECIFIC_TEST_FILES)
-
-    # Check whether data exists at the remote path, if not use defaults
-    message(STATUS " Looking for data at ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATH}/${BRANCHPATH}/${test_data_file} ... ")
-    if(${SPECIFIC_TEST_FILES} MATCHES 0)
-      set(REPOPATHREMOTE   ${REPOPATH})
-      set(BRANCHPATHREMOTE ${BRANCHPATH})
-      message(STATUS "  ... data found, will download this" )
-    else()
-      set(ECBUILD_DOWNLOAD_BASE_URL  ${ECBUILD_DOWNLOAD_BASE_URL_DEFAULT})
-      set(REPOPATHREMOTE             ${REPO})
-      set(BRANCHPATHREMOTE           ${DEFAULTBRANCH})
-      message(STATUS "  ... data not found, will download from defaults: ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file}" )
-    endif()
-
-    # Note: do we at some point need to force the path using an ENV variable? Could be useful when
-    # building where internet access is not available but tests run where it is. E.g. in SLURM.
-    #message(STATUS " ${REPO} test data will be downloaded from: " ${ECBUILD_DOWNLOAD_BASE_URL}/${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file})
-
-    # Set target directory for the downloaded data
-    set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/${BRANCHPATHREMOTE})
-    message(STATUS " will save ${REPO} test data to " ${OUTPUT_PATH})
-    file(MAKE_DIRECTORY ${OUTPUT_PATH})
-
-    # Add test for downloading IODA data
-    ecbuild_add_test( TARGET    fv3jedi_test_tier1_get_test_data_${REPO}
-                      TYPE      SCRIPT
-                      COMMAND   ${CMAKE_BINARY_DIR}/bin/${DOWNLOADER}
-                      ARGS      ${REPOPATHREMOTE}/${BRANCHPATHREMOTE}/${test_data_file}  # Part after URL
-                                ${test_data_file}                                        # Filename
-                                ${OUTPUT_PATH}                                           # Output path
-                                ${ECBUILD_DOWNLOAD_BASE_URL}                             # Url
-                                ${MD5CHECK}                                              # Check for md5 match
-                                testoutput/fv3jedi_test_tier1_get_test_data_${REPO}.log )
-  else()
-    if(EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/${REPO}/${GIT_BRANCH_FV3JEDI}/${test_data_file})
-      set(INPUT_PATH ${LOCAL_PATH_JEDI_TESTFILES}/${REPO}/${GIT_BRANCH_FV3JEDI})
-      set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/${GIT_BRANCH_FV3JEDI})
-    else()
-      set(INPUT_PATH ${LOCAL_PATH_JEDI_TESTFILES}/${REPO}/develop)
-      set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/test_data/${REPO}/develop)
-    endif()
-    message(STATUS " Use local test files from ${INPUT_PATH}")
-    message(STATUS "  ... copy test files to ${OUTPUT_PATH}")
-    execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${INPUT_PATH} ${OUTPUT_PATH} )
+  if ( ${repo} STREQUAL "crtm" )
+    set( GIT_TAG_FUNC ${CRTM_COEFFS_BRANCH} )
   endif()
 
-  set(${LINKNG_PATH} ${OUTPUT_PATH} PARENT_SCOPE)
+  # When env veriable LOCAL_PATH_JEDI_TESTFILES is set, simply link test files
+  # to build directory. get_${repo}_test_data checks the existence of test file directory.
+  # ${repo} test data must be stored in
+  # ${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${BRANCH}/testinput_tier_1
+  if( DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES} )
+    set( LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}" )
+    message( STATUS "use LOCAL_PATH_JEDI_TESTFILES: ${LOCAL_PATH_JEDI_TESTFILES}" )
+    # If test data specific to testing branch exists locally use it.
+    # If not use test data specific to develop branch.
+    if( EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${REPO_GIT_BRANCH} )
+      set( TESTFILE_DIR_REPO "${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${REPO_GIT_BRANCH}" )
+    else()
+      set( TESTFILE_DIR_REPO "${LOCAL_PATH_JEDI_TESTFILES}/${repo}/develop" )
+    endif()
+
+    message( STATUS "Test data in ${TESTFILE_DIR_REPO} is linked to build directory" )
+    list( APPEND REPO_DATA_DOWNLOADER_ARGS
+    ${TESTFILE_DIR_REPO} )
+    set ( REPO_DATA_DOWNLOADER fv3jedi_data_checker.py )
+
+  # Any tagged version of REPO is being built.
+  # Build fv3jedi_get_{repo}_test_data test to download test data from DASH.
+  elseif( DEFINED GIT_TAG_FUNC)
+    message( STATUS "Tagged version of ${repo} is used" )
+    # set ARGS for get_${repo}_test_data
+    set( ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/api/v1/dataset/147_miesch/version/1.1.0/file )
+    set( DIRNAME ${GIT_TAG_FUNC} )
+    set( checksum "0" )
+    set( TESTFILE_DIR_REPO "${CMAKE_SOURCE_DIR}/test-data-release/${repo}/${DIRNAME}" )
+
+    # Create test-data-release in source directory
+    file( MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/test-data-release )
+    # temporary solution for release 1.1.0
+    if ( ${repo} STREQUAL "crtm" )
+      list( APPEND REPO_DATA_DOWNLOADER_ARGS
+            ${ECBUILD_DOWNLOAD_BASE_URL}
+            ${TESTFILE_DIR_REPO}
+            ${test_files_dirname}
+            ${checksum} )
+            file( MAKE_DIRECTORY ${TESTFILE_DIR_REPO} )
+    else()
+      list( APPEND REPO_DATA_DOWNLOADER_ARGS
+            ${ECBUILD_DOWNLOAD_BASE_URL}
+            ${CMAKE_SOURCE_DIR}/test-data-release
+            ${test_files_dirname}
+            ${checksum} )
+    endif()
+
+    set ( REPO_DATA_DOWNLOADER fv3jedi_testdata_downloader.py )
+    message( STATUS "Test data will be downloaded from: ${ECBUILD_DOWNLOAD_BASE_URL}" )
+
+  # Any branch of REPO is being built.
+  # repo-data repository is already cloned by bundle/CMakeLists.txt.
+  # Link test files in repo-data repo to build directory.
+  # get_repo_test_data checks the existence of test file directory
+  else()
+    set( TESTFILE_DIR_REPO ${CMAKE_SOURCE_DIR}/${repo}-data )
+    list( APPEND REPO_DATA_DOWNLOADER_ARGS
+          ${TESTFILE_DIR_REPO} )
+    set (REPO_DATA_DOWNLOADER fv3jedi_data_checker.py )
+  endif()
+
+  # add test for downloading data
+  ecbuild_add_test( TARGET    fv3jedi_get_${repo}_test_data
+                    TYPE      SCRIPT
+                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${REPO_DATA_DOWNLOADER}
+                    ARGS  ${REPO_DATA_DOWNLOADER_ARGS} )
+
+  # pass output data path back to calling code
+  set(${output_data_path} ${TESTFILE_DIR_REPO} PARENT_SCOPE)
+
+  # Create download script for fv3jedi_get_*_test_data test
+  set ( FILENAME ${REPO_DATA_DOWNLOADER})
+  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
+  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
+
+  if( EXISTS "${SOURCE_FILE}.in" )
+    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
+  else()
+    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
+  endif()
+
+
+  add_custom_target( bin_fv3jedi_${repo}_test_download_scripts ALL
+    COMMAND chmod +x ${DEST_FILE}
+    DEPENDS ${DEST_FILE} )
 
 endfunction()
+#############################################
+# add tests to download fv3-jedi & crtm data
 
-# Perform fv3-jedi test data download
-# -----------------------------------
-
-fv3jedi_data_download_test( fv3-jedi develop fv3jedi_testdatainput_tier_1.tar.gz LINKNG_PATH)
-
-execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${LINKNG_PATH}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs )
-
-# Perform ioda test data download
-# -------------------------------
-
-fv3jedi_data_download_test( ioda develop ioda_testinput_tier_1.tar.gz LINKNG_PATH)
+ADD_DOWNLOAD_TEST( "fv3-jedi" fv3jedi_testdatainput_tier_1.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
+ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
 
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${LINKNG_PATH}
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/obs )
+                 ${FV3JEDI_FV3JEDI_TESTFILES_PATH}/testinput_tier_1/inputs
+                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
 
-# Perform crtm test data download
-# -------------------------------
+execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+                 ${FV3JEDI_FV3JEDI_TESTFILES_PATH}/testinput_tier_1/obs
+               ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/testinput_tier_1)
 
-fv3jedi_data_download_test( crtm 2.3.0 crtm_coefficients.tar.gz LINKNG_PATH)
-
-create_symlink_filename( ${LINKNG_PATH}
+create_symlink_filename( ${CRTM_FV3JEDI_TESTFILES_PATH}
                          ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
                          ${crtm_coeff_files} )
 
@@ -666,8 +701,10 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs_land)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/increment)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ensvariance)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/convertstate)
 
 set(members mem001;mem002;mem003;mem004)
 foreach(MEM IN LISTS members)
@@ -681,6 +718,7 @@ set(members mem000;mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem00
 foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/geos/${MEM})
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs_land/${MEM})
 endforeach()
 
 # Stage directory with directories for running the models
@@ -815,6 +853,12 @@ if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
                     EXE     fv3jedi_convertstate.x )
 endif()
 
+fv3jedi_add_test( NAME    convertstate_gfs_model2geovals
+                  EXE     fv3jedi_convertstate.x )
+
+fv3jedi_add_test( NAME    convertstate_geos_model2geovals
+                  EXE     fv3jedi_convertstate.x )
+
 # Remaining interface tests
 # -------------------------
 fv3jedi_add_test( NAME    variablechange_gfs
@@ -845,11 +889,11 @@ fv3jedi_add_test( NAME    model_fv3lm
                   EXE     test_fv3jedi_model.x
                   INTERFACETEST )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
-fv3jedi_add_test( NAME    model_ufs
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
-endif()
+#if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
+#fv3jedi_add_test( NAME    model_ufs
+#                  EXE     test_fv3jedi_model.x
+#                  INTERFACETEST )
+#endif()
 
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
 fv3jedi_add_test( NAME    model_geos
@@ -891,7 +935,7 @@ fv3jedi_add_test( NAME    hofx_fv3lm
 
 # H(x) when ROPP is enabled
 # -------------------------
-if( ${ROPP-UFO_FOUND} )
+if( ${ropp-ufo_FOUND} )
 fv3jedi_add_test( NAME    hofx_gnssro_ropp
                   EXE     fv3jedi_hofx.x
                   TOL     1e-1 0)
@@ -904,11 +948,16 @@ fv3jedi_add_test( NAME    hofx_nomodel
                   TOL     1e-3 0)
 
 fv3jedi_add_test( NAME    hofx_gfs_aero
+                  EXE     fv3jedi_hofx.x
+                  TOL     1e-3 0)
+
+fv3jedi_add_test( NAME    hofx_nomodel_lam_cmaq
                   EXE     fv3jedi_hofx_nomodel.x
                   TOL     1e-3 0)
 
-fv3jedi_add_test( NAME    hofx_nomodel_lam-cmaq
-                  EXE     fv3jedi_hofx_nomodel.x
+fv3jedi_add_test( NAME    hofx4d
+                  EXE     fv3jedi_hofx4d.x
+                  MPI     18
                   TOL     1e-3 0)
 
 # Test to save GeoVaLs to file
@@ -923,6 +972,15 @@ fv3jedi_add_test( NAME    bumpparameters_nicas_geos
                   EXE     fv3jedi_parameters.x)
 
 fv3jedi_add_test( NAME    bumpparameters_nicas_gfs
+                  EXE     fv3jedi_parameters.x)
+
+fv3jedi_add_test( NAME    bumpparameters_nicas_gfs_aero
+                  EXE     fv3jedi_parameters.x)
+
+fv3jedi_add_test( NAME    bumpparameters_nicas_gfs_aero_logp
+                  EXE     fv3jedi_parameters.x)
+
+fv3jedi_add_test( NAME    bumpparameters_nicas_lam_cmaq
                   EXE     fv3jedi_parameters.x)
 
 if (NOT SKIP_LARGE_TESTS)
@@ -990,19 +1048,26 @@ endif()
 #                  EXE          fv3jedi_var.x
 #                  TEST_DEPENDS bumpparameters_nicas_gfs)
 
-fv3jedi_add_test( NAME         hyb-3dvar_gfs_aero
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-1 0
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
-
-if( ${ROPP-UFO_FOUND} )
+if( ${ropp-ufo_FOUND} )
   fv3jedi_add_test( NAME         hyb-3dvar_gfs_gnssro_ropp
                     EXE          fv3jedi_var.x
                     TOL          1.0e-1 0
                     TEST_DEPENDS bumpparameters_nicas_gfs )
 endif()
 
-if( ${GEOS-AERO_FOUND} )
+# Chemistry / AQ Variational Tests
+# -----------
+fv3jedi_add_test( NAME         3dvar_lam_cmaq
+                  EXE          fv3jedi_var.x
+                  TOL          1.0e-1 0
+                  TEST_DEPENDS bumpparameters_nicas_lam_cmaq )
+
+fv3jedi_add_test( NAME         hyb-3dvar_gfs_aero
+                  EXE          fv3jedi_var.x
+                  TOL          1.0e-1 0
+                  TEST_DEPENDS bumpparameters_nicas_gfs_aero )
+
+if( ${geos-aero_FOUND} )
   fv3jedi_add_test( NAME         3denvar_geos_aero
                     EXE          fv3jedi_var.x
                     NOCOMPARE
@@ -1017,16 +1082,14 @@ fv3jedi_add_test( NAME         hyb-fgat_fv3lm
 
 fv3jedi_add_test( NAME         hyb-fgat_gfs_aero
                   EXE          fv3jedi_var.x
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
+                  TEST_DEPENDS bumpparameters_nicas_gfs_aero )
 
 # 4DEnVar
 # -------
-if (NOT SKIP_LARGE_TESTS)
   fv3jedi_add_test( NAME         4denvar
                     EXE          fv3jedi_var.x
                     MPI          18
                     TEST_DEPENDS bumpparameters_nicas_gfs )
-endif()
 
 # Hybrid 4DVar
 # ------------
@@ -1045,6 +1108,11 @@ fv3jedi_add_test( NAME         diffstates_geos
                   EXE          fv3jedi_diffstates.x
                   TOL          1.0e-4 0
                   TEST_DEPENDS hyb-4dvar_pseudo-geos )
+
+fv3jedi_add_test( NAME         diffstates_lam_cmaq
+                  EXE          fv3jedi_diffstates.x
+                  TOL          1.0e-3 0
+                  TEST_DEPENDS 3dvar_lam_cmaq )
 
 # Add increment
 # -------------
@@ -1071,6 +1139,12 @@ fv3jedi_add_test( NAME         lgetkf
                   EXE          fv3jedi_letkf.x
                   TOL          1.0e-2 0 )
 
+# Land DA
+# --------------
+fv3jedi_add_test( NAME         letkf_snow
+                  EXE          fv3jedi_letkf.x
+                  TOL          1.0e-2 0 )
+
 # EnsHofx tests
 # -------------
 if (NOT SKIP_LARGE_TESTS)
@@ -1084,15 +1158,18 @@ endif()
 # Ensemble data assimilation tests
 # --------------------------------
 if (NOT SKIP_LARGE_TESTS)
-
   # 3DVar
   fv3jedi_add_test( NAME         eda_3dvar
                     EXE          fv3jedi_eda.x
                     MPI          12
                     NOCOMPARE
                     TEST_DEPENDS bumpparameters_nicas_gfs )
-
 endif()
+
+  fv3jedi_add_test( NAME       eda_block_3dvar
+                    EXE          fv3jedi_eda.x
+                    MPI          12
+                    TEST_DEPENDS bumpparameters_nicas_gfs )
 
 # Test of time taken
 # ------------------

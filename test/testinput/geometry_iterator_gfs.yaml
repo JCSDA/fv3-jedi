@@ -9,6 +9,7 @@ geometry:
   npy: 13
   npz: 64
   ntiles: 6
+  prepare external nml file: true
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 inc variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]

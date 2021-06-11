@@ -191,9 +191,9 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [cld_amt]
+  - FieldIONames: [cld_amt,cloud_area_fraction_in_atmosphere_layer]
     FieldName: cld_amt
-    LongName: cld_amt
+    LongName: cloud_area_fraction_in_atmosphere_layer 
     Units: 1
     Tracer: true
     IOFile: tracer
@@ -239,7 +239,7 @@ Fields:
     Units: m
     IOFile: core
 
-  - FieldIONames: [phis, PHIS]
+  - FieldIONames: [phis, PHIS, surface_geopotential_height]
     FieldName: phis
     LongName: surface_geopotential_height
     Units: m
@@ -258,7 +258,7 @@ Fields:
     Units: m+2s
     IOFile: core
 
-  - FieldIONames: [vort]
+  - FieldIONames: [vort, vorticity]
     FieldName: vort
     LongName: vorticity
     Units: m+2s
@@ -515,3 +515,18 @@ Fields:
     LongName: moist_air_density
     Units: kgm-3
     IOFile: core
+
+  - FieldIONames: [zorl, surface_roughness_length]
+    FieldName: zorl
+    LongName: surface_roughness_length
+    Units: cm
+    Levels: 1
+    IOFile: surface
+
+  - FieldIONames: [t2m, surface_temperature]
+    FieldName: t2m
+    LongName: surface_temperature
+    Units: K
+    Levels: 1
+    IOFile: surface
+

@@ -33,6 +33,7 @@ public :: fv3jedi_vc_model2geovals
 
 type :: fv3jedi_vc_model2geovals
   integer :: isc, iec, jsc, jec, npz
+  character(len=10) :: tropprs_method
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -45,13 +46,17 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, geom, dummyconf)
+subroutine create(self, geom, conf)
 
 class(fv3jedi_vc_model2geovals), intent(inout) :: self
 type(fv3jedi_geom),              intent(in)    :: geom
-type(fckit_configuration),       intent(in)    :: dummyconf
+type(fckit_configuration),       intent(in)    :: conf
 
-!!! DO NOT USE CONF !!!
+character(len=:), allocatable :: str
+
+! Method to use for tropopause pressure ([gsi] or thompson)
+if (.not. conf%get("tropopause pressure method", str)) str = 'gsi'
+self%tropprs_method = trim(str)
 
 ! Grid convenience
 self%isc = geom%isc
@@ -152,6 +157,15 @@ real(kind=kind_real), pointer     :: qicn    (:,:,:)
 real(kind=kind_real), pointer     :: qlls    (:,:,:)
 real(kind=kind_real), pointer     :: qlcn    (:,:,:)
 
+!qrqs
+logical :: have_qrqs
+real(kind=kind_real), allocatable :: qr      (:,:,:)
+real(kind=kind_real), allocatable :: qs      (:,:,:)
+real(kind=kind_real), pointer     :: qrls    (:,:,:)
+real(kind=kind_real), pointer     :: qrcn    (:,:,:)
+real(kind=kind_real), pointer     :: qsls    (:,:,:)
+real(kind=kind_real), pointer     :: qscn    (:,:,:)
+
 !CRTM mixing ratio
 logical :: have_qmr
 real(kind=kind_real), allocatable :: qmr     (:,:,:)       !Land-sea mask
@@ -160,8 +174,12 @@ real(kind=kind_real), allocatable :: qmr     (:,:,:)       !Land-sea mask
 logical :: have_crtm_cld
 real(kind=kind_real), allocatable :: ql_ade  (:,:,:)
 real(kind=kind_real), allocatable :: qi_ade  (:,:,:)
+real(kind=kind_real), allocatable :: qr_ade  (:,:,:)
+real(kind=kind_real), allocatable :: qs_ade  (:,:,:)
 real(kind=kind_real), allocatable :: ql_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qi_efr  (:,:,:)
+real(kind=kind_real), allocatable :: qr_efr  (:,:,:)
+real(kind=kind_real), allocatable :: qs_efr  (:,:,:)
 real(kind=kind_real), allocatable :: watercov(:,:)
 
 !Salinity
@@ -195,6 +213,15 @@ real(kind=kind_real), allocatable :: surface_snow_thickness                    (
 real(kind=kind_real), allocatable :: surface_wind_speed                        (:,:,:)
 real(kind=kind_real), allocatable :: surface_wind_from_direction               (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
+
+! Vorticity
+logical :: have_vort
+real(kind=kind_real), allocatable :: vort     (:,:,:)
+
+! Tropopause pressure
+logical :: have_tropprs
+real(kind=kind_real), allocatable :: tprs     (:,:,:)
+
 
 
 ! Identity part of the change of fields
@@ -257,7 +284,6 @@ endif
 ! Temperature
 ! -----------
 have_t = .false.
-
 if (xm%has_field( 't')) then
   call xm%get_field('t', t)
   have_t = .true.
@@ -360,6 +386,7 @@ elseif (xm%has_field('ud')) then
   allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call d2a(geom, ud, vd, ua, va)
   have_winds = .true.
+  nullify(ud,vd)
 endif
 
 
@@ -451,6 +478,24 @@ elseif (xm%has_field( 'qils') .and. xm%has_field( 'qicn') .and. &
   ql = qlls + qlcn
   have_qiql = .true.
 endif
+! ------
+have_qrqs = .false.
+if (xm%has_field( 'rainwat') .and. xm%has_field( 'snowwat')) then
+  call xm%get_field('rainwat', qr)
+  call xm%get_field('snowwat', qs)
+  have_qrqs = .true.
+elseif (xm%has_field( 'qrls') .and. xm%has_field( 'qrcn') .and. &
+        xm%has_field( 'qsls') .and. xm%has_field( 'qscn')) then
+  call xm%get_field('qrls', qrls)
+  call xm%get_field('qrcn', qrcn)
+  call xm%get_field('qsls', qsls)
+  call xm%get_field('qscn', qscn)
+  allocate(qr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  allocate(qs(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  qr = qrls + qrcn
+  qs = qsls + qscn
+  have_qrqs = .true.
+endif
 
 
 ! Get CRTM moisture fields
@@ -474,14 +519,28 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
       if (slmsk(i,j,1) == 0) watercov(i,j) = 1.0_kind_real
     enddo
   enddo
-  call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
+  if (have_qrqs ) then
+    allocate(qr_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qs_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qr_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qs_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    qr_ade = 0.0_kind_real
+    qs_ade = 0.0_kind_real
+    qr_efr = 0.0_kind_real
+    qs_efr = 0.0_kind_real
+    call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
+                     ql_ade, qi_ade, ql_efr, qi_efr, &
+                     qr, qs, qr_ade, qs_ade, qr_efr, qs_efr )
+  else
+    call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
                      ql_ade, qi_ade, ql_efr, qi_efr )
+  endif
   have_crtm_cld = .true.
 endif
 
 
-! CRTM moisture fields
-! --------------------
+! CRTM surface fields
+! -------------------
 have_crtm_surface = .false.
 have_sss = .false.
 if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
@@ -538,6 +597,43 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
 
   have_crtm_surface = .true.
 
+endif
+
+
+! Vorticity
+! ---------
+have_vort = .false.
+if (xm%has_field('ud') .and. xm%has_field('vd')) then
+  call xm%get_field('ud', ud)
+  call xm%get_field('vd', vd)
+  allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call udvd_to_vort(geom, ud, vd, vort)
+  have_vort = .true.
+  nullify(ud, vd)
+elseif (xm%has_field('ua') .and. xm%has_field('va')) then
+  allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call xm%get_field('ua', ua)
+  call xm%get_field('va', va)
+  call uava_to_vort(geom, ua, va, vort)
+  have_vort = .true.
+endif
+
+
+! Tropopause pressure
+! -------------------
+have_tropprs = .false.
+if (trim(self%tropprs_method) == "gsi") then
+  if (have_vort .and. have_tv .and. have_pressures .and. have_o3) then
+    allocate(tprs(self%isc:self%iec,self%jsc:self%jec,1))
+    call tropprs(geom, ps, prs, tv, o3, vort, tprs)
+    have_tropprs = .true.
+  endif
+elseif (trim(self%tropprs_method) == "thompson") then
+  if (have_pressures .and. have_geoph .and. have_t) then
+    allocate(tprs(self%isc:self%iec,self%jsc:self%jec,1))
+    call tropprs_th(geom, prs, geoph, t, tprs)
+    have_tropprs = .true.
+  endif
 endif
 
 
@@ -637,6 +733,16 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qi_ade
 
+  case ("mass_content_of_rain_in_atmosphere_layer")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qr_ade
+
+  case ("mass_content_of_snow_in_atmosphere_layer")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qs_ade
+
   case ("effective_radius_of_cloud_liquid_water_particle")
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
@@ -646,6 +752,16 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qi_efr
+
+  case ("effective_radius_of_rain_particle")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qr_efr
+
+  case ("effective_radius_of_snow_particle")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qs_efr
 
   case ("water_area_fraction")
 
@@ -742,6 +858,21 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = soil_type
 
+  case ("vorticity", "vort")
+
+    if (.not. have_vort) call field_fail(fields_to_do(f))
+    field_ptr = vort
+
+  case ("tropopause_pressure")
+
+    if (.not. have_tropprs) call field_fail(fields_to_do(f))
+    field_ptr = tprs
+
+  case ("average_surface_temperature_within_field_of_view")
+
+    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
+    field_ptr = surface_temperature_where_sea
+
   case default
 
     call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar unknown field: "//trim(fields_to_do(f)) &
@@ -779,8 +910,12 @@ if (associated(u_srf)) nullify(u_srf)
 if (associated(v_srf)) nullify(v_srf)
 if (associated(qils)) nullify(qils)
 if (associated(qlls)) nullify(qlls)
+if (associated(qrls)) nullify(qrls)
+if (associated(qsls)) nullify(qsls)
 if (associated(qicn)) nullify(qicn)
 if (associated(qlcn)) nullify(qlcn)
+if (associated(qrcn)) nullify(qrcn)
+if (associated(qscn)) nullify(qscn)
 
 if (allocated(fields_to_do)) deallocate(fields_to_do)
 if (allocated(rh)) deallocate(rh)
@@ -801,11 +936,17 @@ if (allocated(slmsk)) deallocate(slmsk)
 if (allocated(f10m)) deallocate(f10m)
 if (allocated(ql)) deallocate(ql)
 if (allocated(qi)) deallocate(qi)
+if (allocated(qr)) deallocate(qr)
+if (allocated(qs)) deallocate(qs)
 if (allocated(qmr)) deallocate(qmr)
 if (allocated(ql_ade)) deallocate(ql_ade)
 if (allocated(qi_ade)) deallocate(qi_ade)
+if (allocated(qr_ade)) deallocate(qr_ade)
+if (allocated(qs_ade)) deallocate(qs_ade)
 if (allocated(ql_efr)) deallocate(ql_efr)
 if (allocated(qi_efr)) deallocate(qi_efr)
+if (allocated(qr_efr)) deallocate(qr_efr)
+if (allocated(qs_efr)) deallocate(qs_efr)
 if (allocated(watercov)) deallocate(watercov)
 if (allocated(sss)) deallocate(sss)
 if (allocated(land_type_index)) deallocate(land_type_index)
@@ -828,6 +969,8 @@ if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
 if (allocated(surface_wind_speed)) deallocate(surface_wind_speed)
 if (allocated(surface_wind_from_direction)) deallocate(surface_wind_from_direction)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
+if (allocated(vort)) deallocate(vort)
+if (allocated(tprs)) deallocate(tprs)
 
 end subroutine changevar
 

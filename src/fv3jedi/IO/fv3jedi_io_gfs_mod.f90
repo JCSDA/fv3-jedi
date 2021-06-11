@@ -18,7 +18,7 @@ use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
 ! fv3jedi
 use fv3jedi_constants_mod,        only: rad2deg
-use fv3jedi_field_mod,            only: fv3jedi_field, has_field
+use fv3jedi_field_mod,            only: fv3jedi_field, hasfield
 use fv3jedi_geom_mod,             only: fv3jedi_geom
 use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text
 use fv3jedi_kinds_mod,            only: kind_real
@@ -275,7 +275,7 @@ rstflag = .false.
 ! ----------------------------
 indexof_ps = -1
 indexof_delp = -1
-havedelp = has_field(fields, 'delp', indexof_delp)
+havedelp = hasfield(fields, 'delp', indexof_delp)
 
 ! Loop over fields and register their restart file
 ! ------------------------------------------------

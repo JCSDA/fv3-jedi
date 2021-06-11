@@ -10,14 +10,14 @@ module fv3jedi_getvalues_interface_mod
 ! Intrinsic
 use iso_c_binding
 
+! fckit
+use fckit_configuration_module, only: fckit_configuration
+
 ! oops dependencies
 use datetime_mod
-use duration_mod
-use oops_variables_mod
 
 ! ufo dependencies
-use ufo_locs_mod
-use ufo_locs_mod_c, only: ufo_locs_registry
+use ufo_locations_mod
 use ufo_geovals_mod
 use ufo_geovals_mod_c, only: ufo_geovals_registry
 
@@ -53,16 +53,17 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_getvalues_create_c(c_key_self, c_key_geom, c_key_locs) &
+subroutine fv3jedi_getvalues_create_c(c_key_self, c_key_geom, c_locs, c_conf) &
            bind (c, name='fv3jedi_getvalues_create_f90')
-
 integer(c_int),     intent(inout) :: c_key_self      !< Key to self
 integer(c_int),     intent(in)    :: c_key_geom      !< Key to geometry
-integer(c_int),     intent(in)    :: c_key_locs      !< Key to observation locations
+type(c_ptr), value, intent(in)    :: c_locs          !< Observation locations
+type(c_ptr),        intent(in)    :: c_conf
 
 type(fv3jedi_getvalues), pointer :: self
 type(fv3jedi_geom),      pointer :: geom
-type(ufo_locs),          pointer :: locs
+type(ufo_locations)              :: locs
+type(fckit_configuration)        :: f_conf
 
 ! Create object
 call fv3jedi_getvalues_registry%init()
@@ -71,10 +72,12 @@ call fv3jedi_getvalues_registry%get(c_key_self, self)
 
 ! Others
 call fv3jedi_geom_registry%get(c_key_geom, geom)
-call ufo_locs_registry%get(c_key_locs, locs)
+locs = ufo_locations(c_locs)
+
+f_conf = fckit_configuration(c_conf)
 
 ! Call method
-call self%create(geom, locs)
+call self%create(geom, locs, f_conf)
 
 end subroutine fv3jedi_getvalues_create_c
 
@@ -100,15 +103,15 @@ end subroutine fv3jedi_getvalues_delete_c
 ! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_getvalues_fill_geovals_c(c_key_self, c_key_geom, c_key_state, c_t1, c_t2, &
-                                            c_key_locs, c_key_geovals) &
+                                            c_locs, c_key_geovals) &
            bind (c, name='fv3jedi_getvalues_fill_geovals_f90')
 
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_state
-type(c_ptr),    intent(in) :: c_t1
-type(c_ptr),    intent(in) :: c_t2
-integer(c_int), intent(in) :: c_key_locs
+type(c_ptr), value, intent(in) :: c_t1
+type(c_ptr), value, intent(in) :: c_t2
+type(c_ptr), value, intent(in) :: c_locs
 integer(c_int), intent(in) :: c_key_geovals
 
 type(fv3jedi_getvalues), pointer :: self
@@ -116,7 +119,7 @@ type(fv3jedi_geom),      pointer :: geom
 type(fv3jedi_state),     pointer :: state
 type(datetime)                   :: t1
 type(datetime)                   :: t2
-type(ufo_locs),          pointer :: locs
+type(ufo_locations)              :: locs
 type(ufo_geovals),       pointer :: geovals
 
 ! Get objects
@@ -125,7 +128,7 @@ call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_state_registry%get(c_key_state, state)
 call c_f_datetime(c_t1, t1)
 call c_f_datetime(c_t2, t2)
-call ufo_locs_registry%get(c_key_locs, locs)
+locs = ufo_locations(c_locs)
 call ufo_geovals_registry%get(c_key_geovals, geovals)
 
 ! Call method

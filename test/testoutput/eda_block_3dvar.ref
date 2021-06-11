@@ -1,0 +1,23 @@
+Test     : CostJb   : Nonlinear Jb = 0
+Test     : CostJo   : Nonlinear Jo(Radiosonde) = 2158.46, nobs = 1134, Jo/n = 1.90341, err = 2.06099
+Test     : CostFunction: Nonlinear J = 2158.46
+Test     :    Norm reduction all members ( 1) = 0.322538, 0.515265
+Test     :    Quadratic cost function all members: J ( 1) = 1679.46, 1862.69
+Test     :    Norm reduction all members ( 2) = 0.175348, 0.237259
+Test     :    Quadratic cost function all members: J ( 2) = 1647.58, 1823.63
+Test     : DRPBlockLanczosMinimizer: reduction in residual norm = 0.175348
+Test     : CostFunction::addIncrement: Analysis: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  State print | number of fields = 8 | cube sphere face size: C12
+Test     :    ua                            : Min = -4.474889e+01, Max = +9.532314e+01, RMS = +1.653180e+01
+Test     :    va                            : Min = -5.475812e+01, Max = +6.491981e+01, RMS = +8.293421e+00
+Test     :    T                             : Min = +1.841976e+02, Max = +3.070420e+02, RMS = +2.484170e+02
+Test     :    DELP                          : Min = +4.424700e+01, Max = +3.726083e+03, RMS = +1.939817e+03
+Test     :    sphum                         : Min = +0.000000e+00, Max = +1.927108e-02, RMS = +4.746414e-03
+Test     :    ice_wat                       : Min = +0.000000e+00, Max = +4.092759e-04, RMS = +1.526386e-05
+Test     :    liq_wat                       : Min = +0.000000e+00, Max = +9.127198e-04, RMS = +2.843698e-05
+Test     :    o3mr                          : Min = +1.242671e-08, Max = +1.755029e-05, RMS = +5.606905e-06
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : CostJb   : Nonlinear Jb = 197.446
+Test     : CostJo   : Nonlinear Jo(Radiosonde) = 1423.11, nobs = 1134, Jo/n = 1.25495, err = 2.06099
+Test     : CostFunction: Nonlinear J = 1620.56

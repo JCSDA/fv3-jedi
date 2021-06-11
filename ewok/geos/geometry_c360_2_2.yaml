@@ -1,0 +1,13 @@
+nml_file_mpp: '$(stage_dir)/Data/fv3files/fmsmpp.nml'
+trc_file: '$(stage_dir)/Data/fv3files/field_table'
+akbk: '$(stage_dir)/Data/fv3files/akbk72.nc4'
+# input.nml
+layout: [2,2]
+io_layout: [1,1]
+npx: 361
+npy: 361
+npz: 72
+ntiles: 6
+fieldsets:
+  - fieldset: '$(stage_dir)/Data/fieldsets/dynamics.yaml'
+  - fieldset: '$(stage_dir)/Data/fieldsets/ufo.yaml'

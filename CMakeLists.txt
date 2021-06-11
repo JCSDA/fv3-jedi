@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
-project( fv3jedi VERSION 1.0.0 LANGUAGES C CXX Fortran )
+project( fv3jedi VERSION 1.1.0 LANGUAGES C CXX Fortran )
 
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 
@@ -31,7 +31,6 @@ ecbuild_requires_macro_version( 2.5 )
 ecbuild_declare_project()
 
 ecbuild_enable_fortran( REQUIRED )
-ecbuild_add_cxx11_flags()
 
 set( FV3JEDI_LINKER_LANGUAGE CXX )
 
@@ -54,57 +53,56 @@ endif()
 # Dependencies
 ################################################################################
 
+# jedi-cmake
+find_package( jedicmake QUIET )
+
 # NetCDF
 find_package( NetCDF REQUIRED COMPONENTS Fortran )
-include_directories( ${NETCDF_INCLUDE_DIRS} )
 
 # atlas
-ecbuild_use_package( PROJECT atlas VERSION 0.20.2 REQUIRED )
-include_directories( ${ATLAS_INCLUDE_DIRS} )
+find_package( atlas 0.20.2 REQUIRED )
 
 # oops
-ecbuild_use_package( PROJECT oops VERSION 1.0.0 REQUIRED )
-include_directories( ${OOPS_INCLUDE_DIRS} )
+find_package( oops 1.0.0 REQUIRED )
 
 # saber
-ecbuild_use_package( PROJECT saber VERSION 1.0.0 REQUIRED )
-include_directories( ${SABER_INCLUDE_DIRS} )
+find_package( saber 1.0.0 REQUIRED )
 
 # crtm
-ecbuild_use_package( PROJECT crtm VERSION 2.2.3 REQUIRED )
+find_package( crtm 2.2.3 REQUIRED )
 
 # ropp
-ecbuild_use_package( PROJECT ropp-ufo QUIET )
+find_package( ropp-ufo QUIET )
 
 # geos-aero
-ecbuild_use_package( PROJECT geos-aero QUIET )
+find_package( geos-aero QUIET )
 
 # ufo
-ecbuild_use_package( PROJECT ufo VERSION 1.0.0 REQUIRED )
-include_directories( ${UFO_INCLUDE_DIRS} )
+find_package( ufo 1.0.0 REQUIRED )
 
 # femps
-ecbuild_use_package( PROJECT femps VERSION 1.0.0 REQUIRED )
-include_directories( ${FEMPS_INCLUDE_DIRS} )
+find_package( femps 1.0.0 REQUIRED )
 
 #OpenMP
 find_package( OpenMP COMPONENTS Fortran )
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
-ecbuild_include_mpi()
-link_libraries(${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+
+# Set default forecast model
+# --------------------------
+if (NOT FV3_FORECAST_MODEL MATCHES GEOS AND NOT FV3_FORECAST_MODEL MATCHES UFS)
+  set(FV3_FORECAST_MODEL "FV3CORE")
+endif()
 
 # fms
-if (FV3_FORECAST_MODEL MATCHES "FV3CORE") # OR FV3_FORECAST_MODEL MATCHES "UFS")
-  ecbuild_use_package( PROJECT fms REQUIRED )
-  include_directories( ${FMS_INCLUDE_DIRS} )
+if (FV3_FORECAST_MODEL MATCHES "FV3CORE" OR NOT FV3_FORECAST_MODEL) # OR FV3_FORECAST_MODEL MATCHES "UFS")
+  find_package( fms REQUIRED )
 endif()
 
 # fv3
 if (FV3_FORECAST_MODEL MATCHES "FV3CORE" OR NOT FV3_FORECAST_MODEL)
-  ecbuild_use_package( PROJECT fv3 REQUIRED )
-  include_directories( ${FV3_INCLUDE_DIRS} )
+  find_package( fv3 REQUIRED )
 endif()
 
 # geos
@@ -122,14 +120,8 @@ if (FV3_FORECAST_MODEL MATCHES "GEOS")
   link_libraries(GEOSgcm_GridComp)
 endif()
 
-# ufs
-if (FV3_FORECAST_MODEL MATCHES "UFS")
-  #ToDo
-endif()
-
 # Linear model
-ecbuild_use_package( PROJECT fv3jedilm VERSION 1.0.0 REQUIRED )
-include_directories( ${FV3JEDILM_INCLUDE_DIRS} )
+find_package( fv3jedilm 1.0.0 REQUIRED )
 
 ################################################################################
 # Export package info
@@ -156,8 +148,24 @@ endforeach()
 # Sources
 ################################################################################
 
-include_directories( ${FV3JEDI_INCLUDE_DIRS}
-                     ${FV3JEDI_EXTRA_INCLUDE_DIRS} )
+# ufs
+if (FV3_FORECAST_MODEL MATCHES UFS)
+  # TODO: fms will be seperated from UFS at some point
+  # Requires an installion of ufs-weather-model built with -DJEDI_CONTROL=ON and setting
+  # environment variable CMAKE_Platform to linux.custom to ensure INLINE_POST=OFF
+  # set CMAKE_PREFIX_PATH to include location of hpc-stack install and ufs install using
+  # semi-colon separated lists in quotes e.g.--
+  # ecbuild -DCMAKE_PREFIX_PATH="path-to/ufs-weather-model/build/install;path-to/hpc-stack/install" ...
+  find_package(bacio REQUIRED )
+  find_package(sigio REQUIRED )
+  find_package(sp REQUIRED )
+  find_package(w3emc REQUIRED )
+  find_package(w3nco REQUIRED )
+  find_package(nemsio REQUIRED )
+  find_package(fms REQUIRED )
+  find_package(fv3atm REQUIRED )
+  find_package(ufs REQUIRED )
+endif()
 
 add_subdirectory( src )
 add_subdirectory( test )

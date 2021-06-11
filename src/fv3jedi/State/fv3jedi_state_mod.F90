@@ -16,7 +16,7 @@ use fckit_configuration_module, only: fckit_configuration
 use fckit_log_module, only : log
 
 ! fv3jedi uses
-use fv3jedi_field_mod,           only: checksame, fv3jedi_field, has_field, get_field
+use fv3jedi_field_mod,           only: checksame, fv3jedi_field, hasfield, get_field
 use fv3jedi_fields_mod,          only: fv3jedi_fields
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_kinds_mod,           only: kind_real
@@ -80,8 +80,8 @@ npz = geom%npz
 ! -------------------------------------------------------
 
 ! Get D-Grid winds if necessary
-if (has_field(rhs_fields, 'ua')) then !A-Grid in increment
-  if (.not.has_field(rhs_fields, 'ud')) then !D-Grid not in increment
+if (hasfield(rhs_fields, 'ua')) then !A-Grid in increment
+  if (.not.hasfield(rhs_fields, 'ud')) then !D-Grid not in increment
     if (self%has_field('ud')) then !D-grid in state
       allocate(rhs_ud(isc:iec  ,jsc:jec+1,1:npz))
       allocate(rhs_vd(isc:iec+1,jsc:jec  ,1:npz))
@@ -95,8 +95,8 @@ endif
 
 ! Convert ps to delp if necessary
 ! -------------------------------
-if (has_field(rhs_fields, 'ps')) then !ps in increment
-  if (.not.has_field(rhs_fields, 'delp')) then !delp not in increment
+if (hasfield(rhs_fields, 'ps')) then !ps in increment
+  if (.not.hasfield(rhs_fields, 'delp')) then !delp not in increment
     if (self%has_field('delp')) then !delp in state
       allocate(rhs_delp(isc:iec,jsc:jec,1:npz))
       call get_field(rhs_fields, 'ps', rhs_ps)
@@ -118,7 +118,7 @@ do var = 1, size(rhs_fields)
       call self%get_field('ua', self_ua)
       self_ua = self_ua + rhs_ua
     endif
-    if (self%has_field('ud') .and. .not.has_field(rhs_fields, 'ud')) then
+    if (self%has_field('ud') .and. .not.hasfield(rhs_fields, 'ud')) then
       call self%get_field('ud', self_ud)
       self_ud = self_ud + rhs_ud
     endif
@@ -130,7 +130,7 @@ do var = 1, size(rhs_fields)
       call self%get_field('va', self_va)
       self_va = self_va + rhs_va
     endif
-    if (self%has_field('vd') .and. .not.has_field(rhs_fields, 'vd')) then
+    if (self%has_field('vd') .and. .not.hasfield(rhs_fields, 'vd')) then
       call self%get_field('vd', self_vd)
       self_vd = self_vd + rhs_vd
     endif
@@ -157,7 +157,7 @@ do var = 1, size(rhs_fields)
       self_ps = self_ps + rhs_ps
     endif
 
-    if (self%has_field('delp') .and. .not. has_field(rhs_fields, 'delp')) then
+    if (self%has_field('delp') .and. .not. hasfield(rhs_fields, 'delp')) then
       call self%get_field('delp', self_delp)
       self_delp = self_delp + rhs_delp
     endif

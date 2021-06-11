@@ -10,7 +10,6 @@
 
 #include "eckit/config/Configuration.h"
 
-#include "oops/interface/VariableChange.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
 
@@ -22,7 +21,7 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::VariableChangeMaker<Traits, oops::VariableChange<Traits, VarChaColdStartWinds>>
+static oops::VariableChangeMaker<Traits, VarChaColdStartWinds>
        makerVarChaColdStartWinds_("ColdStartWinds");
 // -------------------------------------------------------------------------------------------------
 VarChaColdStartWinds::VarChaColdStartWinds(const Geometry & resol,

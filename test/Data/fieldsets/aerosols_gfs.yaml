@@ -10,128 +10,128 @@
 Geometry: fv3
 
 Fields:
-  - FieldIONames: [du001, DU001, dust1]
+  - FieldIONames: [du001, DU001, dust1, mass_fraction_of_dust001_in_air]
     FieldName: du001
-    LongName: dust1
-    Units: gkg-1
+    LongName: mass_fraction_of_dust001_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [du002, DU002, dust2]
+  - FieldIONames: [du002, DU002, dust2, mass_fraction_of_dust002_in_air]
     FieldName: du002
-    LongName: dust2
-    Units: gkg-1
+    LongName: mass_fraction_of_dust002_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [du003, DU003, dust3]
+  - FieldIONames: [du003, DU003, dust3, mass_fraction_of_dust003_in_air]
     FieldName: du003
-    LongName: dust3
-    Units: gkg-1
+    LongName: mass_fraction_of_dust003_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [du004, DU004, dust4]
+  - FieldIONames: [du004, DU004, dust4, mass_fraction_of_dust004_in_air]
     FieldName: du004
-    LongName: dust4
-    Units: gkg-1
+    LongName: mass_fraction_of_dust004_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [du005, DU005, dust5]
+  - FieldIONames: [du005, DU005, dust5, mass_fraction_of_dust005_in_air]
     FieldName: du005
-    LongName: dust5
-    Units: gkg-1
+    LongName: mass_fraction_of_dust005_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ss001, SS001, seas1]
+  - FieldIONames: [ss001, SS001, seas1, mass_fraction_of_sea_salt001_in_air]
     FieldName: ss001
-    LongName: seas1
-    Units: gkg-1
+    LongName: mass_fraction_of_sea_salt001_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ss002, SS002, seas2]
+  - FieldIONames: [ss002, SS002, seas2, mass_fraction_of_sea_salt002_in_air]
     FieldName: ss002
-    LongName: seas2
-    Units: gkg-1
+    LongName: mass_fraction_of_sea_salt002_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ss003, SS003, seas3]
+  - FieldIONames: [ss003, SS003, seas3, mass_fraction_of_sea_salt003_in_air]
     FieldName: ss003
-    LongName: seas3
-    Units: gkg-1
+    LongName: mass_fraction_of_sea_salt003_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ss004, SS004, seas4]
+  - FieldIONames: [ss004, SS004, seas4, mass_fraction_of_sea_salt004_in_air]
     FieldName: ss004
-    LongName: seas4
-    Units: gkg-1
+    LongName: mass_fraction_of_sea_salt004_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ss005,SS005,seas5]
+  - FieldIONames: [ss005,SS005, seas5, mass_fraction_of_sea_salt005_in_air]
     FieldName: ss005
-    LongName: seas5
-    Units: gkg-1
+    LongName: mass_fraction_of_sea_salt005_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [bcphobic, BCPHOBIC, bc1]
+  - FieldIONames: [bcphobic, BCPHOBIC, bc1, mass_fraction_of_hydrophobic_black_carbon_in_air]
     FieldName: bcphobic
-    LongName: bc1
-    Units: gkg-1
+    LongName: mass_fraction_of_hydrophobic_black_carbon_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [bcphilic, BCPHILIC, bc2]
+  - FieldIONames: [bcphilic, BCPHILIC, bc2, mass_fraction_of_hydrophilic_black_carbon_in_air]
     FieldName: bcphilic
-    LongName: bc2
-    Units: gkg-1
+    LongName: mass_fraction_of_hydrophilic_black_carbon_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ocphobic, OCPHOBIC, oc1]
+  - FieldIONames: [ocphobic, OCPHOBIC, oc1, mass_fraction_of_hydrophobic_organic_carbon_in_air]
     FieldName: ocphobic
-    LongName: oc1
-    Units: gkg-1
+    LongName: mass_fraction_of_hydrophobic_organic_carbon_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ocphilic, OCPHILIC, oc2]
+  - FieldIONames: [ocphilic, OCPHILIC, oc2, mass_fraction_of_hydrophilic_organic_carbon_in_air]
     FieldName: ocphilic
-    LongName: oc2
-    Units: gkg-1
+    LongName: mass_fraction_of_hydrophilic_organic_carbon_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [no3an1, NO3AN1]
+  - FieldIONames: [no3an1, NO3AN1, mass_fraction_of_nitrate001_in_air]
     FieldName: no3an1
-    LongName: no3an1
-    Units: gkg-1
+    LongName: mass_fraction_of_nitrate001_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [no3an2, NO3AN2]
+  - FieldIONames: [no3an2, NO3AN2, mass_fraction_of_nitrate002_in_air]
     FieldName: no3an2
-    LongName: no3an2
-    Units: gkg-1
+    LongName: mass_fraction_of_nitrate002_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [no3an3, NO3AN3]
+  - FieldIONames: [no3an3, NO3AN3, mass_fraction_of_nitrate003_in_air]
     FieldName: no3an3
-    LongName: no3an3
-    Units: gkg-1
+    LongName: mass_fraction_of_nitrate003_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [so4, SO4, sulf]
+  - FieldIONames: [so4, SO4, sulf, mass_fraction_of_sulfate_in_air]
     FieldName: so4
-    LongName: sulf
-    Units: gkg-1
+    LongName: mass_fraction_of_sulfate_in_air
+    Units: ugkg-1
     Tracer: true
     IOFile: tracer

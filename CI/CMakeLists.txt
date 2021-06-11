@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-project( fv3-bundle LANGUAGES C CXX Fortran )
+project( fv3-bundle VERSION 1.0.0 LANGUAGES C CXX Fortran )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -23,17 +23,18 @@ set( ENABLE_MPI ON CACHE BOOL "Compile with MPI" )
 
 # Initialize
 ecbuild_bundle_initialize()
-ecbuild_bundle( PROJECT jedicmake GIT "https://github.com/JCSDA/jedi-cmake.git" BRANCH develop UPDATE )
+ecbuild_bundle( PROJECT jedicmake GIT "https://github.com/jcsda-internal/jedi-cmake.git" )
+include( jedicmake/cmake/Functions/git_functions.cmake  )
 
 # ECMWF libs
 # ----------
 option("BUNDLE_SKIP_ECKIT" "Don't build eckit" "ON" ) # Skip eckit build unless user passes -DBUNDLE_SKIP_ECKIT=OFF
-option("BUNDLE_SKIP_FCKIT" "Don't build fckit" "OFF") # Build fckit unless user passes -DBUNDLE_SKIP_FCKIT=ON
-option("BUNDLE_SKIP_ATLAS" "Don't build atlas" "OFF") # Build atlas unless user passes -DBUNDLE_SKIP_ATLAS=ON
+option("BUNDLE_SKIP_FCKIT" "Don't build fckit" "ON") # Skip eckit build unless user passes -DBUNDLE_SKIP_FCKIT=OFF
+option("BUNDLE_SKIP_ATLAS" "Don't build atlas" "ON") #Skip eckit build unless user passes -DBUNDLE_SKIP_ATLAS=OFF
 
-ecbuild_bundle( PROJECT eckit GIT "https://github.com/JCSDA-internal/eckit.git" BRANCH release-stable UPDATE )
-ecbuild_bundle( PROJECT fckit GIT "https://github.com/JCSDA-internal/fckit.git" BRANCH release-stable UPDATE )
-ecbuild_bundle( PROJECT atlas GIT "https://github.com/JCSDA-internal/atlas.git" BRANCH release-stable UPDATE )
+ecbuild_bundle( PROJECT eckit GIT "https://github.com/jcsda-internal/eckit.git" )
+ecbuild_bundle( PROJECT fckit GIT "https://github.com/jcsda-internal/fckit.git" )
+ecbuild_bundle( PROJECT atlas GIT "https://github.com/jcsda-internal/atlas.git" )
 
 # External (optional) observation operators
 # ------------------------------
@@ -48,14 +49,14 @@ ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-tes
 # External (required) observation operators
 # ------------------------------
 option("BUNDLE_SKIP_CRTM" "Don't build CRTM" "OFF") # Skip crtm build unless user passes -DBUNDLE_SKIP_CRTM=ON
-ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda/crtm.git" )
+ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda-internal/crtm.git" )
 
 # Core JEDI repositories
 # ----------------------
-ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda/oops.git" )
-ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda/saber.git" )
-ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda/ioda.git" )
-ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda/ufo.git" )
+ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda-internal/oops.git" )
+ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda-internal/saber.git" )
+ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda-internal/ioda.git" )
+ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda-internal/ufo.git" )
 
 # Options for building with certain models
 # ----------------------------------------
@@ -70,18 +71,33 @@ ecbuild_info("Building with FV3-based model: ${FV3_FORECAST_MODEL}")
 # -------------------------------------------------------
 if (FV3_FORECAST_MODEL MATCHES "FV3CORE")
   option("BUNDLE_SKIP_FMS" "Don't build FMS" "OFF")
-  ecbuild_bundle( PROJECT fms GIT "https://github.com/jcsda/FMS.git" )
-  ecbuild_bundle( PROJECT fv3 GIT "https://github.com/jcsda/GFDL_atmos_cubed_sphere.git" )
+  ecbuild_bundle( PROJECT fms GIT "https://github.com/jcsda-internal/FMS.git" )
+  ecbuild_bundle( PROJECT fv3 GIT "https://github.com/jcsda-internal/GFDL_atmos_cubed_sphere.git" )
 endif()
 
 # fv3-jedi linear model
 # ---------------------
-ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda/fv3-jedi-linearmodel.git" )
+ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda-internal/fv3-jedi-linearmodel.git" )
 
 # fv3-jedi and associated repositories
 # ------------------------------------
-ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda/femps.git" )
-ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda/fv3-jedi.git" )
+ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda-internal/femps.git" )
+ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda-internal/fv3-jedi.git" )
+
+# ioda, ufo, and fv3-jedi test data
+#---------------------------------
+
+# If IODA branch is being built set GIT_BRANCH_FUNC to IODA's current branch.
+# If a tagged version of IODA is being built set GIT_TAG_FUNC to ioda's current tag. In this case,
+# IODA test files will be download from UCAR DASH and ioda-data repo will not be cloned.
+# When LOCAL_PATH_JEDI_TESTFILES is set to the directory of IODA test files stored
+# in a local directory, ioda-data repo will not be cloned
+
+# same procedure for fv3-jedi-data
+find_branch_name(REPO_DIR_NAME fv3-jedi)
+if( NOT DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES} AND NOT DEFINED ${GIT_TAG_FUNC} )
+  ecbuild_bundle( PROJECT fv3-jedi-data GIT "https://github.com/JCSDA-internal/fv3-jedi-data.git" )
+endif()
 
 # Build Doxygen documentation
 # ---------------------------
@@ -91,3 +107,6 @@ if(BUILD_FV3_BUNDLE_DOC)
 endif(BUILD_FV3_BUNDLE_DOC)
 
 ecbuild_bundle_finalize()
+
+include(cmake/cdash-integration.cmake)
+include(CTest)

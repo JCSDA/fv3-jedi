@@ -14,9 +14,9 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [no]
-    FieldName: no
-    LongName: no
+  - FieldIONames: ['no']
+    FieldName: 'no'
+    LongName: 'no'
     Units: none
     Tracer: true
     IOFile: tracer

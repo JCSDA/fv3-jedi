@@ -17,7 +17,7 @@ use fv3jedi_kinds_mod, only: kind_real
 
 implicit none
 private
-public :: fv3jedi_field, has_field, get_field, put_field, checksame, copy_subset, &
+public :: fv3jedi_field, hasfield, get_field, put_field, checksame, copy_subset, &
           long_name_to_fv3jedi_name
 
 ! These are the same methods as used in fv3jedi_fields but with argument being a list of individual
@@ -54,7 +54,7 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-logical function has_field(fields, field_name, field_index)
+logical function hasfield(fields, field_name, field_index)
 
 type(fv3jedi_field), intent(in)  :: fields(:)
 character(len=*),    intent(in)  :: field_name
@@ -62,16 +62,16 @@ integer, optional,   intent(out) :: field_index
 
 integer :: var
 
-has_field = .false.
+hasfield = .false.
 do var = 1, size(fields)
   if ( trim(fields(var)%fv3jedi_name) == trim(field_name)) then
-    has_field = .true.
+    hasfield = .true.
     if (present(field_index)) field_index = var
     exit
   endif
 enddo
 
-end function has_field
+end function hasfield
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -240,13 +240,13 @@ type(fv3jedi_field),                             intent(inout) :: field_ou(:)
 character(len=field_clen), allocatable, optional, intent(out)   :: not_copied(:)
 
 integer :: var
-character(len=field_clen) :: not_copied_(10000)
+character(len=field_clen) :: not_copied_(size(field_ou))
 integer :: num_not_copied
 
 ! Loop over fields and copy if existing in both
 num_not_copied = 0
 do var = 1, size(field_ou)
-  if (has_field(field_in, field_ou(var)%fv3jedi_name )) then
+  if (hasfield(field_in, field_ou(var)%fv3jedi_name )) then
     call get_field(field_in, field_ou(var)%fv3jedi_name, field_ou(var)%array)
   else
     num_not_copied = num_not_copied + 1

@@ -12,26 +12,26 @@ use mpi
 use string_f_c_mod
 
 ! atlas uses
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace_pointcloud
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace
 
 ! fckit uses
 use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use fms_io_mod,                 only: fms_io_init, fms_io_exit
-use fms_mod,                    only: fms_init
-use mpp_mod,                    only: mpp_init, mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
-use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_domains_init, &
-                                      mpp_define_layout, mpp_define_mosaic, mpp_define_io_domain, &
-                                      mpp_domains_exit, mpp_domains_set_stack_size
+use fms_io_mod,                 only: fms_io_init, fms_io_exit, set_domain
+use fms_mod,                    only: fms_init, check_nml_error
+use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE, input_nml_file
+use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
+                                      mpp_define_mosaic, mpp_define_io_domain, mpp_domains_exit, &
+                                      mpp_domains_set_stack_size
 
 ! fv3 uses
 use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 
 ! fv3jedi uses
 use fields_metadata_mod,         only: fields_metadata, field_metadata
-use fv3jedi_constants_mod,       only: ps, rad2deg
+use fv3jedi_constants_mod,       only: ps, rad2deg, kappa
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
@@ -79,9 +79,12 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxa, dya
   logical :: ne_corner, se_corner, sw_corner, nw_corner
   logical :: nested = .false.
+  logical :: bounded_domain = .false.
+  logical :: logp = .false.
+
   integer :: grid_type = 0
   logical :: dord4 = .true.
-  type(atlas_functionspace_pointcloud) :: afunctionspace
+  type(atlas_functionspace) :: afunctionspace
   contains
     procedure, public :: create
     procedure, public :: clone
@@ -101,16 +104,13 @@ subroutine initialize(conf, comm)
 type(fckit_configuration), intent(in) :: conf
 type(fckit_mpi_comm),      intent(in) :: comm
 
-
 integer :: stackmax = 4000000
 
-call mpp_init(localcomm=comm%communicator())
-call mpp_domains_init
-call fms_io_init
-call fms_init()
+! Initialize fms, mpp, etc.
+call fms_init(localcomm=comm%communicator())
 
+! Set max stacksize
 if (conf%has("stackmax")) call conf%get_or_die("stackmax",stackmax)
-
 call mpp_domains_set_stack_size(stackmax)
 
 end subroutine initialize
@@ -136,6 +136,19 @@ integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
+logical :: logp = .false.
+
+! Namelist for geometry
+integer :: nmls, ios, ierr
+logical :: skip_nml_read = .false.
+integer :: npx, npy, npz, ntiles, nwat
+integer, allocatable :: layout(:), io_layout(:)
+logical :: nested, regional, do_schmidt, hydrostatic
+real(kind=kind_real) :: stretch_fac, target_lat, target_lon
+
+namelist /fv_core_nml/ npx, npy, npz, ntiles, layout, io_layout, regional, nested, do_schmidt, &
+                       target_lat, target_lon, stretch_fac, hydrostatic, nwat
+
 
 ! Add the communicator to the geometry
 ! ------------------------------------
@@ -154,9 +167,44 @@ endif
 ! --------------------------------
 self%fields = fields
 
+! Replace FMS namelist file
+! -------------------------
+if (.not. conf%has("nml_file") .and. .not. conf%has("prepare external nml file")) then
+  ! Set namelist variables using JEDI config
+
+  allocate(layout(2))
+  allocate(io_layout(2))
+
+  nmls = 1
+  nmls = nmls + 1; if (.not. conf%get('npx',         npx        )) npx         = 1
+  nmls = nmls + 1; if (.not. conf%get('npy',         npy        )) npy         = 1
+  nmls = nmls + 1; if (.not. conf%get('npz'        , npz        )) npz         = 1
+  nmls = nmls + 1; if (.not. conf%get('ntiles'     , ntiles     )) ntiles      = 1
+  nmls = nmls + 1; if (.not. conf%get('nwat'       , nwat       )) nwat        = 1
+  nmls = nmls + 1; if (.not. conf%get('layout'     , layout     )) layout      = (/1,1/)
+  nmls = nmls + 1; if (.not. conf%get('io_layout'  , io_layout  )) io_layout   = (/1,1/)
+  nmls = nmls + 1; if (.not. conf%get('nested'     , nested     )) nested      = .false.
+  nmls = nmls + 1; if (.not. conf%get('regional'   , regional   )) regional    = .false.
+  nmls = nmls + 1; if (.not. conf%get('do_schmidt' , do_schmidt )) do_schmidt  = .false.
+  nmls = nmls + 1; if (.not. conf%get('hydrostatic', hydrostatic)) hydrostatic = .true.
+  nmls = nmls + 1; if (.not. conf%get('stretch_fac', stretch_fac)) stretch_fac = 0.0_kind_real
+  nmls = nmls + 1; if (.not. conf%get('target_lat' , target_lat )) target_lat  = 0.0_kind_real
+  nmls = nmls + 1; if (.not. conf%get('target_lon' , target_lon )) target_lon  = 0.0_kind_real
+
+  ! Deallocate existing FMS namelist array and reallocate
+  if (allocated(input_nml_file)) deallocate(input_nml_file)
+  allocate(input_nml_file(nmls))
+
+  ! Write new namelist to internal FMS namelist
+  write (input_nml_file, fv_core_nml, iostat=ios)
+  ierr = check_nml_error(ios,'fv3jedi geom writing input_nml_file')
+
+  skip_nml_read = .true.
+endif
+
 !Intialize using the model setup routine
 ! --------------------------------------
-call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile)
+call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, skip_nml_read)
 
 self%isd = Atm(1)%bd%isd
 self%ied = Atm(1)%bd%ied
@@ -309,6 +357,16 @@ self%ne_corner = Atm(1)%gridstruct%ne_corner
 self%se_corner = Atm(1)%gridstruct%se_corner
 self%sw_corner = Atm(1)%gridstruct%sw_corner
 self%nw_corner = Atm(1)%gridstruct%nw_corner
+self%nested    = Atm(1)%gridstruct%nested
+self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
+
+if (conf%has("logp")) then
+  call conf%get_or_die("logp",logp)
+  self%logp = logp
+else
+  self%logp =.false.
+endif
+
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -463,12 +521,17 @@ self%nw_corner = other%nw_corner
 
 self%domain => other%domain
 
-self%afunctionspace = atlas_functionspace_pointcloud(other%afunctionspace%c_ptr())
+self%afunctionspace = atlas_functionspace(other%afunctionspace%c_ptr())
 
 self%fields = fields
 
 self%lat_us = other%lat_us
 self%lon_us = other%lon_us
+
+self%nested = other%nested
+self%bounded_domain = other%bounded_domain
+
+self%logp = other%logp
 
 end subroutine clone
 
@@ -564,6 +627,8 @@ integer :: jl
 real(kind=kind_real) :: sigmaup, sigmadn
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
+real(kind=kind_real) :: plevli(self%npz+1)
+real(kind=kind_real) :: kapr, kap1
 
 ! Add area
 afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
@@ -575,11 +640,24 @@ call afield%final()
 ! Add vertical unit
 afield = self%afunctionspace%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
 call afield%data(real_ptr_2)
-do jl=1,self%npz
-  sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
-  sigmadn = self%ak(jl  )/ps+self%bk(jl  )
-  real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
-enddo
+
+if (.not. self%logp) then
+   do jl=1,self%npz
+      sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
+      sigmadn = self%ak(jl  )/ps+self%bk(jl  )
+      real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+   enddo
+else
+   kapr = 1.0/kappa
+   kap1 = kappa + 1.0
+   do jl=1,self%npz+1
+      plevli(jl) = self%ak(jl) + self%bk(jl)*ps
+   enddo
+   do jl=1,self%npz
+      real_ptr_2(jl,:) = -log(((plevli(jl)**kap1-plevli(jl+1)**kap1)/(kap1*(plevli(jl)-plevli(jl+1))))**kapr)
+   enddo
+endif
+
 call afieldset%add(afield)
 call afield%final()
 
@@ -719,6 +797,7 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
   if (io_layout(1) /= 1 .or. io_layout(2) /= 1) call mpp_define_io_domain(domain, io_layout)
 
+  call set_domain(domain)
   deallocate(pe_start, pe_end)
   deallocate(layout2D, global_indices)
   deallocate(tile1, tile2, tile_id)

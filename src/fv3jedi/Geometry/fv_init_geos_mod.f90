@@ -22,13 +22,14 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv_init(Atm, dt_atmos_in, grids_on_this_pe, p_split, gtile)
+subroutine fv_init(Atm, dt_atmos_in, grids_on_this_pe, p_split, gtile, skip_nml_read)
 
 type(fv_atmos_type), allocatable, intent(inout) :: Atm(:)
 real(kind=kind_real),             intent(in)    :: dt_atmos_in
 logical, allocatable,             intent(inout) :: grids_on_this_pe(:)
 integer,                          intent(inout) :: p_split
 integer, optional,                intent(out)   :: gtile
+logical,                          intent(in)    :: skip_nml_read
 
 real(4) :: dt_atmos
 

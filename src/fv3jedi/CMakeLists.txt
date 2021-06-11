@@ -4,7 +4,6 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-
 list( APPEND fv3jedi_src_files
   ErrorCovariance/ErrorCovariance.cc
   ErrorCovariance/ErrorCovariance.h
@@ -66,7 +65,6 @@ list( APPEND fv3jedi_src_files
   Utilities/interface.h
   Utilities/Utilities.cc
   Utilities/Utilities.h
-  Utilities/fv3jedi_bump_interp_mod.f90
   Utilities/fv3jedi_communication_mod.f90
   Utilities/fv3jedi_constants_mod.f90
   Utilities/fv3jedi_interpolation_mod.f90
@@ -163,31 +161,14 @@ list( APPEND fv3jedi_geos_src_files
   Model/geos/ModelGEOS.interface.h
 )
 
-# Source files when building with GFS
-list( APPEND fv3jedi_ufs_src_files
-  Geometry/fv_init_mod.f90
-  Model/gfs/fv3jedi_gfs_interface_mod.F90
-  Model/gfs/fv3jedi_gfs_mod.f90
-  Model/gfs/ModelGFS.cc
-  Model/gfs/ModelGFS.h
-  Model/gfs/ModelGFS.interface.h
-)
-
 # Source files when building with UFS
-#list( APPEND fv3jedi_ufs_src_files
-#)
-
-# Source files when building with UFS prototype
-list( APPEND fv3jedi_nuopc_src_files
-  Model/nuopc/fv3jedi_nuopc_interface_mod.F90
-  Model/nuopc/fv3jedi_nuopc_mod.F90
-  Model/nuopc/ModelNUOPC.cc
-  Model/nuopc/ModelNUOPC.h
-  Model/nuopc/ModelNUOPC.interface.h
-  Model/nuopc/esm.F90
-  Model/nuopc/atm.F90
-  Model/nuopc/ocn.F90
-  Model/nuopc/med.F90
+list( APPEND fv3jedi_ufs_src_files
+  Geometry/fv_init_control_mod.f90
+  Model/ufs/fv3jedi_ufs_interface_mod.F90
+  Model/ufs/fv3jedi_ufs_mod.F90
+  Model/ufs/ModelUFS.cc
+  Model/ufs/ModelUFS.h
+  Model/ufs/ModelUFS.interface.h
 )
 
 #Requirement libraries
@@ -216,8 +197,10 @@ endif()
 # Optional model - ufs
 if( FV3_FORECAST_MODEL MATCHES "UFS" )
   list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
+  if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) 
+    set_source_files_properties(${fv3jedi_ufs_src_files} PROPERTIES COMPILE_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fdec -fno-range-check -ffree-form ")
+  endif()
 endif()
-
 
 #Add the library
 ecbuild_add_library( TARGET          fv3jedi
@@ -226,3 +209,30 @@ ecbuild_add_library( TARGET          fv3jedi
                      INSTALL_HEADERS LISTED
                      LINKER_LANGUAGE ${FV3JEDI_LINKER_LANGUAGE}
                    )
+
+target_compile_features( fv3jedi PUBLIC cxx_std_11 )
+target_include_directories( fv3jedi PUBLIC "$<BUILD_INTERFACE:${FV3JEDI_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${FV3JEDI_EXTRA_INCLUDE_DIRS}>" )
+
+if( FV3_FORECAST_MODEL MATCHES "UFS" ) 
+  # ESMF
+  find_package(ESMF MODULE REQUIRED STATIC)
+
+  # Link all the libraries
+  target_link_libraries( fv3jedi PUBLIC nemsio::nemsio)
+  target_link_libraries( fv3jedi PUBLIC w3emc::w3emc_d)
+  target_link_libraries( fv3jedi PUBLIC w3nco::w3nco_d)
+  target_link_libraries( fv3jedi PUBLIC sp::sp_d)
+  target_link_libraries( fv3jedi PUBLIC bacio::bacio_4)
+  target_link_libraries( fv3jedi PUBLIC cpl)
+  target_link_libraries( fv3jedi PUBLIC fms)
+  target_link_libraries( fv3jedi PUBLIC fv3atm)
+  target_link_libraries( fv3jedi PUBLIC cpl)
+  target_link_libraries( fv3jedi PUBLIC ccppdriver)
+  target_link_libraries( fv3jedi PUBLIC ufs)
+  target_link_libraries( fv3jedi PUBLIC gfsphysics)
+  target_link_libraries( fv3jedi PUBLIC io)
+  target_link_libraries( fv3jedi PUBLIC stochastic_physics)
+  target_link_libraries( fv3jedi PUBLIC NetCDF::NetCDF_Fortran)
+  target_include_directories( fv3jedi PUBLIC ${ESMF_F90COMPILEPATHS} )
+  target_compile_definitions( fv3jedi PUBLIC "-DFRONT_FV3=fv3gfs_cap_mod")
+endif()

@@ -293,6 +293,8 @@ do f = 1, size(fields_to_do)
   ! Simulated but not assimilated
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
   case ("mass_content_of_cloud_ice_in_atmosphere_layer")
+  case ("mass_content_of_rain_in_atmosphere_layer")
+  case ("mass_content_of_snow_in_atmosphere_layer")
   case ("pe")
   case ("p")
 
@@ -324,7 +326,7 @@ type(fv3jedi_increment),          intent(inout) :: dxm
 integer :: fg, fm, ji, jj, jk, dxg_index, num_not_copied
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 character(len=field_clen), allocatable :: fields_to_do(:)
-character(len=field_clen) :: not_copied_(10000)
+character(len=field_clen) :: not_copied_(size(dxm%fields))
 logical, allocatable :: field_passed(:)
 integer :: noassim_index
 
@@ -499,6 +501,10 @@ endif
 if (dxg%has_field( "mass_content_of_cloud_liquid_water_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "mass_content_of_cloud_ice_in_atmosphere_layer", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_rain_in_atmosphere_layer", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_snow_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "p", noassim_index)) &
   field_passed(noassim_index) = .true.

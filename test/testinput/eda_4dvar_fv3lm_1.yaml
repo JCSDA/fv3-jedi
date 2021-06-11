@@ -1,5 +1,4 @@
 cost function:
-  obs perturbations seed: 1
   background:
     filetype: gfs
     datapath: Data/inputs/gfs_c12/bkg/
@@ -11,132 +10,133 @@ cost function:
     state variables: [u,v,ua,va,T,ps,DELP,sphum,ice_wat,liq_wat,o3mr]
   background error:
     covariance model: hybrid
-    static weight: 0.1
-    ensemble weight: 0.9
-    static:
-      date: '2018-04-14T21:00:00Z'
-      covariance model: BUMP
-      bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-        method: cor
-        strategy: specific_univariate
-        load_nicas: 1
-        mpicom: 2
-        verbosity: main
-        io_keys:
-        - "ua-ua"
-        - "va-va"
-        - "T-T"
-        - "ps-ps"
-        - "sphum-sphum"
-        - "ice_wat-ice_wat"
-        - "liq_wat-liq_wat"
-        - "o3mr-o3mr"
-        io_values:
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-        - "fixed_2500km_0.3"
-    ensemble:
-      date: '2018-04-14T21:00:00Z'
-      members:
-      - filetype: gfs
-        state variables: &incvars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
-        datapath: Data/inputs/gfs_c12/mem001/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem002/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem003/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem004/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem005/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem006/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem007/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem008/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem009/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      - filetype: gfs
-        state variables: *incvars
-        datapath: Data/inputs/gfs_c12/mem010/
-        filename_core: 20180414.210000.fv_core.res.nc
-        filename_trcr: 20180414.210000.fv_tracer.res.nc
-        filename_sfcd: 20180414.210000.sfc_data.nc
-        filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-        filename_cplr: 20180414.210000.coupler.res
-      localization:
-        timeslots: ['2018-04-14T21:00:00Z']
-        localization variables: *incvars
-        localization method: BUMP
+    components:
+    - covariance:
+        covariance model: BUMP
         bump:
           prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-          method: loc
-          strategy: common
+          method: cor
+          strategy: specific_univariate
           load_nicas: 1
           mpicom: 2
           verbosity: main
-          io_keys: ["common"]
-          io_values: ["fixed_2500km_0.3"]
+          io_keys:
+          - "ua-ua"
+          - "va-va"
+          - "T-T"
+          - "ps-ps"
+          - "sphum-sphum"
+          - "ice_wat-ice_wat"
+          - "liq_wat-liq_wat"
+          - "o3mr-o3mr"
+          io_values:
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+          - "fixed_2500km_0.3"
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members:
+        - filetype: gfs
+          state variables: &incvars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+          datapath: Data/inputs/gfs_c12/mem001/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem002/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem003/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem004/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem005/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem006/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem007/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem008/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem009/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        - filetype: gfs
+          state variables: *incvars
+          datapath: Data/inputs/gfs_c12/mem010/
+          filename_core: 20180414.210000.fv_core.res.nc
+          filename_trcr: 20180414.210000.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.sfc_data.nc
+          filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.coupler.res
+        localization:
+          localization variables: *incvars
+          localization method: BUMP
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+            method: loc
+            strategy: common
+            load_nicas: 1
+            mpicom: 2
+            verbosity: main
+            io_keys: ["common"]
+            io_values: ["fixed_2500km_0.3"]
+      weight:
+        value: 0.9
   observations:
   - obs space:
       name: Aircraft
@@ -145,6 +145,7 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/eda/gfs/mem001/aircraft_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
+      obs perturbations seed: 1
     obs operator:
       name: VertInterp
     obs error:
@@ -170,6 +171,7 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/eda/gfs/mem001/sondes_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
+      obs perturbations seed: 1
     obs operator:
       name: VertInterp
     obs error:
@@ -191,6 +193,7 @@ cost function:
       obsdataout:
         obsfile: Data/hofx/eda/gfs/mem001/gnssro_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [bending_angle]
+      obs perturbations seed: 1
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -203,7 +206,7 @@ cost function:
     obs filters:
     - filter: Domain Check
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
       where:
       - variable:
           name: impact_height@MetaData
@@ -215,7 +218,7 @@ cost function:
       errmodel: NBAM
     - filter: Background Check RONBAM
       filter variables:
-      - name: [bending_angle]
+      - name: bending_angle
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
@@ -224,6 +227,7 @@ cost function:
         obsfile: Data/hofx/eda/gfs/mem001/amsua_n19_eda-4dvar-gfs_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
+      obs perturbations seed: 1
     obs operator:
       name: CRTM
       Absorbers: [H2O,O3]

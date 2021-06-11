@@ -5,21 +5,25 @@
 
 module fv3jedi_getvalues_mod
 
+use iso_c_binding
+
 ! fckit
-use fckit_mpi_module,              only: fckit_mpi_comm
+use fckit_configuration_module,     only: fckit_configuration
+use fckit_mpi_module,               only: fckit_mpi_comm
 
 ! oops
 use datetime_mod,                   only: datetime
-use type_bump,                      only: bump_type
 use unstructured_interpolation_mod, only: unstrc_interp
 
+! saber
+use interpolatorbump_mod,           only: bump_interpolator
+
 ! ufo
-use ufo_locs_mod,                   only: ufo_locs, ufo_locs_time_mask
+use ufo_locations_mod
 use ufo_geovals_mod,                only: ufo_geovals
 
 ! fv3jedi uses
 use fv3jedi_constants_mod,          only: rad2deg
-use fv3jedi_bump_interp_mod,        only: fv3jedi_bump_interp
 use fv3jedi_field_mod,              only: fv3jedi_field, get_field, field_clen, &
                                           long_name_to_fv3jedi_name
 use fv3jedi_geom_mod,               only: fv3jedi_geom
@@ -33,12 +37,12 @@ private
 public :: fv3jedi_getvalues, fv3jedi_getvalues_base
 
 type, abstract :: fv3jedi_getvalues_base
-  integer                   :: isc, iec, jsc, jec, npz, ngrid
-  character(len=2048)       :: interp_method
-  integer                   :: nnear = 4
-  type(unstrc_interp)       :: unsinterp
-  type(fckit_mpi_comm)      :: comm
-  type(fv3jedi_bump_interp) :: bump
+  integer                 :: isc, iec, jsc, jec, npz, ngrid
+  character(len=2048)     :: interp_method
+  integer                 :: nnear = 4
+  type(bump_interpolator) :: bumpinterp
+  type(unstrc_interp)     :: unsinterp
+  type(fckit_mpi_comm)    :: comm
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -56,11 +60,16 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, geom, locs)
+subroutine create(self, geom, locs, conf)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
 type(fv3jedi_geom),            intent(in)    :: geom
-type(ufo_locs),                intent(in)    :: locs
+type(ufo_locations),           intent(in)    :: locs
+type(fckit_configuration),     intent(in)    :: conf
+
+real(8), allocatable, dimension(:) :: lons, lats
+integer :: nlocs
+character(len=:), allocatable :: str
 
 ! Geometry
 ! --------
@@ -72,20 +81,32 @@ self%npz = geom%npz
 self%ngrid = geom%ngrid
 self%comm = geom%f_comm
 
-! Create interpolation weights
+nlocs = locs%nlocs()
+allocate(lons(nlocs), lats(nlocs))
+call locs%get_lons(lons)
+call locs%get_lats(lats)
+
+! Get interpolation method
+! ------------------------
+self%interp_method = geom%interp_method
+if (conf%has("interpolation method")) then
+    call conf%get_or_die("interpolation method",str)
+    self%interp_method = str
+    deallocate(str)
+endif
+
+! Initialize bump interpolator
 ! ----------------------------
-self%interp_method = trim(geom%interp_method)
 if (trim(self%interp_method) == 'bump') then
-  call self%bump%setup(geom%f_comm, geom%isc, geom%iec, geom%jsc, geom%jec, geom%npz, &
-                       geom%grid_lon(geom%isc:geom%iec, geom%jsc:geom%jec), &
-                       geom%grid_lat(geom%isc:geom%iec, geom%jsc:geom%jec), &
-                       locs%nlocs, locs%lon, locs%lat, 55555)
+  call self%bumpinterp%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon_out=lons, lat_out=lats, nl=geom%npz)
 endif
 
 ! Always create unstructured interpolation as it is used for special case fields, e.g. integers
 call self%unsinterp%create( geom%f_comm, self%nnear, 'barycent', &
                             self%ngrid, rad2deg*geom%lat_us, rad2deg*geom%lon_us, &
-                            locs%nlocs, locs%lat, locs%lon )
+                            nlocs, lats, lons )
+
+deallocate(lons, lats)
 
 end subroutine create
 
@@ -95,7 +116,7 @@ subroutine delete(self)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
 
-if (trim(self%interp_method) == 'bump') call self%bump%delete()
+if (trim(self%interp_method) == 'bump') call self%bumpinterp%delete()
 
 call self%unsinterp%delete()
 
@@ -104,44 +125,32 @@ end subroutine delete
 ! --------------------------------------------------------------------------------------------------
 
 subroutine fill_geovals(self, geom, fields, t1, t2, locs, geovals)
-
+implicit none
 class(fv3jedi_getvalues_base), intent(inout) :: self
 type(fv3jedi_geom),            intent(in)    :: geom
-type(fv3jedi_field),          intent(in)    :: fields(:)
-type(datetime),               intent(in)    :: t1
-type(datetime),               intent(in)    :: t2
-type(ufo_locs),               intent(in)    :: locs
-type(ufo_geovals),            intent(inout) :: geovals
+type(fv3jedi_field),           intent(in)    :: fields(:)
+type(datetime),                intent(in)    :: t1
+type(datetime),                intent(in)    :: t2
+type(ufo_locations),           intent(in)    :: locs
+type(ufo_geovals),             intent(inout) :: geovals
 
-integer :: gv, n, ji, jj, jlev
+integer :: gv, n, ji, jj, jlev, nlocs
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
-logical, allocatable :: time_mask(:)
+logical(c_bool), allocatable :: time_mask(:)
 real(kind=kind_real), allocatable :: field_us(:)
-real(kind=kind_real), allocatable :: geovals_all(:,:), geovals_tmp(:)
+real(kind=kind_real), allocatable :: geovals_all(:,:)
 
 ! Get mask for locations in this time window
 ! ------------------------------------------
-call ufo_locs_time_mask(locs, t1, t2, time_mask)
-
-
-! Allocate geovals
-! ----------------
-if (.not. geovals%linit) then
-  do gv = 1, geovals%nvar
-    geovals%geovals(gv)%nval = fields(gv)%npz
-    allocate(geovals%geovals(gv)%vals(geovals%geovals(gv)%nval, geovals%geovals(gv)%nlocs))
-    geovals%geovals(gv)%vals = 0.0_kind_real
-  enddo
-endif
-geovals%linit = .true.
-
+nlocs = locs%nlocs()
+allocate(time_mask(nlocs))
+call locs%get_timemask(t1, t2, time_mask)
 
 ! Loop over GeoVaLs
 ! -----------------
 allocate(field_us(self%ngrid))
-allocate(geovals_all(locs%nlocs, self%npz+1))
-allocate(geovals_tmp(locs%nlocs))
+allocate(geovals_all(nlocs, self%npz+1))
 
 do gv = 1, geovals%nvar
 
@@ -150,16 +159,22 @@ do gv = 1, geovals%nvar
   call long_name_to_fv3jedi_name(fields, trim(geovals%variables(gv)), fv3jedi_name)
   call get_field(fields, fv3jedi_name, field)
 
+  if (geovals%geovals(gv)%nval /= field%npz) then
+    geovals%geovals(gv)%nval = field%npz
+    if (allocated(geovals%geovals(gv)%vals)) deallocate(geovals%geovals(gv)%vals)
+    allocate(geovals%geovals(gv)%vals(geovals%geovals(gv)%nval, geovals%geovals(gv)%nlocs))
+  endif
+
   ! Interpolation
   ! -------------
-  geovals_all = 0.0_kind_real
 
   ! Can optionally interpolate real valued magnitude fields with bump
   ! -----------------------------------------------------------------
   if ( trim(self%interp_method) == 'bump' .and. &
        .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
 
-    call self%bump%apply(field%npz, field%array, locs%nlocs, geovals_all(:,1:field%npz))
+    ! Interpolate
+    call self%bumpinterp%apply(field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz),geovals_all(:,1:field%npz))
 
   else ! Otherwise use unstructured interpolation
 
@@ -175,23 +190,22 @@ do gv = 1, geovals%nvar
       ! Conditions for integer and directional fields
       ! ---------------------------------------------
       if (.not. field%integerfield .and. trim(field%space)=='magnitude') then
-        call self%unsinterp%apply(field_us, geovals_tmp)
+        call self%unsinterp%apply(field_us, geovals_all(:, jlev))
       elseif (field%integerfield) then
-        call unsinterp_integer_apply(self%unsinterp, field_us, geovals_tmp)
+        call unsinterp_integer_apply(self%unsinterp, field_us, geovals_all(:, jlev))
       elseif (trim(field%space)=='direction') then
-        call unsinterp_nearest_apply(self%unsinterp, field_us, geovals_tmp)
+        call unsinterp_nearest_apply(self%unsinterp, field_us, geovals_all(:, jlev))
       else
         call abor1_ftn("fv3jedi_getvalues_mod.fill_geovals: interpolation for this kind of "// &
                        "field is not supported. FieldName: "// trim(field%fv3jedi_name))
       endif
-      geovals_all(1:locs%nlocs, jlev) = geovals_tmp(1:locs%nlocs)
     enddo
 
   endif
 
   ! Fill GeoVaLs relevant to this window
   ! ------------------------------------
-  do n = 1,locs%nlocs
+  do n = 1,nlocs
     if (time_mask(n)) geovals%geovals(gv)%vals(1:field%npz, n) = geovals_all(n, 1:field%npz)
   enddo
 
@@ -199,8 +213,8 @@ enddo
 
 deallocate(field_us)
 deallocate(geovals_all)
-deallocate(geovals_tmp)
 deallocate(time_mask)
+geovals%linit = .true.
 
 end subroutine fill_geovals
 

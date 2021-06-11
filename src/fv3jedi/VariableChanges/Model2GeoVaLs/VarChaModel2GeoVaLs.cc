@@ -10,7 +10,6 @@
 
 #include "eckit/config/Configuration.h"
 
-#include "oops/interface/VariableChange.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
 
@@ -22,8 +21,9 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::VariableChangeMaker<Traits, oops::VariableChange<Traits, VarChaModel2GeoVaLs>>
+static oops::VariableChangeMaker<Traits, VarChaModel2GeoVaLs>
        makerVarChaModel2GeoVaLs_("Model2GeoVaLs");
+static oops::VariableChangeMaker<Traits, VarChaModel2GeoVaLs> makerVarChaDefault_("default");
 // -------------------------------------------------------------------------------------------------
 VarChaModel2GeoVaLs::VarChaModel2GeoVaLs(const Geometry & geom, const eckit::Configuration & conf) :
   geom_(new Geometry(geom))
@@ -44,7 +44,7 @@ VarChaModel2GeoVaLs::~VarChaModel2GeoVaLs() {
 // -------------------------------------------------------------------------------------------------
 void VarChaModel2GeoVaLs::changeVar(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVar");
-  oops::Log::trace() << classname() << " changeVar done" << std::endl;
+  oops::Log::trace() << classname() << " changeVar start" << std::endl;
   fv3jedi_vc_model2geovals_changevar_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
                                          xout.toFortran());
   xout.validTime() = xin.validTime();

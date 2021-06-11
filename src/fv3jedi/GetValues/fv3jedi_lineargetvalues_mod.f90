@@ -5,15 +5,20 @@
 
 module fv3jedi_lineargetvalues_mod
 
+use iso_c_binding
+
 ! fckit
-use fckit_mpi_module,              only: fckit_mpi_comm
+use fckit_mpi_module,               only: fckit_mpi_comm
 
 ! oops
 use datetime_mod,                   only: datetime
 use unstructured_interpolation_mod, only: unstrc_interp
 
+! saber
+use interpolatorbump_mod,         only: bump_interpolator
+
 ! ufo
-use ufo_locs_mod,                   only: ufo_locs, ufo_locs_time_mask
+use ufo_locations_mod
 use ufo_geovals_mod,                only: ufo_geovals
 
 ! fv3jedi uses
@@ -47,26 +52,27 @@ type(fv3jedi_geom),             intent(in)    :: geom
 type(fv3jedi_field),            intent(inout) :: fields(:)
 type(datetime),                 intent(in)    :: t1
 type(datetime),                 intent(in)    :: t2
-type(ufo_locs),                 intent(in)    :: locs
+type(ufo_locations),            intent(in)    :: locs
 type(ufo_geovals),              intent(in)    :: geovals
 
-integer :: gv, n, ji, jj, jlev
+integer :: gv, n, ji, jj, jlev, nlocs
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
-logical, allocatable :: time_mask(:)
+logical(c_bool), allocatable :: time_mask(:)
 real(kind=kind_real), allocatable :: field_us(:)
 real(kind=kind_real), allocatable :: geovals_all(:,:), geovals_tmp(:)
 
 ! Get mask for locations in this time window
 ! ------------------------------------------
-call ufo_locs_time_mask(locs, t1, t2, time_mask)
-
+nlocs = locs%nlocs()
+allocate(time_mask(nlocs))
+call locs%get_timemask(t1, t2, time_mask)
 
 ! Allocate intermediate variables
 ! -------------------------------
 allocate(field_us(self%ngrid))
-allocate(geovals_all(locs%nlocs, self%npz+1))
-allocate(geovals_tmp(locs%nlocs))
+allocate(geovals_all(nlocs, self%npz+1))
+allocate(geovals_tmp(nlocs))
 field_us = 0.0_kind_real
 geovals_all = 0.0_kind_real
 geovals_tmp = 0.0_kind_real
@@ -83,7 +89,7 @@ do gv = 1, geovals%nvar
 
   ! Adjoint of fill GeoVaLs relevant to this window
   ! -----------------------------------------------
-  do n = 1,locs%nlocs
+  do n = 1,nlocs
     if (time_mask(n)) geovals_all(n, 1:field%npz) = geovals%geovals(gv)%vals(1:field%npz, n)
   enddo
 
@@ -92,13 +98,14 @@ do gv = 1, geovals%nvar
   if ( trim(self%interp_method) == 'bump' .and. &
        .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
 
-    call self%bump%apply_ad(field%npz, field%array, locs%nlocs, geovals_all(:,1:field%npz))
+    ! Interpolate
+    call self%bumpinterp%apply_ad(geovals_all(:,1:field%npz),field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz))
 
   else ! Otherwise use unstructured interpolation
 
     do jlev = 1, field%npz
 
-      geovals_tmp(1:locs%nlocs) = geovals_all(1:locs%nlocs, jlev)
+      geovals_tmp(1:nlocs) = geovals_all(1:nlocs, jlev)
 
       ! Conditions for integer and directional fields
       ! ---------------------------------------------
