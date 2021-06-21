@@ -9,6 +9,7 @@
 #include "saber/oops/instantiateCovarFactory.h"
 #include "saber/oops/instantiateLocalizationFactory.h"
 #include "saber/oops/instantiateVariableChangeFactory.h"
+#include "ufo/instantiateObsErrorFactory.h"
 #include "ufo/instantiateObsFilterFactory.h"
 #include "ufo/ObsTraits.h"
 
@@ -21,6 +22,7 @@ int main(int argc,  char ** argv) {
   saber::instantiateCovarFactory<fv3jedi::Traits>();
   saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
+  ufo::instantiateObsErrorFactory<ufo::ObsTraits>();
   ufo::instantiateObsFilterFactory<ufo::ObsTraits>();
   oops::EnsembleApplication<oops::Variational <fv3jedi::Traits, ufo::ObsTraits> > eda;
   return run.execute(eda);

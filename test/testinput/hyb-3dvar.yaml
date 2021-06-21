@@ -168,7 +168,7 @@ cost function:
     obs operator:
       name: VertInterp
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: PreQC
       maxvalue: 3
@@ -196,7 +196,7 @@ cost function:
         compress: 1
         super_ref_qc: NBAM
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: Domain Check
       filter variables:
@@ -227,7 +227,7 @@ cost function:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: Bounds Check
       filter variables:
@@ -251,7 +251,7 @@ cost function:
     linear obs operator:
       name: Identity
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: Background Check
       threshold: 1000
@@ -263,7 +263,7 @@ cost function:
     obs operator:
       name: VertInterp
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: PreQC
       maxvalue: 3

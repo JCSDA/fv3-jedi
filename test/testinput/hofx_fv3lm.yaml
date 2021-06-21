@@ -42,6 +42,8 @@ observations:
     simulated variables: [eastward_wind, northward_wind, air_temperature]
   obs operator:
     name: VertInterp
+  obs error:
+    covariance model: diagonal
 - obs space:
     name: GnssroBndNBAM
     obsdatain:
@@ -54,6 +56,8 @@ observations:
       vertlayer: full
       compress: 1
       super_ref_qc: NBAM
+  obs error:
+    covariance model: diagonal ufo
 - obs space:
     name: SBUV2-NOAA19-OZ
     obsdatain:
@@ -68,6 +72,8 @@ observations:
     geovals: [mole_fraction_of_ozone_in_air]
     coefficients: [0.007886131] # convert from ppmv to DU
     nlevels: [22]
+  obs error:
+    covariance model: diagonal ufo
 - obs space:
     name: AMSUA-NOAA19
     obsdatain:
@@ -83,5 +89,7 @@ observations:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/crtm/
+  obs error:
+    covariance model: diagonal ufo
 prints:
   frequency: PT3H
