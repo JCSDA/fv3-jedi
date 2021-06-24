@@ -188,6 +188,20 @@ namespace fv3jedi {
 
   // -----------------------------------------------------------------------------------------------
 
+  size_t FieldsMetadata::getLevelsFromLongName(const std::string & longName) const {
+    // Iterate over map and search for longname. When found return levels
+    size_t levels = 0;
+    for ( auto it = fields_.begin(); it != fields_.end(); ++it ) {
+       if (longName == it->second.getLongName()) {
+         levels = it->second.getLevels();
+       }
+    }
+    ASSERT(levels != 0);
+    return levels;
+  }
+
+  // -----------------------------------------------------------------------------------------------
+
 }  // namespace fv3jedi
 
 // -------------------------------------------------------------------------------------------------

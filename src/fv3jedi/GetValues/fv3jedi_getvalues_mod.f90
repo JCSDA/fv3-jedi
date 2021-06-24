@@ -159,12 +159,6 @@ do gv = 1, geovals%nvar
   call long_name_to_fv3jedi_name(fields, trim(geovals%variables(gv)), fv3jedi_name)
   call get_field(fields, fv3jedi_name, field)
 
-  if (geovals%geovals(gv)%nval /= field%npz) then
-    geovals%geovals(gv)%nval = field%npz
-    if (allocated(geovals%geovals(gv)%vals)) deallocate(geovals%geovals(gv)%vals)
-    allocate(geovals%geovals(gv)%vals(geovals%geovals(gv)%nval, geovals%geovals(gv)%nlocs))
-  endif
-
   ! Interpolation
   ! -------------
 

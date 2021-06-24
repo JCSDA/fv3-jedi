@@ -18,6 +18,7 @@
 
 #include "eckit/mpi/Comm.h"
 
+#include "oops/base/Variables.h"
 #include "oops/mpi/mpi.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
@@ -55,6 +56,8 @@ class Geometry : public util::Printable,
   const eckit::mpi::Comm & getComm() const {return comm_;}
   atlas::FunctionSpace * atlasFunctionSpace() const {return atlasFunctionSpace_.get();}
   atlas::FieldSet * atlasFieldSet() const {return atlasFieldSet_.get();}
+
+  std::vector<size_t> variableSizes(const oops::Variables &) const;
 
  private:
   Geometry & operator=(const Geometry &);

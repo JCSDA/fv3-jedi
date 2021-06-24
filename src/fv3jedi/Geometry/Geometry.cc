@@ -132,6 +132,18 @@ std::vector<double> Geometry::verticalCoord(std::string & vcUnits) const {
 
 // -------------------------------------------------------------------------------------------------
 
+std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const {
+  // Array of level heights
+  std::vector<size_t> varSizes;
+  // Loop through arrays and search metadata map for the levels
+  for (size_t it = 0; it < vars.size(); it++) {
+    varSizes.push_back(fieldsMeta_.getLevelsFromLongName(vars[it]));
+  }
+  return varSizes;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void Geometry::print(std::ostream & os) const {
   int cube;
   fv3jedi_geom_print_f90(keyGeom_, cube);

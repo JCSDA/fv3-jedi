@@ -16,6 +16,7 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
 #include "oops/util/abor1_cpp.h"
@@ -161,6 +162,9 @@ namespace fv3jedi {
     explicit FieldsMetadata(const eckit::Configuration &);
 
     FieldMetadata getField(const std::string &) const;
+
+    // Function to return number of levels given the longName
+    size_t getLevelsFromLongName(const std::string &) const;
 
    private:
     std::map<std::string, FieldMetadata> fields_;
