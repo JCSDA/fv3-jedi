@@ -13,13 +13,12 @@ use fckit_configuration_module,   only: fckit_configuration
 ! fms
 use fms_io_mod,                   only: restart_file_type, register_restart_field
 use fms_io_mod,                   only: free_restart_type, restore_state, save_restart
-use mpp_domains_mod,              only: east, north, center
+use mpp_domains_mod,              only: east, north, center, domain2D
 use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
 ! fv3jedi
 use fv3jedi_constants_mod,        only: rad2deg
 use fv3jedi_field_mod,            only: fv3jedi_field, hasfield
-use fv3jedi_geom_mod,             only: fv3jedi_geom
 use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text
 use fv3jedi_kinds_mod,            only: kind_real
 
@@ -191,10 +190,9 @@ end subroutine setup_date
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_meta(self, geom, vdate, calendar_type, date_init)
+subroutine read_meta(self, vdate, calendar_type, date_init)
 
 class(fv3jedi_io_gfs), intent(inout) :: self
-type(fv3jedi_geom),    intent(inout) :: geom          !< Geometry
 type(datetime),        intent(inout) :: vdate         !< DateTime
 integer,               intent(inout) :: calendar_type !< GFS calendar type
 integer,               intent(inout) :: date_init(6)  !< GFS date intialized
@@ -205,30 +203,6 @@ integer(kind=c_int) :: idate, isecs
 type(restart_file_type)  :: restart_spec
 integer :: idrst
 real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
-
-
-! Read Lat-Lon and check consitency with geom
-! -------------------------------------------
-if (trim(self%filenames(self%index_spec)) .ne. "null" .and. trim(self%datapath) .ne. "null") then
-
-  allocate(grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec))
-  allocate(grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec))
-
-  idrst = register_restart_field( restart_spec, trim(self%filenames(self%index_spec)), &
-                                  "grid_latt", grid_lat, domain=geom%domain )
-  idrst = register_restart_field( restart_spec, trim(self%filenames(self%index_spec)), &
-                                  "grid_lont", grid_lon, domain=geom%domain )
-
-  call restore_state(restart_spec, directory=trim(adjustl(self%datapath)))
-  call free_restart_type(restart_spec)
-
-  if ((maxval(abs(grid_lat-rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)))>1.0e-4) &
-  .or.(maxval(abs(grid_lon-rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)))>1.0e-4))then
-    call abor1_ftn("Grid in gridspec file does not match that in the geometry")
-  endif
-  deallocate(grid_lat)
-  deallocate(grid_lon)
-endif
 
 ! Get dates from coupler.res
 !---------------------------
@@ -252,12 +226,13 @@ end subroutine read_meta
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_fields(self, geom, fields)
+subroutine read_fields(self, fields, domain, npz) 
 
 implicit none
 class(fv3jedi_io_gfs), intent(inout) :: self
-type(fv3jedi_geom),    intent(inout) :: geom
 type(fv3jedi_field),   intent(inout) :: fields(:)
+type(domain2D), pointer, intent(in) :: domain 
+integer,                 intent(in) :: npz
 
 type(restart_file_type) :: restart(numfiles)
 logical :: rstflag(numfiles)
@@ -286,7 +261,8 @@ do var = 1,size(fields)
     indexof_ps = var
     if (havedelp) cycle ! Do not register delp twice
     deallocate(fields(indexof_ps)%array)
-    allocate(fields(indexof_ps)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, & 
+                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:npz))
     fields(indexof_ps)%short_name = 'DELP'
   endif
 
@@ -325,7 +301,7 @@ do var = 1,size(fields)
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
                                   trim(fields(var)%short_name), fields(var)%array, &
-                                  domain=geom%domain, position=position )
+                                  domain=domain, position=position )
 
 enddo
 
@@ -341,11 +317,13 @@ enddo
 ! Compute ps from DELP
 ! --------------------
 if (indexof_ps > 0) then
-  allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  allocate(delp(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
+                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:npz))
   if (.not. havedelp) then
     delp = fields(indexof_ps)%array
     deallocate(fields(indexof_ps)%array)
-    allocate(fields(indexof_ps)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1))
+    allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
+                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1))
   else
     delp = fields(indexof_delp)%array
   endif
@@ -357,11 +335,11 @@ end subroutine read_fields
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, geom, fields, vdate, calendar_type, date_init)
+subroutine write(self, domain, fields, vdate, calendar_type, date_init)
 
 implicit none
 class(fv3jedi_io_gfs), intent(inout) :: self
-type(fv3jedi_geom),    intent(inout) :: geom          !< Geom
+type(domain2D), pointer, intent(in)  :: domain
 type(fv3jedi_field),   intent(in)    :: fields(:)     !< Fields to be written
 type(datetime),        intent(in)    :: vdate         !< DateTime
 integer,               intent(in)    :: calendar_type !< GFS calendar type
@@ -433,7 +411,7 @@ do var = 1,size(fields)
 
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
-                                  fields(var)%short_name, fields(var)%array, domain=geom%domain, &
+                                  fields(var)%short_name, fields(var)%array, domain=domain, &
                                   position=position, longname = trim(fields(var)%long_name), &
                                   units = trim(fields(var)%units) )
 

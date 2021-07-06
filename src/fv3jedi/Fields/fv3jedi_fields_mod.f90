@@ -367,8 +367,8 @@ deallocate(str)
 if (trim(filetype) == 'gfs') then
 
   call gfs%setup_conf(conf)
-  call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
-  call gfs%read_fields(geom, self%fields)
+  call gfs%read_meta(vdate, self%calendar_type, self%date_init)
+  call gfs%read_fields(self%fields, geom%domain, geom%npz)
 
 elseif (trim(filetype) == 'geos') then
 
@@ -410,7 +410,7 @@ if (trim(filetype) == 'gfs') then
 
   call gfs%setup_conf(conf)
   call gfs%setup_date(vdate)
-  call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
+  call gfs%write(geom%domain, self%fields, vdate, self%calendar_type, self%date_init)
 
 elseif (trim(filetype) == 'geos') then
 

@@ -174,7 +174,7 @@ do index_mod = 1, xmod%nf
 
     if (trim(self%filetype) == 'gfs') then
       call self%gfs%setup_date(vdt)
-      call self%gfs%read_fields( geom, xmod%fields(index_mod:index_mod) )
+      call self%gfs%read_fields( xmod%fields(index_mod:index_mod), geom%domain, geom%npz) 
     elseif (trim(self%filetype) == 'geos') then
       call self%geos%setup_date(vdt)
       call self%geos%read_fields(geom, xmod%fields(index_mod:index_mod))

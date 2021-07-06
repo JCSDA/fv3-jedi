@@ -104,7 +104,7 @@ type(datetime),      intent(inout) :: vdate !< Valid datetime after step
 
 if (trim(self%pseudo_type) == "gfs") then
   call self%gfs%setup_date(vdate)
-  call self%gfs%read_fields(geom, state%fields)
+  call self%gfs%read_fields(state%fields, geom%domain, geom%npz)
 elseif (trim(self%pseudo_type) == "geos") then
   call self%geos%setup_date(vdate)
   call self%geos%read_fields(geom, state%fields)
