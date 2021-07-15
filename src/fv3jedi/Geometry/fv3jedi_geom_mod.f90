@@ -35,6 +35,8 @@ use fv3jedi_constants_mod,       only: ps, rad2deg, kappa
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
+use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
+use fv3jedi_field_mod,           only: fv3jedi_field
 
 implicit none
 private
@@ -58,6 +60,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
   real(kind=kind_real), allocatable, dimension(:)       :: lon_us, lat_us           !Lat/lon centers unstructured
   real(kind=kind_real), allocatable, dimension(:,:)     :: area                     !Grid area
+  real(kind=kind_real), allocatable, dimension(:,:)     :: orography                !Grid surface elevation
   real(kind=kind_real), allocatable, dimension(:,:)     :: dx, dy                   !dx/dy at edges
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxc, dyc                 !dx/dy c grid
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: grid, vlon, vlat
@@ -137,6 +140,11 @@ integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
 logical :: logp = .false.
+
+logical :: read_orog
+type(fv3jedi_io_gfs)  :: gfs_orog
+type(fv3jedi_field)   :: field_orog(1)
+type(field_metadata)  :: fmd
 
 ! Namelist for geometry
 integer :: nmls, ios, ierr
@@ -396,6 +404,51 @@ call setup_domain( self%domain_fix, self%npx-1, self%npy-1, &
 
 self%domain => self%domain_fix
 
+!Optionally read in the orography (needed for land DA)
+if (.not. conf%get('read_orog', read_orog)) read_orog=.false.
+
+if (read_orog) then
+
+  call conf%get_or_die("orog_IO_name",str)
+
+! set up gfs_io object
+  call gfs_orog%setup_conf(conf)
+
+! set up metadata in field to recieve the orog
+  fmd = self%fields%get_field(str)
+  deallocate(str)
+  field_orog(1)%isc = self%isc
+  field_orog(1)%iec = self%iec
+  field_orog(1)%jsc = self%jsc
+  field_orog(1)%jec = self%jec
+  field_orog(1)%npz = fmd%levels
+
+  allocate(field_orog(1)%array(self%isc:self%iec,self%jsc:self%jec,1:fmd%levels))
+
+  field_orog(1)%lalloc = .true.
+
+  field_orog(1)%short_name   = trim(fmd%field_io_name)
+  field_orog(1)%long_name    = trim(fmd%long_name)
+  field_orog(1)%fv3jedi_name = trim(fmd%field_name)
+  field_orog(1)%units        = trim(fmd%units)
+  field_orog(1)%io_file      = trim(fmd%io_file)
+  field_orog(1)%space        = trim(fmd%space)
+  field_orog(1)%staggerloc   = trim(fmd%stagger_loc)
+  field_orog(1)%tracer       = fmd%tracer
+  field_orog(1)%integerfield = trim(fmd%array_kind)=='integer'
+
+! read orog into field
+  call gfs_orog%read_fields(field_orog, self%domain, self%npz)
+
+! copy into geom
+  allocate(self%orography(self%isc:self%iec,self%jsc:self%jec))
+
+  self%orography = field_orog(1)%array(:,:,1)
+
+  deallocate(field_orog(1)%array)
+
+endif
+
 ! Optionally write the geometry to file
 ! -------------------------------------
 if (conf%has("do_write_geom")) then
@@ -405,6 +458,7 @@ endif
 if (do_write_geom) then
   call write_geom(self)
 endif
+
 
 end subroutine create
 

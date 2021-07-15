@@ -9,6 +9,12 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
+    - fieldset: Data/fieldsets/oro_data.yaml
+  read_orog: true
+  orog_IO_name: orog_filt
+  filename_orog: C48_oro_data.nc
+  datapath: Data/inputs/gfs_land_c48/grid/
+  prepend files with date: false
 
 window begin: '2019-12-15T09:00:00Z'
 window length: PT6H
