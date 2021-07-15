@@ -119,7 +119,7 @@ logical :: have_geoph
 real(kind=kind_real), allocatable :: geophi(:,:,:)         !Geopotential height, interfaces
 real(kind=kind_real), allocatable :: geoph (:,:,:)         !Geopotential height
 real(kind=kind_real), allocatable :: suralt(:,:,:)         !Surface altitude
-real(kind=kind_real), pointer     :: phis  (:,:,:)         !Surface geopotential height
+real(kind=kind_real), pointer     :: phis  (:,:,:)         !Surface geopotential height times gravity
 logical,  parameter :: use_compress = .true.
 
 ! Ozone
@@ -133,6 +133,11 @@ real(kind=kind_real), allocatable :: va    (:,:,:)         !Northward wind
 real(kind=kind_real), pointer     :: ud    (:,:,:)         !u component D-grid
 real(kind=kind_real), pointer     :: vd    (:,:,:)         !v component D-grid
 
+! Surface roughness length
+logical :: have_zorl
+real(kind=kind_real), pointer     :: zorl     (:,:,:)      !Incoming in centimeters
+real(kind=kind_real), allocatable :: sfc_rough(:,:,:)      !Outgoing in meters
+
 ! Sea-land mask
 logical :: have_slmsk
 real(kind=kind_real), allocatable :: slmsk   (:,:,:)       !Land-sea mask
@@ -143,7 +148,7 @@ real(kind=kind_real), pointer     :: tsea    (:,:,:)       !Surface temperature
 
 !f10m
 logical :: have_f10m
-real(kind=kind_real), allocatable :: f10m    (:,:,:)       !Land-sea mask
+real(kind=kind_real), allocatable :: f10m    (:,:,:)       !Surface wind reduction factor
 real(kind=kind_real), pointer     :: u_srf   (:,:,:)
 real(kind=kind_real), pointer     :: v_srf   (:,:,:)
 real(kind=kind_real) :: wspd
@@ -331,7 +336,7 @@ if (have_t .and. have_pressures .and. have_q .and. xm%has_field( 'phis')) then
   call xm%get_field('phis',  phis)
   if (.not.allocated(geophi)) allocate(geophi(self%isc:self%iec,self%jsc:self%jec,self%npz+1))
   if (.not.allocated(geoph )) allocate(geoph (self%isc:self%iec,self%jsc:self%jec,self%npz  ))
-  if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,self%npz  ))
+  if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
   call geop_height(geom, prs, prsi, t, q, phis(:,:,1), use_compress, geoph)
   call geop_height_levels(geom, prs, prsi, t, q, phis(:,:,1), use_compress, geophi)
   suralt = phis / grav
@@ -389,7 +394,6 @@ elseif (xm%has_field('ud')) then
   nullify(ud,vd)
 endif
 
-
 ! Land sea mask
 ! -------------
 have_slmsk = .false.
@@ -419,6 +423,19 @@ elseif ( xm%has_field('frocean' ) .and. xm%has_field('frlake'  ) .and. &
     enddo
   enddo
   have_slmsk = .true.
+endif
+
+
+! Transform surface roughness length (zorl) from cm to meters.
+! -------------
+have_zorl = .false.
+allocate(sfc_rough(self%isc:self%iec,self%jsc:self%jec,1))
+if (xm%has_field( 'zorl')) then
+  call xm%get_field('zorl', zorl)
+  have_zorl = .true.
+  sfc_rough = zorl*0.01
+else
+  sfc_rough = 0.01_kind_real
 endif
 
 
@@ -528,11 +545,11 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
     qs_ade = 0.0_kind_real
     qr_efr = 0.0_kind_real
     qs_efr = 0.0_kind_real
-    call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
+    call crtm_ade_efr( geom, prs, t, delp, watercov, q, ql, qi, &
                      ql_ade, qi_ade, ql_efr, qi_efr, &
                      qr, qs, qr_ade, qs_ade, qr_efr, qs_efr )
   else
-    call crtm_ade_efr( geom, prsi, t, delp, watercov, q, ql, qi, &
+    call crtm_ade_efr( geom, prs, t, delp, watercov, q, ql, qi, &
                      ql_ade, qi_ade, ql_efr, qi_efr )
   endif
   have_crtm_cld = .true.
@@ -709,7 +726,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geophi
 
-  case ("surface_altitude")
+  case ("surface_altitude", "surface_geopotential_height")
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = suralt
@@ -828,6 +845,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = surface_wind_from_direction
 
+  case ("wind_reduction_factor_at_10m")
+
+    if (.not. have_f10m) call field_fail(fields_to_do(f))
+    field_ptr = f10m
+
   case ("leaf_area_index")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
@@ -847,6 +869,11 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = land_type_index
+
+  case ("surface_roughness_length")
+
+    if (.not. have_zorl) call field_fail(fields_to_do(f))
+    field_ptr = sfc_rough
 
   case ("vegetation_type_index")
 
@@ -895,6 +922,7 @@ if (associated(stype)) nullify(stype)
 if (associated(vfrac)) nullify(vfrac)
 if (associated(stc)) nullify(stc)
 if (associated(smc)) nullify(smc)
+if (associated(zorl)) nullify(zorl)
 if (associated(field_ptr)) nullify(field_ptr)
 if (associated(q)) nullify(q)
 if (associated(qsat)) nullify(qsat)
@@ -933,6 +961,7 @@ if (allocated(o3)) deallocate(o3)
 if (allocated(ua)) deallocate(ua)
 if (allocated(va)) deallocate(va)
 if (allocated(slmsk)) deallocate(slmsk)
+if (allocated(sfc_rough)) deallocate(sfc_rough)
 if (allocated(f10m)) deallocate(f10m)
 if (allocated(ql)) deallocate(ql)
 if (allocated(qi)) deallocate(qi)

@@ -45,9 +45,9 @@ Test     :    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.4499
 Test     :    mass_content_of_rain_in_atmosp: Min = +0.000000e+00, Max = +6.983535e-02, RMS = +1.072128e-03
 Test     :    mass_content_of_snow_in_atmosp: Min = +0.000000e+00, Max = +1.431376e-01, RMS = +3.534150e-03
 Test     :    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.501658e+00
-Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +9.827405e+01, RMS = +3.155263e+01
-Test     :    effective_radius_of_rain_parti: Min = +0.000000e+00, Max = +5.674342e+02, RMS = +8.625888e+01
-Test     :    effective_radius_of_snow_parti: Min = +0.000000e+00, Max = +5.747690e+02, RMS = +9.292218e+01
+Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +9.852727e+01, RMS = +3.163812e+01
+Test     :    effective_radius_of_rain_parti: Min = +0.000000e+00, Max = +6.799390e+02, RMS = +5.341766e+02
+Test     :    effective_radius_of_snow_parti: Min = +0.000000e+00, Max = +6.913910e+02, RMS = +5.348534e+02
 Test     :    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.108066e-01
 Test     :    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
 Test     :    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
@@ -59,7 +59,7 @@ Test     :    surface_temperature_where_snow: Min = +2.116139e+02, Max = +2.8000
 Test     :    surface_snow_thickness        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +2.073261e+14
 Test     :    vegetation_area_fraction      : Min = +0.000000e+00, Max = +8.667599e-01, RMS = +2.000949e-01
 Test     :    surface_wind_speed            : Min = +1.543586e-04, Max = +6.755239e+01, RMS = +9.515480e+00
-Test     :    surface_wind_from_direction   : Min = +2.780543e-01, Max = +3.600000e+02, RMS = +2.168674e+02
+Test     :    surface_wind_from_direction   : Min = +2.780543e-01, Max = +3.599916e+02, RMS = +2.168674e+02
 Test     :    leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
 Test     :    volume_fraction_of_condensed_w: Min = +2.588957e-02, Max = +1.000000e+00, RMS = +9.282758e-01
 Test     :    soil_temperature              : Min = +0.000000e+00, Max = +3.105186e+02, RMS = +1.339793e+02
@@ -84,9 +84,9 @@ Test     :    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.4499
 Test     :    mass_content_of_rain_in_atmosp: Min = +0.000000e+00, Max = +6.983535e-02, RMS = +1.072128e-03
 Test     :    mass_content_of_snow_in_atmosp: Min = +0.000000e+00, Max = +1.431376e-01, RMS = +3.534150e-03
 Test     :    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.501658e+00
-Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +9.827405e+01, RMS = +3.155263e+01
-Test     :    effective_radius_of_rain_parti: Min = +0.000000e+00, Max = +5.674342e+02, RMS = +8.625888e+01
-Test     :    effective_radius_of_snow_parti: Min = +0.000000e+00, Max = +5.747690e+02, RMS = +9.292218e+01
+Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +9.852727e+01, RMS = +3.163812e+01
+Test     :    effective_radius_of_rain_parti: Min = +0.000000e+00, Max = +6.799390e+02, RMS = +5.341766e+02
+Test     :    effective_radius_of_snow_parti: Min = +0.000000e+00, Max = +6.913910e+02, RMS = +5.348534e+02
 Test     :    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.108066e-01
 Test     :    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
 Test     :    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
@@ -98,7 +98,7 @@ Test     :    surface_temperature_where_snow: Min = +2.116139e+02, Max = +2.8000
 Test     :    surface_snow_thickness        : Min = +0.000000e+00, Max = +1.000000e+15, RMS = +2.073261e+14
 Test     :    vegetation_area_fraction      : Min = +0.000000e+00, Max = +8.667599e-01, RMS = +2.000949e-01
 Test     :    surface_wind_speed            : Min = +1.543586e-04, Max = +6.755239e+01, RMS = +9.515480e+00
-Test     :    surface_wind_from_direction   : Min = +2.780543e-01, Max = +3.600000e+02, RMS = +2.168674e+02
+Test     :    surface_wind_from_direction   : Min = +2.780543e-01, Max = +3.599916e+02, RMS = +2.168674e+02
 Test     :    leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
 Test     :    volume_fraction_of_condensed_w: Min = +2.588957e-02, Max = +1.000000e+00, RMS = +9.282758e-01
 Test     :    soil_temperature              : Min = +0.000000e+00, Max = +3.105186e+02, RMS = +1.339793e+02

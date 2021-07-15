@@ -158,13 +158,13 @@ Test     : Analysis mean :
 Test     :  -----------------------------------------------------------------------------------------------
 Test     :  State print | number of fields = 8 | cube sphere face size: C12
 Test     :    ua                            : Min = -4.533925e+01, Max = +9.395765e+01, RMS = +1.645288e+01
-Test     :    va                            : Min = -5.498630e+01, Max = +6.551181e+01, RMS = +8.248322e+00
-Test     :    T                             : Min = +1.843354e+02, Max = +3.082446e+02, RMS = +2.484119e+02
+Test     :    va                            : Min = -5.498630e+01, Max = +6.551181e+01, RMS = +8.248327e+00
+Test     :    T                             : Min = +1.843349e+02, Max = +3.082446e+02, RMS = +2.484119e+02
 Test     :    DELP                          : Min = +4.424700e+01, Max = +3.726002e+03, RMS = +1.939885e+03
-Test     :    sphum                         : Min = +5.096305e-08, Max = +1.888146e-02, RMS = +4.733658e-03
-Test     :    ice_wat                       : Min = +0.000000e+00, Max = +2.265190e-04, RMS = +1.199293e-05
-Test     :    liq_wat                       : Min = +0.000000e+00, Max = +5.681655e-04, RMS = +2.347474e-05
-Test     :    o3mr                          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608186e-06
+Test     :    sphum                         : Min = +5.096306e-08, Max = +1.888146e-02, RMS = +4.733665e-03
+Test     :    ice_wat                       : Min = +0.000000e+00, Max = +2.265190e-04, RMS = +1.199273e-05
+Test     :    liq_wat                       : Min = +0.000000e+00, Max = +5.681655e-04, RMS = +2.347347e-05
+Test     :    o3mr                          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608185e-06
 Test     :  -----------------------------------------------------------------------------------------------
 Test     : H(x) for member 1:
 Test     : Radiosonde nobs= 2 Min=-7.20163, Max=-2.78551, RMS=5.45997

@@ -939,9 +939,9 @@ fv3jedi_add_test( NAME    hofx_fv3lm
 # H(x) when ROPP is enabled
 # -------------------------
 if( ${ropp-ufo_FOUND} )
-fv3jedi_add_test( NAME    hofx_gnssro_ropp
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-1 0)
+#fv3jedi_add_test( NAME    hofx_gnssro_ropp
+#                  EXE     fv3jedi_hofx.x
+#                  TOL     1e-1 0)
 endif()
 
 # H(x) no model
@@ -1218,7 +1218,7 @@ fv3jedi_add_test( NAME         hyb-3dvar_gfs
 
 fv3jedi_add_test( NAME         hyb-3dvar_geos
                   EXE          fv3jedi_var.x
-                  TOL          1.0e-1 0
+                  TOL          1.0e-1 3
                   TEST_DEPENDS bumpparameters_nicas_geos
                   TIER    2 )
 

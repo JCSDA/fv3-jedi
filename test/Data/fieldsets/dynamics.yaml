@@ -239,9 +239,9 @@ Fields:
     Units: m
     IOFile: core
 
-  - FieldIONames: [phis, PHIS, surface_geopotential_height]
+  - FieldIONames: [phis, PHIS, sfc_geopotential_height_times_grav]
     FieldName: phis
-    LongName: surface_geopotential_height
+    LongName: sfc_geopotential_height_times_grav
     Units: m
     Levels: 1
     IOFile: core
@@ -516,7 +516,7 @@ Fields:
     Units: kgm-3
     IOFile: core
 
-  - FieldIONames: [zorl, surface_roughness_length]
+  - FieldIONames: [zorl]
     FieldName: zorl
     LongName: surface_roughness_length
     Units: cm

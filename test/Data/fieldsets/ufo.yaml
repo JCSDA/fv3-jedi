@@ -24,11 +24,15 @@ Fields:
     Levels: half
 
   - FieldName: height
-    Units: none
+    Units: m
     Levels: full
 
   - FieldName: surface_altitude
-    Units: none
+    Units: m
+    Levels: 1
+
+  - FieldName: surface_geopotential_height
+    Units: m
     Levels: 1
 
   - FieldName: humidity_mixing_ratio
@@ -170,6 +174,10 @@ Fields:
     Units: none
     Levels: 1
     Kind: integer
+
+  - FieldName: surface_roughness_length
+    Units: m
+    Levels: 1
 
   - FieldName: wind_reduction_factor_at_10m
     Units: none

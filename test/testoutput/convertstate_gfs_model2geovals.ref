@@ -40,7 +40,7 @@ Test     :    humidity_mixing_ratio         : Min = +7.329005e-05, Max = +1.9225
 Test     :    mass_content_of_cloud_liquid_w: Min = +0.000000e+00, Max = +2.075990e-01, RMS = +5.805342e-03
 Test     :    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.858391e-01, RMS = +3.907963e-03
 Test     :    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.946336e+00
-Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.036257e+02, RMS = +3.405846e+01
+Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.037510e+02, RMS = +3.418224e+01
 Test     :    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.228507e-01
 Test     :    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
 Test     :    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
@@ -76,7 +76,7 @@ Test     :    humidity_mixing_ratio         : Min = +7.329005e-05, Max = +1.9225
 Test     :    mass_content_of_cloud_liquid_w: Min = +0.000000e+00, Max = +2.075990e-01, RMS = +5.805342e-03
 Test     :    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.858391e-01, RMS = +3.907963e-03
 Test     :    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.946336e+00
-Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.036257e+02, RMS = +3.405846e+01
+Test     :    effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.037510e+02, RMS = +3.418224e+01
 Test     :    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.228507e-01
 Test     :    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
 Test     :    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00

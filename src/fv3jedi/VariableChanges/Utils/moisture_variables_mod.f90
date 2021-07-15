@@ -200,7 +200,11 @@ if( have_qr ) then
           tem1 = grav/rdry
           wc_in_g_m3 = 1000.0_kind_real * tem1 * qr_ade(i,j,k) * (p(i,j,k)/delp(i,j,k)) &
                              /t(i,j,k) * (1.0_kind_real + zvir * max(q(i,j,k),0.0_kind_real))
-          xqq = log10(wc_in_g_m3)
+          if (wc_in_g_m3 .ne. 0.0_kind_real) then
+            xqq = log10(wc_in_g_m3)
+          else
+            xqq = 0.0_kind_real
+          endif
           qr_efr(i,j,k) = 7.934_kind_real*xqq*xqq*xqq + 90.858_kind_real*xqq*xqq &
                         + 387.807_kind_real*xqq + 679.939_kind_real
           qr_efr(i,j,k) = max(qr_efr(i,j,k), 100.0_kind_real)
@@ -226,7 +230,11 @@ if( have_qs ) then
           tem1 = grav/rdry
           wc_in_g_m3 = 1000.0_kind_real * tem1 * qs_ade(i,j,k) * (p(i,j,k)/delp(i,j,k)) &
                              /t(i,j,k) * (1.0_kind_real + zvir * max(q(i,j,k),0.0_kind_real))
-          xqq = log10(wc_in_g_m3)
+          if (wc_in_g_m3 .ne. 0.0_kind_real) then
+            xqq = log10(wc_in_g_m3)
+          else
+            xqq = 0.0_kind_real
+          endif
           qs_efr(i,j,k) = 9.33_kind_real*xqq*xqq*xqq +  84.779_kind_real*xqq*xqq &
                         + 351.1345_kind_real*xqq + 691.391_kind_real !Liu DDA_type5
           qs_efr(i,j,k) = max(qs_efr(i,j,k), 100.0_kind_real)

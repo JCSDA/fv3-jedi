@@ -294,6 +294,7 @@ do jj = geom%jsc, geom%jec
       !Interpolate lowest level winds to observation location
       uu5 = u_srf
       vv5 = v_srf
+      windscale = 1.0_kind_real
 
       sfc_speed = f10*sqrt(uu5*uu5+vv5*vv5)
       wind10    = sfc_speed
