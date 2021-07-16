@@ -18,6 +18,7 @@ module fv3jedi_geom_iter_mod
   public :: fv3jedi_geom_iter_registry
   public :: fv3jedi_geom_iter_setup, fv3jedi_geom_iter_clone, fv3jedi_geom_iter_equals
   public :: fv3jedi_geom_iter_current, fv3jedi_geom_iter_next
+  public :: fv3jedi_geom_iter_orography
 
   type :: fv3jedi_geom_iter
     type(fv3jedi_geom), pointer :: geom => null() !< Geometry
@@ -123,6 +124,29 @@ contains
     lon = rad2deg*lon
 
   end subroutine fv3jedi_geom_iter_current
+
+  ! ------------------------------------------------------------------------------
+  !> Get geometry iterator current lat/lon
+  subroutine fv3jedi_geom_iter_orography(self, oro)
+
+    ! Passed variables
+    type(fv3jedi_geom_iter), intent( in) :: self !< Geometry iterator
+    real(kind_real),    intent(out) :: oro  !< Orography
+
+    ! Check iind/jind
+    if (self%iind == -1 .AND. self%jind == -1) then
+      ! special case of {-1,-1} means end of the grid
+      oro = self%geom%orography(self%geom%iec,self%geom%jec)
+    elseif (self%iind < self%geom%isc .OR. self%iind > self%geom%iec .OR. &
+            self%jind < self%geom%jsc .OR. self%jind > self%geom%jec) then
+      ! outside of the grid
+      call abor1_ftn('fv3jedi_geom_iter_orography: iterator out of bounds')
+    else
+      ! inside of the grid
+      oro = self%geom%orography(self%iind,self%jind)
+    endif
+
+  end subroutine fv3jedi_geom_iter_orography
 
   ! ------------------------------------------------------------------------------
   !> Update geometry iterator to next point

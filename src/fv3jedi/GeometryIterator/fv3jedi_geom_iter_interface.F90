@@ -119,6 +119,25 @@ contains
   end subroutine fv3jedi_geom_iter_current_c
 
   ! ------------------------------------------------------------------------------
+  !> Get geometry iterator current orography
+  subroutine fv3jedi_geom_iter_orography_c(c_key_self, c_oro) bind(c, name='fv3jedi_geom_iter_orography_f90')
+
+    ! Passed variables
+    integer(c_int), intent(   in) :: c_key_self !< Geometry iterator
+    real(c_double), intent(inout) :: c_oro      !< Orography
+
+    ! Local variables
+    type(fv3jedi_geom_iter), pointer :: self
+
+    ! Interface
+    call fv3jedi_geom_iter_registry%get(c_key_self, self)
+
+    ! Call Fortran
+    call fv3jedi_geom_iter_orography(self, c_oro)
+
+  end subroutine fv3jedi_geom_iter_orography_c
+
+  ! ------------------------------------------------------------------------------
   !> Update geometry iterator to next point
   subroutine fv3jedi_geom_iter_next_c(c_key_self) bind(c, name='fv3jedi_geom_iter_next_f90')
 

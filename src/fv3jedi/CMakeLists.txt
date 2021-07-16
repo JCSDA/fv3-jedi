@@ -56,6 +56,8 @@ list( APPEND fv3jedi_src_files
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h
+  ObsLocalization/instantiateObsLocFactory.h
+  ObsLocalization/ObsLocBrasnett99.h
   State/State.cc
   State/State.h
   State/State.interface.h

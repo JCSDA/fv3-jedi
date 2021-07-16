@@ -136,6 +136,7 @@ list( APPEND fv3jedi_test_input
   testinput/model_ufs.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
+  testinput/obslocalization.yaml
   testinput/state_geos_aerosol_ext.yaml
   testinput/state_geos_aerosol.yaml
   testinput/state_geos.yaml
@@ -681,6 +682,10 @@ ecbuild_add_executable( TARGET  test_fv3jedi_model.x
                         SOURCES mains/TestModel.cc
                         LIBS    fv3jedi )
 
+ecbuild_add_executable( TARGET  test_fv3jedi_obslocalization.x
+                        SOURCES mains/TestObsLocalization.cc
+                        LIBS    fv3jedi )
+
 ecbuild_add_executable( TARGET  test_fv3jedi_state.x
                         SOURCES mains/TestState.cc
                         LIBS    fv3jedi )
@@ -1147,6 +1152,12 @@ fv3jedi_add_test( NAME         lgetkf
 fv3jedi_add_test( NAME         letkf_snow
                   EXE          fv3jedi_letkf.x
                   TOL          1.0e-2 0 )
+
+# Obs Localizaton Test
+# --------------
+fv3jedi_add_test( NAME         obslocalization
+                  EXE          test_fv3jedi_obslocalization.x
+                  NOCOMPARE )
 
 # EnsHofx tests
 # -------------

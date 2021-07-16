@@ -40,6 +40,7 @@ class GeometryIterator: public std::iterator<std::forward_iterator_tag,
   bool operator!=(const GeometryIterator &) const;
   eckit::geometry::Point2 operator*() const;
   GeometryIterator& operator++();
+  double getOrography() const;
 
 // Utilities
   F90iter & toFortran() {return keyIter_;}

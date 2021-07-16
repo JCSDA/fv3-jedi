@@ -26,6 +26,7 @@ extern "C" {
   void fv3jedi_geom_iter_equals_f90(const F90iter &, const F90iter&, int &);
   void fv3jedi_geom_iter_current_f90(const F90iter &, double &, double &);
   void fv3jedi_geom_iter_next_f90(const F90iter &);
+  void fv3jedi_geom_iter_orography_f90(const F90iter &, double &);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------

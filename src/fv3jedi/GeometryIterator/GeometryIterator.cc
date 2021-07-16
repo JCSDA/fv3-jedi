@@ -72,6 +72,14 @@ GeometryIterator& GeometryIterator::operator++() {
 
 // -----------------------------------------------------------------------------
 
+double GeometryIterator::getOrography() const {
+  double orography;
+  fv3jedi_geom_iter_orography_f90(keyIter_, orography);
+  return orography;
+}
+
+// -----------------------------------------------------------------------------
+
 void GeometryIterator::print(std::ostream & os) const {
   double lat, lon;
   fv3jedi_geom_iter_current_f90(keyIter_, lon, lat);
