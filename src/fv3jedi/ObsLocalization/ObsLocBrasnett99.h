@@ -24,7 +24,6 @@
 #include "eckit/geometry/Point3.h"
 #include "eckit/geometry/UnitSphere.h"
 
-#include "ioda/ObsDataVector.h"
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
 
@@ -48,11 +47,10 @@ class ObsLocBrasnett99: public ufo::ObsLocSOAR<MODEL> {
  public:
   ObsLocBrasnett99(const eckit::Configuration &, const ioda::ObsSpace &);
 
-  /// compute localization and save localization values in \p obsvector and
-  /// localization flags (1: outside of localization; 0: inside localization area)
-  /// in \p outside
-  void computeLocalization(const GeometryIterator_ &, ioda::ObsDataVector<int> & outside,
-                           ioda::ObsVector & obsvector) const override;
+  /// compute localization and save localization values in \p locvector
+  /// (missing values for observations outside of localization)
+  void computeLocalization(const GeometryIterator_ &,
+                           ioda::ObsVector & locvector) const override;
 
  private:
   void print(std::ostream &) const;
@@ -76,11 +74,10 @@ ObsLocBrasnett99<MODEL>::ObsLocBrasnett99(const eckit::Configuration & config,
 
 template<typename MODEL>
 void ObsLocBrasnett99<MODEL>::computeLocalization(const GeometryIterator_ & geoiter,
-                                            ioda::ObsDataVector<int> & outside,
-                                            ioda::ObsVector & locvector) const {
+                                                  ioda::ObsVector & locvector) const {
   oops::Log::trace() << "ObsLocBrasnett99::computeLocalization" << std::endl;
   // compute horizontal localization using SOAR
-  ufo::ObsLocSOAR<MODEL>::computeLocalization(geoiter, outside, locvector);
+  ufo::ObsLocSOAR<MODEL>::computeLocalization(geoiter, locvector);
   const std::vector<int> & localobs = ufo::ObsLocalization<MODEL>::localobs();
 
   // retrieve orography for this grid point
