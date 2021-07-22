@@ -5,6 +5,9 @@
 
 module fv3jedi_fields_mod
 
+! atlas
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real
+
 ! fckit
 use fckit_mpi_module
 use fckit_configuration_module
@@ -15,7 +18,8 @@ use oops_variables_mod
 use string_utils
 
 ! fv3jedi
-use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, hasfield
+use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
+                                     hasfield, short_name_to_fv3jedi_name
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_io_gfs_mod,        only: fv3jedi_io_gfs
@@ -53,6 +57,9 @@ type :: fv3jedi_fields
     procedure, public :: accumul
     procedure, public :: serialize
     procedure, public :: deserialize
+    procedure, public :: set_atlas
+    procedure, public :: to_atlas
+    procedure, public :: from_atlas
 
     ! Public array/field accessor functions
     procedure, public :: has_field => has_field_
@@ -74,29 +81,21 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, geom, vars, increment)
+subroutine create(self, geom, vars)
 
   class(fv3jedi_fields), intent(inout) :: self
   type(fv3jedi_geom),    intent(in)    :: geom
   type(oops_variables),  intent(in)    :: vars
-  logical, optional,     intent(in)    :: increment
 
   integer :: var, fc
   type(field_metadata) :: fmd
-  logical :: is_increment, field_fail
+  logical :: field_fail
 
   ! Allocate fields structure
   ! -------------------------
   self%nf = vars%nvars()
   allocate(self%fields(self%nf))
 
-  ! Check if this is an increment rather than state
-  ! -----------------------------------------------
-  if (.not. present(increment)) then
-    is_increment = .false.
-  else
-    is_increment = increment
-  endif
 
   ! Loop through and allocate actual fields
   ! ---------------------------------------
@@ -132,11 +131,7 @@ subroutine create(self, geom, vars, increment)
     self%fields(fc)%lalloc = .true.
 
     self%fields(fc)%short_name   = trim(fmd%field_io_name)
-    if (is_increment) then
-      self%fields(fc)%long_name    = "increment_of_"//trim(fmd%long_name)
-    else
-      self%fields(fc)%long_name    = trim(fmd%long_name)
-    endif
+    self%fields(fc)%long_name    = trim(fmd%long_name)
     self%fields(fc)%fv3jedi_name = trim(fmd%field_name)
     self%fields(fc)%units        = trim(fmd%units)
     self%fields(fc)%io_file      = trim(fmd%io_file)
@@ -511,6 +506,142 @@ do var = 1, self%nf
 enddo
 
 end subroutine deserialize
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine set_atlas(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(in)    :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(inout) :: afieldset
+
+integer :: jvar
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+character(len=field_clen) :: fv3jedi_name
+
+
+do jvar = 1,vars%nvars()
+
+  ! Get fv3-jedi field
+  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call self%get_field(fv3jedi_name, field)
+
+  ! Create Atlas field
+  afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
+                                             levels=field%npz )
+
+  ! Add to fieldsets
+  call afieldset%add(afield)
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+end subroutine set_atlas
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine to_atlas(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(in)    :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(inout) :: afieldset
+
+integer :: jvar, jl
+real(kind=kind_real), pointer :: real_ptr_2(:,:)
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+character(len=field_clen) :: fv3jedi_name
+
+do jvar = 1,vars%nvars()
+
+  ! Get fv3-jedi field
+  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call self%get_field(fv3jedi_name, field)
+
+  ! Get/create Atlas field
+  if (afieldset%has_field(field%long_name)) then
+
+    ! Get Atlas field
+    afield = afieldset%field(field%long_name)
+
+  else
+
+    ! Create field
+    afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
+                                               levels=field%npz )
+
+    ! Add to fieldsets
+    call afieldset%add(afield)
+
+  endif
+
+  ! Get pointer to Atlas data
+  call afield%data(real_ptr_2)
+
+  ! Copy the data
+  do jl=1, field%npz
+    real_ptr_2(jl,:) = pack(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),.true.)
+  enddo
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+end subroutine to_atlas
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine from_atlas(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(inout) :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(in)    :: afieldset
+
+integer :: jvar, jl
+real(kind=kind_real), pointer :: real_ptr_2(:,:)
+logical :: umask(geom%isc:geom%iec,geom%jsc:geom%jec)
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+character(len=field_clen) :: fv3jedi_name
+
+
+! Initialization
+umask = .true.
+
+do jvar = 1,vars%nvars()
+
+  ! Get fv3-jedi field
+  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call self%get_field(fv3jedi_name, field)
+
+  ! Get Atlas field
+  afield = afieldset%field(field%long_name)
+
+  ! Get pointer to Atlas field data
+  call afield%data(real_ptr_2)
+
+  ! Copy to fv3-jedi field
+  do jl=1, field%npz
+    field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl) = unpack(real_ptr_2(jl,:), umask, &
+                                                field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl))
+  enddo
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+end subroutine from_atlas
 
 ! --------------------------------------------------------------------------------------------------
 

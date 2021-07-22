@@ -18,7 +18,7 @@ use fv3jedi_kinds_mod, only: kind_real
 implicit none
 private
 public :: fv3jedi_field, hasfield, get_field, put_field, checksame, copy_subset, &
-          long_name_to_fv3jedi_name
+          long_name_to_fv3jedi_name, short_name_to_fv3jedi_name
 
 ! These are the same methods as used in fv3jedi_fields but with argument being a list of individual
 ! fields instead of the fv3jedi_fields class
@@ -37,7 +37,7 @@ type :: fv3jedi_field
  logical :: lalloc = .false.
  character(len=field_clen) :: short_name = "null"   !Short name (to match file name)
  character(len=field_clen) :: fv3jedi_name = "null" !Common name
- character(len=field_clen) :: long_name = "null"    !More descriptive name
+ character(len=field_clen) :: long_name = "null"    !WMO standard name
  character(len=field_clen) :: units = "null"        !Units for the field
  character(len=field_clen) :: io_file = "null"      !Which restart to read/write if not the default
  logical                   :: tracer = .false.      !Whether field is classified as tracer (pos. def.)
@@ -264,6 +264,28 @@ end subroutine copy_subset
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine short_name_to_fv3jedi_name(fields, short_name, fv3jedi_name)
+
+type(fv3jedi_field), intent(in)  :: fields(:)
+character(len=*),    intent(in)  :: short_name
+character(len=*),    intent(out) :: fv3jedi_name
+
+integer :: n
+
+do n = 1, size(fields)
+  if (trim(short_name) == trim(fields(n)%short_name)) then
+    fv3jedi_name = trim(fields(n)%fv3jedi_name)
+    return
+  endif
+enddo
+
+call abor1_ftn("fv3jedi_field_mod.short_name_to_fv3jedi_name short_name "//trim(short_name)//&
+               " not found in fields.")
+
+end subroutine short_name_to_fv3jedi_name
+
+! --------------------------------------------------------------------------------------------------
+
 subroutine long_name_to_fv3jedi_name(fields, long_name, fv3jedi_name)
 
 type(fv3jedi_field), intent(in)  :: fields(:)
@@ -274,14 +296,6 @@ integer :: n
 
 do n = 1, size(fields)
   if (trim(long_name) == trim(fields(n)%long_name)) then
-    fv3jedi_name = trim(fields(n)%fv3jedi_name)
-    return
-  endif
-enddo
-
-! Try with increment_of_ prepended to long_name
-do n = 1, size(fields)
-  if ("increment_of_"//trim(long_name) == trim(fields(n)%long_name)) then
     fv3jedi_name = trim(fields(n)%fv3jedi_name)
     return
   endif

@@ -40,14 +40,14 @@ bump:
 # --------------------
   forced_radii: 1
   rh:
-    sulf: [3000000.0]
+    mass_fraction_of_sulfate_in_air: [3000000.0]
   rv:
-    sulf: [1.5]
+    mass_fraction_of_sulfate_in_air: [1.5]
 # Write C matrix
 # --------------
   write_cmat: 0
   io_keys:
-  - "sulf-sulf"
+  - "mass_fraction_of_sulfate_in_air-mass_fraction_of_sulfate_in_air"
   io_values:
   - "fixed_3000km_1.5"
 output:

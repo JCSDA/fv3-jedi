@@ -5,7 +5,6 @@
 
 module fv3jedi_increment_mod
 
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real
 use iso_c_binding
 use fckit_configuration_module, only: fckit_configuration
 use datetime_mod
@@ -35,9 +34,6 @@ type, extends(fv3jedi_fields) :: fv3jedi_increment
 contains
   procedure, public :: ones
   procedure, public :: random
-  procedure, public :: set_atlas
-  procedure, public :: to_atlas
-  procedure, public :: from_atlas
   procedure, public :: self_add
   procedure, public :: self_schur
   procedure, public :: self_sub
@@ -98,141 +94,6 @@ do var = 1,self%nf
 enddo
 
 end subroutine random
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine set_atlas(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_increment), intent(in)    :: self
-type(fv3jedi_geom),       intent(in)    :: geom
-type(oops_variables),     intent(in)    :: vars
-type(atlas_fieldset),     intent(inout) :: afieldset
-
-integer :: jvar, jf
-logical :: var_found
-type(atlas_field) :: afield
-
-do jvar = 1,vars%nvars()
-  var_found = .false.
-  do jf = 1,self%nf
-    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      if (.not.afieldset%has_field(vars%variable(jvar))) then
-        ! Create field
-        afield = geom%afunctionspace%create_field(name=vars%variable(jvar),&
-                 kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
-
-        ! Add field
-        call afieldset%add(afield)
-
-        ! Release pointer
-        call afield%final()
-      endif
-
-      ! Set flag
-      var_found = .true.
-      exit
-    endif
-  enddo
-  if (.not.var_found) call abor1_ftn('Field '//trim(vars%variable(jvar))//' not found in increment')
-enddo
-
-end subroutine set_atlas
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine to_atlas(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_increment), intent(in)    :: self
-type(fv3jedi_geom),       intent(in)    :: geom
-type(oops_variables),     intent(in)    :: vars
-type(atlas_fieldset),     intent(inout) :: afieldset
-
-integer :: jvar, jf, jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
-logical :: var_found
-type(atlas_field) :: afield
-
-do jvar = 1,vars%nvars()
-  var_found = .false.
-  do jf = 1,self%nf
-    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      if (afieldset%has_field(vars%variable(jvar))) then
-        ! Get field
-        afield = afieldset%field(vars%variable(jvar))
-      else
-        ! Create field
-        afield = geom%afunctionspace%create_field(name=vars%variable(jvar),&
-                 kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
-
-        ! Add field
-        call afieldset%add(afield)
-      endif
-
-      ! Copy data
-      call afield%data(real_ptr_2)
-      do jl=1,self%fields(jf)%npz
-        real_ptr_2(jl,:) = pack(self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),.true.)
-      enddo
-
-      ! Release pointer
-      call afield%final()
-
-      ! Set flag
-      var_found = .true.
-      exit
-    endif
-  enddo
-  if (.not.var_found) call abor1_ftn('Field '//trim(vars%variable(jvar))//' not found in increment')
-enddo
-
-end subroutine to_atlas
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine from_atlas(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_geom),       intent(in)    :: geom
-type(oops_variables),     intent(in)    :: vars
-type(atlas_fieldset),     intent(in)    :: afieldset
-
-integer :: jvar, jf, jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
-logical :: umask(geom%isc:geom%iec,geom%jsc:geom%jec),var_found
-type(atlas_field) :: afield
-
-! Initialization
-umask = .true.
-
-do jvar = 1,vars%nvars()
-  var_found = .false.
-  do jf = 1,self%nf
-    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      ! Get field
-      afield = afieldset%field(vars%variable(jvar))
-
-      ! Copy data
-      call afield%data(real_ptr_2)
-      do jl=1,self%fields(jf)%npz
-        self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl) = unpack(real_ptr_2(jl,:), &
-      & umask,self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl))
-      enddo
-
-      ! Release pointer
-      call afield%final()
-
-      ! Set flag
-      var_found = .true.
-      exit
-    endif
-  enddo
-  if (.not.var_found) call abor1_ftn('Field '//trim(vars%variable(jvar))//' not found in increment')
-enddo
-
-end subroutine from_atlas
 
 ! --------------------------------------------------------------------------------------------------
 

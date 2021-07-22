@@ -17,14 +17,14 @@ cost function:
           mpicom: 2
           verbosity: main
           io_keys:
-          - "ua-ua"
-          - "va-va"
-          - "t-t"
-          - "ps-ps"
-          - "q-q"
-          - "qi-qi"
-          - "ql-ql"
-          - "o3ppmv-o3ppmv"
+          - "eastward_wind-eastward_wind"
+          - "northward_wind-northward_wind"
+          - "air_temperature-air_temperature"
+          - "surface_pressure-surface_pressure"
+          - "specific_humidity-specific_humidity"
+          - "cloud_liquid_ice-cloud_liquid_ice"
+          - "cloud_liquid_water-cloud_liquid_water"
+          - "mole_fraction_of_ozone_in_air-mole_fraction_of_ozone_in_air"
           io_values:
           - "fixed_2500km_0.3"
           - "fixed_2500km_0.3"

@@ -37,17 +37,17 @@ bump:
 # --------------------
   forced_radii: 1
   rh:
-    T: [2500000.0]
-    ps: [2500000.0]
-  rv: 
-    T: [0.3]
-    ps: [0.3]
+    air_temperature: [2500000.0]
+    surface_pressure: [2500000.0]
+  rv:
+    air_temperature: [0.3]
+    surface_pressure: [0.3]
 # Write C matrix
 # --------------
   write_cmat: 0
   io_keys:
-  - "T-T"
-  - "ps-ps"
+  - "air_temperature-air_temperature"
+  - "surface_pressure-surface_pressure"
   io_values:
   - "fixed_2500km_0.3"
   - "fixed_2500km"

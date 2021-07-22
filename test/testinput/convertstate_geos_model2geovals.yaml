@@ -31,6 +31,7 @@ variable changes:
 
   - variable change: Model2GeoVaLs
     tropopause pressure method: thompson
+    cloud effective radius method: gmao
     input variables: &inputvars [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN,qr,qs,
                                  PHIS,frocean,frlake,frseaice,
                                  vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]

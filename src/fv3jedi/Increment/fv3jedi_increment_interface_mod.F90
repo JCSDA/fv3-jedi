@@ -60,7 +60,7 @@ call fv3jedi_increment_registry%add(c_key_self)
 call fv3jedi_increment_registry%get(c_key_self, self)
 
 vars = oops_variables(c_vars)
-call self%create(geom, vars, .true.)
+call self%create(geom, vars)
 
 end subroutine fv3jedi_increment_create_c
 
