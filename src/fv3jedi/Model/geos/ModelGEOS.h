@@ -11,8 +11,8 @@
 #include <ostream>
 #include <string>
 
-#include "oops/base/ModelBase.h"
 #include "oops/base/Variables.h"
+#include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
@@ -37,8 +37,8 @@ namespace fv3jedi {
  *  FV3JEDI nonlinear model definition and configuration parameters.
  */
 
-class ModelGEOS: public oops::ModelBase<Traits>,
-                        private util::ObjectCounter<ModelGEOS> {
+class ModelGEOS: public oops::interface::ModelBase<Traits>,
+                 private util::ObjectCounter<ModelGEOS> {
  public:
   static const std::string classname() {return "fv3jedi::ModelGEOS";}
 

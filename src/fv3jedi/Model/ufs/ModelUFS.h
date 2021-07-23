@@ -11,8 +11,8 @@
 #include <ostream>
 #include <string>
 
-#include "oops/base/ModelBase.h"
 #include "oops/base/Variables.h"
+#include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
@@ -33,8 +33,8 @@ namespace fv3jedi {
 
 // -----------------------------------------------------------------------------
 
-class ModelUFS: public oops::ModelBase<Traits>,
-                        private util::ObjectCounter<ModelUFS> {
+class ModelUFS: public oops::interface::ModelBase<Traits>,
+                private util::ObjectCounter<ModelUFS> {
  public:
   static const std::string classname() {return "fv3jedi::ModelUFS";}
 

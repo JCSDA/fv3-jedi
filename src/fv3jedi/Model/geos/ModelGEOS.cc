@@ -24,7 +24,7 @@
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
-static oops::ModelMaker<Traits, ModelGEOS> makermodel_("GEOS");
+static oops::interface::ModelMaker<Traits, ModelGEOS> makermodel_("GEOS");
 // -----------------------------------------------------------------------------
 ModelGEOS::ModelGEOS(const Geometry & resol,
                             const eckit::Configuration & mconf)

@@ -22,7 +22,7 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
+static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & mconf)
   : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
