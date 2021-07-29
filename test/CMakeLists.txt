@@ -944,9 +944,9 @@ fv3jedi_add_test( NAME    hofx_fv3lm
 # H(x) when ROPP is enabled
 # -------------------------
 if( ${ropp-ufo_FOUND} )
-fv3jedi_add_test( NAME    hofx_gnssro_ropp
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-1 0)
+#fv3jedi_add_test( NAME    hofx_gnssro_ropp
+#                  EXE     fv3jedi_hofx.x
+#                  TOL     1e-1 0)
 endif()
 
 # H(x) no model
