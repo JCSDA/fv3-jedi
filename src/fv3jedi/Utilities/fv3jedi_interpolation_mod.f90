@@ -178,7 +178,7 @@ do var = 1,nf
     ! Use BUMP
     call self%bumpinterp%apply(fields_in(var)%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:fields_in(var)%npz), &
        & fields_ou(var)%array(:,:,1:fields_ou(var)%npz), &
-       & nn=(fields_in(var)%integerfield .or. trim(fields_in(var)%space) == 'direction'))
+       & .not. trim(fields_in(var)%interp_type) == 'default')
 
   else
 
@@ -198,16 +198,15 @@ do var = 1,nf
       enddo
 
       ! Interpolate
-      if (.not. fields_in(var)%integerfield .and. trim(fields_in(var)%space) == 'magnitude' .and. &
-          trim(self%interp_type) == 'barycent') then
+      if ( trim(fields_in(var)%interp_type) == 'default' .and. trim(self%interp_type) == 'barycent') then
 
         call self%unsinterp%apply(field_in, field_ou)
 
-      elseif (fields_in(var)%integerfield) then
+      elseif ( trim(fields_in(var)%interp_type) == 'integer' ) then
 
         call unsinterp_integer_apply(self%unsinterp, field_in, field_ou)
 
-      elseif (trim(fields_in(var)%space) == 'direction') then
+      elseif ( trim(fields_in(var)%interp_type) == 'nearest' ) then
 
         call unsinterp_nearest_apply(self%unsinterp, field_in, field_ou)
 

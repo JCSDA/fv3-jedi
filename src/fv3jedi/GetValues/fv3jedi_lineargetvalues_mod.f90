@@ -95,8 +95,7 @@ do gv = 1, geovals%nvar
 
   ! Adjoint of interpolation
   ! ------------------------
-  if ( trim(self%interp_method) == 'bump' .and. &
-       .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
+  if ( trim(self%interp_method) == 'bump' .and. trim(field%interp_type) == "default" ) then 
 
     ! Interpolate
     call self%bumpinterp%apply_ad(geovals_all(:,1:field%npz),field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz))
@@ -109,11 +108,12 @@ do gv = 1, geovals%nvar
 
       ! Conditions for integer and directional fields
       ! ---------------------------------------------
-      if (.not. field%integerfield .and. trim(field%space)=='magnitude') then
+      if ( trim(field%interp_type) == "default" ) then
         call self%unsinterp%apply_ad(field_us, geovals_tmp)
       else
-        call abor1_ftn("fv3jedi_getvalues_mod.fill_geovals: interpolation for this kind of "// &
-                       "field is not supported. FieldName: "// trim(field%fv3jedi_name))
+        call abor1_ftn("fv3jedi_lineargetvalues_mod.fill_geovals: interpolation for this kind of "// &
+                       "field is not supported. FieldName: "// trim(field%fv3jedi_name)// & 
+                       "interp_type"// trim(field%interp_type) ) 
       endif
 
       n = 0

@@ -43,9 +43,11 @@ type :: fv3jedi_field
  logical                   :: tracer = .false.      !Whether field is classified as tracer (pos. def.)
  character(len=field_clen) :: space                 !One of vector, magnitude, direction
  character(len=field_clen) :: staggerloc            !One of center, eastwest, northsouth, corner
+ character(len=field_clen) :: interp_type = "default" ! One of nearest, integer, or default 
+                                                      ! default will take method from geometry
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
- logical :: integerfield = .false.
+ logical :: integerfield = .false.                  !Whether field is an integer
 endtype fv3jedi_field
 
 ! --------------------------------------------------------------------------------------------------

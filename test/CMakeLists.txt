@@ -248,6 +248,7 @@ Data/fieldsets/dynamics.yaml
 Data/fieldsets/lam_cmaq.yaml
 Data/fieldsets/oro_data.yaml
 Data/fieldsets/ufo.yaml
+Data/fieldsets/land.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fieldsets)

@@ -436,6 +436,7 @@ if (read_orog) then
   field_orog(1)%staggerloc   = trim(fmd%stagger_loc)
   field_orog(1)%tracer       = fmd%tracer
   field_orog(1)%integerfield = trim(fmd%array_kind)=='integer'
+  field_orog(1)%interp_type  = trim(fmd%interp_type)
 
 ! read orog into field
   call gfs_orog%read_fields(field_orog, self%domain, self%npz)

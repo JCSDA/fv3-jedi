@@ -35,6 +35,7 @@ type field_metadata
  character(len=clen) :: stagger_loc
  logical :: tracer
  character(len=clen) :: units
+ character(len=clen) :: interp_type
  character(len=clen) :: io_file
 end type field_metadata
 
@@ -46,8 +47,8 @@ end interface
 
 interface
   subroutine c_fields_metadata_get_field(ptr, field_io_name, field_name, array_kind, levels, &
-                                         long_name, space, stagger_loc, tracer, units, io_file) &
-                                         bind(c, name='fields_metadata_get_field_f')
+                                         long_name, space, stagger_loc, tracer, units, interp_type, &
+                                         io_file) bind(c, name='fields_metadata_get_field_f')
     use iso_c_binding
     integer, parameter :: clen = 2048
     type(c_ptr), value :: ptr
@@ -60,6 +61,7 @@ interface
     character(len=1, kind=c_char), intent(inout) :: stagger_loc(clen)
     logical(c_bool),               intent(inout) :: tracer
     character(len=1, kind=c_char), intent(inout) :: units(clen)
+    character(len=1, kind=c_char), intent(inout) :: interp_type(clen)
     character(len=1, kind=c_char), intent(inout) :: io_file(clen)
   end subroutine c_fields_metadata_get_field
 end interface
@@ -96,6 +98,7 @@ character(len=1, kind=c_char), allocatable :: long_name(:)
 character(len=1, kind=c_char), allocatable :: space(:)
 character(len=1, kind=c_char), allocatable :: stagger_loc(:)
 character(len=1, kind=c_char), allocatable :: units(:)
+character(len=1, kind=c_char), allocatable :: interp_type(:)
 character(len=1, kind=c_char), allocatable :: io_file(:)
 
 character(len=clen, kind=c_char) :: field_name_
@@ -121,6 +124,7 @@ allocate(long_name(clen))
 allocate(space(clen))
 allocate(stagger_loc(clen))
 allocate(units(clen))
+allocate(interp_type(clen))
 allocate(io_file(clen))
 
 field_name = c_null_char
@@ -129,11 +133,12 @@ long_name = c_null_char
 space = c_null_char
 stagger_loc = c_null_char
 units = c_null_char
+interp_type = c_null_char
 io_file = c_null_char
 
 ! Get information from C++ object
 call c_fields_metadata_get_field(self%ptr, field_io_name, field_name, array_kind, levels, &
-                                 long_name, space, stagger_loc, tracer, units, io_file )
+                                 long_name, space, stagger_loc, tracer, units, interp_type, io_file )
 
 ! FieldNameIO
 field%field_io_name = ''
@@ -188,6 +193,13 @@ field%units = ''
 do n = 1,clen
   if (units(n) == c_null_char) exit
   field%units(n:n) = units(n)
+enddo
+
+! Interpolation Type
+field%interp_type = ''
+do n = 1,clen
+  if (interp_type(n) == c_null_char) exit
+  field%interp_type(n:n) = interp_type(n)
 enddo
 
 ! IO file name

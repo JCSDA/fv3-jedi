@@ -73,6 +73,10 @@ namespace fv3jedi {
     std::string getUnits() const {return units_;}
     void setUnits(std::string units) {units_ = units;}
 
+    // InterpType
+    std::string getInterpType() const {return interpType_;}
+    void setInterpType(std::string interpType) {interpType_ = interpType;}
+
     // IO file
     std::string getIOFile() const {return io_file_;}
     void setIOFile(std::string io_file) {io_file_ = io_file;}
@@ -107,6 +111,16 @@ namespace fv3jedi {
       }
     }
 
+    // Validity check on interpolation type
+    void checkInterpTypeValid(const std::string fieldIOName, const std::string interpType) const {
+      auto result = std::find(interpTypeVal_.begin(), interpTypeVal_.end(), interpType);
+      if (result == std::end(interpTypeVal_)) {
+        oops::Log::debug() << "Key: " << fieldIOName << " failed due to invalid interType: "
+                           << interpType << ". Options include: " << interpTypeVal_ << std::endl;
+        ABORT("FieldMetadata::checkSpace failed, run again with debug prints");
+      }
+    }
+
     // Validity check on string level
     void checkLevelValid(const std::string fieldIOName, const std::string level) const {
       auto result = std::find(levelVal_.begin(), levelVal_.end(), level);
@@ -134,12 +148,14 @@ namespace fv3jedi {
     std::string space_;
     bool tracer_;
     std::string units_;
+    std::string interpType_;
     std::string io_file_;
 
     const std::vector<std::string> kindVal_ = {"double", "integer"};
     const std::vector<std::string> levelVal_ = {"full", "half"};
     const std::vector<std::string> spaceVal_ = {"vector", "magnitude", "direction"};
     const std::vector<std::string> staggerLocVal_ = {"center", "eastwest", "northsouth", "corner"};
+    const std::vector<std::string> interpTypeVal_ = {"integer", "nearest", "default"};
 
     void print(std::ostream & os) const {
       os << " FieldIOName: " << fieldIOName_ << "\n";
@@ -151,6 +167,7 @@ namespace fv3jedi {
       os << " StaggerLocation: " << staggerLoc_ << "\n";
       os << " Tracer: " << tracer_ << "\n";
       os << " Units: " << units_ << "\n";
+      os << " InterpType: " << interpType_ << "\n";
       os << " IOFile: " << io_file_ << "\n";
     }
   };

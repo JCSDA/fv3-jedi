@@ -139,6 +139,14 @@ subroutine create(self, geom, vars)
     self%fields(fc)%staggerloc   = trim(fmd%stagger_loc)
     self%fields(fc)%tracer       = fmd%tracer
     self%fields(fc)%integerfield = trim(fmd%array_kind)=='integer'
+    ! hard-coding options for direction and integer fields, otherwise use user spec.
+    if ( self%fields(fc)%integerfield ) then 
+      self%fields(fc)%interp_type  = 'integer'
+    elseif (  trim(self%fields(fc)%space) == 'direction' ) then
+      self%fields(fc)%interp_type  = 'nearest'
+    else
+      self%fields(fc)%interp_type  = trim(fmd%interp_type)
+    endif
 
   enddo
 
@@ -284,7 +292,7 @@ else
 
   ! Check if integer interp needed
   do var = 1, self%nf
-    if (other%fields(var)%integerfield) integer_interp = .true.
+    if (trim(other%fields(var)%interp_type) == "integer") integer_interp = .true.
   enddo
 
   call interp%create(geom%interp_method, integer_interp, geom_other, geom)

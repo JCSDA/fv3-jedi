@@ -164,9 +164,7 @@ do gv = 1, geovals%nvar
 
   ! Can optionally interpolate real valued magnitude fields with bump
   ! -----------------------------------------------------------------
-  if ( trim(self%interp_method) == 'bump' .and. &
-       .not.field%integerfield .and. trim(field%space)=='magnitude' ) then
-
+  if ( trim(self%interp_method) == 'bump' .and. trim(field%interp_type) == "default") then
     ! Interpolate
     call self%bumpinterp%apply(field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz),geovals_all(:,1:field%npz))
 
@@ -183,15 +181,16 @@ do gv = 1, geovals%nvar
 
       ! Conditions for integer and directional fields
       ! ---------------------------------------------
-      if (.not. field%integerfield .and. trim(field%space)=='magnitude') then
+      if ( trim(field%interp_type) == "default" ) then 
         call self%unsinterp%apply(field_us, geovals_all(:, jlev))
-      elseif (field%integerfield) then
+      elseif ( trim(field%interp_type) == "integer" ) then
         call unsinterp_integer_apply(self%unsinterp, field_us, geovals_all(:, jlev))
-      elseif (trim(field%space)=='direction') then
+      elseif ( trim(field%interp_type) == "nearest" ) then
         call unsinterp_nearest_apply(self%unsinterp, field_us, geovals_all(:, jlev))
       else
         call abor1_ftn("fv3jedi_getvalues_mod.fill_geovals: interpolation for this kind of "// &
-                       "field is not supported. FieldName: "// trim(field%fv3jedi_name))
+                       "field is not supported. FieldName: "// trim(field%fv3jedi_name)// & 
+                       "interp_type: "//trim(field%interp_type))
       endif
     enddo
 

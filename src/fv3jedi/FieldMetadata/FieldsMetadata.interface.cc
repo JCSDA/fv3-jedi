@@ -25,7 +25,8 @@ namespace fv3jedi {
   void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata, const char fieldIONameC[],
                                    char fieldNameC[], char kindC[], int& levels,
                                    char longNameC[], char spaceC[], char staggerLocC[],
-                                   bool& tracer, char unitsC[], char io_fileC[]) {
+                                   bool& tracer, char unitsC[], char interpTypeC[],
+                                   char io_fileC[]) {
     // Get meta data for requested field
     oops::Log::trace() << "Calling FieldsMetaData.GetField for " << fieldIONameC << std::endl;
     const std::string fieldIOName(fieldIONameC);
@@ -42,6 +43,7 @@ namespace fv3jedi {
     std::string space = fieldMetadata.getSpace();
     std::string staggerLoc = fieldMetadata.getStaggerLoc();
     std::string units = fieldMetadata.getUnits();
+    std::string interpType = fieldMetadata.getInterpType();
     std::string io_file = fieldMetadata.getIOFile();
 
     // Check string lengths
@@ -51,6 +53,7 @@ namespace fv3jedi {
     checkStringLength(space);
     checkStringLength(staggerLoc);
     checkStringLength(units);
+    checkStringLength(interpType);
     checkStringLength(io_file);
 
     // Fill char outputs
@@ -60,6 +63,7 @@ namespace fv3jedi {
     std::copy(space.begin(), space.end(), spaceC);
     std::copy(staggerLoc.begin(), staggerLoc.end(), staggerLocC);
     std::copy(units.begin(), units.end(), unitsC);
+    std::copy(interpType.begin(), interpType.end(), interpTypeC);
     std::copy(io_file.begin(), io_file.end(), io_fileC);
   }
 

@@ -7,7 +7,7 @@ geometry:
   npz: 64
   ntiles: 6
   fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/land.yaml
     - fieldset: Data/fieldsets/ufo.yaml
     - fieldset: Data/fieldsets/oro_data.yaml
   read_orog: true

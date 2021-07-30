@@ -77,6 +77,7 @@ namespace fv3jedi {
     std::string staggerLoc;
     bool tracer;
     std::string units;
+    std::string interpType;
     std::string io_file;
 
     //  List of field sets
@@ -135,6 +136,7 @@ namespace fv3jedi {
           staggerLoc = confFields[jm].getString("StaggerLoc", "center");
           tracer = confFields[jm].getBool("Tracer", false);
           units = confFields[jm].getString("Units");
+          interpType = confFields[jm].getString("InterpType", "default");
           io_file = confFields[jm].getString("IOFile", "default");
 
           // Check for valid choices
@@ -142,6 +144,7 @@ namespace fv3jedi {
           fieldmetadata.checkSpaceValid(fieldIOName, space);
           fieldmetadata.checkStaggerLocValid(fieldIOName, staggerLoc);
           fieldmetadata.checkLevelValid(fieldIOName, levels_str);
+          fieldmetadata.checkInterpTypeValid(fieldIOName, interpType);
 
           // Convert string levels to integer levels
           int levels;
@@ -162,6 +165,7 @@ namespace fv3jedi {
           fieldmetadata.setStaggerLoc(staggerLoc);
           fieldmetadata.setTracer(tracer);
           fieldmetadata.setUnits(units);
+          fieldmetadata.setInterpType(interpType);
           fieldmetadata.setIOFile(io_file);
         }  // End loop over potential field names
       }  // End loop over fields
