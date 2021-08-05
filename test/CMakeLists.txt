@@ -108,6 +108,7 @@ list( APPEND fv3jedi_test_input
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_save_geovals.yaml
   testinput/hofx4d.yaml
+  testinput/hyb-3dvar_bc.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
   testinput/hyb-3dvar_gfs_1obs.yaml
@@ -197,6 +198,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
   testoutput/hofx4d.ref
+  testoutput/hyb-3dvar_bc.ref
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_gfs_0obs.ref
   testoutput/hyb-3dvar_gfs_1obs.ref
@@ -1066,6 +1068,12 @@ endif()
 #fv3jedi_add_test( NAME         hyb-3dvar_gfs_0obs
 #                  EXE          fv3jedi_var.x
 #                  TEST_DEPENDS bumpparameters_nicas_gfs)
+
+# 3DVar with bias correction on for one of the satellites
+fv3jedi_add_test( NAME         hyb-3dvar_bc
+                  EXE          fv3jedi_var.x
+                  TOL          1.0e-3 0
+                  TEST_DEPENDS bumpparameters_nicas_gfs )
 
 if( ${ropp-ufo_FOUND} )
   fv3jedi_add_test( NAME         hyb-3dvar_gfs_gnssro_ropp
