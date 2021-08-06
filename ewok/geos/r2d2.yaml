@@ -7,9 +7,9 @@ fetch:
       user_date_format: '%Y%m%d.%H%M%S'
   bc:
     - file_type: satbias
-      target_file: $(current_dir)/$(obs_type).$(date).$(file_type).nc4
+      target_file: $(run_dir)/$(obs_type).$(date).$(file_type).nc4
     - file_type: tlapse
-      target_file: $(current_dir)/$(obs_type).$(date).$(file_type).txt
+      target_file: $(run_dir)/$(obs_type).$(date).$(file_type).txt
 
 store:
   fc:
