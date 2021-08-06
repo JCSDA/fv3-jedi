@@ -329,3 +329,8 @@ output:
   filename_cplr: hyb-3dvar-gfs.c24.coupler.res
   first: PT0H
   frequency: PT1H
+
+test:
+  reference filename: testoutput/hyb-3dvar_gfs.ref
+  float relative tolerance: 1.0e-1
+  test output filename: testoutput/hyb-3dvar_gfs.test.out

@@ -38,3 +38,7 @@ states:
   output:
     filetype: latlon
     filename: Data/gfs.bkg.lonlat.
+
+test:
+  reference filename: testoutput/convertstate_gfs_c2ll.ref
+  test output filename: testoutput/convertstate_gfs_c2ll.test.out

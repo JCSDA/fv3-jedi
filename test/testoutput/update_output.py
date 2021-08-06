@@ -1,33 +1,30 @@
-# (C) Copyright 2017-2020 UCAR
+# (C) Copyright 2017-2021 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 import os
-import re
 
-test_string = 'Test     :'
-
-# Loop over log files
-runfiles = os.listdir()
-for runfile in runfiles:
+# Loop over test log files
+run_files = os.listdir()
+for run_file in run_files:
 
     # Check if the file is a log file
-    if runfile[-4:] == '.run':
+    if run_file[-9:] == '.test.out':
 
         # Output file
-        runreffile = runfile[0:-3]+'ref'
-        outfile = open(runreffile, "w")
+        ref_file = run_file[0:-8]+'ref'
+        out_file = open(ref_file, 'w')
+        read_file = open(run_file, 'r')
 
-        # Open file
-        for line in open(runfile, 'r'):
+        content = read_file.readlines()
+        type(content)
 
-            if re.search(test_string, line):
-                outfile.write(line)
-                if line == None:
-                    print('no matches found')
+        for ii in range(0, len(content)):
+            if(content[ii] != "\n"):
+                out_file.write(content[ii])
+            else:
+                pass
 
-        outfile.close()
-
-            # Grep for test string
-            #print(line)
+        read_file.close()
+        out_file.close()

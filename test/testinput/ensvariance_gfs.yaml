@@ -111,3 +111,7 @@ ensemble:
     filename_sfcd: 20180415.000000.sfc_data.nc
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
+
+test:
+  reference filename: testoutput/ensvariance_gfs.ref
+  test output filename: testoutput/ensvariance_gfs.test.out

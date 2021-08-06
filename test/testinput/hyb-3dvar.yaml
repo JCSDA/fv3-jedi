@@ -375,3 +375,8 @@ output:
   filename_cplr: hyb-3dvar.c24.coupler.res
   first: PT0H
   frequency: PT1H
+
+test:
+  reference filename: testoutput/hyb-3dvar.ref
+  float relative tolerance: 1.0e-1
+  test output filename: testoutput/hyb-3dvar.test.out

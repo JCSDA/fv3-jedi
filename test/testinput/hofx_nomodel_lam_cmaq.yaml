@@ -91,3 +91,8 @@ observations:
       hofx units coeff: 1.6605392e-20 # molec/cm2 to mol/m2
   obs error:
     covariance model: diagonal
+
+test:
+  reference filename: testoutput/hofx_nomodel_lam_cmaq.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/hofx_nomodel_lam_cmaq.test.out

@@ -146,7 +146,7 @@ observations:
       obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2018041500_m.nc4
     obsdataout:
       obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2018041500_m.nc4
-    simulated variables: [brightness_temperature] 
+    simulated variables: [brightness_temperature]
     channels: 1-15
   obs operator:
     name: CRTM
@@ -205,7 +205,7 @@ observations:
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2018041500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2018041500_m.nc4 
+      obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2018041500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 16,29,32,35,38,41,44
   obs operator:
@@ -250,3 +250,8 @@ observations:
       CoefficientPath: Data/crtm/
 prints:
   frequency: PT3H
+
+test:
+  reference filename: testoutput/hofx_fv3-gfs.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/hofx_fv3-gfs.test.out

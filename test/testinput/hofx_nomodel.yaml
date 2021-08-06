@@ -55,3 +55,9 @@ observations:
       CoefficientPath: Data/crtm/
 prints:
   frequency: PT3H
+
+
+test:
+  reference filename: testoutput/hofx_nomodel.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/hofx_nomodel.test.out

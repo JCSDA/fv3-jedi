@@ -70,3 +70,7 @@ states:
    filetype: geos # GFS can only handle specific names of output
    datapath: Data/
    filename_bkgd: geovals.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
+
+test:
+  reference filename: testoutput/convertstate_geos_model2geovals.ref
+  test output filename: testoutput/convertstate_geos_model2geovals.test.out

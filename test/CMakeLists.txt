@@ -181,6 +181,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/dirac_gfs_bal.ref
   testoutput/dirac_gfs_c2a.ref
   testoutput/dirac_gfs.ref
+  testoutput/eda_3dvar.ref
+  testoutput/eda_4dvar_fv3lm.ref
   testoutput/eda_block_3dvar.ref
   testoutput/ensvariance_geos.ref
   testoutput/ensvariance_gfs.ref
@@ -510,135 +512,6 @@ create_symlink_filename( ${CRTM_FV3JEDI_TESTFILES_PATH}
 
 # --------------------------------------------------------------------------------------------------
 
-# The following is a wrapper to simplify the generation of tests.
-# There are two types of tests:
-#  1) fv3-jedi executables (EXE must be given)
-#  2) interface tests  (SRC must be given)
-# fv3-jedi executables by default will also run a second step where the output test
-# log stream results are compared with reference values. The interface tests
-# do not do this.
-#
-# Arguments:
-#  NOCOMPARE - if flag is present, no compare test is performed
-#  NAME      - the name of the test (after test_fv3jedi is prepended), as well
-#              as the base name of the input confg file
-#  EXE       - name of executable to be used.
-#  SRC       - The name of the unit test source file to compile
-#  CFG       - The name of the yaml file, if the default testinput/${NAME}.yaml
-#              is not to be used
-#  TOL       - The tolerances to use for the test "float_tolerance int_tolerance"
-#              If none are given, ${FV3JEDI_TESTS_DEFAULT_TOL} is used. Only used
-#              if an EXE with no NOCOMPARE flag set.
-#  MPI       - The number of MPI PEs to use. If not specified, ${FV3JEDI_TESTS_DEFAULT_MPI}
-#              will be used
-# TEST_DEPENDS - list of tests this test depends on
-
-set( FV3JEDI_TESTS_DEFAULT_TOL "0.0;0" CACHE STRING
-     "Default test tolerances for compare.py based tests. (float_tol;int_tol) ")
-
-set( FV3JEDI_TESTS_DEFAULT_MPI 6 CACHE STRING
-     "Default number of PEs to use for fv3-jedi MPI based tests")
-
-set( FV3JEDI_TESTS_FORC_DEFAULT_TOL OFF CACHE BOOL
-     "If true, the specified test tolerances are ignored and FV3JEDI_TESTS_DEFAULT_TOL is used" )
-
-function(fv3jedi_add_test)
-  # parse the passed arguments
-  set(prefix     ARG)
-  set(novals     NOCOMPARE TRAPFPE INTERFACETEST)
-  set(singlevals NAME EXE CFG MPI REF TIER)
-  set(multivals  TEST_DEPENDS TOL)
-  cmake_parse_arguments(${prefix}
-                        "${novals}" "${singlevals}" "${multivals}"
-                        ${ARGN})
-
-  # set the tolerances to defaults if none given, or if we want to override
-  IF(NOT ARG_TOL OR FV3JEDI_TESTS_FORC_DEFAULT_TOL)
-    SET(ARG_TOL ${FV3JEDI_TESTS_DEFAULT_TOL})
-  ENDIF()
-
-  # determine if floating point error trapping should be set
-  if ( ARG_TRAPFPE )
-    set ( TRAPFPE_ENV "OOPS_TRAPFPE=1")
-  else()
-    set ( TRAPFPE_ENV "OOPS_TRAPFPE=0")
-  endif()
-
-  # determine the default config file name
-  if ( ARG_CFG )
-    set ( CONFIG_FILE testinput/${ARG_CFG} )
-  else()
-    set ( CONFIG_FILE testinput/${ARG_NAME}.yaml )
-  endif()
-
-  # MPI PEs
-  set( MPI ${FV3JEDI_TESTS_DEFAULT_MPI} )
-  if ( ARG_MPI )
-    set( MPI ${ARG_MPI})
-  endif()
-
-  # Test executable must be provided
-  if (NOT ARG_EXE)
-    message( FATAL_ERROR "fv3jedi_add_test required EXE argument." )
-  endif()
-
-  # Set the tier for the test
-  if (NOT ARG_TIER)
-    set( TESTTIER 1 )
-  else()
-    set( TESTTIER ${ARG_TIER} )
-  endif()
-
-  # Default reference output is same as input name
-  if ( ARG_REF)
-    set( TESTREF ${ARG_REF})
-  else()
-    set( TESTREF ${ARG_NAME})
-  endif()
-
-  # Are we building a unit test / or running an executable?
-  if ( TESTTIER LESS_EQUAL FV3JEDI_TEST_TIER )
-    if ( ARG_INTERFACETEST )
-
-      # Building a unit test, therfore also assume no compare step
-      ecbuild_add_test( TARGET  fv3jedi_test_tier${TESTTIER}_${ARG_NAME}
-                        TYPE    EXE
-                        COMMAND ${CMAKE_BINARY_DIR}/bin/${ARG_EXE}
-                        ARGS    ${CONFIG_FILE}
-                        MPI     ${MPI}
-                        ENVIRONMENT ${TRAPFPE_ENV}
-                        TEST_DEPENDS test_fv3jedi_${ARG_TEST_DEPENDS} )
-
-    else()
-
-      # Get tolerances to run the test with
-      LIST(GET ARG_TOL 0 TOL_F)
-      LIST(GET ARG_TOL 1 TOL_I)
-
-      # Find the MPI command
-      set(MPI_CMD "${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPI}")
-
-      # Run test executable and the compare script
-      ecbuild_add_test( TARGET  fv3jedi_test_tier${TESTTIER}_${ARG_NAME}
-                        TYPE    SCRIPT
-                        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/test_wrapper.sh"
-                        ARGS    "${CMAKE_BINARY_DIR}/bin/${ARG_EXE}"
-                                ${CONFIG_FILE}
-                        ENVIRONMENT
-                                ${TRAPFPE_ENV}
-                                COMPARE_SCRIPT=${CMAKE_BINARY_DIR}/bin/compare.py
-                                COMPARE_TESTNAME=${ARG_NAME}
-                                COMPARE_REFERENCE=${TESTREF}
-                                COMPARE_TOL_F=${TOL_F}
-                                COMPARE_TOL_I=${TOL_I}
-                                MPI_CMD=${MPI_CMD}
-                                SKIP_COMPARE=${ARG_NOCOMPARE}
-                        DEPENDS ${ARG_EXE}
-                        TEST_DEPENDS test_fv3jedi_${ARG_TEST_DEPENDS})
-    endif()
-  endif()
-
-endfunction()
 
 # --------------------------------------------------------------------------------------------------
 
@@ -755,10 +628,6 @@ if(FV3_FORECAST_MODEL MATCHES "GEOS" OR FV3_FORECAST_MODEL MATCHES "UFS")
   endif()
 endif()
 
-#Tolerances for compare script
-set (ctol 0.0) #Max relative difference
-set (idif 0)   #Max difference
-
 ecbuild_add_resources( TARGET   fv3jedi_test_scripts
                        SOURCES_PACK
                        ${fv3jedi_test_input}
@@ -769,440 +638,548 @@ ecbuild_add_resources( TARGET   fv3jedi_test_scripts
 
 # Interface tests
 # ---------------
-fv3jedi_add_test( NAME    geometry_gfs
-                  EXE     test_fv3jedi_geometry.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_gfs
+                  MPI      6
+                  ARGS     testinput/geometry_gfs.yaml
+                  COMMAND  test_fv3jedi_geometry.x )
 
-fv3jedi_add_test( NAME    geometry_gfs127
-                  EXE     test_fv3jedi_geometry.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_gfs127
+                  MPI      6
+                  ARGS     testinput/geometry_gfs127.yaml
+                  COMMAND  test_fv3jedi_geometry.x )
 
-fv3jedi_add_test( NAME    geometry_geos
-                  EXE     test_fv3jedi_geometry.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_geos
+                  MPI      6
+                  ARGS     testinput/geometry_geos.yaml
+                  COMMAND  test_fv3jedi_geometry.x )
 
-fv3jedi_add_test( NAME    geometry_lam_cmaq
-                  EXE     test_fv3jedi_geometry.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/geometry_lam_cmaq.yaml
+                  COMMAND  test_fv3jedi_geometry.x )
 
-fv3jedi_add_test( NAME    geometry_2d
-                  EXE     test_fv3jedi_geometry.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_2d
+                  MPI      6
+                  ARGS     testinput/geometry_2d.yaml
+                  COMMAND  test_fv3jedi_geometry.x )
 
-fv3jedi_add_test( NAME    geometry_nested
-                  EXE     test_fv3jedi_geometry.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_nested
+                  MPI      6
+                  ARGS     testinput/geometry_nested.yaml
+                  COMMAND  test_fv3jedi_geometry.x )
 
-fv3jedi_add_test( NAME    geometry_iterator_gfs
-                  EXE     test_fv3jedi_geometryiterator.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_gfs
+                  MPI      6
+                  ARGS     testinput/geometry_iterator_gfs.yaml
+                  COMMAND  test_fv3jedi_geometryiterator.x )
 
-fv3jedi_add_test( NAME    geometry_iterator_geos
-                  EXE     test_fv3jedi_geometryiterator.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_geos
+                  MPI      6
+                  ARGS     testinput/geometry_iterator_geos.yaml
+                  COMMAND  test_fv3jedi_geometryiterator.x )
 
-fv3jedi_add_test( NAME    geometry_iterator_lam_cmaq
-                  EXE     test_fv3jedi_geometryiterator.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/geometry_iterator_lam_cmaq.yaml
+                  COMMAND  test_fv3jedi_geometryiterator.x )
 
-fv3jedi_add_test( NAME    state_gfs
-                  EXE     test_fv3jedi_state.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gfs
+                  MPI      6
+                  ARGS     testinput/state_gfs.yaml
+                  COMMAND  test_fv3jedi_state.x )
 
-fv3jedi_add_test( NAME    state_geos
-                  EXE     test_fv3jedi_state.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_geos
+                  MPI      6
+                  ARGS     testinput/state_geos.yaml
+                  COMMAND  test_fv3jedi_state.x )
 
-fv3jedi_add_test( NAME    state_lam_cmaq
-                  EXE     test_fv3jedi_state.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/state_lam_cmaq.yaml
+                  COMMAND  test_fv3jedi_state.x )
 
-fv3jedi_add_test( NAME    state_lam_atmos
-                  EXE     test_fv3jedi_state.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_lam_atmos
+                  MPI      6
+                  ARGS     testinput/state_lam_atmos.yaml
+                  COMMAND  test_fv3jedi_state.x )
 
-fv3jedi_add_test( NAME    state_geos_aerosol
-                  EXE     test_fv3jedi_state.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_geos_aerosol
+                  MPI      6
+                  ARGS     testinput/state_geos_aerosol.yaml
+                  COMMAND  test_fv3jedi_state.x )
 
-fv3jedi_add_test( NAME    state_geos_aerosol_ext
-                  EXE     test_fv3jedi_state.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_geos_aerosol_ext
+                  MPI      6
+                  ARGS     testinput/state_geos_aerosol_ext.yaml
+                  COMMAND  test_fv3jedi_state.x )
 
-fv3jedi_add_test( NAME    increment_gfs
-                  EXE     test_fv3jedi_increment.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_increment_gfs
+                  MPI      6
+                  ARGS     testinput/increment_gfs.yaml
+                  COMMAND  test_fv3jedi_increment.x )
 
-fv3jedi_add_test( NAME    increment_geos
-                  EXE     test_fv3jedi_increment.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_increment_geos
+                  MPI      6
+                  ARGS     testinput/increment_geos.yaml
+                  COMMAND  test_fv3jedi_increment.x )
 
-fv3jedi_add_test( NAME    getvalues_gfs
-                  EXE     test_fv3jedi_getvalues.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues_gfs
+                  MPI      6
+                  ARGS     testinput/getvalues_gfs.yaml
+                  COMMAND  test_fv3jedi_getvalues.x )
 
-fv3jedi_add_test( NAME    getvalues_geos
-                  EXE     test_fv3jedi_getvalues.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues_geos
+                  MPI      6
+                  ARGS     testinput/getvalues_geos.yaml
+                  COMMAND  test_fv3jedi_getvalues.x )
 
-fv3jedi_add_test( NAME    lineargetvalues_gfs
-                  EXE     test_fv3jedi_lineargetvalues.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_lineargetvalues_gfs
+                  MPI      6
+                  ARGS     testinput/lineargetvalues_gfs.yaml
+                  COMMAND  test_fv3jedi_lineargetvalues.x )
 
-fv3jedi_add_test( NAME    lineargetvalues_geos
-                  EXE     test_fv3jedi_lineargetvalues.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_lineargetvalues_geos
+                  MPI      6
+                  ARGS     testinput/lineargetvalues_geos.yaml
+                  COMMAND  test_fv3jedi_lineargetvalues.x )
 
-fv3jedi_add_test( NAME    errorcovariance
-                  EXE     test_fv3jedi_errorcovariance.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance
+                  MPI      6
+                  ARGS     testinput/errorcovariance.yaml
+                  COMMAND  test_fv3jedi_errorcovariance.x )
+
 
 # Variable changes tests (some required for latter tests)
 # -------------------------------------------------------
-fv3jedi_add_test( NAME    convertstate_gfs
-                  EXE     fv3jedi_convertstate.x
-                  TOL     1.0e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs.yaml
+                  COMMAND  fv3jedi_convertstate.x )
 
-fv3jedi_add_test( NAME    convertstate_geos
-                  EXE     fv3jedi_convertstate.x )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos
+                  MPI      6
+                  ARGS     testinput/convertstate_geos.yaml
+                  COMMAND  fv3jedi_convertstate.x )
 
-fv3jedi_add_test( NAME    convertstate_geos_crtm_surface
-                  EXE     fv3jedi_convertstate.x )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_crtm_surface
+                  MPI      6
+                  ARGS     testinput/convertstate_geos_crtm_surface.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
-  fv3jedi_add_test( NAME    convertstate_gfs_cold2fv3
-                    EXE     fv3jedi_convertstate.x )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_cold2fv3
+                    MPI      6
+                    ARGS     testinput/convertstate_gfs_cold2fv3.yaml
+                    COMMAND  fv3jedi_convertstate.x )
+
 endif()
 
-fv3jedi_add_test( NAME    convertstate_gfs_model2geovals
-                  EXE     fv3jedi_convertstate.x )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_model2geovals
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs_model2geovals.yaml
+                  COMMAND  fv3jedi_convertstate.x )
 
-fv3jedi_add_test( NAME    convertstate_geos_model2geovals
-                  EXE     fv3jedi_convertstate.x )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
+                  MPI      6
+                  ARGS     testinput/convertstate_geos_model2geovals.yaml
+                  COMMAND  fv3jedi_convertstate.x )
 
 # Remaining interface tests
 # -------------------------
-fv3jedi_add_test( NAME    variablechange_gfs
-                  EXE     test_fv3jedi_variablechange.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_variablechange_gfs
+                  MPI      6
+                  ARGS     testinput/variablechange_gfs.yaml
+                  COMMAND  test_fv3jedi_variablechange.x )
 
-fv3jedi_add_test( NAME    variablechange_geos
-                  EXE     test_fv3jedi_variablechange.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_variablechange_geos
+                  MPI      6
+                  ARGS     testinput/variablechange_geos.yaml
+                  COMMAND  test_fv3jedi_variablechange.x )
 
-fv3jedi_add_test( NAME    linearvariablechange_gfs
-                  EXE     test_fv3jedi_linearvariablechange.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearvariablechange_gfs
+                  MPI      6
+                  ARGS     testinput/linearvariablechange_gfs.yaml
+                  COMMAND  test_fv3jedi_linearvariablechange.x )
 
-fv3jedi_add_test( NAME    linearvariablechange_geos
-                  EXE     test_fv3jedi_linearvariablechange.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearvariablechange_geos
+                  MPI      6
+                  ARGS     testinput/linearvariablechange_geos.yaml
+                  COMMAND  test_fv3jedi_linearvariablechange.x )
 
-fv3jedi_add_test( NAME    model_pseudo-gfs
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
 
-fv3jedi_add_test( NAME    model_pseudo-geos
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_pseudo-gfs
+                  MPI      6
+                  ARGS     testinput/model_pseudo-gfs.yaml
+                  COMMAND  test_fv3jedi_model.x )
 
-fv3jedi_add_test( NAME    model_fv3lm
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_pseudo-geos
+                  MPI      6
+                  ARGS     testinput/model_pseudo-geos.yaml
+                  COMMAND  test_fv3jedi_model.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_fv3lm
+                  MPI      6
+                  ARGS     testinput/model_fv3lm.yaml
+                  COMMAND  test_fv3jedi_model.x )
+
 
 #if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
-#fv3jedi_add_test( NAME    model_ufs
-#                  EXE     test_fv3jedi_model.x
-#                  INTERFACETEST )
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_ufs
+#                  MPI      6
+#                  ARGS     testinput/model_ufs.yaml
+#                  COMMAND  test_fv3jedi_model.x )
 #endif()
 
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
-fv3jedi_add_test( NAME    model_geos
-                  EXE     test_fv3jedi_model.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_geos
+                  MPI      6
+                  ARGS     testinput/model_geos.yaml
+                  COMMAND  test_fv3jedi_model.x )
 endif()
 
-fv3jedi_add_test( NAME    linearmodel
-                  EXE     test_fv3jedi_linearmodel.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel
+                  MPI      6
+                  ARGS     testinput/linearmodel.yaml
+                  COMMAND  test_fv3jedi_linearmodel.x )
 
-fv3jedi_add_test( NAME    linearmodel_physics
-                  EXE     test_fv3jedi_linearmodel.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_physics
+                  MPI      6
+                  ARGS     testinput/linearmodel_physics.yaml
+                  COMMAND  test_fv3jedi_linearmodel.x )
+
 
 # Forecast tests
 # --------------
-
-fv3jedi_add_test( NAME    forecast_fv3lm
-                  EXE     fv3jedi_forecast.x
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_fv3lm
+                  MPI      6
+                  ARGS     testinput/forecast_fv3lm.yaml
+                  COMMAND  fv3jedi_forecast.x )
 
 if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
-  fv3jedi_add_test( NAME    forecast_ufs
-                    EXE     fv3jedi_forecast.x
-                    TOL     0.0 0)
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs
+                    MPI      6
+                    ARGS     testinput/forecast_ufs.yaml
+                    COMMAND  fv3jedi_forecast.x )
 endif()
 
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
-  fv3jedi_add_test( NAME    forecast_geos
-                    EXE     fv3jedi_forecast.x)
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_geos
+                    MPI      6
+                    ARGS     testinput/forecast_geos.yaml
+                    COMMAND  fv3jedi_forecast.x )
 endif()
 
 # H(x)
 # ----
-fv3jedi_add_test( NAME    hofx_fv3lm
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_fv3lm
+                  MPI      6
+                  ARGS     testinput/hofx_fv3lm.yaml
+                  COMMAND  fv3jedi_hofx.x )
 
 # H(x) when ROPP is enabled
 # -------------------------
 if( ${ropp-ufo_FOUND} )
-#fv3jedi_add_test( NAME    hofx_gnssro_ropp
-#                  EXE     fv3jedi_hofx.x
-#                  TOL     1e-1 0)
+#  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gnssro_ropp
+#                    MPI      6
+#                    ARGS     testinput/hofx_gnssro_ropp.yaml
+#                    COMMAND  fv3jedi_hofx.x )
 endif()
 
 # H(x) no model
 # -------------
-fv3jedi_add_test( NAME    hofx_nomodel
-                  EXE     fv3jedi_hofx_nomodel.x
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel
+                  MPI      6
+                  ARGS     testinput/hofx_nomodel.yaml
+                  COMMAND  fv3jedi_hofx_nomodel.x )
 
-fv3jedi_add_test( NAME    hofx_gfs_aero
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gfs_aero
+                  MPI      6
+                  ARGS     testinput/hofx_gfs_aero.yaml
+                  COMMAND  fv3jedi_hofx.x )
 
-fv3jedi_add_test( NAME    hofx_nomodel_lam_cmaq
-                  EXE     fv3jedi_hofx_nomodel.x
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/hofx_nomodel_lam_cmaq.yaml
+                  COMMAND  fv3jedi_hofx_nomodel.x )
 
-fv3jedi_add_test( NAME    hofx4d
-                  EXE     fv3jedi_hofx4d.x
-                  MPI     18
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx4d
+                  MPI      18
+                  ARGS     testinput/hofx4d.yaml
+                  COMMAND  fv3jedi_hofx4d.x )
 
 # Test to save GeoVaLs to file
 # ----------------------------
-fv3jedi_add_test( NAME    hofx_save_geovals
-                  EXE     fv3jedi_hofx_nomodel.x
-                  TOL     1e-3 0)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_save_geovals
+                  MPI      6
+                  ARGS     testinput/hofx_save_geovals.yaml
+                  COMMAND  fv3jedi_hofx_nomodel.x )
 
 # B Matrix tests
 # --------------
-fv3jedi_add_test( NAME    bumpparameters_nicas_geos
-                  EXE     fv3jedi_parameters.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_geos
+                  MPI      6
+                  ARGS     testinput/bumpparameters_nicas_geos.yaml
+                  COMMAND  fv3jedi_parameters.x )
 
-fv3jedi_add_test( NAME    bumpparameters_nicas_gfs
-                  EXE     fv3jedi_parameters.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_gfs
+                  MPI      6
+                  ARGS     testinput/bumpparameters_nicas_gfs.yaml
+                  COMMAND  fv3jedi_parameters.x )
 
-fv3jedi_add_test( NAME    bumpparameters_nicas_gfs_aero
-                  EXE     fv3jedi_parameters.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero
+                  MPI      6
+                  ARGS     testinput/bumpparameters_nicas_gfs_aero.yaml
+                  COMMAND  fv3jedi_parameters.x )
 
-fv3jedi_add_test( NAME    bumpparameters_nicas_gfs_aero_logp
-                  EXE     fv3jedi_parameters.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero_logp
+                  MPI      6
+                  ARGS     testinput/bumpparameters_nicas_gfs_aero_logp.yaml
+                  COMMAND  fv3jedi_parameters.x )
 
-fv3jedi_add_test( NAME    bumpparameters_nicas_lam_cmaq
-                  EXE     fv3jedi_parameters.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/bumpparameters_nicas_lam_cmaq.yaml
+                  COMMAND  fv3jedi_parameters.x )
 
 if (NOT SKIP_LARGE_TESTS)
-  fv3jedi_add_test( NAME  bumpparameters_nicas_geos_p12
-                    EXE   fv3jedi_parameters.x
-                    MPI   12
-                    REF   bumpparameters_nicas_geos.run )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_geos_p12
+                    MPI      12
+                    ARGS     testinput/bumpparameters_nicas_geos_p12.yaml
+                    COMMAND  fv3jedi_parameters.x )
 
-  fv3jedi_add_test( NAME  bumpparameters_nicas_gfs_p12
-                    EXE   fv3jedi_parameters.x
-                    MPI   12
-                    REF   bumpparameters_nicas_gfs.run )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_gfs_p12
+                    MPI      12
+                    ARGS     testinput/bumpparameters_nicas_gfs_p12.yaml
+                    COMMAND  fv3jedi_parameters.x )
 endif()
 
-fv3jedi_add_test( NAME    errorcovariance_bump
-                  EXE     test_fv3jedi_errorcovariance.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_bump
+                  MPI      6
+                  ARGS     testinput/errorcovariance_bump.yaml
+                  COMMAND  test_fv3jedi_errorcovariance.x )
 
-fv3jedi_add_test( NAME    localization_bump
-                  EXE     test_fv3jedi_localization.x
-                  INTERFACETEST )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_localization_bump
+                  MPI      6
+                  ARGS     testinput/localization_bump.yaml
+                  COMMAND  test_fv3jedi_localization.x )
 
-fv3jedi_add_test( NAME    dirac_geos
-                  EXE     fv3jedi_dirac.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_geos
+                  MPI      6
+                  ARGS     testinput/dirac_geos.yaml
+                  COMMAND  fv3jedi_dirac.x )
 
-fv3jedi_add_test( NAME    dirac_gfs
-                  EXE     fv3jedi_dirac.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
+                  MPI      6
+                  ARGS     testinput/dirac_gfs.yaml
+                  COMMAND  fv3jedi_dirac.x )
 
-fv3jedi_add_test( NAME    dirac_gfs_bal
-                  EXE     fv3jedi_dirac.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_bal
+                  MPI      6
+                  ARGS     testinput/dirac_gfs_bal.yaml
+                  COMMAND  fv3jedi_dirac.x )
 
-fv3jedi_add_test( NAME    dirac_gfs_c2a
-                  EXE     fv3jedi_dirac.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_c2a
+                  MPI      6
+                  ARGS     testinput/dirac_gfs_c2a.yaml
+                  COMMAND  fv3jedi_dirac.x )
 
 # Ensemble variance
 # -----------------
-fv3jedi_add_test( NAME    ensvariance_gfs
-                  EXE     fv3jedi_ensvariance.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_gfs
+                  MPI      6
+                  ARGS     testinput/ensvariance_gfs.yaml
+                  COMMAND  fv3jedi_ensvariance.x )
 
-fv3jedi_add_test( NAME    ensvariance_geos
-                  EXE     fv3jedi_ensvariance.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_geos
+                  MPI      6
+                  ARGS     testinput/ensvariance_geos.yaml
+                  COMMAND  fv3jedi_ensvariance.x )
 
 # 3DVar, 3DEnVar and hybrid 3DVar
 # -------------------------------
-fv3jedi_add_test( NAME         hyb-3dvar
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-1 0
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 if (NOT SKIP_LARGE_TESTS)
-  fv3jedi_add_test( NAME  hyb-3dvar_p12
-                    EXE   fv3jedi_var.x
-                    MPI   12
-                    REF   hyb-3dvar.run
-                    TEST_DEPENDS bumpparameters_nicas_gfs_p12 hyb-3dvar)
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_p12
+                    MPI      12
+                    ARGS     testinput/hyb-3dvar_p12.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_p12 fv3jedi_test_tier1_hyb-3dvar )
 endif()
 
 # 3DVar with GSI balance operator
-#fv3jedi_add_test( NAME    3dvar_gfs_bal
-#                  EXE     fv3jedi_var.x )
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_bal
+#                  MPI      6
+#                  ARGS     testinput/3dvar_gfs_bal.yaml
+#                  COMMAND  fv3jedi_var.x )
 
 # 3DVar with zero obs is not working yet, so these 2 tests are are commented out. The YAML,
 # reference and obs files are are already in place.
-#fv3jedi_add_test( NAME         hyb-3dvar_gfs_0obs
-#                  EXE          fv3jedi_var.x
-#                  TEST_DEPENDS bumpparameters_nicas_gfs)
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs
+#                  MPI      6
+#                  ARGS     testinput/hyb-3dvar_gfs_0obs.yaml
+#                  COMMAND  fv3jedi_var.x
+#                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 # 3DVar with bias correction on for one of the satellites
-fv3jedi_add_test( NAME         hyb-3dvar_bc
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-3 0
-                  TEST_DEPENDS bumpparameters_nicas_gfs )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_bc
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_bc.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 if( ${ropp-ufo_FOUND} )
-  fv3jedi_add_test( NAME         hyb-3dvar_gfs_gnssro_ropp
-                    EXE          fv3jedi_var.x
-                    TOL          1.0e-1 0
-                    TEST_DEPENDS bumpparameters_nicas_gfs )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_gnssro_ropp
+                    MPI      6
+                    ARGS     testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 endif()
 
 # Chemistry / AQ Variational Tests
 # -----------
-fv3jedi_add_test( NAME         3dvar_lam_cmaq
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-1 0
-                  TEST_DEPENDS bumpparameters_nicas_lam_cmaq )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/3dvar_lam_cmaq.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq )
 
-fv3jedi_add_test( NAME         hyb-3dvar_gfs_aero
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-1 0
-                  TEST_DEPENDS bumpparameters_nicas_gfs_aero )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_aero
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_gfs_aero.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
 
 if( ${geos-aero_FOUND} )
-  fv3jedi_add_test( NAME         3denvar_geos_aero
-                    EXE          fv3jedi_var.x
-                    NOCOMPARE
-                    TEST_DEPENDS test_fv3jedi_bumpparameters_nicas_geos )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_3denvar_geos_aero
+                    MPI      6
+                    ARGS     testinput/3denvar_geos_aero.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
 endif()
 
 # Hybrid FGAT
 # -----------
-fv3jedi_add_test( NAME         hyb-fgat_fv3lm
-                  EXE          fv3jedi_var.x
-                  TEST_DEPENDS bumpparameters_nicas_geos )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-fgat_fv3lm
+                  MPI      6
+                  ARGS     testinput/hyb-fgat_fv3lm.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
 
-fv3jedi_add_test( NAME         hyb-fgat_gfs_aero
-                  EXE          fv3jedi_var.x
-                  TEST_DEPENDS bumpparameters_nicas_gfs_aero )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-fgat_gfs_aero
+                  MPI      6
+                  ARGS     testinput/hyb-fgat_gfs_aero.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
 
 # 4DEnVar
 # -------
-  fv3jedi_add_test( NAME         4denvar
-                    EXE          fv3jedi_var.x
-                    MPI          18
-                    TEST_DEPENDS bumpparameters_nicas_gfs )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_4denvar
+                  MPI      18
+                  ARGS     testinput/4denvar.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 # Hybrid 4DVar
 # ------------
-fv3jedi_add_test( NAME         hyb-4dvar_pseudo-geos
-                  EXE          fv3jedi_var.x
-                  TEST_DEPENDS bumpparameters_nicas_geos )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-4dvar_pseudo-geos
+                  MPI      6
+                  ARGS     testinput/hyb-4dvar_pseudo-geos.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
 
 # Diff states
 # -----------
-fv3jedi_add_test( NAME         diffstates_gfs
-                  EXE          fv3jedi_diffstates.x
-                  TOL          1.0e-3 0
-                  TEST_DEPENDS hyb-3dvar )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffstates_gfs
+                  MPI      6
+                  ARGS     testinput/diffstates_gfs.yaml
+                  COMMAND  fv3jedi_diffstates.x
+                  TEST_DEPENDS fv3jedi_test_tier1_hyb-3dvar )
 
-fv3jedi_add_test( NAME         diffstates_geos
-                  EXE          fv3jedi_diffstates.x
-                  TOL          1.0e-4 0
-                  TEST_DEPENDS hyb-4dvar_pseudo-geos )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffstates_geos
+                  MPI      6
+                  ARGS     testinput/diffstates_geos.yaml
+                  COMMAND  fv3jedi_diffstates.x
+                  TEST_DEPENDS fv3jedi_test_tier1_hyb-4dvar_pseudo-geos )
 
-fv3jedi_add_test( NAME         diffstates_lam_cmaq
-                  EXE          fv3jedi_diffstates.x
-                  TOL          1.0e-3 0
-                  TEST_DEPENDS 3dvar_lam_cmaq )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffstates_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/diffstates_lam_cmaq.yaml
+                  COMMAND  fv3jedi_diffstates.x
+                  TEST_DEPENDS fv3jedi_test_tier1_3dvar_lam_cmaq )
 
 # Add increment
 # -------------
-fv3jedi_add_test( NAME         addincrement_gfs
-                  EXE          fv3jedi_addincrement.x
-                  TOL          1.0e-3 0
-                  TEST_DEPENDS diffstates_gfs )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_addincrement_gfs
+                  MPI      6
+                  ARGS     testinput/addincrement_gfs.yaml
+                  COMMAND  fv3jedi_addincrement.x
+                  TEST_DEPENDS fv3jedi_test_tier1_diffstates_gfs )
 
 if (NOT SKIP_LARGE_TESTS)
-  fv3jedi_add_test( NAME         addincrement_geos
-                    EXE          fv3jedi_addincrement.x
-                    MPI          12
-                    TOL          1.0e-4 0
-                    TEST_DEPENDS diffstates_geos )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_addincrement_geos
+                    MPI      12
+                    ARGS     testinput/addincrement_geos.yaml
+                    COMMAND  fv3jedi_addincrement.x
+                    TEST_DEPENDS fv3jedi_test_tier1_diffstates_geos )
 endif()
 
 # LETKF / LGETKF
 # --------------
-fv3jedi_add_test( NAME         letkf
-                  EXE          fv3jedi_letkf.x
-                  TOL          1.0e-2 0 )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf
+                  MPI      6
+                  ARGS     testinput/letkf.yaml
+                  COMMAND  fv3jedi_letkf.x )
 
-fv3jedi_add_test( NAME         lgetkf
-                  EXE          fv3jedi_letkf.x
-                  TOL          1.0e-2 0 )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf
+                  MPI      6
+                  ARGS     testinput/lgetkf.yaml
+                  COMMAND  fv3jedi_letkf.x )
 
 # Land DA
 # --------------
-fv3jedi_add_test( NAME         letkf_snow
-                  EXE          fv3jedi_letkf.x
-                  TOL          1.0e-2 0 )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_snow
+                  MPI      6
+                  ARGS     testinput/letkf_snow.yaml
+                  COMMAND  fv3jedi_letkf.x )
 
 # Obs Localizaton Test
-# --------------
-fv3jedi_add_test( NAME         obslocalization
-                  EXE          test_fv3jedi_obslocalization.x
-                  NOCOMPARE )
+# --------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalization
+                  MPI      6
+                  ARGS     testinput/obslocalization.yaml
+                  COMMAND  test_fv3jedi_obslocalization.x )
 
 # EnsHofx tests
 # -------------
 if (NOT SKIP_LARGE_TESTS)
-  fv3jedi_add_test( NAME         enshofx_fv3lm
-                    EXE          fv3jedi_enshofx.x
-                    REF          hofx_fv3lm.run
-                    MPI          12
-                    TOL          1.0e-2 0 )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
+                    MPI      12
+                    ARGS     testinput/enshofx_fv3lm.yaml
+                    COMMAND  fv3jedi_enshofx.x )
 endif()
 
 # Ensemble data assimilation tests
 # --------------------------------
 if (NOT SKIP_LARGE_TESTS)
   # 3DVar
-  fv3jedi_add_test( NAME         eda_3dvar
-                    EXE          fv3jedi_eda.x
-                    MPI          12
-                    NOCOMPARE
-                    TEST_DEPENDS bumpparameters_nicas_gfs )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar
+                    MPI      12
+                    ARGS     testinput/eda_3dvar.yaml
+                    COMMAND  fv3jedi_eda.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 endif()
 
-  fv3jedi_add_test( NAME       eda_block_3dvar
-                    EXE          fv3jedi_eda.x
-                    MPI          12
-                    TEST_DEPENDS bumpparameters_nicas_gfs )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_block_3dvar
+                  MPI      12
+                  ARGS     testinput/eda_block_3dvar.yaml
+                  COMMAND  fv3jedi_eda.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 # Test of time taken
 # ------------------
@@ -1226,37 +1203,43 @@ endif()
 # Tier 2 tests
 # ------------
 
+if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
+
 # Full observation h(x) for each model
 # ------------------------------------
-fv3jedi_add_test( NAME    hofx_fv3-gfs
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-3 0
-                  TIER    2)
 
-fv3jedi_add_test( NAME    hofx_fv3-geos
-                  EXE     fv3jedi_hofx.x
-                  TOL     1e-2 0
-                  TIER    2)
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-gfs
+                  MPI      6
+                  ARGS     testinput/hofx_fv3-gfs.yaml
+                  COMMAND  fv3jedi_hofx.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-geos
+                  MPI      6
+                  ARGS     testinput/hofx_fv3-geos.yaml
+                  COMMAND  fv3jedi_hofx.x )
+
 
 # Full observation hyb-3DVar for each model
 # -----------------------------------------
-fv3jedi_add_test( NAME         hyb-3dvar_gfs
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-1 0
-                  TEST_DEPENDS bumpparameters_nicas_gfs
-                  TIER    2 )
 
-fv3jedi_add_test( NAME         hyb-3dvar_geos
-                  EXE          fv3jedi_var.x
-                  TOL          1.0e-1 3
-                  TEST_DEPENDS bumpparameters_nicas_geos
-                  TIER    2 )
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_gfs
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_gfs.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_geos
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_geos.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
 
 # EDA 4DVar
 # ---------
-fv3jedi_add_test( NAME         eda_4dvar_fv3lm
-                  EXE          fv3jedi_eda.x
-                  MPI          12
-                  NOCOMPARE
-                  TEST_DEPENDS bumpparameters_nicas_gfs
-                  TIER    2 )
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_eda_4dvar_fv3lm
+                  MPI      12
+                  ARGS     testinput/eda_4dvar_fv3lm.yaml
+                  COMMAND  fv3jedi_eda.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
+endif()

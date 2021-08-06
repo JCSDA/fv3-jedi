@@ -46,3 +46,8 @@ output:
   filename_sfcd: 3dvar_lam_cmaq_no2.sfc_data.nc
   filename_sfcw: 3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
   filename_cplr: 3dvar_lam_cmaq_no2.coupler.res
+
+test:
+  reference filename: testoutput/diffstates_lam_cmaq.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/diffstates_lam_cmaq.test.out

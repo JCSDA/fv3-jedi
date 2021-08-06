@@ -125,3 +125,6 @@ states:
    datapath: Data/convertstate/
    filename_bkgd: geos.bkg.dummy.nc4
    filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+test:
+  reference filename: testoutput/convertstate_geos_crtm_surface.ref
+  test output filename: testoutput/convertstate_geos_crtm_surface.test.out

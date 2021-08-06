@@ -102,7 +102,7 @@ background:
 observations:
 - obs space:
     name: Radiosonde
-    distribution: Halo 
+    distribution: Halo
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/scatwind_obs_2018041500_s.nc4
 #    obsdataout:
@@ -121,7 +121,7 @@ observations:
 prints:
   frequency: PT3H
 
-driver: 
+driver:
   update obs config with geometry info: true
   save posterior ensemble: false
   save posterior mean increment: false
@@ -141,3 +141,8 @@ output increment:
   filetype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
 
+
+test:
+  reference filename: testoutput/letkf.ref
+  float relative tolerance: 1.0e-2
+  test output filename: testoutput/letkf.test.out

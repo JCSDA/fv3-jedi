@@ -23,7 +23,7 @@ initial condition:
 background error:
   covariance model: GSIRF # Identity yet
   date: '2018-04-14T21:00:00Z'
-  analysis variables: 
+  analysis variables:
   variable changes:
   - variable change: Control2Analysis
     input variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
@@ -43,3 +43,7 @@ dirac:
   ildir: [50]   #Level
   itdir: [1]    #Tile
   ifdir: ['ua'] #Field
+
+test:
+  reference filename: testoutput/dirac_gfs_c2a.ref
+  test output filename: testoutput/dirac_gfs_c2a.test.out

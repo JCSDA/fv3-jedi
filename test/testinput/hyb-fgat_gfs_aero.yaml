@@ -23,7 +23,7 @@ cost function:
         - filetype: gfs
           state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
                                       dust1,dust2,dust3,dust4,dust5,
-                                      seas1,seas2,seas3,seas4]   
+                                      seas1,seas2,seas3,seas4]
           datapath: Data/inputs/gfs_aero_c12/mem001/
           filename_core: 20180414.210000.fv_core.res.nc
           filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -160,3 +160,6 @@ variational:
       tstep: PT3H
       tlm variables: *aerovars
 
+test:
+  reference filename: testoutput/hyb-fgat_gfs_aero.ref
+  test output filename: testoutput/hyb-fgat_gfs_aero.test.out

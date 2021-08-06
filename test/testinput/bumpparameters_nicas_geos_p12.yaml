@@ -72,3 +72,6 @@ output:
   datapath: Data/bump/
   filename: bumpparameters_nicas_geos_p12.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
   date: '2018-04-14T21:00:00Z'
+
+test:
+  reference filename: testoutput/bumpparameters_nicas_geos.test.out

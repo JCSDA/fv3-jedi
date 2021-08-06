@@ -64,3 +64,7 @@ states:
     filename_cold: cold2fv3.gfs_data.nc
     filename_cplr: cold2fv3.coupler.res
     filename_orog: cold2fv3.oro_data.nc
+
+test:
+  reference filename: testoutput/convertstate_gfs_cold2fv3.ref
+  test output filename: testoutput/convertstate_gfs_cold2fv3.test.out

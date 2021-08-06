@@ -41,3 +41,8 @@ observations:
     filename: Data/hofx/aircraft_geovals_gfs_2018041500_m.nc4
 prints:
   frequency: PT3H
+
+test:
+  reference filename: testoutput/hofx_save_geovals.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/hofx_save_geovals.test.out

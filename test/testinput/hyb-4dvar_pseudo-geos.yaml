@@ -281,3 +281,7 @@ variational:
         model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                           qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                           zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
+
+test:
+  reference filename: testoutput/hyb-4dvar_pseudo-geos.ref
+  test output filename: testoutput/hyb-4dvar_pseudo-geos.test.out

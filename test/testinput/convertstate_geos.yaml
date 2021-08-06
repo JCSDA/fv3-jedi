@@ -61,3 +61,7 @@ states:
     filetype: geos
     datapath: Data/
     filename_bkgd: dcmip-test-3-1.%yyyy%mm%dd_%hh%MM%ssz.nc4
+
+test:
+  reference filename: testoutput/convertstate_geos.ref
+  test output filename: testoutput/convertstate_geos.test.out

@@ -79,3 +79,6 @@ output:
   filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rv.fv_srf_wnd.res.nc
   filename_cplr: bumpparameters_nicas_gfs_p12.cor_rv.coupler.res
   date: '2018-04-14T21:00:00Z'
+
+test:
+  reference filename: testoutput/bumpparameters_nicas_gfs.test.out

@@ -51,3 +51,8 @@ states:
     filetype: geos
     datapath: Data/
     filename_bkgd: dcmip-test-4-0.%yyyy%mm%dd_%hh%MM%ssz.nc4
+
+test:
+  reference filename: testoutput/convertstate_gfs.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/convertstate_gfs.test.out

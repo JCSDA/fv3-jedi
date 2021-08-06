@@ -57,3 +57,8 @@ observations:
     covariance model: diagonal
 prints:
   frequency: PT3H
+
+test:
+  reference filename: testoutput/hofx_gfs_aero.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/hofx_gfs_aero.test.out

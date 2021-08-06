@@ -20,10 +20,10 @@ window begin: '2019-12-15T09:00:00Z'
 window length: PT6H
 
 background:
- date: &date '2019-12-15T12:00:00Z' 
+ date: &date '2019-12-15T12:00:00Z'
  members:
    - filetype: gfs
-     state variables: [snwdph] 
+     state variables: [snwdph]
      datapath: Data/inputs/gfs_land_c48/mem001/
      filename_sfcd: 20191215.120000.sfc_data.nc
      filename_cplr: 20191215.120000.coupler.res
@@ -49,8 +49,8 @@ observations:
       lengthscale: 250e3
       max_nobs: 50
 
-driver: 
-  save posterior mean: true 
+driver:
+  save posterior mean: true
   save posterior mean increment: true
   save posterior ensemble: false
 
@@ -71,3 +71,8 @@ output increment:
 
 prints:
   frequency: PT3H
+
+test:
+  reference filename: testoutput/letkf_snow.ref
+  float relative tolerance: 1.0e-2
+  test output filename: testoutput/letkf_snow.test.out

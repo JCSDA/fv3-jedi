@@ -327,3 +327,7 @@ output:
   filename_cplr: hyb-3dvar-gfs.c24.p12.coupler.res
   first: PT0H
   frequency: PT1H
+
+test:
+  reference filename: testoutput/hyb-3dvar.test.out
+  test output filename: testoutput/hyb-3dvar.test.out

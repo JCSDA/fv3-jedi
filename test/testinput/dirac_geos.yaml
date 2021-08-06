@@ -18,7 +18,7 @@ initial condition:
   state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: ensemble
-  date: '2018-04-14T21:00:00Z' 
+  date: '2018-04-14T21:00:00Z'
   localization:
     timeslots: ['2018-04-14T21:00:00Z']
     localization variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
@@ -72,3 +72,7 @@ dirac:
   ildir: [50]   #Level
   itdir: [1]    #Tile
   ifdir: ['ua'] #Field
+
+test:
+  reference filename: testoutput/dirac_geos.ref
+  test output filename: testoutput/dirac_geos.test.out

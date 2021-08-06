@@ -217,3 +217,7 @@ variational:
         - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
+
+test:
+  reference filename: testoutput/3dvar_gfs_bal.ref
+  test output filename: testoutput/3dvar_gfs_bal.test.out

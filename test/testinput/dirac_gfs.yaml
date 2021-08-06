@@ -63,3 +63,7 @@ dirac:
   ildir: [50]   #Level
   itdir: [1]    #Tile
   ifdir: ['ua'] #Field
+
+test:
+  reference filename: testoutput/dirac_gfs.ref
+  test output filename: testoutput/dirac_gfs.test.out

@@ -239,3 +239,7 @@ variational:
       name: FV3JEDIIdTLM
       tstep: PT1H
       tlm variables: *fgatvars
+
+test:
+  reference filename: testoutput/hyb-fgat_fv3lm.ref
+  test output filename: testoutput/hyb-fgat_fv3lm.test.out

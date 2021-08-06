@@ -64,3 +64,7 @@ output:
   filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rv.fv_srf_wnd.res.nc
   filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rv.coupler.res
   date: '2020-09-03T18:00:00Z'
+
+test:
+  reference filename: testoutput/bumpparameters_nicas_lam_cmaq.ref
+  test output filename: testoutput/bumpparameters_nicas_lam_cmaq.test.out

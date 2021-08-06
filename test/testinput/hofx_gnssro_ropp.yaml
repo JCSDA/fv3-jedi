@@ -104,3 +104,8 @@ observations:
 #    threshold: 3
 Prints:
   frequency: PT3H
+
+test:
+  reference filename: testoutput/hofx_gnssro_ropp.ref
+  float relative tolerance: 1.0e-1
+  test output filename: testoutput/hofx_gnssro_ropp.test.out
