@@ -12,8 +12,7 @@ geometry:
   - fieldset: Data/fieldsets/dynamics.yaml
   - fieldset: Data/fieldsets/ufo.yaml
   interpolation method: bump
-state variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,
-                  virtual_temperature,mole_fraction_of_ozone_in_air,humidity_mixing_ratio]
+state variables: [eastward_wind,northward_wind,air_temperature,specific_humidity]
 linear getvalues test:
   tolerance linearity: 1.0e-11
   iterations TL: 10
@@ -24,10 +23,8 @@ locations:
   window begin: 2018-04-14T21:00:00Z
   window end: 2018-04-15T03:00:00Z
   obs space:
-    name: Random Locations 
-    simulated variables: [eastward_wind,northward_wind,air_temperature,
-                          specific_humidity,virtual_temperature,
-                          mole_fraction_of_ozone_in_air,humidity_mixing_ratio]
+    name: Random Locations
+    simulated variables: [eastward_wind,northward_wind,air_temperature,specific_humidity]
     generate:
       random:
         nobs: 10
@@ -36,7 +33,7 @@ locations:
         lon1: 0
         lon2: 360
         random seed: 560921
-      obs errors: [0.1,0.3,0.2,0.4,0.5,0.8,1.1]
+      obs errors: [0.1,0.3,0.2,0.4]
 background:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/

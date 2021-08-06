@@ -2,7 +2,7 @@ getvalues test:
   state generate:
     analytic_init: dcmip-test-4-0
     date: '2018-04-14T21:00:00Z'
-    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,air_pressure]
   interpolation tolerance: 1.0e-2
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
@@ -19,13 +19,13 @@ geometry:
   fieldsets:
   - fieldset: Data/fieldsets/dynamics.yaml
   - fieldset: Data/fieldsets/ufo.yaml
-state variables: [virtual_temperature,air_pressure]
+state variables: [air_temperature,air_pressure]
 locations:
   window begin: 2018-04-14T21:00:00Z
   window end: 2018-04-15T03:00:00Z
   obs space:
     name: Random Locations 
-    simulated variables: [virtual_temperature,air_pressure]
+    simulated variables: [air_temperature,air_pressure]
     generate:
       random:
         nobs: 100
