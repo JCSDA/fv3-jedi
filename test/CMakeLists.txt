@@ -880,10 +880,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_fv3lm
 # H(x) when ROPP is enabled
 # -------------------------
 if( ${ropp-ufo_FOUND} )
-#  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gnssro_ropp
-#                    MPI      6
-#                    ARGS     testinput/hofx_gnssro_ropp.yaml
-#                    COMMAND  fv3jedi_hofx.x )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gnssro_ropp
+                    MPI      6
+                    ARGS     testinput/hofx_gnssro_ropp.yaml
+                    COMMAND  fv3jedi_hofx.x )
 endif()
 
 # H(x) no model
