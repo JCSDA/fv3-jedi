@@ -145,7 +145,7 @@ ENDIF()
 
 # Source files when building with stand alone fv3 (GFDL_atmos_cubed_sphere)
 list( APPEND fv3jedi_fv3_src_files
-  Geometry/fv_init_control_mod.f90
+  Geometry/fv_init_control_mod.F90
   VariableChanges/VertRemap/fv3jedi_vc_vertremap.interface.F90
   VariableChanges/VertRemap/fv3jedi_vc_vertremap_mod.f90
   VariableChanges/VertRemap/VarChaVertRemap.cc
@@ -165,7 +165,7 @@ list( APPEND fv3jedi_geos_src_files
 
 # Source files when building with UFS
 list( APPEND fv3jedi_ufs_src_files
-  Geometry/fv_init_control_mod.f90
+  Geometry/fv_init_control_mod.F90
   Model/ufs/fv3jedi_ufs_interface_mod.F90
   Model/ufs/fv3jedi_ufs_mod.F90
   Model/ufs/ModelUFS.cc
@@ -225,16 +225,13 @@ if( FV3_FORECAST_MODEL MATCHES "UFS" )
   target_link_libraries( fv3jedi PUBLIC w3nco::w3nco_d)
   target_link_libraries( fv3jedi PUBLIC sp::sp_d)
   target_link_libraries( fv3jedi PUBLIC bacio::bacio_4)
-  target_link_libraries( fv3jedi PUBLIC cpl)
-  target_link_libraries( fv3jedi PUBLIC fms)
+  target_link_libraries( fv3jedi PUBLIC FMS::fms_r8)
   target_link_libraries( fv3jedi PUBLIC fv3atm)
-  target_link_libraries( fv3jedi PUBLIC cpl)
-  target_link_libraries( fv3jedi PUBLIC ccppdriver)
+  target_link_libraries( fv3jedi PUBLIC ccppphys)
+  target_link_libraries( fv3jedi PUBLIC ccpp)
   target_link_libraries( fv3jedi PUBLIC ufs)
-  target_link_libraries( fv3jedi PUBLIC gfsphysics)
-  target_link_libraries( fv3jedi PUBLIC io)
-  target_link_libraries( fv3jedi PUBLIC stochastic_physics)
   target_link_libraries( fv3jedi PUBLIC NetCDF::NetCDF_Fortran)
   target_include_directories( fv3jedi PUBLIC ${ESMF_F90COMPILEPATHS} )
   target_compile_definitions( fv3jedi PUBLIC "-DFRONT_FV3=fv3gfs_cap_mod")
+  target_compile_definitions(fv3jedi PUBLIC UFS_BUILD)
 endif()

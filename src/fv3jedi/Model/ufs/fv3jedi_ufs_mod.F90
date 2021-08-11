@@ -17,6 +17,7 @@ module fv3jedi_ufs_mod
   ! fv3jedi
   use fv3jedi_geom_mod,      only: fv3jedi_geom
   use fv3jedi_state_mod,     only: fv3jedi_state
+  use fv3jedi_field_mod,     only: fv3jedi_field, field_clen
   
   ! ufs
   use ESMF
@@ -35,6 +36,7 @@ module fv3jedi_ufs_mod
   type :: model_ufs
      type(ESMF_GridComp) :: esmComp
      type(ESMF_State) :: toJedi, fromJedi 
+     integer :: isc, iec, jsc, jec, npz
      type(esmf_Clock) :: clock
      type(esmf_config) :: cf_main                                         !<-- the configure object
    contains
@@ -79,6 +81,12 @@ contains
     call ESMF_LogSet(flush=.true., rc=rc)
     esmf_err_abort(rc)
     call ESMF_LogWrite("ESMF Initialized in "//subname, ESMF_LOGMSG_INFO)
+
+    self%isc = geom%isc
+    self%iec = geom%iec
+    self%jsc = geom%jsc
+    self%jec = geom%jec
+    self%npz = geom%npz
 
     self%cf_main=esmf_configcreate(rc=rc)   
     call ESMF_ConfigLoadFile(config=self%cf_main, &
@@ -130,27 +138,71 @@ contains
      
     call ESMF_LogWrite("Advertising export from ESM", ESMF_LOGMSG_INFO)
     ! Advertise fields on the exportState, for data coming out of ESM component
+    ! Note--only certain fields are available. Check in GFS_surface_generic to see if they are filled
     call NUOPC_Advertise(self%toJedi, &
          StandardNames=(/ &
-                        "inst_zonal_wind_levels               ", &   ! Example fields
-                        "inst_pres_levels                     ", &
-                        "wave_z0_roughness_length             "/), &
+                        "u                                    ", &   ! Example fields
+                        "v                                    ", &   ! Example fields
+                        "ua                                   ", &   ! Example fields
+                        "va                                   ", &   ! Example fields
+                        "t                                    ", &   ! Example fields
+                        "delp                                 ", &   ! Example fields
+                        "sphum                                ", &   ! Example fields
+                        "ice_wat                              ", &   ! Example fields
+                        "liq_wat                              ", &   ! Example fields
+                        "o3mr                                 ", &   ! Example fields
+                        "phis                                 ", &   ! Example fields
+                        "slmsk                                ", &   ! Example fields
+                        "weasd                                ", &   ! Example fields
+                        "tsea                                 ", &   ! Example fields
+                        "vtype                                ", &   ! Example fields
+                        "stype                                ", &   ! Example fields
+                        "vfrac                                ", &   ! Example fields
+                        "stc                                  ", &   ! Example fields
+                        "smc                                  ", &   ! Example fields
+                        "snwdph                               ", &   ! Example fields
+                        "u_srf                                ", &   ! Example fields
+                        "v_srf                                ", &   ! Example fields
+                        "f10m                                 "/), &   ! Example fields
          SharePolicyField="share", &
          TransferOfferGeomObject="cannot provide", rc=rc)
     esmf_err_abort(rc)
 
     
     call ESMF_LogWrite("Advertising imports to ESM", ESMF_LOGMSG_INFO)
-    ! Advertise fields on the importState, for data going into ESM component
+    ! Advertise fields on the importState, for data going into ESM componenta
+
+! imports are not yet implemented
+#if 0 
     call NUOPC_Advertise(self%fromJedi, &
          StandardNames=(/ &
-         "inst_down_lw_flx              ", &         ! Example fields
-         "inst_down_sw_flx              ", &
-         "inst_temp_height2m            "/), &
+                        "u                                    ", &   ! Example fields
+                        "v                                    ", &   ! Example fields
+                        "ua                                   ", &   ! Example fields
+                        "va                                   ", &   ! Example fields
+                        "t                                    ", &   ! Example fields
+                        "delp                                 ", &   ! Example fields
+                        "sphum                                ", &   ! Example fields
+                        "ice_wat                              ", &   ! Example fields
+                        "liq_wat                              ", &   ! Example fields
+                        "o3mr                                 ", &   ! Example fields
+                        "phis                                 ", &   ! Example fields
+                        "slmsk                                ", &   ! Example fields
+                        "weasd                                ", &   ! Example fields
+                        "tsea                                 ", &   ! Example fields
+                        "vtype                                ", &   ! Example fields
+                        "stype                                ", &   ! Example fields
+                        "vfrac                                ", &   ! Example fields
+                        "stc                                  ", &   ! Example fields
+                        "smc                                  ", &   ! Example fields
+                        "snwdph                               ", &   ! Example fields
+                        "u_srf                                ", &   ! Example fields
+                        "v_srf                                ", &   ! Example fields
+                        "f10m                                 "/), &   ! Example fields
          TransferOfferGeomObject="cannot provide", rc=rc)
     
     esmf_err_abort(rc)
-
+#endif
      
     call ESMF_StateGet(self%toJedi, itemCount=cnt, rc=rc)
     esmf_err_abort(rc)
@@ -277,7 +329,6 @@ contains
     type(ESMF_TimeInterval) :: timeStep
     integer, save     :: tstep=1
     character(len=80) :: fileName
-    
 
 !-----------------------------------------------------------------------------
 
@@ -309,7 +360,6 @@ contains
          stopTime=stopTime, currTime=startTime, timeStep=timeStep, rc=rc)
      esmf_err_abort(rc)
 
-     
     ! step the model forward
     call ESMF_GridCompRun(self%esmComp, &
          importState=self%fromJedi, exportState=self%toJedi, &
@@ -319,12 +369,11 @@ contains
 
     call ESMF_StateGet(self%toJedi, itemCount=cnt, rc=rc)
     esmf_err_abort(rc)
-
     write(msg, "(I2)") cnt
     call ESMF_LogWrite("after step toJedi state with "//trim(msg)//" items", & 
          ESMF_LOGMSG_INFO)
     write(fileName, '("fields_in_esm_import_step",I2.2,".nc")') tstep
-    call FV3_StateWrite(self%toJedi, fileName=trim(fileName), rc=rc)
+    call fv3_to_state(self, state)
     call ESMF_LogWrite("after state write "//trim(msg)//" rc", & 
          ESMF_LOGMSG_INFO)
 
@@ -385,13 +434,124 @@ contains
 
   end subroutine finalize
   
+  subroutine fv3_to_state( self, state )
+
+  implicit none
+  type(model_ufs),    intent(in)    :: self
+  type(fv3jedi_state), intent(inout) :: state
+  
+  integer :: num_items, i, rc, rank, lb(3), ub(3), fnpz
+  type(ESMF_Field) :: field
+  character(len=ESMF_MAXSTR), allocatable :: item_names(:)
+  real(kind=ESMF_KIND_R8), pointer :: farrayPtr2(:,:)
+  real(kind=ESMF_KIND_R8), pointer :: farrayPtr3(:,:,:)
+  character(len=field_clen) :: fv3jedi_name
+  type(fv3jedi_field), pointer :: field_ptr
+  
+  real(kind=ESMF_KIND_R8),allocatable,dimension(:,:,:)      :: field_fv3
+  
+  
+  ! Array to hold output from UFS in JEDI precision
+  ! ------------------------------------------------
+  allocate(field_fv3(self%isc:self%iec, self%jsc:self%jec, self%npz+1))
+  
+  
+  ! Get number of items
+  ! -------------------
+  call ESMF_StateGet(self%toJedi, itemcount = num_items, rc = rc)
+  if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_StateGet itemcount failed")
+  
+  
+  ! Get names of the items
+  ! ----------------------
+  allocate(item_names(num_items))
+  call ESMF_StateGet(self%toJedi, itemnamelist = item_names, rc = rc)
+  if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_StateGet itemnamelist failed")
+  
+  
+  ! Loop over states coming from UFS and convert to JEDI state
+  ! -----------------------------------------------------------
+  do i = 1, num_items
+    ! Create map between UFS name and fv3-jedi name
+    ! ----------------------------------------------
+    fv3jedi_name = trim(item_names(i))
+    call ESMF_LogWrite("item name is "//fv3jedi_name, ESMF_LOGMSG_INFO)
+    if(trim(item_names(i)) == 'u') fv3jedi_name = 'ud'
+    if(trim(item_names(i)) == 'v') fv3jedi_name = 'vd'
+    if(trim(item_names(i)) == 'weasd') fv3jedi_name = 'sheleg'
+
+    ! Only need to extract field from UFS if fv3-jedi needs it
+    ! ---------------------------------------------------------
+    if (state%has_field(trim(fv3jedi_name))) then
+ 
+      !Get field from the state
+      call ESMF_StateGet(self%toJedi, item_names(i), field, rc = rc)
+      if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_StateGet field failed")
+  
+      !Validate the field
+      call ESMF_FieldValidate(field, rc = rc)
+      if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldValidate failed")
+  
+      !Get the field rank
+      call ESMF_FieldGet(field, rank = rank, rc = rc)
+      
+      if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldGet rank failed")
+  
+      !Convert field to pointer and pointer bounds
+      field_fv3 = 0.0_ESMF_KIND_R8
+      if (rank == 2) then
+  
+        call ESMF_FieldGet( field, 0, farrayPtr = farrayPtr2, totalLBound = lb(1:2), totalUBound = ub(1:2), rc = rc )
+        if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldGet 2D failed")
+  
+        fnpz = 1
+        field_fv3(self%isc:self%iec,self%jsc:self%jec,1) = farrayPtr2(lb(1):ub(1),lb(2):ub(2))
+        nullify(farrayPtr2)
+  
+      elseif (rank == 3) then
+        call ESMF_FieldGet( field, 0, farrayPtr = farrayPtr3, totalLBound = lb, totalUBound = ub, rc = rc )
+        if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldGet 3D failed",rc)
+  
+        fnpz = ub(3)-lb(3)+1
+        field_fv3(self%isc:self%iec,self%jsc:self%jec,1:fnpz) = farrayPtr3(lb(1):ub(1),lb(2):ub(2),lb(3):ub(3))
+        nullify(farrayPtr3)
+  
+      else
+  
+        call abor1_ftn("fv3_mod: can only handle rank 2 or rank 3 fields from UFS")
+  
+      endif
+  
+      ! Check that dimensions match
+      if ((ub(1)-lb(1)+1 .ne. self%iec-self%isc+1) .or. (ub(2)-lb(2)+1 .ne. self%jec-self%jsc+1) ) then
+        call abor1_ftn("fv3_to_state: dimension mismatch between JEDI and UFS horizontal grid")
+      endif
+  
+      ! Get pointer to fv3-jedi side field
+      call state%get_field(trim(fv3jedi_name), field_ptr)
+  
+      if (field_ptr%npz .ne. fnpz) &
+        call abor1_ftn("fv3_to_state: dimension mismatch between JEDI and UFS vertical grid")
+  
+      ! Copy from UFS to fv3-jedi
+      field_ptr%array(self%isc:self%iec,self%jsc:self%jec,1:fnpz) = field_fv3(self%isc:self%iec,self%jsc:self%jec,1:fnpz)
+    else
+      call ESMF_LogWrite("Not needed by JEDI is "//fv3jedi_name, ESMF_LOGMSG_INFO)
+    endif
+  
+  end do
+  
+  deallocate(item_names)
+  
+  end subroutine fv3_to_state
+
 
   subroutine setUFSClock(self,date_start,date_final)
 
     class(model_ufs),    intent(inout) :: self
     type(esmf_time),     intent(inout) :: date_start, date_final
 
-    type(ESMF_TimeInterval)            :: runDuration
+    type(ESMF_TimeInterval)            :: runDuration, timestep
     integer :: yy,mm,dd,hh,mns,sec,rc
     !-----------------------------------------------------------------------
     !***  extract the start time from the configuration
@@ -464,54 +624,21 @@ contains
     esmf_err_abort(rc)
 
     ! Set any time interval here It will be overridden later
-    call ESMF_timeintervalset(runduration, h=6, rc=rc)
+    call ESMF_timeintervalset(runduration, d=1, rc=rc)
+    call ESMF_timeintervalset(timestep, h=1, rc=rc)
     date_final = date_start + runduration
 
     self%clock = ESMF_ClockCreate(name="main_clock", &
-         timeStep=runduration, startTime=date_start, stopTime=date_final, rc=rc)
+         timeStep=timestep, startTime=date_start, stopTime=date_final, rc=rc)
 
     esmf_err_abort(rc)
+
+    call ESMF_ClockPrint(self%clock, options="startTime", &
+    preString="Printing startTime to stdout: ", rc=rc)
+
 
     ! ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
   end subroutine setUFSClock
 
-  subroutine FV3_StateWrite(state, fileName, rc)
-    type(ESMF_State)      :: state
-    character(len=*)      :: fileName
-    integer, intent(out)  :: rc
-  
-    integer               :: itemCount, i
-    type(ESMF_Field), allocatable  :: fieldList(:)
-    character(len=80), allocatable :: itemNameList(:)
-    rc=ESMF_SUCCESS
-  ! This routine is not currently writing out any fields
-  
-    call ESMF_StateGet(state, itemCount=itemCount, rc=rc)
-    esmf_err_abort(rc)
-
-    if (itemCount==0) return
-  
-    allocate(fieldList(itemCount), itemNameList(itemCount))
-    call ESMF_StateGet(state, itemNameList=itemNameList, rc=rc)
-    esmf_err_abort(rc)
-
-     
-    do i=1,itemCount
-      call ESMF_StateGet(state, itemName=itemNameList(i), field=fieldList(i), &
-        rc=rc)
-      esmf_err_abort(rc)
-
-    enddo
-  
-    call ESMF_StateWrite(state, filename, rc=rc)
-    esmf_err_abort(rc)
-
-     
-    deallocate(fieldList, itemNameList)
-
-
-  end subroutine FV3_StateWrite
-
-  
 end module fv3jedi_ufs_mod
