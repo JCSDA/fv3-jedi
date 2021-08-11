@@ -212,10 +212,10 @@ variational:
     diagnostics:
       departures: ombg
     linear model:
+      name: Identity
+      increment variables: *fgatvars
       variable change: Identity
-      name: FV3JEDIIdTLM
       tstep: PT1H
-      tlm variables: *fgatvars
   - ninner: 4
     gradient norm reduction: 1e-10
     test: on
@@ -235,11 +235,10 @@ variational:
     diagnostics:
       departures: ombg
     linear model:
+      name: Identity
+      increment variables: *fgatvars
       variable change: Identity
-      name: FV3JEDIIdTLM
       tstep: PT1H
-      tlm variables: *fgatvars
-
 test:
   reference filename: testoutput/hyb-fgat_fv3lm.ref
   test output filename: testoutput/hyb-fgat_fv3lm.test.out

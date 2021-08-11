@@ -128,8 +128,6 @@ list( APPEND fv3jedi_src_files
   Tlm/fv3jedi_traj_mod.f90
   Tlm/Tlm.cc
   Tlm/Tlm.h
-  Tlm/TlmId.cc
-  Tlm/TlmId.h
   Tlm/Tlm.interface.F90
   Tlm/Tlm.interface.h
   Tlm/Traj.interface.F90
@@ -199,7 +197,7 @@ endif()
 # Optional model - ufs
 if( FV3_FORECAST_MODEL MATCHES "UFS" )
   list( APPEND FV3JEDI_SRC_DEP ${fv3jedi_ufs_src_files} )
-  if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) 
+  if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
     set_source_files_properties(${fv3jedi_ufs_src_files} PROPERTIES COMPILE_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fdec -fno-range-check -ffree-form ")
   endif()
 endif()
@@ -215,7 +213,7 @@ ecbuild_add_library( TARGET          fv3jedi
 target_compile_features( fv3jedi PUBLIC cxx_std_11 )
 target_include_directories( fv3jedi PUBLIC "$<BUILD_INTERFACE:${FV3JEDI_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${FV3JEDI_EXTRA_INCLUDE_DIRS}>" )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS" ) 
+if( FV3_FORECAST_MODEL MATCHES "UFS" )
   # ESMF
   find_package(ESMF MODULE REQUIRED STATIC)
 

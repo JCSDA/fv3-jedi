@@ -155,11 +155,10 @@ variational:
     diagnostics:
       departures: ombg
     linear model:
+      name: Identity
+      increment variables: *aerovars
       variable change: Identity
-      name: FV3JEDIIdTLM
       tstep: PT3H
-      tlm variables: *aerovars
-
 test:
   reference filename: testoutput/hyb-fgat_gfs_aero.ref
   test output filename: testoutput/hyb-fgat_gfs_aero.test.out

@@ -11,7 +11,7 @@
 #include <ostream>
 #include <string>
 
-#include "oops/base/LinearModelBase.h"
+#include "oops/interface/LinearModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
@@ -29,7 +29,7 @@ namespace fv3jedi {
 
 // Linear model definition.
 
-class Tlm: public oops::LinearModelBase<Traits>,
+class Tlm: public oops::interface::LinearModelBase<Traits>,
                 private util::ObjectCounter<Tlm> {
  public:
   static const std::string classname() {return "fv3jedi::Tlm";}
