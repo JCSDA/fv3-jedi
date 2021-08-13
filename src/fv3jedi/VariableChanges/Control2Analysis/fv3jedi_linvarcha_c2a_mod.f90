@@ -113,11 +113,11 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Winds
-logical :: have_uava
-real(kind=kind_real), pointer,     dimension(:,:,:) :: psip
-real(kind=kind_real), pointer,     dimension(:,:,:) :: chip
+logical :: have_uava, have_udvd
 real(kind=kind_real), allocatable, dimension(:,:,:) :: psi
 real(kind=kind_real), allocatable, dimension(:,:,:) :: chi
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ud
+real(kind=kind_real), allocatable, dimension(:,:,:) :: vd
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ua
 real(kind=kind_real), allocatable, dimension(:,:,:) :: va
 
@@ -141,20 +141,24 @@ if (.not.allocated(fields_to_do)) return
 
 ! Winds
 ! -----
-have_uava = .false.
+have_udvd = .false.
 if (dxc%has_field('psi') .and. dxc%has_field('chi')) then
-  call dxc%get_field('psi', psip)
-  call dxc%get_field('chi', chip)
-  allocate(psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-  allocate(chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-  psi = 0.0_kind_real
-  chi = 0.0_kind_real
-  psi(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psip(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-  chi(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chip(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+  call dxc%get_field('psi', psi)
+  call dxc%get_field('chi', chi)
+  allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz))
+  allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz))
+  call psichi_to_udvd(geom, psi, chi, ud, vd)
+  have_udvd = .true.
+endif
+
+! A-Grid winds
+! ------------
+have_uava = .false.
+if (have_udvd) then
   allocate(ua(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   allocate(va(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-  call psichi_to_uava(geom, psi, chi, ua, va)
-  have_uava = .true.
+  call d_to_a(geom, ud, vd, ua, va)
+  have_uava=.true.
 endif
 
 ! Specific humidity
@@ -189,15 +193,25 @@ do f = 1, size(fields_to_do)
 
   select case (trim(fields_to_do(f)))
 
+  case ("ud")
+
+    if (.not. have_uava) call field_fail(fields_to_do(f))
+    field_ptr = ud
+
+  case ("vd")
+
+    if (.not. have_uava) call field_fail(fields_to_do(f))
+    field_ptr = vd
+
   case ("ua")
 
     if (.not. have_uava) call field_fail(fields_to_do(f))
-    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = ua(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+    field_ptr = ua
 
   case ("va")
 
     if (.not. have_uava) call field_fail(fields_to_do(f))
-    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = va(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+    field_ptr = va
 
   case ("t")
 
@@ -240,9 +254,11 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Winds
-logical :: have_psichi
+logical :: have_psichi, have_udvd
 real(kind=kind_real), pointer,     dimension(:,:,:) :: ua
 real(kind=kind_real), pointer,     dimension(:,:,:) :: va
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ud
+real(kind=kind_real), allocatable, dimension(:,:,:) :: vd
 real(kind=kind_real), allocatable, dimension(:,:,:) :: psi
 real(kind=kind_real), allocatable, dimension(:,:,:) :: chi
 
@@ -291,19 +307,36 @@ if (dxa%has_field('sphum')) then
   have_rh = .true.
 endif
 
+! A-Grid winds
+! ------------
+have_udvd = .false.
+if (dxa%has_field('ud') .and. dxa%has_field('vd')) then
+  call dxa%get_field('ud', ud)
+  call dxa%get_field('vd', vd)
+  have_udvd = .true.
+elseif (dxa%has_field('ua') .and. dxa%has_field('va')) then
+  call dxa%get_field('ua', ua)
+  call dxa%get_field('va', va)
+  allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
+  allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
+  ud = 0.0_kind_real
+  vd = 0.0_kind_real
+  call d_to_a_ad(geom, ud, vd, ua, va)
+  have_udvd = .true.
+endif
+
 ! Winds
 ! -----
 have_psichi = .false.
-if (dxa%has_field('ua') .and. dxa%has_field('va')) then
-  call dxa%get_field('ua', ua)
-  call dxa%get_field('va', va)
-  allocate(psi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-  allocate(chi(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
+if (have_udvd) then
+  allocate(psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  allocate(chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   psi = 0.0_kind_real
   chi = 0.0_kind_real
-  call psichi_to_uava_adm(geom, psi, chi, ua, va)
+  call psichi_to_udvd_adm(geom, psi, chi, ud, vd)
   have_psichi = .true.
 endif
+
 
 ! Loop over the fields not found in the input state and work through cases
 ! ------------------------------------------------------------------------
@@ -316,12 +349,12 @@ do f = 1, size(fields_to_do)
   case ("psi")
 
     if (.not. have_psichi) call field_fail(fields_to_do(f))
-    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psi(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+    field_ptr = psi
 
   case ("chi")
 
     if (.not. have_psichi) call field_fail(fields_to_do(f))
-    field_ptr(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chi(geom%isc:geom%iec,geom%jsc:geom%jec,:)
+    field_ptr = chi
 
   case ("tv")
 
@@ -398,122 +431,6 @@ dxa%calendar_type = dxc%calendar_type
 dxa%date_init = dxc%date_init
 
 end subroutine multiplyinverseadjoint
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine control_to_analysis_tlm(geom,psi, chi, tv, rh, &
-                                        ua , va , t , q, &
-                                   tvt, qt, qsat)
-
- implicit none
- type(fv3jedi_geom), intent(inout) :: geom
-
- !Input: control variables
- real(kind=kind_real), intent(in)    ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
- real(kind=kind_real), intent(in)    ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(in)    ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(in)    ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
-
- !Output: analysis variables
- real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (ua)
- real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !A-grid winds (va)
- real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
-
- !Trajectory for virtual temperature to temperature
- real(kind=kind_real), intent(in)    ::  tvt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !VTemperature traj
- real(kind=kind_real), intent(in)    ::   qt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity traj
- real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Sat spec hum
-
- real(kind=kind_real), allocatable, dimension(:,:,:) :: psi_dom, chi_dom
-
- ua = 0.0_kind_real
- va = 0.0_kind_real
- t  = 0.0_kind_real
- q  = 0.0_kind_real
-
- !psi and chi to A-grid u and v
- !-----------------------------
- allocate(psi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
- allocate(chi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
- psi_dom = 0.0_kind_real
- chi_dom = 0.0_kind_real
-
- psi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psi
- chi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chi
-
- call psichi_to_uava(geom,psi_dom,chi_dom,ua,va)
-
- deallocate(psi_dom, chi_dom)
-
- !Relative humidity to specific humidity
- !--------------------------------------
- call rh_to_q_tl(geom,qsat,rh,q)
-
- !Virtual temperature to temperature
- !----------------------------------
- call Tv_to_T_tl(geom,Tvt,Tv,qt,q,T)
-
-endsubroutine control_to_analysis_tlm
-
-! --------------------------------------------------------------------------------------------------
-
-!> Control variables to state variables - Adjoint
-
-subroutine control_to_analysis_adm(geom,psi, chi, tv, rh, &
-                                        ua , va , t , q, &
-                                   tvt, qt, qsat)
-
- implicit none
- type(fv3jedi_geom), intent(inout) :: geom
-
- !Output: control variables
- real(kind=kind_real), intent(inout) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
- real(kind=kind_real), intent(inout) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
- real(kind=kind_real), intent(inout) ::   tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Virtual temp
- real(kind=kind_real), intent(inout) ::   rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
-
- !Input: analysis variables
- real(kind=kind_real), intent(inout) ::   ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (u)
- real(kind=kind_real), intent(inout) ::   va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dgrid winds (v)
- real(kind=kind_real), intent(inout) ::    t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Dry temperature
- real(kind=kind_real), intent(inout) ::    q(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity
-
- !Trajectory for virtual temperature to temperaturc
- real(kind=kind_real), intent(in)    ::  tvt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !VTemperature traj
- real(kind=kind_real), intent(in)    ::   qt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Specific humidity traj
- real(kind=kind_real), intent(in)    :: qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Sat spec hum
-
- real(kind=kind_real), allocatable, dimension(:,:,:) :: psi_dom, chi_dom
-
- psi = 0.0_kind_real
- chi = 0.0_kind_real
- tv  = 0.0_kind_real
- rh  = 0.0_kind_real
-
- !Virtual temperature to temperature
- !----------------------------------
- call Tv_to_T_ad(geom,Tvt,Tv,qt,q,T)
-
- !Relative humidity to specific humidity
- !--------------------------------------
- call rh_to_q_ad(geom,qsat,rh,q)
-
- !psi and chi to D-grid u and v
- !-----------------------------
- allocate(psi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
- allocate(chi_dom(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
- psi_dom = 0.0_kind_real
- chi_dom = 0.0_kind_real
-
- call psichi_to_uava_adm(geom,psi_dom,chi_dom,ua,va)
-
- psi = psi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:)
- chi = chi_dom(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-
- deallocate(psi_dom, chi_dom)
-
-endsubroutine control_to_analysis_adm
 
 ! --------------------------------------------------------------------------------------------------
 

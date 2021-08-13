@@ -10,7 +10,7 @@ cost function:
     components:
     - covariance:
         covariance model: ID
-        date: '2018-04-15T00:00:00Z'
+        date: 2018-04-15T00:00:00Z
       weight:
         value: 0.01
     - covariance:
@@ -43,10 +43,10 @@ cost function:
         localization:
           localization method: BUMP
           bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
             method: loc
             strategy: common
-            load_nicas: 1
+            load_nicas_local: 1
             mpicom: 2
             verbosity: main
             io_keys: ["common"]

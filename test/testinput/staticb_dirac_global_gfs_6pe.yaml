@@ -1,0 +1,123 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+initial condition:
+  filetype: gfs
+  state variables: &state_vars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]
+  datapath: Data/inputs/gfs_c12/bkg
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+background error:
+  covariance model: BUMP
+  active variables: &active_vars [psi,chi,t,ps,rh,liq_wat,o3mr]
+  bump:
+    datadir: Data/staticb
+    verbosity: main
+    strategy: specific_univariate
+    load_nicas_global: 1
+    grids:
+    - prefix: nicas_3D_gfs
+      variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    - prefix: nicas_2D_gfs
+      variables: [surface_pressure]
+  input:
+  - parameter: nicas_norm
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: 1
+    filename_core: 20180415.000000.nicas_norm.fv_core.res.nc
+    filename_trcr: 20180415.000000.nicas_norm.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.nicas_norm.sfc_data.nc
+    filename_sfcw: 20180415.000000.nicas_norm.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.nicas_norm.coupler.res
+    date: 2018-04-15T00:00:00Z
+  universe radius:
+    filetype: gfs
+    psinfile: 1
+    datapath: Data/staticb/
+    filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+    filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+    filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.cor_rh.coupler.res
+    date: 2018-04-15T00:00:00Z
+  variable changes:
+  - variable change: StdDev
+    input variables: &control_vars [psi,chi,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
+    output variables: *control_vars
+    active variables: *active_vars
+    bump:
+      verbosity: main
+      universe_rad: 100.0e3
+      grids:
+      - variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+      - variables: [surface_pressure]
+    input:
+    - parameter: stddev
+      filetype: gfs
+      psinfile: 1
+      datapath: Data/staticb/
+      filename_core: 20180415.000000.stddev.fv_core.res.nc
+      filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
+      filename_sfcd: 20180415.000000.stddev.sfc_data.nc
+      filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
+      filename_cplr: 20180415.000000.stddev.coupler.res
+      date: 2018-04-15T00:00:00Z
+  - variable change: StatsVariableChange
+    input variables: *control_vars
+    output variables: *control_vars
+    active variables: *active_vars
+    bump:
+      datadir: Data/staticb
+      prefix: vbal_gfs
+      verbosity: main
+      universe_rad: 2000.0e3
+      load_vbal: 1
+      load_samp_global: 1
+      fname_samp: vbal_2018041421_gfs_sampling
+      vbal_block: [1,1,0,1]
+  - variable change: PsiChiToUV
+    input variables: *control_vars
+    output variables: &state_vars_with_rh [ua,va,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
+    active variables: [psi,chi]
+    bump:
+      datadir: Data/staticb
+      prefix: psichitouv_gfs
+      verbosity: main
+      universe_rad: 2000.0e3
+      load_wind_local: 1
+      wind_streamfunction: stream_function
+      wind_velocity_potential: velocity_potential
+      wind_zonal: eastward_wind
+      wind_meridional: northward_wind
+  - variable change: Control2Analysis
+    input variables: *state_vars_with_rh
+    output variables: *state_vars
+output B:
+  filetype: geos
+  datapath: Data/staticb/
+  filename_bkgd: dirac_global_gfs_6pe.nc4
+  date: 2018-04-15T00:00:00Z
+dirac:
+  ndir: 1
+  ixdir: [1]    #Xdir
+  iydir: [1]    #Ydir
+  ildir: [50]   #Level
+  itdir: [1]    #Tile
+  ifdir: [t] #Field
+
+test:
+  reference filename: testoutput/staticb_dirac_global_gfs.ref
+  test output filename: testoutput/staticb_dirac_global_gfs_6pe.test.out

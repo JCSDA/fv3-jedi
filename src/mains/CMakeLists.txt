@@ -3,6 +3,12 @@ ecbuild_add_executable( TARGET  fv3jedi_addincrement.x
                         LIBS	fv3jedi
                       )
 
+ecbuild_add_executable( TARGET  fv3jedi_convertincrement.x
+                        SOURCES fv3jediConvertIncrement.cc
+                        LIBS    fv3jedi
+                                saber
+                       )
+
 ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
                         SOURCES fv3jediConvertState.cc
                         LIBS    fv3jedi

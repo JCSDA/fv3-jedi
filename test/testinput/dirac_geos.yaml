@@ -18,20 +18,18 @@ initial condition:
   state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: ensemble
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
   localization:
-    timeslots: ['2018-04-14T21:00:00Z']
     localization variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
     localization method: BUMP
     bump:
-      prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+      prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
       method: loc
       strategy: common
-      load_nicas: 1
-      mpicom: 2
+      load_nicas_local: 1
       verbosity: main
-      io_keys: ["common"]
-      io_values: ["fixed_2500km_0.3"]
+      io_keys: [common]
+      io_values: [fixed_2500km_0.3]
   members:
     - filetype: geos
       datapath: Data/inputs/geos_c12
@@ -71,7 +69,7 @@ dirac:
   iydir: [1]    #Ydir
   ildir: [50]   #Level
   itdir: [1]    #Tile
-  ifdir: ['ua'] #Field
+  ifdir: [ua] #Field
 
 test:
   reference filename: testoutput/dirac_geos.ref

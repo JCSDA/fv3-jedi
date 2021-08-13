@@ -1,6 +1,6 @@
 covariance test:
   testinverse: true
-  tolerance: '1.0e-13'
+  tolerance: 1.0e-13
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
@@ -26,4 +26,4 @@ background:
   filename_cplr: 20180414.210000.coupler.res
 background error:
   covariance model: FV3JEDI-ID
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z

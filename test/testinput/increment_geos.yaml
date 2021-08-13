@@ -1,5 +1,5 @@
 increment test:
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table

@@ -1,4 +1,4 @@
-window begin: '2018-04-14T21:00:00Z'
+window begin: 2018-04-14T21:00:00Z
 window length: PT6H
 forecast length: PT6H
 geometry:
@@ -57,9 +57,9 @@ observations:
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "longitude" ]
-        sort variable: "air_pressure"
-        sort order: "ascending"
+        group variables: [ longitude ]
+        sort variable: air_pressure
+        sort order: ascending
     simulated variables: [integrated_layer_ozone_in_air]
   obs operator:
     name: AtmVertInterpLay

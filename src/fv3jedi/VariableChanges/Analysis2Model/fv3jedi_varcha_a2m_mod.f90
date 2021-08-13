@@ -21,7 +21,7 @@ use fv3jedi_state_mod,   only: fv3jedi_state
 use fv3jedi_io_gfs_mod,  only: fv3jedi_io_gfs
 use fv3jedi_io_geos_mod, only: fv3jedi_io_geos
 use fv3jedi_field_mod,   only: copy_subset
-use wind_vt_mod,         only: a2d, d2a
+use wind_vt_mod,         only: a_to_d, d_to_a
 
 implicit none
 private
@@ -132,7 +132,7 @@ do index_mod = 1, xmod%nf
       call xana%get_field('va', xana_va)
       call xmod%get_field('ud', xmod_ud)
       call xmod%get_field('vd', xmod_vd)
-      call a2d(geom, xana_ua, xana_va, xmod_ud, xmod_vd)
+      call a_to_d(geom, xana_ua, xana_va, xmod_ud, xmod_vd)
       xmod_ud(:,geom%jec+1,:) = 0.0_kind_real
       xmod_vd(geom%iec+1,:,:) = 0.0_kind_real
       failed = .false.
@@ -244,7 +244,7 @@ do index_ana = 1, xana%nf
       call xmod%get_field('vd', xmod_vd)
       xmod_ud(:,geom%jec+1,:) = 0.0_kind_real
       xmod_vd(geom%iec+1,:,:) = 0.0_kind_real
-      call d2a(geom, xmod_ud, xmod_vd, xana_ua, xana_va)
+      call d_to_a(geom, xmod_ud, xmod_vd, xana_ua, xana_va)
       failed = .false.
       if (xana%f_comm%rank() == 0) write(*,"(A)") &
           "A2M ChangeVarInverse: model state ud         => analysis state ua"

@@ -1,6 +1,6 @@
 cost function:
   cost type: 3D-Var
-  window begin: '2020-09-03T15:00:00Z'
+  window begin: 2020-09-03T15:00:00Z
   window length: PT6H
   analysis variables: [no2]
   geometry:
@@ -25,18 +25,15 @@ cost function:
     state variables: [u,v,T,DELP,ps,sphum,phis,no2]
   background error:
     covariance model: BUMP
-    date: '2020-09-03T18:00:00Z'
+    date: 2020-09-03T18:00:00Z
     bump:
       prefix: Data/bump/fv3jedi_bumpparameters_nicas_lam_cmaq
       method: cor
       strategy: specific_univariate
-      load_nicas: 1
-      mpicom: 2
+      load_nicas_local: 1
       verbosity: main
-      io_keys:
-      - "no2-no2"
-      io_values:
-      - "fixed_2500km_0.3"
+      io_keys: [no2-no2]
+      io_values: [fixed_2500km_0.3]
   observations:
   - obs space:
       name: NO2

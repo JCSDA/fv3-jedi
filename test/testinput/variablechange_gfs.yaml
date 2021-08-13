@@ -52,4 +52,4 @@ variable change tests:
       filename_sfcd: 20180415.000000.sfc_data.nc
       filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
       filename_cplr: 20180415.000000.coupler.res
-      state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]

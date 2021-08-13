@@ -314,12 +314,17 @@ call nccheck( nf90_create( llgeom%filename, ior(NF90_NETCDF4, NF90_MPIIO), ncid,
 call nccheck ( nf90_def_dim(ncid, "lon" , llgeom%nxg , x_dimid), "nf90_def_dim lon" )
 call nccheck ( nf90_def_dim(ncid, "lat" , llgeom%nyg , y_dimid), "nf90_def_dim lat" )
 call nccheck ( nf90_def_dim(ncid, "lev" , geom%npz   , z_dimid), "nf90_def_dim lev" )
-call nccheck ( nf90_def_dim(ncid, "edge", geom%npz+1 , e_dimid), "nf90_def_dim lev" )
-call nccheck ( nf90_def_dim(ncid, "time", 1          , t_dimid), "nf90_def_dim time" )
+call nccheck ( nf90_def_dim(ncid, "edge", geom%npz+1 , e_dimid), "nf90_def_dim edge")
+call nccheck ( nf90_def_dim(ncid, "time", 1          , t_dimid), "nf90_def_dim time")
 
 ! Define fields to be written (geom)
-call nccheck( nf90_def_var(ncid, "lons", NF90_DOUBLE, x_dimid, varid(1)), "nf90_def_var lons" )
-call nccheck( nf90_def_var(ncid, "lats", NF90_DOUBLE, y_dimid, varid(2)), "nf90_def_var lats" )
+call nccheck( nf90_def_var(ncid, "lon", NF90_DOUBLE, x_dimid, varid(1)), "nf90_def_var lon" )
+call nccheck( nf90_put_att(ncid, varid(1), "long_name", "longitude") )
+call nccheck( nf90_put_att(ncid, varid(1), "units", "degrees_east") )
+
+call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, y_dimid, varid(2)), "nf90_def_var lat" )
+call nccheck( nf90_put_att(ncid, varid(2), "long_name", "latitude") )
+call nccheck( nf90_put_att(ncid, varid(2), "units", "degrees_north") )
 
 call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
@@ -372,21 +377,15 @@ do var = 1, size(fields)
 
     ! Interpolate the field to the lat-lon grid
     ! -----------------------------------------
-    if (llgeom%thispe) then
-     allocate(llfield(1:llgeom%nx,1:llgeom%ny,1:geom%npz))
-    else
-     allocate(llfield(0,0,0))
-    endif
+    allocate(llfield(1:llgeom%nx,1:llgeom%ny,1:geom%npz))
     llfield = 0.0_kind_real
 
     csngrid = (geom%iec-geom%isc+1)*(geom%jec-geom%jsc+1)
     llngrid = llgeom%nx*llgeom%ny
 
-    if (llgeom%thispe) then
-      ! Interpolate
-      call llgeom%bumpinterp%apply(fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(var)%npz), &
-         & llfield(:,:,1:fields(var)%npz))
-    endif
+    ! Interpolate
+    call llgeom%bumpinterp%apply(fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fields(var)%npz), &
+                                 llfield(:,:,1:fields(var)%npz))
 
     !Open file
     call nccheck( nf90_open( llgeom%filename, ior(NF90_WRITE, NF90_MPIIO), ncid, &

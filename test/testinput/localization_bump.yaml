@@ -11,17 +11,15 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 loc variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
-test date: '2018-04-14T21:00:00Z'
+test date: 2018-04-14T21:00:00Z
 localization:
   localization method: BUMP
-  timeslots: ['2018-04-14T21:00:00Z']
   localization variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
   bump:
-    prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+    prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
     method: loc
     strategy: common
-    load_nicas: 1
-    mpicom: 2
+    load_nicas_local: 1
     verbosity: main
-    io_keys: ["common"]
-    io_values: ["fixed_2500km_0.3"]
+    io_keys: [common]
+    io_values: [fixed_2500km_0.3]

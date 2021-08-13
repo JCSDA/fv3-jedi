@@ -14,7 +14,7 @@ cost function:
     components:
     - covariance:
         covariance model: ID
-        date: '2018-04-15T00:00:00Z'
+        date: 2018-04-15T00:00:00Z
       weight:
         value: 0.01
     - covariance:
@@ -54,11 +54,10 @@ cost function:
             prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
             method: loc
             strategy: common
-            load_nicas: 1
-            mpicom: 2
+            load_nicas_local: 1
             verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_3000km_0.2"]
+            io_keys: [common]
+            io_values: [fixed_3000km_0.2]
       weight:
         value: 0.99
   observations:
@@ -82,7 +81,7 @@ cost function:
       covariance model: diagonal
   cost type: 3D-Var
   analysis variables: *aerovars
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: 2018-04-14T21:00:00Z
   window length: PT6H
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml

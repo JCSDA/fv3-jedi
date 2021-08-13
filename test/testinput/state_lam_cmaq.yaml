@@ -57,7 +57,7 @@ state test:
                       sv_sqt,lv_pcsog,cld_amt]
   state generate:
     analytic_init: dcmip-test-4-0
-    date: '2020-09-03T18:00:00Z'
+    date: 2020-09-03T18:00:00Z
     state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       no2, 'no',o3,no3,h2o2,n2o5,
                       hno3,hono,pna,so2,sulf,
@@ -96,7 +96,7 @@ state test:
                       sv_tol1,sv_tol2,sv_bnz1,sv_bnz2,sv_pah1,
                       sv_pah2,sv_trp1,sv_trp2,sv_iso1,sv_iso2,
                       sv_sqt,lv_pcsog,cld_amt]
-  date: '2020-09-03T18:00:00Z'
-  norm file: '4400555280.192976'
-  norm generated state: '142.79433322604876'
+  date: 2020-09-03T18:00:00Z
+  norm file: 4400555280.192976
+  norm generated state: 142.79433322604876
   tolerance: 1.0e-08

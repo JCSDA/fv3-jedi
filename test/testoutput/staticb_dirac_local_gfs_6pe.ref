@@ -1,0 +1,27 @@
+Test     : Norm of stddev at 2018-04-15T00:00:00Z: 3.225e+05
+Test     : Input Dirac increment: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  Increment print | number of fields = 9 | cube sphere face size: C12
+Test     :    ua                            : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    va                            : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    t                             : Min = +0.000e+00, Max = +1.000e+00, RMS = +4.253e-03
+Test     :    delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    ps                            : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    sphum                         : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    o3mr                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :  -----------------------------------------------------------------------------------------------
+Test     : B * Increment: 
+Test     :  -----------------------------------------------------------------------------------------------
+Test     :  Increment print | number of fields = 9 | cube sphere face size: C12
+Test     :    ua                            : Min = -1.155e-02, Max = +1.076e-02, RMS = +7.793e-04
+Test     :    va                            : Min = -1.386e-02, Max = +1.124e-02, RMS = +9.159e-04
+Test     :    t                             : Min = -4.203e-03, Max = +1.549e+00, RMS = +9.018e-03
+Test     :    delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    ps                            : Min = -2.849e-01, Max = +1.053e+00, RMS = +1.216e-01
+Test     :    sphum                         : Min = -5.610e-04, Max = +0.000e+00, RMS = +3.155e-06
+Test     :    ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :    o3mr                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+Test     :  -----------------------------------------------------------------------------------------------

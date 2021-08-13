@@ -17,7 +17,7 @@ use fv3jedi_state_mod,   only: fv3jedi_state
 
 use fv3jedi_field_mod, only: copy_subset
 
-use wind_vt_mod, only: a2d, d2a
+use wind_vt_mod, only: a_to_d, d_to_a
 use temperature_vt_mod, only: pt_to_t, t_to_pt
 use pressure_vt_mod, only: pe_to_delp, delp_to_pe, pe_to_pk, ps_to_pe
 use moisture_vt_mod, only: q4_to_q2, q2_to_q4
@@ -136,7 +136,7 @@ if (self%do_wind) then
   call xb%get_field('ua', ua)
   call xb%get_field('va', va)
 
-  call d2a(geom, ud, vd, ua, va)
+  call d_to_a(geom, ud, vd, ua, va)
 
 endif
 
@@ -275,7 +275,7 @@ if (self%do_wind) then
   call xb%get_field('ua', ua)
   call xb%get_field('va', va)
 
-  call a2d(geom, ua, va, ud, vd)
+  call a_to_d(geom, ua, va, ud, vd)
 
 endif
 

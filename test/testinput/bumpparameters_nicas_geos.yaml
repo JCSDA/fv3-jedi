@@ -12,7 +12,7 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: [t,ps]
-date: '2018-04-14T21:00:00Z'
+date: 2018-04-14T21:00:00Z
 background:
   filetype: geos
   datapath: Data/inputs/geos_c12
@@ -20,58 +20,54 @@ background:
   filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
   state variables: [t,ps]
 bump:
-  prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
   verbosity: main
-  universe_rad: 2500000.0
+  universe_rad: 2500.0e3
   strategy: specific_univariate
   new_nicas: 1
-  interp_type: mesh_based
-  ntry: 3
-  nrep: 2
+  write_nicas_local: 1
   resol: 6
-  mpicom: 2
-# Forced length-scales
-# --------------------
   forced_radii: 1
-  rh:
-    air_temperature: [1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1200000.0,
-                      1200000.0,1200000.0, 1200000.0,1100000.0,1100000.0,1100000.0,1000000.0,1000000.0,
-                      1000000.0,1000000.0,1000000.0,1000000.0,1000000.0,950000.0,900000.0,850000.0,
-                      850000.0,800000.0,700000.0,700000.0,700000.0,700000.0,700000.0,700000.0,700000.0,
-                      700000.0,700000.0,700000.0,700000.0,700000.0,650000.0,550000.0,500000.0,480000.0,
-                      460000.0,420000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
-                      400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
-                      400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
-                      400000.0,400000.0,400000.0]
-    surface_pressure: [2500000.0]
-  rv:
-    air_temperature: [0.3]
-    surface_pressure: [0.3]
-# Write C matrix
-# --------------
-  write_cmat: 0
-  io_keys:
-  - "air_temperature-air_temperature"
-  - "surface_pressure-surface_pressure"
-  io_values:
-  - "fixed_2500km_0.3"
-  - "fixed_2500km"
+  grids:
+  - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+    variables: [air_temperature]
+    rh:
+      air_temperature: [1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1200000.0,
+                        1200000.0,1200000.0, 1200000.0,1100000.0,1100000.0,1100000.0,1000000.0,1000000.0,
+                        1000000.0,1000000.0,1000000.0,1000000.0,1000000.0,950000.0,900000.0,850000.0,
+                        850000.0,800000.0,700000.0,700000.0,700000.0,700000.0,700000.0,700000.0,700000.0,
+                        700000.0,700000.0,700000.0,700000.0,700000.0,650000.0,550000.0,500000.0,480000.0,
+                        460000.0,420000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
+                        400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
+                        400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
+                        400000.0,400000.0,400000.0]
+    rv:
+      air_temperature: [0.3]
+    io_keys: [air_temperature-air_temperature]
+    io_values: [fixed_2500km_0.3]
+  - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
+    variables: [surface_pressure]
+    rh:
+      surface_pressure: [2500000.0]
+    rv:
+      surface_pressure: [0.0]
+    io_keys: [surface_pressure-surface_pressure]
+    io_values: [fixed_2500km]
 output:
 #- parameter: stddev
 #  filetype: geos
 #  datapath: Data/bump/
 #  filename: bumpparameters_nicas_geos.stddev.%yyyy%mm%dd_%hh%MM%ssz.nc4
-#  date: '2018-04-14T21:00:00Z'
+#  date: 2018-04-14T21:00:00Z
 - parameter: cor_rh
   filetype: geos
   datapath: Data/bump/
   filename: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
 - parameter: cor_rv
   filetype: geos
   datapath: Data/bump/
   filename: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
 
 test:
   reference filename: testoutput/bumpparameters_nicas_geos.ref

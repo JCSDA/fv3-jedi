@@ -1,7 +1,7 @@
 cost function:
   cost type: 3D-Var
   analysis variables: &3dvars [ua,va,t,ps,q,qi,ql,o3ppmv]
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: 2018-04-14T21:00:00Z
   window length: PT6H
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
@@ -30,7 +30,7 @@ cost function:
     components:
     - covariance:
         covariance model: FV3JEDI-ID
-        date: &adate '2018-04-15T00:00:00Z'
+        date: &adate 2018-04-15T00:00:00Z
       weight:
         value: 0.1
     - covariance:
@@ -80,14 +80,13 @@ cost function:
           localization variables: *3dvars
           localization method: ID
           bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
             method: loc
             strategy: common
-            load_nicas: 1
-            mpicom: 2
+            load_nicas_local: 1
             verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_2500km_0.3"]
+            io_keys: [common]
+            io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:

@@ -1,7 +1,7 @@
 cost function:
   cost type: 4D-Var
   analysis variables: &fgatvars [ua,va,t,ps,q,qi,ql,o3ppmv]
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: 2018-04-14T21:00:00Z
   window length: PT6H
   variable change: Analysis2Model
   filetype: geos
@@ -45,30 +45,19 @@ cost function:
     - covariance:
         covariance model: BUMP
         bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
           method: cor
           strategy: specific_univariate
-          load_nicas: 1
-          mpicom: 2
+          load_nicas_local: 1
           verbosity: main
-          io_keys:
-          - "eastward_wind-eastward_wind"
-          - "northward_wind-northward_wind"
-          - "air_temperature-air_temperature"
-          - "surface_pressure-surface_pressure"
-          - "specific_humidity-specific_humidity"
-          - "cloud_liquid_ice-cloud_liquid_ice"
-          - "cloud_liquid_water-cloud_liquid_water"
-          - "mole_fraction_of_ozone_in_air-mole_fraction_of_ozone_in_air"
-          io_values:
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
+          grids:
+          - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+            variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+            io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,mole_fraction_of_ozone_in_air-mole_fraction_of_ozone_in_air]
+            io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+          - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
+            variables: [surface_pressure]
+            io_keys: [surface_pressure-surface_pressure]
+            io_values: [fixed_2500km]
       weight:
         value: 0.1
     - covariance:
@@ -118,14 +107,13 @@ cost function:
           localization variables: *fgatvars
           localization method: BUMP
           bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
             method: loc
             strategy: common
-            load_nicas: 1
-            mpicom: 2
+            load_nicas_local: 1
             verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_2500km_0.3"]
+            io_keys: [common]
+            io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:

@@ -663,8 +663,8 @@ type(atlas_field) :: afield
 ! Create lon/lat field
 afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,(self%iec-self%isc+1)*(self%jec-self%jsc+1)/))
 call afield%data(real_ptr)
-real_ptr(1,:) = rad2deg*pack(self%grid_lon(self%isc:self%iec,self%jsc:self%jec),.true.)
-real_ptr(2,:) = rad2deg*pack(self%grid_lat(self%isc:self%iec,self%jsc:self%jec),.true.)
+real_ptr(1,:) = rad2deg*reshape(self%grid_lon(self%isc:self%iec,self%jsc:self%jec),(/self%ngrid/))
+real_ptr(2,:) = rad2deg*reshape(self%grid_lat(self%isc:self%iec,self%jsc:self%jec),(/self%ngrid/))
 call afieldset%add(afield)
 
 end subroutine set_atlas_lonlat
@@ -688,7 +688,7 @@ real(kind=kind_real) :: kapr, kap1
 ! Add area
 afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
 call afield%data(real_ptr_1)
-real_ptr_1 = pack(self%area(self%isc:self%iec,self%jsc:self%jec),.true.)
+real_ptr_1 = reshape(self%area(self%isc:self%iec,self%jsc:self%jec),(/self%ngrid/))
 call afieldset%add(afield)
 call afield%final()
 

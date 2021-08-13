@@ -22,7 +22,7 @@ use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_geom_iter_mod,       only: fv3jedi_geom_iter
 use fv3jedi_kinds_mod,           only: kind_real
 
-use wind_vt_mod, only: d2a
+use wind_vt_mod, only: d_to_a
 
 use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north, center
 
@@ -246,8 +246,8 @@ if (self%has_field('ua')) then
     call get_field(x1_fields, 'vd', x1_vd)
     call get_field(x2_fields, 'ud', x2_ud)
     call get_field(x2_fields, 'vd', x2_vd)
-    call d2a(geom, x1_ud, x1_vd, x1_ua, x1_va)
-    call d2a(geom, x2_ud, x2_vd, x2_ua, x2_va)
+    call d_to_a(geom, x1_ud, x1_vd, x1_ua, x1_va)
+    call d_to_a(geom, x2_ud, x2_vd, x2_ua, x2_va)
   else
     call abor1_ftn("fv3jedi_increment_mod.diff_incr: no way to determine A grid winds")
   endif
@@ -382,7 +382,7 @@ do idir=1,ndir
     do var = 1,self%nf
       if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir(idir))) then
         found = .true.
-        self%fields(var)%array(ixdir(idir),iydir(idir),ildir) = 1.0
+        self%fields(var)%array(ixdir(idir),iydir(idir),ildir(idir)) = 1.0
       endif
     enddo
 

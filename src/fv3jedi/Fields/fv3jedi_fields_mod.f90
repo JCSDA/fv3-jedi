@@ -14,6 +14,7 @@ use fckit_configuration_module
 
 ! oops
 use datetime_mod
+use missing_values_mod
 use oops_variables_mod
 use string_utils
 
@@ -182,6 +183,10 @@ subroutine create(self, geom, vars)
   field_fail = self%has_field('o3mr') .and. self%has_field('o3ppmv')
   if (field_fail) call abor1_ftn("fv3jedi_fields.create: o3mr and o3ppmv created")
 
+  !Dummy FMS style datetime
+  self%calendar_type = 0
+  self%date_init = 0
+
 endsubroutine create
 
 ! --------------------------------------------------------------------------------------------------
@@ -252,8 +257,10 @@ do var = 1, self%nf
   do k = 1, self%fields(var)%npz
     do j = self%fields(var)%jsc, self%fields(var)%jec
       do i = self%fields(var)%isc, self%fields(var)%iec
-        zz = zz + self%fields(var)%array(i,j,k)**2
-        ii = ii + 1
+        if (self%fields(var)%array(i,j,k)/=missing_value(0.0_kind_real)) then
+           zz = zz + self%fields(var)%array(i,j,k)**2
+           ii = ii + 1
+        endif
       enddo
     enddo
   enddo
@@ -331,9 +338,12 @@ gs3 = real((iec-isc+1)*(jec-jsc+1)*npz, kind_real)
 call self%f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
 ! Min/Max/SumSquares
-tmp(1) = minval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz))
-tmp(2) = maxval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz))
-tmp(3) =    sum(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)**2)
+tmp(1) = minval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz), &
+ & mask=self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)/=missing_value(0.0_kind_real))
+tmp(2) = maxval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz), &
+ & mask=self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)/=missing_value(0.0_kind_real))
+tmp(3) =    sum(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)**2, &
+ & mask=self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)/=missing_value(0.0_kind_real))
 
 ! Get global min/max/sum
 call self%f_comm%allreduce(tmp(1), minmaxrmsout(1), fckit_mpi_min())
@@ -425,7 +435,6 @@ elseif (trim(filetype) == 'geos') then
 elseif (trim(filetype) == 'latlon') then
 
   call latlon%setup_conf(geom)
-  call latlon%setup_date(vdate)
   call latlon%write(geom, self%fields, conf, vdate)
 
 else
@@ -525,7 +534,7 @@ type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(inout) :: afieldset
 
-integer :: jvar
+integer :: jvar, npz
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
@@ -537,9 +546,13 @@ do jvar = 1,vars%nvars()
   call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
+  ! Variable dimension
+  npz = field%npz
+  if (npz==1) npz = 0
+
   ! Create Atlas field
   afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
-                                             levels=field%npz )
+                                             levels=npz )
 
   ! Add to fieldsets
   call afieldset%add(afield)
@@ -561,8 +574,8 @@ type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(inout) :: afieldset
 
-integer :: jvar, jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
+integer :: jvar, npz, jl
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
@@ -572,6 +585,10 @@ do jvar = 1,vars%nvars()
   ! Get fv3-jedi field
   call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
+
+  ! Variable dimension
+  npz = field%npz
+  if (npz==1) npz = 0
 
   ! Get/create Atlas field
   if (afieldset%has_field(field%long_name)) then
@@ -583,20 +600,32 @@ do jvar = 1,vars%nvars()
 
     ! Create field
     afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
-                                               levels=field%npz )
+                                               levels=npz )
 
     ! Add to fieldsets
     call afieldset%add(afield)
 
   endif
 
-  ! Get pointer to Atlas data
-  call afield%data(real_ptr_2)
+  if (npz==0) then
 
-  ! Copy the data
-  do jl=1, field%npz
-    real_ptr_2(jl,:) = pack(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),.true.)
-  enddo
+    ! Get pointer to Atlas data
+    call afield%data(real_ptr_1)
+
+    ! Copy the data
+    real_ptr_1 = reshape(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,1),(/geom%ngrid/))
+
+  else
+
+    ! Get pointer to Atlas data
+    call afield%data(real_ptr_2)
+
+    ! Copy the data
+    do jl=1, npz
+      real_ptr_2(jl,:) = reshape(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),(/geom%ngrid/))
+    enddo
+
+  endif
 
   ! Release pointer
   call afield%final()
@@ -615,16 +644,12 @@ type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(in)    :: afieldset
 
-integer :: jvar, jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
-logical :: umask(geom%isc:geom%iec,geom%jsc:geom%jec)
+integer :: jvar, npz, jl
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
 
-
-! Initialization
-umask = .true.
 
 do jvar = 1,vars%nvars()
 
@@ -632,17 +657,33 @@ do jvar = 1,vars%nvars()
   call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
+  ! Variable dimension
+  npz = field%npz
+  if (npz==1) npz = 0
+
   ! Get Atlas field
   afield = afieldset%field(field%long_name)
 
-  ! Get pointer to Atlas field data
-  call afield%data(real_ptr_2)
+  if (npz==0) then
 
-  ! Copy to fv3-jedi field
-  do jl=1, field%npz
-    field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl) = unpack(real_ptr_2(jl,:), umask, &
-                                                field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl))
-  enddo
+    ! Get pointer to Atlas field data
+    call afield%data(real_ptr_1)
+
+    ! Copy to fv3-jedi field
+    field%array(geom%isc:geom%iec,geom%jsc:geom%jec,1) = reshape(real_ptr_1, &
+                                                       & (/geom%iec-geom%isc+1,geom%jec-geom%jsc+1/))
+  else
+
+    ! Get pointer to Atlas field data
+    call afield%data(real_ptr_2)
+
+    ! Copy to fv3-jedi field
+    do jl=1, npz
+      field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl) = reshape(real_ptr_2(jl,:), &
+                                                          & (/geom%iec-geom%isc+1,geom%jec-geom%jsc+1/))
+    enddo
+
+  endif
 
   ! Release pointer
   call afield%final()

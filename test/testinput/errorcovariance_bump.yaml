@@ -1,6 +1,6 @@
 covariance test:
   testinverse: false
-  tolerance: '1.0e-13'
+  tolerance: 1.0e-13
 geometry:
   nml_file_mpp: Data/fv3files/fmsmpp.nml
   trc_file: Data/fv3files/field_table
@@ -26,29 +26,19 @@ background:
   filename_cplr: 20180414.210000.coupler.res
 background error:
   covariance model: BUMP
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
   bump:
-    prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
     method: cor
     strategy: specific_univariate
-    load_nicas: 1
-    mpicom: 2
+    universe_rad: 2500.0e3
+    load_nicas_local: 1
     verbosity: main
-    io_keys:
-    - "eastward_wind-eastward_wind"
-    - "northward_wind-northward_wind"
-    - "air_temperature-air_temperature"
-    - "surface_pressure-surface_pressure"
-    - "specific_humidity-specific_humidity"
-    - "cloud_liquid_ice-cloud_liquid_ice"
-    - "cloud_liquid_water-cloud_liquid_water"
-    - "ozone_mass_mixing_ratio-ozone_mass_mixing_ratio"
-    io_values:
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
+    grids:
+    - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+      variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+      io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+      io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+    - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_gfs
+      variables: [surface_pressure]
+      io_keys: [surface_pressure-surface_pressure]
+      io_values: [fixed_2500km]

@@ -1,7 +1,7 @@
 cost function:
   cost type: 4D-Ens-Var
   analysis variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: 2018-04-14T21:00:00Z
   window length: PT6H
   subwindow: PT3H
   background:
@@ -41,16 +41,14 @@ cost function:
     ensemble:
     localization:
       bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
         method: loc
         strategy: common
-        load_nicas: 1
-        mpicom: 2
+        load_nicas_local: 1
         verbosity: main
-        io_keys: ["common"]
-        io_values: ["fixed_2500km_0.3"]
+        io_keys: [common]
+        io_values: [fixed_2500km_0.3]
       localization method: BUMP
-      timeslots: ['2018-04-14T21:00:00Z','2018-04-15T00:00:00Z','2018-04-15T03:00:00Z']
       localization variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
     members:
     - states:

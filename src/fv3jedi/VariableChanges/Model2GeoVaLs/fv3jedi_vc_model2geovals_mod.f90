@@ -222,6 +222,7 @@ real(kind=kind_real), allocatable :: sea_surface_salinity                      (
 ! Vorticity
 logical :: have_vort
 real(kind=kind_real), allocatable :: vort     (:,:,:)
+real(kind=kind_real), allocatable :: divg     (:,:,:)
 
 ! Tropopause pressure
 logical :: have_tropprs
@@ -389,7 +390,7 @@ elseif (xm%has_field('ud')) then
   call xm%get_field('vd', vd)
   allocate(ua(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call d2a(geom, ud, vd, ua, va)
+  call d_to_a(geom, ud, vd, ua, va)
   have_winds = .true.
   nullify(ud,vd)
 endif
@@ -624,14 +625,17 @@ if (xm%has_field('ud') .and. xm%has_field('vd')) then
   call xm%get_field('ud', ud)
   call xm%get_field('vd', vd)
   allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call udvd_to_vort(geom, ud, vd, vort)
+  allocate(divg(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call udvd_to_vortdivg(geom, ud, vd, vort, divg)
   have_vort = .true.
   nullify(ud, vd)
-elseif (xm%has_field('ua') .and. xm%has_field('va')) then
+elseif (have_winds) then
   allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call xm%get_field('ua', ua)
-  call xm%get_field('va', va)
-  call uava_to_vort(geom, ua, va, vort)
+  allocate(divg(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  allocate(ud(self%isc:self%iec  ,self%jsc:self%jec+1,self%npz))
+  allocate(vd(self%isc:self%iec+1,self%jsc:self%jec  ,self%npz))
+  call a_to_d(geom, ua, va, ud, vd)
+  call udvd_to_vortdivg(geom, ud, vd, vort, divg)
   have_vort = .true.
 endif
 

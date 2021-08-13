@@ -43,6 +43,7 @@ public :: changevar
 public :: changevarinverse
 
 type :: fv3jedi_varcha_c2a
+  logical :: skip_femps_init
   type(fempsgrid) :: grid
   type(fempsoprs) :: oprs
   integer :: lprocs
@@ -63,85 +64,90 @@ type(fv3jedi_geom),        intent(inout) :: geom
 type(fckit_configuration), intent(in)    :: conf
 
 integer :: ngrids, niter, lprocs, lstart
-logical :: check_convergence
 character(len=:), allocatable :: str
 character(len=2055) :: path2fv3gridfiles
 
 integer :: n, levs_per_proc
+logical :: tmp
 
 ! Grid and operators for the femps Poisson solver
 ! -----------------------------------------------
+self%skip_femps_init = .false.
+tmp = conf%get("skip femps initialization",self%skip_femps_init)
 
-! Configuration
-call conf%get_or_die("femps_iterations",niter)
-call conf%get_or_die("femps_ngrids",ngrids)
-call conf%get_or_die("femps_path2fv3gridfiles",str); path2fv3gridfiles = str
-if( .not. conf%get('femps_levelprocs',lprocs) ) then
-  lprocs = -1
-endif
-if( .not. conf%get('femps_checkconvergence',check_convergence) ) then
-  check_convergence = .false.
-endif
+if (.not. self%skip_femps_init) then
 
-! Processors that will do the work
-! --------------------------------
-lprocs = min(lprocs,geom%f_comm%size())
-lprocs = min(lprocs,geom%npz)
+  ! Configuration
+  call conf%get_or_die("femps_iterations",niter)
+  call conf%get_or_die("femps_ngrids",ngrids)
+  call conf%get_or_die("femps_path2fv3gridfiles",str); path2fv3gridfiles = str
+  if( .not. conf%get('femps_levelprocs',lprocs) ) then
+    lprocs = -1
+  endif
+  if( .not. conf%get('femps_checkconvergence',self%grid%check_convergence) ) then
+    self%grid%check_convergence = .false.
+  endif
 
-if (lprocs == -1) then
-  self%lprocs = min(geom%npz,geom%f_comm%size())
-else
-  self%lprocs = lprocs
-endif
+  ! Processors that will do the work
+  ! --------------------------------
+  lprocs = min(lprocs,geom%f_comm%size())
+  lprocs = min(lprocs,geom%npz)
 
-if (geom%f_comm%rank() == 0 ) print*, "Running femps with ", self%lprocs, " processors."
+  if (lprocs == -1) then
+    self%lprocs = min(geom%npz,geom%f_comm%size())
+  else
+    self%lprocs = lprocs
+  endif
 
-allocate(self%lev_start(self%lprocs))
-allocate(self%lev_final(self%lprocs))
+  if (geom%f_comm%rank() == 0 ) print*, "Running femps with ", self%lprocs, " processors."
 
-if (self%lprocs == geom%npz) then
-  do n = 1,self%lprocs
-    self%lev_start(n) = n
-    self%lev_final(n) = n
-  enddo
-else
-  levs_per_proc = floor(real(geom%npz,kind_real)/real(self%lprocs,kind_real))
-  lstart = 0
-  do n = 1,self%lprocs
-    self%lev_start(n) = lstart+1
-    self%lev_final(n) = self%lev_start(n) + levs_per_proc - 1
-    if (n .le. mod(geom%npz, self%lprocs)) self%lev_final(n) = self%lev_final(n) + 1
-    lstart = self%lev_final(n)
-  enddo
-endif
+  allocate(self%lev_start(self%lprocs))
+  allocate(self%lev_final(self%lprocs))
 
-if (self%lev_final(self%lprocs) .ne. geom%npz) &
-  call abor1_ftn("fv3jedi_varcha_c2a_mod.create: last level not equal to number of levels.")
+  if (self%lprocs == geom%npz) then
+    do n = 1,self%lprocs
+      self%lev_start(n) = n
+      self%lev_final(n) = n
+    enddo
+  else
+    levs_per_proc = floor(real(geom%npz,kind_real)/real(self%lprocs,kind_real))
+    lstart = 0
+    do n = 1,self%lprocs
+      self%lev_start(n) = lstart+1
+      self%lev_final(n) = self%lev_start(n) + levs_per_proc - 1
+      if (n .le. mod(geom%npz, self%lprocs)) self%lev_final(n) = self%lev_final(n) + 1
+      lstart = self%lev_final(n)
+    enddo
+  endif
 
-! Processors doing the work need grid and operators
-if (geom%f_comm%rank() < self%lprocs ) then
+  if (self%lev_final(self%lprocs) .ne. geom%npz) &
+    call abor1_ftn("fv3jedi_varcha_c2a_mod.create: last level not equal to number of levels.")
 
-  if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS grid object'
-  call self%grid%setup('cs',ngrids=ngrids,cube=geom%npx-1,niter=niter,&
-                       comm = geom%f_comm%communicator(), &
-                       rank = geom%f_comm%rank(), &
-                       csize = geom%f_comm%size(), &
-                       check_convergence = check_convergence )
+  ! Processors doing the work need grid and operators
+  if (geom%f_comm%rank() < self%lprocs ) then
 
-  if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS grid hierarchy from files'
-  call fv3grid_to_ugrid(self%grid,path2fv3gridfiles)
+    if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS grid object'
+    call self%grid%setup('cs',ngrids=ngrids,cube=geom%npx-1,niter=niter,&
+                         comm = geom%f_comm%communicator(), &
+                         rank = geom%f_comm%rank(), &
+                         csize = geom%f_comm%size() )
 
-  ! Build the connectivity and extra geom
-  if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS cubed-sphere connectivity'
-  call self%grid%build_cs(1,1)
+    if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS grid hierarchy from files'
+    call fv3grid_to_ugrid(self%grid,path2fv3gridfiles)
 
-  ! Perform all the setup
-  if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS static operators'
-  call preliminary(self%grid,self%oprs)
+    ! Build the connectivity and extra geom
+    if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS cubed-sphere connectivity'
+    call self%grid%build_cs(1,1)
 
-  ! Partial delete of operators not needed
-  if (geom%f_comm%rank() == 0 ) print*, 'FEMPS partial deallocate'
-  call self%oprs%pdelete()
+    ! Perform all the setup
+    if (geom%f_comm%rank() == 0 ) print*, 'Creating FEMPS static operators'
+    call preliminary(self%grid,self%oprs)
+
+    ! Partial delete of operators not needed
+    if (geom%f_comm%rank() == 0 ) print*, 'FEMPS partial deallocate'
+    call self%oprs%pdelete()
+
+  endif
 
 endif
 
@@ -154,10 +160,13 @@ subroutine delete(self)
 implicit none
 type(fv3jedi_varcha_c2a), intent(inout) :: self
 
-call self%oprs%delete()
-call self%grid%delete()
+if (.not. self%skip_femps_init) then
+  call self%oprs%delete()
+  call self%grid%delete()
+endif
 
-deallocate(self%lev_start,self%lev_final)
+if (allocated(self%lev_start)) deallocate(self%lev_start)
+if (allocated(self%lev_final)) deallocate(self%lev_final)
 
 end subroutine delete
 
@@ -176,13 +185,15 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Stream function/velocity potential
-logical :: have_udvd, have_vodi
+logical :: have_udvd, have_vodi, have_uava
 real(kind=kind_real), pointer     ::   psi(:,:,:)     ! Stream function
 real(kind=kind_real), pointer     ::   chi(:,:,:)     ! Velocity potentail
 real(kind=kind_real), allocatable ::    ud(:,:,:)     ! D-grid u wind
 real(kind=kind_real), allocatable ::    vd(:,:,:)     ! D-grid v wind
 real(kind=kind_real), allocatable ::  vort(:,:,:)     ! Vorticity
 real(kind=kind_real), allocatable ::  divg(:,:,:)     ! Divergence
+real(kind=kind_real), allocatable ::    ua(:,:,:)     ! D-grid u wind
+real(kind=kind_real), allocatable ::    va(:,:,:)     ! D-grid v wind
 
 ! Pressure
 logical :: have_pres
@@ -219,6 +230,7 @@ if (.not.allocated(fields_to_do)) return
 ! Wind variables
 ! --------------
 have_udvd = .false.
+have_uava = .false.
 have_vodi = .false.
 if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
   call xctl%get_field('psi', psi)
@@ -227,11 +239,23 @@ if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
   call psichi_to_udvd(geom, psi, chi, ud, vd)
   have_udvd = .true.
-  allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  allocate(divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call psichi_to_vortdivg(geom, self%grid, self%oprs, psi, chi, self%lprocs, self%lev_start, &
-                          self%lev_final, vort, divg)
-  have_vodi = .true.
+  if (.not. self%skip_femps_init) then
+    allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    allocate(divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+    call psichi_to_vortdivg(geom, self%grid, self%oprs, psi, chi, vort, divg, self%lprocs, self%lev_start, &
+                            self%lev_final)
+    have_vodi = .true.
+  endif
+endif
+
+! A-grid winds
+! ------------
+have_uava = .false.
+if (have_udvd) then
+  allocate(ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  allocate(va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  call d_to_a(geom, ud, vd, ua, va)
+  have_uava = .true.
 endif
 
 ! Pressure
@@ -297,6 +321,16 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_udvd) call field_fail(fields_to_do(f))
     field_ptr = vd
+
+  case ("ua")
+
+    if (.not. have_uava) call field_fail(fields_to_do(f))
+    field_ptr = ua
+
+  case ("va")
+
+    if (.not. have_uava) call field_fail(fields_to_do(f))
+    field_ptr = va
 
   case ("vort")
 
@@ -368,9 +402,11 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Stream function/velocity potential
-logical :: have_pcvd
-real(kind=kind_real), pointer     ::    ud(:,:,:)     ! D-grid u wind
-real(kind=kind_real), pointer     ::    vd(:,:,:)     ! D-grid v wind
+logical :: have_udvd, have_pcvd
+real(kind=kind_real), pointer     ::    ua(:,:,:)     ! D-grid u wind
+real(kind=kind_real), pointer     ::    va(:,:,:)     ! D-grid v wind
+real(kind=kind_real), allocatable ::    ud(:,:,:)     ! D-grid u wind
+real(kind=kind_real), allocatable ::    vd(:,:,:)     ! D-grid v wind
 real(kind=kind_real), allocatable ::   psi(:,:,:)     ! Stream function
 real(kind=kind_real), allocatable ::   chi(:,:,:)     ! Velocity potentail
 real(kind=kind_real), allocatable ::  vort(:,:,:)     ! Vorticity
@@ -420,16 +456,29 @@ if (.not.allocated(fields_to_do)) return
 
 ! Wind variables
 ! --------------
-have_pcvd = .false.
+have_udvd = .false.
 if (xana%has_field('ud') .and. xana%has_field('vd')) then
   call xana%get_field('ud', ud)
   call xana%get_field('vd', vd)
+  have_udvd = .true.
+elseif (xana%has_field('ua') .and. xana%has_field('va')) then
+  call xana%get_field('ua', ua)
+  call xana%get_field('va', va)
+  allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
+  allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
+  call a_to_d(geom, ua, va, ud, vd)
+  have_udvd = .true.
+endif
+
+have_pcvd = .false.
+if (have_udvd) then
   allocate( psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate( chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call udvd_to_psichi(geom, self%grid, self%oprs, ud, vd, psi, chi, &
-                      self%lprocs, self%lev_start, self%lev_final, vort, divg)
+  call udvd_to_vortdivg(geom, ud, vd, vort, divg)
+  call vortdivg_to_psichi(geom, self%grid, self%oprs, vort, divg, psi, chi, &
+                          self%lprocs, self%lev_start, self%lev_final)
   have_pcvd = .true.
 endif
 

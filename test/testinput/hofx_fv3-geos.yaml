@@ -1,4 +1,4 @@
-window begin: '2018-04-14T21:00:00Z'
+window begin: 2018-04-14T21:00:00Z
 window length: PT6H
 forecast length: PT6H
 geometry:
@@ -23,7 +23,7 @@ initial condition:
   filename_bkgd: geos.bkg.20180414_210000z.nc4
   filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
 model:
-  name: 'FV3LM'
+  name: FV3LM
   nml_file: Data/fv3files/input_geos_c12.nml
   nml_file_pert: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
@@ -70,9 +70,9 @@ observations:
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "longitude" ]
-        sort variable: "air_pressure"
-        sort order: "ascending"
+        group variables: [ longitude ]
+        sort variable: air_pressure
+        sort order: ascending
     obsdataout:
       obsfile: Data/hofx/sbuv2_n19_hofx_geos_2018041500_m_out.nc4
     simulated variables: [integrated_layer_ozone_in_air]

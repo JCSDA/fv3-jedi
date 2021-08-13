@@ -22,7 +22,7 @@ initial condition:
   state variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
 background error:
   covariance model: GSIRF # Identity yet
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
   variable changes:
   - variable change: NMCBalance
     input variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
@@ -44,7 +44,7 @@ dirac:
   iydir: [1]    #Ydir
   ildir: [50]   #Level
   itdir: [1]    #Tile
-  ifdir: ['ua'] #Field
+  ifdir: [ua] #Field
 
 test:
   reference filename: testoutput/dirac_gfs_bal.ref

@@ -5,6 +5,7 @@
 
 module fv3jedi_linvarcha_nmcbal_mod
 
+use fckit_configuration_module,   only: fckit_configuration
 use interpolatorbump_mod,         only: bump_interpolator
 
 use netcdf
@@ -307,7 +308,7 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: xbal_t
 real(kind=kind_real), pointer, dimension(:,:,:) :: xbal_q
 real(kind=kind_real), pointer, dimension(:,:,:) :: xbal_ps
 
-real(kind_real), allocatable :: psi_d(:,:,:), chi_d(:,:,:) ! psi/chi on D-grid
+real(kind_real), allocatable :: ud (:,:,:), vd (:,:,:) ! Winds on D-grid
 
 ! Copy fields that are the same in both
 ! -------------------------------------
@@ -344,13 +345,10 @@ call field_interp_from_gaugrid(self)
 
 ! 4. Linear variable changes (Control to Analysis)
 !psi/chi -> ua/va
-allocate(psi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-allocate(chi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-psi_d = 0.0_kind_real; chi_d = 0.0_kind_real
-psi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:) = self%fld(:,:,:,1)
-chi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:) = self%fld(:,:,:,2)
-call psichi_to_uava(geom,psi_d,chi_d,xbal_ua,xbal_va)
-deallocate(psi_d,chi_d)
+allocate( ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
+allocate( vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
+call psichi_to_udvd(geom,xuba_psi,xuba_chi,ud,vd)
+call d_to_a(geom,ud,vd,xbal_ua,xbal_va)
 
 !rh -> q
 call rh_to_q_tl(geom,self%qsattraj,xuba_rh,xbal_q)
@@ -389,7 +387,7 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: xuba_tv
 real(kind=kind_real), pointer, dimension(:,:,:) :: xuba_rh
 real(kind=kind_real), pointer, dimension(:,:,:) :: xuba_ps
 
-real(kind_real), allocatable :: psi_d(:,:,:), chi_d(:,:,:) ! psi/chi on D-grid
+real(kind_real), allocatable ::  ud(:,:,:),  vd(:,:,:) ! Winds on D-grid
 real(kind_real), allocatable :: ps_not_copied(:,:,:)
 
 ! Copy fields that are the same in both
@@ -426,13 +424,12 @@ call tv_to_t_ad(geom,self%tvtraj,self%fld(:,:,:,3),self%qtraj,xbal_q,xbal_t)
 call rh_to_q_ad(geom,self%qsattraj,xuba_rh,xbal_q)
 
 !psi/chi -> ua/va
-allocate(psi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-allocate(chi_d(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz))
-psi_d = 0.0_kind_real; chi_d = 0.0_kind_real
-call psichi_to_uava_adm(geom,psi_d,chi_d,xbal_ua,xbal_va)
-self%fld(:,:,:,1) = psi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-self%fld(:,:,:,2) = chi_d(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-deallocate(psi_d,chi_d)
+allocate( ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
+allocate( vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
+xuba_psi = 0.0_kind_real; xuba_chi = 0.0_kind_real
+
+call d_to_a_ad(geom, ud, vd, xbal_ua, xbal_va)
+call psichi_to_udvd_adm(geom, xuba_psi, xuba_chi, ud, vd)
 
 ! 2. Adjoint of intep. back to cubed-sphere grid
 call field_interp_from_gaugrid_ad(self)
@@ -445,8 +442,6 @@ call field_interp_to_gaugrid_ad(self)
 
 xuba_ps   = xuba_ps  + self%fld(:,:,1:1,4)
 xuba_tv   = xuba_tv  + self%fld(:,:,:,3)
-xuba_psi  = xuba_psi + self%fld(:,:,:,1)
-xuba_chi  = xuba_chi + self%fld(:,:,:,2)
 self%fld = 0.0_kind_real
 
 ! Copy calendar infomation
@@ -748,6 +743,8 @@ implicit none
 type(fv3jedi_linvarcha_nmcbal), intent(inout) :: self
 type(fv3jedi_geom), target,     intent(in)    :: geom
 
+type(fckit_configuration) :: bump_config
+
 ! Check grid size
 if(  (geom%isc/=self%isc).or.(geom%iec/=self%iec) &
 &.or.(geom%jsc/=self%jsc).or.(geom%jec/=self%jec)) then
@@ -755,11 +752,16 @@ if(  (geom%isc/=self%isc).or.(geom%iec/=self%iec) &
 & grid does not match that in the geometry")
 end if
 
-! Initialize bump interpolator
+! Set BUMP configuration
+bump_config = fckit_configuration()
+call bump_config%set('unique_points',.false.)
+
+! Initialize interpolator
 call self%c2g%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon1d_out=self%gg%rlons(1:self%gg%nlon)*rad2deg, &
  & lat1d_out=self%gg%rlats(1:self%gg%nlat)*rad2deg, nl=geom%npz)
 call self%g2c%init(geom%f_comm, lon1d_in=self%gg%rlons(1+self%hx:self%gg%nlon-self%hx)*rad2deg, &
- & lat1d_in=self%gg%rlats(1+self%hy:self%gg%nlat-self%hy)*rad2deg, afunctionspace_out=geom%afunctionspace, nl=geom%npz)
+ & lat1d_in=self%gg%rlats(1+self%hy:self%gg%nlat-self%hy)*rad2deg, afunctionspace_out=geom%afunctionspace, nl=geom%npz, &
+ & config=bump_config)
 
 end subroutine bump_init_gaugrid
 
@@ -803,7 +805,7 @@ self%nx = grid(2)
 self%nz = grid(3)
 if(self%mype==0) then
   write(nlat_c,*) grid(1); write(nlon_c,*) grid(2); write(nlev_c,*) grid(3);
-  write(log_grid,*) "NMC balance operalor grid size : nx=",&
+  write(log_grid,*) "NMC balance operator grid size : nx=",&
  &                          trim(adjustl(nlon_c)), &
  &                   ",ny=",trim(adjustl(nlat_c)), &
  &                   ",nz=",trim(adjustl(nlev_c))

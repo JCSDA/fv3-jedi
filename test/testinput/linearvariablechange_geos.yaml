@@ -6,21 +6,19 @@ linear variable change tests:
     nc1: 1000
     nc2: 100
     new_vbal: 0
-    nrep: 2
-    ntry: 3
-    prefix: 'statsvariablechange_geos'
+    prefix: statsvariablechange_geos
     sam_read: 1
     strategy: common
     vbal_block: [0,0,0,0,0,0,0,0,0]
     vbal_rad: 3000.0e3
-    verbosity: 'none'
+    verbosity: none
   input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
   output variables: [psi,chi,tv,ps,rh,qi,ql,o3]
 - variable change: Control2Analysis
   tolerance inverse: 1000
   testinverse: 1
   input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-  output variables: [ua,va,t,ps,q,qi,ql,o3]
+  output variables: [ud,vd,t,ps,q,qi,ql,o3]
 - variable change: Analysis2Model
   tolerance inverse: 1000
   testinverse: 1

@@ -22,32 +22,20 @@ initial condition:
   state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
 background error:
   covariance model: BUMP
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
   bump:
-    prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-    localization method: cor
     strategy: specific_univariate
-    load_nicas: 1
-    mpicom: 2
+    load_nicas_local: 1
     verbosity: main
-    io_keys:
-    - "eastward_wind-eastward_wind"
-    - "northward_wind-northward_wind"
-    - "air_temperature-air_temperature"
-    - "surface_pressure-surface_pressure"
-    - "specific_humidity-specific_humidity"
-    - "cloud_liquid_ice-cloud_liquid_ice"
-    - "cloud_liquid_water-cloud_liquid_water"
-    - "ozone_mass_mixing_ratio-ozone_mass_mixing_ratio"
-    io_values:
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
-    - "fixed_2500km_0.3"
+    grids:
+    - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+      variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+      io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+      io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+    - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_gfs
+      variables: [surface_pressure]
+      io_keys: [surface_pressure-surface_pressure]
+      io_values: [fixed_2500km]
 output B:
   filetype: gfs
   datapath: Data/bump/
@@ -58,11 +46,11 @@ output B:
   filename_cplr: dirac_gfs.B.coupler.res
 dirac:
   ndir: 1
-  ixdir: [1]    #Xdir
-  iydir: [1]    #Ydir
-  ildir: [50]   #Level
-  itdir: [1]    #Tile
-  ifdir: ['ua'] #Field
+  ixdir: [1]  #Xdir
+  iydir: [1]  #Ydir
+  ildir: [50] #Level
+  itdir: [1]  #Tile
+  ifdir: [ua] #Field
 
 test:
   reference filename: testoutput/dirac_gfs.ref

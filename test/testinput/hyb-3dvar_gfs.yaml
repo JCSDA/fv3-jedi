@@ -1,14 +1,14 @@
 cost function:
   cost type: 3D-Var
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: 2018-04-14T21:00:00Z
   window length: PT6H
-  analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+  analysis variables: &3dvars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]
   geometry:
     nml_file_mpp: Data/fv3files/fmsmpp.nml
     trc_file: Data/fv3files/field_table
     akbk: Data/fv3files/akbk64.nc4
     # input.nml
-    layout: [1,1]
+    layout: [1,2]
     io_layout: [1,1]
     npx: 25
     npy: 25
@@ -25,7 +25,7 @@ cost function:
     filename_sfcd: 20180415.000000.c24.sfc_data.nc
     filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.c24.coupler.res
-    state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+    state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
   background error:
@@ -33,31 +33,79 @@ cost function:
     components:
     - covariance:
         covariance model: BUMP
+        active variables: &active_vars [psi,chi,t,ps,rh,liq_wat,o3mr]
         bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-          method: cor
-          strategy: specific_univariate
-          load_nicas: 1
-          mpicom: 2
+          datadir: Data/staticb
           verbosity: main
-          io_keys:
-          - "eastward_wind-eastward_wind"
-          - "northward_wind-northward_wind"
-          - "air_temperature-air_temperature"
-          - "air_pressure_thickness-air_pressure_thickness"
-          - "specific_humidity-specific_humidity"
-          - "cloud_liquid_ice-cloud_liquid_ice"
-          - "cloud_liquid_water-cloud_liquid_water"
-          - "ozone_mass_mixing_ratio-ozone_mass_mixing_ratio"
-          io_values:
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
+          strategy: specific_univariate
+          load_nicas_local: 1
+          grids:
+          - prefix: nicas_3D_gfs
+            variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+          - prefix: nicas_2D_gfs
+            variables: [surface_pressure]
+        universe radius:
+          filetype: gfs
+          psinfile: 1
+          datapath: Data/staticb/
+          filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+          filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+          filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.cor_rh.coupler.res
+          date: 2018-04-15T00:00:00Z
+        variable changes:
+        - variable change: StdDev
+          input variables: &control_vars [psi,chi,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
+          output variables: *control_vars
+          active variables: *active_vars
+          bump:
+            verbosity: main
+            universe_rad: 100.0e3
+            grids:
+            - variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+            - variables: [surface_pressure]
+          input:
+          - parameter: stddev
+            filetype: gfs
+            psinfile: 1
+            datapath: Data/staticb/
+            filename_core: 20180415.000000.stddev.fv_core.res.nc
+            filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
+            filename_sfcd: 20180415.000000.stddev.sfc_data.nc
+            filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
+            filename_cplr: 20180415.000000.stddev.coupler.res
+            date: 2018-04-15T00:00:00Z
+        - variable change: StatsVariableChange
+          input variables: *control_vars
+          output variables: *control_vars
+          active variables: *active_vars
+          bump:
+            datadir: Data/staticb
+            prefix: vbal_gfs
+            verbosity: main
+            universe_rad: 2000.0e3
+            load_vbal: 1
+            load_samp_local: 1
+            fname_samp: vbal_2018041421_gfs_sampling
+            vbal_block: [1,1,0,1]
+        - variable change: PsiChiToUV
+          input variables: *control_vars
+          output variables: &3dvars_with_rh [ua,va,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
+          active variables: [psi,chi]
+          bump:
+            datadir: Data/staticb
+            prefix: psichitouv_gfs
+            verbosity: main
+            universe_rad: 2000.0e3
+            load_wind_local: 1
+            wind_streamfunction: stream_function
+            wind_velocity_potential: velocity_potential
+            wind_zonal: eastward_wind
+            wind_meridional: northward_wind
+        - variable change: Control2Analysis
+          input variables: *3dvars_with_rh
+          output variables: *3dvars
       weight:
         value: 0.1
     - covariance:
@@ -147,14 +195,13 @@ cost function:
           localization method: BUMP
           localization variables: *3dvars
           bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
             method: loc
             strategy: common
-            load_nicas: 1
-            mpicom: 2
+            load_nicas_global: 1
             verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_2500km_0.3"]
+            io_keys: [common]
+            io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:
@@ -163,7 +210,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/aircraft_hyb-3dvar-1-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -183,7 +230,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sondes_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/sondes_hyb-3dvar-1-gfs_2018041500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -203,7 +250,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/gnssro_hyb-3dvar-1-gfs_2018041500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -235,7 +282,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/amsua_n19_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/amsua_n19_hyb-3dvar-1-gfs_2018041500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs operator:
@@ -264,7 +311,7 @@ cost function:
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sfc_obs_2018041500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sfc_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/sfc_hyb-3dvar-1-gfs_2018041500_m.nc4
       simulated variables: [surface_pressure]
     obs operator:
       name: SfcPCorrected
@@ -287,7 +334,7 @@ variational:
       trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk64.nc4
       # input.nml
-      layout: [1,1]
+      layout: [1,2]
       io_layout: [1,1]
       npx: 13
       npy: 13
@@ -305,7 +352,7 @@ variational:
       trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk64.nc4
       # input.nml
-      layout: [1,1]
+      layout: [1,2]
       io_layout: [1,1]
       npx: 13
       npy: 13
@@ -322,11 +369,11 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs.c24.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs.c24.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs.c24.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs.c24.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs.c24.coupler.res
+  filename_core: hyb-3dvar-1-gfs.c24.fv_core.res.nc
+  filename_trcr: hyb-3dvar-1-gfs.c24.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar-1-gfs.c24.sfc_data.nc
+  filename_sfcw: hyb-3dvar-1-gfs.c24.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar-1-gfs.c24.coupler.res
   first: PT0H
   frequency: PT1H
 

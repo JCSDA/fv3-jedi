@@ -1,0 +1,218 @@
+input geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,2]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+output geometry:
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,2]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+
+variable changes:
+  - variable change: Control2Analysis
+    input variables: [psi,chi,t,ps,rh,liq_wat,o3mr]
+    output variables: &outputvars [ua,va,t,delp,sphum,liq_wat,ice_wat,o3mr]
+    do inverse: true
+    femps_iterations: 60
+    femps_ngrids: 2
+    femps_path2fv3gridfiles: Data/femps/
+    femps_checkconvergence: false
+
+states:
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem001/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem001/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem002/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem002/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem003/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem003/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem004/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem004/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem005/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem005/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem006/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem006/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem007/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem007/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem008/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem008/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem009/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem009/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+- input:
+    filetype: gfs
+    state variables: *outputvars
+    datapath: Data/inputs/gfs_c12/mem010/
+    filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+    filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+    filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+    filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+    filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  output:
+    filetype: gfs
+    datapath: Data/staticb/balanced/mem010/
+    filename_core: fv_core.res.nc
+    filename_trcr: fv_tracer.res.nc
+    filename_sfcd: sfc_data.nc
+    filename_sfcw: fv_srf_wnd.res.nc
+    filename_cplr: coupler.res
+
+test:
+  reference filename: testoutput/staticb_ens-to-psichi__YYYY__MM__DD__HH__gfs.ref
+  test output filename: testoutput/staticb_ens-to_psichi__YYYY__MM__DD__HH__gfs.test.out

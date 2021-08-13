@@ -7,7 +7,7 @@ include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
 
 # Option not to run with large tests
 # ----------------------------------
-option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" ON)
+option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" OFF)
 
 # Create the Data/ directory
 # --------------------------
@@ -38,10 +38,13 @@ Data/fv3files/inputpert_fsoi.nml
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fv3files)
 LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# Static B-specific dates
+# -----------------------
+set(staticb_dates 2018041421;2018041500;2018041503)
 
 # Test input scripts
 # ------------------
-list( APPEND fv3jedi_test_input
+list( APPEND fv3jedi_testinput
   testinput/3denvar_geos_aero.yaml
   testinput/3dvar_gfs_bal.yaml
   testinput/3dvar_lam_cmaq.yaml
@@ -144,13 +147,25 @@ list( APPEND fv3jedi_test_input
   testinput/state_gfs.yaml
   testinput/state_lam_cmaq.yaml
   testinput/state_lam_atmos.yaml
+  testinput/staticb_dirac_global_gfs_6pe.yaml
+  testinput/staticb_dirac_global_gfs_12pe.yaml
+  testinput/staticb_dirac_local_gfs_6pe.yaml
+  testinput/staticb_dirac_local_gfs_12pe.yaml
+  testinput/staticb_cor_gfs.yaml
+  testinput/staticb_nicas_gfs.yaml
+  testinput/staticb_psichitouv_gfs.yaml
+  testinput/staticb_split_nicas_gfs.yaml
+  testinput/staticb_split_psichitouv_gfs.yaml
+  testinput/staticb_split_vbal_gfs.yaml
+  testinput/staticb_var_gfs.yaml
+  testinput/staticb_vbal_gfs.yaml
   testinput/test_time.yaml
   testinput/variablechange_geos.yaml
   testinput/variablechange_gfs.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
-LINK_FILES( "${fv3jedi_test_input}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Test output scripts
 # -------------------
@@ -221,8 +236,27 @@ list( APPEND fv3jedi_testoutput
   testoutput/lgetkf_geos.ref
   testoutput/lgetkf_gfs.ref
   testoutput/lgetkf.ref
+  testoutput/staticb_dirac_global_gfs.ref
+  testoutput/staticb_dirac_local_gfs.ref
+  testoutput/staticb_cor_gfs.ref
+  testoutput/staticb_nicas_gfs.ref
+  testoutput/staticb_psichitouv_gfs.ref
+  testoutput/staticb_split_vbal_gfs.ref
+  testoutput/staticb_split_psichitouv_gfs.ref
+  testoutput/staticb_split_nicas_gfs.ref
+  testoutput/staticb_var_gfs.ref
+  testoutput/staticb_vbal_gfs.ref
   testoutput/update_output.py
 )
+
+foreach(DATE ${staticb_dates})
+  list( APPEND fv3jedi_testoutput
+    testoutput/staticb_ens-to-psichi_${DATE}_gfs.ref
+    testoutput/staticb_unbal_${DATE}_gfs.ref
+    testoutput/staticb_vbal_${DATE}_gfs.ref
+    testoutput/staticb_var-mom_${DATE}_gfs.ref
+  )
+endforeach()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testoutput)
 LINK_FILES( "${fv3jedi_testoutput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
@@ -346,13 +380,13 @@ if( ${geos-aero_FOUND} )
                            ${CMAKE_CURRENT_BINARY_DIR}/Data
                            ${geos-aero_test_data} )
 
-  list( APPEND geos-aero_test_input
+  list( APPEND geos-aero_testinput
   testinput/geosaod.rc
   testinput/Chem_MieRegistry.rc)
 
   CREATE_SYMLINK_FILENAME( ${geos-aero_SOURCE_DIR}/test/
                            ${CMAKE_CURRENT_BINARY_DIR}
-                           ${geos-aero_test_input} )
+                           ${geos-aero_testinput} )
 endif()
 
 # --------------------------------------------------------------------------------------------------
@@ -512,10 +546,6 @@ create_symlink_filename( ${CRTM_FV3JEDI_TESTFILES_PATH}
 
 # --------------------------------------------------------------------------------------------------
 
-
-# --------------------------------------------------------------------------------------------------
-
-
 # Create tests
 # ------------
 
@@ -615,6 +645,16 @@ foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs_land/${MEM})
 endforeach()
 
+# Static B directories
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/staticb)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/staticb/balanced)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/staticb/unbalanced)
+set(members mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem009;mem010)
+foreach(MEM IN LISTS members)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/staticb/balanced/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/staticb/unbalanced/${MEM})
+endforeach()
+
 # Stage directory with directories for running the models
 # -------------------------------------------------------
 if(FV3_FORECAST_MODEL MATCHES "GEOS" OR FV3_FORECAST_MODEL MATCHES "UFS")
@@ -630,7 +670,7 @@ endif()
 
 ecbuild_add_resources( TARGET   fv3jedi_test_scripts
                        SOURCES_PACK
-                       ${fv3jedi_test_input}
+                       ${fv3jedi_testinput}
                      )
 
 # Tier 1 tests
@@ -1199,47 +1239,201 @@ else()
 endif()
 
 
-
 # Tier 2 tests
 # ------------
 
 if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
 
-# Full observation h(x) for each model
-# ------------------------------------
+  # Full BUMP static covariance setup
+  # ----------------------------------
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-gfs
-                  MPI      6
-                  ARGS     testinput/hofx_fv3-gfs.yaml
-                  COMMAND  fv3jedi_hofx.x )
+  # Loop over dates
+  foreach(DATE ${staticb_dates})
+    string(SUBSTRING ${DATE} 0 4 YYYY)
+    string(SUBSTRING ${DATE} 4 2 MM)
+    string(SUBSTRING ${DATE} 6 2 DD)
+    string(SUBSTRING ${DATE} 8 2 HH)
+    message(STATUS "Creating static B yaml files for cycle: ${YYYY}-${MM}-${DD}:${HH}")
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-geos
-                  MPI      6
-                  ARGS     testinput/hofx_fv3-geos.yaml
-                  COMMAND  fv3jedi_hofx.x )
+    # Apply sed on template yaml file
+    execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
+                     INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_ens-to-psichi_DATE_gfs.yaml
+                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_ens-to-psichi_${DATE}_gfs.yaml )
+    execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
+                     INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_vbal_DATE_gfs.yaml
+                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_vbal_${DATE}_gfs.yaml )
+    execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
+                     INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_unbal_DATE_gfs.yaml
+                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_unbal_${DATE}_gfs.yaml )
+    execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
+                     INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_var-mom_DATE_gfs.yaml
+                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_var-mom_${DATE}_gfs.yaml )
+
+    # Change of variable from u/v to psi/chi for the ensemble members
+    ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_ens-to-psichi_${DATE}_gfs
+                      MPI          12
+                      ARGS         testinput/staticb_ens-to-psichi_${DATE}_gfs.yaml
+                      COMMAND      fv3jedi_convertstate.x )
+
+    # Compute vertical covariances and vertical balance using ensemble members
+    ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_vbal_${DATE}_gfs
+                      MPI          12
+                      ARGS         testinput/staticb_vbal_${DATE}_gfs.yaml
+                      COMMAND      fv3jedi_parameters.x
+                      TEST_DEPENDS fv3jedi_test_tier2_staticb_ens-to-psichi_${DATE}_gfs )
+
+    # Unbalance ensemble members
+    ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_unbal_${DATE}_gfs
+                      MPI          12
+                      ARGS         testinput/staticb_unbal_${DATE}_gfs.yaml
+                      COMMAND      fv3jedi_parameters.x
+                      TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_${DATE}_gfs )
+
+    # Compute variance and moments using unbalanced ensemble members
+    ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var-mom_${DATE}_gfs
+                      MPI          12
+                      ARGS         testinput/staticb_var-mom_${DATE}_gfs.yaml
+                      COMMAND      fv3jedi_parameters.x
+                      TEST_DEPENDS fv3jedi_test_tier2_staticb_unbal_${DATE}_gfs )
+  endforeach()
+
+  # Compute vertical balance using previously pre-computed vertical covariances, and unbalance ensemble members
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_vbal_gfs
+                    MPI          12
+                    ARGS         testinput/staticb_vbal_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_2018041421_gfs
+                                 fv3jedi_test_tier2_staticb_vbal_2018041500_gfs
+                                 fv3jedi_test_tier2_staticb_vbal_2018041503_gfs )
+
+  # Compute variance using pre-computed variance
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var_gfs
+                    MPI          12
+                    ARGS         testinput/staticb_var_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var-mom_2018041421_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2018041500_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2018041503_gfs )
+
+  # Compute correlation length-scales using pre-computed moments
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_cor_gfs
+                    MPI          12
+                    ARGS         testinput/staticb_cor_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var-mom_2018041421_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2018041500_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2018041503_gfs )
+
+  # Compute NICAS operator using the length-scales
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_nicas_gfs
+                    MPI          12
+                    ARGS         testinput/staticb_nicas_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_cor_gfs )
+
+  # Compute psi/chi to u/v operator
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_psichitouv_gfs
+                    MPI          12
+                    ARGS         testinput/staticb_psichitouv_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x )
+
+  # Split VBAL operator to get local files on 6 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_vbal_gfs
+                    MPI          6
+                    ARGS         testinput/staticb_split_vbal_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs )
+
+  # Split PSICHITOUV operator to get local files on 6 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_psichitouv_gfs
+                    MPI          6
+                    ARGS         testinput/staticb_split_psichitouv_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_psichitouv_gfs )
+
+  # Split NICAS operator to get local files on 6 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_nicas_gfs
+                    MPI          6
+                    ARGS         testinput/staticb_split_nicas_gfs.yaml
+                    COMMAND      fv3jedi_parameters.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_nicas_gfs )
+
+  # Dirac test using the full BUMP static covariance, local files, 6 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_dirac_local_gfs_6pe
+                    MPI          6
+                    ARGS         testinput/staticb_dirac_local_gfs_6pe.yaml
+                    COMMAND      fv3jedi_dirac.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_split_vbal_gfs
+                                 fv3jedi_test_tier2_staticb_var_gfs
+                                 fv3jedi_test_tier2_staticb_split_nicas_gfs
+                                 fv3jedi_test_tier2_staticb_split_psichitouv_gfs )
+
+  # Dirac test using the full BUMP static covariance, local files 12 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_dirac_local_gfs_12pe
+                    MPI          12
+                    ARGS         testinput/staticb_dirac_local_gfs_12pe.yaml
+                    COMMAND      fv3jedi_dirac.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_split_vbal_gfs
+                                 fv3jedi_test_tier2_staticb_var_gfs
+                                 fv3jedi_test_tier2_staticb_split_nicas_gfs
+                                 fv3jedi_test_tier2_staticb_split_psichitouv_gfs )
+
+  # Dirac test using the full BUMP static covariance, global files, 6 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_dirac_global_gfs_6pe
+                    MPI          6
+                    ARGS         testinput/staticb_dirac_global_gfs_6pe.yaml
+                    COMMAND      fv3jedi_dirac.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
+                                 fv3jedi_test_tier2_staticb_var_gfs
+                                 fv3jedi_test_tier2_staticb_nicas_gfs )
+
+  # Dirac test using the full BUMP static covariance, global files 12 PEs
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_dirac_global_gfs_12pe
+                    MPI          12
+                    ARGS         testinput/staticb_dirac_global_gfs_12pe.yaml
+                    COMMAND      fv3jedi_dirac.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
+                                 fv3jedi_test_tier2_staticb_var_gfs
+                                 fv3jedi_test_tier2_staticb_nicas_gfs )
+
+  # Full observation h(x) for each model
+  # ------------------------------------
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-gfs
+                    MPI      6
+                    ARGS     testinput/hofx_fv3-gfs.yaml
+                    COMMAND  fv3jedi_hofx.x )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-geos
+                    MPI      6
+                    ARGS     testinput/hofx_fv3-geos.yaml
+                    COMMAND  fv3jedi_hofx.x )
 
 
-# Full observation hyb-3DVar for each model
-# -----------------------------------------
+  # Full observation hyb-3DVar for each model
+  # -----------------------------------------
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_gfs
-                  MPI      6
-                  ARGS     testinput/hyb-3dvar_gfs.yaml
-                  COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_gfs
+                    MPI      12
+                    ARGS     testinput/hyb-3dvar_gfs.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
+                                 fv3jedi_test_tier2_staticb_var_gfs
+                                 fv3jedi_test_tier2_staticb_split_nicas_gfs
+                                 fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_geos
-                  MPI      6
-                  ARGS     testinput/hyb-3dvar_geos.yaml
-                  COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_geos
+                    MPI      6
+                    ARGS     testinput/hyb-3dvar_geos.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
 
-# EDA 4DVar
-# ---------
-ecbuild_add_test( TARGET   fv3jedi_test_tier2_eda_4dvar_fv3lm
-                  MPI      12
-                  ARGS     testinput/eda_4dvar_fv3lm.yaml
-                  COMMAND  fv3jedi_eda.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+  # EDA 4DVar
+  # ---------
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_eda_4dvar_fv3lm
+                    MPI      12
+                    ARGS     testinput/eda_4dvar_fv3lm.yaml
+                    COMMAND  fv3jedi_eda.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 endif()

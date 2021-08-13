@@ -169,7 +169,7 @@ if (dxm%has_field('ud')) then
   call dxm%get_field('vd', vd)
   allocate(ua(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call d2a(geom, ud, vd, ua, va)
+  call d_to_a(geom, ud, vd, ua, va)
   have_winds = .true.
 elseif (dxm%has_field('ua')) then
     call dxm%get_field('ua', ua)
@@ -413,7 +413,7 @@ if (dxg%has_field( "ua", ua_index) .and. dxg%has_field( "va", va_index)) then
     allocate(vd(self%isc:self%iec+1,self%jsc:self%jec  ,self%npz))
     ud = 0.0_kind_real
     vd = 0.0_kind_real
-    call d2a_ad(geom, ud, vd, ua, va)
+    call d_to_a_ad(geom, ud, vd, ua, va)
     have_dwinds = .true.
   elseif (dxm%has_field('ua')) then
     have_awinds = .true.

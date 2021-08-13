@@ -20,7 +20,7 @@ use fv3jedi_field_mod,           only: checksame, fv3jedi_field, hasfield, get_f
 use fv3jedi_fields_mod,          only: fv3jedi_fields
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_kinds_mod,           only: kind_real
-use wind_vt_mod,                 only: a2d
+use wind_vt_mod,                 only: a_to_d
 
 implicit none
 private
@@ -87,7 +87,7 @@ if (hasfield(rhs_fields, 'ua')) then !A-Grid in increment
       allocate(rhs_vd(isc:iec+1,jsc:jec  ,1:npz))
       call get_field(rhs_fields, 'ua', rhs_ua)
       call get_field(rhs_fields, 'va', rhs_va)
-      call a2d(geom, rhs_ua, rhs_va, rhs_ud, rhs_vd) !Linear
+      call a_to_d(geom, rhs_ua, rhs_va, rhs_ud, rhs_vd) !Linear
     endif
   endif
 endif

@@ -1,0 +1,39 @@
+geometry:
+  nml_file_mpp: Data/fv3files/fmsmpp.nml
+  trc_file: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
+date: 2018-04-15T00:00:00Z
+background:
+  filetype: gfs
+  state variables: *inputVars
+  psinfile: 1
+  datapath: Data/staticb/unbalanced/mem001
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+bump:
+  datadir: Data/staticb
+  prefix: psichitouv_gfs
+  verbosity: main
+  universe_rad: 2000.0e3
+  new_wind: 1
+  write_wind_local: 1
+  wind_nlon: 100
+  wind_nlat: 50
+  wind_nsg: 5
+  wind_inflation: 1.1
+
+test:
+  reference filename: testoutput/staticb_split_psichitouv_gfs.ref
+  test output filename: testoutput/staticb_split_psichitouv_gfs.test.out

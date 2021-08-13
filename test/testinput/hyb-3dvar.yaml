@@ -1,6 +1,6 @@
 cost function:
   cost type: 3D-Var
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: 2018-04-14T21:00:00Z
   window length: PT6H
   analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   geometry:
@@ -34,30 +34,13 @@ cost function:
     - covariance:
         covariance model: BUMP
         bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+          prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
           method: cor
           strategy: specific_univariate
-          load_nicas: 1
-          mpicom: 2
+          load_nicas_local: 1
           verbosity: main
-          io_keys:
-          - "eastward_wind-eastward_wind"
-          - "northward_wind-northward_wind"
-          - "air_temperature-air_temperature"
-          - "air_pressure_thickness-air_pressure_thickness"
-          - "specific_humidity-specific_humidity"
-          - "cloud_liquid_ice-cloud_liquid_ice"
-          - "cloud_liquid_water-cloud_liquid_water"
-          - "ozone_mass_mixing_ratio-ozone_mass_mixing_ratio"
-          io_values:
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
+          io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,air_pressure_thickness-air_pressure_thickness,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+          io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
       weight:
         value: 0.1
     - covariance:
@@ -147,14 +130,13 @@ cost function:
           localization method: BUMP
           localization variables: *3dvars
           bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
             method: loc
             strategy: common
-            load_nicas: 1
-            mpicom: 2
+            load_nicas_local: 1
             verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_2500km_0.3"]
+            io_keys: [common]
+            io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:

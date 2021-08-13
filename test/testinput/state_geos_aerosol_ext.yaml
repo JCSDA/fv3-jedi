@@ -18,6 +18,6 @@ state test:
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.aero.bkg.ext.20180415_000000z.nc4
     state variables: [ext1, ext2 ]
-  date: '2018-04-15T00:00:00Z'
+  date: 2018-04-15T00:00:00Z
   norm file: 0.034495309744047402
   tolerance: 1.0e-8

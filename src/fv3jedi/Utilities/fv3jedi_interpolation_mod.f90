@@ -19,7 +19,7 @@ use fv3jedi_kinds_mod,              only: kind_real
 use fv3jedi_field_mod,              only: fv3jedi_field, get_field, hasfield
 use fv3jedi_geom_mod,               only: fv3jedi_geom
 use fv3jedi_constants_mod,          only: rad2deg
-use wind_vt_mod,                    only: d2a, a2d
+use wind_vt_mod,                    only: d_to_a, a_to_d
 
 implicit none
 private
@@ -118,7 +118,7 @@ type(fv3jedi_field),       intent(inout) :: fields_ou(nf)  !Output fields
 integer :: var, i, j, k, n
 real(kind=kind_real), allocatable :: field_in(:), field_ou(:)
 
-logical :: do_d2a
+logical :: do_d_to_a
 real(kind=kind_real), allocatable :: ua(:,:,:)
 real(kind=kind_real), allocatable :: va(:,:,:)
 real(kind=kind_real), allocatable :: ud(:,:,:)
@@ -130,10 +130,10 @@ type(fv3jedi_field), pointer :: v_ou
 
 ! Special case of D-grid winds
 ! ----------------------------
-do_d2a = .false.
+do_d_to_a = .false.
 if (hasfield(fields_in,'ud')) then
 
-  do_d2a = .true.
+  do_d_to_a = .true.
 
   call get_field(fields_in, 'ud', u_in)
   call get_field(fields_in, 'vd', v_in)
@@ -141,7 +141,7 @@ if (hasfield(fields_in,'ud')) then
   allocate(ua(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
   allocate(va(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
 
-  call d2a(geom_in, u_in%array, v_in%array, ua, va)
+  call d_to_a(geom_in, u_in%array, v_in%array, ua, va)
 
   ! Reallocate without staggering
   deallocate(u_in%array)
@@ -234,7 +234,7 @@ enddo
 
 ! Back to D-Grid
 ! --------------
-if (do_d2a) then
+if (do_d_to_a) then
 
   call get_field(fields_ou, 'ud', u_ou)
   call get_field(fields_ou, 'vd', v_ou)
@@ -242,7 +242,7 @@ if (do_d2a) then
   allocate(ud(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
   allocate(vd(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
 
-  call a2d(geom_ou, u_ou%array, v_ou%array, ud, vd)
+  call a_to_d(geom_ou, u_ou%array, v_ou%array, ud, vd)
 
   ! Reallocate with staggering
   deallocate(u_ou%array)
