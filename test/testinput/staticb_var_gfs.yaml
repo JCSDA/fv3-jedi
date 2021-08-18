@@ -30,15 +30,15 @@ bump:
   strategy: specific_univariate
   ens1_nsub: 3
   var_filter: 1
-  var_npass: 10
+  var_niter: 1
   var_rhflt:
-    psi: [3000.0e3]
-    chi: [3000.0e3]
-    t: [300.0e3]
-    ps: [300.0e3]
-    rh: [300.0e3]
-    liq_wat: [300.0e3]
-    o3mr: [300.0e3]
+    stream_function: [3000.0e3]
+    velocity_potential: [3000.0e3]
+    air_temperature: [300.0e3]
+    surface_pressure: [300.0e3]
+    relative_humidity: [300.0e3]
+    cloud_liquid_water: [300.0e3]
+    ozone_mass_mixing_ratio: [300.0e3]
   ne: 30
   grids:
   - prefix: var_3D_gfs

@@ -1,8 +1,8 @@
-Test     : Norm of var at 2018-04-14T21:00:00Z: 2.409e+11
-Test     : Norm of m4 at 2018-04-14T21:00:00Z: 5.322e+23
-Test     : Norm of var at 2018-04-15T00:00:00Z: 2.607e+11
-Test     : Norm of m4 at 2018-04-15T00:00:00Z: 6.751e+23
-Test     : Norm of var at 2018-04-15T03:00:00Z: 2.819e+11
-Test     : Norm of m4 at 2018-04-15T03:00:00Z: 7.612e+23
-Test     : Norm of stddev at 2018-04-15T00:00:00Z: 3.225e+05
-Test     : Norm of stddev at 2018-04-15T00:00:00Z: 3.225e+05
+Norm of var at 2018-04-14T21:00:00Z: 2.409e+11
+Norm of m4 at 2018-04-14T21:00:00Z: 5.322e+23
+Norm of var at 2018-04-15T00:00:00Z: 2.607e+11
+Norm of m4 at 2018-04-15T00:00:00Z: 6.751e+23
+Norm of var at 2018-04-15T03:00:00Z: 2.819e+11
+Norm of m4 at 2018-04-15T03:00:00Z: 7.612e+23
+Norm of stddev at 2018-04-15T00:00:00Z: 3.321e+05
+Norm of stddev at 2018-04-15T00:00:00Z: 3.321e+05
