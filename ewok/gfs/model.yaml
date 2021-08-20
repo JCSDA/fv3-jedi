@@ -1,7 +1,5 @@
 name: FV3LM
-nml_file: '$(stage_dir)/fv3files/input_gfs_$(horizontal_resolution).nml'
-trc_file: '$(stage_dir)/fv3files/field_table'
-nml_file_pert: '$(stage_dir)/fv3files/inputpert_4dvar.nml'
+namelist filename: '$(stage_dir)/fv3files/input_gfs_$(horizontal_resolution).nml'
 tstep: PT15M
 lm_do_dyn: 1
 lm_do_trb: 0

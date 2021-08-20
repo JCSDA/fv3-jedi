@@ -48,7 +48,7 @@ subroutine c_fv3jedi_geom_initialize(c_conf, c_comm) bind(c,name='fv3jedi_geom_i
 
 implicit none
 
-type(c_ptr), intent(in)        :: c_conf
+type(c_ptr), value, intent(in) :: c_conf
 type(c_ptr), value, intent(in) :: c_comm
 
 type(fckit_mpi_comm)        :: f_comm
@@ -65,21 +65,21 @@ end subroutine c_fv3jedi_geom_initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_fields_meta) &
+subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_nlev) &
                                bind(c, name='fv3jedi_geom_setup_f90')
 
 implicit none
 
 !Arguments
 integer(c_int),     intent(inout) :: c_key_self
-type(c_ptr),        intent(in)    :: c_conf
+type(c_ptr), value, intent(in)    :: c_conf
 type(c_ptr), value, intent(in)    :: c_comm
-type(c_ptr), value, intent(in)    :: c_fields_meta
+integer(c_int),     intent(inout) :: c_nlev
 
 type(fv3jedi_geom), pointer :: self
 type(fckit_configuration)   :: f_conf
 type(fckit_mpi_comm)        :: f_comm
-type(fields_metadata)       :: f_fields_metadata
+integer                     :: f_nlev
 
 ! LinkedList
 ! ----------
@@ -91,13 +91,69 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! ------------
 f_conf            = fckit_configuration(c_conf)
 f_comm            = fckit_mpi_comm(c_comm)
-f_fields_metadata = fields_metadata(c_fields_meta)
 
 ! Call implementation
 ! -------------------
-call self%create(f_conf, f_comm, f_fields_metadata)
+call self%create(f_conf, f_comm, f_nlev)
+
+! Pass number of levels
+! ---------------------
+c_nlev = f_nlev
 
 end subroutine c_fv3jedi_geom_setup
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_addfmd_setup(c_key_self, c_fields_meta) &
+                                  bind(c, name='fv3jedi_geom_addfmd_f90')
+
+implicit none
+!Arguments
+integer(c_int),     intent(inout) :: c_key_self
+type(c_ptr), value, intent(in)    :: c_fields_meta
+
+type(fv3jedi_geom), pointer :: self
+type(fields_metadata)       :: f_fields_metadata
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self,self)
+
+! Fortran APIs
+! ------------
+f_fields_metadata = fields_metadata(c_fields_meta)
+
+! Add to Fortran type
+! -------------------
+self%fields = f_fields_metadata
+
+end subroutine c_fv3jedi_addfmd_setup
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_read_orography(c_key_self, c_conf) &
+  bind(c,name='fv3jedi_geom_read_orography_f90')
+
+implicit none
+integer(c_int),     intent(inout) :: c_key_self
+type(c_ptr), value, intent(in)    :: c_conf
+
+type(fv3jedi_geom), pointer :: self
+type(fckit_configuration)   :: f_conf
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self,self)
+
+! Fortran APIs
+! ------------
+f_conf = fckit_configuration(c_conf)
+
+! Call implementation
+! -------------------
+call self%read_orography(f_conf)
+
+end subroutine c_fv3jedi_geom_read_orography
 
 ! --------------------------------------------------------------------------------------------------
 

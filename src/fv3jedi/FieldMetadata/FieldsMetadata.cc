@@ -66,7 +66,7 @@ namespace fv3jedi {
 
   // -----------------------------------------------------------------------------------------------
 
-  FieldsMetadata::FieldsMetadata(const eckit::Configuration & confFull) {
+  FieldsMetadata::FieldsMetadata(const eckit::Configuration & confFull, int & nlev) {
     // Local versions
     std::string fieldIOName;
     std::string fieldName;
@@ -84,9 +84,6 @@ namespace fv3jedi {
     std::vector<eckit::LocalConfiguration> confFieldSets;
     confFull.get("fieldsets", confFieldSets);
     int confFieldSetsSize = confFieldSets.size();
-
-    // Get number of vertical levels
-    const int nlev = confFull.getInt("npz");
 
     //  Loop over sets of fields, i.e. each yaml file
     for (int km = 0; km < confFieldSetsSize; ++km) {

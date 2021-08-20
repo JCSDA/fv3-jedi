@@ -23,7 +23,7 @@ module fv3jedi_geom_iter_mod
   type :: fv3jedi_geom_iter
     type(fv3jedi_geom), pointer :: geom => null() !< Geometry
     integer :: iind = 1  !< index e.g. lat(iind,jind)
-    integer :: jind = 1  !< 
+    integer :: jind = 1  !<
   end type fv3jedi_geom_iter
 
 #define LISTED_TYPE fv3jedi_geom_iter
@@ -108,7 +108,7 @@ contains
     if (self%iind == -1 .AND. self%jind == -1) then
       ! special case of {-1,-1} means end of the grid
       lat = self%geom%grid_lat(self%geom%iec,self%geom%jec)
-      lon = self%geom%grid_lon(self%geom%iec,self%geom%jec) 
+      lon = self%geom%grid_lon(self%geom%iec,self%geom%jec)
     elseif (self%iind < self%geom%isc .OR. self%iind > self%geom%iec .OR. &
             self%jind < self%geom%jsc .OR. self%jind > self%geom%jec) then
       ! outside of the grid
@@ -136,14 +136,14 @@ contains
     ! Check iind/jind
     if (self%iind == -1 .AND. self%jind == -1) then
       ! special case of {-1,-1} means end of the grid
-      oro = self%geom%orography(self%geom%iec,self%geom%jec)
+      oro = self%geom%orography(self%geom%iec,self%geom%jec,1)
     elseif (self%iind < self%geom%isc .OR. self%iind > self%geom%iec .OR. &
             self%jind < self%geom%jsc .OR. self%jind > self%geom%jec) then
       ! outside of the grid
       call abor1_ftn('fv3jedi_geom_iter_orography: iterator out of bounds')
     else
       ! inside of the grid
-      oro = self%geom%orography(self%iind,self%jind)
+      oro = self%geom%orography(self%iind,self%jind,1)
     endif
 
   end subroutine fv3jedi_geom_iter_orography
@@ -160,7 +160,7 @@ contains
     jind = self%jind
 
     ! increment by 1
-    if (iind.lt.self%geom%iec) then 
+    if (iind.lt.self%geom%iec) then
       iind = iind + 1
     elseif (iind.eq.self%geom%iec) then
       iind = self%geom%isc

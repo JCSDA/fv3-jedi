@@ -176,7 +176,7 @@ namespace fv3jedi {
 
   class FieldsMetadata {
    public:
-    explicit FieldsMetadata(const eckit::Configuration &);
+    explicit FieldsMetadata(const eckit::Configuration &, int &);
 
     FieldMetadata getField(const std::string &) const;
 

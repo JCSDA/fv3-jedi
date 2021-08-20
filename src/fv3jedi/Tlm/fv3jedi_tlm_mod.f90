@@ -16,14 +16,15 @@ use duration_mod
 use oops_variables_mod
 
 ! fv3-jedi-linearmodel
-use fv3jedi_lm_mod,        only: fv3jedi_lm_type
+use fv3jedi_lm_mod, only: fv3jedi_lm_type
 
 ! fv3-jedi
-use fv3jedi_geom_mod,      only: fv3jedi_geom
-use fv3jedi_kinds_mod,     only: kind_real
-use fv3jedi_increment_mod, only: fv3jedi_increment
-use fv3jedi_state_mod,     only: fv3jedi_state
-use fv3jedi_traj_mod,      only: fv3jedi_traj
+use fv3jedi_fmsnamelist_mod, only: fv3jedi_fmsnamelist
+use fv3jedi_geom_mod,        only: fv3jedi_geom
+use fv3jedi_kinds_mod,       only: kind_real
+use fv3jedi_increment_mod,   only: fv3jedi_increment
+use fv3jedi_state_mod,       only: fv3jedi_state
+use fv3jedi_traj_mod,        only: fv3jedi_traj
 
 implicit none
 private
@@ -63,6 +64,7 @@ character(len=20) :: ststep
 type(duration) :: dtstep
 real(kind=kind_real) :: dt
 character(len=:), allocatable :: str
+type(fv3jedi_fmsnamelist) :: fmsnamelist
 
 ! Model time step
 ! ---------------
@@ -78,7 +80,26 @@ call conf%get_or_die("lm_do_dyn",self%fv3jedi_lm%conf%do_dyn)
 call conf%get_or_die("lm_do_trb",self%fv3jedi_lm%conf%do_phy_trb)
 call conf%get_or_die("lm_do_mst",self%fv3jedi_lm%conf%do_phy_mst)
 
+! Prepare namelist (nonlinear part)
+! ---------------------------------
+call fmsnamelist%replace_namelist(conf)
+
+! Filename for namelist (tl/ad part)
+! ----------------------------------
+self%fv3jedi_lm%conf%inputpert_filename = 'inputpert.nml'
+if (conf%has("linear model namelist filename")) then
+  call conf%get_or_die("linear model namelist filename", str)
+  self%fv3jedi_lm%conf%inputpert_filename = str
+  deallocate(str)
+endif
+
+! Call linear model constructor
+! -----------------------------
 call self%fv3jedi_lm%create(dt,geom%npx,geom%npy,geom%npz,geom%ptop,geom%ak,geom%bk)
+
+! Revert the fms namelist
+! -----------------------
+call fmsnamelist%revert_namelist
 
 end subroutine create
 

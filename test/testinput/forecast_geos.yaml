@@ -1,15 +1,13 @@
 forecast length: PT6H
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  # input.nml
   layout: [4,4]
-  io_layout: [1,1]
   npx: 91
   npy: 91
   npz: 72
-  ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 model:

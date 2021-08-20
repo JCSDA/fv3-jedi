@@ -66,7 +66,7 @@ class Geometry : public util::Printable,
   const eckit::mpi::Comm & comm_;
   std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpace_;
   std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
-  const FieldsMetadata fieldsMeta_;
+  std::shared_ptr<FieldsMetadata> fieldsMeta_;
 };
 // -------------------------------------------------------------------------------------------------
 

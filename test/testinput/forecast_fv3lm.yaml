@@ -1,22 +1,17 @@
 forecast length: PT1H
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/input_gfs_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk64.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
   npx: 13
   npy: 13
   npz: 64
-  ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 model:
   name: FV3LM
-  nml_file: Data/fv3files/input_gfs_c12.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  use internal namelist: true
   tstep: PT15M
   lm_do_dyn: 1
   lm_do_trb: 0

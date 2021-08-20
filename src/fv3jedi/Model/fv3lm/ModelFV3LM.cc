@@ -17,7 +17,6 @@
 #include "fv3jedi/Model/fv3lm/ModelFV3LM.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
@@ -29,9 +28,7 @@ ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & mcon
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM" << std::endl;
   tstep_ = util::Duration(mconf.getString("tstep"));
   const eckit::Configuration * configc = &mconf;
-  stageFv3Files(mconf, geom_.getComm());
   fv3jedi_fv3lm_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  removeFv3Files(geom_.getComm());
   oops::Log::trace() << "ModelFV3LM created" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

@@ -65,10 +65,9 @@ list( APPEND fv3jedi_src_files
   State/fv3jedi_state_mod.F90
   Utilities/Traits.h
   Utilities/interface.h
-  Utilities/Utilities.cc
-  Utilities/Utilities.h
   Utilities/fv3jedi_communication_mod.f90
   Utilities/fv3jedi_constants_mod.f90
+  Utilities/fv3jedi_fmsnamelist_mod.f90
   Utilities/fv3jedi_interpolation_mod.f90
   Utilities/fv3jedi_kinds_mod.f90
   Utilities/fv3jedi_netcdf_utils_mod.F90
@@ -205,7 +204,7 @@ endif()
 #Add the library
 ecbuild_add_library( TARGET          fv3jedi
                      SOURCES         ${FV3JEDI_SRC_DEP}
-                     LIBS            ${FV3JEDI_LIB_DEP}
+                     PUBLIC_LIBS     ${FV3JEDI_LIB_DEP}
                      INSTALL_HEADERS LISTED
                      LINKER_LANGUAGE ${FV3JEDI_LINKER_LANGUAGE}
                    )

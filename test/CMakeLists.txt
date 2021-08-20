@@ -19,8 +19,8 @@ list( APPEND fv3jedi_test_fv3files
 Data/fv3files/akbk64.nc4
 Data/fv3files/akbk72.nc4
 Data/fv3files/akbk127.nc4
-Data/fv3files/field_table
-Data/fv3files/field_table_cold_starts
+Data/fv3files/field_table_gmao
+Data/fv3files/field_table_gfdl
 Data/fv3files/field_table_lam_cmaq
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_gfs_c12.nml

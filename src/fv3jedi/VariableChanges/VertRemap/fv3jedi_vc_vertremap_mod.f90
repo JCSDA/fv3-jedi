@@ -9,26 +9,27 @@ module fv3jedi_vc_vertremap_mod
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms
-use constants_mod,         only: grav
-use field_manager_mod,     only: MODEL_ATMOS
-use mpp_domains_mod,       only: mpp_update_domains
-use tracer_manager_mod,    only: get_number_tracers, get_tracer_names, get_tracer_index, NO_TRACER, &
-                                 set_tracer_profile
+use constants_mod,           only: grav
+use field_manager_mod,       only: MODEL_ATMOS
+use mpp_domains_mod,         only: mpp_update_domains
+use tracer_manager_mod,      only: get_number_tracers, get_tracer_names, get_tracer_index, NO_TRACER, &
+                                   set_tracer_profile
 
 ! fv3
-use external_ic_mod,       only: remap_scalar, remap_dwinds, source
-use fv_arrays_mod,         only: fv_atmos_type, deallocate_fv_atmos_type, R_GRID
-use fv_grid_utils_mod,     only: mid_pt_sphere, get_unit_vect2, get_latlon_vector, inner_prod
-use test_cases_mod,        only: checker_tracers
+use external_ic_mod,         only: remap_scalar, remap_dwinds, source
+use fv_arrays_mod,           only: fv_atmos_type, deallocate_fv_atmos_type, R_GRID
+use fv_grid_utils_mod,       only: mid_pt_sphere, get_unit_vect2, get_latlon_vector, inner_prod
+use test_cases_mod,          only: checker_tracers
 
 ! fv3jedi
-use fv_prec_mod,           only: kind_fv3
-use fv_init_mod,           only: fv_init
-use fv3jedi_geom_mod,      only: fv3jedi_geom
-use fv3jedi_fieldfail_mod, only: field_fail
-use fv3jedi_field_mod,     only: copy_subset, field_clen, fv3jedi_field
-use fv3jedi_kinds_mod,     only: kind_real
-use fv3jedi_state_mod,     only: fv3jedi_state
+use fv_prec_mod,             only: kind_fv3
+use fv_init_mod,             only: fv_init
+use fv3jedi_fmsnamelist_mod, only: fv3jedi_fmsnamelist
+use fv3jedi_geom_mod,        only: fv3jedi_geom
+use fv3jedi_fieldfail_mod,   only: field_fail
+use fv3jedi_field_mod,       only: copy_subset, field_clen, fv3jedi_field
+use fv3jedi_kinds_mod,       only: kind_real
+use fv3jedi_state_mod,       only: fv3jedi_state
 
 implicit none
 private
@@ -60,9 +61,13 @@ type(fckit_configuration),   intent(in)    :: conf
 integer :: gtile, p_split = 1, n
 logical :: checks_passed
 character(len=:), allocatable :: str
+type(fv3jedi_fmsnamelist) :: fmsnamelist
+
+! Prepare namelist
+call fmsnamelist%replace_namelist(conf)
 
 ! Create Atm structure
-call fv_init(self%Atm, 300.0_kind_real, self%grids_on_this_pe, p_split, gtile, .false.)
+call fv_init(self%Atm, 300.0_kind_real, self%grids_on_this_pe, p_split, gtile, .true.)
 
 ! Flag to use cold starts
 if( .not. conf%get('input is cold starts', self%from_cold_start) ) self%from_cold_start = .true.
@@ -99,6 +104,10 @@ if (.not.checks_passed) call abor1_ftn("fv3jedi_vc_vertremap_mod.field_fail: Geo
 
 if (.not.size(self%Atm)==1) call abor1_ftn("fv3jedi_vc_vertremap_mod.field_fail: Atm strucutre"// &
                                            " with size > 1 not supported.")
+
+! Revert the fms namelist
+! -----------------------
+call fmsnamelist%revert_namelist
 
 end subroutine create
 

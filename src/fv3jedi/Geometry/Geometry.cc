@@ -15,13 +15,13 @@
 #include "atlas/util/Config.h"
 
 #include "eckit/config/Configuration.h"
+#include "eckit/config/LocalConfiguration.h"
 
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.interface.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 // -------------------------------------------------------------------------------------------------
 
@@ -29,28 +29,29 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-Geometry::Geometry(const eckit::Configuration & conf,
-                   const eckit::mpi::Comm & comm) : comm_(comm), fieldsMeta_(conf) {
-  const eckit::Configuration * configc = &conf;
-
+Geometry::Geometry(const eckit::Configuration & conf, const eckit::mpi::Comm & comm) : comm_(comm) {
   // Call the initialize phase, done only once.
   static bool initialized = false;
   if (!initialized) {
-    stageFMSFiles(conf, comm);
-    fv3jedi_geom_initialize_f90(&configc, &comm_);
-    removeFv3Files(comm);
+    const eckit::LocalConfiguration & fmsconf = conf.getSubConfiguration("fms initialization");
+    fv3jedi_geom_initialize_f90(&fmsconf, &comm_);
     initialized = true;
     oops::Log::debug() << "FMS MPP initialized on " << comm_.name() << std::endl;
   }
 
-  // Prepare input.nml and other FV3 files
-  bool prep_nml = conf.getBool("prepare external nml file", false);
-  stageFv3Files(conf, comm);
-  if ( !conf.has("nml_file") && prep_nml ) {
-    generateGeomFv3Conf(conf, comm);
+  // Geometry constructor
+  int nlev;
+  fv3jedi_geom_setup_f90(keyGeom_, &conf, &comm_, nlev);
+
+  // Construct the field sets and add to Geometry
+  fieldsMeta_.reset(new FieldsMetadata(conf, nlev));
+  fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
+
+  // Read the orography
+  if (conf.has("orography")) {
+    const eckit::LocalConfiguration & oroconf = conf.getSubConfiguration("orography");
+    fv3jedi_geom_read_orography_f90(keyGeom_, &oroconf);
   }
-  fv3jedi_geom_setup_f90(keyGeom_, &configc, &comm_, &fieldsMeta_);
-  removeFv3Files(comm);
 
   // Set ATLAS lon/lat field
   atlasFieldSet_.reset(new atlas::FieldSet());
@@ -70,8 +71,9 @@ Geometry::Geometry(const eckit::Configuration & conf,
 
 // -------------------------------------------------------------------------------------------------
 
-Geometry::Geometry(const Geometry & other) : comm_(other.comm_), fieldsMeta_(other.fieldsMeta_) {
-  fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, &fieldsMeta_);
+Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
+  fieldsMeta_ = std::make_shared<FieldsMetadata>(*other.fieldsMeta_);
+  fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, fieldsMeta_.get());
   atlasFunctionSpace_.reset(new atlas::functionspace::PointCloud(
                             other.atlasFunctionSpace_->lonlat()));
   fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
@@ -137,7 +139,7 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
   std::vector<size_t> varSizes;
   // Loop through arrays and search metadata map for the levels
   for (size_t it = 0; it < vars.size(); it++) {
-    varSizes.push_back(fieldsMeta_.getLevelsFromLongName(vars[it]));
+    varSizes.push_back(fieldsMeta_->getLevelsFromLongName(vars[it]));
   }
   return varSizes;
 }

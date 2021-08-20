@@ -18,7 +18,6 @@
 #include "fv3jedi/Model/ufs/ModelUFS.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------

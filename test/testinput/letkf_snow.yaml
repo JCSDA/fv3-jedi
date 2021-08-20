@@ -1,20 +1,19 @@
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table
   akbk: Data/fv3files/akbk64.nc4
   npx: 49
   npy: 49
   npz: 64
-  ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/land.yaml
     - fieldset: Data/fieldsets/ufo.yaml
     - fieldset: Data/fieldsets/oro_data.yaml
-  read_orog: true
-  orog_IO_name: orog_filt
-  filename_orog: C48_oro_data.nc
-  datapath: Data/inputs/gfs_land_c48/grid/
-  prepend files with date: false
+  orography:
+    orography field name: orog_filt
+    datapath: Data/inputs/gfs_land_c48/grid/
+    filename_orog: C48_oro_data.nc
 
 window begin: 2019-12-15T09:00:00Z
 window length: PT6H

@@ -19,12 +19,13 @@ use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use fms_io_mod,                 only: fms_io_init, fms_io_exit, set_domain
-use fms_mod,                    only: fms_init, check_nml_error
-use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE, input_nml_file
+use fms_io_mod,                 only: set_domain, nullify_domain
+use fms_mod,                    only: fms_init
+use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
                                       mpp_define_mosaic, mpp_define_io_domain, mpp_domains_exit, &
                                       mpp_domains_set_stack_size
+use field_manager_mod,          only: fm_string_len, field_manager_init
 
 ! fv3 uses
 use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
@@ -35,6 +36,7 @@ use fv3jedi_constants_mod,       only: ps, rad2deg, kappa
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
+use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
 use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
 use fv3jedi_field_mod,           only: fv3jedi_field
 
@@ -60,7 +62,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
   real(kind=kind_real), allocatable, dimension(:)       :: lon_us, lat_us           !Lat/lon centers unstructured
   real(kind=kind_real), allocatable, dimension(:,:)     :: area                     !Grid area
-  real(kind=kind_real), allocatable, dimension(:,:)     :: orography                !Grid surface elevation
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: orography                !Grid surface elevation
   real(kind=kind_real), allocatable, dimension(:,:)     :: dx, dy                   !dx/dy at edges
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxc, dyc                 !dx/dy c grid
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: grid, vlon, vlat
@@ -92,6 +94,7 @@ type :: fv3jedi_geom
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
+    procedure, public :: read_orography
     procedure, public :: set_atlas_lonlat
     procedure, public :: fill_atlas_fieldset
 end type fv3jedi_geom
@@ -108,25 +111,48 @@ type(fckit_configuration), intent(in) :: conf
 type(fckit_mpi_comm),      intent(in) :: comm
 
 integer :: stackmax = 4000000
+character(len=1024) :: nml_filename, field_table_filename
+character(len=:), allocatable :: str
+
+! Path for input.nml file
+nml_filename = 'input.nml'
+if (conf%has("namelist filename")) then
+  call conf%get_or_die("namelist filename",str)
+  if (len(str) > 1024) call abor1_ftn("Length of fms namelist filename too long")
+  nml_filename = str
+  deallocate(str)
+endif
+
+! Field table file
+field_table_filename = 'field_table'
+if (conf%has("field table filename")) then
+  call conf%get_or_die("field table filename",str)
+  if (len(str) > fm_string_len) call abor1_ftn("Length of fms field table filename too long")
+  field_table_filename = str
+  deallocate(str)
+endif
 
 ! Initialize fms, mpp, etc.
-call fms_init(localcomm=comm%communicator())
+call fms_init(localcomm=comm%communicator(), alt_input_nml_path = nml_filename)
 
 ! Set max stacksize
 if (conf%has("stackmax")) call conf%get_or_die("stackmax",stackmax)
 call mpp_domains_set_stack_size(stackmax)
 
+! Initialize the tracers
+call field_manager_init(table_name = field_table_filename)
+
 end subroutine initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, conf, comm, fields)
+subroutine create(self, conf, comm, nlevs)
 
 !Arguments
 class(fv3jedi_geom), target, intent(inout) :: self
 type(fckit_configuration),   intent(in)    :: conf
 type(fckit_mpi_comm),        intent(in)    :: comm
-type(fields_metadata),       intent(in)    :: fields
+integer,                     intent(out)   :: nlevs
 
 !Locals
 character(len=256)                    :: file_akbk
@@ -141,22 +167,7 @@ character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
 logical :: logp = .false.
 
-logical :: read_orog
-type(fv3jedi_io_gfs)  :: gfs_orog
-type(fv3jedi_field)   :: field_orog(1)
-type(field_metadata)  :: fmd
-
-! Namelist for geometry
-integer :: nmls, ios, ierr
-logical :: skip_nml_read = .false.
-integer :: npx, npy, npz, ntiles, nwat
-integer, allocatable :: layout(:), io_layout(:)
-logical :: nested, regional, do_schmidt, hydrostatic
-real(kind=kind_real) :: stretch_fac, target_lat, target_lon
-
-namelist /fv_core_nml/ npx, npy, npz, ntiles, layout, io_layout, regional, nested, do_schmidt, &
-                       target_lat, target_lon, stretch_fac, hydrostatic, nwat
-
+type(fv3jedi_fmsnamelist) :: fmsnamelist
 
 ! Add the communicator to the geometry
 ! ------------------------------------
@@ -171,49 +182,16 @@ if (conf%has("interpolation method")) then
   deallocate(str)
 endif
 
-! Local pointer to field meta data
-! --------------------------------
-self%fields = fields
-
-! Replace FMS namelist file
-! -------------------------
-if (.not. conf%has("nml_file") .and. .not. conf%has("prepare external nml file")) then
-  ! Set namelist variables using JEDI config
-
-  allocate(layout(2))
-  allocate(io_layout(2))
-
-  nmls = 1
-  nmls = nmls + 1; if (.not. conf%get('npx',         npx        )) npx         = 1
-  nmls = nmls + 1; if (.not. conf%get('npy',         npy        )) npy         = 1
-  nmls = nmls + 1; if (.not. conf%get('npz'        , npz        )) npz         = 1
-  nmls = nmls + 1; if (.not. conf%get('ntiles'     , ntiles     )) ntiles      = 1
-  nmls = nmls + 1; if (.not. conf%get('nwat'       , nwat       )) nwat        = 1
-  nmls = nmls + 1; if (.not. conf%get('layout'     , layout     )) layout      = (/1,1/)
-  nmls = nmls + 1; if (.not. conf%get('io_layout'  , io_layout  )) io_layout   = (/1,1/)
-  nmls = nmls + 1; if (.not. conf%get('nested'     , nested     )) nested      = .false.
-  nmls = nmls + 1; if (.not. conf%get('regional'   , regional   )) regional    = .false.
-  nmls = nmls + 1; if (.not. conf%get('do_schmidt' , do_schmidt )) do_schmidt  = .false.
-  nmls = nmls + 1; if (.not. conf%get('hydrostatic', hydrostatic)) hydrostatic = .true.
-  nmls = nmls + 1; if (.not. conf%get('stretch_fac', stretch_fac)) stretch_fac = 0.0_kind_real
-  nmls = nmls + 1; if (.not. conf%get('target_lat' , target_lat )) target_lat  = 0.0_kind_real
-  nmls = nmls + 1; if (.not. conf%get('target_lon' , target_lon )) target_lon  = 0.0_kind_real
-
-  ! Deallocate existing FMS namelist array and reallocate
-  if (allocated(input_nml_file)) deallocate(input_nml_file)
-  allocate(input_nml_file(nmls))
-
-  ! Write new namelist to internal FMS namelist
-  write (input_nml_file, fv_core_nml, iostat=ios)
-  ierr = check_nml_error(ios,'fv3jedi geom writing input_nml_file')
-
-  skip_nml_read = .true.
-endif
+! Update the fms namelist with this Geometry
+! ------------------------------------------
+call fmsnamelist%replace_namelist(conf)
 
 !Intialize using the model setup routine
 ! --------------------------------------
-call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, skip_nml_read)
+call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, .true.)
 
+! Copy relevant contents of Atm
+! -----------------------------
 self%isd = Atm(1)%bd%isd
 self%ied = Atm(1)%bd%ied
 self%jsd = Atm(1)%bd%jsd
@@ -229,6 +207,8 @@ self%ntiles = Atm(1)%flagstruct%ntiles
 self%npx = Atm(1)%npx
 self%npy = Atm(1)%npy
 self%npz = Atm(1)%npz
+
+nlevs = self%npz
 
 self%layout(1) = Atm(1)%layout(1)
 self%layout(2) = Atm(1)%layout(2)
@@ -403,65 +383,75 @@ call setup_domain( self%domain_fix, self%npx-1, self%npy-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
 
 self%domain => self%domain_fix
-
-!Optionally read in the orography (needed for land DA)
-if (.not. conf%get('read_orog', read_orog)) read_orog=.false.
-
-if (read_orog) then
-
-  call conf%get_or_die("orog_IO_name",str)
-
-! set up gfs_io object
-  call gfs_orog%setup_conf(conf)
-
-! set up metadata in field to recieve the orog
-  fmd = self%fields%get_field(str)
-  deallocate(str)
-  field_orog(1)%isc = self%isc
-  field_orog(1)%iec = self%iec
-  field_orog(1)%jsc = self%jsc
-  field_orog(1)%jec = self%jec
-  field_orog(1)%npz = fmd%levels
-
-  allocate(field_orog(1)%array(self%isc:self%iec,self%jsc:self%jec,1:fmd%levels))
-
-  field_orog(1)%lalloc = .true.
-
-  field_orog(1)%short_name   = trim(fmd%field_io_name)
-  field_orog(1)%long_name    = trim(fmd%long_name)
-  field_orog(1)%fv3jedi_name = trim(fmd%field_name)
-  field_orog(1)%units        = trim(fmd%units)
-  field_orog(1)%io_file      = trim(fmd%io_file)
-  field_orog(1)%space        = trim(fmd%space)
-  field_orog(1)%staggerloc   = trim(fmd%stagger_loc)
-  field_orog(1)%tracer       = fmd%tracer
-  field_orog(1)%integerfield = trim(fmd%array_kind)=='integer'
-  field_orog(1)%interp_type  = trim(fmd%interp_type)
-
-! read orog into field
-  call gfs_orog%read_fields(field_orog, self%domain, self%npz)
-
-! copy into geom
-  allocate(self%orography(self%isc:self%iec,self%jsc:self%jec))
-
-  self%orography = field_orog(1)%array(:,:,1)
-
-  deallocate(field_orog(1)%array)
-
-endif
+call nullify_domain()
 
 ! Optionally write the geometry to file
 ! -------------------------------------
-if (conf%has("do_write_geom")) then
-  call conf%get_or_die("do_write_geom",do_write_geom)
+if (conf%has("write geom")) then
+  call conf%get_or_die("write geom",do_write_geom)
 endif
 
 if (do_write_geom) then
   call write_geom(self)
 endif
 
+! Revert the fms namelist
+! -----------------------
+call fmsnamelist%revert_namelist
 
 end subroutine create
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine read_orography(self, conf)
+
+! Arguments
+class(fv3jedi_geom), target, intent(inout) :: self
+type(fckit_configuration),   intent(in)    :: conf
+
+! Locals
+type(field_metadata) :: fmd
+type(fv3jedi_io_gfs) :: gfs_orog
+type(fv3jedi_field)  :: field_orog(1)
+character(len=:), allocatable :: str
+
+! Get name of field in file
+call conf%get_or_die("orography field name", str)
+
+! Set up gfs_io object
+call gfs_orog%setup_conf(conf)
+
+! Set up metadata in field to recieve the orog
+field_orog(1)%isc = self%isc
+field_orog(1)%iec = self%iec
+field_orog(1)%jsc = self%jsc
+field_orog(1)%jec = self%jec
+field_orog(1)%npz = 1
+
+! Allocate data array
+allocate(field_orog(1)%array(self%isc:self%iec,self%jsc:self%jec,1))
+
+! Assign field metadata
+fmd = self%fields%get_field(str)
+field_orog(1)%lalloc       = .true.
+field_orog(1)%short_name   = trim(fmd%field_io_name)
+field_orog(1)%long_name    = trim(fmd%long_name)
+field_orog(1)%fv3jedi_name = trim(fmd%field_name)
+field_orog(1)%units        = trim(fmd%units)
+field_orog(1)%io_file      = trim(fmd%io_file)
+field_orog(1)%space        = trim(fmd%space)
+field_orog(1)%staggerloc   = trim(fmd%stagger_loc)
+field_orog(1)%tracer       = fmd%tracer
+field_orog(1)%integerfield = trim(fmd%array_kind)=='integer'
+field_orog(1)%interp_type  = trim(fmd%interp_type)
+
+! Read orography into field
+call gfs_orog%read_fields(field_orog, self%domain, self%npz)
+
+! Move into geom
+call move_alloc(field_orog(1)%array, self%orography)
+
+end subroutine read_orography
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -588,6 +578,11 @@ self%bounded_domain = other%bounded_domain
 
 self%logp = other%logp
 
+if (allocated(other%orography)) then
+  allocate(self%orography(other%isc:other%iec,other%jsc:other%jec,1))
+  self%orography = other%orography
+endif
+
 end subroutine clone
 
 ! --------------------------------------------------------------------------------------------------
@@ -635,6 +630,8 @@ deallocate(self%dya   )
 
 deallocate(self%lat_us)
 deallocate(self%lon_us)
+
+if (allocated(self%orography)) deallocate(self%orography)
 
 ! Required memory leak, since copying this causes problems
 !call mpp_deallocate_domain(self%domain_fix)
@@ -852,7 +849,6 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
   if (io_layout(1) /= 1 .or. io_layout(2) /= 1) call mpp_define_io_domain(domain, io_layout)
 
-  call set_domain(domain)
   deallocate(pe_start, pe_end)
   deallocate(layout2D, global_indices)
   deallocate(tile1, tile2, tile_id)

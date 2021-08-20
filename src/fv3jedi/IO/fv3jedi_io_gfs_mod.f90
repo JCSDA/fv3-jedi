@@ -13,6 +13,7 @@ use fckit_configuration_module,   only: fckit_configuration
 ! fms
 use fms_io_mod,                   only: restart_file_type, register_restart_field
 use fms_io_mod,                   only: free_restart_type, restore_state, save_restart
+use fms_io_mod,                   only: set_domain, nullify_domain
 use mpp_domains_mod,              only: east, north, center, domain2D
 use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
@@ -200,7 +201,6 @@ integer,               intent(inout) :: date_init(6)  !< GFS date intialized
 integer :: date(6)
 integer(kind=c_int) :: idate, isecs
 
-type(restart_file_type)  :: restart_spec
 integer :: idrst
 real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
 
@@ -226,12 +226,12 @@ end subroutine read_meta
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_fields(self, fields, domain, npz) 
+subroutine read_fields(self, fields, domain, npz)
 
 implicit none
 class(fv3jedi_io_gfs), intent(inout) :: self
 type(fv3jedi_field),   intent(inout) :: fields(:)
-type(domain2D), pointer, intent(in) :: domain 
+type(domain2D), pointer, intent(in) :: domain
 integer,                 intent(in) :: npz
 
 type(restart_file_type) :: restart(numfiles)
@@ -241,6 +241,10 @@ integer :: n, indexrst, position, var, idrst
 logical :: havedelp
 integer :: indexof_ps, indexof_delp
 real(kind=kind_real), allocatable :: delp(:,:,:)
+
+! Set FMS IO internal domain
+! --------------------------
+call set_domain(domain)
 
 ! Register and read fields
 ! ------------------------
@@ -261,7 +265,7 @@ do var = 1,size(fields)
     indexof_ps = var
     if (havedelp) cycle ! Do not register delp twice
     deallocate(fields(indexof_ps)%array)
-    allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, & 
+    allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
                 fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:npz))
     fields(indexof_ps)%short_name = 'DELP'
   endif
@@ -331,6 +335,10 @@ if (indexof_ps > 0) then
   fields(indexof_ps)%short_name = 'ps'
 endif
 
+! Nullify FMS IO internal domain
+! ------------------------------
+call nullify_domain()
+
 end subroutine read_fields
 
 ! --------------------------------------------------------------------------------------------------
@@ -350,6 +358,10 @@ integer :: n, indexrst, position, var, idrst, date(6)
 integer(kind=c_int) :: idate, isecs
 type(restart_file_type) :: restart(numfiles)
 character(len=64)  :: datefile
+
+! Set FMS IO internal domain
+! --------------------------
+call set_domain(domain)
 
 ! Get datetime
 ! ------------
@@ -439,6 +451,10 @@ if (mpp_pe() == mpp_root_pe() .and. .not. self%skip_coupler) then
    write( 101, '(6i6,8x,a)') date,      'Current model time: year, month, day, hour, minute, second'
    close(101)
 endif
+
+! Nullify FMS IO internal domain
+! ------------------------------
+call nullify_domain()
 
 end subroutine write
 

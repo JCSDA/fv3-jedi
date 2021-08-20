@@ -20,7 +20,6 @@
 #include "fv3jedi/Tlm/Tlm.interface.h"
 #include "fv3jedi/Tlm/Traj.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
 
@@ -39,9 +38,7 @@ Tlm::Tlm(const Geometry & resol, const eckit::Configuration & tlConf) : keySelf_
   const eckit::Configuration * configc = &tlConf;
 
   // Implementation
-  stageFv3Files(tlConf, resol.getComm());
   fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), &configc);
-  removeFv3Files(resol.getComm());
 
   oops::Log::trace() << "Tlm::Tlm done" << std::endl;
 }

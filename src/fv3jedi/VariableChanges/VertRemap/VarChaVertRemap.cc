@@ -16,7 +16,6 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/State/State.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "fv3jedi/Utilities/Utilities.h"
 #include "fv3jedi/VariableChanges/VertRemap/VarChaVertRemap.h"
 
 namespace fv3jedi {
@@ -30,14 +29,8 @@ VarChaVertRemap::VarChaVertRemap(const Geometry & resol, const eckit::Configurat
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
   const eckit::Configuration * configc = &conf;
 
-  // Prepare input.nml file
-  stageFv3Files(conf, resol.getComm());
-  if ( !conf.has("nml_file") ) {
-    generateGeomFv3Conf(conf, resol.getComm());
-  }
   fv3jedi_vc_vertremap_create_f90(keyFtn_, geom_->toFortran(), &configc);
-  // Remove input.nml
-  removeFv3Files(resol.getComm());
+
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

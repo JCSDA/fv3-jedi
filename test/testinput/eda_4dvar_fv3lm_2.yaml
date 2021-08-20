@@ -252,9 +252,7 @@ cost function:
   filename_cplr: 20180414.210000.coupler.res
   model:
     name: FV3LM
-    nml_file: Data/fv3files/input_gfs_c12.nml
-    trc_file: Data/fv3files/field_table
-    nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+    namelist filename: Data/fv3files/input_gfs_c12.nml
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
@@ -263,16 +261,13 @@ cost function:
                 slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                 u_srf,v_srf,f10m]
   geometry:
-    nml_file_mpp: Data/fv3files/fmsmpp.nml
-    trc_file: Data/fv3files/field_table
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+      field table filename: Data/fv3files/field_table
     akbk: Data/fv3files/akbk64.nc4
-    # input.nml
-    layout: [1,1]
-    io_layout: [1,1]
     npx: 13
     npy: 13
     npz: 64
-    ntiles: 6
     fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
@@ -297,15 +292,10 @@ variational:
     gradient norm reduction: 1e-10
     test: on
     geometry:
-      trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk64.nc4
-      # input.nml
-      layout: [1,1]
-      io_layout: [1,1]
       npx: 13
       npy: 13
       npz: 64
-      ntiles: 6
       fieldsets:
       - fieldset: Data/fieldsets/dynamics.yaml
       - fieldset: Data/fieldsets/ufo.yaml
@@ -315,9 +305,8 @@ variational:
     linear model:
       variable change: Analysis2Model
       name: FV3JEDITLM
-      nml_file: Data/fv3files/input_gfs_c12.nml
-      trc_file: Data/fv3files/field_table
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      namelist filename: Data/fv3files/input_gfs_c12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
       tlm variables: [ud,vd,ua,va,t,delp,q,qi,ql,o3mr]
       lm_do_dyn: 1
@@ -329,15 +318,10 @@ variational:
     gradient norm reduction: 1e-10
     test: on
     geometry:
-      trc_file: Data/fv3files/field_table
       akbk: Data/fv3files/akbk64.nc4
-      # input.nml
-      layout: [1,1]
-      io_layout: [1,1]
       npx: 13
       npy: 13
       npz: 64
-      ntiles: 6
       fieldsets:
       - fieldset: Data/fieldsets/dynamics.yaml
       - fieldset: Data/fieldsets/ufo.yaml
@@ -346,9 +330,8 @@ variational:
     linear model:
       variable change: Analysis2Model
       name: FV3JEDITLM
-      nml_file: Data/fv3files/input_gfs_c12.nml
-      trc_file: Data/fv3files/field_table
-      nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+      namelist filename: Data/fv3files/input_gfs_c12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
       tlm variables: [ud,vd,ua,va,t,delp,q,qi,ql,o3mr]
       lm_do_dyn: 1

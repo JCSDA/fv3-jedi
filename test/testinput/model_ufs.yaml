@@ -1,18 +1,16 @@
 geometry:
-  nml_file_mpp: Data/ModelDirs/ufs/stc/input.nml
-  trc_file: Data/ModelDirs/ufs/stc/field_table
+  fms initialization:
+    namelist filename: Data/ModelDirs/ufs/stc/input.nml
+    field table filename: Data/ModelDirs/ufs/stc/field_table
   akbk: Data/fv3files/akbk64.nc4
-  prepare external nml file: true
   layout: [1,1]
-  io_layout: [1,1]
   npx: 97
   npy: 97
   npz: 64
-  ntiles: 6
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 model:
-  name: UFS 
+  name: UFS
   tstep: PT1H
   ufs_run_directory: Data/ModelDirs/ufs/stc
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
@@ -22,7 +20,7 @@ model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
-  final norm: 143.96545506196134 
+  final norm: 143.96545506196134
   tolerance: 1.0e-4
   test reforecast: false
 initial condition:

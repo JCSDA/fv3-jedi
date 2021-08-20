@@ -17,7 +17,6 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/State/State.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "fv3jedi/Utilities/Utilities.h"
 #include "fv3jedi/VariableChanges/Control2Analysis/LinVarChaC2A.h"
 
 namespace fv3jedi {
