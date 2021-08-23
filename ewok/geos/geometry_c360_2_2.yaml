@@ -1,6 +1,6 @@
 fms initialization:
-  namelist filename: Data/fv3files/fmsmpp.nml
-  field table filename: Data/fv3files/field_table_gmao
+  namelist filename: '$(stage_dir)/Data/fv3files/fmsmpp.nml'
+  field table filename: '$(stage_dir)/Data/fv3files/field_table_gmao'
 akbk: '$(stage_dir)/Data/fv3files/akbk72.nc4'
 layout: [2,2]
 npx: 361
