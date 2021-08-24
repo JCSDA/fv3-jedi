@@ -233,6 +233,7 @@ cost function:
         CoefficientPath: Data/crtm/
     obs bias:
       input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
+      output file: Data/analysis/satbias_amsua_n19_out.nc4
       variational bc:
         predictors:
         - name: constant
