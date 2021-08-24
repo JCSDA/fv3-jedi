@@ -15,10 +15,11 @@ Fields:
     Levels: 1
     IOFile: surface
 
-  - FieldIONames: [snwdph]
+  - FieldIONames: [snwdph, totalSnowDepth]
     FieldName: snwdph
-    LongName: snwdph
-    Units: none
+    LongName: totalSnowDepth
+    Units: mm
     InterpType: nearest
     Levels: 1
     IOFile: surface
+
