@@ -20,7 +20,7 @@ use mpp_mod,                      only: mpp_pe, mpp_root_pe
 ! fv3jedi
 use fv3jedi_constants_mod,        only: rad2deg
 use fv3jedi_field_mod,            only: fv3jedi_field, hasfield
-use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text
+use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text, add_iteration
 use fv3jedi_kinds_mod,            only: kind_real
 
 ! --------------------------------------------------------------------------------------------------
@@ -120,6 +120,7 @@ do n = 1, numfiles
     call f_conf%get_or_die(fileconf(n),str)
     if (len(str) > 128) call abor1_ftn("fv3jedi_io_gfs_mod.setup: "//fileconf(n)//&
                                         " too long, max FMS char length= 128")
+    call add_iteration(f_conf,str)
     self%filenames_conf(n) = str
     deallocate(str)
   endif

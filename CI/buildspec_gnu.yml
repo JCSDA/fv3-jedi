@@ -175,6 +175,13 @@ phases:
       - echo $CODEBUILD_BUILD_SUCCEEDING
       - echo $BUILD_STATUS
 
+      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
+        then echo "Build passed, rerun failed tests";
+        su - jedi -c "CC=mpicc CXX=mpicxx FC=mpifort
+        && cd /home/jedi/fv3-jedi
+        && ctest -VV --rerun-failed";
+        fi 
+
       # upload find cdash url and upload it as CodeBuild artifact to S3
       - if [ "$BUILD_STATUS" = "1" ];
         then echo "Build & tests passed, find cdash url";

@@ -147,17 +147,24 @@ end subroutine string_from_conf
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine add_iteration (f_conf,str)
+subroutine add_iteration(f_conf,str)
 
 implicit none
 type(fckit_configuration),  intent(in)  :: f_conf
 character(len=:), allocatable, intent(inout) :: str
 
+integer :: i, j
 character(len=:), allocatable :: iter
 
 if (f_conf%has("iteration")) then
   call f_conf%get_or_die("iteration", iter)
-  str = str // iter // '.'
+  i = index(str, 'nc')
+  j = index(str, 'res')
+  if (i == 0 .AND. j == 0) then
+    str = str // iter // '.'
+  else
+    str = iter // '.' // str
+  endif
 endif
 
 end subroutine add_iteration
