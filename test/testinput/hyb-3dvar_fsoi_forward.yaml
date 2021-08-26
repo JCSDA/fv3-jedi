@@ -1,0 +1,203 @@
+cost function:
+  cost type: 3D-Var
+  window begin: 2018-04-14T21:00:00Z
+  window length: PT6H
+  analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+      field table filename: Data/fv3files/field_table_gfdl
+    akbk: Data/fv3files/akbk64.nc4
+    npx: 25
+    npy: 25
+    npz: 64
+    fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+  background:
+    filetype: gfs
+    datapath: Data/
+    filename_core: 20180415.000000.c24.fv_core.res.nc
+    filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.c24.sfc_data.nc
+    filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.c24.coupler.res
+    state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
+  background error:
+    covariance model: hybrid
+    components:
+    - covariance:
+        covariance model: BUMP
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+          method: cor
+          strategy: specific_univariate
+          load_nicas_local: 1
+          verbosity: main
+          io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,air_pressure_thickness-air_pressure_thickness,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+          io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members:
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem001/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem002/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem003/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem004/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem005/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem006/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem007/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem008/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem009/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        - filetype: gfs
+          state variables: *3dvars
+          datapath: Data/inputs/gfs_c12/mem010/
+          filename_core: 20180415.000000.fv_core.res.nc
+          filename_trcr: 20180415.000000.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.sfc_data.nc
+          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.coupler.res
+        localization:
+          localization method: BUMP
+          localization variables: *3dvars
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+            method: loc
+            strategy: common
+            load_nicas_local: 1
+            verbosity: main
+            io_keys: [common]
+            io_values: [fixed_2500km_0.3]
+      weight:
+        value: 0.9
+  observations:
+  - obs space:
+      name: Radiosonde
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
+      simulated variables: [eastward_wind, northward_wind, air_temperature]
+    obs operator:
+      name: VertInterp
+    obs error:
+      covariance model: diagonal ufo
+    obs filters:
+    - filter: PreQC
+      maxvalue: 3
+    - filter: Background Check
+      filter variables:
+      - name: eastward_wind
+      - name: northward_wind
+      - name: air_temperature
+      threshold: 6.0
+variational:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 20
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk64.nc4
+      npx: 13
+      npy: 13
+      npz: 64
+      fieldsets:
+      - fieldset: Data/fieldsets/dynamics.yaml
+      - fieldset: Data/fieldsets/ufo.yaml
+    diagnostics:
+      departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        filetype: gfs
+        datapath: Data/analysis
+        filename_core: iter1.hyb-3dvar_fsoi_forward.c24.fv_core.res.nc
+        filename_trcr: iter1.hyb-3dvar_fsoi_forward.c24.fv_tracer.res.nc
+        filename_sfcd: iter1.hyb-3dvar_fsoi_forward.c24.sfc_data.nc
+        filename_sfcw: iter1.hyb-3dvar_fsoi_forward.c24.fv_srf_wnd.res.nc
+        filename_cplr: iter1.hyb-3dvar_fsoi_forward.c24.coupler.res
+        analysis variables: *3dvars
+final:
+  diagnostics:
+    departures: oman
+output:
+  filetype: gfs
+  datapath: Data/analysis/
+  filename_core: hyb-3dvar_fsoi_forward.c24.fv_core.res.nc
+  filename_trcr: hyb-3dvar_fsoi_forward.c24.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar_fsoi_forward.c24.sfc_data.nc
+  filename_sfcw: hyb-3dvar_fsoi_forward.c24.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar_fsoi_forward.c24.coupler.res
+  first: PT0H
+  frequency: PT1H
+
+test:
+  reference filename: testoutput/hyb-3dvar_fsoi_forward.ref
+  float relative tolerance: 1.0e-1
+  test output filename: testoutput/hyb-3dvar_fsoi_forward.test.out

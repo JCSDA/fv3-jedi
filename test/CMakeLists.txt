@@ -112,6 +112,8 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_save_geovals.yaml
   testinput/hofx4d.yaml
   testinput/hyb-3dvar_bc.yaml
+  testinput/hyb-3dvar_fsoi_backward.yaml
+  testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
   testinput/hyb-3dvar_gfs_1obs.yaml
@@ -216,6 +218,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_save_geovals.ref
   testoutput/hofx4d.ref
   testoutput/hyb-3dvar_bc.ref
+  testoutput/hyb-3dvar_fsoi_backward.ref
+  testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_gfs_0obs.ref
   testoutput/hyb-3dvar_gfs_1obs.ref
@@ -1132,6 +1136,20 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-4dvar_pseudo-geos
                   ARGS     testinput/hyb-4dvar_pseudo-geos.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
+
+# FSOI
+# ----
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_forward
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_fsoi_forward.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_backward
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_fsoi_backward.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_hyb-3dvar_fsoi_forward )
 
 # Diff states
 # -----------

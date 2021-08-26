@@ -157,6 +157,10 @@ subroutine create(self, geom, vars)
   ! Initialize all arrays to zero
   call self%zero()
 
+  ! Initialize datetime to zero
+  self%calendar_type = 0
+  self%date_init(:) = 0
+
   ! Copy some geometry for convenience
   self%isc    = geom%isc
   self%iec    = geom%iec
