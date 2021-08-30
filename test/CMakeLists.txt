@@ -240,8 +240,10 @@ list( APPEND fv3jedi_testoutput
   testoutput/lgetkf_geos.ref
   testoutput/lgetkf_gfs.ref
   testoutput/lgetkf.ref
-  testoutput/staticb_dirac_global_gfs.ref
-  testoutput/staticb_dirac_local_gfs.ref
+  testoutput/staticb_dirac_global_gfs_6pe.ref
+  testoutput/staticb_dirac_global_gfs_12pe.ref
+  testoutput/staticb_dirac_local_gfs_6pe.ref
+  testoutput/staticb_dirac_local_gfs_12pe.ref
   testoutput/staticb_cor_gfs.ref
   testoutput/staticb_nicas_gfs.ref
   testoutput/staticb_psichitouv_gfs.ref

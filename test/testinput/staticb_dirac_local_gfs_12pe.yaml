@@ -86,10 +86,6 @@ background error:
       verbosity: main
       universe_rad: 2000.0e3
       load_wind_local: 1
-      wind_streamfunction: stream_function
-      wind_velocity_potential: velocity_potential
-      wind_zonal: eastward_wind
-      wind_meridional: northward_wind
   - variable change: Control2Analysis
     input variables: *state_vars_with_rh
     output variables: *state_vars
@@ -107,5 +103,5 @@ dirac:
   ifdir: [t] #Field
 
 test:
-  reference filename: testoutput/staticb_dirac_local_gfs.ref
+  reference filename: testoutput/staticb_dirac_local_gfs_12pe.ref
   test output filename: testoutput/staticb_dirac_local_gfs_12pe.test.out

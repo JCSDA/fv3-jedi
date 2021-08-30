@@ -16,11 +16,11 @@ Input Dirac increment:
 B * Increment: 
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
-   ua                            : Min = -1.168e-02, Max = +1.193e-02, RMS = +8.500e-04
-   va                            : Min = -1.421e-02, Max = +1.226e-02, RMS = +9.925e-04
-   t                             : Min = -4.838e-03, Max = +1.550e+00, RMS = +9.027e-03
+   ua                            : Min = -1.172e-02, Max = +1.202e-02, RMS = +8.496e-04
+   va                            : Min = -1.425e-02, Max = +1.227e-02, RMS = +9.911e-04
+   t                             : Min = -4.833e-03, Max = +1.550e+00, RMS = +9.026e-03
    delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   ps                            : Min = -3.286e-01, Max = +1.199e+00, RMS = +1.360e-01
+   ps                            : Min = -3.286e-01, Max = +1.199e+00, RMS = +1.356e-01
    sphum                         : Min = -5.610e-04, Max = +0.000e+00, RMS = +3.155e-06
    ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
