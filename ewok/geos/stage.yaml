@@ -1,8 +1,8 @@
 # Static FeildSets and FV3 files
 copy_files:
   directories:
-    - [$(jedi_build)/../fv3-jedi/test/Data/fieldsets/*, $(stage_dir)/Data/fieldsets/]
-    - [$(jedi_build)/../fv3-jedi/test/Data/fv3files/*, $(stage_dir)/Data/fv3files/]
+    - [../../test/Data/fieldsets/*, $(stage_dir)/Data/fieldsets/]
+    - [../../test/Data/fv3files/*, $(stage_dir)/Data/fv3files/]
 
 # CRTM fix file (could be in R2D2)
 link_files:
