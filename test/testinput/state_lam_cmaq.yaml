@@ -55,7 +55,8 @@ state test:
                       sv_pah2,sv_trp1,sv_trp2,sv_iso1,sv_iso2,
                       sv_sqt,lv_pcsog,cld_amt]
   state generate:
-    analytic_init: dcmip-test-4-0
+    analytic init:
+      method: dcmip-test-4-0
     date: 2020-09-03T18:00:00Z
     state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       no2, 'no',o3,no3,h2o2,n2o5,

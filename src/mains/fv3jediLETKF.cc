@@ -18,8 +18,8 @@
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   ufo::instantiateObsLocFactory<fv3jedi::Traits>();
-  ufo::instantiateObsErrorFactory<ufo::ObsTraits>();
-  ufo::instantiateObsFilterFactory<ufo::ObsTraits>();
+  ufo::instantiateObsErrorFactory();
+  ufo::instantiateObsFilterFactory();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   fv3jedi::instantiateObsLocFactory<fv3jedi::Traits>();
   oops::LocalEnsembleDA<fv3jedi::Traits, ufo::ObsTraits> letkf;

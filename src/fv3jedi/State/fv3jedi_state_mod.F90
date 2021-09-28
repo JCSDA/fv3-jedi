@@ -279,13 +279,13 @@ subroutine analytic_IC(self, geom, conf, vdate)
   real(kind=kind_real), pointer :: delz(:,:,:)
 
 
-  If (conf%has("analytic_init")) Then
-     call conf%get_or_die("analytic_init",str)
+  If (conf%has("analytic init")) Then
+     call conf%get_or_die("analytic init.method",str)
      IC = str
      deallocate(str)
   EndIf
 
-  call log%warning("fv3jedi_state:analytic_init: "//IC)
+  call log%warning("fv3jedi_state:analytic init: "//IC)
   call conf%get_or_die("date",str)
   sdate = str
   deallocate(str)

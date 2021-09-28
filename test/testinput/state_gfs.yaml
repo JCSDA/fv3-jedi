@@ -19,7 +19,8 @@ state test:
     filename_cplr: 20180414.210000.coupler.res
     state variables: [u,v,ua,va,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr]
   state generate:
-    analytic_init: dcmip-test-4-0
+    analytic init:
+      method: dcmip-test-4-0
     date: 2018-04-14T21:00:00Z
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
   date: 2018-04-14T21:00:00Z

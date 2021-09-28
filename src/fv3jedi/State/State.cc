@@ -46,7 +46,7 @@ State::State(const Geometry & geom, const eckit::Configuration & conf): geom_(ne
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
 
   // Analytical or read from file
-  if (conf.has("analytic_init")) {
+  if (conf.has("analytic init")) {
     this->analytic_init(conf, geom);
   } else {
     this->read(conf);

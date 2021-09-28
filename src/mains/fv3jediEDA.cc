@@ -22,8 +22,8 @@ int main(int argc,  char ** argv) {
   saber::instantiateCovarFactory<fv3jedi::Traits>();
   saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
-  ufo::instantiateObsErrorFactory<ufo::ObsTraits>();
-  ufo::instantiateObsFilterFactory<ufo::ObsTraits>();
+  ufo::instantiateObsErrorFactory();
+  ufo::instantiateObsFilterFactory();
   oops::EnsembleApplication<oops::Variational <fv3jedi::Traits, ufo::ObsTraits> > eda;
   return run.execute(eda);
 }
