@@ -52,11 +52,6 @@ ecbuild_add_executable( TARGET  fv3jedi_hofx.x
                         LIBS    fv3jedi
                       )
 
-ecbuild_add_executable( TARGET  fv3jedi_hofx4d.x
-                        SOURCES fv3jediHofX4Dhack.cc
-                        LIBS    fv3jedi
-                      )
-
 ecbuild_add_executable( TARGET  fv3jedi_hofx_nomodel.x
                         SOURCES fv3jediHofXNoModel.cc
                         LIBS    fv3jedi

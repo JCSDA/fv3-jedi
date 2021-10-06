@@ -53,7 +53,7 @@ class ObsLocBrasnett99: public ufo::ObsLocSOAR<MODEL> {
                            ioda::ObsVector & locvector) const override;
 
  private:
-  void print(std::ostream &) const;
+  void print(std::ostream &) const override;
   std::vector<float> obsAltitude_;  //< altitude of observations
   double VertScale_;  //< vertical localization scale
 };

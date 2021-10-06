@@ -1,6 +1,5 @@
 window begin: 2018-04-14T21:00:00Z
 window length: PT6H
-forecast length: PT6H
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
@@ -50,9 +49,6 @@ observations:
       Sensor_ID: amsua_n19
       EndianType: little_endian
       CoefficientPath: Data/crtm/
-prints:
-  frequency: PT3H
-
 
 test:
   reference filename: testoutput/hofx_nomodel.ref
