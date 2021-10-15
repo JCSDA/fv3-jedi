@@ -43,14 +43,17 @@ namespace fv3jedi {
 template<class MODEL>
 class ObsLocBrasnett99: public ufo::ObsLocSOAR<MODEL> {
   typedef typename MODEL::GeometryIterator   GeometryIterator_;
+  typedef typename ufo::ObsLocalization<MODEL>::LocalObs LocalObs_;
 
  public:
   ObsLocBrasnett99(const eckit::Configuration &, const ioda::ObsSpace &);
 
+ protected:
   /// compute localization and save localization values in \p locvector
   /// (missing values for observations outside of localization)
-  void computeLocalization(const GeometryIterator_ &,
-                           ioda::ObsVector & locvector) const override;
+  void localizeLocalObs(const GeometryIterator_ &,
+                        ioda::ObsVector & locvector,
+                        const LocalObs_ &) const override;
 
  private:
   void print(std::ostream &) const override;
@@ -73,12 +76,13 @@ ObsLocBrasnett99<MODEL>::ObsLocBrasnett99(const eckit::Configuration & config,
 // -----------------------------------------------------------------------------
 
 template<typename MODEL>
-void ObsLocBrasnett99<MODEL>::computeLocalization(const GeometryIterator_ & geoiter,
-                                                  ioda::ObsVector & locvector) const {
+void ObsLocBrasnett99<MODEL>::localizeLocalObs(const GeometryIterator_ & geoiter,
+                                               ioda::ObsVector & locvector,
+                                               const LocalObs_ & localobs) const {
   oops::Log::trace() << "ObsLocBrasnett99::computeLocalization" << std::endl;
+
   // compute horizontal localization using SOAR
-  ufo::ObsLocSOAR<MODEL>::computeLocalization(geoiter, locvector);
-  const std::vector<int> & localobs = ufo::ObsLocalization<MODEL>::localobs();
+  ufo::ObsLocSOAR<MODEL>::localizeLocalObs(geoiter, locvector, localobs);
 
   // retrieve orography for this grid point
   double orog = geoiter.getOrography();
@@ -87,12 +91,12 @@ void ObsLocBrasnett99<MODEL>::computeLocalization(const GeometryIterator_ & geoi
   // compute vertical localization and multiply it by SOAR computed above
   // vloc=exp(- (dz/hfac)^2 )
   const size_t nvars = locvector.nvars();
-  for (size_t jlocal = 0; jlocal < localobs.size(); ++jlocal) {
-    double locFactor = std::exp(-std::pow((obsAltitude_[localobs[jlocal]] - orog)
+  for (size_t jlocal = 0; jlocal < localobs.index.size(); ++jlocal) {
+    double locFactor = std::exp(-std::pow((obsAltitude_[localobs.index[jlocal]] - orog)
                                           /VertScale_, 2));
     // obsdist is calculated at each location; need to update R for each variable
     for (size_t jvar = 0; jvar < nvars; ++jvar) {
-      locvector[jvar + localobs[jlocal] * nvars] *= locFactor;
+      locvector[jvar + localobs.index[jlocal] * nvars] *= locFactor;
     }
   }
 }
