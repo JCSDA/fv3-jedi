@@ -46,7 +46,7 @@ observations:
   obs localization:
       localization method: Gaspari-Cohn
       lengthscale: 250e3
-      max_nobs: 50
+      max nobs: 500
 
 driver:
   save posterior mean: true
