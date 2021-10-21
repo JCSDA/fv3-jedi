@@ -17,7 +17,6 @@ output geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
-output variables: [vtype,stype,vfrac]
 states:
 - input:
     filetype: gfs
