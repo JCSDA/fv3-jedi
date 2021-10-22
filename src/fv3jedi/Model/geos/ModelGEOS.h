@@ -11,10 +11,16 @@
 #include <ostream>
 #include <string>
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
+#include "oops/generic/ModelBase.h"
 #include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
@@ -32,6 +38,22 @@ namespace fv3jedi {
   class State;
 
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+/// Options taken by ModelGEOS
+  class ModelGEOSParameters : public oops::ModelParametersBase {
+    OOPS_CONCRETE_PARAMETERS(ModelGEOSParameters, ModelParametersBase)
+
+   public:
+    oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
+    oops::RequiredParameter<std::string> geosRunDirectory{ "geos_run_directory", this};
+    oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+
+    oops::OptionalParameter<bool> reforecast{ "reforecast", this};
+    oops::OptionalParameter<bool> esmfLogging{ "ESMF_Logging", this};
+  };
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 /// FV3JEDI model definition.
 /*!
  *  FV3JEDI nonlinear model definition and configuration parameters.
@@ -40,9 +62,10 @@ namespace fv3jedi {
 class ModelGEOS: public oops::interface::ModelBase<Traits>,
                  private util::ObjectCounter<ModelGEOS> {
  public:
+  typedef ModelGEOSParameters Parameters_;
   static const std::string classname() {return "fv3jedi::ModelGEOS";}
 
-  ModelGEOS(const Geometry &, const eckit::Configuration &);
+  ModelGEOS(const Geometry &, const Parameters_ &);
   ~ModelGEOS();
 
 /// Prepare model integration

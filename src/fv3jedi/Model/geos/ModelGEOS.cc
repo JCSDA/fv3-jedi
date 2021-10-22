@@ -25,23 +25,21 @@ namespace fv3jedi {
 // -----------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelGEOS> makermodel_("GEOS");
 // -----------------------------------------------------------------------------
-ModelGEOS::ModelGEOS(const Geometry & resol,
-                            const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
+ModelGEOS::ModelGEOS(const Geometry & resol, const Parameters_ & params)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(params.toConfiguration(), "model variables")
 {
   oops::Log::trace() << "ModelGEOS::ModelGEOS" << std::endl;
-  tstep_ = util::Duration(mconf.getString("tstep"));
-  const eckit::Configuration * configc = &mconf;
+  tstep_ = params.tstep;
 
   // JEDI to GEOS directory
   getcwd(jedidir_, 10000);
 
-  std::string sGEOSSCRDIR = mconf.getString("geos_run_directory");
+  std::string sGEOSSCRDIR = params.geosRunDirectory.value();
   strcpy(geosscrdir_, sGEOSSCRDIR.c_str());
   chdir(geosscrdir_);
 
   // Create the model
-  fv3jedi_geos_create_f90(&configc, geom_.toFortran(), keyConfig_);
+  fv3jedi_geos_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
 
   // GEOS to JEDI directory
   chdir(jedidir_);
