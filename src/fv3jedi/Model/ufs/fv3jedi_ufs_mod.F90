@@ -6,36 +6,36 @@
 #define esmf_err_abort(rc) if (esmf_LogFoundError(rc, msg="Aborting UFS", line=__LINE__, file=__FILE__)) call esmf_Finalize(endflag=esmf_END_ABORT)
 
 module fv3jedi_ufs_mod
-  
+
   ! oops
   use datetime_mod
   use duration_mod
 
   ! fckit
   use fckit_configuration_module, only: fckit_configuration
-  
+
   ! fv3jedi
   use fv3jedi_geom_mod,      only: fv3jedi_geom
   use fv3jedi_state_mod,     only: fv3jedi_state
   use fv3jedi_field_mod,     only: fv3jedi_field, field_clen
-  
+
   ! ufs
   use ESMF
   use NUOPC
   use NUOPC_Driver
   use module_EARTH_GRID_COMP, only: esmSS => EARTH_REGISTER
   use mpp_mod,            only: read_input_nml,mpp_pe
-  
+
 
   implicit none
   private
-  
+
   public :: model_ufs
-  
+
   !> Fortran derived type to hold model definition
   type :: model_ufs
      type(ESMF_GridComp) :: esmComp
-     type(ESMF_State) :: toJedi, fromJedi 
+     type(ESMF_State) :: toJedi, fromJedi
      integer :: isc, iec, jsc, jec, npz
      type(esmf_Clock) :: clock
      type(esmf_config) :: cf_main                                         !<-- the configure object
@@ -46,22 +46,22 @@ module fv3jedi_ufs_mod
      procedure :: step
      procedure :: finalize
   end type model_ufs
-  
+
   character(len=*), parameter :: modname='fv3jedi_ufs_mod'
-  
+
   ! --------------------------------------------------------------------------------------------------
 
 contains
-  
+
   ! --------------------------------------------------------------------------------------------------
-  
+
   subroutine create(self, conf, geom)
-    
+
     implicit none
     class(model_ufs),          intent(inout) :: self
     type(fckit_configuration), intent(in)    :: conf
     type(fv3jedi_geom),        intent(in)    :: geom
-    
+
     integer :: rc, urc, phase, i, cnt
     character(len=20) :: cdate_start, cdate_stop
 
@@ -71,7 +71,7 @@ contains
     character(len=*),parameter :: subname = modname//' (create)'
     type(ESMF_CplComp),  pointer       :: connectors(:)
     character(len=128) :: name, msg
-    
+
     ! Initialize ESMF
     call ESMF_Initialize(logkindflag=esmf_LOGKIND_MULTI, &
          defaultCalkind=esmf_CALKIND_GREGORIAN, &
@@ -88,11 +88,11 @@ contains
     self%jec = geom%jec
     self%npz = geom%npz
 
-    self%cf_main=esmf_configcreate(rc=rc)   
+    self%cf_main=esmf_configcreate(rc=rc)
     call ESMF_ConfigLoadFile(config=self%cf_main, &
          filename='model_configure', &
          rc=rc)
-    
+
     ! This call to read_input_nml() seems to be required
     ! for CCPP.  However, it does not belong at this level
     ! but should be handled inside the model itself
@@ -108,14 +108,14 @@ contains
     esmf_err_abort(rc)
     esmf_err_abort(urc)
 
-   
+
     ! Set ESM's Verbosity (High)  - 32513
     call NUOPC_CompAttributeSet(self%esmComp, name="Verbosity", &
          value="32513", rc=rc)
     esmf_err_abort(rc)
 
-    
-    
+
+
     ! Initialize the clock based on contents of model_configure
     ! -------------------------------------------
     call setUFSClock(self,startTime,stopTime)
@@ -130,12 +130,12 @@ contains
          rc=rc)
     esmf_err_abort(rc)
 
-     
+
     self%fromJedi = ESMF_StateCreate(stateintent=ESMF_STATEINTENT_EXPORT, &
          rc=rc)
     esmf_err_abort(rc)
 
-     
+
     call ESMF_LogWrite("Advertising export from ESM", ESMF_LOGMSG_INFO)
     ! Advertise fields on the exportState, for data coming out of ESM component
     ! Note--only certain fields are available. Check in GFS_surface_generic to see if they are filled
@@ -168,12 +168,12 @@ contains
          TransferOfferGeomObject="cannot provide", rc=rc)
     esmf_err_abort(rc)
 
-    
+
     call ESMF_LogWrite("Advertising imports to ESM", ESMF_LOGMSG_INFO)
     ! Advertise fields on the importState, for data going into ESM componenta
 
 ! imports are not yet implemented
-#if 0 
+#if 0
     call NUOPC_Advertise(self%fromJedi, &
          StandardNames=(/ &
                         "u                                    ", &   ! Example fields
@@ -200,10 +200,10 @@ contains
                         "v_srf                                ", &   ! Example fields
                         "f10m                                 "/), &   ! Example fields
          TransferOfferGeomObject="cannot provide", rc=rc)
-    
+
     esmf_err_abort(rc)
 #endif
-     
+
     call ESMF_StateGet(self%toJedi, itemCount=cnt, rc=rc)
     esmf_err_abort(rc)
 
@@ -218,7 +218,7 @@ contains
          phaseLabel=label_ExternalAdvertise, phaseIndex=phase, rc=rc)
     esmf_err_abort(rc)
 
-     
+
     call ESMF_GridCompInitialize(self%esmComp, phase=phase, &
          importState=self%fromJedi, exportState=self%toJedi, &
          clock=self%clock, userRc=urc, rc=rc)
@@ -233,27 +233,27 @@ contains
     call ESMF_LogWrite("After calling advertise toJedi state has "//trim(msg)//" items.", &
          ESMF_LOGMSG_INFO)
 
-    
+
     ! Set verbosity flag on connectors
-    nullify(connectors); 
-    call NUOPC_DriverGetComp(self%esmComp, & 
+    nullify(connectors);
+    call NUOPC_DriverGetComp(self%esmComp, &
          compList=connectors, rc=rc)
     esmf_err_abort(rc)
 
-     
+
     call ESMF_LogWrite("About to set connector verbosity", ESMF_LOGMSG_INFO)
     do i=lbound(connectors,1), ubound(connectors,1)
        call ESMF_CplCompGet(connectors(i), name=name, rc=rc)
        esmf_err_abort(rc)
 
-       call NUOPC_CompAttributeSet(connectors(i), name="Verbosity", & 
+       call NUOPC_CompAttributeSet(connectors(i), name="Verbosity", &
             value="max", rc=rc)
        esmf_err_abort(rc)
 
-       call ESMF_LogWrite(" --> Set verbosity on connector: "//trim(name), & 
+       call ESMF_LogWrite(" --> Set verbosity on connector: "//trim(name), &
             ESMF_LOGMSG_INFO)
     enddo
-     
+
     deallocate(connectors)
 
     ! call ExternalRealize phase
@@ -273,7 +273,7 @@ contains
 
     write(msg, "(I2)") cnt
 
-    call ESMF_LogWrite("Dumping toJedi state with "//trim(msg)//" items", & 
+    call ESMF_LogWrite("Dumping toJedi state with "//trim(msg)//" items", &
          ESMF_LOGMSG_INFO)
 
     ! call ExternalDataInit phase
@@ -291,11 +291,11 @@ contains
     call ESMF_LogWrite("Exit "//subname, ESMF_LOGMSG_INFO)
 
   end subroutine create
-  
+
 ! --------------------------------------------------------------------------------------------------
 
   subroutine initialize(self, state, vdate)
-    
+
     implicit none
 
     class(model_ufs),    intent(inout) :: self
@@ -307,7 +307,7 @@ contains
     call ESMF_LogWrite("Enter "//subname, ESMF_LOGMSG_INFO)
 
     call ESMF_LogWrite("Exit "//subname, ESMF_LOGMSG_INFO)
-    
+
   end subroutine initialize
 
 ! --------------------------------------------------------------------------------------------------
@@ -315,12 +315,12 @@ contains
   subroutine step(self, state, vdate_start, vdate_final)
 
     implicit none
-    
+
     class(model_ufs),    intent(inout) :: self
     type(fv3jedi_state), intent(inout) :: state
     type(datetime),      intent(in)    :: vdate_start
     type(datetime),      intent(in)    :: vdate_final
-        
+
     ! local variables
     integer :: rc, urc, cnt
     character(len=20) :: strStartTime, strStopTime
@@ -337,23 +337,23 @@ contains
 
     call datetime_to_string(vdate_start, strStartTime)
     call datetime_to_string(vdate_final, strStopTime)
-    
+
     call ESMF_LogWrite(" --> REQUESTED START TIME:"//trim(strStartTime), ESMF_LOGMSG_INFO)
     call ESMF_LogWrite(" --> REQUESTED STOP  TIME:"//trim(strStopTime), ESMF_LOGMSG_INFO)
 
-    call ESMF_ClockGet(self%clock, startTime=startTime, & 
+    call ESMF_ClockGet(self%clock, startTime=startTime, &
          stopTime=stopTime, rc=rc)
     esmf_err_abort(rc)
 
-    
+
     call ESMF_TimeSet(startTime, timeString=strStartTime, rc=rc)
     esmf_err_abort(rc)
 
-    
+
     call ESMF_TimeSet(stopTime, timeString=strStopTime, rc=rc)
     esmf_err_abort(rc)
 
-    
+
     timeStep = stopTime - startTime
 
     call ESMF_ClockSet(self%clock, startTime=startTime, &
@@ -370,21 +370,21 @@ contains
     call ESMF_StateGet(self%toJedi, itemCount=cnt, rc=rc)
     esmf_err_abort(rc)
     write(msg, "(I2)") cnt
-    call ESMF_LogWrite("after step toJedi state with "//trim(msg)//" items", & 
+    call ESMF_LogWrite("after step toJedi state with "//trim(msg)//" items", &
          ESMF_LOGMSG_INFO)
     write(fileName, '("fields_in_esm_import_step",I2.2,".nc")') tstep
     call fv3_to_state(self, state)
-    call ESMF_LogWrite("after state write "//trim(msg)//" rc", & 
+    call ESMF_LogWrite("after state write "//trim(msg)//" rc", &
          ESMF_LOGMSG_INFO)
 
     call ESMF_LogWrite("Exit "//subname, ESMF_LOGMSG_INFO)
 
   end subroutine step
-  
+
 ! --------------------------------------------------------------------------------------------------
 
   subroutine delete(self)
-    
+
     implicit none
     class(model_ufs), intent(inout) :: self
     integer :: rc
@@ -395,13 +395,13 @@ contains
     call ESMF_GridCompDestroy(self%esmComp, rc=rc)
     esmf_err_abort(rc)
 
-     
+
     call ESMF_LogWrite("About to destroy toJedi state "//subname, ESMF_LOGMSG_INFO)
 
     call ESMF_StateDestroy(self%toJedi, rc=rc)
     esmf_err_abort(rc)
 
-    
+
     call ESMF_LogWrite("About to destroy fromJedi state "//subname, ESMF_LOGMSG_INFO)
 
     call ESMF_StateDestroy(self%fromJedi, rc=rc)
@@ -418,14 +418,14 @@ contains
   end subroutine delete
 
   ! --------------------------------------------------------------------------------------------------
-  
+
   subroutine finalize(self, state, vdate)
-    
+
     implicit none
     class(model_ufs),    intent(inout) :: self
     type(fv3jedi_state), intent(in)    :: state
     type(datetime),intent(in)    :: vdate
-    
+
     character(len=*),parameter :: subname = modname//' (finalize)'
     ! Clean up is being done in the delete method
     call ESMF_LogWrite("Enter "//subname, ESMF_LOGMSG_INFO)
@@ -433,13 +433,13 @@ contains
     call ESMF_LogWrite("Exit "//subname, ESMF_LOGMSG_INFO)
 
   end subroutine finalize
-  
+
   subroutine fv3_to_state( self, state )
 
   implicit none
   type(model_ufs),    intent(in)    :: self
   type(fv3jedi_state), intent(inout) :: state
-  
+
   integer :: num_items, i, rc, rank, lb(3), ub(3), fnpz
   type(ESMF_Field) :: field
   character(len=ESMF_MAXSTR), allocatable :: item_names(:)
@@ -447,28 +447,28 @@ contains
   real(kind=ESMF_KIND_R8), pointer :: farrayPtr3(:,:,:)
   character(len=field_clen) :: fv3jedi_name
   type(fv3jedi_field), pointer :: field_ptr
-  
+
   real(kind=ESMF_KIND_R8),allocatable,dimension(:,:,:)      :: field_fv3
-  
-  
+
+
   ! Array to hold output from UFS in JEDI precision
   ! ------------------------------------------------
   allocate(field_fv3(self%isc:self%iec, self%jsc:self%jec, self%npz+1))
-  
-  
+
+
   ! Get number of items
   ! -------------------
   call ESMF_StateGet(self%toJedi, itemcount = num_items, rc = rc)
   if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_StateGet itemcount failed")
-  
-  
+
+
   ! Get names of the items
   ! ----------------------
   allocate(item_names(num_items))
   call ESMF_StateGet(self%toJedi, itemnamelist = item_names, rc = rc)
   if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_StateGet itemnamelist failed")
-  
-  
+
+
   ! Loop over states coming from UFS and convert to JEDI state
   ! -----------------------------------------------------------
   do i = 1, num_items
@@ -483,66 +483,66 @@ contains
     ! Only need to extract field from UFS if fv3-jedi needs it
     ! ---------------------------------------------------------
     if (state%has_field(trim(fv3jedi_name))) then
- 
+
       !Get field from the state
       call ESMF_StateGet(self%toJedi, item_names(i), field, rc = rc)
       if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_StateGet field failed")
-  
+
       !Validate the field
       call ESMF_FieldValidate(field, rc = rc)
       if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldValidate failed")
-  
+
       !Get the field rank
       call ESMF_FieldGet(field, rank = rank, rc = rc)
-      
+
       if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldGet rank failed")
-  
+
       !Convert field to pointer and pointer bounds
       field_fv3 = 0.0_ESMF_KIND_R8
       if (rank == 2) then
-  
+
         call ESMF_FieldGet( field, 0, farrayPtr = farrayPtr2, totalLBound = lb(1:2), totalUBound = ub(1:2), rc = rc )
         if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldGet 2D failed")
-  
+
         fnpz = 1
         field_fv3(self%isc:self%iec,self%jsc:self%jec,1) = farrayPtr2(lb(1):ub(1),lb(2):ub(2))
         nullify(farrayPtr2)
-  
+
       elseif (rank == 3) then
         call ESMF_FieldGet( field, 0, farrayPtr = farrayPtr3, totalLBound = lb, totalUBound = ub, rc = rc )
         if (rc.ne.0) call abor1_ftn("fv3_to_state: ESMF_FieldGet 3D failed",rc)
-  
+
         fnpz = ub(3)-lb(3)+1
         field_fv3(self%isc:self%iec,self%jsc:self%jec,1:fnpz) = farrayPtr3(lb(1):ub(1),lb(2):ub(2),lb(3):ub(3))
         nullify(farrayPtr3)
-  
+
       else
-  
+
         call abor1_ftn("fv3_mod: can only handle rank 2 or rank 3 fields from UFS")
-  
+
       endif
-  
+
       ! Check that dimensions match
       if ((ub(1)-lb(1)+1 .ne. self%iec-self%isc+1) .or. (ub(2)-lb(2)+1 .ne. self%jec-self%jsc+1) ) then
         call abor1_ftn("fv3_to_state: dimension mismatch between JEDI and UFS horizontal grid")
       endif
-  
+
       ! Get pointer to fv3-jedi side field
       call state%get_field(trim(fv3jedi_name), field_ptr)
-  
+
       if (field_ptr%npz .ne. fnpz) &
         call abor1_ftn("fv3_to_state: dimension mismatch between JEDI and UFS vertical grid")
-  
+
       ! Copy from UFS to fv3-jedi
       field_ptr%array(self%isc:self%iec,self%jsc:self%jec,1:fnpz) = field_fv3(self%isc:self%iec,self%jsc:self%jec,1:fnpz)
     else
       call ESMF_LogWrite("Not needed by JEDI is "//fv3jedi_name, ESMF_LOGMSG_INFO)
     endif
-  
+
   end do
-  
+
   deallocate(item_names)
-  
+
   end subroutine fv3_to_state
 
 

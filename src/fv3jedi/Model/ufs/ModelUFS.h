@@ -11,10 +11,16 @@
 #include <ostream>
 #include <string>
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
+#include "oops/generic/ModelBase.h"
 #include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
@@ -31,14 +37,28 @@ namespace fv3jedi {
   class Increment;
   class State;
 
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+/// Options taken by ModelUFS
+  class ModelUFSParameters : public oops::ModelParametersBase {
+    OOPS_CONCRETE_PARAMETERS(ModelUFSParameters, ModelParametersBase)
+
+   public:
+    oops::RequiredParameter<eckit::LocalConfiguration> modelVariables{ "model variables", this};
+    oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+    oops::RequiredParameter<std::string> ufsRunDirectory{ "ufs_run_directory", this};
+  };
+
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 class ModelUFS: public oops::interface::ModelBase<Traits>,
                 private util::ObjectCounter<ModelUFS> {
  public:
+  typedef ModelUFSParameters Parameters_;
   static const std::string classname() {return "fv3jedi::ModelUFS";}
 
-  ModelUFS(const Geometry &, const eckit::Configuration &);
+  ModelUFS(const Geometry &, const Parameters_ &);
   ~ModelUFS();
 
   void initialize(State &) const;

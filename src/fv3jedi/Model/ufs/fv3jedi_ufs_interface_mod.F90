@@ -45,9 +45,9 @@ contains
 subroutine c_fv3jedi_ufs_create(c_key_self, c_conf, c_key_geom) &
            bind (c,name='fv3jedi_ufs_create_f90')
 
-integer(c_int), intent(inout) :: c_key_self  !< Key to model data
-integer(c_int), intent(in)    :: c_key_geom  !< Geometry
-type(c_ptr),    intent(in)    :: c_conf      !< pointer to object of class Config
+integer(c_int), intent(inout)  :: c_key_self  !< Key to model data
+integer(c_int), intent(in)     :: c_key_geom  !< Geometry
+type(c_ptr), value, intent(in) :: c_conf      !< pointer to object of class Config
 
 type(model_ufs),     pointer :: self
 type(fv3jedi_geom),  pointer :: geom

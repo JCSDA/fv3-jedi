@@ -23,16 +23,15 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 // -------------------------------------------------------------------------------------------------
-ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables") {
+ModelUFS::ModelUFS(const Geometry & resol, const Parameters_ & params)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(params.toConfiguration(), "model variables") {
   char tmpdir_[10000];
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
   getcwd(tmpdir_, 10000);
-  tstep_ = util::Duration(mconf.getString("tstep"));
-  strcpy(ufsdir_, mconf.getString("ufs_run_directory").c_str());
-  const eckit::Configuration * configc = &mconf;
+  tstep_ = params.tstep;
+  strcpy(ufsdir_, params.ufsRunDirectory.value().c_str());
   chdir(ufsdir_);
-  fv3jedi_ufs_create_f90(keyConfig_, &configc, geom_.toFortran());
+  fv3jedi_ufs_create_f90(keyConfig_, params.toConfiguration(), geom_.toFortran());
   oops::Log::trace() << "ModelUFS::ModelUFS done" << std::endl;
   chdir(tmpdir_);
 }
