@@ -24,7 +24,7 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_fv3lm_create_f90(const eckit::Configuration * const *, const F90geom &, F90model &);
+  void fv3jedi_fv3lm_create_f90(const eckit::Configuration &, const F90geom &, F90model &);
   void fv3jedi_fv3lm_delete_f90(F90model &);
 
 

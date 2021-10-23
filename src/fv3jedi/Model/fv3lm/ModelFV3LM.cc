@@ -22,13 +22,12 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
 // -------------------------------------------------------------------------------------------------
-ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
+ModelFV3LM::ModelFV3LM(const Geometry & resol, const Parameters_ & params)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(params.toConfiguration(), "model variables")
 {
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM" << std::endl;
-  tstep_ = util::Duration(mconf.getString("tstep"));
-  const eckit::Configuration * configc = &mconf;
-  fv3jedi_fv3lm_create_f90(&configc, geom_.toFortran(), keyConfig_);
+  tstep_ = params.tstep;
+  fv3jedi_fv3lm_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
   oops::Log::trace() << "ModelFV3LM created" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

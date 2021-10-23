@@ -45,9 +45,9 @@ subroutine c_fv3jedi_fv3lm_create(c_conf, c_key_geom, c_key_self) &
            bind (c,name='fv3jedi_fv3lm_create_f90')
 
 implicit none
-integer(c_int), intent(inout) :: c_key_self  !< Key to model data
-integer(c_int), intent(in)    :: c_key_geom  !< Geometry
-type(c_ptr),    intent(in)    :: c_conf      !< pointer to object of class Config
+integer(c_int), intent(inout)  :: c_key_self  !< Key to model data
+integer(c_int), intent(in)     :: c_key_geom  !< Geometry
+type(c_ptr),value , intent(in) :: c_conf      !< pointer to object of class Config
 
 type(fv3lm_model),  pointer :: self
 type(fv3jedi_geom), pointer :: geom
