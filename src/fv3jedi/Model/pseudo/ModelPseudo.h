@@ -1,13 +1,13 @@
 /*
- * (C) Copyright 2019 UCAR
+ * (C) Copyright 2019-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_PSEUDO_MODELPSEUDO_H_
-#define FV3JEDI_MODEL_PSEUDO_MODELPSEUDO_H_
+#pragma once
 
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -18,7 +18,6 @@
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Model/pseudo/ModelPseudo.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
 
 // Forward declarations
@@ -31,11 +30,7 @@ namespace fv3jedi {
   class Increment;
   class State;
 
-// -----------------------------------------------------------------------------
-/// FV3JEDI model definition.
-/*!
- *  FV3JEDI nonlinear model definition and configuration parameters.
- */
+// -------------------------------------------------------------------------------------------------
 
 class ModelPseudo: public oops::interface::ModelBase<Traits>,
                    private util::ObjectCounter<ModelPseudo> {
@@ -60,14 +55,12 @@ class ModelPseudo: public oops::interface::ModelBase<Traits>,
 
  private:
   void print(std::ostream &) const;
-  F90model keyConfig_;
   util::Duration tstep_;
-  const Geometry geom_;
-  const oops::Variables vars_;
-  int runstagecheck_ = 0;
+  oops::Variables vars_;
+  bool runstagecheck_;
   mutable bool runstage_ = true;
+  std::unique_ptr<IOBase> io_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_PSEUDO_MODELPSEUDO_H_

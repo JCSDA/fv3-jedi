@@ -1,7 +1,9 @@
-module fv3jedi_io_gfs_mod
+! (C) Copyright 2017-2021 UCAR
+!
+! This software is licensed under the terms of the Apache Licence Version 2.0
+! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-! iso
-use iso_c_binding
+module fv3jedi_io_gfs_mod
 
 ! oops
 use datetime_mod
@@ -27,12 +29,13 @@ use fv3jedi_kinds_mod,            only: kind_real
 
 implicit none
 private
-public fv3jedi_io_gfs
+public fv3jedi_io_gfs, read_fields
 
 ! If adding a new file it is added here and object and config in setup
 integer, parameter :: numfiles = 9
 
 type fv3jedi_io_gfs
+ logical :: input_is_date_templated
  character(len=128) :: datapath
  character(len=128) :: filenames(numfiles)
  character(len=128) :: filenames_conf(numfiles)
@@ -48,13 +51,15 @@ type fv3jedi_io_gfs
  logical :: ps_in_file
  logical :: skip_coupler
  logical :: prepend_date
+ ! Geometry copies
+ type(domain2D), pointer :: domain
+ integer :: npz
  contains
-  procedure :: setup_conf  ! Setup for when config is available, called from constructors
-  procedure :: setup_date  ! Setup when datetime is available
-  procedure :: read_meta
-  procedure :: read_fields
-  procedure :: write
-  final     :: dummy_final
+   procedure :: create
+   procedure :: delete
+   procedure :: read
+   procedure :: write
+   final     :: dummy_final
 end type fv3jedi_io_gfs
 
 ! --------------------------------------------------------------------------------------------------
@@ -63,10 +68,12 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine setup_conf(self, f_conf)
+subroutine create(self, conf, domain, npz)
 
 class(fv3jedi_io_gfs),     intent(inout) :: self
-type(fckit_configuration), intent(in)    :: f_conf
+type(fckit_configuration), intent(in)    :: conf
+type(domain2D), target,    intent(in)    :: domain
+integer,                   intent(in)    :: npz
 
 integer :: n
 character(len=:), allocatable :: str
@@ -74,13 +81,13 @@ character(len=13) :: fileconf(numfiles)
 
 ! Get path to files
 ! -----------------
-call f_conf%get_or_die("datapath",str)
+call conf%get_or_die("datapath",str)
 if (len(str) > 128) &
   call abor1_ftn('fv3jedi_io_gfs_mod.setup: datapath too long, max FMS char length= 128')
 
 ! For ensemble methods switch out member template
 ! -----------------------------------------------
-call swap_name_member(f_conf, str)
+call swap_name_member(conf, str)
 
 self%datapath = str
 deallocate(str)
@@ -116,11 +123,11 @@ fileconf(self%index_cold) = "filename_cold"
 do n = 1, numfiles
 
   ! Retrieve user input filenames if available
-  if (f_conf%has(fileconf(n))) then
-    call f_conf%get_or_die(fileconf(n),str)
+  if (conf%has(fileconf(n))) then
+    call conf%get_or_die(fileconf(n),str)
     if (len(str) > 128) call abor1_ftn("fv3jedi_io_gfs_mod.setup: "//fileconf(n)//&
                                         " too long, max FMS char length= 128")
-    call add_iteration(f_conf,str)
+    call add_iteration(conf,str)
     self%filenames_conf(n) = str
     deallocate(str)
   endif
@@ -133,31 +140,98 @@ enddo
 ! Option to retrieve Ps from delp
 ! -------------------------------
 self%ps_in_file = .false.
-if (f_conf%has("psinfile")) then
-  call f_conf%get_or_die("psinfile",self%ps_in_file)
+if (conf%has("psinfile")) then
+  call conf%get_or_die("psinfile",self%ps_in_file)
 endif
 
 ! Option to skip read/write of coupler file
 ! -----------------------------------------
 self%skip_coupler = .false.
-if (f_conf%has("skip coupler file")) then
-  call f_conf%get_or_die("skip coupler file",self%skip_coupler)
+if (conf%has("skip coupler file")) then
+  call conf%get_or_die("skip coupler file",self%skip_coupler)
 endif
 
 ! Option to turn off prepending file with date
 ! --------------------------------------------
-if (.not.f_conf%get("prepend files with date", self%prepend_date)) then
+if (.not.conf%get("prepend files with date", self%prepend_date)) then
   self%prepend_date = .true.
 endif
 
-end subroutine setup_conf
+! Optionally the file name to be read is datetime templated
+! ---------------------------------------------------------
+if (conf%has("filename is datetime templated")) then
+  call conf%get_or_die("filename is datetime templated", self%input_is_date_templated)
+else
+  self%input_is_date_templated = .false.
+endif
+
+! Geometry copies
+! ---------------
+self%domain => domain
+self%npz = npz
+
+end subroutine create
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine delete(self)
+
+class(fv3jedi_io_gfs), intent(inout) :: self
+
+if (associated(self%domain)) nullify(self%domain)
+
+end subroutine delete
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine read(self, vdate, calendar_type, date_init, fields)
+
+class(fv3jedi_io_gfs), intent(inout) :: self
+type(datetime),        intent(inout) :: vdate
+integer,               intent(inout) :: calendar_type
+integer,               intent(inout) :: date_init(6)
+type(fv3jedi_field),   intent(inout) :: fields(:)
+
+! Overwrite any datetime templates in the file names
+! --------------------------------------------------
+if (self%input_is_date_templated) call setup_date(self, vdate)
+
+! Read meta data
+! --------------
+call read_meta(self, vdate, calendar_type, date_init)
+
+! Read fields
+! -----------
+call read_fields(self, fields)
+
+end subroutine read
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine write(self, vdate, calendar_type, date_init, fields)
+
+class(fv3jedi_io_gfs), intent(inout) :: self
+type(datetime),        intent(in)    :: vdate
+integer,               intent(in)    :: calendar_type
+integer,               intent(in)    :: date_init(6)
+type(fv3jedi_field),   intent(in)    :: fields(:)
+
+! Overwrite any datetime templates in the file names
+! --------------------------------------------------
+call setup_date(self, vdate)
+
+! Write metadata and fields
+! -------------------------
+call write_all(self, fields, vdate, calendar_type, date_init)
+
+end subroutine write
 
 ! --------------------------------------------------------------------------------------------------
 
 subroutine setup_date(self, vdate)
 
-class(fv3jedi_io_gfs),               intent(inout) :: self
-type(datetime),                      intent(in)    :: vdate
+type(fv3jedi_io_gfs), intent(inout) :: self
+type(datetime),       intent(in)    :: vdate
 
 integer :: n
 character(len=4) :: yyyy
@@ -171,6 +245,8 @@ do n = 1, numfiles
 
   ! Config filenames to filenames
   self%filenames(n) = trim(self%filenames_conf(n))
+
+  print*, n, self%filenames(n), yyyy
 
   ! Swap out datetime templates if needed
   if (index(self%filenames(n),"%yyyy") > 0) &
@@ -194,13 +270,13 @@ end subroutine setup_date
 
 subroutine read_meta(self, vdate, calendar_type, date_init)
 
-class(fv3jedi_io_gfs), intent(inout) :: self
-type(datetime),        intent(inout) :: vdate         !< DateTime
-integer,               intent(inout) :: calendar_type !< GFS calendar type
-integer,               intent(inout) :: date_init(6)  !< GFS date intialized
+type(fv3jedi_io_gfs), intent(inout) :: self
+type(datetime),       intent(inout) :: vdate         !< DateTime
+integer,              intent(inout) :: calendar_type !< GFS calendar type
+integer,              intent(inout) :: date_init(6)  !< GFS date intialized
 
 integer :: date(6)
-integer(kind=c_int) :: idate, isecs
+integer :: idate, isecs
 
 integer :: idrst
 real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
@@ -227,13 +303,11 @@ end subroutine read_meta
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_fields(self, fields, domain, npz)
+subroutine read_fields(self, fields)
 
 implicit none
-class(fv3jedi_io_gfs), intent(inout) :: self
-type(fv3jedi_field),   intent(inout) :: fields(:)
-type(domain2D), pointer, intent(in) :: domain
-integer,                 intent(in) :: npz
+type(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_field),  intent(inout) :: fields(:)
 
 type(restart_file_type) :: restart(numfiles)
 logical :: rstflag(numfiles)
@@ -245,7 +319,7 @@ real(kind=kind_real), allocatable :: delp(:,:,:)
 
 ! Set FMS IO internal domain
 ! --------------------------
-call set_domain(domain)
+call set_domain(self%domain)
 
 ! Register and read fields
 ! ------------------------
@@ -267,7 +341,7 @@ do var = 1,size(fields)
     if (havedelp) cycle ! Do not register delp twice
     deallocate(fields(indexof_ps)%array)
     allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
-                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:npz))
+                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:self%npz))
     fields(indexof_ps)%short_name = 'DELP'
   endif
 
@@ -306,7 +380,7 @@ do var = 1,size(fields)
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
                                   trim(fields(var)%short_name), fields(var)%array, &
-                                  domain=domain, position=position )
+                                  domain=self%domain, position=position )
 
 enddo
 
@@ -323,7 +397,7 @@ enddo
 ! --------------------
 if (indexof_ps > 0) then
   allocate(delp(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
-                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:npz))
+                fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:self%npz))
   if (.not. havedelp) then
     delp = fields(indexof_ps)%array
     deallocate(fields(indexof_ps)%array)
@@ -344,25 +418,24 @@ end subroutine read_fields
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, domain, fields, vdate, calendar_type, date_init)
+subroutine write_all(self, fields, vdate, calendar_type, date_init)
 
 implicit none
-class(fv3jedi_io_gfs), intent(inout) :: self
-type(domain2D), pointer, intent(in)  :: domain
-type(fv3jedi_field),   intent(in)    :: fields(:)     !< Fields to be written
-type(datetime),        intent(in)    :: vdate         !< DateTime
-integer,               intent(in)    :: calendar_type !< GFS calendar type
-integer,               intent(in)    :: date_init(6)  !< GFS date intialized
+type(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),       intent(in)    :: vdate         !< DateTime
+integer,              intent(in)    :: calendar_type !< GFS calendar type
+integer,              intent(in)    :: date_init(6)  !< GFS date intialized
 
 logical :: rstflag(numfiles)
 integer :: n, indexrst, position, var, idrst, date(6)
-integer(kind=c_int) :: idate, isecs
+integer :: idate, isecs
 type(restart_file_type) :: restart(numfiles)
 character(len=64)  :: datefile
 
 ! Set FMS IO internal domain
 ! --------------------------
-call set_domain(domain)
+call set_domain(self%domain)
 
 ! Get datetime
 ! ------------
@@ -424,7 +497,7 @@ do var = 1,size(fields)
 
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
-                                  fields(var)%short_name, fields(var)%array, domain=domain, &
+                                  fields(var)%short_name, fields(var)%array, domain=self%domain, &
                                   position=position, longname = trim(fields(var)%long_name), &
                                   units = trim(fields(var)%units) )
 
@@ -457,7 +530,7 @@ endif
 ! ------------------------------
 call nullify_domain()
 
-end subroutine write
+end subroutine write_all
 
 ! --------------------------------------------------------------------------------------------------
 

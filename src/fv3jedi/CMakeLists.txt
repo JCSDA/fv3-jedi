@@ -39,20 +39,31 @@ list( APPEND fv3jedi_src_files
   Increment/Increment.interface.h
   Increment/fv3jedi_increment_interface_mod.F90
   Increment/fv3jedi_increment_mod.F90
-  IO/fv3jedi_io_geos_mod.f90
-  IO/fv3jedi_io_gfs_mod.f90
-  IO/fv3jedi_io_latlon_mod.f90
-  IO/fv3jedi_io_utils_mod.f90
+  IO/FV3Restart/fv3jedi_io_gfs_mod.f90
+  IO/FV3Restart/IOGfs.cc
+  IO/FV3Restart/IOGfs.h
+  IO/FV3Restart/IOGfs.interface.F90
+  IO/FV3Restart/IOGfs.interface.h
+  IO/Geos/fv3jedi_io_geos_mod.f90
+  IO/Geos/IOGeos.cc
+  IO/Geos/IOGeos.h
+  IO/Geos/IOGeos.interface.F90
+  IO/Geos/IOGeos.interface.h
+  IO/LatLon/fv3jedi_io_latlon_mod.f90
+  IO/LatLon/IOLatLon.cc
+  IO/LatLon/IOLatLon.h
+  IO/LatLon/IOLatLon.interface.F90
+  IO/LatLon/IOLatLon.interface.h
+  IO/Utils/fv3jedi_io_utils_mod.f90
+  IO/Utils/IOBase.cc
+  IO/Utils/IOBase.h
   Model/fv3lm/fv3jedi_fv3lm_interface_mod.F90
   Model/fv3lm/fv3jedi_fv3lm_mod.f90
   Model/fv3lm/ModelFV3LM.cc
   Model/fv3lm/ModelFV3LM.h
   Model/fv3lm/ModelFV3LM.interface.h
-  Model/pseudo/fv3jedi_pseudo_interface_mod.F90
-  Model/pseudo/fv3jedi_pseudo_mod.f90
   Model/pseudo/ModelPseudo.cc
   Model/pseudo/ModelPseudo.h
-  Model/pseudo/ModelPseudo.interface.h
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h

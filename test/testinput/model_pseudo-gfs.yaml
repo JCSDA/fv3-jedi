@@ -11,7 +11,8 @@ geometry:
 model:
   name: PSEUDO
   tstep: PT1H
-  pseudo_type: gfs
+  filetype: gfs
+  filename is datetime templated: true
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
   filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc

@@ -23,9 +23,6 @@ use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_f
                                      hasfield, short_name_to_fv3jedi_name
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
-use fv3jedi_io_gfs_mod,        only: fv3jedi_io_gfs
-use fv3jedi_io_geos_mod,       only: fv3jedi_io_geos
-use fv3jedi_io_latlon_mod,     only: fv3jedi_llgeom
 use fv3jedi_kinds_mod,         only: kind_real
 use fields_metadata_mod,       only: field_metadata
 
@@ -53,8 +50,6 @@ type :: fv3jedi_fields
     procedure, public :: norm
     procedure, public :: change_resol
     procedure, public :: minmaxrms
-    procedure, public :: read
-    procedure, public :: write
     procedure, public :: accumul
     procedure, public :: serialize
     procedure, public :: deserialize
@@ -141,7 +136,7 @@ subroutine create(self, geom, vars)
     self%fields(fc)%tracer       = fmd%tracer
     self%fields(fc)%integerfield = trim(fmd%array_kind)=='integer'
     ! hard-coding options for direction and integer fields, otherwise use user spec.
-    if ( self%fields(fc)%integerfield ) then 
+    if ( self%fields(fc)%integerfield ) then
       self%fields(fc)%interp_type  = 'integer'
     elseif (  trim(self%fields(fc)%space) == 'direction' ) then
       self%fields(fc)%interp_type  = 'nearest'
@@ -358,96 +353,6 @@ call self%f_comm%allreduce(tmp(3), minmaxrmsout(3), fckit_mpi_sum())
 minmaxrmsout(3) = sqrt(minmaxrmsout(3)/gs3g)
 
 endsubroutine minmaxrms
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine read(self, geom, conf, vdate)
-
-class(fv3jedi_fields),     intent(inout) :: self
-type(fv3jedi_geom),        intent(inout) :: geom
-type(fckit_configuration), intent(in)    :: conf
-type(datetime),            intent(inout) :: vdate
-
-type(fv3jedi_io_gfs)  :: gfs
-type(fv3jedi_io_geos) :: geos
-
-character(len=10) :: filetype
-character(len=:), allocatable :: str
-
-
-! IO type
-call conf%get_or_die("filetype",str)
-filetype = str
-deallocate(str)
-
-
-if (trim(filetype) == 'gfs') then
-
-  call gfs%setup_conf(conf)
-  call gfs%read_meta(vdate, self%calendar_type, self%date_init)
-  call gfs%read_fields(self%fields, geom%domain, geom%npz)
-
-elseif (trim(filetype) == 'geos') then
-
-  call geos%setup_conf(geom, conf)
-  call geos%read_meta(geom, vdate, self%calendar_type, self%date_init, self%fields)
-  call geos%read_fields(geom, self%fields)
-  call geos%delete()
-
-else
-
-  call abor1_ftn("fv3jedi_fields_mod.read: restart type not supported")
-
-endif
-
-endsubroutine read
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine write(self, geom, conf, vdate)
-
-class(fv3jedi_fields),     intent(inout) :: self
-type(fv3jedi_geom),        intent(inout) :: geom
-type(fckit_configuration), intent(in)    :: conf
-type(datetime),            intent(inout) :: vdate
-
-type(fv3jedi_io_gfs)  :: gfs
-type(fv3jedi_io_geos) :: geos
-type(fv3jedi_llgeom)  :: latlon
-
-character(len=10) :: filetype
-character(len=:), allocatable :: str
-
-! IO type
-call conf%get_or_die("filetype",str)
-filetype = str
-deallocate(str)
-
-if (trim(filetype) == 'gfs') then
-
-  call gfs%setup_conf(conf)
-  call gfs%setup_date(vdate)
-  call gfs%write(geom%domain, self%fields, vdate, self%calendar_type, self%date_init)
-
-elseif (trim(filetype) == 'geos') then
-
-  call geos%setup_conf(geom, conf)
-  call geos%setup_date(vdate)
-  call geos%write(geom, self%fields, vdate)
-  call geos%delete()
-
-elseif (trim(filetype) == 'latlon') then
-
-  call latlon%setup_conf(geom)
-  call latlon%write(geom, self%fields, conf, vdate)
-
-else
-
-    call abor1_ftn("fv3jedi_fields.write: restart type not supported")
-
-endif
-
-endsubroutine write
 
 ! --------------------------------------------------------------------------------------------------
 

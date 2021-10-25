@@ -29,6 +29,7 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
 
 namespace fv3jedi {
@@ -177,15 +178,17 @@ void Increment::fromAtlas(atlas::FieldSet * afieldset) {
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::read(const eckit::Configuration & config) {
-  const eckit::Configuration * conf = &config;
-  util::DateTime * dtp = &time_;
-  fv3jedi_increment_read_file_f90(geom_->toFortran(), keyInc_, &conf, &dtp);
+  // Create IO object
+  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
+  // Perform read
+  io_->read(*this);
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::write(const eckit::Configuration & config) const {
-  const eckit::Configuration * conf = &config;
-  const util::DateTime * dtp = &time_;
-  fv3jedi_increment_write_file_f90(geom_->toFortran(), keyInc_, &conf, &dtp);
+  // Create IO object
+  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
+  // Perform read
+  io_->write(*this);
 }
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {

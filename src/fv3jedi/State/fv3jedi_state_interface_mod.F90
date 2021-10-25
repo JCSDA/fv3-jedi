@@ -185,31 +185,6 @@ end subroutine fv3jedi_state_change_resol_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_read_file_c(c_key_geom, c_key_state, c_conf, c_dt) &
-           bind(c,name='fv3jedi_state_read_file_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_state  !< State
-type(c_ptr), intent(in)    :: c_conf !< Configuration
-type(c_ptr), intent(inout) :: c_dt   !< DateTime
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-
-type(fv3jedi_state), pointer :: self
-type(datetime) :: fdate
-type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration) :: f_conf
-
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,self)
-call c_f_datetime(c_dt, fdate)
-f_conf = fckit_configuration(c_conf)
-
-call self%read(geom, f_conf, fdate)
-
-end subroutine fv3jedi_state_read_file_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf, c_dt) &
            bind(c,name='fv3jedi_state_analytic_init_f90')
 
@@ -231,31 +206,6 @@ f_conf = fckit_configuration(c_conf)
 call self%analytic_IC(geom, f_conf, fdate)
 
 end subroutine fv3jedi_state_analytic_init_c
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine fv3jedi_state_write_file_c(c_key_geom, c_key_state, c_conf, c_dt) &
-           bind(c,name='fv3jedi_state_write_file_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_state  !< State
-type(c_ptr), intent(in) :: c_conf !< Configuration
-type(c_ptr), intent(in) :: c_dt   !< DateTime
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-
-type(fv3jedi_state), pointer :: self
-type(datetime) :: fdate
-type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration) :: f_conf
-
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,self)
-call c_f_datetime(c_dt, fdate)
-f_conf = fckit_configuration(c_conf)
-
-call self%write(geom, f_conf, fdate)
-
-end subroutine fv3jedi_state_write_file_c
 
 ! --------------------------------------------------------------------------------------------------
 

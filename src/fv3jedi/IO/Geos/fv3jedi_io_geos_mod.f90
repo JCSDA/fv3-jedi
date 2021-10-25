@@ -1,12 +1,9 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2021 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_io_geos_mod
-
-! iso
-use iso_c_binding
 
 ! libs
 use mpi
@@ -67,12 +64,15 @@ type fv3jedi_io_geos
  integer :: x_dimid, y_dimid, n_dimid, z_dimid, e_dimid, t_dimid, f_dimid, c_dimid, o_dimid
  ! Ps in file option
  logical :: ps_in_file = .false.
+ ! Geometry copies
+ integer :: isc, iec, jsc, jec
+ integer :: npx, npy, npz, ntiles
+ real(kind=kind_real), allocatable :: grid_lat(:,:), grid_lon(:,:)
+ logical :: input_is_date_templated
  contains
-  procedure :: setup_conf
-  procedure :: setup_date
+  procedure :: create
   procedure :: delete
-  procedure :: read_meta
-  procedure :: read_fields
+  procedure :: read
   procedure :: write
   final     :: dummy_final
 end type fv3jedi_io_geos
@@ -83,11 +83,11 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine setup_conf(self, geom, f_conf)
+subroutine create(self, geom, conf)
 
 class(fv3jedi_io_geos),    intent(inout) :: self
 type(fv3jedi_geom),        intent(in)    :: geom
-type(fckit_configuration), intent(in)    :: f_conf
+type(fckit_configuration), intent(in)    :: conf
 
 integer :: ierr, n, var
 
@@ -124,7 +124,7 @@ self%restart(5) = .true.  !Is a restart file
 
 ! Get configuration
 ! -----------------
-call get_conf(self, f_conf)
+call get_conf(self, conf)
 
 ! Config filenames to filenames
 ! -----------------------------
@@ -190,14 +190,108 @@ if (self%iam_io_proc) then
 
 endif
 
-end subroutine setup_conf
+! Copy some geometry for later use
+self%isc = geom%isc
+self%iec = geom%iec
+self%jsc = geom%jsc
+self%jec = geom%jec
+self%npx = geom%npx
+self%npy = geom%npy
+self%npz = geom%npz
+self%ntiles = geom%ntiles
+allocate(self%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec))
+allocate(self%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec))
+self%grid_lat = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
+self%grid_lon = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
+
+end subroutine create
+
+! ------------------------------------------------------------------------------
+
+subroutine delete(self)
+
+class(fv3jedi_io_geos), intent(inout) :: self
+
+integer :: ierr, n
+
+! Deallocate
+! ----------
+if (allocated(self%ncid_forfield)) deallocate(self%ncid_forfield)
+
+if (allocated(self%grid_lat)) deallocate(self%grid_lat)
+if (allocated(self%grid_lon)) deallocate(self%grid_lon)
+
+! Release split comms
+! -------------------
+if (self%csize > 6) call MPI_Comm_free(self%tcomm, ierr)
+call MPI_Comm_free(self%ocomm, ierr)
+
+end subroutine delete
+
+! ------------------------------------------------------------------------------
+
+subroutine read(self, vdate, calendar_type, date_init, fields)
+
+class(fv3jedi_io_geos), intent(inout) :: self
+type(datetime),         intent(inout) :: vdate
+integer,                intent(inout) :: calendar_type
+integer,                intent(inout) :: date_init(6)
+type(fv3jedi_field),    intent(inout) :: fields(:)
+
+! Overwrite any datetime templates in the file names
+! --------------------------------------------------
+if (self%input_is_date_templated) call setup_date(self, vdate)
+
+! Read meta data
+! --------------
+call read_meta(self, vdate, calendar_type, date_init, fields)
+
+! Read fields
+! -----------
+call read_fields(self, fields)
+
+end subroutine read
+
+! ------------------------------------------------------------------------------
+
+subroutine write(self, fields, vdate)
+
+class(fv3jedi_io_geos), intent(inout) :: self
+type(fv3jedi_field),    intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),         intent(in)    :: vdate         !< DateTime
+
+! Overwrite any datetime templates in the file names
+! --------------------------------------------------
+call setup_date(self, vdate)
+
+! Set filenames
+! -------------
+call set_file_names(self, fields)
+
+! Open/create files
+! -----------------
+call create_files(self)
+
+! Write meta data
+! ---------------
+if (self%clobber) call write_meta(self, fields, vdate)
+
+! Write fields
+! ------------
+call write_fields(self, fields, vdate)
+
+! Close files
+! -----------
+call close_files(self)
+
+end subroutine write
 
 ! ------------------------------------------------------------------------------
 
 subroutine setup_date(self, vdate)
 
-class(fv3jedi_io_geos),    intent(inout) :: self
-type(datetime),            intent(in)    :: vdate
+type(fv3jedi_io_geos), intent(inout) :: self
+type(datetime),        intent(in)    :: vdate
 
 integer :: n
 character(len=4) :: yyyy
@@ -233,44 +327,51 @@ end subroutine setup_date
 
 ! ------------------------------------------------------------------------------
 
-subroutine get_conf(self,f_conf)
+subroutine get_conf(self, conf)
 
-implicit none
-class(fv3jedi_io_geos),    intent(inout) :: self
-type(fckit_configuration), intent(in)    :: f_conf
+type(fv3jedi_io_geos),     intent(inout) :: self
+type(fckit_configuration), intent(in)    :: conf
 
 integer :: n
 
 ! Path where files are read from or saved to
 ! ------------------------------------------
-call string_from_conf(f_conf,"datapath",self%datapath,'Data',memberswap=.true.)
+call string_from_conf(conf,"datapath",self%datapath,'Data',memberswap=.true.)
 
 ! User can ask for extra meta data needed for GEOS ingest
 ! -------------------------------------------------------
-if (.not. f_conf%get('geosingestmeta',self%geosingestmeta)) self%geosingestmeta = .false.
+if (.not. conf%get('geosingestmeta',self%geosingestmeta)) self%geosingestmeta = .false.
 
 ! Whether to expect/use the tile dimenstion in the file
 ! -----------------------------------------------------
-if (.not. f_conf%get('clobber',self%clobber)) self%clobber = .true.
+if (.not. conf%get('clobber',self%clobber)) self%clobber = .true.
 
 ! Whether to expect/use the tile dimenstion in the file
 ! -----------------------------------------------------
-if (.not. f_conf%get('tiledim',self%tiledim(1))) self%tiledim(1) = .true.
-if (.not. f_conf%get('tiledim',self%tiledim(2))) self%tiledim(2) = .true.
+if (.not. conf%get('tiledim',self%tiledim(1))) self%tiledim(1) = .true.
+if (.not. conf%get('tiledim',self%tiledim(2))) self%tiledim(2) = .true.
 
 ! User can optionally specify the file names
 ! ------------------------------------------
 n = 0
-n = n+1; call string_from_conf(f_conf,"filename_bkgd",self%filenames_conf(1), &
+n = n+1; call string_from_conf(conf,"filename_bkgd",self%filenames_conf(1), &
                                self%filenames_default(1),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_crtm",self%filenames_conf(2), &
+n = n+1; call string_from_conf(conf,"filename_crtm",self%filenames_conf(2), &
                                self%filenames_default(2),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_core",self%filenames_conf(3), &
+n = n+1; call string_from_conf(conf,"filename_core",self%filenames_conf(3), &
                                self%filenames_default(3),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_mois",self%filenames_conf(4), &
+n = n+1; call string_from_conf(conf,"filename_mois",self%filenames_conf(4), &
                                self%filenames_default(4),memberswap=.true.)
-n = n+1; call string_from_conf(f_conf,"filename_surf",self%filenames_conf(5), &
+n = n+1; call string_from_conf(conf,"filename_surf",self%filenames_conf(5), &
                                self%filenames_default(5),memberswap=.true.)
+
+! Optionally the file name to be read is datetime templated
+! ---------------------------------------------------------
+if (conf%has("filename is datetime templated")) then
+  call conf%get_or_die("filename is datetime templated", self%input_is_date_templated)
+else
+  self%input_is_date_templated = .false.
+endif
 
 ! Sanity check
 ! ------------
@@ -279,46 +380,24 @@ if (n .ne. numfiles) &
                   does not match numfiles")
 
 ! Option to allow for ps infile
-if (f_conf%has("psinfile")) call f_conf%get_or_die("psinfile",self%ps_in_file)
+if (conf%has("psinfile")) call conf%get_or_die("psinfile",self%ps_in_file)
 
 end subroutine get_conf
 
 ! ------------------------------------------------------------------------------
 
-subroutine delete(self)
+subroutine read_meta(self, vdate, calendar_type, date_init, fields)
 
-implicit none
-class(fv3jedi_io_geos), intent(inout) :: self
-
-integer :: ierr, n
-
-! Deallocate
-! ----------
-if (allocated(self%ncid_forfield)) deallocate(self%ncid_forfield)
-
-! Release split comms
-! -------------------
-if (self%csize > 6) call MPI_Comm_free(self%tcomm, ierr)
-call MPI_Comm_free(self%ocomm, ierr)
-
-end subroutine delete
-
-! ------------------------------------------------------------------------------
-
-subroutine read_meta(self, geom, vdate, calendar_type, date_init, fields)
-
-implicit none
-class(fv3jedi_io_geos), intent(inout) :: self
-type(fv3jedi_geom),     intent(inout) :: geom          !< Geometry
-type(datetime),         intent(inout) :: vdate         !< DateTime
-integer,                intent(inout) :: calendar_type !< Calendar type
-integer,                intent(inout) :: date_init(6)  !< Date intialized
-type(fv3jedi_field),    intent(in)    :: fields(:)
+type(fv3jedi_io_geos), intent(inout) :: self
+type(datetime),        intent(inout) :: vdate         !< DateTime
+integer,               intent(inout) :: calendar_type !< Calendar type
+integer,               intent(inout) :: date_init(6)  !< Date intialized
+type(fv3jedi_field),   intent(in)    :: fields(:)
 
 integer :: varid, date(6), intdate, inttime, idate, isecs
 character(len=8) :: cdate
 character(len=6) :: ctime
-integer(kind=c_int) :: cidate, cisecs, n, df
+integer :: cidate, cisecs, n, df
 
 ! Set filenames
 ! -------------
@@ -383,12 +462,10 @@ end subroutine read_meta
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_fields(self, geom, fields)
+subroutine read_fields(self, fields)
 
-implicit none
-class(fv3jedi_io_geos), target, intent(inout) :: self
-type(fv3jedi_geom),             intent(inout) :: geom
-type(fv3jedi_field),            intent(inout) :: fields(:)
+type(fv3jedi_io_geos), target, intent(inout) :: self
+type(fv3jedi_field),           intent(inout) :: fields(:)
 
 integer :: varid, var, lev, ncid
 logical :: tiledim
@@ -413,7 +490,7 @@ is_r3_noti = self%is_r3_noti
 
 ! Array for level of whole tile
 ! -----------------------------
-allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
+allocate(arrayg(1:self%npx-1,1:self%npy-1))
 
 
 ! Loop over fields
@@ -427,8 +504,8 @@ do var = 1,size(fields)
   if (.not. self%ps_in_file) then
     if (trim(fields(var)%fv3jedi_name) == 'ps') then
       fields(var)%short_name = 'delp'
-      fields(var)%npz = geom%npz
-      allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+      fields(var)%npz = self%npz
+      allocate(delp(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
     endif
   endif
 
@@ -487,17 +564,18 @@ do var = 1,size(fields)
     ! -----------------------------------------------
     if (.not. self%ps_in_file .and. trim(fields(var)%fv3jedi_name) == 'ps') then
       if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, 1, arrayg, delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+        call scatter_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, &
+                          1, arrayg, delp(self%isc:self%iec,self%jsc:self%jec,lev))
       else
-        delp(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+        delp(self%isc:self%iec,self%jsc:self%jec,lev) = arrayg(self%isc:self%iec,self%jsc:self%jec)
       endif
     else
       if (self%csize > 6) then
-        call scatter_tile(geom, self%tcomm, 1, arrayg, &
-                          fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev))
+        call scatter_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, &
+                          1, arrayg, fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev))
       else
-        fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev) = &
-                                                         arrayg(geom%isc:geom%iec,geom%jsc:geom%jec)
+        fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev) = &
+                                                         arrayg(self%isc:self%iec,self%jsc:self%jec)
       endif
     endif
 
@@ -526,45 +604,11 @@ end subroutine read_fields
 
 ! ------------------------------------------------------------------------------
 
-subroutine write(self, geom, fields, vdate)
+subroutine write_meta(self, fields, vdate)
 
-implicit none
-class(fv3jedi_io_geos), intent(inout) :: self
-type(fv3jedi_geom),     intent(inout) :: geom          !< Geom
-type(fv3jedi_field),    intent(in)    :: fields(:)     !< Fields to be written
-type(datetime),         intent(in)    :: vdate         !< DateTime
-
-! Set filenames
-! -------------
-call set_file_names(self, fields)
-
-! Open/create files
-! -----------------
-call create_files(self)
-
-! Write meta data
-! ---------------
-if (self%clobber) call write_meta(self, geom, fields, vdate)
-
-! Write fields
-! ------------
-call write_fields(self, geom, fields, vdate)
-
-! Close files
-! -----------
-call close_files(self)
-
-end subroutine write
-
-! ------------------------------------------------------------------------------
-
-subroutine write_meta(self, geom, fields, vdate)
-
-implicit none
-class(fv3jedi_io_geos), target, intent(inout) :: self
-type(fv3jedi_geom),             intent(inout) :: geom          !< Geom
-type(fv3jedi_field),            intent(in)    :: fields(:)     !< Fields to be written
-type(datetime),                 intent(in)    :: vdate         !< DateTime
+type(fv3jedi_io_geos), target, intent(inout) :: self
+type(fv3jedi_field),           intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),                intent(in)    :: vdate         !< DateTime
 
 integer :: var, ymult, k, n, vc
 character(len=15)  :: datefile
@@ -581,18 +625,20 @@ real(kind=kind_real), allocatable :: latg(:,:), long(:,:), xdimydim(:)
 
 ! Gathered lats/lons
 ! ------------------
-allocate(latg(1:geom%npx-1,1:geom%npy-1))
-allocate(long(1:geom%npx-1,1:geom%npy-1))
+allocate(latg(1:self%npx-1,1:self%npy-1))
+allocate(long(1:self%npx-1,1:self%npy-1))
 
 if (self%csize > 6) then
-  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec), latg)
-  call gather_tile(geom, self%tcomm, 1, rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec), long)
+  call gather_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, 1, &
+                   self%grid_lat, latg)
+  call gather_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, 1, &
+                   self%grid_lon, long)
 else
-  latg = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
-  long = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
+  latg = self%grid_lat
+  long = self%grid_lon
 endif
 
-write(cubesize,'(I8)') geom%npx-1
+write(cubesize,'(I8)') self%npx-1
 
 ! IO processors write the metadata
 ! --------------------------------
@@ -609,8 +655,8 @@ if (self%iam_io_proc) then
 
   ! Xdim, Ydim arrays
   ! -----------------
-  allocate(xdimydim(geom%npx-1))
-  do k = 1,geom%npx-1
+  allocate(xdimydim(self%npx-1))
+  do k = 1,self%npx-1
     xdimydim(k) = real(k,kind_real)
   enddo
 
@@ -625,8 +671,8 @@ if (self%iam_io_proc) then
 
   ! Level and edge arrays
   ! ---------------------
-  allocate(levels(geom%npz+1))
-  do k = 1,geom%npz+1
+  allocate(levels(self%npz+1))
+  do k = 1,self%npz+1
     levels(k) = k
   enddo
 
@@ -651,14 +697,14 @@ if (self%iam_io_proc) then
       endif
 
       ! Main dimensions
-      call nccheck ( nf90_def_dim(self%ncid(n), trim(XdimVar), geom%npx-1,         self%x_dimid), &
+      call nccheck ( nf90_def_dim(self%ncid(n), trim(XdimVar), self%npx-1,         self%x_dimid), &
                      "nf90_def_dim "//trim(XdimVar) )
-      call nccheck ( nf90_def_dim(self%ncid(n), trim(YdimVar), ymult*(geom%npy-1), self%y_dimid), &
+      call nccheck ( nf90_def_dim(self%ncid(n), trim(YdimVar), ymult*(self%npy-1), self%y_dimid), &
                      "nf90_def_dim "//trim(YdimVar) )
       if (self%tiledim(n)) &
-        call nccheck ( nf90_def_dim(self%ncid(n), "n",  geom%ntiles, self%n_dimid), "nf90_def_dim n"    )
-      call nccheck ( nf90_def_dim(self%ncid(n), "lev",  geom%npz,    self%z_dimid), "nf90_def_dim lev"  )
-      call nccheck ( nf90_def_dim(self%ncid(n), "edge", geom%npz+1,  self%e_dimid), "nf90_def_dim edge" )
+        call nccheck ( nf90_def_dim(self%ncid(n), "n",  self%ntiles, self%n_dimid), "nf90_def_dim n"    )
+      call nccheck ( nf90_def_dim(self%ncid(n), "lev",  self%npz,    self%z_dimid), "nf90_def_dim lev"  )
+      call nccheck ( nf90_def_dim(self%ncid(n), "edge", self%npz+1,  self%e_dimid), "nf90_def_dim edge" )
       call nccheck ( nf90_def_dim(self%ncid(n), "time", 1,           self%t_dimid), "nf90_def_dim time" )
 
       ! In case the four level surface fields need to be written
@@ -685,7 +731,7 @@ if (self%iam_io_proc) then
         dimidsg(:) = (/ self%x_dimid, self%y_dimid /)
       endif
 
-      ! Define fields to be written (geom)
+      ! Define fields to be written
       vc=0;
 
       if (self%tiledim(n)) then
@@ -800,7 +846,7 @@ if (self%iam_io_proc) then
                                                   "nf90_put_var lats" )
 
       ! Write model levels & time
-      vc=vc+1;call nccheck( nf90_put_var( self%ncid(n), varid(vc), levels(1:geom%npz) ), "nf90_put_var lev" )
+      vc=vc+1;call nccheck( nf90_put_var( self%ncid(n), varid(vc), levels(1:self%npz) ), "nf90_put_var lev" )
       vc=vc+1;call nccheck( nf90_put_var( self%ncid(n), varid(vc), levels ), "nf90_put_var edge" )
 
       ! Time
@@ -816,13 +862,11 @@ end subroutine write_meta
 
 ! ------------------------------------------------------------------------------
 
-subroutine write_fields(self, geom, fields, vdate)
+subroutine write_fields(self, fields, vdate)
 
-implicit none
-class(fv3jedi_io_geos), target, intent(inout) :: self
-type(fv3jedi_geom),             intent(inout) :: geom          !< Geom
-type(fv3jedi_field),            intent(in)    :: fields(:)     !< Fields to be written
-type(datetime),                 intent(in)    :: vdate         !< DateTime
+type(fv3jedi_io_geos), target, intent(inout) :: self
+type(fv3jedi_field),           intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),                intent(in)    :: vdate         !< DateTime
 
 integer :: var, lev, n, ncid, filei, varid
 integer, target :: dimids2_tile(4), dimids3_tile(5), dimidse_tile(5), dimids4_tile(5)
@@ -835,7 +879,7 @@ integer, pointer :: istart(:), icount(:)
 
 ! Whole level of tile array
 ! -------------------------
-allocate(arrayg(1:geom%npx-1,1:geom%npy-1))
+allocate(arrayg(1:self%npx-1,1:self%npy-1))
 
 
 ! Local counts for 3 to allow changing start point
@@ -899,9 +943,9 @@ do var = 1,size(fields)
 
       if (fields(var)%npz == 1) then
         dimids => dimids2
-      elseif (fields(var)%npz == geom%npz) then
+      elseif (fields(var)%npz == self%npz) then
         dimids => dimids3
-      elseif (fields(var)%npz == geom%npz+1) then
+      elseif (fields(var)%npz == self%npz+1) then
         dimids => dimidse
       elseif (fields(var)%npz == 4) then
         dimids => dimids4
@@ -965,9 +1009,10 @@ do var = 1,size(fields)
   do lev = 1,fields(var)%npz
 
     if (self%csize > 6) then
-      call gather_tile(geom, self%tcomm, 1, fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev), arrayg)
+      call gather_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, 1, &
+                       fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev), arrayg)
     else
-      arrayg = fields(var)%array(geom%isc:geom%iec,geom%jsc:geom%jec,lev)
+      arrayg = fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev)
     endif
 
     if (self%iam_io_proc) then
@@ -993,15 +1038,13 @@ end subroutine write_fields
 
 ! ------------------------------------------------------------------------------
 
-subroutine gather_tile(geom, comm, nlev, array_l, array_g)
+subroutine gather_tile(isc, iec, jsc, jec, npx, npy, comm, nlev, array_l, array_g)
 
-implicit none
-
-type(fv3jedi_geom),   intent(in)    :: geom
+integer,              intent(in)    :: isc, iec, jsc, jec, npx, npy
 integer,              intent(in)    :: comm
 integer,              intent(in)    :: nlev
-real(kind=kind_real), intent(in)    :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec,1:nlev)  ! Local array
-real(kind=kind_real), intent(inout) :: array_g(1:geom%npx-1,1:geom%npy-1,1:nlev)            ! Gathered array (only valid on root)
+real(kind=kind_real), intent(in)    :: array_l(isc:iec,jsc:jec,1:nlev)  ! Local array
+real(kind=kind_real), intent(inout) :: array_g(1:npx-1,1:npy-1,1:nlev)            ! Gathered array (only valid on root)
 
 real(kind=kind_real), allocatable :: vector_g(:), vector_l(:)
 integer :: comm_size, ierr
@@ -1021,17 +1064,17 @@ do n = 1,comm_size
 enddo
 
 !Horizontal size for global and local
-npx_g = geom%npx-1
-npy_g = geom%npy-1
-npx_l = geom%iec-geom%isc+1
-npy_l = geom%jec-geom%jsc+1
+npx_g = npx-1
+npy_g = npy-1
+npx_l = iec-isc+1
+npy_l = jec-jsc+1
 
 !Gather local dimensions
 allocate(isc_l(comm_size), iec_l(comm_size), jsc_l(comm_size), jec_l(comm_size))
-call mpi_allgatherv(geom%isc, 1, mpi_int, isc_l, counts, displs, mpi_int, comm, ierr)
-call mpi_allgatherv(geom%iec, 1, mpi_int, iec_l, counts, displs, mpi_int, comm, ierr)
-call mpi_allgatherv(geom%jsc, 1, mpi_int, jsc_l, counts, displs, mpi_int, comm, ierr)
-call mpi_allgatherv(geom%jec, 1, mpi_int, jec_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(isc, 1, mpi_int, isc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(iec, 1, mpi_int, iec_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(jsc, 1, mpi_int, jsc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(jec, 1, mpi_int, jec_l, counts, displs, mpi_int, comm, ierr)
 deallocate(counts,displs)
 
 ! Pack whole tile array into vector
@@ -1055,8 +1098,8 @@ enddo
 allocate(vector_l(npx_l*npy_l*nlev))
 n = 0
 do jk = 1,nlev
-  do jj = geom%jsc,geom%jec
-    do ji = geom%isc,geom%iec
+  do jj = jsc,jec
+    do ji = isc,iec
       n = n+1
       vector_l(n) = array_l(ji,jj,jk)
     enddo
@@ -1090,15 +1133,13 @@ end subroutine gather_tile
 
 ! ------------------------------------------------------------------------------
 
-subroutine scatter_tile(geom, comm, nlev, array_g, array_l)
+subroutine scatter_tile(isc, iec, jsc, jec, npx, npy, comm, nlev, array_g, array_l)
 
-implicit none
-
-type(fv3jedi_geom),   intent(in)    :: geom
+integer,              intent(in)    :: isc, iec, jsc, jec, npx, npy
 integer,              intent(in)    :: comm
 integer,              intent(in)    :: nlev
-real(kind=kind_real), intent(in)    :: array_g(1:geom%npx-1,1:geom%npy-1,nlev)            ! Gathered array (only valid on root)
-real(kind=kind_real), intent(inout) :: array_l(geom%isc:geom%iec,geom%jsc:geom%jec,nlev)  ! Local array
+real(kind=kind_real), intent(in)    :: array_g(1:npx-1,1:npy-1,nlev)            ! Gathered array (only valid on root)
+real(kind=kind_real), intent(inout) :: array_l(isc:iec,jsc:jec,nlev)  ! Local array
 
 real(kind=kind_real), allocatable :: vector_g(:), vector_l(:)
 integer :: comm_size, ierr
@@ -1118,17 +1159,17 @@ do n = 1,comm_size
 enddo
 
 !Horizontal size for global and local
-npx_g = geom%npx-1
-npy_g = geom%npy-1
-npx_l = geom%iec-geom%isc+1
-npy_l = geom%jec-geom%jsc+1
+npx_g = npx-1
+npy_g = npy-1
+npx_l = iec-isc+1
+npy_l = jec-jsc+1
 
 !Gather local dimensions
 allocate(isc_l(comm_size), iec_l(comm_size), jsc_l(comm_size), jec_l(comm_size))
-call mpi_allgatherv(geom%isc, 1, mpi_int, isc_l, counts, displs, mpi_int, comm, ierr)
-call mpi_allgatherv(geom%iec, 1, mpi_int, iec_l, counts, displs, mpi_int, comm, ierr)
-call mpi_allgatherv(geom%jsc, 1, mpi_int, jsc_l, counts, displs, mpi_int, comm, ierr)
-call mpi_allgatherv(geom%jec, 1, mpi_int, jec_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(isc, 1, mpi_int, isc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(iec, 1, mpi_int, iec_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(jsc, 1, mpi_int, jsc_l, counts, displs, mpi_int, comm, ierr)
+call mpi_allgatherv(jec, 1, mpi_int, jec_l, counts, displs, mpi_int, comm, ierr)
 deallocate(counts,displs)
 
 ! Pack whole tile array into vector
@@ -1162,8 +1203,8 @@ deallocate(vector_g,vectorcounts,vectordispls)
 ! Unpack local vector into array
 n = 0
 do jk = 1,nlev
-  do jj = geom%jsc,geom%jec
-    do ji = geom%isc,geom%iec
+  do jj = jsc,jec
+    do ji = isc,iec
       n = n+1
       array_l(ji,jj,jk) = vector_l(n)
     enddo

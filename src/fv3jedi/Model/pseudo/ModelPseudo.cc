@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2020 UCAR
+ * (C) Copyright 2019-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,6 +16,7 @@
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/Model/pseudo/ModelPseudo.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
@@ -25,51 +26,44 @@ namespace fv3jedi {
 static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
+  : tstep_(0), vars_(mconf, "model variables"), io_(IOFactory::create(mconf, resol))
 {
+  // Trace
   oops::Log::trace() << "ModelPseudo::ModelPseudo" << std::endl;
+  // Get timestep from condfig
   tstep_ = util::Duration(mconf.getString("tstep"));
-  const eckit::Configuration * configc = &mconf;
-  fv3jedi_pseudo_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  if (mconf.has("run stage check")) {
-    runstagecheck_ = mconf.getInt("run stage check");
-  }
+  // Optionally retrieve run stage check
+  runstagecheck_ = mconf.getBool("run stage check", false);
+  // Trace
   oops::Log::trace() << "ModelPseudo created" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::~ModelPseudo() {
-  fv3jedi_pseudo_delete_f90(keyConfig_);
   oops::Log::trace() << "ModelPseudo destructed" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::initialize(State & xx) const {
-  if (runstage_) {
-    fv3jedi_pseudo_initialize_f90(keyConfig_, xx.toFortran());
-  }
   oops::Log::trace() << "ModelPseudo::initialize" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::step(State & xx, const ModelBias &) const {
   xx.validTime() += tstep_;
-  util::DateTime * dtp = &xx.validTime();
   if (runstage_) {
-    fv3jedi_pseudo_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran(), &dtp);
+    // Read model state at valid time from files
+    io_->read(xx);
   } else {
-    int world_rank = oops::mpi::world().rank();
-    if (world_rank == 0) {
+    // Do nothing and print message
+    if (oops::mpi::world().rank() == 0) {
       oops::Log::warning() << "Pseudo model has already run through "
-                            "once so not re-reading states, just ticking the"
-                            " clock." << std::endl;
+                              "once so not re-reading states, just ticking the"
+                              " clock." << std::endl;
     }
   }
   oops::Log::trace() << "ModelPseudo::step" << xx.validTime() << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::finalize(State & xx) const {
-  if (runstage_) {
-    fv3jedi_pseudo_finalize_f90(keyConfig_, xx.toFortran());
-  }
-  if (runstagecheck_ == 1) {runstage_ = false;}
+  if (runstagecheck_) {runstage_ = false;}
   oops::Log::trace() << "ModelPseudo::finalize" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

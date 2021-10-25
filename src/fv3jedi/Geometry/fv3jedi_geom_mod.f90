@@ -37,7 +37,7 @@ use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
 use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
-use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs
+use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs, read_fields
 use fv3jedi_field_mod,           only: fv3jedi_field
 
 implicit none
@@ -419,7 +419,7 @@ character(len=:), allocatable :: str
 call conf%get_or_die("orography field name", str)
 
 ! Set up gfs_io object
-call gfs_orog%setup_conf(conf)
+call gfs_orog%create(conf, self%domain, self%npz)
 
 ! Set up metadata in field to recieve the orog
 field_orog(1)%isc = self%isc
@@ -446,7 +446,7 @@ field_orog(1)%integerfield = trim(fmd%array_kind)=='integer'
 field_orog(1)%interp_type  = trim(fmd%interp_type)
 
 ! Read orography into field
-call gfs_orog%read_fields(field_orog, self%domain, self%npz)
+call read_fields(gfs_orog, field_orog)
 
 ! Move into geom
 call move_alloc(field_orog(1)%array, self%orography)

@@ -23,6 +23,7 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
 
 namespace fv3jedi {
@@ -96,9 +97,10 @@ State & State::operator+=(const Increment & dx) {
 }
 // -------------------------------------------------------------------------------------------------
 void State::read(const eckit::Configuration & config) {
-  const eckit::Configuration * conf = &config;
-  util::DateTime * dtp = &time_;
-  fv3jedi_state_read_file_f90(geom_->toFortran(), keyState_, &conf, &dtp);
+  // Create IO object
+  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
+  // Perform read
+  io_->read(*this);
 }
 // -------------------------------------------------------------------------------------------------
 void State::analytic_init(const eckit::Configuration & config, const Geometry & geom) {
@@ -108,9 +110,10 @@ void State::analytic_init(const eckit::Configuration & config, const Geometry & 
 }
 // -------------------------------------------------------------------------------------------------
 void State::write(const eckit::Configuration & config) const {
-  const eckit::Configuration * conf = &config;
-  const util::DateTime * dtp = &time_;
-  fv3jedi_state_write_file_f90(geom_->toFortran(), keyState_, &conf, &dtp);
+  // Create IO object
+  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
+  // Perform read
+  io_->write(*this);
 }
 // -------------------------------------------------------------------------------------------------
 void State::print(std::ostream & os) const {

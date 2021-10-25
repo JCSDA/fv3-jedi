@@ -59,9 +59,9 @@ self%filetype = str
 
 ! Setup IO from config
 if (trim(self%filetype) == 'gfs') then
-  call self%gfs%setup_conf(conf)
+  call self%gfs%create(conf, geom%domain, geom%npz)
 elseif (trim(self%filetype) == 'geos') then
-  call self%geos%setup_conf(geom, conf)
+  call self%geos%create(geom, conf)
 else
   call abor1_ftn("fv3jedi_varcha_a2m_mod: filetype must be geos or gfs")
 endif
@@ -75,6 +75,7 @@ subroutine delete(self)
 implicit none
 class(fv3jedi_varcha_a2m), intent(inout) :: self
 
+if (trim(self%filetype) == 'gfs') call self%gfs%delete()
 if (trim(self%filetype) == 'geos') call self%geos%delete()
 
 end subroutine delete
@@ -173,11 +174,9 @@ do index_mod = 1, xmod%nf
         "Attempting to read from file"
 
     if (trim(self%filetype) == 'gfs') then
-      call self%gfs%setup_date(vdt)
-      call self%gfs%read_fields( xmod%fields(index_mod:index_mod), geom%domain, geom%npz) 
+      call self%gfs%read(vdt, xmod%calendar_type, xmod%date_init, xmod%fields(index_mod:index_mod))
     elseif (trim(self%filetype) == 'geos') then
-      call self%geos%setup_date(vdt)
-      call self%geos%read_fields(geom, xmod%fields(index_mod:index_mod))
+      call self%geos%read(vdt, xmod%calendar_type, xmod%date_init, xmod%fields(index_mod:index_mod))
     endif
 
   endif

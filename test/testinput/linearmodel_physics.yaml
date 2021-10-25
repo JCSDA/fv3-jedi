@@ -33,7 +33,8 @@ linear model test:
   tolerance TL: 1.0e6 # With physics on the tl test will not pass (perturbation model)
 model:
   name: PSEUDO
-  pseudo_type: geos
+  filetype: geos
+  filename is datetime templated: true
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4

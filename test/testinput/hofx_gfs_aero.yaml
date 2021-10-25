@@ -15,7 +15,8 @@ geometry:
     - fieldset: Data/fieldsets/ufo.yaml
 model:
   name: PSEUDO
-  pseudo_type: gfs
+  filetype: gfs
+  filename is datetime templated: true
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
   filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
