@@ -15,9 +15,6 @@ use fckit_mpi_module,               only: fckit_mpi_comm
 use datetime_mod,                   only: datetime
 use unstructured_interpolation_mod, only: unstrc_interp
 
-! saber
-use interpolatorbump_mod,           only: bump_interpolator
-
 ! ufo
 use ufo_locations_mod
 use ufo_geovals_mod,                only: ufo_geovals
@@ -40,7 +37,6 @@ type, abstract :: fv3jedi_getvalues_base
   integer                 :: isc, iec, jsc, jec, npz, ngrid
   character(len=2048)     :: interp_method
   integer                 :: nnear = 4
-  type(bump_interpolator) :: bumpinterp
   type(unstrc_interp)     :: unsinterp
   type(fckit_mpi_comm)    :: comm
   contains
@@ -98,7 +94,7 @@ endif
 ! Initialize bump interpolator
 ! ----------------------------
 if (trim(self%interp_method) == 'bump') then
-  call self%bumpinterp%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon_out=lons, lat_out=lats, nl=geom%npz)
+  call abor1_ftn("fv3jedi_getvalues_mod: bump interpolation not supported")
 endif
 
 ! Always create unstructured interpolation as it is used for special case fields, e.g. integers
@@ -115,8 +111,6 @@ end subroutine create
 subroutine delete(self)
 
 class(fv3jedi_getvalues_base), intent(inout) :: self
-
-if (trim(self%interp_method) == 'bump') call self%bumpinterp%delete()
 
 call self%unsinterp%delete()
 
@@ -165,9 +159,7 @@ do gv = 1, geovals%nvar
   ! Can optionally interpolate real valued magnitude fields with bump
   ! -----------------------------------------------------------------
   if ( trim(self%interp_method) == 'bump' .and. trim(field%interp_type) == "default") then
-    ! Interpolate
-    call self%bumpinterp%apply(field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz),geovals_all(:,1:field%npz))
-
+    call abor1_ftn("fv3jedi_getvalues_mod: bump interpolation not supported")
   else ! Otherwise use unstructured interpolation
 
     do jlev = 1, field%npz

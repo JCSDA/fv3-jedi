@@ -184,11 +184,6 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
-    # Overide interpolation from geometry
-    get values:
-      interpolation method: bump
-    linear get values:
-      interpolation method: bump
   - obs space:
       name: GnssroBndNBAM
       obsdatain:

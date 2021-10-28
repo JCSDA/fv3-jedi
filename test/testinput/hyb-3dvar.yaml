@@ -183,11 +183,6 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
-    # Overide interpolation from geometry
-    get values:
-      interpolation method: bump
-    linear get values:
-      interpolation method: bump
   - obs space:
       name: GnssroBndNBAM
       obsdatain:
@@ -232,7 +227,7 @@ cost function:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
     obs error:
-      covariance model: diagonal ufo
+      covariance model: diagonal
     obs filters:
     - filter: Bounds Check
       filter variables:

@@ -14,9 +14,6 @@ use fckit_mpi_module,               only: fckit_mpi_comm
 use datetime_mod,                   only: datetime
 use unstructured_interpolation_mod, only: unstrc_interp
 
-! saber
-use interpolatorbump_mod,         only: bump_interpolator
-
 ! ufo
 use ufo_locations_mod
 use ufo_geovals_mod,                only: ufo_geovals
@@ -96,10 +93,7 @@ do gv = 1, geovals%nvar
   ! Adjoint of interpolation
   ! ------------------------
   if ( trim(self%interp_method) == 'bump' .and. trim(field%interp_type) == "default" ) then 
-
-    ! Interpolate
-    call self%bumpinterp%apply_ad(geovals_all(:,1:field%npz),field%array(field%isc:field%iec,field%jsc:field%jec,1:field%npz))
-
+    call abor1_ftn("fv3jedi_getvalues_mod: bump interpolation not supported")
   else ! Otherwise use unstructured interpolation
 
     do jlev = 1, field%npz

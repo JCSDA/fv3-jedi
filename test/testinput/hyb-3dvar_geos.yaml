@@ -8,7 +8,6 @@ cost function:
       namelist filename: Data/fv3files/input_geos_c12.nml
       field table filename: Data/fv3files/field_table_gmao
     akbk: Data/fv3files/akbk72.nc4
-    interpolation method: bump
     npx: 13
     npy: 13
     npz: 72
@@ -107,8 +106,6 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: Radiosonde
       obsdatain:
@@ -129,8 +126,6 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: GnssroBndNBAM
       obsdatain:
@@ -165,8 +160,6 @@ cost function:
       apply at iterations: 0, 1
       filter variables:
       - name: bending_angle
-    get values:
-      interpolation method: bump
   - obs space:
       name: AMSUA-METOP-A
       obsdatain:
@@ -231,8 +224,6 @@ cost function:
           name: brightness_temperature_15@ObsValue
         minvalue: 50.0
         maxvalue: 550.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: AMSUA-METOP-B
       obsdatain:
@@ -298,8 +289,6 @@ cost function:
 #2          name: brightness_temperature_15@ObsValue
 #2        minvalue: 50.0
 #2        maxvalue: 550.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: AMSUA-NOAA15
       obsdatain:
@@ -364,8 +353,6 @@ cost function:
           name: brightness_temperature_15@ObsValue
         minvalue: 50.0
         maxvalue: 550.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: AMSUA-NOAA18
       obsdatain:
@@ -430,8 +417,6 @@ cost function:
           name: brightness_temperature_15@ObsValue
         minvalue: 50.0
         maxvalue: 550.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
@@ -496,8 +481,6 @@ cost function:
           name: brightness_temperature_15@ObsValue
         minvalue: 50.0
         maxvalue: 550.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: MHS-NOAA18
       obsdatain:
@@ -530,8 +513,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-5
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: MHS-METOP-A
       obsdatain:
@@ -564,8 +545,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-5
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: MHS-METOP-B
       obsdatain:
@@ -598,8 +577,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-5
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: SNDRD1-GOES15
       obsdatain:
@@ -629,8 +606,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-8,10-12
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: SNDRD2-GOES15
       obsdatain:
@@ -660,8 +635,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-8,10-12
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: SNDRD3-GOES15
       obsdatain:
@@ -691,8 +664,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-8,10-12
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: SNDRD4-GOES15
       obsdatain:
@@ -722,8 +693,6 @@ cost function:
       - name: brightness_temperature
         channels: 1-8,10-12
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: ATMS-NPP
       obsdatain:
@@ -775,8 +744,6 @@ cost function:
       - name: brightness_temperature
         channels: 5-15,17-22
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: AMSR2-GCOM
       obsdatain:
@@ -1093,8 +1060,6 @@ cost function:
       - name: brightness_temperature
         channels: 5,6,7,10,12,13
       threshold: 2.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: AIRS-AQUA
       obsdatain:
@@ -1159,7 +1124,6 @@ cost function:
 
       threshold: 3.0
     get values:
-      interpolation method: bump
       tropopause pressure method: thompson
   - obs space:
       name: IASI-METOPA
@@ -1232,8 +1196,6 @@ cost function:
                   1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
                   1671
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: IASI-METOPB
       obsdatain:
@@ -1305,8 +1267,6 @@ cost function:
                   1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
                   1671
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: CRIS-NPP
       obsdatain:
@@ -1349,8 +1309,6 @@ cost function:
                   236,242,248,266,279,283,311,342,404,427,
                   464,473,529,596,626,646,659
       threshold: 3.0
-    get values:
-      interpolation method: bump
   - obs space:
       name: SfcObs
       obsdatain:
@@ -1368,8 +1326,6 @@ cost function:
     obs filters:
     - filter: Background Check
       threshold: 1000
-    get values:
-      interpolation method: bump
 final:
   diagnostics:
     departures: oman
@@ -1388,7 +1344,6 @@ variational:
     test: on
     geometry:
       akbk: Data/fv3files/akbk72.nc4
-      interpolation method: bump
       npx: 13
       npy: 13
       npz: 72
@@ -1402,7 +1357,6 @@ variational:
     test: on
     geometry:
       akbk: Data/fv3files/akbk72.nc4
-      interpolation method: bump
       npx: 13
       npy: 13
       npz: 72

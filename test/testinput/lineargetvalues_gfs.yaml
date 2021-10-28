@@ -9,7 +9,6 @@ geometry:
   fieldsets:
   - fieldset: Data/fieldsets/dynamics.yaml
   - fieldset: Data/fieldsets/ufo.yaml
-  interpolation method: bump
 state variables: [eastward_wind,northward_wind,air_temperature,specific_humidity]
 linear getvalues test:
   tolerance linearity: 1.0e-11
