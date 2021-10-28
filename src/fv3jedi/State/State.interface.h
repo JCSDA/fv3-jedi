@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_STATE_STATE_INTERFACE_H_
-#define FV3JEDI_STATE_STATE_INTERFACE_H_
+#pragma once
 
 #include "fv3jedi/Utilities/interface.h"
 #include "oops/base/Variables.h"
@@ -21,15 +20,8 @@ extern "C" {
   void fv3jedi_state_add_incr_f90(const F90geom &, const F90state &, const F90inc &);
   void fv3jedi_state_change_resol_f90(const F90state &, const F90geom &, const F90state &,
                                       const F90geom &);
-  void fv3jedi_state_read_file_f90(const F90geom &, const F90state &,
-                                   const eckit::Configuration * const *, util::DateTime * const *);
   void fv3jedi_state_analytic_init_f90(const F90state &, const F90geom &,
-                                       const eckit::Configuration * const *,
-                                       util::DateTime * const *);
-  void fv3jedi_state_write_file_f90(const F90geom &, const F90state &,
-                                    const eckit::Configuration * const *,
-                                    const util::DateTime * const *);
-
+                                       const eckit::Configuration &);
   void fv3jedi_state_sersize_f90(const F90state &, int &);
 
   void fv3jedi_state_serialize_f90(const F90state &, const std::size_t &, double[]);
@@ -42,4 +34,3 @@ extern "C" {
   void fv3jedi_state_getminmaxrms_f90(const F90state &, int &, const int &, char*, double &);
 };  // extern "C"
 }  // namespace fv3jedi
-#endif  // FV3JEDI_STATE_STATE_INTERFACE_H_

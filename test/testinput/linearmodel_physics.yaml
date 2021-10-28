@@ -38,7 +38,7 @@ model:
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  run stage check: 1
+  run stage check: true
   tstep: PT1H
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,

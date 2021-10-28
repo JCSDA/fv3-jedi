@@ -35,7 +35,7 @@ background error:
   - parameter: nicas_norm
     filetype: gfs
     datapath: Data/staticb/
-    psinfile: 1
+    psinfile: true
     filename_core: 20180415.000000.nicas_norm.fv_core.res.nc
     filename_trcr: 20180415.000000.nicas_norm.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.nicas_norm.sfc_data.nc
@@ -44,7 +44,7 @@ background error:
     date: 2018-04-15T00:00:00Z
   universe radius:
     filetype: gfs
-    psinfile: 1
+    psinfile: true
     datapath: Data/staticb/
     filename_core: 20180415.000000.cor_rh.fv_core.res.nc
     filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
@@ -66,7 +66,7 @@ background error:
     input:
     - parameter: stddev
       filetype: gfs
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/
       filename_core: 20180415.000000.stddev.fv_core.res.nc
       filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc

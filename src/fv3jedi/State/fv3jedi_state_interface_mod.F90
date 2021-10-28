@@ -185,25 +185,30 @@ end subroutine fv3jedi_state_change_resol_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf, c_dt) &
+subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf) &
            bind(c,name='fv3jedi_state_analytic_init_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_state  !< State
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-type(c_ptr), intent(in)    :: c_conf !< Configuration
-type(c_ptr), intent(inout) :: c_dt   !< DateTime
+integer(c_int),     intent(in)    :: c_key_state
+integer(c_int),     intent(in)    :: c_key_geom
+type(c_ptr), value, intent(in)    :: c_conf
 
-type(fv3jedi_state), pointer :: self
-type(fv3jedi_geom), pointer :: geom
-type(datetime) :: fdate
+type(fv3jedi_state), pointer :: f_self
+type(fv3jedi_geom), pointer :: f_geom
 type(fckit_configuration) :: f_conf
 
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,self)
-call c_f_datetime(c_dt, fdate)
+! Linked list
+! -----------
+call fv3jedi_geom_registry%get(c_key_geom, f_geom)
+call fv3jedi_state_registry%get(c_key_state, f_self)
+
+! Fortran APIs
+! ------------
 f_conf = fckit_configuration(c_conf)
-call self%analytic_IC(geom, f_conf, fdate)
+
+! Call implementation
+! -------------------
+call f_self%analytic_IC(f_geom, f_conf)
 
 end subroutine fv3jedi_state_analytic_init_c
 

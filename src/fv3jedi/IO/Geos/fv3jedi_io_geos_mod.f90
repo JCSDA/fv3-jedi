@@ -43,8 +43,6 @@ type fv3jedi_io_geos
  character(len=maxstring) :: filenames(numfiles) = ''
  character(len=maxstring) :: filenames_conf(numfiles) = ''
  character(len=maxstring) :: filenames_default(numfiles) = ''
- ! Write extra meta data needed for GEOS ingest
- logical :: geosingestmeta = .false.
  ! Comms
  logical :: iam_io_proc
  type(fckit_mpi_comm) :: ccomm
@@ -337,10 +335,6 @@ integer :: n
 ! Path where files are read from or saved to
 ! ------------------------------------------
 call string_from_conf(conf,"datapath",self%datapath,'Data',memberswap=.true.)
-
-! User can ask for extra meta data needed for GEOS ingest
-! -------------------------------------------------------
-if (.not. conf%get('geosingestmeta',self%geosingestmeta)) self%geosingestmeta = .false.
 
 ! Whether to expect/use the tile dimenstion in the file
 ! -----------------------------------------------------

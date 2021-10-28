@@ -182,7 +182,6 @@ variational:
         filename_sfcd: iter1.hyb-3dvar_fsoi_forward.c24.sfc_data.nc
         filename_sfcw: iter1.hyb-3dvar_fsoi_forward.c24.fv_srf_wnd.res.nc
         filename_cplr: iter1.hyb-3dvar_fsoi_forward.c24.coupler.res
-        analysis variables: *3dvars
 final:
   diagnostics:
     departures: oman

@@ -1,12 +1,11 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_INCREMENT_INCREMENT_H_
-#define FV3JEDI_INCREMENT_INCREMENT_H_
+#pragma once
 
 #include <memory>
 #include <ostream>
@@ -15,35 +14,65 @@
 
 #include "atlas/field.h"
 
-#include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Increment/Increment.interface.h"
-#include "fv3jedi/State/State.h"
 #include "oops/base/LocalIncrement.h"
-#include "oops/base/Variables.h"
+#include "oops/base/WriteParametersBase.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/dot_product.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
-namespace eckit {
-  class Configuration;
-}
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
-namespace ufo {
-  class GeoVaLs;
-  class Locations;
-}
+#include "fv3jedi/Increment/Increment.interface.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 
 namespace oops {
   class Variables;
 }
 
 namespace fv3jedi {
+  class Geometry;
   class ModelBiasIncrement;
   class State;
 
-// FV3JEDI increment
+// -------------------------------------------------------------------------------------------------
+
+class DiracParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(DiracParameters, Parameters)
+ public:
+  // Number of Diracs
+  oops::RequiredParameter<int> ndir{"ndir", this};
+  // Vector (length n) with index in x direction
+  oops::RequiredParameter<std::vector<int>> ixdir{"ixdir", this};
+  // Vector (length n) with index in y direction
+  oops::RequiredParameter<std::vector<int>> iydir{"iydir", this};
+  // Vector (length n) with index of level
+  oops::RequiredParameter<std::vector<int>> ildir{"ildir", this};
+  // Vector (length n) with index of tile
+  oops::RequiredParameter<std::vector<int>> itdir{"itdir", this};
+  // Vector (length n) with name of field
+  oops::RequiredParameter<std::vector<std::string>> ifdir{"ifdir", this};
+};
+
+// -------------------------------------------------------------------------------------------------
+
+class IncrementReadParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(IncrementReadParameters, Parameters)
+ public:
+  IOParametersWrapper ioParametersWrapper{this};
+};
+
+// -------------------------------------------------------------------------------------------------
+
+class IncrementWriteParameters : public oops::WriteParametersBase {
+  OOPS_CONCRETE_PARAMETERS(IncrementWriteParameters, WriteParametersBase)
+ public:
+  IOParametersWrapper ioParametersWrapper{this};
+};
 
 // -------------------------------------------------------------------------------------------------
 
@@ -51,6 +80,10 @@ class Increment : public util::Printable,
                   private util::ObjectCounter<Increment> {
  public:
   static const std::string classname() {return "fv3jedi::Increment";}
+
+  typedef DiracParameters          DiracParameters_;
+  typedef IncrementReadParameters  ReadParameters_;
+  typedef IncrementWriteParameters WriteParameters_;
 
 /// Constructor, destructor
   Increment(const Geometry &, const oops::Variables &, const util::DateTime &);
@@ -71,7 +104,7 @@ class Increment : public util::Printable,
   double dot_product_with(const Increment &) const;
   void schur_product_with(const Increment &);
   void random();
-  void dirac(const eckit::Configuration &);
+  void dirac(const DiracParameters_ &);
 
 /// Get/Set increment values at grid points
   oops::LocalIncrement getLocal(const GeometryIterator &) const;
@@ -83,15 +116,14 @@ class Increment : public util::Printable,
   void fromAtlas(atlas::FieldSet *);
 
 /// I/O and diagnostics
-  void read(const eckit::Configuration &);
-  void write(const eckit::Configuration &) const;
+  void read(const ReadParameters_ &);
+  void write(const WriteParameters_ &) const;
   double norm() const;
 
   void updateTime(const util::Duration & dt) {time_ += dt;}
 
 /// Other
   void accumul(const double &, const State &);
-  void jnormgrad(const State &, const eckit::Configuration &);
 
 /// Serialize and deserialize
   size_t serialSize() const;
@@ -120,5 +152,3 @@ class Increment : public util::Printable,
 // -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-
-#endif  // FV3JEDI_INCREMENT_INCREMENT_H_

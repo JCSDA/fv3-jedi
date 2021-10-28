@@ -12,7 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "eckit/config/LocalConfiguration.h"
+#include "boost/none_t.hpp"
+
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
@@ -29,33 +30,41 @@
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
+
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time):
              geom_(new Geometry(geom)), vars_(vars), time_(time) {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
-// -------------------------------------------------------------------------------------------------
-State::State(const Geometry & geom, const eckit::Configuration & conf): geom_(new Geometry(geom)),
-             time_(util::DateTime()) {
-  oops::Log::trace() << "State::State (from geom and config) starting" << std::endl;
 
-// Should check if this can be done inside read
-  oops::Variables lvars(conf, "state variables");
+// -------------------------------------------------------------------------------------------------
+
+State::State(const Geometry & geom, const Parameters_ & params): geom_(new Geometry(geom)),
+             time_(util::DateTime()) {
+  oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
+
+  // Should check if this can be done inside read
+  oops::Variables lvars(params.toConfiguration(), "state variables");
   this->vars_ = lvars;
 
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
 
   // Analytical or read from file
-  if (conf.has("analytic init")) {
-    this->analytic_init(conf, geom);
+  if (params.analytic.value() != boost::none) {
+    // Must pass datetime in config
+    ASSERT(params.datetime.value() != boost::none);
+    time_ = util::DateTime(*params.datetime.value());
+    this->analytic_init(*params.analytic.value(), geom);
   } else {
-    this->read(conf);
+    this->read(params);
   }
 
-  oops::Log::trace() << "State::State (from geom and config) done" << std::endl;
+  oops::Log::trace() << "State::State (from geom and parameters) done" << std::endl;
 }
+
 // -------------------------------------------------------------------------------------------------
+
 State::State(const Geometry & resol, const State & other): geom_(new Geometry(resol)),
              vars_(other.vars_), time_(other.time_) {
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
@@ -64,29 +73,39 @@ State::State(const Geometry & resol, const State & other): geom_(new Geometry(re
                                  other.geom_->toFortran());
   oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
 }
+
 // -------------------------------------------------------------------------------------------------
+
 State::State(const State & other): geom_(other.geom_), vars_(other.vars_), time_(other.time_) {
   oops::Log::trace() << "State::State (from other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_copy_f90(keyState_, other.keyState_);
   oops::Log::trace() << "State::State (from other) done" << std::endl;
 }
+
 // -------------------------------------------------------------------------------------------------
+
 State::~State() {
   fv3jedi_state_delete_f90(keyState_);
 }
+
 // -------------------------------------------------------------------------------------------------
+
 State & State::operator=(const State & rhs) {
   fv3jedi_state_copy_f90(keyState_, rhs.keyState_);
   time_ = rhs.time_;
   return *this;
 }
+
 // -------------------------------------------------------------------------------------------------
+
 void State::changeResolution(const State & other) {
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
 }
+
 // -------------------------------------------------------------------------------------------------
+
 State & State::operator+=(const Increment & dx) {
   ASSERT(this->validTime() == dx.validTime());
   // Interpolate increment to state resolution
@@ -95,27 +114,29 @@ State & State::operator+=(const Increment & dx) {
   fv3jedi_state_add_incr_f90(geom_->toFortran(), keyState_, dx_sr.toFortran());
   return *this;
 }
+
 // -------------------------------------------------------------------------------------------------
-void State::read(const eckit::Configuration & config) {
-  // Create IO object
-  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
-  // Perform read
-  io_->read(*this);
+
+void State::analytic_init(const AnalyticICParameters_ & params, const Geometry & geom) {
+  fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), params.toConfiguration());
 }
+
 // -------------------------------------------------------------------------------------------------
-void State::analytic_init(const eckit::Configuration & config, const Geometry & geom) {
-  const eckit::Configuration * conf = &config;
-  util::DateTime * dtp = &time_;
-  fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), &conf, &dtp);
+
+void State::read(const Parameters_ & params) {
+  IOBase_ io(IOFactory::create(*geom_, *params.ioParametersWrapper.ioParameters.value()));
+  io->read(*this);
 }
+
 // -------------------------------------------------------------------------------------------------
-void State::write(const eckit::Configuration & config) const {
-  // Create IO object
-  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
-  // Perform read
-  io_->write(*this);
+
+void State::write(const WriteParameters_ & params) const {
+  IOBase_ io(IOFactory::create(*geom_, *params.ioParametersWrapper.ioParameters.value()));
+  io->write(*this);
 }
+
 // -------------------------------------------------------------------------------------------------
+
 void State::print(std::ostream & os) const {
   // Get the number of fields
   int numberFields;
@@ -150,21 +171,29 @@ void State::print(std::ostream & os) const {
      << " -----------------------------------------------"
         "------------------------------------------------";
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 void State::zero() {
   fv3jedi_state_zero_f90(keyState_);
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 void State::accumul(const double & zz, const State & xx) {
   fv3jedi_state_axpy_f90(keyState_, zz, xx.keyState_);
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 double State::norm() const {
   double zz = 0.0;
   fv3jedi_state_norm_f90(keyState_, zz);
   return zz;
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 size_t State::serialSize() const {
   oops::Log::trace() << "State serialSize starting" << std::endl;
   size_t nn = 1;
@@ -175,7 +204,9 @@ size_t State::serialSize() const {
   return nn;
   oops::Log::trace() << "State serialSize done" << std::endl;
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 void State::serialize(std::vector<double> & vect) const {
   oops::Log::trace() << "State serialize starting" << std::endl;
   int size_fld = this->serialSize() - 3;
@@ -190,7 +221,9 @@ void State::serialize(std::vector<double> & vect) const {
 
   oops::Log::trace() << "State serialize done" << std::endl;
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
 void State::deserialize(const std::vector<double> & vect, size_t & index) {
   oops::Log::trace() << "State deserialize starting" << std::endl;
   fv3jedi_state_deserialize_f90(keyState_, vect.size(), vect.data(), index);
@@ -201,6 +234,7 @@ void State::deserialize(const std::vector<double> & vect, size_t & index) {
   time_.deserialize(vect, index);
   oops::Log::trace() << "State deserialize done" << std::endl;
 }
-// -----------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi

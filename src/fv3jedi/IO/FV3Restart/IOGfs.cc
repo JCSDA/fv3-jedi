@@ -8,8 +8,6 @@
 #include <ostream>
 #include <string>
 
-#include "eckit/config/Configuration.h"
-
 #include "oops/util/Logger.h"
 #include "oops/util/Timer.h"
 
@@ -22,10 +20,10 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static IOMaker<IOGfs> makerIOGfs_("gfs");
 // -------------------------------------------------------------------------------------------------
-IOGfs::IOGfs(const eckit::Configuration & conf, const Geometry & geom) : IOBase(conf, geom) {
+IOGfs::IOGfs(const Geometry & geom, const Parameters_ & params) : IOBase(geom) {
   util::Timer timer(classname(), "IOGfs");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
-  fv3jedi_io_gfs_create_f90(objectKeyForFortran_, conf, geom.toFortran());
+  fv3jedi_io_gfs_create_f90(objectKeyForFortran_, params.toConfiguration(), geom.toFortran());
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

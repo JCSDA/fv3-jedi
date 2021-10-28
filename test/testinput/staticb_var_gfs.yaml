@@ -14,7 +14,7 @@ date: 2018-04-15T00:00:00Z
 background:
   filetype: gfs
   state variables: *inputVars
-  psinfile: 1
+  psinfile: true
   datapath: Data/staticb/unbalanced/mem001
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -48,7 +48,7 @@ input:
 - parameter: var
   filetype: gfs
   datapath: Data/staticb/
-  psinfile: 1
+  psinfile: true
   filename_core: 20180414.210000.var.fv_core.res.nc
   filename_trcr: 20180414.210000.var.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.var.sfc_data.nc
@@ -58,7 +58,7 @@ input:
 - parameter: m4
   filetype: gfs
   datapath: Data/staticb/
-  psinfile: 1
+  psinfile: true
   filename_core: 20180414.210000.m4.fv_core.res.nc
   filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
   filename_sfcd: 20180414.210000.m4.sfc_data.nc
@@ -68,7 +68,7 @@ input:
 - parameter: var
   filetype: gfs
   datapath: Data/staticb/
-  psinfile: 1
+  psinfile: true
   filename_core: 20180415.000000.var.fv_core.res.nc
   filename_trcr: 20180415.000000.var.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.var.sfc_data.nc
@@ -78,7 +78,7 @@ input:
 - parameter: m4
   filetype: gfs
   datapath: Data/staticb/
-  psinfile: 1
+  psinfile: true
   filename_core: 20180415.000000.m4.fv_core.res.nc
   filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.m4.sfc_data.nc
@@ -88,7 +88,7 @@ input:
 - parameter: var
   filetype: gfs
   datapath: Data/staticb/
-  psinfile: 1
+  psinfile: true
   filename_core: 20180415.030000.var.fv_core.res.nc
   filename_trcr: 20180415.030000.var.fv_tracer.res.nc
   filename_sfcd: 20180415.030000.var.sfc_data.nc
@@ -98,7 +98,7 @@ input:
 - parameter: m4
   filetype: gfs
   datapath: Data/staticb/
-  psinfile: 1
+  psinfile: true
   filename_core: 20180415.030000.m4.fv_core.res.nc
   filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
   filename_sfcd: 20180415.030000.m4.sfc_data.nc

@@ -99,7 +99,7 @@ final:
 output:
   filetype: geos
   datapath: Data/analysis
-  filename: 3denvar_geos_aero_C12_550
+  filename_bkgd: 3denvar_geos_aero_C12_550
   first: PT0H
   frequency: PT3H
 variational:

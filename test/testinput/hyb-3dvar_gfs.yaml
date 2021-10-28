@@ -44,7 +44,7 @@ cost function:
             variables: [surface_pressure]
         universe radius:
           filetype: gfs
-          psinfile: 1
+          psinfile: true
           datapath: Data/staticb/
           filename_core: 20180415.000000.cor_rh.fv_core.res.nc
           filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
@@ -66,7 +66,7 @@ cost function:
           input:
           - parameter: stddev
             filetype: gfs
-            psinfile: 1
+            psinfile: true
             datapath: Data/staticb/
             filename_core: 20180415.000000.stddev.fv_core.res.nc
             filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc

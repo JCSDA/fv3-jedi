@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/mpi/mpi.h"
@@ -16,7 +15,6 @@
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/Model/pseudo/ModelPseudo.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
@@ -25,17 +23,19 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
-ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & mconf)
-  : tstep_(0), vars_(mconf, "model variables"), io_(IOFactory::create(mconf, resol))
+ModelPseudo::ModelPseudo(const Geometry & resol, const Parameters_ & params)
+  : tstep_(0), vars_(params.toConfiguration(), "model variables"), io_()
 {
+  oops::Log::trace() << "ModelPseudo::ModelPseudo starting" << std::endl;
+  // Create IO object
+  io_.reset(IOFactory::create(resol, *params.ioParametersWrapper.ioParameters.value()));
   // Trace
-  oops::Log::trace() << "ModelPseudo::ModelPseudo" << std::endl;
-  // Get timestep from condfig
-  tstep_ = util::Duration(mconf.getString("tstep"));
+  // Get timestep from params
+  tstep_ = params.tstep.value();
   // Optionally retrieve run stage check
-  runstagecheck_ = mconf.getBool("run stage check", false);
+  runstagecheck_ = params.runstagecheck.value();
   // Trace
-  oops::Log::trace() << "ModelPseudo created" << std::endl;
+  oops::Log::trace() << "ModelPseudo::ModelPseudo done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::~ModelPseudo() {

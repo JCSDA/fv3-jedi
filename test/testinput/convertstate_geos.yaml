@@ -27,11 +27,11 @@ states:
    filetype: geos
    datapath: Data/
    filename_bkgd: geos.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
-# Analytic initial conditions
+# Initial conditions
 - input:
     analytic init:
       method: dcmip-test-1-1
-    date: 2018-04-14T21:00:00Z
+    datetime: 2018-04-14T21:00:00Z
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   output:
     filetype: geos
@@ -40,7 +40,7 @@ states:
 - input:
     analytic init:
       method: dcmip-test-1-2
-    date: 2018-04-14T21:00:00Z
+    datetime: 2018-04-14T21:00:00Z
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   output:
     filetype: geos
@@ -49,7 +49,7 @@ states:
 - input:
     analytic init:
       method: dcmip-test-3-1
-    date: 2018-04-14T21:00:00Z
+    datetime: 2018-04-14T21:00:00Z
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   output:
     filetype: geos

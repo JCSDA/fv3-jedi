@@ -7,6 +7,9 @@
 
 #include "fv3jedi/IO/Utils/IOBase.h"
 
+#include "oops/util/abor1_cpp.h"
+#include "oops/util/Logger.h"
+
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
@@ -21,17 +24,29 @@ IOFactory::IOFactory(const std::string & name) {
 
 // -------------------------------------------------------------------------------------------------
 
-IOBase * IOFactory::create(const eckit::Configuration & conf, const Geometry & geom) {
-  oops::Log::trace() << "fv3jedi::IOBase constructor starting" << std::endl;
-  const std::string &id = conf.getString("filetype");
+IOBase * IOFactory::create(const Geometry & geom, const IOParametersBase & params) {
+  oops::Log::trace() << "IOBase::create starting" << std::endl;
+  const std::string &id = params.filetype.value().value();
   typename std::map<std::string, IOFactory*>::iterator jloc = getMakers().find(id);
   if (jloc == getMakers().end()) {
     oops::Log::error() << id << " does not exist in fv3jedi::IOFactory." << std::endl;
     ABORT("Element does not exist in fv3jedi::IOFactory.");
   }
-  IOBase * ptr = jloc->second->make(conf, geom);
-  oops::Log::trace() << "fv3jedi::IOBase constructor done" << std::endl;
+  IOBase * ptr = jloc->second->make(geom, params);
+  oops::Log::trace() << "IOBase::create done" << std::endl;
   return ptr;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+std::unique_ptr<IOParametersBase>
+IOFactory::createParameters(const std::string &name) {
+  typename std::map<std::string, IOFactory*>::iterator it =
+      getMakers().find(name);
+  if (it == getMakers().end()) {
+    throw std::runtime_error(name + " does not exist in fv3jedi::IOFactory");
+  }
+  return it->second->makeParameters();
 }
 
 // -------------------------------------------------------------------------------------------------

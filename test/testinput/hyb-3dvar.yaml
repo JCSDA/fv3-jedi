@@ -306,7 +306,6 @@ variational:
         filename_sfcd: iter1.hyb-3dvar.c24.sfc_data.nc
         filename_sfcw: iter1.hyb-3dvar.c24.fv_srf_wnd.res.nc
         filename_cplr: iter1.hyb-3dvar.c24.coupler.res
-        analysis variables: *3dvars
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -330,7 +329,6 @@ variational:
         filename_sfcd: iter2.hyb-3dvar.c24.sfc_data.nc
         filename_sfcw: iter2.hyb-3dvar.c24.fv_srf_wnd.res.nc
         filename_cplr: iter2.hyb-3dvar.c24.coupler.res
-        analysis variables: *3dvars
 final:
   diagnostics:
     departures: oman

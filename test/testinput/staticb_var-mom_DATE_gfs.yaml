@@ -14,7 +14,7 @@ date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
 background:
   filetype: gfs
   state variables: *inputVars
-  psinfile: 1
+  psinfile: true
   datapath: Data/staticb/unbalanced/mem001
   filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
   filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -44,8 +44,7 @@ bump:
   ensemble:
     members:
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem001
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -54,8 +53,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem002
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -64,8 +62,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem003
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -74,8 +71,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem004
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -84,8 +80,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem005
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -94,8 +89,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem006
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -104,8 +98,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem007
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -114,8 +107,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem008
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -124,8 +116,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem009
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -134,8 +125,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
       date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     - filetype: gfs
-      state variables: *inputVars
-      psinfile: 1
+      psinfile: true
       datapath: Data/staticb/unbalanced/mem010
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
       filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc

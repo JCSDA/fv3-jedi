@@ -11,10 +11,10 @@ module fv3jedi_io_latlon_interface_mod
 use iso_c_binding
 
 ! fckit
-use fckit_configuration_module, only: fckit_configuration
+use fckit_configuration_module,      only: fckit_configuration
 
 ! oops
-use datetime_mod
+use datetime_mod,                    only: datetime, c_f_datetime
 
 ! fv3-jedi
 use fv3jedi_increment_mod,           only: fv3jedi_increment

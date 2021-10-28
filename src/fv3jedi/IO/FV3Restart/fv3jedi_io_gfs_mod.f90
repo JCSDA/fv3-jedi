@@ -246,8 +246,6 @@ do n = 1, numfiles
   ! Config filenames to filenames
   self%filenames(n) = trim(self%filenames_conf(n))
 
-  print*, n, self%filenames(n), yyyy
-
   ! Swap out datetime templates if needed
   if (index(self%filenames(n),"%yyyy") > 0) &
     self%filenames(n) = replace_text(self%filenames(n),'%yyyy',yyyy)

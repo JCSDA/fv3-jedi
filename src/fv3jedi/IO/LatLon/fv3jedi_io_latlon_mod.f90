@@ -80,13 +80,11 @@ call create_latlon(self, geom)
 ! Naming convention for the file
 ! For ensemble methods switch out member template
 self%filename = 'Data/fv3jedi.latlon.'
-if (conf%has("filename")) then
-   call conf%get_or_die("filename",str)
-   call swap_name_member(conf, str)
-   call add_iteration(conf, str)
-   self%filename = str
-   deallocate(str)
-endif
+call conf%get_or_die("filename",str)
+call swap_name_member(conf, str)
+call add_iteration(conf, str)
+self%filename = str
+deallocate(str)
 
 end subroutine create
 

@@ -11,24 +11,38 @@
 #include <ostream>
 #include <string>
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
+#include "oops/generic/ModelBase.h"
 #include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
-#include "oops/util/Printable.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
-#include "fv3jedi/Geometry/Geometry.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/Utilities/Traits.h"
 
-// Forward declarations
-namespace eckit {
-  class Configuration;
-}
-
 namespace fv3jedi {
+  class Geometry;
   class ModelBias;
   class Increment;
   class State;
+
+// -------------------------------------------------------------------------------------------------
+
+class ModelPseudoParameters : public oops::ModelParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ModelPseudoParameters, ModelParametersBase)
+ public:
+  oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
+  oops::Parameter<bool> runstagecheck{ "run stage check", "turn off subsequent forecasts "
+                                       "in multiple forecast applications such as outer loop data "
+                                       "assimilation", false, this};
+  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+  // Include IO parameters
+  IOParametersWrapper ioParametersWrapper{this};
+};
 
 // -------------------------------------------------------------------------------------------------
 
@@ -37,7 +51,9 @@ class ModelPseudo: public oops::interface::ModelBase<Traits>,
  public:
   static const std::string classname() {return "fv3jedi::ModelPseudo";}
 
-  ModelPseudo(const Geometry &, const eckit::Configuration &);
+  typedef ModelPseudoParameters Parameters_;
+
+  ModelPseudo(const Geometry &, const Parameters_ &);
   ~ModelPseudo();
 
 /// Prepare model integration

@@ -280,7 +280,6 @@ variational:
         filename_sfcd: tt3dvar.eigenvec.sfc_data.nc
         filename_sfcw: tt3dvar.eigenvec.fv_srf_wnd.res.nc
         filename_cplr: tt3dvar.eigenvec.coupler.res
-        analysis variables: *3dvars
   iterations:
   - ninner: 15
     gradient norm reduction: 1e-10

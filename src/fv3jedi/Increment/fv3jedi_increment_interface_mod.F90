@@ -108,19 +108,30 @@ end subroutine fv3jedi_increment_ones_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_dirac_c(c_key_self,c_conf,c_key_geom) &
+subroutine fv3jedi_increment_dirac_c(c_key_self, c_conf, c_key_geom) &
            bind(c,name='fv3jedi_increment_dirac_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_self
-type(c_ptr), intent(in)    :: c_conf !< Configuration
-integer(c_int), intent(in) :: c_key_geom !< Geometry
-type(fv3jedi_increment), pointer :: self
-type(fv3jedi_geom),  pointer :: geom
+integer(c_int),     intent(in) :: c_key_self
+type(c_ptr), value, intent(in) :: c_conf
+integer(c_int),     intent(in) :: c_key_geom
 
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_increment_registry%get(c_key_self, self)
-call self%dirac(c_conf,geom)
+type(fv3jedi_increment), pointer :: f_self
+type(fv3jedi_geom),      pointer :: f_geom
+type(fckit_configuration)        :: f_conf
+
+! Linked list
+! -----------
+call fv3jedi_increment_registry%get(c_key_self, f_self)
+call fv3jedi_geom_registry%get(c_key_geom, f_geom)
+
+! Fortran APIs
+! ------------
+f_conf = fckit_configuration(c_conf)
+
+! Call implementation
+! -------------------
+call f_self%dirac(f_conf, f_geom)
 
 end subroutine fv3jedi_increment_dirac_c
 

@@ -51,15 +51,11 @@ background error:
 output B:
   filetype: geos
   datapath: Data/bump/
-  filename: dirac.B.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT1H
+  filename_bkgd: dirac.B.%yyyy%mm%dd_%hh%MM%ssz.nc4
 output localization:
   filetype: geos
   datapath: Data/bump/
-  filename: dirac.loc.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT1H
+  filename_bkgd: dirac.loc.%yyyy%mm%dd_%hh%MM%ssz.nc4
 dirac:
   ndir: 1
   ixdir: [1]    #Xdir

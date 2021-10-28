@@ -322,12 +322,12 @@ end subroutine diff_incr
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine dirac(self, c_conf, geom)
+subroutine dirac(self, conf, geom)
 
 implicit none
-class(fv3jedi_increment), intent(inout) :: self
-type(c_ptr),              intent(in)    :: c_conf
-type(fv3jedi_geom),       intent(in)    :: geom
+class(fv3jedi_increment),  intent(inout) :: self
+type(fckit_configuration), intent(in)    :: conf
+type(fv3jedi_geom),        intent(in)    :: geom
 
 integer :: ndir,idir,var
 
@@ -335,35 +335,35 @@ integer, allocatable :: ixdir(:),iydir(:),ildir(:),itdir(:)
 character(len=32), allocatable :: ifdir(:)
 
 logical :: found
-type(fckit_configuration) :: f_conf
+
 character(len=:), allocatable :: str
 character(len=:), allocatable :: str_array(:)
 
-f_conf = fckit_configuration(c_conf)
-
 ! Get Diracs positions
-call f_conf%get_or_die("ndir",ndir)
+call conf%get_or_die("ndir",ndir)
 
 allocate(ixdir(ndir))
 allocate(iydir(ndir))
 allocate(ildir(ndir))
 allocate(itdir(ndir))
 
-if ((f_conf%get_size("ixdir")/=ndir) .or. &
-    (f_conf%get_size("iydir")/=ndir) .or. &
-    (f_conf%get_size("ildir")/=ndir) .or. &
-    (f_conf%get_size("itdir")/=ndir) .or. &
-    (f_conf%get_size("ifdir")/=ndir)) &
+if ((conf%get_size("ixdir")/=ndir) .or. &
+    (conf%get_size("iydir")/=ndir) .or. &
+    (conf%get_size("ildir")/=ndir) .or. &
+    (conf%get_size("itdir")/=ndir) .or. &
+    (conf%get_size("ifdir")/=ndir)) &
   call abor1_ftn("fv3jedi_increment_mod.diracL=: dimension inconsistency")
 
-call f_conf%get_or_die("ixdir",ixdir)
-call f_conf%get_or_die("iydir",iydir)
-call f_conf%get_or_die("ildir",ildir)
-call f_conf%get_or_die("itdir",itdir)
+call conf%get_or_die("ixdir",ixdir)
+call conf%get_or_die("iydir",iydir)
+call conf%get_or_die("ildir",ildir)
+call conf%get_or_die("itdir",itdir)
 
-call f_conf%get_or_die("ifdir",str_array)
+call conf%get_or_die("ifdir",str_array)
 ifdir = str_array
 deallocate(str_array)
+
+print*, ndir, ixdir, iydir, ildir, itdir, ifdir
 
 ! Setup Diracs
 call self%zero()

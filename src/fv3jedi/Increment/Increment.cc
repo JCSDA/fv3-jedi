@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,7 +16,6 @@
 
 #include "atlas/field.h"
 
-#include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
@@ -177,18 +176,20 @@ void Increment::fromAtlas(atlas::FieldSet * afieldset) {
   fv3jedi_increment_from_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::read(const eckit::Configuration & config) {
+void Increment::read(const ReadParameters_ & params) {
   // Create IO object
-  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
+  std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
+                                               *params.ioParametersWrapper.ioParameters.value()));
   // Perform read
-  io_->read(*this);
+  io->read(*this);
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::write(const eckit::Configuration & config) const {
+void Increment::write(const WriteParameters_ & params) const {
   // Create IO object
-  std::unique_ptr<IOBase> io_(IOFactory::create(config, *geom_));
+  std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
+                                               *params.ioParametersWrapper.ioParameters.value()));
   // Perform read
-  io_->write(*this);
+  io->write(*this);
 }
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {
@@ -232,9 +233,8 @@ void Increment::print(std::ostream & os) const {
         "------------------------------------------------";
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::dirac(const eckit::Configuration & config) {
-  const eckit::Configuration * conf = &config;
-  fv3jedi_increment_dirac_f90(keyInc_, &conf, geom_->toFortran());
+void Increment::dirac(const DiracParameters_ & params) {
+  fv3jedi_increment_dirac_f90(keyInc_, params.toConfiguration(), geom_->toFortran());
 }
 // -------------------------------------------------------------------------------------------------
 size_t Increment::serialSize() const {
