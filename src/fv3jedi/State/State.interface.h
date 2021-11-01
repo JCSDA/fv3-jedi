@@ -22,6 +22,7 @@ extern "C" {
                                       const F90geom &);
   void fv3jedi_state_analytic_init_f90(const F90state &, const F90geom &,
                                        const eckit::Configuration &);
+  void fv3jedi_state_fill_geom_orography_f90(const F90state &, F90geom &);
   void fv3jedi_state_sersize_f90(const F90state &, int &);
 
   void fv3jedi_state_serialize_f90(const F90state &, const std::size_t &, double[]);

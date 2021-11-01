@@ -45,8 +45,8 @@ namespace fv3jedi {
     oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
     oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
 
-    oops::OptionalParameter<std::string> lmnamelistFilename{
-       "linear model namelist filename", this};
+    oops::Parameter<std::string> lmnamelistFilename{ "linear model namelist filename",
+            "inputpert.nml", this};
     oops::OptionalParameter<std::string> namelistFilename{"namelist filename", this};
   };
 

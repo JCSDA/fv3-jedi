@@ -131,32 +131,6 @@ end subroutine c_fv3jedi_addfmd_setup
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_read_orography(c_key_self, c_conf) &
-  bind(c,name='fv3jedi_geom_read_orography_f90')
-
-implicit none
-integer(c_int),     intent(inout) :: c_key_self
-type(c_ptr), value, intent(in)    :: c_conf
-
-type(fv3jedi_geom), pointer :: self
-type(fckit_configuration)   :: f_conf
-
-! LinkedList
-! ----------
-call fv3jedi_geom_registry%get(c_key_self,self)
-
-! Fortran APIs
-! ------------
-f_conf = fckit_configuration(c_conf)
-
-! Call implementation
-! -------------------
-call self%read_orography(f_conf)
-
-end subroutine c_fv3jedi_geom_read_orography
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine c_fv3jedi_geom_clone(c_key_self, c_key_other, c_fields_meta) bind(c,name='fv3jedi_geom_clone_f90')
 
 implicit none

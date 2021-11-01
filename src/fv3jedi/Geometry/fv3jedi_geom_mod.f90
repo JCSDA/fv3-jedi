@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2021 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -94,7 +94,6 @@ type :: fv3jedi_geom
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
-    procedure, public :: read_orography
     procedure, public :: set_atlas_lonlat
     procedure, public :: fill_atlas_fieldset
 end type fv3jedi_geom
@@ -110,33 +109,27 @@ subroutine initialize(conf, comm)
 type(fckit_configuration), intent(in) :: conf
 type(fckit_mpi_comm),      intent(in) :: comm
 
-integer :: stackmax = 4000000
+integer :: stackmax
 character(len=1024) :: nml_filename, field_table_filename
 character(len=:), allocatable :: str
 
 ! Path for input.nml file
-nml_filename = 'input.nml'
-if (conf%has("namelist filename")) then
-  call conf%get_or_die("namelist filename",str)
-  if (len(str) > 1024) call abor1_ftn("Length of fms namelist filename too long")
-  nml_filename = str
-  deallocate(str)
-endif
+call conf%get_or_die("namelist filename",str)
+if (len(str) > 1024) call abor1_ftn("Length of fms namelist filename too long")
+nml_filename = str
+deallocate(str)
 
 ! Field table file
-field_table_filename = 'field_table'
-if (conf%has("field table filename")) then
-  call conf%get_or_die("field table filename",str)
-  if (len(str) > fm_string_len) call abor1_ftn("Length of fms field table filename too long")
-  field_table_filename = str
-  deallocate(str)
-endif
+call conf%get_or_die("field table filename",str)
+if (len(str) > fm_string_len) call abor1_ftn("Length of fms field table filename too long")
+field_table_filename = str
+deallocate(str)
 
 ! Initialize fms, mpp, etc.
 call fms_init(localcomm=comm%communicator(), alt_input_nml_path = nml_filename)
 
 ! Set max stacksize
-if (conf%has("stackmax")) call conf%get_or_die("stackmax",stackmax)
+call conf%get_or_die("stackmax", stackmax)
 call mpp_domains_set_stack_size(stackmax)
 
 ! Initialize the tracers
@@ -175,12 +168,9 @@ self%f_comm = comm
 
 ! Interpolation type
 ! ------------------
-self%interp_method = 'barycent'
-if (conf%has("interpolation method")) then
-  call conf%get_or_die("interpolation method",str)
-  self%interp_method = str
-  deallocate(str)
-endif
+call conf%get_or_die("interpolation method",str)
+self%interp_method = str
+deallocate(str)
 
 ! Update the fms namelist with this Geometry
 ! ------------------------------------------
@@ -348,12 +338,8 @@ self%nw_corner = Atm(1)%gridstruct%nw_corner
 self%nested    = Atm(1)%gridstruct%nested
 self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
-if (conf%has("logp")) then
-  call conf%get_or_die("logp",logp)
-  self%logp = logp
-else
-  self%logp =.false.
-endif
+call conf%get_or_die("logp",logp)
+self%logp = logp
 
 
 !Unstructured lat/lon
@@ -387,9 +373,7 @@ call nullify_domain()
 
 ! Optionally write the geometry to file
 ! -------------------------------------
-if (conf%has("write geom")) then
-  call conf%get_or_die("write geom",do_write_geom)
-endif
+call conf%get_or_die("write geom",do_write_geom)
 
 if (do_write_geom) then
   call write_geom(self)
@@ -400,58 +384,6 @@ endif
 call fmsnamelist%revert_namelist
 
 end subroutine create
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine read_orography(self, conf)
-
-! Arguments
-class(fv3jedi_geom), target, intent(inout) :: self
-type(fckit_configuration),   intent(in)    :: conf
-
-! Locals
-type(field_metadata) :: fmd
-type(fv3jedi_io_gfs) :: gfs_orog
-type(fv3jedi_field)  :: field_orog(1)
-character(len=:), allocatable :: str
-
-! Get name of field in file
-call conf%get_or_die("orography field name", str)
-
-! Set up gfs_io object
-call gfs_orog%create(conf, self%domain, self%npz)
-
-! Set up metadata in field to recieve the orog
-field_orog(1)%isc = self%isc
-field_orog(1)%iec = self%iec
-field_orog(1)%jsc = self%jsc
-field_orog(1)%jec = self%jec
-field_orog(1)%npz = 1
-
-! Allocate data array
-allocate(field_orog(1)%array(self%isc:self%iec,self%jsc:self%jec,1))
-
-! Assign field metadata
-fmd = self%fields%get_field(str)
-field_orog(1)%lalloc       = .true.
-field_orog(1)%short_name   = trim(fmd%field_io_name)
-field_orog(1)%long_name    = trim(fmd%long_name)
-field_orog(1)%fv3jedi_name = trim(fmd%field_name)
-field_orog(1)%units        = trim(fmd%units)
-field_orog(1)%io_file      = trim(fmd%io_file)
-field_orog(1)%space        = trim(fmd%space)
-field_orog(1)%staggerloc   = trim(fmd%stagger_loc)
-field_orog(1)%tracer       = fmd%tracer
-field_orog(1)%integerfield = trim(fmd%array_kind)=='integer'
-field_orog(1)%interp_type  = trim(fmd%interp_type)
-
-! Read orography into field
-call read_fields(gfs_orog, field_orog)
-
-! Move into geom
-call move_alloc(field_orog(1)%array, self%orography)
-
-end subroutine read_orography
 
 ! --------------------------------------------------------------------------------------------------
 

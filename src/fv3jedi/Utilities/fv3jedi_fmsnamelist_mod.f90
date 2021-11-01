@@ -133,7 +133,7 @@ allocate(io_layout(2))
 nmls = 1
 
 ! Compulsory elements
-nmls = nmls + 1;
+nmls = nmls + 1
 if (.not. conf%get('npx', npx)) call abor1_ftn("conf_to_namelist: did not find npx in config")
 nmls = nmls + 1
 if (.not. conf%get('npy', npy)) call abor1_ftn("conf_to_namelist: did not find npy in config")

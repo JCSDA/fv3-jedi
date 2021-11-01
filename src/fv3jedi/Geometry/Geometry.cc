@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 UCAR
+ * (C) Copyright 2017-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,9 +14,6 @@
 #include "atlas/grid.h"
 #include "atlas/util/Config.h"
 
-#include "eckit/config/Configuration.h"
-#include "eckit/config/LocalConfiguration.h"
-
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 
@@ -29,29 +26,23 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-Geometry::Geometry(const eckit::Configuration & conf, const eckit::mpi::Comm & comm) : comm_(comm) {
+Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
+                   comm_(comm) {
   // Call the initialize phase, done only once.
   static bool initialized = false;
   if (!initialized) {
-    const eckit::LocalConfiguration & fmsconf = conf.getSubConfiguration("fms initialization");
-    fv3jedi_geom_initialize_f90(&fmsconf, &comm_);
+    fv3jedi_geom_initialize_f90((*params.fmsInit.value()).toConfiguration(), &comm_);
     initialized = true;
     oops::Log::debug() << "FMS MPP initialized on " << comm_.name() << std::endl;
   }
 
   // Geometry constructor
   int nlev;
-  fv3jedi_geom_setup_f90(keyGeom_, &conf, &comm_, nlev);
+  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nlev);
 
   // Construct the field sets and add to Geometry
-  fieldsMeta_.reset(new FieldsMetadata(conf, nlev));
+  fieldsMeta_.reset(new FieldsMetadata(params.fieldsMetadataParameters, nlev));
   fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
-
-  // Read the orography
-  if (conf.has("orography")) {
-    const eckit::LocalConfiguration & oroconf = conf.getSubConfiguration("orography");
-    fv3jedi_geom_read_orography_f90(keyGeom_, &oroconf);
-  }
 
   // Set ATLAS lon/lat field
   atlasFieldSet_.reset(new atlas::FieldSet());
@@ -67,6 +58,12 @@ Geometry::Geometry(const eckit::Configuration & conf, const eckit::mpi::Comm & c
   // Fill ATLAS fieldset
   atlasFieldSet_.reset(new atlas::FieldSet());
   fv3jedi_geom_fill_atlas_fieldset_f90(keyGeom_, atlasFieldSet_->get());
+
+  // Read the orography
+  if (params.orography.value() != boost::none) {
+    State orogstate(*this, *params.orography.value());
+    orogstate.fillGeomOrography(*this);
+  }
 }
 
 // -------------------------------------------------------------------------------------------------

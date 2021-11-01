@@ -19,6 +19,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
+#include "fv3jedi/FieldMetadata/FieldsMetadataParameters.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Printable.h"
@@ -176,7 +177,8 @@ namespace fv3jedi {
 
   class FieldsMetadata {
    public:
-    explicit FieldsMetadata(const eckit::Configuration &, int &);
+    typedef FieldsMetadataParameters Parameters_;
+    FieldsMetadata(const Parameters_ &, int &);
 
     FieldMetadata getField(const std::string &) const;
 

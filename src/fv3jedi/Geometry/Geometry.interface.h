@@ -30,11 +30,11 @@ namespace fv3jedi {
 
 extern "C" {
 
-  void fv3jedi_geom_initialize_f90(const eckit::LocalConfiguration *, const eckit::mpi::Comm *);
-  void fv3jedi_geom_setup_f90(F90geom &, const eckit::Configuration *,
+  void fv3jedi_geom_initialize_f90(const eckit::LocalConfiguration &, const eckit::mpi::Comm *);
+  void fv3jedi_geom_setup_f90(F90geom &, const eckit::Configuration &,
                              const eckit::mpi::Comm *, int &);
   void fv3jedi_geom_addfmd_f90(F90geom &, FieldsMetadata *);
-  void fv3jedi_geom_read_orography_f90(F90geom &, const eckit::LocalConfiguration *);
+  // void fv3jedi_geom_read_orography_f90(F90geom &, const eckit::LocalConfiguration &);
   void fv3jedi_geom_set_atlas_lonlat_f90(const F90geom &, atlas::field::FieldSetImpl *);
   void fv3jedi_geom_set_atlas_functionspace_pointer_f90(const F90geom &,
                                                        atlas::functionspace::FunctionSpaceImpl *);

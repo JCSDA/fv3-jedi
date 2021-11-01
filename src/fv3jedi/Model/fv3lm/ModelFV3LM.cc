@@ -23,7 +23,7 @@ namespace fv3jedi {
 static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
 // -------------------------------------------------------------------------------------------------
 ModelFV3LM::ModelFV3LM(const Geometry & resol, const Parameters_ & params)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(params.toConfiguration(), "model variables")
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(params.modelVariables)
 {
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM" << std::endl;
   tstep_ = params.tstep;

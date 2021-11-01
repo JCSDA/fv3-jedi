@@ -86,12 +86,9 @@ call fmsnamelist%replace_namelist(conf)
 
 ! Filename for namelist (tl/ad part)
 ! ----------------------------------
-self%fv3jedi_lm%conf%inputpert_filename = 'inputpert.nml'
-if (conf%has("linear model namelist filename")) then
-  call conf%get_or_die("linear model namelist filename", str)
-  self%fv3jedi_lm%conf%inputpert_filename = str
-  deallocate(str)
-endif
+call conf%get_or_die("linear model namelist filename", str)
+self%fv3jedi_lm%conf%inputpert_filename = str
+deallocate(str)
 
 ! Call linear model constructor
 ! -----------------------------

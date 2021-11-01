@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2020 UCAR
+ * (C) Copyright 2020-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -13,6 +13,7 @@
   Fields:
     - FieldName: ud
       FieldIONames: [u, ud, U]
+      InterpType: nearest
       Kind: double
       Levels: full
       LongName: u_component_of_native_D_grid_wind
@@ -25,6 +26,7 @@
     - FieldName: t
       FieldIONames: [t, T, air_temperature]
       Kind: double
+      InterpType: nearest
       Levels: full
       LongName: air_temperature
       Space: magnitude
@@ -37,6 +39,7 @@
                 accessed in a variable change this is the name that is used to do so.
   FieldIONames: Name used by the model and in the files. There can be multiple options per
                 FieldName.
+  InterpType:   Type of interpolation used.
   Kind:         What kind of data, 'double', 'integer' (default: double)
   Levels:       Can be 'full' (nz), 'half' (nz+1) or a number. (Default: full)
   LongName:     Long name written to output files (default: FieldName)
@@ -66,7 +69,7 @@ namespace fv3jedi {
 
   // -----------------------------------------------------------------------------------------------
 
-  FieldsMetadata::FieldsMetadata(const eckit::Configuration & confFull, int & nlev) {
+  FieldsMetadata::FieldsMetadata(const Parameters_ & params, int & nlev) {
     // Local versions
     std::string fieldIOName;
     std::string fieldName;
@@ -81,29 +84,31 @@ namespace fv3jedi {
     std::string io_file;
 
     //  List of field sets
-    std::vector<eckit::LocalConfiguration> confFieldSets;
-    confFull.get("fieldsets", confFieldSets);
-    int confFieldSetsSize = confFieldSets.size();
+    std::vector<FieldsetsParameters> paramsFieldSets = params.fieldSets.value();
+    int paramsFieldSetsSize = paramsFieldSets.size();
 
     //  Loop over sets of fields, i.e. each yaml file
-    for (int km = 0; km < confFieldSetsSize; ++km) {
+    for (int km = 0; km < paramsFieldSetsSize; ++km) {
       // Create new config for each field set
-      eckit::PathName pathNameFieldSet(confFieldSets[km].getString("fieldset"));
-      const eckit::YAMLConfiguration confFieldSet(pathNameFieldSet);
+      eckit::PathName pathNameFieldSet(paramsFieldSets[km].fieldSet.value());
+      const eckit::YAMLConfiguration paramsFieldSet(pathNameFieldSet);
+
+      FieldsParameters fieldsparams;
+      fieldsparams.validateAndDeserialize(paramsFieldSet);
 
       //  List of fields
-      std::vector<eckit::LocalConfiguration> confFields;
-      confFieldSet.get("Fields", confFields);
-      int confFieldsSize = confFields.size();
+      std::vector<FieldParameters> paramsFields = fieldsparams.fields.value();
+      int paramsFieldsSize = paramsFields.size();
 
       // Loop over fields
-      for (int jm = 0; jm < confFieldsSize; ++jm) {
+      for (int jm = 0; jm < paramsFieldsSize; ++jm) {
         //  List of potential names, default is FieldName
-        fieldName = confFields[jm].getString("FieldName");
-
+        fieldName = paramsFields[jm].fieldName.value();
         std::vector<std::string> fieldIONames;
         fieldIONames.push_back(fieldName);
-        fieldIONames = confFields[jm].getStringVector("FieldIONames", fieldIONames);
+        if (paramsFields[jm].fieldIONames.value().size() > 0) {
+          fieldIONames = paramsFields[jm].fieldIONames.value();
+        }
 
         int confFieldIONamesSize = fieldIONames.size();
 
@@ -126,15 +131,19 @@ namespace fv3jedi {
           // Push other metadata
           // -------------------
 
-          kind = confFields[jm].getString("Kind", "double");
-          levels_str = confFields[jm].getString("Levels", "full");
-          longName = confFields[jm].getString("LongName", fieldName);
-          space = confFields[jm].getString("Space", "magnitude");
-          staggerLoc = confFields[jm].getString("StaggerLoc", "center");
-          tracer = confFields[jm].getBool("Tracer", false);
-          units = confFields[jm].getString("Units");
-          interpType = confFields[jm].getString("InterpType", "default");
-          io_file = confFields[jm].getString("IOFile", "default");
+          kind = paramsFields[jm].precisionKind.value();
+          levels_str = paramsFields[jm].levels.value();
+          if (paramsFields[jm].longName.value() == boost::none) {
+            longName = fieldName;
+          } else {
+            longName = *paramsFields[jm].longName.value();
+          }
+          space = paramsFields[jm].space.value();
+          staggerLoc = paramsFields[jm].staggerLoc.value();
+          tracer = paramsFields[jm].tracer.value();
+          units = paramsFields[jm].units.value();
+          interpType = paramsFields[jm].interpType.value();
+          io_file = paramsFields[jm].ioFile.value();
 
           // Check for valid choices
           fieldmetadata.checkKindValid(fieldIOName, kind);

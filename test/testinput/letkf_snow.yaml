@@ -11,7 +11,9 @@ geometry:
     - fieldset: Data/fieldsets/ufo.yaml
     - fieldset: Data/fieldsets/oro_data.yaml
   orography:
-    orography field name: orog_filt
+    filetype: gfs
+    skip coupler file: true
+    state variables: [orog_filt]
     datapath: Data/inputs/gfs_land_c48/grid/
     filename_orog: C48_oro_data.nc
 

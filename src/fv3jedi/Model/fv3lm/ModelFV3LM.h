@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -44,14 +44,14 @@ namespace fv3jedi {
     OOPS_CONCRETE_PARAMETERS(ModelFV3LMParameters, ModelParametersBase)
 
    public:
-    oops::RequiredParameter<eckit::LocalConfiguration> modelVariables{ "model variables", this};
+    oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
     oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
 
     oops::RequiredParameter<int> lm_do_dyn{ "lm_do_dyn", this};
     oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
     oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
 
-    oops::OptionalParameter<bool> useInternalNamelist{ "use internal namelist", this};
+    oops::Parameter<bool> useInternalNamelist{ "use internal namelist", false, this};
     oops::OptionalParameter<std::string> namelistFilename{ "namelist filename", this};
   };
 
