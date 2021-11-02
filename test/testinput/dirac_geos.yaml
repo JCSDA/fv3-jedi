@@ -48,21 +48,17 @@ background error:
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem005.20180414_210000z.nc4
       state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
-output B:
+output dirac:
   filetype: geos
   datapath: Data/bump/
-  filename_bkgd: dirac.B.%yyyy%mm%dd_%hh%MM%ssz.nc4
-output localization:
-  filetype: geos
-  datapath: Data/bump/
-  filename_bkgd: dirac.loc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename_bkgd: dirac.%id%.%yyyy%mm%dd_%hh%MM%ssz.nc4
 dirac:
   ndir: 1
-  ixdir: [1]    #Xdir
-  iydir: [1]    #Ydir
-  ildir: [50]   #Level
-  itdir: [1]    #Tile
-  ifdir: [ua] #Field
+  ixdir: [1]
+  iydir: [1]
+  ildir: [50]
+  itdir: [1]
+  ifdir: [t]
 
 test:
   reference filename: testoutput/dirac_geos.ref

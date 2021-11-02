@@ -25,21 +25,21 @@ background error:
   - variable change: Control2Analysis
     input variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
     output variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
-output B:
+output dirac:
   filetype: gfs
   datapath: Data/gsirf/
-  filename_core: dirac_gfs_c2a.B.fv_core.res.nc
-  filename_trcr: dirac_gfs_c2a.B.fv_tracer.res.nc
-  filename_sfcd: dirac_gfs_c2a.B.sfc_data.nc
-  filename_sfcw: dirac_gfs_c2a.B.fv_srf_wnd.res.nc
-  filename_cplr: dirac_gfs_c2a.B.coupler.res
+  filename_core: dirac_%id%_gfs_c2a.fv_core.res.nc
+  filename_trcr: dirac_%id%_gfs_c2a.fv_tracer.res.nc
+  filename_sfcd: dirac_%id%_gfs_c2a.sfc_data.nc
+  filename_sfcw: dirac_%id%_gfs_c2a.fv_srf_wnd.res.nc
+  filename_cplr: dirac_%id%_gfs_c2a.coupler.res
 dirac:
   ndir: 1
-  ixdir: [1]    #Xdir
-  iydir: [1]    #Ydir
-  ildir: [50]   #Level
-  itdir: [1]    #Tile
-  ifdir: [ua] #Field
+  ixdir: [1]
+  iydir: [1]
+  ildir: [50]
+  itdir: [1]
+  ifdir: [ua]
 
 test:
   reference filename: testoutput/dirac_gfs_c2a.ref

@@ -27,21 +27,21 @@ background error:
     layoutx: 3
     layouty: 2
     path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
-output B:
+output dirac:
   filetype: gfs
   datapath: Data/gsirf/
-  filename_core: dirac_gfs_bal.B.fv_core.res.nc
-  filename_trcr: dirac_gfs_bal.B.fv_tracer.res.nc
-  filename_sfcd: dirac_gfs_bal.B.sfc_data.nc
-  filename_sfcw: dirac_gfs_bal.B.fv_srf_wnd.res.nc
-  filename_cplr: dirac_gfs_bal.B.coupler.res
+  filename_core: dirac_%id%_gfs_bal.fv_core.res.nc
+  filename_trcr: dirac_%id%_gfs_bal.fv_tracer.res.nc
+  filename_sfcd: dirac_%id%_gfs_bal.sfc_data.nc
+  filename_sfcw: dirac_%id%_gfs_bal.fv_srf_wnd.res.nc
+  filename_cplr: dirac_%id%_gfs_bal.coupler.res
 dirac:
   ndir: 1
-  ixdir: [1]    #Xdir
-  iydir: [1]    #Ydir
-  ildir: [50]   #Level
-  itdir: [1]    #Tile
-  ifdir: [ua] #Field
+  ixdir: [1]
+  iydir: [1]
+  ildir: [50]
+  itdir: [1]
+  ifdir: [ua]
 
 test:
   reference filename: testoutput/dirac_gfs_bal.ref

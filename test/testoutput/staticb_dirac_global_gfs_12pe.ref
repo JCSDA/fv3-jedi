@@ -1,19 +1,19 @@
-Norm of stddev at 2018-04-15T00:00:00Z: 3.321e+05
-Norm of nicas_norm at 2018-04-15T00:00:00Z: 1.032e+00
 Input Dirac increment: 
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
-   ua                            : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   va                            : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   t                             : Min = +0.000e+00, Max = +1.000e+00, RMS = +4.253e-03
-   delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   ps                            : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   sphum                         : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   o3mr                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
+   ua                            : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   va                            : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   t                             : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.252586e-03
+   delp                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   ps                            : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   sphum                         : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   ice_wat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   liq_wat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   o3mr                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
-B * Increment: 
+Norm of stddev at 2018-04-15T00:00:00Z: 3.321e+05
+Norm of nicas_norm at 2018-04-15T00:00:00Z: 1.032e+00
+Covariance(BUMP) * Increment: 
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
    ua                            : Min = -1.172e-02, Max = +1.202e-02, RMS = +8.496e-04

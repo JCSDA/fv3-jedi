@@ -33,21 +33,21 @@ background error:
       variables: [surface_pressure]
       io_keys: [surface_pressure-surface_pressure]
       io_values: [fixed_2500km]
-output B:
+output dirac:
   filetype: gfs
   datapath: Data/bump/
-  filename_core: dirac_gfs.B.fv_core.res.nc
-  filename_trcr: dirac_gfs.B.fv_tracer.res.nc
-  filename_sfcd: dirac_gfs.B.sfc_data.nc
-  filename_sfcw: dirac_gfs.B.fv_srf_wnd.res.nc
-  filename_cplr: dirac_gfs.B.coupler.res
+  filename_core: dirac_%id%_gfs.fv_core.res.nc
+  filename_trcr: dirac_%id%_gfs.fv_tracer.res.nc
+  filename_sfcd: dirac_%id%_gfs.sfc_data.nc
+  filename_sfcw: dirac_%id%_gfs.fv_srf_wnd.res.nc
+  filename_cplr: dirac_%id%_gfs.coupler.res
 dirac:
   ndir: 1
-  ixdir: [1]  #Xdir
-  iydir: [1]  #Ydir
-  ildir: [50] #Level
-  itdir: [1]  #Tile
-  ifdir: [ua] #Field
+  ixdir: [1]
+  iydir: [1]
+  ildir: [50]
+  itdir: [1]
+  ifdir: [ua]
 
 test:
   reference filename: testoutput/dirac_gfs.ref
