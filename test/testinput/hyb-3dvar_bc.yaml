@@ -255,6 +255,7 @@ cost function:
           inflation:
             ratio: 1.1
             ratio for small dataset: 2.0
+        output file: Data/analysis/satbias_cov_amsua_n19_out.nc4
     obs error:
       covariance model: diagonal
     obs filters:
