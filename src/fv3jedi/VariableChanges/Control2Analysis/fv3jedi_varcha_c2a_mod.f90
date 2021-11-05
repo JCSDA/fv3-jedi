@@ -73,7 +73,9 @@ logical :: tmp
 ! Grid and operators for the femps Poisson solver
 ! -----------------------------------------------
 self%skip_femps_init = .false.
-tmp = conf%get("skip femps initialization",self%skip_femps_init)
+if (conf%has("skip femps initialization")) then
+   call conf%get_or_die("skip femps initialization",self%skip_femps_init)
+end if
 
 if (.not. self%skip_femps_init) then
 
