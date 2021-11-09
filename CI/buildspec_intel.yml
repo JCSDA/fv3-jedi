@@ -129,7 +129,7 @@ phases:
         && echo $PATH
         && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         && export PATH=/usr/local/lib:$PATH
-        && ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DSKIP_LARGE_TESTS=OFF -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsintel.test"
+        && ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsintel.test"
 
       - su - jedi -c "export FV3JEDI_TEST_TIER=1
         && export CC=mpiicc

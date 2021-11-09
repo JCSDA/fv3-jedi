@@ -7,7 +7,7 @@ include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
 
 # Option not to run with large tests
 # ----------------------------------
-option(SKIP_LARGE_TESTS "Skip tests with more than 6 processors" OFF)
+option(BUILD_LARGE_TESTS "build tests with more than 6 processors" ON)
 
 # Create the Data/ directory
 # --------------------------
@@ -868,14 +868,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_fv3lm
                   COMMAND  test_fv3jedi_model.x )
 
 
-#if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
+#if( FV3_FORECAST_MODEL MATCHES "UFS" AND BUILD_LARGE_TESTS)
 #ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_ufs
 #                  MPI      6
 #                  ARGS     testinput/model_ufs.yaml
 #                  COMMAND  test_fv3jedi_model.x )
 #endif()
 
-if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_geos
                   MPI      6
                   ARGS     testinput/model_geos.yaml
@@ -900,14 +900,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_fv3lm
                   ARGS     testinput/forecast_fv3lm.yaml
                   COMMAND  fv3jedi_forecast.x )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS" AND NOT SKIP_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "UFS" AND BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs
                     MPI      6
                     ARGS     testinput/forecast_ufs.yaml
                     COMMAND  fv3jedi_forecast.x )
 endif()
 
-if( FV3_FORECAST_MODEL MATCHES "GEOS" AND NOT SKIP_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_geos
                     MPI      6
                     ARGS     testinput/forecast_geos.yaml
@@ -981,7 +981,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq
                   ARGS     testinput/bumpparameters_nicas_lam_cmaq.yaml
                   COMMAND  fv3jedi_parameters.x )
 
-if (NOT SKIP_LARGE_TESTS)
+if (BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_geos_p12
                     MPI      12
                     ARGS     testinput/bumpparameters_nicas_geos_p12.yaml
@@ -1043,7 +1043,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
-if (NOT SKIP_LARGE_TESTS)
+if (BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_p12
                     MPI      12
                     ARGS     testinput/hyb-3dvar_p12.yaml
@@ -1174,7 +1174,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_addincrement_gfs
                   COMMAND  fv3jedi_addincrement.x
                   TEST_DEPENDS fv3jedi_test_tier1_diffstates_gfs )
 
-if (NOT SKIP_LARGE_TESTS)
+if (BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_addincrement_geos
                     MPI      12
                     ARGS     testinput/addincrement_geos.yaml
@@ -1210,7 +1210,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalization
 
 # EnsHofx tests
 # -------------
-if (NOT SKIP_LARGE_TESTS)
+if (BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
                     MPI      12
                     ARGS     testinput/enshofx_fv3lm.yaml
@@ -1219,7 +1219,7 @@ endif()
 
 # Ensemble data assimilation tests
 # --------------------------------
-if (NOT SKIP_LARGE_TESTS)
+if (BUILD_LARGE_TESTS)
   # 3DVar
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar
                     MPI      12
