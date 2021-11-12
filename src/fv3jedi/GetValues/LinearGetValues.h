@@ -8,7 +8,6 @@
 #pragma once
 
 #include <fstream>
-#include <map>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -40,8 +39,6 @@ namespace ufo {
 namespace fv3jedi {
   class State;
   class Geometry;
-  class VarChaModel2GeoVaLs;
-  class LinVarChaModel2GeoVaLs;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -60,17 +57,10 @@ class LinearGetValues : public util::Printable, private util::ObjectCounter<Line
                      const ufo::GeoVaLs & geovals) const;
 
  private:
-  const LinVarChaModel2GeoVaLs * getLinVarCha(const util::DateTime &) const;
-
-  typedef std::map< util::DateTime, LinVarChaModel2GeoVaLs * >::iterator lvcIter;
-  typedef std::map< util::DateTime, LinVarChaModel2GeoVaLs * >::const_iterator lvcIterCnst;
-
   void print(std::ostream &) const;
   F90lineargetvalues keyLinearGetValues_;
   ufo::Locations locs_;
   std::shared_ptr<const Geometry> geom_;
-  std::map< util::DateTime, LinVarChaModel2GeoVaLs * > linearmodel2geovals_;
-  std::unique_ptr<VarChaModel2GeoVaLs> model2geovals_;
 };
 
 // -------------------------------------------------------------------------------------------------

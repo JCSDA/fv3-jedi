@@ -61,6 +61,7 @@
 #include <map>
 #include <utility>
 
+#include "eckit/exception/Exceptions.h"
 #include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 
 // -------------------------------------------------------------------------------------------------
@@ -176,15 +177,6 @@ namespace fv3jedi {
         }  // End loop over potential field names
       }  // End loop over fields
     }  // End loop over field sets
-
-
-    // Prints for debugging
-    // --------------------
-    std::map<std::string, FieldMetadata>::iterator itr;
-
-    for (itr = fields_.begin(); itr != fields_.end(); ++itr) {
-      oops::Log::debug() << "Key: " << itr->first << "\nData: \n" << itr->second << std::endl;
-    }
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -206,7 +198,10 @@ namespace fv3jedi {
          levels = it->second.getLevels();
        }
     }
-    ASSERT(levels != 0);
+    if (levels == 0) {
+      oops::Log::error() << "getLevelsFromLongName did not find " << longName << std::endl;
+      throw eckit::BadParameter("Long name not found");
+    }
     return levels;
   }
 

@@ -24,6 +24,9 @@ namespace fv3jedi {
 static oops::LinearVariableChangeMaker<Traits,
        oops::LinearVariableChange<Traits, LinVarChaModel2GeoVaLs> >
        makerLinVarChaModel2GeoVaLs_("Model2GeoVaLs");
+static oops::LinearVariableChangeMaker<Traits,
+       oops::LinearVariableChange<Traits, LinVarChaModel2GeoVaLs> >
+       makerLinVarChaModel2GeoDef_("default");
 // -------------------------------------------------------------------------------------------------
 LinVarChaModel2GeoVaLs::LinVarChaModel2GeoVaLs(const State & bg, const State & fg,
                                          const Geometry & resol, const eckit::Configuration & conf):
