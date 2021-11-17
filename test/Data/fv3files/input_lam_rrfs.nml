@@ -1,0 +1,14 @@
+
+&fv_core_nml
+    layout = 6, 2
+    npx = 202
+    npy = 106
+    npz = 65
+    ntiles = 1
+    regional = .true.
+/
+
+&fv_grid_nml
+    grid_file = 'Data/inputs/lam_rrfs/INPUT/C403_mosaic.halo3.nc'
+    mosaic_path = 'Data/inputs/lam_rrfs/INPUT'
+/

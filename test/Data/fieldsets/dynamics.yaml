@@ -184,10 +184,45 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [graupel]
+  - FieldIONames: [qg, graupel]
     FieldName: graupel
     LongName: graupel
     Units: kgkg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [water_nc]
+    FieldName: qncloud
+    LongName: cloud_droplet_number_concentration
+    Units: kg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ice_nc]
+    FieldName: qnice
+    LongName: cloud_ice_number_concentration
+    Units: kg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [rain_nc]
+    FieldName: qnrain
+    LongName: rain_number_concentration
+    Units: kg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [liq_aero]
+    FieldName: qnwfa
+    LongName: aerosol_water_number_concentration
+    Units: kg-1
+    Tracer: true
+    IOFile: tracer
+
+  - FieldIONames: [ice_aero]
+    FieldName: qnifa
+    LongName: aerosol_ice_number_concentration
+    Units: kg-1
     Tracer: true
     IOFile: tracer
 
@@ -316,9 +351,16 @@ Fields:
 
   - FieldIONames: [stc]
     FieldName: stc
-    LongName: stc
+    LongName: soil_temperature
     Units: none
     Levels: 4
+    IOFile: surface
+
+  - FieldIONames: [tslb]
+    FieldName: tslb
+    LongName: soil_temperature
+    Units: none
+    Levels: 9
     IOFile: surface
 
   - FieldIONames: [soilt]
@@ -330,9 +372,16 @@ Fields:
 
   - FieldIONames: [smc]
     FieldName: smc
-    LongName: smc
+    LongName: soil_moisture
     Units: none
     Levels: 4
+    IOFile: surface
+
+  - FieldIONames: [smois]
+    FieldName: smois
+    LongName: soil_moisture
+    Units: none
+    Levels: 9
     IOFile: surface
 
   - FieldIONames: [soilm]

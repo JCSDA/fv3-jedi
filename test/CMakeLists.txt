@@ -22,6 +22,7 @@ Data/fv3files/akbk127.nc4
 Data/fv3files/field_table_gmao
 Data/fv3files/field_table_gfdl
 Data/fv3files/field_table_lam_cmaq
+Data/fv3files/field_table_lam_rrfs
 Data/fv3files/fmsmpp.nml
 Data/fv3files/input_gfs_c12.nml
 Data/fv3files/input_gfs_c12_p12.nml
@@ -31,6 +32,7 @@ Data/fv3files/input_geos_c12.nml
 Data/fv3files/input_geos_c12_p12.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_lam_cmaq.nml
+Data/fv3files/input_lam_rrfs.nml
 Data/fv3files/inputpert_4dvar.nml
 Data/fv3files/inputpert_fsoi.nml
 )
@@ -109,6 +111,7 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_gnssro_ropp.yaml
   testinput/hofx_nomodel.yaml
   testinput/hofx_nomodel_lam_cmaq.yaml
+  testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_save_geovals.yaml
   testinput/hyb-3dvar_bc.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
@@ -212,6 +215,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_gfs_aero.ref
   testoutput/hofx_gnssro_ropp.ref
   testoutput/hofx_nomodel_lam_cmaq.ref
+  testoutput/hofx_nomodel_lam_rrfs.ref
   testoutput/hofx_nomodel_gfs.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
@@ -1421,6 +1425,11 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     MPI      6
                     ARGS     testinput/hofx_fv3-geos.yaml
                     COMMAND  fv3jedi_hofx.x )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_nomodel_lam_rrfs
+                    MPI      12
+                    ARGS     testinput/hofx_nomodel_lam_rrfs.yaml
+                    COMMAND  fv3jedi_hofx_nomodel.x )
 
 
   # Full observation hyb-3DVar for each model
