@@ -9,7 +9,6 @@
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/LocalEnsembleDA.h"
 #include "oops/runs/Run.h"
-#include "saber/oops/instantiateVariableChangeFactory.h"
 #include "ufo/instantiateObsErrorFactory.h"
 #include "ufo/instantiateObsFilterFactory.h"
 #include "ufo/instantiateObsLocFactory.h"
@@ -20,7 +19,6 @@ int main(int argc,  char ** argv) {
   ufo::instantiateObsLocFactory<fv3jedi::Traits>();
   ufo::instantiateObsErrorFactory();
   ufo::instantiateObsFilterFactory();
-  saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   fv3jedi::instantiateObsLocFactory<fv3jedi::Traits>();
   oops::LocalEnsembleDA<fv3jedi::Traits, ufo::ObsTraits> letkf;
   return run.execute(letkf);

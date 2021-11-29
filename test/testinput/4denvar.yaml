@@ -1,6 +1,6 @@
 cost function:
   cost type: 4D-Ens-Var
-  analysis variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+  analysis variables: &vars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
   window begin: 2018-04-14T21:00:00Z
   window length: PT6H
   subwindow: PT3H
@@ -38,22 +38,24 @@ cost function:
                         u_srf,v_srf,f10m]
   background error:
     covariance model: ensemble
-    ensemble:
     localization:
-      bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
-        method: loc
-        strategy: common
-        load_nicas_local: 1
-        verbosity: main
-        io_keys: [common]
-        io_values: [fixed_2500km_0.3]
-      localization method: BUMP
-      localization variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+      localization method: SABER
+      saber block:
+        saber block name: BUMP_NICAS
+        input variables: *vars
+        output variables: *vars
+        bump:
+          prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+          method: loc
+          strategy: common
+          load_nicas_local: true
+          verbosity: main
+          io_keys: [common]
+          io_values: [fixed_2500km_0.3]
     members:
     - states:
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem001/
         filename_core: 20180414.210000.fv_core.res.nc
         filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -61,7 +63,7 @@ cost function:
         filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
         filename_cplr: 20180414.210000.coupler.res
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem001/
         filename_core: 20180415.000000.fv_core.res.nc
         filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -69,7 +71,7 @@ cost function:
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem001/
         filename_core: 20180415.030000.fv_core.res.nc
         filename_trcr: 20180415.030000.fv_tracer.res.nc
@@ -78,7 +80,7 @@ cost function:
         filename_cplr: 20180415.030000.coupler.res
     - states:
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem002/
         filename_core: 20180414.210000.fv_core.res.nc
         filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -86,7 +88,7 @@ cost function:
         filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
         filename_cplr: 20180414.210000.coupler.res
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem002/
         filename_core: 20180415.000000.fv_core.res.nc
         filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -94,7 +96,7 @@ cost function:
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem002/
         filename_core: 20180415.030000.fv_core.res.nc
         filename_trcr: 20180415.030000.fv_tracer.res.nc
@@ -103,7 +105,7 @@ cost function:
         filename_cplr: 20180415.030000.coupler.res
     - states:
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem003/
         filename_core: 20180414.210000.fv_core.res.nc
         filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -111,7 +113,7 @@ cost function:
         filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
         filename_cplr: 20180414.210000.coupler.res
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem003/
         filename_core: 20180415.000000.fv_core.res.nc
         filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -119,7 +121,7 @@ cost function:
         filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.coupler.res
       - filetype: gfs
-        state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+        state variables: *vars
         datapath: Data/inputs/gfs_c12/mem003/
         filename_core: 20180415.030000.fv_core.res.nc
         filename_trcr: 20180415.030000.fv_tracer.res.nc

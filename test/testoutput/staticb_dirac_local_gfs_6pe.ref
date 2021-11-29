@@ -11,8 +11,8 @@ Input Dirac increment:
    liq_wat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    o3mr                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
-Norm of stddev at 2018-04-15T00:00:00Z: 3.321e+05
-Covariance(BUMP) * Increment: 
+Norm of stddev: 3.321e+05
+Covariance(SABER) * Increment: 
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
    ua                            : Min = -1.172e-02, Max = +1.202e-02, RMS = +8.496e-04

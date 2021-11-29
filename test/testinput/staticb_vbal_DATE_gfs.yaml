@@ -9,9 +9,7 @@ geometry:
   npz: 64
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
-active variables: [psi,chi,t,ps]
-date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+input variables: &inputVars [psi,chi,t,ps]
 background:
   filetype: gfs
   state variables: *inputVars
@@ -27,17 +25,17 @@ bump:
   prefix: vbal__YYYY__MM__DD__HH__gfs
   verbosity: main
   universe_rad: 2500.0e3
-  update_vbal_cov: 1
-  write_vbal_cov: 1
-  new_vbal: 1
-  write_vbal: 1
-  write_samp_local: 1
+  update_vbal_cov: true
+  write_vbal_cov: true
+  new_vbal: true
+  write_vbal: true
+  write_samp_local: true
   nc1: 500
   nc2: 200
   diag_draw_type: octahedral
-  vbal_block: [1,1,0,1]
+  vbal_block: [true,true,false,true]
   vbal_rad: 2000.0e3
-  vbal_pseudo_inv: 1
+  vbal_pseudo_inv: true
   vbal_pseudo_inv_var_th: 0.1
   ensemble:
     members:

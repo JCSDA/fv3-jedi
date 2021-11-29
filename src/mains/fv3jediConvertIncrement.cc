@@ -8,11 +8,9 @@
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/ConvertIncrement.h"
 #include "oops/runs/Run.h"
-#include "saber/oops/instantiateVariableChangeFactory.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   oops::ConvertIncrement<fv3jedi::Traits> cs;
   return run.execute(cs);
 }

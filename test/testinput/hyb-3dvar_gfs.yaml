@@ -30,41 +30,38 @@ cost function:
     covariance model: hybrid
     components:
     - covariance:
-        covariance model: BUMP
-        active variables: &active_vars [psi,chi,t,ps,rh,liq_wat,o3mr]
-        bump:
-          datadir: Data/staticb
-          verbosity: main
-          strategy: specific_univariate
-          load_nicas_local: 1
-          grids:
-          - prefix: nicas_3D_gfs
-            variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-          - prefix: nicas_2D_gfs
-            variables: [surface_pressure]
-        universe radius:
-          filetype: gfs
-          psinfile: true
-          datapath: Data/staticb/
-          filename_core: 20180415.000000.cor_rh.fv_core.res.nc
-          filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
-          filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.cor_rh.coupler.res
-          date: 2018-04-15T00:00:00Z
-        variable changes:
-        - variable change: StdDev
+        covariance model: SABER
+        saber blocks:
+        - saber block name: BUMP_NICAS
+          saber central block: true
           input variables: &control_vars [psi,chi,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
           output variables: *control_vars
-          active variables: *active_vars
+          active variables: &active_vars [psi,chi,t,ps,rh,liq_wat,o3mr]
           bump:
+            datadir: Data/staticb
             verbosity: main
-            universe_rad: 100.0e3
+            strategy: specific_univariate
+            load_nicas_local: true
             grids:
-            - variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-            - variables: [surface_pressure]
-          input:
-          - parameter: stddev
+            - prefix: nicas_3D_gfs
+              variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+            - prefix: nicas_2D_gfs
+              variables: [surface_pressure]
+            universe radius:
+              filetype: gfs
+              psinfile: true
+              datapath: Data/staticb/
+              filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+              filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+              filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+              filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+              filename_cplr: 20180415.000000.cor_rh.coupler.res
+              date: 2018-04-15T00:00:00Z
+        - saber block name: StdDev
+          input variables: *control_vars
+          output variables: *control_vars
+          active variables: *active_vars
+          file:
             filetype: gfs
             psinfile: true
             datapath: Data/staticb/
@@ -74,7 +71,7 @@ cost function:
             filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
             filename_cplr: 20180415.000000.stddev.coupler.res
             date: 2018-04-15T00:00:00Z
-        - variable change: StatsVariableChange
+        - saber block name: BUMP_VerticalBalance
           input variables: *control_vars
           output variables: *control_vars
           active variables: *active_vars
@@ -83,20 +80,21 @@ cost function:
             prefix: vbal_gfs
             verbosity: main
             universe_rad: 2000.0e3
-            load_vbal: 1
-            load_samp_local: 1
+            load_vbal: true
+            load_samp_local: true
             fname_samp: vbal_2018041421_gfs_sampling
-            vbal_block: [1,1,0,1]
-        - variable change: PsiChiToUV
+            vbal_block: [true, true,false, true,false,false]
+        - saber block name: BUMP_PsiChiToUV
           input variables: *control_vars
           output variables: &3dvars_with_rh [ua,va,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
-          active variables: [psi,chi]
+          active variables: [psi,chi,ua,va]
           bump:
             datadir: Data/staticb
             prefix: psichitouv_gfs
             verbosity: main
             universe_rad: 2000.0e3
-            load_wind_local: 1
+            load_wind_local: true
+        variable changes:
         - variable change: Control2Analysis
           input variables: *3dvars_with_rh
           output variables: *3dvars
@@ -186,16 +184,19 @@ cost function:
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         localization:
-          localization method: BUMP
-          localization variables: *3dvars
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
-            method: loc
-            strategy: common
-            load_nicas_global: 1
-            verbosity: main
-            io_keys: [common]
-            io_values: [fixed_2500km_0.3]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *3dvars
+            output variables: *3dvars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:

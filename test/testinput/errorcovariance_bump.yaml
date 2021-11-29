@@ -11,10 +11,10 @@ geometry:
   npz: 64
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-analysis variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+analysis variables: &vars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
 background:
   filetype: gfs
-  state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+  state variables: *vars
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -22,20 +22,24 @@ background:
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
 background error:
-  covariance model: BUMP
-  date: 2018-04-14T21:00:00Z
-  bump:
-    method: cor
-    strategy: specific_univariate
-    universe_rad: 2500.0e3
-    load_nicas_local: 1
-    verbosity: main
-    grids:
-    - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
-      variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
-      io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
-      io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
-    - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_gfs
-      variables: [surface_pressure]
-      io_keys: [surface_pressure-surface_pressure]
-      io_values: [fixed_2500km]
+  covariance model: SABER
+  saber blocks:
+  - saber block name: BUMP_NICAS
+    saber central block: true
+    input variables: *vars
+    output variables: *vars
+    bump:
+      method: cor
+      strategy: specific_univariate
+      universe_rad: 2500.0e3
+      load_nicas_local: true
+      verbosity: main
+      grids:
+      - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+        variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+        io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+        io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+      - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_gfs
+        variables: [surface_pressure]
+        io_keys: [surface_pressure-surface_pressure]
+        io_values: [fixed_2500km]

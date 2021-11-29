@@ -10,7 +10,6 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
-date: 2018-04-15T00:00:00Z
 background:
   filetype: gfs
   state variables: *inputVars
@@ -27,11 +26,11 @@ bump:
   universe_rad: 5000.0e3
   method: cor
   strategy: specific_univariate
-  load_mom: 1
-  new_hdiag: 1
-  write_hdiag: 1
+  load_mom: true
+  new_hdiag: true
+  write_hdiag: true
   ens1_nsub: 3
-  load_samp_local: 1
+  load_samp_local: true
   nc3: 10
   dc: 500.0e3
   nl0r: 15
@@ -52,25 +51,25 @@ bump:
     - var-mom_2D_2018041421_gfs_mom
     - var-mom_2D_2018041500_gfs_mom
     - var-mom_2D_2018041503_gfs_mom
-output:
-- parameter: cor_rh
-  filetype: gfs
-  datapath: Data/staticb/
-  filename_core: cor_rh.fv_core.res.nc
-  filename_trcr: cor_rh.fv_tracer.res.nc
-  filename_sfcd: cor_rh.sfc_data.nc
-  filename_sfcw: cor_rh.fv_srf_wnd.res.nc
-  filename_cplr: cor_rh.coupler.res
-  date: 2018-04-15T00:00:00Z
-- parameter: cor_rv
-  filetype: gfs
-  datapath: Data/staticb/
-  filename_core: cor_rv.fv_core.res.nc
-  filename_trcr: cor_rv.fv_tracer.res.nc
-  filename_sfcd: cor_rv.sfc_data.nc
-  filename_sfcw: cor_rv.fv_srf_wnd.res.nc
-  filename_cplr: cor_rv.coupler.res
-  date: 2018-04-15T00:00:00Z
+  output:
+  - parameter: cor_rh
+    filetype: gfs
+    datapath: Data/staticb/
+    filename_core: cor_rh.fv_core.res.nc
+    filename_trcr: cor_rh.fv_tracer.res.nc
+    filename_sfcd: cor_rh.sfc_data.nc
+    filename_sfcw: cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: cor_rh.coupler.res
+    date: 2018-04-15T00:00:00Z
+  - parameter: cor_rv
+    filetype: gfs
+    datapath: Data/staticb/
+    filename_core: cor_rv.fv_core.res.nc
+    filename_trcr: cor_rv.fv_tracer.res.nc
+    filename_sfcd: cor_rv.sfc_data.nc
+    filename_sfcw: cor_rv.fv_srf_wnd.res.nc
+    filename_cplr: cor_rv.coupler.res
+    date: 2018-04-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_cor_gfs.ref

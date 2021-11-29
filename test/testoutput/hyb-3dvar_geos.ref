@@ -31,7 +31,7 @@ CostFunction::addIncrement: Analysis:
    va                            : Min = -5.619865e+01, Max = +6.495247e+01, RMS = +8.579122e+00
    t                             : Min = +1.852996e+02, Max = +3.081416e+02, RMS = +2.471427e+02
    ps                            : Min = +5.448240e+04, Max = +1.037373e+05, RMS = +9.900788e+04
-   q                             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.017604e-03
+   q                             : Min = +0.000000e+00, Max = +1.948509e-02, RMS = +4.017605e-03
    qi                            : Min = +0.000000e+00, Max = +2.853714e-04, RMS = +5.411697e-06
    ql                            : Min = +0.000000e+00, Max = +7.432870e-04, RMS = +2.465358e-05
    qr                            : Min = +0.000000e+00, Max = +4.188229e-03, RMS = +6.301762e-05
@@ -51,7 +51,32 @@ CostFunction::addIncrement: Analysis:
    u10m                          : Min = -1.541011e+01, Max = +2.004475e+01, RMS = +5.677292e+00
    v10m                          : Min = -1.646713e+01, Max = +1.457106e+01, RMS = +4.830783e+00
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 7.85798e-05
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CostJb   : Nonlinear Jb = 3.95271e-07
 CostJo   : Nonlinear Jo(Aircraft) = 3027.55, nobs = 1430, Jo/n = 2.11717, err = 2.67875
 CostJo   : Nonlinear Jo(Radiosonde) = 2149.72, nobs = 1125, Jo/n = 1.91086, err = 2.05967
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 269.935, nobs = 148, Jo/n = 1.82389, err = 0.000298811
@@ -104,12 +129,37 @@ CostFunction::addIncrement: Analysis:
    u10m                          : Min = -1.541011e+01, Max = +2.004475e+01, RMS = +5.677292e+00
    v10m                          : Min = -1.646713e+01, Max = +1.457106e+01, RMS = +4.830783e+00
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 8.48735e-05
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CostJb   : Nonlinear Jb = 3.87104e-07
 CostJo   : Nonlinear Jo(Aircraft) = 3027.55, nobs = 1430, Jo/n = 2.11717, err = 2.67875
 CostJo   : Nonlinear Jo(Radiosonde) = 2149.72, nobs = 1125, Jo/n = 1.91086, err = 2.05967
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 205.029, nobs = 148, Jo/n = 1.38533, err = 0.000298811
 CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 700.442, nobs = 645, Jo/n = 1.08596, err = 1.27194
-CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 422.08, nobs = 585, Jo/n = 0.721503, err = 1.32338
+CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 422.079, nobs = 585, Jo/n = 0.721503, err = 1.32338
 CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 386.39, nobs = 705, Jo/n = 0.548072, err = 0.745452
 CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 510.436, nobs = 456, Jo/n = 1.11938, err = 1.48971
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 686.28, nobs = 632, Jo/n = 1.08589, err = 1.2837

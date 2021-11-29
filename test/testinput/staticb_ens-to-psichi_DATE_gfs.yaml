@@ -20,7 +20,7 @@ output geometry:
 
 variable changes:
   - variable change: Control2Analysis
-    input variables: [psi,chi,t,ps,rh,liq_wat,o3mr]
+    input variables: [psi,chi,t,ps,rh,liq_wat,ice_wat,o3mr]
     output variables: &outputvars [ua,va,t,delp,sphum,liq_wat,ice_wat,o3mr]
     do inverse: true
     femps_iterations: 60
@@ -211,4 +211,4 @@ states:
 
 test:
   reference filename: testoutput/staticb_ens-to-psichi__YYYY__MM__DD__HH__gfs.ref
-  test output filename: testoutput/staticb_ens-to_psichi__YYYY__MM__DD__HH__gfs.test.out
+  test output filename: testoutput/staticb_ens-to-psichi__YYYY__MM__DD__HH__gfs.test.out

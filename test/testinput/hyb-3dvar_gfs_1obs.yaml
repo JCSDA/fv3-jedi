@@ -29,15 +29,19 @@ cost function:
     covariance model: hybrid
     components:
     - covariance:
-        covariance model: BUMP
-        bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
-          method: cor
-          strategy: specific_univariate
-          load_nicas_local: 1
-          verbosity: main
-          io_keys: [ua-ua,va-va,T-T,DELP-DELP,sphum-sphum,ice_wat-ice_wat,liq_wat-liq_wat,o3mr-o3mr]
-          io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+        covariance model: SABER
+        - saber block name: BUMP_NICAS
+          saber central block: true
+          input variables: *3dvars
+          output variables: *3dvars
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+            method: cor
+            strategy: specific_univariate
+            load_nicas_local: true
+            verbosity: main
+            io_keys: [ua-ua,va-va,T-T,DELP-DELP,sphum-sphum,ice_wat-ice_wat,liq_wat-liq_wat,o3mr-o3mr]
+            io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
       weight:
         value: 0.1
     - covariance:
@@ -124,16 +128,19 @@ cost function:
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         localization:
-          localization variables: *3dvars
-          localization method: BUMP
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
-            method: loc
-            strategy: common
-            load_nicas_local: 1
-            verbosity: main
-            io_keys: [common]
-            io_values: [fixed_2500km_0.3]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *3dvars
+            output variables: *3dvars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:

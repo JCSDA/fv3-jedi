@@ -9,7 +9,6 @@ geometry:
     - fieldset: Data/fieldsets/lam_cmaq.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 input variables: [no2]
-date: 2020-09-03T18:00:00Z
 background:
   filetype: gfs
   datapath: Data/inputs/lam_cmaq/bkg/
@@ -24,35 +23,35 @@ bump:
   verbosity: main
   universe_rad: 2500.0e3
   strategy: specific_univariate
-  new_nicas: 1
-  write_nicas_local: 1
+  new_nicas: true
+  write_nicas_local: true
   resol: 6
-  forced_radii: 1
+  forced_radii: true
   rh:
     no2: [2500000.0]
   rv:
     no2: [0.3]
   io_keys: [no2-no2]
   io_values: [fixed_2500km_0.3]
-output:
-- parameter: cor_rh
-  filetype: gfs
-  datapath: Data/bump/
-  filename_core: bumpparameters_nicas_lam_cmaq.cor_rh.fv_core.res.nc
-  filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rh.fv_tracer.res.nc
-  filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rh.sfc_data.nc
-  filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rh.fv_srf_wnd.res.nc
-  filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rh.coupler.res
-  date: 2020-09-03T18:00:00Z
-- parameter: cor_rv
-  filetype: gfs
-  datapath: Data/bump/
-  filename_core: bumpparameters_nicas_lam_cmaq.cor_rv.fv_core.res.nc
-  filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rv.fv_tracer.res.nc
-  filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rv.sfc_data.nc
-  filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rv.fv_srf_wnd.res.nc
-  filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rv.coupler.res
-  date: 2020-09-03T18:00:00Z
+  output:
+  - parameter: cor_rh
+    filetype: gfs
+    datapath: Data/bump/
+    filename_core: bumpparameters_nicas_lam_cmaq.cor_rh.fv_core.res.nc
+    filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rh.fv_tracer.res.nc
+    filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rh.sfc_data.nc
+    filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rh.coupler.res
+    date: 2020-09-03T18:00:00Z
+  - parameter: cor_rv
+    filetype: gfs
+    datapath: Data/bump/
+    filename_core: bumpparameters_nicas_lam_cmaq.cor_rv.fv_core.res.nc
+    filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rv.fv_tracer.res.nc
+    filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rv.sfc_data.nc
+    filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rv.fv_srf_wnd.res.nc
+    filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rv.coupler.res
+    date: 2020-09-03T18:00:00Z
 
 test:
   reference filename: testoutput/bumpparameters_nicas_lam_cmaq.ref

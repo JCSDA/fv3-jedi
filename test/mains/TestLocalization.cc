@@ -7,12 +7,12 @@
 
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/Run.h"
-#include "saber/oops/instantiateLocalizationFactory.h"
+#include "saber/oops/instantiateCovarFactory.h"
 #include "test/interface/Localization.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  saber::instantiateLocalizationFactory<fv3jedi::Traits>();
+  saber::instantiateCovarFactory<fv3jedi::Traits>();
   test::Localization<fv3jedi::Traits> tests;
   return run.execute(tests);
 }

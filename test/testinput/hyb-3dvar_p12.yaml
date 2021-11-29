@@ -30,15 +30,20 @@ cost function:
     covariance model: hybrid
     components:
     - covariance:
-        covariance model: BUMP
-        bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
-          method: cor
-          strategy: specific_univariate
-          load_nicas_local: 1
-          verbosity: main
-          io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,air_pressure_thickness-air_pressure_thickness,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
-          io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+        covariance model: SABER
+        saber blocks:
+        - saber block name: BUMP_NICAS
+          saber central block: true
+          input variables: *3dvars
+          output variables: *3dvars
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
+            method: cor
+            strategy: specific_univariate
+            load_nicas_local: true
+            verbosity: main
+            io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,air_pressure_thickness-air_pressure_thickness,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+            io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
       weight:
         value: 0.1
     - covariance:
@@ -125,31 +130,60 @@ cost function:
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         localization:
-          localization method: BUMP
-          localization variables: *3dvars
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
-            method: loc
-            strategy: common
-            load_nicas_local: 1
-            verbosity: main
-            io_keys: [common]
-            io_values: [fixed_2500km_0.3]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *3dvars
+            output variables: *3dvars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:
   - obs space:
+      # The input file does not contain a variable called 'air_temperature', but contains one
+      # called 'renamed_air_temperature'. We use filters to copy renamed_air_temperature@ObsValue
+      # to air_temperature@DerivedObsValue and renamed_air_temperature@ObsError to
+      # air_temperature@ObsError. In this way we verify derived variables can be assimilated.
       name: Aircraft
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m_renamed_var.nc4
       obsdataout:
         obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2018041500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
+      simulated variables: [eastward_wind, northward_wind]
+      derived simulated variables: [air_temperature]
     obs operator:
       name: VertInterp
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
+    # Create a derived variable
+    - filter: Variable Assignment
+      assignments:
+      - name: air_temperature@DerivedObsValue
+        type: float
+        source variable:
+          name: renamed_air_temperature@ObsValue
+    # Populate its ObsError estimates (filled with missing values up to now)
+    - filter: Perform Action
+      filter variables: [air_temperature]
+      action:
+        name: assign error
+        error function:
+          name: renamed_air_temperature@ObsError
+    # Populate its PreQC flags
+    - filter: Variable Assignment
+      assignments:
+      - name: air_temperature@PreQC
+        type: int
+        source variable:
+          name: renamed_air_temperature@PreQC
     - filter: PreQC
       maxvalue: 3
     - filter: Background Check
@@ -171,7 +205,7 @@ cost function:
         compress: 1
         super_ref_qc: NBAM
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: Domain Check
       filter variables:
@@ -202,7 +236,7 @@ cost function:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: Bounds Check
       filter variables:
@@ -226,12 +260,11 @@ cost function:
     linear obs operator:
       name: Identity
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: Background Check
       threshold: 1000
-  - monitoring only: true
-    obs space:
+  - obs space:
       name: Radiosonde
       obsdatain:
         obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
@@ -239,7 +272,7 @@ cost function:
     obs operator:
       name: VertInterp
     obs error:
-      covariance model: diagonal
+      covariance model: diagonal ufo
     obs filters:
     - filter: PreQC
       maxvalue: 3
@@ -249,6 +282,7 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
+    monitoring only: true
 variational:
   minimizer:
     algorithm: DRIPCG
@@ -267,6 +301,16 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        filetype: gfs
+        datapath: Data/analysis
+        filename_core: iter1.hyb-3dvar.c24.fv_core.res.nc
+        filename_trcr: iter1.hyb-3dvar.c24.fv_tracer.res.nc
+        filename_sfcd: iter1.hyb-3dvar.c24.sfc_data.nc
+        filename_sfcw: iter1.hyb-3dvar.c24.fv_srf_wnd.res.nc
+        filename_cplr: iter1.hyb-3dvar.c24.coupler.res
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -281,20 +325,31 @@ variational:
       - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        filetype: gfs
+        datapath: Data/analysis
+        filename_core: iter2.hyb-3dvar.c24.fv_core.res.nc
+        filename_trcr: iter2.hyb-3dvar.c24.fv_tracer.res.nc
+        filename_sfcd: iter2.hyb-3dvar.c24.sfc_data.nc
+        filename_sfcw: iter2.hyb-3dvar.c24.fv_srf_wnd.res.nc
+        filename_cplr: iter2.hyb-3dvar.c24.coupler.res
 final:
   diagnostics:
     departures: oman
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar_p12.c24.fv_core.res.nc
-  filename_trcr: hyb-3dvar_p12.c24.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar_p12.c24.sfc_data.nc
-  filename_sfcw: hyb-3dvar_p12.c24.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar_p12.c24.coupler.res
+  filename_core: hyb-3dvar.c24.fv_core.res.nc
+  filename_trcr: hyb-3dvar.c24.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar.c24.sfc_data.nc
+  filename_sfcw: hyb-3dvar.c24.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar.c24.coupler.res
   first: PT0H
   frequency: PT1H
 
 test:
-  reference filename: testoutput/hyb-3dvar.test.out
-  test output filename: testoutput/hyb-3dvar.test.out
+  reference filename: testoutput/hyb-3dvar.ref
+  float relative tolerance: 1.0e-1
+  test output filename: testoutput/hyb-3dvar_p12.test.out

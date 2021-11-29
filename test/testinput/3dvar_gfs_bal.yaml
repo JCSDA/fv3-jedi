@@ -9,26 +9,29 @@ cost function:
     filename_cplr: 20180415.000000.c24.coupler.res
     state variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   background error:
-    date: 2018-04-15T00:00:00Z
-    covariance model: BUMP
-    bump:
-      method: cor
-      strategy: specific_univariate
-      load_nicas_local: 1
-      verbosity: main
-      grids:
-      - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
-        variables: [psi,chi,tv,rh,ice_wat,liq_wat,o3mr]
-        io_keys: [psi-psi,chi-chi,tv-tv,rh-rh,ice_wat-ice_wat,liq_wat-liq_wat,o3mr-o3mr]
-        io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
-      - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_gfs
-        variables: [surface_pressure]
-        io_keys: [ps-ps]
-        io_values: [fixed_2500km]
+    covariance model: SABER
+    - saber block name: BUMP_NICAS
+      saber central block: true
+      input variables: &control_vars [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+      output variables: *control_vars
+      bump:
+        method: cor
+        strategy: specific_univariate
+        load_nicas_local: true
+        verbosity: main
+        grids:
+        - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+          variables: [psi,chi,tv,rh,ice_wat,liq_wat,o3mr]
+          io_keys: [psi-psi,chi-chi,tv-tv,rh-rh,ice_wat-ice_wat,liq_wat-liq_wat,o3mr-o3mr]
+          io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
+        - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_gfs
+          variables: [surface_pressure]
+          io_keys: [ps-ps]
+          io_values: [fixed_2500km]
     variable changes:
     - variable change: NMCBalance
       input variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
-      output variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+      output variables: *control_vars
       layoutx: 3
       layouty: 2
       path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc

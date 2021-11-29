@@ -73,16 +73,19 @@ cost function:
             datapath: Data/inputs/geos_c12
             filename_bkgd: geos.mem010.20180415_000000z.nc4
         localization:
-          localization variables: *3dvars
-          localization method: ID
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-            method: loc
-            strategy: common
-            load_nicas_local: 1
-            verbosity: main
-            io_keys: [common]
-            io_values: [fixed_2500km_0.3]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *3dvars
+            output variables: *3dvars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_2500km_0.3]
       weight:
         value: 0.9
   observations:

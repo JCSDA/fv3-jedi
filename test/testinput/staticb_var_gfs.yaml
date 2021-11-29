@@ -10,7 +10,6 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
-date: 2018-04-15T00:00:00Z
 background:
   filetype: gfs
   state variables: *inputVars
@@ -28,7 +27,7 @@ bump:
   method: cor
   strategy: specific_univariate
   ens1_nsub: 3
-  var_filter: 1
+  var_filter: true
   var_niter: 1
   var_rhflt:
     stream_function: [3000.0e3]
@@ -44,83 +43,82 @@ bump:
     variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   - prefix: var_2D_gfs
     variables: [surface_pressure]
-input:
-- parameter: var
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180414.210000.var.fv_core.res.nc
-  filename_trcr: 20180414.210000.var.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.var.sfc_data.nc
-  filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.var.coupler.res
-  date: 2018-04-14T21:00:00Z
-- parameter: m4
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180414.210000.m4.fv_core.res.nc
-  filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.m4.sfc_data.nc
-  filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.m4.coupler.res
-  date: 2018-04-14T21:00:00Z
-- parameter: var
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180415.000000.var.fv_core.res.nc
-  filename_trcr: 20180415.000000.var.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.var.sfc_data.nc
-  filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.var.coupler.res
-  date: 2018-04-15T00:00:00Z
-- parameter: m4
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180415.000000.m4.fv_core.res.nc
-  filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.m4.sfc_data.nc
-  filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.m4.coupler.res
-  date: 2018-04-15T00:00:00Z
-- parameter: var
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180415.030000.var.fv_core.res.nc
-  filename_trcr: 20180415.030000.var.fv_tracer.res.nc
-  filename_sfcd: 20180415.030000.var.sfc_data.nc
-  filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.030000.var.coupler.res
-  date: 2018-04-15T03:00:00Z
-- parameter: m4
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180415.030000.m4.fv_core.res.nc
-  filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
-  filename_sfcd: 20180415.030000.m4.sfc_data.nc
-  filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.030000.m4.coupler.res
-  date: 2018-04-15T03:00:00Z
-output:
-- parameter: stddev
-  filetype: gfs
-  datapath: Data/staticb/
-  filename_core: stddev.fv_core.res.nc
-  filename_trcr: stddev.fv_tracer.res.nc
-  filename_sfcd: stddev.sfc_data.nc
-  filename_sfcw: stddev.fv_srf_wnd.res.nc
-  filename_cplr: stddev.coupler.res
-  date: 2018-04-15T00:00:00Z
-- parameter: stddev
-  filetype: geos
-  datapath: Data/staticb/
-  filename_bkgd: stddev.nc4
-  date: 2018-04-15T00:00:00Z
-
+  input:
+  - parameter: var
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180414.210000.var.fv_core.res.nc
+    filename_trcr: 20180414.210000.var.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.var.sfc_data.nc
+    filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.var.coupler.res
+    date: 2018-04-14T21:00:00Z
+  - parameter: m4
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180414.210000.m4.fv_core.res.nc
+    filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.m4.sfc_data.nc
+    filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.m4.coupler.res
+    date: 2018-04-14T21:00:00Z
+  - parameter: var
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180415.000000.var.fv_core.res.nc
+    filename_trcr: 20180415.000000.var.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.var.sfc_data.nc
+    filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.var.coupler.res
+    date: 2018-04-15T00:00:00Z
+  - parameter: m4
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180415.000000.m4.fv_core.res.nc
+    filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.m4.sfc_data.nc
+    filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.m4.coupler.res
+    date: 2018-04-15T00:00:00Z
+  - parameter: var
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180415.030000.var.fv_core.res.nc
+    filename_trcr: 20180415.030000.var.fv_tracer.res.nc
+    filename_sfcd: 20180415.030000.var.sfc_data.nc
+    filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.030000.var.coupler.res
+    date: 2018-04-15T03:00:00Z
+  - parameter: m4
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180415.030000.m4.fv_core.res.nc
+    filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
+    filename_sfcd: 20180415.030000.m4.sfc_data.nc
+    filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.030000.m4.coupler.res
+    date: 2018-04-15T03:00:00Z
+  output:
+  - parameter: stddev
+    filetype: gfs
+    datapath: Data/staticb/
+    filename_core: stddev.fv_core.res.nc
+    filename_trcr: stddev.fv_tracer.res.nc
+    filename_sfcd: stddev.sfc_data.nc
+    filename_sfcw: stddev.fv_srf_wnd.res.nc
+    filename_cplr: stddev.coupler.res
+    date: 2018-04-15T00:00:00Z
+  - parameter: stddev
+    filetype: geos
+    datapath: Data/staticb/
+    filename_bkgd: stddev.nc4
+    date: 2018-04-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_var_gfs.ref

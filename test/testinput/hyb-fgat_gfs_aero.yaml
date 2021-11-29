@@ -53,16 +53,19 @@ cost function:
           filename_trcr: 20180414.210000.fv_tracer.res.nc
           filename_cplr: 20180414.210000.coupler.res
         localization:
-          localization variables: *aerovars
-          localization method: BUMP
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
-            method: loc
-            strategy: common
-            load_nicas_local: 1
-            verbosity: main
-            io_keys: [common]
-            io_values: [fixed_3000km_0.2]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *aerovars
+            output variables: *aerovars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_3000km_0.2]
       weight:
         value: 0.9
   observations:

@@ -9,7 +9,6 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
-date: 2018-04-15T00:00:00Z
 background:
   filetype: gfs
   state variables: *inputVars
@@ -24,34 +23,34 @@ bump:
   datadir: Data/staticb
   verbosity: main
   strategy: specific_univariate
-  load_nicas_global: 1
-  write_nicas_local: 1
+  load_nicas_global: true
+  write_nicas_local: true
   grids:
   - prefix: nicas_3D_gfs
     variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   - prefix: nicas_2D_gfs
     variables: [surface_pressure]
-input:
-- parameter: nicas_norm
-  filetype: gfs
-  datapath: Data/staticb/
-  psinfile: true
-  filename_core: 20180415.000000.nicas_norm.fv_core.res.nc
-  filename_trcr: 20180415.000000.nicas_norm.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.nicas_norm.sfc_data.nc
-  filename_sfcw: 20180415.000000.nicas_norm.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.nicas_norm.coupler.res
-  date: 2018-04-15T00:00:00Z
-universe radius:
-  filetype: gfs
-  psinfile: true
-  datapath: Data/staticb/
-  filename_core: 20180415.000000.cor_rh.fv_core.res.nc
-  filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
-  filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.cor_rh.coupler.res
-  date: 2018-04-15T00:00:00Z
+  input:
+  - parameter: nicas_norm
+    filetype: gfs
+    datapath: Data/staticb/
+    psinfile: true
+    filename_core: 20180415.000000.nicas_norm.fv_core.res.nc
+    filename_trcr: 20180415.000000.nicas_norm.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.nicas_norm.sfc_data.nc
+    filename_sfcw: 20180415.000000.nicas_norm.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.nicas_norm.coupler.res
+    date: 2018-04-15T00:00:00Z
+  universe radius:
+    filetype: gfs
+    psinfile: true
+    datapath: Data/staticb/
+    filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+    filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+    filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.cor_rh.coupler.res
+    date: 2018-04-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_split_nicas_gfs.ref

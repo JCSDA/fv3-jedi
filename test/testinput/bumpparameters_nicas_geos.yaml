@@ -9,7 +9,6 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: [t,ps]
-date: 2018-04-14T21:00:00Z
 background:
   filetype: geos
   datapath: Data/inputs/geos_c12
@@ -20,10 +19,10 @@ bump:
   verbosity: main
   universe_rad: 2500.0e3
   strategy: specific_univariate
-  new_nicas: 1
-  write_nicas_local: 1
+  new_nicas: true
+  write_nicas_local: true
   resol: 6
-  forced_radii: 1
+  forced_radii: true
   grids:
   - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
     variables: [air_temperature]
@@ -49,22 +48,17 @@ bump:
       surface_pressure: [0.0]
     io_keys: [surface_pressure-surface_pressure]
     io_values: [fixed_2500km]
-output:
-#- parameter: stddev
-#  filetype: geos
-#  datapath: Data/bump/
-#  filename_bkgd: bumpparameters_nicas_geos.stddev.%yyyy%mm%dd_%hh%MM%ssz.nc4
-#  date: 2018-04-14T21:00:00Z
-- parameter: cor_rh
-  filetype: geos
-  datapath: Data/bump/
-  filename_bkgd: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  date: 2018-04-14T21:00:00Z
-- parameter: cor_rv
-  filetype: geos
-  datapath: Data/bump/
-  filename_bkgd: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  date: 2018-04-14T21:00:00Z
+  output:
+  - parameter: cor_rh
+    filetype: geos
+    datapath: Data/bump/
+    filename_bkgd: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    date: 2018-04-14T21:00:00Z
+  - parameter: cor_rv
+    filetype: geos
+    datapath: Data/bump/
+    filename_bkgd: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    date: 2018-04-14T21:00:00Z
 
 test:
   reference filename: testoutput/bumpparameters_nicas_geos.ref

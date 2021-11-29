@@ -9,16 +9,20 @@ cost function:
     covariance model: hybrid
     components:
     - covariance:
-        covariance model: ID
-        date: 2018-04-15T00:00:00Z
+        covariance model: SABER
+        saber blocks:
+        - saber block name: ID
+          saber central block: true
+          input variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
+                                      SS001, SS002, SS003, SS004, SS005,
+                                      BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
+                                      NO3AN1, NO3AN2, NO3AN3, SO4 ]
+          output variables: *aerovars
       weight:
         value: 0.01
     - covariance:
         covariance model: ensemble
-        state variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
-                                    SS001, SS002, SS003, SS004, SS005,
-                                    BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
-                                    NO3AN1, NO3AN2, NO3AN3, SO4 ]
+        state variables: *aerovars
         members:
           - filetype: geos
             state variables: *aerovars
@@ -41,17 +45,19 @@ cost function:
             datapath: Data/inputs/geos_c12/
             filename_bkgd: geos.aero.bkg.20180415_000000z.mem005.nc4
         localization:
-          localization method: BUMP
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-            method: loc
-            strategy: common
-            load_nicas_local: 1
-            mpicom: 2
-            verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_2500km_0.3"]
-          localization variables: *aerovars
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *aerovars
+            output variables: *aerovars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: ["common"]
+              io_values: ["fixed_2500km_0.3"]
       weight:
         value: 0.99
   observations:

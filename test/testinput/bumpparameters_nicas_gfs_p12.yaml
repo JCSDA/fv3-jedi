@@ -10,7 +10,6 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: [T,ps]
-date: 2018-04-14T21:00:00Z
 background:
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
@@ -24,11 +23,10 @@ bump:
   verbosity: main
   universe_rad: 2500.0e3
   strategy: specific_univariate
-  new_nicas: 1
-  write_nicas_local: 1
-  write_nicas_global: 1
+  new_nicas: true
+  write_nicas_local: true
   resol: 6
-  forced_radii: 1
+  forced_radii: true
   grids:
   - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
     variables: [air_temperature]
@@ -46,34 +44,25 @@ bump:
       surface_pressure: [0.0]
     io_keys: [surface_pressure-surface_pressure]
     io_values: [fixed_2500km]
-output:
-#- parameter: stddev
-#  filetype: gfs
-#  datapath: Data/bump/
-#  filename_core: bumpparameters_nicas_gfs_p12.stddev.fv_core.res.nc
-#  filename_trcr: bumpparameters_nicas_gfs_p12.stddev.fv_tracer.res.nc
-#  filename_sfcd: bumpparameters_nicas_gfs_p12.stddev.sfc_data.nc
-#  filename_sfcw: bumpparameters_nicas_gfs_p12.stddev.fv_srf_wnd.res.nc
-#  filename_cplr: bumpparameters_nicas_gfs_p12.stddev.coupler.res
-#  date: 2018-04-14T21:00:00Z
-- parameter: cor_rh
-  filetype: gfs
-  datapath: Data/bump/
-  filename_core: bumpparameters_nicas_gfs_p12.cor_rh.fv_core.res.nc
-  filename_trcr: bumpparameters_nicas_gfs_p12.cor_rh.fv_tracer.res.nc
-  filename_sfcd: bumpparameters_nicas_gfs_p12.cor_rh.sfc_data.nc
-  filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rh.fv_srf_wnd.res.nc
-  filename_cplr: bumpparameters_nicas_gfs_p12.cor_rh.coupler.res
-  date: 2018-04-14T21:00:00Z
-- parameter: cor_rv
-  filetype: gfs
-  datapath: Data/bump/
-  filename_core: bumpparameters_nicas_gfs_p12.cor_rv.fv_core.res.nc
-  filename_trcr: bumpparameters_nicas_gfs_p12.cor_rv.fv_tracer.res.nc
-  filename_sfcd: bumpparameters_nicas_gfs_p12.cor_rv.sfc_data.nc
-  filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rv.fv_srf_wnd.res.nc
-  filename_cplr: bumpparameters_nicas_gfs_p12.cor_rv.coupler.res
-  date: 2018-04-14T21:00:00Z
+  output:
+  - parameter: cor_rh
+    filetype: gfs
+    datapath: Data/bump/
+    filename_core: bumpparameters_nicas_gfs_p12.cor_rh.fv_core.res.nc
+    filename_trcr: bumpparameters_nicas_gfs_p12.cor_rh.fv_tracer.res.nc
+    filename_sfcd: bumpparameters_nicas_gfs_p12.cor_rh.sfc_data.nc
+    filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: bumpparameters_nicas_gfs_p12.cor_rh.coupler.res
+    date: 2018-04-14T21:00:00Z
+  - parameter: cor_rv
+    filetype: gfs
+    datapath: Data/bump/
+    filename_core: bumpparameters_nicas_gfs_p12.cor_rv.fv_core.res.nc
+    filename_trcr: bumpparameters_nicas_gfs_p12.cor_rv.fv_tracer.res.nc
+    filename_sfcd: bumpparameters_nicas_gfs_p12.cor_rv.sfc_data.nc
+    filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rv.fv_srf_wnd.res.nc
+    filename_cplr: bumpparameters_nicas_gfs_p12.cor_rv.coupler.res
+    date: 2018-04-14T21:00:00Z
 
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs.ref

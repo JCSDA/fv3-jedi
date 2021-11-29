@@ -1,19 +1,4 @@
 linear variable change tests:
-- variable change: StatsVariableChange
-  tolerance inverse: 1.0e-12
-  bump:
-    check_vbal: 0
-    nc1: 1000
-    nc2: 100
-    new_vbal: 0
-    prefix: statsvariablechange_geos
-    sam_read: 1
-    strategy: common
-    vbal_block: [0,0,0,0,0,0,0,0,0]
-    vbal_rad: 3000.0e3
-    verbosity: none
-  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-  output variables: [psi,chi,tv,ps,rh,qi,ql,o3]
 - variable change: Control2Analysis
   tolerance inverse: 1000
   testinverse: 1

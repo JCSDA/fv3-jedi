@@ -455,19 +455,24 @@ do jvar = 1,vars%nvars()
   call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
-  ! Variable dimension
-  npz = field%npz
-  if (npz==1) npz = 0
+  ! Create the field in the fieldset if it doesn't already exists
+  if (.not.afieldset%has_field(field%long_name)) then
 
-  ! Create Atlas field
-  afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
-                                             levels=npz )
+    ! Variable dimension
+    npz = field%npz
+    if (npz==1) npz = 0
 
-  ! Add to fieldsets
-  call afieldset%add(afield)
+    ! Create Atlas field
+    afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
+                                               levels=npz )
 
-  ! Release pointer
-  call afield%final()
+    ! Add to fieldsets
+    call afieldset%add(afield)
+
+    ! Release pointer
+    call afield%final()
+
+  endif
 
 enddo
 

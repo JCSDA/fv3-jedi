@@ -23,16 +23,21 @@ cost function:
     filename_cplr: 20200903.180000.coupler.res
     state variables: [u,v,T,DELP,ps,sphum,phis,no2]
   background error:
-    covariance model: BUMP
-    date: 2020-09-03T18:00:00Z
-    bump:
-      prefix: Data/bump/fv3jedi_bumpparameters_nicas_lam_cmaq
-      method: cor
-      strategy: specific_univariate
-      load_nicas_local: 1
-      verbosity: main
-      io_keys: [no2-no2]
-      io_values: [fixed_2500km_0.3]
+    covariance model: SABER
+    saber blocks:
+    - saber block name: BUMP_NICAS
+      saber central block: true
+      iterative inverse: true
+      input variables: [no2]
+      output variables: [no2]
+      bump:
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_lam_cmaq
+        method: cor
+        strategy: specific_univariate
+        load_nicas_local: true
+        verbosity: main
+        io_keys: [no2-no2]
+        io_values: [fixed_2500km_0.3]
   observations:
   - obs space:
       name: NO2

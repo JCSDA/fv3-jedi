@@ -10,7 +10,6 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
-date: 2018-04-15T00:00:00Z
 background:
   filetype: gfs
   state variables: *inputVars
@@ -26,8 +25,8 @@ bump:
   prefix: psichitouv_gfs
   verbosity: main
   universe_rad: 2000.0e3
-  new_wind: 1
-  write_wind_local: 1
+  new_wind: true
+  write_wind_local: true
   wind_nlon: 100
   wind_nlat: 50
   wind_nsg: 5

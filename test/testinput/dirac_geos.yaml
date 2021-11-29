@@ -12,42 +12,45 @@ initial condition:
   filetype: geos
   datapath: Data/inputs/geos_c12
   filename_bkgd: geos.bkg.20180414_210000z.nc4
-  state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+  state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: ensemble
   date: 2018-04-14T21:00:00Z
   localization:
-    localization variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
-    localization method: BUMP
-    bump:
-      prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-      method: loc
-      strategy: common
-      load_nicas_local: 1
-      verbosity: main
-      io_keys: [common]
-      io_values: [fixed_2500km_0.3]
+    localization method: SABER
+    saber block:
+      saber block name: BUMP_NICAS
+      input variables: *vars
+      output variables: *vars
+      bump:
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+        method: loc
+        strategy: common
+        load_nicas_local: true
+        verbosity: main
+        io_keys: [common]
+        io_values: [fixed_2500km_0.3]
   members:
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem001.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+      state variables: *vars
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem002.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+      state variables: *vars
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem003.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+      state variables: *vars
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem004.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+      state variables: *vars
     - filetype: geos
       datapath: Data/inputs/geos_c12
       filename_bkgd: geos.mem005.20180414_210000z.nc4
-      state variables: [ua,va,t,ps,q,qi,ql,o3ppmv]
+      state variables: *vars
 output dirac:
   filetype: geos
   datapath: Data/bump/
@@ -59,6 +62,7 @@ dirac:
   ildir: [50]
   itdir: [1]
   ifdir: [t]
+
 
 test:
   reference filename: testoutput/dirac_geos.ref

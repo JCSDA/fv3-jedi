@@ -13,17 +13,21 @@ cost function:
     covariance model: hybrid
     components:
     - covariance:
-        covariance model: ID
-        date: 2018-04-15T00:00:00Z
+        covariance model: SABER
+        saber blocks:
+        - saber block name: ID
+          saber central block: true
+          input variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
+                                      dust1,dust2,dust3,dust4,dust5,
+                                      seas1,seas2,seas3,seas4]
+          output variables: *aerovars
       weight:
         value: 0.01
     - covariance:
         covariance model: ensemble
         members:
         - filetype: gfs
-          state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
-                                      dust1,dust2,dust3,dust4,dust5,
-                                      seas1,seas2,seas3,seas4]
+          state variables: *aerovars
           datapath: Data/inputs/gfs_aero_c12/mem001/
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_cplr: 20180415.000000.coupler.res
@@ -48,16 +52,19 @@ cost function:
           filename_trcr: 20180415.000000.fv_tracer.res.nc
           filename_cplr: 20180415.000000.coupler.res
         localization:
-          localization variables: *aerovars
-          localization method: BUMP
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
-            method: loc
-            strategy: common
-            load_nicas_local: 1
-            verbosity: main
-            io_keys: [common]
-            io_values: [fixed_3000km_0.2]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *aerovars
+            output variables: *aerovars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_3000km_0.2]
       weight:
         value: 0.99
   observations:

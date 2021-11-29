@@ -62,8 +62,8 @@ ecbuild_add_executable( TARGET  fv3jedi_letkf.x
                         LIBS    fv3jedi
                       )
 
-ecbuild_add_executable( TARGET  fv3jedi_parameters.x
-                        SOURCES fv3jediEstimateParams.cc
+ecbuild_add_executable( TARGET  fv3jedi_error_covariance_training.x
+                        SOURCES fv3jediErrorCovarianceTraining.cc
                         LIBS    fv3jedi
                                 saber
                       )
