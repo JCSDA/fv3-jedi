@@ -1,43 +1,73 @@
 Initial state for member 1:
  -----------------------------------------------------------------------------------------------
- State print | number of fields = 1 | cube sphere face size: C48
+ State print | number of fields = 3 | cube sphere face size: C48
    snwdph                        : Min = +2.121320e+01, Max = +1.654773e+03, RMS = +1.903302e+02
+   vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
+   slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 2:
  -----------------------------------------------------------------------------------------------
- State print | number of fields = 1 | cube sphere face size: C48
+ State print | number of fields = 3 | cube sphere face size: C48
    snwdph                        : Min = -2.121320e+01, Max = +1.612347e+03, RMS = +1.793604e+02
+   vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
+   slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
+
 H(x) for member 1:
-Simulate nobs= 9519 Min=21.2132, Max=1056.54, RMS=169.889
+Simulate nobs= 9518 Min=21.2132, Max=1056.54, RMS=169.894
+
+
 H(x) for member 2:
-Simulate nobs= 9519 Min=-21.2132, Max=1014.12, RMS=145.899
+Simulate nobs= 9518 Min=-21.2132, Max=1014.12, RMS=145.905
+
+
 H(x) ensemble background mean: 
-Simulate nobs= 9519 Min=0, Max=1035.33, RMS=156.922
+Simulate nobs= 9518 Min=0, Max=1035.33, RMS=156.927
+
+
 background y - H(x): 
-Simulate nobs= 9519 Min=-889.996, Max=2662.83, RMS=180.914
+Simulate nobs= 9518 Min=-889.996, Max=2662.83, RMS=180.924
+
+
 Background mean :
  -----------------------------------------------------------------------------------------------
- State print | number of fields = 1 | cube sphere face size: C48
+ State print | number of fields = 3 | cube sphere face size: C48
    snwdph                        : Min = +0.000000e+00, Max = +1.633560e+03, RMS = +1.837059e+02
+   vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
+   slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
+
 Analysis mean :
  -----------------------------------------------------------------------------------------------
- State print | number of fields = 1 | cube sphere face size: C48
-   snwdph                        : Min = -2.439517e+02, Max = +1.633560e+03, RMS = +1.830658e+02
+ State print | number of fields = 3 | cube sphere face size: C48
+   snwdph                        : Min = -6.921104e+01, Max = +1.633560e+03, RMS = +1.826412e+02
+   vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
+   slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
+
 Analysis mean increment :
  -----------------------------------------------------------------------------------------------
- Increment print | number of fields = 1 | cube sphere face size: C48
-   snwdph                        : Min = -3.924212e+02, Max = +3.955931e+02, RMS = +1.672997e+01
+ Increment print | number of fields = 3 | cube sphere face size: C48
+   snwdph                        : Min = -1.124353e+02, Max = +8.102695e+01, RMS = +7.611296e+00
+   vtype                         : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   slmsk                         : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
 H(x) for member 1:
-Simulate nobs= 9519 Min=-228.338, Max=1109.88, RMS=185.228
+Simulate nobs= 9518 Min=-56.1754, Max=1056.54, RMS=152.682
+
+
 H(x) for member 2:
-Simulate nobs= 9519 Min=-259.565, Max=1070.43, RMS=176.681
+Simulate nobs= 9518 Min=-82.2467, Max=1014.12, RMS=141.83
+
+
 H(x) ensemble analysis mean: 
-Simulate nobs= 9519 Min=-243.952, Max=1090.15, RMS=180.853
+Simulate nobs= 9518 Min=-69.211, Max=1035.33, RMS=147.072
+
+
 analysis y - H(x): 
-Simulate nobs= 9519 Min=-717.314, Max=2313.41, RMS=155.336
-ombg RMS: 180.914
-oman RMS: 155.336
+Simulate nobs= 9518 Min=-881.333, Max=2610.01, RMS=179.825
+
+
+ombg RMS: 180.924
+oman RMS: 179.825

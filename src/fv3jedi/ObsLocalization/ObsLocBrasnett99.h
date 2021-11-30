@@ -57,7 +57,7 @@ class ObsLocBrasnett99: public ufo::ObsLocSOAR<MODEL> {
 
  private:
   void print(std::ostream &) const override;
-  std::vector<float> obsAltitude_;  //< altitude of observations
+  std::vector<float> obsHeight_;  //< height of observations
   double VertScale_;  //< vertical localization scale
 };
 // -----------------------------------------------------------------------------
@@ -65,13 +65,13 @@ template<typename MODEL>
 ObsLocBrasnett99<MODEL>::ObsLocBrasnett99(const eckit::Configuration & config,
                               const ioda::ObsSpace & obsspace):
        ufo::ObsLocSOAR<MODEL>::ObsLocSOAR(config, obsspace),
-       obsAltitude_(obsspace.nlocs()),
+       obsHeight_(obsspace.nlocs()),
        VertScale_(config.getDouble("vertical lengthscale", 800)) {
   oops::Log::trace()<< "Brasnett99 localization with: vertical scale=" << VertScale_
                     << std::endl;
 
-  // read altitude of measurements
-  obsspace.get_db("MetaData", "altitude", obsAltitude_);
+  // read height of measurements
+  obsspace.get_db("MetaData", "height", obsHeight_);
 }
 // -----------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ void ObsLocBrasnett99<MODEL>::localizeLocalObs(const GeometryIterator_ & geoiter
   // vloc=exp(- (dz/hfac)^2 )
   const size_t nvars = locvector.nvars();
   for (size_t jlocal = 0; jlocal < localobs.index.size(); ++jlocal) {
-    double locFactor = std::exp(-std::pow((obsAltitude_[localobs.index[jlocal]] - orog)
+    double locFactor = std::exp(-std::pow((obsHeight_[localobs.index[jlocal]] - orog)
                                           /VertScale_, 2));
     // obsdist is calculated at each location; need to update R for each variable
     for (size_t jvar = 0; jvar < nvars; ++jvar) {
