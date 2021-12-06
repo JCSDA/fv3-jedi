@@ -20,7 +20,6 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/container/KDTree.h"
-#include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/geometry/UnitSphere.h"
 

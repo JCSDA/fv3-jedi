@@ -409,7 +409,7 @@ integer :: var, nz, ii
 ii = 0
 do var = 1,self%nf
   nz = self%fields(var)%npz
-  values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iind, geoiter%jind,:)
+  values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iindex, geoiter%jindex,:)
   ii = ii + nz
 enddo
 
@@ -431,7 +431,7 @@ integer :: var, nz, ii
 ii = 0
 do var = 1,self%nf
   nz = self%fields(var)%npz
-  self%fields(var)%array(geoiter%iind, geoiter%jind,:) = values(ii+1:ii+nz)
+  self%fields(var)%array(geoiter%iindex, geoiter%jindex,:) = values(ii+1:ii+nz)
   ii = ii + nz
 enddo
 

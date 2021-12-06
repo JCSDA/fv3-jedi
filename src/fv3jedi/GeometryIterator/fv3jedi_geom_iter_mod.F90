@@ -22,8 +22,8 @@ module fv3jedi_geom_iter_mod
 
   type :: fv3jedi_geom_iter
     type(fv3jedi_geom), pointer :: geom => null() !< Geometry
-    integer :: iind = 1  !< index e.g. lat(iind,jind)
-    integer :: jind = 1  !<
+    integer :: iindex = 1  !< index e.g. lat(iindex,jindex)
+    integer :: jindex = 1  !<
   end type fv3jedi_geom_iter
 
 #define LISTED_TYPE fv3jedi_geom_iter
@@ -45,19 +45,19 @@ contains
 
   ! ------------------------------------------------------------------------------
   !> Setup for the geometry iterator
-  subroutine fv3jedi_geom_iter_setup(self, geom, iind, jind)
+  subroutine fv3jedi_geom_iter_setup(self, geom, iindex, jindex)
 
     ! Passed variables
     type(fv3jedi_geom_iter),     intent(inout) :: self !< Geometry iterator
     type(fv3jedi_geom), pointer, intent(   in) :: geom !< Geometry
-    integer,                  intent(   in) :: iind, jind  !< Index
+    integer,                  intent(   in) :: iindex, jindex  !< Index
 
     ! Associate geometry
     self%geom => geom
 
-    ! Define iind/jind for local tile
-    self%iind = iind
-    self%jind = jind
+    ! Define iindex/jindex for local tile
+    self%iindex = iindex
+    self%jindex = jindex
 
   end subroutine fv3jedi_geom_iter_setup
 
@@ -72,9 +72,9 @@ contains
     ! Associate geometry
     self%geom => other%geom
 
-    ! Copy iind/jind
-    self%iind = other%iind
-    self%jind = other%jind
+    ! Copy iindex/jindex
+    self%iindex = other%iindex
+    self%jindex = other%jindex
 
   end subroutine fv3jedi_geom_iter_clone
 
@@ -91,7 +91,7 @@ contains
     equals = 0
 
     ! Check equality
-    if (associated(self%geom, other%geom) .and. (self%iind==other%iind) .and. (self%jind==other%jind)) equals = 1
+    if (associated(self%geom, other%geom) .and. (self%iindex==other%iindex) .and. (self%jindex==other%jindex)) equals = 1
 
   end subroutine fv3jedi_geom_iter_equals
 
@@ -104,19 +104,19 @@ contains
     real(kind_real),    intent(out) :: lat  !< Latitude
     real(kind_real),    intent(out) :: lon  !< Longitude
 
-    ! Check iind/jind
-    if (self%iind == -1 .AND. self%jind == -1) then
+    ! Check iindex/jindex
+    if (self%iindex == -1 .AND. self%jindex == -1) then
       ! special case of {-1,-1} means end of the grid
       lat = self%geom%grid_lat(self%geom%iec,self%geom%jec)
       lon = self%geom%grid_lon(self%geom%iec,self%geom%jec)
-    elseif (self%iind < self%geom%isc .OR. self%iind > self%geom%iec .OR. &
-            self%jind < self%geom%jsc .OR. self%jind > self%geom%jec) then
+    elseif (self%iindex < self%geom%isc .OR. self%iindex > self%geom%iec .OR. &
+            self%jindex < self%geom%jsc .OR. self%jindex > self%geom%jec) then
       ! outside of the grid
       call abor1_ftn('fv3jedi_geom_iter_current: iterator out of bounds')
     else
       ! inside of the grid
-      lat = self%geom%grid_lat(self%iind,self%jind)
-      lon = self%geom%grid_lon(self%iind,self%jind)
+      lat = self%geom%grid_lat(self%iindex,self%jindex)
+      lon = self%geom%grid_lon(self%iindex,self%jindex)
     endif
 
     !convert to degrees from radians
@@ -133,17 +133,17 @@ contains
     type(fv3jedi_geom_iter), intent( in) :: self !< Geometry iterator
     real(kind_real),    intent(out) :: oro  !< Orography
 
-    ! Check iind/jind
-    if (self%iind == -1 .AND. self%jind == -1) then
+    ! Check iindex/jindex
+    if (self%iindex == -1 .AND. self%jindex == -1) then
       ! special case of {-1,-1} means end of the grid
       oro = self%geom%orography(self%geom%iec,self%geom%jec,1)
-    elseif (self%iind < self%geom%isc .OR. self%iind > self%geom%iec .OR. &
-            self%jind < self%geom%jsc .OR. self%jind > self%geom%jec) then
+    elseif (self%iindex < self%geom%isc .OR. self%iindex > self%geom%iec .OR. &
+            self%jindex < self%geom%jsc .OR. self%jindex > self%geom%jec) then
       ! outside of the grid
       call abor1_ftn('fv3jedi_geom_iter_orography: iterator out of bounds')
     else
       ! inside of the grid
-      oro = self%geom%orography(self%iind,self%jind,1)
+      oro = self%geom%orography(self%iindex,self%jindex,1)
     endif
 
   end subroutine fv3jedi_geom_iter_orography
@@ -154,26 +154,26 @@ contains
 
     ! Passed variables
     type(fv3jedi_geom_iter), intent(inout) :: self !< Geometry iterator
-    integer :: iind, jind
+    integer :: iindex, jindex
 
-    iind = self%iind
-    jind = self%jind
+    iindex = self%iindex
+    jindex = self%jindex
 
     ! increment by 1
-    if (iind.lt.self%geom%iec) then
-      iind = iind + 1
-    elseif (iind.eq.self%geom%iec) then
-      iind = self%geom%isc
-      jind = jind + 1
+    if (iindex.lt.self%geom%iec) then
+      iindex = iindex + 1
+    elseif (iindex.eq.self%geom%iec) then
+      iindex = self%geom%isc
+      jindex = jindex + 1
     end if
 
-    if (jind > self%geom%jec) then
-        iind=-1
-        jind=-1
+    if (jindex > self%geom%jec) then
+        iindex=-1
+        jindex=-1
     end if
 
-    self%iind = iind
-    self%jind = jind
+    self%iindex = iindex
+    self%jindex = jindex
 
   end subroutine fv3jedi_geom_iter_next
   ! ------------------------------------------------------------------------------

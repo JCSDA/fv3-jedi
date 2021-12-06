@@ -11,7 +11,7 @@
 #include <iterator>
 #include <string>
 
-#include "eckit/geometry/Point2.h"
+#include "eckit/geometry/Point3.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.interface.h"
@@ -25,7 +25,7 @@ class Geometry;
 
 // -----------------------------------------------------------------------------
 class GeometryIterator: public std::iterator<std::forward_iterator_tag,
-                                               eckit::geometry::Point2>,
+                                               eckit::geometry::Point3>,
                           public util::Printable,
                           private util::ObjectCounter<GeometryIterator> {
  public:
@@ -38,7 +38,7 @@ class GeometryIterator: public std::iterator<std::forward_iterator_tag,
 
   bool operator==(const GeometryIterator &) const;
   bool operator!=(const GeometryIterator &) const;
-  eckit::geometry::Point2 operator*() const;
+  eckit::geometry::Point3 operator*() const;
   GeometryIterator& operator++();
   double getOrography() const;
 

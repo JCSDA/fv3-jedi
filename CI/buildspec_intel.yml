@@ -188,6 +188,19 @@ phases:
       - echo $CODEBUILD_BUILD_SUCCEEDING
       - echo $BUILD_STATUS
 
+      # find cdash url and upload it as CodeBuild artifact to S3
+      - if [ "$BUILD_STATUS" = "1" ];
+        then echo "Build & tests passed, find cdash url";
+        bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing;
+        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing);
+        echo $url;
+        echo ${url} > /jcsda/artifacts/cdash-url.txt;
+        cat /jcsda/artifacts/cdash-url.txt;
+        else echo "Build failed";
+        fi
+      - cp /home/jedi/fv3-jedi/Testing/Temporary/CTestCostData.txt /jcsda/artifacts/
+
+
       # rerun failed tests with -VV
       - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
         then echo "Build passed, rerun failed tests";
@@ -200,17 +213,6 @@ phases:
         && ctest -VV --rerun-failed";
         fi
 
-      # upload find cdash url and upload it as CodeBuild artifact to S3
-      - if [ "$BUILD_STATUS" = "1" ];
-        then echo "Build & tests passed, find cdash url";
-        bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing;
-        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing);
-        echo $url;
-        echo ${url} > /jcsda/artifacts/cdash-url.txt;
-        cat /jcsda/artifacts/cdash-url.txt;
-        else echo "Build failed";
-        fi
-      - cp /home/jedi/fv3-jedi/Testing/Temporary/CTestCostData.txt /jcsda/artifacts/
 
 artifacts:
   files:

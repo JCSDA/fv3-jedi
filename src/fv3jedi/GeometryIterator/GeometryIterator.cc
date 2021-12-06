@@ -57,10 +57,10 @@ bool GeometryIterator::operator!=(const GeometryIterator & other) const {
 
 // -----------------------------------------------------------------------------
 
-eckit::geometry::Point2 GeometryIterator::operator*() const {
+eckit::geometry::Point3 GeometryIterator::operator*() const {
   double lat, lon;
   fv3jedi_geom_iter_current_f90(keyIter_, lon, lat);
-  return eckit::geometry::Point2(lon, lat);
+  return eckit::geometry::Point3(lon, lat, 0.0);
 }
 
 // -----------------------------------------------------------------------------
