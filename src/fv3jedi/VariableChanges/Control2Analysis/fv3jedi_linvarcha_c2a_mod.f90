@@ -57,12 +57,23 @@ type(fckit_configuration),   intent(in)    :: conf
 
 real(kind=kind_real), pointer :: t   (:,:,:)
 real(kind=kind_real), pointer :: q   (:,:,:)
-real(kind=kind_real), pointer :: delp(:,:,:)
+real(kind=kind_real), allocatable :: delp(:,:,:)
+real(kind=kind_real), pointer :: ps  (:,:,:)
 
 !> Pointers to the background state
 call bg%get_field('t'   , t)
 call bg%get_field('sphum'   , q)
-call bg%get_field('delp', delp)
+
+!> Pressure
+if (bg%has_field('delp')) then
+  call bg%get_field('delp', delp)
+elseif (bg%has_field('ps')) then
+  call bg%get_field('ps', ps)
+  allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  call ps_to_delp(geom, ps, delp)
+else
+  call abor1_ftn("fv3jedi_linvarcha_c2a_mod.create : delp or ps should be present")
+endif
 
 !> Virtual temperature trajectory
 allocate(self%tvtraj   (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
