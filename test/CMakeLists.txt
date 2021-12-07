@@ -814,6 +814,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_crtm_surface
                   ARGS     testinput/convertstate_geos_crtm_surface.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_c2ll
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs_c2ll.yaml
+                  COMMAND  fv3jedi_convertstate.x )
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_cold2fv3
