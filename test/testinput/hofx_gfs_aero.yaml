@@ -25,7 +25,7 @@ model:
   model variables: [T,DELP,sphum,
                     sulf,bc1,bc2,oc1,oc2,
                     dust1,dust2,dust3,dust4,dust5,
-                    seas1,seas2,seas3,seas4]
+                    seas1,seas2,seas3,seas4,seas5]
 initial condition:
   filetype: gfs
   datapath: Data/inputs/gfs_aero_c12/bkg/
@@ -33,7 +33,7 @@ initial condition:
   filename_trcr: 20180414.210000.fv_tracer.res.nc
   filename_cplr: 20180414.210000.coupler.res
   state variables: [T,DELP,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,
-              dust5,seas1,seas2,seas3,seas4]
+              dust5,seas1,seas2,seas3,seas4,seas5]
 observations:
 - obs space:
     name: Aod
@@ -44,15 +44,66 @@ observations:
     simulated variables: [aerosol_optical_depth]
     channels: 4
   obs operator:
-    name: AodCRTM
-    Absorbers: [H2O,O3]
+    name: AodLUTs
     obs options:
       Sensor_ID: v.viirs-m_npp
       EndianType: little_endian
       CoefficientPath: Data/crtm/
-      AerosolOption: aerosols_gocart_default
+      AerosolOption: aerosols_gocart_merra_2
+      RCFile: [geosaod.rc]
   obs error:
     covariance model: diagonal
+- obs space:
+    name: Aod
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/aod_aeronet_obs_2018041500.nc4
+    obsdataout:
+      obsfile: Data/hofx/aod_aeronet_hofx_2018041500.nc4
+    simulated variables: [aerosol_optical_depth]
+    channels: 1-8
+  obs operator:
+    name: AodLUTs
+    obs options:
+      Sensor_ID: aeronet
+      AerosolOption: aerosols_gocart_merra_2
+      RCFile: [geosaod_aeronet.rc]
+  obs filters:
+  - filter: Temporal Thinning
+    seed_time: 2018-04-15T00:00:00Z
+    min_spacing: PT03H
+    category_variable:
+      name: station_id@MetaData
+
+- obs space:
+    name: Aod
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/aaod_aeronet_obs_2018041500.nc4
+    obsdataout:
+      obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
+    simulated variables: [absorption_aerosol_optical_depth]
+    channels: 3,5-7
+  obs operator:
+    name: AodLUTs
+    obs options:
+      Sensor_ID: aeronet
+      AerosolOption: aerosols_gocart_merra_2
+      RCFile: [geosaod_aeronet.rc]
+      AbsorptionAod: true
+  obs filters:
+  - filter: Temporal Thinning
+    seed_time: 2018-04-15T00:00:00Z
+    min_spacing: PT03H
+    category_variable:
+      name: station_id@MetaData
+  - filter: Domain Check
+    where:
+    - variable:
+        name: aod_l2_qc@MetaData
+      is_in: 0
+    - variable:
+        name: aaod_l2_qc_without_aod440_le_0.4_threshold@MetaData
+      is_in: 0
+
 prints:
   frequency: PT3H
 
