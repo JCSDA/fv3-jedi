@@ -1,0 +1,176 @@
+version: 0.2
+
+env:
+  shell: bash
+  parameter-store:
+    GIT_USER: "/CodeBuild/Git_USER"
+    GIT_PASS: "/CodeBuild/Git_PASS"
+
+phases:
+  install:
+    commands:
+      - echo Executing install phase
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_SOURCE_REPO_URL
+      - echo $CODEBUILD_SOURCE_VERSION
+
+      - echo $CODEBUILD_WEBHOOK_MERGE_COMMIT
+      - echo $CODEBUILD_WEBHOOK_PREV_COMMIT
+      - echo $CODEBUILD_WEBHOOK_HEAD_REF
+      - echo $CODEBUILD_WEBHOOK_ACTOR_ACCOUNT_ID
+      - echo $CODEBUILD_WEBHOOK_EVENT
+      - echo $CODEBUILD_WEBHOOK_TRIGGER
+      - echo $CODEBUILD_WEBHOOK_BASE_REF
+
+  pre_build:
+    commands:
+      - echo Executing pre_build phase
+      # for nightly builds/tests use develop branch
+      - export CODEBUILD_GIT_BRANCH="develop"
+      - export CODEBUILD_GIT_BRANCH_CRTM="release/crtm_jedi"
+
+      # Upload branch name and commit sha as CodeBuild artifact to S3
+      - mkdir -p /jcsda/artifacts
+      - echo ${CODEBUILD_GIT_BRANCH} > /jcsda/artifacts/branch_name.txt
+      - echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} > /jcsda/artifacts/commit_sha.txt
+
+      - cd CI
+      - . /etc/profile.d/intel.sh
+
+      # jedi-cmake
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH jedicmake /jcsda/fv3-bundle develop
+
+      # FV3-JEDI (testing repo)
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH fv3-jedi /jcsda/fv3-bundle develop
+
+      # fv3-jedi-lm
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH fv3-jedi-lm /jcsda/fv3-bundle develop
+
+      # crtm
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/crtm $CODEBUILD_GIT_BRANCH_CRTM crtm /jcsda/fv3-bundle $CRTM_JEDI_BRANCH
+
+      # ioda
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
+
+      # saber
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/saber $CODEBUILD_GIT_BRANCH saber /jcsda/fv3-bundle develop
+
+      # oops
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/oops $CODEBUILD_GIT_BRANCH oops /jcsda/fv3-bundle develop
+
+      # ufo
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ufo $CODEBUILD_GIT_BRANCH ufo /jcsda/fv3-bundle develop
+
+      # femps
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
+
+      # fms
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable
+
+      # GFDL_atmos_cubed_sphere
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
+
+      #  internal repos
+      # geos-aero
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
+
+      # ropp
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+
+      # gsw
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH gsw /jcsda/fv3-bundle develop
+
+      # saber-data
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/saber-data $CODEBUILD_GIT_BRANCH saber-data /jcsda/fv3-bundle develop
+
+      # ioda-data
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ioda-data $CODEBUILD_GIT_BRANCH ioda-data /jcsda/fv3-bundle develop
+
+      # ufo-data
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ufo-data $CODEBUILD_GIT_BRANCH ufo-data /jcsda/fv3-bundle develop
+
+      # fv3-jedi-data
+      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH fv3-jedi-data /jcsda/fv3-bundle develop
+
+
+      # move CMakeLists.txt
+      - cp CMakeLists_nightly.txt /jcsda/fv3-bundle/CMakeLists.txt
+      - cp -r cmake /jcsda/fv3-bundle/
+      # cdash upload setup
+      - cp /jcsda/fv3-bundle/cmake/CTestConfig_nightly.cmake /jcsda/fv3-bundle/CTestConfig.cmake
+      - chmod 777 -R /jcsda/fv3-bundle
+
+  build:
+    on-failure: CONTINUE
+    commands:
+      - echo Executing build phase
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - export BUILD_STATUS="0"
+      - echo $BUILD_STATUS
+
+      - su - jedi -c "export FV3JEDI_TEST_TIER=2
+        && cd /home/jedi
+        && export CC=mpiicc
+        && export FC=mpiifort
+        && export CXX=mpiicpc
+        && echo $LD_LIBRARY_PATH
+        && echo $PATH
+        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+        && export PATH=/usr/local/lib:$PATH
+        && ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SITE=NightlyCodeBuild -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF /jcsda/fv3-bundle/
+        && ls /home/jedi"
+
+      - su - jedi -c "export FV3JEDI_TEST_TIER=2
+        && cd /home/jedi
+        && export CC=mpiicc
+        && export FC=mpiifort
+        && export CXX=mpiicpc
+        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+        && export PATH=/usr/local/lib:$PATH
+        && cat DartConfiguration.tcl
+        && make -j4"
+
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
+        then export BUILD_STATUS="1";
+        echo "Build passed";
+        fi
+      - echo $BUILD_STATUS
+
+      # Run all tests in fv3-bundle
+      - su - jedi -c "export CC=mpiicc
+        && export FC=mpiifort
+        && export CXX=mpiicpc
+        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+        && export PATH=/usr/local/lib:$PATH
+        && cd /home/jedi
+        && ctest -D NightlyTest
+        && ls /home/jedi/Testing
+        && cat /home/jedi/Testing/TAG"
+
+    finally:
+      # upload ctest report to CDASH
+      - su - jedi -c "export CC=mpiicc
+        && export FC=mpiifort
+        && export CXX=mpiicpc
+        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+        && export PATH=/usr/local/lib:$PATH
+        && cd /home/jedi
+        && ctest -D NightlySubmit -M Nightly -- --track Nightly --group Nightly"
+
+  post_build:
+    commands:
+
+      # upload find cdash url and upload it as CodeBuild artifact to S3
+      - if [ "$BUILD_STATUS" = "1" ];
+        then echo "Build & tests passed, find cdash url";
+        bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/Testing;
+        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/Testing);
+        echo $url;
+        echo ${url} > /jcsda/artifacts/cdash-url.txt;
+        cat /jcsda/artifacts/cdash-url.txt;
+        else echo "Build failed";
+        fi
+      - echo Executing post_build phase
+      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - echo $BUILD_STATUS
