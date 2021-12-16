@@ -352,223 +352,223 @@ Background mean :
 Analysis mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.979848e+01, Max = +9.422192e+01, RMS = +1.969678e+01
-   va                            : Min = -6.568660e+01, Max = +6.394783e+01, RMS = +8.545170e+00
-   t                             : Min = +1.695835e+02, Max = +3.082663e+02, RMS = +2.464152e+02
+   ua                            : Min = -4.979848e+01, Max = +9.422192e+01, RMS = +1.969686e+01
+   va                            : Min = -6.568660e+01, Max = +6.394783e+01, RMS = +8.545029e+00
+   t                             : Min = +1.695835e+02, Max = +3.082663e+02, RMS = +2.464151e+02
    delp                          : Min = +1.000000e+00, Max = +5.131772e+03, RMS = +1.953822e+03
-   q                             : Min = +3.391868e-07, Max = +2.032063e-02, RMS = +4.090875e-03
-   qi                            : Min = +0.000000e+00, Max = +2.902276e-04, RMS = +6.463040e-06
-   ql                            : Min = +0.000000e+00, Max = +3.410393e-04, RMS = +2.090942e-05
-   o3ppmv                        : Min = +2.849704e-08, Max = +5.663026e-05, RMS = +6.269719e-06
+   q                             : Min = +3.391868e-07, Max = +2.032063e-02, RMS = +4.090643e-03
+   qi                            : Min = +0.000000e+00, Max = +2.902276e-04, RMS = +6.466764e-06
+   ql                            : Min = +0.000000e+00, Max = +3.410393e-04, RMS = +2.091185e-05
+   o3ppmv                        : Min = +2.849704e-08, Max = +5.663026e-05, RMS = +6.269728e-06
  -----------------------------------------------------------------------------------------------
 
 H(x) for member 1:
-Radiosonde nobs= 2 Min=-6.9808, Max=-2.2228, RMS=5.18036
+Radiosonde nobs= 2 Min=-6.88552, Max=-2.17084, RMS=5.10504
 
 
 H(x) for member 2:
-Radiosonde nobs= 2 Min=-6.36669, Max=-2.06965, RMS=4.73383
+Radiosonde nobs= 2 Min=-6.2126, Max=-2.05174, RMS=4.62634
 
 
 H(x) for member 3:
-Radiosonde nobs= 2 Min=-6.45851, Max=-2.15984, RMS=4.81546
+Radiosonde nobs= 2 Min=-6.37211, Max=-2.2208, RMS=4.77157
 
 
 H(x) for member 4:
-Radiosonde nobs= 2 Min=-6.68633, Max=-1.91815, RMS=4.91865
+Radiosonde nobs= 2 Min=-6.68167, Max=-1.90669, RMS=4.91326
 
 
 H(x) for member 5:
-Radiosonde nobs= 2 Min=-6.02735, Max=-2.02807, RMS=4.49678
+Radiosonde nobs= 2 Min=-6.15125, Max=-1.91615, RMS=4.55574
 
 
 H(x) for member 6:
-Radiosonde nobs= 2 Min=-6.70523, Max=-1.68414, RMS=4.88858
+Radiosonde nobs= 2 Min=-6.85452, Max=-1.56923, RMS=4.97227
 
 
 H(x) for member 7:
-Radiosonde nobs= 2 Min=-6.36293, Max=-1.65736, RMS=4.6494
+Radiosonde nobs= 2 Min=-6.33192, Max=-1.54016, RMS=4.60789
 
 
 H(x) for member 8:
-Radiosonde nobs= 2 Min=-6.62956, Max=-1.68947, RMS=4.83763
+Radiosonde nobs= 2 Min=-6.68384, Max=-1.61307, RMS=4.86188
 
 
 H(x) for member 9:
-Radiosonde nobs= 2 Min=-6.55177, Max=-1.99109, RMS=4.84201
+Radiosonde nobs= 2 Min=-6.71185, Max=-1.73368, RMS=4.90177
 
 
 H(x) for member 10:
-Radiosonde nobs= 2 Min=-6.99869, Max=-1.94785, RMS=5.13692
+Radiosonde nobs= 2 Min=-7.18956, Max=-1.89309, RMS=5.25707
 
 
 H(Zx) - ymean for member 1 eig 1 :
-Radiosonde nobs= 2 Min=-0.481487, Max=-0.340797, RMS=0.417116
+Radiosonde nobs= 2 Min=-0.368604, Max=-0.331353, RMS=0.350474
 
 
 H(Zx) - ymean for member 1 eig 2 :
-Radiosonde nobs= 2 Min=-0.16959, Max=-0.120036, RMS=0.146918
+Radiosonde nobs= 2 Min=-0.12983, Max=-0.11671, RMS=0.123445
 
 
 H(Zx) - ymean for member 1 eig 3 :
-Radiosonde nobs= 2 Min=-0.0725654, Max=-0.0513619, RMS=0.0628641
+Radiosonde nobs= 2 Min=-0.0555527, Max=-0.0499386, RMS=0.0528203
 
 
 H(Zx) - ymean for member 1 eig 4 :
-Radiosonde nobs= 2 Min=-0.0600631, Max=-0.0425127, RMS=0.0520332
+Radiosonde nobs= 2 Min=-0.0459815, Max=-0.0413347, RMS=0.0437199
 
 
 H(Zx) - ymean for member 2 eig 1 :
-Radiosonde nobs= 2 Min=-0.158276, Max=0.250383, RMS=0.209455
+Radiosonde nobs= 2 Min=-0.226667, Max=0.470614, RMS=0.369362
 
 
 H(Zx) - ymean for member 2 eig 2 :
-Radiosonde nobs= 2 Min=-0.0557482, Max=0.0881905, RMS=0.0737747
+Radiosonde nobs= 2 Min=-0.0798373, Max=0.165761, RMS=0.130097
 
 
 H(Zx) - ymean for member 2 eig 3 :
-Radiosonde nobs= 2 Min=-0.0238539, Max=0.0377355, RMS=0.0315672
+Radiosonde nobs= 2 Min=-0.0341613, Max=0.0709269, RMS=0.0556669
 
 
 H(Zx) - ymean for member 2 eig 4 :
-Radiosonde nobs= 2 Min=-0.0197441, Max=0.0312341, RMS=0.0261285
+Radiosonde nobs= 2 Min=-0.0282756, Max=0.0587068, RMS=0.046076
 
 
 H(Zx) - ymean for member 3 eig 1 :
-Radiosonde nobs= 2 Min=-0.265762, Max=0.140953, RMS=0.212717
+Radiosonde nobs= 2 Min=-0.428144, Max=0.280509, RMS=0.361934
 
 
 H(Zx) - ymean for member 3 eig 2 :
-Radiosonde nobs= 2 Min=-0.0936073, Max=0.0496468, RMS=0.0749237
+Radiosonde nobs= 2 Min=-0.150802, Max=0.0988014, RMS=0.127481
 
 
 H(Zx) - ymean for member 3 eig 3 :
-Radiosonde nobs= 2 Min=-0.0400533, Max=0.0212432, RMS=0.0320589
+Radiosonde nobs= 2 Min=-0.064526, Max=0.0422758, RMS=0.0545475
 
 
 H(Zx) - ymean for member 3 eig 4 :
-Radiosonde nobs= 2 Min=-0.0331525, Max=0.0175832, RMS=0.0265354
+Radiosonde nobs= 2 Min=-0.0534088, Max=0.0349921, RMS=0.0451495
 
 
 H(Zx) - ymean for member 4 eig 1 :
-Radiosonde nobs= 2 Min=-0.130546, Max=0.0222705, RMS=0.0936437
+Radiosonde nobs= 2 Min=-0.088417, Max=-0.0538078, RMS=0.0731876
 
 
 H(Zx) - ymean for member 4 eig 2 :
-Radiosonde nobs= 2 Min=-0.0459812, Max=0.00784417, RMS=0.0329834
+Radiosonde nobs= 2 Min=-0.0311424, Max=-0.0189523, RMS=0.0257783
 
 
 H(Zx) - ymean for member 4 eig 3 :
-Radiosonde nobs= 2 Min=-0.0196748, Max=0.00335641, RMS=0.0141131
+Radiosonde nobs= 2 Min=-0.0133254, Max=-0.00810944, RMS=0.0110302
 
 
 H(Zx) - ymean for member 4 eig 4 :
-Radiosonde nobs= 2 Min=-0.016285, Max=0.00277814, RMS=0.0116816
+Radiosonde nobs= 2 Min=-0.0110296, Max=-0.00671226, RMS=0.00912979
 
 
 H(Zx) - ymean for member 5 eig 1 :
-Radiosonde nobs= 2 Min=-0.108724, Max=0.654803, RMS=0.469355
+Radiosonde nobs= 2 Min=-0.0650766, Max=0.543725, RMS=0.387216
 
 
 H(Zx) - ymean for member 5 eig 2 :
-Radiosonde nobs= 2 Min=-0.0382951, Max=0.230636, RMS=0.165317
+Radiosonde nobs= 2 Min=-0.0229214, Max=0.191512, RMS=0.136386
 
 
 H(Zx) - ymean for member 5 eig 3 :
-Radiosonde nobs= 2 Min=-0.016386, Max=0.0986861, RMS=0.070737
+Radiosonde nobs= 2 Min=-0.00980777, Max=0.0819455, RMS=0.0583578
 
 
 H(Zx) - ymean for member 5 eig 4 :
-Radiosonde nobs= 2 Min=-0.0135628, Max=0.0816834, RMS=0.0585497
+Radiosonde nobs= 2 Min=-0.00811798, Max=0.0678271, RMS=0.0483033
 
 
 H(Zx) - ymean for member 6 eig 1 :
-Radiosonde nobs= 2 Min=-0.153071, Max=0.301163, RMS=0.238883
+Radiosonde nobs= 2 Min=-0.294407, Max=0.34837, RMS=0.322519
 
 
 H(Zx) - ymean for member 6 eig 2 :
-Radiosonde nobs= 2 Min=-0.0539149, Max=0.106076, RMS=0.0841398
+Radiosonde nobs= 2 Min=-0.103697, Max=0.122703, RMS=0.113598
 
 
 H(Zx) - ymean for member 6 eig 3 :
-Radiosonde nobs= 2 Min=-0.0230695, Max=0.0453887, RMS=0.0360023
+Radiosonde nobs= 2 Min=-0.0443704, Max=0.0525032, RMS=0.0486072
 
 
 H(Zx) - ymean for member 6 eig 4 :
-Radiosonde nobs= 2 Min=-0.0190948, Max=0.0375686, RMS=0.0297994
+Radiosonde nobs= 2 Min=-0.0367258, Max=0.0434574, RMS=0.0402326
 
 
 H(Zx) - ymean for member 7 eig 1 :
-Radiosonde nobs= 2 Min=0.254862, Max=0.33308, RMS=0.296561
+Radiosonde nobs= 2 Min=0.32841, Max=0.383013, RMS=0.356758
 
 
 H(Zx) - ymean for member 7 eig 2 :
-Radiosonde nobs= 2 Min=0.0897681, Max=0.117318, RMS=0.104455
+Radiosonde nobs= 2 Min=0.115673, Max=0.134906, RMS=0.125658
 
 
 H(Zx) - ymean for member 7 eig 3 :
-Radiosonde nobs= 2 Min=0.0384106, Max=0.0501988, RMS=0.0446951
+Radiosonde nobs= 2 Min=0.0494951, Max=0.0577244, RMS=0.0537674
 
 
 H(Zx) - ymean for member 7 eig 4 :
-Radiosonde nobs= 2 Min=0.0317928, Max=0.0415501, RMS=0.0369945
+Radiosonde nobs= 2 Min=0.0409675, Max=0.047779, RMS=0.0445038
 
 
 H(Zx) - ymean for member 8 eig 1 :
-Radiosonde nobs= 2 Min=-0.0628979, Max=0.294813, RMS=0.213156
+Radiosonde nobs= 2 Min=-0.0909998, Max=0.296122, RMS=0.219054
 
 
 H(Zx) - ymean for member 8 eig 2 :
-Radiosonde nobs= 2 Min=-0.022154, Max=0.10384, RMS=0.0750782
+Radiosonde nobs= 2 Min=-0.0320522, Max=0.104301, RMS=0.0771557
 
 
 H(Zx) - ymean for member 8 eig 3 :
-Radiosonde nobs= 2 Min=-0.00947942, Max=0.0444316, RMS=0.032125
+Radiosonde nobs= 2 Min=-0.0137147, Max=0.0446289, RMS=0.0330139
 
 
 H(Zx) - ymean for member 8 eig 4 :
-Radiosonde nobs= 2 Min=-0.0078462, Max=0.0367765, RMS=0.0265901
+Radiosonde nobs= 2 Min=-0.0113518, Max=0.0369398, RMS=0.0273259
 
 
 H(Zx) - ymean for member 9 eig 1 :
-Radiosonde nobs= 2 Min=-0.0646517, Max=0.0298145, RMS=0.0503426
+Radiosonde nobs= 2 Min=-0.124382, Max=0.15239, RMS=0.139093
 
 
 H(Zx) - ymean for member 9 eig 2 :
-Radiosonde nobs= 2 Min=-0.0227718, Max=0.0105013, RMS=0.0177318
+Radiosonde nobs= 2 Min=-0.0438102, Max=0.0536753, RMS=0.0489917
 
 
 H(Zx) - ymean for member 9 eig 3 :
-Radiosonde nobs= 2 Min=-0.00974374, Max=0.00449338, RMS=0.00758719
+Radiosonde nobs= 2 Min=-0.0187458, Max=0.0229669, RMS=0.0209629
 
 
 H(Zx) - ymean for member 9 eig 4 :
-Radiosonde nobs= 2 Min=-0.00806498, Max=0.00371921, RMS=0.00627999
+Radiosonde nobs= 2 Min=-0.0155161, Max=0.01901, RMS=0.0173512
 
 
 H(Zx) - ymean for member 10 eig 1 :
-Radiosonde nobs= 2 Min=-0.502814, Max=-0.0131159, RMS=0.355664
+Radiosonde nobs= 2 Min=-0.693699, Max=-0.0375963, RMS=0.491239
 
 
 H(Zx) - ymean for member 10 eig 2 :
-Radiosonde nobs= 2 Min=-0.177102, Max=-0.00461973, RMS=0.125273
+Radiosonde nobs= 2 Min=-0.244336, Max=-0.0132422, RMS=0.173025
 
 
 H(Zx) - ymean for member 10 eig 3 :
-Radiosonde nobs= 2 Min=-0.0757798, Max=-0.00197672, RMS=0.0536026
+Radiosonde nobs= 2 Min=-0.104548, Max=-0.00566618, RMS=0.0740352
 
 
 H(Zx) - ymean for member 10 eig 4 :
-Radiosonde nobs= 2 Min=-0.0627236, Max=-0.00163615, RMS=0.0443674
+Radiosonde nobs= 2 Min=-0.0865355, Max=-0.00468995, RMS=0.0612797
 
 
 H(x) ensemble analysis mean: 
-Radiosonde nobs= 2 Min=-6.57679, Max=-1.93684, RMS=4.84796
+Radiosonde nobs= 2 Min=-6.60749, Max=-1.86155, RMS=4.85408
 
 
 analysis y - H(x): 
-Radiosonde nobs= 2 Min=-1.06316, Max=1.17679, RMS=1.12141
+Radiosonde nobs= 2 Min=-1.13845, Max=1.20748, RMS=1.17348
 
 
 ombg RMS: 1.18839
-oman RMS: 1.12141
+oman RMS: 1.17348
