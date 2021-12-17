@@ -1,0 +1,73 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 64
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
+background:
+  filetype: gfs
+  state variables: *inputVars
+  datapath: Data/inputs/gfs_aero_c12/mem001
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+bump:
+  datadir: Data/staticb_aero
+  prefix: nicas_aero
+  verbosity: main
+  strategy: specific_univariate
+  new_nicas: true
+  write_nicas_local: true
+  write_nicas_c0: false
+  resol: 6.0
+  universe radius:
+    filetype: gfs
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+    filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+    filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.cor_rh.coupler.res
+    date: 2018-04-15T00:00:00Z
+  input:
+  - parameter: cor_rh
+    filetype: gfs
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+    filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+    filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.cor_rh.coupler.res
+    date: 2018-04-15T00:00:00Z
+  - parameter: cor_rv
+    filetype: gfs
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.000000.cor_rv.fv_core.res.nc
+    filename_trcr: 20180415.000000.cor_rv.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.cor_rv.sfc_data.nc
+    filename_sfcw: 20180415.000000.cor_rv.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.cor_rv.coupler.res
+    date: 2018-04-15T00:00:00Z
+  output:
+  - parameter: nicas_norm
+    filetype: gfs
+    datapath: Data/staticb_aero/
+    filename_core: nicas_norm.fv_core.res.nc
+    filename_trcr: nicas_norm.fv_tracer.res.nc
+    filename_sfcd: nicas_norm.sfc_data.nc
+    filename_sfcw: nicas_norm.fv_srf_wnd.res.nc
+    filename_cplr: nicas_norm.coupler.res
+    date: 2018-04-15T00:00:00Z
+
+test:
+  reference filename: testoutput/staticb_nicas_aero.ref
+  test output filename: testoutput/staticb_nicas_aero.test.out

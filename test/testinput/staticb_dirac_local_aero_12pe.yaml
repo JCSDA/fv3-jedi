@@ -1,0 +1,76 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk64.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 64
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+initial condition:
+  filetype: gfs
+  state variables: &state_vars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
+  datapath: Data/inputs/gfs_aero_c12/bkg
+  filename_core: 20180415.000000.fv_core.res.nc
+  filename_trcr: 20180415.000000.fv_tracer.res.nc
+  filename_sfcd: 20180415.000000.sfc_data.nc
+  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20180415.000000.coupler.res
+background error:
+  covariance model: SABER
+  saber blocks:
+  - saber block name: BUMP_NICAS
+    saber central block: true
+    input variables: *state_vars
+    output variables: *state_vars
+    bump:
+      datadir: Data/staticb_aero
+      prefix: nicas_aero
+      verbosity: main
+      strategy: specific_univariate
+      load_nicas_local: true
+      universe radius:
+        filetype: gfs
+        datapath: Data/staticb_aero/
+        filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+        filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+        filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+        filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+        filename_cplr: 20180415.000000.cor_rh.coupler.res
+        date: 2018-04-15T00:00:00Z
+  - saber block name: StdDev
+    input variables: *state_vars
+    output variables: *state_vars
+    file:
+      filetype: gfs
+      psinfile: true
+      datapath: Data/staticb_aero/
+      filename_core: 20180415.000000.stddev.fv_core.res.nc
+      filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
+      filename_sfcd: 20180415.000000.stddev.sfc_data.nc
+      filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
+      filename_cplr: 20180415.000000.stddev.coupler.res
+      date: 2018-04-15T00:00:00Z
+output dirac:
+  filetype: gfs
+  datapath: Data/staticb_aero/
+  filename_core: dirac_local_%id%_aero_12pe.fv_core.res.nc
+  filename_trcr: dirac_local_%id%_aero_12pe.fv_tracer.res.nc
+  filename_sfcd: dirac_local_%id%_aero_12pe.sfc_data.nc
+  filename_sfcw: dirac_local_%id%_aero_12pe.fv_srf_wnd.res.nc
+  filename_cplr: dirac_local_%id%_aero_12pe.coupler.res
+  date: 2018-04-15T00:00:00Z
+dirac:
+  ndir: 1
+  ixdir: [1]    #Xdir
+  iydir: [1]    #Ydir
+  ildir: [50]   #Level
+  itdir: [1]    #Tile
+  ifdir: [so4]  #Field
+
+test:
+  reference filename: testoutput/staticb_dirac_local_aero_12pe.ref
+  test output filename: testoutput/staticb_dirac_local_aero_12pe.test.out

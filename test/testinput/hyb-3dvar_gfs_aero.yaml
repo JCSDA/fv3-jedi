@@ -131,7 +131,6 @@ variational:
         - fieldset: Data/fieldsets/ufo.yaml
     diagnostics:
       departures: ombg
-
 test:
   reference filename: testoutput/hyb-3dvar_gfs_aero.ref
   float relative tolerance: 1.0e-1

@@ -363,8 +363,6 @@ call conf%get_or_die("ifdir",str_array)
 ifdir = str_array
 deallocate(str_array)
 
-print*, ndir, ixdir, iydir, ildir, itdir, ifdir
-
 ! Setup Diracs
 call self%zero()
 

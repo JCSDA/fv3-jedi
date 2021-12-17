@@ -9,19 +9,20 @@ geometry:
   npz: 64
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
-input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 background:
   filetype: gfs
   state variables: *inputVars
-  psinfile: true
-  datapath: Data/staticb/unbalanced/mem001
+  datapath: Data/inputs/gfs_aero_c12/mem001
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
 bump:
-  datadir: Data/staticb
+  datadir: Data/staticb_aero
+  prefix: var_aero
   verbosity: main
   universe_rad: 3000.0e3
   method: cor
@@ -30,24 +31,25 @@ bump:
   var_filter: true
   var_niter: 1
   var_rhflt:
-    stream_function: [3000.0e3]
-    velocity_potential: [3000.0e3]
-    air_temperature: [300.0e3]
-    surface_pressure: [300.0e3]
-    relative_humidity: [300.0e3]
-    cloud_liquid_water: [300.0e3]
-    ozone_mass_mixing_ratio: [300.0e3]
+    mass_fraction_of_sulfate_in_air: [300.0e3]
+    mass_fraction_of_hydrophobic_black_carbon_in_air: [300.0e3]
+    mass_fraction_of_hydrophilic_black_carbon_in_air: [300.0e3]
+    mass_fraction_of_hydrophobic_organic_carbon_in_air: [300.0e3]
+    mass_fraction_of_hydrophilic_organic_carbon_in_air: [300.0e3]
+    mass_fraction_of_dust001_in_air: [300.0e3]
+    mass_fraction_of_dust002_in_air: [300.0e3]
+    mass_fraction_of_dust003_in_air: [300.0e3]
+    mass_fraction_of_dust004_in_air: [300.0e3]
+    mass_fraction_of_dust005_in_air: [300.0e3]
+    mass_fraction_of_sea_salt001_in_air: [300.0e3]
+    mass_fraction_of_sea_salt002_in_air: [300.0e3]
+    mass_fraction_of_sea_salt003_in_air: [300.0e3]
+    mass_fraction_of_sea_salt004_in_air: [300.0e3]
   ne: 30
-  grids:
-  - prefix: var_3D_gfs
-    variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-  - prefix: var_2D_gfs
-    variables: [surface_pressure]
   input:
   - parameter: var
     filetype: gfs
-    datapath: Data/staticb/
-    psinfile: true
+    datapath: Data/staticb_aero/
     filename_core: 20180414.210000.var.fv_core.res.nc
     filename_trcr: 20180414.210000.var.fv_tracer.res.nc
     filename_sfcd: 20180414.210000.var.sfc_data.nc
@@ -56,8 +58,7 @@ bump:
     date: 2018-04-14T21:00:00Z
   - parameter: m4
     filetype: gfs
-    datapath: Data/staticb/
-    psinfile: true
+    datapath: Data/staticb_aero/
     filename_core: 20180414.210000.m4.fv_core.res.nc
     filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
     filename_sfcd: 20180414.210000.m4.sfc_data.nc
@@ -66,8 +67,7 @@ bump:
     date: 2018-04-14T21:00:00Z
   - parameter: var
     filetype: gfs
-    datapath: Data/staticb/
-    psinfile: true
+    datapath: Data/staticb_aero/
     filename_core: 20180415.000000.var.fv_core.res.nc
     filename_trcr: 20180415.000000.var.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.var.sfc_data.nc
@@ -76,8 +76,7 @@ bump:
     date: 2018-04-15T00:00:00Z
   - parameter: m4
     filetype: gfs
-    datapath: Data/staticb/
-    psinfile: true
+    datapath: Data/staticb_aero/
     filename_core: 20180415.000000.m4.fv_core.res.nc
     filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
     filename_sfcd: 20180415.000000.m4.sfc_data.nc
@@ -86,8 +85,7 @@ bump:
     date: 2018-04-15T00:00:00Z
   - parameter: var
     filetype: gfs
-    datapath: Data/staticb/
-    psinfile: true
+    datapath: Data/staticb_aero/
     filename_core: 20180415.030000.var.fv_core.res.nc
     filename_trcr: 20180415.030000.var.fv_tracer.res.nc
     filename_sfcd: 20180415.030000.var.sfc_data.nc
@@ -96,8 +94,7 @@ bump:
     date: 2018-04-15T03:00:00Z
   - parameter: m4
     filetype: gfs
-    datapath: Data/staticb/
-    psinfile: true
+    datapath: Data/staticb_aero/
     filename_core: 20180415.030000.m4.fv_core.res.nc
     filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
     filename_sfcd: 20180415.030000.m4.sfc_data.nc
@@ -107,7 +104,7 @@ bump:
   output:
   - parameter: stddev
     filetype: gfs
-    datapath: Data/staticb/
+    datapath: Data/staticb_aero/
     filename_core: stddev.fv_core.res.nc
     filename_trcr: stddev.fv_tracer.res.nc
     filename_sfcd: stddev.sfc_data.nc
@@ -116,5 +113,5 @@ bump:
     date: 2018-04-15T00:00:00Z
 
 test:
-  reference filename: testoutput/staticb_var_gfs.ref
-  test output filename: testoutput/staticb_var_gfs.test.out
+  reference filename: testoutput/staticb_var_aero.ref
+  test output filename: testoutput/staticb_var_aero.test.out
