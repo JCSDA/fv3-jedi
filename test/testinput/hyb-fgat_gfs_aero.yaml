@@ -91,12 +91,13 @@ cost function:
   analysis variables: *aerovars
   window begin: 2018-04-14T21:00:00Z
   window length: PT6H
-  variable change: Analysis2Model
-  filetype: gfs
-  datapath: Data/inputs/gfs_aero_c12/bkg/
-  filename_core: 20180414.210000.fv_core.res.nc
-  filename_trcr: 20180414.210000.fv_tracer.res.nc
-  filename_cplr: 20180414.210000.coupler.res
+#  variable change:
+#    variable change name: Analysis2Model
+#    filetype: gfs
+#    datapath: Data/inputs/gfs_aero_c12/bkg/
+#    filename_core: 20180414.210000.fv_core.res.nc
+#    filename_trcr: 20180414.210000.fv_tracer.res.nc
+#    filename_cplr: 20180414.210000.coupler.res
   model:
     name: PSEUDO
     filetype: gfs

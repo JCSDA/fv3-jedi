@@ -39,7 +39,6 @@ states:
     analytic init:
       method: dcmip-test-4-0
     datetime: 2018-04-14T21:00:00Z
-    state variables: [u,v,ua,va,T,DELP,w,delz,sphum,ice_wat,liq_wat,o3mr,phis]
   output:
     filetype: geos
     datapath: Data/

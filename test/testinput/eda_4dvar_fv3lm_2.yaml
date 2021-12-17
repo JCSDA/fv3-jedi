@@ -250,14 +250,15 @@ cost function:
   analysis variables: *incvars
   window begin: 2018-04-14T21:00:00Z
   window length: PT6H
-  variable change: Analysis2Model
-  filetype: gfs
-  datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180414.210000.fv_core.res.nc
-  filename_trcr: 20180414.210000.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.sfc_data.nc
-  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.coupler.res
+  variable change:
+    variable change name: Analysis2Model
+    filetype: gfs
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20180414.210000.fv_core.res.nc
+    filename_trcr: 20180414.210000.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.sfc_data.nc
+    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.coupler.res
   model:
     name: FV3LM
     namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -311,7 +312,6 @@ variational:
       departures: ombg
     obs perturbations: true
     linear model:
-      variable change: Analysis2Model
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
@@ -322,6 +322,8 @@ variational:
       lm_do_mst: 0
       trajectory:
         model variables: [ud,vd,ua,va,t,delp,q,qi,ql,o3mr]
+    linear variable change:
+      linear variable change name: Analysis2Model
   - ninner: 1
     gradient norm reduction: 1e-10
     test: on
@@ -336,7 +338,6 @@ variational:
     diagnostics:
       departures: ombg
     linear model:
-      variable change: Analysis2Model
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
@@ -347,3 +348,5 @@ variational:
       lm_do_mst: 0
       trajectory:
         model variables: [ud,vd,ua,va,t,delp,q,qi,ql,o3mr]
+    linear variable change:
+      linear variable change name: Analysis2Model

@@ -32,6 +32,13 @@ CostFunction::addIncrement: Analysis:
    v_srf                         : Min = -1.439e+01, Max = +1.507e+01, RMS = +4.110e+00
    f10m                          : Min = +6.213e-01, Max = +1.040e+00, RMS = +9.009e-01
  -----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
 Norm of stddev: 3.321e+05
 CostJb   : Nonlinear Jb = 2.124e+01
 CostJo   : Nonlinear Jo(Aircraft) = 2.050e+03, nobs = 1403, Jo/n = 1.461e+00, err = 2.681e+00
@@ -66,6 +73,13 @@ CostFunction::addIncrement: Analysis:
    v_srf                         : Min = -1.439e+01, Max = +1.507e+01, RMS = +4.110e+00
    f10m                          : Min = +6.213e-01, Max = +1.040e+00, RMS = +9.009e-01
  -----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
 CostJb   : Nonlinear Jb = 24.4
 CostJo   : Nonlinear Jo(Aircraft) = 1.99e+03, nobs = 1403, Jo/n = 1.42, err = 2.68
 CostJo   : Nonlinear Jo(Radiosonde) = 1.57e+03, nobs = 1127, Jo/n = 1.39, err = 2.06

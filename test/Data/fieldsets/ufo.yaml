@@ -39,9 +39,9 @@ Fields:
     Units: 1
     Levels: full
 
-  - FieldName: mole_fraction_of_ozone_in_air
-    Units: none
-    Levels: full
+#  - FieldName: mole_fraction_of_ozone_in_air
+#    Units: none
+#    Levels: full
 
   - FieldName: integrated_layer_ozone_in air
     Units: none
@@ -147,6 +147,7 @@ Fields:
     Units: none
     Levels: 1
     Space: direction
+    InterpType: nearest
 
   - FieldName: leaf_area_index
     Units: none
@@ -164,16 +165,19 @@ Fields:
     Units: none
     Levels: 1
     Kind: integer
+    InterpType: integer
 
   - FieldName: vegetation_type_index
     Units: none
     Levels: 1
     Kind: integer
+    InterpType: integer
 
   - FieldName: soil_type
     Units: none
     Levels: 1
     Kind: integer
+    InterpType: integer
 
   - FieldName: surface_roughness_length
     Units: m

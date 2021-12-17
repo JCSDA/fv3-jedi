@@ -57,6 +57,30 @@ list( APPEND fv3jedi_src_files
   IO/Utils/fv3jedi_io_utils_mod.f90
   IO/Utils/IOBase.cc
   IO/Utils/IOBase.h
+  LinearVariableChange/LinearVariableChange.cc
+  LinearVariableChange/LinearVariableChange.h
+  LinearVariableChange/Analysis2Model/fv3jedi_linvarcha_a2m.interface.F90
+  LinearVariableChange/Analysis2Model/fv3jedi_linvarcha_a2m_mod.f90
+  LinearVariableChange/Analysis2Model/LinVarChaA2M.cc
+  LinearVariableChange/Analysis2Model/LinVarChaA2M.h
+  LinearVariableChange/Analysis2Model/LinVarChaA2M.interface.h
+  LinearVariableChange/Base/LinearVariableChangeBase.cc
+  LinearVariableChange/Base/LinearVariableChangeBase.h
+  LinearVariableChange/Control2Analysis/fv3jedi_linvarcha_c2a.interface.F90
+  LinearVariableChange/Control2Analysis/fv3jedi_linvarcha_c2a_mod.f90
+  LinearVariableChange/Control2Analysis/LinVarChaC2A.cc
+  LinearVariableChange/Control2Analysis/LinVarChaC2A.h
+  LinearVariableChange/Control2Analysis/LinVarChaC2A.interface.h
+  LinearVariableChange/Model2GeoVaLs/fv3jedi_lvc_model2geovals.interface.F90
+  LinearVariableChange/Model2GeoVaLs/fv3jedi_lvc_model2geovals_mod.f90
+  LinearVariableChange/Model2GeoVaLs/LinVarChaModel2GeoVaLs.cc
+  LinearVariableChange/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h
+  LinearVariableChange/Model2GeoVaLs/LinVarChaModel2GeoVaLs.interface.h
+  LinearVariableChange/NMCBalance/fv3jedi_linvarcha_nmcbal.interface.F90
+  LinearVariableChange/NMCBalance/fv3jedi_linvarcha_nmcbal_mod.f90
+  LinearVariableChange/NMCBalance/LinVarChaNMCBal.cc
+  LinearVariableChange/NMCBalance/LinVarChaNMCBal.h
+  LinearVariableChange/NMCBalance/LinVarChaNMCBal.interface.h
   Model/fv3lm/fv3jedi_fv3lm_interface_mod.F90
   Model/fv3lm/fv3jedi_fv3lm_mod.f90
   Model/fv3lm/ModelFV3LM.cc
@@ -82,58 +106,47 @@ list( APPEND fv3jedi_src_files
   Utilities/fv3jedi_interpolation_mod.f90
   Utilities/fv3jedi_kinds_mod.f90
   Utilities/fv3jedi_netcdf_utils_mod.F90
-  VariableChanges/Analysis2Model/LinVarChaA2M.cc
-  VariableChanges/Analysis2Model/LinVarChaA2M.h
-  VariableChanges/Analysis2Model/LinVarChaA2M.interface.h
-  VariableChanges/Analysis2Model/fv3jedi_linvarcha_a2m.interface.F90
-  VariableChanges/Analysis2Model/fv3jedi_linvarcha_a2m_mod.f90
-  VariableChanges/Analysis2Model/VarChaA2M.cc
-  VariableChanges/Analysis2Model/VarChaA2M.h
-  VariableChanges/Analysis2Model/VarChaA2M.interface.h
-  VariableChanges/Analysis2Model/fv3jedi_varcha_a2m.interface.F90
-  VariableChanges/Analysis2Model/fv3jedi_varcha_a2m_mod.f90
-  VariableChanges/ColdStartWinds/fv3jedi_vc_coldstartwinds.interface.F90
-  VariableChanges/ColdStartWinds/fv3jedi_vc_coldstartwinds_mod.f90
-  VariableChanges/ColdStartWinds/VarChaColdStartWinds.cc
-  VariableChanges/ColdStartWinds/VarChaColdStartWinds.h
-  VariableChanges/ColdStartWinds/VarChaColdStartWinds.interface.h
-  VariableChanges/Control2Analysis/LinVarChaC2A.cc
-  VariableChanges/Control2Analysis/LinVarChaC2A.h
-  VariableChanges/Control2Analysis/LinVarChaC2A.interface.h
-  VariableChanges/Control2Analysis/fv3jedi_linvarcha_c2a.interface.F90
-  VariableChanges/Control2Analysis/fv3jedi_linvarcha_c2a_mod.f90
-  VariableChanges/Control2Analysis/VarChaC2A.cc
-  VariableChanges/Control2Analysis/VarChaC2A.h
-  VariableChanges/Control2Analysis/VarChaC2A.interface.h
-  VariableChanges/Control2Analysis/fv3jedi_varcha_c2a.interface.F90
-  VariableChanges/Control2Analysis/fv3jedi_varcha_c2a_mod.f90
-  VariableChanges/GEOSRstToBkg/fv3jedi_vc_geosrst2bkg.interface.F90
-  VariableChanges/GEOSRstToBkg/fv3jedi_vc_geosrst2bkg_mod.f90
-  VariableChanges/GEOSRstToBkg/VarChaGeosRst2Bkg.cc
-  VariableChanges/GEOSRstToBkg/VarChaGeosRst2Bkg.h
-  VariableChanges/GEOSRstToBkg/VarChaGeosRst2Bkg.interface.h
-  VariableChanges/Model2GeoVaLs/fv3jedi_lvc_model2geovals.interface.F90
-  VariableChanges/Model2GeoVaLs/fv3jedi_lvc_model2geovals_mod.f90
-  VariableChanges/Model2GeoVaLs/fv3jedi_vc_model2geovals.interface.F90
-  VariableChanges/Model2GeoVaLs/fv3jedi_vc_model2geovals_mod.f90
-  VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.cc
-  VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h
-  VariableChanges/Model2GeoVaLs/LinVarChaModel2GeoVaLs.interface.h
-  VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.cc
-  VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.h
-  VariableChanges/Model2GeoVaLs/VarChaModel2GeoVaLs.interface.h
-  VariableChanges/NMCBalance/LinVarChaNMCBal.cc
-  VariableChanges/NMCBalance/LinVarChaNMCBal.h
-  VariableChanges/NMCBalance/LinVarChaNMCBal.interface.h
-  VariableChanges/NMCBalance/fv3jedi_linvarcha_nmcbal.interface.F90
-  VariableChanges/NMCBalance/fv3jedi_linvarcha_nmcbal_mod.f90
-  VariableChanges/Utils/fv3jedi_fieldfail_mod.f90
-  VariableChanges/Utils/height_variables_mod.f90
-  VariableChanges/Utils/moisture_variables_mod.f90
-  VariableChanges/Utils/pressure_variables_mod.f90
-  VariableChanges/Utils/surface_variables_mod.f90
-  VariableChanges/Utils/temperature_variables_mod.f90
-  VariableChanges/Utils/wind_variables_mod.f90
+  VariableChange/VariableChange.cc
+  VariableChange/VariableChange.h
+  VariableChange/Analysis2Model/fv3jedi_varcha_a2m.interface.F90
+  VariableChange/Analysis2Model/fv3jedi_varcha_a2m_mod.f90
+  VariableChange/Analysis2Model/VarChaA2M.cc
+  VariableChange/Analysis2Model/VarChaA2M.h
+  VariableChange/Analysis2Model/VarChaA2M.interface.h
+  VariableChange/Base/VariableChangeBase.cc
+  VariableChange/Base/VariableChangeBase.h
+  VariableChange/ColdStartWinds/fv3jedi_vc_coldstartwinds.interface.F90
+  VariableChange/ColdStartWinds/fv3jedi_vc_coldstartwinds_mod.f90
+  VariableChange/ColdStartWinds/VarChaColdStartWinds.cc
+  VariableChange/ColdStartWinds/VarChaColdStartWinds.h
+  VariableChange/ColdStartWinds/VarChaColdStartWinds.interface.h
+  VariableChange/Control2Analysis/fv3jedi_varcha_c2a.interface.F90
+  VariableChange/Control2Analysis/fv3jedi_varcha_c2a_mod.f90
+  VariableChange/Control2Analysis/VarChaC2A.cc
+  VariableChange/Control2Analysis/VarChaC2A.h
+  VariableChange/Control2Analysis/VarChaC2A.interface.h
+  VariableChange/GEOSRstToBkg/fv3jedi_vc_geosrst2bkg.interface.F90
+  VariableChange/GEOSRstToBkg/fv3jedi_vc_geosrst2bkg_mod.f90
+  VariableChange/GEOSRstToBkg/VarChaGeosRst2Bkg.cc
+  VariableChange/GEOSRstToBkg/VarChaGeosRst2Bkg.h
+  VariableChange/GEOSRstToBkg/VarChaGeosRst2Bkg.interface.h
+  VariableChange/Model2GeoVaLs/fv3jedi_vc_model2geovals.interface.F90
+  VariableChange/Model2GeoVaLs/fv3jedi_vc_model2geovals_mod.f90
+  VariableChange/Model2GeoVaLs/VarChaModel2GeoVaLs.cc
+  VariableChange/Model2GeoVaLs/VarChaModel2GeoVaLs.h
+  VariableChange/Model2GeoVaLs/VarChaModel2GeoVaLs.interface.h
+  VariableChange/Utils/fv3jedi_fieldfail_mod.f90
+  VariableChange/Utils/height_variables_mod.f90
+  VariableChange/Utils/moisture_variables_mod.f90
+  VariableChange/Utils/pressure_variables_mod.f90
+  VariableChange/Utils/surface_variables_mod.f90
+  VariableChange/Utils/temperature_variables_mod.f90
+  VariableChange/Utils/wind_variables_mod.f90
+  VariableChange/VertRemap/fv3jedi_vc_vertremap.interface.F90
+  VariableChange/VertRemap/fv3jedi_vc_vertremap_mod.f90
+  VariableChange/VertRemap/VarChaVertRemap.cc
+  VariableChange/VertRemap/VarChaVertRemap.h
+  VariableChange/VertRemap/VarChaVertRemap.interface.h
   Tlm/fv3jedi_tlm_mod.f90
   Tlm/fv3jedi_traj_mod.f90
   Tlm/Tlm.cc
@@ -154,11 +167,11 @@ ENDIF()
 # Source files when building with stand alone fv3 (GFDL_atmos_cubed_sphere)
 list( APPEND fv3jedi_fv3_src_files
   Geometry/fv_init_control_mod.F90
-  VariableChanges/VertRemap/fv3jedi_vc_vertremap.interface.F90
-  VariableChanges/VertRemap/fv3jedi_vc_vertremap_mod.f90
-  VariableChanges/VertRemap/VarChaVertRemap.cc
-  VariableChanges/VertRemap/VarChaVertRemap.h
-  VariableChanges/VertRemap/VarChaVertRemap.interface.h
+  VariableChange/VertRemap/fv3jedi_vc_vertremap.interface.F90
+  VariableChange/VertRemap/fv3jedi_vc_vertremap_mod.f90
+  VariableChange/VertRemap/VarChaVertRemap.cc
+  VariableChange/VertRemap/VarChaVertRemap.h
+  VariableChange/VertRemap/VarChaVertRemap.interface.h
 )
 
 # Source files when building with GEOS

@@ -14,9 +14,6 @@ state test:
     datapath: Data/inputs/geos_c12
     filename_bkgd: geos.bkg.20180414_210000z.nc4
     filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-#    filename_core:
-#    filename_mois:
-#    filename_surf:
     tiledim: true
     clobber: false
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
@@ -24,8 +21,7 @@ state test:
     analytic init:
       method: dcmip-test-4-0
     datetime: 2018-04-14T21:00:00Z
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   date: 2018-04-14T21:00:00Z
   norm file: 661.38618820428508
-  norm generated state: 630.85428384947306
+  norm generated state: 14954.334047185948
   tolerance: 1.0e-08

@@ -94,8 +94,8 @@ cost function:
             verbosity: main
             universe_rad: 2000.0e3
             load_wind_local: true
-        variable changes:
-        - variable change: Control2Analysis
+        linear variable change:
+          linear variable change name: Control2Analysis
           input variables: *3dvars_with_rh
           output variables: *3dvars
       weight:

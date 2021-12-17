@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_GEOMETRYITERATOR_GEOMETRYITERATOR_H_
-#define FV3JEDI_GEOMETRYITERATOR_GEOMETRYITERATOR_H_
+#pragma once
 
 #include <iterator>
 #include <string>
@@ -53,5 +52,3 @@ class GeometryIterator: public std::iterator<std::forward_iterator_tag,
 };
 
 }  // namespace fv3jedi
-
-#endif  // FV3JEDI_GEOMETRYITERATOR_GEOMETRYITERATOR_H_

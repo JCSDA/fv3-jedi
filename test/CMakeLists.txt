@@ -60,10 +60,12 @@ list( APPEND fv3jedi_testinput
   testinput/bumpparameters_nicas_gfs_aero.yaml
   testinput/bumpparameters_nicas_gfs_aero_logp.yaml
   testinput/bumpparameters_nicas_lam_cmaq.yaml
+  testinput/convertincrement_geos_model2geovals.yaml
   testinput/convertstate_geos_crtm_surface.yaml
   testinput/convertstate_geos_model2geovals.yaml
   testinput/convertstate_geos.yaml
-  testinput/convertstate_gfs_cold2fv3.yaml
+  testinput/convertstate_gfs_coldstartwinds.yaml
+  testinput/convertstate_gfs_vertremap.yaml
   testinput/convertstate_gfs_model2geovals.yaml
   testinput/convertstate_gfs.yaml
   testinput/convertstate_gfs_c2ll.yaml
@@ -184,10 +186,12 @@ list( APPEND fv3jedi_testoutput
   testoutput/bumpparameters_nicas_gfs_aero.ref
   testoutput/bumpparameters_nicas_gfs_aero_logp.ref
   testoutput/bumpparameters_nicas_lam_cmaq.ref
+  testoutput/convertincrement_geos_model2geovals.ref
   testoutput/convertstate_geos_crtm_surface.ref
   testoutput/convertstate_geos_model2geovals.ref
   testoutput/convertstate_geos.ref
-  testoutput/convertstate_gfs_cold2fv3.ref
+  testoutput/convertstate_gfs_coldstartwinds.ref
+  testoutput/convertstate_gfs_vertremap.ref
   testoutput/convertstate_gfs_model2geovals.ref
   testoutput/convertstate_gfs.ref
   testoutput/convertstate_gfs_c2ll.ref
@@ -821,11 +825,16 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_c2ll
                   COMMAND  fv3jedi_convertstate.x )
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_cold2fv3
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_coldstartwinds
                     MPI      6
-                    ARGS     testinput/convertstate_gfs_cold2fv3.yaml
+                    ARGS     testinput/convertstate_gfs_coldstartwinds.yaml
                     COMMAND  fv3jedi_convertstate.x )
 
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_vertremap
+                    MPI      6
+                    ARGS     testinput/convertstate_gfs_vertremap.yaml
+                    COMMAND  fv3jedi_convertstate.x
+                    TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_coldstartwinds)
 endif()
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_model2geovals
@@ -837,6 +846,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
                   MPI      6
                   ARGS     testinput/convertstate_geos_model2geovals.yaml
                   COMMAND  fv3jedi_convertstate.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertincrement_geos_model2geovals
+                  MPI      6
+                  ARGS     testinput/convertincrement_geos_model2geovals.yaml
+                COMMAND  fv3jedi_convertincrement.x )
 
 # Remaining interface tests
 # -------------------------

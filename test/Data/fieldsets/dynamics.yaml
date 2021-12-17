@@ -228,7 +228,7 @@ Fields:
 
   - FieldIONames: [cld_amt,cloud_area_fraction_in_atmosphere_layer]
     FieldName: cld_amt
-    LongName: cloud_area_fraction_in_atmosphere_layer 
+    LongName: cloud_area_fraction_in_atmosphere_layer
     Units: 1
     Tracer: true
     IOFile: tracer
@@ -247,7 +247,7 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [o3,o3ppmv]
+  - FieldIONames: [o3,o3ppmv,mole_fraction_of_ozone_in_air]
     FieldName: o3ppmv
     LongName: mole_fraction_of_ozone_in_air
     Units: mole_fraction_of_ozone_in_air
@@ -351,20 +351,20 @@ Fields:
 
   - FieldIONames: [stc]
     FieldName: stc
-    LongName: soil_temperature
+    LongName: stc
     Units: none
     Levels: 4
     IOFile: surface
 
   - FieldIONames: [tslb]
     FieldName: tslb
-    LongName: soil_temperature
+    LongName: tslb
     Units: none
     Levels: 9
     IOFile: surface
 
   - FieldIONames: [soilt]
-    FieldName: stc
+    FieldName: soilt
     LongName: soilt
     Units: none
     Levels: 1
@@ -372,20 +372,20 @@ Fields:
 
   - FieldIONames: [smc]
     FieldName: smc
-    LongName: soil_moisture
+    LongName: smc
     Units: none
     Levels: 4
     IOFile: surface
 
   - FieldIONames: [smois]
     FieldName: smois
-    LongName: soil_moisture
+    LongName: smois
     Units: none
     Levels: 9
     IOFile: surface
 
   - FieldIONames: [soilm]
-    FieldName: smc
+    FieldName: soilm
     LongName: soilm
     Units: none
     Levels: 1
@@ -578,4 +578,3 @@ Fields:
     Units: K
     Levels: 1
     IOFile: surface
-

@@ -32,7 +32,6 @@ states:
     analytic init:
       method: dcmip-test-1-1
     datetime: 2018-04-14T21:00:00Z
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   output:
     filetype: geos
     datapath: Data/
@@ -41,7 +40,6 @@ states:
     analytic init:
       method: dcmip-test-1-2
     datetime: 2018-04-14T21:00:00Z
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   output:
     filetype: geos
     datapath: Data/
@@ -50,7 +48,6 @@ states:
     analytic init:
       method: dcmip-test-3-1
     datetime: 2018-04-14T21:00:00Z
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
   output:
     filetype: geos
     datapath: Data/

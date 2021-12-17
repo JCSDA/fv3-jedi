@@ -365,4 +365,26 @@ end subroutine fv3jedi_state_deserialize_c
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine fv3jedi_state_update_fields_c(c_key_state, c_key_geom, c_vars) &
+  bind(c,name='fv3jedi_state_update_fields_f90')
+
+implicit none
+integer(c_int), intent(inout)  :: c_key_state
+integer(c_int), intent(in)     :: c_key_geom !< Geometry
+type(c_ptr), value, intent(in) :: c_vars     !< List of variables
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables)         :: vars
+
+call fv3jedi_state_registry%get(c_key_state,self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+
+vars = oops_variables(c_vars)
+call self%update_fields(geom, vars)
+
+end subroutine fv3jedi_state_update_fields_c
+
+! --------------------------------------------------------------------------------------------------
+
 end module fv3jedi_state_interface_mod

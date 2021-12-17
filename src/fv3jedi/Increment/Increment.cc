@@ -35,16 +35,20 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
-                     const util::DateTime & time): geom_(new Geometry(geom)), vars_(vars),
-                     time_(time) {
+                     const util::DateTime & time)
+  : geom_(new Geometry(geom)), vars_(vars), time_(time),
+    varsLongName_(geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars))
+{
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_zero_f90(keyInc_);
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-Increment::Increment(const Geometry & geom, const Increment & other): geom_(new Geometry(geom)),
-                     vars_(other.vars_), time_(other.time_) {
+Increment::Increment(const Geometry & geom, const Increment & other)
+  : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_),
+    varsLongName_(other.varsLongName_)
+{
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   fv3jedi_increment_change_resol_f90(keyInc_, geom_->toFortran(), other.keyInc_,
@@ -52,8 +56,9 @@ Increment::Increment(const Geometry & geom, const Increment & other): geom_(new 
   oops::Log::trace() << "Increment::Increment (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-Increment::Increment(const Increment & other, const bool copy): geom_(other.geom_),
-                     vars_(other.vars_), time_(other.time_) {
+Increment::Increment(const Increment & other, const bool copy)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_), varsLongName_(other.varsLongName_)
+{
   oops::Log::trace() << "Increment::Increment (from other and bool copy) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
   if (copy) {
@@ -82,6 +87,12 @@ Increment & Increment::operator=(const Increment & rhs) {
   fv3jedi_increment_copy_f90(keyInc_, rhs.keyInc_);
   time_ = rhs.time_;
   return *this;
+}
+// -------------------------------------------------------------------------------------------------
+void Increment::updateFields(const oops::Variables & newVars) {
+  vars_ = newVars;
+  varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(newVars);
+  fv3jedi_increment_update_fields_f90(keyInc_, geom_->toFortran(), newVars);
 }
 // -------------------------------------------------------------------------------------------------
 Increment & Increment::operator+=(const Increment & dx) {

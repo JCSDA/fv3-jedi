@@ -20,7 +20,7 @@ use string_utils
 
 ! fv3jedi
 use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
-                                     hasfield, short_name_to_fv3jedi_name
+                                     hasfield, short_name_to_fv3jedi_name, create_field
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_kinds_mod,         only: kind_real
@@ -56,6 +56,7 @@ type :: fv3jedi_fields
     procedure, public :: set_atlas
     procedure, public :: to_atlas
     procedure, public :: from_atlas
+    procedure, public :: update_fields
 
     ! Public array/field accessor functions
     procedure, public :: has_field => has_field_
@@ -84,7 +85,6 @@ subroutine create(self, geom, vars)
   type(oops_variables),  intent(in)    :: vars
 
   integer :: var, fc
-  type(field_metadata) :: fmd
   logical :: field_fail
 
   ! Allocate fields structure
@@ -92,57 +92,22 @@ subroutine create(self, geom, vars)
   self%nf = vars%nvars()
   allocate(self%fields(self%nf))
 
-
   ! Loop through and allocate actual fields
   ! ---------------------------------------
   fc = 0
   do var = 1, vars%nvars()
 
-    fmd = geom%fields%get_field(trim(vars%variable(var)))
-
     ! Uptick counter
     fc=fc+1;
 
+    ! Copy geometry
     self%fields(fc)%isc = geom%isc
     self%fields(fc)%iec = geom%iec
     self%fields(fc)%jsc = geom%jsc
     self%fields(fc)%jec = geom%jec
-    self%fields(fc)%npz = fmd%levels
 
-    field_fail = len(trim(fmd%field_name)) > field_clen
-    if (field_fail) call abor1_ftn("fv3jedi_fields.create: " //trim(fmd%field_name)// " too long")
-
-    if(.not.self%fields(fc)%lalloc) then
-
-      if (trim(fmd%stagger_loc) == 'center') then
-        allocate(self%fields(fc)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fmd%levels))
-      elseif (trim(fmd%stagger_loc) == 'northsouth') then
-        allocate(self%fields(fc)%array(geom%isc:geom%iec,geom%jsc:geom%jec+1,1:fmd%levels))
-      elseif (trim(fmd%stagger_loc) == 'eastwest') then
-        allocate(self%fields(fc)%array(geom%isc:geom%iec+1,geom%jsc:geom%jec,1:fmd%levels))
-      endif
-
-    endif
-
-    self%fields(fc)%lalloc = .true.
-
-    self%fields(fc)%short_name   = trim(fmd%field_io_name)
-    self%fields(fc)%long_name    = trim(fmd%long_name)
-    self%fields(fc)%fv3jedi_name = trim(fmd%field_name)
-    self%fields(fc)%units        = trim(fmd%units)
-    self%fields(fc)%io_file      = trim(fmd%io_file)
-    self%fields(fc)%space        = trim(fmd%space)
-    self%fields(fc)%staggerloc   = trim(fmd%stagger_loc)
-    self%fields(fc)%tracer       = fmd%tracer
-    self%fields(fc)%integerfield = trim(fmd%array_kind)=='integer'
-    ! hard-coding options for direction and integer fields, otherwise use user spec.
-    if ( self%fields(fc)%integerfield ) then
-      self%fields(fc)%interp_type  = 'integer'
-    elseif (  trim(self%fields(fc)%space) == 'direction' ) then
-      self%fields(fc)%interp_type  = 'nearest'
-    else
-      self%fields(fc)%interp_type  = trim(fmd%interp_type)
-    endif
+    ! Set this fields meta data
+    call create_field(self%fields(fc), geom%fields%get_field(trim(vars%variable(var))), geom%f_comm)
 
   enddo
 
@@ -186,7 +151,7 @@ subroutine create(self, geom, vars)
   self%calendar_type = 0
   self%date_init = 0
 
-endsubroutine create
+end subroutine create
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -196,12 +161,10 @@ class(fv3jedi_fields), intent(inout) :: self
 
 integer :: var
 
-do var = 1, self%nf
-  if(self%fields(var)%lalloc) deallocate(self%fields(var)%array)
-  self%fields(var)%lalloc = .false.
+do var = 1, size(self%fields)
+  if (self%fields(var)%lalloc) deallocate(self%fields(var)%array)
 enddo
 deallocate(self%fields)
-
 end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
@@ -605,6 +568,57 @@ do jvar = 1,vars%nvars()
 enddo
 
 end subroutine from_atlas
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine update_fields(self, geom, new_vars)
+
+implicit none
+
+! Passed variables
+class(fv3jedi_fields), intent(inout) :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: new_vars
+
+type(fv3jedi_field), allocatable :: fields_tmp(:)
+integer :: f, findex
+type(field_metadata) :: fmd
+
+! Allocate temporary array to hold fields
+allocate(fields_tmp(new_vars%nvars()))
+
+! Loop over and move fields or allocate new fields
+do f = 1, new_vars%nvars()
+
+  fields_tmp(f)%isc = geom%isc
+  fields_tmp(f)%iec = geom%iec
+  fields_tmp(f)%jsc = geom%jsc
+  fields_tmp(f)%jec = geom%jec
+
+  fmd = geom%fields%get_field(trim(new_vars%variable(f)))
+
+  if (self%has_field(trim(fmd%field_name), findex)) then
+
+    ! If already allocated then move to temporary
+    call move_alloc(self%fields(findex)%array, fields_tmp(f)%array)
+    self%fields(findex)%lalloc = .false.
+    fields_tmp(f)%lalloc = .true.
+
+  endif
+
+  ! Create field in temporary (allocate will be skipped if moved)
+  call create_field(fields_tmp(f), fmd, geom%f_comm)
+
+enddo
+
+! Move the temporary array back to self
+call self%delete()
+call move_alloc(fields_tmp, self%fields)
+
+! Update number of fields
+self%nf = size(self%fields)
+
+end subroutine update_fields
 
 ! --------------------------------------------------------------------------------------------------
 

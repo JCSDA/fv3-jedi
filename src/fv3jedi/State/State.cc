@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -31,30 +31,47 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time):
-             geom_(new Geometry(geom)), vars_(vars), time_(time) {
+State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
+  : geom_(new Geometry(geom)), vars_(vars), time_(time),
+    varsLongName_(geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars))
+{
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
+
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-State::State(const Geometry & geom, const Parameters_ & params): geom_(new Geometry(geom)),
-             time_(util::DateTime()) {
+State::State(const Geometry & geom, const Parameters_ & params)
+  : geom_(new Geometry(geom)), time_(util::DateTime())
+{
   oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
 
-  // Should check if this can be done inside read
-  oops::Variables lvars(params.toConfiguration(), "state variables");
-  this->vars_ = lvars;
-
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
-
-  // Analytical or read from file
+  // Set up time and vars
   if (params.analytic.value() != boost::none) {
     // Must pass datetime in config
     ASSERT(params.datetime.value() != boost::none);
     time_ = util::DateTime(*params.datetime.value());
+    // Variables are hard coded for analytic initial condition (must not be provided)
+    ASSERT(params.stateVariables.value() == boost::none);
+    vars_ = oops::Variables({"ua", "va", "t", "delp", "p", "q", "qi", "ql", "phis", "o3mr", "w"});
+  } else {
+    // Datetime must not be provided (will be read from file)
+    ASSERT(params.datetime.value() == boost::none);
+    // If variables are being read they must be defined in the config
+    ASSERT(params.stateVariables.value() != boost::none);
+    vars_ = oops::Variables(*params.stateVariables.value());
+  }
+
+  // Set long name variables
+  varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars_);
+
+  // Allocate state
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
+
+  // Generate analytical state or read from file
+  if (params.analytic.value() != boost::none) {
     this->analytic_init(*params.analytic.value(), geom);
   } else {
     this->read(params);
@@ -65,8 +82,10 @@ State::State(const Geometry & geom, const Parameters_ & params): geom_(new Geome
 
 // -------------------------------------------------------------------------------------------------
 
-State::State(const Geometry & resol, const State & other): geom_(new Geometry(resol)),
-             vars_(other.vars_), time_(other.time_) {
+State::State(const Geometry & resol, const State & other)
+  : geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_),
+    varsLongName_(other.varsLongName_)
+{
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
@@ -76,7 +95,9 @@ State::State(const Geometry & resol, const State & other): geom_(new Geometry(re
 
 // -------------------------------------------------------------------------------------------------
 
-State::State(const State & other): geom_(other.geom_), vars_(other.vars_), time_(other.time_) {
+State::State(const State & other)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_), varsLongName_(other.varsLongName_)
+{
   oops::Log::trace() << "State::State (from other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
   fv3jedi_state_copy_f90(keyState_, other.keyState_);
@@ -102,6 +123,14 @@ State & State::operator=(const State & rhs) {
 void State::changeResolution(const State & other) {
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void State::updateFields(const oops::Variables & newVars) {
+  vars_ = newVars;
+  varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(newVars);
+  fv3jedi_state_update_fields_f90(keyState_, geom_->toFortran(), newVars);
 }
 
 // -------------------------------------------------------------------------------------------------

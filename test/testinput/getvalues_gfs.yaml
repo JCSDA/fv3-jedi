@@ -3,7 +3,6 @@ getvalues test:
     analytic init:
       method: dcmip-test-4-0
     datetime: 2018-04-14T21:00:00Z
-    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,air_pressure]
   interpolation tolerance: 1.0e-2
 geometry:
   fms initialization:

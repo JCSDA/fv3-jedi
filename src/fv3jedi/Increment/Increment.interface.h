@@ -32,6 +32,7 @@ extern "C" {
                                           const F90geom &);
   void fv3jedi_increment_sizes_f90(const F90inc &, int &);
   void fv3jedi_increment_norm_f90(const F90inc &, double &);
+  void fv3jedi_increment_update_fields_f90(F90inc &, const F90geom &, const oops::Variables &);
   void fv3jedi_increment_set_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
                                        atlas::field::FieldSetImpl *);
   void fv3jedi_increment_to_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,

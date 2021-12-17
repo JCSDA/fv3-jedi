@@ -1,0 +1,51 @@
+input geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  nwat: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/cold_start_127.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/oro_data.yaml
+output geometry:
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  nwat: 6
+  fieldsets:
+    - fieldset: Data/fieldsets/cold_start_127.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/oro_data.yaml
+variable change:
+  # Convert to cubed-sphere D-Grid winds
+  variable change name: ColdStartWinds
+  input variables: &input [ps_cold,w_cold,zh_cold,t_cold,delp_cold,sphum_cold,liq_wat_cold,
+                   o3mr_cold,ice_wat_cold,rainwat_cold,snowwat_cold,graupel_cold,u_w_cold,v_w_cold,
+                   u_s_cold,v_s_cold,orog_filt]
+  output variables: [ps_cold,w_cold,zh_cold,t_cold,delp_cold,sphum_cold,liq_wat_cold,o3mr_cold,
+                    ice_wat_cold,rainwat_cold,snowwat_cold,graupel_cold,ud_cold,vd_cold,orog_filt]
+states:
+- input:
+    filetype: gfs
+    state variables: *input
+    datapath: Data/inputs/gfs_c12/
+    filename_cold: cold/20200101.000000.gfs_data.nc
+    filename_cplr: cold/20200101.000000.coupler.res
+    filename_orog: oro/C12_oro_data.nc
+    skip coupler file: true
+  output:
+    filetype: gfs
+    datapath: Data/convertstate/
+    prepend files with date: false
+    filename_cold: 20200101.000000.coldstartwinds.gfs_data.nc
+    filename_cplr: 20200101.000000.coldstartwinds.coupler.res
+    filename_orog: 20200101.000000.coldstartwinds.oro_data.nc
+
+test:
+  reference filename: testoutput/convertstate_gfs_coldstartwinds.ref
+  test output filename: testoutput/convertstate_gfs_coldstartwinds.test.out

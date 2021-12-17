@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_UTILITIES_INTERFACE_H_
-#define FV3JEDI_UTILITIES_INTERFACE_H_
+#pragma once
 
 // Forward declarations
 namespace eckit {
@@ -42,9 +41,10 @@ typedef int F90ootrj;
 typedef int F90state;
 // Increment key
 typedef int F90inc;
+// Variable change
+typedef int F90varcha;
 // GetValues key
 typedef int F90getvalues;
 typedef int F90lineargetvalues;
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_UTILITIES_INTERFACE_H_

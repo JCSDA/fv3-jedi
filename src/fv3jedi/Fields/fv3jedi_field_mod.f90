@@ -13,12 +13,13 @@ use datetime_mod
 use oops_variables_mod
 
 ! fv3jedi
-use fv3jedi_kinds_mod, only: kind_real
+use fv3jedi_kinds_mod,   only: kind_real
+use fields_metadata_mod, only: field_metadata
 
 implicit none
 private
 public :: fv3jedi_field, hasfield, get_field, put_field, checksame, copy_subset, &
-          long_name_to_fv3jedi_name, short_name_to_fv3jedi_name
+          long_name_to_fv3jedi_name, short_name_to_fv3jedi_name, create_field
 
 ! These are the same methods as used in fv3jedi_fields but with argument being a list of individual
 ! fields instead of the fv3jedi_fields class
@@ -43,16 +44,79 @@ type :: fv3jedi_field
  logical                   :: tracer = .false.      !Whether field is classified as tracer (pos. def.)
  character(len=field_clen) :: space                 !One of vector, magnitude, direction
  character(len=field_clen) :: staggerloc            !One of center, eastwest, northsouth, corner
- character(len=field_clen) :: interp_type = "default" ! One of nearest, integer, or default 
+ character(len=field_clen) :: interp_type = "default" ! One of nearest, integer, or default
                                                       ! default will take method from geometry
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
  logical :: integerfield = .false.                  !Whether field is an integer
+ type(fckit_mpi_comm) :: comm                     ! Communicator
 endtype fv3jedi_field
 
 ! --------------------------------------------------------------------------------------------------
 
 contains
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine create_field(self, fmd, comm)
+
+type(fv3jedi_field),  intent(inout) :: self
+type(field_metadata), intent(in)    :: fmd
+type(fckit_mpi_comm), intent(in)    :: comm
+
+! Check that the name in the field meta data is not longer than expected
+! ----------------------------------------------------------------------
+if (len(trim(fmd%field_name)) > field_clen) &
+  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%field_name)// " too long")
+
+! Retrieve number of levels
+! -------------------------
+self%npz = fmd%levels
+
+! Allocate the field array data
+! -----------------------------
+if(.not.self%lalloc) then
+
+  if (trim(fmd%stagger_loc) == 'center') then
+    allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:fmd%levels))
+  elseif (trim(fmd%stagger_loc) == 'northsouth') then
+    allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:fmd%levels))
+  elseif (trim(fmd%stagger_loc) == 'eastwest') then
+    allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:fmd%levels))
+  endif
+
+  ! Initialize to zero and set allocated
+  self%array = 0.0_kind_real
+  self%lalloc = .true.
+
+endif
+
+! Set the rest of the meta data
+! -----------------------------
+self%short_name   = trim(fmd%field_io_name)
+self%long_name    = trim(fmd%long_name)
+self%fv3jedi_name = trim(fmd%field_name)
+self%units        = trim(fmd%units)
+self%io_file      = trim(fmd%io_file)
+self%space        = trim(fmd%space)
+self%staggerloc   = trim(fmd%stagger_loc)
+self%tracer       = fmd%tracer
+self%integerfield = trim(fmd%array_kind)=='integer'
+self%interp_type  = trim(fmd%interp_type)
+
+! Ensure the interpolation type is consistent with other metadata
+! ---------------------------------------------------------------
+if ( self%integerfield ) then
+  self%interp_type  = 'integer'
+elseif (  trim(self%space) == 'direction' ) then
+  self%interp_type  = 'nearest'
+endif
+
+! Communicator
+! ------------
+self%comm = comm
+
+end subroutine create_field
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -210,6 +274,36 @@ end subroutine put_field
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine print_fields_debug(fields1, fields2)
+
+type(fv3jedi_field), intent(in) :: fields1(:)
+type(fv3jedi_field), intent(in) :: fields2(:)
+
+integer :: var
+
+! Only root prints the fields
+if (fields1(1)%comm%rank() == 0) then
+
+  print*, 'Number of fields: ', size(fields1), "and", size(fields2)
+
+  ! Print list of fields in fields1
+  print*, "List of fields in fields1:"
+  do var = 1,size(fields1)
+    print*, trim(fields1(var)%fv3jedi_name)
+  enddo
+
+  ! Print list of fields in fields2
+  print*, "List of fields in fields2:"
+  do var = 1,size(fields2)
+    print*, 'fields2:', var, trim(fields2(var)%fv3jedi_name)
+  enddo
+
+endif
+
+end subroutine print_fields_debug
+
+! --------------------------------------------------------------------------------------------------
+
 subroutine checksame(fields1, fields2, calling_method)
 
 implicit none
@@ -220,13 +314,17 @@ character(len=*),    intent(in) :: calling_method
 integer :: var
 
 if (size(fields1) .ne. size(fields2)) then
+  if (fields1(1)%comm%rank() == 0) print*, 'fv3jedi.fields checksame different number of fields'
+  call print_fields_debug(fields1, fields2)
   call abor1_ftn(trim(calling_method)//"(checksame): Different number of fields")
 endif
 
 do var = 1,size(fields1)
   if (fields1(var)%fv3jedi_name .ne. fields2(var)%fv3jedi_name) then
-      call abor1_ftn(trim(calling_method)//"(checksame): field "//trim(fields1(var)%fv3jedi_name)//&
-                     " not in the equivalent position in the right hand side")
+    if (fields1(1)%comm%rank() == 0) print*, 'fv3jedi.fields checksame positional differences'
+    call print_fields_debug(fields1, fields2)
+    call abor1_ftn(trim(calling_method)//"(checksame): field "//trim(fields1(var)%fv3jedi_name)//&
+                                           " not in the equivalent position in the right hand side")
   endif
 enddo
 

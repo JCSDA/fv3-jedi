@@ -43,7 +43,7 @@ void GetValues::fillGeoVaLs(const State & state, const util::DateTime & t1,
   oops::Log::trace() << "GetValues::fillGeovals starting" << std::endl;
   fv3jedi_getvalues_fill_geovals_f90(keyGetValues_, geom_->toFortran(), state.toFortran(),
                                      t1, t2, locs_, geovals.toFortran());
-  oops::Log::trace() << "GetValues::fillGeovals done" << geovals << std::endl;
+  oops::Log::trace() << "GetValues::fillGeovals done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------

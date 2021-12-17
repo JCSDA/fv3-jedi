@@ -173,7 +173,7 @@ do gv = 1, geovals%nvar
 
       ! Conditions for integer and directional fields
       ! ---------------------------------------------
-      if ( trim(field%interp_type) == "default" ) then 
+      if ( trim(field%interp_type) == "default" ) then
         call self%unsinterp%apply(field_us, geovals_all(:, jlev))
       elseif ( trim(field%interp_type) == "integer" ) then
         call unsinterp_integer_apply(self%unsinterp, field_us, geovals_all(:, jlev))
@@ -181,7 +181,7 @@ do gv = 1, geovals%nvar
         call unsinterp_nearest_apply(self%unsinterp, field_us, geovals_all(:, jlev))
       else
         call abor1_ftn("fv3jedi_getvalues_mod.fill_geovals: interpolation for this kind of "// &
-                       "field is not supported. FieldName: "// trim(field%fv3jedi_name)// & 
+                       "field is not supported. FieldName: "// trim(field%fv3jedi_name)// &
                        "interp_type: "//trim(field%interp_type))
       endif
     enddo

@@ -106,74 +106,85 @@ namespace fv3jedi {
         //  List of potential names, default is FieldName
         fieldName = paramsFields[jm].fieldName.value();
         std::vector<std::string> fieldIONames;
+
+        // Always add the Field name to the map keys
         fieldIONames.push_back(fieldName);
-        if (paramsFields[jm].fieldIONames.value().size() > 0) {
-          fieldIONames = paramsFields[jm].fieldIONames.value();
+
+        // Add any user provided IO names to the map keys
+        for (auto &IOName : paramsFields[jm].fieldIONames.value()) {
+            fieldIONames.push_back(IOName);
+        }
+
+        // Add any user provided long name to the map keys
+        if (paramsFields[jm].longName.value() != boost::none) {
+          fieldIONames.push_back(*paramsFields[jm].longName.value());
         }
 
         int confFieldIONamesSize = fieldIONames.size();
 
         // Loop over potential field names
         for (int im = 0; im < confFieldIONamesSize; ++im) {
-          // Insert new field
+          // Insert new field into the map
           fieldIOName = fieldIONames[im];
 
-          // Assertion that field not already in the map
-          if ( fields_.find(fieldIOName) != fields_.end() ) {
-            ABORT("FieldMetadata::FieldMetadata Field "+fieldIOName+" already in the map");
-          }
+          // Only add if not already in the map
+          if ( fields_.find(fieldIOName) == fields_.end() ) {
+            fields_.insert(std::pair<std::string, FieldMetadata>(fieldIOName,
+                                                                 FieldMetadata(fieldIOName)));
 
-          fields_.insert(std::pair<std::string, FieldMetadata>(fieldIOName,
-                                                               FieldMetadata(fieldIOName)));
+            // Pointer to current
+            FieldMetadata& fieldmetadata = fields_.find(fieldIOName)->second;
 
-          // Pointer to current
-          FieldMetadata& fieldmetadata = fields_.find(fieldIOName)->second;
+            // Push other metadata
+            // -------------------
 
-          // Push other metadata
-          // -------------------
+            kind = paramsFields[jm].precisionKind.value();
+            levels_str = paramsFields[jm].levels.value();
+            if (paramsFields[jm].longName.value() == boost::none) {
+              longName = fieldName;
+            } else {
+              longName = *paramsFields[jm].longName.value();
+            }
+            space = paramsFields[jm].space.value();
+            staggerLoc = paramsFields[jm].staggerLoc.value();
+            tracer = paramsFields[jm].tracer.value();
+            units = paramsFields[jm].units.value();
+            interpType = paramsFields[jm].interpType.value();
+            io_file = paramsFields[jm].ioFile.value();
 
-          kind = paramsFields[jm].precisionKind.value();
-          levels_str = paramsFields[jm].levels.value();
-          if (paramsFields[jm].longName.value() == boost::none) {
-            longName = fieldName;
-          } else {
-            longName = *paramsFields[jm].longName.value();
-          }
-          space = paramsFields[jm].space.value();
-          staggerLoc = paramsFields[jm].staggerLoc.value();
-          tracer = paramsFields[jm].tracer.value();
-          units = paramsFields[jm].units.value();
-          interpType = paramsFields[jm].interpType.value();
-          io_file = paramsFields[jm].ioFile.value();
+            // Check for valid choices
+            fieldmetadata.checkKindValid(fieldIOName, kind);
+            fieldmetadata.checkSpaceValid(fieldIOName, space);
+            fieldmetadata.checkStaggerLocValid(fieldIOName, staggerLoc);
+            fieldmetadata.checkLevelValid(fieldIOName, levels_str);
+            fieldmetadata.checkInterpTypeValid(fieldIOName, interpType);
 
-          // Check for valid choices
-          fieldmetadata.checkKindValid(fieldIOName, kind);
-          fieldmetadata.checkSpaceValid(fieldIOName, space);
-          fieldmetadata.checkStaggerLocValid(fieldIOName, staggerLoc);
-          fieldmetadata.checkLevelValid(fieldIOName, levels_str);
-          fieldmetadata.checkInterpTypeValid(fieldIOName, interpType);
+            // Convert string levels to integer levels
+            int levels;
 
-          // Convert string levels to integer levels
-          int levels;
+            if (levels_str == "full") {
+              levels = nlev;
+            } else if (levels_str == "half") {
+              levels = nlev + 1;
+            } else {
+              try {
+                levels = std::stoi(levels_str);
+              } catch (std::invalid_argument& e) {
+                ABORT("FieldMetadata::FieldsMetadata levels neither full, half or an integer");
+              }
+            }
 
-          if (levels_str == "full") {
-            levels = nlev;
-          } else if (levels_str == "half") {
-            levels = nlev + 1;
-          } else {
-            levels = std::stoi(levels_str);
-          }
-
-          fieldmetadata.setFieldName(fieldName);
-          fieldmetadata.setKind(kind);
-          fieldmetadata.setLevels(levels);
-          fieldmetadata.setLongName(longName);
-          fieldmetadata.setSpace(space);
-          fieldmetadata.setStaggerLoc(staggerLoc);
-          fieldmetadata.setTracer(tracer);
-          fieldmetadata.setUnits(units);
-          fieldmetadata.setInterpType(interpType);
-          fieldmetadata.setIOFile(io_file);
+            fieldmetadata.setFieldName(fieldName);
+            fieldmetadata.setKind(kind);
+            fieldmetadata.setLevels(levels);
+            fieldmetadata.setLongName(longName);
+            fieldmetadata.setSpace(space);
+            fieldmetadata.setStaggerLoc(staggerLoc);
+            fieldmetadata.setTracer(tracer);
+            fieldmetadata.setUnits(units);
+            fieldmetadata.setInterpType(interpType);
+            fieldmetadata.setIOFile(io_file);
+          }  // End if not already in the map
         }  // End loop over potential field names
       }  // End loop over fields
     }  // End loop over field sets
@@ -203,6 +214,52 @@ namespace fv3jedi {
       throw eckit::BadParameter("Long name not found");
     }
     return levels;
+  }
+
+  // -----------------------------------------------------------------------------------------------
+
+  oops::Variables FieldsMetadata::LongNameFromIONameLongNameOrFieldName(
+                                                               const oops::Variables & vars) const {
+    // Method takes as input an oops Variables object containing either IO names, field names or
+    // long names. It returns the corresponding long name.
+
+    // Convert variables to vector of strings
+    const std::vector<std::string>& vecStrInName = vars.variables();
+
+    // Vector of long name strings
+    std::vector<std::string> vecStrLongName;
+
+    // Make sure a field is found
+    bool found;
+
+    // Iterate over vars and find equivalent long name
+    for (auto &StrInName : vecStrInName) {
+      // First check if the incoming name is an IO name:
+      auto it = fields_.find(StrInName);
+
+      // Make sure something is found
+      found = false;
+
+      if (it != fields_.end()) {
+        // If IO name extract from element (it)
+        vecStrLongName.push_back(it->second.getLongName());
+        found = true;
+      } else {
+        // If not IO name iterate through elements and check long names or field names
+        for ( auto ite = fields_.begin(); ite != fields_.end(); ++ite ) {
+          if (StrInName == ite->second.getLongName() || StrInName == ite->second.getFieldName()) {
+            vecStrLongName.push_back(ite->second.getLongName());
+            found = true;
+          }
+        }
+      }
+
+      // Make sure element was found
+      ASSERT(found);
+    }
+
+    // Return long name vars
+    return oops::Variables(vecStrLongName);
   }
 
   // -----------------------------------------------------------------------------------------------

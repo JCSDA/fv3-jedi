@@ -106,6 +106,7 @@ class Increment : public util::Printable,
   void random();
   void dirac(const DiracParameters_ &);
 
+
 /// Get/Set increment values at grid points
   oops::LocalIncrement getLocal(const GeometryIterator &) const;
   void setLocal(const oops::LocalIncrement &, const GeometryIterator &);
@@ -120,6 +121,9 @@ class Increment : public util::Printable,
   void write(const WriteParameters_ &) const;
   double norm() const;
 
+// Add or remove fields
+  void updateFields(const oops::Variables &);
+
   void updateTime(const util::Duration & dt) {time_ += dt;}
 
 /// Other
@@ -132,6 +136,8 @@ class Increment : public util::Printable,
 
 // Utilities
   std::shared_ptr<const Geometry> geometry() const {return geom_;}
+  const oops::Variables & variables() const {return vars_;}
+  const oops::Variables & variablesLongName() const {return varsLongName_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}
@@ -147,6 +153,7 @@ class Increment : public util::Printable,
   F90inc keyInc_;
   std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
+  oops::Variables varsLongName_;
   util::DateTime time_;
 };
 // -------------------------------------------------------------------------------------------------

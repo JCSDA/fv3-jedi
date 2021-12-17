@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_GEOMETRY_GEOMETRY_H_
-#define FV3JEDI_GEOMETRY_GEOMETRY_H_
+#pragma once
 
 #include <memory>
 #include <ostream>
@@ -62,6 +61,8 @@ class Geometry : public util::Printable,
 
   std::vector<size_t> variableSizes(const oops::Variables &) const;
 
+  const FieldsMetadata & fieldsMetaData() const {return *fieldsMeta_;}
+
  private:
   Geometry & operator=(const Geometry &);
   void print(std::ostream &) const;
@@ -74,5 +75,3 @@ class Geometry : public util::Printable,
 // -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-
-#endif  // FV3JEDI_GEOMETRY_GEOMETRY_H_

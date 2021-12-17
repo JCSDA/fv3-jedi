@@ -18,34 +18,33 @@ output geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 
-variable changes:
-
-  - variable change: Model2GeoVaLs
-    tropopause pressure method: thompson
-    cloud effective radius method: gmao
-    input variables: &inputvars [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN,qr,qs,
-                                 PHIS,frocean,frlake,frseaice,
-                                 vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
-    output variables: [rh,ps,tv,geopotential_height,
-                       surface_altitude,mole_fraction_of_carbon_dioxide_in_air,
-                       humidity_mixing_ratio,
-                       mass_content_of_cloud_liquid_water_in_atmosphere_layer,
-                       mass_content_of_cloud_ice_in_atmosphere_layer,
-                       mass_content_of_rain_in_atmosphere_layer,
-                       mass_content_of_snow_in_atmosphere_layer,
-                       effective_radius_of_cloud_liquid_water_particle,
-                       effective_radius_of_cloud_ice_particle,
-                       effective_radius_of_rain_particle,
-                       effective_radius_of_snow_particle,
-                       water_area_fraction,
-                       land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
-                       surface_temperature_where_sea, surface_temperature_where_land,
-                       surface_temperature_where_ice,surface_temperature_where_snow,
-                       surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
-                       surface_wind_from_direction,leaf_area_index,
-                       volume_fraction_of_condensed_water_in_soil,soil_temperature,
-                       land_type_index,vegetation_type_index,soil_type,
-                       vort,tropopause_pressure]
+variable change:
+  variable change name: Model2GeoVaLs
+  tropopause pressure method: thompson
+  cloud effective radius method: gmao
+  input variables: &inputvars [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN,qr,qs,
+                                PHIS,frocean,frlake,frseaice,
+                                vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+  output variables: [rh,ps,tv,geopotential_height,
+                      surface_altitude,mole_fraction_of_carbon_dioxide_in_air,
+                      humidity_mixing_ratio,
+                      mass_content_of_cloud_liquid_water_in_atmosphere_layer,
+                      mass_content_of_cloud_ice_in_atmosphere_layer,
+                      mass_content_of_rain_in_atmosphere_layer,
+                      mass_content_of_snow_in_atmosphere_layer,
+                      effective_radius_of_cloud_liquid_water_particle,
+                      effective_radius_of_cloud_ice_particle,
+                      effective_radius_of_rain_particle,
+                      effective_radius_of_snow_particle,
+                      water_area_fraction,
+                      land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
+                      surface_temperature_where_sea, surface_temperature_where_land,
+                      surface_temperature_where_ice,surface_temperature_where_snow,
+                      surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
+                      surface_wind_from_direction,leaf_area_index,
+                      volume_fraction_of_condensed_water_in_soil,soil_temperature,
+                      land_type_index,vegetation_type_index,soil_type,
+                      vort,tropopause_pressure]
 states:
 - input:
     filetype: gfs

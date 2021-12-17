@@ -54,49 +54,6 @@ state test:
                       sv_tol1,sv_tol2,sv_bnz1,sv_bnz2,sv_pah1,
                       sv_pah2,sv_trp1,sv_trp2,sv_iso1,sv_iso2,
                       sv_sqt,lv_pcsog,cld_amt]
-  state generate:
-    analytic init:
-      method: dcmip-test-4-0
-    datetime: 2020-09-03T18:00:00Z
-    state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-                      no2, 'no',o3,no3,h2o2,n2o5,
-                      hno3,hono,pna,so2,sulf,
-                      pan,pacd,aacd,ald2,panx,
-                      form,mepx,meoh,rooh,ntr1,
-                      ntr2,facd,co,aldx,glyd,
-                      gly,mgly,etha,etoh,ket,
-                      par,acet,prpa,ethy,eth,
-                      ole,iole,isop,ispd,intr,
-                      ispx,hpld,opo3,epox,terp,
-                      benzene,cres,open,tol,xopn,
-                      xylmn,naph,cat1,cron,opan,
-                      ech4,cl2,hocl,fmcl,hcl,
-                      clno2,sesq,soaalk,vlvpo1,vsvpo1,
-                      vsvpo2,vsvpo3,vivpo1,vlvoo1,vlvoo2,
-                      vsvoo1,vsvoo2,vsvoo3,pcvoc,form_primary,
-                      ald2_primary,butadiene13,acrolein,acro_primary,tolu,
-                      hg,hgiigas,aso4j,aso4i,anh4j,
-                      anh4i,ano3j,ano3i,aalk1j,aalk2j,
-                      axyl1j,axyl2j,axyl3j,atol1j,atol2j,
-                      atol3j,abnz1j,abnz2j,abnz3j,apah1j,
-                      apah2j,apah3j,atrp1j,atrp2j,aiso1j,
-                      aiso2j,asqtj,aorgcj,aecj,aeci,
-                      aothrj,aothri,afej,aalj,asij,
-                      atij,acaj,amgj,akj,amnj,
-                      acors,asoil,numatkn,numacc,numcor,
-                      srfatkn,srfacc,srfcor,ah2oj,ah2oi,
-                      ah3opj,ah3opi,anaj,anai,aclj,
-                      acli,aseacat,aclk,aso4k,anh4k,
-                      ano3k,ah2ok,ah3opk,aiso3j,aolgaj,
-                      aolgbj,aglyj,apcsoj,alvpo1i,asvpo1i,
-                      asvpo2i,alvpo1j,asvpo1j,asvpo2j,asvpo3j,
-                      aivpo1j,alvoo1i,alvoo2i,asvoo1i,asvoo2i,
-                      alvoo1j,alvoo2j,asvoo1j,asvoo2j,asvoo3j,
-                      nh3,sv_alk1,sv_alk2,sv_xyl1,sv_xyl2,
-                      sv_tol1,sv_tol2,sv_bnz1,sv_bnz2,sv_pah1,
-                      sv_pah2,sv_trp1,sv_trp2,sv_iso1,sv_iso2,
-                      sv_sqt,lv_pcsog,cld_amt]
   date: 2020-09-03T18:00:00Z
   norm file: 4400555280.192976
-  norm generated state: 142.79433322604876
   tolerance: 1.0e-08

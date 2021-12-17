@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_UFS_MODELUFS_H_
-#define FV3JEDI_MODEL_UFS_MODELUFS_H_
+#pragma once
 
 #include <ostream>
 #include <string>
@@ -83,4 +82,3 @@ class ModelUFS: public oops::interface::ModelBase<Traits>,
 // -----------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_UFS_MODELUFS_H_

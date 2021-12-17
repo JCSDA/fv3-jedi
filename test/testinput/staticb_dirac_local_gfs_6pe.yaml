@@ -82,8 +82,8 @@ background error:
       verbosity: main
       universe_rad: 2000.0e3
       load_wind_local: true
-  variable changes:
-  - variable change: Control2Analysis
+  linear variable change:
+    linear variable change name: Control2Analysis
     input variables: *state_vars_with_rh
     output variables: *state_vars
 output dirac:

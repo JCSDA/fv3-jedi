@@ -1,14 +1,16 @@
 linear variable change tests:
-- variable change: Control2Analysis
-  tolerance inverse: 1000
+- linear variable change:
+    linear variable change name: Control2Analysis
+    input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+    output variables: [ud,vd,t,ps,q,qi,ql,o3]
   testinverse: 1
-  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-  output variables: [ud,vd,t,ps,q,qi,ql,o3]
-- variable change: Analysis2Model
   tolerance inverse: 1000
+- linear variable change:
+    linear variable change name: Analysis2Model
+    input variables: [ua,va,t,ps,q,qi,ql,o3]
+    output variables: [u,v,t,delp,q,qi,ql,o3]
   testinverse: 1
-  input variables: [ua,va,t,ps,q,qi,ql,o3]
-  output variables: [u,v,t,delp,q,qi,ql,o3]
+  tolerance inverse: 1000
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml

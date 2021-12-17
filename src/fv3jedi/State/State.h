@@ -50,7 +50,7 @@ class StateParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(StateParameters, Parameters)
  public:
   // Analytic initial condition parameters
-  oops::RequiredParameter<oops::Variables> stateVariables{ "state variables", this};
+  oops::OptionalParameter<oops::Variables> stateVariables{ "state variables", this};
   oops::OptionalParameter<AnalyticICParameters> analytic{ "analytic init", this};
   oops::OptionalParameter<util::DateTime> datetime{"datetime", this};
   // Read parameters
@@ -106,9 +106,13 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   void serialize(std::vector<double> &) const;
   void deserialize(const std::vector<double> &, size_t &);
 
+// Add or remove fields
+  void updateFields(const oops::Variables &);
+
 // Utilities
   std::shared_ptr<const Geometry> geometry() const {return geom_;}
   const oops::Variables & variables() const {return vars_;}
+  const oops::Variables & variablesLongName() const {return varsLongName_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}
@@ -125,6 +129,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   F90state keyState_;
   std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
+  oops::Variables varsLongName_;
   util::DateTime time_;
 };
 

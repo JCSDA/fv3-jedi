@@ -26,8 +26,8 @@ background error:
     output variables: *control_vars
     gsi:
       dummy parameter: 3141592
-  variable changes:
-  - variable change: NMCBalance
+  linear variable change:
+    linear variable change name: NMCBalance
     input variables: *control_vars
     output variables: *vars
     layoutx: 3

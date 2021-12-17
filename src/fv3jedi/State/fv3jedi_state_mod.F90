@@ -257,10 +257,11 @@ real(kind=kind_real) :: rlat, rlon
 real(kind=kind_real) :: pk,pe1,pe2,ps
 real(kind=kind_real) :: u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,q2,q3,q4
 character(len=:), allocatable :: method
-real(kind=kind_real), pointer :: ud  (:,:,:)
-real(kind=kind_real), pointer :: vd  (:,:,:)
+real(kind=kind_real), pointer :: ua  (:,:,:)
+real(kind=kind_real), pointer :: va  (:,:,:)
 real(kind=kind_real), pointer :: t   (:,:,:)
 real(kind=kind_real), pointer :: delp(:,:,:)
+real(kind=kind_real), pointer :: p   (:,:,:)
 real(kind=kind_real), pointer :: q   (:,:,:)
 real(kind=kind_real), pointer :: qi  (:,:,:)
 real(kind=kind_real), pointer :: ql  (:,:,:)
@@ -276,20 +277,31 @@ if (geom%f_comm%rank() == 0) then
   call log%warning("fv3jedi_state: analytic initital condition with method: "//method)
 endif
 
-! Pointers to mandatory states
-call self%get_field('ud'     , ud  )
-call self%get_field('vd'     , vd  )
+! Pointers to fields
+call self%get_field('ua'     , ua  )
+call self%get_field('va'     , va  )
 call self%get_field('t'      , t   )
 call self%get_field('delp'   , delp)
+call self%get_field('p'      , p   )
 call self%get_field('sphum'  , q   )
 call self%get_field('ice_wat', qi  )
 call self%get_field('liq_wat', ql  )
 call self%get_field('phis'   , phis)
+call self%get_field('o3mr'   , o3  )
+call self%get_field('w'      , w   )
 
-! Pointers to optional states
-if (self%has_field('o3mr'  )) call self%get_field('o3mr'  , o3)
-if (self%has_field('o3ppmv')) call self%get_field('o3ppmv', o3)
-if (self%has_field('w'     )) call self%get_field('w'     , w )
+! Initialize fields
+ua   = 0.0_kind_real
+va   = 0.0_kind_real
+t    = 0.0_kind_real
+delp = 0.0_kind_real
+p    = 0.0_kind_real
+q    = 0.0_kind_real
+qi   = 0.0_kind_real
+ql   = 0.0_kind_real
+phis = 0.0_kind_real
+o3   = 0.0_kind_real
+w    = 0.0_kind_real
 
 select case (method)
 
@@ -316,16 +328,16 @@ select case (method)
           call test1_advection_deformation(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,phis0,ps0,rho0,hum0,q1,&
                                            q2,q3,q4)
 
-          ud(i,j,k)   = u0
-          vd(i,j,k)   = v0
+          ua(i,j,k)   = u0
+          va(i,j,k)   = v0
           t(i,j,k)    = t0
           delp(i,j,k) = pe2-pe1
+          p(i,j,k)    = pk
           q (i,j,k)   = hum0
           qi(i,j,k)   = q1
           ql(i,j,k)   = q2
-          if (self%has_field('o3mr'  )) o3(i,j,k) = q3
-          if (self%has_field('o3ppmv')) o3(i,j,k) = q3
-          if (self%has_field('w'     )) w(i,j,k)  = w0
+          o3(i,j,k)   = q3
+          w(i,j,k)    = w0
 
         enddo
       enddo
@@ -352,13 +364,14 @@ select case (method)
           pk = 0.5_kind_real * (pe1+pe2)
           call test1_advection_hadley(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,phis0,ps,rho0,hum0,q1)
 
-          ud(i,j,k)   = u0
-          vd(i,j,k)   = v0
+          ua(i,j,k)   = u0
+          va(i,j,k)   = v0
           t(i,j,k)    = t0
           delp(i,j,k) = pe2-pe1
+          p(i,j,k)    = pk
           q(i,j,k)    = hum0
           qi(i,j,k)   = q1
-          if (self%has_field('w')) w(i,j,k)  = w0
+          w(i,j,k)    = w0
 
         enddo
       enddo
@@ -385,12 +398,13 @@ select case (method)
           pk = 0.5_kind_real * (pe1+pe2)
           call test3_gravity_wave(rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,phis0,ps,rho0,hum0)
 
-          ud(i,j,k)   = u0
-          vd(i,j,k)   = v0
+          ua(i,j,k)   = u0
+          va(i,j,k)   = v0
           t(i,j,k)    = t0
           delp(i,j,k) = pe2-pe1
+          p(i,j,k)    = pk
           q(i,j,k)    = hum0
-          if (self%has_field('w')) w(i,j,k)  = w0
+          w(i,j,k)    = w0
 
         enddo
       enddo
@@ -419,12 +433,13 @@ select case (method)
           call test4_baroclinic_wave(0,1.0_kind_real,rlon,rlat,pk,0.d0,0,u0,v0,w0,t0,phis0,ps,rho0,&
                                      hum0,q1,q2)
 
-          ud(i,j,k)   = u0
-          vd(i,j,k)   = v0
+          ua(i,j,k)   = u0
+          va(i,j,k)   = v0
           t(i,j,k)    = t0
           delp(i,j,k) = pe2-pe1
+          p(i,j,k)    = pk
           q(i,j,k)    = hum0
-          if (self%has_field('w')) w(i,j,k)  = w0
+          w(i,j,k)    = w0
 
         enddo
       enddo

@@ -18,20 +18,19 @@ output geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 
-variable changes:
-  - variable change: Control2Analysis
-    input variables: [psi,chi,t,ps,rh,liq_wat,ice_wat,o3mr]
-    output variables: &outputvars [ua,va,t,delp,sphum,liq_wat,ice_wat,o3mr]
-    do inverse: true
-    femps_iterations: 60
-    femps_ngrids: 2
-    femps_path2fv3gridfiles: Data/femps/
-    femps_checkconvergence: false
+variable change:
+  variable change name: Control2Analysis
+  output variables: [psi,chi,t,ps,rh,liq_wat,ice_wat,o3mr]
+  do inverse: true
+  femps_iterations: 60
+  femps_ngrids: 2
+  femps_path2fv3gridfiles: Data/femps/
+  femps_checkconvergence: false
 
 states:
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: &readvars [ua,va,t,delp,sphum,liq_wat,ice_wat,o3mr]
     datapath: Data/inputs/gfs_c12/mem001/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -49,7 +48,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem002/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -67,7 +66,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem003/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -85,7 +84,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem004/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -103,7 +102,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem005/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -121,7 +120,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem006/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -139,7 +138,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem007/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -157,7 +156,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem008/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -175,7 +174,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem009/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
@@ -193,7 +192,7 @@ states:
 
 - input:
     filetype: gfs
-    state variables: *outputvars
+    state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem010/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
     filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc

@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_OBSLOCALIZATION_INSTANTIATEOBSLOCFACTORY_H_
-#define FV3JEDI_OBSLOCALIZATION_INSTANTIATEOBSLOCFACTORY_H_
+#pragma once
 
 #include "fv3jedi/ObsLocalization/ObsLocBrasnett99.h"
 #include "fv3jedi/Utilities/Traits.h"
@@ -24,5 +23,3 @@ template<typename MODEL> void instantiateObsLocFactory() {
 }
 
 }  // namespace fv3jedi
-
-#endif  // FV3JEDI_OBSLOCALIZATION_INSTANTIATEOBSLOCFACTORY_H_

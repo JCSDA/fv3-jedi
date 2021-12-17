@@ -19,10 +19,12 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
-#include "fv3jedi/FieldMetadata/FieldsMetadataParameters.h"
+#include "oops/base/Variables.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Printable.h"
+
+#include "fv3jedi/FieldMetadata/FieldsMetadataParameters.h"
 
 namespace eckit {
   class Configuration;
@@ -184,6 +186,9 @@ namespace fv3jedi {
 
     // Function to return number of levels given the longName
     size_t getLevelsFromLongName(const std::string &) const;
+
+    // Get long name from IO name
+    oops::Variables LongNameFromIONameLongNameOrFieldName(const oops::Variables &) const;
 
    private:
     std::map<std::string, FieldMetadata> fields_;

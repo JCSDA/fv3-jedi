@@ -1,22 +1,16 @@
 linear variable change tests:
-- variable change: Control2Analysis
+- linear variable change:
+    linear variable change name: Control2Analysis
+    testinverse: 1
+    input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
+    output variables: [ua,va,t,ps,q,qi,ql,o3]
   tolerance inverse: 1000
-  testinverse: 1
-  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-  output variables: [ua,va,t,ps,q,qi,ql,o3]
-#- variable change: NMCBalance
-#  layoutx: 3
-#  layouty: 2
-#  path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
-#  tolerance inverse: 1000
-#  testinverse: 1
-#  input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-#  output variables: [ua,va,t,ps,q,qi,ql,o3]
-- variable change: Analysis2Model
+- linear variable change:
+    linear variable change name: Analysis2Model
+    testinverse: 1
+    input variables: [ua,va,t,ps,q,qi,ql,o3]
+    output variables: [ud,vd,t,delp,q,qi,ql,o3]
   tolerance inverse: 1000
-  testinverse: 1
-  input variables: [ua,va,t,ps,q,qi,ql,o3]
-  output variables: [ud,vd,t,delp,q,qi,ql,o3]
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml

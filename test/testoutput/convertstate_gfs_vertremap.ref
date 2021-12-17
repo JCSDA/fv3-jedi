@@ -1,0 +1,60 @@
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 15 | cube sphere face size: C12
+   ps_cold                       : Min = +5.414548e+04, Max = +1.032328e+05, RMS = +9.890864e+04
+   w_cold                        : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   zh_cold                       : Min = -2.700000e+01, Max = +1.953465e+05, RMS = +3.009826e+04
+   t_cold                        : Min = +1.571782e+02, Max = +3.161545e+02, RMS = +2.493252e+02
+   delp_cold                     : Min = +6.060000e-01, Max = +1.759486e+03, RMS = +9.531478e+02
+   sphum_cold                    : Min = +9.999999e-10, Max = +1.909865e-02, RMS = +4.799526e-03
+   liq_wat_cold                  : Min = +0.000000e+00, Max = +9.909850e-04, RMS = +3.195239e-05
+   o3mr_cold                     : Min = +2.235865e-09, Max = +1.786298e-05, RMS = +4.369529e-06
+   ice_wat_cold                  : Min = +0.000000e+00, Max = +2.727668e-04, RMS = +1.503782e-05
+   rainwat_cold                  : Min = +0.000000e+00, Max = +4.382010e-04, RMS = +8.250399e-06
+   snowwat_cold                  : Min = +0.000000e+00, Max = +5.426334e-04, RMS = +1.693663e-05
+   graupel_cold                  : Min = +0.000000e+00, Max = +3.984132e-04, RMS = +3.020743e-06
+   ud_cold                       : Min = -1.067699e+02, Max = +1.708777e+02, RMS = +1.819201e+01
+   vd_cold                       : Min = -1.510396e+02, Max = +1.553370e+02, RMS = +1.889764e+01
+   orog_filt                     : Min = -2.700000e+01, Max = +5.045898e+03, RMS = +6.066785e+02
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaVertRemap variable change
+Variable change from: 15 variables: ps_cold, w_cold, zh_cold, t_cold, delp_cold, sphum_cold, liq_wat_cold, o3mr_cold, ice_wat_cold, rainwat_cold, snowwat_cold, graupel_cold, ud_cold, vd_cold, orog_filt
+Variable change to: 15 variables: ps, t, delp, sphum, liq_wat, o3mr, ice_wat, rainwat, snowwat, graupel, sgs_tke, cld_amt, ud, vd, phis
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 15 | cube sphere face size: C12
+   ps                            : Min = +5.411005e+04, Max = +1.032357e+05, RMS = +9.890653e+04
+   t                             : Min = +1.571781e+02, Max = +3.161541e+02, RMS = +2.497871e+02
+   delp                          : Min = +6.060000e-01, Max = +1.759552e+03, RMS = +9.568736e+02
+   sphum                         : Min = +9.994943e-10, Max = +1.909865e-02, RMS = +4.818002e-03
+   liq_wat                       : Min = +0.000000e+00, Max = +9.731424e-04, RMS = +3.145501e-05
+   o3mr                          : Min = +2.235865e-09, Max = +1.786298e-05, RMS = +4.386621e-06
+   ice_wat                       : Min = +0.000000e+00, Max = +1.227869e-04, RMS = +1.563390e-06
+   rainwat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   snowwat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   graupel                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   sgs_tke                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   cld_amt                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   ud                            : Min = -1.067699e+02, Max = +1.708777e+02, RMS = +1.802288e+01
+   vd                            : Min = -1.510396e+02, Max = +1.553370e+02, RMS = +1.862777e+01
+   phis                          : Min = -2.647795e+02, Max = +4.948336e+04, RMS = +5.949483e+03
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 15 | cube sphere face size: C12
+   ps                            : Min = +5.411005e+04, Max = +1.032357e+05, RMS = +9.890653e+04
+   t                             : Min = +1.571781e+02, Max = +3.161541e+02, RMS = +2.497871e+02
+   delp                          : Min = +6.060000e-01, Max = +1.759552e+03, RMS = +9.568736e+02
+   sphum                         : Min = +9.994943e-10, Max = +1.909865e-02, RMS = +4.818002e-03
+   liq_wat                       : Min = +0.000000e+00, Max = +9.731424e-04, RMS = +3.145501e-05
+   o3mr                          : Min = +2.235865e-09, Max = +1.786298e-05, RMS = +4.386621e-06
+   ice_wat                       : Min = +0.000000e+00, Max = +1.227869e-04, RMS = +1.563390e-06
+   rainwat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   snowwat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   graupel                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   sgs_tke                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   cld_amt                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   ud                            : Min = -1.067699e+02, Max = +1.708777e+02, RMS = +1.802288e+01
+   vd                            : Min = -1.510396e+02, Max = +1.553370e+02, RMS = +1.862777e+01
+   phis                          : Min = -2.647795e+02, Max = +4.948336e+04, RMS = +5.949483e+03
+ -----------------------------------------------------------------------------------------------

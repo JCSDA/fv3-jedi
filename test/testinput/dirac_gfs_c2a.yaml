@@ -26,8 +26,8 @@ background error:
     output variables: *control_vars
     gsi:
       dummy parameter: 3141592
-  variable changes:
-  - variable change: Control2Analysis
+  linear variable change:
+    linear variable change name: Control2Analysis
     input variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
     output variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
 output dirac:
