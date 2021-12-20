@@ -28,8 +28,8 @@
 #include "oops/generic/soar.h"
 #include "oops/util/Printable.h"
 
-#include "ufo/obslocalization/ObsLocParameters.h"
-#include "ufo/obslocalization/ObsLocSOAR.h"
+#include "ufo/obslocalization/ObsHorLocParameters.h"
+#include "ufo/obslocalization/ObsHorLocSOAR.h"
 
 
 namespace fv3jedi {
@@ -39,15 +39,15 @@ namespace fv3jedi {
 /// Note, Brasnett99 adds vertical localization to the horizontal SOAR function
 /// Hence, we inherit from ufo::ObsLocSOAR
 template<class MODEL>
-class ObsLocBrasnett99: public ufo::ObsLocSOAR<MODEL> {
+class ObsLocBrasnett99: public ufo::ObsHorLocSOAR<MODEL> {
   typedef typename MODEL::GeometryIterator   GeometryIterator_;
-  typedef typename ufo::ObsLocalization<MODEL>::LocalObs LocalObs_;
+  typedef typename ufo::ObsHorLocalization<MODEL>::LocalObs LocalObs_;
 
  public:
   ObsLocBrasnett99(const eckit::Configuration &, const ioda::ObsSpace &);
 
  protected:
-  /// compute localization and save localization values in \p locvector
+  /// compute localization and update localization values in \p locvector
   /// (missing values for observations outside of localization)
   void localizeLocalObs(const GeometryIterator_ &,
                         ioda::ObsVector & locvector,
@@ -62,7 +62,7 @@ class ObsLocBrasnett99: public ufo::ObsLocSOAR<MODEL> {
 template<typename MODEL>
 ObsLocBrasnett99<MODEL>::ObsLocBrasnett99(const eckit::Configuration & config,
                               const ioda::ObsSpace & obsspace):
-       ufo::ObsLocSOAR<MODEL>::ObsLocSOAR(config, obsspace),
+       ufo::ObsHorLocSOAR<MODEL>::ObsHorLocSOAR(config, obsspace),
        obsHeight_(obsspace.nlocs()),
        VertScale_(config.getDouble("vertical lengthscale", 800)) {
   oops::Log::trace()<< "Brasnett99 localization with: vertical scale=" << VertScale_
@@ -80,7 +80,7 @@ void ObsLocBrasnett99<MODEL>::localizeLocalObs(const GeometryIterator_ & geoiter
   oops::Log::trace() << "ObsLocBrasnett99::computeLocalization" << std::endl;
 
   // compute horizontal localization using SOAR
-  ufo::ObsLocSOAR<MODEL>::localizeLocalObs(geoiter, locvector, localobs);
+  ufo::ObsHorLocSOAR<MODEL>::localizeLocalObs(geoiter, locvector, localobs);
 
   // retrieve orography for this grid point
   double orog = geoiter.getOrography();

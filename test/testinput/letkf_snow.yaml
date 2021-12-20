@@ -45,10 +45,9 @@ observations:
     name: Identity
   obs error:
     covariance model: diagonal
-  obs localization:
-    search method: kd_tree
+  obs localizations:
+  - localization method: Brasnett99
     lengthscale: 250e3
-    localization method: Brasnett99
     soar horizontal decay: 0.000021
     vertical lengthscale: 700
     max nobs: 50

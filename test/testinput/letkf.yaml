@@ -111,8 +111,8 @@ observations:
     name: VertInterp
   obs error:
     covariance model: diagonal
-  obs localization:
-    localization method: Gaspari-Cohn
+  obs localizations:
+  - localization method: Horizontal Gaspari-Cohn
     lengthscale: 5000e3
     max nobs: 1000
 
