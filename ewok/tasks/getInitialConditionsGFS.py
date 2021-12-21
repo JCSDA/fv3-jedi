@@ -1,0 +1,19 @@
+# (C) Copyright 2020-2021 UCAR
+# 
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+import os
+import yamltools
+import ewok.tasks.getInitialConditions as generic
+
+class getInitialConditionsGFS(generic.getInitialConditions):
+
+    def setup(self, config):
+
+        # Get generic defaults
+        generic.getInitialConditions.setup(self, config)
+
+        # Use specific script
+        self.command = os.path.join(config['model_path'],"tasks/getForecastGFS.py")
+

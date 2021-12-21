@@ -1,0 +1,14 @@
+# (C) Copyright 2020-2021 UCAR
+# 
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+filetype: gfs
+datapath: '{{currentdir}}'
+filename_core: $(bgdatetime).fv_core.res.nc
+filename_trcr: $(bgdatetime).fv_tracer.res.nc
+filename_sfcd: $(bgdatetime).sfc_data.nc
+filename_sfcw: $(bgdatetime).fv_srf_wnd.res.nc
+filename_cplr: $(bgdatetime).coupler.res
+state variables: [u, v, ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m, sss]
+
