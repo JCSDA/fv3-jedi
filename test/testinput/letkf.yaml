@@ -116,9 +116,6 @@ observations:
     lengthscale: 5000e3
     max nobs: 1000
 
-prints:
-  frequency: PT3H
-
 driver:
   update obs config with geometry info: true
   save posterior ensemble: false

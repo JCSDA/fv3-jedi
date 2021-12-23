@@ -100,9 +100,6 @@ output increment:
   filetype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/xainc.
 
-prints:
-  frequency: PT3H 
-
 test:
   reference filename: testoutput/letkf_snow.ref
   float relative tolerance: 1.0e-2
