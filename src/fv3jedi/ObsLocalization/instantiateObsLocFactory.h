@@ -10,7 +10,6 @@
 #include "fv3jedi/ObsLocalization/ObsLocBrasnett99.h"
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/base/ObsLocalizationBase.h"
-#include "oops/interface/ObsLocalization.h"
 #include "ufo/instantiateObsLocFactory.h"
 #include "ufo/ObsTraits.h"
 

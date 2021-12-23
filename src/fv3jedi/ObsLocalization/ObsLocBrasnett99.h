@@ -7,32 +7,26 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cmath>
-#include <memory>
 #include <ostream>
-#include <string>
-#include <utility>
 #include <vector>
-
-#include "atlas/util/Earth.h"
-
-#include "eckit/config/Configuration.h"
-#include "eckit/container/KDTree.h"
-#include "eckit/geometry/Point3.h"
-#include "eckit/geometry/UnitSphere.h"
 
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
 
-#include "oops/generic/soar.h"
-#include "oops/util/Printable.h"
-
-#include "ufo/obslocalization/ObsHorLocParameters.h"
 #include "ufo/obslocalization/ObsHorLocSOAR.h"
-
+#include "ufo/obslocalization/ObsHorLocSOARParameters.h"
 
 namespace fv3jedi {
+
+/// \brief Options controlling Brasnett 99 observation space localization
+/// for snow DA.
+class ObsLocBrasnettParameters : public ufo::ObsHorLocSOARParameters {
+  OOPS_CONCRETE_PARAMETERS(ObsLocBrasnettParameters, ufo::ObsHorLocSOARParameters)
+
+ public:
+  oops::Parameter<double> vertscale{"vertical lengthscale",
+                 "lengthscale of vertical localization in meters", 800., this};
+};
 
 /// Brasnett 99 observation space localization for snow DA
 /// https://doi.org/10.1175/1520-0450(1999)038<0726:AGAOSD>2.0.CO;2
@@ -44,7 +38,8 @@ class ObsLocBrasnett99: public ufo::ObsHorLocSOAR<MODEL> {
   typedef typename ufo::ObsHorLocalization<MODEL>::LocalObs LocalObs_;
 
  public:
-  ObsLocBrasnett99(const eckit::Configuration &, const ioda::ObsSpace &);
+  typedef ObsLocBrasnettParameters Parameters_;
+  ObsLocBrasnett99(const Parameters_ &, const ioda::ObsSpace &);
 
  protected:
   /// compute localization and update localization values in \p locvector
@@ -60,11 +55,11 @@ class ObsLocBrasnett99: public ufo::ObsHorLocSOAR<MODEL> {
 };
 // -----------------------------------------------------------------------------
 template<typename MODEL>
-ObsLocBrasnett99<MODEL>::ObsLocBrasnett99(const eckit::Configuration & config,
-                              const ioda::ObsSpace & obsspace):
-       ufo::ObsHorLocSOAR<MODEL>::ObsHorLocSOAR(config, obsspace),
+ObsLocBrasnett99<MODEL>::ObsLocBrasnett99(const Parameters_ & params,
+                                          const ioda::ObsSpace & obsspace):
+       ufo::ObsHorLocSOAR<MODEL>::ObsHorLocSOAR(params, obsspace),
        obsHeight_(obsspace.nlocs()),
-       VertScale_(config.getDouble("vertical lengthscale", 800)) {
+       VertScale_(params.vertscale) {
   oops::Log::trace()<< "Brasnett99 localization with: vertical scale=" << VertScale_
                     << std::endl;
 
