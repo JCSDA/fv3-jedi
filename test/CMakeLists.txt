@@ -121,6 +121,7 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
+  testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
   testinput/hyb-3dvar_gfs_1obs.yaml
   testinput/hyb-3dvar_gfs_aero.yaml
   testinput/hyb-3dvar_gfs_aero_bump.yaml
@@ -234,6 +235,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_gfs_0obs.ref
+  testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.ref
   testoutput/hyb-3dvar_gfs_1obs.ref
   testoutput/hyb-3dvar_gfs_aero.ref
   testoutput/hyb-3dvar_gfs_aero_bump.ref
@@ -1100,13 +1102,19 @@ endif()
 #                  ARGS     testinput/3dvar_gfs_bal.yaml
 #                  COMMAND  fv3jedi_var.x )
 
-# 3DVar with zero obs is not working yet, so these 2 tests are are commented out. The YAML,
-# reference and obs files are are already in place.
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs
-#                  MPI      6
-#                  ARGS     testinput/hyb-3dvar_gfs_0obs.yaml
-#                  COMMAND  fv3jedi_var.x
-#                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+# 3DVar with zero obs
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_gfs_0obs.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
+# 3DVar with zero obs in one of the obs spaces
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs_inoneobsspace
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 # 3DVar with bias correction on for one of the satellites
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_bc

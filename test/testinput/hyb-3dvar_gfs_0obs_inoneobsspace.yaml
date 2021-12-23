@@ -162,14 +162,34 @@ cost function:
       - name: eastward_wind
       - name: northward_wind
       minvalue: 250.0 # filter out the winds too -- zero obs will be assimilated.
+  - obs space:
+      name: Aircraft
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/aircraft_hyb-3dvar-1-gfs_2018041500_m.nc4
+      simulated variables: [eastward_wind, northward_wind, air_temperature]
+    obs operator:
+      name: VertInterp
+    obs error:
+      covariance model: diagonal
+    obs filters:
+    - filter: PreQC
+      maxvalue: 3
+    - filter: Background Check
+      filter variables:
+      - name: eastward_wind
+      - name: northward_wind
+      - name: air_temperature
+      threshold: 6.0
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs_0obs.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs_0obs.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs_0obs.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs_0obs.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs_0obs.coupler.res
+  filename_core: hyb-3dvar-gfs_0obs2.fv_core.res.nc
+  filename_trcr: hyb-3dvar-gfs_0obs2.fv_tracer.res.nc
+  filename_sfcd: hyb-3dvar-gfs_0obs2.sfc_data.nc
+  filename_sfcw: hyb-3dvar-gfs_0obs2.fv_srf_wnd.res.nc
+  filename_cplr: hyb-3dvar-gfs_0obs2.coupler.res
   first: PT0H
   frequency: PT1H
 final:
@@ -207,6 +227,6 @@ variational:
       departures: ombg
 
 test:
-  reference filename: testoutput/hyb-3dvar_gfs_0obs.ref
-  test output filename: testoutput/hyb-3dvar_gfs_0obs.test.out
+  reference filename: testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.ref
+  test output filename: testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.test.out
   float relative tolerance: 1.0e-3
