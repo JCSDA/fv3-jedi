@@ -105,12 +105,7 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: 3dvar_lam_cmaq_no2.fv_core.res.nc
-  filename_trcr: 3dvar_lam_cmaq_no2.fv_tracer.res.nc
-  filename_sfcd: 3dvar_lam_cmaq_no2.sfc_data.nc
-  filename_sfcw: 3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
-  filename_cplr: 3dvar_lam_cmaq_no2.coupler.res
-  first: PT0H
+  prefix: 20200903.180000.3dvar_lam_cmaq_no2
   frequency: PT1H
 
 test:

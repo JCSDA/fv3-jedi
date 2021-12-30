@@ -29,12 +29,9 @@ initial condition:
 output:
   filetype: gfs
   datapath: Data/forecast
-  filename_core: forecast_fv3.fv_core.res.nc
-  filename_trcr: forecast_fv3.fv_tracer.res.nc
-  filename_sfcd: forecast_fv3.sfc_data.nc
-  filename_sfcw: forecast_fv3.fv_srf_wnd.res.nc
-  filename_cplr: forecast_fv3.coupler.res
-  first: PT0H
+  type: fc
+  exp: forecast_fv3
+  date: 2018-04-14T21:00:00Z
   frequency: PT15M
 
 test:

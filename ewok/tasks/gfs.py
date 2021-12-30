@@ -1,12 +1,17 @@
 # (C) Copyright 2020-2021 UCAR
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 import ewok.tasks.GenericModel
 import getBackgroundGFS
+import getExpInitGFS
 import getFixFilesGFS
 import getInitialConditionsGFS
+import getStaticB
+import saveAnalysisGFS
+import saveForecastGFS
+
 
 class ModelTasks(ewok.tasks.GenericModel.GenericModelTasks):
 
@@ -14,6 +19,9 @@ class ModelTasks(ewok.tasks.GenericModel.GenericModelTasks):
         ewok.tasks.GenericModel.GenericModelTasks.__init__(self)
 
         self.getBackground = getBackgroundGFS.getBackgroundGFS
-        self.getFixFiles = getFixFilesGFS.getFixFilesGFS
+        self.getExpInit = getExpInitGFS.getExpInitGFS
+        self.getStaticB = getStaticB.getStaticB
+        self.getStaticModel = getFixFilesGFS.getFixFilesGFS
         self.getInitialConditions = getInitialConditionsGFS.getInitialConditionsGFS
-
+        self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS
+        self.saveForecast = saveForecastGFS.saveForecastGFS

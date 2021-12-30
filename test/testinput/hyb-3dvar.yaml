@@ -17,11 +17,7 @@ cost function:
   background:
     filetype: gfs
     datapath: Data/
-    filename_core: 20180415.000000.c24.fv_core.res.nc
-    filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.c24.sfc_data.nc
-    filename_sfcw: 20180415.000000.c24.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.c24.coupler.res
+    prefix: 20180415.000000.c24
     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
@@ -51,83 +47,43 @@ cost function:
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem001/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem002/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem003/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem004/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem005/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem006/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem007/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem008/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem009/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         - filetype: gfs
           state variables: *3dvars
           datapath: Data/inputs/gfs_c12/mem010/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+          prefix: '20180415.000000'
         localization:
           localization method: SABER
           saber block:          
@@ -304,11 +260,7 @@ variational:
       increment:
         filetype: gfs
         datapath: Data/analysis
-        filename_core: iter1.hyb-3dvar.c24.fv_core.res.nc
-        filename_trcr: iter1.hyb-3dvar.c24.fv_tracer.res.nc
-        filename_sfcd: iter1.hyb-3dvar.c24.sfc_data.nc
-        filename_sfcw: iter1.hyb-3dvar.c24.fv_srf_wnd.res.nc
-        filename_cplr: iter1.hyb-3dvar.c24.coupler.res
+        prefix: iter1.hyb-3dvar.c24
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -327,23 +279,14 @@ variational:
       increment:
         filetype: gfs
         datapath: Data/analysis
-        filename_core: iter2.hyb-3dvar.c24.fv_core.res.nc
-        filename_trcr: iter2.hyb-3dvar.c24.fv_tracer.res.nc
-        filename_sfcd: iter2.hyb-3dvar.c24.sfc_data.nc
-        filename_sfcw: iter2.hyb-3dvar.c24.fv_srf_wnd.res.nc
-        filename_cplr: iter2.hyb-3dvar.c24.coupler.res
+        prefix: iter2.hyb-3dvar.c24
 final:
   diagnostics:
     departures: oman
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar.c24.fv_core.res.nc
-  filename_trcr: hyb-3dvar.c24.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar.c24.sfc_data.nc
-  filename_sfcw: hyb-3dvar.c24.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar.c24.coupler.res
-  first: PT0H
+  prefix: 20180415.000000.hyb-3dvar.c24
   frequency: PT1H
 
 test:

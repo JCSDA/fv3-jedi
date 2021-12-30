@@ -14,6 +14,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "oops/base/WriteParametersBase.h"
 #include "oops/util/AssociativeContainers.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/OptionalPolymorphicParameter.h"
@@ -43,8 +44,8 @@ class IOBase : public util::Printable, private boost::noncopyable {
 
 // -------------------------------------------------------------------------------------------------
 
-class IOParametersBase : public oops::Parameters {
-  OOPS_ABSTRACT_PARAMETERS(IOParametersBase, Parameters)
+class IOParametersBase : public oops::WriteParametersBase {
+  OOPS_ABSTRACT_PARAMETERS(IOParametersBase, WriteParametersBase)
  public:
   oops::OptionalParameter<std::string> filetype{"filetype", this};
 };

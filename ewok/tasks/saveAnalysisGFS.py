@@ -5,15 +5,15 @@
 
 import os
 import yamltools
-import ewok.tasks.getBackground as generic
+import ewok.tasks.saveAnalysis as generic
 
 
-class getBackgroundGFS(generic.getBackground):
+class saveAnalysisGFS(generic.saveAnalysis):
 
-    def setup(self, config, fc):
+    def setup(self, config, an):
 
         # Get generic defaults
-        generic.getBackground.setup(self, config, fc)
+        generic.saveAnalysis.setup(self, config, an)
 
         # Use GFS specific script
-        self.command = os.path.join(config['model_path'], "tasks/runGetForecast.py")
+        self.command = os.path.join(config['model_path'], "tasks/runSaveAnalysis.py")

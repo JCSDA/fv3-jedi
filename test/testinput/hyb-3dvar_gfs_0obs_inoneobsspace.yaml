@@ -185,12 +185,7 @@ cost function:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs_0obs2.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs_0obs2.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs_0obs2.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs_0obs2.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs_0obs2.coupler.res
-  first: PT0H
+  prefix: hyb-3dvar-gfs_0obs2
   frequency: PT1H
 final:
   diagnostics:

@@ -178,10 +178,7 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-1-gfs.fv_core.res.nc
-  filename_trcr: hyb-3dvar-1-gfs.fv_tracer.res.nc
-  filename_cplr: hyb-3dvar-1-gfs.coupler.res
-  first: PT0H
+  prefix: hyb-3dvar-1-gfs
   frequency: PT1H
 test:
   reference filename: testoutput/hyb-3dvar_gfs_aero_bump.ref

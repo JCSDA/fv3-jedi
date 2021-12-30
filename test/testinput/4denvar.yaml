@@ -163,12 +163,7 @@ cost function:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: 4denvar-gfs.fv_core.res.nc
-  filename_trcr: 4denvar-gfs.fv_tracer.res.nc
-  filename_sfcd: 4denvar-gfs.sfc_data.nc
-  filename_sfcw: 4denvar-gfs.fv_srf_wnd.res.nc
-  filename_cplr: 4denvar-gfs.coupler.res
-  first: PT0H
+  prefix: 4denvar-gfs
   frequency: PT3H
 final:
   diagnostics:

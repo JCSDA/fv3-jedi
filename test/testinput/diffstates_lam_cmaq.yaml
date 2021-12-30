@@ -36,11 +36,7 @@ state2: #background
 output:
   filetype: gfs
   datapath: Data/increment/
-  filename_core: 3dvar_lam_cmaq_no2.fv_core.res.nc
-  filename_trcr: 3dvar_lam_cmaq_no2.fv_tracer.res.nc
-  filename_sfcd: 3dvar_lam_cmaq_no2.sfc_data.nc
-  filename_sfcw: 3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
-  filename_cplr: 3dvar_lam_cmaq_no2.coupler.res
+  prefix: 3dvar_lam_cmaq_no2
 
 test:
   reference filename: testoutput/diffstates_lam_cmaq.ref

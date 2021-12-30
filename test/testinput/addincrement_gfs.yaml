@@ -38,11 +38,7 @@ increment: # Increment
 output: # Analysis
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs.bkg+inc.c24.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs.bkg+inc.c24.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs.bkg+inc.c24.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs.bkg+inc.c24.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs.bkg+inc.c24.coupler.res
+  prefix: hyb-3dvar-gfs.bkg+inc.c24
 
 test:
   reference filename: testoutput/addincrement_gfs.ref

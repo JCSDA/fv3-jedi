@@ -51,6 +51,8 @@ type fv3jedi_io_gfs
  logical :: ps_in_file
  logical :: skip_coupler
  logical :: prepend_date
+ logical :: has_prefix
+ character(len=128) :: prefix
  ! Geometry copies
  type(domain2D), pointer :: domain
  integer :: npz
@@ -98,7 +100,7 @@ deallocate(str)
 self%filenames_conf(self%index_core) = 'fv_core.res.nc'
 self%filenames_conf(self%index_trcr) = 'fv_tracer.res.nc'
 self%filenames_conf(self%index_sfcd) = 'sfc_data.nc'
-self%filenames_conf(self%index_sfcw) = 'srf_wnd.nc'
+self%filenames_conf(self%index_sfcw) = 'fv_srf_wnd.res.nc'
 self%filenames_conf(self%index_cplr) = 'coupler.res'
 self%filenames_conf(self%index_spec) = 'null'
 self%filenames_conf(self%index_phys) = 'phy_data.nc'
@@ -165,6 +167,14 @@ else
   self%input_is_date_templated = .false.
 endif
 
+! Option to overwrite date etc...
+! -------------------------------
+self%has_prefix = conf%has("prefix")
+if (self%has_prefix) then
+  call conf%get_or_die("prefix",str)
+  self%prefix = trim(str)
+endif
+
 ! Geometry copies
 ! ---------------
 self%domain => domain
@@ -191,10 +201,19 @@ type(datetime),        intent(inout) :: vdate
 integer,               intent(inout) :: calendar_type
 integer,               intent(inout) :: date_init(6)
 type(fv3jedi_field),   intent(inout) :: fields(:)
+integer :: n
 
 ! Overwrite any datetime templates in the file names
 ! --------------------------------------------------
 if (self%input_is_date_templated) call setup_date(self, vdate)
+
+! Use prefix if present
+! ---------------------
+if (self%has_prefix) then
+  do n = 1, numfiles
+    self%filenames(n) = trim(self%prefix)//"."//trim(self%filenames_conf(n))
+  enddo
+endif
 
 ! Read meta data
 ! --------------
@@ -453,6 +472,14 @@ write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2,A1)') date(1),date(2),date(3),".
 if (self%prepend_date) then
   do n = 1, numfiles
     self%filenames(n) = trim(datefile)//trim(self%filenames(n))
+  enddo
+endif
+
+! Use prefix if present
+! ---------------------
+if (self%has_prefix) then
+  do n = 1, numfiles
+    self%filenames(n) = trim(self%prefix)//"."//trim(self%filenames_conf(n))
   enddo
 endif
 

@@ -47,10 +47,7 @@ states:
   output:
     filetype: gfs
     datapath: Data/convertstate/
-    prepend files with date: false
-    filename_cold: 20200101.000000.cold2fv3.gfs_data.nc
-    filename_cplr: 20200101.000000.cold2fv3.coupler.res
-    filename_orog: 20200101.000000.cold2fv3.oro_data.nc
+    prefix: 20200101.000000.cold2fv3
 
 test:
   reference filename: testoutput/convertstate_gfs_vertremap.ref

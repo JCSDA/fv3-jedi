@@ -283,12 +283,7 @@ cost function:
 output:
   filetype: gfs
   datapath: Data/analysis/eda/gfs/mem002
-  filename_core: eda-4dvar-gfs.fv_core.res.nc
-  filename_trcr: eda-4dvar-gfs.fv_tracer.res.nc
-  filename_sfcd: eda-4dvar-gfs.sfc_data.nc
-  filename_sfcw: eda-4dvar-gfs.fv_srf_wnd.res.nc
-  filename_cplr: eda-4dvar-gfs.coupler.res
-  first: PT0H
+  prefix: eda-4dvar-gfs
   frequency: PT3H
 final:
   diagnostics:

@@ -38,7 +38,7 @@ class IOGfsParameters : public IOParametersBase {
   oops::Parameter<std::string> filename_sfcd{"filename_sfcd", "filename_sfcd",
                                              "sfc_data.nc", this};
   oops::Parameter<std::string> filename_sfcw{"filename_sfcw", "filename_sfcw",
-                                             "srf_wnd.nc", this};
+                                             "fv_srf_wnd.res.nc", this};
   oops::Parameter<std::string> filename_cplr{"filename_cplr", "filename_cplr",
                                              "coupler.res", this};
   oops::Parameter<std::string> filename_spec{"filename_spec", "filename_spec",

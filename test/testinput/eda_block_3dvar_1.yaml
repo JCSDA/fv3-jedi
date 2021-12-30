@@ -119,12 +119,7 @@ cost function:
 output:
   filetype: gfs
   datapath: Data/analysis/eda/gfs/mem001
-  filename_core: eda-3dvar-block-gfs.fv_core.res.nc
-  filename_trcr: eda-3dvar-block-gfs.fv_tracer.res.nc
-  filename_sfcd: eda-3dvar-block-gfs.sfc_data.nc
-  filename_sfcw: eda-3dvar-block-gfs.fv_srf_wnd.res.nc
-  filename_cplr: eda-3dvar-block-gfs.coupler.res
-  first: PT0H
+  prefix: eda-3dvar-block-gfs
   frequency: PT1H
 final:
   diagnostics:

@@ -4,16 +4,15 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 import os
-import yamltools
-import ewok.tasks.getInitialConditions as generic
+import ewok.tasks.getExpInit as generic
 
 
-class getInitialConditionsGFS(generic.getInitialConditions):
+class getExpInitGFS(generic.getExpInit):
 
     def setup(self, config):
 
         # Get generic defaults
-        generic.getInitialConditions.setup(self, config)
+        generic.getExpInit.setup(self, config)
 
         # Use specific script
-        self.command = os.path.join(config['model_path'], "tasks/runGetForecast.py")
+        self.command = os.path.join(config['model_path'], "tasks/runGetAnalysis.py")

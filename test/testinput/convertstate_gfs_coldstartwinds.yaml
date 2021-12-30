@@ -41,10 +41,7 @@ states:
   output:
     filetype: gfs
     datapath: Data/convertstate/
-    prepend files with date: false
-    filename_cold: 20200101.000000.coldstartwinds.gfs_data.nc
-    filename_cplr: 20200101.000000.coldstartwinds.coupler.res
-    filename_orog: 20200101.000000.coldstartwinds.oro_data.nc
+    prefix: 20200101.000000.coldstartwinds
 
 test:
   reference filename: testoutput/convertstate_gfs_coldstartwinds.ref

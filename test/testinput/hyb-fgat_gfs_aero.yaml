@@ -129,10 +129,7 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: hyb-fgat-gfs_aero.fv_core.res.nc
-  filename_trcr: hyb-fgat-gfs_aero.fv_tracer.res.nc
-  filename_cplr: hyb-fgat-gfs_aero.coupler.res
-  first: PT0H
+  prefix: hyb-fgat-gfs_aero
   frequency: PT3H
 variational:
   minimizer:

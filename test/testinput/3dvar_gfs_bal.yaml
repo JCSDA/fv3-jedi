@@ -158,12 +158,7 @@ final:
 output:
   filetype: gfs
   datapath: Data/analysis/
-  filename_core: 3dvar-gfs_bal.fv_core.res.nc
-  filename_trcr: 3dvar-gfs_bal.fv_tracer.res.nc
-  filename_sfcd: 3dvar-gfs_bal.sfc_data.nc
-  filename_sfcw: 3dvar-gfs_bal.fv_srf_wnd.res.nc
-  filename_cplr: 3dvar-gfs_bal.coupler.res
-  first: PT0H
+  prefix: 20180415.000000.3dvar-gfs_bal
   frequency: PT1H
 variational:
   minimizer:
