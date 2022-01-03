@@ -26,7 +26,6 @@ variance output:
   filename_sfcw: ensemblevariance.fv_srf_wnd.res.nc
   filename_cplr: ensemblevariance.coupler.res
 ensemble:
-  output variables: *incvars
   members:
   - filetype: gfs
     state variables: *incvars

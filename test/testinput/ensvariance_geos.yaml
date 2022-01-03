@@ -18,7 +18,6 @@ variance output:
   datapath: Data/ensvariance
   filename_bkgd: geos.ensemblevariance.%yyyy%mm%dd_%hh%MM%ssz.nc4
 ensemble:
-  output variables: *incvars
   members:
   - filetype: geos
     datapath: Data/inputs/geos_c12

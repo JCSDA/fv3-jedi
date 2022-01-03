@@ -15,7 +15,6 @@ initial condition:
   state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: ensemble
-  date: 2018-04-14T21:00:00Z
   localization:
     localization method: SABER
     saber block:

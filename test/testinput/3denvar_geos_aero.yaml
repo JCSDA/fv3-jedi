@@ -22,7 +22,6 @@ cost function:
         value: 0.01
     - covariance:
         covariance model: ensemble
-        state variables: *aerovars
         members:
           - filetype: geos
             state variables: *aerovars
