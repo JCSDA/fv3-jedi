@@ -17,6 +17,9 @@ class getFixFilesGFS(Task):
         localconf['resol'] = config['GEOMETRY']['_resol_name']
         localconf['nlevs'] = str(config['GEOMETRY']['npz'])
 
+        ilayout = config['GEOMETRY']['layout']
+        layout = str(ilayout[0]) + "x" + str(ilayout[1])
+
         tmplfile = os.path.join(config['model_path'], "templates/fixgeom.yaml")
         geomtmpl = yamltools.parse_config(tmplfile)
         geomconf = yamltools.substitute_template_variables(geomtmpl, localconf)
@@ -30,4 +33,6 @@ class getFixFilesGFS(Task):
         self.config['ENV']['FV3REPO'] = os.path.join(os.environ.get("JEDI_SRC"), "fv3-jedi")
         self.config['ENV']['FIXDIR'] = self.config['currentdir']
         self.config['ENV']['RESOL'] = config['GEOMETRY']['_resol_name']
+        self.config['ENV']['NLEVS'] = config['GEOMETRY']['npz']
+        self.config['ENV']['LAYOUT'] = layout
         self.command = os.path.join(config['model_path'], "tasks/getfixfiles.sh")

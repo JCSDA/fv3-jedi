@@ -10,13 +10,15 @@ set -eux
 echo "FV3REPO = ${FV3REPO}"
 echo "FIXDIR  = ${FIXDIR}"
 
-cp ${FV3REPO}/test/Data/fv3files/akbk64.nc4       ${FIXDIR}/akbk64.nc4
+echo "RESOL = ${RESOL}"
+echo "NLEVS = ${NLEVS}"
+echo "LAYOUT = ${LAYOUT}"
+
+cp ${FV3REPO}/test/Data/fv3files/akbk${NLEVS}.nc4 ${FIXDIR}/akbk${NLEVS}.nc4
 cp ${FV3REPO}/test/Data/fv3files/fmsmpp.nml       ${FIXDIR}/fmsmpp.nml
 cp ${FV3REPO}/test/Data/fv3files/field_table_gfdl ${FIXDIR}/field_table_gfdl
 cp ${FV3REPO}/test/Data/fieldsets/dynamics.yaml   ${FIXDIR}/dynamics.yaml
 cp ${FV3REPO}/test/Data/fieldsets/ufo.yaml        ${FIXDIR}/ufo.yaml
 
-echo "RESOL = ${RESOL}"
-
-cp ${FV3REPO}/test/Data/fv3files/input_gfs_${RESOL}.nml ${FIXDIR}/model_gfs_${RESOL}.nml
+cp ${FV3REPO}/test/Data/fv3files/input_gfs_${RESOL}_${LAYOUT}.nml ${FIXDIR}/model_gfs_${RESOL}.nml
 

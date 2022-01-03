@@ -15,5 +15,7 @@ class getInitialConditionsGFS(generic.getInitialConditions):
         # Get generic defaults
         generic.getInitialConditions.setup(self, config)
 
+        self.walltime = '00:05:00'
+
         # Use specific script
         self.command = os.path.join(config['model_path'], "tasks/runGetForecast.py")
