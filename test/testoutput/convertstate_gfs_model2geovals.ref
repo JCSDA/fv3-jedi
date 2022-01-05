@@ -25,7 +25,8 @@ Input state:
  -----------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
 Variable change from: 21 variables: ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m
-Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index, vegetation_type_index, soil_type, vort, tropopause_pressure
+Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
+
 State after variable transform: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 32 | cube sphere face size: C12
@@ -56,7 +57,7 @@ State after variable transform:
    leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    volume_fraction_of_condensed_w: Min = +3.380891e-02, Max = +1.000000e+00, RMS = +8.960741e-01
    soil_temperature              : Min = +0.000000e+00, Max = +3.112298e+02, RMS = +1.346440e+02
-   land_type_index               : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
+   land_type_index_NPOESS        : Min = +1.000000e+00, Max = +1.900000e+01, RMS = +9.739607e+00
    vegetation_type_index         : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
    soil_type                     : Min = +1.000000e+00, Max = +8.000000e+00, RMS = +2.735018e+00
    vort                          : Min = -1.055734e-04, Max = +1.100743e-04, RMS = +1.569415e-05
@@ -92,7 +93,7 @@ Output state:
    leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    volume_fraction_of_condensed_w: Min = +3.380891e-02, Max = +1.000000e+00, RMS = +8.960741e-01
    soil_temperature              : Min = +0.000000e+00, Max = +3.112298e+02, RMS = +1.346440e+02
-   land_type_index               : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
+   land_type_index_NPOESS        : Min = +1.000000e+00, Max = +1.900000e+01, RMS = +9.739607e+00
    vegetation_type_index         : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
    soil_type                     : Min = +1.000000e+00, Max = +8.000000e+00, RMS = +2.735018e+00
    vort                          : Min = -1.055734e-04, Max = +1.100743e-04, RMS = +1.569415e-05

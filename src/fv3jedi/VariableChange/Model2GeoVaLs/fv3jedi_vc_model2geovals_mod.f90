@@ -201,7 +201,8 @@ real(kind=kind_real), pointer     :: vfrac    (:,:,:)
 real(kind=kind_real), allocatable :: soilt    (:,:,:)
 real(kind=kind_real), allocatable :: soilm    (:,:,:)
 real(kind=kind_real), pointer     :: soil_tmp (:,:,:)
-real(kind=kind_real), allocatable :: land_type_index                           (:,:,:)
+real(kind=kind_real), allocatable :: land_type_index_npoess                    (:,:,:)
+real(kind=kind_real), allocatable :: land_type_index_igbp                      (:,:,:)
 real(kind=kind_real), allocatable :: vegetation_type_index                     (:,:,:)
 real(kind=kind_real), allocatable :: soil_type                                 (:,:,:)
 real(kind=kind_real), allocatable :: water_area_fraction                       (:,:,:)
@@ -607,7 +608,8 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   call xm%get_field('u_srf' , u_srf )
   call xm%get_field('v_srf' , v_srf )
 
-  allocate(land_type_index                           (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(land_type_index_npoess                    (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(land_type_index_igbp                      (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(vegetation_type_index                     (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(soil_type                                 (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(water_area_fraction                       (self%isc:self%iec,self%jsc:self%jec,1))
@@ -634,8 +636,22 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
     have_sss = .true.
   endif
 
+  ! Here we compute the surface data for CRTM. A particular note about the surface types:
+  !
+  ! We compute at once the CRTM surface types supported in fv3-jedi: land types in two possible
+  ! classification schemes, soil type, and vegetation type (*). This simplifies the logic, and
+  ! should only be a negligible additional expense. A minor optimization would be to pass to
+  ! `crtm_surface` information about which surface type was requested from this function
+  ! (changevar), so only the requested type would be computed. Typically, this would be land type
+  ! (in just a single classification scheme) for vis/IR obs, or soil and vegetation types for
+  ! microwave obs.
+  !
+  ! (*) Note: CRTM also supports the USGS land type classification -- to use this with fv3-jedi, the
+  ! mapping from the fv3-jedi land type to the USGS land type must be added to `crtm_surface`. This
+  ! would exactly follow the code currently in place for the NPOESS and IGBP classifications.
   call crtm_surface( geom, slmsk, sheleg, tsea, vtype, stype, vfrac, soilt, soilm, u_srf, v_srf, &
-                      f10m, sss, land_type_index, vegetation_type_index, soil_type, &
+                      f10m, sss, land_type_index_npoess, land_type_index_igbp, &
+                      vegetation_type_index, soil_type, &
                       water_area_fraction, land_area_fraction, ice_area_fraction, &
                       surface_snow_area_fraction, leaf_area_index, surface_temperature_where_sea, &
                       surface_temperature_where_land, surface_temperature_where_ice, &
@@ -900,10 +916,21 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = soil_temperature
 
-  case ("land_type_index")
+  case ("land_type_index_NPOESS")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = land_type_index
+    field_ptr = land_type_index_npoess
+
+  case ("land_type_index_IGBP")
+
+    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
+    field_ptr = land_type_index_igbp
+
+  case ("land_type_index_USGS")
+
+    call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar does not currently implement " &
+                   //"the variable change to the USGS land type classification. " &
+                   //"This variable change should be added to surface_variables_mod.")
 
   case ("surface_roughness_length")
 
@@ -1014,7 +1041,8 @@ if (allocated(qr_efr)) deallocate(qr_efr)
 if (allocated(qs_efr)) deallocate(qs_efr)
 if (allocated(watercov)) deallocate(watercov)
 if (allocated(sss)) deallocate(sss)
-if (allocated(land_type_index)) deallocate(land_type_index)
+if (allocated(land_type_index_npoess)) deallocate(land_type_index_npoess)
+if (allocated(land_type_index_igbp)) deallocate(land_type_index_igbp)
 if (allocated(vegetation_type_index)) deallocate(vegetation_type_index)
 if (allocated(soil_type)) deallocate(soil_type)
 if (allocated(water_area_fraction)) deallocate(water_area_fraction)

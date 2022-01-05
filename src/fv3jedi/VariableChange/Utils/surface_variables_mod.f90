@@ -25,8 +25,8 @@ contains
 
 subroutine crtm_surface( geom, field_slmsk, field_sheleg, field_tsea, field_vtype, field_stype, &
                          field_vfrac, field_stc, field_smc, field_u_srf, field_v_srf, field_f10m, &
-                         field_sss, &
-                         land_type, vegetation_type, soil_type, water_coverage, land_coverage, &
+                         field_sss, land_type_npoess, land_type_igbp, &
+                         vegetation_type, soil_type, water_coverage, land_coverage, &
                          ice_coverage, snow_coverage, lai, water_temperature, land_temperature, &
                          ice_temperature, snow_temperature, soil_moisture_content, &
                          vegetation_fraction, soil_temperature, snow_depth, wind_speed, &
@@ -49,7 +49,8 @@ real(kind=kind_real), intent(in)  :: field_v_srf          (geom%isc:geom%iec,geo
 real(kind=kind_real), intent(in)  :: field_f10m           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_sss            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: vegetation_type      (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(inout) :: land_type            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: land_type_npoess     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
+real(kind=kind_real), intent(inout) :: land_type_igbp       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: soil_type            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: water_coverage       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: land_coverage        (geom%isc:geom%iec,geom%jsc:geom%jec,1)
@@ -107,13 +108,7 @@ integer, parameter :: URBAN_CONCRETE = 15
 integer, parameter :: BROADLEAF_BRUSH = 17
 integer, parameter :: WET_SOIL = 18
 integer, parameter :: SCRUB_SOIL = 19
-integer, parameter :: nvege_type = 20
 integer, parameter :: IGBP_N_TYPES = 20
-integer, parameter :: SOIL_N_TYPES = 16
-integer, allocatable,dimension(:) :: map_to_crtm_ir
-integer, allocatable,dimension(:) :: map_to_crtm_mwave
-integer, parameter, dimension(1:IGBP_N_TYPES) :: igbp_to_gfs=(/4, &
-   1, 5, 2, 3, 8, 9, 6, 6, 7, 8, 12, 7, 12, 13, 11, 0, 10, 10, 11/)
  integer, parameter, dimension(1:IGBP_N_TYPES) :: igbp_to_npoess=(/PINE_FOREST, &
    BROADLEAF_FOREST, PINE_FOREST, BROADLEAF_FOREST, BROADLEAF_PINE_FOREST, &
    SCRUB, SCRUB_SOIL, BROADLEAF_BRUSH, BROADLEAF_BRUSH, SCRUB, BROADLEAF_BRUSH, &
@@ -122,7 +117,23 @@ integer, parameter, dimension(1:IGBP_N_TYPES) :: igbp_to_gfs=(/4, &
  integer, parameter, dimension(1:IGBP_N_TYPES) :: igbp_to_igbp=(/1, &
    2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, &
    20/)
- integer, parameter, dimension(1:SOIL_N_TYPES) :: map_soil_to_crtm=(/1, &
+
+ ! CRTM IR/vis uses 20 land surface types, but each type can be represented in any of three
+ ! different classifications: NPOESS, IGBP, USGS. We use the GSI mappings from the GFS
+ ! model type to IGBP and NPOESS. Currently the mapping to USGS is not implemented, but it could
+ ! be added following exactly the same logic used in the other two cases.
+ integer, parameter :: num_land_types = 20
+ integer, parameter, dimension(1:num_land_types) :: map_model_sfc_to_crtm_land_npoess = &
+   igbp_to_npoess
+ integer, parameter, dimension(1:num_land_types) :: map_model_sfc_to_crtm_land_igbp = igbp_to_igbp
+
+ ! CRTM microwave uses 13 vegetation types
+ integer, parameter :: num_vege_types = 20
+ integer, parameter, dimension(1:num_vege_types) :: map_model_sfc_to_crtm_mwave_vege=(/4, &
+   1, 5, 2, 3, 8, 9, 6, 6, 7, 8, 12, 7, 12, 13, 11, 0, 10, 10, 11/)
+ ! CRTM microwave uses 9 soil types
+ integer, parameter :: num_soil_types = 16
+ integer, parameter, dimension(1:num_soil_types) :: map_model_soil_to_crtm_mwave_soil=(/1, &
    1, 4, 2, 2, 8, 7, 2, 6, 5, 2, 3, 8, 1, 6, 9/)
 
 integer :: ji, jj
@@ -139,17 +150,6 @@ real(kind=kind_real) :: u_srf
 real(kind=kind_real) :: v_srf
 real(kind=kind_real) :: f10m
 real(kind=kind_real) :: sss
-
-! Vegetation maps
-allocate(map_to_crtm_ir   (nvege_type))
-allocate(map_to_crtm_mwave(nvege_type))
-map_to_crtm_ir    = igbp_to_igbp
-map_to_crtm_mwave = igbp_to_gfs
-!TODO, this belongs in ufo or with advanced locations
-!select case ( TRIM(CRTM_IRlandCoeff_Classification()) )
-! case('NPOESS'); map_to_crtm_ir=igbp_to_npoess
-! case('IGBP')  ; map_to_crtm_ir=igbp_to_igbp
-!end select
 
 ! Loop over all grid points
 do jj = geom%jsc, geom%jec
@@ -261,12 +261,13 @@ do jj = geom%jsc, geom%jec
     itype  = vty
     istype = sty
 
-    itype  = min(max(1,itype),nvege_type)
-    istype = min(max(1,istype),SOIL_N_TYPES)
-    land_type(ji,jj,1) = real(max(1,map_to_crtm_mwave(itype)),kind_real)
-    Vegetation_Type(ji,jj,1) = real(max(1,map_to_crtm_mwave(itype)),kind_real)
-    Soil_Type(ji,jj,1) = real(map_soil_to_crtm(istype),kind_real)
-    lai_type = real(map_to_crtm_mwave(itype),kind_real)
+    itype  = min(max(1,itype),num_vege_types)
+    istype = min(max(1,istype),num_soil_types)
+    land_type_npoess(ji,jj,1) = real(max(1,map_model_sfc_to_crtm_land_npoess(itype)),kind_real)
+    land_type_igbp(ji,jj,1) = real(max(1,map_model_sfc_to_crtm_land_igbp(itype)),kind_real)
+    Vegetation_Type(ji,jj,1) = real(max(1,map_model_sfc_to_crtm_mwave_vege(itype)),kind_real)
+    Soil_Type(ji,jj,1) = real(map_model_soil_to_crtm_mwave_soil(istype),kind_real)
+    lai_type = real(map_model_sfc_to_crtm_mwave_vege(itype),kind_real)
 
     water_coverage(ji,jj,1) = min(max(0.0_kind_real,sfcpct(0)),1.0_kind_real)
     land_coverage(ji,jj,1)  = min(max(0.0_kind_real,sfcpct(1)),1.0_kind_real)
@@ -342,9 +343,6 @@ do jj = geom%jsc, geom%jec
 
   enddo
 enddo
-
-deallocate(map_to_crtm_ir)
-deallocate(map_to_crtm_mwave)
 
 end subroutine crtm_surface
 

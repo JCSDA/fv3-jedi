@@ -34,7 +34,7 @@ variable change:
                      surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
                      surface_wind_from_direction,leaf_area_index,
                      volume_fraction_of_condensed_water_in_soil,soil_temperature,
-                     land_type_index,vegetation_type_index,soil_type,
+                     land_type_index_NPOESS,vegetation_type_index,soil_type,
                      vort,tropopause_pressure]
 states:
 - input:

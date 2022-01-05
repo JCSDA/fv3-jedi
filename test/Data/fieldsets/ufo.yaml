@@ -161,7 +161,7 @@ Fields:
     Units: none
     Levels: 1
 
-  - FieldName: land_type_index
+  - FieldName: land_type_index_NPOESS
     Units: none
     Levels: 1
     Kind: integer
