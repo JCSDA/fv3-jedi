@@ -1608,62 +1608,75 @@ npx = geom%npx
 npy = geom%npy
 npz = geom%npz
 
-do j=max(2,js),min(npy-2,je)
-  do i=max(2,is),min(npx-2,ie)
-    utmp(i,j) = c2*(u(i,j-1)+u(i,j+2)) + c1*(u(i,j)+u(i,j+1))
-    vtmp(i,j) = c2*(v(i-1,j)+v(i+2,j)) + c1*(v(i,j)+v(i+1,j))
-  enddo
-enddo
+if (geom%bounded_domain) then
 
-if ( js==1  ) then
-  do i=is,ie+1
-    wv(i,1) = v(i,1)*geom%dy(i,1)
+  do j=max(1,js),min(npy-1,je)
+    do i=max(1,is),min(npx-1,ie)
+      utmp(i,j) = c2*(u(i,j-1)+u(i,j+2)) + c1*(u(i,j)+u(i,j+1))
+      vtmp(i,j) = c2*(v(i-1,j)+v(i+2,j)) + c1*(v(i,j)+v(i+1,j))
+    enddo
   enddo
-  do i=is,ie
-    vtmp(i,1) = 2.*(wv(i,1) + wv(i+1,1)) / (geom%dy(i,1)+geom%dy(i+1,1))
-    utmp(i,1) = 2.*(u(i,1)*geom%dx(i,1) + u(i,2)*geom%dx(i,2)) / (geom%dx(i,1) + geom%dx(i,2))
-  enddo
-endif
 
-if ( (je+1)==npy   ) then
-  j = npy-1
-  do i=is,ie+1
-    wv(i,j) = v(i,j)*geom%dy(i,j)
-  enddo
-  do i=is,ie
-    vtmp(i,j) = 2.*(wv(i,j) + wv(i+1,j)) / (geom%dy(i,j)+geom%dy(i+1,j))
-    utmp(i,j) = 2.*(u(i,j)*geom%dx(i,j) + u(i,j+1)*geom%dx(i,j+1)) / (geom%dx(i,j) + geom%dx(i,j+1))
-  enddo
-endif
+else
 
-if ( is==1 ) then
-  i = 1
-  do j=js,je
-    wv(1,j) = v(1,j)*geom%dy(1,j)
-    wv(2,j) = v(2,j)*geom%dy(2,j)
+  do j=max(2,js),min(npy-2,je)
+    do i=max(2,is),min(npx-2,ie)
+      utmp(i,j) = c2*(u(i,j-1)+u(i,j+2)) + c1*(u(i,j)+u(i,j+1))
+      vtmp(i,j) = c2*(v(i-1,j)+v(i+2,j)) + c1*(v(i,j)+v(i+1,j))
+    enddo
   enddo
-  do j=js,je+1
-    wu(i,j) = u(i,j)*geom%dx(i,j)
-  enddo
-  do j=js,je
-    utmp(i,j) = 2.*(wu(i,j) + wu(i,j+1))/(geom%dx(i,j)+geom%dx(i,j+1))
-    vtmp(i,j) = 2.*(wv(1,j) + wv(2,j  ))/(geom%dy(1,j)+geom%dy(2,j))
-  enddo
-endif
 
-if ( (ie+1)==npx) then
-  i = npx-1
-  do j=js,je
-    wv(i,  j) = v(i,  j)*geom%dy(i,  j)
-    wv(i+1,j) = v(i+1,j)*geom%dy(i+1,j)
-  enddo
-  do j=js,je+1
-    wu(i,j) = u(i,j)*geom%dx(i,j)
-  enddo
-  do j=js,je
-    utmp(i,j) = 2.*(wu(i,j) + wu(i,  j+1))/(geom%dx(i,j)+geom%dx(i,j+1))
-    vtmp(i,j) = 2.*(wv(i,j) + wv(i+1,j  ))/(geom%dy(i,j)+geom%dy(i+1,j))
-  enddo
+  if ( js==1  ) then
+    do i=is,ie+1
+      wv(i,1) = v(i,1)*geom%dy(i,1)
+    enddo
+    do i=is,ie
+      vtmp(i,1) = 2.*(wv(i,1) + wv(i+1,1)) / (geom%dy(i,1)+geom%dy(i+1,1))
+      utmp(i,1) = 2.*(u(i,1)*geom%dx(i,1) + u(i,2)*geom%dx(i,2)) / (geom%dx(i,1) + geom%dx(i,2))
+    enddo
+  endif
+
+  if ( (je+1)==npy   ) then
+    j = npy-1
+    do i=is,ie+1
+      wv(i,j) = v(i,j)*geom%dy(i,j)
+    enddo
+    do i=is,ie
+      vtmp(i,j) = 2.*(wv(i,j) + wv(i+1,j)) / (geom%dy(i,j)+geom%dy(i+1,j))
+      utmp(i,j) = 2.*(u(i,j)*geom%dx(i,j) + u(i,j+1)*geom%dx(i,j+1)) / (geom%dx(i,j) + geom%dx(i,j+1))
+    enddo
+  endif
+
+  if ( is==1 ) then
+    i = 1
+    do j=js,je
+      wv(1,j) = v(1,j)*geom%dy(1,j)
+      wv(2,j) = v(2,j)*geom%dy(2,j)
+    enddo
+    do j=js,je+1
+      wu(i,j) = u(i,j)*geom%dx(i,j)
+    enddo
+    do j=js,je
+      utmp(i,j) = 2.*(wu(i,j) + wu(i,j+1))/(geom%dx(i,j)+geom%dx(i,j+1))
+      vtmp(i,j) = 2.*(wv(1,j) + wv(2,j  ))/(geom%dy(1,j)+geom%dy(2,j))
+    enddo
+  endif
+
+  if ( (ie+1)==npx) then
+    i = npx-1
+    do j=js,je
+      wv(i,  j) = v(i,  j)*geom%dy(i,  j)
+      wv(i+1,j) = v(i+1,j)*geom%dy(i+1,j)
+    enddo
+    do j=js,je+1
+      wu(i,j) = u(i,j)*geom%dx(i,j)
+    enddo
+    do j=js,je
+      utmp(i,j) = 2.*(wu(i,j) + wu(i,  j+1))/(geom%dx(i,j)+geom%dx(i,j+1))
+      vtmp(i,j) = 2.*(wv(i,j) + wv(i+1,j  ))/(geom%dy(i,j)+geom%dy(i+1,j))
+    enddo
+  endif
+
 endif
 
 !Transform local a-grid winds into latitude-longitude coordinates
@@ -1944,25 +1957,29 @@ end do
 call mpp_update_domains_adm(u, u_ad, v, v_ad, geom%domain, gridtype=dgrid_ne)
 
 !Adjoint fill edges
-ebuffery = 0.0_kind_real
-nbufferx = 0.0_kind_real
-wbuffery = 0.0_kind_real
-sbufferx = 0.0_kind_real
+if (.not. geom%bounded_domain) then
 
-do k=1,npz
-  do i=is,ie
-    nbufferx(i,k) = u_ad(i,je+1,k)
-  enddo
-enddo
-do k=1,npz
-  do j=js,je
-    ebuffery(j,k) = v_ad(ie+1,j,k)
-  enddo
-enddo
+  ebuffery = 0.0_kind_real
+  nbufferx = 0.0_kind_real
+  wbuffery = 0.0_kind_real
+  sbufferx = 0.0_kind_real
 
-call mpp_get_boundary_ad( u_ad, v_ad, geom%domain, &
-                          wbuffery=wbuffery, ebuffery=ebuffery, sbufferx=sbufferx, nbufferx=nbufferx, &
-                          gridtype=DGRID_NE, complete=.true. )
+  do k=1,npz
+    do i=is,ie
+      nbufferx(i,k) = u_ad(i,je+1,k)
+    enddo
+  enddo
+  do k=1,npz
+    do j=js,je
+      ebuffery(j,k) = v_ad(ie+1,j,k)
+    enddo
+  enddo
+
+  call mpp_get_boundary_ad( u_ad, v_ad, geom%domain, &
+                            wbuffery=wbuffery, ebuffery=ebuffery, sbufferx=sbufferx, nbufferx=nbufferx, &
+                            gridtype=DGRID_NE, complete=.true. )
+
+endif
 
 !Output compute part
 u_ad_comp = u_ad(is:ie  ,js:je+1,:)
@@ -2491,24 +2508,28 @@ npz = geom%npz
 
 ! Fill north/east edges
 ! ---------------------
-ebuffery = 0.0_kind_real
-nbufferx = 0.0_kind_real
-wbuffery = 0.0_kind_real
-sbufferx = 0.0_kind_real
-call mpp_get_boundary( u, v, geom%domain, &
-                       wbuffery=wbuffery, ebuffery=ebuffery, &
-                       sbufferx=sbufferx, nbufferx=nbufferx, &
-                       gridtype=DGRID_NE, complete=.true. )
-do k=1,npz
-   do i=isc,iec
-      u(i,jec+1,k) = nbufferx(i,k)
-   enddo
-enddo
-do k=1,npz
-   do j=jsc,jec
-      v(iec+1,j,k) = ebuffery(j,k)
-   enddo
-enddo
+if (.not. geom%bounded_domain) then
+
+  ebuffery = 0.0_kind_real
+  nbufferx = 0.0_kind_real
+  wbuffery = 0.0_kind_real
+  sbufferx = 0.0_kind_real
+  call mpp_get_boundary( u, v, geom%domain, &
+                         wbuffery=wbuffery, ebuffery=ebuffery, &
+                         sbufferx=sbufferx, nbufferx=nbufferx, &
+                         gridtype=DGRID_NE, complete=.true. )
+  do k=1,npz
+     do i=isc,iec
+        u(i,jec+1,k) = nbufferx(i,k)
+     enddo
+  enddo
+  do k=1,npz
+     do j=jsc,jec
+        v(iec+1,j,k) = ebuffery(j,k)
+     enddo
+  enddo
+
+endif
 
 ! Fill halos
 ! ----------
@@ -2547,24 +2568,28 @@ subroutine fill_dgrid_winds_adm(geom, u, u_ad, v, v_ad, fillhalo)
     if (fillhalo) call mpp_update_domains_adm(u, u_ad, v, v_ad, geom%domain, gridtype=dgrid_ne)
   end if
 
-  wbuffery = 0.0_kind_real
-  sbufferx = 0.0_kind_real
-  ebuffery = 0.0_kind_real
-  nbufferx = 0.0_kind_real
+  if (.not. geom%bounded_domain) then
 
-  do k=npz,1,-1
-    do j=jec,jsc,-1
-      ebuffery(j, k) = v_ad(iec+1, j, k)
-    end do
-  end do
-  do k=npz,1,-1
-    do i=iec,isc,-1
-      nbufferx(i, k) = u_ad(i, jec+1, k)
-    end do
-  end do
+    wbuffery = 0.0_kind_real
+    sbufferx = 0.0_kind_real
+    ebuffery = 0.0_kind_real
+    nbufferx = 0.0_kind_real
 
-  call mpp_get_boundary_ad(u_ad, v_ad, geom%domain, wbuffery=wbuffery, ebuffery=ebuffery, &
-                           sbufferx=sbufferx, nbufferx=nbufferx, gridtype=dgrid_ne, complete=.true.)
+    do k=npz,1,-1
+      do j=jec,jsc,-1
+        ebuffery(j, k) = v_ad(iec+1, j, k)
+      end do
+    end do
+    do k=npz,1,-1
+      do i=iec,isc,-1
+        nbufferx(i, k) = u_ad(i, jec+1, k)
+      end do
+    end do
+
+    call mpp_get_boundary_ad(u_ad, v_ad, geom%domain, wbuffery=wbuffery, ebuffery=ebuffery, &
+                             sbufferx=sbufferx, nbufferx=nbufferx, gridtype=dgrid_ne, complete=.true.)
+
+  endif
 
 end subroutine fill_dgrid_winds_adm
 
@@ -2597,23 +2622,27 @@ npz = geom%npz
 
 ! Fill north/east edges
 ! ---------------------
-ebufferx = 0.0_kind_real
-nbuffery = 0.0_kind_real
-wbufferx = 0.0_kind_real
-sbuffery = 0.0_kind_real
+if (.not. geom%bounded_domain) then
 
-call mpp_get_boundary(uc, vc, geom%domain, &
-                      wbufferx=wbufferx, ebufferx=ebufferx, &
-                      sbuffery=sbuffery, nbuffery=nbuffery, &
-                      gridtype=CGRID_NE, complete=.true.)
-do k=1,npz
-   do j=jsc,jec
-      uc(iec+1,j,k) = ebufferx(j,k)
-   enddo
-   do i=isc,iec
-      vc(i,jec+1,k) = nbuffery(i,k)
-   enddo
-enddo
+  ebufferx = 0.0_kind_real
+  nbuffery = 0.0_kind_real
+  wbufferx = 0.0_kind_real
+  sbuffery = 0.0_kind_real
+
+  call mpp_get_boundary(uc, vc, geom%domain, &
+                        wbufferx=wbufferx, ebufferx=ebufferx, &
+                        sbuffery=sbuffery, nbuffery=nbuffery, &
+                        gridtype=CGRID_NE, complete=.true.)
+  do k=1,npz
+     do j=jsc,jec
+        uc(iec+1,j,k) = ebufferx(j,k)
+     enddo
+     do i=isc,iec
+        vc(i,jec+1,k) = nbuffery(i,k)
+     enddo
+  enddo
+
+endif
 
 ! Fill halos
 ! ----------
@@ -2650,20 +2679,24 @@ if (present(fillhalo)) then
   if (fillhalo) call mpp_update_domains_adm(uc_ad, uc_ad, vc_ad, vc_ad, geom%domain, gridtype=cgrid_ne)
 end if
 
-sbuffery = 0.0_kind_real
-wbufferx = 0.0_kind_real
+if (.not. geom%bounded_domain) then
 
-do k=npz,1,-1
-  do i=iec,isc,-1
-    nbuffery(i, k) = vc_ad(i,jec+1,k)
-  end do
-  do j=jec,jsc,-1
-    ebufferx(j, k) = uc_ad(iec+1,j,k)
-  end do
-end do
+  sbuffery = 0.0_kind_real
+  wbufferx = 0.0_kind_real
 
-call mpp_get_boundary_ad(uc_ad, vc_ad, geom%domain, sbuffery=sbuffery, nbuffery=nbuffery, &
-                         wbufferx=wbufferx, ebufferx=ebufferx, gridtype=cgrid_ne, complete=.true.)
+  do k=npz,1,-1
+    do i=iec,isc,-1
+      nbuffery(i, k) = vc_ad(i,jec+1,k)
+    end do
+    do j=jec,jsc,-1
+      ebufferx(j, k) = uc_ad(iec+1,j,k)
+    end do
+  end do
+
+  call mpp_get_boundary_ad(uc_ad, vc_ad, geom%domain, sbuffery=sbuffery, nbuffery=nbuffery, &
+                           wbufferx=wbufferx, ebufferx=ebufferx, gridtype=cgrid_ne, complete=.true.)
+
+endif
 
 end subroutine fill_cgrid_winds_adm
 
