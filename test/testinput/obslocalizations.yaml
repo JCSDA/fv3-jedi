@@ -1,0 +1,40 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk64.nc4
+  npx: 13
+  npy: 13
+  npz: 64
+  fieldsets:
+    - fieldset: Data/fieldsets/oro_data.yaml
+  orography:
+    filetype: gfs
+    skip coupler file: true
+    state variables: [orog_filt]
+    datapath: Data/inputs/gfs_land_c48/grid/
+    filename_orog: C48_oro_data.nc
+
+window begin: &date '2019-12-15T00:00:00Z'
+window end: 2019-12-16T00:00:00Z
+
+observations:
+- obs space:
+    name: 'Brasnett99'
+    distribution: InefficientDistribution
+    simulated variables: ['snwdph']
+    obsdatain:  {obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc}
+  obs localizations:
+  - localization method: Horizontal SOAR
+    lengthscale: 250e3
+    soar horizontal decay: 0.000018
+  - localization method: Vertical Brasnett
+    vertical lengthscale: 800
+
+observation localizations reference:
+  gridpoints:
+    lons: [200.610019, 75.8489626, 301.789939]
+    lats: [66.736118, 41.6938865, -21.5839479]
+    depths: [0.0, 0.0, 0.0]
+  local nobs: [2, 1, 0]
+  rms: [0.122327,0.00637097,0]

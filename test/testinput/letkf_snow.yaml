@@ -46,11 +46,12 @@ observations:
   obs error:
     covariance model: diagonal
   obs localizations:
-  - localization method: Brasnett99
+  - localization method: Horizontal SOAR
     lengthscale: 250e3
     soar horizontal decay: 0.000021
-    vertical lengthscale: 700
     max nobs: 50
+  - localization method: Vertical Brasnett
+    vertical lengthscale: 700
   obs filters:
   - filter: Bounds Check # negative / missing snow
     filter variables:

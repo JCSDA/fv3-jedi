@@ -11,15 +11,13 @@
 #include "oops/runs/Run.h"
 #include "ufo/instantiateObsErrorFactory.h"
 #include "ufo/instantiateObsFilterFactory.h"
-#include "ufo/instantiateObsLocFactory.h"
 #include "ufo/ObsTraits.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  ufo::instantiateObsLocFactory<fv3jedi::Traits>();
   ufo::instantiateObsErrorFactory();
   ufo::instantiateObsFilterFactory();
-  fv3jedi::instantiateObsLocFactory<fv3jedi::Traits>();
+  fv3jedi::instantiateObsLocFactory();
   oops::LocalEnsembleDA<fv3jedi::Traits, ufo::ObsTraits> letkf;
   return run.execute(letkf);
 }

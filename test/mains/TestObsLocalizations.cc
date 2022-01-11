@@ -8,13 +8,13 @@
 #include "fv3jedi/Utilities/Traits.h"
 
 #include "oops/runs/Run.h"
-#include "test/interface/ObsLocalization.h"
+#include "test/base/ObsLocalizations.h"
 #include "fv3jedi/ObsLocalization/instantiateObsLocFactory.h"
 #include "ufo/ObsTraits.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   fv3jedi::instantiateObsLocFactory();
-  test::ObsLocalization<fv3jedi::Traits, ufo::ObsTraits> tests;
+  test::ObsLocalizations<fv3jedi::Traits, ufo::ObsTraits> tests;
   return run.execute(tests);
 }

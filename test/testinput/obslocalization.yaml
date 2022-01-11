@@ -52,21 +52,3 @@ observations:
     reference local nobs: [2, 1, 0]
     reference rms: [0.122889, 0.0630446, 0]
     print iterator: false
-
-- obs space:
-    name: 'Brasnett99'
-    distribution: InefficientDistribution
-    simulated variables: ['snwdph']
-    obsdatain:  {obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc}
-  obs localizations:
-  - localization method: Brasnett99
-    lengthscale: 250e3
-    soar horizontal decay: 0.000018
-    vertical lengthscale: 800
-    reference gridpoints:
-      lons: [200.610019, 75.8489626, 301.789939]
-      lats: [66.736118, 41.6938865, -21.5839479]
-      depths: [0.0, 0.0, 0.0]
-    reference local nobs: [2, 1, 0]
-    reference rms: [0.122327,0.00637097,0]
-    print iterator: false

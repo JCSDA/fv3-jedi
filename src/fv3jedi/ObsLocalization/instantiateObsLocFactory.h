@@ -7,18 +7,18 @@
 
 #pragma once
 
-#include "fv3jedi/ObsLocalization/ObsLocBrasnett99.h"
+#include "fv3jedi/ObsLocalization/ObsLocVerticalBrasnett.h"
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/base/ObsLocalizationBase.h"
 #include "ufo/instantiateObsLocFactory.h"
 #include "ufo/ObsTraits.h"
 
 namespace fv3jedi {
-template<typename MODEL> void instantiateObsLocFactory() {
-  ufo::instantiateObsLocFactory<MODEL>();
-
-  static oops::ObsLocalizationMaker<MODEL, ufo::ObsTraits, fv3jedi::ObsLocBrasnett99<MODEL>>
-           makerBrasnett99_("Brasnett99");
+void instantiateObsLocFactory() {
+  ufo::instantiateObsLocFactory<fv3jedi::Traits>();
+  static oops::ObsLocalizationMaker<fv3jedi::Traits, ufo::ObsTraits,
+                                    fv3jedi::ObsLocVerticalBrasnett>
+         makerVerticalBrasnett_("Vertical Brasnett");
 }
 
 }  // namespace fv3jedi
