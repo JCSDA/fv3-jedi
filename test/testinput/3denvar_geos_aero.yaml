@@ -22,27 +22,15 @@ cost function:
         value: 0.01
     - covariance:
         covariance model: ensemble
-        members:
-          - filetype: geos
+        members from template:
+          template:
+            filetype: geos
             state variables: *aerovars
-            datapath: Data/inputs/geos_c12/
-            filename_bkgd: geos.aero.bkg.20180415_000000z.mem001.nc4
-          - filetype: geos
-            state variables: *aerovars
-            datapath: Data/inputs/geos_c12/
-            filename_bkgd: geos.aero.bkg.20180415_000000z.mem002.nc4
-          - filetype: geos
-            state variables: *aerovars
-            datapath: Data/inputs/geos_c12/
-            filename_bkgd: geos.aero.bkg.20180415_000000z.mem003.nc4
-          - filetype: geos
-            state variables: *aerovars
-            datapath: Data/inputs/geos_c12/
-            filename_bkgd: geos.aero.bkg.20180415_000000z.mem004.nc4
-          - filetype: geos
-            state variables: *aerovars
-            datapath: Data/inputs/geos_c12/
-            filename_bkgd: geos.aero.bkg.20180415_000000z.mem005.nc4
+            datapath: Data/inputs/geos_c12
+            filename_bkgd: geos.aero.bkg.20180415_000000z.mem%mem%.nc4
+          pattern: %mem%
+          nmembers: 5
+          zero padding: 3
         localization:
           localization method: SABER
           saber block:

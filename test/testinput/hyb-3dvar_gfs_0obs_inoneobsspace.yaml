@@ -45,87 +45,19 @@ cost function:
         value: 0.1
     - covariance:
         covariance model: ensemble
-        members:
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem001/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem002/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem003/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem004/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem005/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem006/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem007/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem008/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem009/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem010/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+        members from template:
+          template:
+            filetype: gfs
+            state variables: *3dvars
+            datapath: Data/inputs/gfs_c12/mem%mem%/
+            filename_core: 20180415.000000.fv_core.res.nc
+            filename_trcr: 20180415.000000.fv_tracer.res.nc
+            filename_sfcd: 20180415.000000.sfc_data.nc
+            filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
+            filename_cplr: 20180415.000000.coupler.res
+          pattern: %mem%
+          nmembers: 10
+          zero padding: 3
         localization:
           localization method: SABER
           saber block:

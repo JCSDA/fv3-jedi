@@ -19,39 +19,19 @@ cost function:
         value: 0.1
     - covariance:
         covariance model: ensemble
-        members:
-        - filetype: gfs
-          state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
-                                      dust1,dust2,dust3,dust4,dust5,
-                                      seas1,seas2,seas3,seas4]
-          datapath: Data/inputs/gfs_aero_c12/mem001/
-          filename_core: 20180414.210000.fv_core.res.nc
-          filename_trcr: 20180414.210000.fv_tracer.res.nc
-          filename_cplr: 20180414.210000.coupler.res
-        - filetype: gfs
-          state variables: *aerovars
-          datapath: Data/inputs/gfs_aero_c12/mem002/
-          filename_core: 20180414.210000.fv_core.res.nc
-          filename_trcr: 20180414.210000.fv_tracer.res.nc
-          filename_cplr: 20180414.210000.coupler.res
-        - filetype: gfs
-          state variables: *aerovars
-          datapath: Data/inputs/gfs_aero_c12/mem003/
-          filename_core: 20180414.210000.fv_core.res.nc
-          filename_trcr: 20180414.210000.fv_tracer.res.nc
-          filename_cplr: 20180414.210000.coupler.res
-        - filetype: gfs
-          state variables: *aerovars
-          datapath: Data/inputs/gfs_aero_c12/mem004/
-          filename_core: 20180414.210000.fv_core.res.nc
-          filename_trcr: 20180414.210000.fv_tracer.res.nc
-          filename_cplr: 20180414.210000.coupler.res
-        - filetype: gfs
-          state variables: *aerovars
-          datapath: Data/inputs/gfs_aero_c12/mem005/
-          filename_core: 20180414.210000.fv_core.res.nc
-          filename_trcr: 20180414.210000.fv_tracer.res.nc
-          filename_cplr: 20180414.210000.coupler.res
+        members from template:
+          template:
+            filetype: gfs
+            state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
+                                        dust1,dust2,dust3,dust4,dust5,
+                                        seas1,seas2,seas3,seas4]
+            datapath: Data/inputs/gfs_aero_c12/mem%mem%/
+            filename_core: 20180414.210000.fv_core.res.nc
+            filename_trcr: 20180414.210000.fv_tracer.res.nc
+            filename_cplr: 20180414.210000.coupler.res
+          pattern: %mem%
+          nmembers: 5
+          zero padding: 3
         localization:
           localization method: SABER
           saber block:

@@ -41,97 +41,20 @@ bump:
   - prefix: var-mom_2D__YYYY__MM__DD__HH__gfs
     variables: [surface_pressure]
   ensemble:
-    members:
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem001
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem002
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem003
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem004
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem005
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem006
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem007
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem008
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem009
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      psinfile: true
-      datapath: Data/staticb/unbalanced/mem010
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    members from template:
+      template:
+        filetype: gfs
+        psinfile: true
+        datapath: Data/staticb/unbalanced/mem%mem%/
+        filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+        filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+        filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+        filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+        filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+        date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+      pattern: %mem%
+      nmembers: 10
+      zero padding: 3
   output:
   - parameter: var
     filetype: gfs

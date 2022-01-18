@@ -64,47 +64,15 @@ cost function:
         value: 0.1
     - covariance:
         covariance model: ensemble
-        members:
-          - filetype: geos
+        members from template:
+          template:
+            filetype: geos
             state variables: *fgatvars
             datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem001.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem002.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem003.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem004.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem005.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem006.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem007.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem008.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem009.20180414_210000z.nc4
-          - filetype: geos
-            state variables: *fgatvars
-            datapath: Data/inputs/geos_c12
-            filename_bkgd: geos.mem010.20180414_210000z.nc4
+            filename_bkgd: geos.mem%mem%.20180414_210000z.nc4
+          pattern: %mem%
+          nmembers: 10
+          zero padding: 3
         localization:
           localization method: SABER
           saber block:

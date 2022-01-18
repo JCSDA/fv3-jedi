@@ -37,47 +37,20 @@ bump:
   nl0r: 15
   diag_draw_type: octahedral
   ensemble:
-    members:
-    - filetype: gfs
-      datapath: Data/inputs/gfs_aero_c12/mem001
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      datapath: Data/inputs/gfs_aero_c12/mem002
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      datapath: Data/inputs/gfs_aero_c12/mem003
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      datapath: Data/inputs/gfs_aero_c12/mem004
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    - filetype: gfs
-      datapath: Data/inputs/gfs_aero_c12/mem005
-      filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
-      filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
-      filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
-      filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
-      filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-      date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    members from template:
+      template:
+        filetype: gfs
+        psinfile: true
+        datapath: Data/inputs/gfs_aero_c12/mem%mem%/
+        filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+        filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+        filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+        filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+        filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+        date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+      pattern: %mem%
+      nmembers: 5
+      zero padding: 3
   output:
   - parameter: var
     filetype: gfs

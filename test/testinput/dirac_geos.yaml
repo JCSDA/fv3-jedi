@@ -29,27 +29,15 @@ background error:
         verbosity: main
         io_keys: [common]
         io_values: [fixed_2500km_0.3]
-  members:
-    - filetype: geos
-      datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.mem001.20180414_210000z.nc4
+  members from template:
+    template:
+      filetype: geos
       state variables: *vars
-    - filetype: geos
       datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.mem002.20180414_210000z.nc4
-      state variables: *vars
-    - filetype: geos
-      datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.mem003.20180414_210000z.nc4
-      state variables: *vars
-    - filetype: geos
-      datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.mem004.20180414_210000z.nc4
-      state variables: *vars
-    - filetype: geos
-      datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.mem005.20180414_210000z.nc4
-      state variables: *vars
+      filename_bkgd: geos.mem%mem%.20180414_210000z.nc4
+    pattern: %mem%
+    nmembers: 5
+    zero padding: 3
 output dirac:
   filetype: geos
   datapath: Data/bump/
