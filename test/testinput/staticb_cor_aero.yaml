@@ -30,6 +30,7 @@ bump:
   load_mom: true
   new_hdiag: true
   write_hdiag: true
+  ens1_ne: 30
   ens1_nsub: 3
   load_samp_local: true
   nc3: 10
