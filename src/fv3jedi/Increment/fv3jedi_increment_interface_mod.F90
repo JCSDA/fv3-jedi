@@ -41,13 +41,14 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_create_c(c_key_self, c_key_geom, c_vars) &
+subroutine fv3jedi_increment_create_c(c_key_self, c_key_geom, c_vars, c_time) &
            bind(c,name='fv3jedi_increment_create_f90')
 
 implicit none
-integer(c_int), intent(inout) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom !< Geometry
-type(c_ptr), value, intent(in) :: c_vars     !< List of variables
+integer(c_int),     intent(inout) :: c_key_self
+integer(c_int),     intent(in)    :: c_key_geom !< Geometry
+type(c_ptr), value, intent(in)    :: c_vars     !< List of variables
+type(c_ptr), value, intent(in)    :: c_time     !< Datetime
 
 type(fv3jedi_increment), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
@@ -60,6 +61,10 @@ call fv3jedi_increment_registry%add(c_key_self)
 call fv3jedi_increment_registry%get(c_key_self, self)
 
 vars = oops_variables(c_vars)
+
+! Create Fortran pointer to datetime
+call c_f_datetime(c_time, self%time)
+
 call self%create(geom, vars)
 
 end subroutine fv3jedi_increment_create_c
@@ -421,10 +426,6 @@ call fv3jedi_state_registry%get(c_key_x2,x2)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 
 call self%diff_incr(x1%fields,x2%fields,geom)
-
-! Datetime
-self%calendar_type  = x1%calendar_type
-self%date_init      = x1%date_init
 
 end subroutine fv3jedi_increment_diff_incr_c
 

@@ -12,7 +12,8 @@
 
 namespace fv3jedi {
 extern "C" {
-  void fv3jedi_state_create_f90(F90state &, const F90geom &, const oops::Variables &);
+  void fv3jedi_state_create_f90(F90state &, const F90geom &, const oops::Variables &,
+                                const util::DateTime &);
   void fv3jedi_state_delete_f90(F90state &);
   void fv3jedi_state_copy_f90(const F90state &, const F90state &);
   void fv3jedi_state_zero_f90(const F90state &);

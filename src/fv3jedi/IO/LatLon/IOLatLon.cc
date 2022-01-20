@@ -46,14 +46,14 @@ void IOLatLon::read(Increment & dx) const {
 void IOLatLon::write(const State & x) const {
   util::Timer timer(classname(), "write state");
   oops::Log::trace() << classname() << " write state starting" << std::endl;
-  fv3jedi_io_latlon_write_state_f90(objectKeyForFortran_, x.toFortran(), &x.time());
+  fv3jedi_io_latlon_write_state_f90(objectKeyForFortran_, x.toFortran());
   oops::Log::trace() << classname() << " write state done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void IOLatLon::write(const Increment & dx) const {
   util::Timer timer(classname(), "write increment");
   oops::Log::trace() << classname() << " write increment starting" << std::endl;
-  fv3jedi_io_latlon_write_increment_f90(objectKeyForFortran_, dx.toFortran(), &dx.time());
+  fv3jedi_io_latlon_write_increment_f90(objectKeyForFortran_, dx.toFortran());
   oops::Log::trace() << classname() << " write increment done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

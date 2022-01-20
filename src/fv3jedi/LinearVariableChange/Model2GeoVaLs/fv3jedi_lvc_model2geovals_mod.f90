@@ -299,11 +299,6 @@ do f = 1, size(fields_to_do)
 
 enddo
 
-! Copy calendar infomation
-! ------------------------
-dxg%calendar_type = dxm%calendar_type
-dxg%date_init = dxm%date_init
-
 end subroutine multiply
 
 ! --------------------------------------------------------------------------------------------------
@@ -626,12 +621,6 @@ do fg = 1, size(dxg%fields)
                    "fields to a model field")
   endif
 enddo
-
-
-! Copy calendar infomation
-! ------------------------
-dxm%calendar_type = dxg%calendar_type
-dxm%date_init = dxg%date_init
 
 ! ! Print information
 ! if (geom%f_comm%rank()==0) then

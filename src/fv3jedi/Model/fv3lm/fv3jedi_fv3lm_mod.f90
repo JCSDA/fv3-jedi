@@ -125,13 +125,12 @@ end subroutine initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine step(self, state, geom, vdate)
+subroutine step(self, state, geom)
 
 implicit none
 class(fv3lm_model),  intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
 type(fv3jedi_geom),  intent(inout) :: geom
-type(datetime),      intent(inout) :: vdate !< Valid datetime after step
 
 call state_to_lm(state,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_nl()

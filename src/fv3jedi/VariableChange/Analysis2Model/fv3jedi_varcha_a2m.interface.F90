@@ -92,7 +92,7 @@ end subroutine c_fv3jedi_varcha_a2m_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_a2m_changevar(c_key_self,c_key_geom,c_key_xana,c_key_xmod,c_vdt) &
+subroutine c_fv3jedi_varcha_a2m_changevar(c_key_self,c_key_geom,c_key_xana,c_key_xmod) &
            bind (c,name='fv3jedi_varcha_a2m_changevar_f90')
 
 implicit none
@@ -100,27 +100,24 @@ integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_xana
 integer(c_int), intent(in) :: c_key_xmod
-type(c_ptr),    intent(in) :: c_vdt
 
 type(fv3jedi_varcha_a2m), pointer :: self
 type(fv3jedi_geom),       pointer :: geom
 type(fv3jedi_state),      pointer :: xana
 type(fv3jedi_state),      pointer :: xmod
-type(datetime)                    :: vdt
 
 call fv3jedi_varcha_a2m_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 call fv3jedi_state_registry%get(c_key_xana,xana)
 call fv3jedi_state_registry%get(c_key_xmod,xmod)
-call c_f_datetime(c_vdt, vdt)
 
-call self%changevar(geom,xana,xmod,vdt)
+call self%changevar(geom,xana,xmod)
 
 end subroutine c_fv3jedi_varcha_a2m_changevar
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_varcha_a2m_changevarinverse(c_key_self,c_key_geom,c_key_xmod,c_key_xana,c_vdt) &
+subroutine c_fv3jedi_varcha_a2m_changevarinverse(c_key_self,c_key_geom,c_key_xmod,c_key_xana) &
            bind (c,name='fv3jedi_varcha_a2m_changevarinverse_f90')
 
 implicit none
@@ -128,21 +125,18 @@ integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_xmod
 integer(c_int), intent(in) :: c_key_xana
-type(c_ptr),    intent(in) :: c_vdt
 
 type(fv3jedi_varcha_a2m), pointer :: self
 type(fv3jedi_geom),       pointer :: geom
 type(fv3jedi_state),      pointer :: xana
 type(fv3jedi_state),      pointer :: xmod
-type(datetime)                    :: vdt
 
 call fv3jedi_varcha_a2m_registry%get(c_key_self,self)
 call fv3jedi_geom_registry%get(c_key_geom,geom)
 call fv3jedi_state_registry%get(c_key_xmod,xmod)
 call fv3jedi_state_registry%get(c_key_xana,xana)
-call c_f_datetime(c_vdt, vdt)
 
-call self%changevarinverse(geom,xmod,xana,vdt)
+call self%changevarinverse(geom,xmod,xana)
 
 end subroutine c_fv3jedi_varcha_a2m_changevarinverse
 

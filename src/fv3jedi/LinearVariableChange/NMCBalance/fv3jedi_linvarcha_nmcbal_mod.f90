@@ -359,10 +359,6 @@ call tv_to_t_tl(geom,self%tvtraj,self%fld(:,:,:,3),self%qtraj,xbal_q,xbal_t)
 !Ps
 xbal_ps = self%fld(:,:,1:1,4)
 
-! Copy calendar infomation
-xbal%calendar_type = xuba%calendar_type
-xbal%date_init = xuba%date_init
-
 end subroutine multiply
 
 ! ------------------------------------------------------------------------------
@@ -444,10 +440,6 @@ xuba_ps   = xuba_ps  + self%fld(:,:,1:1,4)
 xuba_tv   = xuba_tv  + self%fld(:,:,:,3)
 self%fld = 0.0_kind_real
 
-! Copy calendar infomation
-xuba%calendar_type = xbal%calendar_type
-xuba%date_init = xbal%date_init
-
 end subroutine multiplyadjoint
 
 ! ------------------------------------------------------------------------------
@@ -490,10 +482,6 @@ xuba_chi = xbal_va
 xuba_tv  = xbal_t
 xuba_rh  = xbal_q
 
-! Copy calendar infomation
-xuba%calendar_type = xbal%calendar_type
-xuba%date_init = xbal%date_init
-
 end subroutine multiplyinverse
 
 ! ------------------------------------------------------------------------------
@@ -534,10 +522,6 @@ xbal_ua = xuba_psi
 xbal_va = xuba_chi
 xbal_t  = xuba_tv
 xbal_q  = xuba_rh
-
-! Copy calendar infomation
-xbal%calendar_type = xuba%calendar_type
-xbal%date_init = xuba%date_init
 
 end subroutine multiplyinverseadjoint
 

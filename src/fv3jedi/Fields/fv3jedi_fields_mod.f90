@@ -36,9 +36,9 @@ public :: fv3jedi_fields
 type :: fv3jedi_fields
 
   integer :: isc, iec, jsc, jec, npx, npy, npz, nf             ! Geometry convenience
-  integer :: calendar_type, date_init(6)                       ! FMS style datetime
   type(fckit_mpi_comm) :: f_comm                               ! Communicator
   type(fv3jedi_field), allocatable :: fields(:)                ! Array of fields
+  type(datetime) :: time
 
   contains
 
@@ -117,10 +117,6 @@ subroutine create(self, geom, vars)
   ! Initialize all arrays to zero
   call self%zero()
 
-  ! Initialize datetime to zero
-  self%calendar_type = 0
-  self%date_init(:) = 0
-
   ! Copy some geometry for convenience
   self%isc    = geom%isc
   self%iec    = geom%iec
@@ -146,10 +142,6 @@ subroutine create(self, geom, vars)
   !Check User's choice of ozone variables.
   field_fail = self%has_field('o3mr') .and. self%has_field('o3ppmv')
   if (field_fail) call abor1_ftn("fv3jedi_fields.create: o3mr and o3ppmv created")
-
-  !Dummy FMS style datetime
-  self%calendar_type = 0
-  self%date_init = 0
 
 end subroutine create
 
@@ -181,9 +173,6 @@ call checksame(self%fields, other%fields, "fv3jedi_fields_mod.copy")
 do var = 1, self%nf
   self%fields(var)%array = other%fields(var)%array
 enddo
-
-self%calendar_type = other%calendar_type
-self%date_init = other%date_init
 
 end subroutine copy
 
@@ -267,9 +256,6 @@ else
   call interp%create(geom%interp_method, integer_interp, geom_other, geom)
   call interp%apply(self%nf, geom_other, other%fields, geom, self%fields)
   call interp%delete()
-
-  self%calendar_type = other%calendar_type
-  self%date_init = other%date_init
 
 endif
 

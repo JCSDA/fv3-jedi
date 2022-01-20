@@ -214,11 +214,6 @@ if (self%do_clds) then
 
 endif
 
-! Copy calendar infomation
-! ------------------------
-xb%calendar_type = xr%calendar_type
-xb%date_init = xr%date_init
-
 end subroutine changevar
 
 ! ------------------------------------------------------------------------------
@@ -355,11 +350,6 @@ if (self%do_clds) then
   call q2_to_q4(geom, qi, ql, qilsf, qicnf, qils, qicn, qlls, qlcn)
 
 endif
-
-! Copy calendar infomation
-! ------------------------
-xr%calendar_type = xb%calendar_type
-xr%date_init = xb%date_init
 
 end subroutine changevarinverse
 

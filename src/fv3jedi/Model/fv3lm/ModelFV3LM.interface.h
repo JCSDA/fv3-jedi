@@ -29,8 +29,7 @@ extern "C" {
 
   void fv3jedi_fv3lm_initialize_f90(const F90model &, const F90state &);
 
-  void fv3jedi_fv3lm_step_f90(const F90model &, const F90state &, const F90geom &,
-                              util::DateTime * const *);
+  void fv3jedi_fv3lm_step_f90(const F90model &, const F90state &, const F90geom &);
 
   void fv3jedi_fv3lm_finalize_f90(const F90model &, const F90inc &);
 

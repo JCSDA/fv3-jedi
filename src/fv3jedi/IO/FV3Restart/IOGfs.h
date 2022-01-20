@@ -76,6 +76,9 @@ class IOGfsParameters : public IOParametersBase {
   // Things BUMP puts in write config not needed in IO but specified to avoid failures
   oops::OptionalParameter<std::string> bumpparameter{"parameter", "bump parameter", this};
   oops::OptionalParameter<util::DateTime> bumpdatetime{"date", "bump datetime", this};
+
+  // Let user set the calendar type
+  oops::Parameter<int> calendar_type{"calendar type", "calendar type", 2, this};
 };
 
 // -------------------------------------------------------------------------------------------------

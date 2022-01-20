@@ -43,8 +43,7 @@ void ModelFV3LM::initialize(State & xx) const {
 // -------------------------------------------------------------------------------------------------
 void ModelFV3LM::step(State & xx, const ModelBias &) const {
   xx.validTime() += tstep_;
-  util::DateTime * dtp = &xx.validTime();
-  fv3jedi_fv3lm_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran(), &dtp);
+  fv3jedi_fv3lm_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran());
   oops::Log::debug() << "ModelFV3LM::step" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

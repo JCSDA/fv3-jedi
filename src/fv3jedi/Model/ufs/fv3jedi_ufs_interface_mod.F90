@@ -81,23 +81,19 @@ end subroutine c_fv3jedi_ufs_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_ufs_initialize(c_key_self, c_key_state, c_dt) &
+subroutine c_fv3jedi_ufs_initialize(c_key_self, c_key_state) &
            bind(c,name='fv3jedi_ufs_initialize_f90')
 
 integer(c_int), intent(in) :: c_key_self  !< Model
 integer(c_int), intent(in) :: c_key_state !< Model state
-type(c_ptr),    intent(in) :: c_dt        !< DateTime
 
 type(model_ufs),     pointer :: self
 type(fv3jedi_state), pointer :: state
-type(datetime) :: fdate
 
 call fv3jedi_state_registry%get(c_key_state,state)
 call fv3jedi_ufs_registry%get(c_key_self, self)
 
-call c_f_datetime(c_dt, fdate)
-
-call self%initialize(state, fdate)
+call self%initialize(state)
 
 end subroutine c_fv3jedi_ufs_initialize
 
@@ -131,24 +127,19 @@ end subroutine c_fv3jedi_ufs_step
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_ufs_finalize(c_key_self, c_key_state, c_dt) &
+subroutine c_fv3jedi_ufs_finalize(c_key_self, c_key_state) &
            bind(c,name='fv3jedi_ufs_finalize_f90')
 
 integer(c_int), intent(in) :: c_key_self  !< Model
 integer(c_int), intent(in) :: c_key_state !< Model state
-type(c_ptr),    intent(in) :: c_dt        !< DateTime
 
 type(model_ufs),     pointer :: self
 type(fv3jedi_state), pointer :: state
 
-type(datetime) :: fdate
-
 call fv3jedi_state_registry%get(c_key_state,state)
 call fv3jedi_ufs_registry%get(c_key_self, self)
 
-call c_f_datetime(c_dt, fdate)
-
-call self%finalize(state, fdate)
+call c_f_datetime(c_dt)
 
 end subroutine c_fv3jedi_ufs_finalize
 

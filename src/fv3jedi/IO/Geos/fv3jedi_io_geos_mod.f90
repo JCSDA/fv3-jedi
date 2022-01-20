@@ -228,12 +228,10 @@ end subroutine delete
 
 ! ------------------------------------------------------------------------------
 
-subroutine read(self, vdate, calendar_type, date_init, fields)
+subroutine read(self, vdate, fields)
 
 class(fv3jedi_io_geos), intent(inout) :: self
 type(datetime),         intent(inout) :: vdate
-integer,                intent(inout) :: calendar_type
-integer,                intent(inout) :: date_init(6)
 type(fv3jedi_field),    intent(inout) :: fields(:)
 
 ! Overwrite any datetime templates in the file names
@@ -242,7 +240,7 @@ if (self%input_is_date_templated) call setup_date(self, vdate)
 
 ! Read meta data
 ! --------------
-call read_meta(self, vdate, calendar_type, date_init, fields)
+call read_meta(self, vdate, fields)
 
 ! Read fields
 ! -----------
@@ -380,12 +378,10 @@ end subroutine get_conf
 
 ! ------------------------------------------------------------------------------
 
-subroutine read_meta(self, vdate, calendar_type, date_init, fields)
+subroutine read_meta(self, vdate, fields)
 
 type(fv3jedi_io_geos), intent(inout) :: self
 type(datetime),        intent(inout) :: vdate         !< DateTime
-integer,               intent(inout) :: calendar_type !< Calendar type
-integer,               intent(inout) :: date_init(6)  !< Date intialized
 type(fv3jedi_field),   intent(in)    :: fields(:)
 
 integer :: varid, date(6), intdate, inttime, idate, isecs
@@ -400,9 +396,6 @@ call set_file_names(self, fields)
 ! Open files
 ! ----------
 call open_files(self)
-
-calendar_type = -1
-date_init = 0
 
 idate = 0
 isecs = 0

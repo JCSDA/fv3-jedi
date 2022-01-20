@@ -12,10 +12,9 @@ namespace fv3jedi {
   extern "C" {
   void fv3jedi_io_gfs_create_f90(F90iogfs &, const eckit::Configuration &, const F90geom &);
   void fv3jedi_io_gfs_delete_f90(F90iogfs &);
-  void fv3jedi_io_gfs_read_state_f90(const F90iogfs &, F90state &, util::DateTime *);
-  void fv3jedi_io_gfs_read_increment_f90(const F90iogfs &, F90inc &, util::DateTime *);
-  void fv3jedi_io_gfs_write_state_f90(const F90iogfs &, const F90state &, const util::DateTime *);
-  void fv3jedi_io_gfs_write_increment_f90(const F90iogfs &, const F90inc &,
-                                           const util::DateTime *);
+  void fv3jedi_io_gfs_read_state_f90(const F90iogfs &, F90state &);
+  void fv3jedi_io_gfs_read_increment_f90(const F90iogfs &, F90inc &);
+  void fv3jedi_io_gfs_write_state_f90(const F90iogfs &, const F90state &);
+  void fv3jedi_io_gfs_write_increment_f90(const F90iogfs &, const F90inc &);
   }  // extern "C"
 }  // namespace fv3jedi

@@ -82,14 +82,13 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine changevar(self,geom,xana,xmod,vdt)
+subroutine changevar(self,geom,xana,xmod)
 
 implicit none
 class(fv3jedi_varcha_a2m), intent(inout) :: self
 type(fv3jedi_geom),        intent(inout) :: geom
 type(fv3jedi_state),       intent(in)    :: xana
 type(fv3jedi_state),       intent(inout) :: xmod
-type(datetime),            intent(inout) :: vdt
 
 integer :: index_ana, index_mod, index_ana_found
 integer :: k
@@ -174,31 +173,26 @@ do index_mod = 1, xmod%nf
         "Attempting to read from file"
 
     if (trim(self%filetype) == 'gfs') then
-      call self%gfs%read(vdt, xmod%calendar_type, xmod%date_init, xmod%fields(index_mod:index_mod))
+      call self%gfs%read(xmod%time, xmod%fields(index_mod:index_mod))
     elseif (trim(self%filetype) == 'geos') then
-      call self%geos%read(vdt, xmod%calendar_type, xmod%date_init, xmod%fields(index_mod:index_mod))
+      call self%geos%read(xmod%time, xmod%fields(index_mod:index_mod))
     endif
 
   endif
 
 enddo
 
-! Copy calendar infomation
-xmod%calendar_type = xana%calendar_type
-xmod%date_init = xana%date_init
-
 end subroutine changevar
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine changevarinverse(self,geom,xmod,xana,vdt)
+subroutine changevarinverse(self,geom,xmod,xana)
 
 implicit none
 class(fv3jedi_varcha_a2m), intent(inout) :: self
 type(fv3jedi_geom),        intent(inout) :: geom
 type(fv3jedi_state),       intent(in)    :: xmod
 type(fv3jedi_state),       intent(inout) :: xana
-type(datetime),            intent(inout) :: vdt
 
 integer :: index_ana, index_mod, index_mod_found
 logical :: failed
@@ -277,10 +271,6 @@ do index_ana = 1, xana%nf
                              trim(xana%fields(index_ana)%fv3jedi_name)//" from the model state" )
 
 enddo
-
-! Copy calendar infomation
-xana%calendar_type = xmod%calendar_type
-xana%date_init = xmod%date_init
 
 end subroutine changevarinverse
 

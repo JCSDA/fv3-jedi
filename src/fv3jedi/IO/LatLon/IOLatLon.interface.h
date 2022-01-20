@@ -12,9 +12,7 @@ namespace fv3jedi {
   extern "C" {
   void fv3jedi_io_latlon_create_f90(F90iolatlon &, const eckit::Configuration &, const F90geom &);
   void fv3jedi_io_latlon_delete_f90(F90iolatlon &);
-  void fv3jedi_io_latlon_write_state_f90(const F90iolatlon &, const F90state &,
-                                         const util::DateTime *);
-  void fv3jedi_io_latlon_write_increment_f90(const F90iolatlon &, const F90inc &,
-                                           const util::DateTime *);
+  void fv3jedi_io_latlon_write_state_f90(const F90iolatlon &, const F90state &);
+  void fv3jedi_io_latlon_write_increment_f90(const F90iolatlon &, const F90inc &);
   }  // extern "C"
 }  // namespace fv3jedi

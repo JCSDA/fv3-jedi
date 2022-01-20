@@ -971,13 +971,6 @@ do f = 1, size(fields_to_do)
 
 enddo
 
-
-! Copy calendar infomation
-! ------------------------
-xg%calendar_type = xm%calendar_type
-xg%date_init = xm%date_init
-
-
 if (associated(sheleg)) nullify(sheleg)
 if (associated(vtype)) nullify(vtype)
 if (associated(stype)) nullify(stype)

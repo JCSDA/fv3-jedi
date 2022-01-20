@@ -13,9 +13,6 @@ use iso_c_binding
 ! fckit
 use fckit_configuration_module,      only: fckit_configuration
 
-! oops
-use datetime_mod,                    only: datetime, c_f_datetime
-
 ! fv3-jedi
 use fv3jedi_increment_mod,           only: fv3jedi_increment
 use fv3jedi_increment_interface_mod, only: fv3jedi_increment_registry
@@ -105,117 +102,93 @@ end subroutine c_fv3jedi_io_gfs_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_gfs_read_state(c_key_self, c_key_state, c_datetime) &
+subroutine c_fv3jedi_io_gfs_read_state(c_key_self, c_key_state) &
            bind (c,name='fv3jedi_io_gfs_read_state_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_state
-type(c_ptr), value, intent(in) :: c_datetime
 
 type(fv3jedi_io_gfs), pointer :: f_self
 type(fv3jedi_state),  pointer :: f_state
-type(datetime)                :: f_datetime
 
 ! Linked list
 ! -----------
 call fv3jedi_io_gfs_registry%get(c_key_self, f_self)
 call fv3jedi_state_registry%get(c_key_state, f_state)
 
-! Fortran APIs
-! ------------
-call c_f_datetime(c_datetime, f_datetime)
-
 ! Call implementation
 ! -------------------
-call f_self%read(f_datetime, f_state%calendar_type, f_state%date_init, f_state%fields)
+call f_self%read(f_state%time, f_state%fields)
 
 end subroutine c_fv3jedi_io_gfs_read_state
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_gfs_read_increment(c_key_self, c_key_increment, c_datetime) &
+subroutine c_fv3jedi_io_gfs_read_increment(c_key_self, c_key_increment) &
            bind (c,name='fv3jedi_io_gfs_read_increment_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_increment
-type(c_ptr), value, intent(in) :: c_datetime
 
 type(fv3jedi_io_gfs),    pointer :: f_self
 type(fv3jedi_increment), pointer :: f_increment
-type(datetime)                   :: f_datetime
 
 ! Linked list
 ! -----------
 call fv3jedi_io_gfs_registry%get(c_key_self, f_self)
 call fv3jedi_increment_registry%get(c_key_increment, f_increment)
 
-! Fortran APIs
-! ------------
-call c_f_datetime(c_datetime, f_datetime)
-
 ! Call implementation
 ! -------------------
-call f_self%read(f_datetime, f_increment%calendar_type, f_increment%date_init, f_increment%fields)
+call f_self%read(f_increment%time, f_increment%fields)
 
 end subroutine c_fv3jedi_io_gfs_read_increment
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_gfs_write_state(c_key_self, c_key_state, c_datetime) &
+subroutine c_fv3jedi_io_gfs_write_state(c_key_self, c_key_state) &
            bind (c,name='fv3jedi_io_gfs_write_state_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_state
-type(c_ptr), value, intent(in) :: c_datetime
 
 type(fv3jedi_io_gfs),  pointer :: f_self
 type(fv3jedi_state),   pointer :: f_state
-type(datetime)                 :: f_datetime
 
 ! Linked list
 ! -----------
 call fv3jedi_io_gfs_registry%get(c_key_self, f_self)
 call fv3jedi_state_registry%get(c_key_state, f_state)
 
-! Fortran APIs
-! ------------
-call c_f_datetime(c_datetime, f_datetime)
-
 ! Call implementation
 ! -------------------
-call f_self%write(f_datetime, f_state%calendar_type, f_state%date_init, f_state%fields)
+call f_self%write(f_state%time, f_state%fields)
 
 end subroutine c_fv3jedi_io_gfs_write_state
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_gfs_write_increment(c_key_self, c_key_increment, c_datetime) &
+subroutine c_fv3jedi_io_gfs_write_increment(c_key_self, c_key_increment) &
            bind (c,name='fv3jedi_io_gfs_write_increment_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_increment
-type(c_ptr), value, intent(in) :: c_datetime
 
 type(fv3jedi_io_gfs),    pointer :: f_self
 type(fv3jedi_increment), pointer :: f_increment
-type(datetime)                   :: f_datetime
 
 ! Linked list
 ! -----------
 call fv3jedi_io_gfs_registry%get(c_key_self, f_self)
 call fv3jedi_increment_registry%get(c_key_increment, f_increment)
 
-! Fortran APIs
-! ------------
-call c_f_datetime(c_datetime, f_datetime)
-
 ! Call implementation
 ! -------------------
-call f_self%write(f_datetime, f_increment%calendar_type, f_increment%date_init, f_increment%fields)
+call f_self%write(f_increment%time, f_increment%fields)
 
 end subroutine c_fv3jedi_io_gfs_write_increment
 

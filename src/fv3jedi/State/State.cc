@@ -37,7 +37,7 @@ State::State(const Geometry & geom, const oops::Variables & vars, const util::Da
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
 
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
   oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
 
@@ -68,7 +68,7 @@ State::State(const Geometry & geom, const Parameters_ & params)
   varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars_);
 
   // Allocate state
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
 
   // Generate analytical state or read from file
   if (params.analytic.value() != boost::none) {
@@ -87,7 +87,7 @@ State::State(const Geometry & resol, const State & other)
     varsLongName_(other.varsLongName_)
 {
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
   fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
                                  other.geom_->toFortran());
   oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
@@ -99,7 +99,7 @@ State::State(const State & other)
   : geom_(other.geom_), vars_(other.vars_), time_(other.time_), varsLongName_(other.varsLongName_)
 {
   oops::Log::trace() << "State::State (from other) starting" << std::endl;
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_);
+  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
   fv3jedi_state_copy_f90(keyState_, other.keyState_);
   oops::Log::trace() << "State::State (from other) done" << std::endl;
 }

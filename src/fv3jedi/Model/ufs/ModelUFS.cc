@@ -47,8 +47,7 @@ void ModelUFS::initialize(State & xx) const {
   oops::Log::trace() << "ModelUFS::cd to " << ufsdir_ << std::endl;
 
   chdir(ufsdir_);
-  util::DateTime * dtp = &xx.validTime();
-  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), &dtp);
+  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran());
   oops::Log::trace() << "ModelUFS::initialize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -70,8 +69,7 @@ void ModelUFS::step(State & xx, const ModelBias &) const
 // -------------------------------------------------------------------------------------------------
 void ModelUFS::finalize(State & xx) const {
   oops::Log::trace() << "ModelUFS::finalize starting" << std::endl;
-  util::DateTime * dtp = &xx.validTime();
-  fv3jedi_ufs_finalize_f90(keyConfig_, xx.toFortran(), &dtp);
+  fv3jedi_ufs_finalize_f90(keyConfig_, xx.toFortran());
   oops::Log::trace() << "ModelUFS::finalize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

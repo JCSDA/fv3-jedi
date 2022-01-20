@@ -13,7 +13,8 @@
 
 namespace fv3jedi {
 extern "C" {
-  void fv3jedi_increment_create_f90(F90inc &, const F90geom &, const oops::Variables &);
+  void fv3jedi_increment_create_f90(F90inc &, const F90geom &, const oops::Variables &,
+                                    const util::DateTime &);
   void fv3jedi_increment_delete_f90(F90inc &);
   void fv3jedi_increment_copy_f90(const F90inc &, const F90inc &);
   void fv3jedi_increment_zero_f90(const F90inc &);

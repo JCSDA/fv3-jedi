@@ -294,13 +294,12 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-  subroutine initialize(self, state, vdate)
+  subroutine initialize(self, state)
 
     implicit none
 
     class(model_ufs),    intent(inout) :: self
     type(fv3jedi_state), intent(in)    :: state
-    type(datetime),      intent(in)    :: vdate
 
     character(len=*),parameter :: subname = modname//' (initialize)'
 
@@ -419,12 +418,11 @@ contains
 
   ! --------------------------------------------------------------------------------------------------
 
-  subroutine finalize(self, state, vdate)
+  subroutine finalize(self, state)
 
     implicit none
     class(model_ufs),    intent(inout) :: self
     type(fv3jedi_state), intent(in)    :: state
-    type(datetime),intent(in)    :: vdate
 
     character(len=*),parameter :: subname = modname//' (finalize)'
     ! Clean up is being done in the delete method

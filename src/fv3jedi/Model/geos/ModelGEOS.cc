@@ -64,9 +64,8 @@ void ModelGEOS::initialize(State & xx) const {
 void ModelGEOS::step(State & xx, const ModelBias &) const {
   oops::Log::trace() << "ModelGEOS::step starting" << xx.validTime() << std::endl;
   xx.validTime() += tstep_;
-  util::DateTime * dtp = &xx.validTime();
   chdir(geosscrdir_);
-  fv3jedi_geos_step_f90(keyConfig_, xx.toFortran(), &dtp);
+  fv3jedi_geos_step_f90(keyConfig_, xx.toFortran());
   chdir(jedidir_);
   oops::Log::trace() << "ModelGEOS::step done" << xx.validTime() << std::endl;
 }

@@ -170,11 +170,6 @@ do f = 1, size(fields_to_do)
 
 enddo
 
-! Copy calendar infomation
-! ------------------------
-xout%calendar_type = xin%calendar_type
-xout%date_init = xin%date_init
-
 end subroutine changevar
 
 ! --------------------------------------------------------------------------------------------------

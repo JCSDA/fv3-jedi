@@ -233,12 +233,11 @@ end subroutine geos_initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine geos_step(self, state, vdate)
+subroutine geos_step(self, state)
 
 implicit none
 type(geos_model),    intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
-type(datetime),      intent(in)    :: vdate !< Valid datetime after step
 
 integer :: n, rc
 

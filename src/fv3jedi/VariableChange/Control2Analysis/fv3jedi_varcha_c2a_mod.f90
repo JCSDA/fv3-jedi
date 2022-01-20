@@ -383,10 +383,6 @@ do f = 1, size(fields_to_do)
 
 enddo
 
-! Copy calendar infomation
-xana%calendar_type = xctl%calendar_type
-xana%date_init = xctl%date_init
-
 end subroutine changevar
 
 ! ------------------------------------------------------------------------------
@@ -642,10 +638,6 @@ do f = 1, size(fields_to_do)
   end select
 
 enddo
-
-! Copy calendar infomation
-xctl%calendar_type = xana%calendar_type
-xctl%date_init = xana%date_init
 
 end subroutine changevarinverse
 

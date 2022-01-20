@@ -110,28 +110,25 @@ end subroutine c_fv3jedi_fv3lm_initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_fv3lm_step(c_key_self, c_key_state, c_key_geom, c_dt) &
+subroutine c_fv3jedi_fv3lm_step(c_key_self, c_key_state, c_key_geom) &
            bind(c,name='fv3jedi_fv3lm_step_f90')
 
 implicit none
 integer(c_int), intent(in)    :: c_key_self  !< Model
 integer(c_int), intent(in)    :: c_key_state !< Model state
 integer(c_int), intent(in)    :: c_key_geom  !< Geometry
-type(c_ptr),    intent(inout) :: c_dt        !< DateTime
 
 type(fv3lm_model),   pointer :: self
 type(fv3jedi_state), pointer :: state
 type(fv3jedi_geom),  pointer :: geom
-type(datetime)               :: fdate
 
 ! Linked lists
 call fv3jedi_fv3lm_registry%get(c_key_self, self)
 call fv3jedi_state_registry%get(c_key_state,state)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
-call c_f_datetime(c_dt, fdate)
 
 ! Implementation
-call self%step(state, geom, fdate)
+call self%step(state, geom)
 
 end subroutine c_fv3jedi_fv3lm_step
 

@@ -40,9 +40,8 @@ VarChaA2M::~VarChaA2M() {
 void VarChaA2M::changeVar(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVar");
   oops::Log::trace() << classname() << " changeVar done" << std::endl;
-  util::DateTime * vtime = &xout.validTime();
   fv3jedi_varcha_a2m_changevar_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
-                                   xout.toFortran(), &vtime);
+                                   xout.toFortran());
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVar done" << std::endl;
 }
@@ -50,9 +49,8 @@ void VarChaA2M::changeVar(const State & xin, State & xout) const {
 void VarChaA2M::changeVarInverse(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVarInverse");
   oops::Log::trace() << classname() << " changeVarInverse starting" << std::endl;
-  util::DateTime * vtime = &xout.validTime();
   fv3jedi_varcha_a2m_changevarinverse_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
-                                          xout.toFortran(), &vtime);
+                                          xout.toFortran());
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVarInverse done" << std::endl;
 }

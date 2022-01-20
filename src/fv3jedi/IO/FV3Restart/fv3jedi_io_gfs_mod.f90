@@ -53,6 +53,7 @@ type fv3jedi_io_gfs
  logical :: prepend_date
  logical :: has_prefix
  character(len=128) :: prefix
+ integer :: calendar_type
  ! Geometry copies
  type(domain2D), pointer :: domain
  integer :: npz
@@ -175,6 +176,13 @@ if (self%has_prefix) then
   self%prefix = trim(str)
 endif
 
+! Calendar type
+! -------------
+self%calendar_type = 2
+if (conf%has("calendar type")) then
+  call conf%get_or_die("calendar type", self%calendar_type)
+endif
+
 ! Geometry copies
 ! ---------------
 self%domain => domain
@@ -194,12 +202,10 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read(self, vdate, calendar_type, date_init, fields)
+subroutine read(self, vdate, fields)
 
 class(fv3jedi_io_gfs), intent(inout) :: self
 type(datetime),        intent(inout) :: vdate
-integer,               intent(inout) :: calendar_type
-integer,               intent(inout) :: date_init(6)
 type(fv3jedi_field),   intent(inout) :: fields(:)
 integer :: n
 
@@ -217,7 +223,7 @@ endif
 
 ! Read meta data
 ! --------------
-call read_meta(self, vdate, calendar_type, date_init)
+call read_meta(self, vdate)
 
 ! Read fields
 ! -----------
@@ -227,12 +233,10 @@ end subroutine read
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, vdate, calendar_type, date_init, fields)
+subroutine write(self, vdate, fields)
 
 class(fv3jedi_io_gfs), intent(inout) :: self
 type(datetime),        intent(in)    :: vdate
-integer,               intent(in)    :: calendar_type
-integer,               intent(in)    :: date_init(6)
 type(fv3jedi_field),   intent(in)    :: fields(:)
 
 ! Overwrite any datetime templates in the file names
@@ -241,7 +245,7 @@ call setup_date(self, vdate)
 
 ! Write metadata and fields
 ! -------------------------
-call write_all(self, fields, vdate, calendar_type, date_init)
+call write_all(self, fields, vdate)
 
 end subroutine write
 
@@ -285,18 +289,18 @@ end subroutine setup_date
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_meta(self, vdate, calendar_type, date_init)
+subroutine read_meta(self, vdate)
 
 type(fv3jedi_io_gfs), intent(inout) :: self
 type(datetime),       intent(inout) :: vdate         !< DateTime
-integer,              intent(inout) :: calendar_type !< GFS calendar type
-integer,              intent(inout) :: date_init(6)  !< GFS date intialized
 
 integer :: date(6)
 integer :: idate, isecs
 
 integer :: idrst
 real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
+integer :: calendar_type
+integer :: date_init(6)
 
 ! Get dates from coupler.res
 !---------------------------
@@ -435,14 +439,12 @@ end subroutine read_fields
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_all(self, fields, vdate, calendar_type, date_init)
+subroutine write_all(self, fields, vdate)
 
 implicit none
 type(fv3jedi_io_gfs), intent(inout) :: self
 type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
 type(datetime),       intent(in)    :: vdate         !< DateTime
-integer,              intent(in)    :: calendar_type !< GFS calendar type
-integer,              intent(in)    :: date_init(6)  !< GFS date intialized
 
 logical :: rstflag(numfiles)
 integer :: n, indexrst, position, var, idrst, date(6)
@@ -544,10 +546,10 @@ enddo
 if (mpp_pe() == mpp_root_pe() .and. .not. self%skip_coupler) then
    open(101, file = trim(adjustl(self%datapath))//'/'// &
         trim(adjustl(self%filenames(self%index_cplr))), form='formatted')
-   write( 101, '(i6,8x,a)' ) calendar_type, &
+   write( 101, '(i6,8x,a)' ) self%calendar_type, &
         '(Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)'
-   write( 101, '(6i6,8x,a)') date_init, 'Model start time:   year, month, day, hour, minute, second'
-   write( 101, '(6i6,8x,a)') date,      'Current model time: year, month, day, hour, minute, second'
+   write( 101, '(6i6,8x,a)') date, 'Model start time:   year, month, day, hour, minute, second'
+   write( 101, '(6i6,8x,a)') date, 'Current model time: year, month, day, hour, minute, second'
    close(101)
 endif
 

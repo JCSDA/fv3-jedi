@@ -243,11 +243,6 @@ do f = 1, size(fields_to_do)
 
 enddo
 
-! Copy calendar infomation
-! ------------------------
-dxa%calendar_type = dxc%calendar_type
-dxa%date_init = dxc%date_init
-
 end subroutine multiply
 
 ! --------------------------------------------------------------------------------------------------
@@ -386,11 +381,6 @@ do f = 1, size(fields_to_do)
 
 enddo
 
-! Copy calendar infomation
-! ------------------------
-dxc%calendar_type = dxa%calendar_type
-dxc%date_init = dxa%date_init
-
 end subroutine multiplyadjoint
 
 ! --------------------------------------------------------------------------------------------------
@@ -411,11 +401,6 @@ do f = 1, size(dxc%fields)
   dxc%fields(f)%array = dxa%fields(f)%array
 enddo
 
-! Copy calendar infomation
-! ------------------------
-dxc%calendar_type = dxa%calendar_type
-dxc%date_init = dxa%date_init
-
 end subroutine multiplyinverse
 
 ! --------------------------------------------------------------------------------------------------
@@ -435,11 +420,6 @@ integer :: f
 do f = 1, size(dxc%fields)
   dxa%fields(f)%array = dxc%fields(f)%array
 enddo
-
-! Copy calendar infomation
-! ------------------------
-dxa%calendar_type = dxc%calendar_type
-dxa%date_init = dxc%date_init
 
 end subroutine multiplyinverseadjoint
 
