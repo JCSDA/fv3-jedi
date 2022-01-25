@@ -5,10 +5,9 @@
 
 filetype: gfs
 datapath: '{{currentdir}}'
-filename_core: $(bgdatetime).fv_core.res.nc
-filename_trcr: $(bgdatetime).fv_tracer.res.nc
-filename_sfcd: $(bgdatetime).sfc_data.nc
-filename_sfcw: $(bgdatetime).fv_srf_wnd.res.nc
-filename_cplr: $(bgdatetime).coupler.res
+filename_core: $(expid).fc.$(fcdatetime).$(fcstep).fv_core.res.nc
+filename_trcr: $(expid).fc.$(fcdatetime).$(fcstep).fv_tracer.res.nc
+filename_sfcd: $(expid).fc.$(fcdatetime).$(fcstep).sfc_data.nc
+filename_sfcw: $(expid).fc.$(fcdatetime).$(fcstep).fv_srf_wnd.res.nc
+filename_cplr: $(expid).fc.$(fcdatetime).$(fcstep).coupler.res
 state variables: [u, v, ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m]
-

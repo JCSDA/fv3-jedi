@@ -17,18 +17,25 @@ if not os.path.exists(conf['currentdir']):
     raise RuntimeError('Working directory does not exist')
 os.chdir(conf['currentdir'])
 
+# Define experiment to read from, current experiment by default
+exp_read = conf['experiment']['expid']
+if 'exp_source' in conf:
+    exp_read = conf['exp_source']
+
 # Date
 andate = yamltools.parse_datetime(conf['date'])
 
 # Fetch state
 
-filename = yamltools.jediformat(andate) + '.$(file_type).tile$(tile).nc'
-cplrfile = yamltools.jediformat(andate) + '.coupler.res'
+base = conf['experiment']['expid'] + '.an.'
+sdate = yamltools.jediformat(andate)
+filename = base + sdate + '.$(file_type).tile$(tile).nc'
+cplrfile = base + sdate + '.coupler.res'
 
 fetch(
     model=conf['experiment']['model'],
     type='an',
-    experiment=conf['ankeys']['expid'],
+    experiment=exp_read,
     resolution=conf['resolution'],
     date=yamltools.jediformat(andate),
     target_file=filename,
@@ -41,7 +48,7 @@ fetch(
 fetch(
     model='gfs_metadata',
     type='an',
-    experiment=conf['ankeys']['expid'],
+    experiment=exp_read,
     resolution=conf['resolution'],
     date=yamltools.jediformat(andate),
     target_file=cplrfile,
