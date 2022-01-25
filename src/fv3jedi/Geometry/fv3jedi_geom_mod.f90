@@ -32,7 +32,7 @@ use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 
 ! fv3jedi uses
 use fields_metadata_mod,         only: fields_metadata, field_metadata
-use fv3jedi_constants_mod,       only: ps, rad2deg, kappa
+use fv3jedi_constants_mod,       only: ps, rad2deg, kap1, kapr
 use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
@@ -42,7 +42,7 @@ use fv3jedi_field_mod,           only: fv3jedi_field
 
 implicit none
 private
-public :: fv3jedi_geom, getVerticalCoordLogP, initialize
+public :: fv3jedi_geom, getVerticalCoordLogP, initialize, pedges2pmidlayer
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -611,8 +611,7 @@ integer :: jl
 real(kind=kind_real) :: sigmaup, sigmadn
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
-real(kind=kind_real) :: plevli(self%npz+1)
-real(kind=kind_real) :: kapr, kap1
+real(kind=kind_real) :: plevli(self%npz+1),logp(self%npz)
 
 ! Add area
 afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
@@ -632,13 +631,9 @@ if (.not. self%logp) then
       real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
    enddo
 else
-   kapr = 1.0/kappa
-   kap1 = kappa + 1.0
-   do jl=1,self%npz+1
-      plevli(jl) = self%ak(jl) + self%bk(jl)*ps
-   enddo
+   call getVerticalCoordLogP(self,logp,self%npz,ps)
    do jl=1,self%npz
-      real_ptr_2(jl,:) = -log(((plevli(jl)**kap1-plevli(jl+1)**kap1)/(kap1*(plevli(jl)-plevli(jl+1))))**kapr)
+      real_ptr_2(jl,:) = logp(jl)
    enddo
 endif
 
@@ -896,6 +891,26 @@ subroutine write_geom(self)
 
 end subroutine write_geom
 
+!----------------------------------------------------------------------------
+! 1d pressure_edge to pressure_mid
+!----------------------------------------------------------------------------
+
+subroutine pedges2pmidlayer(npz,ptype,pe1d,p1d)
+ integer,              intent(in)  :: npz       !number of model layers
+ character(len=*),     intent(in)  :: ptype     !midlayer pressure definition: 'average' or 'Philips'
+ real(kind=kind_real), intent(in)  :: pe1d(npz+1) !pressure edge
+ real(kind=kind_real), intent(out) :: p1d(npz)    !pressure mid
+
+ select case (ptype)
+   case('average')
+     p1d = 0.5*(pe1d(2:npz+1) + pe1d(1:npz))
+   case('Philips')
+     p1d = ((pe1d(2:npz+1)**kap1 - pe1d(1:npz)**kap1)/&
+            (kap1*(pe1d(2:npz+1) - pe1d(1:npz))))**kapr
+ end select
+
+end subroutine pedges2pmidlayer
+
 !--------------------------------------------------------------------------------------------------
 
 subroutine getVerticalCoordLogP(self, vc, npz, psurf)
@@ -907,16 +922,8 @@ subroutine getVerticalCoordLogP(self, vc, npz, psurf)
   real(kind=kind_real), intent(in) :: psurf
   real(kind=kind_real), intent(out) :: vc(npz)
 
-  real :: plevli(npz+1), plevlm
-  real :: rd, cp, kap, kapr, kap1
+  real(kind=kind_real) :: plevli(npz+1), p(npz)
   integer :: k
-
-  ! constants
-  rd = 2.8705e+2
-  cp = 1.0046e+3
-  kap = rd/cp
-  kapr = cp/rd
-  kap1 = kap + 1.0
 
   ! compute interface pressure
   do k=1,self%npz+1
@@ -924,12 +931,8 @@ subroutine getVerticalCoordLogP(self, vc, npz, psurf)
   enddo
 
   ! compute presure at mid level and convert it to logp
-  do k=1,self%npz
-    ! phillips vertical interpolation from guess_grids.F90 in GSI
-    ! (used for global model)
-    plevlm = ((plevli(k)**kap1-plevli(k+1)**kap1)/(kap1*(plevli(k)-plevli(k+1))))**kapr
-    vc(k) = - log(plevlm)
-  enddo
+  call pedges2pmidlayer(self%npz,'Philips',plevli,p)
+  vc = - log(p)
 
 end subroutine getVerticalCoordLogP
 ! --------------------------------------------------------------------------------------------------

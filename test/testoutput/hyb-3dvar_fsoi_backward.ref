@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Radiosonde) = 2222.3, nobs = 1127, Jo/n = 1.97187, err = 2.05889
-CostFunction: Nonlinear J = 2222.3
-DRIPCGMinimizer: reduction in residual norm = 1.68419e-09
+CostJo   : Nonlinear Jo(Radiosonde) = 2222.27, nobs = 1127, Jo/n = 1.97185, err = 2.05889
+CostFunction: Nonlinear J = 2222.27
+DRIPCGMinimizer: reduction in residual norm = 1.70533e-09
 FSOI increment test within tolerance.
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
@@ -28,6 +28,9 @@ CostFunction::addIncrement: Analysis:
    v_srf                         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110500e+00
    f10m                          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009470e-01
  -----------------------------------------------------------------------------------------------
+
+
+
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Radiosonde) = 2222.3, nobs = 1127, Jo/n = 1.97187, err = 2.05889
-CostFunction: Nonlinear J = 2222.3
+CostJo   : Nonlinear Jo(Radiosonde) = 2222.27, nobs = 1127, Jo/n = 1.97185, err = 2.05889
+CostFunction: Nonlinear J = 2222.27

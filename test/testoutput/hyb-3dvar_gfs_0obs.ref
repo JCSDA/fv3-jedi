@@ -4,30 +4,36 @@ CostFunction: Nonlinear J = 0
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C24
-   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550376e+01
-   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707370e+00
-   T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484150e+02
-   DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939525e+03
-   sphum                         : Min = +1.200969e-07, Max = +1.841109e-02, RMS = +4.657690e-03
+   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550371e+01
+   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707278e+00
+   T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484149e+02
+   DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939520e+03
+   sphum                         : Min = +1.200969e-07, Max = +1.841109e-02, RMS = +4.657669e-03
    ice_wat                       : Min = +0.000000e+00, Max = +2.392257e-04, RMS = +9.094105e-06
-   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809627e-05
-   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603562e-06
+   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809588e-05
+   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603561e-06
  -----------------------------------------------------------------------------------------------
+
+
+
 CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
 CostFunction: Nonlinear J = 0
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C24
-   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550376e+01
-   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707370e+00
-   T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484150e+02
-   DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939525e+03
-   sphum                         : Min = +1.200969e-07, Max = +1.841109e-02, RMS = +4.657690e-03
+   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550371e+01
+   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707278e+00
+   T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484149e+02
+   DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939520e+03
+   sphum                         : Min = +1.200969e-07, Max = +1.841109e-02, RMS = +4.657669e-03
    ice_wat                       : Min = +0.000000e+00, Max = +2.392257e-04, RMS = +9.094105e-06
-   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809627e-05
-   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603562e-06
+   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809588e-05
+   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603561e-06
  -----------------------------------------------------------------------------------------------
+
+
+
 CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
 CostFunction: Nonlinear J = 0

@@ -6,7 +6,7 @@
 module pressure_vt_mod
 
 use fv3jedi_constants_mod, only: kappa, grav, rad2deg, constoz
-use fv3jedi_geom_mod, only: fv3jedi_geom
+use fv3jedi_geom_mod, only: fv3jedi_geom, pedges2pmidlayer
 use fv3jedi_kinds_mod, only: kind_real
 
 implicit none
@@ -40,7 +40,7 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp)
  real(kind=kind_real), optional, intent(out) :: logp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !Log of pressure mid point
 
  !Locals
- integer :: isc,iec,jsc,jec,k
+ integer :: isc,iec,jsc,jec,i,j,k
 
  isc = geom%isc
  iec = geom%iec
@@ -48,13 +48,14 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp)
  jec = geom%jec
 
  !Pressure at layer edge
- pe(isc:iec,jsc:jec,1) = geom%ptop
- do k = 2,geom%npz+1
-   pe(isc:iec,jsc:jec,k) = pe(isc:iec,jsc:jec,k-1) + delp(isc:iec,jsc:jec,k-1)
- enddo
+ call delp_to_pe(geom,delp,pe)
 
  !Midpoint pressure
- p(isc:iec,jsc:jec,:) = 0.5*(pe(isc:iec,jsc:jec,2:geom%npz+1) + pe(isc:iec,jsc:jec,1:geom%npz))
+ do i = isc,iec
+   do j = jsc,jec
+       call pedges2pmidlayer(geom%npz,'Philips',pe(i,j,:),p(i,j,:))
+   enddo
+ enddo
 
  if (present(logp)) then
    !Log pressure

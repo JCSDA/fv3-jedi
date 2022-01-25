@@ -26,22 +26,21 @@ Input state:
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
 Variable change from: 21 variables: ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m
 Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
-
 State after variable transform: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 32 | cube sphere face size: C12
-   rh                            : Min = +1.349484e-06, Max = +1.042292e+00, RMS = +4.607808e-01
+   rh                            : Min = +1.327630e-06, Max = +1.041832e+00, RMS = +4.607497e-01
    ps                            : Min = +5.447601e+04, Max = +1.037935e+05, RMS = +9.902481e+04
    tv                            : Min = +1.845485e+02, Max = +3.086368e+02, RMS = +2.488990e+02
    mole_fraction_of_ozone_in_air : Min = +1.820534e-02, Max = +1.058838e+01, RMS = +3.389191e+00
-   geopotential_height           : Min = -4.870936e+00, Max = +5.466498e+04, RMS = +1.960164e+04
+   geopotential_height           : Min = -4.863889e+00, Max = +5.493456e+04, RMS = +1.962329e+04
    surface_altitude              : Min = -2.700000e+01, Max = +5.086234e+03, RMS = +6.086856e+02
    mole_fraction_of_carbon_dioxid: Min = +4.070000e+02, Max = +4.070000e+02, RMS = +4.070000e+02
    humidity_mixing_ratio         : Min = +7.329005e-05, Max = +1.922511e+01, RMS = +4.810997e+00
    mass_content_of_cloud_liquid_w: Min = +0.000000e+00, Max = +2.075990e-01, RMS = +5.805342e-03
    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.858391e-01, RMS = +3.907963e-03
    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.946336e+00
-   effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.037510e+02, RMS = +3.418224e+01
+   effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.037504e+02, RMS = +3.417922e+01
    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.228507e-01
    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
@@ -61,23 +60,23 @@ State after variable transform:
    vegetation_type_index         : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
    soil_type                     : Min = +1.000000e+00, Max = +8.000000e+00, RMS = +2.735018e+00
    vort                          : Min = -1.055734e-04, Max = +1.100743e-04, RMS = +1.569415e-05
-   tropopause_pressure           : Min = +1.500000e+04, Max = +3.500000e+04, RMS = +1.654791e+04
+   tropopause_pressure           : Min = +1.500000e+04, Max = +3.500000e+04, RMS = +1.654934e+04
  -----------------------------------------------------------------------------------------------
 Output state: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 32 | cube sphere face size: C12
-   rh                            : Min = +1.349484e-06, Max = +1.042292e+00, RMS = +4.607808e-01
+   rh                            : Min = +1.327630e-06, Max = +1.041832e+00, RMS = +4.607497e-01
    ps                            : Min = +5.447601e+04, Max = +1.037935e+05, RMS = +9.902481e+04
    tv                            : Min = +1.845485e+02, Max = +3.086368e+02, RMS = +2.488990e+02
    mole_fraction_of_ozone_in_air : Min = +1.820534e-02, Max = +1.058838e+01, RMS = +3.389191e+00
-   geopotential_height           : Min = -4.870936e+00, Max = +5.466498e+04, RMS = +1.960164e+04
+   geopotential_height           : Min = -4.863889e+00, Max = +5.493456e+04, RMS = +1.962329e+04
    surface_altitude              : Min = -2.700000e+01, Max = +5.086234e+03, RMS = +6.086856e+02
    mole_fraction_of_carbon_dioxid: Min = +4.070000e+02, Max = +4.070000e+02, RMS = +4.070000e+02
    humidity_mixing_ratio         : Min = +7.329005e-05, Max = +1.922511e+01, RMS = +4.810997e+00
    mass_content_of_cloud_liquid_w: Min = +0.000000e+00, Max = +2.075990e-01, RMS = +5.805342e-03
    mass_content_of_cloud_ice_in_a: Min = +0.000000e+00, Max = +1.858391e-01, RMS = +3.907963e-03
    effective_radius_of_cloud_liqu: Min = +0.000000e+00, Max = +1.000000e+01, RMS = +6.946336e+00
-   effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.037510e+02, RMS = +3.418224e+01
+   effective_radius_of_cloud_ice_: Min = +0.000000e+00, Max = +1.037504e+02, RMS = +3.417922e+01
    water_area_fraction           : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +8.228507e-01
    land_area_fraction            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.577016e-01
    ice_area_fraction             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
@@ -97,5 +96,5 @@ Output state:
    vegetation_type_index         : Min = +1.000000e+00, Max = +1.200000e+01, RMS = +5.077068e+00
    soil_type                     : Min = +1.000000e+00, Max = +8.000000e+00, RMS = +2.735018e+00
    vort                          : Min = -1.055734e-04, Max = +1.100743e-04, RMS = +1.569415e-05
-   tropopause_pressure           : Min = +1.500000e+04, Max = +3.500000e+04, RMS = +1.654791e+04
+   tropopause_pressure           : Min = +1.500000e+04, Max = +3.500000e+04, RMS = +1.654934e+04
  -----------------------------------------------------------------------------------------------

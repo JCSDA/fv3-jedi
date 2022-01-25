@@ -1,18 +1,18 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Radiosonde) = 2222.3, nobs = 1127, Jo/n = 1.97187, err = 2.05889
-CostFunction: Nonlinear J = 2222.3
-DRIPCGMinimizer: reduction in residual norm = 9.35419e-10
+CostJo   : Nonlinear Jo(Radiosonde) = 2222.27, nobs = 1127, Jo/n = 1.97185, err = 2.05889
+CostFunction: Nonlinear J = 2222.27
+DRIPCGMinimizer: reduction in residual norm = 9.37901e-10
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 21 | cube sphere face size: C24
-   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.551273e+01
-   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.711566e+00
-   T                             : Min = +1.853355e+02, Max = +3.069781e+02, RMS = +2.484154e+02
+   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.551271e+01
+   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.711569e+00
+   T                             : Min = +1.853350e+02, Max = +3.069781e+02, RMS = +2.484154e+02
    DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939519e+03
-   sphum                         : Min = +1.215097e-07, Max = +1.839850e-02, RMS = +4.658335e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +2.392278e-04, RMS = +9.105308e-06
-   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.811544e-05
-   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603620e-06
+   sphum                         : Min = +1.215280e-07, Max = +1.839851e-02, RMS = +4.658335e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +2.392278e-04, RMS = +9.105323e-06
+   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.811545e-05
+   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603621e-06
    phis                          : Min = +0.000000e+00, Max = +3.753800e+04, RMS = +5.030820e+03
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +5.718254e-01
    sheleg                        : Min = +0.000000e+00, Max = +1.439450e+02, RMS = +2.073467e+01
@@ -27,6 +27,9 @@ CostFunction::addIncrement: Analysis:
    v_srf                         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110500e+00
    f10m                          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009470e-01
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 206.254
-CostJo   : Nonlinear Jo(Radiosonde) = 1492.22, nobs = 1127, Jo/n = 1.32406, err = 2.05889
+
+
+
+CostJb   : Nonlinear Jb = 206.217
+CostJo   : Nonlinear Jo(Radiosonde) = 1492.25, nobs = 1127, Jo/n = 1.32409, err = 2.05889
 CostFunction: Nonlinear J = 1698.47

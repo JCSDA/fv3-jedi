@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Aod) = 204.999, nobs = 6, Jo/n = 34.1665, err = 0.212603
+CostJo   : Nonlinear Jo(Aod) = 204.999, nobs = 6, Jo/n = 34.1666, err = 0.212603
 CostFunction: Nonlinear J = 204.999
-DRIPCGMinimizer: reduction in residual norm = 2.98067e-12
+DRIPCGMinimizer: reduction in residual norm = 2.97968e-12
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 17 | cube sphere face size: C12
@@ -23,6 +23,9 @@ CostFunction::addIncrement: Analysis:
    seas3                         : Min = +1.000000e-16, Max = +2.932068e+01, RMS = +1.347006e+00
    seas4                         : Min = +1.000000e-16, Max = +1.135203e+02, RMS = +3.895225e+00
  -----------------------------------------------------------------------------------------------
+
+
+
 CostJb   : Nonlinear Jb = 0.0663083
-CostJo   : Nonlinear Jo(Aod) = 204.746, nobs = 6, Jo/n = 34.1244, err = 0.212603
+CostJo   : Nonlinear Jo(Aod) = 204.747, nobs = 6, Jo/n = 34.1244, err = 0.212603
 CostFunction: Nonlinear J = 204.813

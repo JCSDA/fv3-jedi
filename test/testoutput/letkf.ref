@@ -10,6 +10,7 @@ Initial state for member 1:
    liq_wat                       : Min = -1.438971e-20, Max = +9.126812e-04, RMS = +2.857036e-05
    o3mr                          : Min = +2.126602e-08, Max = +1.755029e-05, RMS = +5.606773e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 2:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -22,6 +23,7 @@ Initial state for member 2:
    liq_wat                       : Min = -1.544947e-20, Max = +8.907087e-04, RMS = +2.990086e-05
    o3mr                          : Min = +2.281538e-08, Max = +1.752690e-05, RMS = +5.608141e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 3:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -34,6 +36,7 @@ Initial state for member 3:
    liq_wat                       : Min = -1.083651e-20, Max = +8.943776e-04, RMS = +2.920756e-05
    o3mr                          : Min = +2.792736e-08, Max = +1.753904e-05, RMS = +5.616064e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 4:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -46,6 +49,7 @@ Initial state for member 4:
    liq_wat                       : Min = -1.462239e-20, Max = +8.878114e-04, RMS = +2.881267e-05
    o3mr                          : Min = +2.909601e-08, Max = +1.752656e-05, RMS = +5.603069e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 5:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -58,6 +62,7 @@ Initial state for member 5:
    liq_wat                       : Min = -1.095310e-20, Max = +8.966260e-04, RMS = +3.036551e-05
    o3mr                          : Min = +2.246646e-08, Max = +1.752876e-05, RMS = +5.609180e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 6:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -70,6 +75,7 @@ Initial state for member 6:
    liq_wat                       : Min = -1.231948e-20, Max = +7.001934e-04, RMS = +2.826721e-05
    o3mr                          : Min = +2.336561e-08, Max = +1.753087e-05, RMS = +5.608784e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 7:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -82,6 +88,7 @@ Initial state for member 7:
    liq_wat                       : Min = -1.992422e-20, Max = +9.155169e-04, RMS = +2.861250e-05
    o3mr                          : Min = +2.160282e-08, Max = +1.751305e-05, RMS = +5.603202e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 8:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -94,6 +101,7 @@ Initial state for member 8:
    liq_wat                       : Min = -3.531432e-20, Max = +7.866090e-04, RMS = +2.906258e-05
    o3mr                          : Min = +1.933553e-08, Max = +1.752228e-05, RMS = +5.602161e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 9:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -106,6 +114,7 @@ Initial state for member 9:
    liq_wat                       : Min = -1.077643e-20, Max = +9.939508e-04, RMS = +2.837309e-05
    o3mr                          : Min = +2.803439e-08, Max = +1.750544e-05, RMS = +5.610272e-06
  -----------------------------------------------------------------------------------------------
+
 Initial state for member 10:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -118,30 +127,55 @@ Initial state for member 10:
    liq_wat                       : Min = -1.347585e-20, Max = +7.361283e-04, RMS = +2.773310e-05
    o3mr                          : Min = +2.585135e-08, Max = +1.753470e-05, RMS = +5.614625e-06
  -----------------------------------------------------------------------------------------------
+
 H(x) for member 1:
 Radiosonde nobs= 2 Min=-7.24641, Max=-2.79931, RMS=5.49303
+
+
 H(x) for member 2:
 Radiosonde nobs= 2 Min=-7.67173, Max=-2.76565, RMS=5.76647
+
+
 H(x) for member 3:
 Radiosonde nobs= 2 Min=-6.0268, Max=-1.67025, RMS=4.42222
+
+
 H(x) for member 4:
 Radiosonde nobs= 2 Min=-7.13259, Max=-2.13771, RMS=5.26515
+
+
 H(x) for member 5:
 Radiosonde nobs= 2 Min=-7.1313, Max=-2.00879, RMS=5.23883
+
+
 H(x) for member 6:
 Radiosonde nobs= 2 Min=-8.07252, Max=-2.9914, RMS=6.08745
+
+
 H(x) for member 7:
 Radiosonde nobs= 2 Min=-6.70858, Max=-1.74224, RMS=4.90105
+
+
 H(x) for member 8:
 Radiosonde nobs= 2 Min=-7.49953, Max=-2.0608, RMS=5.49954
+
+
 H(x) for member 9:
 Radiosonde nobs= 2 Min=-7.88657, Max=-2.56944, RMS=5.86515
+
+
 H(x) for member 10:
 Radiosonde nobs= 2 Min=-7.47117, Max=-2.46218, RMS=5.56241
+
+
 H(x) ensemble background mean: 
 Radiosonde nobs= 2 Min=-7.28472, Max=-2.32078, RMS=5.40616
+
+
 background y - H(x): 
 Radiosonde nobs= 2 Min=-0.679222, Max=1.88472, RMS=1.4166
+
+
 Background mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -154,41 +188,67 @@ Background mean :
    liq_wat                       : Min = -3.609793e-21, Max = +5.681655e-04, RMS = +2.346770e-05
    o3mr                          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608180e-06
  -----------------------------------------------------------------------------------------------
+
 Analysis mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
    ua                            : Min = -4.533925e+01, Max = +9.395765e+01, RMS = +1.645288e+01
-   va                            : Min = -5.498630e+01, Max = +6.551181e+01, RMS = +8.248327e+00
-   T                             : Min = +1.843349e+02, Max = +3.082446e+02, RMS = +2.484119e+02
+   va                            : Min = -5.498630e+01, Max = +6.551181e+01, RMS = +8.248322e+00
+   T                             : Min = +1.843354e+02, Max = +3.082446e+02, RMS = +2.484119e+02
    DELP                          : Min = +4.424700e+01, Max = +3.726002e+03, RMS = +1.939885e+03
-   sphum                         : Min = +5.096306e-08, Max = +1.888146e-02, RMS = +4.733665e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +2.265190e-04, RMS = +1.199273e-05
-   liq_wat                       : Min = +0.000000e+00, Max = +5.681655e-04, RMS = +2.347347e-05
-   o3mr                          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608185e-06
+   sphum                         : Min = +5.096302e-08, Max = +1.888146e-02, RMS = +4.733658e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +2.265190e-04, RMS = +1.199292e-05
+   liq_wat                       : Min = +0.000000e+00, Max = +5.681655e-04, RMS = +2.347475e-05
+   o3mr                          : Min = +3.083000e-08, Max = +1.752522e-05, RMS = +5.608186e-06
  -----------------------------------------------------------------------------------------------
+
 H(x) for member 1:
-Radiosonde nobs= 2 Min=-7.20163, Max=-2.78551, RMS=5.45997
+Radiosonde nobs= 2 Min=-7.20163, Max=-2.7855, RMS=5.45997
+
+
 H(x) for member 2:
-Radiosonde nobs= 2 Min=-7.63275, Max=-2.74973, RMS=5.73672
+Radiosonde nobs= 2 Min=-7.63275, Max=-2.74972, RMS=5.73672
+
+
 H(x) for member 3:
-Radiosonde nobs= 2 Min=-5.9702, Max=-1.64301, RMS=4.37852
+Radiosonde nobs= 2 Min=-5.9702, Max=-1.643, RMS=4.37851
+
+
 H(x) for member 4:
 Radiosonde nobs= 2 Min=-7.0889, Max=-2.11379, RMS=5.23071
+
+
 H(x) for member 5:
-Radiosonde nobs= 2 Min=-7.0881, Max=-1.98283, RMS=5.20446
+Radiosonde nobs= 2 Min=-7.0881, Max=-1.98282, RMS=5.20445
+
+
 H(x) for member 6:
 Radiosonde nobs= 2 Min=-8.03799, Max=-2.97758, RMS=6.06116
+
+
 H(x) for member 7:
-Radiosonde nobs= 2 Min=-6.6608, Max=-1.71361, RMS=4.86326
+Radiosonde nobs= 2 Min=-6.6608, Max=-1.7136, RMS=4.86326
+
+
 H(x) for member 8:
 Radiosonde nobs= 2 Min=-7.46104, Max=-2.03429, RMS=5.46834
+
+
 H(x) for member 9:
 Radiosonde nobs= 2 Min=-7.85123, Max=-2.54959, RMS=5.83705
+
+
 H(x) for member 10:
 Radiosonde nobs= 2 Min=-7.43071, Max=-2.44217, RMS=5.53081
+
+
 H(x) ensemble analysis mean: 
 Radiosonde nobs= 2 Min=-7.24233, Max=-2.29921, RMS=5.37298
+
+
 analysis y - H(x): 
-Radiosonde nobs= 2 Min=-0.70079, Max=1.84233, RMS=1.39379
+Radiosonde nobs= 2 Min=-0.700792, Max=1.84233, RMS=1.39379
+
+
 ombg RMS: 1.4166
 oman RMS: 1.39379

@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Aircraft) = 3433.39, nobs = 1368, Jo/n = 2.50979, err = 2.69652
+CostJo   : Nonlinear Jo(Aircraft) = 3429.3, nobs = 1368, Jo/n = 2.5068, err = 2.69652
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 491.836, nobs = 148, Jo/n = 3.32321, err = 0.000298811
-CostFunction: Nonlinear J = 3925.22
+CostFunction: Nonlinear J = 3921.14
 DRIPCGMinimizer: reduction in residual norm = 0.709911
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
@@ -15,10 +15,14 @@ CostFunction::addIncrement: Analysis:
    ql                            : Min = +0.000000e+00, Max = +5.823120e-04, RMS = +2.493701e-05
    o3ppmv                        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 1.096e-07
-CostJo   : Nonlinear Jo(Aircraft) = 3433.4, nobs = 1368, Jo/n = 2.5098, err = 2.69652
+
+
+
+
+CostJb   : Nonlinear Jb = 1.09227e-07
+CostJo   : Nonlinear Jo(Aircraft) = 3429.31, nobs = 1368, Jo/n = 2.50681, err = 2.69652
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 424.287, nobs = 148, Jo/n = 2.8668, err = 0.000298811
-CostFunction: Nonlinear J = 3857.69
+CostFunction: Nonlinear J = 3853.6
 DRIPCGMinimizer: reduction in residual norm = 0.788645
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
@@ -32,7 +36,11 @@ CostFunction::addIncrement: Analysis:
    ql                            : Min = +0.000000e+00, Max = +5.823120e-04, RMS = +2.493701e-05
    o3ppmv                        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 1.45537e-07
-CostJo   : Nonlinear Jo(Aircraft) = 3433.4, nobs = 1368, Jo/n = 2.5098, err = 2.69652
+
+
+
+
+CostJb   : Nonlinear Jb = 1.45076e-07
+CostJo   : Nonlinear Jo(Aircraft) = 3429.31, nobs = 1368, Jo/n = 2.50681, err = 2.69652
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 428.007, nobs = 148, Jo/n = 2.89194, err = 0.000298811
-CostFunction: Nonlinear J = 3861.41
+CostFunction: Nonlinear J = 3857.32

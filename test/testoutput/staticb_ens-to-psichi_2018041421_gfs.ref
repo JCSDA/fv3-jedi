@@ -1,390 +1,390 @@
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.564850e+01, Max = +9.164924e+01, RMS = +1.643179e+01
-Test     :    va                            : Min = -6.183459e+01, Max = +7.610841e+01, RMS = +8.412116e+00
-Test     :    t                             : Min = +1.846425e+02, Max = +3.097994e+02, RMS = +2.484454e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.726454e+03, RMS = +1.939818e+03
-Test     :    sphum                         : Min = +1.011885e-09, Max = +1.903326e-02, RMS = +4.755243e-03
-Test     :    liq_wat                       : Min = -1.474713e-20, Max = +9.793621e-04, RMS = +2.704892e-05
-Test     :    ice_wat                       : Min = -3.258727e-21, Max = +3.007304e-04, RMS = +1.294475e-05
-Test     :    o3mr                          : Min = +1.405318e-08, Max = +1.756448e-05, RMS = +5.599144e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.663295e+08, Max = +3.297479e+08, RMS = +4.407117e+07
-Test     :    chi                           : Min = -4.075686e+07, Max = +3.263010e+07, RMS = +5.004270e+06
-Test     :    t                             : Min = +1.846425e+02, Max = +3.097994e+02, RMS = +2.484454e+02
-Test     :    ps                            : Min = +5.466547e+04, Max = +1.037760e+05, RMS = +9.898038e+04
-Test     :    rh                            : Min = +1.389764e-06, Max = +1.025479e+00, RMS = +4.591976e-01
-Test     :    liq_wat                       : Min = -1.474713e-20, Max = +9.793621e-04, RMS = +2.704892e-05
-Test     :    ice_wat                       : Min = -3.258727e-21, Max = +3.007304e-04, RMS = +1.294475e-05
-Test     :    o3mr                          : Min = +1.405318e-08, Max = +1.756448e-05, RMS = +5.599144e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.663295e+08, Max = +3.297479e+08, RMS = +4.407117e+07
-Test     :    chi                           : Min = -4.075686e+07, Max = +3.263010e+07, RMS = +5.004270e+06
-Test     :    t                             : Min = +1.846425e+02, Max = +3.097994e+02, RMS = +2.484454e+02
-Test     :    ps                            : Min = +5.466547e+04, Max = +1.037760e+05, RMS = +9.898038e+04
-Test     :    rh                            : Min = +1.389764e-06, Max = +1.025479e+00, RMS = +4.591976e-01
-Test     :    liq_wat                       : Min = -1.474713e-20, Max = +9.793621e-04, RMS = +2.704892e-05
-Test     :    ice_wat                       : Min = -3.258727e-21, Max = +3.007304e-04, RMS = +1.294475e-05
-Test     :    o3mr                          : Min = +1.405318e-08, Max = +1.756448e-05, RMS = +5.599144e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.674705e+01, Max = +8.929499e+01, RMS = +1.641169e+01
-Test     :    va                            : Min = -6.071891e+01, Max = +7.207241e+01, RMS = +8.439918e+00
-Test     :    t                             : Min = +1.842489e+02, Max = +3.102497e+02, RMS = +2.484514e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.729553e+03, RMS = +1.940498e+03
-Test     :    sphum                         : Min = +1.020950e-09, Max = +1.954225e-02, RMS = +4.740822e-03
-Test     :    liq_wat                       : Min = -2.215438e-20, Max = +9.896228e-04, RMS = +2.722724e-05
-Test     :    ice_wat                       : Min = -2.356387e-21, Max = +4.234069e-04, RMS = +1.455225e-05
-Test     :    o3mr                          : Min = +2.722430e-08, Max = +1.756526e-05, RMS = +5.600429e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.655975e+08, Max = +3.289625e+08, RMS = +4.404833e+07
-Test     :    chi                           : Min = -3.858460e+07, Max = +3.197840e+07, RMS = +4.911322e+06
-Test     :    t                             : Min = +1.842489e+02, Max = +3.102497e+02, RMS = +2.484514e+02
-Test     :    ps                            : Min = +5.466855e+04, Max = +1.038431e+05, RMS = +9.901123e+04
-Test     :    rh                            : Min = +1.410735e-06, Max = +1.026046e+00, RMS = +4.584918e-01
-Test     :    liq_wat                       : Min = -2.215438e-20, Max = +9.896228e-04, RMS = +2.722724e-05
-Test     :    ice_wat                       : Min = -2.356387e-21, Max = +4.234069e-04, RMS = +1.455225e-05
-Test     :    o3mr                          : Min = +2.722430e-08, Max = +1.756526e-05, RMS = +5.600429e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.655975e+08, Max = +3.289625e+08, RMS = +4.404833e+07
-Test     :    chi                           : Min = -3.858460e+07, Max = +3.197840e+07, RMS = +4.911322e+06
-Test     :    t                             : Min = +1.842489e+02, Max = +3.102497e+02, RMS = +2.484514e+02
-Test     :    ps                            : Min = +5.466855e+04, Max = +1.038431e+05, RMS = +9.901123e+04
-Test     :    rh                            : Min = +1.410735e-06, Max = +1.026046e+00, RMS = +4.584918e-01
-Test     :    liq_wat                       : Min = -2.215438e-20, Max = +9.896228e-04, RMS = +2.722724e-05
-Test     :    ice_wat                       : Min = -2.356387e-21, Max = +4.234069e-04, RMS = +1.455225e-05
-Test     :    o3mr                          : Min = +2.722430e-08, Max = +1.756526e-05, RMS = +5.600429e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.626095e+01, Max = +9.271462e+01, RMS = +1.638710e+01
-Test     :    va                            : Min = -6.191064e+01, Max = +7.219067e+01, RMS = +8.427425e+00
-Test     :    t                             : Min = +1.845071e+02, Max = +3.103313e+02, RMS = +2.484289e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.727633e+03, RMS = +1.939856e+03
-Test     :    sphum                         : Min = +2.218956e-09, Max = +1.921724e-02, RMS = +4.762596e-03
-Test     :    liq_wat                       : Min = -1.629639e-20, Max = +1.069688e-03, RMS = +2.864431e-05
-Test     :    ice_wat                       : Min = -1.254820e-21, Max = +4.961359e-04, RMS = +1.412880e-05
-Test     :    o3mr                          : Min = +2.277203e-08, Max = +1.756117e-05, RMS = +5.608506e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.659381e+08, Max = +3.277171e+08, RMS = +4.400546e+07
-Test     :    chi                           : Min = -4.013170e+07, Max = +3.373360e+07, RMS = +5.021524e+06
-Test     :    t                             : Min = +1.845071e+02, Max = +3.103313e+02, RMS = +2.484289e+02
-Test     :    ps                            : Min = +5.467362e+04, Max = +1.038015e+05, RMS = +9.898216e+04
-Test     :    rh                            : Min = +1.392172e-06, Max = +1.045676e+00, RMS = +4.605281e-01
-Test     :    liq_wat                       : Min = -1.629639e-20, Max = +1.069688e-03, RMS = +2.864431e-05
-Test     :    ice_wat                       : Min = -1.254820e-21, Max = +4.961359e-04, RMS = +1.412880e-05
-Test     :    o3mr                          : Min = +2.277203e-08, Max = +1.756117e-05, RMS = +5.608506e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.659381e+08, Max = +3.277171e+08, RMS = +4.400546e+07
-Test     :    chi                           : Min = -4.013170e+07, Max = +3.373360e+07, RMS = +5.021524e+06
-Test     :    t                             : Min = +1.845071e+02, Max = +3.103313e+02, RMS = +2.484289e+02
-Test     :    ps                            : Min = +5.467362e+04, Max = +1.038015e+05, RMS = +9.898216e+04
-Test     :    rh                            : Min = +1.392172e-06, Max = +1.045676e+00, RMS = +4.605281e-01
-Test     :    liq_wat                       : Min = -1.629639e-20, Max = +1.069688e-03, RMS = +2.864431e-05
-Test     :    ice_wat                       : Min = -1.254820e-21, Max = +4.961359e-04, RMS = +1.412880e-05
-Test     :    o3mr                          : Min = +2.277203e-08, Max = +1.756117e-05, RMS = +5.608506e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.635305e+01, Max = +9.466394e+01, RMS = +1.639559e+01
-Test     :    va                            : Min = -6.193842e+01, Max = +7.538538e+01, RMS = +8.430267e+00
-Test     :    t                             : Min = +1.853029e+02, Max = +3.104389e+02, RMS = +2.484421e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.729970e+03, RMS = +1.940185e+03
-Test     :    sphum                         : Min = +1.003701e-09, Max = +1.887447e-02, RMS = +4.749734e-03
-Test     :    liq_wat                       : Min = -1.409135e-20, Max = +8.664231e-04, RMS = +2.670060e-05
-Test     :    ice_wat                       : Min = -1.201861e-21, Max = +3.155375e-04, RMS = +1.351914e-05
-Test     :    o3mr                          : Min = +2.678463e-08, Max = +1.753481e-05, RMS = +5.595327e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.652694e+08, Max = +3.281974e+08, RMS = +4.393316e+07
-Test     :    chi                           : Min = -3.762952e+07, Max = +3.071311e+07, RMS = +4.790229e+06
-Test     :    t                             : Min = +1.853029e+02, Max = +3.104389e+02, RMS = +2.484421e+02
-Test     :    ps                            : Min = +5.468848e+04, Max = +1.038520e+05, RMS = +9.899700e+04
-Test     :    rh                            : Min = +1.378179e-06, Max = +1.051807e+00, RMS = +4.599724e-01
-Test     :    liq_wat                       : Min = -1.409135e-20, Max = +8.664231e-04, RMS = +2.670060e-05
-Test     :    ice_wat                       : Min = -1.201861e-21, Max = +3.155375e-04, RMS = +1.351914e-05
-Test     :    o3mr                          : Min = +2.678463e-08, Max = +1.753481e-05, RMS = +5.595327e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.652694e+08, Max = +3.281974e+08, RMS = +4.393316e+07
-Test     :    chi                           : Min = -3.762952e+07, Max = +3.071311e+07, RMS = +4.790229e+06
-Test     :    t                             : Min = +1.853029e+02, Max = +3.104389e+02, RMS = +2.484421e+02
-Test     :    ps                            : Min = +5.468848e+04, Max = +1.038520e+05, RMS = +9.899700e+04
-Test     :    rh                            : Min = +1.378179e-06, Max = +1.051807e+00, RMS = +4.599724e-01
-Test     :    liq_wat                       : Min = -1.409135e-20, Max = +8.664231e-04, RMS = +2.670060e-05
-Test     :    ice_wat                       : Min = -1.201861e-21, Max = +3.155375e-04, RMS = +1.351914e-05
-Test     :    o3mr                          : Min = +2.678463e-08, Max = +1.753481e-05, RMS = +5.595327e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.588924e+01, Max = +9.336334e+01, RMS = +1.641029e+01
-Test     :    va                            : Min = -6.100034e+01, Max = +7.493876e+01, RMS = +8.428112e+00
-Test     :    t                             : Min = +1.848057e+02, Max = +3.096348e+02, RMS = +2.484335e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.727913e+03, RMS = +1.940121e+03
-Test     :    sphum                         : Min = +3.009088e-09, Max = +1.912219e-02, RMS = +4.757812e-03
-Test     :    liq_wat                       : Min = -1.342611e-20, Max = +1.020636e-03, RMS = +2.753064e-05
-Test     :    ice_wat                       : Min = -9.615335e-22, Max = +3.040134e-04, RMS = +1.431237e-05
-Test     :    o3mr                          : Min = +1.706789e-08, Max = +1.755555e-05, RMS = +5.601443e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.677489e+08, Max = +3.306941e+08, RMS = +4.406110e+07
-Test     :    chi                           : Min = -3.947475e+07, Max = +3.360295e+07, RMS = +5.033441e+06
-Test     :    t                             : Min = +1.848057e+02, Max = +3.096348e+02, RMS = +2.484335e+02
-Test     :    ps                            : Min = +5.465659e+04, Max = +1.038075e+05, RMS = +9.899399e+04
-Test     :    rh                            : Min = +1.406873e-06, Max = +1.021866e+00, RMS = +4.598433e-01
-Test     :    liq_wat                       : Min = -1.342611e-20, Max = +1.020636e-03, RMS = +2.753064e-05
-Test     :    ice_wat                       : Min = -9.615335e-22, Max = +3.040134e-04, RMS = +1.431237e-05
-Test     :    o3mr                          : Min = +1.706789e-08, Max = +1.755555e-05, RMS = +5.601443e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.677489e+08, Max = +3.306941e+08, RMS = +4.406110e+07
-Test     :    chi                           : Min = -3.947475e+07, Max = +3.360295e+07, RMS = +5.033441e+06
-Test     :    t                             : Min = +1.848057e+02, Max = +3.096348e+02, RMS = +2.484335e+02
-Test     :    ps                            : Min = +5.465659e+04, Max = +1.038075e+05, RMS = +9.899399e+04
-Test     :    rh                            : Min = +1.406873e-06, Max = +1.021866e+00, RMS = +4.598433e-01
-Test     :    liq_wat                       : Min = -1.342611e-20, Max = +1.020636e-03, RMS = +2.753064e-05
-Test     :    ice_wat                       : Min = -9.615335e-22, Max = +3.040134e-04, RMS = +1.431237e-05
-Test     :    o3mr                          : Min = +1.706789e-08, Max = +1.755555e-05, RMS = +5.601443e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.650583e+01, Max = +9.070274e+01, RMS = +1.640585e+01
-Test     :    va                            : Min = -6.085537e+01, Max = +7.456215e+01, RMS = +8.428353e+00
-Test     :    t                             : Min = +1.848202e+02, Max = +3.099619e+02, RMS = +2.484479e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.727145e+03, RMS = +1.940686e+03
-Test     :    sphum                         : Min = +1.023162e-09, Max = +1.933122e-02, RMS = +4.758599e-03
-Test     :    liq_wat                       : Min = -1.631393e-20, Max = +9.269821e-04, RMS = +2.857258e-05
-Test     :    ice_wat                       : Min = -7.218409e-22, Max = +3.641471e-04, RMS = +1.408745e-05
-Test     :    o3mr                          : Min = +2.665693e-08, Max = +1.755008e-05, RMS = +5.601022e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.656837e+08, Max = +3.293059e+08, RMS = +4.401421e+07
-Test     :    chi                           : Min = -3.917279e+07, Max = +3.326362e+07, RMS = +5.016584e+06
-Test     :    t                             : Min = +1.848202e+02, Max = +3.099619e+02, RMS = +2.484479e+02
-Test     :    ps                            : Min = +5.469298e+04, Max = +1.037909e+05, RMS = +9.901971e+04
-Test     :    rh                            : Min = +1.394313e-06, Max = +1.058992e+00, RMS = +4.599702e-01
-Test     :    liq_wat                       : Min = -1.631393e-20, Max = +9.269821e-04, RMS = +2.857258e-05
-Test     :    ice_wat                       : Min = -7.218409e-22, Max = +3.641471e-04, RMS = +1.408745e-05
-Test     :    o3mr                          : Min = +2.665693e-08, Max = +1.755008e-05, RMS = +5.601022e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.656837e+08, Max = +3.293059e+08, RMS = +4.401421e+07
-Test     :    chi                           : Min = -3.917279e+07, Max = +3.326362e+07, RMS = +5.016584e+06
-Test     :    t                             : Min = +1.848202e+02, Max = +3.099619e+02, RMS = +2.484479e+02
-Test     :    ps                            : Min = +5.469298e+04, Max = +1.037909e+05, RMS = +9.901971e+04
-Test     :    rh                            : Min = +1.394313e-06, Max = +1.058992e+00, RMS = +4.599702e-01
-Test     :    liq_wat                       : Min = -1.631393e-20, Max = +9.269821e-04, RMS = +2.857258e-05
-Test     :    ice_wat                       : Min = -7.218409e-22, Max = +3.641471e-04, RMS = +1.408745e-05
-Test     :    o3mr                          : Min = +2.665693e-08, Max = +1.755008e-05, RMS = +5.601022e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.667370e+01, Max = +9.124025e+01, RMS = +1.641239e+01
-Test     :    va                            : Min = -6.122326e+01, Max = +7.422377e+01, RMS = +8.417030e+00
-Test     :    t                             : Min = +1.848073e+02, Max = +3.097944e+02, RMS = +2.484478e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.726621e+03, RMS = +1.939758e+03
-Test     :    sphum                         : Min = +1.000000e-09, Max = +1.918234e-02, RMS = +4.746889e-03
-Test     :    liq_wat                       : Min = -1.373467e-20, Max = +1.088838e-03, RMS = +2.778092e-05
-Test     :    ice_wat                       : Min = -1.190164e-21, Max = +3.771429e-04, RMS = +1.448834e-05
-Test     :    o3mr                          : Min = +2.790026e-08, Max = +1.755158e-05, RMS = +5.595259e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.661934e+08, Max = +3.280225e+08, RMS = +4.410901e+07
-Test     :    chi                           : Min = -3.989281e+07, Max = +3.242892e+07, RMS = +5.171305e+06
-Test     :    t                             : Min = +1.848073e+02, Max = +3.097944e+02, RMS = +2.484478e+02
-Test     :    ps                            : Min = +5.468783e+04, Max = +1.037796e+05, RMS = +9.897768e+04
-Test     :    rh                            : Min = +1.328671e-06, Max = +1.044353e+00, RMS = +4.597183e-01
-Test     :    liq_wat                       : Min = -1.373467e-20, Max = +1.088838e-03, RMS = +2.778092e-05
-Test     :    ice_wat                       : Min = -1.190164e-21, Max = +3.771429e-04, RMS = +1.448834e-05
-Test     :    o3mr                          : Min = +2.790026e-08, Max = +1.755158e-05, RMS = +5.595259e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.661934e+08, Max = +3.280225e+08, RMS = +4.410901e+07
-Test     :    chi                           : Min = -3.989281e+07, Max = +3.242892e+07, RMS = +5.171305e+06
-Test     :    t                             : Min = +1.848073e+02, Max = +3.097944e+02, RMS = +2.484478e+02
-Test     :    ps                            : Min = +5.468783e+04, Max = +1.037796e+05, RMS = +9.897768e+04
-Test     :    rh                            : Min = +1.328671e-06, Max = +1.044353e+00, RMS = +4.597183e-01
-Test     :    liq_wat                       : Min = -1.373467e-20, Max = +1.088838e-03, RMS = +2.778092e-05
-Test     :    ice_wat                       : Min = -1.190164e-21, Max = +3.771429e-04, RMS = +1.448834e-05
-Test     :    o3mr                          : Min = +2.790026e-08, Max = +1.755158e-05, RMS = +5.595259e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.655702e+01, Max = +9.192750e+01, RMS = +1.641686e+01
-Test     :    va                            : Min = -6.089241e+01, Max = +7.600455e+01, RMS = +8.441663e+00
-Test     :    t                             : Min = +1.849679e+02, Max = +3.096838e+02, RMS = +2.484259e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.723852e+03, RMS = +1.939184e+03
-Test     :    sphum                         : Min = +1.007639e-09, Max = +1.933611e-02, RMS = +4.758799e-03
-Test     :    liq_wat                       : Min = -1.948191e-20, Max = +1.008487e-03, RMS = +2.644712e-05
-Test     :    ice_wat                       : Min = -2.411121e-21, Max = +3.728292e-04, RMS = +1.441509e-05
-Test     :    o3mr                          : Min = +1.651870e-08, Max = +1.754088e-05, RMS = +5.594540e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.656901e+08, Max = +3.287136e+08, RMS = +4.405684e+07
-Test     :    chi                           : Min = -3.933797e+07, Max = +3.252801e+07, RMS = +4.933814e+06
-Test     :    t                             : Min = +1.849679e+02, Max = +3.096838e+02, RMS = +2.484259e+02
-Test     :    ps                            : Min = +5.464539e+04, Max = +1.037196e+05, RMS = +9.895160e+04
-Test     :    rh                            : Min = +1.334352e-06, Max = +1.021010e+00, RMS = +4.589139e-01
-Test     :    liq_wat                       : Min = -1.948191e-20, Max = +1.008487e-03, RMS = +2.644712e-05
-Test     :    ice_wat                       : Min = -2.411121e-21, Max = +3.728292e-04, RMS = +1.441509e-05
-Test     :    o3mr                          : Min = +1.651870e-08, Max = +1.754088e-05, RMS = +5.594540e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.656901e+08, Max = +3.287136e+08, RMS = +4.405684e+07
-Test     :    chi                           : Min = -3.933797e+07, Max = +3.252801e+07, RMS = +4.933814e+06
-Test     :    t                             : Min = +1.849679e+02, Max = +3.096838e+02, RMS = +2.484259e+02
-Test     :    ps                            : Min = +5.464539e+04, Max = +1.037196e+05, RMS = +9.895160e+04
-Test     :    rh                            : Min = +1.334352e-06, Max = +1.021010e+00, RMS = +4.589139e-01
-Test     :    liq_wat                       : Min = -1.948191e-20, Max = +1.008487e-03, RMS = +2.644712e-05
-Test     :    ice_wat                       : Min = -2.411121e-21, Max = +3.728292e-04, RMS = +1.441509e-05
-Test     :    o3mr                          : Min = +1.651870e-08, Max = +1.754088e-05, RMS = +5.594540e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.591706e+01, Max = +9.098048e+01, RMS = +1.640293e+01
-Test     :    va                            : Min = -6.103976e+01, Max = +7.470257e+01, RMS = +8.465432e+00
-Test     :    t                             : Min = +1.845562e+02, Max = +3.096651e+02, RMS = +2.484326e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.724829e+03, RMS = +1.939142e+03
-Test     :    sphum                         : Min = +1.014226e-09, Max = +1.915451e-02, RMS = +4.765118e-03
-Test     :    liq_wat                       : Min = -1.955155e-20, Max = +1.002800e-03, RMS = +2.726322e-05
-Test     :    ice_wat                       : Min = -2.522092e-21, Max = +3.881870e-04, RMS = +1.437125e-05
-Test     :    o3mr                          : Min = +2.228638e-08, Max = +1.755228e-05, RMS = +5.602306e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.667754e+08, Max = +3.282436e+08, RMS = +4.400309e+07
-Test     :    chi                           : Min = -3.893976e+07, Max = +3.130838e+07, RMS = +4.932728e+06
-Test     :    t                             : Min = +1.845562e+02, Max = +3.096651e+02, RMS = +2.484326e+02
-Test     :    ps                            : Min = +5.465337e+04, Max = +1.037408e+05, RMS = +9.894958e+04
-Test     :    rh                            : Min = +1.414583e-06, Max = +1.041911e+00, RMS = +4.600040e-01
-Test     :    liq_wat                       : Min = -1.955155e-20, Max = +1.002800e-03, RMS = +2.726322e-05
-Test     :    ice_wat                       : Min = -2.522092e-21, Max = +3.881870e-04, RMS = +1.437125e-05
-Test     :    o3mr                          : Min = +2.228638e-08, Max = +1.755228e-05, RMS = +5.602306e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.667754e+08, Max = +3.282436e+08, RMS = +4.400309e+07
-Test     :    chi                           : Min = -3.893976e+07, Max = +3.130838e+07, RMS = +4.932728e+06
-Test     :    t                             : Min = +1.845562e+02, Max = +3.096651e+02, RMS = +2.484326e+02
-Test     :    ps                            : Min = +5.465337e+04, Max = +1.037408e+05, RMS = +9.894958e+04
-Test     :    rh                            : Min = +1.414583e-06, Max = +1.041911e+00, RMS = +4.600040e-01
-Test     :    liq_wat                       : Min = -1.955155e-20, Max = +1.002800e-03, RMS = +2.726322e-05
-Test     :    ice_wat                       : Min = -2.522092e-21, Max = +3.881870e-04, RMS = +1.437125e-05
-Test     :    o3mr                          : Min = +2.228638e-08, Max = +1.755228e-05, RMS = +5.602306e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Input state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.679971e+01, Max = +9.179542e+01, RMS = +1.641388e+01
-Test     :    va                            : Min = -6.245741e+01, Max = +7.250070e+01, RMS = +8.435443e+00
-Test     :    t                             : Min = +1.846864e+02, Max = +3.104280e+02, RMS = +2.484318e+02
-Test     :    delp                          : Min = +4.424700e+01, Max = +3.728348e+03, RMS = +1.939736e+03
-Test     :    sphum                         : Min = +1.064275e-09, Max = +1.917688e-02, RMS = +4.751916e-03
-Test     :    liq_wat                       : Min = -2.312462e-20, Max = +1.027585e-03, RMS = +2.658572e-05
-Test     :    ice_wat                       : Min = -3.810394e-21, Max = +3.096837e-04, RMS = +1.370717e-05
-Test     :    o3mr                          : Min = +2.375183e-08, Max = +1.757284e-05, RMS = +5.607069e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Variable transform: fv3jedi::VarChaC2A variable change
-Test     : Variable change from: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
-Test     : Variable change to: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
-Test     : State after variable transform: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.659597e+08, Max = +3.286456e+08, RMS = +4.406628e+07
-Test     :    chi                           : Min = -4.062157e+07, Max = +3.134188e+07, RMS = +4.993123e+06
-Test     :    t                             : Min = +1.846864e+02, Max = +3.104280e+02, RMS = +2.484318e+02
-Test     :    ps                            : Min = +5.467541e+04, Max = +1.038169e+05, RMS = +9.897666e+04
-Test     :    rh                            : Min = +1.444325e-06, Max = +1.026097e+00, RMS = +4.592613e-01
-Test     :    liq_wat                       : Min = -2.312462e-20, Max = +1.027585e-03, RMS = +2.658572e-05
-Test     :    ice_wat                       : Min = -3.810394e-21, Max = +3.096837e-04, RMS = +1.370717e-05
-Test     :    o3mr                          : Min = +2.375183e-08, Max = +1.757284e-05, RMS = +5.607069e-06
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : Output state: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 8 | cube sphere face size: C12
-Test     :    psi                           : Min = -1.659597e+08, Max = +3.286456e+08, RMS = +4.406628e+07
-Test     :    chi                           : Min = -4.062157e+07, Max = +3.134188e+07, RMS = +4.993123e+06
-Test     :    t                             : Min = +1.846864e+02, Max = +3.104280e+02, RMS = +2.484318e+02
-Test     :    ps                            : Min = +5.467541e+04, Max = +1.038169e+05, RMS = +9.897666e+04
-Test     :    rh                            : Min = +1.444325e-06, Max = +1.026097e+00, RMS = +4.592613e-01
-Test     :    liq_wat                       : Min = -2.312462e-20, Max = +1.027585e-03, RMS = +2.658572e-05
-Test     :    ice_wat                       : Min = -3.810394e-21, Max = +3.096837e-04, RMS = +1.370717e-05
-Test     :    o3mr                          : Min = +2.375183e-08, Max = +1.757284e-05, RMS = +5.607069e-06
-Test     :  -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.564850e+01, Max = +9.164924e+01, RMS = +1.643179e+01
+   va                            : Min = -6.183459e+01, Max = +7.610841e+01, RMS = +8.412116e+00
+   t                             : Min = +1.846425e+02, Max = +3.097994e+02, RMS = +2.484454e+02
+   delp                          : Min = +4.424700e+01, Max = +3.726454e+03, RMS = +1.939818e+03
+   sphum                         : Min = +1.011885e-09, Max = +1.903326e-02, RMS = +4.755243e-03
+   liq_wat                       : Min = -1.474713e-20, Max = +9.793621e-04, RMS = +2.704892e-05
+   ice_wat                       : Min = -3.258727e-21, Max = +3.007304e-04, RMS = +1.294475e-05
+   o3mr                          : Min = +1.405318e-08, Max = +1.756448e-05, RMS = +5.599144e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.663295e+08, Max = +3.297479e+08, RMS = +4.407117e+07
+   chi                           : Min = -4.075686e+07, Max = +3.263010e+07, RMS = +5.004270e+06
+   t                             : Min = +1.846425e+02, Max = +3.097994e+02, RMS = +2.484454e+02
+   ps                            : Min = +5.466547e+04, Max = +1.037760e+05, RMS = +9.898038e+04
+   rh                            : Min = +1.367258e-06, Max = +1.025062e+00, RMS = +4.591664e-01
+   liq_wat                       : Min = -1.474713e-20, Max = +9.793621e-04, RMS = +2.704892e-05
+   ice_wat                       : Min = -3.258727e-21, Max = +3.007304e-04, RMS = +1.294475e-05
+   o3mr                          : Min = +1.405318e-08, Max = +1.756448e-05, RMS = +5.599144e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.663295e+08, Max = +3.297479e+08, RMS = +4.407117e+07
+   chi                           : Min = -4.075686e+07, Max = +3.263010e+07, RMS = +5.004270e+06
+   t                             : Min = +1.846425e+02, Max = +3.097994e+02, RMS = +2.484454e+02
+   ps                            : Min = +5.466547e+04, Max = +1.037760e+05, RMS = +9.898038e+04
+   rh                            : Min = +1.367258e-06, Max = +1.025062e+00, RMS = +4.591664e-01
+   liq_wat                       : Min = -1.474713e-20, Max = +9.793621e-04, RMS = +2.704892e-05
+   ice_wat                       : Min = -3.258727e-21, Max = +3.007304e-04, RMS = +1.294475e-05
+   o3mr                          : Min = +1.405318e-08, Max = +1.756448e-05, RMS = +5.599144e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.674705e+01, Max = +8.929499e+01, RMS = +1.641169e+01
+   va                            : Min = -6.071891e+01, Max = +7.207241e+01, RMS = +8.439918e+00
+   t                             : Min = +1.842489e+02, Max = +3.102497e+02, RMS = +2.484514e+02
+   delp                          : Min = +4.424700e+01, Max = +3.729553e+03, RMS = +1.940498e+03
+   sphum                         : Min = +1.020950e-09, Max = +1.954225e-02, RMS = +4.740822e-03
+   liq_wat                       : Min = -2.215438e-20, Max = +9.896228e-04, RMS = +2.722724e-05
+   ice_wat                       : Min = -2.356387e-21, Max = +4.234069e-04, RMS = +1.455225e-05
+   o3mr                          : Min = +2.722430e-08, Max = +1.756526e-05, RMS = +5.600429e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.655975e+08, Max = +3.289625e+08, RMS = +4.404833e+07
+   chi                           : Min = -3.858460e+07, Max = +3.197840e+07, RMS = +4.911322e+06
+   t                             : Min = +1.842489e+02, Max = +3.102497e+02, RMS = +2.484514e+02
+   ps                            : Min = +5.466855e+04, Max = +1.038431e+05, RMS = +9.901123e+04
+   rh                            : Min = +1.387889e-06, Max = +1.025643e+00, RMS = +4.584605e-01
+   liq_wat                       : Min = -2.215438e-20, Max = +9.896228e-04, RMS = +2.722724e-05
+   ice_wat                       : Min = -2.356387e-21, Max = +4.234069e-04, RMS = +1.455225e-05
+   o3mr                          : Min = +2.722430e-08, Max = +1.756526e-05, RMS = +5.600429e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.655975e+08, Max = +3.289625e+08, RMS = +4.404833e+07
+   chi                           : Min = -3.858460e+07, Max = +3.197840e+07, RMS = +4.911322e+06
+   t                             : Min = +1.842489e+02, Max = +3.102497e+02, RMS = +2.484514e+02
+   ps                            : Min = +5.466855e+04, Max = +1.038431e+05, RMS = +9.901123e+04
+   rh                            : Min = +1.387889e-06, Max = +1.025643e+00, RMS = +4.584605e-01
+   liq_wat                       : Min = -2.215438e-20, Max = +9.896228e-04, RMS = +2.722724e-05
+   ice_wat                       : Min = -2.356387e-21, Max = +4.234069e-04, RMS = +1.455225e-05
+   o3mr                          : Min = +2.722430e-08, Max = +1.756526e-05, RMS = +5.600429e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.626095e+01, Max = +9.271462e+01, RMS = +1.638710e+01
+   va                            : Min = -6.191064e+01, Max = +7.219067e+01, RMS = +8.427425e+00
+   t                             : Min = +1.845071e+02, Max = +3.103313e+02, RMS = +2.484289e+02
+   delp                          : Min = +4.424700e+01, Max = +3.727633e+03, RMS = +1.939856e+03
+   sphum                         : Min = +2.218956e-09, Max = +1.921724e-02, RMS = +4.762596e-03
+   liq_wat                       : Min = -1.629639e-20, Max = +1.069688e-03, RMS = +2.864431e-05
+   ice_wat                       : Min = -1.254820e-21, Max = +4.961359e-04, RMS = +1.412880e-05
+   o3mr                          : Min = +2.277203e-08, Max = +1.756117e-05, RMS = +5.608506e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.659381e+08, Max = +3.277171e+08, RMS = +4.400546e+07
+   chi                           : Min = -4.013170e+07, Max = +3.373360e+07, RMS = +5.021524e+06
+   t                             : Min = +1.845071e+02, Max = +3.103313e+02, RMS = +2.484289e+02
+   ps                            : Min = +5.467362e+04, Max = +1.038015e+05, RMS = +9.898216e+04
+   rh                            : Min = +1.369626e-06, Max = +1.045214e+00, RMS = +4.604968e-01
+   liq_wat                       : Min = -1.629639e-20, Max = +1.069688e-03, RMS = +2.864431e-05
+   ice_wat                       : Min = -1.254820e-21, Max = +4.961359e-04, RMS = +1.412880e-05
+   o3mr                          : Min = +2.277203e-08, Max = +1.756117e-05, RMS = +5.608506e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.659381e+08, Max = +3.277171e+08, RMS = +4.400546e+07
+   chi                           : Min = -4.013170e+07, Max = +3.373360e+07, RMS = +5.021524e+06
+   t                             : Min = +1.845071e+02, Max = +3.103313e+02, RMS = +2.484289e+02
+   ps                            : Min = +5.467362e+04, Max = +1.038015e+05, RMS = +9.898216e+04
+   rh                            : Min = +1.369626e-06, Max = +1.045214e+00, RMS = +4.604968e-01
+   liq_wat                       : Min = -1.629639e-20, Max = +1.069688e-03, RMS = +2.864431e-05
+   ice_wat                       : Min = -1.254820e-21, Max = +4.961359e-04, RMS = +1.412880e-05
+   o3mr                          : Min = +2.277203e-08, Max = +1.756117e-05, RMS = +5.608506e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.635305e+01, Max = +9.466394e+01, RMS = +1.639559e+01
+   va                            : Min = -6.193842e+01, Max = +7.538538e+01, RMS = +8.430267e+00
+   t                             : Min = +1.853029e+02, Max = +3.104389e+02, RMS = +2.484421e+02
+   delp                          : Min = +4.424700e+01, Max = +3.729970e+03, RMS = +1.940185e+03
+   sphum                         : Min = +1.003701e-09, Max = +1.887447e-02, RMS = +4.749734e-03
+   liq_wat                       : Min = -1.409135e-20, Max = +8.664231e-04, RMS = +2.670060e-05
+   ice_wat                       : Min = -1.201861e-21, Max = +3.155375e-04, RMS = +1.351914e-05
+   o3mr                          : Min = +2.678463e-08, Max = +1.753481e-05, RMS = +5.595327e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.652694e+08, Max = +3.281974e+08, RMS = +4.393316e+07
+   chi                           : Min = -3.762952e+07, Max = +3.071311e+07, RMS = +4.790229e+06
+   t                             : Min = +1.853029e+02, Max = +3.104389e+02, RMS = +2.484421e+02
+   ps                            : Min = +5.468848e+04, Max = +1.038520e+05, RMS = +9.899700e+04
+   rh                            : Min = +1.355860e-06, Max = +1.051366e+00, RMS = +4.599411e-01
+   liq_wat                       : Min = -1.409135e-20, Max = +8.664231e-04, RMS = +2.670060e-05
+   ice_wat                       : Min = -1.201861e-21, Max = +3.155375e-04, RMS = +1.351914e-05
+   o3mr                          : Min = +2.678463e-08, Max = +1.753481e-05, RMS = +5.595327e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.652694e+08, Max = +3.281974e+08, RMS = +4.393316e+07
+   chi                           : Min = -3.762952e+07, Max = +3.071311e+07, RMS = +4.790229e+06
+   t                             : Min = +1.853029e+02, Max = +3.104389e+02, RMS = +2.484421e+02
+   ps                            : Min = +5.468848e+04, Max = +1.038520e+05, RMS = +9.899700e+04
+   rh                            : Min = +1.355860e-06, Max = +1.051366e+00, RMS = +4.599411e-01
+   liq_wat                       : Min = -1.409135e-20, Max = +8.664231e-04, RMS = +2.670060e-05
+   ice_wat                       : Min = -1.201861e-21, Max = +3.155375e-04, RMS = +1.351914e-05
+   o3mr                          : Min = +2.678463e-08, Max = +1.753481e-05, RMS = +5.595327e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.588924e+01, Max = +9.336334e+01, RMS = +1.641029e+01
+   va                            : Min = -6.100034e+01, Max = +7.493876e+01, RMS = +8.428112e+00
+   t                             : Min = +1.848057e+02, Max = +3.096348e+02, RMS = +2.484335e+02
+   delp                          : Min = +4.424700e+01, Max = +3.727913e+03, RMS = +1.940121e+03
+   sphum                         : Min = +3.009088e-09, Max = +1.912219e-02, RMS = +4.757812e-03
+   liq_wat                       : Min = -1.342611e-20, Max = +1.020636e-03, RMS = +2.753064e-05
+   ice_wat                       : Min = -9.615335e-22, Max = +3.040134e-04, RMS = +1.431237e-05
+   o3mr                          : Min = +1.706789e-08, Max = +1.755555e-05, RMS = +5.601443e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.677489e+08, Max = +3.306941e+08, RMS = +4.406110e+07
+   chi                           : Min = -3.947475e+07, Max = +3.360295e+07, RMS = +5.033441e+06
+   t                             : Min = +1.848057e+02, Max = +3.096348e+02, RMS = +2.484335e+02
+   ps                            : Min = +5.465659e+04, Max = +1.038075e+05, RMS = +9.899399e+04
+   rh                            : Min = +1.384089e-06, Max = +1.021446e+00, RMS = +4.598121e-01
+   liq_wat                       : Min = -1.342611e-20, Max = +1.020636e-03, RMS = +2.753064e-05
+   ice_wat                       : Min = -9.615335e-22, Max = +3.040134e-04, RMS = +1.431237e-05
+   o3mr                          : Min = +1.706789e-08, Max = +1.755555e-05, RMS = +5.601443e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.677489e+08, Max = +3.306941e+08, RMS = +4.406110e+07
+   chi                           : Min = -3.947475e+07, Max = +3.360295e+07, RMS = +5.033441e+06
+   t                             : Min = +1.848057e+02, Max = +3.096348e+02, RMS = +2.484335e+02
+   ps                            : Min = +5.465659e+04, Max = +1.038075e+05, RMS = +9.899399e+04
+   rh                            : Min = +1.384089e-06, Max = +1.021446e+00, RMS = +4.598121e-01
+   liq_wat                       : Min = -1.342611e-20, Max = +1.020636e-03, RMS = +2.753064e-05
+   ice_wat                       : Min = -9.615335e-22, Max = +3.040134e-04, RMS = +1.431237e-05
+   o3mr                          : Min = +1.706789e-08, Max = +1.755555e-05, RMS = +5.601443e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.650583e+01, Max = +9.070274e+01, RMS = +1.640585e+01
+   va                            : Min = -6.085537e+01, Max = +7.456215e+01, RMS = +8.428353e+00
+   t                             : Min = +1.848202e+02, Max = +3.099619e+02, RMS = +2.484479e+02
+   delp                          : Min = +4.424700e+01, Max = +3.727145e+03, RMS = +1.940686e+03
+   sphum                         : Min = +1.023162e-09, Max = +1.933122e-02, RMS = +4.758599e-03
+   liq_wat                       : Min = -1.631393e-20, Max = +9.269821e-04, RMS = +2.857258e-05
+   ice_wat                       : Min = -7.218409e-22, Max = +3.641471e-04, RMS = +1.408745e-05
+   o3mr                          : Min = +2.665693e-08, Max = +1.755008e-05, RMS = +5.601022e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.656837e+08, Max = +3.293059e+08, RMS = +4.401421e+07
+   chi                           : Min = -3.917279e+07, Max = +3.326362e+07, RMS = +5.016584e+06
+   t                             : Min = +1.848202e+02, Max = +3.099619e+02, RMS = +2.484479e+02
+   ps                            : Min = +5.469298e+04, Max = +1.037909e+05, RMS = +9.901971e+04
+   rh                            : Min = +1.371732e-06, Max = +1.058559e+00, RMS = +4.599388e-01
+   liq_wat                       : Min = -1.631393e-20, Max = +9.269821e-04, RMS = +2.857258e-05
+   ice_wat                       : Min = -7.218409e-22, Max = +3.641471e-04, RMS = +1.408745e-05
+   o3mr                          : Min = +2.665693e-08, Max = +1.755008e-05, RMS = +5.601022e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.656837e+08, Max = +3.293059e+08, RMS = +4.401421e+07
+   chi                           : Min = -3.917279e+07, Max = +3.326362e+07, RMS = +5.016584e+06
+   t                             : Min = +1.848202e+02, Max = +3.099619e+02, RMS = +2.484479e+02
+   ps                            : Min = +5.469298e+04, Max = +1.037909e+05, RMS = +9.901971e+04
+   rh                            : Min = +1.371732e-06, Max = +1.058559e+00, RMS = +4.599388e-01
+   liq_wat                       : Min = -1.631393e-20, Max = +9.269821e-04, RMS = +2.857258e-05
+   ice_wat                       : Min = -7.218409e-22, Max = +3.641471e-04, RMS = +1.408745e-05
+   o3mr                          : Min = +2.665693e-08, Max = +1.755008e-05, RMS = +5.601022e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.667370e+01, Max = +9.124025e+01, RMS = +1.641239e+01
+   va                            : Min = -6.122326e+01, Max = +7.422377e+01, RMS = +8.417030e+00
+   t                             : Min = +1.848073e+02, Max = +3.097944e+02, RMS = +2.484478e+02
+   delp                          : Min = +4.424700e+01, Max = +3.726621e+03, RMS = +1.939758e+03
+   sphum                         : Min = +1.000000e-09, Max = +1.918234e-02, RMS = +4.746889e-03
+   liq_wat                       : Min = -1.373467e-20, Max = +1.088838e-03, RMS = +2.778092e-05
+   ice_wat                       : Min = -1.190164e-21, Max = +3.771429e-04, RMS = +1.448834e-05
+   o3mr                          : Min = +2.790026e-08, Max = +1.755158e-05, RMS = +5.595259e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.661934e+08, Max = +3.280225e+08, RMS = +4.410901e+07
+   chi                           : Min = -3.989281e+07, Max = +3.242892e+07, RMS = +5.171305e+06
+   t                             : Min = +1.848073e+02, Max = +3.097944e+02, RMS = +2.484478e+02
+   ps                            : Min = +5.468783e+04, Max = +1.037796e+05, RMS = +9.897768e+04
+   rh                            : Min = +1.307153e-06, Max = +1.043891e+00, RMS = +4.596868e-01
+   liq_wat                       : Min = -1.373467e-20, Max = +1.088838e-03, RMS = +2.778092e-05
+   ice_wat                       : Min = -1.190164e-21, Max = +3.771429e-04, RMS = +1.448834e-05
+   o3mr                          : Min = +2.790026e-08, Max = +1.755158e-05, RMS = +5.595259e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.661934e+08, Max = +3.280225e+08, RMS = +4.410901e+07
+   chi                           : Min = -3.989281e+07, Max = +3.242892e+07, RMS = +5.171305e+06
+   t                             : Min = +1.848073e+02, Max = +3.097944e+02, RMS = +2.484478e+02
+   ps                            : Min = +5.468783e+04, Max = +1.037796e+05, RMS = +9.897768e+04
+   rh                            : Min = +1.307153e-06, Max = +1.043891e+00, RMS = +4.596868e-01
+   liq_wat                       : Min = -1.373467e-20, Max = +1.088838e-03, RMS = +2.778092e-05
+   ice_wat                       : Min = -1.190164e-21, Max = +3.771429e-04, RMS = +1.448834e-05
+   o3mr                          : Min = +2.790026e-08, Max = +1.755158e-05, RMS = +5.595259e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.655702e+01, Max = +9.192750e+01, RMS = +1.641686e+01
+   va                            : Min = -6.089241e+01, Max = +7.600455e+01, RMS = +8.441663e+00
+   t                             : Min = +1.849679e+02, Max = +3.096838e+02, RMS = +2.484259e+02
+   delp                          : Min = +4.424700e+01, Max = +3.723852e+03, RMS = +1.939184e+03
+   sphum                         : Min = +1.007639e-09, Max = +1.933611e-02, RMS = +4.758799e-03
+   liq_wat                       : Min = -1.948191e-20, Max = +1.008487e-03, RMS = +2.644712e-05
+   ice_wat                       : Min = -2.411121e-21, Max = +3.728292e-04, RMS = +1.441509e-05
+   o3mr                          : Min = +1.651870e-08, Max = +1.754088e-05, RMS = +5.594540e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.656901e+08, Max = +3.287136e+08, RMS = +4.405684e+07
+   chi                           : Min = -3.933797e+07, Max = +3.252801e+07, RMS = +4.933814e+06
+   t                             : Min = +1.849679e+02, Max = +3.096838e+02, RMS = +2.484259e+02
+   ps                            : Min = +5.464539e+04, Max = +1.037196e+05, RMS = +9.895160e+04
+   rh                            : Min = +1.312743e-06, Max = +1.020643e+00, RMS = +4.588828e-01
+   liq_wat                       : Min = -1.948191e-20, Max = +1.008487e-03, RMS = +2.644712e-05
+   ice_wat                       : Min = -2.411121e-21, Max = +3.728292e-04, RMS = +1.441509e-05
+   o3mr                          : Min = +1.651870e-08, Max = +1.754088e-05, RMS = +5.594540e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.656901e+08, Max = +3.287136e+08, RMS = +4.405684e+07
+   chi                           : Min = -3.933797e+07, Max = +3.252801e+07, RMS = +4.933814e+06
+   t                             : Min = +1.849679e+02, Max = +3.096838e+02, RMS = +2.484259e+02
+   ps                            : Min = +5.464539e+04, Max = +1.037196e+05, RMS = +9.895160e+04
+   rh                            : Min = +1.312743e-06, Max = +1.020643e+00, RMS = +4.588828e-01
+   liq_wat                       : Min = -1.948191e-20, Max = +1.008487e-03, RMS = +2.644712e-05
+   ice_wat                       : Min = -2.411121e-21, Max = +3.728292e-04, RMS = +1.441509e-05
+   o3mr                          : Min = +1.651870e-08, Max = +1.754088e-05, RMS = +5.594540e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.591706e+01, Max = +9.098048e+01, RMS = +1.640293e+01
+   va                            : Min = -6.103976e+01, Max = +7.470257e+01, RMS = +8.465432e+00
+   t                             : Min = +1.845562e+02, Max = +3.096651e+02, RMS = +2.484326e+02
+   delp                          : Min = +4.424700e+01, Max = +3.724829e+03, RMS = +1.939142e+03
+   sphum                         : Min = +1.014226e-09, Max = +1.915451e-02, RMS = +4.765118e-03
+   liq_wat                       : Min = -1.955155e-20, Max = +1.002800e-03, RMS = +2.726322e-05
+   ice_wat                       : Min = -2.522092e-21, Max = +3.881870e-04, RMS = +1.437125e-05
+   o3mr                          : Min = +2.228638e-08, Max = +1.755228e-05, RMS = +5.602306e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.667754e+08, Max = +3.282436e+08, RMS = +4.400309e+07
+   chi                           : Min = -3.893976e+07, Max = +3.130838e+07, RMS = +4.932728e+06
+   t                             : Min = +1.845562e+02, Max = +3.096651e+02, RMS = +2.484326e+02
+   ps                            : Min = +5.465337e+04, Max = +1.037408e+05, RMS = +9.894958e+04
+   rh                            : Min = +1.391674e-06, Max = +1.041451e+00, RMS = +4.599727e-01
+   liq_wat                       : Min = -1.955155e-20, Max = +1.002800e-03, RMS = +2.726322e-05
+   ice_wat                       : Min = -2.522092e-21, Max = +3.881870e-04, RMS = +1.437125e-05
+   o3mr                          : Min = +2.228638e-08, Max = +1.755228e-05, RMS = +5.602306e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.667754e+08, Max = +3.282436e+08, RMS = +4.400309e+07
+   chi                           : Min = -3.893976e+07, Max = +3.130838e+07, RMS = +4.932728e+06
+   t                             : Min = +1.845562e+02, Max = +3.096651e+02, RMS = +2.484326e+02
+   ps                            : Min = +5.465337e+04, Max = +1.037408e+05, RMS = +9.894958e+04
+   rh                            : Min = +1.391674e-06, Max = +1.041451e+00, RMS = +4.599727e-01
+   liq_wat                       : Min = -1.955155e-20, Max = +1.002800e-03, RMS = +2.726322e-05
+   ice_wat                       : Min = -2.522092e-21, Max = +3.881870e-04, RMS = +1.437125e-05
+   o3mr                          : Min = +2.228638e-08, Max = +1.755228e-05, RMS = +5.602306e-06
+ -----------------------------------------------------------------------------------------------
+Input state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -4.679971e+01, Max = +9.179542e+01, RMS = +1.641388e+01
+   va                            : Min = -6.245741e+01, Max = +7.250070e+01, RMS = +8.435443e+00
+   t                             : Min = +1.846864e+02, Max = +3.104280e+02, RMS = +2.484318e+02
+   delp                          : Min = +4.424700e+01, Max = +3.728348e+03, RMS = +1.939736e+03
+   sphum                         : Min = +1.064275e-09, Max = +1.917688e-02, RMS = +4.751916e-03
+   liq_wat                       : Min = -2.312462e-20, Max = +1.027585e-03, RMS = +2.658572e-05
+   ice_wat                       : Min = -3.810394e-21, Max = +3.096837e-04, RMS = +1.370717e-05
+   o3mr                          : Min = +2.375183e-08, Max = +1.757284e-05, RMS = +5.607069e-06
+ -----------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaC2A variable change
+Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
+State after variable transform: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.659597e+08, Max = +3.286456e+08, RMS = +4.406628e+07
+   chi                           : Min = -4.062157e+07, Max = +3.134188e+07, RMS = +4.993123e+06
+   t                             : Min = +1.846864e+02, Max = +3.104280e+02, RMS = +2.484318e+02
+   ps                            : Min = +5.467541e+04, Max = +1.038169e+05, RMS = +9.897666e+04
+   rh                            : Min = +1.420934e-06, Max = +1.025728e+00, RMS = +4.592300e-01
+   liq_wat                       : Min = -2.312462e-20, Max = +1.027585e-03, RMS = +2.658572e-05
+   ice_wat                       : Min = -3.810394e-21, Max = +3.096837e-04, RMS = +1.370717e-05
+   o3mr                          : Min = +2.375183e-08, Max = +1.757284e-05, RMS = +5.607069e-06
+ -----------------------------------------------------------------------------------------------
+Output state: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   psi                           : Min = -1.659597e+08, Max = +3.286456e+08, RMS = +4.406628e+07
+   chi                           : Min = -4.062157e+07, Max = +3.134188e+07, RMS = +4.993123e+06
+   t                             : Min = +1.846864e+02, Max = +3.104280e+02, RMS = +2.484318e+02
+   ps                            : Min = +5.467541e+04, Max = +1.038169e+05, RMS = +9.897666e+04
+   rh                            : Min = +1.420934e-06, Max = +1.025728e+00, RMS = +4.592300e-01
+   liq_wat                       : Min = -2.312462e-20, Max = +1.027585e-03, RMS = +2.658572e-05
+   ice_wat                       : Min = -3.810394e-21, Max = +3.096837e-04, RMS = +1.370717e-05
+   o3mr                          : Min = +2.375183e-08, Max = +1.757284e-05, RMS = +5.607069e-06
+ -----------------------------------------------------------------------------------------------

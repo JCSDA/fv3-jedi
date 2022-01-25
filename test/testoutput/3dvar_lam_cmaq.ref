@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(NO2) = 346.134, nobs = 65, Jo/n = 5.32514, err = 1.06053e-05
-CostFunction: Nonlinear J = 346.134
-PCGMinimizer: reduction in residual norm = 0.00206287
+CostJo   : Nonlinear Jo(NO2) = 346.222, nobs = 65, Jo/n = 5.32649, err = 1.06053e-05
+CostFunction: Nonlinear J = 346.222
+PCGMinimizer: reduction in residual norm = 0.00207103
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C45
@@ -12,11 +12,11 @@ CostFunction::addIncrement: Analysis:
    ps                            : Min = +7.008338e+04, Max = +1.016514e+05, RMS = +9.426137e+04
    sphum                         : Min = +9.893754e-07, Max = +2.116033e-02, RMS = +5.550789e-03
    phis                          : Min = +0.000000e+00, Max = +3.108395e+04, RMS = +9.714241e+03
-   no2                           : Min = +0.000000e+00, Max = +5.278364e-02, RMS = +1.786939e-03
+   no2                           : Min = +0.000000e+00, Max = +5.278333e-02, RMS = +1.788334e-03
  -----------------------------------------------------------------------------------------------
 
 
 
-CostJb   : Nonlinear Jb = 4.34659e-05
-CostJo   : Nonlinear Jo(NO2) = 48874.4, nobs = 65, Jo/n = 751.915, err = 1.06053e-05
-CostFunction: Nonlinear J = 48874.4
+CostJb   : Nonlinear Jb = 4.36582e-05
+CostJo   : Nonlinear Jo(NO2) = 49354.6, nobs = 65, Jo/n = 759.302, err = 1.06053e-05
+CostFunction: Nonlinear J = 49354.6
