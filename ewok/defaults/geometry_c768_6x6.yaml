@@ -7,6 +7,6 @@ npx: 769
 npy: 769
 npz: 127
 ntiles: 6
-layout: [10,10]
+layout: [6,6]
 io_layout: [1,1]
 _resol_name: c768

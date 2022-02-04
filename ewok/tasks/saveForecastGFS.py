@@ -15,5 +15,7 @@ class saveForecastGFS(generic.saveForecast):
         # Get generic defaults
         generic.saveForecast.setup(self, config, fc)
 
+        self.walltime = '00:10:00'
+
         # Use GFS specific script
         self.command = os.path.join(config['model_path'], "tasks/runSaveForecast.py")
