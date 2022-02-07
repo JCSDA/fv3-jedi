@@ -20,19 +20,23 @@ increment geometry:
   fieldsets:
   - fieldset: Data/fieldsets/dynamics.yaml
 state:
-  filetype: geos
+  datetime: 2018-04-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
+  filename: geos.bkg.20180414_210000z.nc4
   state variables: [ua,va,t,q,qi,ql,o3ppmv]
 increment:
-  filetype: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/increment
-  filename_bkgd: hyb-4dvar-geos.inc.20180414_210000z.nc4
+  filename: hyb-4dvar-geos.inc.20180414_210000z.nc4
   added variables: [ua,va,t,q,qi,ql,o3ppmv]
 output:
-  filetype: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/analysis
-  filename_bkgd: hyb-3dvar-geos.bkg+inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: hyb-3dvar-geos.bkg+inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
   reference filename: testoutput/addincrement_geos.ref

@@ -11,6 +11,7 @@ geometry:
     - fieldset: Data/fieldsets/aerosols_gfs.yaml
 input variables: [sulf]
 background:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc

@@ -17,6 +17,7 @@ output geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 states:
 - input:
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,

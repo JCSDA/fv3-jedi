@@ -39,16 +39,16 @@ list( APPEND fv3jedi_src_files
   Increment/Increment.interface.h
   Increment/fv3jedi_increment_interface_mod.F90
   Increment/fv3jedi_increment_mod.F90
+  IO/CubeSphereHistory/fv3jedi_io_cube_sphere_history_mod.f90
+  IO/CubeSphereHistory/IOCubeSphereHistory.cc
+  IO/CubeSphereHistory/IOCubeSphereHistory.h
+  IO/CubeSphereHistory/IOCubeSphereHistory.interface.F90
+  IO/CubeSphereHistory/IOCubeSphereHistory.interface.h
   IO/FV3Restart/fv3jedi_io_gfs_mod.f90
   IO/FV3Restart/IOGfs.cc
   IO/FV3Restart/IOGfs.h
   IO/FV3Restart/IOGfs.interface.F90
   IO/FV3Restart/IOGfs.interface.h
-  IO/Geos/fv3jedi_io_geos_mod.f90
-  IO/Geos/IOGeos.cc
-  IO/Geos/IOGeos.h
-  IO/Geos/IOGeos.interface.F90
-  IO/Geos/IOGeos.interface.h
   IO/LatLon/fv3jedi_io_latlon_mod.f90
   IO/LatLon/IOLatLon.cc
   IO/LatLon/IOLatLon.h

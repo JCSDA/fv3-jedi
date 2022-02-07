@@ -15,11 +15,10 @@ model:
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   tstep: PT1H
-  filetype: geos
-  filename is datetime templated: true
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
 model aux control: null
 model aux error: null
 model test:
@@ -27,10 +26,11 @@ model test:
   final norm: 38346657026646.617
   tolerance: 1.0e-4
 initial condition:
-  filetype: geos
+  datetime: 2018-04-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
-  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
   state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,

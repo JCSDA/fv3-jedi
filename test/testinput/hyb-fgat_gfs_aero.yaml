@@ -1,5 +1,6 @@
 cost function:
   background:
+    datetime: 2018-04-14T21:00:00Z
     filetype: gfs
     datapath: Data/inputs/gfs_aero_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
@@ -21,6 +22,7 @@ cost function:
         covariance model: ensemble
         members from template:
           template:
+            datetime: 2018-04-14T21:00:00Z
             filetype: gfs
             state variables: &aerovars [sulf,bc1,bc2,oc1,oc2,
                                         dust1,dust2,dust3,dust4,dust5,

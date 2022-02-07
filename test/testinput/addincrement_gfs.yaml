@@ -18,6 +18,7 @@ increment geometry:
   fieldsets:
   - fieldset: Data/fieldsets/dynamics.yaml
 state: # Background
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   datapath: Data/
   filename_core: 20180415.000000.c24.fv_core.res.nc

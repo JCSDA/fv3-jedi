@@ -64,6 +64,8 @@ class IncrementReadParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(IncrementReadParameters, Parameters)
  public:
   IOParametersWrapper ioParametersWrapper{this};
+  oops::OptionalParameter<bool> setdatetime{"set datetime on read", this};
+  oops::OptionalParameter<util::DateTime> datetime{"datetime", this};
 };
 
 // -------------------------------------------------------------------------------------------------

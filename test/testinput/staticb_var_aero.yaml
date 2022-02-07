@@ -12,6 +12,7 @@ geometry:
     - fieldset: Data/fieldsets/aerosols_gfs.yaml
 input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 background:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   state variables: *inputVars
   datapath: Data/inputs/gfs_aero_c12/mem001
@@ -48,6 +49,7 @@ bump:
   ne: 30
   input:
   - parameter: var
+    datetime: 2018-04-14T21:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180414.210000.var.fv_core.res.nc
@@ -57,6 +59,7 @@ bump:
     filename_cplr: 20180414.210000.var.coupler.res
     date: 2018-04-14T21:00:00Z
   - parameter: m4
+    datetime: 2018-04-14T21:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180414.210000.m4.fv_core.res.nc
@@ -66,6 +69,7 @@ bump:
     filename_cplr: 20180414.210000.m4.coupler.res
     date: 2018-04-14T21:00:00Z
   - parameter: var
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.var.fv_core.res.nc
@@ -75,6 +79,7 @@ bump:
     filename_cplr: 20180415.000000.var.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: m4
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.m4.fv_core.res.nc
@@ -84,6 +89,7 @@ bump:
     filename_cplr: 20180415.000000.m4.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: var
+    datetime: 2018-04-15T03:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.030000.var.fv_core.res.nc
@@ -93,6 +99,7 @@ bump:
     filename_cplr: 20180415.030000.var.coupler.res
     date: 2018-04-15T03:00:00Z
   - parameter: m4
+    datetime: 2018-04-15T03:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.030000.m4.fv_core.res.nc

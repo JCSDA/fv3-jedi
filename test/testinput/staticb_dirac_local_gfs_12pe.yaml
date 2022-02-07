@@ -10,6 +10,7 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 initial condition:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   state variables: &state_vars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]
   datapath: Data/inputs/gfs_c12/bkg
@@ -37,6 +38,8 @@ background error:
       - prefix: nicas_2D_gfs
         variables: [surface_pressure]
       universe radius:
+        datetime: 2018-04-15T00:00:00Z
+        set datetime on read: true
         filetype: gfs
         psinfile: true
         datapath: Data/staticb/
@@ -51,6 +54,8 @@ background error:
     output variables: *control_vars
     active variables: *active_vars
     file:
+      datetime: 2018-04-15T00:00:00Z
+      set datetime on read: true
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/

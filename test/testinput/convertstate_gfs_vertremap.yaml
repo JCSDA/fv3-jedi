@@ -37,6 +37,7 @@ variable change:
                      cld_amt,ud,vd,phis]
 states:
 - input:
+    datetime: 2020-01-01T00:00:00Z
     filetype: gfs
     state variables: *input
     datapath: Data/convertstate/

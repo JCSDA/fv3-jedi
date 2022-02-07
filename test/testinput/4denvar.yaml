@@ -7,6 +7,7 @@ cost function:
   background:
     states:
     - filetype: gfs
+      datetime: 2018-04-14T21:00:00Z
       datapath: Data/inputs/gfs_c12/bkg/
       filename_core: 20180414.210000.fv_core.res.nc
       filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -17,6 +18,7 @@ cost function:
                         slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                         u_srf,v_srf,f10m]
     - filetype: gfs
+      datetime: 2018-04-15T00:00:00Z
       datapath: Data/inputs/gfs_c12/bkg/
       filename_core: 20180415.000000.fv_core.res.nc
       filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -27,6 +29,7 @@ cost function:
                         slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                         u_srf,v_srf,f10m]
     - filetype: gfs
+      datetime: 2018-04-15T03:00:00Z
       datapath: Data/inputs/gfs_c12/bkg/
       filename_core: 20180415.030000.fv_core.res.nc
       filename_trcr: 20180415.030000.fv_tracer.res.nc
@@ -56,6 +59,7 @@ cost function:
       template:
         states:
         - filetype: gfs
+          datetime: 2018-04-14T21:00:00Z
           state variables: *vars
           datapath: Data/inputs/gfs_c12/mem%mem%/
           filename_core: 20180414.210000.fv_core.res.nc
@@ -64,6 +68,7 @@ cost function:
           filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.coupler.res
         - filetype: gfs
+          datetime: 2018-04-15T00:00:00Z
           state variables: *vars
           datapath: Data/inputs/gfs_c12/mem%mem%/
           filename_core: 20180415.000000.fv_core.res.nc
@@ -72,6 +77,7 @@ cost function:
           filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.coupler.res
         - filetype: gfs
+          datetime: 2018-04-15T03:00:00Z
           state variables: *vars
           datapath: Data/inputs/gfs_c12/mem%mem%/
           filename_core: 20180415.030000.fv_core.res.nc

@@ -11,7 +11,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 state:
-  date: 2020-12-15T00:00:00Z
+  datetime: 2020-12-15T00:00:00Z
   filetype: gfs
   datapath: Data/inputs/lam_rrfs/bkg
   filename_core: 20201215.000000.rrfs_C403.fv_core.res.tile1.nc

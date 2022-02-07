@@ -18,40 +18,45 @@ output geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 states:
 - input:
-    filetype: geos
+    datetime: 2018-04-14T21:00:00Z
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/inputs/geos_c12
-    filename_bkgd: geos.bkg.20180414_210000z.nc4
-    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+    filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
     state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/
-   filename_bkgd: geos.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
 # Initial conditions
 - input:
     analytic init:
       method: dcmip-test-1-1
     datetime: 2018-04-14T21:00:00Z
   output:
-    filetype: geos
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/
-    filename_bkgd: geos.dcmip-test-1-1.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos.dcmip-test-1-1.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     analytic init:
       method: dcmip-test-1-2
     datetime: 2018-04-14T21:00:00Z
   output:
-    filetype: geos
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/
-    filename_bkgd: geos.dcmip-test-1-2.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos.dcmip-test-1-2.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     analytic init:
       method: dcmip-test-3-1
     datetime: 2018-04-14T21:00:00Z
   output:
-    filetype: geos
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/
-    filename_bkgd: dcmip-test-3-1.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: dcmip-test-3-1.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
   reference filename: testoutput/convertstate_geos.ref

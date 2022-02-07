@@ -13,6 +13,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 analysis variables: &vars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
 background:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   state variables: *vars
   datapath: Data/inputs/gfs_c12/bkg/

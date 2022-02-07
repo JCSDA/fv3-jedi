@@ -11,6 +11,7 @@ geometry:
 state test:
   statefile:
     filetype: gfs
+    datetime: 2018-04-14T21:00:00Z
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc

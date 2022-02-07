@@ -24,6 +24,7 @@ model test:
   tolerance: 1.0e-4
   test reforecast: false
 initial condition:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   datapath: Data/ModelDirs/ufs/stc/INPUT
   filename_core: fv_core.res.nc

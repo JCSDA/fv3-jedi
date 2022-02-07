@@ -42,6 +42,7 @@ model:
   model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 model aux control: null
 initial condition:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc

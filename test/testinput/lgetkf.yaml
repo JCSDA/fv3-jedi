@@ -17,46 +17,66 @@ window length: PT6H
 background:
    date: *date
    members:
-   - filetype: geos
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem001.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem001.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem002.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem002.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem003.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem003.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem004.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem004.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem005.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem005.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem006.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem006.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem007.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem007.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem008.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem008.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem009.20180415_000000z.nc4
-   - filetype: geos
+     filename: geos.mem009.20180415_000000z.nc4
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: cube sphere history
+     provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename_bkgd: geos.mem010.20180415_000000z.nc4
+     filename: geos.mem010.20180415_000000z.nc4
 
 
 observations:
@@ -91,9 +111,10 @@ local ensemble DA:
     mult: 1.1
 
 output:
-  filetype: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/analysis/letkf/geos/mem%{member}%/
-  filename_bkgd: lgetkf.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: lgetkf.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
   type: ens

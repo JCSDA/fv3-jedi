@@ -11,6 +11,7 @@ geometry:
     - fieldset: Data/fieldsets/ufo.yaml
     - fieldset: Data/fieldsets/oro_data.yaml
   orography:
+    datetime: 2019-12-15T18:00:00Z
     filetype: gfs
     skip coupler file: true
     state variables: [orog_filt]
@@ -23,12 +24,14 @@ window length: PT6H
 background:
  date: &date 2019-12-15T18:00:00Z
  members:
-   - filetype: gfs
+   - datetime: 2019-12-15T18:00:00Z
+     filetype: gfs
      state variables: [snwdph,vtype,slmsk]
      datapath: Data/inputs/gfs_land_c48/mem001/
      filename_sfcd: 20191215.180000.sfc_data.nc
      filename_cplr: 20191215.180000.coupler.res
-   - filetype: gfs
+   - datetime: 2019-12-15T18:00:00Z
+     filetype: gfs
      state variables: [snwdph,vtype,slmsk]
      datapath: Data/inputs/gfs_land_c48/mem002/
      filename_sfcd: 20191215.180000.sfc_data.nc
@@ -37,7 +40,7 @@ background:
 observations:
 - obs space:
     name: Simulate
-    distribution: InefficientDistribution 
+    distribution: InefficientDistribution
     simulated variables: [totalSnowDepth]
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc

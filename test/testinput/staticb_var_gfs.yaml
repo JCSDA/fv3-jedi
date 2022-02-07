@@ -11,6 +11,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
 background:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   state variables: *inputVars
   psinfile: true
@@ -45,6 +46,7 @@ bump:
     variables: [surface_pressure]
   input:
   - parameter: var
+    datetime: 2018-04-14T21:00:00Z
     filetype: gfs
     datapath: Data/staticb/
     psinfile: true
@@ -55,6 +57,7 @@ bump:
     filename_cplr: 20180414.210000.var.coupler.res
     date: 2018-04-14T21:00:00Z
   - parameter: m4
+    datetime: 2018-04-14T21:00:00Z
     filetype: gfs
     datapath: Data/staticb/
     psinfile: true
@@ -65,6 +68,7 @@ bump:
     filename_cplr: 20180414.210000.m4.coupler.res
     date: 2018-04-14T21:00:00Z
   - parameter: var
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/staticb/
     psinfile: true
@@ -75,6 +79,7 @@ bump:
     filename_cplr: 20180415.000000.var.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: m4
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/staticb/
     psinfile: true
@@ -85,6 +90,7 @@ bump:
     filename_cplr: 20180415.000000.m4.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: var
+    datetime: 2018-04-15T03:00:00Z
     filetype: gfs
     datapath: Data/staticb/
     psinfile: true
@@ -95,6 +101,7 @@ bump:
     filename_cplr: 20180415.030000.var.coupler.res
     date: 2018-04-15T03:00:00Z
   - parameter: m4
+    datetime: 2018-04-15T03:00:00Z
     filetype: gfs
     datapath: Data/staticb/
     psinfile: true

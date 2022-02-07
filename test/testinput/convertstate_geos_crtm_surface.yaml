@@ -20,6 +20,7 @@ output geometry:
 states:
 - input:
     filetype: gfs
+    datetime: 2018-04-14T21:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
@@ -28,12 +29,13 @@ states:
     filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    datetime: 2018-04-14T22:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.220000.fv_core.res.nc
@@ -42,12 +44,13 @@ states:
     filename_sfcw: 20180414.220000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.220000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    datetime: 2018-04-14T23:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.230000.fv_core.res.nc
@@ -56,12 +59,13 @@ states:
     filename_sfcw: 20180414.230000.fv_srf_wnd.res.nc
     filename_cplr: 20180414.230000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    datetime: 2018-04-15T00:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.000000.fv_core.res.nc
@@ -70,12 +74,13 @@ states:
     filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    datetime: 2018-04-15T01:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.010000.fv_core.res.nc
@@ -84,12 +89,13 @@ states:
     filename_sfcw: 20180415.010000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.010000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    datetime: 2018-04-15T02:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.020000.fv_core.res.nc
@@ -98,12 +104,13 @@ states:
     filename_sfcw: 20180415.020000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.020000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: gfs
+    datetime: 2018-04-15T03:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.030000.fv_core.res.nc
@@ -112,10 +119,10 @@ states:
     filename_sfcw: 20180415.030000.fv_srf_wnd.res.nc
     filename_cplr: 20180415.030000.coupler.res
   output:
-   filetype: geos
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/convertstate/
-   filename_bkgd: geos.bkg.dummy.nc4
-   filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 test:
   reference filename: testoutput/convertstate_geos_crtm_surface.ref
   test output filename: testoutput/convertstate_geos_crtm_surface.test.out

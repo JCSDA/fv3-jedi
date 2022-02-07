@@ -188,6 +188,12 @@ void Increment::fromAtlas(atlas::FieldSet * afieldset) {
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::read(const ReadParameters_ & params) {
+  // Optionally set the datetime on read (needed for some bump applications)
+  if (params.setdatetime.value() != boost::none) {
+    if (*params.setdatetime.value() && params.datetime.value() != boost::none) {
+      time_ = *params.datetime.value();
+    }
+  }
   // Create IO object
   std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));

@@ -10,6 +10,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: [T,ps]
 background:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc

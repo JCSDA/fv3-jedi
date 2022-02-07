@@ -12,6 +12,7 @@ geometry:
     - fieldset: Data/fieldsets/aerosols_gfs.yaml
 input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 background:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   state variables: *inputVars
   datapath: Data/inputs/gfs_aero_c12/mem001
@@ -30,6 +31,8 @@ bump:
   write_nicas_c0: false
   resol: 6.0
   universe radius:
+    datetime: 2018-04-15T00:00:00Z
+    set datetime on read: true
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.cor_rh.fv_core.res.nc
@@ -40,6 +43,8 @@ bump:
     date: 2018-04-15T00:00:00Z
   input:
   - parameter: cor_rh
+    set datetime on read: true
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.cor_rh.fv_core.res.nc
@@ -49,6 +54,8 @@ bump:
     filename_cplr: 20180415.000000.cor_rh.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: cor_rv
+    set datetime on read: true
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.cor_rv.fv_core.res.nc

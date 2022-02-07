@@ -47,19 +47,20 @@ variable change:
                       vort,tropopause_pressure]
 states:
 - input:
-    filetype: gfs
+    datetime: 2018-04-14T21:00:00Z
     state variables: *inputvars
-    filetype: geos
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/inputs/geos_c12
-    filename_core: fvcore_internal_rst.20180414_21z.nc4
-    filename_mois: moist_internal_rst.20180414_21z.nc4
-    filename_surf: surf_import_rst.20180414_21z.nc4
-    filename_bkgd: geos.bkg.20180414_210000z.nc4
-    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+    filenames: [fvcore_internal_rst.20180414_21z.nc4,moist_internal_rst.20180414_21z.nc4,
+                surf_import_rst.20180414_21z.nc4,geos.bkg.20180414_210000z.nc4,
+                geos.bkg.crtmsrf.20180414_210000z.nc4]
+    tile is a dimension: [false, false, false, true, true]
   output:
-   filetype: geos # GFS can only handle specific names of output
+   filetype: cube sphere history
+   provider: geos
    datapath: Data/
-   filename_bkgd: geovals.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geovals.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
   reference filename: testoutput/convertstate_geos_model2geovals.ref

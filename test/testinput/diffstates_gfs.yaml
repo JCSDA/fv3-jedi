@@ -16,6 +16,7 @@ increment geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 state1: #Analysis
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   datapath: Data/analysis
   filename_core: 20180415.000000.hyb-3dvar.c24.fv_core.res.nc
@@ -25,6 +26,7 @@ state1: #Analysis
   filename_cplr: 20180415.000000.hyb-3dvar.c24.coupler.res
   state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 state2: #background
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   datapath: Data/
   filename_core: 20180415.000000.c24.fv_core.res.nc

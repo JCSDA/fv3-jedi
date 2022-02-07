@@ -10,9 +10,11 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 state test:
   statefile:
-    filetype: geos
+    datetime: 2018-04-15T00:00:00Z
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/inputs/geos_c12
-    filename_bkgd: geos.aero.bkg.20180415_000000z.nc4
+    filename: geos.aero.bkg.20180415_000000z.nc4
     state variables: [DU001, DU002, DU003, DU004, DU005,
                 SS001, SS002, SS003, SS004, SS005,
                 BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,

@@ -11,6 +11,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,ice_wat,o3mr]
 background:
+  datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: gfs
   state variables: *inputVars
   psinfile: true
@@ -32,6 +33,7 @@ bump:
   vbal_block: [true,true,false,true]
   operators application:
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem001/
@@ -51,6 +53,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem002/
@@ -70,6 +73,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem003/
@@ -89,6 +93,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem004/
@@ -108,6 +113,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem005/
@@ -127,6 +133,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem006/
@@ -146,6 +153,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem007/
@@ -165,6 +173,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem008/
@@ -184,6 +193,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem009/
@@ -203,6 +213,7 @@ bump:
       filename_cplr: coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
+      datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: gfs
       psinfile: true
       datapath: Data/staticb/balanced/mem010/

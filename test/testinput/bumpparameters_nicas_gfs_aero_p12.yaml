@@ -3,7 +3,7 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
   akbk: Data/fv3files/akbk64.nc4
-  layout: [1,2] 
+  layout: [1,2]
   npx: 13
   npy: 13
   npz: 64
@@ -12,6 +12,7 @@ geometry:
     - fieldset: Data/fieldsets/aerosols_gfs.yaml
 input variables: [sulf]
 background:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc

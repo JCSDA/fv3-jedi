@@ -22,8 +22,9 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 background:
-  filetype: geos
+  datetime: 2018-04-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
-  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
   state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]

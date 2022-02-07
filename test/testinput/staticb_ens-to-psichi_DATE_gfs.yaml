@@ -29,6 +29,7 @@ variable change:
 
 states:
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: &readvars [ua,va,t,delp,sphum,liq_wat,ice_wat,o3mr]
     datapath: Data/inputs/gfs_c12/mem001/
@@ -47,6 +48,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem002/
@@ -65,6 +67,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem003/
@@ -83,6 +86,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem004/
@@ -101,6 +105,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem005/
@@ -119,6 +124,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem006/
@@ -137,6 +143,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem007/
@@ -155,6 +162,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem008/
@@ -173,6 +181,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem009/
@@ -191,6 +200,7 @@ states:
     filename_cplr: coupler.res
 
 - input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: gfs
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem010/

@@ -9,6 +9,7 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 background:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
@@ -28,6 +29,7 @@ variance output:
 ensemble:
   members from template:
     template:
+      datetime: 2018-04-15T00:00:00Z
       filetype: gfs
       state variables: *incvars
       datapath: Data/inputs/gfs_c12/mem%mem%/

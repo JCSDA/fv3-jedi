@@ -16,14 +16,14 @@ model:
   geos_run_directory: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
   model variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
 initial condition:
-  filetype: geos
+  datetime: 2018-04-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
-  filename_core: fvcore_internal_rst
-  filename_mois: moist_internal_rst
-  filename_surf: fvcore_internal_rst
+  filenames: [fvcore_internal_rst, moist_internal_rst, fvcore_internal_rst]
   state variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
 output:
-  filetype: geos
+  filetype: cube sphere history
   datapath: Data/forecast
   filename: forecast.jediex.
   first: PT0H

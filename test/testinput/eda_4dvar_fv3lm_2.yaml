@@ -1,5 +1,6 @@
 cost function:
   background:
+    datetime: 2018-04-14T21:00:00Z
     filetype: gfs
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
@@ -38,6 +39,7 @@ cost function:
         covariance model: ensemble
         members from template:
           template:
+            datetime: 2018-04-14T21:00:00Z
             filetype: gfs
             state variables: *incvars
             datapath: Data/inputs/gfs_c12/mem%mem%/

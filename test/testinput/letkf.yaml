@@ -16,7 +16,8 @@ window length: PT6H
 background:
  date: *date
  members:
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem001/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -24,7 +25,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem002/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -32,7 +34,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem003/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -40,7 +43,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem004/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -48,7 +52,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem005/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -56,7 +61,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem006/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -64,7 +70,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem007/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -72,7 +79,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem008/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -80,7 +88,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem009/
      filename_core: 20180415.000000.fv_core.res.nc
@@ -88,7 +97,8 @@ background:
      filename_sfcd: 20180415.000000.sfc_data.nc
      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
      filename_cplr: 20180415.000000.coupler.res
-   - filetype: gfs
+   - datetime: 2018-04-15T00:00:00Z
+     filetype: gfs
      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
      datapath: Data/inputs/gfs_c12/mem010/
      filename_core: 20180415.000000.fv_core.res.nc

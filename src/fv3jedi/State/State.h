@@ -55,6 +55,7 @@ class StateParameters : public oops::Parameters {
   oops::OptionalParameter<util::DateTime> datetime{"datetime", this};
   // Read parameters
   IOParametersWrapper ioParametersWrapper{this};
+  oops::OptionalParameter<bool> setdatetime{"set datetime on read", this};
 };
 
 // -------------------------------------------------------------------------------------------------

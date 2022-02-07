@@ -18,6 +18,7 @@ model:
   lm_do_mst: 0
   model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 initial condition:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc

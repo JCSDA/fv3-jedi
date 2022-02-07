@@ -23,6 +23,7 @@ model test:
   final norm: 661.54831136916323
   tolerance: 1.0e-4
 initial condition:
+  datetime: 2018-04-14T21:00:00Z
   filetype: gfs
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
   datapath: Data/inputs/gfs_c12/bkg/

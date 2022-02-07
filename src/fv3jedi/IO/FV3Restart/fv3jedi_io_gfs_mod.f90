@@ -205,7 +205,7 @@ end subroutine delete
 subroutine read(self, vdate, fields)
 
 class(fv3jedi_io_gfs), intent(inout) :: self
-type(datetime),        intent(inout) :: vdate
+type(datetime),        intent(in)    :: vdate
 type(fv3jedi_field),   intent(inout) :: fields(:)
 integer :: n
 
@@ -223,7 +223,7 @@ endif
 
 ! Read meta data
 ! --------------
-call read_meta(self, vdate)
+if (.not. self%skip_coupler) call read_meta(self, vdate)
 
 ! Read fields
 ! -----------
@@ -291,34 +291,43 @@ end subroutine setup_date
 
 subroutine read_meta(self, vdate)
 
-type(fv3jedi_io_gfs), intent(inout) :: self
-type(datetime),       intent(inout) :: vdate         !< DateTime
+type(fv3jedi_io_gfs), intent(in) :: self
+type(datetime),       intent(in) :: vdate         !< DateTime
 
 integer :: date(6)
-integer :: idate, isecs
+integer :: idate, itime
+character(len=8) :: cdate
+character(len=6) :: ctime
 
-integer :: idrst
-real(kind=kind_real), allocatable, dimension(:,:) :: grid_lat, grid_lon
 integer :: calendar_type
 integer :: date_init(6)
+character(len=64) :: vdate_string_file, vdate_string
 
-! Get dates from coupler.res
-!---------------------------
-if (.not. self%skip_coupler) then
-  open(101, file=trim(adjustl(self%datapath))//'/'//self%filenames(self%index_cplr), form='formatted')
-  read(101, '(i6)')  calendar_type
-  read(101, '(6i6)') date_init
-  read(101, '(6i6)') date
-  close(101)
-  idate=date(1)*10000+date(2)*100+date(3)
-  isecs=date(4)*3600+date(5)*60+date(6)
-else
-  idate = 20000101
-  isecs = 0
-endif
+! Get datetime from coupler.res
+open(101, file=trim(adjustl(self%datapath))//'/'//self%filenames(self%index_cplr), form='formatted')
+read(101, '(i6)')  calendar_type
+read(101, '(6i6)') date_init
+read(101, '(6i6)') date
+close(101)
 
-! Set datetime
-call datetime_from_ifs(vdate, idate, isecs)
+! Pad and convert to string
+idate=date(1)*10000+date(2)*100+date(3)
+itime=date(4)*10000+date(5)*100+date(6)
+write(cdate,"(I0.8)") idate  ! Looks like YYYYMMDD
+write(ctime,"(I0.6)") itime  ! Looks like HHmmSS
+
+! Compute string form of the datetime in the fields
+call datetime_to_string(vdate, vdate_string)
+
+! Convert to string that matches format returned by datetime_to_string YYYY-MM-DDTHH:mm:SS
+vdate_string_file = cdate(1:4)//'-'//cdate(5:6)//'-'//cdate(7:8)//'T'// &
+                    ctime(1:2)//':'//ctime(3:4)//':'//ctime(5:6)//'Z'
+
+! Assert
+if (trim(vdate_string_file) .ne. trim(vdate_string)) &
+  call abor1_ftn("io_cube_sphere_history.read.check_datetime: Datetime set in config (" &
+                 //trim(vdate_string)//") does not match that read from the file (" &
+                 //trim(vdate_string_file)//").")
 
 end subroutine read_meta
 

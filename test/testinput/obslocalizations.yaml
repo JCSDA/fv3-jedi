@@ -9,6 +9,7 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/oro_data.yaml
   orography:
+    datetime: 2019-12-15T18:00:00Z
     filetype: gfs
     skip coupler file: true
     state variables: [orog_filt]

@@ -4,6 +4,7 @@ cost function:
   window length: PT6H
   analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   background:
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     datapath: Data/inputs/gfs_c12/mem002/
     filename_core: 20180415.000000.fv_core.res.nc
@@ -36,6 +37,7 @@ cost function:
         covariance model: ensemble
         members from template:
           template:
+            datetime: 2018-04-15T00:00:00Z
             filetype: gfs
             state variables: *3dvars
             datapath: Data/inputs/gfs_c12/mem%mem%/

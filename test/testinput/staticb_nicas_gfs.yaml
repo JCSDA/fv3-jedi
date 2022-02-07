@@ -11,6 +11,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
 background:
+  datetime: 2018-04-15T00:00:00Z
   filetype: gfs
   state variables: *inputVars
   psinfile: true
@@ -39,6 +40,8 @@ bump:
   - prefix: nicas_2D_gfs
     variables: [surface_pressure]
   universe radius:
+    set datetime on read: true
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     psinfile: true
     datapath: Data/staticb/
@@ -50,6 +53,8 @@ bump:
     date: 2018-04-15T00:00:00Z
   input:
   - parameter: cor_rh
+    set datetime on read: true
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     psinfile: true
     datapath: Data/staticb/
@@ -60,6 +65,8 @@ bump:
     filename_cplr: 20180415.000000.cor_rh.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: cor_rv
+    set datetime on read: true
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     psinfile: true
     datapath: Data/staticb/

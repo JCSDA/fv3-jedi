@@ -17,6 +17,7 @@ output geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 states:
 - input:
+    datetime: 2018-04-15T00:00:00Z
     filetype: gfs
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
@@ -36,9 +37,10 @@ states:
       method: dcmip-test-4-0
     datetime: 2018-04-14T21:00:00Z
   output:
-    filetype: geos
+    filetype: cube sphere history
+    provider: geos
     datapath: Data/
-    filename_bkgd: dcmip-test-4-0.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: dcmip-test-4-0.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
   reference filename: testoutput/convertstate_gfs.ref

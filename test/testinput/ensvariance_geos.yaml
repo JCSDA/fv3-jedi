@@ -9,21 +9,26 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 background:
-  filetype: geos
+  datetime: 2018-04-15T00:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180415_000000z.nc4
+  filename: geos.bkg.20180415_000000z.nc4
   state variables: &incvars [ua,va,t,delp,q,qi,ql]
 variance output:
-  filetype: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/ensvariance
-  filename_bkgd: geos.ensemblevariance.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: geos.ensemblevariance.%yyyy%mm%dd_%hh%MM%ssz.nc4
 ensemble:
   members from template:
     template:
-      filetype: geos
+      datetime: 2018-04-15T00:00:00Z
+      filetype: cube sphere history
+      provider: geos
       state variables: *incvars
       datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.mem%mem%.20180415_000000z.nc4
+      filename: geos.mem%mem%.20180415_000000z.nc4
     pattern: %mem%
     nmembers: 10
     zero padding: 3

@@ -31,6 +31,7 @@ variable change:
                     ice_wat_cold,rainwat_cold,snowwat_cold,graupel_cold,ud_cold,vd_cold,orog_filt]
 states:
 - input:
+    datetime: 2020-01-01T00:00:00Z
     filetype: gfs
     state variables: *input
     datapath: Data/inputs/gfs_c12/

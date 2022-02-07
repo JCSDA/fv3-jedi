@@ -48,17 +48,16 @@ State::State(const Geometry & geom, const Parameters_ & params)
 {
   oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
 
+  // Datetime from the config for read and analytical
+  ASSERT(params.datetime.value() != boost::none);
+  time_ = util::DateTime(*params.datetime.value());
+
   // Set up time and vars
   if (params.analytic.value() != boost::none) {
-    // Must pass datetime in config
-    ASSERT(params.datetime.value() != boost::none);
-    time_ = util::DateTime(*params.datetime.value());
     // Variables are hard coded for analytic initial condition (must not be provided)
     ASSERT(params.stateVariables.value() == boost::none);
     vars_ = oops::Variables({"ua", "va", "t", "delp", "p", "q", "qi", "ql", "phis", "o3mr", "w"});
   } else {
-    // Datetime must not be provided (will be read from file)
-    ASSERT(params.datetime.value() == boost::none);
     // If variables are being read they must be defined in the config
     ASSERT(params.stateVariables.value() != boost::none);
     vars_ = oops::Variables(*params.stateVariables.value());
@@ -161,6 +160,12 @@ void State::fillGeomOrography(Geometry & geom) const {
 // -------------------------------------------------------------------------------------------------
 
 void State::read(const Parameters_ & params) {
+  // Optionally set the datetime on read (needed for some bump applications)
+  if (params.setdatetime.value() != boost::none) {
+    if (*params.setdatetime.value() && params.datetime.value() != boost::none) {
+      time_ = *params.datetime.value();
+    }
+  }
   IOBase_ io(IOFactory::create(*geom_, *params.ioParametersWrapper.ioParameters.value()));
   io->read(*this);
 }

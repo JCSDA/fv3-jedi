@@ -13,12 +13,13 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 initial condition:
-  filetype: geos
+  datetime: 2018-04-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
                     frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
-  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
 model:
   name: FV3LM
   use internal namelist: true
