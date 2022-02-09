@@ -173,7 +173,6 @@ list( APPEND fv3jedi_testinput
   testinput/staticb_var_gfs.yaml
   testinput/staticb_var_aero.yaml
   testinput/staticb_vbal_gfs.yaml
-  testinput/test_time.yaml
   testinput/variablechange_geos.yaml
   testinput/variablechange_gfs.yaml
 )
@@ -203,8 +202,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_gfs_model2geovals.ref
   testoutput/convertstate_gfs.ref
   testoutput/convertstate_gfs_c2ll.ref
-  testoutput/CTestCostData.txt.awsgnu.test
-  testoutput/CTestCostData.txt.awsintel.test
   testoutput/diffstates_geos.ref
   testoutput/diffstates_gfs.ref
   testoutput/diffstates_lam_cmaq.ref
@@ -1294,24 +1291,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_block_3dvar
                   ARGS     testinput/eda_block_3dvar.yaml
                   COMMAND  fv3jedi_eda.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
-
-# Test of time taken
-# ------------------
-if ( DEFINED TEST_TIME_REF_FV3 )
-  execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-          ${CMAKE_CURRENT_SOURCE_DIR}/testoutput/${TEST_TIME_REF_FV3}
-          ${CMAKE_CURRENT_BINARY_DIR}/testoutput/${TEST_TIME_REF_FV3} )
-
-  ecbuild_add_test( TARGET fv3jedi_test_tier1_run_times
-                    TYPE SCRIPT
-                    COMMAND ${CMAKE_BINARY_DIR}/bin/run_time_test.py
-                    ARGS testoutput/${TEST_TIME_REF_FV3}
-                    ${CMAKE_BINARY_DIR}/fv3-jedi/Testing/Temporary/CTestCostData.txt
-                    testinput/test_time.yaml)
-else()
-  message ( STATUS "TEST_TIME not built")
-endif()
-
 
 # Tier 2 tests
 # ------------

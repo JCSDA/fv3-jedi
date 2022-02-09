@@ -129,7 +129,7 @@ phases:
         && echo $PATH
         && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         && export PATH=/usr/local/lib:$PATH
-        && ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DTEST_TIME_REF_FV3=CTestCostData.txt.awsintel.test"
+        && ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF"
 
       - su - jedi -c "export FV3JEDI_TEST_TIER=1
         && export CC=mpiicc
@@ -157,20 +157,7 @@ phases:
         && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         && export PATH=/usr/local/lib:$PATH
         && cd /home/jedi/fv3-jedi
-        && ctest -C Release -D ExperimentalTest -E fv3jedi_test_tier1_run_times"
-
-      - cat /home/jedi/fv3-jedi/Testing/Temporary/CTestCostData.txt
-
-      - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
-        then echo "All tests passed; Run time test";
-        su - jedi -c "export CC=mpiicc
-        && export FC=mpiifort
-        && export CXX=mpiicpc
-        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-        && export PATH=/usr/local/lib:$PATH
-        && cd /home/jedi/fv3-jedi
-        && ctest -VV -R test_fv3_time";
-        fi
+        && ctest -C Release -D ExperimentalTest"
 
     finally:
       # upload ctest report to CDASH
@@ -198,7 +185,6 @@ phases:
         cat /jcsda/artifacts/cdash-url.txt;
         else echo "Build failed";
         fi
-      - cp /home/jedi/fv3-jedi/Testing/Temporary/CTestCostData.txt /jcsda/artifacts/
 
 
       # rerun failed tests with -VV
@@ -206,10 +192,10 @@ phases:
         then echo "Build passed, rerun failed tests";
         su - jedi -c "export CC=mpiicc
         && export FC=mpiifort
-        && export CXX=mpiicpc 
+        && export CXX=mpiicpc
         && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         && export PATH=/usr/local/lib:$PATH
-        && cd /home/jedi/fv3-jedi       
+        && cd /home/jedi/fv3-jedi
         && ctest -VV --rerun-failed";
         fi
 
