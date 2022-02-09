@@ -31,8 +31,8 @@ class GeometryIterator: public std::iterator<std::forward_iterator_tag,
   static const std::string classname() {return "fv3jedi::GeometryIterator";}
 
   GeometryIterator(const GeometryIterator &);
-  explicit GeometryIterator(const Geometry & geom,
-                            const int & iindex = 1, const int & jindex = 1);
+  explicit GeometryIterator(const Geometry & geom, const int & iindex = 1,
+                            const int & jindex = 1, const int & kindex = 1);
   ~GeometryIterator();
 
   bool operator==(const GeometryIterator &) const;

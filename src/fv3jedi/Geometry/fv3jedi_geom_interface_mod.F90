@@ -277,27 +277,51 @@ end subroutine c_fv3jedi_geom_fill_atlas_fieldset
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_start_end(c_key_self, ist, iend, jst, jend, npz) &
+subroutine c_fv3jedi_geom_start_end(c_key_self, ist, iend, jst, jend, kst, kend, npz) &
                                     bind(c, name='fv3jedi_geom_start_end_f90')
 
 implicit none
 
 integer(c_int), intent( in) :: c_key_self
-integer(c_int), intent(out) :: ist, iend, jst, jend, npz
+integer(c_int), intent(out) :: ist, iend, jst, jend, kst, kend, npz
 
 type(fv3jedi_geom), pointer :: self
+
+integer(c_int) :: itd ! iterator dimension
 
 ! LinkedList
 ! ----------
 call fv3jedi_geom_registry%get(c_key_self, self)
 
+itd = self%iterator_dimension
+
 ist  = self%isc
 iend = self%iec
 jst  = self%jsc
 jend = self%jec
+! 3D iterator starts from 0 for surface variables
+if (3 == itd) then
+   kst = 0
+else
+   kst  = 1
+end if
+kend = self%npz
 npz  = self%npz
 
 end subroutine c_fv3jedi_geom_start_end
+
+! ------------------------------------------------------------------------------
+!> C++ interface to get dimension of the GeometryIterator
+subroutine c_fv3jedi_geom_iterator_dimension_f90(c_key_self, itd) &
+                                           bind(c, name='fv3jedi_geom_iterator_dimension_f90')
+  integer(c_int), intent( in) :: c_key_self
+  integer(c_int), intent(out) :: itd ! iterator dimension
+
+  type(fv3jedi_geom), pointer :: self
+  call fv3jedi_geom_registry%get(c_key_self, self)
+
+  itd = self%iterator_dimension
+end subroutine c_fv3jedi_geom_iterator_dimension_f90
 
 !--------------------------------------------------------------------------------------------------
 

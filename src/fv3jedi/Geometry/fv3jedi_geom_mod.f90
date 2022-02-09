@@ -42,17 +42,18 @@ use fv3jedi_field_mod,           only: fv3jedi_field
 
 implicit none
 private
-public :: fv3jedi_geom, getVerticalCoordLogP, initialize, pedges2pmidlayer
+public :: fv3jedi_geom, getVerticalCoord, getVerticalCoordLogP, initialize, pedges2pmidlayer
 
 ! --------------------------------------------------------------------------------------------------
 
 !> Fortran derived type to hold geometry data for the FV3JEDI model
 type :: fv3jedi_geom
   integer :: isd, ied, jsd, jed                                                     !data domain
-  integer :: isc, iec, jsc, jec                                                     !compute domain
+  integer :: isc, iec, jsc, jec, kec                                                !compute domain
   integer :: npx,npy,npz,ngrid                                                      !x/y/z-dir grid edge points per tile
   integer :: layout(2), io_layout(2)                                                !Processor layouts
   integer :: ntile, ntiles                                                          !Tile number and total
+  integer :: iterator_dimension                                                     !iterator dimension
   real(kind=kind_real) :: ptop                                                      !Pressure at top of domain
   type(domain2D) :: domain_fix                                                      !MPP domain
   type(domain2D), pointer :: domain                                                 !MPP domain
@@ -72,6 +73,9 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
   type(fields_metadata) :: fields
+  ! Vertical Coordinate
+  real(kind=kind_real), allocatable, dimension(:)       :: vCoord                   !Model vertical coordinate
+  real(kind=kind_real), allocatable, dimension(:,:)     :: surface_pressure         !Grid surface pressure
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -159,6 +163,7 @@ integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
 logical :: logp = .false.
+integer :: iterator_dimension = 2
 
 type(fv3jedi_fmsnamelist) :: fmsnamelist
 
@@ -171,6 +176,9 @@ self%f_comm = comm
 call conf%get_or_die("interpolation method",str)
 self%interp_method = str
 deallocate(str)
+
+call conf%get_or_die("iterator dimension", iterator_dimension)
+self%iterator_dimension = iterator_dimension
 
 ! Update the fms namelist with this Geometry
 ! ------------------------------------------
@@ -186,10 +194,12 @@ self%isd = Atm(1)%bd%isd
 self%ied = Atm(1)%bd%ied
 self%jsd = Atm(1)%bd%jsd
 self%jed = Atm(1)%bd%jed
+
 self%isc = Atm(1)%bd%isc
 self%iec = Atm(1)%bd%iec
 self%jsc = Atm(1)%bd%jsc
 self%jec = Atm(1)%bd%jec
+self%kec = Atm(1)%npz
 
 self%ntile  = gtile
 self%ntiles = Atm(1)%flagstruct%ntiles
@@ -338,6 +348,11 @@ self%nw_corner = Atm(1)%gridstruct%nw_corner
 self%nested    = Atm(1)%gridstruct%nested
 self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
+allocate(self%vCoord(self%npz))
+allocate(self%surface_pressure(self%isd:self%ied, self%jsd:self%jed))
+
+self%surface_pressure = real(Atm(1)%ps ,kind_real)
+
 call conf%get_or_die("logp",logp)
 self%logp = logp
 
@@ -453,6 +468,8 @@ self%jec             = other%jec
 self%jed             = other%jed
 self%ntile           = other%ntile
 self%ntiles          = other%ntiles
+self%iterator_dimension = other%iterator_dimension
+
 self%ptop            = other%ptop
 self%ak              = other%ak
 self%bk              = other%bk
@@ -902,19 +919,19 @@ subroutine pedges2pmidlayer(npz,ptype,pe1d,p1d)
  real(kind=kind_real), intent(out) :: p1d(npz)    !pressure mid
 
  select case (ptype)
-   case('average')
-     p1d = 0.5*(pe1d(2:npz+1) + pe1d(1:npz))
    case('Philips')
      p1d = ((pe1d(2:npz+1)**kap1 - pe1d(1:npz)**kap1)/&
             (kap1*(pe1d(2:npz+1) - pe1d(1:npz))))**kapr
+   case default
+     p1d = 0.5*(pe1d(2:npz+1) + pe1d(1:npz))
  end select
 
 end subroutine pedges2pmidlayer
 
 !--------------------------------------------------------------------------------------------------
-
-subroutine getVerticalCoordLogP(self, vc, npz, psurf)
-  ! returns log(pressure) at mid level of the vertical column with surface prsssure of psurf
+subroutine getVerticalCoord(self, vc, npz, psurf)
+  ! returns log(pressure) at mid level of the vertical column with surface
+  ! prsssure of psurf
   ! coded using an example from Jeff Whitaker used in GSI ENKF pacakge
 
   type(fv3jedi_geom),   intent(in) :: self
@@ -926,12 +943,28 @@ subroutine getVerticalCoordLogP(self, vc, npz, psurf)
   integer :: k
 
   ! compute interface pressure
-  do k=1,self%npz+1
+  do k=1,npz+1
     plevli(k) = self%ak(k) + self%bk(k)*psurf
   enddo
 
   ! compute presure at mid level and convert it to logp
-  call pedges2pmidlayer(self%npz,'Philips',plevli,p)
+  call pedges2pmidlayer(npz,'Philips',plevli,vc)
+
+end subroutine getVerticalCoord
+
+!--------------------------------------------------------------------------------------------------
+subroutine getVerticalCoordLogP(self, vc, npz, psurf)
+  ! returns log(pressure) at mid level of the vertical column with surface prsssure of psurf
+  ! coded using an example from Jeff Whitaker used in GSI ENKF pacakge
+
+  type(fv3jedi_geom),   intent(in) :: self
+  integer,              intent(in) :: npz
+  real(kind=kind_real), intent(in) :: psurf
+  real(kind=kind_real), intent(out) :: vc(npz)
+
+  real(kind=kind_real) :: p(npz)
+
+  call getVerticalCoord(self, p, npz, psurf)
   vc = - log(p)
 
 end subroutine getVerticalCoordLogP

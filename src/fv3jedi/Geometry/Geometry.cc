@@ -91,9 +91,10 @@ Geometry::~Geometry() {
 
 GeometryIterator Geometry::begin() const {
   // return start of the geometry on this mpi tile
-  int ist, iend, jst, jend, npz;
-  fv3jedi_geom_start_end_f90(keyGeom_, ist, iend, jst, jend, npz);
-  return GeometryIterator(*this, ist, jst);
+  int ist, iend, jst, jend, kst, kend, npz;
+  fv3jedi_geom_start_end_f90(keyGeom_, ist, iend, jst, jend, kst, kend, npz);
+  // 3D iterator starts from 0 for surface variables
+  return GeometryIterator(*this, ist, jst, kst);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -102,7 +103,7 @@ GeometryIterator Geometry::end() const {
   // return end of the geometry on this mpi tile
   // (returns index out of bounds for the iterator loops to work)
 
-  return GeometryIterator(*this, -1, -1);
+  return GeometryIterator(*this, -1, -1, -1);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -112,8 +113,8 @@ std::vector<double> Geometry::verticalCoord(std::string & vcUnits) const {
   // to enable initial comparisons with GSI, verticalCoord is valid for psurf=1e5
   // TODO(TBD) implement interface where vertical coordinate is valid for state[gridIterator].psurf
 
-  int ist, iend, jst, jend, npz;
-  fv3jedi_geom_start_end_f90(keyGeom_, ist, iend, jst, jend, npz);
+  int ist, iend, jst, jend, kst, kend, npz;
+  fv3jedi_geom_start_end_f90(keyGeom_, ist, iend, jst, jend, kst, kend, npz);
   std::vector<double> vc(npz);
   double psurf = 100000.0;
   if (vcUnits == "logp") {

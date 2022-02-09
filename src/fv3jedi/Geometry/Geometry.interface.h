@@ -41,8 +41,10 @@ extern "C" {
   void fv3jedi_geom_clone_f90(F90geom &, const F90geom &, const FieldsMetadata *);
   void fv3jedi_geom_print_f90(const F90geom &, int &);
   void fv3jedi_geom_delete_f90(F90geom &);
-  void fv3jedi_geom_start_end_f90(const F90geom &, int &, int &, int &, int &, int &);
+  void fv3jedi_geom_start_end_f90(const F90geom &, int &, int &, int &, int &, int &,
+                                  int &, int &);
   void fv3jedi_geom_verticalCoord_f90(const F90geom &, double &, int &, double &);
+  int fv3jedi_geom_iterator_dimension_f90(const F90geom &, int &);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------

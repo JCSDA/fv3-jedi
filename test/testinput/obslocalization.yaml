@@ -8,6 +8,7 @@ geometry:
   npz: 64
   fieldsets:
     - fieldset: Data/fieldsets/oro_data.yaml
+  iterator dimension: 2
   orography:
     datetime: 2019-12-15T18:00:00Z
     filetype: gfs
@@ -32,7 +33,7 @@ observations:
     reference gridpoints:
       lons: [200.610019, 75.8489626, 301.789939]
       lats: [66.736118, 41.6938865, -21.5839479]
-      depths: [0.0, 0.0, 0.0]
+      depths: [-99999, -99999, -99999]
     reference local nobs: [2, 1, 0]
     reference rms: [1.0, 1.0, 1.0]
     print iterator: false
@@ -49,7 +50,7 @@ observations:
     reference gridpoints:
       lons: [200.610019, 75.8489626, 301.789939]
       lats: [66.736118, 41.6938865, -21.5839479]
-      depths: [0.0, 0.0, 0.0]
+      depths: [-99999, -99999, -99999]
     reference local nobs: [2, 1, 0]
     reference rms: [0.122889, 0.0630446, 0]
     print iterator: false

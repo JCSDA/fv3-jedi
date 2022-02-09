@@ -57,6 +57,7 @@ class GeometryParameters : public oops::Parameters {
   oops::OptionalParameter<int> npx{ "npx", this};
   oops::OptionalParameter<int> npy{ "npy", this};
   oops::OptionalParameter<int> npz{ "npz", this};
+  oops::Parameter<int> iterator_dimension{ "iterator dimension", 2, this};
   oops::Parameter<int> nwat{ "nwat", 1, this};
   oops::OptionalParameter<StateParameters> orography{ "orography", this};
   oops::Parameter<bool> regional{ "regional", false, this};

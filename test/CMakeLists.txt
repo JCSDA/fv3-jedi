@@ -100,8 +100,10 @@ list( APPEND fv3jedi_testinput
   testinput/geometry_geos.yaml
   testinput/geometry_gfs127.yaml
   testinput/geometry_gfs.yaml
-  testinput/geometry_iterator_geos.yaml
-  testinput/geometry_iterator_gfs.yaml
+  testinput/geometry_iterator_geos_2d.yaml
+  testinput/geometry_iterator_geos_3d.yaml
+  testinput/geometry_iterator_gfs_2d.yaml
+  testinput/geometry_iterator_gfs_3d.yaml
   testinput/geometry_iterator_lam_cmaq.yaml
   testinput/geometry_lam_cmaq.yaml
   testinput/geometry_nested.yaml
@@ -738,14 +740,24 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_nested
                   ARGS     testinput/geometry_nested.yaml
                   COMMAND  test_fv3jedi_geometry.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_gfs
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_gfs_2d
                   MPI      6
-                  ARGS     testinput/geometry_iterator_gfs.yaml
+                  ARGS     testinput/geometry_iterator_gfs_2d.yaml
                   COMMAND  test_fv3jedi_geometryiterator.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_geos
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_gfs_3d
                   MPI      6
-                  ARGS     testinput/geometry_iterator_geos.yaml
+                  ARGS     testinput/geometry_iterator_gfs_3d.yaml
+                  COMMAND  test_fv3jedi_geometryiterator.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_geos_2d
+                  MPI      6
+                  ARGS     testinput/geometry_iterator_geos_2d.yaml
+                  COMMAND  test_fv3jedi_geometryiterator.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_geos_3d
+                  MPI      6
+                  ARGS     testinput/geometry_iterator_geos_3d.yaml
                   COMMAND  test_fv3jedi_geometryiterator.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_lam_cmaq

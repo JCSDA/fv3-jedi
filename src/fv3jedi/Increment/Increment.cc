@@ -149,8 +149,8 @@ void Increment::random() {
 }
 // -------------------------------------------------------------------------------------------------
 oops::LocalIncrement Increment::getLocal(const GeometryIterator & iter) const {
-  int ist, iend, jst, jend, npz;
-  fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, npz);
+  int ist, iend, jst, jend, kst, kend, npz;
+  fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, kst, kend, npz);
 
   oops::Variables fieldNames = vars_;
 

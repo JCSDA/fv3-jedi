@@ -1,0 +1,14 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk64.nc4
+  npx: 13
+  npy: 13
+  npz: 64
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+  iterator dimension: 3
+inc variables: [ua,va,T,DELP,sphum,ps,ice_wat,liq_wat,o3mr]
+increment test:
+  date: 2018-04-14T21:00:00Z

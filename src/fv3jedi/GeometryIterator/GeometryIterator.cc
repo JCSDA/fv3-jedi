@@ -25,11 +25,12 @@ GeometryIterator::GeometryIterator(const GeometryIterator& iter):
 
 // -----------------------------------------------------------------------------
 
-GeometryIterator::GeometryIterator(const Geometry & geom,
-                                       const int & iindex, const int & jindex):
+GeometryIterator::GeometryIterator(const Geometry & geom, const int & iindex,
+                                   const int & jindex, const int & kindex):
   geom_(geom)
 {
-  fv3jedi_geom_iter_setup_f90(keyIter_, geom_.toFortran(), iindex, jindex);
+  fv3jedi_geom_iter_setup_f90(keyIter_, geom_.toFortran(),
+                              iindex, jindex, kindex);
 }
 
 
@@ -58,9 +59,9 @@ bool GeometryIterator::operator!=(const GeometryIterator & other) const {
 // -----------------------------------------------------------------------------
 
 eckit::geometry::Point3 GeometryIterator::operator*() const {
-  double lat, lon;
-  fv3jedi_geom_iter_current_f90(keyIter_, lon, lat);
-  return eckit::geometry::Point3(lon, lat, 0.0);
+  double lat, lon, vCoord;
+  fv3jedi_geom_iter_current_f90(keyIter_, lon, lat, vCoord);
+  return eckit::geometry::Point3(lon, lat, vCoord);
 }
 
 // -----------------------------------------------------------------------------
@@ -81,9 +82,10 @@ double GeometryIterator::getOrography() const {
 // -----------------------------------------------------------------------------
 
 void GeometryIterator::print(std::ostream & os) const {
-  double lat, lon;
-  fv3jedi_geom_iter_current_f90(keyIter_, lon, lat);
-  os << "GeometryIterator, lat/lon: " << lat << " / " << lon << std::endl;
+  double lat, lon, vCoord;
+  fv3jedi_geom_iter_current_f90(keyIter_, lon, lat, vCoord);
+  os << "GeometryIterator, lat/lon/vCoord: " << lat << " / " << lon
+     << " / " << vCoord << std::endl;
 }
 
 // -----------------------------------------------------------------------------
