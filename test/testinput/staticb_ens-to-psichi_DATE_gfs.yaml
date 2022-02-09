@@ -30,7 +30,7 @@ variable change:
 states:
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: &readvars [ua,va,t,delp,sphum,liq_wat,ice_wat,o3mr]
     datapath: Data/inputs/gfs_c12/mem001/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -39,7 +39,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem001/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -49,7 +49,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem002/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -58,7 +58,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem002/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -68,7 +68,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem003/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -77,7 +77,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem003/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -87,7 +87,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem004/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -96,7 +96,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem004/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -106,7 +106,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem005/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -115,7 +115,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem005/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -125,7 +125,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem006/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -134,7 +134,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem006/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -144,7 +144,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem007/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -153,7 +153,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem007/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -163,7 +163,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem008/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -172,7 +172,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem008/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -182,7 +182,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem009/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -191,7 +191,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem009/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc
@@ -201,7 +201,7 @@ states:
 
 - input:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: *readvars
     datapath: Data/inputs/gfs_c12/mem010/
     filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -210,7 +210,7 @@ states:
     filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
     filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
   output:
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/balanced/mem010/
     filename_core: fv_core.res.nc
     filename_trcr: fv_tracer.res.nc

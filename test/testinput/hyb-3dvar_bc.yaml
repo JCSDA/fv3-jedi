@@ -16,7 +16,7 @@ cost function:
     - fieldset: Data/fieldsets/ufo.yaml
   background:
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/
     filename_core: 20180415.000000.c24.fv_core.res.nc
     filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
@@ -51,7 +51,7 @@ cost function:
         members from template:
           template:
             datetime: 2018-04-15T00:00:00Z
-            filetype: gfs
+            filetype: fms restart
             state variables: *3dvars
             datapath: Data/inputs/gfs_c12/mem%mem%/
             filename_core: 20180415.000000.fv_core.res.nc
@@ -282,7 +282,7 @@ final:
   diagnostics:
     departures: oman
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/
   prefix: hyb-3dvar_bc.c24
   frequency: PT1H

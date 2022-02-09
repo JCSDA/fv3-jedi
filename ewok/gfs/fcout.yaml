@@ -1,4 +1,4 @@
-filetype: gfs
+filetype: fms restart
 datapath: '$(run_dir)'
 filename_core: 'fv_core.res.nc'
 filename_trcr: 'fv_tracer.res.nc'

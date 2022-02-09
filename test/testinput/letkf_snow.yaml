@@ -12,7 +12,7 @@ geometry:
     - fieldset: Data/fieldsets/oro_data.yaml
   orography:
     datetime: 2019-12-15T18:00:00Z
-    filetype: gfs
+    filetype: fms restart
     skip coupler file: true
     state variables: [orog_filt]
     datapath: Data/inputs/gfs_land_c48/grid/
@@ -25,13 +25,13 @@ background:
  date: &date 2019-12-15T18:00:00Z
  members:
    - datetime: 2019-12-15T18:00:00Z
-     filetype: gfs
+     filetype: fms restart
      state variables: [snwdph,vtype,slmsk]
      datapath: Data/inputs/gfs_land_c48/mem001/
      filename_sfcd: 20191215.180000.sfc_data.nc
      filename_cplr: 20191215.180000.coupler.res
    - datetime: 2019-12-15T18:00:00Z
-     filetype: gfs
+     filetype: fms restart
      state variables: [snwdph,vtype,slmsk]
      datapath: Data/inputs/gfs_land_c48/mem002/
      filename_sfcd: 20191215.180000.sfc_data.nc

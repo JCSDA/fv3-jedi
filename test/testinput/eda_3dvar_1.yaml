@@ -16,7 +16,7 @@ cost function:
     - fieldset: Data/fieldsets/ufo.yaml
   background:
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -51,7 +51,7 @@ cost function:
         members from template:
           template:
             datetime: 2018-04-15T00:00:00Z
-            filetype: gfs
+            filetype: fms restart
             state variables: *3dvars
             datapath: Data/inputs/gfs_c12/mem%mem%/
             filename_core: 20180415.000000.fv_core.res.nc
@@ -210,7 +210,7 @@ variational:
     online diagnostics:
       max eigenvectors: 2
       eigenvector:
-        filetype: gfs
+        filetype: fms restart
         datapath: Data/analysis/eda/gfs/mem001
         filename_core: tt3dvar.eigenvec.fv_core.res.nc
         filename_trcr: tt3dvar.eigenvec.fv_tracer.res.nc
@@ -236,7 +236,7 @@ final:
   diagnostics:
     departures: oman
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/eda/gfs/mem001
   prefix: eda-3dvar-gfs
   frequency: PT1H

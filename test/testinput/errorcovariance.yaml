@@ -14,7 +14,7 @@ geometry:
 analysis variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
 background:
   datetime: 2018-04-14T21:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc

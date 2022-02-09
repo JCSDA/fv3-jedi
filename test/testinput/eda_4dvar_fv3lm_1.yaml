@@ -1,7 +1,7 @@
 cost function:
   background:
     datetime: 2018-04-14T21:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -40,7 +40,7 @@ cost function:
         members from template:
           template:
             datetime: 2018-04-14T21:00:00Z
-            filetype: gfs
+            filetype: fms restart
             state variables: *incvars
             datapath: Data/inputs/gfs_c12/mem%mem%/
             filename_core: 20180414.210000.fv_core.res.nc
@@ -186,7 +186,7 @@ cost function:
   window length: PT6H
   variable change:
     variable change name: Analysis2Model
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -215,7 +215,7 @@ cost function:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/eda/gfs/mem001
   prefix: eda-4dvar-gfs
   frequency: PT3H

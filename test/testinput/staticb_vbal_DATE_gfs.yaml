@@ -12,7 +12,7 @@ geometry:
 input variables: &inputVars [psi,chi,t,ps]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: *inputVars
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
@@ -42,7 +42,7 @@ bump:
     members from template:
       template:
         datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-        filetype: gfs
+        filetype: fms restart
         psinfile: true
         datapath: Data/staticb/balanced/mem%mem%/
         filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc

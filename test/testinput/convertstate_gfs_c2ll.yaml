@@ -18,7 +18,7 @@ output geometry:
 states:
 - input:
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]

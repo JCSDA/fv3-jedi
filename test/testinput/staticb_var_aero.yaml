@@ -13,7 +13,7 @@ geometry:
 input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 background:
   datetime: 2018-04-15T00:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: *inputVars
   datapath: Data/inputs/gfs_aero_c12/mem001
   filename_core: 20180415.000000.fv_core.res.nc
@@ -50,7 +50,7 @@ bump:
   input:
   - parameter: var
     datetime: 2018-04-14T21:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: 20180414.210000.var.fv_core.res.nc
     filename_trcr: 20180414.210000.var.fv_tracer.res.nc
@@ -60,7 +60,7 @@ bump:
     date: 2018-04-14T21:00:00Z
   - parameter: m4
     datetime: 2018-04-14T21:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: 20180414.210000.m4.fv_core.res.nc
     filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
@@ -70,7 +70,7 @@ bump:
     date: 2018-04-14T21:00:00Z
   - parameter: var
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.var.fv_core.res.nc
     filename_trcr: 20180415.000000.var.fv_tracer.res.nc
@@ -80,7 +80,7 @@ bump:
     date: 2018-04-15T00:00:00Z
   - parameter: m4
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: 20180415.000000.m4.fv_core.res.nc
     filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
@@ -90,7 +90,7 @@ bump:
     date: 2018-04-15T00:00:00Z
   - parameter: var
     datetime: 2018-04-15T03:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: 20180415.030000.var.fv_core.res.nc
     filename_trcr: 20180415.030000.var.fv_tracer.res.nc
@@ -100,7 +100,7 @@ bump:
     date: 2018-04-15T03:00:00Z
   - parameter: m4
     datetime: 2018-04-15T03:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: 20180415.030000.m4.fv_core.res.nc
     filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
@@ -110,7 +110,7 @@ bump:
     date: 2018-04-15T03:00:00Z
   output:
   - parameter: stddev
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: stddev.fv_core.res.nc
     filename_trcr: stddev.fv_tracer.res.nc

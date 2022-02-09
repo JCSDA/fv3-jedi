@@ -10,7 +10,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 initial condition:
   datetime: 2018-04-14T21:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -32,7 +32,7 @@ background error:
     input variables: [psi,chi,tv,delp,ps,rh,ice_wat,liq_wat,o3mr]
     output variables: [ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
 output dirac:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/gsirf/
   filename_core: dirac_%id%_gfs_c2a.fv_core.res.nc
   filename_trcr: dirac_%id%_gfs_c2a.fv_tracer.res.nc

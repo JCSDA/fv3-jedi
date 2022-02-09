@@ -19,7 +19,7 @@ increment geometry:
   - fieldset: Data/fieldsets/dynamics.yaml
 state: # Background
   datetime: 2018-04-15T00:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/
   filename_core: 20180415.000000.c24.fv_core.res.nc
   filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
@@ -28,7 +28,7 @@ state: # Background
   filename_cplr: 20180415.000000.c24.coupler.res
   state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 increment: # Increment
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/increment
   filename_core: 20180415.000000.hyb-3dvar-gfs.c24.fv_core.res.nc
   filename_trcr: 20180415.000000.hyb-3dvar-gfs.c24.fv_tracer.res.nc
@@ -37,7 +37,7 @@ increment: # Increment
   filename_cplr: 20180415.000000.hyb-3dvar-gfs.c24.coupler.res
   added variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 output: # Analysis
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/
   prefix: hyb-3dvar-gfs.bkg+inc.c24
 

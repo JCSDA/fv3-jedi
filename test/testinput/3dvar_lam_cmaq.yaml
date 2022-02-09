@@ -15,7 +15,7 @@ cost function:
     - fieldset: Data/fieldsets/ufo.yaml
   background:
     datetime: 2020-09-03T18:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/inputs/lam_cmaq/bkg/
     filename_core: 20200903.180000.fv_core.res.tile1.nc
     filename_trcr: 20200903.180000.fv_tracer.res.tile1.nc
@@ -104,7 +104,7 @@ final:
   diagnostics:
     departures: oman
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/
   prefix: 20200903.180000.3dvar_lam_cmaq_no2
   frequency: PT1H

@@ -24,7 +24,7 @@ saber blocks:
     - variables: [surface_pressure]
       fname_nicas: nicas_2020010100-2020013100/nicas_2020010100-2020013100_2D_nicas
     universe radius:
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: /work/noaa/da/menetrie/StaticBTraining/c384/bump_1.0/cor_2020010100-2020013100
       filename_core: cor_rh.fv_core.res.nc
@@ -36,7 +36,7 @@ saber blocks:
   output variables: *control_vars
   active variables: *active_vars
   file:
-    filetype: gfs
+    filetype: fms restart
     psinfile: true
     datapath: /work/noaa/da/menetrie/StaticBTraining/c384/bump_1.0/var_2020010100-2020013100
     filename_core: stddev.fv_core.res.nc

@@ -1,7 +1,7 @@
 cost function:
   background:
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/
     filename_core: 20180415.000000.c24.fv_core.res.nc
     filename_trcr: 20180415.000000.c24.fv_tracer.res.nc
@@ -157,7 +157,7 @@ final:
   diagnostics:
     departures: oman
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/
   prefix: 20180415.000000.3dvar-gfs_bal
   frequency: PT1H

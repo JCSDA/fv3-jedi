@@ -10,7 +10,7 @@ geometry:
     - fieldset: Data/fieldsets/oro_data.yaml
   orography:
     datetime: 2019-12-15T18:00:00Z
-    filetype: gfs
+    filetype: fms restart
     skip coupler file: true
     state variables: [orog_filt]
     datapath: Data/inputs/gfs_land_c48/grid/

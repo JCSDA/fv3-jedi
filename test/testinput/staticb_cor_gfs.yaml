@@ -12,7 +12,7 @@ geometry:
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
 background:
   datetime: 2018-04-15T00:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: *inputVars
   psinfile: true
   datapath: Data/staticb/unbalanced/mem001
@@ -55,7 +55,7 @@ bump:
     - var-mom_2D_2018041503_gfs_mom
   output:
   - parameter: cor_rh
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_rh.fv_core.res.nc
     filename_trcr: cor_rh.fv_tracer.res.nc
@@ -64,7 +64,7 @@ bump:
     filename_cplr: cor_rh.coupler.res
     date: 2018-04-15T00:00:00Z
   - parameter: cor_rv
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_rv.fv_core.res.nc
     filename_trcr: cor_rv.fv_tracer.res.nc

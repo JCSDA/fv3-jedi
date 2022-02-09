@@ -19,7 +19,7 @@ model:
                     f10m]
 initial condition:
   datetime: 2018-04-14T21:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: /home/mpotts/fv3-bundle/fv3-jedi/test/Data/ModelDirs/ufs/stc/INPUT
   filename_core: fv_core.res.nc
   filename_trcr: fv_tracer.res.nc
@@ -30,7 +30,7 @@ initial condition:
                     sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf,
                     f10m]
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: /home/mpotts/fv3-bundle/fv3-jedi/test/Data/forecast
   filename: forecast.jediex.
   first: PT0H

@@ -12,7 +12,7 @@ geometry:
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,ice_wat,o3mr]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: *inputVars
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
@@ -34,7 +34,7 @@ bump:
   operators application:
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem001/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -44,7 +44,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem001/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -54,7 +54,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem002/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -64,7 +64,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem002/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -74,7 +74,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem003/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -84,7 +84,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem003/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -94,7 +94,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem004/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -104,7 +104,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem004/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -114,7 +114,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem005/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -124,7 +124,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem005/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -134,7 +134,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem006/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -144,7 +144,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem006/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -154,7 +154,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem007/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -164,7 +164,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem007/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -174,7 +174,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem008/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -184,7 +184,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem008/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -194,7 +194,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem009/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -204,7 +204,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem009/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc
@@ -214,7 +214,7 @@ bump:
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb/balanced/mem010/
       filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -224,7 +224,7 @@ bump:
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
     bump operators: [inverseMultiplyVbal]
     output:
-      filetype: gfs
+      filetype: fms restart
       datapath: Data/staticb/unbalanced/mem010/
       filename_core: fv_core.res.nc
       filename_trcr: fv_tracer.res.nc

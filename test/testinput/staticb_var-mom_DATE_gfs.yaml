@@ -12,7 +12,7 @@ geometry:
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: *inputVars
   psinfile: true
   datapath: Data/staticb/unbalanced/mem001
@@ -45,7 +45,7 @@ bump:
     members from template:
       template:
         datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-        filetype: gfs
+        filetype: fms restart
         psinfile: true
         datapath: Data/staticb/unbalanced/mem%mem%/
         filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -59,7 +59,7 @@ bump:
       zero padding: 3
   output:
   - parameter: var
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/
     filename_core: var.fv_core.res.nc
     filename_trcr: var.fv_tracer.res.nc
@@ -68,7 +68,7 @@ bump:
     filename_cplr: var.coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - parameter: m4
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb/
     filename_core: m4.fv_core.res.nc
     filename_trcr: m4.fv_tracer.res.nc

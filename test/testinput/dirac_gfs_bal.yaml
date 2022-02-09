@@ -10,7 +10,7 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 initial condition:
   datetime: 2018-04-14T21:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -35,7 +35,7 @@ background error:
     layouty: 2
     path_to_nmcbalance_coeffs: Data/inputs/nmcbalance/global_berror.l64y192.nc
 output dirac:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/gsirf/
   filename_core: dirac_%id%_gfs_bal.fv_core.res.nc
   filename_trcr: dirac_%id%_gfs_bal.fv_tracer.res.nc

@@ -1,4 +1,4 @@
-filetype: gfs
+filetype: fms restart
 datapath: '$(run_dir)'
 filename_core: '{{local_background_time}}.fv_core.res.nc'
 filename_trcr: '{{local_background_time}}.fv_tracer.res.nc'

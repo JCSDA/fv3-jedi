@@ -13,7 +13,7 @@ geometry:
     - fieldset: Data/fieldsets/ufo.yaml
 state:
   datetime: 2018-04-15T00:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc

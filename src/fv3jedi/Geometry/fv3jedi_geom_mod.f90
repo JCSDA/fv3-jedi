@@ -37,7 +37,7 @@ use fv3jedi_kinds_mod,           only: kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
 use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
-use fv3jedi_io_gfs_mod,          only: fv3jedi_io_gfs, read_fields
+use fv3jedi_io_fms_mod,          only: fv3jedi_io_fms, read_fields
 use fv3jedi_field_mod,           only: fv3jedi_field
 
 implicit none

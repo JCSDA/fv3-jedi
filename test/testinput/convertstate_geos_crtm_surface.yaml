@@ -19,7 +19,7 @@ output geometry:
     - fieldset: Data/fieldsets/ufo.yaml
 states:
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-14T21:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
@@ -34,7 +34,7 @@ states:
    datapath: Data/convertstate/
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-14T22:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
@@ -49,7 +49,7 @@ states:
    datapath: Data/convertstate/
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-14T23:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
@@ -64,7 +64,7 @@ states:
    datapath: Data/convertstate/
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-15T00:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
@@ -79,7 +79,7 @@ states:
    datapath: Data/convertstate/
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-15T01:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
@@ -94,7 +94,7 @@ states:
    datapath: Data/convertstate/
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-15T02:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
@@ -109,7 +109,7 @@ states:
    datapath: Data/convertstate/
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
-    filetype: gfs
+    filetype: fms restart
     datetime: 2018-04-15T03:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/

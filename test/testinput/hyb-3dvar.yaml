@@ -16,7 +16,7 @@ cost function:
     - fieldset: Data/fieldsets/ufo.yaml
   background:
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/
     prefix: 20180415.000000.c24
     state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
@@ -47,7 +47,7 @@ cost function:
         members from template:
           template:
             datetime: 2018-04-15T00:00:00Z
-            filetype: gfs
+            filetype: fms restart
             state variables: *3dvars
             datapath: Data/inputs/gfs_c12/mem%mem%/
             prefix: '20180415.000000'
@@ -228,7 +228,7 @@ variational:
     online diagnostics:
       write increment: true
       increment:
-        filetype: gfs
+        filetype: fms restart
         datapath: Data/analysis
         prefix: iter1.hyb-3dvar.c24
   - ninner: 5
@@ -247,14 +247,14 @@ variational:
     online diagnostics:
       write increment: true
       increment:
-        filetype: gfs
+        filetype: fms restart
         datapath: Data/analysis
         prefix: iter2.hyb-3dvar.c24
 final:
   diagnostics:
     departures: oman
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/
   prefix: 20180415.000000.hyb-3dvar.c24
   frequency: PT1H

@@ -19,7 +19,7 @@ model:
   model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 initial condition:
   datetime: 2018-04-14T21:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc
@@ -28,7 +28,7 @@ initial condition:
   filename_cplr: 20180414.210000.coupler.res
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/forecast
   type: fc
   exp: forecast_fv3

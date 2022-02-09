@@ -18,7 +18,7 @@ use datetime_mod
 use fv3jedi_kinds_mod,                  only: kind_real
 use fv3jedi_geom_mod,                   only: fv3jedi_geom
 use fv3jedi_state_mod,                  only: fv3jedi_state
-use fv3jedi_io_gfs_mod,                 only: fv3jedi_io_gfs
+use fv3jedi_io_fms_mod,                 only: fv3jedi_io_fms
 use fv3jedi_io_cube_sphere_history_mod, only: fv3jedi_io_cube_sphere_history
 use fv3jedi_field_mod,                  only: copy_subset
 use wind_vt_mod,                        only: a_to_d, d_to_a
@@ -26,10 +26,9 @@ use wind_vt_mod,                        only: a_to_d, d_to_a
 implicit none
 private
 public :: fv3jedi_varcha_a2m
-
 type :: fv3jedi_varcha_a2m
   character(len=96)     :: filetype !IO type
-  type(fv3jedi_io_gfs)  :: gfs
+  type(fv3jedi_io_fms)  :: fms
   type(fv3jedi_io_cube_sphere_history) :: csh
   contains
     procedure :: create
@@ -58,12 +57,12 @@ call conf%get_or_die("filetype", str)
 self%filetype = str
 
 ! Setup IO from config
-if (trim(self%filetype) == 'gfs') then
-  call self%gfs%create(conf, geom%domain, geom%npz)
+if (trim(self%filetype) == 'fms restart') then
+  call self%fms%create(conf, geom%domain, geom%npz)
 elseif (trim(self%filetype) == 'cube sphere history') then
   call self%csh%create(geom, conf)
 else
-  call abor1_ftn("fv3jedi_varcha_a2m_mod: filetype must be cube sphere history or gfs, is "// &
+  call abor1_ftn("fv3jedi_varcha_a2m_mod: filetype must be cube sphere history or fms restart, is "// &
                  trim(self%filetype)//".")
 endif
 
@@ -76,7 +75,7 @@ subroutine delete(self)
 implicit none
 class(fv3jedi_varcha_a2m), intent(inout) :: self
 
-if (trim(self%filetype) == 'gfs') call self%gfs%delete()
+if (trim(self%filetype) == 'fms restart') call self%fms%delete()
 if (trim(self%filetype) == 'cube sphere history') call self%csh%delete()
 
 end subroutine delete
@@ -173,8 +172,8 @@ do index_mod = 1, xmod%nf
         "Found no way of getting "//trim(xmod%fields(index_mod)%fv3jedi_name)//" from the analysis state."//&
         "Attempting to read from file"
 
-    if (trim(self%filetype) == 'gfs') then
-      call self%gfs%read(xmod%time, xmod%fields(index_mod:index_mod))
+    if (trim(self%filetype) == 'fms restart') then
+      call self%fms%read(xmod%time, xmod%fields(index_mod:index_mod))
     elseif (trim(self%filetype) == 'cube sphere history') then
       call self%csh%read(xmod%time, xmod%fields(index_mod:index_mod))
     endif

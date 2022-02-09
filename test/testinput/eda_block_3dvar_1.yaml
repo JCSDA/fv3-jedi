@@ -5,7 +5,7 @@ cost function:
   analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   background:
     datetime: 2018-04-15T00:00:00Z
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/inputs/gfs_c12/mem001/
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -38,7 +38,7 @@ cost function:
         members from template:
           template:
             datetime: 2018-04-15T00:00:00Z
-            filetype: gfs
+            filetype: fms restart
             state variables: *3dvars
             datapath: Data/inputs/gfs_c12/mem%mem%/
             filename_core: 20180415.000000.fv_core.res.nc
@@ -88,7 +88,7 @@ cost function:
       - name: northward_wind
       - name: air_temperature
       threshold: 6.0
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
@@ -107,7 +107,7 @@ cost function:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/eda/gfs/mem001
   prefix: eda-3dvar-block-gfs
   frequency: PT1H
@@ -121,7 +121,7 @@ variational:
     online diagnostics:
       write basis: false
       krylov basis:
-        filetype: gfs
+        filetype: fms restart
         datapath: Data/analysis/eda/gfs/mem001/
         filename_core: krylov.fv_core.res.nc
         filename_trcr: krylov.fv_tracer.res.nc

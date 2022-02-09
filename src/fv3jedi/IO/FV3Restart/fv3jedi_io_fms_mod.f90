@@ -3,7 +3,7 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-module fv3jedi_io_gfs_mod
+module fv3jedi_io_fms_mod
 
 ! oops
 use datetime_mod
@@ -29,12 +29,12 @@ use fv3jedi_kinds_mod,            only: kind_real
 
 implicit none
 private
-public fv3jedi_io_gfs, read_fields
+public fv3jedi_io_fms, read_fields
 
 ! If adding a new file it is added here and object and config in setup
 integer, parameter :: numfiles = 9
 
-type fv3jedi_io_gfs
+type fv3jedi_io_fms
  logical :: input_is_date_templated
  character(len=128) :: datapath
  character(len=128) :: filenames(numfiles)
@@ -63,7 +63,7 @@ type fv3jedi_io_gfs
    procedure :: read
    procedure :: write
    final     :: dummy_final
-end type fv3jedi_io_gfs
+end type fv3jedi_io_fms
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ contains
 
 subroutine create(self, conf, domain, npz)
 
-class(fv3jedi_io_gfs),     intent(inout) :: self
+class(fv3jedi_io_fms),     intent(inout) :: self
 type(fckit_configuration), intent(in)    :: conf
 type(domain2D), target,    intent(in)    :: domain
 integer,                   intent(in)    :: npz
@@ -86,7 +86,7 @@ character(len=13) :: fileconf(numfiles)
 ! -----------------
 call conf%get_or_die("datapath",str)
 if (len(str) > 128) &
-  call abor1_ftn('fv3jedi_io_gfs_mod.setup: datapath too long, max FMS char length= 128')
+  call abor1_ftn('fv3jedi_io_fms_mod.setup: datapath too long, max FMS char length= 128')
 
 ! For ensemble methods switch out member template
 ! -----------------------------------------------
@@ -128,7 +128,7 @@ do n = 1, numfiles
   ! Retrieve user input filenames if available
   if (conf%has(fileconf(n))) then
     call conf%get_or_die(fileconf(n),str)
-    if (len(str) > 128) call abor1_ftn("fv3jedi_io_gfs_mod.setup: "//fileconf(n)//&
+    if (len(str) > 128) call abor1_ftn("fv3jedi_io_fms_mod.setup: "//fileconf(n)//&
                                         " too long, max FMS char length= 128")
     call add_iteration(conf,str)
     self%filenames_conf(n) = str
@@ -194,7 +194,7 @@ end subroutine create
 
 subroutine delete(self)
 
-class(fv3jedi_io_gfs), intent(inout) :: self
+class(fv3jedi_io_fms), intent(inout) :: self
 
 if (associated(self%domain)) nullify(self%domain)
 
@@ -204,8 +204,8 @@ end subroutine delete
 
 subroutine read(self, vdate, fields)
 
-class(fv3jedi_io_gfs), intent(inout) :: self
-type(datetime),        intent(in)    :: vdate
+class(fv3jedi_io_fms), intent(inout) :: self
+type(datetime),        intent(inout) :: vdate
 type(fv3jedi_field),   intent(inout) :: fields(:)
 integer :: n
 
@@ -235,7 +235,7 @@ end subroutine read
 
 subroutine write(self, vdate, fields)
 
-class(fv3jedi_io_gfs), intent(inout) :: self
+class(fv3jedi_io_fms), intent(inout) :: self
 type(datetime),        intent(in)    :: vdate
 type(fv3jedi_field),   intent(in)    :: fields(:)
 
@@ -253,7 +253,7 @@ end subroutine write
 
 subroutine setup_date(self, vdate)
 
-type(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_io_fms), intent(inout) :: self
 type(datetime),       intent(in)    :: vdate
 
 integer :: n
@@ -291,8 +291,8 @@ end subroutine setup_date
 
 subroutine read_meta(self, vdate)
 
-type(fv3jedi_io_gfs), intent(in) :: self
-type(datetime),       intent(in) :: vdate         !< DateTime
+type(fv3jedi_io_fms), intent(inout) :: self
+type(datetime),       intent(inout) :: vdate         !< DateTime
 
 integer :: date(6)
 integer :: idate, itime
@@ -336,7 +336,7 @@ end subroutine read_meta
 subroutine read_fields(self, fields)
 
 implicit none
-type(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_io_fms), intent(inout) :: self
 type(fv3jedi_field),  intent(inout) :: fields(:)
 
 type(restart_file_type) :: restart(numfiles)
@@ -391,9 +391,9 @@ do var = 1,size(fields)
     case("cold")
       indexrst = self%index_cold
     case("default")
-      call abor1_ftn("fv3jedi_io_gfs_mod: Abort, field "//trim(fields(var)%short_name)//&
+      call abor1_ftn("fv3jedi_io_fms_mod: Abort, field "//trim(fields(var)%short_name)//&
                       " does not have IOFile specified in the FieldSets metadata or it"&
-                      " does not match options in gfs IO module")
+                      " does not match options in fms IO module")
   end select
 
   ! Convert fv3jedi position to fms position
@@ -451,7 +451,7 @@ end subroutine read_fields
 subroutine write_all(self, fields, vdate)
 
 implicit none
-type(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_io_fms), intent(inout) :: self
 type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
 type(datetime),       intent(in)    :: vdate         !< DateTime
 
@@ -516,7 +516,7 @@ do var = 1,size(fields)
     case("cold")
       indexrst = self%index_cold
     case("default")
-      call abor1_ftn("fv3jedi_io_gfs_mod: Abort, field "//trim(fields(var)%short_name)//&
+      call abor1_ftn("fv3jedi_io_fms_mod: Abort, field "//trim(fields(var)%short_name)//&
                       " does not have IOFile specified in the FieldSets metadata")
   end select
 
@@ -572,9 +572,9 @@ end subroutine write_all
 
 ! Not really needed but prevents gnu compiler bug
 subroutine dummy_final(self)
-type(fv3jedi_io_gfs), intent(inout) :: self
+type(fv3jedi_io_fms), intent(inout) :: self
 end subroutine dummy_final
 
 ! --------------------------------------------------------------------------------------------------
 
-end module fv3jedi_io_gfs_mod
+end module fv3jedi_io_fms_mod

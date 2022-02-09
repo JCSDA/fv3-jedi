@@ -15,7 +15,7 @@ geometry:
     - fieldset: Data/fieldsets/ufo.yaml
 model:
   name: PSEUDO
-  filetype: gfs
+  filetype: fms restart
   filename is datetime templated: true
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
@@ -28,7 +28,7 @@ model:
                     seas1,seas2,seas3,seas4,seas5]
 initial condition:
   datetime: 2018-04-14T21:00:00Z
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/inputs/gfs_aero_c12/bkg/
   filename_core: 20180414.210000.fv_core.res.nc
   filename_trcr: 20180414.210000.fv_tracer.res.nc

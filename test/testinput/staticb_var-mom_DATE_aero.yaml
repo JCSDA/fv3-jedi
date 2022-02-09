@@ -13,7 +13,7 @@ geometry:
 input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: *inputVars
   datapath: Data/inputs/gfs_aero_c12/mem001
   filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -41,7 +41,7 @@ bump:
     members from template:
       template:
         datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-        filetype: gfs
+        filetype: fms restart
         psinfile: true
         datapath: Data/inputs/gfs_aero_c12/mem%mem%/
         filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
@@ -55,7 +55,7 @@ bump:
       zero padding: 3
   output:
   - parameter: var
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: var.fv_core.res.nc
     filename_trcr: var.fv_tracer.res.nc
@@ -64,7 +64,7 @@ bump:
     filename_cplr: var.coupler.res
     date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - parameter: m4
-    filetype: gfs
+    filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: m4.fv_core.res.nc
     filename_trcr: m4.fv_tracer.res.nc

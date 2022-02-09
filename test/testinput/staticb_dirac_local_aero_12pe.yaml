@@ -12,7 +12,7 @@ geometry:
     - fieldset: Data/fieldsets/aerosols_gfs.yaml
 initial condition:
   datetime: 2018-04-15T00:00:00Z
-  filetype: gfs
+  filetype: fms restart
   state variables: &state_vars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
   datapath: Data/inputs/gfs_aero_c12/bkg
   filename_core: 20180415.000000.fv_core.res.nc
@@ -36,7 +36,7 @@ background error:
       universe radius:
         datetime: 2018-04-15T00:00:00Z
         set datetime on read: true
-        filetype: gfs
+        filetype: fms restart
         datapath: Data/staticb_aero/
         filename_core: 20180415.000000.cor_rh.fv_core.res.nc
         filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
@@ -50,7 +50,7 @@ background error:
     file:
       datetime: 2018-04-15T00:00:00Z
       set datetime on read: true
-      filetype: gfs
+      filetype: fms restart
       psinfile: true
       datapath: Data/staticb_aero/
       filename_core: 20180415.000000.stddev.fv_core.res.nc
@@ -60,7 +60,7 @@ background error:
       filename_cplr: 20180415.000000.stddev.coupler.res
       date: 2018-04-15T00:00:00Z
 output dirac:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/staticb_aero/
   filename_core: dirac_local_%id%_aero_12pe.fv_core.res.nc
   filename_trcr: dirac_local_%id%_aero_12pe.fv_tracer.res.nc
