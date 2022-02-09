@@ -121,7 +121,7 @@ phases:
 
       # configure and build
       - cd /build_container
-      - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUILD_LARGE_TESTS=OFF /jcsda/fv3-bundle/
+      - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUILD_LARGE_TESTS=OFF /jcsda/fv3-bundle/
       - cd fv3-jedi
       - cp ../DartConfiguration.tcl .
       - sed -i 's/fv3-bundle/fv3-bundle\/fv3-jedi/' DartConfiguration.tcl
