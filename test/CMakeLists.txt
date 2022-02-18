@@ -1,4 +1,4 @@
-# (C) Copyright 2017-2020 UCAR
+# (C) Copyright 2017-2022 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -139,6 +139,7 @@ list( APPEND fv3jedi_testinput
   testinput/letkf.yaml
   testinput/lgetkf.yaml
   testinput/letkf_snow.yaml
+  testinput/adjointforecast.yaml
   testinput/lineargetvalues_geos.yaml
   testinput/lineargetvalues_gfs.yaml
   testinput/linearmodel_physics.yaml
@@ -255,6 +256,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/lgetkf_geos.ref
   testoutput/lgetkf_gfs.ref
   testoutput/lgetkf.ref
+  testoutput/adjointforecast.ref
   testoutput/staticb_dirac_global_gfs_6pe.ref
   testoutput/staticb_dirac_global_gfs_12pe.ref
   testoutput/staticb_dirac_local_gfs_6pe.ref
@@ -649,6 +651,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/geos)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/gfs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/forecast)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/adjointforecast)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos)
@@ -1210,6 +1213,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_backward
                   ARGS     testinput/hyb-3dvar_fsoi_backward.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_hyb-3dvar_fsoi_forward )
+
+# Adjoint Forecast
+# ----------------
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_adjointforecast
+                  MPI      6
+                  ARGS     testinput/adjointforecast.yaml
+                  COMMAND  fv3jedi_adjointforecast.x )
 
 # Diff states
 # -----------

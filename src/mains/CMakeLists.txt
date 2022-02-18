@@ -83,10 +83,11 @@ ecbuild_add_executable( TARGET  fv3jedi_var.x
                         LIBS    fv3jedi
                                 saber
                       )
-#ecbuild_add_executable( TARGET  fv3jedi_linearforecast.x
-#                        SOURCES fv3jediLinearForecast.cc
-#                        LIBS    fv3jedi
-#                       )
+
+ecbuild_add_executable( TARGET  fv3jedi_adjointforecast.x
+                        SOURCES fv3jediAdjointForecast.cc
+                        LIBS    fv3jedi
+                      )
 
 # Plotting utility
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fv3jedi_plot_field.py ${CMAKE_BINARY_DIR}/bin/fv3jedi_plot_field.x COPYONLY)

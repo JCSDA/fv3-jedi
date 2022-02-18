@@ -1,4 +1,4 @@
-# (C) Copyright 2017-2020 UCAR.
+# (C) Copyright 2017-2022 UCAR.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -91,6 +91,7 @@ list( APPEND fv3jedi_src_files
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h
+  NormGradient/NormGradient.h
   ObsLocalization/instantiateObsLocFactory.h
   ObsLocalization/ObsLocVerticalBrasnett.h
   State/State.cc

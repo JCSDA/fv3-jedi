@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2021 UCAR
+ * (C) Copyright 2017-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -24,6 +24,8 @@
 
 #include "fv3jedi/ModelBias/ModelBiasCovariance.h"
 
+#include "fv3jedi/NormGradient/NormGradient.h"
+
 namespace fv3jedi {
 
 struct Traits {
@@ -40,6 +42,7 @@ struct Traits {
   typedef fv3jedi::ModelBias            ModelAuxControl;
   typedef fv3jedi::ModelBiasIncrement   ModelAuxIncrement;
   typedef fv3jedi::ModelBiasCovariance  ModelAuxCovariance;
+  typedef fv3jedi::NormGradient         NormGradient;
   typedef fv3jedi::State                State;
   typedef fv3jedi::VariableChange       VariableChange;
 };
