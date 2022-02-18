@@ -1,4 +1,4 @@
-Input Dirac increment: 
+Input Dirac increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
    ua                            : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
@@ -11,17 +11,17 @@ Input Dirac increment:
    liq_wat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    o3mr                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
-Norm of nicas_norm at 2018-04-15T00:00:00Z: 1.032e+00
+Norm of nicas_norm at 2018-04-15T00:00:00Z: 1.024e+00
 Norm of stddev: 3.321e+05
-Covariance(SABER) * Increment: 
+Covariance(SABER) * Increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
-   ua                            : Min = -1.172e-02, Max = +1.202e-02, RMS = +8.496e-04
-   va                            : Min = -1.425e-02, Max = +1.227e-02, RMS = +9.911e-04
-   t                             : Min = -4.833e-03, Max = +1.550e+00, RMS = +9.026e-03
+   ua                            : Min = -1.132e-02, Max = +1.174e-02, RMS = +8.427e-04
+   va                            : Min = -1.385e-02, Max = +1.207e-02, RMS = +9.862e-04
+   t                             : Min = -4.852e-03, Max = +1.550e+00, RMS = +8.968e-03
    delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   ps                            : Min = -3.286e-01, Max = +1.199e+00, RMS = +1.356e-01
-   sphum                         : Min = -5.610e-04, Max = +0.000e+00, RMS = +3.155e-06
+   ps                            : Min = -2.886e-01, Max = +1.198e+00, RMS = +1.456e-01
+   sphum                         : Min = -5.610e-04, Max = +0.000e+00, RMS = +3.145e-06
    ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    o3mr                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00

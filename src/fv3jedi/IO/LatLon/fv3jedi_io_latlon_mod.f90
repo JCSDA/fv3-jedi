@@ -198,7 +198,7 @@ endif
 
 ! Initialize bump interpolator
 call self%bumpinterp%init(self%comm, afunctionspace_in=geom%afunctionspace, lon1d_out=self%lons, &
-                          lat1d_out=self%lats, nl=self%npz)
+                          lat1d_out=self%lats, nl0=self%npz)
 
 !IO communicator
 !call MPI_Comm_split(self%comm%communicator(), color, self%comm%rank(), self%llcomm, ierr)

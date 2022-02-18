@@ -1,18 +1,18 @@
 CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Aircraft) = 2751.88, nobs = 1430, Jo/n = 1.92439, err = 2.6781
 CostFunction: Nonlinear J = 2751.88
-DRIPCGMinimizer: reduction in residual norm = 0.341957
+DRIPCGMinimizer: reduction in residual norm = 0.428032
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 21 | cube sphere face size: C12
-   ua                            : Min = -4.631078e+01, Max = +9.136480e+01, RMS = +1.640384e+01
-   va                            : Min = -6.127964e+01, Max = +7.380730e+01, RMS = +8.405802e+00
-   T                             : Min = +1.847642e+02, Max = +3.102424e+02, RMS = +2.484559e+02
-   ps                            : Min = +5.451119e+04, Max = +1.038108e+05, RMS = +9.902526e+04
-   sphum                         : Min = +0.000000e+00, Max = +1.906352e-02, RMS = +4.763313e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +6.910392e-04, RMS = +1.500153e-05
-   liq_wat                       : Min = +0.000000e+00, Max = +1.745440e-03, RMS = +2.857789e-05
-   o3mr                          : Min = +0.000000e+00, Max = +1.754712e-05, RMS = +5.601335e-06
+   ua                            : Min = -4.631079e+01, Max = +9.135881e+01, RMS = +1.640373e+01
+   va                            : Min = -6.128263e+01, Max = +7.380730e+01, RMS = +8.405447e+00
+   T                             : Min = +1.847644e+02, Max = +3.102424e+02, RMS = +2.484563e+02
+   ps                            : Min = +5.451119e+04, Max = +1.038108e+05, RMS = +9.902524e+04
+   sphum                         : Min = +0.000000e+00, Max = +1.906352e-02, RMS = +4.763355e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +6.844648e-04, RMS = +1.496474e-05
+   liq_wat                       : Min = +0.000000e+00, Max = +1.744289e-03, RMS = +2.862074e-05
+   o3mr                          : Min = +0.000000e+00, Max = +1.754712e-05, RMS = +5.601336e-06
    phis                          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
    sheleg                        : Min = +0.000000e+00, Max = +2.006071e+02, RMS = +2.381962e+01
@@ -29,14 +29,14 @@ CostFunction::addIncrement: Analysis:
  -----------------------------------------------------------------------------------------------
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 21 | cube sphere face size: C12
-   ua                            : Min = -4.531172e+01, Max = +9.451802e+01, RMS = +1.647111e+01
-   va                            : Min = -5.432047e+01, Max = +6.517229e+01, RMS = +8.290425e+00
-   T                             : Min = +1.845484e+02, Max = +3.082121e+02, RMS = +2.484270e+02
-   ps                            : Min = +5.447601e+04, Max = +1.037935e+05, RMS = +9.902478e+04
-   sphum                         : Min = +0.000000e+00, Max = +1.878826e-02, RMS = +4.754499e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +5.096676e-04, RMS = +1.468333e-05
-   liq_wat                       : Min = +0.000000e+00, Max = +9.161694e-04, RMS = +2.857816e-05
-   o3mr                          : Min = +0.000000e+00, Max = +1.752379e-05, RMS = +5.609118e-06
+   ua                            : Min = -4.531172e+01, Max = +9.443510e+01, RMS = +1.647076e+01
+   va                            : Min = -5.433100e+01, Max = +6.517229e+01, RMS = +8.288825e+00
+   T                             : Min = +1.845485e+02, Max = +3.082121e+02, RMS = +2.484274e+02
+   ps                            : Min = +5.447601e+04, Max = +1.037935e+05, RMS = +9.902477e+04
+   sphum                         : Min = +0.000000e+00, Max = +1.879479e-02, RMS = +4.754685e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +5.096676e-04, RMS = +1.468192e-05
+   liq_wat                       : Min = +0.000000e+00, Max = +9.161694e-04, RMS = +2.858854e-05
+   o3mr                          : Min = +0.000000e+00, Max = +1.752379e-05, RMS = +5.609119e-06
    phis                          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
    sheleg                        : Min = +0.000000e+00, Max = +2.011737e+02, RMS = +2.385674e+01
@@ -53,14 +53,14 @@ CostFunction::addIncrement: Analysis:
  -----------------------------------------------------------------------------------------------
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 21 | cube sphere face size: C12
-   ua                            : Min = -4.458521e+01, Max = +8.873914e+01, RMS = +1.644557e+01
-   va                            : Min = -5.514564e+01, Max = +6.500325e+01, RMS = +8.237954e+00
-   T                             : Min = +1.848038e+02, Max = +3.085401e+02, RMS = +2.484122e+02
-   ps                            : Min = +5.456248e+04, Max = +1.037203e+05, RMS = +9.902109e+04
-   sphum                         : Min = +0.000000e+00, Max = +1.862762e-02, RMS = +4.743382e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +4.711386e-04, RMS = +1.585418e-05
-   liq_wat                       : Min = +0.000000e+00, Max = +1.003688e-03, RMS = +2.954326e-05
-   o3mr                          : Min = +3.055439e-08, Max = +1.751602e-05, RMS = +5.613643e-06
+   ua                            : Min = -4.458522e+01, Max = +8.873914e+01, RMS = +1.644561e+01
+   va                            : Min = -5.514709e+01, Max = +6.500325e+01, RMS = +8.236505e+00
+   T                             : Min = +1.848037e+02, Max = +3.085402e+02, RMS = +2.484124e+02
+   ps                            : Min = +5.456248e+04, Max = +1.037203e+05, RMS = +9.902106e+04
+   sphum                         : Min = +0.000000e+00, Max = +1.864061e-02, RMS = +4.743329e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +4.711386e-04, RMS = +1.584720e-05
+   liq_wat                       : Min = +0.000000e+00, Max = +1.042668e-03, RMS = +2.970142e-05
+   o3mr                          : Min = +3.055439e-08, Max = +1.751602e-05, RMS = +5.613647e-06
    phis                          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
    sheleg                        : Min = +0.000000e+00, Max = +2.018775e+02, RMS = +2.389094e+01
@@ -75,9 +75,6 @@ CostFunction::addIncrement: Analysis:
    v_srf                         : Min = -1.758323e+01, Max = +2.023139e+01, RMS = +5.484483e+00
    f10m                          : Min = +6.157255e-01, Max = +1.123031e+00, RMS = +9.048770e-01
  -----------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 53.5785
-CostJo   : Nonlinear Jo(Aircraft) = 2206.29, nobs = 1430, Jo/n = 1.54286, err = 2.6781
-CostFunction: Nonlinear J = 2259.87
+CostJb   : Nonlinear Jb = 45.1472
+CostJo   : Nonlinear Jo(Aircraft) = 2251.27, nobs = 1430, Jo/n = 1.57432, err = 2.6781
+CostFunction: Nonlinear J = 2296.42

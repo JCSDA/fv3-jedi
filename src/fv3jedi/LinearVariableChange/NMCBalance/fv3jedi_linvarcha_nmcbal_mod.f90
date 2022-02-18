@@ -742,9 +742,9 @@ call bump_config%set('unique_points',.false.)
 
 ! Initialize interpolator
 call self%c2g%init(geom%f_comm, afunctionspace_in=geom%afunctionspace, lon1d_out=self%gg%rlons(1:self%gg%nlon)*rad2deg, &
- & lat1d_out=self%gg%rlats(1:self%gg%nlat)*rad2deg, nl=geom%npz)
+ & lat1d_out=self%gg%rlats(1:self%gg%nlat)*rad2deg, nl0=geom%npz)
 call self%g2c%init(geom%f_comm, lon1d_in=self%gg%rlons(1+self%hx:self%gg%nlon-self%hx)*rad2deg, &
- & lat1d_in=self%gg%rlats(1+self%hy:self%gg%nlat-self%hy)*rad2deg, afunctionspace_out=geom%afunctionspace, nl=geom%npz, &
+ & lat1d_in=self%gg%rlats(1+self%hy:self%gg%nlat-self%hy)*rad2deg, afunctionspace_out=geom%afunctionspace, nl0=geom%npz, &
  & config=bump_config)
 
 end subroutine bump_init_gaugrid

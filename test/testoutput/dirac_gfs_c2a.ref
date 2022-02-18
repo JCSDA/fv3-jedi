@@ -1,4 +1,4 @@
-Input Dirac increment: 
+Input Dirac increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
    ua                            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.252586e-03
@@ -12,7 +12,7 @@ Input Dirac increment:
    o3mr                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
 GSI dummy parameter: 3141592
-Covariance(SABER) * Increment: 
+Covariance(SABER) * Increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
    ua                            : Min = -5.991326e-13, Max = +2.429014e-12, RMS = +1.195569e-14

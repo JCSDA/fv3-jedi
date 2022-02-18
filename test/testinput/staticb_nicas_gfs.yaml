@@ -28,7 +28,6 @@ bump:
   new_nicas: true
   write_nicas_global: true
   write_nicas_local: true
-  write_nicas_c0: false
   resol: 6
   min_lev:
     cloud_liquid_water: 26
@@ -52,7 +51,7 @@ bump:
     filename_cplr: 20180415.000000.cor_rh.coupler.res
     date: 2018-04-15T00:00:00Z
   input:
-  - parameter: cor_rh
+  - parameter: rh
     set datetime on read: true
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
@@ -64,7 +63,7 @@ bump:
     filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.cor_rh.coupler.res
     date: 2018-04-15T00:00:00Z
-  - parameter: cor_rv
+  - parameter: rv
     set datetime on read: true
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart

@@ -1,4 +1,4 @@
-Input Dirac increment: 
+Input Dirac increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 8 | cube sphere face size: C12
    ua                            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.252586e-03
@@ -10,10 +10,10 @@ Input Dirac increment:
    liq_wat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    o3mr                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
-Covariance(SABER) * Increment: 
+Covariance(SABER) * Increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +2.127765e-02
+   ua                            : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +2.241799e-02
    va                            : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    T                             : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    ps                            : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00

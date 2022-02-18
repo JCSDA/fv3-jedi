@@ -13,9 +13,6 @@ CostFunction::addIncrement: Analysis:
    liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809588e-05
    o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603561e-06
  -----------------------------------------------------------------------------------------------
-
-
-
 CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
 CostFunction: Nonlinear J = 0
@@ -31,9 +28,6 @@ CostFunction::addIncrement: Analysis:
    liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809588e-05
    o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603561e-06
  -----------------------------------------------------------------------------------------------
-
-
-
 CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
 CostFunction: Nonlinear J = 0

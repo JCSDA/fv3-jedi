@@ -2,28 +2,7 @@ CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Aircraft) = 3429.3, nobs = 1368, Jo/n = 2.5068, err = 2.69652
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 491.836, nobs = 148, Jo/n = 3.32321, err = 0.000298811
 CostFunction: Nonlinear J = 3921.14
-DRIPCGMinimizer: reduction in residual norm = 0.709911
-CostFunction::addIncrement: Analysis: 
- -----------------------------------------------------------------------------------------------
- State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -5.705249e+01, Max = +9.875590e+01, RMS = +2.014244e+01
-   va                            : Min = -6.313938e+01, Max = +7.476113e+01, RMS = +8.568433e+00
-   t                             : Min = +1.851981e+02, Max = +3.090463e+02, RMS = +2.471528e+02
-   ps                            : Min = +5.450188e+04, Max = +1.038103e+05, RMS = +9.900817e+04
-   q                             : Min = +0.000000e+00, Max = +1.964027e-02, RMS = +4.017279e-03
-   qi                            : Min = +0.000000e+00, Max = +4.413215e-04, RMS = +6.873514e-06
-   ql                            : Min = +0.000000e+00, Max = +5.823120e-04, RMS = +2.493701e-05
-   o3ppmv                        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
- -----------------------------------------------------------------------------------------------
-
-
-
-
-CostJb   : Nonlinear Jb = 1.09227e-07
-CostJo   : Nonlinear Jo(Aircraft) = 3429.31, nobs = 1368, Jo/n = 2.50681, err = 2.69652
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 424.287, nobs = 148, Jo/n = 2.8668, err = 0.000298811
-CostFunction: Nonlinear J = 3853.6
-DRIPCGMinimizer: reduction in residual norm = 0.788645
+DRIPCGMinimizer: reduction in residual norm = 0.710177
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
@@ -31,16 +10,29 @@ CostFunction::addIncrement: Analysis:
    va                            : Min = -6.313939e+01, Max = +7.476113e+01, RMS = +8.568433e+00
    t                             : Min = +1.851981e+02, Max = +3.090463e+02, RMS = +2.471528e+02
    ps                            : Min = +5.450188e+04, Max = +1.038103e+05, RMS = +9.900817e+04
-   q                             : Min = +0.000000e+00, Max = +1.964027e-02, RMS = +4.017282e-03
+   q                             : Min = +0.000000e+00, Max = +1.964027e-02, RMS = +4.017273e-03
    qi                            : Min = +0.000000e+00, Max = +4.413215e-04, RMS = +6.873514e-06
    ql                            : Min = +0.000000e+00, Max = +5.823120e-04, RMS = +2.493701e-05
    o3ppmv                        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
  -----------------------------------------------------------------------------------------------
-
-
-
-
-CostJb   : Nonlinear Jb = 1.45076e-07
-CostJo   : Nonlinear Jo(Aircraft) = 3429.31, nobs = 1368, Jo/n = 2.50681, err = 2.69652
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 428.007, nobs = 148, Jo/n = 2.89194, err = 0.000298811
-CostFunction: Nonlinear J = 3857.32
+CostJb   : Nonlinear Jb = 9.12644e-08
+CostJo   : Nonlinear Jo(Aircraft) = 3429.32, nobs = 1368, Jo/n = 2.50681, err = 2.69652
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 423.788, nobs = 148, Jo/n = 2.86343, err = 0.000298811
+CostFunction: Nonlinear J = 3853.11
+DRIPCGMinimizer: reduction in residual norm = 0.773311
+CostFunction::addIncrement: Analysis: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+   ua                            : Min = -5.705249e+01, Max = +9.875590e+01, RMS = +2.014244e+01
+   va                            : Min = -6.313940e+01, Max = +7.476113e+01, RMS = +8.568433e+00
+   t                             : Min = +1.851981e+02, Max = +3.090463e+02, RMS = +2.471528e+02
+   ps                            : Min = +5.450188e+04, Max = +1.038103e+05, RMS = +9.900817e+04
+   q                             : Min = +0.000000e+00, Max = +1.964027e-02, RMS = +4.017275e-03
+   qi                            : Min = +0.000000e+00, Max = +4.413215e-04, RMS = +6.873514e-06
+   ql                            : Min = +0.000000e+00, Max = +5.823120e-04, RMS = +2.493701e-05
+   o3ppmv                        : Min = +1.883499e-02, Max = +3.571349e+01, RMS = +3.814502e+00
+ -----------------------------------------------------------------------------------------------
+CostJb   : Nonlinear Jb = 9.06121e-08
+CostJo   : Nonlinear Jo(Aircraft) = 3429.32, nobs = 1368, Jo/n = 2.50681, err = 2.69652
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 423.861, nobs = 148, Jo/n = 2.86392, err = 0.000298811
+CostFunction: Nonlinear J = 3853.18

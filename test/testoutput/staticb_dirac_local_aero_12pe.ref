@@ -1,4 +1,4 @@
-Input Dirac increment: 
+Input Dirac increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 14 | cube sphere face size: C12
    sulf                          : Min = +0.000000e+00, Max = +1.000000e+00, RMS = +4.252586e-03
@@ -17,10 +17,10 @@ Input Dirac increment:
    seas4                         : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
 Norm of stddev: 6.421e-01
-Covariance(SABER) * Increment: 
+Covariance(SABER) * Increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 14 | cube sphere face size: C12
-   sulf                          : Min = +0.000e+00, Max = +2.270e-05, RMS = +2.609e-07
+   sulf                          : Min = +0.000e+00, Max = +2.303e-05, RMS = +2.464e-07
    bc1                           : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    bc2                           : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    oc1                           : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
