@@ -4,6 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 filetype: fms restart
+datetime: '{{background_time}}'
 datapath: '{{currentdir}}'
 filename_core: $(expid).fc.$(fcdatetime).$(fcstep).fv_core.res.nc
 filename_trcr: $(expid).fc.$(fcdatetime).$(fcstep).fv_tracer.res.nc
