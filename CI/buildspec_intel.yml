@@ -120,7 +120,7 @@ phases:
       - export BUILD_STATUS="0"
       - echo $BUILD_STATUS
 
-      - su - jedi -c "export FV3JEDI_TEST_TIER=2
+      - su - jedi -c "export FV3JEDI_TEST_TIER=1
         && cd /home/jedi
         && export CC=mpiicc
         && export FC=mpiifort
