@@ -82,7 +82,8 @@ background:
 observations:
 - obs space:
     name: Radiosonde
-    distribution: InefficientDistribution
+    distribution:
+      name: InefficientDistribution
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/scatwind_obs_2018041500_s.nc4
     #simulated variables: [eastward_wind, northward_wind, air_temperature]

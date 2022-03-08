@@ -40,7 +40,8 @@ background:
 observations:
 - obs space:
     name: Simulate
-    distribution: InefficientDistribution
+    distribution:
+      name: InefficientDistribution
     simulated variables: [totalSnowDepth]
     obsdatain:
       obsfile: Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
