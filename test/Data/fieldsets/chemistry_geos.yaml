@@ -1,0 +1,48 @@
+#
+# (C) Copyright 2020 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Field definitions for GEOS-CF
+#
+
+Geometry: fv3
+
+Fields:
+  - FieldIONames: [PS, ps]
+    FieldName: ps
+    LongName: surface_pressure
+    Units: Pa
+    Levels: 1
+    Tracer: false
+
+  - FieldIONames: [DELP, delp]
+    FieldName: delp
+    LongName: pressure_thickness
+    Units: Pa
+    Tracer: false
+
+  - FieldIONames: [SPHU, sphu]
+    FieldName: sphu
+    LongName: specific_humidity
+    Units: kg kg-1
+    Tracer: true
+
+  - FieldIONames: [NO2, no2]
+    FieldName: no2
+    LongName: Dry mixing ratio of species for NO2
+    Units: mol mol-1 dry
+    Tracer: true
+
+  - FieldIONames: [NO, 'no']
+    FieldName: 'no'
+    LongName: Dry mixing ratio of species for NO
+    Units: mol mol-1 dry
+    Tracer: true
+
+  - FieldIONames: [O3, o3]
+    FieldName: o3
+    LongName: Dry mixing ratio of species for O3
+    Units: mol mol-1 dry
+    Tracer: true
