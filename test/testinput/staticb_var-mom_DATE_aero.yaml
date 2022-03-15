@@ -50,7 +50,7 @@ bump:
         filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
         filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
         date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
-      pattern: %mem%
+      pattern: '%mem%'
       nmembers: 5
       zero padding: 3
   output:

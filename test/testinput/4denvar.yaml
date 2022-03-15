@@ -85,7 +85,7 @@ cost function:
           filename_sfcd: 20180415.030000.sfc_data.nc
           filename_sfcw: 20180415.030000.fv_srf_wnd.res.nc
           filename_cplr: 20180415.030000.coupler.res
-      pattern: %mem%
+      pattern: '%mem%'
       nmembers: 3
       zero padding: 3
   observations:

@@ -39,7 +39,7 @@ background error:
       state variables: *vars
       datapath: Data/inputs/geos_c12
       filename: geos.mem%mem%.20180414_210000z.nc4
-    pattern: %mem%
+    pattern: '%mem%'
     nmembers: 5
     zero padding: 3
 output dirac:

@@ -86,7 +86,7 @@ cost function:
             filename_core: 20180415.000000.fv_core.res.nc
             filename_trcr: 20180415.000000.fv_tracer.res.nc
             filename_cplr: 20180415.000000.coupler.res
-          pattern: %mem%
+          pattern: '%mem%'
           nmembers: 5
           zero padding: 3
         localization:

@@ -31,7 +31,7 @@ cost function:
             filename_core: 20180414.210000.fv_core.res.nc
             filename_trcr: 20180414.210000.fv_tracer.res.nc
             filename_cplr: 20180414.210000.coupler.res
-          pattern: %mem%
+          pattern: '%mem%'
           nmembers: 5
           zero padding: 3
         localization:
@@ -85,9 +85,9 @@ cost function:
     filetype: fms restart
     filename is datetime templated: true
     datapath: Data/inputs/gfs_aero_c12/bkg/
-    filename_core: %yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc
-    filename_trcr: %yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc
-    filename_cplr: %yyyy%mm%dd.%hh%MM%ss.coupler.res
+    filename_core: '%yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc'
+    filename_trcr: '%yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc'
+    filename_cplr: '%yyyy%mm%dd.%hh%MM%ss.coupler.res'
     tstep: PT3H
     model variables: [T,DELP,sphum,
                       sulf,bc1,bc2,oc1,oc2,

@@ -51,7 +51,7 @@ cost function:
             state variables: *3dvars
             datapath: Data/inputs/gfs_c12/mem%mem%/
             prefix: '20180415.000000'
-          pattern: %mem%
+          pattern: '%mem%'
           nmembers: 10
           zero padding: 3
         localization:
