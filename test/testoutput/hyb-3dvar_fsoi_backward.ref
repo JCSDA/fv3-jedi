@@ -1,33 +1,33 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Radiosonde) = 2222.27, nobs = 1127, Jo/n = 1.97185, err = 2.05889
-CostFunction: Nonlinear J = 2222.27
-DRIPCGMinimizer: reduction in residual norm = 2.36555e-09
+CostJo   : Nonlinear Jo(Radiosonde) = 2603.29, nobs = 1342, Jo/n = 1.93986, err = 2.06337
+CostFunction: Nonlinear J = 2603.29
+DRIPCGMinimizer: reduction in residual norm = 2.20086e-10
 FSOI increment test within tolerance.
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 21 | cube sphere face size: C24
-   ua                            : Min = -4.436424e+01, Max = +8.436861e+01, RMS = +1.550371e+01
-   va                            : Min = -4.334857e+01, Max = +5.865755e+01, RMS = +6.707278e+00
-   T                             : Min = +1.853523e+02, Max = +3.069781e+02, RMS = +2.484149e+02
-   DELP                          : Min = +4.424700e+01, Max = +3.723423e+03, RMS = +1.939520e+03
-   sphum                         : Min = +1.200969e-07, Max = +1.841109e-02, RMS = +4.657669e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +2.392257e-04, RMS = +9.094105e-06
-   liq_wat                       : Min = +0.000000e+00, Max = +5.332951e-04, RMS = +1.809588e-05
-   o3mr                          : Min = +3.539822e-08, Max = +1.745353e-05, RMS = +5.603561e-06
-   phis                          : Min = +0.000000e+00, Max = +3.753800e+04, RMS = +5.030820e+03
-   slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +5.718254e-01
-   sheleg                        : Min = +0.000000e+00, Max = +1.439450e+02, RMS = +2.073467e+01
-   tsea                          : Min = +2.163794e+02, Max = +3.094686e+02, RMS = +2.885458e+02
-   vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.593921e+00
-   stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +3.993810e+00
-   vfrac                         : Min = +0.000000e+00, Max = +8.204034e-01, RMS = +1.756374e-01
-   stc                           : Min = +2.205464e+02, Max = +3.088920e+02, RMS = +2.892425e+02
-   smc                           : Min = +4.815572e-02, Max = +1.000000e+00, RMS = +8.483204e-01
-   snwdph                        : Min = +0.000000e+00, Max = +1.432708e+03, RMS = +1.719883e+02
-   u_srf                         : Min = -1.385039e+01, Max = +2.045508e+01, RMS = +5.336897e+00
-   v_srf                         : Min = -1.438815e+01, Max = +1.506575e+01, RMS = +4.110500e+00
-   f10m                          : Min = +6.213250e-01, Max = +1.040358e+00, RMS = +9.009470e-01
+   ua                            : Min = -1.009859e+02, Max = +1.367834e+02, RMS = +2.117704e+01
+   va                            : Min = -8.770493e+01, Max = +9.589397e+01, RMS = +8.947503e+00
+   T                             : Min = +1.613774e+02, Max = +3.048842e+02, RMS = +2.496126e+02
+   DELP                          : Min = +6.060000e-01, Max = +1.777130e+03, RMS = +9.570508e+02
+   sphum                         : Min = +4.569406e-07, Max = +1.814204e-02, RMS = +4.603257e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +2.121802e-04, RMS = +9.158781e-06
+   liq_wat                       : Min = +0.000000e+00, Max = +5.740238e-04, RMS = +2.199768e-05
+   o3mr                          : Min = +2.725192e-08, Max = +1.707276e-05, RMS = +4.351928e-06
+   phis                          : Min = +0.000000e+00, Max = +3.789293e+04, RMS = +5.035494e+03
+   slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.029156e-01
+   sheleg                        : Min = +0.000000e+00, Max = +1.678816e+02, RMS = +1.924761e+01
+   tsea                          : Min = +2.360376e+02, Max = +3.235559e+02, RMS = +2.867527e+02
+   vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.706660e+00
+   stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.172288e+00
+   vfrac                         : Min = +0.000000e+00, Max = +8.295246e-01, RMS = +1.630891e-01
+   stc                           : Min = +2.259325e+02, Max = +3.070321e+02, RMS = +2.889669e+02
+   smc                           : Min = +2.289565e-02, Max = +1.000000e+00, RMS = +8.460253e-01
+   snwdph                        : Min = +0.000000e+00, Max = +1.093312e+03, RMS = +1.552067e+02
+   u_srf                         : Min = -1.047040e+01, Max = +1.668774e+01, RMS = +4.857342e+00
+   v_srf                         : Min = -1.287201e+01, Max = +1.196901e+01, RMS = +3.714239e+00
+   f10m                          : Min = +9.433518e-01, Max = +1.056937e+00, RMS = +9.958132e-01
  -----------------------------------------------------------------------------------------------
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Radiosonde) = 2222.27, nobs = 1127, Jo/n = 1.97185, err = 2.05889
-CostFunction: Nonlinear J = 2222.27
+CostJo   : Nonlinear Jo(Radiosonde) = 2603.29, nobs = 1342, Jo/n = 1.93986, err = 2.06337
+CostFunction: Nonlinear J = 2603.29

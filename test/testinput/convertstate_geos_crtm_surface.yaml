@@ -2,10 +2,10 @@ input geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gmao
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
@@ -20,14 +20,14 @@ output geometry:
 states:
 - input:
     filetype: fms restart
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180414.210000.fv_core.res.nc
-    filename_trcr: 20180414.210000.fv_tracer.res.nc
-    filename_sfcd: 20180414.210000.sfc_data.nc
-    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.210000.coupler.res
+    filename_core: 20201214.210000.fv_core.res.nc
+    filename_trcr: 20201214.210000.fv_tracer.res.nc
+    filename_sfcd: 20201214.210000.sfc_data.nc
+    filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.210000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos
@@ -35,14 +35,14 @@ states:
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: fms restart
-    datetime: 2018-04-14T22:00:00Z
+    datetime: 2020-12-14T22:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180414.220000.fv_core.res.nc
-    filename_trcr: 20180414.220000.fv_tracer.res.nc
-    filename_sfcd: 20180414.220000.sfc_data.nc
-    filename_sfcw: 20180414.220000.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.220000.coupler.res
+    filename_core: 20201214.220000.fv_core.res.nc
+    filename_trcr: 20201214.220000.fv_tracer.res.nc
+    filename_sfcd: 20201214.220000.sfc_data.nc
+    filename_sfcw: 20201214.220000.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.220000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos
@@ -50,14 +50,14 @@ states:
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: fms restart
-    datetime: 2018-04-14T23:00:00Z
+    datetime: 2020-12-14T23:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180414.230000.fv_core.res.nc
-    filename_trcr: 20180414.230000.fv_tracer.res.nc
-    filename_sfcd: 20180414.230000.sfc_data.nc
-    filename_sfcw: 20180414.230000.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.230000.coupler.res
+    filename_core: 20201214.230000.fv_core.res.nc
+    filename_trcr: 20201214.230000.fv_tracer.res.nc
+    filename_sfcd: 20201214.230000.sfc_data.nc
+    filename_sfcw: 20201214.230000.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.230000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos
@@ -65,14 +65,14 @@ states:
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: fms restart
-    datetime: 2018-04-15T00:00:00Z
+    datetime: 2020-12-15T00:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180415.000000.fv_core.res.nc
-    filename_trcr: 20180415.000000.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.sfc_data.nc
-    filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.coupler.res
+    filename_core: 20201215.000000.fv_core.res.nc
+    filename_trcr: 20201215.000000.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.sfc_data.nc
+    filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos
@@ -80,14 +80,14 @@ states:
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: fms restart
-    datetime: 2018-04-15T01:00:00Z
+    datetime: 2020-12-15T01:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180415.010000.fv_core.res.nc
-    filename_trcr: 20180415.010000.fv_tracer.res.nc
-    filename_sfcd: 20180415.010000.sfc_data.nc
-    filename_sfcw: 20180415.010000.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.010000.coupler.res
+    filename_core: 20201215.010000.fv_core.res.nc
+    filename_trcr: 20201215.010000.fv_tracer.res.nc
+    filename_sfcd: 20201215.010000.sfc_data.nc
+    filename_sfcw: 20201215.010000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.010000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos
@@ -95,14 +95,14 @@ states:
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: fms restart
-    datetime: 2018-04-15T02:00:00Z
+    datetime: 2020-12-15T02:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180415.020000.fv_core.res.nc
-    filename_trcr: 20180415.020000.fv_tracer.res.nc
-    filename_sfcd: 20180415.020000.sfc_data.nc
-    filename_sfcw: 20180415.020000.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.020000.coupler.res
+    filename_core: 20201215.020000.fv_core.res.nc
+    filename_trcr: 20201215.020000.fv_tracer.res.nc
+    filename_sfcd: 20201215.020000.sfc_data.nc
+    filename_sfcw: 20201215.020000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.020000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos
@@ -110,14 +110,14 @@ states:
    filename: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 - input:
     filetype: fms restart
-    datetime: 2018-04-15T03:00:00Z
+    datetime: 2020-12-15T03:00:00Z
     state variables: [vtype,stype,vfrac]
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180415.030000.fv_core.res.nc
-    filename_trcr: 20180415.030000.fv_tracer.res.nc
-    filename_sfcd: 20180415.030000.sfc_data.nc
-    filename_sfcw: 20180415.030000.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.030000.coupler.res
+    filename_core: 20201215.030000.fv_core.res.nc
+    filename_trcr: 20201215.030000.fv_tracer.res.nc
+    filename_sfcd: 20201215.030000.sfc_data.nc
+    filename_sfcw: 20201215.030000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.030000.coupler.res
   output:
    filetype: cube sphere history
    provider: geos

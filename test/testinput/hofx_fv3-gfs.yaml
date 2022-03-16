@@ -1,29 +1,30 @@
-window begin: 2018-04-14T21:00:00Z
+window begin: 2020-12-14T21:00:00Z
 window length: PT6H
 forecast length: PT6H
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 initial condition:
-  datetime: 2018-04-14T21:00:00Z
+  datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m,sss]
+                    u_srf,v_srf,f10m]
+                    # u_srf,v_srf,f10m,sss]
   datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180414.210000.fv_core.res.nc
-  filename_trcr: 20180414.210000.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.sfc_data.nc
-  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.coupler.res
+  filename_core: 20201214.210000.fv_core.res.nc
+  filename_trcr: 20201214.210000.fv_tracer.res.nc
+  filename_sfcd: 20201214.210000.sfc_data.nc
+  filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20201214.210000.coupler.res
 model:
   name: FV3LM
   namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -33,70 +34,71 @@ model:
   lm_do_mst: 0
   model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m,sss]
+                    u_srf,v_srf,f10m]
+                    # u_srf,v_srf,f10m,sss]
 observations:
 - obs space:
     name: SeaSurfaceTemp
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/sst_obs-2018-04-15.nc4
+      obsfile: Data/obs/testinput_tier_1/sst_obs_2020121500.nc4
     obsdataout:
-      obsfile: Data/hofx/sst_gmi_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
     simulated variables: [sea_surface_temperature]
   obs operator:
     name: Identity
   obs error:
     covariance model: diagonal
-- obs space:
-    name: SeaSurfaceSalinity
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/sss_obs_20180415_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/sss_hofx_gfs_2018041500_m.nc4
-    simulated variables: [sea_surface_salinity]
-  obs operator:
-    name: Identity
-  obs error:
-    covariance model: diagonal
+# - obs space:
+#     name: SeaSurfaceSalinity
+#     obsdatain:
+#       obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
+#     obsdataout:
+#       obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
+#     simulated variables: [sea_surface_salinity]
+#   obs operator:
+#     name: Identity
+#   obs error:
+#     covariance model: diagonal
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/aircraft_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
     simulated variables: [eastward_wind,northward_wind,air_temperature]
   obs operator:
     name: VertInterp
 - obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/sondes_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/sondes_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/sondes_hofx_gfs_2020121500_m.nc4
     simulated variables: [eastward_wind, northward_wind, air_temperature]
   obs operator:
     name: VertInterp
-- obs space:
-    name: SBUV2-NOAA19-OZ
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2018041500_m.nc4
-      obsgrouping:
-        group variables: [ longitude ]
-        sort variable: air_pressure
-        sort order: ascending
-    obsdataout:
-      obsfile: Data/hofx/sbuv2_n19_obs_2018041500_m_out.nc4
-    simulated variables: [integrated_layer_ozone_in_air]
-  obs operator:
-    name: AtmVertInterpLay
-    geovals: [mole_fraction_of_ozone_in_air]
-    coefficients: [0.007886131] # convert from ppmv to DU
-    nlevels: [22]
+# - obs space:
+#     name: SBUV2-NOAA19-OZ
+#     obsdatain:
+#       obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
+#       obsgrouping:
+#         group variables: [ longitude ]
+#         sort variable: air_pressure
+#         sort order: ascending
+#     obsdataout:
+#       obsfile: Data/hofx/sbuv2_n19_obs_2020121500_m_out.nc4
+#     simulated variables: [integrated_layer_ozone_in_air]
+#   obs operator:
+#     name: AtmVertInterpLay
+#     geovals: [mole_fraction_of_ozone_in_air]
+#     coefficients: [0.007886131] # convert from ppmv to DU
+#     nlevels: [22]
 - obs space:
     name: AMSUA-NOAA19
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/amsua_n19_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 1-15
   obs operator:
@@ -111,9 +113,9 @@ observations:
 - obs space:
     name: AIRS-AQUA
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/airs_aqua_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/airs_aqua_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 1,6-7
   obs operator:
@@ -126,9 +128,9 @@ observations:
 - obs space:
     name: GnssroBndNBAM
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/gnssro_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/gnssro_hofx_gfs_2020121500_m.nc4
     simulated variables: [bending_angle]
   obs operator:
     name: GnssroBndNBAM
@@ -140,9 +142,9 @@ observations:
 - obs space:
     name: HIRS4-METOPA
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 1-15
   obs operator:
@@ -155,9 +157,9 @@ observations:
 - obs space:
     name: CRIS-NPP
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 24,26,28,32,37,39,42,44,47,49,51,53,55,57,59,61,63,
               65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,
@@ -176,18 +178,18 @@ observations:
 - obs space:
     name: Satwind
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/satwind_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/satwind_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/satwind_hofx_gfs_2020121500_m.nc4
     simulated variables: [eastward_wind, northward_wind]
   obs operator:
     name: VertInterp
 - obs space:
     name: MHS-N19
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/mhs_n19_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/mhs_n19_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 1-5
   obs operator:
@@ -200,9 +202,9 @@ observations:
 - obs space:
     name: IASI-METOPA
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 16,29,32,35,38,41,44
   obs operator:
@@ -215,9 +217,9 @@ observations:
 - obs space:
     name: SEVIRI-METEOSAT8
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2020121500_m.nc4
     obsdataout:
-      obsfile: Data/hofx/seviri_m08_hofx_gfs_2018041500_m.nc4
+      obsfile: Data/hofx/seviri_m08_hofx_gfs_2020121500_m.nc4
     simulated variables: [brightness_temperature]
     channels: 5
   obs operator:
@@ -225,24 +227,6 @@ observations:
     Absorbers: [H2O,O3,CO2]
     obs options:
       Sensor_ID: seviri_m08
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: RADIOMETER-SMAP
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/smap_obs_2018041500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/smap_hofx_gfs_2018041500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 1-4
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    Clouds: [Water, Ice]
-    Cloud_Fraction: 1.0
-    Salinity: on
-    obs options:
-      Sensor_ID: radiometer_smap
       EndianType: little_endian
       CoefficientPath: Data/crtm/
 prints:

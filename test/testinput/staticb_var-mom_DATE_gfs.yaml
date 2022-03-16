@@ -2,11 +2,11 @@ geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   layout: [1,2]
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
@@ -31,10 +31,10 @@ bump:
   update_mom: true
   write_mom: true
   write_samp_local: true
-  nc1: 3500
+  nc1: 500
   nc3: 10
   dc: 500.0e3
-  nl0r: 15
+  nl0r: 5
   diag_draw_type: octahedral
   grids:
   - prefix: var-mom_3D__YYYY__MM__DD__HH__gfs

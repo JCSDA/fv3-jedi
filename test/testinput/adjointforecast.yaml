@@ -6,10 +6,10 @@ linear forecast:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       field table filename: Data/fv3files/field_table_gfdl
-    akbk: Data/fv3files/akbk64.nc4
+    akbk: Data/fv3files/akbk127.nc4
     npx: 13
     npy: 13
-    npz: 64
+    npz: 127
     fieldsets:
       - fieldset: Data/fieldsets/dynamics.yaml
 
@@ -38,10 +38,10 @@ forecast:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       field table filename: Data/fv3files/field_table_gfdl
-    akbk: Data/fv3files/akbk64.nc4
+    akbk: Data/fv3files/akbk127.nc4
     npx: 13
     npy: 13
-    npz: 64
+    npz: 127
     fieldsets:
       - fieldset: Data/fieldsets/dynamics.yaml
 
@@ -58,13 +58,13 @@ forecast:
   # Model initial condition
   initial condition:
     filetype: fms restart
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180414.210000.fv_core.res.nc
-    filename_trcr: 20180414.210000.fv_tracer.res.nc
-    filename_sfcd: 20180414.210000.sfc_data.nc
-    filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.210000.coupler.res
+    filename_core: 20201214.210000.fv_core.res.nc
+    filename_trcr: 20201214.210000.fv_tracer.res.nc
+    filename_sfcd: 20201214.210000.sfc_data.nc
+    filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.210000.coupler.res
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 
 # Optionally write the adjoint initial condition
@@ -86,22 +86,22 @@ forecast aspect:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       field table filename: Data/fv3files/field_table_gfdl
-    akbk: Data/fv3files/akbk64.nc4
+    akbk: Data/fv3files/akbk127.nc4
     npx: 13
     npy: 13
-    npz: 64
+    npz: 127
     fieldsets:
       - fieldset: Data/fieldsets/dynamics.yaml
 
   verification state:
     filetype: fms restart
-    datetime: 2018-04-14T22:00:00Z
+    datetime: 2020-12-14T22:00:00Z
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180414.220000.fv_core.res.nc
-    filename_trcr: 20180414.220000.fv_tracer.res.nc
-    filename_sfcd: 20180414.220000.sfc_data.nc
-    filename_sfcw: 20180414.220000.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.220000.coupler.res
+    filename_core: 20201214.220000.fv_core.res.nc
+    filename_trcr: 20201214.220000.fv_tracer.res.nc
+    filename_sfcd: 20201214.220000.sfc_data.nc
+    filename_sfcw: 20201214.220000.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.220000.coupler.res
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 
   # Norm definition
@@ -134,3 +134,4 @@ adjoint forecast:
 
 test:
   reference filename: testoutput/adjointforecast.ref
+  test output filename: testoutput/adjointforecast.test.out

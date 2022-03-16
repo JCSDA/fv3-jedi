@@ -42,7 +42,8 @@ LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 
 # Static B-specific dates
 # -----------------------
-set(staticb_dates 2018041421;2018041500;2018041503)
+set(staticb_dates 2020121421;2020121500;2020121503)
+set(staticb_dates_aero 2018041421;2018041500;2018041503)
 
 # Test input scripts
 # ------------------
@@ -284,8 +285,13 @@ foreach(DATE ${staticb_dates})
     testoutput/staticb_ens-to-psichi_${DATE}_gfs.ref
     testoutput/staticb_unbal_${DATE}_gfs.ref
     testoutput/staticb_vbal_${DATE}_gfs.ref
-    testoutput/staticb_var-mom_${DATE}_aero.ref
     testoutput/staticb_var-mom_${DATE}_gfs.ref
+  )
+endforeach()
+
+foreach(DATE ${staticb_dates_aero})
+  list( APPEND fv3jedi_testoutput
+    testoutput/staticb_var-mom_${DATE}_aero.ref
   )
 endforeach()
 
@@ -888,15 +894,15 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_model2geovals
                   ARGS     testinput/convertstate_gfs_model2geovals.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
-                  MPI      6
-                  ARGS     testinput/convertstate_geos_model2geovals.yaml
-                  COMMAND  fv3jedi_convertstate.x )
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
+#                  MPI      6
+#                  ARGS     testinput/convertstate_geos_model2geovals.yaml
+#                  COMMAND  fv3jedi_convertstate.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertincrement_geos_model2geovals
                   MPI      6
                   ARGS     testinput/convertincrement_geos_model2geovals.yaml
-                COMMAND  fv3jedi_convertincrement.x )
+                  COMMAND  fv3jedi_convertincrement.x )
 
 # Remaining interface tests
 # -------------------------
@@ -1089,10 +1095,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
                   ARGS     testinput/dirac_gfs.yaml
                   COMMAND  fv3jedi_dirac.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_bal
-                  MPI      6
-                  ARGS     testinput/dirac_gfs_bal.yaml
-                  COMMAND  fv3jedi_dirac.x )
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_bal
+#                  MPI      6
+#                  ARGS     testinput/dirac_gfs_bal.yaml
+#                  COMMAND  fv3jedi_dirac.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_c2a
                   MPI      6
@@ -1356,9 +1362,6 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                      INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_unbal_DATE_gfs.yaml
                      OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_unbal_${DATE}_gfs.yaml )
     execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
-                     INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_var-mom_DATE_aero.yaml
-                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_var-mom_${DATE}_aero.yaml )
-    execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
                      INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_var-mom_DATE_gfs.yaml
                      OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_var-mom_${DATE}_gfs.yaml )
 
@@ -1383,10 +1386,6 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                       TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_${DATE}_gfs )
 
     # Compute variance and moments using unbalanced ensemble members
-    ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var-mom_${DATE}_aero
-                      MPI          12
-                      ARGS         testinput/staticb_var-mom_${DATE}_aero.yaml
-                      COMMAND      fv3jedi_error_covariance_training.x )
 
     ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var-mom_${DATE}_gfs
                       MPI          12
@@ -1395,14 +1394,35 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                       TEST_DEPENDS fv3jedi_test_tier2_staticb_unbal_${DATE}_gfs )
   endforeach()
 
+  # Loop over dates for aero case
+  foreach(DATE ${staticb_dates_aero})
+    string(SUBSTRING ${DATE} 0 4 YYYY)
+    string(SUBSTRING ${DATE} 4 2 MM)
+    string(SUBSTRING ${DATE} 6 2 DD)
+    string(SUBSTRING ${DATE} 8 2 HH)
+    message(STATUS "Creating static B yaml files for cycle: ${YYYY}-${MM}-${DD}:${HH}")
+
+    # Apply sed on template yaml file
+    execute_process( COMMAND     sed "-e s/_YYYY_/${YYYY}/g;s/_MM_/${MM}/g;s/_DD_/${DD}/g;s/_HH_/${HH}/g"
+                     INPUT_FILE  ${CMAKE_CURRENT_SOURCE_DIR}/testinput/staticb_var-mom_DATE_aero.yaml
+                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/testinput/staticb_var-mom_${DATE}_aero.yaml )
+
+    # Compute variance and moments using unbalanced ensemble members
+    ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var-mom_${DATE}_aero
+                      MPI          12
+                      ARGS         testinput/staticb_var-mom_${DATE}_aero.yaml
+                      COMMAND      fv3jedi_error_covariance_training.x )
+
+  endforeach()
+
   # Compute vertical balance using previously pre-computed vertical covariances, and unbalance ensemble members
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_vbal_gfs
                     MPI          12
                     ARGS         testinput/staticb_vbal_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_training.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_2018041421_gfs
-                                 fv3jedi_test_tier2_staticb_vbal_2018041500_gfs
-                                 fv3jedi_test_tier2_staticb_vbal_2018041503_gfs )
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_2020121421_gfs
+                                 fv3jedi_test_tier2_staticb_vbal_2020121500_gfs
+                                 fv3jedi_test_tier2_staticb_vbal_2020121503_gfs )
 
   # Compute variance using pre-computed variance
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var_aero
@@ -1417,9 +1437,9 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     MPI          12
                     ARGS         testinput/staticb_var_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_training.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var-mom_2018041421_gfs
-                                 fv3jedi_test_tier2_staticb_var-mom_2018041500_gfs
-                                 fv3jedi_test_tier2_staticb_var-mom_2018041503_gfs )
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var-mom_2020121421_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2020121500_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2020121503_gfs )
 
   # Compute correlation length-scales using pre-computed moments
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_cor_aero
@@ -1434,9 +1454,9 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     MPI          12
                     ARGS         testinput/staticb_cor_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_training.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var-mom_2018041421_gfs
-                                 fv3jedi_test_tier2_staticb_var-mom_2018041500_gfs
-                                 fv3jedi_test_tier2_staticb_var-mom_2018041503_gfs )
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var-mom_2020121421_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2020121500_gfs
+                                 fv3jedi_test_tier2_staticb_var-mom_2020121503_gfs )
 
   # Compute NICAS operator using the length-scales
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_nicas_aero

@@ -2,10 +2,10 @@ geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/oro_data.yaml
@@ -17,22 +17,22 @@ variable change tests:
       # Possible to read variable with this variable change
       filetype: fms restart
       datapath: Data/inputs/gfs_c12/bkg/
-      filename_core: 20180415.000000.fv_core.res.nc
-      filename_trcr: 20180415.000000.fv_tracer.res.nc
-      filename_sfcd: 20180415.000000.sfc_data.nc
-      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-      filename_cplr: 20180415.000000.coupler.res
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
       input variables: [ua,va,t,ps]
       output variables: [u,v,ua,va,delp,t,sphum,vtype,u_srf,v_srf]
     state:
-      datetime: 2018-04-15T00:00:00Z
+      datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
       datapath: Data/inputs/gfs_c12/bkg/
-      filename_core: 20180415.000000.fv_core.res.nc
-      filename_trcr: 20180415.000000.fv_tracer.res.nc
-      filename_sfcd: 20180415.000000.sfc_data.nc
-      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-      filename_cplr: 20180415.000000.coupler.res
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
       state variables: [ua,va,t,ps]
     tolerance inverse: 1.0e1
 
@@ -46,14 +46,14 @@ variable change tests:
       input variables: [psi,chi,t,tv,delp,ps,q,rh,qi,ql,o3]
       output variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
     state:
-      datetime: 2018-04-15T00:00:00Z
+      datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
       datapath: Data/inputs/gfs_c12/bkg/
-      filename_core: 20180415.000000.fv_core.res.nc
-      filename_trcr: 20180415.000000.fv_tracer.res.nc
-      filename_sfcd: 20180415.000000.sfc_data.nc
-      filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-      filename_cplr: 20180415.000000.coupler.res
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
       state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
     tolerance inverse: 1.0e-4
     inverse first: true #Switched input and output variables

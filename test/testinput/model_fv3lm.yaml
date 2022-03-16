@@ -2,10 +2,10 @@ geometry:
   fms initialization:
     namelist filename: Data/fv3files/input_gfs_c12.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 model:
@@ -20,15 +20,15 @@ model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
-  final norm: 661.54831136916323
+  final norm: 354.70206401769235
   tolerance: 1.0e-4
 initial condition:
-  datetime: 2018-04-14T21:00:00Z
+  datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
   datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180414.210000.fv_core.res.nc
-  filename_trcr: 20180414.210000.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.sfc_data.nc
-  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.coupler.res
+  filename_core: 20201214.210000.fv_core.res.nc
+  filename_trcr: 20201214.210000.fv_tracer.res.nc
+  filename_sfcd: 20201214.210000.sfc_data.nc
+  filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20201214.210000.coupler.res

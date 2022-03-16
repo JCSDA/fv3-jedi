@@ -1,50 +1,50 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Aircraft) = 4010.92, nobs = 1120, Jo/n = 3.58118, err = 2.74322
-CostJo   : Nonlinear Jo(Radiosonde) = 3608.01, nobs = 916, Jo/n = 3.93888, err = 2.01693
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 1251.49, nobs = 147, Jo/n = 8.51357, err = 0.000299766
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 815.532, nobs = 747, Jo/n = 1.09174, err = 1.90651
-CostFunction: Nonlinear J = 9685.96
-DRIPCGMinimizer: reduction in residual norm = 0.539278
+CostJo   : Nonlinear Jo(Aircraft) = 6243.22, nobs = 2765, Jo/n = 2.25794, err = 2.19879
+CostJo   : Nonlinear Jo(Radiosonde) = 3313.73, nobs = 1328, Jo/n = 2.49528, err = 2.06355
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 516.521, nobs = 131, Jo/n = 3.94291, err = 0.000343738
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 634.277, nobs = 796, Jo/n = 0.79683, err = 9.98605
+CostFunction: Nonlinear J = 10707.7
+DRIPCGMinimizer: reduction in residual norm = 0.472419
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 11 | cube sphere face size: C12
-   u                             : Min = -7.998311e+01, Max = +7.443785e+01, RMS = +1.269962e+01
-   v                             : Min = -8.004184e+01, Max = +8.021624e+01, RMS = +1.274250e+01
-   ua                            : Min = -4.631079e+01, Max = +9.136980e+01, RMS = +1.640422e+01
-   va                            : Min = -6.112541e+01, Max = +7.380730e+01, RMS = +8.406592e+00
-   T                             : Min = +1.847640e+02, Max = +3.102424e+02, RMS = +2.484510e+02
-   ps                            : Min = +5.451119e+04, Max = +1.038108e+05, RMS = +9.902529e+04
-   DELP                          : Min = +4.424700e+01, Max = +3.728065e+03, RMS = +1.940813e+03
-   sphum                         : Min = +0.000000e+00, Max = +1.906350e-02, RMS = +4.762133e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +6.371008e-04, RMS = +1.478965e-05
-   liq_wat                       : Min = +0.000000e+00, Max = +1.054092e-03, RMS = +2.772811e-05
-   o3mr                          : Min = +2.759108e-08, Max = +1.754712e-05, RMS = +5.601335e-06
+   u                             : Min = -1.349684e+02, Max = +1.278492e+02, RMS = +1.583734e+01
+   v                             : Min = -1.427724e+02, Max = +1.232258e+02, RMS = +1.737459e+01
+   ua                            : Min = -9.987031e+01, Max = +1.684620e+02, RMS = +2.214699e+01
+   va                            : Min = -9.878677e+01, Max = +1.111114e+02, RMS = +1.063430e+01
+   T                             : Min = +1.572711e+02, Max = +3.067189e+02, RMS = +2.496414e+02
+   ps                            : Min = +5.400067e+04, Max = +1.048278e+05, RMS = +9.898039e+04
+   DELP                          : Min = +6.059999e-01, Max = +1.794782e+03, RMS = +9.576774e+02
+   sphum                         : Min = +0.000000e+00, Max = +1.863979e-02, RMS = +4.697475e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +5.075422e-04, RMS = +1.579572e-05
+   liq_wat                       : Min = +0.000000e+00, Max = +9.803740e-04, RMS = +3.386975e-05
+   o3mr                          : Min = +0.000000e+00, Max = +2.357276e-05, RMS = +4.356844e-06
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 1.32241e-07
-CostJo   : Nonlinear Jo(Aircraft) = 4010.5, nobs = 1120, Jo/n = 3.5808, err = 2.74322
-CostJo   : Nonlinear Jo(Radiosonde) = 3607.7, nobs = 916, Jo/n = 3.93854, err = 2.01693
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 1208.37, nobs = 147, Jo/n = 8.22022, err = 0.000299766
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 813.993, nobs = 747, Jo/n = 1.08968, err = 1.90651
-CostFunction: Nonlinear J = 9640.56
-DRIPCGMinimizer: reduction in residual norm = 0.668202
+CostJb   : Nonlinear Jb = 2.77794e-05
+CostJo   : Nonlinear Jo(Aircraft) = 6236.49, nobs = 2765, Jo/n = 2.25551, err = 2.19879
+CostJo   : Nonlinear Jo(Radiosonde) = 3311.84, nobs = 1328, Jo/n = 2.49386, err = 2.06355
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 348.644, nobs = 131, Jo/n = 2.6614, err = 0.000343738
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 618.974, nobs = 796, Jo/n = 0.777606, err = 9.98605
+CostFunction: Nonlinear J = 10515.9
+DRIPCGMinimizer: reduction in residual norm = 0.737829
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 11 | cube sphere face size: C12
-   u                             : Min = -7.998311e+01, Max = +7.443785e+01, RMS = +1.269962e+01
-   v                             : Min = -8.004184e+01, Max = +8.021624e+01, RMS = +1.274250e+01
-   ua                            : Min = -4.631079e+01, Max = +9.136980e+01, RMS = +1.640422e+01
-   va                            : Min = -6.112541e+01, Max = +7.380730e+01, RMS = +8.406592e+00
-   T                             : Min = +1.847640e+02, Max = +3.102424e+02, RMS = +2.484510e+02
-   ps                            : Min = +5.451119e+04, Max = +1.038108e+05, RMS = +9.902529e+04
-   DELP                          : Min = +4.424700e+01, Max = +3.728065e+03, RMS = +1.940813e+03
-   sphum                         : Min = +0.000000e+00, Max = +1.906350e-02, RMS = +4.762168e-03
-   ice_wat                       : Min = +0.000000e+00, Max = +6.371008e-04, RMS = +1.478965e-05
-   liq_wat                       : Min = +0.000000e+00, Max = +1.054092e-03, RMS = +2.772811e-05
-   o3mr                          : Min = +2.759108e-08, Max = +1.754712e-05, RMS = +5.601335e-06
+   u                             : Min = -1.349684e+02, Max = +1.278492e+02, RMS = +1.583734e+01
+   v                             : Min = -1.427724e+02, Max = +1.232258e+02, RMS = +1.737459e+01
+   ua                            : Min = -9.987031e+01, Max = +1.684620e+02, RMS = +2.214699e+01
+   va                            : Min = -9.878677e+01, Max = +1.111114e+02, RMS = +1.063430e+01
+   T                             : Min = +1.572711e+02, Max = +3.067189e+02, RMS = +2.496414e+02
+   ps                            : Min = +5.400067e+04, Max = +1.048278e+05, RMS = +9.898039e+04
+   DELP                          : Min = +6.059999e-01, Max = +1.794782e+03, RMS = +9.576774e+02
+   sphum                         : Min = +0.000000e+00, Max = +1.863984e-02, RMS = +4.697881e-03
+   ice_wat                       : Min = +0.000000e+00, Max = +5.075422e-04, RMS = +1.579572e-05
+   liq_wat                       : Min = +0.000000e+00, Max = +9.803740e-04, RMS = +3.386975e-05
+   o3mr                          : Min = +0.000000e+00, Max = +2.357276e-05, RMS = +4.356844e-06
  -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 1.41947e-07
-CostJo   : Nonlinear Jo(Aircraft) = 4010.42, nobs = 1120, Jo/n = 3.58074, err = 2.74322
-CostJo   : Nonlinear Jo(Radiosonde) = 3607.65, nobs = 916, Jo/n = 3.93848, err = 2.01693
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 1208, nobs = 147, Jo/n = 8.21768, err = 0.000299766
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 813.738, nobs = 747, Jo/n = 1.08934, err = 1.90651
-CostFunction: Nonlinear J = 9639.81
+CostJb   : Nonlinear Jb = 3.64861e-05
+CostJo   : Nonlinear Jo(Aircraft) = 6234.85, nobs = 2765, Jo/n = 2.25492, err = 2.19879
+CostJo   : Nonlinear Jo(Radiosonde) = 3311.35, nobs = 1328, Jo/n = 2.49348, err = 2.06355
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 329.504, nobs = 131, Jo/n = 2.5153, err = 0.000343738
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 615.305, nobs = 796, Jo/n = 0.772996, err = 9.98605
+CostFunction: Nonlinear J = 10491

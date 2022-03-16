@@ -1,29 +1,29 @@
-window begin: 2018-04-14T21:00:00Z
+window begin: 2020-12-14T21:00:00Z
 window length: PT6H
 forecast length: PT6H
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
     - fieldset: Data/fieldsets/ufo.yaml
 initial condition:
-  datetime: 2018-04-14T21:00:00Z
+  datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m,sss]
+                    u_srf,v_srf,f10m]
   datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180414.210000.fv_core.res.nc
-  filename_trcr: 20180414.210000.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.sfc_data.nc
-  filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.coupler.res
+  filename_core: 20201214.210000.fv_core.res.nc
+  filename_trcr: 20201214.210000.fv_tracer.res.nc
+  filename_sfcd: 20201214.210000.sfc_data.nc
+  filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+  filename_cplr: 20201214.210000.coupler.res
 model:
   name: FV3LM
   namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -33,18 +33,18 @@ model:
   lm_do_mst: 0
   model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m,sss]
+                    u_srf,v_srf,f10m]
 observations:
 - obs space:
     name: GnssroBndROPP1D
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
       obsgrouping:
         group variables: [record_number]
         sort variable: impact_height
         sort order: ascending
     obsdataout:
-      obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2018041500_m.nc4
+      obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2020121500_m.nc4
     simulated variables: [bending_angle]
   obs operator:
     name:  GnssroBndROPP1D
@@ -70,13 +70,13 @@ observations:
 - obs space:
     name: GnssroBndROPP2D
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
       obsgrouping:
         group variables: [record_number]
         sort variable: impact_height
         sort order: ascending
     obsdataout:
-      obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
+      obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2020121500_m.nc4
     simulated variables: [bending_angle]
   obs operator:
     name:  GnssroBndROPP2D

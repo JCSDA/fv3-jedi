@@ -1,10 +1,10 @@
 cost function:
   background:
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filename: geos.bkg.20180414_210000z.nc4
+    filename: geos.bkg.20201214_210000z.nc4
     state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
   background error:
     covariance model: hybrid
@@ -37,12 +37,12 @@ cost function:
         covariance model: ensemble
         members from template:
           template:
-            datetime: 2018-04-14T21:00:00Z
+            datetime: 2020-12-14T21:00:00Z
             filetype: cube sphere history
             provider: geos
             state variables: *incvars
             datapath: Data/inputs/geos_c12
-            filename: geos.mem%mem%.20180414_210000z.nc4
+            filename: geos.mem%mem%.20201214_210000z.nc4
           pattern: '%mem%'
           nmembers: 10
           zero padding: 3
@@ -70,9 +70,9 @@ cost function:
       # air_temperature@ObsError. In this way we verify derived variables can be assimilated.
       name: Aircraft
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2018041500_m_renamed_var.nc4
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
       obsdataout:
-        obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2018041500_m.nc4
+        obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2020121500_m.nc4
       simulated variables: [eastward_wind, northward_wind]
       derived simulated variables: [air_temperature]
     obs operator:
@@ -113,7 +113,7 @@ cost function:
   - obs space:
       name: GnssroBndNBAM
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
@@ -140,38 +140,38 @@ cost function:
     - filter: Background Check RONBAM
       filter variables:
       - name: bending_angle
-#  - obs space:
-#      name: AMSUA-NOAA19
-#      obsdatain:
-#        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
-#      simulated variables: [brightness_temperature]
-#      channels: 1-15
-#    obs operator:
-#      name: CRTM
-#      Absorbers: [H2O,O3]
-#      Clouds: [Water, Ice]
-#      Cloud_Fraction: 1.0
-#      obs options:
-#        Sensor_ID: amsua_n19
-#        EndianType: little_endian
-#        CoefficientPath: Data/crtm/
-#    obs error:
-#      covariance model: diagonal
-#    obs filters:
-#    - filter: Bounds Check
-#      filter variables:
-#      - name: brightness_temperature
-#        channels: 1-15
-#      minvalue: 100.0
-#      maxvalue: 500.0
-#    - filter: Background Check
-#      filter variables:
-#      - name: brightness_temperature
-#        channels: 1-15
-#      threshold: 3.0
+  - obs space:
+      name: AMSUA-NOAA19
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-15
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      obs options:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+    obs error:
+      covariance model: diagonal
+    obs filters:
+    - filter: Bounds Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 1-15
+      minvalue: 100.0
+      maxvalue: 500.0
+    - filter: Background Check
+      filter variables:
+      - name: brightness_temperature
+        channels: 1-15
+      threshold: 3.0
   cost type: 4D-Var
   analysis variables: *incvars
-  window begin: 2018-04-14T21:00:00Z
+  window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   variable change:
     variable change name: Analysis2Model

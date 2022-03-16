@@ -11,72 +11,72 @@ geometry:
     - fieldset: Data/fieldsets/ufo.yaml
 
 
-window begin: &date 2018-04-14T21:00:00Z
+window begin: &date 2020-12-14T21:00:00Z
 window length: PT6H
 
 background:
    date: *date
    members:
-   - datetime: 2018-04-15T00:00:00Z
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem001.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem001.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem002.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem002.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem003.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem003.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem004.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem004.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem005.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem005.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem006.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem006.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem007.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem007.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem008.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem008.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem009.20180415_000000z.nc4
-   - datetime: 2018-04-15T00:00:00Z
+     filename: geos.mem009.20201215_000000z.nc4
+   - datetime: 2020-12-15T00:00:00Z
      filetype: cube sphere history
      provider: geos
      state variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
      datapath: Data/inputs/geos_c12/
-     filename: geos.mem010.20180415_000000z.nc4
+     filename: geos.mem010.20201215_000000z.nc4
 
 
 observations:
@@ -85,7 +85,7 @@ observations:
     distribution:
       name: InefficientDistribution
     obsdatain:
-      obsfile: Data/obs/testinput_tier_1/scatwind_obs_2018041500_s.nc4
+      obsfile: Data/obs/testinput_tier_1/scatwind_obs_2020121500_s.nc4
     #simulated variables: [eastward_wind, northward_wind, air_temperature]
     simulated variables: [eastward_wind, northward_wind]
   obs operator:

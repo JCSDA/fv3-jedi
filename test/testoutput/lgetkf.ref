@@ -1,354 +1,354 @@
 Initial state for member 1:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.963644e+01, Max = +9.893482e+01, RMS = +1.974055e+01
-   va                            : Min = -6.877134e+01, Max = +6.481426e+01, RMS = +8.642049e+00
-   t                             : Min = +1.696357e+02, Max = +3.078989e+02, RMS = +2.464178e+02
-   delp                          : Min = +1.000000e+00, Max = +5.131563e+03, RMS = +1.953821e+03
-   q                             : Min = +3.294443e-07, Max = +2.049415e-02, RMS = +4.098207e-03
-   qi                            : Min = +0.000000e+00, Max = +2.987601e-04, RMS = +6.876348e-06
-   ql                            : Min = +0.000000e+00, Max = +4.639251e-04, RMS = +2.298433e-05
-   o3ppmv                        : Min = +2.749585e-08, Max = +5.665370e-05, RMS = +6.272301e-06
+   ua                            : Min = -9.859732e+01, Max = +1.689675e+02, RMS = +2.662092e+01
+   va                            : Min = -1.051706e+02, Max = +1.038981e+02, RMS = +1.122918e+01
+   t                             : Min = +1.666501e+02, Max = +3.050897e+02, RMS = +2.463259e+02
+   delp                          : Min = +1.000000e+00, Max = +5.181863e+03, RMS = +1.953345e+03
+   q                             : Min = +6.953212e-07, Max = +1.943493e-02, RMS = +4.014581e-03
+   qi                            : Min = +0.000000e+00, Max = +2.630451e-04, RMS = +6.259617e-06
+   ql                            : Min = +0.000000e+00, Max = +3.389392e-04, RMS = +2.014415e-05
+   o3ppmv                        : Min = +1.314910e-02, Max = +3.727415e+01, RMS = +3.709061e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 2:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.976531e+01, Max = +9.320896e+01, RMS = +1.974272e+01
-   va                            : Min = -6.242578e+01, Max = +6.546241e+01, RMS = +8.627919e+00
-   t                             : Min = +1.673335e+02, Max = +3.085724e+02, RMS = +2.464222e+02
-   delp                          : Min = +1.000000e+00, Max = +5.131361e+03, RMS = +1.953842e+03
-   q                             : Min = +3.348668e-07, Max = +2.056490e-02, RMS = +4.094372e-03
-   qi                            : Min = +0.000000e+00, Max = +4.622416e-04, RMS = +7.333729e-06
-   ql                            : Min = +0.000000e+00, Max = +5.547214e-04, RMS = +2.348435e-05
-   o3ppmv                        : Min = +2.805960e-08, Max = +5.713717e-05, RMS = +6.269784e-06
+   ua                            : Min = -1.014826e+02, Max = +1.682307e+02, RMS = +2.658992e+01
+   va                            : Min = -1.014380e+02, Max = +1.048050e+02, RMS = +1.119905e+01
+   t                             : Min = +1.647494e+02, Max = +3.046029e+02, RMS = +2.463347e+02
+   delp                          : Min = +1.000000e+00, Max = +5.180858e+03, RMS = +1.953360e+03
+   q                             : Min = +6.930200e-07, Max = +2.047110e-02, RMS = +4.004151e-03
+   qi                            : Min = +0.000000e+00, Max = +2.947250e-04, RMS = +5.944096e-06
+   ql                            : Min = +0.000000e+00, Max = +3.068573e-04, RMS = +2.010141e-05
+   o3ppmv                        : Min = +6.239466e-03, Max = +3.724428e+01, RMS = +3.707973e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 3:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -5.047334e+01, Max = +1.004301e+02, RMS = +1.972890e+01
-   va                            : Min = -6.595000e+01, Max = +6.681798e+01, RMS = +8.648882e+00
-   t                             : Min = +1.723751e+02, Max = +3.078964e+02, RMS = +2.464154e+02
-   delp                          : Min = +1.000000e+00, Max = +5.131439e+03, RMS = +1.953820e+03
-   q                             : Min = +3.421180e-07, Max = +2.041938e-02, RMS = +4.100057e-03
-   qi                            : Min = +0.000000e+00, Max = +3.332088e-04, RMS = +6.714901e-06
-   ql                            : Min = +0.000000e+00, Max = +5.952400e-04, RMS = +2.321799e-05
-   o3ppmv                        : Min = +2.504628e-08, Max = +5.610167e-05, RMS = +6.272816e-06
+   ua                            : Min = -1.006852e+02, Max = +1.693435e+02, RMS = +2.659918e+01
+   va                            : Min = -1.046179e+02, Max = +1.050252e+02, RMS = +1.121078e+01
+   t                             : Min = +1.672309e+02, Max = +3.048986e+02, RMS = +2.463200e+02
+   delp                          : Min = +1.000000e+00, Max = +5.185000e+03, RMS = +1.953332e+03
+   q                             : Min = +6.933686e-07, Max = +1.954405e-02, RMS = +4.001161e-03
+   qi                            : Min = +0.000000e+00, Max = +3.359984e-04, RMS = +6.051355e-06
+   ql                            : Min = +0.000000e+00, Max = +3.199332e-04, RMS = +2.019930e-05
+   o3ppmv                        : Min = +1.191015e-02, Max = +3.743135e+01, RMS = +3.708683e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 4:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -5.025118e+01, Max = +9.997128e+01, RMS = +1.973564e+01
-   va                            : Min = -6.836322e+01, Max = +6.612693e+01, RMS = +8.649824e+00
-   t                             : Min = +1.669867e+02, Max = +3.083421e+02, RMS = +2.464167e+02
-   delp                          : Min = +1.000000e+00, Max = +5.133950e+03, RMS = +1.953802e+03
-   q                             : Min = +3.365683e-07, Max = +2.043995e-02, RMS = +4.090770e-03
-   qi                            : Min = +0.000000e+00, Max = +3.885846e-04, RMS = +7.017198e-06
-   ql                            : Min = +0.000000e+00, Max = +4.295782e-04, RMS = +2.273719e-05
-   o3ppmv                        : Min = +2.753410e-08, Max = +5.661866e-05, RMS = +6.271438e-06
+   ua                            : Min = -1.006405e+02, Max = +1.702600e+02, RMS = +2.662720e+01
+   va                            : Min = -1.038842e+02, Max = +1.042738e+02, RMS = +1.122265e+01
+   t                             : Min = +1.670951e+02, Max = +3.050540e+02, RMS = +2.463178e+02
+   delp                          : Min = +1.000000e+00, Max = +5.184455e+03, RMS = +1.953329e+03
+   q                             : Min = +6.910574e-07, Max = +1.919339e-02, RMS = +4.003456e-03
+   qi                            : Min = +0.000000e+00, Max = +1.858973e-04, RMS = +5.479037e-06
+   ql                            : Min = +0.000000e+00, Max = +3.516113e-04, RMS = +2.057524e-05
+   o3ppmv                        : Min = +9.994841e-03, Max = +3.740868e+01, RMS = +3.706805e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 5:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.800267e+01, Max = +9.726060e+01, RMS = +1.973432e+01
-   va                            : Min = -6.363003e+01, Max = +6.471086e+01, RMS = +8.601290e+00
-   t                             : Min = +1.698771e+02, Max = +3.082317e+02, RMS = +2.464162e+02
-   delp                          : Min = +1.000000e+00, Max = +5.134062e+03, RMS = +1.953806e+03
-   q                             : Min = +3.379613e-07, Max = +2.028195e-02, RMS = +4.097722e-03
-   qi                            : Min = +0.000000e+00, Max = +3.534275e-04, RMS = +7.118992e-06
-   ql                            : Min = +0.000000e+00, Max = +4.505650e-04, RMS = +2.331188e-05
-   o3ppmv                        : Min = +2.831589e-08, Max = +5.664881e-05, RMS = +6.269671e-06
+   ua                            : Min = -1.041713e+02, Max = +1.699353e+02, RMS = +2.658883e+01
+   va                            : Min = -1.024482e+02, Max = +1.053159e+02, RMS = +1.120076e+01
+   t                             : Min = +1.684828e+02, Max = +3.049882e+02, RMS = +2.463221e+02
+   delp                          : Min = +1.000000e+00, Max = +5.190115e+03, RMS = +1.953388e+03
+   q                             : Min = +6.959003e-07, Max = +1.946551e-02, RMS = +4.003594e-03
+   qi                            : Min = +0.000000e+00, Max = +3.380051e-04, RMS = +6.320322e-06
+   ql                            : Min = +0.000000e+00, Max = +3.804009e-04, RMS = +2.003813e-05
+   o3ppmv                        : Min = +1.247787e-02, Max = +3.718097e+01, RMS = +3.708298e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 6:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.996685e+01, Max = +9.724366e+01, RMS = +1.972055e+01
-   va                            : Min = -6.693577e+01, Max = +6.792510e+01, RMS = +8.594844e+00
-   t                             : Min = +1.653220e+02, Max = +3.087620e+02, RMS = +2.464099e+02
-   delp                          : Min = +1.000000e+00, Max = +5.129492e+03, RMS = +1.953833e+03
-   q                             : Min = +3.368993e-07, Max = +2.007766e-02, RMS = +4.081315e-03
-   qi                            : Min = +0.000000e+00, Max = +2.742693e-04, RMS = +6.712604e-06
-   ql                            : Min = +0.000000e+00, Max = +4.532721e-04, RMS = +2.271343e-05
-   o3ppmv                        : Min = +2.524794e-08, Max = +5.648131e-05, RMS = +6.269477e-06
+   ua                            : Min = -1.011465e+02, Max = +1.686854e+02, RMS = +2.660317e+01
+   va                            : Min = -1.044497e+02, Max = +1.043724e+02, RMS = +1.123771e+01
+   t                             : Min = +1.661450e+02, Max = +3.052766e+02, RMS = +2.463279e+02
+   delp                          : Min = +1.000000e+00, Max = +5.177853e+03, RMS = +1.953355e+03
+   q                             : Min = +7.006471e-07, Max = +1.944413e-02, RMS = +3.997090e-03
+   qi                            : Min = +0.000000e+00, Max = +2.398658e-04, RMS = +6.144899e-06
+   ql                            : Min = +0.000000e+00, Max = +3.430035e-04, RMS = +2.030606e-05
+   o3ppmv                        : Min = +1.341319e-02, Max = +3.779930e+01, RMS = +3.708650e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 7:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.921290e+01, Max = +9.488135e+01, RMS = +1.972216e+01
-   va                            : Min = -6.993300e+01, Max = +6.720167e+01, RMS = +8.641958e+00
-   t                             : Min = +1.684024e+02, Max = +3.078021e+02, RMS = +2.464115e+02
-   delp                          : Min = +1.000000e+00, Max = +5.132437e+03, RMS = +1.953822e+03
-   q                             : Min = +3.347811e-07, Max = +2.004878e-02, RMS = +4.094997e-03
-   qi                            : Min = +0.000000e+00, Max = +3.854521e-04, RMS = +6.924473e-06
-   ql                            : Min = +0.000000e+00, Max = +4.555912e-04, RMS = +2.283235e-05
-   o3ppmv                        : Min = +2.593838e-08, Max = +5.614067e-05, RMS = +6.268650e-06
+   ua                            : Min = -1.005486e+02, Max = +1.695532e+02, RMS = +2.662983e+01
+   va                            : Min = -1.059286e+02, Max = +1.054953e+02, RMS = +1.122603e+01
+   t                             : Min = +1.667847e+02, Max = +3.051199e+02, RMS = +2.463389e+02
+   delp                          : Min = +1.000000e+00, Max = +5.187999e+03, RMS = +1.953384e+03
+   q                             : Min = +6.999981e-07, Max = +2.032304e-02, RMS = +4.014641e-03
+   qi                            : Min = +0.000000e+00, Max = +2.585794e-04, RMS = +6.125801e-06
+   ql                            : Min = +0.000000e+00, Max = +3.863768e-04, RMS = +2.015945e-05
+   o3ppmv                        : Min = +1.249861e-02, Max = +3.753463e+01, RMS = +3.708860e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 8:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.949826e+01, Max = +9.708848e+01, RMS = +1.971011e+01
-   va                            : Min = -6.791476e+01, Max = +6.522223e+01, RMS = +8.626051e+00
-   t                             : Min = +1.680683e+02, Max = +3.084557e+02, RMS = +2.464168e+02
-   delp                          : Min = +1.000000e+00, Max = +5.128688e+03, RMS = +1.953813e+03
-   q                             : Min = +3.367893e-07, Max = +2.060212e-02, RMS = +4.086157e-03
-   qi                            : Min = +0.000000e+00, Max = +3.649875e-04, RMS = +6.889417e-06
-   ql                            : Min = +0.000000e+00, Max = +5.783561e-04, RMS = +2.327293e-05
-   o3ppmv                        : Min = +2.813491e-08, Max = +5.664321e-05, RMS = +6.270702e-06
+   ua                            : Min = -9.789752e+01, Max = +1.690793e+02, RMS = +2.660602e+01
+   va                            : Min = -1.046856e+02, Max = +1.055105e+02, RMS = +1.124836e+01
+   t                             : Min = +1.663010e+02, Max = +3.048885e+02, RMS = +2.463285e+02
+   delp                          : Min = +1.000000e+00, Max = +5.181545e+03, RMS = +1.953340e+03
+   q                             : Min = +7.013338e-07, Max = +1.994473e-02, RMS = +4.014392e-03
+   qi                            : Min = +0.000000e+00, Max = +2.459840e-04, RMS = +5.919932e-06
+   ql                            : Min = +0.000000e+00, Max = +3.611799e-04, RMS = +1.994917e-05
+   o3ppmv                        : Min = +4.893768e-03, Max = +3.729860e+01, RMS = +3.708012e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 9:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -5.140660e+01, Max = +9.979353e+01, RMS = +1.975765e+01
-   va                            : Min = -6.614242e+01, Max = +6.408265e+01, RMS = +8.643364e+00
-   t                             : Min = +1.707375e+02, Max = +3.081595e+02, RMS = +2.464155e+02
-   delp                          : Min = +1.000000e+00, Max = +5.133889e+03, RMS = +1.953838e+03
-   q                             : Min = +3.394476e-07, Max = +2.006521e-02, RMS = +4.091741e-03
-   qi                            : Min = +0.000000e+00, Max = +3.595418e-04, RMS = +7.049258e-06
-   ql                            : Min = +0.000000e+00, Max = +5.602673e-04, RMS = +2.323016e-05
-   o3ppmv                        : Min = +2.897630e-08, Max = +5.639257e-05, RMS = +6.270611e-06
+   ua                            : Min = -1.005406e+02, Max = +1.678048e+02, RMS = +2.660701e+01
+   va                            : Min = -1.038221e+02, Max = +1.044941e+02, RMS = +1.120737e+01
+   t                             : Min = +1.680240e+02, Max = +3.053170e+02, RMS = +2.463218e+02
+   delp                          : Min = +1.000000e+00, Max = +5.171823e+03, RMS = +1.953350e+03
+   q                             : Min = +6.959519e-07, Max = +1.971267e-02, RMS = +4.004418e-03
+   qi                            : Min = +0.000000e+00, Max = +2.546552e-04, RMS = +5.752056e-06
+   ql                            : Min = +0.000000e+00, Max = +3.157480e-04, RMS = +2.070095e-05
+   o3ppmv                        : Min = +1.276234e-02, Max = +3.737193e+01, RMS = +3.710001e+00
  -----------------------------------------------------------------------------------------------
 Initial state for member 10:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -5.019510e+01, Max = +9.375143e+01, RMS = +1.972762e+01
-   va                            : Min = -6.437849e+01, Max = +6.238200e+01, RMS = +8.604856e+00
-   t                             : Min = +1.722173e+02, Max = +3.085423e+02, RMS = +2.464151e+02
-   delp                          : Min = +1.000000e+00, Max = +5.130837e+03, RMS = +1.953824e+03
-   q                             : Min = +3.244969e-07, Max = +2.021214e-02, RMS = +4.099368e-03
-   qi                            : Min = +0.000000e+00, Max = +3.833685e-04, RMS = +7.205461e-06
-   ql                            : Min = +0.000000e+00, Max = +5.516281e-04, RMS = +2.339478e-05
-   o3ppmv                        : Min = +2.940750e-08, Max = +5.748485e-05, RMS = +6.268882e-06
+   ua                            : Min = -1.037544e+02, Max = +1.692399e+02, RMS = +2.659261e+01
+   va                            : Min = -1.042085e+02, Max = +1.046154e+02, RMS = +1.122234e+01
+   t                             : Min = +1.675946e+02, Max = +3.050028e+02, RMS = +2.463073e+02
+   delp                          : Min = +1.000000e+00, Max = +5.181519e+03, RMS = +1.953332e+03
+   q                             : Min = +6.963272e-07, Max = +1.905469e-02, RMS = +3.999013e-03
+   qi                            : Min = +0.000000e+00, Max = +2.046299e-04, RMS = +5.536679e-06
+   ql                            : Min = +0.000000e+00, Max = +3.436368e-04, RMS = +1.980564e-05
+   o3ppmv                        : Min = +1.079265e-02, Max = +3.766456e+01, RMS = +3.707623e+00
  -----------------------------------------------------------------------------------------------
 H(x) for member 1:
-Radiosonde nobs= 2 Min=-6.90484, Max=-2.16022, RMS=5.11583
+Radiosonde nobs= 2 Min=-2.19298, Max=10.8965, RMS=7.85951
 H(x) for member 2:
-Radiosonde nobs= 2 Min=-6.23055, Max=-2.04117, RMS=4.63606
+Radiosonde nobs= 2 Min=-2.71201, Max=10.0708, RMS=7.37481
 H(x) for member 3:
-Radiosonde nobs= 2 Min=-6.39035, Max=-2.21036, RMS=4.78133
+Radiosonde nobs= 2 Min=-3.2896, Max=10.7521, RMS=7.95073
 H(x) for member 4:
-Radiosonde nobs= 2 Min=-6.70063, Max=-1.89589, RMS=4.92407
+Radiosonde nobs= 2 Min=-1.93592, Max=11.3289, RMS=8.12683
 H(x) for member 5:
-Radiosonde nobs= 2 Min=-6.16918, Max=-1.90565, RMS=4.56565
+Radiosonde nobs= 2 Min=-3.04646, Max=10.8896, RMS=7.99577
 H(x) for member 6:
-Radiosonde nobs= 2 Min=-6.87396, Max=-1.5581, RMS=4.98392
+Radiosonde nobs= 2 Min=-1.99672, Max=11.8334, RMS=8.48573
 H(x) for member 7:
-Radiosonde nobs= 2 Min=-6.35024, Max=-1.52916, RMS=4.61865
+Radiosonde nobs= 2 Min=-1.78117, Max=11.6802, RMS=8.3546
 H(x) for member 8:
-Radiosonde nobs= 2 Min=-6.70284, Max=-1.60208, RMS=4.87313
+Radiosonde nobs= 2 Min=-2.91296, Max=10.9496, RMS=8.01186
 H(x) for member 9:
-Radiosonde nobs= 2 Min=-6.73085, Max=-1.72271, RMS=4.91284
+Radiosonde nobs= 2 Min=-2.43482, Max=10.8186, RMS=7.84128
 H(x) for member 10:
-Radiosonde nobs= 2 Min=-7.20947, Max=-1.8822, RMS=5.26873
+Radiosonde nobs= 2 Min=-2.91473, Max=10.8639, RMS=7.95362
 H(Zx) - ymean for member 1 eig 1 :
-Radiosonde nobs= 2 Min=-0.36881, Max=-0.331968, RMS=0.350873
+Radiosonde nobs= 2 Min=-0.133255, Max=0.391802, RMS=0.292631
 H(Zx) - ymean for member 1 eig 2 :
-Radiosonde nobs= 2 Min=-0.129902, Max=-0.116926, RMS=0.123584
+Radiosonde nobs= 2 Min=-0.0469351, Max=0.138, RMS=0.10307
 H(Zx) - ymean for member 1 eig 3 :
-Radiosonde nobs= 2 Min=-0.0555833, Max=-0.050031, RMS=0.0528801
+Radiosonde nobs= 2 Min=-0.0200829, Max=0.0590486, RMS=0.0441025
 H(Zx) - ymean for member 1 eig 4 :
-Radiosonde nobs= 2 Min=-0.0460069, Max=-0.0414111, RMS=0.0437693
+Radiosonde nobs= 2 Min=-0.0166228, Max=0.0488751, RMS=0.0365041
 H(Zx) - ymean for member 2 eig 1 :
-Radiosonde nobs= 2 Min=-0.22693, Max=0.471631, RMS=0.37009
+Radiosonde nobs= 2 Min=-1.11738, Max=-0.22676, RMS=0.806212
 H(Zx) - ymean for member 2 eig 2 :
-Radiosonde nobs= 2 Min=-0.0799291, Max=0.166117, RMS=0.130353
+Radiosonde nobs= 2 Min=-0.393562, Max=-0.0798692, RMS=0.283963
 H(Zx) - ymean for member 2 eig 3 :
-Radiosonde nobs= 2 Min=-0.0342006, Max=0.0710796, RMS=0.0557763
+Radiosonde nobs= 2 Min=-0.1684, Max=-0.034175, RMS=0.121504
 H(Zx) - ymean for member 2 eig 4 :
-Radiosonde nobs= 2 Min=-0.0283082, Max=0.0588332, RMS=0.0461665
+Radiosonde nobs= 2 Min=-0.139387, Max=-0.028287, RMS=0.10057
 H(Zx) - ymean for member 3 eig 1 :
-Radiosonde nobs= 2 Min=-0.428563, Max=0.281184, RMS=0.362444
+Radiosonde nobs= 2 Min=-0.915119, Max=-0.305454, RMS=0.682182
 H(Zx) - ymean for member 3 eig 2 :
-Radiosonde nobs= 2 Min=-0.150948, Max=0.0990384, RMS=0.12766
+Radiosonde nobs= 2 Min=-0.322323, Max=-0.107587, RMS=0.240278
 H(Zx) - ymean for member 3 eig 3 :
-Radiosonde nobs= 2 Min=-0.0645889, Max=0.0423773, RMS=0.054624
+Radiosonde nobs= 2 Min=-0.137918, Max=-0.046035, RMS=0.102812
 H(Zx) - ymean for member 3 eig 4 :
-Radiosonde nobs= 2 Min=-0.0534608, Max=0.035076, RMS=0.0452128
+Radiosonde nobs= 2 Min=-0.114156, Max=-0.0381036, RMS=0.0850983
 H(Zx) - ymean for member 4 eig 1 :
-Radiosonde nobs= 2 Min=-0.088595, Max=-0.0537971, RMS=0.0732912
+Radiosonde nobs= 2 Min=0.381962, Max=0.698164, RMS=0.562729
 H(Zx) - ymean for member 4 eig 2 :
-Radiosonde nobs= 2 Min=-0.0312049, Max=-0.0189484, RMS=0.0258146
+Radiosonde nobs= 2 Min=0.134534, Max=0.245907, RMS=0.198204
 H(Zx) - ymean for member 4 eig 3 :
-Radiosonde nobs= 2 Min=-0.0133522, Max=-0.00810777, RMS=0.0110457
+Radiosonde nobs= 2 Min=0.0575655, Max=0.10522, RMS=0.0848089
 H(Zx) - ymean for member 4 eig 4 :
-Radiosonde nobs= 2 Min=-0.0110517, Max=-0.00671087, RMS=0.00914265
+Radiosonde nobs= 2 Min=0.0476475, Max=0.0870919, RMS=0.0701972
 H(Zx) - ymean for member 5 eig 1 :
-Radiosonde nobs= 2 Min=-0.0654241, Max=0.54477, RMS=0.387979
+Radiosonde nobs= 2 Min=-0.625354, Max=-0.14151, RMS=0.453372
 H(Zx) - ymean for member 5 eig 2 :
-Radiosonde nobs= 2 Min=-0.0230436, Max=0.191879, RMS=0.136654
+Radiosonde nobs= 2 Min=-0.220262, Max=-0.0498425, RMS=0.159686
 H(Zx) - ymean for member 5 eig 3 :
-Radiosonde nobs= 2 Min=-0.00986008, Max=0.0821024, RMS=0.0584723
+Radiosonde nobs= 2 Min=-0.0942472, Max=-0.021327, RMS=0.0683278
 H(Zx) - ymean for member 5 eig 4 :
-Radiosonde nobs= 2 Min=-0.00816128, Max=0.0679569, RMS=0.0483981
+Radiosonde nobs= 2 Min=-0.0780093, Max=-0.0176525, RMS=0.0565556
 H(Zx) - ymean for member 6 eig 1 :
-Radiosonde nobs= 2 Min=-0.295164, Max=0.34878, RMS=0.323086
+Radiosonde nobs= 2 Min=0.625702, Max=0.983213, RMS=0.824078
 H(Zx) - ymean for member 6 eig 2 :
-Radiosonde nobs= 2 Min=-0.103963, Max=0.122847, RMS=0.113797
+Radiosonde nobs= 2 Min=0.220384, Max=0.346306, RMS=0.290256
 H(Zx) - ymean for member 6 eig 3 :
-Radiosonde nobs= 2 Min=-0.0444843, Max=0.0525647, RMS=0.0486924
+Radiosonde nobs= 2 Min=0.0942996, Max=0.14818, RMS=0.124197
 H(Zx) - ymean for member 6 eig 4 :
-Radiosonde nobs= 2 Min=-0.03682, Max=0.0435083, RMS=0.0403031
+Radiosonde nobs= 2 Min=0.0780527, Max=0.12265, RMS=0.102799
 H(Zx) - ymean for member 7 eig 1 :
-Radiosonde nobs= 2 Min=0.328988, Max=0.383263, RMS=0.357158
+Radiosonde nobs= 2 Min=0.800633, Max=0.882586, RMS=0.842607
 H(Zx) - ymean for member 7 eig 2 :
-Radiosonde nobs= 2 Min=0.115876, Max=0.134993, RMS=0.125798
+Radiosonde nobs= 2 Min=0.281999, Max=0.310864, RMS=0.296782
 H(Zx) - ymean for member 7 eig 3 :
-Radiosonde nobs= 2 Min=0.0495818, Max=0.0577617, RMS=0.0538274
+Radiosonde nobs= 2 Min=0.120664, Max=0.133015, RMS=0.126989
 H(Zx) - ymean for member 7 eig 4 :
-Radiosonde nobs= 2 Min=0.0410393, Max=0.0478099, RMS=0.0445534
+Radiosonde nobs= 2 Min=0.0998744, Max=0.110098, RMS=0.10511
 H(Zx) - ymean for member 8 eig 1 :
-Radiosonde nobs= 2 Min=-0.0912279, Max=0.296363, RMS=0.219264
+Radiosonde nobs= 2 Min=-0.466246, Max=-0.069984, RMS=0.333379
 H(Zx) - ymean for member 8 eig 2 :
-Radiosonde nobs= 2 Min=-0.0321322, Max=0.104385, RMS=0.0772291
+Radiosonde nobs= 2 Min=-0.164221, Max=-0.0246497, RMS=0.117422
 H(Zx) - ymean for member 8 eig 3 :
-Radiosonde nobs= 2 Min=-0.013749, Max=0.0446649, RMS=0.0330454
+Radiosonde nobs= 2 Min=-0.070268, Max=-0.0105473, RMS=0.0502436
 H(Zx) - ymean for member 8 eig 4 :
-Radiosonde nobs= 2 Min=-0.0113801, Max=0.0369696, RMS=0.027352
+Radiosonde nobs= 2 Min=-0.0581615, Max=-0.0087301, RMS=0.0415871
 H(Zx) - ymean for member 9 eig 1 :
-Radiosonde nobs= 2 Min=-0.124606, Max=0.152597, RMS=0.139306
+Radiosonde nobs= 2 Min=-0.226088, Max=0.103582, RMS=0.175848
 H(Zx) - ymean for member 9 eig 2 :
-Radiosonde nobs= 2 Min=-0.0438888, Max=0.0537475, RMS=0.0490664
+Radiosonde nobs= 2 Min=-0.0796324, Max=0.0364835, RMS=0.0619369
 H(Zx) - ymean for member 9 eig 3 :
-Radiosonde nobs= 2 Min=-0.0187795, Max=0.0229979, RMS=0.0209949
+Radiosonde nobs= 2 Min=-0.0340737, Max=0.0156108, RMS=0.026502
 H(Zx) - ymean for member 9 eig 4 :
-Radiosonde nobs= 2 Min=-0.0155439, Max=0.0190356, RMS=0.0173777
+Radiosonde nobs= 2 Min=-0.0282031, Max=0.0129212, RMS=0.021936
 H(Zx) - ymean for member 10 eig 1 :
-Radiosonde nobs= 2 Min=-0.695011, Max=-0.0374794, RMS=0.492161
+Radiosonde nobs= 2 Min=-0.468357, Max=-0.172138, RMS=0.352838
 H(Zx) - ymean for member 10 eig 2 :
-Radiosonde nobs= 2 Min=-0.244796, Max=-0.013201, RMS=0.173349
+Radiosonde nobs= 2 Min=-0.164964, Max=-0.0606302, RMS=0.124276
 H(Zx) - ymean for member 10 eig 3 :
-Radiosonde nobs= 2 Min=-0.104745, Max=-0.00564853, RMS=0.0741737
+Radiosonde nobs= 2 Min=-0.0705862, Max=-0.0259429, RMS=0.0531763
 H(Zx) - ymean for member 10 eig 4 :
-Radiosonde nobs= 2 Min=-0.0866986, Max=-0.00467534, RMS=0.0613942
+Radiosonde nobs= 2 Min=-0.0584248, Max=-0.0214732, RMS=0.0440145
 H(x) ensemble background mean: 
-Radiosonde nobs= 2 Min=-6.62629, Max=-1.85075, RMS=4.86482
+Radiosonde nobs= 2 Min=-2.52174, Max=11.0084, RMS=7.98571
 background y - H(x): 
-Radiosonde nobs= 2 Min=-1.14925, Max=1.22629, RMS=1.18839
+Radiosonde nobs= 2 Min=-1.70835, Max=0.421737, RMS=1.24425
 Background mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.979848e+01, Max = +9.422192e+01, RMS = +1.969686e+01
-   va                            : Min = -6.568660e+01, Max = +6.394783e+01, RMS = +8.545029e+00
-   t                             : Min = +1.695835e+02, Max = +3.082663e+02, RMS = +2.464151e+02
-   delp                          : Min = +1.000000e+00, Max = +5.131772e+03, RMS = +1.953822e+03
-   q                             : Min = +3.391868e-07, Max = +2.032063e-02, RMS = +4.090622e-03
-   qi                            : Min = +0.000000e+00, Max = +2.902276e-04, RMS = +6.466769e-06
-   ql                            : Min = +0.000000e+00, Max = +3.410393e-04, RMS = +2.091212e-05
-   o3ppmv                        : Min = +2.849704e-08, Max = +5.663026e-05, RMS = +6.269728e-06
+   ua                            : Min = -1.000569e+02, Max = +1.690252e+02, RMS = +2.657874e+01
+   va                            : Min = -1.039744e+02, Max = +1.045786e+02, RMS = +1.115488e+01
+   t                             : Min = +1.675871e+02, Max = +3.048224e+02, RMS = +2.463239e+02
+   delp                          : Min = +1.000000e+00, Max = +5.182303e+03, RMS = +1.953351e+03
+   q                             : Min = +6.962926e-07, Max = +1.911462e-02, RMS = +4.002334e-03
+   qi                            : Min = +0.000000e+00, Max = +2.128896e-04, RMS = +5.421187e-06
+   ql                            : Min = +0.000000e+00, Max = +2.797111e-04, RMS = +1.853791e-05
+   o3ppmv                        : Min = +1.370352e-02, Max = +3.742085e+01, RMS = +3.707934e+00
  -----------------------------------------------------------------------------------------------
 Analysis mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -4.979848e+01, Max = +9.422192e+01, RMS = +1.969685e+01
-   va                            : Min = -6.568660e+01, Max = +6.394783e+01, RMS = +8.545029e+00
-   t                             : Min = +1.695835e+02, Max = +3.082663e+02, RMS = +2.464151e+02
-   delp                          : Min = +1.000000e+00, Max = +5.131772e+03, RMS = +1.953822e+03
-   q                             : Min = +3.391868e-07, Max = +2.032063e-02, RMS = +4.090646e-03
-   qi                            : Min = +0.000000e+00, Max = +2.902276e-04, RMS = +6.466764e-06
-   ql                            : Min = +0.000000e+00, Max = +3.410393e-04, RMS = +2.091184e-05
-   o3ppmv                        : Min = +2.849704e-08, Max = +5.663026e-05, RMS = +6.269728e-06
+   ua                            : Min = -1.000569e+02, Max = +1.690252e+02, RMS = +2.657867e+01
+   va                            : Min = -1.039744e+02, Max = +1.045786e+02, RMS = +1.115487e+01
+   t                             : Min = +1.675871e+02, Max = +3.048224e+02, RMS = +2.463239e+02
+   delp                          : Min = +1.000000e+00, Max = +5.182303e+03, RMS = +1.953352e+03
+   q                             : Min = +6.962926e-07, Max = +1.911462e-02, RMS = +4.002338e-03
+   qi                            : Min = +0.000000e+00, Max = +2.128896e-04, RMS = +5.420545e-06
+   ql                            : Min = +0.000000e+00, Max = +2.796385e-04, RMS = +1.854085e-05
+   o3ppmv                        : Min = +1.370705e-02, Max = +3.742085e+01, RMS = +3.707934e+00
  -----------------------------------------------------------------------------------------------
 H(x) for member 1:
-Radiosonde nobs= 2 Min=-6.88882, Max=-2.17768, RMS=5.10872
+Radiosonde nobs= 2 Min=-2.21272, Max=10.8458, RMS=7.82709
 H(x) for member 2:
-Radiosonde nobs= 2 Min=-6.20351, Max=-2.05626, RMS=4.62124
+Radiosonde nobs= 2 Min=-2.73365, Max=10.0123, RMS=7.33893
 H(x) for member 3:
-Radiosonde nobs= 2 Min=-6.36597, Max=-2.22851, RMS=4.76927
+Radiosonde nobs= 2 Min=-3.32133, Max=10.7049, RMS=7.92547
 H(x) for member 4:
-Radiosonde nobs= 2 Min=-6.6812, Max=-1.90858, RMS=4.9133
+Radiosonde nobs= 2 Min=-1.95482, Max=11.2822, RMS=8.09655
 H(x) for member 5:
-Radiosonde nobs= 2 Min=-6.1411, Max=-1.91831, RMS=4.54934
+Radiosonde nobs= 2 Min=-3.07606, Max=10.843, RMS=7.9697
 H(x) for member 6:
-Radiosonde nobs= 2 Min=-6.85724, Max=-1.56485, RMS=4.97345
+Radiosonde nobs= 2 Min=-2.01884, Max=11.7932, RMS=8.46035
 H(x) for member 7:
-Radiosonde nobs= 2 Min=-6.32499, Max=-1.5352, RMS=4.6023
+Radiosonde nobs= 2 Min=-1.80003, Max=11.637, RMS=8.32648
 H(x) for member 8:
-Radiosonde nobs= 2 Min=-6.68335, Max=-1.60955, RMS=4.86096
+Radiosonde nobs= 2 Min=-2.94131, Max=10.9031, RMS=7.98524
 H(x) for member 9:
-Radiosonde nobs= 2 Min=-6.71185, Max=-1.73234, RMS=4.90153
+Radiosonde nobs= 2 Min=-2.45697, Max=10.7681, RMS=7.80989
 H(x) for member 10:
-Radiosonde nobs= 2 Min=-7.19831, Max=-1.89484, RMS=5.26337
+Radiosonde nobs= 2 Min=-2.94267, Max=10.8163, RMS=7.92627
 H(Zx) - ymean for member 1 eig 1 :
-Radiosonde nobs= 2 Min=-0.375484, Max=-0.337493, RMS=0.356994
+Radiosonde nobs= 2 Min=-0.13684, Max=0.397009, RMS=0.296936
 H(Zx) - ymean for member 1 eig 2 :
-Radiosonde nobs= 2 Min=-0.132253, Max=-0.118871, RMS=0.12574
+Radiosonde nobs= 2 Min=-0.0481977, Max=0.139834, RMS=0.104586
 H(Zx) - ymean for member 1 eig 3 :
-Radiosonde nobs= 2 Min=-0.0565893, Max=-0.0508635, RMS=0.0538027
+Radiosonde nobs= 2 Min=-0.0206232, Max=0.0598334, RMS=0.0447512
 H(Zx) - ymean for member 1 eig 4 :
-Radiosonde nobs= 2 Min=-0.0468395, Max=-0.0421002, RMS=0.044533
+Radiosonde nobs= 2 Min=-0.01707, Max=0.0495246, RMS=0.037041
 H(Zx) - ymean for member 2 eig 1 :
-Radiosonde nobs= 2 Min=-0.230781, Max=0.479235, RMS=0.376116
+Radiosonde nobs= 2 Min=-1.13008, Max=-0.223824, RMS=0.814609
 H(Zx) - ymean for member 2 eig 2 :
-Radiosonde nobs= 2 Min=-0.0812855, Max=0.168796, RMS=0.132475
+Radiosonde nobs= 2 Min=-0.398036, Max=-0.078835, RMS=0.286921
 H(Zx) - ymean for member 2 eig 3 :
-Radiosonde nobs= 2 Min=-0.034781, Max=0.0722256, RMS=0.0566845
+Radiosonde nobs= 2 Min=-0.170314, Max=-0.0337325, RMS=0.12277
 H(Zx) - ymean for member 2 eig 4 :
-Radiosonde nobs= 2 Min=-0.0287886, Max=0.0597818, RMS=0.0469183
+Radiosonde nobs= 2 Min=-0.140971, Max=-0.0279207, RMS=0.101618
 H(Zx) - ymean for member 3 eig 1 :
-Radiosonde nobs= 2 Min=-0.436067, Max=0.285622, RMS=0.368602
+Radiosonde nobs= 2 Min=-0.924209, Max=-0.30471, RMS=0.688118
 H(Zx) - ymean for member 3 eig 2 :
-Radiosonde nobs= 2 Min=-0.153591, Max=0.100602, RMS=0.129829
+Radiosonde nobs= 2 Min=-0.325524, Max=-0.107325, RMS=0.242368
 H(Zx) - ymean for member 3 eig 3 :
-Radiosonde nobs= 2 Min=-0.0657197, Max=0.0430462, RMS=0.055552
+Radiosonde nobs= 2 Min=-0.139288, Max=-0.0459229, RMS=0.103706
 H(Zx) - ymean for member 3 eig 4 :
-Radiosonde nobs= 2 Min=-0.0543968, Max=0.0356297, RMS=0.0459809
+Radiosonde nobs= 2 Min=-0.11529, Max=-0.0380108, RMS=0.0858387
 H(Zx) - ymean for member 4 eig 1 :
-Radiosonde nobs= 2 Min=-0.0900548, Max=-0.0547859, RMS=0.0745364
+Radiosonde nobs= 2 Min=0.383236, Max=0.704357, RMS=0.567005
 H(Zx) - ymean for member 4 eig 2 :
-Radiosonde nobs= 2 Min=-0.031719, Max=-0.0192967, RMS=0.0262532
+Radiosonde nobs= 2 Min=0.134983, Max=0.248088, RMS=0.19971
 H(Zx) - ymean for member 4 eig 3 :
-Radiosonde nobs= 2 Min=-0.0135722, Max=-0.0082568, RMS=0.0112334
+Radiosonde nobs= 2 Min=0.0577576, Max=0.106154, RMS=0.0854534
 H(Zx) - ymean for member 4 eig 4 :
-Radiosonde nobs= 2 Min=-0.0112338, Max=-0.00683423, RMS=0.00929799
+Radiosonde nobs= 2 Min=0.0478065, Max=0.0878645, RMS=0.0707306
 H(Zx) - ymean for member 5 eig 1 :
-Radiosonde nobs= 2 Min=-0.0663795, Max=0.553618, RMS=0.394271
+Radiosonde nobs= 2 Min=-0.631901, Max=-0.14017, RMS=0.457682
 H(Zx) - ymean for member 5 eig 2 :
-Radiosonde nobs= 2 Min=-0.0233801, Max=0.194995, RMS=0.13887
+Radiosonde nobs= 2 Min=-0.222568, Max=-0.0493705, RMS=0.161205
 H(Zx) - ymean for member 5 eig 3 :
-Radiosonde nobs= 2 Min=-0.0100041, Max=0.0834358, RMS=0.0594206
+Radiosonde nobs= 2 Min=-0.0952339, Max=-0.021125, RMS=0.0689774
 H(Zx) - ymean for member 5 eig 4 :
-Radiosonde nobs= 2 Min=-0.00828045, Max=0.0690606, RMS=0.049183
+Radiosonde nobs= 2 Min=-0.078826, Max=-0.0174854, RMS=0.0570932
 H(Zx) - ymean for member 6 eig 1 :
-Radiosonde nobs= 2 Min=-0.299856, Max=0.354862, RMS=0.328512
+Radiosonde nobs= 2 Min=0.62806, Max=0.992282, RMS=0.830387
 H(Zx) - ymean for member 6 eig 2 :
-Radiosonde nobs= 2 Min=-0.105615, Max=0.124989, RMS=0.115708
+Radiosonde nobs= 2 Min=0.221215, Max=0.349501, RMS=0.292478
 H(Zx) - ymean for member 6 eig 3 :
-Radiosonde nobs= 2 Min=-0.0451914, Max=0.0534812, RMS=0.0495101
+Radiosonde nobs= 2 Min=0.094655, Max=0.149547, RMS=0.125148
 H(Zx) - ymean for member 6 eig 4 :
-Radiosonde nobs= 2 Min=-0.0374053, Max=0.0442669, RMS=0.04098
+Radiosonde nobs= 2 Min=0.0783469, Max=0.123781, RMS=0.103586
 H(Zx) - ymean for member 7 eig 1 :
-Radiosonde nobs= 2 Min=0.334468, Max=0.390194, RMS=0.363401
+Radiosonde nobs= 2 Min=0.806175, Max=0.888833, RMS=0.848511
 H(Zx) - ymean for member 7 eig 2 :
-Radiosonde nobs= 2 Min=0.117806, Max=0.137434, RMS=0.127997
+Radiosonde nobs= 2 Min=0.28395, Max=0.313064, RMS=0.298862
 H(Zx) - ymean for member 7 eig 3 :
-Radiosonde nobs= 2 Min=0.0504077, Max=0.0588062, RMS=0.0547682
+Radiosonde nobs= 2 Min=0.121499, Max=0.133956, RMS=0.127879
 H(Zx) - ymean for member 7 eig 4 :
-Radiosonde nobs= 2 Min=0.041723, Max=0.0486744, RMS=0.0453321
+Radiosonde nobs= 2 Min=0.100566, Max=0.110877, RMS=0.105847
 H(Zx) - ymean for member 8 eig 1 :
-Radiosonde nobs= 2 Min=-0.0926168, Max=0.301591, RMS=0.223086
+Radiosonde nobs= 2 Min=-0.471304, Max=-0.0685456, RMS=0.336768
 H(Zx) - ymean for member 8 eig 2 :
-Radiosonde nobs= 2 Min=-0.0326214, Max=0.106226, RMS=0.0785754
+Radiosonde nobs= 2 Min=-0.166002, Max=-0.0241431, RMS=0.118616
 H(Zx) - ymean for member 8 eig 3 :
-Radiosonde nobs= 2 Min=-0.0139583, Max=0.0454529, RMS=0.0336214
+Radiosonde nobs= 2 Min=-0.0710302, Max=-0.0103305, RMS=0.0507544
 H(Zx) - ymean for member 8 eig 4 :
-Radiosonde nobs= 2 Min=-0.0115534, Max=0.0376218, RMS=0.0278287
+Radiosonde nobs= 2 Min=-0.0587924, Max=-0.00855066, RMS=0.0420099
 H(Zx) - ymean for member 9 eig 1 :
-Radiosonde nobs= 2 Min=-0.126585, Max=0.155259, RMS=0.14165
+Radiosonde nobs= 2 Min=-0.229396, Max=0.105909, RMS=0.178661
 H(Zx) - ymean for member 9 eig 2 :
-Radiosonde nobs= 2 Min=-0.0445858, Max=0.0546853, RMS=0.0498918
+Radiosonde nobs= 2 Min=-0.0807977, Max=0.0373032, RMS=0.0629277
 H(Zx) - ymean for member 9 eig 3 :
-Radiosonde nobs= 2 Min=-0.0190777, Max=0.0233992, RMS=0.0213481
+Radiosonde nobs= 2 Min=-0.0345723, Max=0.0159616, RMS=0.026926
 H(Zx) - ymean for member 9 eig 4 :
-Radiosonde nobs= 2 Min=-0.0157908, Max=0.0193677, RMS=0.01767
+Radiosonde nobs= 2 Min=-0.0286158, Max=0.0132115, RMS=0.0222869
 H(Zx) - ymean for member 10 eig 1 :
-Radiosonde nobs= 2 Min=-0.706338, Max=-0.0384083, RMS=0.500194
+Radiosonde nobs= 2 Min=-0.472931, Max=-0.171952, RMS=0.355831
 H(Zx) - ymean for member 10 eig 2 :
-Radiosonde nobs= 2 Min=-0.248786, Max=-0.0135282, RMS=0.176178
+Radiosonde nobs= 2 Min=-0.166575, Max=-0.060565, RMS=0.12533
 H(Zx) - ymean for member 10 eig 3 :
-Radiosonde nobs= 2 Min=-0.106452, Max=-0.00578853, RMS=0.0753843
+Radiosonde nobs= 2 Min=-0.0712755, Max=-0.025915, RMS=0.0536273
 H(Zx) - ymean for member 10 eig 4 :
-Radiosonde nobs= 2 Min=-0.0881115, Max=-0.00479122, RMS=0.0623963
+Radiosonde nobs= 2 Min=-0.0589954, Max=-0.0214501, RMS=0.0443878
 H(x) ensemble analysis mean: 
-Radiosonde nobs= 2 Min=-6.60563, Max=-1.86261, RMS=4.85303
+Radiosonde nobs= 2 Min=-2.54584, Max=10.9606, RMS=7.95662
 analysis y - H(x): 
-Radiosonde nobs= 2 Min=-1.13739, Max=1.20563, RMS=1.17201
-ombg RMS: 1.18839
-oman RMS: 1.17201
+Radiosonde nobs= 2 Min=-1.66058, Max=0.445841, RMS=1.21579
+ombg RMS: 1.24425
+oman RMS: 1.21579

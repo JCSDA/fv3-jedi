@@ -2,23 +2,23 @@ geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   layout: [1,2]
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 initial condition:
-  datetime: 2018-04-15T00:00:00Z
+  datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
   state variables: &state_vars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]
   datapath: Data/inputs/gfs_c12/bkg
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
 background error:
   covariance model: SABER
   saber blocks:
@@ -40,44 +40,44 @@ background error:
       input:
       - parameter: nicas_norm
         set datetime on read: true
-        datetime: 2018-04-15T00:00:00Z
+        datetime: 2020-12-15T00:00:00Z
         filetype: fms restart
         datapath: Data/staticb/
         psinfile: true
-        filename_core: 20180415.000000.nicas_norm.fv_core.res.nc
-        filename_trcr: 20180415.000000.nicas_norm.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.nicas_norm.sfc_data.nc
-        filename_sfcw: 20180415.000000.nicas_norm.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.nicas_norm.coupler.res
-        date: 2018-04-15T00:00:00Z
+        filename_core: 20201215.000000.nicas_norm.fv_core.res.nc
+        filename_trcr: 20201215.000000.nicas_norm.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.nicas_norm.sfc_data.nc
+        filename_sfcw: 20201215.000000.nicas_norm.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.nicas_norm.coupler.res
+        date: 2020-12-15T00:00:00Z
       universe radius:
-        datetime: 2018-04-15T00:00:00Z
+        datetime: 2020-12-15T00:00:00Z
         set datetime on read: true
         filetype: fms restart
         psinfile: true
         datapath: Data/staticb/
-        filename_core: 20180415.000000.cor_rh.fv_core.res.nc
-        filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
-        filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.cor_rh.coupler.res
-        date: 2018-04-15T00:00:00Z
+        filename_core: 20201215.000000.cor_rh.fv_core.res.nc
+        filename_trcr: 20201215.000000.cor_rh.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.cor_rh.sfc_data.nc
+        filename_sfcw: 20201215.000000.cor_rh.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.cor_rh.coupler.res
+        date: 2020-12-15T00:00:00Z
   - saber block name: StdDev
     input variables: *control_vars
     output variables: *control_vars
     active variables: *active_vars
     file:
-      datetime: 2018-04-15T00:00:00Z
+      datetime: 2020-12-15T00:00:00Z
       set datetime on read: true
       filetype: fms restart
       psinfile: true
       datapath: Data/staticb/
-      filename_core: 20180415.000000.stddev.fv_core.res.nc
-      filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
-      filename_sfcd: 20180415.000000.stddev.sfc_data.nc
-      filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
-      filename_cplr: 20180415.000000.stddev.coupler.res
-      date: 2018-04-15T00:00:00Z
+      filename_core: 20201215.000000.stddev.fv_core.res.nc
+      filename_trcr: 20201215.000000.stddev.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.stddev.sfc_data.nc
+      filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.stddev.coupler.res
+      date: 2020-12-15T00:00:00Z
   - saber block name: BUMP_VerticalBalance
     input variables: *control_vars
     output variables: *control_vars
@@ -89,7 +89,7 @@ background error:
       universe_rad: 2000.0e3
       load_vbal: true
       load_samp_global: true
-      fname_samp: vbal_2018041421_gfs_sampling
+      fname_samp: vbal_2020121421_gfs_sampling
       vbal_block: [true,true,false,true]
   - saber block name: BUMP_PsiChiToUV
     input variables: *control_vars
@@ -113,7 +113,7 @@ output dirac:
   filename_sfcd: dirac_global_%id%_gfs_12pe.sfc_data.nc
   filename_sfcw: dirac_global_%id%_gfs_12pe.fv_srf_wnd.res.nc
   filename_cplr: dirac_global_%id%_gfs_12pe.coupler.res
-  date: 2018-04-15T00:00:00Z
+  date: 2020-12-15T00:00:00Z
 dirac:
   ndir: 1
   ixdir: [1]

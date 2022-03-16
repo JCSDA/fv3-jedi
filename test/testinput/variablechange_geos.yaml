@@ -9,22 +9,21 @@ geometry:
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 variable change tests:
-
   - variable change:
       variable change name: Analysis2Model
       # Possible to read variable with this variable change
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
-      filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
+      filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
       output variables: [u,v,ua,va,delp,t,q,vtype]
       input variables: [ua,va,t,ps]
     state:
-      datetime: 2018-04-14T21:00:00Z
+      datetime: 2020-12-14T21:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
-      filename: geos.bkg.20180414_210000z.nc4
+      filename: geos.bkg.20201214_210000z.nc4
       state variables: [ua,va,t,ps]
     tolerance inverse: 1.0e-4
 
@@ -37,12 +36,12 @@ variable change tests:
       input variables: [psi,chi,vort,divg,t,tv,delp,ps,q,rh,qi,ql,qilsf,qicnf]
       output variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
     state:
-      datetime: 2018-04-14T21:00:00Z
+      datetime: 2020-12-14T21:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
-      filenames: [fvcore_internal_rst.20180414_21z.nc4, moist_internal_rst.20180414_21z.nc4,
-                  surf_import_rst.20180414_21z.nc4]
+      filenames: [fvcore_internal_rst.20201214_21z.nc4, moist_internal_rst.20201214_21z.nc4,
+                  surf_import_rst.20201214_21z.nc4]
       tile is a dimension: [false, false, false]
       state variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
     tolerance inverse: 10.0
@@ -59,12 +58,12 @@ variable change tests:
       input variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
       output variables: [ua,va,t,delp,ps,q,qi,ql,qilsf,qicnf]
     state:
-      datetime: 2018-04-14T21:00:00Z
+      datetime: 2020-12-14T21:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
-      filenames: [fvcore_internal_rst.20180414_21z.nc4, moist_internal_rst.20180414_21z.nc4,
-                  surf_import_rst.20180414_21z.nc4]
+      filenames: [fvcore_internal_rst.20201214_21z.nc4, moist_internal_rst.20201214_21z.nc4,
+                  surf_import_rst.20201214_21z.nc4]
       tile is a dimension: [false, false, false]
       state variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
     tolerance inverse: 10

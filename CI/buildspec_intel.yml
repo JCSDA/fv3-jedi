@@ -196,6 +196,7 @@ phases:
         && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         && export PATH=/usr/local/lib:$PATH
         && cd /home/jedi/fv3-jedi
+        && ctest -N
         && ctest -VV --rerun-failed";
         fi
 

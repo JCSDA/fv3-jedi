@@ -11,11 +11,11 @@ geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: [t,ps]
 background:
-  datetime: 2018-04-14T21:00:00Z
+  datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
+  filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
   state variables: [t,ps]
 bump:
   verbosity: main
@@ -56,13 +56,13 @@ bump:
     provider: geos
     datapath: Data/bump/
     filename: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    date: 2018-04-14T21:00:00Z
+    date: 2020-12-14T21:00:00Z
   - parameter: cor_rv
     filetype: cube sphere history
     provider: geos
     datapath: Data/bump/
     filename: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    date: 2018-04-14T21:00:00Z
+    date: 2020-12-14T21:00:00Z
 
 test:
   reference filename: testoutput/bumpparameters_nicas_geos.ref

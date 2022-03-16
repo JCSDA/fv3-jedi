@@ -21,7 +21,7 @@
   io_layout = 1,1
   npx = 13
   npy = 13
-  npz = 64
+  npz = 127
   ntiles = 6
   fv_debug = .F.
   n_sponge = 9

@@ -5,7 +5,6 @@ Initial state for member 1:
    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
-
 Initial state for member 2:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 3 | cube sphere face size: C48
@@ -13,23 +12,14 @@ Initial state for member 2:
    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
-
 H(x) for member 1:
 Simulate nobs= 9518 Min=21.2132, Max=1056.54, RMS=169.894
-
-
 H(x) for member 2:
 Simulate nobs= 9518 Min=-21.2132, Max=1014.12, RMS=145.905
-
-
 H(x) ensemble background mean: 
 Simulate nobs= 9518 Min=0, Max=1035.33, RMS=156.927
-
-
 background y - H(x): 
 Simulate nobs= 9518 Min=-889.996, Max=2662.83, RMS=180.924
-
-
 Background mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 3 | cube sphere face size: C48
@@ -37,7 +27,6 @@ Background mean :
    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
-
 Analysis mean :
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 3 | cube sphere face size: C48
@@ -45,7 +34,6 @@ Analysis mean :
    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.780521e+00
    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.749700e-01
  -----------------------------------------------------------------------------------------------
-
 Analysis mean increment :
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 3 | cube sphere face size: C48
@@ -55,19 +43,11 @@ Analysis mean increment :
  -----------------------------------------------------------------------------------------------
 H(x) for member 1:
 Simulate nobs= 9518 Min=-56.1754, Max=1056.54, RMS=152.682
-
-
 H(x) for member 2:
 Simulate nobs= 9518 Min=-82.2467, Max=1014.12, RMS=141.83
-
-
 H(x) ensemble analysis mean: 
 Simulate nobs= 9518 Min=-69.211, Max=1035.33, RMS=147.072
-
-
 analysis y - H(x): 
 Simulate nobs= 9518 Min=-881.333, Max=2610.01, RMS=179.825
-
-
 ombg RMS: 180.924
 oman RMS: 179.825

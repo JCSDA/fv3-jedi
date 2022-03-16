@@ -2,25 +2,25 @@ geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk64.nc4
+  akbk: Data/fv3files/akbk127.nc4
   layout: [1,2]
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   fieldsets:
     - fieldset: Data/fieldsets/dynamics.yaml
 input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
 background:
-  datetime: 2018-04-15T00:00:00Z
+  datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
   state variables: *inputVars
   psinfile: true
   datapath: Data/staticb/unbalanced/mem001
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
 bump:
   datadir: Data/staticb
   verbosity: main
@@ -46,71 +46,71 @@ bump:
     variables: [surface_pressure]
   input:
   - parameter: var
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
     psinfile: true
-    filename_core: 20180414.210000.var.fv_core.res.nc
-    filename_trcr: 20180414.210000.var.fv_tracer.res.nc
-    filename_sfcd: 20180414.210000.var.sfc_data.nc
-    filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.210000.var.coupler.res
-    date: 2018-04-14T21:00:00Z
+    filename_core: 20201214.210000.var.fv_core.res.nc
+    filename_trcr: 20201214.210000.var.fv_tracer.res.nc
+    filename_sfcd: 20201214.210000.var.sfc_data.nc
+    filename_sfcw: 20201214.210000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.210000.var.coupler.res
+    date: 2020-12-14T21:00:00Z
   - parameter: m4
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
     psinfile: true
-    filename_core: 20180414.210000.m4.fv_core.res.nc
-    filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
-    filename_sfcd: 20180414.210000.m4.sfc_data.nc
-    filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.210000.m4.coupler.res
-    date: 2018-04-14T21:00:00Z
+    filename_core: 20201214.210000.m4.fv_core.res.nc
+    filename_trcr: 20201214.210000.m4.fv_tracer.res.nc
+    filename_sfcd: 20201214.210000.m4.sfc_data.nc
+    filename_sfcw: 20201214.210000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.210000.m4.coupler.res
+    date: 2020-12-14T21:00:00Z
   - parameter: var
-    datetime: 2018-04-15T00:00:00Z
+    datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
     psinfile: true
-    filename_core: 20180415.000000.var.fv_core.res.nc
-    filename_trcr: 20180415.000000.var.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.var.sfc_data.nc
-    filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.var.coupler.res
-    date: 2018-04-15T00:00:00Z
+    filename_core: 20201215.000000.var.fv_core.res.nc
+    filename_trcr: 20201215.000000.var.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.var.sfc_data.nc
+    filename_sfcw: 20201215.000000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.var.coupler.res
+    date: 2020-12-15T00:00:00Z
   - parameter: m4
-    datetime: 2018-04-15T00:00:00Z
+    datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
     psinfile: true
-    filename_core: 20180415.000000.m4.fv_core.res.nc
-    filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.m4.sfc_data.nc
-    filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.m4.coupler.res
-    date: 2018-04-15T00:00:00Z
+    filename_core: 20201215.000000.m4.fv_core.res.nc
+    filename_trcr: 20201215.000000.m4.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.m4.sfc_data.nc
+    filename_sfcw: 20201215.000000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.m4.coupler.res
+    date: 2020-12-15T00:00:00Z
   - parameter: var
-    datetime: 2018-04-15T03:00:00Z
+    datetime: 2020-12-15T03:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
     psinfile: true
-    filename_core: 20180415.030000.var.fv_core.res.nc
-    filename_trcr: 20180415.030000.var.fv_tracer.res.nc
-    filename_sfcd: 20180415.030000.var.sfc_data.nc
-    filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.030000.var.coupler.res
-    date: 2018-04-15T03:00:00Z
+    filename_core: 20201215.030000.var.fv_core.res.nc
+    filename_trcr: 20201215.030000.var.fv_tracer.res.nc
+    filename_sfcd: 20201215.030000.var.sfc_data.nc
+    filename_sfcw: 20201215.030000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.030000.var.coupler.res
+    date: 2020-12-15T03:00:00Z
   - parameter: m4
-    datetime: 2018-04-15T03:00:00Z
+    datetime: 2020-12-15T03:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
     psinfile: true
-    filename_core: 20180415.030000.m4.fv_core.res.nc
-    filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
-    filename_sfcd: 20180415.030000.m4.sfc_data.nc
-    filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.030000.m4.coupler.res
-    date: 2018-04-15T03:00:00Z
+    filename_core: 20201215.030000.m4.fv_core.res.nc
+    filename_trcr: 20201215.030000.m4.fv_tracer.res.nc
+    filename_sfcd: 20201215.030000.m4.sfc_data.nc
+    filename_sfcw: 20201215.030000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.030000.m4.coupler.res
+    date: 2020-12-15T03:00:00Z
   output:
   - parameter: stddev
     filetype: fms restart
@@ -120,7 +120,7 @@ bump:
     filename_sfcd: stddev.sfc_data.nc
     filename_sfcw: stddev.fv_srf_wnd.res.nc
     filename_cplr: stddev.coupler.res
-    date: 2018-04-15T00:00:00Z
+    date: 2020-12-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_var_gfs.ref

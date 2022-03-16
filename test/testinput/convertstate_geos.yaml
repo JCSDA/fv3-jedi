@@ -18,11 +18,11 @@ output geometry:
     - fieldset: Data/fieldsets/dynamics.yaml
 states:
 - input:
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20180414_210000z.nc4, geos.bkg.crtmsrf.20180414_210000z.nc4]
+    filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
     state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
   output:
    filetype: cube sphere history
@@ -33,7 +33,7 @@ states:
 - input:
     analytic init:
       method: dcmip-test-1-1
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
   output:
     filetype: cube sphere history
     provider: geos
@@ -42,7 +42,7 @@ states:
 - input:
     analytic init:
       method: dcmip-test-1-2
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
   output:
     filetype: cube sphere history
     provider: geos
@@ -51,7 +51,7 @@ states:
 - input:
     analytic init:
       method: dcmip-test-3-1
-    datetime: 2018-04-14T21:00:00Z
+    datetime: 2020-12-14T21:00:00Z
   output:
     filetype: cube sphere history
     provider: geos

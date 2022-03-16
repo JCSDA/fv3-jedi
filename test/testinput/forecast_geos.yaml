@@ -16,7 +16,7 @@ model:
   geos_run_directory: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
   model variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
 initial condition:
-  datetime: 2018-04-14T21:00:00Z
+  datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
   datapath: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
