@@ -894,10 +894,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_model2geovals
                   ARGS     testinput/convertstate_gfs_model2geovals.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
-#                  MPI      6
-#                  ARGS     testinput/convertstate_geos_model2geovals.yaml
-#                  COMMAND  fv3jedi_convertstate.x )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
+                  MPI      6
+                  ARGS     testinput/convertstate_geos_model2geovals.yaml
+                  COMMAND  fv3jedi_convertstate.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertincrement_geos_model2geovals
                   MPI      6
