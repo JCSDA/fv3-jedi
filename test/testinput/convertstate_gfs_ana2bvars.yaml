@@ -1,0 +1,48 @@
+input geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+output geometry:
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+
+variable change:
+  variable change name: Control2Analysis
+  do inverse: true
+  femps_iterations: 50
+  femps_ngrids: 2
+  femps_levelprocs: -1
+  femps_path2fv3gridfiles: Data/femps
+  output variables: [psi,chi,T,ps,sphum,ice_wat,liq_wat,o3mr]
+
+states:
+- input:
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
+    state variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20201215.000000.fv_core.res.nc
+    filename_trcr: 20201215.000000.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.sfc_data.nc
+    filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.coupler.res
+  output:
+    filetype: fms restart
+    datapath: Data/convertstate/
+    prefix: bvars
+
+test:
+  reference filename: testoutput/convertstate_gfs_ana2bvars.ref
+  test output filename: testoutput/convertstate_gfs_ana2bvars.test.out

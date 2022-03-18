@@ -236,7 +236,7 @@ do f = 1, size(fields_to_do)
 
   case default
 
-    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiply unknown field: "//trim(fields_to_do(f)) &
+    call abor1_ftn("fv3jedi_linvarcha_c2a_mod.multiply unknown field: "//trim(fields_to_do(f)) &
                    //". Not in input field and no transform case specified.")
 
   end select
@@ -374,7 +374,7 @@ do f = 1, size(fields_to_do)
 
   case default
 
-    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiplyadjoint unknown field: "//trim(fields_to_do(f)) &
+    call abor1_ftn("fv3jedi_linvarcha_c2a_mod.multiplyadjoint unknown field: "//trim(fields_to_do(f)) &
                    //". Not in input field and no transform case specified.")
 
   end select

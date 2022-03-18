@@ -49,7 +49,6 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 # ------------------
 list( APPEND fv3jedi_testinput
   testinput/3denvar_geos_aero.yaml
-  testinput/3dvar_gfs_bal.yaml
   testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
   testinput/addincrement_geos.yaml
@@ -67,6 +66,7 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_geos_model2geovals.yaml
   testinput/convertstate_geos.yaml
   testinput/convertstate_geos_cf.yaml
+  testinput/convertstate_gfs_ana2bvars.yaml
   testinput/convertstate_gfs_coldstartwinds.yaml
   testinput/convertstate_gfs_vertremap.yaml
   testinput/convertstate_gfs_model2geovals.yaml
@@ -76,9 +76,8 @@ list( APPEND fv3jedi_testinput
   testinput/diffstates_gfs.yaml
   testinput/diffstates_lam_cmaq.yaml
   testinput/dirac_geos.yaml
-  testinput/dirac_gfs_bal.yaml
-  testinput/dirac_gfs_c2a.yaml
   testinput/dirac_gfs.yaml
+  testinput/dirac_gfs_gsi_global.yaml
   testinput/eda_3dvar_1.yaml
   testinput/eda_3dvar_2.yaml
   testinput/eda_3dvar.yaml
@@ -94,6 +93,7 @@ list( APPEND fv3jedi_testinput
   testinput/ensvariance_geos.yaml
   testinput/ensvariance_gfs.yaml
   testinput/errorcovariance_bump.yaml
+  testinput/errorcovariance_gfs_gsi_global.yaml
   testinput/errorcovariance.yaml
   testinput/forecast_fv3lm.yaml
   testinput/forecast_geos.yaml
@@ -204,6 +204,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_geos_model2geovals.ref
   testoutput/convertstate_geos.ref
   testoutput/convertstate_geos_cf.ref
+  testoutput/convertstate_gfs_ana2bvars.ref
   testoutput/convertstate_gfs_coldstartwinds.ref
   testoutput/convertstate_gfs_vertremap.ref
   testoutput/convertstate_gfs_model2geovals.ref
@@ -213,9 +214,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/diffstates_gfs.ref
   testoutput/diffstates_lam_cmaq.ref
   testoutput/dirac_geos.ref
-  testoutput/dirac_gfs_bal.ref
-  testoutput/dirac_gfs_c2a.ref
   testoutput/dirac_gfs.ref
+  testoutput/dirac_gfs_gsi_global.ref
   testoutput/eda_3dvar.ref
   testoutput/eda_4dvar_fv3lm.ref
   testoutput/eda_block_3dvar.ref
@@ -894,6 +894,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_model2geovals
                   ARGS     testinput/convertstate_gfs_model2geovals.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_ana2bvars
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs_ana2bvars.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_model2geovals
                   MPI      6
                   ARGS     testinput/convertstate_geos_model2geovals.yaml
@@ -1080,6 +1085,12 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_bump
                   ARGS     testinput/errorcovariance_bump.yaml
                   COMMAND  test_fv3jedi_errorcovariance.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_gfs_gsi_global
+                  MPI      6
+                  ARGS     testinput/errorcovariance_gfs_gsi_global.yaml
+                  COMMAND  test_fv3jedi_errorcovariance.x
+                  TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_ana2bvars )
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_localization_bump
                   MPI      6
                   ARGS     testinput/localization_bump.yaml
@@ -1095,14 +1106,9 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
                   ARGS     testinput/dirac_gfs.yaml
                   COMMAND  fv3jedi_dirac.x )
 
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_bal
-#                  MPI      6
-#                  ARGS     testinput/dirac_gfs_bal.yaml
-#                  COMMAND  fv3jedi_dirac.x )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_c2a
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_gsi_global
                   MPI      6
-                  ARGS     testinput/dirac_gfs_c2a.yaml
+                  ARGS     testinput/dirac_gfs_gsi_global.yaml
                   COMMAND  fv3jedi_dirac.x )
 
 # Ensemble variance
@@ -1132,12 +1138,6 @@ if (BUILD_LARGE_TESTS)
                     COMMAND  fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_p12 fv3jedi_test_tier1_hyb-3dvar )
 endif()
-
-# 3DVar with GSI balance operator
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_bal
-#                  MPI      6
-#                  ARGS     testinput/3dvar_gfs_bal.yaml
-#                  COMMAND  fv3jedi_var.x )
 
 # 3DVar with zero obs
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs

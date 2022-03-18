@@ -76,11 +76,6 @@ list( APPEND fv3jedi_src_files
   LinearVariableChange/Model2GeoVaLs/LinVarChaModel2GeoVaLs.cc
   LinearVariableChange/Model2GeoVaLs/LinVarChaModel2GeoVaLs.h
   LinearVariableChange/Model2GeoVaLs/LinVarChaModel2GeoVaLs.interface.h
-  LinearVariableChange/NMCBalance/fv3jedi_linvarcha_nmcbal.interface.F90
-  LinearVariableChange/NMCBalance/fv3jedi_linvarcha_nmcbal_mod.f90
-  LinearVariableChange/NMCBalance/LinVarChaNMCBal.cc
-  LinearVariableChange/NMCBalance/LinVarChaNMCBal.h
-  LinearVariableChange/NMCBalance/LinVarChaNMCBal.interface.h
   Model/fv3lm/fv3jedi_fv3lm_interface_mod.F90
   Model/fv3lm/fv3jedi_fv3lm_mod.f90
   Model/fv3lm/ModelFV3LM.cc
