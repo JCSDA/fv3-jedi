@@ -25,6 +25,8 @@ saber blocks:
       fname_nicas: nicas_2020010100-2020013100/nicas_2020010100-2020013100_2D_nicas
     universe radius:
       filetype: fms restart
+      datetime: 2020-01-31T00:00:00Z
+      set datetime on read: true
       psinfile: true
       datapath: /work/noaa/da/menetrie/StaticBTraining/c384/bump_1.0/cor_2020010100-2020013100
       filename_core: cor_rh.fv_core.res.nc
@@ -37,6 +39,8 @@ saber blocks:
   active variables: *active_vars
   file:
     filetype: fms restart
+    datetime: 2020-01-31T00:00:00Z
+    set datetime on read: true
     psinfile: true
     datapath: /work/noaa/da/menetrie/StaticBTraining/c384/bump_1.0/var_2020010100-2020013100
     filename_core: stddev.fv_core.res.nc
