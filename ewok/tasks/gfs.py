@@ -27,4 +27,5 @@ class ModelTasks(ewok.tasks.GenericModel.GenericModelTasks):
         self.getInitialConditions = getInitialConditionsGFS.getInitialConditionsGFS
         self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS
         self.saveForecast = saveForecastGFS.saveForecastGFS
+        self.createPlots = ewok.createPlots
         self.savePlots = ewok.savePlots
