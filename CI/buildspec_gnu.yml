@@ -36,6 +36,10 @@ phases:
       - echo "CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH}"
       - echo "CODEBUILD_SOURCE_VERSION=${CODEBUILD_SOURCE_VERSION}"
 
+      # read cdash url from s3
+      - wget https://ci-test-cdash-url.s3.amazonaws.com/cdash_url.txt
+      - CDASH_URL=$(cat cdash_url.txt)
+
   pre_build:
     commands:
       - echo Executing pre_build phase
@@ -111,6 +115,7 @@ phases:
       - cp -r cmake /jcsda/fv3-bundle/
       # cdash upload setup
       - cp /jcsda/fv3-bundle/cmake/CTestConfig.cmake /jcsda/fv3-bundle/
+      - sed -i "s@CDASH_URL@$CDASH_URL@g" /jcsda/fv3-bundle/CTestConfig.cmake
 
       - chmod 777 -R /jcsda/fv3-bundle
 
@@ -164,8 +169,7 @@ phases:
       # find cdash url and upload it as CodeBuild artifact to S3
       - if [ "$BUILD_STATUS" = "1" ];
         then echo "Build & tests passed, find cdash url";
-        bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing;
-        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing);
+        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing $CDASH_URL);
         echo $url;
         echo ${url} > /jcsda/artifacts/cdash-url.txt;
         cat /jcsda/artifacts/cdash-url.txt;
