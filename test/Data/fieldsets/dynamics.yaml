@@ -38,19 +38,19 @@ Fields:
     Space: vector
     StaggerLoc: northsouth
 
-  - FieldIONames: [ua, eastward_wind]
+  - FieldIONames: [ua, eastward_wind, ugrd]
     FieldName: ua
     LongName: eastward_wind
     Units: ms-1
     IOFile: core
 
-  - FieldIONames: [va, northward_wind]
+  - FieldIONames: [va, northward_wind, vgrd]
     FieldName: va
     LongName: northward_wind
     Units: ms-1
     IOFile: core
 
-  - FieldIONames: [t, T, air_temperature, temperature]
+  - FieldIONames: [t, T, air_temperature, temperature, tmp]
     FieldName: t
     LongName: air_temperature
     Units: K
@@ -68,7 +68,7 @@ Fields:
     Units: K
     IOFile: core
 
-  - FieldIONames: [delp, DELP, air_pressure_thickness]
+  - FieldIONames: [delp, DELP, air_pressure_thickness, dpres]
     FieldName: delp
     LongName: air_pressure_thickness
     Units: pa
@@ -94,14 +94,14 @@ Fields:
     Levels: full
     IOFile: core
 
-  - FieldIONames: [ps, surface_pressure]
+  - FieldIONames: [ps, surface_pressure, pressfc]
     FieldName: ps
     LongName: surface_pressure
     Units: Pa
     Levels: 1
     IOFile: core
 
-  - FieldIONames: [q, sphum, Q, specific_humidity]
+  - FieldIONames: [q, sphum, Q, specific_humidity, spfh]
     FieldName: sphum
     LongName: specific_humidity
     Units: kgkg-1
@@ -114,14 +114,14 @@ Fields:
     Units: 1
     IOFile: tracer
 
-  - FieldIONames: [qi, ice_wat]
+  - FieldIONames: [qi, ice_wat, icmr]
     FieldName: ice_wat
     LongName: cloud_liquid_ice
     Units: kgkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [ql, liq_wat]
+  - FieldIONames: [ql, liq_wat, clwmr]
     FieldName: liq_wat
     LongName: cloud_liquid_water
     Units: kgkg-1
@@ -170,21 +170,21 @@ Fields:
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [qs, snowwat]
+  - FieldIONames: [qs, snowwat, snmr]
     FieldName: snowwat
     LongName: snow_water
     Units: kgkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [qr, rainwat]
+  - FieldIONames: [qr, rainwat, rwmr]
     FieldName: rainwat
     LongName: rain_water
     Units: kgkg-1
     Tracer: true
     IOFile: tracer
 
-  - FieldIONames: [qg, graupel]
+  - FieldIONames: [qg, graupel, grle]
     FieldName: graupel
     LongName: graupel
     Units: kgkg-1
@@ -274,7 +274,7 @@ Fields:
     Units: m
     IOFile: core
 
-  - FieldIONames: [phis, PHIS, sfc_geopotential_height_times_grav]
+  - FieldIONames: [phis, PHIS, sfc_geopotential_height_times_grav, hgtsfc]
     FieldName: phis
     LongName: sfc_geopotential_height_times_grav
     Units: m

@@ -44,11 +44,13 @@ end subroutine str_check
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine vdate_to_datestring(vdate,datest,date,yyyy,mm,dd,hh,min,ss)
+subroutine vdate_to_datestring(vdate,datest,isodate,ufsdate,date,yyyy,mm,dd,hh,min,ss)
 
 implicit none
 type(datetime),              intent(in)  :: vdate
 character(len=*), optional,  intent(out) :: datest
+character(len=*), optional,  intent(out) :: isodate
+character(len=*), optional,  intent(out) :: ufsdate
 integer,          optional,  intent(out) :: date(6)
 character(len=4), optional,  intent(out) :: yyyy
 character(len=2), optional,  intent(out) :: mm
@@ -71,7 +73,13 @@ dateloc(5) = (isecs - dateloc(4)*3600)/60
 dateloc(6) = isecs - (dateloc(4)*3600 + dateloc(5)*60)
 
 if (present(datest)) &
-write(datest,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2)') dateloc(1),dateloc(2),dateloc(3),"_",&
+write(datest,'(I4,I0.2,I0.2,"_",I0.2,I0.2,I0.2)') dateloc(1),dateloc(2),dateloc(3),&
+                                                 dateloc(4),dateloc(5),dateloc(6)
+if (present(isodate)) &
+write(isodate,'(I4,"-",I0.2,"-",I0.2,"T",I0.2,":",I0.2,":",I0.2,"Z")') dateloc(1),dateloc(2),dateloc(3),&
+                                                 dateloc(4),dateloc(5),dateloc(6)
+if (present(ufsdate)) &
+write(ufsdate,'(I4,"-",I0.2,"-",I0.2,"T",I0.2,":",I0.2,":",I0.2)') dateloc(1),dateloc(2),dateloc(3),&
                                                  dateloc(4),dateloc(5),dateloc(6)
 
 !Optionally pass date back

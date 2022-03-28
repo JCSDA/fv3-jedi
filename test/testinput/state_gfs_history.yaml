@@ -1,0 +1,21 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+state test:
+  statefile:
+    filetype: cube sphere history
+    provider: ufs
+    datetime: 2021-03-22T12:00:00Z
+    datapath: Data/inputs/gfs_c12/bkg_hist/
+    filename: atmf006.nc
+    state variables: [ugrd,vgrd,tmp,spfh,delz,dpres,pressfc,hgtsfc,o3mr]
+  date: 2021-03-22T12:00:00Z
+  norm file: 3357.1428615656268
+  tolerance: 1.0e-08

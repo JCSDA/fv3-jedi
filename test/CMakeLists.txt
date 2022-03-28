@@ -161,6 +161,7 @@ list( APPEND fv3jedi_testinput
   testinput/state_geos.yaml
   testinput/state_geos_cf.yaml
   testinput/state_gfs.yaml
+  testinput/state_gfs_history.yaml
   testinput/state_lam_cmaq.yaml
   testinput/state_lam_atmos.yaml
   testinput/staticb_dirac_global_gfs_6pe.yaml
@@ -781,6 +782,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_lam_cmaq
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gfs
                   MPI      6
                   ARGS     testinput/state_gfs.yaml
+                  COMMAND  test_fv3jedi_state.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gfs_history
+                  MPI      6
+                  ARGS     testinput/state_gfs_history.yaml
                   COMMAND  test_fv3jedi_state.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_geos
