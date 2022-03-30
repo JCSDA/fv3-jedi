@@ -1,0 +1,66 @@
+Norm of stddev: 6.421e-01
+CostJb   : Nonlinear Jb = 0.000e+00
+CostJo   : Nonlinear Jo(Aod) = 2.161e+02, nobs = 6, Jo/n = 3.601e+01, err = 2.126e-01
+CostFunction: Nonlinear J = 2.161e+02
+DRIPCGMinimizer: reduction in residual norm = 1.188e-15
+CostFunction::addIncrement: Analysis: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 17 | cube sphere face size: C12
+   t                             : Min = +1.845e+02, Max = +3.080e+02, RMS = +2.481e+02
+   delp                          : Min = +4.425e+01, Max = +3.725e+03, RMS = +1.938e+03
+   sphum                         : Min = +1.174e-07, Max = +1.832e-02, RMS = +4.625e-03
+   sulf                          : Min = +2.816e-05, Max = +8.037e+00, RMS = +3.328e-01
+   bc1                           : Min = +7.296e-09, Max = +3.963e+00, RMS = +6.104e-02
+   bc2                           : Min = +8.272e-09, Max = +6.274e-01, RMS = +2.755e-02
+   oc1                           : Min = +7.226e-09, Max = +2.836e+01, RMS = +4.318e-01
+   oc2                           : Min = +8.488e-09, Max = +4.254e+00, RMS = +2.139e-01
+   dust1                         : Min = +1.000e-16, Max = +4.896e+01, RMS = +1.682e+00
+   dust2                         : Min = +1.000e-16, Max = +4.802e+01, RMS = +1.608e+00
+   dust3                         : Min = +1.000e-16, Max = +9.448e+01, RMS = +2.952e+00
+   dust4                         : Min = +1.000e-16, Max = +1.852e+02, RMS = +4.695e+00
+   dust5                         : Min = +1.000e-16, Max = +2.268e+01, RMS = +4.365e-01
+   seas1                         : Min = +1.000e-16, Max = +8.586e-02, RMS = +4.210e-03
+   seas2                         : Min = +1.000e-16, Max = +2.806e+00, RMS = +1.369e-01
+   seas3                         : Min = +1.000e-16, Max = +2.932e+01, RMS = +1.347e+00
+   seas4                         : Min = +1.000e-16, Max = +1.135e+02, RMS = +3.895e+00
+ -----------------------------------------------------------------------------------------------
+
+Obs bias coefficients: 
+---------------------------------------------------------------
+            constant:  Min=     -0.01558423,  Max=     -0.01558423,  Norm=      0.01558423
+---------------------------------------------------------------
+
+Norm of stddev: 6.421e-01
+CostJb   : Nonlinear Jb = 3.223e-01
+CostJo   : Nonlinear Jo(Aod) = 2.154e+02, nobs = 6, Jo/n = 3.590e+01, err = 2.126e-01
+CostFunction: Nonlinear J = 2.157e+02
+CostFunction::addIncrement: Analysis: 
+ -----------------------------------------------------------------------------------------------
+ State print | number of fields = 17 | cube sphere face size: C12
+   t                             : Min = +1.845e+02, Max = +3.080e+02, RMS = +2.481e+02
+   delp                          : Min = +4.425e+01, Max = +3.725e+03, RMS = +1.938e+03
+   sphum                         : Min = +1.174e-07, Max = +1.832e-02, RMS = +4.625e-03
+   sulf                          : Min = +2.816e-05, Max = +8.037e+00, RMS = +3.328e-01
+   bc1                           : Min = +7.296e-09, Max = +3.963e+00, RMS = +6.104e-02
+   bc2                           : Min = +8.272e-09, Max = +6.274e-01, RMS = +2.755e-02
+   oc1                           : Min = +7.226e-09, Max = +2.836e+01, RMS = +4.318e-01
+   oc2                           : Min = +8.488e-09, Max = +4.254e+00, RMS = +2.139e-01
+   dust1                         : Min = +1.000e-16, Max = +4.896e+01, RMS = +1.682e+00
+   dust2                         : Min = +1.000e-16, Max = +4.802e+01, RMS = +1.608e+00
+   dust3                         : Min = +1.000e-16, Max = +9.448e+01, RMS = +2.952e+00
+   dust4                         : Min = +1.000e-16, Max = +1.852e+02, RMS = +4.695e+00
+   dust5                         : Min = +1.000e-16, Max = +2.268e+01, RMS = +4.365e-01
+   seas1                         : Min = +1.000e-16, Max = +8.586e-02, RMS = +4.210e-03
+   seas2                         : Min = +1.000e-16, Max = +2.806e+00, RMS = +1.369e-01
+   seas3                         : Min = +1.000e-16, Max = +2.932e+01, RMS = +1.347e+00
+   seas4                         : Min = +1.000e-16, Max = +1.135e+02, RMS = +3.895e+00
+ -----------------------------------------------------------------------------------------------
+
+Obs bias coefficients: 
+---------------------------------------------------------------
+            constant:  Min=     -0.01558423,  Max=     -0.01558423,  Norm=      0.01558423
+---------------------------------------------------------------
+
+CostJb   : Nonlinear Jb = 0.32232523
+CostJo   : Nonlinear Jo(Aod) = 215.37417092, nobs = 6, Jo/n = 35.89569515, err = 0.21260291
+CostFunction: Nonlinear J = 215.69649615

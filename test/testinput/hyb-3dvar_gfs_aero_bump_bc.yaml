@@ -1,0 +1,183 @@
+cost function:
+  cost type: 3D-Var
+  window begin: 2018-04-14T21:00:00Z
+  window length: PT6H
+  analysis variables: &aerovars
+                      [sulf,bc1,bc2,oc1,oc2,
+                      dust1,dust2,dust3,dust4,dust5,
+                      seas1,seas2,seas3,seas4]
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+      field table filename: Data/fv3files/field_table_gfdl
+    akbk: Data/fv3files/akbk64.nc4
+    layout: [1,2]
+    npx: 13
+    npy: 13
+    npz: 64
+    fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/aerosols_gfs.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+  background:
+    datetime: 2018-04-15T00:00:00Z
+    filetype: fms restart
+    datapath: Data/inputs/gfs_aero_c12/bkg/
+    filename_core: 20180415.000000.fv_core.res.nc
+    filename_trcr: 20180415.000000.fv_tracer.res.nc
+    filename_cplr: 20180415.000000.coupler.res
+    state variables: &state_vars [t,delp,sphum,sulf,bc1,bc2,oc1,oc2,
+                      dust1,dust2,dust3,dust4,dust5,
+                      seas1,seas2,seas3,seas4]
+  background error:
+    covariance model: hybrid
+    components:
+    - covariance:
+        covariance model: SABER
+        saber blocks:
+        - saber block name: BUMP_NICAS
+          saber central block: true
+          input variables: &control_vars [sulf,bc1,bc2,oc1,oc2,
+                            dust1,dust2,dust3,dust4,dust5,
+                            seas1,seas2,seas3,seas4]
+          output variables: *control_vars
+          bump:
+            datadir: Data/staticb_aero
+            prefix: nicas_aero
+            verbosity: main
+            strategy: specific_univariate
+            load_nicas_local: true
+            universe radius:
+              set datetime on read: true
+              datetime: 2018-04-15T00:00:00Z
+              filetype: fms restart
+              datapath: Data/staticb_aero/
+              filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+              filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+              filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+              filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+              filename_cplr: 20180415.000000.cor_rh.coupler.res
+              date: 2018-04-15T00:00:00Z
+        - saber block name: StdDev
+          input variables: *control_vars
+          output variables: *control_vars
+          file:
+            datetime: 2018-04-15T00:00:00Z
+            set datetime on read: true
+            filetype: fms restart
+            psinfile: true
+            datapath: Data/staticb_aero/
+            filename_core: 20180415.000000.stddev.fv_core.res.nc
+            filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
+            filename_sfcd: 20180415.000000.stddev.sfc_data.nc
+            filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
+            filename_cplr: 20180415.000000.stddev.coupler.res
+            date: 2018-04-15T00:00:00Z
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members from template:
+          template:
+            datetime: 2018-04-15T00:00:00Z
+            filetype: fms restart
+            state variables: *aerovars
+            datapath: Data/inputs/gfs_aero_c12/mem%mem%/
+            filename_core: 20180415.000000.fv_core.res.nc
+            filename_trcr: 20180415.000000.fv_tracer.res.nc
+            filename_cplr: 20180415.000000.coupler.res
+          pattern: '%mem%'
+          nmembers: 5
+          zero padding: 3
+        localization:
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *aerovars
+            output variables: *aerovars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: [common]
+              io_values: [fixed_3000km_0.2]
+      weight:
+        value: 0.9
+  observations:
+  - obs space:
+      name: Aod
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
+      obsdataout:
+        obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_bc_2018041500_sf6.nc4
+      simulated variables: [aerosol_optical_depth]
+      channels: 4
+    obs operator:
+      name: AodCRTM
+      Absorbers: [H2O,O3]
+      obs options:
+        Sensor_ID: v.viirs-m_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+        AerosolOption: aerosols_gocart_default
+    obs bias: 
+      input file: Data/obs/testinput_tier_1/VIIRS_bias.nc
+      output file: Data/analysis/VIIRS_bias_out.nc
+      variational bc:
+        predictors:
+        - name: constant 
+      covariance:
+        minimal required obs number: 20
+        variance range: [1.0e-6, 1.0]
+        step size: 1.0e-4
+        largest analysis variance: 10.0
+    obs error:
+      covariance model: diagonal
+variational:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 10
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk64.nc4
+      layout: [1,2]
+      npx: 13
+      npy: 13
+      npz: 64
+      fieldsets:
+      - fieldset: Data/fieldsets/dynamics.yaml
+      - fieldset: Data/fieldsets/aerosols_gfs.yaml
+      - fieldset: Data/fieldsets/ufo.yaml
+    diagnostics:
+      departures: ombg
+  - ninner: 5
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk64.nc4
+      layout: [1,2]
+      npx: 13
+      npy: 13
+      npz: 64
+      fieldsets:
+      - fieldset: Data/fieldsets/dynamics.yaml
+      - fieldset: Data/fieldsets/aerosols_gfs.yaml
+      - fieldset: Data/fieldsets/ufo.yaml
+    diagnostics:
+      departures: ombg
+final:
+  diagnostics:
+    departures: oman
+output:
+  filetype: fms restart 
+  datapath: Data/analysis/
+  prefix: hyb-3dvar-aero-bc
+  frequency: PT1H
+test:
+  reference filename: testoutput/hyb-3dvar_gfs_aero_bump_bc.ref
+  float relative tolerance: 1.0e-1
+  test output filename: testoutput/hyb-3dvar_gfs_aero_bump_bc.test.out
