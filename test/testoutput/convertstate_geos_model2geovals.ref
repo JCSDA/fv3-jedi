@@ -57,7 +57,7 @@ State after variable transform:
    vegetation_area_fraction      : Min = +0.000000e+00, Max = +9.321926e-01, RMS = +1.884797e-01
    surface_wind_speed            : Min = +2.868584e-04, Max = +6.951701e+01, RMS = +1.013543e+01
    surface_wind_from_direction   : Min = +2.798459e-01, Max = +3.598986e+02, RMS = +2.107983e+02
-   leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   leaf_area_index               : Min = +0.000000e+00, Max = +5.895625e+00, RMS = +1.365202e+00
    volume_fraction_of_condensed_w: Min = +1.098297e-03, Max = +1.000000e+00, RMS = +9.295791e-01
    soil_temperature              : Min = +0.000000e+00, Max = +3.075777e+02, RMS = +1.238852e+02
    land_type_index_NPOESS        : Min = +1.000000e+00, Max = +1.900000e+01, RMS = +9.599986e+00
@@ -96,7 +96,7 @@ Output state:
    vegetation_area_fraction      : Min = +0.000000e+00, Max = +9.321926e-01, RMS = +1.884797e-01
    surface_wind_speed            : Min = +2.868584e-04, Max = +6.951701e+01, RMS = +1.013543e+01
    surface_wind_from_direction   : Min = +2.798459e-01, Max = +3.598986e+02, RMS = +2.107983e+02
-   leaf_area_index               : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
+   leaf_area_index               : Min = +0.000000e+00, Max = +5.895625e+00, RMS = +1.365202e+00
    volume_fraction_of_condensed_w: Min = +1.098297e-03, Max = +1.000000e+00, RMS = +9.295791e-01
    soil_temperature              : Min = +0.000000e+00, Max = +3.075777e+02, RMS = +1.238852e+02
    land_type_index_NPOESS        : Min = +1.000000e+00, Max = +1.900000e+01, RMS = +9.599986e+00

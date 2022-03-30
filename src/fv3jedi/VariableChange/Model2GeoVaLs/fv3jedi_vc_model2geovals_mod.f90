@@ -194,6 +194,8 @@ real(kind=kind_real), allocatable :: sss     (:,:,:)
 
 !CRTM surface
 logical :: have_crtm_surface, have_soilt, have_soilm
+integer :: sec_of_year
+real(kind=kind_real) :: fractional_day_of_year
 real(kind=kind_real), pointer     :: sheleg   (:,:,:)
 real(kind=kind_real), pointer     :: vtype    (:,:,:)
 real(kind=kind_real), pointer     :: stype    (:,:,:)
@@ -636,6 +638,10 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
     have_sss = .true.
   endif
 
+  ! Compute day of year, used for surface fields with seasonal variation
+  sec_of_year = datetime_seconds_since_jan1(xm%time)
+  fractional_day_of_year = sec_of_year / 86400.0_kind_real
+
   ! Here we compute the surface data for CRTM. A particular note about the surface types:
   !
   ! We compute at once the CRTM surface types supported in fv3-jedi: land types in two possible
@@ -649,15 +655,16 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   ! (*) Note: CRTM also supports the USGS land type classification -- to use this with fv3-jedi, the
   ! mapping from the fv3-jedi land type to the USGS land type must be added to `crtm_surface`. This
   ! would exactly follow the code currently in place for the NPOESS and IGBP classifications.
-  call crtm_surface( geom, slmsk, sheleg, tsea, vtype, stype, vfrac, soilt, soilm, u_srf, v_srf, &
-                      f10m, sss, land_type_index_npoess, land_type_index_igbp, &
-                      vegetation_type_index, soil_type, &
-                      water_area_fraction, land_area_fraction, ice_area_fraction, &
-                      surface_snow_area_fraction, leaf_area_index, surface_temperature_where_sea, &
-                      surface_temperature_where_land, surface_temperature_where_ice, &
-                      surface_temperature_where_snow, volume_fraction_of_condensed_water_in_soil, &
-                      vegetation_area_fraction, soil_temperature, surface_snow_thickness, &
-                      surface_wind_speed, surface_wind_from_direction, sea_surface_salinity)
+  call crtm_surface( geom, fractional_day_of_year, &
+                     slmsk, sheleg, tsea, vtype, stype, vfrac, soilt, soilm, u_srf, v_srf, &
+                     f10m, sss, land_type_index_npoess, land_type_index_igbp, &
+                     vegetation_type_index, soil_type, &
+                     water_area_fraction, land_area_fraction, ice_area_fraction, &
+                     surface_snow_area_fraction, leaf_area_index, surface_temperature_where_sea, &
+                     surface_temperature_where_land, surface_temperature_where_ice, &
+                     surface_temperature_where_snow, volume_fraction_of_condensed_water_in_soil, &
+                     vegetation_area_fraction, soil_temperature, surface_snow_thickness, &
+                     surface_wind_speed, surface_wind_from_direction, sea_surface_salinity)
 
   have_crtm_surface = .true.
 

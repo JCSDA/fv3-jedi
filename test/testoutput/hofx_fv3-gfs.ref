@@ -54,15 +54,27 @@ Final state:
  -----------------------------------------------------------------------------------------------
 H(x): 
 SeaSurfaceTemp nobs= 88 Min=259.85, Max=302.198, RMS=288.906
+
 Aircraft nobs= 6279 Min=-39.2364, Max=299.082, RMS=146.525
+
 Radiosonde nobs= 2931 Min=-73.9076, Max=300.783, RMS=134.62
-AMSUA-NOAA19 nobs= 1500 Min=148.102, Max=290.647, RMS=229.479
+
+AMSUA-NOAA19 nobs= 1500 Min=148.102, Max=291.142, RMS=229.645
+
 AIRS-AQUA nobs= 303 Min=201.746, Max=240.422, RMS=218.722
+
 GnssroBndNBAM nobs= 148 Min=6.0436e-06, Max=0.0361039, RMS=0.00784505
+
 HIRS4-METOPA nobs= 1515 Min=202.056, Max=301.547, RMS=248.51
+
 CRIS-NPP nobs= 9999 Min=199.054, Max=298.427, RMS=249.441
+
 Satwind nobs= 182 Min=-16.7074, Max=42.9431, RMS=11.2593
+
 MHS-N19 nobs= 505 Min=161.471, Max=289.782, RMS=251.192
+
 IASI-METOPA nobs= 707 Min=202.322, Max=259.542, RMS=223.549
+
 SEVIRI-METEOSAT8 nobs= 99 Min=226.413, Max=249.872, RMS=238.591
+
 End H(x)

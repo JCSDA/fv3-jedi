@@ -23,7 +23,8 @@ contains
 ! Surface quantities in the form needed by the crtm -------------------------
 !----------------------------------------------------------------------------
 
-subroutine crtm_surface( geom, field_slmsk, field_sheleg, field_tsea, field_vtype, field_stype, &
+subroutine crtm_surface( geom, day_of_year, &
+                         field_slmsk, field_sheleg, field_tsea, field_vtype, field_stype, &
                          field_vfrac, field_stc, field_smc, field_u_srf, field_v_srf, field_f10m, &
                          field_sss, land_type_npoess, land_type_igbp, &
                          vegetation_type, soil_type, water_coverage, land_coverage, &
@@ -36,6 +37,7 @@ implicit none
 
 !Arguments
 type(fv3jedi_geom)  , intent(in)  :: geom
+real(kind=kind_real), intent(in)  :: day_of_year
 real(kind=kind_real), intent(in)  :: field_slmsk          (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_sheleg         (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_tsea           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
@@ -274,12 +276,12 @@ do jj = geom%jsc, geom%jec
     ice_coverage(ji,jj,1)   = min(max(0.0_kind_real,sfcpct(2)),1.0_kind_real)
     snow_coverage(ji,jj,1)  = min(max(0.0_kind_real,sfcpct(3)),1.0_kind_real)
 
-    Lai(ji,jj,1) = 0.0_kind_real
+    lai(ji,jj,1) = 0.0_kind_real
 
     if (land_coverage(ji,jj,1) > 0.0_kind_real) then
 
-       if(lai_type>0)then
-         call get_lai(lai_type,lai(ji,jj,1)) !TODO: does nothing yet
+       if (lai_type > 0) then
+         call get_lai(lai_type, geom%grid_lat(ji,jj), day_of_year, lai(ji,jj,1))
        endif
 
        ! for Glacial land ice soil type and vegetation type
@@ -348,19 +350,67 @@ end subroutine crtm_surface
 
 !----------------------------------------------------------------------------
 
-subroutine get_lai(lai_type,lai)
+! Implement leaf-area index (LAI) from GSI's crtm_interface module
+!
+! This is a simple triangle-wave function reaching its min value in winter and its max value
+! in summer (in each hemisphere). Note this means at the equator, where seasons are offset,
+! the LAI is discontinuous, with min/winter values of LAI meeting max/summer values.
+subroutine get_lai(lai_type, latitude, day_of_year_in, lai)
 
   implicit none
 
-  integer             , intent(in ) :: lai_type
+  integer, intent(in) :: lai_type
+  real(kind=kind_real), intent(in) :: latitude
+  real(kind=kind_real), intent(in) :: day_of_year_in
   real(kind=kind_real), intent(out) :: lai
 
-  !Dummy code, needs to be figured out
-  if (lai_type .ne. 0) then
-    lai = 0.0_kind_real
+  real(kind=kind_real), dimension(2) :: lai_season
+  real(kind=kind_real), dimension(13), parameter :: lai_min = (/ &
+          3.08_kind_real, 1.85_kind_real, 2.80_kind_real, 5.00_kind_real, 1.00_kind_real, &
+          0.50_kind_real, 0.52_kind_real, 0.60_kind_real, 0.50_kind_real, 0.60_kind_real, &
+          0.10_kind_real, 1.56_kind_real, 0.01_kind_real /)
+  real(kind=kind_real), dimension(13), parameter :: lai_max = (/ &
+          6.48_kind_real, 3.31_kind_real, 5.50_kind_real, 6.40_kind_real, 5.16_kind_real, &
+          3.66_kind_real, 2.90_kind_real, 2.60_kind_real, 3.66_kind_real, 2.60_kind_real, &
+          0.75_kind_real, 5.68_kind_real, 0.01_kind_real /)
+
+  ! Days-of-year for mid-Jan & mid-Jul (leap years are ignored), when the simple LAI function
+  ! reaches its extremal values
+  real(kind=kind_real), dimension(3), parameter :: day_of_peak = &
+          (/15.5_kind_real, 196.5_kind_real, 380.5_kind_real/)
+
+  real(kind=kind_real) :: day_of_year
+  integer :: ni, n1, n2
+  real(kind=kind_real) :: w1, w2
+
+  day_of_year = day_of_year_in
+  if (day_of_year .lt. day_of_peak(1)) day_of_year = day_of_year + 365.0_kind_real
+
+  do ni = 1,2
+    if (day_of_year .ge. day_of_peak(ni) .and. day_of_year .lt. day_of_peak(ni + 1)) then
+      n1 = ni
+      n2 = ni + 1
+      exit
+    endif
+    ! If got here, then day_of_year < day_of_peak(1) or day_of_year >= day_of_peak(3),
+    ! so either day_of_year was very wrong on input or the rephasing logic above failed.
+    if (ni == 2) then
+      call abor1_ftn('fv3jedi.surface_vt_mod.get_lai received invalid day_of_year')
+    endif
+  enddo
+  w1 = (day_of_peak(n2) - day_of_year) / (day_of_peak(n2) - day_of_peak(n1))
+  w2 = (day_of_year - day_of_peak(n1)) / (day_of_peak(n2) - day_of_peak(n1))
+  if (n2 .eq. 3) n2 = 1
+
+  lai_season(1) = lai_min(lai_type)
+  lai_season(2) = lai_max(lai_type)
+  if (latitude < 0.0_kind_real) then
+    lai = w1 * lai_season(n2) + w2 * lai_season(n1)
+  else
+    lai = w1 * lai_season(n1) + w2 * lai_season(n2)
   endif
 
-  end subroutine get_lai
+end subroutine get_lai
 
 !----------------------------------------------------------------------------
 
