@@ -99,6 +99,10 @@ Fields:
     Units: none
     Levels: full
 
+  - FieldName: totalSnowDepth_background_error
+    Units: none
+    Levels: 1
+
   - FieldName: water_area_fraction
     Units: none
     Levels: 1
