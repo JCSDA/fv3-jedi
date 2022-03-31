@@ -31,18 +31,18 @@ Fields:
 
   - FieldIONames: [NO2, no2]
     FieldName: no2
-    LongName: Dry mixing ratio of species for NO2
+    LongName: no2
     Units: mol mol-1 dry
     Tracer: true
 
   - FieldIONames: [NO, 'no']
     FieldName: 'no'
-    LongName: Dry mixing ratio of species for NO
+    LongName: 'no'
     Units: mol mol-1 dry
     Tracer: true
 
   - FieldIONames: [O3, o3]
     FieldName: o3
-    LongName: Dry mixing ratio of species for O3
+    LongName: o3
     Units: mol mol-1 dry
     Tracer: true
