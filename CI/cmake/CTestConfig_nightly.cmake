@@ -1,6 +1,6 @@
 set(CTEST_PROJECT_NAME "fv3-bundle")
 set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
-set(CTEST_DROP_LOCATION "/submit.php?project=fv3-bundle")
+set(CTEST_DROP_LOCATION "CDASH_URL/submit.php?project=fv3-bundle")
 set(CTEST_USE_LAUNCHERS 1)
 set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} 1)
 set(CTEST_LABELS_FOR_SUBPROJECTS fv3-jedi ufo ufo-data oops ioda saber crtm)
