@@ -13,6 +13,9 @@ use iso_c_binding
 ! fckit
 use fckit_configuration_module,     only: fckit_configuration
 
+! atlas
+use atlas_module, only: atlas_fieldset
+
 ! oops
 use datetime_mod
 use duration_mod
@@ -303,6 +306,62 @@ do n = 1,c_f_name_len
 enddo
 
 end subroutine fv3jedi_state_getminmaxrms_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_set_atlas_c(c_key_self, c_key_geom, c_vars, c_afieldset, c_include_halo) &
+ & bind (c,name='fv3jedi_state_set_atlas_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr), intent(in), value :: c_afieldset
+logical(c_bool), intent(in)    :: c_include_halo
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(atlas_fieldset) :: afieldset
+logical :: include_halo
+
+call fv3jedi_state_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+afieldset = atlas_fieldset(c_afieldset)
+include_halo = c_include_halo
+
+call self%set_atlas(geom, vars, afieldset, include_halo)
+
+end subroutine fv3jedi_state_set_atlas_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_to_atlas_c(c_key_self, c_key_geom, c_vars, c_afieldset, c_include_halo) &
+ & bind (c,name='fv3jedi_state_to_atlas_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr), intent(in), value :: c_afieldset
+logical(c_bool), intent(in) :: c_include_halo
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(atlas_fieldset) :: afieldset
+logical :: include_halo
+
+call fv3jedi_state_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+afieldset = atlas_fieldset(c_afieldset)
+include_halo = c_include_halo
+
+call self%to_atlas(geom, vars, afieldset, include_halo)
+
+end subroutine fv3jedi_state_to_atlas_c
 
 ! --------------------------------------------------------------------------------------------------
 

@@ -6,7 +6,7 @@
 module fv3jedi_fields_mod
 
 ! atlas
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_metadata
 
 ! fckit
 use fckit_mpi_module
@@ -25,6 +25,8 @@ use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_kinds_mod,         only: kind_real
 use fields_metadata_mod,       only: field_metadata
+
+use mpp_domains_mod, only: mpp_update_domains, mpp_update_domains_ad
 
 implicit none
 private
@@ -56,6 +58,7 @@ type :: fv3jedi_fields
     procedure, public :: set_atlas
     procedure, public :: to_atlas
     procedure, public :: from_atlas
+    procedure, public :: to_atlas_ad
     procedure, public :: update_fields
 
     ! Public array/field accessor functions
@@ -384,19 +387,28 @@ end subroutine deserialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_atlas(self, geom, vars, afieldset)
+subroutine set_atlas(self, geom, vars, afieldset, opt_include_halo)
 
 implicit none
 class(fv3jedi_fields), intent(in)    :: self
 type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(inout) :: afieldset
+! include_halo argument is optional in f90 implementation so f90 consumers (e.g., increment) can
+! retain a simple interface with to_atlas. In the C++ interface, the argument is not optional.
+logical, optional,     intent(in)    :: opt_include_halo
 
 integer :: jvar, npz
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
 
+logical :: include_halo
+if (present(opt_include_halo)) then
+  include_halo = opt_include_halo
+else
+  include_halo = .false.
+endif
 
 do jvar = 1,vars%nvars()
 
@@ -412,8 +424,14 @@ do jvar = 1,vars%nvars()
     if (npz==1) npz = 0
 
     ! Create Atlas field
-    afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
-                                               levels=npz )
+    if (include_halo) then
+      afield = geom%afunctionspace_incl_halo%create_field( name=field%long_name, &
+                                                           kind=atlas_real(kind_real), &
+                                                           levels=npz )
+    else
+      afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
+                                                 levels=npz )
+    endif
 
     ! Add to fieldsets
     call afieldset%add(afield)
@@ -429,25 +447,61 @@ end subroutine set_atlas
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine to_atlas(self, geom, vars, afieldset)
+subroutine to_atlas(self, geom, vars, afieldset, opt_include_halo)
 
 implicit none
 class(fv3jedi_fields), intent(in)    :: self
 type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(inout) :: afieldset
+! include_halo argument is optional in f90 implementation so f90 consumers (e.g., increment) can
+! retain a simple interface with to_atlas. In the C++ interface, the argument is not optional.
+logical, optional,     intent(in)    :: opt_include_halo
 
 integer :: jvar, npz, jl
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
+type(atlas_metadata) :: meta
+
+logical :: include_halo
+real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
+real(kind=kind_real), allocatable :: field_array(:,:)  ! holds local field data + halo data
+integer :: ngrid
+
+if (present(opt_include_halo)) then
+  include_halo = opt_include_halo
+else
+  include_halo = .false.
+endif
 
 do jvar = 1,vars%nvars()
 
   ! Get fv3-jedi field
   call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
+
+  ! If halo points are requested, we prepare the local+halo data into the variable field_array
+  if (include_halo) then
+    ngrid = geom%ngrid_including_halo()
+    allocate(field_array(ngrid, field%npz))
+
+    ! Fill local data
+    allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, field%npz))
+    tmp_fv3_data = 0.0_kind_real
+    tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, :) = field%array
+
+    ! Fill halo data -- this wraps MPI calls to get field data from other PEs
+    call mpp_update_domains(tmp_fv3_data, geom%domain)
+
+    ! Construct JEDI interp grid, by removing FV3's corner halos at cubed-sphere grid corners
+    ! Note that the interp grid is 1D because removing the corners means it has irregular structure
+    do jl=1,field%npz
+      call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,jl), field_array(:,jl))
+    enddo
+    deallocate(tmp_fv3_data)
+  endif
 
   ! Variable dimension
   npz = field%npz
@@ -462,8 +516,14 @@ do jvar = 1,vars%nvars()
   else
 
     ! Create field
-    afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
-                                               levels=npz )
+    if (include_halo) then
+      afield = geom%afunctionspace_incl_halo%create_field( name=field%long_name, &
+                                                           kind=atlas_real(kind_real), &
+                                                           levels=npz )
+    else
+      afield = geom%afunctionspace%create_field( name=field%long_name, kind=atlas_real(kind_real), &
+                                                 levels=npz )
+    endif
 
     ! Add to fieldsets
     call afieldset%add(afield)
@@ -476,7 +536,11 @@ do jvar = 1,vars%nvars()
     call afield%data(real_ptr_1)
 
     ! Copy the data
-    real_ptr_1 = reshape(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,1),(/geom%ngrid/))
+    if (include_halo) then
+      real_ptr_1 = field_array(:,1)
+    else
+      real_ptr_1 = reshape(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,1),(/geom%ngrid/))
+    endif
 
   else
 
@@ -484,14 +548,25 @@ do jvar = 1,vars%nvars()
     call afield%data(real_ptr_2)
 
     ! Copy the data
-    do jl=1, npz
-      real_ptr_2(jl,:) = reshape(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),(/geom%ngrid/))
-    enddo
+    if (include_halo) then
+      do jl=1, npz
+        real_ptr_2(jl,:) = field_array(:,jl)
+      enddo
+    else
+      do jl=1, npz
+        real_ptr_2(jl,:) = reshape(field%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),(/geom%ngrid/))
+      enddo
+    endif
 
   endif
 
+  meta = afield%metadata()
+  call meta%set('interp_type', trim(field%interp_type))
+
   ! Release pointer
   call afield%final()
+
+  if (include_halo) deallocate(field_array)
 
 enddo
 
@@ -499,6 +574,8 @@ end subroutine to_atlas
 
 ! --------------------------------------------------------------------------------------------------
 
+! Because from_atlas is currently not used in the context of interpolations, the atlas FieldSet
+! should not contain halo points.
 subroutine from_atlas(self, geom, vars, afieldset)
 
 implicit none
@@ -512,7 +589,7 @@ real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=field_clen) :: fv3jedi_name
-
+character(len=1024) :: errmsg
 
 do jvar = 1,vars%nvars()
 
@@ -526,6 +603,13 @@ do jvar = 1,vars%nvars()
 
   ! Get Atlas field
   afield = afieldset%field(field%long_name)
+
+  ! Sanity check that afield has expected size, i.e., does not include halo points.
+  if (geom%ngrid /= afield%size() / field%npz) then
+    write (errmsg,*) "Bad afield size in from_atlas: expect geom%ngrid = ", geom%ngrid, &
+                     " but got afield ngrid = ", afield%size() / field%npz
+    call abor1_ftn(trim(errmsg))
+  end if
 
   if (npz==0) then
 
@@ -554,6 +638,90 @@ do jvar = 1,vars%nvars()
 enddo
 
 end subroutine from_atlas
+
+! --------------------------------------------------------------------------------------------------
+
+! Because to_atlas_ad is currently only used in the context of interpolations, the atlas FieldSet
+! should contain halo points. An adjoint of halo exchange is performed before adding the FieldSet
+! to the fv3 fields.
+subroutine to_atlas_ad(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(inout) :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(in)    :: afieldset
+
+integer :: jvar, npz, jl
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+character(len=field_clen) :: fv3jedi_name
+character(len=1024) :: errmsg
+
+real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
+integer :: ngrid
+
+ngrid = geom%ngrid_including_halo()
+
+do jvar = 1,vars%nvars()
+
+  ! Get fv3-jedi field
+  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call self%get_field(fv3jedi_name, field)
+
+  ! Variable dimension
+  npz = field%npz
+  if (npz==1) npz = 0
+
+  ! Get Atlas field
+  afield = afieldset%field(field%long_name)
+
+  ! Sanity check that afield has expected size, i.e., includes halo points
+  if (ngrid /= afield%size()/field%npz) then
+    write (errmsg,*) "Bad afield size in to_atlas_ad: expect ngrid = ", ngrid, &
+                     ", but got afield ngrid = ", afield%size()/field%npz
+    call abor1_ftn(trim(errmsg))
+  end if
+
+  ! Allocate buffer for 2d fv3-jedi field (local data + halo) before adjoint of halo exchange
+  allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, field%npz))
+  tmp_fv3_data = 0.0
+
+  if (npz==0) then
+
+    ! Get pointer to Atlas field data
+    call afield%data(real_ptr_1)
+
+    ! Reshape 1d afield data (local + halo) into 2d fv3-jedi field
+    call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,1), real_ptr_1(:))
+
+  else
+
+    ! Get pointer to Atlas field data
+    call afield%data(real_ptr_2)
+
+    ! Reshape 1d afield data (local + halo) into 2d fv3-jedi field
+    do jl=1,field%npz
+      call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,jl), real_ptr_2(jl,:))
+    enddo
+
+  endif
+
+  ! Adjoint of halo exchange
+  call mpp_update_domains_ad(tmp_fv3_data, geom%domain)
+
+  ! Add local data (the "center" of the 2d array) to the fv3 fields
+  field%array = field%array + tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, :)
+
+  deallocate(tmp_fv3_data)
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+end subroutine to_atlas_ad
 
 ! --------------------------------------------------------------------------------------------------
 

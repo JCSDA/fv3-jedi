@@ -10,7 +10,7 @@ use fv3jedi_kinds_mod, only: kind_real
 use crtm_module, only: crtm_irlandcoeff_classification
 use fv3jedi_constants_mod, only: rad2deg, deg2rad, pi
 
-use unstructured_interpolation_mod, only: unstrc_interp
+use slow_unstructured_interpolation_mod, only: unstrc_interp
 
 implicit none
 private

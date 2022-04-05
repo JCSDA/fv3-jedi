@@ -121,6 +121,9 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   util::DateTime & validTime() {return time_;}
   void updateTime(const util::Duration & dt) {time_ += dt;}
 
+// Get values as Atlas FieldSet
+  void getFieldSet(const oops::Variables &, atlas::FieldSet &) const;
+
   int & toFortran() {return keyState_;}
   const int & toFortran() const {return keyState_;}
 

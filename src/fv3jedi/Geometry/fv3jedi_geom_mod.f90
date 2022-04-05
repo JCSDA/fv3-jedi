@@ -94,12 +94,17 @@ type :: fv3jedi_geom
   integer :: grid_type = 0
   logical :: dord4 = .true.
   type(atlas_functionspace) :: afunctionspace
+  type(atlas_functionspace) :: afunctionspace_incl_halo
+
   contains
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
     procedure, public :: set_atlas_lonlat
     procedure, public :: fill_atlas_fieldset
+    procedure, public :: ngrid_including_halo
+    procedure, public :: trim_fv3_grid_to_jedi_interp_grid
+    procedure, public :: trim_fv3_grid_to_jedi_interp_grid_ad
 end type fv3jedi_geom
 
 ! --------------------------------------------------------------------------------------------------
@@ -516,6 +521,7 @@ self%nw_corner = other%nw_corner
 self%domain => other%domain
 
 self%afunctionspace = atlas_functionspace(other%afunctionspace%c_ptr())
+self%afunctionspace_incl_halo = atlas_functionspace(other%afunctionspace_incl_halo%c_ptr())
 
 self%fields = fields
 
@@ -586,6 +592,7 @@ if (allocated(self%orography)) deallocate(self%orography)
 !call mpp_deallocate_domain(self%domain_fix)
 
 call self%afunctionspace%final()
+call self%afunctionspace_incl_halo%final()
 
 ! Could finalize the fms routines. Possibly needs to be done only when key = 0
 !call fms_io_exit
@@ -596,22 +603,41 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_atlas_lonlat(self, afieldset)
+subroutine set_atlas_lonlat(self, afieldset, include_halo)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
+logical,              intent(in) :: include_halo
 
 !Locals
 real(kind_real), pointer :: real_ptr(:,:)
-type(atlas_field) :: afield
+type(atlas_field) :: afield, afield_incl_halo
+integer :: ngrid
+
+ngrid = self%ngrid
 
 ! Create lon/lat field
-afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,(self%iec-self%isc+1)*(self%jec-self%jsc+1)/))
+afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,ngrid/))
 call afield%data(real_ptr)
-real_ptr(1,:) = rad2deg*reshape(self%grid_lon(self%isc:self%iec,self%jsc:self%jec),(/self%ngrid/))
-real_ptr(2,:) = rad2deg*reshape(self%grid_lat(self%isc:self%iec,self%jsc:self%jec),(/self%ngrid/))
+real_ptr(1,:) = rad2deg*reshape(self%grid_lon(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
+real_ptr(2,:) = rad2deg*reshape(self%grid_lat(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
 call afieldset%add(afield)
+
+if (include_halo) then
+  nullify(real_ptr)
+  ngrid = ngrid_including_halo(self)
+
+  ! Create an additional lon/lat field containing owned points (as above) and also halo
+  afield_incl_halo = atlas_field(name="lonlat_including_halo", kind=atlas_real(kind_real), &
+                                 shape=(/2,ngrid/))
+  call afield_incl_halo%data(real_ptr)
+  call trim_fv3_grid_to_jedi_interp_grid(self, self%grid_lon, real_ptr(1,:))
+  call trim_fv3_grid_to_jedi_interp_grid(self, self%grid_lat, real_ptr(2,:))
+  ! Convert rad -> degree
+  real_ptr(:,:) = rad2deg * real_ptr(:,:)
+  call afieldset%add(afield_incl_halo)
+endif
 
 end subroutine set_atlas_lonlat
 
@@ -658,6 +684,201 @@ call afieldset%add(afield)
 call afield%final()
 
 end subroutine fill_atlas_fieldset
+
+! --------------------------------------------------------------------------------------------------
+
+! A helper function for the size of the grid constructed by trim_fv3_grid_to_jedi_interp_grid; for
+! details, see that subroutine's documentation.
+function ngrid_including_halo(self)
+  class(fv3jedi_geom), intent(in) :: self
+  integer :: ngrid_including_halo
+
+  logical :: remove_sw_corner, remove_se_corner, remove_nw_corner, remove_ne_corner
+  integer :: halo_width
+
+  ! Identify which corners of the grid patch are corners of the cubed sphere:
+  remove_sw_corner = (self%isc == 1 .and. self%jsc == 1)
+  remove_se_corner = (self%iec == self%npx-1 .and. self%jsc == 1)
+  remove_nw_corner = (self%isc == 1 .and. self%jec == self%npy-1)
+  remove_ne_corner = (self%iec == self%npx-1 .and. self%jec == self%npy-1)
+
+  ! In the code below, we assume halos have the same width all around the grid patch. This could
+  ! be generalized fairly easily, but for now we just check the assumption:
+  halo_width = self%ied - self%iec
+  if (halo_width /= self%isc - self%isd .or. halo_width /= self%jed - self%jec &
+      .or. halo_width /= self%jsc - self%jsd) then
+    call abor1_ftn("fv3jedi_geom_mod: code must be generalized to use non-uniform halo widths")
+  endif
+
+  ! Total size of grid to keep is: local grid + 4 edge halos + <kept corner halos>
+  ! This is easier to compute as: full grid - <removed corner halos>
+  ngrid_including_halo = (self%ied - self%isd + 1) * (self%jed - self%jsd + 1)
+  if (remove_sw_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+  if (remove_se_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+  if (remove_nw_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+  if (remove_ne_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+end function ngrid_including_halo
+
+! --------------------------------------------------------------------------------------------------
+
+! The fv3jedi modules interfacing with FV3 give access to grid data with full halos
+! (edges + corners) for FV3 quantities like coordinates and fields.
+!
+! This is almost always what we want as the interpolation source grid, except that the FV3 corner
+! halo points are meaningless at the corner of the cubed-sphere grids, where the 6 "cube faces"
+! meet. This is because at this location the coordinates kink so the two edge halos touch.
+!
+! This subroutine takes FV3 grid data and cuts out the meaningless data from halo corner regions at
+! cubed-sphere grid corners. The result is the source grid needed for JEDI interpolations. Because
+! the result has unpredictable structure, the field is stored in a 1D array. This function ensures
+! all fields are represented in 1D with the same ordering.
+subroutine trim_fv3_grid_to_jedi_interp_grid(self, fv3_halo, interp_halo)
+  class(fv3jedi_geom), intent(in) :: self
+  real(kind_real), intent(in) :: fv3_halo(self%isd:self%ied, self%jsd:self%jed)
+  real(kind_real), intent(inout) :: interp_halo(:)
+
+  integer :: a, b, ngrid_to_keep, nsection, halo_width
+  logical :: remove_sw_corner, remove_se_corner, remove_nw_corner, remove_ne_corner
+
+  ! Check inputs are correctly sized
+  ngrid_to_keep = ngrid_including_halo(self)
+  if (ngrid_to_keep /= size(interp_halo)) then
+    call abor1_ftn("fv3jedi_geom_mod: bad array dimension for interp_halo")
+  endif
+
+  ! First, copy ngrid owned data points
+  nsection = self%ngrid
+  a = 1
+  b = nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isc:self%iec, self%jsc:self%jec), (/nsection/))
+
+  ! In ngrid_including_halo, halo_width was checked to be uniform
+  halo_width = self%ied - self%iec
+
+  ! Copy west + east edge halos
+  nsection = halo_width * (self%jec - self%jsc + 1)
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isd:self%isc-1, self%jsc:self%jec), (/nsection/))
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%iec+1:self%ied, self%jsc:self%jec), (/nsection/))
+
+  ! Copy south + north edge halos
+  nsection = halo_width * (self%iec - self%isc + 1)
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isc:self%iec, self%jsd:self%jsc-1), (/nsection/))
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isc:self%iec, self%jec+1:self%jed), (/nsection/))
+
+  remove_sw_corner = (self%isc == 1 .and. self%jsc == 1)
+  remove_se_corner = (self%iec == self%npx-1 .and. self%jsc == 1)
+  remove_nw_corner = (self%isc == 1 .and. self%jec == self%npy-1)
+  remove_ne_corner = (self%iec == self%npx-1 .and. self%jec == self%npy-1)
+
+  ! Copy corner halos as needed
+  nsection = halo_width * halo_width
+  if (.not. remove_sw_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%isd:self%isc-1, self%jsd:self%jsc-1), (/nsection/))
+  endif
+  if (.not. remove_se_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%iec+1:self%ied, self%jsd:self%jsc-1), (/nsection/))
+  endif
+  if (.not. remove_nw_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%isd:self%isc-1, self%jec+1:self%jed), (/nsection/))
+  endif
+  if (.not. remove_ne_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%iec+1:self%ied, self%jec+1:self%jed), (/nsection/))
+  endif
+endsubroutine trim_fv3_grid_to_jedi_interp_grid
+
+! --------------------------------------------------------------------------------------------------
+
+! Adjoint of trim_fv3_grid_to_jedi_interp_grid: takes 1D data (ordered with owned points first,
+! then halo points second), and unpacks into a 2D fv3-jedi grid. If the grid is at the corner of
+! the cubed sphere, such that there is no input data to fill the "corner" halo with, then set
+! those points to 0.
+subroutine trim_fv3_grid_to_jedi_interp_grid_ad(self, fv3_halo, interp_halo)
+  class(fv3jedi_geom), intent(in) :: self
+  real(kind_real), intent(inout) :: fv3_halo(self%isd:self%ied, self%jsd:self%jed)
+  real(kind_real), intent(in) :: interp_halo(:)
+
+  integer :: a, b, ngrid_to_keep, halo_width, nsection
+  logical :: remove_sw_corner, remove_se_corner, remove_nw_corner, remove_ne_corner
+
+  ! Check inputs are correctly sized
+  ngrid_to_keep = ngrid_including_halo(self)
+  if (ngrid_to_keep /= size(interp_halo)) then
+    call abor1_ftn("fv3jedi_geom_mod: bad array dimension for interp_halo")
+  endif
+
+  fv3_halo(:,:) = 0.0
+
+  ! First, copy ngrid owned data points
+  nsection = self%ngrid
+  a = 1
+  b = nsection
+  fv3_halo(self%isc:self%iec, self%jsc:self%jec) = reshape(interp_halo(a:b), (/self%iec - self%isc + 1, self%jec - self%jsc + 1/))
+
+  ! In ngrid_including_halo, halo_width was checked to be uniform
+  halo_width = self%ied - self%iec
+
+  ! Copy west + east edge halos
+  nsection = halo_width * (self%jec - self%jsc + 1)
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%isd:self%isc-1, self%jsc:self%jec) = reshape(interp_halo(a:b), (/self%isc - self%isd, self%jec - self%jsc + 1/))
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%iec+1:self%ied, self%jsc:self%jec) = reshape(interp_halo(a:b), (/self%ied - self%iec, self%jec - self%jsc + 1/))
+
+  ! Copy south + north edge halos
+  nsection = halo_width * (self%iec - self%isc + 1)
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%isc:self%iec, self%jsd:self%jsc-1) = reshape(interp_halo(a:b), (/self%iec - self%isc + 1, self%jsc - self%jsd/))
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%isc:self%iec, self%jec+1:self%jed) = reshape(interp_halo(a:b), (/self%iec - self%isc + 1, self%jsc - self%jsd/))
+
+  remove_sw_corner = (self%isc == 1 .and. self%jsc == 1)
+  remove_se_corner = (self%iec == self%npx-1 .and. self%jsc == 1)
+  remove_nw_corner = (self%isc == 1 .and. self%jec == self%npy-1)
+  remove_ne_corner = (self%iec == self%npx-1 .and. self%jec == self%npy-1)
+
+  ! Copy corner halos as needed
+  nsection = halo_width * halo_width
+  if (.not. remove_sw_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%isd:self%isc-1, self%jsd:self%jsc-1) = reshape(interp_halo(a:b), (/self%isc - self%isd, self%jsc - self%jsd/))
+  endif
+  if (.not. remove_se_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%iec+1:self%ied, self%jsd:self%jsc-1) = reshape(interp_halo(a:b), (/self%ied - self%iec, self%jsc - self%jsd/))
+  endif
+  if (.not. remove_nw_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%isd:self%isc-1, self%jec+1:self%jed) = reshape(interp_halo(a:b), (/self%isc - self%isd, self%jed - self%jec/))
+  endif
+  if (.not. remove_ne_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%iec+1:self%ied, self%jec+1:self%jed) = reshape(interp_halo(a:b), (/self%ied - self%iec, self%jed - self%jec/))
+  endif
+endsubroutine trim_fv3_grid_to_jedi_interp_grid_ad
 
 ! --------------------------------------------------------------------------------------------------
 

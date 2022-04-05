@@ -45,15 +45,22 @@ Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
   fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
 
   // Set ATLAS lon/lat field
+  // include halo so we can set up function spaces with/without halo
   atlasFieldSet_.reset(new atlas::FieldSet());
-  fv3jedi_geom_set_atlas_lonlat_f90(keyGeom_, atlasFieldSet_->get());
-  atlas::Field atlasField = atlasFieldSet_->field("lonlat");
+  const bool include_halo = true;
+  fv3jedi_geom_set_atlas_lonlat_f90(keyGeom_, atlasFieldSet_->get(), include_halo);
 
   // Create ATLAS function space
+  const atlas::Field atlasField = atlasFieldSet_->field("lonlat");
   atlasFunctionSpace_.reset(new atlas::functionspace::PointCloud(atlasField));
 
-  // Set ATLAS function space pointer in Fortran
-  fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
+  // Create ATLAS function space with halo
+  const atlas::Field atlasFieldInclHalo = atlasFieldSet_->field("lonlat_including_halo");
+  atlasFunctionSpaceIncludingHalo_.reset(new atlas::functionspace::PointCloud(atlasFieldInclHalo));
+
+  // Set ATLAS function space pointers in Fortran
+  fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get(),
+                                                   atlasFunctionSpaceIncludingHalo_->get());
 
   // Fill ATLAS fieldset
   atlasFieldSet_.reset(new atlas::FieldSet());
@@ -73,7 +80,10 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, fieldsMeta_.get());
   atlasFunctionSpace_.reset(new atlas::functionspace::PointCloud(
                             other.atlasFunctionSpace_->lonlat()));
-  fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get());
+  atlasFunctionSpaceIncludingHalo_.reset(new atlas::functionspace::PointCloud(
+                            other.atlasFunctionSpaceIncludingHalo_->lonlat()));
+  fv3jedi_geom_set_atlas_functionspace_pointer_f90(keyGeom_, atlasFunctionSpace_->get(),
+                                                   atlasFunctionSpaceIncludingHalo_->get());
   atlasFieldSet_.reset(new atlas::FieldSet());
   for (int jfield = 0; jfield < other.atlasFieldSet_->size(); ++jfield) {
     atlas::Field atlasField = other.atlasFieldSet_->field(jfield);
@@ -140,6 +150,27 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
     varSizes.push_back(fieldsMeta_->getLevelsFromLongName(vars[it]));
   }
   return varSizes;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
+                      const bool halo) const {
+  const atlas::functionspace::PointCloud * fspace;
+  if (halo) {
+    fspace = atlasFunctionSpaceIncludingHalo_.get();
+  } else {
+    fspace = atlasFunctionSpace_.get();
+  }
+  const auto lonlat = atlas::array::make_view<double, 2>(fspace->lonlat());
+  const size_t npts = fspace->size();
+  lats.resize(npts);
+  lons.resize(npts);
+  for (size_t jj = 0; jj < npts; ++jj) {
+    lats[jj] = lonlat(jj, 1);
+    lons[jj] = lonlat(jj, 0);
+    if (lons[jj] < 0.0) lons[jj] += 360.0;
+  }
 }
 
 // -------------------------------------------------------------------------------------------------

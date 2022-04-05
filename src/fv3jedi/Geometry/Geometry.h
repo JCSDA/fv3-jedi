@@ -17,7 +17,6 @@
 
 #include "eckit/mpi/Comm.h"
 
-#include "oops/base/Variables.h"
 #include "oops/mpi/mpi.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
@@ -27,14 +26,12 @@
 #include "fv3jedi/Geometry/GeometryParameters.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
 
-namespace eckit {
-  class Configuration;
+namespace oops {
+  class Variables;
 }
 
 namespace fv3jedi {
-
   class GeometryIterator;
-  class State;
 
 // -------------------------------------------------------------------------------------------------
 /// Geometry handles geometry for FV3JEDI model.
@@ -58,6 +55,7 @@ class Geometry : public util::Printable,
   const eckit::mpi::Comm & getComm() const {return comm_;}
   atlas::FunctionSpace * atlasFunctionSpace() const {return atlasFunctionSpace_.get();}
   atlas::FieldSet * atlasFieldSet() const {return atlasFieldSet_.get();}
+  void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
 
   std::vector<size_t> variableSizes(const oops::Variables &) const;
 
@@ -69,6 +67,7 @@ class Geometry : public util::Printable,
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
   std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpace_;
+  std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpaceIncludingHalo_;
   std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
 };

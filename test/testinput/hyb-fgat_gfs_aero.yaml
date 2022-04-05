@@ -139,3 +139,4 @@ variational:
 test:
   reference filename: testoutput/hyb-fgat_gfs_aero.ref
   test output filename: testoutput/hyb-fgat_gfs_aero.test.out
+  float relative tolerance: 2.0e-3

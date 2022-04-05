@@ -205,7 +205,7 @@ end subroutine c_fv3jedi_geom_print
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_atlas_lonlat(c_key_self, c_afieldset) &
+subroutine c_fv3jedi_geom_set_atlas_lonlat(c_key_self, c_afieldset, c_include_halo) &
                                            bind(c,name='fv3jedi_geom_set_atlas_lonlat_f90')
 
 implicit none
@@ -213,9 +213,11 @@ implicit none
 !Arguments
 integer(c_int), intent(in) :: c_key_self
 type(c_ptr), intent(in), value :: c_afieldset
+logical(c_bool), intent(in) :: c_include_halo
 
 type(fv3jedi_geom), pointer :: self
 type(atlas_fieldset) :: afieldset
+logical :: include_halo
 
 ! LinkedList
 ! ----------
@@ -225,19 +227,22 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! ------------
 afieldset = atlas_fieldset(c_afieldset)
 
+include_halo = c_include_halo
+
 ! Call implementation
 ! -------------------
-call self%set_atlas_lonlat(afieldset)
+call self%set_atlas_lonlat(afieldset, include_halo)
 
 end subroutine c_fv3jedi_geom_set_atlas_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace) &
+subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace,c_afunctionspace_incl_halo) &
                                                           bind(c,name='fv3jedi_geom_set_atlas_functionspace_pointer_f90')
 
 integer(c_int), intent(in)     :: c_key_self
 type(c_ptr), intent(in), value :: c_afunctionspace
+type(c_ptr), intent(in), value :: c_afunctionspace_incl_halo
 
 type(fv3jedi_geom),pointer :: self
 
@@ -248,6 +253,7 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! Create function space
 ! ---------------------
 self%afunctionspace = atlas_functionspace(c_afunctionspace)
+self%afunctionspace_incl_halo = atlas_functionspace(c_afunctionspace_incl_halo)
 
 end subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer
 

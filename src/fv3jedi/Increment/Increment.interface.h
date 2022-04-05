@@ -35,11 +35,13 @@ extern "C" {
   void fv3jedi_increment_norm_f90(const F90inc &, double &);
   void fv3jedi_increment_update_fields_f90(F90inc &, const F90geom &, const oops::Variables &);
   void fv3jedi_increment_set_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                       atlas::field::FieldSetImpl *);
+                                       atlas::field::FieldSetImpl *, const bool &);
   void fv3jedi_increment_to_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                      atlas::field::FieldSetImpl *);
+                                      atlas::field::FieldSetImpl *, const bool &);
   void fv3jedi_increment_from_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                        atlas::field::FieldSetImpl *);
+                                        const atlas::field::FieldSetImpl *);
+  void fv3jedi_increment_to_atlas_ad_f90(const F90inc &, const F90geom &, const oops::Variables &,
+                                      const atlas::field::FieldSetImpl *);
   void fv3jedi_increment_dirac_f90(const F90inc &, const eckit::Configuration &,
                                    const F90geom &);
   void fv3jedi_increment_serialize_f90(const F90inc &, const std::size_t &, double[]);

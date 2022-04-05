@@ -14,6 +14,8 @@
 
 #include "boost/none_t.hpp"
 
+#include "atlas/field.h"
+
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
@@ -234,7 +236,15 @@ double State::norm() const {
   return zz;
 }
 
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+void State::getFieldSet(const oops::Variables & vars, atlas::FieldSet & fset) const {
+  const bool include_halo = true;
+  fv3jedi_state_set_atlas_f90(keyState_, geom_->toFortran(), vars, fset.get(), include_halo);
+  fv3jedi_state_to_atlas_f90(keyState_, geom_->toFortran(), vars, fset.get(), include_halo);
+}
+
+// -----------------------------------------------------------------------------
 
 size_t State::serialSize() const {
   oops::Log::trace() << "State serialSize starting" << std::endl;

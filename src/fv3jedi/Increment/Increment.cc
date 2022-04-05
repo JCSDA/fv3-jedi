@@ -176,15 +176,31 @@ void Increment::setLocal(const oops::LocalIncrement & values, const GeometryIter
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::setAtlas(atlas::FieldSet * afieldset) const {
-  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
+  oops::Log::trace() << "fv3jedi::Increment::setAtlas starting" << std::endl;
+  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get(), false);
+  oops::Log::trace() << "fv3jedi::Increment::setAtlas done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::toAtlas(atlas::FieldSet * afieldset) const {
-  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
+  oops::Log::trace() << "fv3jedi::Increment::toAtlas starting" << std::endl;
+  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get(), false);
+  oops::Log::trace() << "fv3jedi::Increment::toAtlas done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::fromAtlas(atlas::FieldSet * afieldset) {
+  oops::Log::trace() << "fv3jedi::Increment::fromAtlas starting" << std::endl;
   fv3jedi_increment_from_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
+  oops::Log::trace() << "fv3jedi::Increment::fromAtlas done" << std::endl;
+}
+// -------------------------------------------------------------------------------------------------
+void Increment::getFieldSet(const oops::Variables & vars, atlas::FieldSet & fset) const {
+  const bool include_halo = true;
+  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars, fset.get(), include_halo);
+  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars, fset.get(), include_halo);
+}
+// -------------------------------------------------------------------------------------------------
+void Increment::getFieldSetAD(const oops::Variables & vars, const atlas::FieldSet & fset) {
+  fv3jedi_increment_to_atlas_ad_f90(keyInc_, geom_->toFortran(), vars, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::read(const ReadParameters_ & params) {

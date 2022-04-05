@@ -9,7 +9,7 @@ module fv3jedi_interpolation_mod
 use fckit_mpi_module,               only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 
 ! oops
-use unstructured_interpolation_mod, only: unstrc_interp
+use slow_unstructured_interpolation_mod, only: unstrc_interp
 
 ! saber
 use interpolatorbump_mod,         only: bump_interpolator
@@ -85,6 +85,8 @@ endif
 ! --------------------------------------------
 self%nnearest = 4
 if (self%need_bary) then
+  ! This uses the slower Fortran unstructure interpolation copied into fv3-jedi at time of
+  ! early-2022 GetValues optimization.
   call self%unsinterp%create( geom_in%f_comm, self%nnearest, trim(us_interp_type), &
                               geom_in%ngrid, rad2deg*geom_in%lat_us, rad2deg*geom_in%lon_us, &
                               geom_ou%ngrid, rad2deg*geom_ou%lat_us, rad2deg*geom_ou%lon_us )

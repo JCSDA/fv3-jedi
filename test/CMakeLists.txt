@@ -109,8 +109,6 @@ list( APPEND fv3jedi_testinput
   testinput/geometry_iterator_lam_cmaq.yaml
   testinput/geometry_lam_cmaq.yaml
   testinput/geometry_nested.yaml
-  testinput/getvalues_geos.yaml
-  testinput/getvalues_gfs.yaml
   testinput/hofx_fv3-geos.yaml
   testinput/hofx_fv3-gfs.yaml
   testinput/hofx_fv3lm.yaml
@@ -143,8 +141,6 @@ list( APPEND fv3jedi_testinput
   testinput/lgetkf.yaml
   testinput/letkf_snow.yaml
   testinput/adjointforecast.yaml
-  testinput/lineargetvalues_geos.yaml
-  testinput/lineargetvalues_gfs.yaml
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
   testinput/linearvariablechange_geos.yaml
@@ -600,20 +596,12 @@ ecbuild_add_executable( TARGET  test_fv3jedi_geometry.x
                         SOURCES mains/TestGeometry.cc
                         LIBS    fv3jedi )
 
-ecbuild_add_executable( TARGET  test_fv3jedi_getvalues.x
-                        SOURCES mains/TestGetValues.cc
-                        LIBS    fv3jedi )
-
 ecbuild_add_executable( TARGET  test_fv3jedi_geometryiterator.x
                         SOURCES mains/TestGeometryIterator.cc
                         LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_increment.x
                         SOURCES mains/TestIncrement.cc
-                        LIBS    fv3jedi )
-
-ecbuild_add_executable( TARGET  test_fv3jedi_lineargetvalues.x
-                        SOURCES mains/TestLinearGetValues.cc
                         LIBS    fv3jedi )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_linearmodel.x
@@ -831,31 +819,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_increment_geos
                   ARGS     testinput/increment_geos.yaml
                   COMMAND  test_fv3jedi_increment.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues_gfs
-                  MPI      6
-                  ARGS     testinput/getvalues_gfs.yaml
-                  COMMAND  test_fv3jedi_getvalues.x )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues_geos
-                  MPI      6
-                  ARGS     testinput/getvalues_geos.yaml
-                  COMMAND  test_fv3jedi_getvalues.x )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_lineargetvalues_gfs
-                  MPI      6
-                  ARGS     testinput/lineargetvalues_gfs.yaml
-                  COMMAND  test_fv3jedi_lineargetvalues.x )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_lineargetvalues_geos
-                  MPI      6
-                  ARGS     testinput/lineargetvalues_geos.yaml
-                  COMMAND  test_fv3jedi_lineargetvalues.x )
-
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance
                   MPI      6
                   ARGS     testinput/errorcovariance.yaml
                   COMMAND  test_fv3jedi_errorcovariance.x )
-
 
 # Variable changes tests (some required for latter tests)
 # -------------------------------------------------------
