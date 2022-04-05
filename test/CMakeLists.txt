@@ -49,6 +49,7 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 # ------------------
 list( APPEND fv3jedi_testinput
   testinput/3denvar_geos_aero.yaml
+  testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
   testinput/addincrement_geos.yaml
@@ -188,6 +189,7 @@ LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_B
 # -------------------
 list( APPEND fv3jedi_testoutput
   testoutput/3dvar_lam_cmaq.ref
+  testoutput/3dvar_gfs_aero.ref
   testoutput/3denvar_geos_aero.ref
   testoutput/4denvar.ref
   testoutput/addincrement_geos.ref
@@ -1545,7 +1547,6 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     ARGS    testinput/hyb-3dvar_gfs_aero_bump.yaml
                     COMMAND fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
-                                 fv3jedi_test_tier2_staticb_split_nicas_aero
                                  fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
 
 
@@ -1554,7 +1555,13 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     ARGS     testinput/hyb-3dvar_gfs_aero_bump_bc.yaml
                     COMMAND  fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
-                                 fv3jedi_test_tier2_staticb_split_nicas_aero
+                                 fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_3dvar_gfs_aero
+                    MPI      12 
+                    ARGS     testinput/3dvar_gfs_aero.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
                                  fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
 
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_gfs
