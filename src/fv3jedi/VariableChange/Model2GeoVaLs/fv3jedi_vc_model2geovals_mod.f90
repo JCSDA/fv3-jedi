@@ -795,7 +795,7 @@ do f = 1, size(fields_to_do)
 
   case ("totalSnowDepth_background_error")
 
-    field_ptr = 60.0_kind_real
+    field_ptr = 30.0_kind_real
 
   case ("humidity_mixing_ratio")
 
