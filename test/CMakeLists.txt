@@ -128,7 +128,7 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_gfs_1obs.yaml
   testinput/hyb-3dvar_gfs_aero.yaml
   testinput/hyb-3dvar_gfs_aero_bump.yaml
-  testinput/hyb-3dvar_gfs_aero_bump_bc.yaml 
+  testinput/hyb-3dvar_gfs_aero_bump_bc.yaml
   testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
   testinput/hyb-3dvar_gfs.yaml
   testinput/hyb-3dvar_p12.yaml
@@ -1551,14 +1551,14 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
 
 
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_gfs_aero_bump_bc
-                    MPI      12  
+                    MPI      12
                     ARGS     testinput/hyb-3dvar_gfs_aero_bump_bc.yaml
                     COMMAND  fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
                                  fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
 
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_3dvar_gfs_aero
-                    MPI      12 
+                    MPI      12
                     ARGS     testinput/3dvar_gfs_aero.yaml
                     COMMAND  fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
