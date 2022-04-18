@@ -4,5 +4,6 @@ files:
 
 test:
   reference filename: testoutput/eda_4dvar_fv3lm.ref
-  float relative tolerance: 1.0e-1
+  float relative tolerance: 1.0e-8
+  float absolute tolerance: 1.0e-8
   test output filename: testoutput/eda_4dvar_fv3lm.test.out

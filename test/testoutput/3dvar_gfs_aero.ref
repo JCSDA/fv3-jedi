@@ -1,16 +1,16 @@
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Aod) = 204.999, nobs = 6, Jo/n = 34.1666, err = 0.212603
-CostFunction: Nonlinear J = 204.999
-DRIPCGMinimizer: reduction in residual norm = 2.69391e-23
-CostFunction::addIncrement: Analysis: 
+CostJo   : Nonlinear Jo(Aod) = 205, nobs = 6, Jo/n = 34.1666, err = 0.212603
+CostFunction: Nonlinear J = 205
+DRIPCGMinimizer: reduction in residual norm = 3.21864e-23
+CostFunction::addIncrement: Analysis:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 17 | cube sphere face size: C12
    t                             : Min = +1.845368e+02, Max = +3.080446e+02, RMS = +2.481242e+02
    delp                          : Min = +4.424700e+01, Max = +3.724811e+03, RMS = +1.937828e+03
    sphum                         : Min = +1.174081e-07, Max = +1.831856e-02, RMS = +4.624708e-03
-   sulf                          : Min = +2.816072e-05, Max = +8.037314e+00, RMS = +3.365934e-01
-   bc1                           : Min = +7.295911e-09, Max = +3.962690e+00, RMS = +6.153386e-02
-   bc2                           : Min = +8.272125e-09, Max = +6.273580e-01, RMS = +2.957072e-02
+   sulf                          : Min = +2.816072e-05, Max = +8.037314e+00, RMS = +3.365932e-01
+   bc1                           : Min = +7.295911e-09, Max = +3.962690e+00, RMS = +6.153382e-02
+   bc2                           : Min = +8.272125e-09, Max = +6.273580e-01, RMS = +2.957052e-02
    oc1                           : Min = +7.226193e-09, Max = +2.835925e+01, RMS = +4.318622e-01
    oc2                           : Min = +8.488171e-09, Max = +4.253998e+00, RMS = +2.141248e-01
    dust1                         : Min = +1.000000e-16, Max = +4.657054e+01, RMS = +1.670418e+00
@@ -23,27 +23,24 @@ CostFunction::addIncrement: Analysis:
    seas3                         : Min = +1.000000e-16, Max = +2.932068e+01, RMS = +1.346960e+00
    seas4                         : Min = +1.000000e-16, Max = +1.135203e+02, RMS = +3.895081e+00
  -----------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 8.33651
-CostJo   : Nonlinear Jo(Aod) = 179.299, nobs = 6, Jo/n = 29.8831, err = 0.212603
-CostFunction: Nonlinear J = 187.635
-DRIPCGMinimizer: reduction in residual norm = 3.17467e-11
-CostFunction::addIncrement: Analysis: 
+CostJb   : Nonlinear Jb = 8.33598
+CostJo   : Nonlinear Jo(Aod) = 179.3, nobs = 6, Jo/n = 29.8833, err = 0.212603
+CostFunction: Nonlinear J = 187.636
+DRIPCGMinimizer: reduction in residual norm = 3.17564e-11
+CostFunction::addIncrement: Analysis:
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 17 | cube sphere face size: C12
    t                             : Min = +1.845368e+02, Max = +3.080446e+02, RMS = +2.481242e+02
    delp                          : Min = +4.424700e+01, Max = +3.724811e+03, RMS = +1.937828e+03
    sphum                         : Min = +1.174081e-07, Max = +1.831856e-02, RMS = +4.624708e-03
-   sulf                          : Min = +2.816072e-05, Max = +8.037314e+00, RMS = +3.364889e-01
-   bc1                           : Min = +7.295911e-09, Max = +3.962690e+00, RMS = +6.190142e-02
-   bc2                           : Min = +8.272125e-09, Max = +6.273580e-01, RMS = +3.096178e-02
+   sulf                          : Min = +2.816072e-05, Max = +8.037314e+00, RMS = +3.364887e-01
+   bc1                           : Min = +7.295911e-09, Max = +3.962690e+00, RMS = +6.190133e-02
+   bc2                           : Min = +8.272125e-09, Max = +6.273580e-01, RMS = +3.096141e-02
    oc1                           : Min = +7.226193e-09, Max = +2.835925e+01, RMS = +4.318645e-01
    oc2                           : Min = +8.488171e-09, Max = +4.253998e+00, RMS = +2.142433e-01
-   dust1                         : Min = +1.000000e-16, Max = +4.657043e+01, RMS = +1.670427e+00
+   dust1                         : Min = +1.000000e-16, Max = +4.657042e+01, RMS = +1.670427e+00
    dust2                         : Min = +1.000000e-16, Max = +4.574957e+01, RMS = +1.597021e+00
-   dust3                         : Min = +1.000000e-16, Max = +8.988956e+01, RMS = +2.928798e+00
+   dust3                         : Min = +1.000000e-16, Max = +8.988955e+01, RMS = +2.928798e+00
    dust4                         : Min = +1.000000e-16, Max = +1.754081e+02, RMS = +4.639919e+00
    dust5                         : Min = +1.000000e-16, Max = +2.129790e+01, RMS = +4.270766e-01
    seas1                         : Min = +1.000000e-16, Max = +8.585639e-02, RMS = +4.209357e-03
@@ -51,9 +48,6 @@ CostFunction::addIncrement: Analysis:
    seas3                         : Min = +1.000000e-16, Max = +2.932068e+01, RMS = +1.346959e+00
    seas4                         : Min = +1.000000e-16, Max = +1.135203e+02, RMS = +3.895081e+00
  -----------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 8.84139
-CostJo   : Nonlinear Jo(Aod) = 178.057, nobs = 6, Jo/n = 29.6762, err = 0.212603
-CostFunction: Nonlinear J = 186.898
+CostJb   : Nonlinear Jb = 8.84078
+CostJo   : Nonlinear Jo(Aod) = 178.058, nobs = 6, Jo/n = 29.6764, err = 0.212603
+CostFunction: Nonlinear J = 186.899

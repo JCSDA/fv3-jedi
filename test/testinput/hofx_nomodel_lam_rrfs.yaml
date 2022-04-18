@@ -37,5 +37,6 @@ observations:
 
 test:
   reference filename: testoutput/hofx_nomodel_lam_rrfs.ref
-  float relative tolerance: 1.0e-3
+  float relative tolerance: 1.0e-8
+  float absolute tolerance: 1.0e-8
   test output filename: testoutput/hofx_nomodel_lam_rrfs.test.out
