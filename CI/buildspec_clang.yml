@@ -36,6 +36,11 @@ phases:
         else export CODEBUILD_GIT_BRANCH=${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/};
         fi
 
+      # Determine the git base branch. This is the branch we are merging into.
+      # It can be develop or another branch. It will be used as a fall back branch in clone.sh
+      - export GIT_BASE_BRANCH=${CODEBUILD_WEBHOOK_BASE_REF#refs/heads/}
+
+      - echo "GIT_BASE_BRANCH=${GIT_BASE_BRANCH}"
       - echo "CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH}"
       - echo "CODEBUILD_SOURCE_VERSION=${CODEBUILD_SOURCE_VERSION}"
 
@@ -51,11 +56,13 @@ phases:
       - export CRTM_JEDI_BRANCH="release/crtm_jedi"
 
       - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
-        then export CODEBUILD_GIT_BRANCH_FORK="release-stable";
-        export CODEBUILD_GIT_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
-        else export CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH};
-        export CODEBUILD_GIT_BRANCH_CRTM=${CODEBUILD_GIT_BRANCH};
-        echo "CODEBUILD_GIT_BRANCH_FORK=${CODEBUILD_GIT_BRANCH_FORK}";
+        then export CODEBUILD_GIT_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
+        else export CODEBUILD_GIT_BRANCH_CRTM=${CODEBUILD_GIT_BRANCH};
+        fi
+
+      - if [ "$GIT_BASE_BRANCH" = "develop" ];
+        then export GIT_BASE_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
+        else export GIT_BASE_BRANCH_CRTM=${GIT_BASE_BRANCH};
         fi
 
       # Upload branch name and commit sha as CodeBuild artifact to S3
@@ -63,51 +70,59 @@ phases:
       - echo ${CODEBUILD_GIT_BRANCH} > /jcsda/artifacts/branch_name.txt
       - echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} > /jcsda/artifacts/commit_sha.txt
 
+      #  Setting git credentials
+      - sed -i '/ssh/d' ~/.gitconfig
+      - sed '/instead/d' ~/.gitconfig
+      - git config --global credential.helper store
+      - touch ~/.git-credentials
+      - chmod 0700 ~/.git-credentials
+      - echo "https://${GIT_USER}:${GIT_PASS}@github.com" >~/.git-credentials
+
       # jedi-cmake
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH jedicmake /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle jedicmake ${GIT_BASE_BRANCH} develop
 
       # FV3-JEDI (testing repo)
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH fv3-jedi /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH} develop
 
       # fv3-jedi-lm
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH fv3-jedi-lm /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-lm ${GIT_BASE_BRANCH} develop
 
       # crtm
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/crtm $CODEBUILD_GIT_BRANCH_CRTM crtm /jcsda/fv3-bundle $CRTM_JEDI_BRANCH
+      - ./clone.sh jcsda-internal/crtm $CODEBUILD_GIT_BRANCH_CRTM /jcsda/fv3-bundle crtm ${GIT_BASE_BRANCH_CRTM} $CRTM_JEDI_BRANCH
 
       # ioda
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ioda $CODEBUILD_GIT_BRANCH ioda /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/ioda $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda ${GIT_BASE_BRANCH} develop
 
       # saber
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/saber $CODEBUILD_GIT_BRANCH saber /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/saber $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber ${GIT_BASE_BRANCH} develop
 
       # oops
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/oops $CODEBUILD_GIT_BRANCH oops /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/oops $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle oops ${GIT_BASE_BRANCH} develop
 
       # ufo
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ufo $CODEBUILD_GIT_BRANCH ufo /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/ufo $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ufo ${GIT_BASE_BRANCH} develop
 
       # femps
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/femps $CODEBUILD_GIT_BRANCH femps /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/femps $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle femps ${GIT_BASE_BRANCH} develop
 
       # fms
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda/FMS $CODEBUILD_GIT_BRANCH fms /jcsda/fv3-bundle release-stable
+      - ./clone.sh jcsda/FMS $CODEBUILD_GIT_BRANCH  /jcsda/fv3-bundle fms ${GIT_BASE_BRANCH} release-stable
 
       # GFDL_atmos_cubed_sphere
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH fv3 /jcsda/fv3-bundle release-stable
+      - ./clone.sh jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3 ${GIT_BASE_BRANCH} release-stable
 
       #  internal repos
       # geos-aero
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH geos-aero /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle geos-aero ${GIT_BASE_BRANCH} develop
 
       # ropp
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH ropp-ufo /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ropp-ufo ${GIT_BASE_BRANCH} develop
 
       #gsw
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH gsw /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsw ${GIT_BASE_BRANCH} develop
 
       # fv3-jedi-test
-      - ./clone.sh $GIT_USER $GIT_PASS jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH fv3-jedi-data /jcsda/fv3-bundle develop
+      - ./clone.sh jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-data ${GIT_BASE_BRANCH} develop
 
       # move CMakeLists.txt
       - cp CMakeLists.txt /jcsda/fv3-bundle
