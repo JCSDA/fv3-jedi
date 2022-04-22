@@ -1062,11 +1062,13 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_bump
                   ARGS     testinput/errorcovariance_bump.yaml
                   COMMAND  test_fv3jedi_errorcovariance.x )
 
+if( ${gsibclim_FOUND} )
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_gfs_gsi_global
                   MPI      6
                   ARGS     testinput/errorcovariance_gfs_gsi_global.yaml
                   COMMAND  test_fv3jedi_errorcovariance.x
                   TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_ana2bvars )
+endif ()
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_localization_bump
                   MPI      6
@@ -1083,10 +1085,12 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
                   ARGS     testinput/dirac_gfs.yaml
                   COMMAND  fv3jedi_dirac.x )
 
+if( ${gsibclim_FOUND} )
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_gsi_global
                   MPI      6
                   ARGS     testinput/dirac_gfs_gsi_global.yaml
                   COMMAND  fv3jedi_dirac.x )
+endif()
 
 # Ensemble variance
 # -----------------
