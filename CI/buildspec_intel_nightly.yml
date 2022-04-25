@@ -28,8 +28,10 @@ phases:
       # for nightly builds/tests use develop branch
       - export CODEBUILD_GIT_BRANCH="develop"
       - export CODEBUILD_GIT_BRANCH_CRTM="release/crtm_jedi"
+      - export CODEBUILD_GIT_BRANCH_FV3CORE="release-stable";
       - export GIT_BASE_BRANCH="develop"
       - export GIT_BASE_BRANCH_CRTM="release/crtm_jedi"
+      - export CODEBUILD_GIT_BRANCH_FV3CORE="release-stable";
 
 
       # Upload branch name and commit sha as CodeBuild artifact to S3
@@ -80,10 +82,10 @@ phases:
       - ./clone.sh jcsda-internal/femps $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle femps ${GIT_BASE_BRANCH} develop
 
       # fms
-      - ./clone.sh jcsda/FMS $CODEBUILD_GIT_BRANCH  /jcsda/fv3-bundle fms ${GIT_BASE_BRANCH} release-stable
+      - ./clone.sh jcsda/FMS $CODEBUILD_GIT_BRANCH_FV3CORE  /jcsda/fv3-bundle fms ${GIT_BASE_BRANCH_FV3CORE} release-stable
 
       # GFDL_atmos_cubed_sphere
-      - ./clone.sh jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3 ${GIT_BASE_BRANCH} release-stable
+      - ./clone.sh jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH_FV3CORE /jcsda/fv3-bundle fv3 ${GIT_BASE_BRANCH_FV3CORE} release-stable
 
       #  internal repos
       # geos-aero
