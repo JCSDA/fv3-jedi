@@ -15,12 +15,12 @@ Norm of stddev: 4.815e+05
 Covariance(SABER) * Increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
-   ua                            : Min = -4.598e-02, Max = +5.692e-02, RMS = +2.565e-03
-   va                            : Min = -4.202e-02, Max = +6.535e-02, RMS = +3.032e-03
-   t                             : Min = -4.738e-02, Max = +3.629e-01, RMS = +2.069e-03
+   ua                            : Min = -3.709e-02, Max = +4.568e-02, RMS = +2.641e-03
+   va                            : Min = -3.875e-02, Max = +4.876e-02, RMS = +3.069e-03
+   t                             : Min = -3.865e-02, Max = +3.653e-01, RMS = +2.216e-03
    delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   ps                            : Min = -3.703e-01, Max = +5.833e-01, RMS = +8.365e-02
-   sphum                         : Min = -1.875e-11, Max = +0.000e+00, RMS = +7.929e-14
+   ps                            : Min = -9.270e-01, Max = +3.549e-01, RMS = +1.081e-01
+   sphum                         : Min = -1.753e-11, Max = +0.000e+00, RMS = +7.825e-14
    ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    o3mr                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00

@@ -1,0 +1,55 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 127
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+input variables: &inputVars [ua,va,t,ps,sphum,liq_wat,ice_wat,o3mr]
+background:
+  datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+  filetype: fms restart
+  state variables: *inputVars
+  datapath: Data/inputs/gfs_c12/mem001/
+  filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+  filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+  filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+  filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+  filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+bump:
+  datadir: Data/ensembleb
+  prefix: mom__YYYY__MM__DD__HH__gfs
+  verbosity: main
+  universe_rad: 5000.0e3
+  method: loc
+  strategy: common
+  update_mom: true
+  write_mom: true
+  write_samp_local: true
+  nc1: 500
+  nc3: 10
+  dc: 500.0e3
+  nl0r: 5
+  diag_draw_type: octahedral
+  ensemble:
+    members from template:
+      template:
+        datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+        filetype: fms restart
+        datapath: Data/inputs/gfs_c12/mem%mem%/
+        filename_core: _YYYY__MM__DD_._HH_0000.fv_core.res.nc
+        filename_trcr: _YYYY__MM__DD_._HH_0000.fv_tracer.res.nc
+        filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
+        filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
+        filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+      pattern: '%mem%'
+      nmembers: 10
+      zero padding: 3
+
+test:
+  reference filename: testoutput/ensembleb_mom__YYYY__MM__DD__HH__gfs.ref
+  test output filename: testoutput/ensembleb_mom__YYYY__MM__DD__HH__gfs.test.out

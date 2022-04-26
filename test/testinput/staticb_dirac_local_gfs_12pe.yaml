@@ -43,11 +43,11 @@ background error:
         filetype: fms restart
         psinfile: true
         datapath: Data/staticb/
-        filename_core: 20201215.000000.cor_rh.fv_core.res.nc
-        filename_trcr: 20201215.000000.cor_rh.fv_tracer.res.nc
-        filename_sfcd: 20201215.000000.cor_rh.sfc_data.nc
-        filename_sfcw: 20201215.000000.cor_rh.fv_srf_wnd.res.nc
-        filename_cplr: 20201215.000000.cor_rh.coupler.res
+        filename_core: 20201215.000000.cor_rh_1.fv_core.res.nc
+        filename_trcr: 20201215.000000.cor_rh_1.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
+        filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.cor_rh_1.coupler.res
         date: 2020-12-15T00:00:00Z
   - saber block name: StdDev
     input variables: *control_vars

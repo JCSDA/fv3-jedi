@@ -1,0 +1,68 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 127
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+input variables: &inputVars [ua,va,t,ps,sphum,liq_wat,ice_wat,o3mr]
+background:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
+  state variables: *inputVars
+  datapath: Data/inputs/gfs_c12/mem001/
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
+bump:
+  datadir: Data/ensembleb
+  prefix: loc_gfs
+  verbosity: main
+  universe_rad: 5000.0e3
+  method: loc
+  strategy: common
+  load_mom: true
+  new_hdiag: true
+  write_hdiag: true
+  ens1_ne: 30
+  ens1_nsub: 3
+  load_samp_local: true
+  nc3: 10
+  dc: 500.0e3
+  nl0r: 5
+  diag_rvflt: 0.1
+  ne: 10
+  fname_samp: mom_2020121421_gfs_sampling
+  fname_mom:
+  - mom_2020121421_gfs_mom
+  - mom_2020121500_gfs_mom
+  - mom_2020121503_gfs_mom
+  output:
+  - parameter: loc_rh
+    filetype: fms restart
+    datapath: Data/ensembleb
+    filename_core: loc_rh.fv_core.res.nc
+    filename_trcr: loc_rh.fv_tracer.res.nc
+    filename_sfcd: loc_rh.sfc_data.nc
+    filename_sfcw: loc_rh.fv_srf_wnd.res.nc
+    filename_cplr: loc_rh.coupler.res
+    date: 2020-12-15T00:00:00Z
+  - parameter: loc_rv
+    filetype: fms restart
+    datapath: Data/ensembleb/
+    filename_core: loc_rv.fv_core.res.nc
+    filename_trcr: loc_rv.fv_tracer.res.nc
+    filename_sfcd: loc_rv.sfc_data.nc
+    filename_sfcw: loc_rv.fv_srf_wnd.res.nc
+    filename_cplr: loc_rv.coupler.res
+    date: 2020-12-15T00:00:00Z
+
+test:
+  reference filename: testoutput/ensembleb_loc_gfs.ref
+  test output filename: testoutput/ensembleb_loc_gfs.test.out

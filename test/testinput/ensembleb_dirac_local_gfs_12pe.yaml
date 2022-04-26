@@ -1,0 +1,69 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 127
+  fieldsets:
+    - fieldset: Data/fieldsets/dynamics.yaml
+initial condition:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
+  state variables: &state_vars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]
+  datapath: Data/inputs/gfs_c12/bkg
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
+background error:
+  covariance model: ensemble
+  members from template:
+    template:
+      datetime: 2020-12-15T00:00:00Z
+      filetype: fms restart
+      state variables: *state_vars
+      datapath: Data/inputs/gfs_c12/mem%mem%/
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
+    pattern: '%mem%'
+    nmembers: 10
+    zero padding: 3
+  localization:
+    localization method: SABER
+    saber block:
+      saber block name: BUMP_NICAS
+      input variables: *state_vars
+      output variables: *state_vars
+      bump:
+        prefix: Data/ensembleb/nicas_gfs
+        method: loc
+        strategy: common
+        load_nicas_local: true
+        verbosity: main
+output dirac:
+  filetype: fms restart
+  datapath: Data/ensembleb/
+  filename_core: dirac_local_%id%_gfs_12pe.fv_core.res.nc
+  filename_trcr: dirac_local_%id%_gfs_12pe.fv_tracer.res.nc
+  filename_sfcd: dirac_local_%id%_gfs_12pe.sfc_data.nc
+  filename_sfcw: dirac_local_%id%_gfs_12pe.fv_srf_wnd.res.nc
+  filename_cplr: dirac_local_%id%_gfs_12pe.coupler.res
+  date: 2020-12-15T00:00:00Z
+dirac:
+  ndir: 1
+  ixdir: [1]
+  iydir: [1]
+  ildir: [50]
+  itdir: [1]
+  ifdir: [t]
+
+test:
+  reference filename: testoutput/ensembleb_dirac_local_gfs_12pe.ref
+  test output filename: testoutput/ensembleb_dirac_local_gfs_12pe.test.out

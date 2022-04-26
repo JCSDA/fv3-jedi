@@ -11,17 +11,25 @@ Input Dirac increment:
    liq_wat                       : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
    o3mr                          : Min = +0.000000e+00, Max = +0.000000e+00, RMS = +0.000000e+00
  -----------------------------------------------------------------------------------------------
-Norm of nicas_norm at 2020-12-15T00:00:00Z: 1.022e+00
+Number of components for stream_function at 2020-12-15T00:00:00Z : 2
+Number of components for velocity_potential at 2020-12-15T00:00:00Z : 2
+Number of components for air_temperature at 2020-12-15T00:00:00Z : 2
+Number of components for relative_humidity at 2020-12-15T00:00:00Z : 2
+Number of components for cloud_liquid_water at 2020-12-15T00:00:00Z : 2
+Number of components for ozone_mass_mixing_ratio at 2020-12-15T00:00:00Z : 2
+Number of components for surface_pressure at 2020-12-15T00:00:00Z : 2
+Norm of nicas_norm - 1 at 2020-12-15T00:00:00Z: 1.031e+00
+Norm of nicas_norm - 2 at 2020-12-15T00:00:00Z: 1.007e+00
 Norm of stddev: 4.815e+05
 Covariance(SABER) * Increment:
  -----------------------------------------------------------------------------------------------
  Increment print | number of fields = 9 | cube sphere face size: C12
-   ua                            : Min = -4.598e-02, Max = +5.692e-02, RMS = +2.565e-03
-   va                            : Min = -4.202e-02, Max = +6.535e-02, RMS = +3.032e-03
-   t                             : Min = -4.738e-02, Max = +3.629e-01, RMS = +2.069e-03
+   ua                            : Min = -3.758e-02, Max = +3.257e-02, RMS = +2.082e-03
+   va                            : Min = -3.854e-02, Max = +4.947e-02, RMS = +2.386e-03
+   t                             : Min = -3.502e-02, Max = +3.627e-01, RMS = +1.739e-03
    delp                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
-   ps                            : Min = -3.703e-01, Max = +5.833e-01, RMS = +8.365e-02
-   sphum                         : Min = -1.875e-11, Max = +0.000e+00, RMS = +7.929e-14
+   ps                            : Min = -6.773e-01, Max = +3.374e-01, RMS = +8.067e-02
+   sphum                         : Min = -1.561e-11, Max = +0.000e+00, RMS = +5.917e-14
    ice_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    liq_wat                       : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
    o3mr                          : Min = +0.000e+00, Max = +0.000e+00, RMS = +0.000e+00
