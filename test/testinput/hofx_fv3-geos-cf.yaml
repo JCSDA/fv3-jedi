@@ -1,0 +1,53 @@
+window begin: 2019-01-02T00:00:00Z
+window length: PT6H
+forecast length: PT6H
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    #field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  npx: 13
+  npy: 13
+  npz: 72
+  fieldsets:
+    - fieldset: Data/fieldsets/chemistry_geos.yaml
+    - fieldset: Data/fieldsets/dynamics.yaml
+    - fieldset: Data/fieldsets/ufo.yaml
+model:
+  name: PSEUDO
+  filetype: cube sphere history
+  datapath: Data/inputs/geos_c12
+  filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  tstep: PT3H
+  model variables: [DELP,NO2,NO,O3,PS,SPHU]
+initial condition:
+  datetime: 2019-01-02T00:00:00Z
+  filetype: cube sphere history
+  datapath: Data/inputs/geos_c12
+  filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  state variables: [DELP,NO2,NO,O3,PS,SPHU]
+observations:
+- obs space:
+    name: NO2
+    obsdatain:
+      obsfile: Data/obs/testinput_tier_1/tropomi_no2_2019010200_m.nc4
+    obsdataout:
+      obsfile: Data/hofx/tropomi_no2_hofx_geos_2019010200_m.nc
+    simulated variables: [nitrogen_dioxide_in_tropospheric_column]
+  obs operator:
+    name: AvgKernel
+    nlayers_kernel: 34
+    PresLevVar: pressure_level
+    AvgKernelVar: averaging_kernel_level
+    tracer variables: [no2]
+    tropospheric column: true
+    total column: false
+    model units coeff: 1.0 # geoscf already in ppmv
+  obs error:
+    covariance model: diagonal
+prints:
+  frequency: PT3H
+test:
+  reference filename: testoutput/hofx_fv3-geos-cf.ref
+  float relative tolerance: 1.0e-3
+  test output filename: testoutput/hofx_fv3-geos-cf.test.out

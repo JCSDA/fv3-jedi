@@ -73,6 +73,9 @@ class IOCubeSphereHistoryParameters : public IOParametersBase {
                                                           "z half dimension name",
                                                           this};
 
+  // Set date/time on read
+  oops::OptionalParameter<bool> setDateTime{"set datetime on read", "set datetime on read", this};
+
   // Optionally the config may contain member
   oops::OptionalParameter<int> member{"member", "ensemble member number", this};
 

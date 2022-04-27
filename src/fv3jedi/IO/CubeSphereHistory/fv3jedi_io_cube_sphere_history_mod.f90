@@ -63,6 +63,9 @@ type fv3jedi_io_csh_conf
   character(len=:), allocatable :: y_var_long_name(:)
   character(len=:), allocatable :: y_var_units(:)
 
+  ! Date/time checking
+  logical :: set_datetime_on_read
+
 end type fv3jedi_io_csh_conf
 
 
@@ -379,6 +382,14 @@ call parse_conf_string_array(conf, "y var units", self%conf%y_var_units, &
                              y_var_units_default, nfiles)
 
 
+! Date/time checking
+! ------------------
+if (conf%has("set datetime on read")) then
+  call conf%get_or_die('set datetime on read', self%conf%set_datetime_on_read)
+else
+  self%conf%set_datetime_on_read = .false.
+endif
+
 end subroutine parse_conf
 
 ! --------------------------------------------------------------------------------------------------
@@ -594,6 +605,9 @@ integer :: n
 character(len=64) :: vdate_string_file, vdate_string
 character(len=20) :: time_str
 
+! Do not check date/time if set on read
+if (self%conf%set_datetime_on_read) return
+
 ! This reads the datetime from the first file in the list and checks against datetime already set
 
 ! Compute string form of the datetime in the fields
@@ -737,7 +751,6 @@ do var = 1,size(fields)
       call nccheck ( nf90_get_var( self%ncid(file_index(var)), varid(var), arrayg, istart, icount), &
                     "nf90_get_var "//trim(fields(var)%short_name) )
     endif
-
 
     ! Scatter the field to all processors on the tile
     ! -----------------------------------------------
