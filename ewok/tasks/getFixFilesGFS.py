@@ -13,7 +13,7 @@ class getFixFilesGFS(Task):
     def setup(self, config, **inputs):
 
         localconf = {}
-        localconf['fixdir'] = self.config['currentdir']
+        localconf['fixdir'] = self.RUNTIME_YAML['currentdir']
         localconf['resol'] = config['GEOMETRY']['_resol_name']
         localconf['nlevs'] = str(config['GEOMETRY']['npz'])
 
@@ -30,9 +30,9 @@ class getFixFilesGFS(Task):
         modelconf = yamltools.substitute_template_variables(modeltmpl, localconf)
         self.output['FIXMODEL'] = modelconf
 
-        self.config['ENV']['FV3REPO'] = os.path.join(os.environ.get("JEDI_SRC"), "fv3-jedi")
-        self.config['ENV']['FIXDIR'] = self.config['currentdir']
-        self.config['ENV']['RESOL'] = config['GEOMETRY']['_resol_name']
-        self.config['ENV']['NLEVS'] = config['GEOMETRY']['npz']
-        self.config['ENV']['LAYOUT'] = layout
+        self.RUNTIME_ENV['FV3REPO'] = os.path.join(os.environ.get("JEDI_SRC"), "fv3-jedi")
+        self.RUNTIME_ENV['FIXDIR'] = self.RUNTIME_YAML['currentdir']
+        self.RUNTIME_ENV['RESOL'] = config['GEOMETRY']['_resol_name']
+        self.RUNTIME_ENV['NLEVS'] = config['GEOMETRY']['npz']
+        self.RUNTIME_ENV['LAYOUT'] = layout
         self.command = os.path.join(config['model_path'], "tasks/getfixfiles.sh")
