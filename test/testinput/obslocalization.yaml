@@ -26,7 +26,7 @@ observations:
     name: 'BoxCar'
     distribution:
       name: InefficientDistribution
-    simulated variables: ['snwdph']
+    simulated variables: ['totalSnowDepth']
     obsdatain:  {obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc}
   obs localizations:
   - localization method: Horizontal Box car
@@ -43,7 +43,7 @@ observations:
     name: 'SOAR'
     distribution:
       name: InefficientDistribution
-    simulated variables: ['snwdph']
+    simulated variables: ['totalSnowDepth']
     obsdatain:  {obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc}
   obs localizations:
   - localization method: Horizontal SOAR
