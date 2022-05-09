@@ -135,5 +135,4 @@ variational:
 
 test:
   reference filename: testoutput/3denvar_geos_aero.ref
-  float relative tolerance: 1.0e-2
   test output filename: testoutput/3denvar_geos_aero.test.out

@@ -37,5 +37,4 @@ output:
 
 test:
   reference filename: testoutput/diffstates_geos.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/diffstates_geos.test.out

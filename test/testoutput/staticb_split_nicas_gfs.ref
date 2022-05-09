@@ -5,6 +5,6 @@ Number of components for relative_humidity at 2020-12-15T00:00:00Z : 2
 Number of components for cloud_liquid_water at 2020-12-15T00:00:00Z : 2
 Number of components for ozone_mass_mixing_ratio at 2020-12-15T00:00:00Z : 2
 Number of components for surface_pressure at 2020-12-15T00:00:00Z : 2
-Norm of nicas_norm - 1 at 2020-12-15T00:00:00Z: 1.031e+00
-Norm of nicas_norm - 2 at 2020-12-15T00:00:00Z: 1.007e+00
+Norm of nicas_norm - 1 at 2020-12-15T00:00:00Z: 1.0307421110465389e+00
+Norm of nicas_norm - 2 at 2020-12-15T00:00:00Z: 1.0074085678839935e+00
 No output configuration

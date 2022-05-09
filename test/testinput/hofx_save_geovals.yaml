@@ -40,5 +40,4 @@ observations:
 
 test:
   reference filename: testoutput/hofx_save_geovals.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/hofx_save_geovals.test.out

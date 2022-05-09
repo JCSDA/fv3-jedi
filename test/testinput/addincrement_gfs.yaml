@@ -43,5 +43,6 @@ output: # Analysis
 
 test:
   reference filename: testoutput/addincrement_gfs.ref
-  float relative tolerance: 5.0e-2
   test output filename: testoutput/addincrement_gfs.test.out
+  float relative tolerance: 1.0e-5
+  float absolute tolerance: 1.0e-6

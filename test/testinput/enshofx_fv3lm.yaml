@@ -4,4 +4,3 @@ files:
 
 test:
   reference filename: testoutput/hofx_fv3lm.test.out
-  float relative tolerance: 1.0e-2

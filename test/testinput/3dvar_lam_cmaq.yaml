@@ -111,5 +111,4 @@ output:
 
 test:
   reference filename: testoutput/3dvar_lam_cmaq.ref
-  float relative tolerance: 1.0e-1
   test output filename: testoutput/3dvar_lam_cmaq.test.out

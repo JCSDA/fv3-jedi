@@ -265,5 +265,6 @@ output:
 
 test:
   reference filename: testoutput/hyb-3dvar.ref
-  float relative tolerance: 1.0e-1
   test output filename: testoutput/hyb-3dvar_p12.test.out
+  float relative tolerance: 1.0e-4
+  float absolute tolerance: 1.0e-6

@@ -350,5 +350,4 @@ prints:
 
 test:
   reference filename: testoutput/hofx_fv3-geos.ref
-  float relative tolerance: 1.0e-2
   test output filename: testoutput/hofx_fv3-geos.test.out

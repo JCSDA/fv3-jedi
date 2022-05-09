@@ -37,5 +37,4 @@ output:
 
 test:
   reference filename: testoutput/forecast_fv3lm.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/forecast_fv3lm.test.out

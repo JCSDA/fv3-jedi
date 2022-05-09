@@ -5,5 +5,4 @@ files:
 test:
   reference filename: testoutput/eda_3dvar.ref
   test output filename: testoutput/eda_3dvar.test.out
-  float relative tolerance: 1.0e-2
   integer tolerance: 1

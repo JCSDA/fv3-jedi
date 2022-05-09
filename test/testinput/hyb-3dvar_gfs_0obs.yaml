@@ -138,4 +138,5 @@ variational:
 test:
   reference filename: testoutput/hyb-3dvar_gfs_0obs.ref
   test output filename: testoutput/hyb-3dvar_gfs_0obs.test.out
-  float relative tolerance: 1.0e-3
+  float relative tolerance: 1.0e-5
+  float absolute tolerance: 1.0e-6

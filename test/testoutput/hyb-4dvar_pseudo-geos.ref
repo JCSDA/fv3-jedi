@@ -1,30 +1,25 @@
-CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Aircraft) = 4803.18, nobs = 2816, Jo/n = 1.70568, err = 2.20097
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 447.139, nobs = 132, Jo/n = 3.38742, err = 0.000342623
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 611.187, nobs = 817, Jo/n = 0.748087, err = 9.85171
-CostFunction: Nonlinear J = 5861.51
-DRIPCGMinimizer: reduction in residual norm = 0.775788
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+CostJo   : Nonlinear Jo(Aircraft) = 4.8036720362136584e+03, nobs = 2816, Jo/n = 1.7058494446781458e+00, err = 2.2009674712324232e+00
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.4716291062343754e+02, nobs = 132, Jo/n = 3.3875978077533149e+00, err = 3.4262285835776816e-04
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.1150145656369955e+02, nobs = 817, Jo/n = 7.4847179505960781e-01, err = 9.8517097798932109e+00
+CostFunction: Nonlinear J = 5.8623364034007955e+03
+DRIPCGMinimizer: reduction in residual norm = 7.7580580121388754e-01
 CostFunction::addIncrement: Analysis: 
  -----------------------------------------------------------------------------------------------
  State print | number of fields = 10 | cube sphere face size: C12
-   u                             : Min = -9.519258e+01, Max = +1.335117e+02, RMS = +1.886231e+01
-   v                             : Min = -1.490456e+02, Max = +1.207941e+02, RMS = +2.093151e+01
-   ua                            : Min = -1.068389e+02, Max = +1.756528e+02, RMS = +2.657291e+01
-   va                            : Min = -1.013154e+02, Max = +1.139238e+02, RMS = +1.133700e+01
-   t                             : Min = +1.647597e+02, Max = +3.061019e+02, RMS = +2.463425e+02
-   delp                          : Min = +1.000000e+00, Max = +5.186947e+03, RMS = +1.954119e+03
-   q                             : Min = +0.000000e+00, Max = +1.913101e-02, RMS = +3.957400e-03
-   qi                            : Min = +0.000000e+00, Max = +8.832309e-04, RMS = +3.818141e-05
-   ql                            : Min = +0.000000e+00, Max = +1.148099e-03, RMS = +3.569745e-05
-   o3ppmv                        : Min = +1.299472e-02, Max = +3.624273e+01, RMS = +3.726325e+00
+   u                             : Min = -9.5192576594302409e+01, Max = +1.3351170863489645e+02, RMS = +1.8862308193978773e+01
+   v                             : Min = -1.4904560868304566e+02, Max = +1.2079411753763274e+02, RMS = +2.0931509018729070e+01
+   ua                            : Min = -1.0683894073263438e+02, Max = +1.7565275664359694e+02, RMS = +2.6572912741087976e+01
+   va                            : Min = -1.0131538372763129e+02, Max = +1.1392380247093124e+02, RMS = +1.1336995064225297e+01
+   t                             : Min = +1.6475966759706697e+02, Max = +3.0610194334609406e+02, RMS = +2.4634246720937836e+02
+   delp                          : Min = +1.0000002384185789e+00, Max = +5.1869469844878840e+03, RMS = +1.9541187970262329e+03
+   q                             : Min = +0.0000000000000000e+00, Max = +1.9131017414280183e-02, RMS = +3.9574023221760875e-03
+   qi                            : Min = +0.0000000000000000e+00, Max = +8.8325724025732427e-04, RMS = +3.8190492302943398e-05
+   ql                            : Min = +0.0000000000000000e+00, Max = +1.1483258018107055e-03, RMS = +3.5708649586730886e-05
+   o3ppmv                        : Min = +1.2994716118316256e-02, Max = +3.6242732982450399e+01, RMS = +3.7263249064018429e+00
  -----------------------------------------------------------------------------------------------
-
-
-
-
-
-CostJb   : Nonlinear Jb = 0.000109765
-CostJo   : Nonlinear Jo(Aircraft) = 5461.11, nobs = 2779, Jo/n = 1.96514, err = 2.19821
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 346.668, nobs = 132, Jo/n = 2.62627, err = 0.000342623
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1215.54, nobs = 817, Jo/n = 1.48781, err = 9.85171
-CostFunction: Nonlinear J = 7023.32
+CostJb   : Nonlinear Jb = 0.0001098203342288098
+CostJo   : Nonlinear Jo(Aircraft) = 5461.477816375151, nobs = 2779, Jo/n = 1.965267296284689, err = 2.198205784058108
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 346.6726217876779, nobs = 132, Jo/n = 2.626307740815742, err = 0.0003426228583577682
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1215.948667743817, nobs = 817, Jo/n = 1.488309262844329, err = 9.851709779893211
+CostFunction: Nonlinear J = 7024.099215726979

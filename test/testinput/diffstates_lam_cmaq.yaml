@@ -42,5 +42,4 @@ output:
 
 test:
   reference filename: testoutput/diffstates_lam_cmaq.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/diffstates_lam_cmaq.test.out

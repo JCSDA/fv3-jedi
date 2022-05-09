@@ -234,5 +234,4 @@ prints:
 
 test:
   reference filename: testoutput/hofx_fv3-gfs.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/hofx_fv3-gfs.test.out

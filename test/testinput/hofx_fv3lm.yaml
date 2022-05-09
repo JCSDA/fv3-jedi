@@ -93,5 +93,4 @@ prints:
 
 test:
   reference filename: testoutput/hofx_fv3lm.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/hofx_fv3lm.test.out

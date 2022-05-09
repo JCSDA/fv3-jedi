@@ -44,5 +44,5 @@ states:
 
 test:
   reference filename: testoutput/convertstate_gfs.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/convertstate_gfs.test.out
+  float relative tolerance: 1.0e-3

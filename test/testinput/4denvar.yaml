@@ -149,4 +149,3 @@ variational:
 test:
   reference filename: testoutput/4denvar.ref
   test output filename: testoutput/4denvar.test.out
-  float relative tolerance: 1.0e-2

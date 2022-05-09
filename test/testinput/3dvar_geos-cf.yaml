@@ -98,6 +98,6 @@ variational:
 
 test:
   reference filename: testoutput/3dvar_geos-cf.ref
-  float relative tolerance: 1.0e-0
-  integer tolerance: 3
   test output filename: testoutput/3dvar_geos-cf.test.out
+  integer tolerance: 3
+  float relative tolerance: 1.0e-0

@@ -5,9 +5,9 @@ Number of components for relative_humidity at 2020-12-15T00:00:00Z : 2
 Number of components for cloud_liquid_water at 2020-12-15T00:00:00Z : 2
 Number of components for ozone_mass_mixing_ratio at 2020-12-15T00:00:00Z : 2
 Number of components for surface_pressure at 2020-12-15T00:00:00Z : 2
-Norm of cor_a - 1 at 2020-12-15T00:00:00Z: 8.255e-01
-Norm of cor_a - 2 at 2020-12-15T00:00:00Z: 2.323e-01
-Norm of cor_rh - 1 at 2020-12-15T00:00:00Z: 8.383e+06
-Norm of cor_rh - 2 at 2020-12-15T00:00:00Z: 1.419e+06
-Norm of cor_rv - 1 at 2020-12-15T00:00:00Z: 7.418e-01
-Norm of cor_rv - 2 at 2020-12-15T00:00:00Z: 3.509e-02
+Norm of cor_a - 1 at 2020-12-15T00:00:00Z: 8.2553314777192199e-01
+Norm of cor_a - 2 at 2020-12-15T00:00:00Z: 2.3234137828120441e-01
+Norm of cor_rh - 1 at 2020-12-15T00:00:00Z: 8.3832619061755417e+06
+Norm of cor_rh - 2 at 2020-12-15T00:00:00Z: 1.4192491965178580e+06
+Norm of cor_rv - 1 at 2020-12-15T00:00:00Z: 7.4178230567054282e-01
+Norm of cor_rv - 2 at 2020-12-15T00:00:00Z: 3.5088213098785632e-02

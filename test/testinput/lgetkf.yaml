@@ -256,6 +256,6 @@ output increment:
 
 test:
   reference filename: testoutput/lgetkf.ref
-  float relative tolerance: 1.0e-4
-  float absolute tolerance: 1.0e-8
   test output filename: testoutput/lgetkf.test.out
+  float absolute tolerance: 1.0e-8
+  float relative tolerance: 1.0e-4

@@ -192,6 +192,5 @@ variational:
       increment variables: *fgatvars
       tstep: PT1H
 test:
-  float relative tolerance: 1.0e-2
   reference filename: testoutput/hyb-fgat_fv3lm.ref
   test output filename: testoutput/hyb-fgat_fv3lm.test.out

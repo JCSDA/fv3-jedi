@@ -49,5 +49,4 @@ prints:
   frequency: PT3H
 test:
   reference filename: testoutput/hofx_fv3-geos-cf.ref
-  float relative tolerance: 1.0e-3
   test output filename: testoutput/hofx_fv3-geos-cf.test.out
