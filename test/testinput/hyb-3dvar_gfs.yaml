@@ -299,3 +299,5 @@ output:
 test:
   reference filename: testoutput/hyb-3dvar_gfs.ref
   test output filename: testoutput/hyb-3dvar_gfs.test.out
+  float relative tolerance: 1.0e-3
+  float absolute tolerance: 1.0e-6
