@@ -4,8 +4,11 @@ cost function:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filename: geos.bkg.20201214_210000z.nc4
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
+    filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
+    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
+                      qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
+                      zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
+                      stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   background error:
     covariance model: hybrid
     components:
@@ -176,10 +179,6 @@ cost function:
   window length: PT6H
   variable change:
     variable change name: Analysis2Model
-    filetype: cube sphere history
-    provider: geos
-    datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
   model:
     name: PSEUDO
     filetype: cube sphere history

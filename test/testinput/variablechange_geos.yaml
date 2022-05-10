@@ -11,11 +11,6 @@ geometry:
 variable change tests:
   - variable change:
       variable change name: Analysis2Model
-      # Possible to read variable with this variable change
-      filetype: cube sphere history
-      provider: geos
-      datapath: Data/inputs/geos_c12
-      filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
       output variables: [u,v,ua,va,delp,t,q,vtype]
       input variables: [ua,va,t,ps]
     state:

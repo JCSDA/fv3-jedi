@@ -14,14 +14,6 @@ variable change tests:
   # Analysis2Model
   - variable change:
       variable change name: Analysis2Model
-      # Possible to read variable with this variable change
-      filetype: fms restart
-      datapath: Data/inputs/gfs_c12/bkg/
-      filename_core: 20201215.000000.fv_core.res.nc
-      filename_trcr: 20201215.000000.fv_tracer.res.nc
-      filename_sfcd: 20201215.000000.sfc_data.nc
-      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
-      filename_cplr: 20201215.000000.coupler.res
       input variables: [ua,va,t,ps]
       output variables: [u,v,ua,va,delp,t,sphum,vtype,u_srf,v_srf]
     state:

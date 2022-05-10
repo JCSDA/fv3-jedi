@@ -8,7 +8,9 @@ cost function:
     filename_sfcd: 20201214.210000.sfc_data.nc
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: [u,v,ua,va,T,ps,DELP,sphum,ice_wat,liq_wat,o3mr]
+    state variables: [u,v,ua,va,T,ps,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
   background error:
     covariance model: hybrid
     components:
@@ -186,13 +188,6 @@ cost function:
   window length: PT6H
   variable change:
     variable change name: Analysis2Model
-    filetype: fms restart
-    datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20201214.210000.fv_core.res.nc
-    filename_trcr: 20201214.210000.fv_tracer.res.nc
-    filename_sfcd: 20201214.210000.sfc_data.nc
-    filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
-    filename_cplr: 20201214.210000.coupler.res
   model:
     name: FV3LM
     namelist filename: Data/fv3files/input_gfs_c12.nml
