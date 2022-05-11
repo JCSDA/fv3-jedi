@@ -38,52 +38,53 @@ background:
      filename_cplr: 20191215.180000.coupler.res
 
 observations:
-- obs space:
-    name: Simulate
-    distribution:
-      name: InefficientDistribution
-    simulated variables: [totalSnowDepth]
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
-  obs operator:
-    name: Identity
-  obs error:
-    covariance model: diagonal
-  obs localizations:
-  - localization method: Horizontal SOAR
-    lengthscale: 250e3
-    soar horizontal decay: 0.000021
-    max nobs: 50
-  - localization method: Vertical Brasnett
-    vertical lengthscale: 700
-  obs filters:
-  - filter: Bounds Check # negative / missing snow
-    filter variables:
-    - name: totalSnowDepth
-    minvalue: 0.0
-  - filter: Domain Check # missing station elevation (-999.9)
-    where:
-    - variable:
-        name: height@MetaData
-      minvalue: -999.0
-  - filter: Domain Check # land only
-    where:
-    - variable:
-        name: slmsk@GeoVaLs
-      minvalue: 0.5
-      maxvalue: 1.5
-  - filter: RejectList  # no land-ice
-    where:
-    - variable:
-        name: vtype@GeoVaLs
-      minvalue: 14.5
-      maxvalue: 15.5
-  - filter: Background Check # gross error check
-    filter variables:
-    - name: totalSnowDepth
-    threshold: 6.25
-    action:
-      name: reject
+  observers:
+  - obs space:
+      name: Simulate
+      distribution:
+        name: InefficientDistribution
+      simulated variables: [totalSnowDepth]
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
+    obs operator:
+      name: Identity
+    obs error:
+      covariance model: diagonal
+    obs localizations:
+    - localization method: Horizontal SOAR
+      lengthscale: 250e3
+      soar horizontal decay: 0.000021
+      max nobs: 50
+    - localization method: Vertical Brasnett
+      vertical lengthscale: 700
+    obs filters:
+    - filter: Bounds Check # negative / missing snow
+      filter variables:
+      - name: totalSnowDepth
+      minvalue: 0.0
+    - filter: Domain Check # missing station elevation (-999.9)
+      where:
+      - variable:
+          name: height@MetaData
+        minvalue: -999.0
+    - filter: Domain Check # land only
+      where:
+      - variable:
+          name: slmsk@GeoVaLs
+        minvalue: 0.5
+        maxvalue: 1.5
+    - filter: RejectList  # no land-ice
+      where:
+      - variable:
+          name: vtype@GeoVaLs
+        minvalue: 14.5
+        maxvalue: 15.5
+    - filter: Background Check # gross error check
+      filter variables:
+      - name: totalSnowDepth
+      threshold: 6.25
+      action:
+        name: reject
 
 driver:
   save posterior mean: true

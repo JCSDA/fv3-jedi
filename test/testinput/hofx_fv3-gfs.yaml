@@ -37,198 +37,199 @@ model:
                     u_srf,v_srf,f10m]
                     # u_srf,v_srf,f10m,sss]
 observations:
-- obs space:
-    name: SeaSurfaceTemp
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/sst_obs_2020121500.nc4
-    obsdataout:
-      obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
-    simulated variables: [sea_surface_temperature]
-  obs operator:
-    name: Identity
-  obs error:
-    covariance model: diagonal
-# - obs space:
-#     name: SeaSurfaceSalinity
-#     obsdatain:
-#       obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
-#     obsdataout:
-#       obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
-#     simulated variables: [sea_surface_salinity]
-#   obs operator:
-#     name: Identity
-#   obs error:
-#     covariance model: diagonal
-- obs space:
-    name: Aircraft
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
-    simulated variables: [eastward_wind,northward_wind,air_temperature]
-  obs operator:
-    name: VertInterp
-- obs space:
-    name: Radiosonde
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/sondes_hofx_gfs_2020121500_m.nc4
-    simulated variables: [eastward_wind, northward_wind, air_temperature]
-  obs operator:
-    name: VertInterp
-# - obs space:
-#     name: SBUV2-NOAA19-OZ
-#     obsdatain:
-#       obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
-#       obsgrouping:
-#         group variables: [ longitude ]
-#         sort variable: air_pressure
-#         sort order: ascending
-#     obsdataout:
-#       obsfile: Data/hofx/sbuv2_n19_obs_2020121500_m_out.nc4
-#     simulated variables: [integrated_layer_ozone_in_air]
-#   obs operator:
-#     name: AtmVertInterpLay
-#     geovals: [mole_fraction_of_ozone_in_air]
-#     coefficients: [0.007886131] # convert from ppmv to DU
-#     nlevels: [22]
-- obs space:
-    name: AMSUA-NOAA19
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 1-15
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    Clouds: [Water, Ice]
-    Cloud_Fraction: 1.0
-    obs options:
-      Sensor_ID: amsua_n19
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: AIRS-AQUA
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/airs_aqua_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 1,6-7
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    obs options:
-      Sensor_ID: airs_aqua
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: GnssroBndNBAM
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/gnssro_hofx_gfs_2020121500_m.nc4
-    simulated variables: [bending_angle]
-  obs operator:
-    name: GnssroBndNBAM
-    obs options:
-      sr_steps: 2
-      vertlayer: full
-      compress: 1
-      super_ref_qc: NBAM
-- obs space:
-    name: HIRS4-METOPA
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 1-15
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    obs options:
-      Sensor_ID: hirs4_metop-a
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: CRIS-NPP
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 24,26,28,32,37,39,42,44,47,49,51,53,55,57,59,61,63,
-              65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,
-              99,103,105,107,109,111,113,115,117,119,121,123,125,
-              127,129,131,133,135,137,139,141,143,145,147,149,151,
-              153,155,157,159,163,167,171,175,179,183,187,190,194,
-              197,200,211,224,275,279,291,311,332,342,389,410,427,
-              464,501,529,710,713,742,882,890,937,995,1008,1022,1058
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    obs options:
-      Sensor_ID: cris-fsr_npp
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: Satwind
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/satwind_hofx_gfs_2020121500_m.nc4
-    simulated variables: [eastward_wind, northward_wind]
-  obs operator:
-    name: VertInterp
-- obs space:
-    name: MHS-N19
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/mhs_n19_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 1-5
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    obs options:
-      Sensor_ID: mhs_n19
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: IASI-METOPA
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 16,29,32,35,38,41,44
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    obs options:
-      Sensor_ID: iasi_metop-a
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
-- obs space:
-    name: SEVIRI-METEOSAT8
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/seviri_m08_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 5
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    obs options:
-      Sensor_ID: seviri_m08
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+  observers:
+  - obs space:
+      name: SeaSurfaceTemp
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/sst_obs_2020121500.nc4
+      obsdataout:
+        obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
+      simulated variables: [sea_surface_temperature]
+    obs operator:
+      name: Identity
+    obs error:
+      covariance model: diagonal
+#   - obs space:
+#       name: SeaSurfaceSalinity
+#       obsdatain:
+#         obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
+#       obsdataout:
+#         obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
+#       simulated variables: [sea_surface_salinity]
+#     obs operator:
+#       name: Identity
+#     obs error:
+#       covariance model: diagonal
+  - obs space:
+      name: Aircraft
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
+      simulated variables: [eastward_wind,northward_wind,air_temperature]
+    obs operator:
+      name: VertInterp
+  - obs space:
+      name: Radiosonde
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/sondes_hofx_gfs_2020121500_m.nc4
+      simulated variables: [eastward_wind, northward_wind, air_temperature]
+    obs operator:
+      name: VertInterp
+#   - obs space:
+#       name: SBUV2-NOAA19-OZ
+#       obsdatain:
+#         obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
+#         obsgrouping:
+#           group variables: [ longitude ]
+#           sort variable: air_pressure
+#           sort order: ascending
+#       obsdataout:
+#         obsfile: Data/hofx/sbuv2_n19_obs_2020121500_m_out.nc4
+#       simulated variables: [integrated_layer_ozone_in_air]
+#     obs operator:
+#       name: AtmVertInterpLay
+#       geovals: [mole_fraction_of_ozone_in_air]
+#       coefficients: [0.007886131] # convert from ppmv to DU
+#       nlevels: [22]
+  - obs space:
+      name: AMSUA-NOAA19
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-15
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      obs options:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - obs space:
+      name: AIRS-AQUA
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/airs_aqua_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1,6-7
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      obs options:
+        Sensor_ID: airs_aqua
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - obs space:
+      name: GnssroBndNBAM
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/gnssro_hofx_gfs_2020121500_m.nc4
+      simulated variables: [bending_angle]
+    obs operator:
+      name: GnssroBndNBAM
+      obs options:
+        sr_steps: 2
+        vertlayer: full
+        compress: 1
+        super_ref_qc: NBAM
+  - obs space:
+      name: HIRS4-METOPA
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-15
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      obs options:
+        Sensor_ID: hirs4_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - obs space:
+      name: CRIS-NPP
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 24,26,28,32,37,39,42,44,47,49,51,53,55,57,59,61,63,
+                65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,
+                99,103,105,107,109,111,113,115,117,119,121,123,125,
+                127,129,131,133,135,137,139,141,143,145,147,149,151,
+                153,155,157,159,163,167,171,175,179,183,187,190,194,
+                197,200,211,224,275,279,291,311,332,342,389,410,427,
+                464,501,529,710,713,742,882,890,937,995,1008,1022,1058
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      obs options:
+        Sensor_ID: cris-fsr_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - obs space:
+      name: Satwind
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/satwind_hofx_gfs_2020121500_m.nc4
+      simulated variables: [eastward_wind, northward_wind]
+    obs operator:
+      name: VertInterp
+  - obs space:
+      name: MHS-N19
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/mhs_n19_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-5
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      obs options:
+        Sensor_ID: mhs_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - obs space:
+      name: IASI-METOPA
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 16,29,32,35,38,41,44
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      obs options:
+        Sensor_ID: iasi_metop-a
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+  - obs space:
+      name: SEVIRI-METEOSAT8
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/seviri_m08_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 5
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      obs options:
+        Sensor_ID: seviri_m08
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
 prints:
   frequency: PT3H
 

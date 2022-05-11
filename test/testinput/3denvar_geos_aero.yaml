@@ -52,28 +52,29 @@ cost function:
       weight:
         value: 0.99
   observations:
-  - obs space:
-      name: Aod
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/geos_aod_obs_2018041500_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/geos_aero_aod_550_3dvar_20180415_00z.nc4
-      simulated variables: [Total_Aerosol_Optical_Depth_550]
-    obs operator:
-      name: AodGeos
-      tracer_geovals: [mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                       mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                       mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                       mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                       mass_fraction_of_sea_salt004_in_air, mass_fraction_of_sea_salt005_in_air,
-                       mass_fraction_of_hydrophobic_black_carbon_in_air, mass_fraction_of_hydrophilic_black_carbon_in_air,
-                       mass_fraction_of_hydrophobic_organic_carbon_in_air, mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                       mass_fraction_of_sulfate_in_air, mass_fraction_of_nitrate001_in_air, mass_fraction_of_nitrate002_in_air,
-                       mass_fraction_of_nitrate003_in_air]
-      RCFile: [geosaod.rc]
-      wavelengths: [550.0]
-    obs error:
-      covariance model: diagonal
+    observers:
+    - obs space:
+        name: Aod
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/geos_aod_obs_2018041500_m.nc4
+        obsdataout:
+          obsfile: Data/hofx/geos_aero_aod_550_3dvar_20180415_00z.nc4
+        simulated variables: [Total_Aerosol_Optical_Depth_550]
+      obs operator:
+        name: AodGeos
+        tracer_geovals: [mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                         mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                         mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                         mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                         mass_fraction_of_sea_salt004_in_air, mass_fraction_of_sea_salt005_in_air,
+                         mass_fraction_of_hydrophobic_black_carbon_in_air, mass_fraction_of_hydrophilic_black_carbon_in_air,
+                         mass_fraction_of_hydrophobic_organic_carbon_in_air, mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                         mass_fraction_of_sulfate_in_air, mass_fraction_of_nitrate001_in_air, mass_fraction_of_nitrate002_in_air,
+                         mass_fraction_of_nitrate003_in_air]
+        RCFile: [geosaod.rc]
+        wavelengths: [550.0]
+      obs error:
+        covariance model: diagonal
   cost type: 3D-Var
   analysis variables: *aerovars
   window begin: '2018-04-14T21:00:00Z'

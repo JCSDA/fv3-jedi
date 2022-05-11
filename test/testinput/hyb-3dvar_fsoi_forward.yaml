@@ -79,24 +79,25 @@ cost function:
       weight:
         value: 0.9
   observations:
-  - obs space:
-      name: Radiosonde
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
-    obs operator:
-      name: VertInterp
-    obs error:
-      covariance model: diagonal ufo
-    obs filters:
-    - filter: PreQC
-      maxvalue: 3
-    - filter: Background Check
-      filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
-      threshold: 6.0
+    observers:
+    - obs space:
+        name: Radiosonde
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+        simulated variables: [eastward_wind, northward_wind, air_temperature]
+      obs operator:
+        name: VertInterp
+      obs error:
+        covariance model: diagonal ufo
+      obs filters:
+      - filter: PreQC
+        maxvalue: 3
+      - filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
 variational:
   minimizer:
     algorithm: DRIPCG

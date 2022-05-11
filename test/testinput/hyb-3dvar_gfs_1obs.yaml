@@ -78,19 +78,20 @@ cost function:
       weight:
         value: 0.9
   observations:
-  - obs space:
-      name: GnssroRef
-      obsdatain:
-       obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_1obs.nc4
-      obsdataout:
-       obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_1obs_2020121500_1obs.nc4
-      simulated variables: [refractivity]
-    obs operator:
-      name: GnssroRef
-      obs options:
-        use_compress: 1
-    obs error:
-      covariance model: diagonal
+    observers:
+    - obs space:
+        name: GnssroRef
+        obsdatain:
+         obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_1obs.nc4
+        obsdataout:
+         obsfile: Data/hofx/gnssro_hyb-3dvar-gfs_1obs_2020121500_1obs.nc4
+        simulated variables: [refractivity]
+      obs operator:
+        name: GnssroRef
+        obs options:
+          use_compress: 1
+      obs error:
+        covariance model: diagonal
 variational:
   minimizer:
     algorithm: DRIPCG

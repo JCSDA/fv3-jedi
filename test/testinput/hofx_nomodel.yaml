@@ -25,32 +25,36 @@ state:
                     u_srf,v_srf,f10m]
                     # u_srf,v_srf,f10m,sss]
 observations:
-- obs space:
-    name: Aircraft
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
-    simulated variables: [eastward_wind,northward_wind,air_temperature]
-  obs operator:
-    name: VertInterp
-- obs space:
-    name: AMSUA-NOAA19
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
-    simulated variables: [brightness_temperature]
-    channels: 1-15
-  obs operator:
-    name: CRTM
-    Absorbers: [H2O,O3,CO2]
-    Clouds: [Water, Ice]
-    Cloud_Fraction: 1.0
-    obs options:
-      Sensor_ID: amsua_n19
-      EndianType: little_endian
-      CoefficientPath: Data/crtm/
+  get values:
+    variable change:
+      variable change name: Model2GeoVaLs
+  observers:
+  - obs space:
+      name: Aircraft
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
+      simulated variables: [eastward_wind,northward_wind,air_temperature]
+    obs operator:
+      name: VertInterp
+  - obs space:
+      name: AMSUA-NOAA19
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightness_temperature]
+      channels: 1-15
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      obs options:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
 
 test:
   reference filename: testoutput/hofx_nomodel.ref

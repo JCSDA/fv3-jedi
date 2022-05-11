@@ -40,50 +40,51 @@ cost function:
         io_keys: [no2-no2]
         io_values: [fixed_2500km_0.3]
   observations:
-  - obs space:
-      name: NO2
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/tropomi_no2_2020090318_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/tropomi_no2_3dvar_lam_cmaq_2020090318_m.nc4
-      simulated variables: [nitrogen_dioxide_in_tropospheric_column]
-    obs filters:
-    - filter: Domain Check
-      where:
-      - variable:
-          name: quality_assurance_value@MetaData
-        minvalue: 0.9
-    - filter: Bounds Check
-      filter variables:
-      - name: nitrogen_dioxide_in_tropospheric_column
-      test variables:
-      - name: LAMDomainCheck@ObsFunction
-        options:
-          map_projection: gnomonic_ed # only option currently supported
-          save: true # will save the DerivedValue to IODA output file
-          # the size of the FV3-LAM grid (mass, not staggered)
-          npx: 45
-          npy: 24
-          # below comes from the global attributes in the FV3-LAM grid netCDF file
-          plat: 33.5
-          plon: -97.5
-          a: 0.21423
-          k: -0.23209
-          dx: 0.4995731519
-          dy: 0.4995731519
-      minvalue: 1.0 # will filter all obs outside of the specified limited area domain
-    obs operator:
-      name: AvgKernel
-      nlayers_kernel: 34
-      PresLevVar: pressure_level
-      AvgKernelVar: averaging_kernel_level
-      tracer variables: [no2]
-      tropospheric column: true
-      total column: false
-      model units coeff: 1e-6 # ppmv to 1/1
-      hofx units coeff: 1.6605392e-20 # molec/cm2 to mol/m2
-    obs error:
-      covariance model: diagonal
+    observers:
+    - obs space:
+        name: NO2
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/tropomi_no2_2020090318_m.nc4
+        obsdataout:
+          obsfile: Data/hofx/tropomi_no2_3dvar_lam_cmaq_2020090318_m.nc4
+        simulated variables: [nitrogen_dioxide_in_tropospheric_column]
+      obs filters:
+      - filter: Domain Check
+        where:
+        - variable:
+            name: quality_assurance_value@MetaData
+          minvalue: 0.9
+      - filter: Bounds Check
+        filter variables:
+        - name: nitrogen_dioxide_in_tropospheric_column
+        test variables:
+        - name: LAMDomainCheck@ObsFunction
+          options:
+            map_projection: gnomonic_ed # only option currently supported
+            save: true # will save the DerivedValue to IODA output file
+            # the size of the FV3-LAM grid (mass, not staggered)
+            npx: 45
+            npy: 24
+            # below comes from the global attributes in the FV3-LAM grid netCDF file
+            plat: 33.5
+            plon: -97.5
+            a: 0.21423
+            k: -0.23209
+            dx: 0.4995731519
+            dy: 0.4995731519
+        minvalue: 1.0 # will filter all obs outside of the specified limited area domain
+      obs operator:
+        name: AvgKernel
+        nlayers_kernel: 34
+        PresLevVar: pressure_level
+        AvgKernelVar: averaging_kernel_level
+        tracer variables: [no2]
+        tropospheric column: true
+        total column: false
+        model units coeff: 1e-6 # ppmv to 1/1
+        hofx units coeff: 1.6605392e-20 # molec/cm2 to mol/m2
+      obs error:
+        covariance model: diagonal
 variational:
   minimizer:
     algorithm: PCG

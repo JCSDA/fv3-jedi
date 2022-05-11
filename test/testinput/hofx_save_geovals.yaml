@@ -25,18 +25,19 @@ state:
                     u_srf,v_srf,f10m]
                     # u_srf,v_srf,f10m,sss]
 observations:
-- obs space:
-    name: Aircraft
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-    simulated variables: [eastward_wind,northward_wind,air_temperature]
-  obs operator:
-    name: VertInterp
-# GOMsaver is the filter to extract GeoVaLs needed by the specified obs operator
-# filename is the output path to the GeoVaLs file
-  obs filters:
-  - filter: GOMsaver
-    filename: Data/hofx/aircraft_geovals_gfs_2020121500_m.nc4
+  observers:
+  - obs space:
+      name: Aircraft
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+      simulated variables: [eastward_wind,northward_wind,air_temperature]
+    obs operator:
+      name: VertInterp
+#   GOMsaver is the filter to extract GeoVaLs needed by the specified obs operator
+#   filename is the output path to the GeoVaLs file
+    obs filters:
+    - filter: GOMsaver
+      filename: Data/hofx/aircraft_geovals_gfs_2020121500_m.nc4
 
 test:
   reference filename: testoutput/hofx_save_geovals.ref

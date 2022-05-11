@@ -35,74 +35,75 @@ model:
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                     u_srf,v_srf,f10m]
 observations:
-- obs space:
-    name: GnssroBndROPP1D
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
-      obsgrouping:
-        group variables: [record_number]
-        sort variable: impact_height
-        sort order: ascending
-    obsdataout:
-      obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2020121500_m.nc4
-    simulated variables: [bending_angle]
-  obs operator:
-    name:  GnssroBndROPP1D
-    obs options:
-  obs filters:
-  - filter: Domain Check
-    filter variables:
-    - name: bending_angle
-    where :
-    - variable:
-        name: impact_height@MetaData
-      minvalue: 0
-      maxvalue: 50000
-  - filter: ROobserror
-    filter variables:
-    - name: bending_angle
-    errmodel: NRL
-    variable: bending_angle
-  - filter: Background Check
-    filter variables:
-    - name: bending_angle
-    threshold: 3
-- obs space:
-    name: GnssroBndROPP2D
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
-      obsgrouping:
-        group variables: [record_number]
-        sort variable: impact_height
-        sort order: ascending
-    obsdataout:
-      obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2020121500_m.nc4
-    simulated variables: [bending_angle]
-  obs operator:
-    name:  GnssroBndROPP2D
-    obs options:
+  observers:
+  - obs space:
+      name: GnssroBndROPP1D
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+        obsgrouping:
+          group variables: [record_number]
+          sort variable: impact_height
+          sort order: ascending
+      obsdataout:
+        obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2020121500_m.nc4
+      simulated variables: [bending_angle]
+    obs operator:
+      name:  GnssroBndROPP1D
+      obs options:
+    obs filters:
+    - filter: Domain Check
+      filter variables:
+      - name: bending_angle
+      where :
+      - variable:
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
+    - filter: ROobserror
+      filter variables:
+      - name: bending_angle
+      errmodel: NRL
+      variable: bending_angle
+    - filter: Background Check
+      filter variables:
+      - name: bending_angle
+      threshold: 3
+  - obs space:
+      name: GnssroBndROPP2D
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+        obsgrouping:
+          group variables: [record_number]
+          sort variable: impact_height
+          sort order: ascending
+      obsdataout:
+        obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2020121500_m.nc4
+      simulated variables: [bending_angle]
+    obs operator:
+      name:  GnssroBndROPP2D
+      obs options:
+        n_horiz: 3
+        res: 40.0
+        top_2d: 10.0
+    obs filters:
+    - filter: Domain Check
+      filter variables:
+      - name: bending_angle
+      where :
+      - variable:
+          name: impact_height@MetaData
+        minvalue: 0
+        maxvalue: 50000
+    - filter: ROobserror
       n_horiz: 3
-      res: 40.0
-      top_2d: 10.0
-  obs filters:
-  - filter: Domain Check
-    filter variables:
-    - name: bending_angle
-    where :
-    - variable:
-        name: impact_height@MetaData
-      minvalue: 0
-      maxvalue: 50000
-  - filter: ROobserror
-    n_horiz: 3
-    filter variables:
-    - name: bending_angle
-    errmodel: NRL
-    variable: bending_angle
-  - filter: Background Check
-    filter variables:
-    - name: bending_angle
-    threshold: 3
+      filter variables:
+      - name: bending_angle
+      errmodel: NRL
+      variable: bending_angle
+    - filter: Background Check
+      filter variables:
+      - name: bending_angle
+      threshold: 3
 prints:
   frequency: PT3H
 

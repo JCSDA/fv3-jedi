@@ -72,24 +72,25 @@ cost function:
         filename_cplr: 20180415.000000.stddev.coupler.res
         date: 2018-04-15T00:00:00Z
   observations:
-  - obs space:
-      name: Aod
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
-      obsdataout:
-        obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
-      simulated variables: [aerosol_optical_depth]
-      channels: 4
-    obs operator:
-      name: AodCRTM
-      Absorbers: [H2O,O3]
-      obs options:
-        Sensor_ID: v.viirs-m_npp
-        EndianType: little_endian
-        CoefficientPath: Data/crtm/
-        AerosolOption: aerosols_gocart_default
-    obs error:
-      covariance model: diagonal
+    observers:
+    - obs space:
+        name: Aod
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
+        obsdataout:
+          obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
+        simulated variables: [aerosol_optical_depth]
+        channels: 4
+      obs operator:
+        name: AodCRTM
+        Absorbers: [H2O,O3]
+        obs options:
+          Sensor_ID: v.viirs-m_npp
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+          AerosolOption: aerosols_gocart_default
+      obs error:
+        covariance model: diagonal
 variational:
   minimizer:
     algorithm: DRIPCG

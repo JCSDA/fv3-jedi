@@ -25,15 +25,16 @@ state:
 #                   phis,slmsk,sheleg,tsea,vtype,stype,vfrac,tslb,smois,snwdph,
 #                   u_srf,v_srf,f10m,zorl,t2m]
 observations:
-- obs space:
-    name: Aircraft
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-#   obsdataout:
-#     obsfile: Data/hofx/aircraft_hofx_rrfs_2020121500.nc
-    simulated variables: [eastward_wind, northward_wind, air_temperature, specific_humidity]
-  obs operator:
-    name: VertInterp
+  observers:
+  - obs space:
+      name: Aircraft
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+#     obsdataout:
+#       obsfile: Data/hofx/aircraft_hofx_rrfs_2020121500.nc
+      simulated variables: [eastward_wind, northward_wind, air_temperature, specific_humidity]
+    obs operator:
+      name: VertInterp
 
 test:
   reference filename: testoutput/hofx_nomodel_lam_rrfs.ref

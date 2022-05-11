@@ -66,28 +66,29 @@ cost function:
       weight:
         value: 0.9
   observations:
-  - obs space:
-      name: Radiosonde
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
-      obsdataout:
-        obsfile: Data/hofx/eda/gfs/mem001/block_sondes_eda-3dvar-gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
-      obs perturbations seed: 1
-    obs operator:
-      name: VertInterp
-    obs error:
-      covariance model: diagonal
-      random amplitude: 0.5
-    obs filters:
-    - filter: PreQC
-      maxvalue: 3
-    - filter: Background Check
-      filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
-      threshold: 6.0
+    observers:
+    - obs space:
+        name: Radiosonde
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+        obsdataout:
+          obsfile: Data/hofx/eda/gfs/mem001/block_sondes_eda-3dvar-gfs_2020121500_m.nc4
+        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        obs perturbations seed: 1
+      obs operator:
+        name: VertInterp
+      obs error:
+        covariance model: diagonal
+        random amplitude: 0.5
+      obs filters:
+      - filter: PreQC
+        maxvalue: 3
+      - filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
   filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201215.000000.fv_core.res.nc

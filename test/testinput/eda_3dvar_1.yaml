@@ -79,132 +79,133 @@ cost function:
       weight:
         value: 0.9
   observations:
-  - obs space:
-      # The input file does not contain a variable called 'air_temperature', but contains one
-      # called 'renamed_air_temperature'. We use filters to copy renamed_air_temperature@ObsValue
-      # to air_temperature@DerivedObsValue and renamed_air_temperature@ObsError to
-      # air_temperature@ObsError. In this way we verify derived variables can be assimilated.
-      name: Aircraft
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
-      obsdataout:
-        obsfile: Data/hofx/eda/gfs/mem001/aircraft_eda-3dvar-gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
-      observed variables: [eastward_wind, northward_wind]
-      derived variables: [air_temperature]
-      obs perturbations seed: 1
-    obs operator:
-      name: VertInterp
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    # Create a derived variable
-    - filter: Variable Assignment
-      assignments:
-      - name: air_temperature@DerivedObsValue
-        type: float
-        source variable:
-          name: renamed_air_temperature@ObsValue
-    # Populate its ObsError estimates (filled with missing values up to now)
-    - filter: Perform Action
-      filter variables: [air_temperature]
-      action:
-        name: assign error
-        error function:
-          name: renamed_air_temperature@ObsError
-    # Populate its PreQC flags
-    - filter: Variable Assignment
-      assignments:
-      - name: air_temperature@PreQC
-        type: int
-        source variable:
-          name: renamed_air_temperature@PreQC
-    - filter: PreQC
-      maxvalue: 3
-    - filter: Background Check
-      filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
-      threshold: 6.0
-  - obs space:
-      name: GnssroBndNBAM
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
-      simulated variables: [bending_angle]
-      obs perturbations seed: 1
-    obs operator:
-      name: GnssroBndNBAM
-      obs options:
-        sr_steps: 2
-        vertlayer: full
-        compress: 1
-        super_ref_qc: NBAM
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    - filter: Domain Check
-      filter variables:
-      - name: bending_angle
-      where:
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - filter: ROobserror
-      filter variables:
-      - name: bending_angle
-      errmodel: NBAM
-    - filter: Background Check RONBAM
-      filter variables:
-      - name: bending_angle
-  - obs space:
-      name: AMSUA-NOAA19
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
-      channels: 1-15
-      obs perturbations seed: 1
-    obs operator:
-      name: CRTM
-      Absorbers: [H2O,O3]
-      obs options:
-        Sensor_ID: amsua_n19
-        EndianType: little_endian
-        CoefficientPath: Data/crtm/
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    - filter: Bounds Check
-      filter variables:
-      - name: brightness_temperature
+    observers:
+    - obs space:
+        # The input file does not contain a variable called 'air_temperature', but contains one
+        # called 'renamed_air_temperature'. We use filters to copy renamed_air_temperature@ObsValue
+        # to air_temperature@DerivedObsValue and renamed_air_temperature@ObsError to
+        # air_temperature@ObsError. In this way we verify derived variables can be assimilated.
+        name: Aircraft
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
+        obsdataout:
+          obsfile: Data/hofx/eda/gfs/mem001/aircraft_eda-3dvar-gfs_2020121500_m.nc4
+        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        observed variables: [eastward_wind, northward_wind]
+        derived variables: [air_temperature]
+        obs perturbations seed: 1
+      obs operator:
+        name: VertInterp
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      # Create a derived variable
+      - filter: Variable Assignment
+        assignments:
+        - name: air_temperature@DerivedObsValue
+          type: float
+          source variable:
+            name: renamed_air_temperature@ObsValue
+      # Populate its ObsError estimates (filled with missing values up to now)
+      - filter: Perform Action
+        filter variables: [air_temperature]
+        action:
+          name: assign error
+          error function:
+            name: renamed_air_temperature@ObsError
+      # Populate its PreQC flags
+      - filter: Variable Assignment
+        assignments:
+        - name: air_temperature@PreQC
+          type: int
+          source variable:
+            name: renamed_air_temperature@PreQC
+      - filter: PreQC
+        maxvalue: 3
+      - filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
+    - obs space:
+        name: GnssroBndNBAM
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+        simulated variables: [bending_angle]
+        obs perturbations seed: 1
+      obs operator:
+        name: GnssroBndNBAM
+        obs options:
+          sr_steps: 2
+          vertlayer: full
+          compress: 1
+          super_ref_qc: NBAM
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      - filter: Domain Check
+        filter variables:
+        - name: bending_angle
+        where:
+        - variable:
+            name: impact_height@MetaData
+          minvalue: 0
+          maxvalue: 50000
+      - filter: ROobserror
+        filter variables:
+        - name: bending_angle
+        errmodel: NBAM
+      - filter: Background Check RONBAM
+        filter variables:
+        - name: bending_angle
+    - obs space:
+        name: AMSUA-NOAA19
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+        simulated variables: [brightness_temperature]
         channels: 1-15
-      minvalue: 100.0
-      maxvalue: 500.0
-    - filter: Background Check
-      filter variables:
-      - name: brightness_temperature
-        channels: 1-15
-      threshold: 3.0
-  - obs space:
-      name: Radiosonde
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
-      obs perturbations seed: 1
-    obs operator:
-      name: VertInterp
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    - filter: PreQC
-      maxvalue: 3
-    - filter: Background Check
-      filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
-      threshold: 6.0
+        obs perturbations seed: 1
+      obs operator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        obs options:
+          Sensor_ID: amsua_n19
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      - filter: Bounds Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
+      - filter: Background Check
+        filter variables:
+        - name: brightness_temperature
+          channels: 1-15
+        threshold: 3.0
+    - obs space:
+        name: Radiosonde
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        obs perturbations seed: 1
+      obs operator:
+        name: VertInterp
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      - filter: PreQC
+        maxvalue: 3
+      - filter: Background Check
+        filter variables:
+        - name: eastward_wind
+        - name: northward_wind
+        - name: air_temperature
+        threshold: 6.0
 variational:
   minimizer:
     algorithm: DRPLanczos
