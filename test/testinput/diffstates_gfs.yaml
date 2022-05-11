@@ -43,5 +43,5 @@ output:
 test:
   reference filename: testoutput/diffstates_gfs.ref
   test output filename: testoutput/diffstates_gfs.test.out
-  float relative tolerance: 1.0e-5
-  float absolute tolerance: 1.0e-6
+  float relative tolerance: 1.0e-4
+  float absolute tolerance: 1.0e-4

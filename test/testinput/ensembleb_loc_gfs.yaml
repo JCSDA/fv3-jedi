@@ -66,3 +66,5 @@ bump:
 test:
   reference filename: testoutput/ensembleb_loc_gfs.ref
   test output filename: testoutput/ensembleb_loc_gfs.test.out
+  float relative tolerance: 1.0e-5
+  float absolute tolerance: 1.0e-5

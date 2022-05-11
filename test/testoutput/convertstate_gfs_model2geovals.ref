@@ -1,100 +1,100 @@
 Input state: 
- -----------------------------------------------------------------------------------------------
- State print | number of fields = 21 | cube sphere face size: C12
-   ua                            : Min = -1.0808005226726641e+02, Max = +1.5254285196689409e+02, RMS = +2.2156165197969546e+01
-   va                            : Min = -1.0151447572667882e+02, Max = +1.0656765405741353e+02, RMS = +1.0393969791347695e+01
-   T                             : Min = +1.5865009407036410e+02, Max = +3.0653885708773061e+02, RMS = +2.4962364131438417e+02
-   DELP                          : Min = +6.0599994659423817e-01, Max = +1.7927172479208255e+03, RMS = +9.5771383767079681e+02
-   sphum                         : Min = +1.2804727152986153e-09, Max = +1.8723704386097544e-02, RMS = +4.6967978850461283e-03
-   ice_wat                       : Min = -4.2004505407201364e-21, Max = +3.4908649350015467e-04, RMS = +1.4451341902862160e-05
-   liq_wat                       : Min = -9.4095662968587237e-21, Max = +1.0694775100156446e-03, RMS = +3.4817857684731345e-05
-   o3mr                          : Min = +2.8166011299632619e-09, Max = +1.7470989779275887e-05, RMS = +4.3563484867392158e-06
-   phis                          : Min = -2.6477954101562500e+02, Max = +4.9483356501111783e+04, RMS = +5.9494834270643069e+03
-   slmsk                         : Min = +0.0000000000000000e+00, Max = +2.0000000000000004e+00, RMS = +6.6320345634919742e-01
-   sheleg                        : Min = +0.0000000000000000e+00, Max = +2.2560732452076238e+02, RMS = +2.2262278348509248e+01
-   tsea                          : Min = +2.2906805071655253e+02, Max = +3.2545676286191065e+02, RMS = +2.8676581491798419e+02
-   vtype                         : Min = +0.0000000000000000e+00, Max = +1.9000000000000000e+01, RMS = +5.8103714740683028e+00
-   stype                         : Min = +0.0000000000000000e+00, Max = +1.6000000000000000e+01, RMS = +4.3370710375995900e+00
-   vfrac                         : Min = +0.0000000000000000e+00, Max = +9.3228731613197013e-01, RMS = +1.9051967997010422e-01
-   stc                           : Min = +2.2223013432965388e+02, Max = +3.0959538937410571e+02, RMS = +2.8897268178046460e+02
-   smc                           : Min = +2.0000000000000000e-02, Max = +1.0000000000000002e+00, RMS = +8.6190186078147835e-01
-   snwdph                        : Min = +0.0000000000000000e+00, Max = +1.3285476634008219e+03, RMS = +1.7913120186264419e+02
-   u_srf                         : Min = -1.8101275076649053e+01, Max = +2.1220834227111389e+01, RMS = +5.8495982180186621e+00
-   v_srf                         : Min = -1.4623627030973990e+01, Max = +1.8213843978241414e+01, RMS = +4.8372223427453616e+00
-   f10m                          : Min = +9.4200706791884525e-01, Max = +1.0783731020020086e+00, RMS = +9.9586000625264048e-01
- -----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 21 | cube sphere face size: C12
+eastward_wind                                | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969532e+01
+northward_wind                               | Min:-1.0151447572667882e+02 Max:+1.0656765405741353e+02 RMS:+1.0393969791347702e+01
+air_temperature                              | Min:+1.5865009407036410e+02 Max:+3.0653885708773061e+02 RMS:+2.4962364131438429e+02
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079806e+02
+specific_humidity                            | Min:+1.2804727152986153e-09 Max:+1.8723704386097544e-02 RMS:+4.6967978850461301e-03
+cloud_liquid_ice                             | Min:-4.2004505407201364e-21 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
+cloud_liquid_water                           | Min:-9.4095662968587237e-21 Max:+1.0694775100156446e-03 RMS:+3.4817857684731358e-05
+ozone_mass_mixing_ratio                      | Min:+2.8166011299632619e-09 Max:+1.7470989779275887e-05 RMS:+4.3563484867392150e-06
+sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
+sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509252e+01
+sea_surface_temperature                      | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798424e+02
+vtype                                        | Min:+0.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+5.8103714740683028e+00
+stype                                        | Min:+0.0000000000000000e+00 Max:+1.6000000000000000e+01 RMS:+4.3370710375995900e+00
+vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.9051967997010422e-01
+stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
+smc                                          | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
+totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3285476634008219e+03 RMS:+1.7913120186264425e+02
+u_srf                                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
+v_srf                                        | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
+f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264037e-01
+----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
 Variable change from: 21 variables: ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m
 Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
 State after variable transform: 
- -----------------------------------------------------------------------------------------------
- State print | number of fields = 32 | cube sphere face size: C12
-   rh                            : Min = +9.7386099756970810e-10, Max = +1.0241599791402913e+00, RMS = +4.7443026652312664e-01
-   ps                            : Min = +5.3984383265251498e+04, Max = +1.0473442195347164e+05, RMS = +9.8983831005599204e+04
-   tv                            : Min = +1.5865052804677049e+02, Max = +3.0815027761147030e+02, RMS = +2.5010088591249416e+02
-   mole_fraction_of_ozone_in_air : Min = +1.7018720841565718e-03, Max = +1.0556478683342091e+01, RMS = +2.6322320897939488e+00
-   geopotential_height           : Min = -1.6837767841805256e+01, Max = +7.9805489051111916e+04, RMS = +2.4840160350346447e+04
-   surface_altitude              : Min = -2.6999999083848717e+01, Max = +5.0458980896750454e+03, RMS = +6.0667847094209606e+02
-   mole_fraction_of_carbon_dioxid: Min = +4.0700000000000000e+02, Max = +4.0700000000000000e+02, RMS = +4.0700000000000000e+02
-   humidity_mixing_ratio         : Min = +1.2804727169382260e-06, Max = +1.9080970843572338e+01, RMS = +4.7529192956846131e+00
-   mass_content_of_cloud_liquid_w: Min = +0.0000000000000000e+00, Max = +1.3538278602069012e-01, RMS = +3.3329401371641025e-03
-   mass_content_of_cloud_ice_in_a: Min = +0.0000000000000000e+00, Max = +6.0801698649563578e-02, RMS = +1.9403476504739866e-03
-   effective_radius_of_cloud_liqu: Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+01, RMS = +6.7156616825406328e+00
-   effective_radius_of_cloud_ice_: Min = +0.0000000000000000e+00, Max = +1.0406878391563916e+02, RMS = +3.7866111705283778e+01
-   water_area_fraction           : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +8.1436751190383594e-01
-   land_area_fraction            : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +4.3700368673756312e-01
-   ice_area_fraction             : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +8.3333333333333329e-02
-   surface_snow_area_fraction    : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +3.7267799624996495e-01
-   surface_temperature_where_sea : Min = +2.7000000000000000e+02, Max = +3.2545676286191065e+02, RMS = +2.8856616717757311e+02
-   surface_temperature_where_land: Min = +2.2906805071655253e+02, Max = +3.2545676286191065e+02, RMS = +2.8676581491798419e+02
-   surface_temperature_where_ice : Min = +2.2906805071655253e+02, Max = +2.8000000000000000e+02, RMS = +2.7615097095726986e+02
-   surface_temperature_where_snow: Min = +2.2906805071655253e+02, Max = +2.8000000000000000e+02, RMS = +2.7615097095726986e+02
-   surface_snow_thickness        : Min = +0.0000000000000000e+00, Max = +2.2560732452076238e+02, RMS = +2.2262253924964504e+01
-   vegetation_area_fraction      : Min = +0.0000000000000000e+00, Max = +9.3228731613197013e-01, RMS = +1.8920913360061203e-01
-   surface_wind_speed            : Min = +6.9870439183580199e-02, Max = +2.1215103721830587e+01, RMS = +7.5680080630515612e+00
-   surface_wind_from_direction   : Min = +2.5639356551436188e-01, Max = +3.5990367774320623e+02, RMS = +2.1384056966342857e+02
-   leaf_area_index               : Min = +0.0000000000000000e+00, Max = +5.8979347826086963e+00, RMS = +1.3973263598176446e+00
-   volume_fraction_of_condensed_w: Min = +2.0000000000000000e-02, Max = +1.0000000000000000e+00, RMS = +9.0568498171125944e-01
-   soil_temperature              : Min = +0.0000000000000000e+00, Max = +3.0700739894258089e+02, RMS = +1.2760703940045644e+02
-   land_type_index_NPOESS        : Min = +1.0000000000000000e+00, Max = +1.9000000000000000e+01, RMS = +9.5998649681861359e+00
-   vegetation_type_index         : Min = +1.0000000000000000e+00, Max = +1.2000000000000000e+01, RMS = +5.0099438157565235e+00
-   soil_type                     : Min = +1.0000000000000000e+00, Max = +8.0000000000000000e+00, RMS = +2.7514726696538077e+00
-   vort                          : Min = -1.2496545759979326e-04, Max = +1.1578828828808977e-04, RMS = +1.7935331794188319e-05
-   tropopause_pressure           : Min = +1.5000000000000000e+04, Max = +3.5000000000000000e+04, RMS = +1.6132543884947550e+04
- -----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 32 | cube sphere face size: C12
+relative_humidity                            | Min:+9.7386099756970934e-10 Max:+1.0241599791402811e+00 RMS:+4.7443026652312625e-01
+surface_pressure                             | Min:+5.3984383265251498e+04 Max:+1.0473442195347164e+05 RMS:+9.8983831005599204e+04
+virtual_temperature                          | Min:+1.5865052804677049e+02 Max:+3.0815027761147030e+02 RMS:+2.5010088591249450e+02
+mole_fraction_of_ozone_in_air                | Min:+1.7018720841565718e-03 Max:+1.0556478683342091e+01 RMS:+2.6322320897939497e+00
+geopotential_height                          | Min:-1.6837767841807079e+01 Max:+7.9805489051111930e+04 RMS:+2.4840160350346418e+04
+surface_altitude                             | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209617e+02
+mole_fraction_of_carbon_dioxide_in_air       | Min:+4.0700000000000000e+02 Max:+4.0700000000000000e+02 RMS:+4.0700000000000000e+02
+humidity_mixing_ratio                        | Min:+1.2804727169382258e-06 Max:+1.9080970843572338e+01 RMS:+4.7529192956846114e+00
+mass_content_of_cloud_liquid_water_in_atmosp | Min:+0.0000000000000000e+00 Max:+1.3538278602069012e-01 RMS:+3.3329401371641203e-03
+mass_content_of_cloud_ice_in_atmosphere_laye | Min:+0.0000000000000000e+00 Max:+6.0801698649563578e-02 RMS:+1.9403476504739725e-03
+effective_radius_of_cloud_liquid_water_parti | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+01 RMS:+6.7156616825406328e+00
+effective_radius_of_cloud_ice_particle       | Min:+0.0000000000000000e+00 Max:+1.0406878391563970e+02 RMS:+3.7866111705283792e+01
+water_area_fraction                          | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.1436751190383594e-01
+land_area_fraction                           | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.3700368673756312e-01
+ice_area_fraction                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.3333333333333329e-02
+surface_snow_area_fraction                   | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+3.7267799624996495e-01
+surface_temperature_where_sea                | Min:+2.7000000000000000e+02 Max:+3.2545676286191065e+02 RMS:+2.8856616717757311e+02
+surface_temperature_where_land               | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798424e+02
+surface_temperature_where_ice                | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+surface_temperature_where_snow               | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+surface_snow_thickness                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262253924964508e+01
+vegetation_area_fraction                     | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.8920913360061203e-01
+surface_wind_speed                           | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515620e+00
+surface_wind_from_direction                  | Min:+2.5639356551436188e-01 Max:+3.5990367774320623e+02 RMS:+2.1384056966342854e+02
+leaf_area_index                              | Min:+0.0000000000000000e+00 Max:+5.8979347826086963e+00 RMS:+1.3973263598176442e+00
+volume_fraction_of_condensed_water_in_soil   | Min:+2.0000000000000000e-02 Max:+1.0000000000000000e+00 RMS:+9.0568498171125944e-01
+soil_temperature                             | Min:+0.0000000000000000e+00 Max:+3.0700739894258089e+02 RMS:+1.2760703940045643e+02
+land_type_index_NPOESS                       | Min:+1.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+9.5998649681861359e+00
+vegetation_type_index                        | Min:+1.0000000000000000e+00 Max:+1.2000000000000000e+01 RMS:+5.0099438157565235e+00
+soil_type                                    | Min:+1.0000000000000000e+00 Max:+8.0000000000000000e+00 RMS:+2.7514726696538077e+00
+vorticity                                    | Min:-1.2496545759979364e-04 Max:+1.1578828828809770e-04 RMS:+1.7935331794188055e-05
+tropopause_pressure                          | Min:+1.5000000000000000e+04 Max:+3.5000000000000000e+04 RMS:+1.6132543884947547e+04
+----------------------------------------------------------------------------------------------------
 Output state: 
- -----------------------------------------------------------------------------------------------
- State print | number of fields = 32 | cube sphere face size: C12
-   rh                            : Min = +9.7386099756970810e-10, Max = +1.0241599791402913e+00, RMS = +4.7443026652312664e-01
-   ps                            : Min = +5.3984383265251498e+04, Max = +1.0473442195347164e+05, RMS = +9.8983831005599204e+04
-   tv                            : Min = +1.5865052804677049e+02, Max = +3.0815027761147030e+02, RMS = +2.5010088591249416e+02
-   mole_fraction_of_ozone_in_air : Min = +1.7018720841565718e-03, Max = +1.0556478683342091e+01, RMS = +2.6322320897939488e+00
-   geopotential_height           : Min = -1.6837767841805256e+01, Max = +7.9805489051111916e+04, RMS = +2.4840160350346447e+04
-   surface_altitude              : Min = -2.6999999083848717e+01, Max = +5.0458980896750454e+03, RMS = +6.0667847094209606e+02
-   mole_fraction_of_carbon_dioxid: Min = +4.0700000000000000e+02, Max = +4.0700000000000000e+02, RMS = +4.0700000000000000e+02
-   humidity_mixing_ratio         : Min = +1.2804727169382260e-06, Max = +1.9080970843572338e+01, RMS = +4.7529192956846131e+00
-   mass_content_of_cloud_liquid_w: Min = +0.0000000000000000e+00, Max = +1.3538278602069012e-01, RMS = +3.3329401371641025e-03
-   mass_content_of_cloud_ice_in_a: Min = +0.0000000000000000e+00, Max = +6.0801698649563578e-02, RMS = +1.9403476504739866e-03
-   effective_radius_of_cloud_liqu: Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+01, RMS = +6.7156616825406328e+00
-   effective_radius_of_cloud_ice_: Min = +0.0000000000000000e+00, Max = +1.0406878391563916e+02, RMS = +3.7866111705283778e+01
-   water_area_fraction           : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +8.1436751190383594e-01
-   land_area_fraction            : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +4.3700368673756312e-01
-   ice_area_fraction             : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +8.3333333333333329e-02
-   surface_snow_area_fraction    : Min = +0.0000000000000000e+00, Max = +1.0000000000000000e+00, RMS = +3.7267799624996495e-01
-   surface_temperature_where_sea : Min = +2.7000000000000000e+02, Max = +3.2545676286191065e+02, RMS = +2.8856616717757311e+02
-   surface_temperature_where_land: Min = +2.2906805071655253e+02, Max = +3.2545676286191065e+02, RMS = +2.8676581491798419e+02
-   surface_temperature_where_ice : Min = +2.2906805071655253e+02, Max = +2.8000000000000000e+02, RMS = +2.7615097095726986e+02
-   surface_temperature_where_snow: Min = +2.2906805071655253e+02, Max = +2.8000000000000000e+02, RMS = +2.7615097095726986e+02
-   surface_snow_thickness        : Min = +0.0000000000000000e+00, Max = +2.2560732452076238e+02, RMS = +2.2262253924964504e+01
-   vegetation_area_fraction      : Min = +0.0000000000000000e+00, Max = +9.3228731613197013e-01, RMS = +1.8920913360061203e-01
-   surface_wind_speed            : Min = +6.9870439183580199e-02, Max = +2.1215103721830587e+01, RMS = +7.5680080630515612e+00
-   surface_wind_from_direction   : Min = +2.5639356551436188e-01, Max = +3.5990367774320623e+02, RMS = +2.1384056966342857e+02
-   leaf_area_index               : Min = +0.0000000000000000e+00, Max = +5.8979347826086963e+00, RMS = +1.3973263598176446e+00
-   volume_fraction_of_condensed_w: Min = +2.0000000000000000e-02, Max = +1.0000000000000000e+00, RMS = +9.0568498171125944e-01
-   soil_temperature              : Min = +0.0000000000000000e+00, Max = +3.0700739894258089e+02, RMS = +1.2760703940045644e+02
-   land_type_index_NPOESS        : Min = +1.0000000000000000e+00, Max = +1.9000000000000000e+01, RMS = +9.5998649681861359e+00
-   vegetation_type_index         : Min = +1.0000000000000000e+00, Max = +1.2000000000000000e+01, RMS = +5.0099438157565235e+00
-   soil_type                     : Min = +1.0000000000000000e+00, Max = +8.0000000000000000e+00, RMS = +2.7514726696538077e+00
-   vort                          : Min = -1.2496545759979326e-04, Max = +1.1578828828808977e-04, RMS = +1.7935331794188319e-05
-   tropopause_pressure           : Min = +1.5000000000000000e+04, Max = +3.5000000000000000e+04, RMS = +1.6132543884947550e+04
- -----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 32 | cube sphere face size: C12
+relative_humidity                            | Min:+9.7386099756970934e-10 Max:+1.0241599791402811e+00 RMS:+4.7443026652312625e-01
+surface_pressure                             | Min:+5.3984383265251498e+04 Max:+1.0473442195347164e+05 RMS:+9.8983831005599204e+04
+virtual_temperature                          | Min:+1.5865052804677049e+02 Max:+3.0815027761147030e+02 RMS:+2.5010088591249450e+02
+mole_fraction_of_ozone_in_air                | Min:+1.7018720841565718e-03 Max:+1.0556478683342091e+01 RMS:+2.6322320897939497e+00
+geopotential_height                          | Min:-1.6837767841807079e+01 Max:+7.9805489051111930e+04 RMS:+2.4840160350346418e+04
+surface_altitude                             | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209617e+02
+mole_fraction_of_carbon_dioxide_in_air       | Min:+4.0700000000000000e+02 Max:+4.0700000000000000e+02 RMS:+4.0700000000000000e+02
+humidity_mixing_ratio                        | Min:+1.2804727169382258e-06 Max:+1.9080970843572338e+01 RMS:+4.7529192956846114e+00
+mass_content_of_cloud_liquid_water_in_atmosp | Min:+0.0000000000000000e+00 Max:+1.3538278602069012e-01 RMS:+3.3329401371641203e-03
+mass_content_of_cloud_ice_in_atmosphere_laye | Min:+0.0000000000000000e+00 Max:+6.0801698649563578e-02 RMS:+1.9403476504739725e-03
+effective_radius_of_cloud_liquid_water_parti | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+01 RMS:+6.7156616825406328e+00
+effective_radius_of_cloud_ice_particle       | Min:+0.0000000000000000e+00 Max:+1.0406878391563970e+02 RMS:+3.7866111705283792e+01
+water_area_fraction                          | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.1436751190383594e-01
+land_area_fraction                           | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.3700368673756312e-01
+ice_area_fraction                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.3333333333333329e-02
+surface_snow_area_fraction                   | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+3.7267799624996495e-01
+surface_temperature_where_sea                | Min:+2.7000000000000000e+02 Max:+3.2545676286191065e+02 RMS:+2.8856616717757311e+02
+surface_temperature_where_land               | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798424e+02
+surface_temperature_where_ice                | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+surface_temperature_where_snow               | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+surface_snow_thickness                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262253924964508e+01
+vegetation_area_fraction                     | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.8920913360061203e-01
+surface_wind_speed                           | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515620e+00
+surface_wind_from_direction                  | Min:+2.5639356551436188e-01 Max:+3.5990367774320623e+02 RMS:+2.1384056966342854e+02
+leaf_area_index                              | Min:+0.0000000000000000e+00 Max:+5.8979347826086963e+00 RMS:+1.3973263598176442e+00
+volume_fraction_of_condensed_water_in_soil   | Min:+2.0000000000000000e-02 Max:+1.0000000000000000e+00 RMS:+9.0568498171125944e-01
+soil_temperature                             | Min:+0.0000000000000000e+00 Max:+3.0700739894258089e+02 RMS:+1.2760703940045643e+02
+land_type_index_NPOESS                       | Min:+1.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+9.5998649681861359e+00
+vegetation_type_index                        | Min:+1.0000000000000000e+00 Max:+1.2000000000000000e+01 RMS:+5.0099438157565235e+00
+soil_type                                    | Min:+1.0000000000000000e+00 Max:+8.0000000000000000e+00 RMS:+2.7514726696538077e+00
+vorticity                                    | Min:-1.2496545759979364e-04 Max:+1.1578828828809770e-04 RMS:+1.7935331794188055e-05
+tropopause_pressure                          | Min:+1.5000000000000000e+04 Max:+3.5000000000000000e+04 RMS:+1.6132543884947547e+04
+----------------------------------------------------------------------------------------------------

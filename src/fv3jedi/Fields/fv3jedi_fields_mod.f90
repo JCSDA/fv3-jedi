@@ -282,7 +282,7 @@ jsc = self%fields(field_num)%jsc
 jec = self%fields(field_num)%jec
 npz = self%fields(field_num)%npz
 
-field_name = self%fields(field_num)%short_name
+field_name = self%fields(field_num)%long_name
 
 ! Compute global sum over the field
 gs3 = real((iec-isc+1)*(jec-jsc+1)*npz, kind_real)

@@ -1,23 +1,23 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Radiosonde) = 2.6496716182502005e+03, nobs = 1345, Jo/n = 1.9700160730484761e+00, err = 2.0634885510289287e+00
-CostFunction: Nonlinear J = 2.6496716182502005e+03
-   Norm reduction all members ( 1) = 4.8757007971023048e-01, 5.5257009002173907e-01
-   Quadratic cost function all members: J ( 1) = 2.3222351327890055e+03, 2.5284476991277379e+03
-   Norm reduction all members ( 2) = 1.9249570873085295e-01, 2.0084066166135800e-01
-   Quadratic cost function all members: J ( 2) = 2.2652213641832386e+03, 2.4540995399449303e+03
-DRPBlockLanczosMinimizer: reduction in residual norm = 1.9249570873085295e-01
+CostJo   : Nonlinear Jo(Radiosonde) = 2.6496716182502228e+03, nobs = 1345, Jo/n = 1.9700160730484928e+00, err = 2.0634885510289287e+00
+CostFunction: Nonlinear J = 2.6496716182502228e+03
+   Norm reduction all members ( 1) = 4.8757007971023619e-01, 5.5257009002175450e-01
+   Quadratic cost function all members: J ( 1) = 2.3222351327890192e+03, 2.5284476991277452e+03
+   Norm reduction all members ( 2) = 1.9249570873086028e-01, 2.0084066166136066e-01
+   Quadratic cost function all members: J ( 2) = 2.2652213641832495e+03, 2.4540995399449357e+03
+DRPBlockLanczosMinimizer: reduction in residual norm = 1.9249570873086028e-01
 CostFunction::addIncrement: Analysis: 
- -----------------------------------------------------------------------------------------------
- State print | number of fields = 8 | cube sphere face size: C12
-   ua                            : Min = -1.0781133731507043e+02, Max = +1.5487659715423769e+02, RMS = +2.2185159243388547e+01
-   va                            : Min = -1.0239323277236400e+02, Max = +1.0512720322664948e+02, RMS = +1.0406417934143022e+01
-   T                             : Min = +1.5974157554397024e+02, Max = +3.0599258776607803e+02, RMS = +2.4962906281021716e+02
-   DELP                          : Min = +6.0599993853456557e-01, Max = +1.7932459621753899e+03, RMS = +9.5773021619097756e+02
-   sphum                         : Min = +0.0000000000000000e+00, Max = +1.8614343020040072e-02, RMS = +4.6907309390980196e-03
-   ice_wat                       : Min = +0.0000000000000000e+00, Max = +3.7798664620125052e-04, RMS = +1.5682400678208514e-05
-   liq_wat                       : Min = +0.0000000000000000e+00, Max = +9.6120589151239898e-04, RMS = +3.4659570852391482e-05
-   o3mr                          : Min = +2.9838879123772961e-09, Max = +1.8496256928718732e-05, RMS = +4.3562499708886838e-06
- -----------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 183.3015536437936
-CostJo   : Nonlinear Jo(Radiosonde) = 2038.791690582849, nobs = 1345, Jo/n = 1.515830253221449, err = 2.063488551028929
-CostFunction: Nonlinear J = 2222.093244226643
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 8 | cube sphere face size: C12
+eastward_wind                                | Min:-1.0781133731507042e+02 Max:+1.5487659715423769e+02 RMS:+2.2185159243388501e+01
+northward_wind                               | Min:-1.0239323277236399e+02 Max:+1.0512720322664948e+02 RMS:+1.0406417934143022e+01
+air_temperature                              | Min:+1.5974157554397027e+02 Max:+3.0599258776607797e+02 RMS:+2.4962906281021716e+02
+air_pressure_thickness                       | Min:+6.0599993853456557e-01 Max:+1.7932459621753899e+03 RMS:+9.5773021619097756e+02
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8614343020040072e-02 RMS:+4.6907309390980187e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.7798664620125057e-04 RMS:+1.5682400678208589e-05
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.6120589151239898e-04 RMS:+3.4659570852391637e-05
+ozone_mass_mixing_ratio                      | Min:+2.9838879123772775e-09 Max:+1.8496256928718735e-05 RMS:+4.3562499708886973e-06
+----------------------------------------------------------------------------------------------------
+CostJb   : Nonlinear Jb = 183.30155364379
+CostJo   : Nonlinear Jo(Radiosonde) = 2038.791690582866, nobs = 1345, Jo/n = 1.515830253221462, err = 2.063488551028929
+CostFunction: Nonlinear J = 2222.093244226656
