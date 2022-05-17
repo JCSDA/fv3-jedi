@@ -13,7 +13,7 @@ class getFixFilesGFS(Task):
     def setup(self, config, **inputs):
 
         localconf = {}
-        localconf['fixdir'] = self.RUNTIME_YAML['currentdir']
+        localconf['fixdir'] = self.workdir['wdir']
         localconf['resol'] = config['GEOMETRY']['_resol_name']
         localconf['nlevs'] = str(config['GEOMETRY']['npz'])
 
@@ -31,7 +31,7 @@ class getFixFilesGFS(Task):
         self.output['FIXMODEL'] = modelconf
 
         self.RUNTIME_ENV['FV3REPO'] = os.path.join(os.environ.get("JEDI_SRC"), "fv3-jedi")
-        self.RUNTIME_ENV['FIXDIR'] = self.RUNTIME_YAML['currentdir']
+        self.RUNTIME_ENV['FIXDIR'] = self.workdir['wdir']
         self.RUNTIME_ENV['RESOL'] = config['GEOMETRY']['_resol_name']
         self.RUNTIME_ENV['NLEVS'] = config['GEOMETRY']['npz']
         self.RUNTIME_ENV['LAYOUT'] = layout

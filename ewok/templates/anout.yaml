@@ -9,4 +9,4 @@ date: '{{current_cycle}}'
 first: $(an_first)
 frequency: $(an_frequency)
 filetype: fms restart
-datapath: '{{currentdir}}'
+datapath: '{{workdir}}'

@@ -8,4 +8,4 @@ exp: $(expid)
 date: '{{current_cycle}}'
 frequency: $(forecast_output_frequency)
 filetype: fms restart
-datapath: '{{currentdir}}'
+datapath: '{{workdir}}'

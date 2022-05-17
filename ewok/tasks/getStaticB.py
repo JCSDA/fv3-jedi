@@ -18,7 +18,7 @@ class getStaticB(Task):
             bump3d = config['BACKGROUND_ERROR']['_prefix3d']
     
             fv3_data_dir = os.path.join(build['builddir'], 'fv3-jedi/test/Data')
-            static_b_dir = os.path.join(self.RUNTIME_YAML['currentdir'], 'staticB')
+            static_b_dir = os.path.join(self.workdir['wdir'], 'staticB')
     
             self.output['STATICB'] = {}
             self.output['STATICB']['datadir'] = static_b_dir

@@ -13,9 +13,9 @@ import r2d2
 conf = yamltools.configure_runtime(sys.argv[1])
 
 # Check for working directory
-if not os.path.exists(conf['currentdir']):
+if not os.path.exists(conf['workdir']):
     raise RuntimeError('Working directory does not exist')
-os.chdir(conf['currentdir'])
+os.chdir(conf['workdir'])
 
 # Date
 fcdate = conf['fc']['date']
