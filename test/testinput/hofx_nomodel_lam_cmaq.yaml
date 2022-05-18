@@ -6,10 +6,7 @@ geometry:
     field table filename: Data/fv3files/field_table_lam_cmaq
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
-    - fieldset: Data/fieldsets/lam_cmaq.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 state:
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart

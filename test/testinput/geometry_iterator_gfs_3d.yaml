@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
   iterator dimension: 3
 inc variables: [ua,va,T,DELP,sphum,ps,ice_wat,liq_wat,o3mr]
 increment test:

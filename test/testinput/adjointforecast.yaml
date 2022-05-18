@@ -10,8 +10,7 @@ linear forecast:
     npx: 13
     npy: 13
     npz: 127
-    fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
+    field metadata override: Data/fieldmetadata/gfs-restart.yaml
 
   # Linear model config
   linear model:
@@ -42,8 +41,7 @@ forecast:
     npx: 13
     npy: 13
     npz: 127
-    fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
+    field metadata override: Data/fieldmetadata/gfs-restart.yaml
 
   # Model config
   model:
@@ -90,8 +88,7 @@ forecast aspect:
     npx: 13
     npy: 13
     npz: 127
-    fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
+    field metadata override: Data/fieldmetadata/gfs-restart.yaml
 
   verification state:
     filetype: fms restart

@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: GEOS
   tstep: PT30M

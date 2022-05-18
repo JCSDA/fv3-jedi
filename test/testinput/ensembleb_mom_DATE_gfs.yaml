@@ -7,8 +7,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 input variables: &inputVars [ua,va,t,ps,sphum,liq_wat,ice_wat,o3mr]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z

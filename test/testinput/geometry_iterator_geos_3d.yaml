@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
   iterator dimension: 3
 inc variables: [ua,va,t,delp,ps,q,qi,ql,o3ppmv]
 increment test:

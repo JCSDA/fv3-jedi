@@ -16,5 +16,4 @@ geometry:
   stretch_fac: 2.0
   hydrostatic: false
   nwat: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml

@@ -5,9 +5,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/aerosols_geos.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 state test:
   statefile:
     datetime: 2018-04-15T00:00:00Z
@@ -15,10 +13,10 @@ state test:
     provider: geos
     datapath: Data/inputs/geos_c12
     filename: geos.aero.bkg.20180415_000000z.nc4
-    state variables: [DU001, DU002, DU003, DU004, DU005,
-                SS001, SS002, SS003, SS004, SS005,
-                BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
-                NO3AN1, NO3AN2, NO3AN3, SO4 ]
+    state variables: [du001, du002, du003, du004, du005,
+                ss001, ss002, ss003, ss004, ss005,
+                bcphobic, bcphilic, ocphobic, ocphilic,
+                no3an1, no3an2, no3an3, so4 ]
   date: 2018-04-15T00:00:00Z
   norm file: 5.6656081674032044e-09
   tolerance: 1.0e-8

@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-history.yaml
 state test:
   statefile:
     filetype: cube sphere history

@@ -6,15 +6,13 @@ state geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 increment geometry:
   akbk: Data/fv3files/akbk72.nc4
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 state1: #Analysis
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history

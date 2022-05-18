@@ -15,10 +15,7 @@ cost function:
     npx: 13
     npy: 13
     npz: 64
-    fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/aerosols_gfs.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+    field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
   background:
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
@@ -149,10 +146,7 @@ variational:
       npx: 13
       npy: 13
       npz: 64
-      fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/aerosols_gfs.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
     diagnostics:
       departures: ombg
   - ninner: 5
@@ -164,10 +158,7 @@ variational:
       npx: 13
       npy: 13
       npz: 64
-      fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/aerosols_gfs.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
     diagnostics:
       departures: ombg
 final:

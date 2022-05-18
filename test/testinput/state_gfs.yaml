@@ -7,8 +7,7 @@ geometry:
   npy: 13
   npz: 127
   layout: [1,1]
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 state test:
   statefile:
     filetype: fms restart

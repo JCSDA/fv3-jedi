@@ -2,14 +2,14 @@ linear variable change tests:
 - linear variable change:
     linear variable change name: Control2Analysis
     testinverse: 1
-    input variables: [psi,chi,tv,ps,rh,qi,ql,o3]
-    output variables: [ua,va,t,ps,q,qi,ql,o3]
+    input variables: [psi,chi,tv,ps,rh,ice_wat,liq_wat,o3mr]
+    output variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
   tolerance inverse: 1000
 - linear variable change:
     linear variable change name: Analysis2Model
     testinverse: 1
-    input variables: [ua,va,t,ps,q,qi,ql,o3]
-    output variables: [ud,vd,t,delp,q,qi,ql,o3]
+    input variables: [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+    output variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   tolerance inverse: 1000
 geometry:
   fms initialization:
@@ -19,8 +19,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart

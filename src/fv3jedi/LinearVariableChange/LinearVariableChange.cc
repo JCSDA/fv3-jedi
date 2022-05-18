@@ -8,6 +8,8 @@
 #include <ostream>
 #include <string>
 
+#include "oops/util/Logger.h"
+
 #include "fv3jedi/LinearVariableChange/LinearVariableChange.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
@@ -42,7 +44,7 @@ void LinearVariableChange::multiply(Increment & dx, const oops::Variables & vars
   oops::Log::trace() << "LinearVariableChange::multiply starting" << std::endl;
 
   // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.LongNameFromIONameLongNameOrFieldName(vars);
+  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (varsLongName <= dx.variablesLongName()) {
@@ -72,7 +74,7 @@ void LinearVariableChange::multiplyInverse(Increment & dx, const oops::Variables
   oops::Log::trace() << "LinearVariableChange::multiplyInverse starting" << std::endl;
 
   // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.LongNameFromIONameLongNameOrFieldName(vars);
+  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (varsLongName <= dx.variablesLongName()) {
@@ -102,7 +104,7 @@ void LinearVariableChange::multiplyAD(Increment & dx, const oops::Variables & va
   oops::Log::trace() << "LinearVariableChange::multiplyAD starting" << std::endl;
 
   // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.LongNameFromIONameLongNameOrFieldName(vars);
+  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (varsLongName <= dx.variablesLongName()) {
@@ -132,7 +134,7 @@ void LinearVariableChange::multiplyInverseAD(Increment & dx, const oops::Variabl
   oops::Log::trace() << "LinearVariableChange::multiplyInverseAD starting" << std::endl;
 
   // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.LongNameFromIONameLongNameOrFieldName(vars);
+  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (varsLongName <= dx.variablesLongName()) {

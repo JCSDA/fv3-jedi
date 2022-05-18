@@ -4,8 +4,7 @@ geometry:
     field table filename: Data/fv3files/field_table_gfdl
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 state test:
   statefile :
     filetype: fms restart

@@ -17,7 +17,4 @@ geometry:
   stretch_fac: 0.0
   target_lat: 0.0
   target_lon: 0.0
-  fieldsets:
-    - fieldset: Data/fieldsets/aerosols_geos.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml

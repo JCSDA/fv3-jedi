@@ -7,20 +7,14 @@ input geometry:
   npy: 13
   npz: 127
   nwat: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/cold_start_127.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/oro_data.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 output geometry:
   akbk: Data/fv3files/akbk127.nc4
   npx: &npxout 13
   npy: &npyout 13
   npz: &npzout 127
   nwat: &nwat 6
-  fieldsets:
-    - fieldset: Data/fieldsets/cold_start_127.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/oro_data.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 variable change:
   variable change name: VertRemap
   input is cold starts: true

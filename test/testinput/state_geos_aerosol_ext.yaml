@@ -5,9 +5,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/aerosols_geos.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 state test:
   statefile:
     datetime: 2018-04-15T00:00:00Z

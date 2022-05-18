@@ -12,11 +12,12 @@
 namespace fv3jedi {
 
 extern "C" {
-  void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata, const char fieldIONameC[],
-                                   char fieldNameC[], char kindC[], int& levels,
-                                   char longNameC[], char SpaceC[], char staggerLocC[],
-                                   bool& tracer, char unitsC[], char interpTypeC[],
-                                   char io_fileC[]);
+  void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata,
+                                   const char longshortioNameC[], char longNameC[],
+                                   char shrtNameC[], char varUnitsC[], char dataKindC[],
+                                   bool& tracer, char stagrLocC[], int & levels, char mathSpacC[],
+                                   char inOuNameC[], char inOuFileC[], char intrpTypC[]);
+
 }
 
 }  // namespace fv3jedi

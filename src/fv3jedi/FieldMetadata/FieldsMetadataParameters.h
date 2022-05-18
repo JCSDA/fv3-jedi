@@ -25,37 +25,22 @@ namespace fv3jedi {
 
 // -----------------------------------------------------------------------------------------------
 
-class FieldParameters : public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(FieldParameters, Parameters)
+class FieldOverrideParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(FieldOverrideParameters, Parameters)
  public:
-  oops::RequiredParameter<std::string> fieldName{ "FieldName", this};
-  oops::Parameter<std::vector<std::string>> fieldIONames{ "FieldIONames", {}, this};
-  oops::Parameter<std::string> interpType{ "InterpType", "default", this};
-  oops::Parameter<std::string> ioFile{ "IOFile", "default", this};
-  oops::Parameter<std::string> precisionKind{ "Kind", "double", this};
-  oops::Parameter<std::string> levels{ "Levels", "full", this};
-  oops::OptionalParameter<std::string> longName{ "LongName", this};
-  oops::Parameter<std::string> space{ "Space", "magnitude", this};
-  oops::Parameter<std::string> staggerLoc{ "StaggerLoc", "center", this};
-  oops::Parameter<bool> tracer{ "Tracer", false, this};
-  oops::RequiredParameter<std::string> units{ "Units", this};
+  oops::RequiredParameter<std::string> longName{"long name", this};
+  oops::OptionalParameter<std::string> varUnits{"units", this};
+  oops::OptionalParameter<std::string> InOuName{"io name", this};
+  oops::OptionalParameter<std::string> InOuFile{"io file", this};
+  oops::OptionalParameter<std::string> IntrpTyp{"interpolation type", this};
 };
 
 // -----------------------------------------------------------------------------------------------
 
-class FieldsParameters : public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(FieldsParameters, Parameters)
+class FieldsOverrideParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(FieldsOverrideParameters, Parameters)
  public:
-  oops::RequiredParameter<std::string> geometry{ "Geometry", this};
-  oops::RequiredParameter<std::vector<FieldParameters>> fields{ "Fields", this};
-};
-
-// -----------------------------------------------------------------------------------------------
-
-class FieldsetsParameters : public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(FieldsetsParameters, Parameters)
- public:
-  oops::RequiredParameter<std::string> fieldSet{ "fieldset", this};
+  oops::RequiredParameter<std::vector<FieldOverrideParameters>> fields{"field metadata", this};
 };
 
 // -----------------------------------------------------------------------------------------------
@@ -63,7 +48,7 @@ class FieldsetsParameters : public oops::Parameters {
 class FieldsMetadataParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(FieldsMetadataParameters, Parameters)
  public:
-  oops::RequiredParameter<std::vector<FieldsetsParameters>> fieldSets{ "fieldsets", this};
+  oops::OptionalParameter<std::string> override{"field metadata override", this};
 };
 
 // -----------------------------------------------------------------------------------------------

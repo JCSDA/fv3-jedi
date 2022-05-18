@@ -7,7 +7,4 @@ geometry:
   npy: 13
   npz: 127
   write geom: true #Output the grid so it can be read by e.g. femps
-  fieldsets:
-    - fieldset: Data/fieldsets/aerosols_gfs.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml

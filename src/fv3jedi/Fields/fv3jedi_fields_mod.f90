@@ -20,7 +20,7 @@ use string_utils
 
 ! fv3jedi
 use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
-                                     hasfield, short_name_to_fv3jedi_name, create_field
+                                     hasfield, get_fv3jedi_name, create_field
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_kinds_mod,         only: kind_real
@@ -253,7 +253,7 @@ else
 
   ! Check if integer interp needed
   do var = 1, self%nf
-    if (trim(other%fields(var)%interp_type) == "integer") integer_interp = .true.
+    if (trim(other%fields(var)%interpolation_type) == "integer") integer_interp = .true.
   enddo
 
   call interp%create(geom%interp_method, integer_interp, geom_other, geom)
@@ -413,7 +413,7 @@ endif
 do jvar = 1,vars%nvars()
 
   ! Get fv3-jedi field
-  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
   ! Create the field in the fieldset if it doesn't already exists
@@ -479,7 +479,7 @@ endif
 do jvar = 1,vars%nvars()
 
   ! Get fv3-jedi field
-  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
   ! If halo points are requested, we prepare the local+halo data into the variable field_array
@@ -561,7 +561,7 @@ do jvar = 1,vars%nvars()
   endif
 
   meta = afield%metadata()
-  call meta%set('interp_type', trim(field%interp_type))
+  call meta%set('interp_type', trim(field%interpolation_type))
 
   ! Release pointer
   call afield%final()
@@ -594,7 +594,7 @@ character(len=1024) :: errmsg
 do jvar = 1,vars%nvars()
 
   ! Get fv3-jedi field
-  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
   ! Variable dimension
@@ -667,7 +667,7 @@ ngrid = geom%ngrid_including_halo()
 do jvar = 1,vars%nvars()
 
   ! Get fv3-jedi field
-  call short_name_to_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
+  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
   call self%get_field(fv3jedi_name, field)
 
   ! Variable dimension
@@ -751,7 +751,7 @@ do f = 1, new_vars%nvars()
 
   fmd = geom%fields%get_field(trim(new_vars%variable(f)))
 
-  if (self%has_field(trim(fmd%field_name), findex)) then
+  if (self%has_field(trim(fmd%short_name), findex)) then
 
     ! If already allocated then move to temporary
     call move_alloc(self%fields(findex)%array, fields_tmp(f)%array)

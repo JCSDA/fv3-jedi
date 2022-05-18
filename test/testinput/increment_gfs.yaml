@@ -8,6 +8,5 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 inc variables: [u,v,T,DELP]

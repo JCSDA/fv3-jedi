@@ -37,7 +37,7 @@ namespace fv3jedi {
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
                      const util::DateTime & time)
   : geom_(new Geometry(geom)), vars_(vars), time_(time),
-    varsLongName_(geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars))
+    varsLongName_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
@@ -91,7 +91,7 @@ Increment & Increment::operator=(const Increment & rhs) {
 // -------------------------------------------------------------------------------------------------
 void Increment::updateFields(const oops::Variables & newVars) {
   vars_ = newVars;
-  varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(newVars);
+  varsLongName_ = geom_->fieldsMetaData().getLongNameFromAnyName(newVars);
   fv3jedi_increment_update_fields_f90(keyInc_, geom_->toFortran(), newVars);
 }
 // -------------------------------------------------------------------------------------------------

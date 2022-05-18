@@ -9,7 +9,7 @@ use iso_c_binding
 
 use fckit_C_interop_module, only: c_ptr_to_string
 
-use string_f_c_mod, only: f_c_string
+use string_f_c_mod, only: f_c_string, c_f_string
 
 implicit none
 
@@ -26,17 +26,17 @@ type fields_metadata
 end type fields_metadata
 
 type field_metadata
- character(len=clen) :: field_io_name
- character(len=clen) :: field_name
- character(len=clen) :: array_kind
- integer :: levels
  character(len=clen) :: long_name
- character(len=clen) :: space
- character(len=clen) :: stagger_loc
- logical :: tracer
+ character(len=clen) :: short_name
  character(len=clen) :: units
- character(len=clen) :: interp_type
+ character(len=clen) :: kind
+ logical :: tracer
+ character(len=clen) :: horizontal_stagger_location
+ integer :: levels
+ character(len=clen) :: space
+ character(len=clen) :: io_name
  character(len=clen) :: io_file
+ character(len=clen) :: interpolation_type
 end type field_metadata
 
 interface fields_metadata
@@ -46,23 +46,25 @@ end interface
 ! --------------------------------------------------------------------------------------------------
 
 interface
-  subroutine c_fields_metadata_get_field(ptr, field_io_name, field_name, array_kind, levels, &
-                                         long_name, space, stagger_loc, tracer, units, interp_type, &
-                                         io_file) bind(c, name='fields_metadata_get_field_f')
+  subroutine c_fields_metadata_get_field(ptr, longshortio_name, long_name, short_name, &
+                                         units, kindd, tracer, horizontal_stagger_location, &
+                                         levels, space, io_name, io_file, interpolation_type) &
+                                         bind(c, name='fields_metadata_get_field_f')
     use iso_c_binding
     integer, parameter :: clen = 2048
     type(c_ptr), value :: ptr
-    character(len=1, kind=c_char), intent(in) :: field_io_name(clen)
-    character(len=1, kind=c_char), intent(inout) :: field_name(clen)
-    character(len=1, kind=c_char), intent(inout) :: array_kind(clen)
-    integer(kind=c_int),           intent(inout) :: levels
-    character(len=1, kind=c_char), intent(inout) :: long_name(clen)
-    character(len=1, kind=c_char), intent(inout) :: space(clen)
-    character(len=1, kind=c_char), intent(inout) :: stagger_loc(clen)
-    logical(c_bool),               intent(inout) :: tracer
-    character(len=1, kind=c_char), intent(inout) :: units(clen)
-    character(len=1, kind=c_char), intent(inout) :: interp_type(clen)
-    character(len=1, kind=c_char), intent(inout) :: io_file(clen)
+    character(len=1, kind=c_char), intent(in) :: longshortio_name(clen)
+    character(len=1, kind=c_char) :: long_name(clen)
+    character(len=1, kind=c_char) :: short_name(clen)
+    character(len=1, kind=c_char) :: units(clen)
+    character(len=1, kind=c_char) :: kindd(clen)
+    logical(c_bool) :: tracer
+    character(len=1, kind=c_char) :: horizontal_stagger_location(clen)
+    integer(kind=c_int) :: levels
+    character(len=1, kind=c_char) :: space(clen)
+    character(len=1, kind=c_char) :: io_name(clen)
+    character(len=1, kind=c_char) :: io_file(clen)
+    character(len=1, kind=c_char) :: interpolation_type(clen)
   end subroutine c_fields_metadata_get_field
 end interface
 
@@ -83,131 +85,78 @@ end function create
 
 ! --------------------------------------------------------------------------------------------------
 
-function get_field(self, field_io_name_in) result(field)
+function get_field(self, longshortio_name_in) result(field)
 
-class(fields_metadata), intent(in)    :: self
-character(len=*),       intent(in)    :: field_io_name_in
+class(fields_metadata), intent(in) :: self
+character(len=*),       intent(in) :: longshortio_name_in
 type(field_metadata) :: field
 
-character(len=1, kind=c_char), allocatable :: field_io_name(:)
+character(len=1, kind=c_char), allocatable :: longshortio_name(:)
 
-! String pointers
-character(len=1, kind=c_char), allocatable :: field_name(:)
-character(len=1, kind=c_char), allocatable :: array_kind(:)
+! Returned from c++
 character(len=1, kind=c_char), allocatable :: long_name(:)
-character(len=1, kind=c_char), allocatable :: space(:)
-character(len=1, kind=c_char), allocatable :: stagger_loc(:)
+character(len=1, kind=c_char), allocatable :: short_name(:)
 character(len=1, kind=c_char), allocatable :: units(:)
-character(len=1, kind=c_char), allocatable :: interp_type(:)
-character(len=1, kind=c_char), allocatable :: io_file(:)
-
-character(len=clen, kind=c_char) :: field_name_
-
-integer(c_int)  :: levels
+character(len=1, kind=c_char), allocatable :: kindd(:)
 logical(c_bool) :: tracer
+character(len=1, kind=c_char), allocatable :: horizontal_stagger_location(:)
+integer(kind=c_int) :: levels
+character(len=1, kind=c_char), allocatable :: space(:)
+character(len=1, kind=c_char), allocatable :: io_name(:)
+character(len=1, kind=c_char), allocatable :: io_file(:)
+character(len=1, kind=c_char), allocatable :: interpolation_type(:)
 
-integer :: n, iolen
+integer :: n, longshortiolen
 
-! field_io_name that can be passed to c++
-iolen = len(trim(field_io_name_in))
-allocate(field_io_name(clen))
-field_io_name = ''
-do n = 1,iolen
-  field_io_name(n) = field_io_name_in(n:n)
+! longshortio_name that can be passed to c++
+longshortiolen = len(trim(longshortio_name_in))
+allocate(longshortio_name(clen))
+longshortio_name = ''
+do n = 1,longshortiolen
+  longshortio_name(n) = longshortio_name_in(n:n)
 enddo
-field_io_name(iolen+1) = c_null_char
+longshortio_name(longshortiolen+1) = c_null_char
 
-! Allocate outputs
-allocate(field_name(clen))
-allocate(array_kind(clen))
+! Allocate string outputs
 allocate(long_name(clen))
-allocate(space(clen))
-allocate(stagger_loc(clen))
+allocate(short_name(clen))
 allocate(units(clen))
-allocate(interp_type(clen))
+allocate(kindd(clen))
+allocate(horizontal_stagger_location(clen))
+allocate(space(clen))
+allocate(io_name(clen))
 allocate(io_file(clen))
+allocate(interpolation_type(clen))
 
-field_name = c_null_char
-array_kind = c_null_char
 long_name = c_null_char
-space = c_null_char
-stagger_loc = c_null_char
+short_name = c_null_char
 units = c_null_char
-interp_type = c_null_char
+kindd = c_null_char
+horizontal_stagger_location = c_null_char
+space = c_null_char
+io_name = c_null_char
 io_file = c_null_char
+interpolation_type = c_null_char
 
 ! Get information from C++ object
-call c_fields_metadata_get_field(self%ptr, field_io_name, field_name, array_kind, levels, &
-                                 long_name, space, stagger_loc, tracer, units, interp_type, io_file )
+call c_fields_metadata_get_field(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
+                                 tracer, horizontal_stagger_location, levels, space, io_name, &
+                                 io_file, interpolation_type)
 
-! FieldNameIO
-field%field_io_name = ''
-do n = 1,clen
-  if (field_io_name(n) == c_null_char) exit
-  field%field_io_name(n:n) = field_io_name(n)
-enddo
-
-! FieldName
-field%field_name = ''
-do n = 1,clen
-  if (field_name(n) == c_null_char) exit
-  field%field_name(n:n) = field_name(n)
-enddo
-
-! ArrayKind
-field%array_kind = ''
-do n = 1,clen
-  if (array_kind(n) == c_null_char) exit
-  field%array_kind(n:n) = array_kind(n)
-enddo
-
-! Levels
+! Copy non string
+field%tracer = tracer
 field%levels = levels
 
-! LongName
-field%long_name = ''
-do n = 1,clen
-  if (long_name(n) == c_null_char) exit
-  field%long_name(n:n) = long_name(n)
-enddo
-
-! Space
-field%space = ''
-do n = 1,clen
-  if (space(n) == c_null_char) exit
-  field%space(n:n) = space(n)
-enddo
-
-! StaggerLoc
-field%stagger_loc = ''
-do n = 1,clen
-  if (stagger_loc(n) == c_null_char) exit
-  field%stagger_loc(n:n) = stagger_loc(n)
-enddo
-
-! Tracer
-field%tracer = tracer
-
-! Units
-field%units = ''
-do n = 1,clen
-  if (units(n) == c_null_char) exit
-  field%units(n:n) = units(n)
-enddo
-
-! Interpolation Type
-field%interp_type = ''
-do n = 1,clen
-  if (interp_type(n) == c_null_char) exit
-  field%interp_type(n:n) = interp_type(n)
-enddo
-
-! IO file name
-field%io_file = ''
-do n = 1,clen
-  if (io_file(n) == c_null_char) exit
-  field%io_file(n:n) = io_file(n)
-enddo
+! Copy string
+call c_f_string(long_name, field%long_name)
+call c_f_string(short_name, field%short_name)
+call c_f_string(units, field%units)
+call c_f_string(kindd, field%kind)
+call c_f_string(horizontal_stagger_location, field%horizontal_stagger_location)
+call c_f_string(space, field%space)
+call c_f_string(io_name, field%io_name)
+call c_f_string(io_file, field%io_file)
+call c_f_string(interpolation_type, field%interpolation_type)
 
 end function get_field
 

@@ -8,8 +8,7 @@ geometry:
   npx: 91
   npy: 91
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: GEOS
   tstep: PT15M

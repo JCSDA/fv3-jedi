@@ -21,7 +21,7 @@ use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
 ! fv3jedi
 use fv3jedi_constants_mod,        only: rad2deg
-use fv3jedi_field_mod,            only: fv3jedi_field, hasfield
+use fv3jedi_field_mod,            only: fv3jedi_field, hasfield, field_clen
 use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text, add_iteration
 use fv3jedi_kinds_mod,            only: kind_real
 
@@ -335,7 +335,6 @@ end subroutine read_meta
 
 subroutine read_fields(self, fields)
 
-implicit none
 type(fv3jedi_io_fms), intent(inout) :: self
 type(fv3jedi_field),  intent(inout) :: fields(:)
 
@@ -375,32 +374,14 @@ do var = 1,size(fields)
     fields(indexof_ps)%short_name = 'DELP'
   endif
 
-  select case (trim(fields(var)%io_file))
-    case("core")
-      indexrst = self%index_core
-    case("tracer")
-      indexrst = self%index_trcr
-    case("surface")
-      indexrst = self%index_sfcd
-    case("surface_wind")
-      indexrst = self%index_sfcw
-    case("physics")
-      indexrst = self%index_phys
-    case("orography")
-      indexrst = self%index_orog
-    case("cold")
-      indexrst = self%index_cold
-    case("default")
-      call abor1_ftn("fv3jedi_io_fms_mod: Abort, field "//trim(fields(var)%short_name)//&
-                      " does not have IOFile specified in the FieldSets metadata or it"&
-                      " does not match options in fms IO module")
-  end select
+  ! Get file to use
+  call get_io_file(self, fields(var), indexrst)
 
   ! Convert fv3jedi position to fms position
   position = center
-  if (fields(var)%staggerloc == 'northsouth') then
+  if (fields(var)%horizontal_stagger_location == 'northsouth') then
     position = north
-  elseif (fields(var)%staggerloc == 'eastwest') then
+  elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
     position = east
   endif
 
@@ -450,7 +431,6 @@ end subroutine read_fields
 
 subroutine write_all(self, fields, vdate)
 
-implicit none
 type(fv3jedi_io_fms), intent(inout) :: self
 type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
 type(datetime),       intent(in)    :: vdate         !< DateTime
@@ -500,31 +480,14 @@ rstflag = .false.
 ! ------------------------------------------------
 do var = 1,size(fields)
 
-  select case (trim(fields(var)%io_file))
-    case("core")
-      indexrst = self%index_core
-    case("tracer")
-      indexrst = self%index_trcr
-    case("surface")
-      indexrst = self%index_sfcd
-    case("surface_wind")
-      indexrst = self%index_sfcw
-    case("physics")
-      indexrst = self%index_phys
-    case("orography")
-      indexrst = self%index_orog
-    case("cold")
-      indexrst = self%index_cold
-    case("default")
-      call abor1_ftn("fv3jedi_io_fms_mod: Abort, field "//trim(fields(var)%short_name)//&
-                      " does not have IOFile specified in the FieldSets metadata")
-  end select
+  ! Get file to use
+  call get_io_file(self, fields(var), indexrst)
 
   ! Convert fv3jedi position to fms position
   position = center
-  if (fields(var)%staggerloc == 'northsouth') then
+  if (fields(var)%horizontal_stagger_location == 'northsouth') then
     position = north
-  elseif (fields(var)%staggerloc == 'eastwest') then
+  elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
     position = east
   endif
 
@@ -567,6 +530,74 @@ endif
 call nullify_domain()
 
 end subroutine write_all
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine get_io_file(self, field, indexrst)
+
+! Arguments
+type(fv3jedi_io_fms), intent(in)  :: self
+type(fv3jedi_field),  intent(in)  :: field
+integer,              intent(out) :: indexrst
+
+! Locals
+character(len=field_clen) :: io_file
+
+! Get the io_file from the field
+! ------------------------------
+io_file = field%io_file
+
+! Try to make sensible choice on the file name to be used if not set in the metadata
+! ----------------------------------------------------------------------------------
+if (trim(io_file) == 'default') then
+
+  ! Start by setting to core
+  io_file = 'core'
+
+  ! Tracers go in tracer file
+  if (field%tracer) io_file = 'tracer'
+
+  ! Fields with 1 level go in surface file
+  if (field%npz == 1) io_file = 'surface'
+
+  ! Except ps
+  if (field%fv3jedi_name == 'ps') io_file = 'core'
+
+  ! Except phis
+  if (field%fv3jedi_name == 'phis') io_file = 'core'
+
+  ! And except surface winds
+  if (field%fv3jedi_name == 'u_srf' .or. field%fv3jedi_name == 'v_srf') &
+    io_file = 'surface_wind'
+
+  ! Orog variables if short name contains orog
+  if (index(trim(field%fv3jedi_name), 'orog') /= 0) io_file = 'orography'
+
+  ! Cold start variables if short name contains cold
+  if (index(trim(field%fv3jedi_name), 'cold') /= 0) io_file = 'cold'
+
+endif
+
+! Set the filename index
+! ----------------------
+select case (io_file)
+  case("core")
+    indexrst = self%index_core
+  case("tracer")
+    indexrst = self%index_trcr
+  case("surface")
+    indexrst = self%index_sfcd
+  case("surface_wind")
+    indexrst = self%index_sfcw
+  case("physics")
+    indexrst = self%index_phys
+  case("orography")
+    indexrst = self%index_orog
+  case("cold")
+    indexrst = self%index_cold
+end select
+
+end subroutine get_io_file
 
 ! --------------------------------------------------------------------------------------------------
 

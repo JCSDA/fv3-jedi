@@ -8,6 +8,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 #include <iterator>
 #include <map>
 #include <string>
@@ -21,7 +22,6 @@
 
 #include "oops/base/Variables.h"
 #include "oops/util/abor1_cpp.h"
-#include "oops/util/Logger.h"
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/FieldMetadata/FieldsMetadataParameters.h"
@@ -36,162 +36,154 @@ namespace fv3jedi {
 
   class FieldMetadata : public util::Printable {
    public:
-    explicit FieldMetadata(const std::string fieldIOName) {
-      fieldIOName_ = fieldIOName;
+    explicit FieldMetadata(const std::string longName, int nlev) {
+      longName_ = longName;
+      nlev_ = nlev;
     }
 
-    // FieldIOName
-    std::string getFieldIOName() const {return fieldIOName_;}
-    void setFieldIOName(std::string fieldIOName) {fieldIOName_ = fieldIOName;}
-
-    // FieldName
-    std::string getFieldName() const {return fieldName_;}
-    void setFieldName(std::string fieldName) {fieldName_ = fieldName;}
-
-    // Kind
-    std::string getKind() const {return kind_;}
-    void setKind(std::string kind) {kind_ = kind;}
-
-    // Levels
-    int getLevels() const {return levels_;}
-    void setLevels(int levels) {levels_ = levels;}
-
-    // LongName
+    // Get functions
+    // -------------
+    bool getIsTracer() const {return isTracer_;}
+    int getNumLevls() const {return numLevls_;}
     std::string getLongName() const {return longName_;}
-    void setLongName(std::string longName) {longName_ = longName;}
+    std::string getShrtName() const {return shrtName_;}
+    std::string getDataKind() const {return dataKind_;}
+    std::string getStagrLoc() const {return stagrLoc_;}
+    std::string getMathSpac() const {return mathSpac_;}
+    std::string getVarUnits() const {return varUnits_;}
+    std::string getInOuName() const {return inOuName_;}
+    std::string getInOuFile() const {return inOuFile_;}
+    std::string getIntrpTyp() const {return intrpTyp_;}
 
-    // Space
-    std::string getSpace() const {return space_;}
-    void setSpace(std::string space) {space_ = space;}
+    // Set functions (strings)
+    // -----------------------
+    void setShrtName(std::string shrtName) {shrtName_ = shrtName;}
+    void setDataKind(std::string dataKind) {dataKind_ = dataKind;}
+    void setStagrLoc(std::string stagrLoc) {stagrLoc_ = stagrLoc;}
+    void setMathSpac(std::string mathSpac) {mathSpac_ = mathSpac;}
+    void setVarUnits(std::string varUnits) {varUnits_ = varUnits;}
+    void setInOuName(std::string inOuName) {inOuName_ = inOuName;}
+    void setInOuFile(std::string inOuFile) {inOuFile_ = inOuFile;}
+    void setIntrpTyp(std::string intrpTyp) {intrpTyp_ = intrpTyp;}
 
-    // StaggerLoc
-    std::string getStaggerLoc() const {return staggerLoc_;}
-    void setStaggerLoc(std::string staggerLoc) {staggerLoc_ = staggerLoc;}
-
-    // Tracer
-    bool getTracer() const {return tracer_;}
-    void setTracer(bool tracer) {tracer_ = tracer;}
-
-    // Units
-    std::string getUnits() const {return units_;}
-    void setUnits(std::string units) {units_ = units;}
-
-    // InterpType
-    std::string getInterpType() const {return interpType_;}
-    void setInterpType(std::string interpType) {interpType_ = interpType;}
-
-    // IO file
-    std::string getIOFile() const {return io_file_;}
-    void setIOFile(std::string io_file) {io_file_ = io_file;}
-
-    // Validity check on kind
-    void checkKindValid(const std::string fieldIOName, const std::string kind) const {
-      auto result = std::find(kindVal_.begin(), kindVal_.end(), kind);
-      if (result == std::end(kindVal_)) {
-        oops::Log::debug() << "Key: " << fieldIOName << " failed due to invalid kind: "
-                           << kind << ". Options include: " << kindVal_ << std::endl;
-        ABORT("FieldMetadata::checkKindValid failed, run again with debug prints");
+    // Set number of levels
+    // --------------------
+    void setNumLevls(int numLevls) {numLevls_ = numLevls;}
+    void setNumLevls(std::string numLevls) {
+      if (numLevls == "full") {
+        numLevls_ = nlev_;
+      } else if (numLevls == "half") {
+        numLevls_ = nlev_ + 1;
+      } else if (numLevls == "halfplusone") {
+        numLevls_ = nlev_ + 2;
+      } else {
+        try {
+          numLevls_ = std::stoi(numLevls);
+        } catch (std::invalid_argument& e) {
+          ABORT("FieldMetadata::setFieldNumLevls levels neither full, half or an integer");
+        }
       }
     }
 
-    // Validity check on stagger location
-    void checkStaggerLocValid(const std::string fieldIOName, const std::string staggerLoc) const {
-      auto result = std::find(staggerLocVal_.begin(), staggerLocVal_.end(), staggerLoc);
-      if (result == std::end(staggerLocVal_)) {
-        oops::Log::debug() << "Key: " << fieldIOName << " failed due to invalid stagger location: "
-                           << staggerLoc << ". Options include: " << staggerLocVal_ << std::endl;
-        ABORT("FieldMetadata::checkStaggerLocValid failed, run again with debug prints");
+    // Set tracer
+    // ----------
+    void setIsTracer(bool isTracer) {isTracer_ = isTracer;}
+    void setIsTracer(std::string tracer) {
+      if (tracer == "true") {
+         isTracer_ = true;
+      } else if (tracer == "false") {
+         isTracer_ = false;
+      } else {
+        ABORT("FieldMetadata::setIsTracer tracer must be true or false");
       }
     }
 
-    // Validity check on space
-    void checkSpaceValid(const std::string fieldIOName, const std::string space) const {
-      auto result = std::find(spaceVal_.begin(), spaceVal_.end(), space);
-      if (result == std::end(spaceVal_)) {
-        oops::Log::debug() << "Key: " << fieldIOName << " failed due to invalid space: "
-                           << space << ". Options include: " << spaceVal_ << std::endl;
-        ABORT("FieldMetadata::checkSpace failed, run again with debug prints");
+    // Validity macro
+    void validateVariable(std::vector<std::string> validOptions, std::string choice) const {
+      auto result = std::find(validOptions.begin(), validOptions.end(), choice);
+      if (result == std::end(validOptions)) {
+        ABORT("FieldMetadata::validate For long name " + longName_ + " invalid kind: " + choice);
       }
     }
 
-    // Validity check on interpolation type
-    void checkInterpTypeValid(const std::string fieldIOName, const std::string interpType) const {
-      auto result = std::find(interpTypeVal_.begin(), interpTypeVal_.end(), interpType);
-      if (result == std::end(interpTypeVal_)) {
-        oops::Log::debug() << "Key: " << fieldIOName << " failed due to invalid interType: "
-                           << interpType << ". Options include: " << interpTypeVal_ << std::endl;
-        ABORT("FieldMetadata::checkSpace failed, run again with debug prints");
-      }
-    }
-
-    // Validity check on string level
-    void checkLevelValid(const std::string fieldIOName, const std::string level) const {
-      auto result = std::find(levelVal_.begin(), levelVal_.end(), level);
-      if (result == std::end(levelVal_) && is_number(level) == false) {
-        oops::Log::debug() << "Key: " << fieldIOName << " failed due to invalid level choice: "
-                           << level << ". Options include: " << levelVal_ << "or an integer"
-                           << std::endl;
-        ABORT("FieldMetadata::checkLevelValid failed, run again with debug prints");
-      }
-    }
-
-    // Function to check if string is a number
-    bool is_number(const std::string& s) const {
-      return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c)
-                                        { return !std::isdigit(c); }) == s.end();
+    // Check validity of choices
+    void validate() const {
+      this->validateVariable(ValidDataKind_, dataKind_);
+      this->validateVariable(ValidIntrpTyp_, intrpTyp_);
+      this->validateVariable(ValidMathSpac_, mathSpac_);
+      this->validateVariable(ValidStagrLoc_, stagrLoc_);
     }
 
    private:
-    std::string fieldIOName_;
-    std::string fieldName_;
-    std::string kind_;
-    int levels_;
+    // Picked up from default file
     std::string longName_;
-    std::string staggerLoc_;
-    std::string space_;
-    bool tracer_;
-    std::string units_;
-    std::string interpType_;
-    std::string io_file_;
+    std::string shrtName_;
+    std::string dataKind_;
+    std::string stagrLoc_;
+    int numLevls_;
+    std::string mathSpac_;
+    bool isTracer_;
 
-    const std::vector<std::string> kindVal_ = {"double", "integer"};
-    const std::vector<std::string> levelVal_ = {"full", "half"};
-    const std::vector<std::string> spaceVal_ = {"vector", "magnitude", "direction"};
-    const std::vector<std::string> staggerLocVal_ = {"center", "eastwest", "northsouth", "corner"};
-    const std::vector<std::string> interpTypeVal_ = {"integer", "nearest", "default"};
+    // Picked up from both default and override file
+    std::string varUnits_;
 
+    // Only picked up from override file
+    std::string inOuName_;
+    std::string inOuFile_;
+    std::string intrpTyp_;
+
+    // Number of levels for the model
+    int nlev_;
+
+    // Valid choices
+    const std::vector<std::string> ValidDataKind_ = {"double", "integer"};
+    const std::vector<std::string> ValidIntrpTyp_ = {"integer", "nearest", "default"};
+    const std::vector<std::string> ValidMathSpac_ = {"vector", "magnitude", "direction"};
+    const std::vector<std::string> ValidStagrLoc_ = {"center", "eastwest", "northsouth", "corner"};
+
+    // Print method
     void print(std::ostream & os) const {
-      os << " FieldIOName: " << fieldIOName_ << "\n";
-      os << " FieldName: " << fieldName_ << "\n";
-      os << " Kind: " << kind_ << "\n";
-      os << " Levels: " << levels_ << "\n";
-      os << " LongName: " << longName_ << "\n";
-      os << " Space: " << space_ << "\n";
-      os << " StaggerLocation: " << staggerLoc_ << "\n";
-      os << " Tracer: " << tracer_ << "\n";
-      os << " Units: " << units_ << "\n";
-      os << " InterpType: " << interpType_ << "\n";
-      os << " IOFile: " << io_file_ << "\n";
+      os << std::endl << "   Long name: " << longName_;
+      os << std::endl << "   Short name: " << shrtName_;
+      os << std::endl << "   Units: " << varUnits_;
+      os << std::endl << "   Kind: " << dataKind_;
+      os << std::endl << "   Horizontal stagger location: " << stagrLoc_;
+      os << std::endl << "   Levels: " << numLevls_;
+      os << std::endl << "   Space: " << mathSpac_;
+      os << std::endl << "   Tracer: " << isTracer_;
+      os << std::endl << "   IO name: " << inOuName_;
+      os << std::endl << "   IO file: " << inOuFile_;
+      os << std::endl << "   Interpolation type: " << intrpTyp_;
     }
   };
 
   // -----------------------------------------------------------------------------------------------
 
-  class FieldsMetadata {
+  class FieldsMetadata : public util::Printable {
    public:
     typedef FieldsMetadataParameters Parameters_;
     FieldsMetadata(const Parameters_ &, int &);
 
+    // Get field from any of the potential field names
     FieldMetadata getField(const std::string &) const;
 
-    // Function to return number of levels given the longName
-    size_t getLevelsFromLongName(const std::string &) const;
+    // Get levels from any of the potential field names
+    size_t getLevels(const std::string &) const;
 
-    // Get long name from IO name
-    oops::Variables LongNameFromIONameLongNameOrFieldName(const oops::Variables &) const;
+    // Get long name from any of the potential field names
+    oops::Variables getLongNameFromAnyName(const oops::Variables &) const;
+    std::string getLongNameFromAnyName(const std::string &) const;
 
    private:
-    std::map<std::string, FieldMetadata> fields_;
+    std::map<std::string, FieldMetadata> fieldsMetadata_;
+
+    // Print method
+    void print(std::ostream & os) const {
+      os << std::endl << " List of field meta data available: \n";
+      for (const auto& ke : fieldsMetadata_) {
+        os << std::endl << "  Key = " << ke.first << ":" << ke.second << "\n";
+      }
+    }
   };
 
   // -----------------------------------------------------------------------------------------------

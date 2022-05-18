@@ -11,9 +11,7 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-    fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   background:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -228,9 +226,7 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
     obs perturbations: true

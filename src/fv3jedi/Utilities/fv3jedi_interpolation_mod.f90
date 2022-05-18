@@ -180,7 +180,7 @@ do var = 1,nf
     ! Use BUMP
     call self%bumpinterp%apply(fields_in(var)%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:fields_in(var)%npz), &
        & fields_ou(var)%array(:,:,1:fields_ou(var)%npz), &
-       & .not. trim(fields_in(var)%interp_type) == 'default')
+       & .not. trim(fields_in(var)%interpolation_type) == 'default')
 
   else
 
@@ -200,15 +200,15 @@ do var = 1,nf
       enddo
 
       ! Interpolate
-      if ( trim(fields_in(var)%interp_type) == 'default' .and. trim(self%interp_type) == 'barycent') then
+      if ( trim(fields_in(var)%interpolation_type) == 'default' .and. trim(self%interp_type) == 'barycent') then
 
         call self%unsinterp%apply(field_in, field_ou)
 
-      elseif ( trim(fields_in(var)%interp_type) == 'integer' ) then
+      elseif ( trim(fields_in(var)%interpolation_type) == 'integer' ) then
 
         call unsinterp_integer_apply(self%unsinterp, field_in, field_ou)
 
-      elseif ( trim(fields_in(var)%interp_type) == 'nearest' ) then
+      elseif ( trim(fields_in(var)%interpolation_type) == 'nearest' ) then
 
         call unsinterp_nearest_apply(self%unsinterp, field_in, field_ou)
 

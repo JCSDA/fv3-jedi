@@ -95,10 +95,7 @@ cost function:
     npx: 13
     npy: 13
     npz: 64
-    fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/aerosols_gfs.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+    field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 final:
   diagnostics:
     departures: oman
@@ -119,10 +116,7 @@ variational:
       npx: 13
       npy: 13
       npz: 64
-      fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/aerosols_gfs.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
     diagnostics:
       departures: ombg
     linear model:

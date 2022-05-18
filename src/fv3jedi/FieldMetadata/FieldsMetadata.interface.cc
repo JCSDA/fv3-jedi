@@ -22,49 +22,51 @@ namespace fv3jedi {
     }
   }
 
-  void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata, const char fieldIONameC[],
-                                   char fieldNameC[], char kindC[], int& levels,
-                                   char longNameC[], char spaceC[], char staggerLocC[],
-                                   bool& tracer, char unitsC[], char interpTypeC[],
-                                   char io_fileC[]) {
+  void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata,
+                                   const char longshortioNameC[], char longNameC[],
+                                   char shrtNameC[], char varUnitsC[], char dataKindC[],
+                                   bool& tracer, char stagrLocC[], int & levels, char mathSpacC[],
+                                   char inOuNameC[], char inOuFileC[], char intrpTypC[]) {
     // Get meta data for requested field
-    oops::Log::trace() << "Calling FieldsMetaData.GetField for " << fieldIONameC << std::endl;
-    const std::string fieldIOName(fieldIONameC);
-    FieldMetadata fieldMetadata = fieldsMetadata->getField(fieldIOName);
+    const std::string longshortioName(longshortioNameC);
+    FieldMetadata fieldMetadata = fieldsMetadata->getField(longshortioName);
 
     // Bool, int outputs
-    levels = fieldMetadata.getLevels();
-    tracer = fieldMetadata.getTracer();
+    levels = fieldMetadata.getNumLevls();
+    tracer = fieldMetadata.getIsTracer();
 
     // Prepare char outputs
-    std::string fieldName = fieldMetadata.getFieldName();
-    std::string kind = fieldMetadata.getKind();
     std::string longName = fieldMetadata.getLongName();
-    std::string space = fieldMetadata.getSpace();
-    std::string staggerLoc = fieldMetadata.getStaggerLoc();
-    std::string units = fieldMetadata.getUnits();
-    std::string interpType = fieldMetadata.getInterpType();
-    std::string io_file = fieldMetadata.getIOFile();
+    std::string shrtName = fieldMetadata.getShrtName();
+    std::string varUnits = fieldMetadata.getVarUnits();
+    std::string dataKind = fieldMetadata.getDataKind();
+    std::string stagrLoc = fieldMetadata.getStagrLoc();
+    std::string mathSpac = fieldMetadata.getMathSpac();
+    std::string inOuName = fieldMetadata.getInOuName();
+    std::string inOuFile = fieldMetadata.getInOuFile();
+    std::string intrpTyp = fieldMetadata.getIntrpTyp();
 
     // Check string lengths
-    checkStringLength(fieldName);
-    checkStringLength(kind);
     checkStringLength(longName);
-    checkStringLength(space);
-    checkStringLength(staggerLoc);
-    checkStringLength(units);
-    checkStringLength(interpType);
-    checkStringLength(io_file);
+    checkStringLength(shrtName);
+    checkStringLength(varUnits);
+    checkStringLength(dataKind);
+    checkStringLength(stagrLoc);
+    checkStringLength(mathSpac);
+    checkStringLength(inOuName);
+    checkStringLength(inOuFile);
+    checkStringLength(intrpTyp);
 
     // Fill char outputs
-    std::copy(fieldName.begin(), fieldName.end(), fieldNameC);
-    std::copy(kind.begin(), kind.end(), kindC);
     std::copy(longName.begin(), longName.end(), longNameC);
-    std::copy(space.begin(), space.end(), spaceC);
-    std::copy(staggerLoc.begin(), staggerLoc.end(), staggerLocC);
-    std::copy(units.begin(), units.end(), unitsC);
-    std::copy(interpType.begin(), interpType.end(), interpTypeC);
-    std::copy(io_file.begin(), io_file.end(), io_fileC);
+    std::copy(shrtName.begin(), shrtName.end(), shrtNameC);
+    std::copy(varUnits.begin(), varUnits.end(), varUnitsC);
+    std::copy(dataKind.begin(), dataKind.end(), dataKindC);
+    std::copy(stagrLoc.begin(), stagrLoc.end(), stagrLocC);
+    std::copy(mathSpac.begin(), mathSpac.end(), mathSpacC);
+    std::copy(inOuName.begin(), inOuName.end(), inOuNameC);
+    std::copy(inOuFile.begin(), inOuFile.end(), inOuFileC);
+    std::copy(intrpTyp.begin(), intrpTyp.end(), intrpTypC);
   }
 
 }  // namespace fv3jedi

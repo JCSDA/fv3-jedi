@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 test date: 2020-12-14T21:00:00Z
 loc variables: &vars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
 localization:

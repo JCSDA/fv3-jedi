@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/chemistry_geos.yaml
+  field metadata override: Data/fieldmetadata/geos-cf.yaml
 state test:
   statefile:
     datetime: 2019-01-02T03:00:00Z
@@ -17,7 +16,7 @@ state test:
     filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     tile is a dimension: [true]
     clobber existing files: [false]
-    state variables: [DELP,NO2,NO,O3,PS,SPHU]
+    state variables: [delp,no2,'no',o3,ps,sphu]
   state generate:
     analytic init:
       method: dcmip-test-4-0

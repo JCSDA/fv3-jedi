@@ -331,8 +331,8 @@ do var = 1, size(fields)
   ! Only certain fields can be written for now
   ! ------------------------------------------
   if ( trim(fields(var)%space) == 'magnitude' .and. &
-       trim(fields(var)%staggerloc) == 'center' .and. &
-       .not. fields(var)%integerfield ) then
+       trim(fields(var)%horizontal_stagger_location) == 'center' .and. &
+       .not. fields(var)%kind == 'integer' ) then
 
     ! Interpolate the field to the lat-lon grid
     ! -----------------------------------------

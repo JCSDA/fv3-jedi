@@ -6,16 +6,14 @@ input geometry:
   npx: 13
   npy: 13
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/chemistry_geos.yaml
+  field metadata override: Data/fieldmetadata/geos-cf.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
   interpolation method: bump
   npx: 25
   npy: 25
   npz: 72
-  fieldsets:
-    - fieldset: Data/fieldsets/chemistry_geos.yaml
+  field metadata override: Data/fieldmetadata/geos-cf.yaml
 states:
 - input:
     datetime: 2019-01-02T03:00:00Z
@@ -23,7 +21,7 @@ states:
     provider: geos
     datapath: Data/inputs/geos_c12
     filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    state variables: [DELP,NO2,NO,O3,PS,SPHU]
+    state variables: [delp,no2,'no',o3,ps,sphu]
   output:
    filetype: cube sphere history
    provider: geos

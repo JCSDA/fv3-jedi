@@ -35,7 +35,7 @@ namespace fv3jedi {
 
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
   : geom_(new Geometry(geom)), vars_(vars), time_(time),
-    varsLongName_(geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars))
+    varsLongName_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
 
@@ -58,7 +58,8 @@ State::State(const Geometry & geom, const Parameters_ & params)
   if (params.analytic.value() != boost::none) {
     // Variables are hard coded for analytic initial condition (must not be provided)
     ASSERT(params.stateVariables.value() == boost::none);
-    vars_ = oops::Variables({"ua", "va", "t", "delp", "p", "q", "qi", "ql", "phis", "o3mr", "w"});
+    vars_ = oops::Variables({"ua", "va", "t", "delp", "p", "sphum", "ice_wat", "liq_wat", "phis",
+                             "o3mr", "w"});
   } else {
     // If variables are being read they must be defined in the config
     ASSERT(params.stateVariables.value() != boost::none);
@@ -66,7 +67,7 @@ State::State(const Geometry & geom, const Parameters_ & params)
   }
 
   // Set long name variables
-  varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(vars_);
+  varsLongName_ = geom_->fieldsMetaData().getLongNameFromAnyName(vars_);
 
   // Allocate state
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
@@ -130,7 +131,7 @@ void State::changeResolution(const State & other) {
 
 void State::updateFields(const oops::Variables & newVars) {
   vars_ = newVars;
-  varsLongName_ = geom_->fieldsMetaData().LongNameFromIONameLongNameOrFieldName(newVars);
+  varsLongName_ = geom_->fieldsMetaData().getLongNameFromAnyName(newVars);
   fv3jedi_state_update_fields_f90(keyState_, geom_->toFortran(), newVars);
 }
 

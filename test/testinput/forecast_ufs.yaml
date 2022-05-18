@@ -8,8 +8,7 @@ geometry:
   npx: 97
   npy: 97
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 model:
   name: UFS
   tstep: PT1H

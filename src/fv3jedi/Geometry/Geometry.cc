@@ -33,7 +33,6 @@ Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
   if (!initialized) {
     fv3jedi_geom_initialize_f90((*params.fmsInit.value()).toConfiguration(), &comm_);
     initialized = true;
-    oops::Log::debug() << "FMS MPP initialized on " << comm_.name() << std::endl;
   }
 
   // Geometry constructor
@@ -136,7 +135,6 @@ std::vector<double> Geometry::verticalCoord(std::string & vcUnits) const {
     errorMsg << "Uknown vertical coordinate unit " << vcUnits << std::endl;
     ABORT(errorMsg.str());
   }
-  oops::Log::debug() << "fv3 vert coord: " << vc << std::endl;
   return vc;
 }
 
@@ -147,7 +145,7 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
   std::vector<size_t> varSizes;
   // Loop through arrays and search metadata map for the levels
   for (size_t it = 0; it < vars.size(); it++) {
-    varSizes.push_back(fieldsMeta_->getLevelsFromLongName(vars[it]));
+    varSizes.push_back(fieldsMeta_->getLevels(vars[it]));
   }
   return varSizes;
 }

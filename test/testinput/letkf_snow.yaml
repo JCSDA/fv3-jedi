@@ -6,10 +6,7 @@ geometry:
   npx: 49
   npy: 49
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/land.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
-    - fieldset: Data/fieldsets/oro_data.yaml
+  field metadata override: Data/fieldmetadata/gfs-land.yaml
   orography:
     datetime: 2019-12-15T18:00:00Z
     filetype: fms restart

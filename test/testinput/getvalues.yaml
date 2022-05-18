@@ -6,8 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
 state:
   analytic init:
     method: dcmip-test-4-0

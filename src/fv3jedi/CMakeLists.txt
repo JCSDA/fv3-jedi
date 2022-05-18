@@ -8,6 +8,7 @@ list( APPEND fv3jedi_src_files
   ErrorCovariance/ErrorCovariance.cc
   ErrorCovariance/ErrorCovariance.h
   FieldMetadata/FieldsMetadata.cc
+  FieldMetadata/FieldsMetadataDefault.h
   FieldMetadata/FieldsMetadata.h
   FieldMetadata/FieldsMetadata.interface.cc
   FieldMetadata/FieldsMetadata.interface.h

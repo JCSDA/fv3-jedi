@@ -19,7 +19,7 @@ use fields_metadata_mod, only: field_metadata
 implicit none
 private
 public :: fv3jedi_field, hasfield, get_field, put_field, checksame, copy_subset, &
-          long_name_to_fv3jedi_name, short_name_to_fv3jedi_name, create_field
+          get_fv3jedi_name, create_field
 
 ! These are the same methods as used in fv3jedi_fields but with argument being a list of individual
 ! fields instead of the fv3jedi_fields class
@@ -36,20 +36,19 @@ integer, parameter, public :: field_clen = 2048
 !Field type (individual field)
 type :: fv3jedi_field
  logical :: lalloc = .false.
- character(len=field_clen) :: short_name = "null"   !Short name (to match file name)
- character(len=field_clen) :: fv3jedi_name = "null" !Common name
- character(len=field_clen) :: long_name = "null"    !WMO standard name
- character(len=field_clen) :: units = "null"        !Units for the field
- character(len=field_clen) :: io_file = "null"      !Which restart to read/write if not the default
- logical                   :: tracer = .false.      !Whether field is classified as tracer (pos. def.)
- character(len=field_clen) :: space                 !One of vector, magnitude, direction
- character(len=field_clen) :: staggerloc            !One of center, eastwest, northsouth, corner
- character(len=field_clen) :: interp_type = "default" ! One of nearest, integer, or default
-                                                      ! default will take method from geometry
+ character(len=field_clen) :: long_name                       ! Field long name
+ character(len=field_clen) :: fv3jedi_name                    ! Field short name
+ character(len=field_clen) :: units                           ! Field units
+ character(len=field_clen) :: kind                            ! Data kind, real, integer etc (always allocate real data)
+ logical                   :: tracer                          ! Whether field is tracer or not
+ character(len=field_clen) :: horizontal_stagger_location     ! Stagger location in horizontal
+ character(len=field_clen) :: space                           ! Vector, magnitude, direction
+ character(len=field_clen) :: short_name                      ! Name used for IO
+ character(len=field_clen) :: io_file                         ! File used for IO
+ character(len=field_clen) :: interpolation_type              ! Type of interpolation to use
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
- logical :: integerfield = .false.                  !Whether field is an integer
- type(fckit_mpi_comm) :: comm                     ! Communicator
+ type(fckit_mpi_comm) :: comm                       ! Communicator
 endtype fv3jedi_field
 
 ! --------------------------------------------------------------------------------------------------
@@ -64,25 +63,39 @@ type(fv3jedi_field),  intent(inout) :: self
 type(field_metadata), intent(in)    :: fmd
 type(fckit_mpi_comm), intent(in)    :: comm
 
-! Check that the name in the field meta data is not longer than expected
-! ----------------------------------------------------------------------
-if (len(trim(fmd%field_name)) > field_clen) &
-  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%field_name)// " too long")
+! Check that the names in the field meta data are not longer than expected
+! ------------------------------------------------------------------------
+if (len(trim(fmd%long_name)) > field_clen) &
+  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%long_name)// " too long")
+if (len(trim(fmd%short_name)) > field_clen) &
+  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%short_name)// " too long")
+if (len(trim(fmd%io_name)) > field_clen) &
+  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%io_name)// " too long")
 
-! Retrieve number of levels
-! -------------------------
+! Copy metadata
+! -------------
+self%long_name = fmd%long_name
+self%fv3jedi_name = fmd%short_name
+self%units = fmd%units
+self%kind = fmd%kind
+self%tracer = fmd%tracer
+self%horizontal_stagger_location = fmd%horizontal_stagger_location
 self%npz = fmd%levels
+self%space = fmd%space
+self%short_name = fmd%io_name
+self%io_file = fmd%io_file
+self%interpolation_type = fmd%interpolation_type
 
 ! Allocate the field array data
 ! -----------------------------
 if(.not.self%lalloc) then
 
-  if (trim(fmd%stagger_loc) == 'center') then
-    allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:fmd%levels))
-  elseif (trim(fmd%stagger_loc) == 'northsouth') then
-    allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:fmd%levels))
-  elseif (trim(fmd%stagger_loc) == 'eastwest') then
-    allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:fmd%levels))
+  if (trim(self%horizontal_stagger_location) == 'center') then
+    allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
+  elseif (trim(self%horizontal_stagger_location) == 'northsouth') then
+    allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
+  elseif (trim(self%horizontal_stagger_location) == 'eastwest') then
+    allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
   endif
 
   ! Initialize to zero and set allocated
@@ -91,25 +104,14 @@ if(.not.self%lalloc) then
 
 endif
 
-! Set the rest of the meta data
-! -----------------------------
-self%short_name   = trim(fmd%field_io_name)
-self%long_name    = trim(fmd%long_name)
-self%fv3jedi_name = trim(fmd%field_name)
-self%units        = trim(fmd%units)
-self%io_file      = trim(fmd%io_file)
-self%space        = trim(fmd%space)
-self%staggerloc   = trim(fmd%stagger_loc)
-self%tracer       = fmd%tracer
-self%integerfield = trim(fmd%array_kind)=='integer'
-self%interp_type  = trim(fmd%interp_type)
-
 ! Ensure the interpolation type is consistent with other metadata
 ! ---------------------------------------------------------------
-if ( self%integerfield ) then
-  self%interp_type  = 'integer'
-elseif (  trim(self%space) == 'direction' ) then
-  self%interp_type  = 'nearest'
+if (self%interpolation_type == 'default') then
+  if ( trim(self%kind)=='integer' ) then
+    self%interpolation_type  = 'integer'
+  elseif ( trim(self%space) == 'direction' ) then
+    self%interpolation_type  = 'nearest'
+  endif
 endif
 
 ! Communicator
@@ -364,47 +366,27 @@ end subroutine copy_subset
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine short_name_to_fv3jedi_name(fields, short_name, fv3jedi_name)
+subroutine get_fv3jedi_name(fields, longshortio_name, fv3jedi_name)
 
 type(fv3jedi_field), intent(in)  :: fields(:)
-character(len=*),    intent(in)  :: short_name
+character(len=*),    intent(in)  :: longshortio_name
 character(len=*),    intent(out) :: fv3jedi_name
 
 integer :: n
 
 do n = 1, size(fields)
-  if (trim(short_name) == trim(fields(n)%short_name)) then
+  if (trim(longshortio_name) == trim(fields(n)%short_name  ) .or. &
+      trim(longshortio_name) == trim(fields(n)%fv3jedi_name) .or. &
+      trim(longshortio_name) == trim(fields(n)%long_name   )) then
     fv3jedi_name = trim(fields(n)%fv3jedi_name)
     return
   endif
 enddo
 
-call abor1_ftn("fv3jedi_field_mod.short_name_to_fv3jedi_name short_name "//trim(short_name)//&
-               " not found in fields.")
+call abor1_ftn("fv3jedi_field_mod.get_fv3jedi_name longshortio_name " &
+               //trim(longshortio_name)//" not found in fields.")
 
-end subroutine short_name_to_fv3jedi_name
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine long_name_to_fv3jedi_name(fields, long_name, fv3jedi_name)
-
-type(fv3jedi_field), intent(in)  :: fields(:)
-character(len=*),    intent(in)  :: long_name
-character(len=*),    intent(out) :: fv3jedi_name
-
-integer :: n
-
-do n = 1, size(fields)
-  if (trim(long_name) == trim(fields(n)%long_name)) then
-    fv3jedi_name = trim(fields(n)%fv3jedi_name)
-    return
-  endif
-enddo
-
-call abor1_ftn("fv3jedi_field_mod.long_name_to_fv3jedi_name long_name "//trim(long_name)//&
-               " not found in fields.")
-
-end subroutine long_name_to_fv3jedi_name
+end subroutine get_fv3jedi_name
 
 ! --------------------------------------------------------------------------------------------------
 

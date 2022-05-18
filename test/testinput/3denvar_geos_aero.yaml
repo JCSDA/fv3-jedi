@@ -5,8 +5,8 @@ cost function:
     provider: geos
     datapath : Data/inputs/geos_c12
     filenames: [geos.aero.bkg.20180415_000000z.nc4]
-    state variables: [DELP, RH, DU001, DU002, DU003, DU004, DU005, SS001, SS002, SS003, SS004,
-                      SS005, BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC, NO3AN1, NO3AN2, NO3AN3, SO4 ]
+    state variables: [delp, rh, du001, du002, du003, du004, du005, ss001, ss002, ss003, ss004,
+                      ss005, bcphobic, bcphilic, ocphobic, ocphilic, no3an1, no3an2, no3an3, so4 ]
   background error:
     covariance model: hybrid
     components:
@@ -15,10 +15,10 @@ cost function:
         saber blocks:
         - saber block name: ID
           saber central block: true
-          input variables: &aerovars [DU001, DU002, DU003, DU004, DU005,
-                                      SS001, SS002, SS003, SS004, SS005,
-                                      BCPHOBIC, BCPHILIC, OCPHOBIC, OCPHILIC,
-                                      NO3AN1, NO3AN2, NO3AN3, SO4 ]
+          input variables: &aerovars [du001, du002, du003, du004, du005,
+                                      ss001, ss002, ss003, ss004, ss005,
+                                      bcphobic, bcphilic, ocphobic, ocphilic,
+                                      no3an1, no3an2, no3an3, so4 ]
           output variables: *aerovars
       weight:
         value: 0.01
@@ -87,10 +87,7 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    fieldsets:
-    - fieldset: Data/fieldsets/aerosols_geos.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+    field metadata override: Data/fieldmetadata/geos.yaml
 final:
   diagnostics:
     departures: oman
@@ -114,10 +111,7 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      fieldsets:
-      - fieldset: Data/fieldsets/aerosols_geos.yaml
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      field metadata override: Data/fieldmetadata/geos.yaml
     test: on
   - diagnostics:
       departures: ombg
@@ -128,10 +122,7 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      fieldsets:
-      - fieldset: Data/fieldsets/aerosols_geos.yaml
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      field metadata override: Data/fieldmetadata/geos.yaml
     test: on
 
 test:

@@ -6,8 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/oro_data.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
   iterator dimension: 2
   orography:
     datetime: 2019-12-15T18:00:00Z

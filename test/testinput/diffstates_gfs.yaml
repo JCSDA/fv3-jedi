@@ -6,15 +6,13 @@ state geometry:
   npx: 25
   npy: 25
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 increment geometry:
   akbk: Data/fv3files/akbk127.nc4
   npx: 25
   npy: 25
   npz: 127
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 state1: #Analysis
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart

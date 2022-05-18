@@ -328,22 +328,17 @@ LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 
 # Field sets
 # ----------
-list( APPEND fv3jedi_field_sets
-Data/fieldsets/aerosols_geos.yaml
-Data/fieldsets/aerosols_gfs.yaml
-Data/fieldsets/chemistry_geos.yaml
-Data/fieldsets/cold_start_64.yaml
-Data/fieldsets/cold_start_127.yaml
-Data/fieldsets/dynamics_lam_cmaq.yaml
-Data/fieldsets/dynamics.yaml
-Data/fieldsets/lam_cmaq.yaml
-Data/fieldsets/oro_data.yaml
-Data/fieldsets/ufo.yaml
-Data/fieldsets/land.yaml
+list( APPEND fv3jedi_field_metadata
+Data/fieldmetadata/geos.yaml
+Data/fieldmetadata/geos-cf.yaml
+Data/fieldmetadata/gfs-aerosol.yaml
+Data/fieldmetadata/gfs-history.yaml
+Data/fieldmetadata/gfs-land.yaml
+Data/fieldmetadata/gfs-restart.yaml
 )
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fieldsets)
-LINK_FILES( "${fv3jedi_field_sets}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fieldmetadata)
+LINK_FILES( "${fv3jedi_field_metadata}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Resources from other respositores
 # ---------------------------------
