@@ -356,11 +356,11 @@ real(kind=kind_real), allocatable :: delp (:,:,:)         !Pressure thickness
 ! Print information
 !if (geom%f_comm%rank()==0) then
 !  do fg = 1, size(dxg%fields)
-!    print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields IN: ", trim(dxg%fields(fg)%fv3jedi_name), &
+!    print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields IN: ", trim(dxg%fields(fg)%short_name), &
 !            minval(dxg%fields(fg)%array), maxval(dxg%fields(fg)%array)
 !  enddo
 !  do fm = 1, size(dxm%fields)
-!    print*, "Model2GeoVaLs.multiplyAD, Model fields IN:   ", trim(dxm%fields(fm)%fv3jedi_name), &
+!    print*, "Model2GeoVaLs.multiplyAD, Model fields IN:   ", trim(dxm%fields(fm)%short_name), &
 !            minval(dxm%fields(fm)%array), maxval(dxm%fields(fm)%array)
 !  enddo
 !endif
@@ -374,15 +374,15 @@ field_passed = .false.
 num_not_copied = 0
 do fm = 1, size(dxm%fields)
   ! Identity if found and not winds
-  if (.not.trim(dxm%fields(fm)%fv3jedi_name) == 'ua' .and. &
-      .not.trim(dxm%fields(fm)%fv3jedi_name) == 'va' .and. &
-      dxg%has_field( dxm%fields(fm)%fv3jedi_name, dxg_index)) then
-    call dxg%get_field(dxm%fields(fm)%fv3jedi_name, field_ptr)
+  if (.not.trim(dxm%fields(fm)%short_name) == 'ua' .and. &
+      .not.trim(dxm%fields(fm)%short_name) == 'va' .and. &
+      dxg%has_field( dxm%fields(fm)%short_name, dxg_index)) then
+    call dxg%get_field(dxm%fields(fm)%short_name, field_ptr)
     dxm%fields(fm)%array = dxm%fields(fm)%array + field_ptr
     field_passed(dxg_index) = .true.
   else
     num_not_copied = num_not_copied + 1
-    not_copied_(num_not_copied) = dxm%fields(fm)%fv3jedi_name
+    not_copied_(num_not_copied) = dxm%fields(fm)%short_name
   endif
 enddo
 
@@ -503,7 +503,7 @@ if (dxg%has_field( "pe", noassim_index)) &
 ! Print information
 !if (geom%f_comm%rank()==0) then
 ! do fg = 1, size(dxg%fields)
-!   print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields: ", trim(dxg%fields(fg)%fv3jedi_name), &
+!   print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields: ", trim(dxg%fields(fg)%short_name), &
 !           ", passed: ", field_passed(fg)
 ! enddo
 !endif
@@ -573,7 +573,7 @@ enddo
 ! Print information
 !if (geom%f_comm%rank()==0) then
 ! do fg = 1, size(dxg%fields)
-!   print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields: ", trim(dxg%fields(fg)%fv3jedi_name), &
+!   print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields: ", trim(dxg%fields(fg)%short_name), &
 !           "Passed: ", field_passed(fg)
 ! enddo
 !endif
@@ -584,11 +584,11 @@ do fg = 1, size(dxg%fields)
 
   if (.not. field_passed(fg)) then
 
-    select case(trim(dxg%fields(fg)%fv3jedi_name))
+    select case(trim(dxg%fields(fg)%short_name))
 
     case ("tv")
 
-      if (.not. have_tv) call field_fail(trim(dxg%fields(fg)%fv3jedi_name))
+      if (.not. have_tv) call field_fail(trim(dxg%fields(fg)%short_name))
       field_passed(tv_index) = .true.
       call dxm%get_field("t", tptr)
       call dxm%get_field("sphum", qptr)
@@ -597,14 +597,14 @@ do fg = 1, size(dxg%fields)
 
     case ("humidity_mixing_ratio")
 
-      if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%fv3jedi_name))
+      if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%short_name))
       field_passed(qmr_index) = .true.
       call dxm%get_field("sphum", qptr)
       qptr = qptr + q_qmr
 
     case default
 
-      call abor1_ftn("GeoVaLs field "//trim(dxg%fields(fg)%fv3jedi_name)//" has no known link "// &
+      call abor1_ftn("GeoVaLs field "//trim(dxg%fields(fg)%short_name)//" has no known link "// &
                       "to fields in model state")
 
     end select
@@ -625,10 +625,10 @@ enddo
 ! ! Print information
 ! if (geom%f_comm%rank()==0) then
 !   do fg = 1, size(dxg%fields)
-!     print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields OUT: ", trim(dxg%fields(fg)%fv3jedi_name), minval(dxg%fields(fg)%array), maxval(dxg%fields(fg)%array)
+!     print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields OUT: ", trim(dxg%fields(fg)%short_name), minval(dxg%fields(fg)%array), maxval(dxg%fields(fg)%array)
 !   enddo
 !   do fm = 1, size(dxm%fields)
-!     print*, "Model2GeoVaLs.multiplyAD, Model fields OUT:   ", trim(dxm%fields(fm)%fv3jedi_name), minval(dxm%fields(fg)%array), maxval(dxm%fields(fg)%array)
+!     print*, "Model2GeoVaLs.multiplyAD, Model fields OUT:   ", trim(dxm%fields(fm)%short_name), minval(dxm%fields(fg)%array), maxval(dxm%fields(fg)%array)
 !   enddo
 ! endif
 

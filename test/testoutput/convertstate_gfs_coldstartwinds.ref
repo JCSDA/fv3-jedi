@@ -20,7 +20,7 @@ d_grid_south_face_normal_wind_component_cold | Min:-1.3237819447156139e+02 Max:+
 filtered_orography                           | Min:-2.7000000000000000e+01 Max:+5.0458980144986690e+03 RMS:+6.0667846124499204e+02
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaColdStartWinds variable change
-Variable change from: 17 variables: ps_cold, w_cold, zh_cold, t_cold, delp_cold, sphum_cold, liq_wat_cold, o3mr_cold, ice_wat_cold, rainwat_cold, snowwat_cold, graupel_cold, u_w_cold, v_w_cold, u_s_cold, v_s_cold, orog_filt
+Variable change from: 17 variables: surface_pressure_cold_start, upward_air_velocity_cold_start, layer_thickness_cold_start, air_temperature_cold_start, air_pressure_thickness_cold_start, specific_humidity_cold_start, cloud_liquid_water_cold_start, ozone_mass_mixing_ratio_cold_start, ice_wat_cold_start, rainwat_cold_start, snowwat_cold_start, graupel_cold_start, d_grid_west_face_tangential_wind_component_cold_start, d_grid_west_face_normal_wind_component_cold_start, d_grid_south_face_tangential_wind_component_cold_start, d_grid_south_face_normal_wind_component_cold_start, filtered_orography
 Variable change to: 15 variables: ps_cold, w_cold, zh_cold, t_cold, delp_cold, sphum_cold, liq_wat_cold, o3mr_cold, ice_wat_cold, rainwat_cold, snowwat_cold, graupel_cold, ud_cold, vd_cold, orog_filt
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------

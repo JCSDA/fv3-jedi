@@ -382,15 +382,15 @@ do var = 1, size(fields)
     if (associated(dimids)) then
 
       ! Write field to the file
-      call nccheck( nf90_def_var( ncid, trim(fields(var)%short_name), NF90_DOUBLE, dimids, varid), &
-                    "nf90_def_var"//trim(fields(var)%short_name) )
+      call nccheck( nf90_def_var( ncid, trim(fields(var)%io_name), NF90_DOUBLE, dimids, varid), &
+                    "nf90_def_var"//trim(fields(var)%io_name) )
       call nccheck( nf90_put_att(ncid, varid, "long_name", trim(fields(var)%long_name) ), "nf90_put_att" )
       call nccheck( nf90_put_att(ncid, varid, "units"    , trim(fields(var)%units)     ), "nf90_put_att" )
       call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
       if (self%thispe) then
        call nccheck( nf90_put_var( ncid, varid, llfield, start = istart, count = icount), &
-                     "nf90_put_var"//trim(fields(var)%short_name) )
+                     "nf90_put_var"//trim(fields(var)%io_name) )
       endif
 
     endif

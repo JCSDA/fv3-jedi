@@ -26,8 +26,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::interface::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
-Tlm::Tlm(const Geometry & resol, const Parameters_ & params) : keySelf_(0), tstep_(),
-  trajmap_(), linvars_(params.tlmVariables)
+Tlm::Tlm(const Geometry & resol, const Parameters_ & params) : keySelf_(0), tstep_(), trajmap_(),
+  linvars_(resol.fieldsMetaData().getLongNameFromAnyName(params.tlmVariables))
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 

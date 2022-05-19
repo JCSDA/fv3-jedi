@@ -242,10 +242,10 @@ call copy_subset(xm%fields, xg%fields, fields_to_do)
 
 ! if (geom%f_comm%rank()==0) then
 !   do f = 1, size(xm%fields)
-!     print*, "Model2GeoVaLs.changeVar, Model fields:   ", trim(xm%fields(f)%fv3jedi_name)
+!     print*, "Model2GeoVaLs.changeVar, Model fields:   ", trim(xm%fields(f)%short_name)
 !   enddo
 !   do f = 1, size(xg%fields)
-!     print*, "Model2GeoVaLs.changeVar, GeoVaLs fields: ", trim(xg%fields(f)%fv3jedi_name)
+!     print*, "Model2GeoVaLs.changeVar, GeoVaLs fields: ", trim(xg%fields(f)%short_name)
 !   enddo
 !   do f = 1, size(fields_to_do)
 !     print*, "Model2GeoVaLs.changeVar, GeoVaLs needed by transform: ", trim(fields_to_do(f))

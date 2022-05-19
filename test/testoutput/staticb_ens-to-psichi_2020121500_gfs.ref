@@ -11,7 +11,7 @@ cloud_liquid_ice                             | Min:-7.7766709947912867e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:+2.9744141544568681e-09 Max:+1.8493564124952562e-05 RMS:+4.3563600505976953e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ cloud_liquid_ice                             | Min:-4.6255892271795764e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:+7.8621485615378954e-09 Max:+1.8484501939361488e-05 RMS:+4.3561326195354988e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ cloud_liquid_ice                             | Min:-3.7867249550273297e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:-2.0401767509703437e-09 Max:+1.8151335654549060e-05 RMS:+4.3566629626813078e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ cloud_liquid_ice                             | Min:-1.2435201177165919e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:+7.2504230998195822e-10 Max:+2.0112543978187676e-05 RMS:+4.3556095559355499e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ cloud_liquid_ice                             | Min:-6.0797787100982309e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:-1.6855544686263505e-09 Max:+1.7395451891797272e-05 RMS:+4.3565260797063933e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ cloud_liquid_ice                             | Min:-2.5640930454771588e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:-2.0404785466194633e-09 Max:+1.7616060942920580e-05 RMS:+4.3580989664361691e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ cloud_liquid_ice                             | Min:-1.8629835448140802e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:+4.7507334303703184e-09 Max:+1.7689683822557023e-05 RMS:+4.3549328545235066e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ cloud_liquid_ice                             | Min:-2.1104932768248133e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:-1.8101120797711535e-09 Max:+1.8917579784838969e-05 RMS:+4.3563258817611416e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ cloud_liquid_ice                             | Min:-2.1995966839856406e-22 Max:+
 ozone_mass_mixing_ratio                      | Min:+4.0941952381139940e-09 Max:+2.0795408514766231e-05 RMS:+4.3566534317671708e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@ cloud_liquid_ice                             | Min:-1.0050696213099395e-21 Max:+
 ozone_mass_mixing_ratio                      | Min:+1.0512694261624498e-09 Max:+1.9381616650354006e-05 RMS:+4.3569961140591890e-06
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 8 variables: ua, va, t, delp, sphum, liq_wat, ice_wat, o3mr
+Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 Variable change to: 8 variables: psi, chi, t, ps, rh, liq_wat, ice_wat, o3mr
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------

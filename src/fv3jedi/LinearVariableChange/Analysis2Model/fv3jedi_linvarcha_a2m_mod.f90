@@ -93,7 +93,7 @@ do index_mod = 1, xmod%nf
 
   !Check analysis for presence of field
   do index_ana = 1, xana%nf
-    if (xmod%fields(index_mod)%fv3jedi_name == xana%fields(index_ana)%fv3jedi_name) then
+    if (xmod%fields(index_mod)%short_name == xana%fields(index_ana)%short_name) then
       index_ana_found = index_ana
       exit
     endif
@@ -105,10 +105,10 @@ do index_mod = 1, xmod%nf
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     failed = .false.
     if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M Multiply: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name(1:10)&
-        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name(1:10)
+        "A2M Multiply: analysis increment "//xana%fields(index_ana_found)%short_name(1:10)&
+        //" => linearized model "//xmod%fields(index_mod)%short_name(1:10)
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
+  elseif (xmod%fields(index_mod)%short_name == 'ud') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xana%has_field('ua')) then
@@ -124,7 +124,7 @@ do index_mod = 1, xmod%nf
           "A2M Multiply: analysis increment ua         => linearized model ud"
     endif
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
+  elseif (xmod%fields(index_mod)%short_name == 'vd') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xana%has_field('ua')) then
@@ -134,7 +134,7 @@ do index_mod = 1, xmod%nf
           "A2M Multiply: analysis increment va         => linearized model ud"
     endif
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
+  elseif (xmod%fields(index_mod)%short_name == 'delp') then
 
     !Special case: ps in analysis, delp in model
     if (xana%has_field('ps')) then
@@ -151,7 +151,7 @@ do index_mod = 1, xmod%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiply: found no way of getting "//&
-                             trim(xmod%fields(index_mod)%fv3jedi_name)//" from the analysis increment" )
+                             trim(xmod%fields(index_mod)%short_name)//" from the analysis increment" )
 
 enddo
 
@@ -186,7 +186,7 @@ do index_ana = 1, xana%nf
 
   !Check analysis for presence of field
   do index_mod = 1, xmod%nf
-    if (xana%fields(index_ana)%fv3jedi_name == xmod%fields(index_mod)%fv3jedi_name) then
+    if (xana%fields(index_ana)%short_name == xmod%fields(index_mod)%short_name) then
       index_mod_found = index_mod
       exit
     endif
@@ -198,10 +198,10 @@ do index_ana = 1, xana%nf
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
     failed = .false.
     if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M MultiplyAdjoint: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name(1:10)&
-        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name(1:10)
+        "A2M MultiplyAdjoint: linearized model "//xmod%fields(index_mod_found)%short_name(1:10)&
+        //" => analysis increment "//xana%fields(index_ana)%short_name(1:10)
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
+  elseif (xana%fields(index_ana)%short_name == 'ua') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xmod%has_field('ud')) then
@@ -217,7 +217,7 @@ do index_ana = 1, xana%nf
           "A2M MultiplyAdjoint: linearized model ud         => analysis increment ua"
     endif
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
+  elseif (xana%fields(index_ana)%short_name == 'va') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xmod%has_field('ud')) then
@@ -227,7 +227,7 @@ do index_ana = 1, xana%nf
           "A2M MultiplyAdjoint: linearized model vd         => analysis increment va"
     endif
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
+  elseif (xana%fields(index_ana)%short_name == 'ps') then
 
     !Special case: ps in analysis, delp in model
     if (xmod%has_field('delp')) then
@@ -245,7 +245,7 @@ do index_ana = 1, xana%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyadjoint: found no way of getting "//&
-                             trim(xana%fields(index_ana)%fv3jedi_name)//" from the linearized model" )
+                             trim(xana%fields(index_ana)%short_name)//" from the linearized model" )
 
 enddo
 
@@ -279,7 +279,7 @@ do index_ana = 1, xana%nf
 
   !Check analysis for presence of field
   do index_mod = 1, xmod%nf
-    if (xana%fields(index_ana)%fv3jedi_name == xmod%fields(index_mod)%fv3jedi_name) then
+    if (xana%fields(index_ana)%short_name == xmod%fields(index_mod)%short_name) then
       index_mod_found = index_mod
       exit
     endif
@@ -291,10 +291,10 @@ do index_ana = 1, xana%nf
     failed = .false.
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
     if (xana%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M MultiplyInverse: linearized model "//xmod%fields(index_mod_found)%fv3jedi_name(1:10)&
-        //" => analysis increment "//xana%fields(index_ana)%fv3jedi_name(1:10)
+        "A2M MultiplyInverse: linearized model "//xmod%fields(index_mod_found)%short_name(1:10)&
+        //" => analysis increment "//xana%fields(index_ana)%short_name(1:10)
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
+  elseif (xana%fields(index_ana)%short_name == 'ua') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xmod%has_field('ud')) then
@@ -310,7 +310,7 @@ do index_ana = 1, xana%nf
           "A2M MultiplyInverse: linearized model ud         => analysis increment ua"
     endif
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
+  elseif (xana%fields(index_ana)%short_name == 'va') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xmod%has_field('ud')) then
@@ -320,7 +320,7 @@ do index_ana = 1, xana%nf
           "A2M MultiplyInverse: linearized model vd         => analysis increment va"
     endif
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
+  elseif (xana%fields(index_ana)%short_name == 'ps') then
 
     !Special case: ps in analysis, delp in model
     if (xmod%has_field('delp')) then
@@ -335,7 +335,7 @@ do index_ana = 1, xana%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyinverse: found no way of getting "//&
-                             trim(xana%fields(index_ana)%fv3jedi_name)//" from the linearized model" )
+                             trim(xana%fields(index_ana)%short_name)//" from the linearized model" )
 
 enddo
 
@@ -370,7 +370,7 @@ do index_mod = 1, xmod%nf
 
   !Check analysis for presence of field
   do index_ana = 1, xana%nf
-    if (xmod%fields(index_mod)%fv3jedi_name == xana%fields(index_ana)%fv3jedi_name) then
+    if (xmod%fields(index_mod)%short_name == xana%fields(index_ana)%short_name) then
       index_ana_found = index_ana
       exit
     endif
@@ -382,10 +382,10 @@ do index_mod = 1, xmod%nf
     failed = .false.
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     if (xmod%f_comm%rank() == 0) write(*,"(A, A10, A, A10)") &
-        "A2M MultiplyInverseAdjoint: analysis increment "//xana%fields(index_ana_found)%fv3jedi_name(1:10)&
-        //" => linearized model "//xmod%fields(index_mod)%fv3jedi_name(1:10)
+        "A2M MultiplyInverseAdjoint: analysis increment "//xana%fields(index_ana_found)%short_name(1:10)&
+        //" => linearized model "//xmod%fields(index_mod)%short_name(1:10)
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
+  elseif (xmod%fields(index_mod)%short_name == 'ud') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xana%has_field('ua')) then
@@ -401,7 +401,7 @@ do index_mod = 1, xmod%nf
           "A2M MultiplyInverseAdjoint: analysis increment ua         => linearized model ud"
     endif
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
+  elseif (xmod%fields(index_mod)%short_name == 'vd') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xana%has_field('ua')) then
@@ -411,7 +411,7 @@ do index_mod = 1, xmod%nf
           "A2M MultiplyInverseAdjoint: analysis increment va         => linearized model vd"
     endif
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
+  elseif (xmod%fields(index_mod)%short_name == 'delp') then
 
     !Special case: ps in analysis, delp in model
     if (xana%has_field('ps')) then
@@ -428,7 +428,7 @@ do index_mod = 1, xmod%nf
   endif
 
   if (failed) call abor1_ftn("fv3jedi_linvarcha_a2m_mod.multiplyinverseadjoint: found no way of getting "//&
-                             trim(xmod%fields(index_mod)%fv3jedi_name)//" from the analysis increment" )
+                             trim(xmod%fields(index_mod)%short_name)//" from the analysis increment" )
 
 enddo
 

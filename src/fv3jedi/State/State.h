@@ -113,7 +113,6 @@ class State : public util::Printable, private util::ObjectCounter<State> {
 // Utilities
   std::shared_ptr<const Geometry> geometry() const {return geom_;}
   const oops::Variables & variables() const {return vars_;}
-  const oops::Variables & variablesLongName() const {return varsLongName_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}
@@ -133,7 +132,6 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   F90state keyState_;
   std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
-  oops::Variables varsLongName_;
   util::DateTime time_;
 };
 

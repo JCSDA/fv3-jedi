@@ -52,7 +52,7 @@ dirac:
   iydir: [1]
   ildir: [50]
   itdir: [1]
-  ifdir: [t]
+  ifdir: [air_temperature]
 
 
 test:

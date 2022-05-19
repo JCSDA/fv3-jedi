@@ -12,6 +12,7 @@
 #include <numeric>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "atlas/field.h"
@@ -36,8 +37,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
                      const util::DateTime & time)
-  : geom_(new Geometry(geom)), vars_(vars), time_(time),
-    varsLongName_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
+  : geom_(new Geometry(geom)), time_(time),
+    vars_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
@@ -46,8 +47,7 @@ Increment::Increment(const Geometry & geom, const oops::Variables & vars,
 }
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const Increment & other)
-  : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_),
-    varsLongName_(other.varsLongName_)
+  : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
@@ -57,7 +57,7 @@ Increment::Increment(const Geometry & geom, const Increment & other)
 }
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Increment & other, const bool copy)
-  : geom_(other.geom_), vars_(other.vars_), time_(other.time_), varsLongName_(other.varsLongName_)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from other and bool copy) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
@@ -91,7 +91,6 @@ Increment & Increment::operator=(const Increment & rhs) {
 // -------------------------------------------------------------------------------------------------
 void Increment::updateFields(const oops::Variables & newVars) {
   vars_ = newVars;
-  varsLongName_ = geom_->fieldsMetaData().getLongNameFromAnyName(newVars);
   fv3jedi_increment_update_fields_f90(keyInc_, geom_->toFortran(), newVars);
 }
 // -------------------------------------------------------------------------------------------------

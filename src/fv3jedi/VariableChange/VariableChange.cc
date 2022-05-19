@@ -38,11 +38,8 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars) const {
   // Trace
   oops::Log::trace() << "VariableChange::changeVar starting" << std::endl;
 
-  // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
-
   // If all variables already in incoming state just remove the no longer needed fields
-  if (varsLongName <= x.variablesLongName()) {
+  if (vars <= x.variables()) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVar done (identity)" << std::endl;
     return;
@@ -70,11 +67,8 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars) c
   // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
-  // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
-
   // If all variables already in incoming state just remove the no longer needed fields
-  if (varsLongName <= x.variablesLongName()) {
+  if (vars <= x.variables()) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVarInverse done (identity)" << std::endl;
     return;

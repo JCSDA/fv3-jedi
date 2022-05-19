@@ -365,13 +365,13 @@ havedelp = hasfield(fields, 'delp', indexof_delp)
 do var = 1,size(fields)
 
   ! If need ps and not in file will compute from delp so read delp in place of ps
-  if (trim(fields(var)%fv3jedi_name) == 'ps' .and. .not.self%ps_in_file) then
+  if (trim(fields(var)%short_name) == 'ps' .and. .not.self%ps_in_file) then
     indexof_ps = var
     if (havedelp) cycle ! Do not register delp twice
     deallocate(fields(indexof_ps)%array)
     allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
                 fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:self%npz))
-    fields(indexof_ps)%short_name = 'DELP'
+    fields(indexof_ps)%io_name = 'DELP'
   endif
 
   ! Get file to use
@@ -390,7 +390,7 @@ do var = 1,size(fields)
 
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
-                                  trim(fields(var)%short_name), fields(var)%array, &
+                                  trim(fields(var)%io_name), fields(var)%array, &
                                   domain=self%domain, position=position )
 
 enddo
@@ -418,7 +418,7 @@ if (indexof_ps > 0) then
     delp = fields(indexof_delp)%array
   endif
   fields(indexof_ps)%array(:,:,1) = sum(delp,3)
-  fields(indexof_ps)%short_name = 'ps'
+  fields(indexof_ps)%io_name = 'ps'
 endif
 
 ! Nullify FMS IO internal domain
@@ -496,7 +496,7 @@ do var = 1,size(fields)
 
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
-                                  fields(var)%short_name, fields(var)%array, domain=self%domain, &
+                                  fields(var)%io_name, fields(var)%array, domain=self%domain, &
                                   position=position, longname = trim(fields(var)%long_name), &
                                   units = trim(fields(var)%units) )
 
@@ -561,20 +561,20 @@ if (trim(io_file) == 'default') then
   if (field%npz == 1) io_file = 'surface'
 
   ! Except ps
-  if (field%fv3jedi_name == 'ps') io_file = 'core'
+  if (field%short_name == 'ps') io_file = 'core'
 
   ! Except phis
-  if (field%fv3jedi_name == 'phis') io_file = 'core'
+  if (field%short_name == 'phis') io_file = 'core'
 
   ! And except surface winds
-  if (field%fv3jedi_name == 'u_srf' .or. field%fv3jedi_name == 'v_srf') &
+  if (field%short_name == 'u_srf' .or. field%short_name == 'v_srf') &
     io_file = 'surface_wind'
 
   ! Orog variables if short name contains orog
-  if (index(trim(field%fv3jedi_name), 'orog') /= 0) io_file = 'orography'
+  if (index(trim(field%short_name), 'orog') /= 0) io_file = 'orography'
 
   ! Cold start variables if short name contains cold
-  if (index(trim(field%fv3jedi_name), 'cold') /= 0) io_file = 'cold'
+  if (index(trim(field%short_name), 'cold') /= 0) io_file = 'cold'
 
 endif
 

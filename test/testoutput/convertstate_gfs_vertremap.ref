@@ -18,7 +18,7 @@ v_component_of_native_D_grid_wind_cold_start | Min:-1.5103964907662623e+02 Max:+
 filtered_orography                           | Min:-2.7000000000000000e+01 Max:+5.0458980144986690e+03 RMS:+6.0667846124499204e+02
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaVertRemap variable change
-Variable change from: 15 variables: ps_cold, w_cold, zh_cold, t_cold, delp_cold, sphum_cold, liq_wat_cold, o3mr_cold, ice_wat_cold, rainwat_cold, snowwat_cold, graupel_cold, ud_cold, vd_cold, orog_filt
+Variable change from: 15 variables: surface_pressure_cold_start, upward_air_velocity_cold_start, layer_thickness_cold_start, air_temperature_cold_start, air_pressure_thickness_cold_start, specific_humidity_cold_start, cloud_liquid_water_cold_start, ozone_mass_mixing_ratio_cold_start, ice_wat_cold_start, rainwat_cold_start, snowwat_cold_start, graupel_cold_start, u_component_of_native_D_grid_wind_cold_start, v_component_of_native_D_grid_wind_cold_start, filtered_orography
 Variable change to: 15 variables: ps, t, delp, sphum, liq_wat, o3mr, ice_wat, rainwat, snowwat, graupel, sgs_tke, cld_amt, ud, vd, phis
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------

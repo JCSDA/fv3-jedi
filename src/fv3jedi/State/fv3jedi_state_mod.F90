@@ -114,7 +114,7 @@ endif
 do var = 1, size(rhs_fields)
 
   !Winds are a special case
-  if (rhs_fields(var)%fv3jedi_name == 'ua') then
+  if (rhs_fields(var)%short_name == 'ua') then
 
     if (self%has_field('ua')) then
       call get_field(rhs_fields,  'ua', rhs_ua)
@@ -126,7 +126,7 @@ do var = 1, size(rhs_fields)
       self_ud = self_ud + rhs_ud
     endif
 
-  elseif (rhs_fields(var)%fv3jedi_name == 'va') then
+  elseif (rhs_fields(var)%short_name == 'va') then
 
     if (self%has_field('va')) then
       call get_field(rhs_fields,  'va', rhs_va)
@@ -138,7 +138,7 @@ do var = 1, size(rhs_fields)
       self_vd = self_vd + rhs_vd
     endif
 
-  elseif (rhs_fields(var)%fv3jedi_name == 't') then
+  elseif (rhs_fields(var)%short_name == 't') then
 
     if (self%has_field('t')) then
       call get_field(rhs_fields,  't', rhs_t)
@@ -152,7 +152,7 @@ do var = 1, size(rhs_fields)
       self_pt = self_pt + rhs_pt
     endif
 
-  elseif (rhs_fields(var)%fv3jedi_name == 'ps') then
+  elseif (rhs_fields(var)%short_name == 'ps') then
 
     if (self%has_field('ps')) then
       call get_field(rhs_fields,  'ps', rhs_ps)
@@ -168,7 +168,7 @@ do var = 1, size(rhs_fields)
   else
 
     !Get pointer to state
-    call self%get_field(rhs_fields(var)%fv3jedi_name, field_pointer)
+    call self%get_field(rhs_fields(var)%short_name, field_pointer)
 
     !Add increment to state
     field_pointer%array = field_pointer%array + rhs_fields(var)%array
@@ -205,7 +205,7 @@ do var = 1,self%nf
     !Print message warning about negative tracer removal
     if (found_neg .and. self%f_comm%rank() == 0) print*, &
              'fv3jedi_state_mod.add_incr: Removed negative values for '&
-             //trim(self%fields(var)%fv3jedi_name)
+             //trim(self%fields(var)%short_name)
 
   endif
 

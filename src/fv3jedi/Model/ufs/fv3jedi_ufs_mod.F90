@@ -443,7 +443,7 @@ contains
   character(len=ESMF_MAXSTR), allocatable :: item_names(:)
   real(kind=ESMF_KIND_R8), pointer :: farrayPtr2(:,:)
   real(kind=ESMF_KIND_R8), pointer :: farrayPtr3(:,:,:)
-  character(len=field_clen) :: fv3jedi_name
+  character(len=field_clen) :: short_name
   type(fv3jedi_field), pointer :: field_ptr
 
   real(kind=ESMF_KIND_R8),allocatable,dimension(:,:,:)      :: field_fv3
@@ -472,15 +472,15 @@ contains
   do i = 1, num_items
     ! Create map between UFS name and fv3-jedi name
     ! ----------------------------------------------
-    fv3jedi_name = trim(item_names(i))
-    call ESMF_LogWrite("item name is "//fv3jedi_name, ESMF_LOGMSG_INFO)
-    if(trim(item_names(i)) == 'u') fv3jedi_name = 'ud'
-    if(trim(item_names(i)) == 'v') fv3jedi_name = 'vd'
-    if(trim(item_names(i)) == 'weasd') fv3jedi_name = 'sheleg'
+    short_name = trim(item_names(i))
+    call ESMF_LogWrite("item name is "//short_name, ESMF_LOGMSG_INFO)
+    if(trim(item_names(i)) == 'u') short_name = 'ud'
+    if(trim(item_names(i)) == 'v') short_name = 'vd'
+    if(trim(item_names(i)) == 'weasd') short_name = 'sheleg'
 
     ! Only need to extract field from UFS if fv3-jedi needs it
     ! ---------------------------------------------------------
-    if (state%has_field(trim(fv3jedi_name))) then
+    if (state%has_field(trim(short_name))) then
 
       !Get field from the state
       call ESMF_StateGet(self%toJedi, item_names(i), field, rc = rc)
@@ -526,7 +526,7 @@ contains
       endif
 
       ! Get pointer to fv3-jedi side field
-      call state%get_field(trim(fv3jedi_name), field_ptr)
+      call state%get_field(trim(short_name), field_ptr)
 
       if (field_ptr%npz .ne. fnpz) &
         call abor1_ftn("fv3_to_state: dimension mismatch between JEDI and UFS vertical grid")
@@ -534,7 +534,7 @@ contains
       ! Copy from UFS to fv3-jedi
       field_ptr%array(self%isc:self%iec,self%jsc:self%jec,1:fnpz) = field_fv3(self%isc:self%iec,self%jsc:self%jec,1:fnpz)
     else
-      call ESMF_LogWrite("Not needed by JEDI is "//fv3jedi_name, ESMF_LOGMSG_INFO)
+      call ESMF_LogWrite("Not needed by JEDI is "//short_name, ESMF_LOGMSG_INFO)
     endif
 
   end do

@@ -46,7 +46,7 @@ dirac:
   iydir: [6]  #Ydir
   ildir: [50] #Level
   itdir: [1]  #Tile
-  ifdir: [ua] #Field
+  ifdir: [eastward_wind] #Field
 output dirac:
   filetype: cube sphere history
   provider: geos

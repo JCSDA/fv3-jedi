@@ -297,7 +297,7 @@ type(ESMF_Field) :: field
 character(len=ESMF_MAXSTR), allocatable :: item_names(:)
 real(kind=ESMF_KIND_R4), pointer :: farrayPtr2(:,:)
 real(kind=ESMF_KIND_R4), pointer :: farrayPtr3(:,:,:)
-character(len=field_clen) :: fv3jedi_name
+character(len=field_clen) :: short_name
 type(fv3jedi_field), pointer :: field_ptr
 real(kind=kind_real), allocatable, dimension(:,:,:) :: field_geos
 
@@ -336,105 +336,105 @@ do i = 1, num_items
 
     ! DYN
     case ("U_DGRID")
-      fv3jedi_name = 'ud'
+      short_name = 'ud'
     case ("V_DGRID")
-      fv3jedi_name = 'vd'
+      short_name = 'vd'
     case ("PT")
-      fv3jedi_name = 'pt'
+      short_name = 'pt'
     case ("PE")
-      fv3jedi_name = 'pe'
+      short_name = 'pe'
     case ("T")
-      fv3jedi_name = 't'
+      short_name = 't'
     case ("DELP")
-      fv3jedi_name = 'delp'
+      short_name = 'delp'
     case ("PS")
-      fv3jedi_name = 'ps'
+      short_name = 'ps'
     case ("TA")
-      fv3jedi_name = 'ts'
+      short_name = 'ts'
     case ("DZ")
-      fv3jedi_name = 'delz'
+      short_name = 'delz'
     case ("W")
-      fv3jedi_name = 'w'
+      short_name = 'w'
 
     ! AGCM
     case ("PHIS")
-      fv3jedi_name = 'phis'
+      short_name = 'phis'
     case ("QITOT")
-      fv3jedi_name = 'ice_wat'
+      short_name = 'ice_wat'
     case ("QLTOT")
-      fv3jedi_name = 'liq_wat'
+      short_name = 'liq_wat'
     case ("VARFLT")
-      fv3jedi_name = 'varflt'
+      short_name = 'varflt'
 
     ! MOIST
     case ("Q")
-      fv3jedi_name = 'sphum'
+      short_name = 'sphum'
     case ("QICN")
-      fv3jedi_name = "qicn"
+      short_name = "qicn"
     case ("QLCN")
-      fv3jedi_name = "qlcn"
+      short_name = "qlcn"
     case ("QILS")
-      fv3jedi_name = "qils"
+      short_name = "qils"
     case ("QLLS")
-      fv3jedi_name = "qlls"
+      short_name = "qlls"
     case ("QSTOT")
-      fv3jedi_name = "qs"
+      short_name = "qs"
     case ("QRTOT")
-      fv3jedi_name = "qr"
+      short_name = "qr"
     case ("QCLSX0")
-      fv3jedi_name = 'qls'
+      short_name = 'qls'
     case ("QCCNX0")
-      fv3jedi_name = 'qcn'
+      short_name = 'qcn'
     case ("CLCNX0")
-      fv3jedi_name = 'cfcn'
+      short_name = 'cfcn'
     case ("KCBL_moist")
-      fv3jedi_name = 'kcbl'
+      short_name = 'kcbl'
     case ("TS_moist")
-      fv3jedi_name = 'tsm'
+      short_name = 'tsm'
     case ("KHl_moist")
-      fv3jedi_name = 'khl'
+      short_name = 'khl'
     case ("KHu_moist")
-      fv3jedi_name = 'khu'
+      short_name = 'khu'
 
     ! CHEMISTRY
     case ("O3")
-      fv3jedi_name = 'o3ppmv'
+      short_name = 'o3ppmv'
 
     ! SURFACE
     case ("FRLAND")
-      fv3jedi_name = 'frland'
+      short_name = 'frland'
     case ("FRLANDICE")
-      fv3jedi_name = 'frlandice'
+      short_name = 'frlandice'
     case ("FRLAKE")
-      fv3jedi_name = 'frlake'
+      short_name = 'frlake'
     case ("FROCEAN")
-      fv3jedi_name = 'frocean'
+      short_name = 'frocean'
     case ("FRACI")
-      fv3jedi_name = 'frseaice'
+      short_name = 'frseaice'
     case ("USTAR")
-      fv3jedi_name = 'ustar'
+      short_name = 'ustar'
     case ("BSTAR")
-      fv3jedi_name = 'bstar'
+      short_name = 'bstar'
     case ("CM")
-      fv3jedi_name = 'cm'
+      short_name = 'cm'
     case ("CT")
-      fv3jedi_name = 'ct'
+      short_name = 'ct'
     case ("CQ")
-      fv3jedi_name = 'cq'
+      short_name = 'cq'
     case ("U10N")
-      fv3jedi_name = 'u_srf'
+      short_name = 'u_srf'
     case ("V10N")
-      fv3jedi_name = 'v_srf'
+      short_name = 'v_srf'
     case ('SNOMAS')
-      fv3jedi_name = 'sheleg'
+      short_name = 'sheleg'
     case ('TSOIL1')
-      fv3jedi_name = 'soilt'
+      short_name = 'soilt'
     case ('WET1')
-      fv3jedi_name = 'soilm'
+      short_name = 'soilm'
 
     !TURBULENCE
     case ('ZPBL')
-      fv3jedi_name = 'zpbl'
+      short_name = 'zpbl'
 
     ! NO MAP
     case default
@@ -445,7 +445,7 @@ do i = 1, num_items
 
   ! Only need to extract field from GEOS if fv3-jedi needs it
   ! ---------------------------------------------------------
-  if (state%has_field(trim(fv3jedi_name))) then
+  if (state%has_field(trim(short_name))) then
 
     !Get field from the state
     call ESMF_StateGet(self%cap%cap_gc%export_state, item_names(i), field, rc = rc)
@@ -491,7 +491,7 @@ do i = 1, num_items
     endif
 
     ! Get pointer to fv3-jedi side field
-    call state%get_field(trim(fv3jedi_name), field_ptr)
+    call state%get_field(trim(short_name), field_ptr)
 
     if (field_ptr%npz .ne. fnpz) &
       call abor1_ftn("geos_to_state: dimension mismatch between JEDI and GEOS vertical grid")

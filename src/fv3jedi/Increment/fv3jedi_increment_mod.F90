@@ -68,7 +68,6 @@ contains
 
 subroutine ones(self)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
@@ -83,7 +82,6 @@ end subroutine ones
 
 subroutine random(self)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
@@ -99,7 +97,6 @@ end subroutine random
 
 subroutine self_add(self,rhs)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
@@ -117,7 +114,6 @@ end subroutine self_add
 
 subroutine self_schur(self,rhs)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
@@ -135,7 +131,6 @@ end subroutine self_schur
 
 subroutine self_sub(self,rhs)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
@@ -153,7 +148,6 @@ end subroutine self_sub
 
 subroutine self_mul(self,zz)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 real(kind=kind_real),     intent(in)    :: zz
 
@@ -169,7 +163,6 @@ end subroutine self_mul
 
 subroutine dot_prod(self,other,zprod)
 
-implicit none
 class(fv3jedi_increment), intent(in)    :: self
 class(fv3jedi_increment), intent(in)    :: other
 real(kind=kind_real),     intent(inout) :: zprod
@@ -203,7 +196,6 @@ end subroutine dot_prod
 
 subroutine diff_incr(self, x1_fields, x2_fields, geom)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 type(fv3jedi_field),      intent(in)    :: x1_fields(:)
 type(fv3jedi_field),      intent(in)    :: x2_fields(:)
@@ -282,24 +274,24 @@ endif
 do var = 1,self%nf
 
   !A-Grid winds can be a special case
-  if (self%fields(var)%fv3jedi_name == 'ua') then
+  if (self%fields(var)%short_name == 'ua') then
 
     self%fields(var)%array = x1_ua - x2_ua
 
-  elseif (self%fields(var)%fv3jedi_name == 'va') then
+  elseif (self%fields(var)%short_name == 'va') then
 
     self%fields(var)%array = x1_va - x2_va
 
   !Ps can be a special case
-  elseif (self%fields(var)%fv3jedi_name == 'ps') then
+  elseif (self%fields(var)%short_name == 'ps') then
 
     self%fields(var)%array = x1_ps - x2_ps
 
   else
 
     !Get pointer to states
-    call get_field(x1_fields, self%fields(var)%fv3jedi_name, x1p)
-    call get_field(x2_fields, self%fields(var)%fv3jedi_name, x2p)
+    call get_field(x1_fields, self%fields(var)%short_name, x1p)
+    call get_field(x2_fields, self%fields(var)%short_name, x2p)
 
     !inc = state - state
     self%fields(var)%array = x1p%array - x2p%array
@@ -324,20 +316,17 @@ end subroutine diff_incr
 
 subroutine dirac(self, conf, geom)
 
-implicit none
+! Arguments
 class(fv3jedi_increment),  intent(inout) :: self
 type(fckit_configuration), intent(in)    :: conf
 type(fv3jedi_geom),        intent(in)    :: geom
 
-integer :: ndir,idir,var
-
+! Locals
+integer :: ndir,idir
 integer, allocatable :: ixdir(:),iydir(:),ildir(:),itdir(:)
 character(len=32), allocatable :: ifdir(:)
-
-logical :: found
-
-character(len=:), allocatable :: str
 character(len=:), allocatable :: str_array(:)
+type(fv3jedi_field), pointer :: dirac_field
 
 ! Get Diracs positions
 call conf%get_or_die("ndir",ndir)
@@ -369,22 +358,16 @@ call self%zero()
 ! only u, v, T, ps and tracers allowed
 do idir=1,ndir
 
-  found = .false.
+  ! Get the field
+  call get_field(self%fields, trim(ifdir(idir)), dirac_field)
 
   ! is specified grid point, tile number on this processor
   if (geom%ntile == itdir(idir) .and. &
     ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
     iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
 
-    ! If so, perturb desired increment and level
-    do var = 1,self%nf
-      if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir(idir))) then
-        found = .true.
-        self%fields(var)%array(ixdir(idir),iydir(idir),ildir(idir)) = 1.0
-      endif
-    enddo
-
-    if (.not.found) call abor1_ftn("fv3jedi_increment_mod.dirac: dirac not found")
+    ! Make perturbation
+    dirac_field%array(ixdir(idir),iydir(idir),ildir(idir)) = 1.0_kind_real
 
   endif
 
@@ -395,8 +378,6 @@ end subroutine dirac
 ! --------------------------------------------------------------------------------------------------
 
 subroutine getpoint(self, geoiter, values)
-
-implicit none
 
 class(fv3jedi_increment), intent(in)    :: self
 type(fv3jedi_geom_iter),  intent(in)    :: geoiter
@@ -416,8 +397,6 @@ end subroutine getpoint
 ! --------------------------------------------------------------------------------------------------
 
 subroutine setpoint(self, geoiter, values)
-
-implicit none
 
 ! Passed variables
 class(fv3jedi_increment), intent(inout) :: self

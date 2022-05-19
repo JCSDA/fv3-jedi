@@ -135,7 +135,7 @@ dirac:
   iydir: [1]
   ildir: [50]
   itdir: [1]
-  ifdir: [t]
+  ifdir: [air_temperature]
 
 test:
   reference filename: testoutput/staticb_dirac_global_gfs_6pe.ref

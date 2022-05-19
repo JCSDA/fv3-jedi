@@ -86,7 +86,7 @@ do index_mod = 1, xmod%nf
 
   !Check analysis for presence of field
   do index_ana = 1, xana%nf
-    if (xmod%fields(index_mod)%fv3jedi_name == xana%fields(index_ana)%fv3jedi_name) then
+    if (xmod%fields(index_mod)%short_name == xana%fields(index_ana)%short_name) then
       index_ana_found = index_ana
       exit
     endif
@@ -98,7 +98,7 @@ do index_mod = 1, xmod%nf
     xmod%fields(index_mod)%array = xana%fields(index_ana_found)%array
     failed = .false.
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'ud') then
+  elseif (xmod%fields(index_mod)%short_name == 'ud') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xana%has_field('ua')) then
@@ -112,7 +112,7 @@ do index_mod = 1, xmod%nf
       failed = .false.
     endif
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'vd') then
+  elseif (xmod%fields(index_mod)%short_name == 'vd') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xana%has_field('ua')) then
@@ -120,7 +120,7 @@ do index_mod = 1, xmod%nf
       failed = .false.
     endif
 
-  elseif (xmod%fields(index_mod)%fv3jedi_name == 'delp') then
+  elseif (xmod%fields(index_mod)%short_name == 'delp') then
 
     !Special case: ps in analysis, delp in model
     if (xana%has_field('ps')) then
@@ -136,8 +136,7 @@ do index_mod = 1, xmod%nf
 
   if (failed) &
     call abor1_ftn("fv3jedi_linvarcha_a2m_mod.changevar: Found no way of getting " &
-                   // trim(xmod%fields(index_mod)%fv3jedi_name) // &
-                   " from the analysis state.")
+                   // trim(xmod%fields(index_mod)%short_name) // " from the analysis state.")
 
 enddo
 
@@ -170,7 +169,7 @@ do index_ana = 1, xana%nf
 
   !Check analysis for presence of field
   do index_mod = 1, xmod%nf
-    if (xana%fields(index_ana)%fv3jedi_name == xmod%fields(index_mod)%fv3jedi_name) then
+    if (xana%fields(index_ana)%short_name == xmod%fields(index_mod)%short_name) then
       index_mod_found = index_mod
       exit
     endif
@@ -182,7 +181,7 @@ do index_ana = 1, xana%nf
     failed = .false.
     xana%fields(index_ana)%array = xmod%fields(index_mod_found)%array
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'ua') then
+  elseif (xana%fields(index_ana)%short_name == 'ua') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xmod%has_field('ud')) then
@@ -196,7 +195,7 @@ do index_ana = 1, xana%nf
       failed = .false.
     endif
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'va') then
+  elseif (xana%fields(index_ana)%short_name == 'va') then
 
     !Special case: A-grid analysis, D-Grid model
     if (xmod%has_field('ud')) then
@@ -204,7 +203,7 @@ do index_ana = 1, xana%nf
       failed = .false.
     endif
 
-  elseif (xana%fields(index_ana)%fv3jedi_name == 'ps') then
+  elseif (xana%fields(index_ana)%short_name == 'ps') then
 
     !Special case: ps in analysis, delp in model
     if (xmod%has_field('delp')) then
@@ -218,8 +217,7 @@ do index_ana = 1, xana%nf
 
   if (failed) &
     call abor1_ftn("fv3jedi_linvarcha_a2m_mod.changevarinverse: Found no way of getting " &
-                   // trim(xmod%fields(index_mod)%fv3jedi_name) // &
-                   " from the model state.")
+                   // trim(xmod%fields(index_mod)%short_name) // " from the model state.")
 
 enddo
 

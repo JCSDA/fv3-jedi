@@ -34,8 +34,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
-  : geom_(new Geometry(geom)), vars_(vars), time_(time),
-    varsLongName_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
+  : geom_(new Geometry(geom)), time_(time),
+    vars_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
 
@@ -67,7 +67,7 @@ State::State(const Geometry & geom, const Parameters_ & params)
   }
 
   // Set long name variables
-  varsLongName_ = geom_->fieldsMetaData().getLongNameFromAnyName(vars_);
+  vars_ = geom_->fieldsMetaData().getLongNameFromAnyName(vars_);
 
   // Allocate state
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
@@ -85,8 +85,7 @@ State::State(const Geometry & geom, const Parameters_ & params)
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & resol, const State & other)
-  : geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_),
-    varsLongName_(other.varsLongName_)
+  : geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
@@ -98,7 +97,7 @@ State::State(const Geometry & resol, const State & other)
 // -------------------------------------------------------------------------------------------------
 
 State::State(const State & other)
-  : geom_(other.geom_), vars_(other.vars_), time_(other.time_), varsLongName_(other.varsLongName_)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "State::State (from other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
@@ -130,8 +129,7 @@ void State::changeResolution(const State & other) {
 // -------------------------------------------------------------------------------------------------
 
 void State::updateFields(const oops::Variables & newVars) {
-  vars_ = newVars;
-  varsLongName_ = geom_->fieldsMetaData().getLongNameFromAnyName(newVars);
+  vars_ = oops::Variables(newVars);
   fv3jedi_state_update_fields_f90(keyState_, geom_->toFortran(), newVars);
 }
 

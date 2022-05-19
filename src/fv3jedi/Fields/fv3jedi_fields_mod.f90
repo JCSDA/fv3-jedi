@@ -20,7 +20,8 @@ use string_utils
 
 ! fv3jedi
 use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
-                                     hasfield, get_fv3jedi_name, create_field
+                                     hasfield, create_field
+                                     
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_kinds_mod,         only: kind_real
@@ -401,7 +402,6 @@ logical, optional,     intent(in)    :: opt_include_halo
 integer :: jvar, npz
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
-character(len=field_clen) :: fv3jedi_name
 
 logical :: include_halo
 if (present(opt_include_halo)) then
@@ -412,9 +412,8 @@ endif
 
 do jvar = 1,vars%nvars()
 
-  ! Get fv3-jedi field
-  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
-  call self%get_field(fv3jedi_name, field)
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
 
   ! Create the field in the fieldset if it doesn't already exists
   if (.not.afieldset%has_field(field%long_name)) then
@@ -462,7 +461,6 @@ integer :: jvar, npz, jl
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
-character(len=field_clen) :: fv3jedi_name
 type(atlas_metadata) :: meta
 
 logical :: include_halo
@@ -478,9 +476,8 @@ endif
 
 do jvar = 1,vars%nvars()
 
-  ! Get fv3-jedi field
-  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
-  call self%get_field(fv3jedi_name, field)
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
 
   ! If halo points are requested, we prepare the local+halo data into the variable field_array
   if (include_halo) then
@@ -588,14 +585,12 @@ integer :: jvar, npz, jl
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
-character(len=field_clen) :: fv3jedi_name
 character(len=1024) :: errmsg
 
 do jvar = 1,vars%nvars()
 
-  ! Get fv3-jedi field
-  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
-  call self%get_field(fv3jedi_name, field)
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
 
   ! Variable dimension
   npz = field%npz
@@ -656,7 +651,6 @@ integer :: jvar, npz, jl
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
-character(len=field_clen) :: fv3jedi_name
 character(len=1024) :: errmsg
 
 real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
@@ -666,9 +660,8 @@ ngrid = geom%ngrid_including_halo()
 
 do jvar = 1,vars%nvars()
 
-  ! Get fv3-jedi field
-  call get_fv3jedi_name(self%fields, trim(vars%variable(jvar)), fv3jedi_name)
-  call self%get_field(fv3jedi_name, field)
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
 
   ! Variable dimension
   npz = field%npz

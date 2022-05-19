@@ -43,11 +43,8 @@ void LinearVariableChange::setTrajectory(const State & xbg, const State & xfg) {
 void LinearVariableChange::multiply(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::multiply starting" << std::endl;
 
-  // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
-
   // If all variables already in incoming state just remove the no longer needed fields
-  if (varsLongName <= dx.variablesLongName()) {
+  if (vars <= dx.variables()) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::multiply done (identity)" << std::endl;
     return;
@@ -73,11 +70,8 @@ void LinearVariableChange::multiply(Increment & dx, const oops::Variables & vars
 void LinearVariableChange::multiplyInverse(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::multiplyInverse starting" << std::endl;
 
-  // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
-
   // If all variables already in incoming state just remove the no longer needed fields
-  if (varsLongName <= dx.variablesLongName()) {
+  if (vars <= dx.variables()) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::multiplyInverse done (identity)" << std::endl;
     return;
@@ -103,11 +97,8 @@ void LinearVariableChange::multiplyInverse(Increment & dx, const oops::Variables
 void LinearVariableChange::multiplyAD(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::multiplyAD starting" << std::endl;
 
-  // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
-
   // If all variables already in incoming state just remove the no longer needed fields
-  if (varsLongName <= dx.variablesLongName()) {
+  if (vars <= dx.variables()) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::multiplyAD done (identity)" << std::endl;
     return;
@@ -133,11 +124,8 @@ void LinearVariableChange::multiplyAD(Increment & dx, const oops::Variables & va
 void LinearVariableChange::multiplyInverseAD(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::multiplyInverseAD starting" << std::endl;
 
-  // Convert vars to long names and field names
-  const oops::Variables varsLongName = fieldsMetadata_.getLongNameFromAnyName(vars);
-
   // If all variables already in incoming state just remove the no longer needed fields
-  if (varsLongName <= dx.variablesLongName()) {
+  if (vars <= dx.variables()) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::multiplyInverseAD done (identity)" << std::endl;
     return;
