@@ -14,10 +14,10 @@ import saveAnalysisGFS
 import saveForecastGFS
 
 
-class ModelTasks(ewok.tasks.GenericModel.GenericModelTasks):
+class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
 
     def __init__(self):
-        ewok.tasks.GenericModel.GenericModelTasks.__init__(self)
+        ewok.tasks.GenericModel.ModelTasks.__init__(self)
 
         self.getBackground = getBackgroundGFS.getBackgroundGFS
         self.getExpInit = getExpInitGFS.getExpInitGFS
