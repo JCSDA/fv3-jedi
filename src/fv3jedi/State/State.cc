@@ -234,6 +234,26 @@ double State::norm() const {
   return zz;
 }
 
+// -------------------------------------------------------------------------------------------------
+
+void State::setAtlas(atlas::FieldSet * afieldset) const {
+  const bool include_halo = false;
+  fv3jedi_state_set_atlas_f90(keyState_, geom_->toFortran(), vars_, afieldset->get(), include_halo);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void State::toAtlas(atlas::FieldSet * afieldset) const {
+  const bool include_halo = false;
+  fv3jedi_state_to_atlas_f90(keyState_, geom_->toFortran(), vars_, afieldset->get(), include_halo);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void State::fromAtlas(atlas::FieldSet * afieldset) {
+  fv3jedi_state_from_atlas_f90(keyState_, geom_->toFortran(), vars_, afieldset->get());
+}
+
 // -----------------------------------------------------------------------------
 
 void State::getFieldSet(const oops::Variables & vars, atlas::FieldSet & fset) const {

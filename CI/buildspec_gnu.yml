@@ -109,6 +109,9 @@ phases:
       # ufo
       - ./clone.sh jcsda-internal/ufo $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ufo ${GIT_BASE_BRANCH} develop
 
+      # vader
+      - ./clone.sh jcsda-internal/vader $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle vader ${GIT_BASE_BRANCH} develop
+
       # femps
       - ./clone.sh jcsda-internal/femps $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle femps ${GIT_BASE_BRANCH} develop
 

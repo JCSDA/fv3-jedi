@@ -86,6 +86,9 @@ find_package( ufo 1.0.0 REQUIRED )
 # femps
 find_package( femps 1.0.0 REQUIRED )
 
+# vader
+find_package( vader 1.0.0 REQUIRED )
+
 #OpenMP
 find_package( OpenMP COMPONENTS Fortran )
 

@@ -122,6 +122,9 @@ class State : public util::Printable, private util::ObjectCounter<State> {
 
 // Get values as Atlas FieldSet
   void getFieldSet(const oops::Variables &, atlas::FieldSet &) const;
+  void setAtlas(atlas::FieldSet *) const;
+  void toAtlas(atlas::FieldSet *) const;
+  void fromAtlas(atlas::FieldSet *);
 
   int & toFortran() {return keyState_;}
   const int & toFortran() const {return keyState_;}

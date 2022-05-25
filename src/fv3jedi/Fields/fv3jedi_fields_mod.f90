@@ -21,7 +21,6 @@ use string_utils
 ! fv3jedi
 use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
                                      hasfield, create_field
-                                     
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_kinds_mod,         only: kind_real

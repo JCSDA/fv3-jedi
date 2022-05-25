@@ -20,6 +20,8 @@
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
 
+#include "vader/vader.h"
+
 #include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 #include "fv3jedi/VariableChange/Base/VariableChangeBase.h"
 
@@ -45,6 +47,7 @@ class VariableChange : public util::Printable {
   void print(std::ostream &) const override;
   std::unique_ptr<VariableChangeBase> variableChange_;
   FieldsMetadata fieldsMetadata_;
+  vader::Vader vader_;
 };
 
 // -------------------------------------------------------------------------------------------------

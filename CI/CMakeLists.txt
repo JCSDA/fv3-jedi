@@ -57,6 +57,7 @@ ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda-internal/oops.git" )
 ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda-internal/saber.git" )
 ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda-internal/ioda.git" )
 ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda-internal/ufo.git" )
+ecbuild_bundle( PROJECT vader GIT "https://github.com/jcsda-internal/vader.git" )
 
 # Options for building with certain models
 # ----------------------------------------

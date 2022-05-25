@@ -24,6 +24,7 @@
 #include "oops/util/parameters/ParametersOrConfiguration.h"
 #include "oops/util/parameters/PolymorphicParameter.h"
 #include "oops/util/Printable.h"
+#include "vader/VaderParameters.h"
 
 namespace fv3jedi {
   class Geometry;
@@ -35,6 +36,7 @@ class VariableChangeParametersBase : public oops::VariableChangeParametersBase {
   OOPS_ABSTRACT_PARAMETERS(VariableChangeParametersBase, oops::VariableChangeParametersBase)
  public:
   oops::OptionalParameter<std::string> name{"variable change name", this};
+  oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
 };
 
 // -------------------------------------------------------------------------------------------------

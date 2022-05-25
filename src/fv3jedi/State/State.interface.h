@@ -30,6 +30,8 @@ extern "C" {
                                    atlas::field::FieldSetImpl *, const bool &);
   void fv3jedi_state_to_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
                                   atlas::field::FieldSetImpl *, const bool &);
+  void fv3jedi_state_from_atlas_f90(const F90state &, const F90geom &, const oops::Variables &,
+                                    const atlas::field::FieldSetImpl *);
   void fv3jedi_state_sersize_f90(const F90state &, int &);
 
   void fv3jedi_state_serialize_f90(const F90state &, const std::size_t &, double[]);
