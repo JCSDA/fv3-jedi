@@ -673,7 +673,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "u_srf";
+    md.longName = "surface_eastward_wind";
     md.shortName = "u_srf";
     md.units = "ms-1";
     md.kind = "double";
@@ -683,7 +683,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "v_srf";
+    md.longName = "surface_northward_wind";
     md.shortName = "v_srf";
     md.units = "ms-1";
     md.kind = "double";

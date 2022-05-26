@@ -28,6 +28,10 @@ model:
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
                     frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
 observations:
+  get values:
+    variable change:
+      variable change name: Model2GeoVaLs
+      tropopause pressure method: thompson
   observers:
   - obs space:
       name: Aircraft
@@ -40,6 +44,8 @@ observations:
       name: VertInterp
     obs error:
       covariance model: diagonal
+    get values:
+      time interpolation: linear
   - obs space:
       name: GnssroBndNBAM
       obsdatain:
@@ -54,22 +60,8 @@ observations:
         super_ref_qc: NBAM
     obs error:
       covariance model: diagonal ufo
-#   - obs space:
-#       name: SBUV2-NOAA19-OZ
-#       obsdatain:
-#         obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
-#         obsgrouping:
-#           group variables: [ longitude ]
-#           sort variable: air_pressure
-#           sort order: ascending
-#       simulated variables: [integrated_layer_ozone_in_air]
-#     obs operator:
-#       name: AtmVertInterpLay
-#       geovals: [mole_fraction_of_ozone_in_air]
-#       coefficients: [0.007886131] # convert from ppmv to DU
-#       nlevels: [22]
-#     obs error:
-#       covariance model: diagonal ufo
+    get values:
+      time interpolation: linear
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
@@ -81,12 +73,15 @@ observations:
       Absorbers: [H2O,O3,CO2]
       Clouds: [Water, Ice]
       Cloud_Fraction: 1.0
+      SurfaceWindGeoVars: uv
       obs options:
         Sensor_ID: amsua_n19
         EndianType: little_endian
         CoefficientPath: Data/crtm/
     obs error:
       covariance model: diagonal ufo
+    get values:
+      time interpolation: linear
 prints:
   frequency: PT3H
 
