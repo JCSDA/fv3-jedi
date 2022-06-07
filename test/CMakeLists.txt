@@ -130,7 +130,6 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_0obs.yaml
   testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
-  testinput/hyb-3dvar_gfs_1obs.yaml
   testinput/hyb-3dvar_gfs_aero.yaml
   testinput/hyb-3dvar_gfs_aero_bump.yaml
   testinput/hyb-3dvar_gfs_aero_bump_bc.yaml
@@ -244,7 +243,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_gnssro_ropp.ref
   testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_lam_rrfs.ref
-  testoutput/hofx_nomodel_gfs.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
   testoutput/hyb-3dvar_bc.ref
@@ -253,25 +251,17 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_gfs_0obs.ref
   testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.ref
-  testoutput/hyb-3dvar_gfs_1obs.ref
   testoutput/hyb-3dvar_gfs_aero.ref
   testoutput/hyb-3dvar_gfs_aero_bump.ref
   testoutput/hyb-3dvar_gfs_aero_bump_bc.ref
   testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
   testoutput/hyb-3dvar_gfs.ref
   testoutput/hyb-3dvar.ref
-  testoutput/hyb-4dvar_fv3-gfs.ref
   testoutput/hyb-4dvar_pseudo-geos.ref
-  testoutput/hyb-fgat_fv3-geos.ref
-  testoutput/hyb-fgat_fv3-gfs.ref
   testoutput/hyb-fgat_fv3lm.ref
   testoutput/hyb-fgat_gfs_aero.ref
-  testoutput/letkf_geos.ref
-  testoutput/letkf_gfs.ref
   testoutput/letkf.ref
   testoutput/letkf_snow.ref
-  testoutput/lgetkf_geos.ref
-  testoutput/lgetkf_gfs.ref
   testoutput/lgetkf.ref
   testoutput/adjointforecast.ref
   testoutput/staticb_cor_gfs.ref
