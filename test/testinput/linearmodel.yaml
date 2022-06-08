@@ -26,9 +26,9 @@ linear model:
   trajectory:
     model variables: *anavars
 linear model test:
-  forecast length: PT1H
-  first multiplier TL: 0.01
-  iterations TL: 10
+  forecast length: PT30M
+  first multiplier TL: 1.e-11 # use weaker multipliers (e.g. 0.01) and more iterations for debugging
+  iterations TL: 1            # use more iterations (e.g. 10) for debugging, and adjust first multiplier
   tolerance AD: 2.0e-11
   tolerance TL: 1.0
 model:
