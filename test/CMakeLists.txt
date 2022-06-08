@@ -50,6 +50,7 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 list( APPEND fv3jedi_testinput
   testinput/3denvar_geos_aero.yaml
   testinput/3dvar_geos-cf.yaml
+  testinput/3dvar_gfs_0obs.yaml
   testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
@@ -124,11 +125,9 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_save_geovals.yaml
-  testinput/hyb-3dvar_bc.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
   testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
-  testinput/hyb-3dvar_gfs_0obs.yaml
   testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
   testinput/hyb-3dvar_gfs_aero.yaml
   testinput/hyb-3dvar_gfs_aero_bump.yaml
@@ -197,6 +196,7 @@ LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_B
 list( APPEND fv3jedi_testoutput
   testoutput/3dvar_geos-cf.ref
   testoutput/3dvar_lam_cmaq.ref
+  testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
   testoutput/3denvar_geos_aero.ref
   testoutput/4denvar.ref
@@ -245,11 +245,9 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel_lam_rrfs.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_save_geovals.ref
-  testoutput/hyb-3dvar_bc.ref
   testoutput/hyb-3dvar_fsoi_backward.ref
   testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
-  testoutput/hyb-3dvar_gfs_0obs.ref
   testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.ref
   testoutput/hyb-3dvar_gfs_aero.ref
   testoutput/hyb-3dvar_gfs_aero_bump.ref
@@ -1125,7 +1123,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_geos
                   ARGS     testinput/ensvariance_geos.yaml
                   COMMAND  fv3jedi_ensvariance.x )
 
-# 3DVar, 3DEnVar and hybrid 3DVar
+# hybrid 3DVar
 # -------------------------------
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar
                   MPI      6
@@ -1142,23 +1140,15 @@ if (BUILD_LARGE_TESTS)
 endif()
 
 # 3DVar with zero obs
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_0obs
                   MPI      6
-                  ARGS     testinput/hyb-3dvar_gfs_0obs.yaml
-                  COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+                  ARGS     testinput/3dvar_gfs_0obs.yaml
+                  COMMAND  fv3jedi_var.x )
 
 # 3DVar with zero obs in one of the obs spaces
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs_inoneobsspace
                   MPI      6
                   ARGS     testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
-                  COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
-
-# 3DVar with bias correction on for one of the satellites
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_bc
-                  MPI      6
-                  ARGS     testinput/hyb-3dvar_bc.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
@@ -1215,7 +1205,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-fgat_gfs_aero
 # 4DEnVar
 # -------
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_4denvar
-                  MPI      18
+                  MPI      12
                   ARGS     testinput/4denvar.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )

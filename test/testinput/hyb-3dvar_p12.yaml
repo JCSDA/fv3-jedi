@@ -79,8 +79,6 @@ cost function:
         name: Aircraft
         obsdatain:
           obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
-        obsdataout:
-          obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2020121500_m.nc4
         simulated variables: [eastward_wind, northward_wind, air_temperature]
         observed variables: [eastward_wind, northward_wind]
         derived variables: [air_temperature]
@@ -161,6 +159,36 @@ cost function:
           Sensor_ID: amsua_n19
           EndianType: little_endian
           CoefficientPath: Data/crtm/
+      obs bias:
+        input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
+        output file: Data/analysis/satbias_amsua_n19_p12_out.nc4
+        variational bc:
+          predictors:
+          - name: constant
+          - name: lapse_rate
+            order: 2
+            tlapse: &amsua19tlap Data/obs/testinput_tier_1/amsua_n19_tlapmean.txt
+          - name: lapse_rate
+            tlapse: *amsua19tlap
+          - name: emissivity
+          - name: scan_angle
+            order: 4
+          - name: scan_angle
+            order: 3
+          - name: scan_angle
+            order: 2
+          - name: scan_angle
+        covariance:
+          minimal required obs number: 20
+          variance range: [1.0e-6, 10.0]
+          step size: 1.0e-4
+          largest analysis variance: 10000.0
+          prior:
+            input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
+            inflation:
+              ratio: 1.1
+              ratio for small dataset: 2.0
+          output file: Data/analysis/satbias_cov_amsua_n19_p12_out.nc4
       obs error:
         covariance model: diagonal
       obs filters:
@@ -225,12 +253,6 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    online diagnostics:
-      write increment: true
-      increment:
-        filetype: fms restart
-        datapath: Data/analysis
-        prefix: iter1.hyb-3dvar.c24
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -243,19 +265,13 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    online diagnostics:
-      write increment: true
-      increment:
-        filetype: fms restart
-        datapath: Data/analysis
-        prefix: iter2.hyb-3dvar.c24
 final:
   diagnostics:
     departures: oman
 output:
   filetype: fms restart
   datapath: Data/analysis/
-  prefix: 20201215.000000.hyb-3dvar.c24
+  prefix: 20201215.000000.hyb-3dvar.c24_p12
   frequency: PT1H
 
 test:
