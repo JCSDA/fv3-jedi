@@ -15,8 +15,7 @@ initial condition:
   filetype: fms restart
   state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
-                    # u_srf,v_srf,f10m,sss]
+                    u_srf,v_srf,f10m,sss]
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201214.210000.fv_core.res.nc
   filename_trcr: 20201214.210000.fv_tracer.res.nc
@@ -32,8 +31,7 @@ model:
   lm_do_mst: 0
   model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
-                    # u_srf,v_srf,f10m,sss]
+                    u_srf,v_srf,f10m,sss]
 observations:
   observers:
   - obs space:
@@ -47,17 +45,17 @@ observations:
       name: Identity
     obs error:
       covariance model: diagonal
-#   - obs space:
-#       name: SeaSurfaceSalinity
-#       obsdatain:
-#         obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
-#       obsdataout:
-#         obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
-#       simulated variables: [sea_surface_salinity]
-#     obs operator:
-#       name: Identity
-#     obs error:
-#       covariance model: diagonal
+  - obs space:
+      name: SeaSurfaceSalinity
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
+      simulated variables: [sea_surface_salinity]
+    obs operator:
+      name: Identity
+    obs error:
+      covariance model: diagonal
   - obs space:
       name: Aircraft
       obsdatain:
