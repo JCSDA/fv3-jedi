@@ -31,15 +31,15 @@ background error:
                              ozone_mass_mixing_ratio]
     output variables: *bvars
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
-    procesor layout x direction: 3
-    procesor layout y direction: 2
+    processor layout x direction: 3
+    processor layout y direction: 2
     debugging mode: false
   - saber block name: gsi interpolation to model grid
     input variables: *bvars
     output variables: *bvars
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
-    procesor layout x direction: 3
-    procesor layout y direction: 2
+    processor layout x direction: 3
+    processor layout y direction: 2
     debugging mode: false
   # Does nothing except rename the variables seen by saber (psi -> stream_function etc).
   linear variable change:
