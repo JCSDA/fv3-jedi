@@ -69,11 +69,10 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
   // Call Vader. On entry, varsVaderFinal holds the vars requested from Vader; on exit,
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
-  std::unique_ptr<atlas::FieldSet> xfs(new atlas::FieldSet());
-  x.setAtlas(xfs.get());
-  x.toAtlas(xfs.get());
-  vader_.changeVar(xfs.get(), varsVaderFinal);
-  x.fromAtlas(xfs.get());
+  atlas::FieldSet xfs;
+  x.toFieldSet(xfs);
+  vader_.changeVar(xfs, varsVaderFinal);
+  x.fromFieldSet(xfs);
 
   // List of variables Vader added
   oops::Variables varsVaderAdded = varsVaderStart;
@@ -139,11 +138,10 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
 
   // Call Vader. On entry, varsVaderFinal holds the vars requested from Vader; on exit,
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
-  std::unique_ptr<atlas::FieldSet> xfs(new atlas::FieldSet());
-  x.setAtlas(xfs.get());
-  x.toAtlas(xfs.get());
-  vader_.changeVar(xfs.get(), varsVaderFinal);
-  x.fromAtlas(xfs.get());
+  atlas::FieldSet xfs;
+  x.toFieldSet(xfs);
+  vader_.changeVar(xfs, varsVaderFinal);
+  x.fromFieldSet(xfs);
 
   // List of variables Vader added
   oops::Variables varsVaderAdded = varsVaderStart;

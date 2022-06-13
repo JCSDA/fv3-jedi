@@ -12,7 +12,7 @@ use mpi
 use string_f_c_mod
 
 ! atlas uses
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_integer, atlas_real, atlas_functionspace
 
 ! fckit uses
 use fckit_mpi_module,           only: fckit_mpi_comm
@@ -33,7 +33,7 @@ use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 ! fv3jedi uses
 use fields_metadata_mod,         only: fields_metadata, field_metadata
 use fv3jedi_constants_mod,       only: ps, rad2deg, kap1, kapr
-use fv3jedi_kinds_mod,           only: kind_real
+use fv3jedi_kinds_mod,           only: kind_int, kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
 use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
@@ -100,8 +100,8 @@ type :: fv3jedi_geom
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
-    procedure, public :: set_atlas_lonlat
-    procedure, public :: fill_atlas_fieldset
+    procedure, public :: set_lonlat
+    procedure, public :: fill_extra_fields
     procedure, public :: ngrid_including_halo
     procedure, public :: trim_fv3_grid_to_jedi_interp_grid
     procedure, public :: trim_fv3_grid_to_jedi_interp_grid_ad
@@ -307,7 +307,7 @@ else
 endif
 
 ! Arrays from the Atm Structure
-! --------------------------------
+! -----------------------------
 
 self%grid_lon  = real(Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
 self%grid_lat  = real(Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
@@ -360,7 +360,6 @@ self%surface_pressure = real(Atm(1)%ps ,kind_real)
 
 call conf%get_or_die("logp",logp)
 self%logp = logp
-
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -603,7 +602,7 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_atlas_lonlat(self, afieldset, include_halo)
+subroutine set_lonlat(self, afieldset, include_halo)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
@@ -639,34 +638,54 @@ if (include_halo) then
   call afieldset%add(afield_incl_halo)
 endif
 
-end subroutine set_atlas_lonlat
+end subroutine set_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fill_atlas_fieldset(self, afieldset)
+subroutine fill_extra_fields(self, afieldset)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
-integer :: jl
+integer :: jl, ngrid
+integer, pointer :: int_ptr(:)
 real(kind=kind_real) :: sigmaup, sigmadn
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+real(kind=kind_real), allocatable :: hmask_1(:), hmask_2(:,:)
 type(atlas_field) :: afield
 real(kind=kind_real) :: plevli(self%npz+1),logp(self%npz)
 
+! Prepare halo mask
+ngrid = ngrid_including_halo(self)
+allocate(hmask_1(ngrid))
+allocate(hmask_2(self%isd:self%ied,self%jsd:self%jed))
+hmask_2 = 0.0_kind_real
+hmask_2(self%isc:self%iec,self%jsc:self%jec) = 1.0_kind_real
+call trim_fv3_grid_to_jedi_interp_grid(self, hmask_2, hmask_1)
+
+! Add halo mask
+afield = self%afunctionspace_incl_halo%create_field(name='hmask', kind=atlas_integer(kind_int), levels=0)
+call afield%data(int_ptr)
+int_ptr = int(hmask_1)
+call afieldset%add(afield)
+call afield%final()
+
+! Release memory
+deallocate(hmask_1)
+deallocate(hmask_2)
+
 ! Add area
-afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
+afield = self%afunctionspace_incl_halo%create_field(name='area', kind=atlas_real(kind_real), levels=0)
 call afield%data(real_ptr_1)
-real_ptr_1 = reshape(self%area(self%isc:self%iec,self%jsc:self%jec),(/self%ngrid/))
+call trim_fv3_grid_to_jedi_interp_grid(self, self%area, real_ptr_1)
 call afieldset%add(afield)
 call afield%final()
 
 ! Add vertical unit
-afield = self%afunctionspace%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
+afield = self%afunctionspace_incl_halo%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
 call afield%data(real_ptr_2)
-
 if (.not. self%logp) then
    do jl=1,self%npz
       sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
@@ -679,11 +698,10 @@ else
       real_ptr_2(jl,:) = logp(jl)
    enddo
 endif
-
 call afieldset%add(afield)
 call afield%final()
 
-end subroutine fill_atlas_fieldset
+end subroutine fill_extra_fields
 
 ! --------------------------------------------------------------------------------------------------
 

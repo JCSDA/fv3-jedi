@@ -205,8 +205,8 @@ end subroutine c_fv3jedi_geom_print
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_atlas_lonlat(c_key_self, c_afieldset, c_include_halo) &
-                                           bind(c,name='fv3jedi_geom_set_atlas_lonlat_f90')
+subroutine c_fv3jedi_geom_set_lonlat(c_key_self, c_afieldset, c_include_halo) &
+                                     bind(c,name='fv3jedi_geom_set_lonlat_f90')
 
 implicit none
 
@@ -231,14 +231,14 @@ include_halo = c_include_halo
 
 ! Call implementation
 ! -------------------
-call self%set_atlas_lonlat(afieldset, include_halo)
+call self%set_lonlat(afieldset, include_halo)
 
-end subroutine c_fv3jedi_geom_set_atlas_lonlat
+end subroutine c_fv3jedi_geom_set_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer(c_key_self,c_afunctionspace,c_afunctionspace_incl_halo) &
-                                                          bind(c,name='fv3jedi_geom_set_atlas_functionspace_pointer_f90')
+subroutine c_fv3jedi_geom_set_functionspace_pointer(c_key_self,c_afunctionspace,c_afunctionspace_incl_halo) &
+                                                    bind(c,name='fv3jedi_geom_set_functionspace_pointer_f90')
 
 integer(c_int), intent(in)     :: c_key_self
 type(c_ptr), intent(in), value :: c_afunctionspace
@@ -255,12 +255,12 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 self%afunctionspace = atlas_functionspace(c_afunctionspace)
 self%afunctionspace_incl_halo = atlas_functionspace(c_afunctionspace_incl_halo)
 
-end subroutine c_fv3jedi_geom_set_atlas_functionspace_pointer
+end subroutine c_fv3jedi_geom_set_functionspace_pointer
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_fill_atlas_fieldset(c_key_self, c_afieldset) &
-                                              bind(c,name='fv3jedi_geom_fill_atlas_fieldset_f90')
+subroutine c_fv3jedi_geom_fill_extra_fields(c_key_self, c_afieldset) &
+                                                     bind(c,name='fv3jedi_geom_fill_extra_fields_f90')
 
 implicit none
 
@@ -277,9 +277,9 @@ afieldset = atlas_fieldset(c_afieldset)
 
 ! Call implementation
 ! -------------------
-call self%fill_atlas_fieldset(afieldset)
+call self%fill_extra_fields(afieldset)
 
-end subroutine c_fv3jedi_geom_fill_atlas_fieldset
+end subroutine c_fv3jedi_geom_fill_extra_fields
 
 ! --------------------------------------------------------------------------------------------------
 

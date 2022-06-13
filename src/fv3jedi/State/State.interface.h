@@ -26,12 +26,10 @@ extern "C" {
   void fv3jedi_state_analytic_init_f90(const F90state &, const F90geom &,
                                        const eckit::Configuration &);
   void fv3jedi_state_fill_geom_orography_f90(const F90state &, F90geom &);
-  void fv3jedi_state_set_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                   atlas::field::FieldSetImpl *, const bool &);
-  void fv3jedi_state_to_atlas_f90(const F90inc &, const F90geom &, const oops::Variables &,
-                                  atlas::field::FieldSetImpl *, const bool &);
-  void fv3jedi_state_from_atlas_f90(const F90state &, const F90geom &, const oops::Variables &,
-                                    const atlas::field::FieldSetImpl *);
+  void fv3jedi_state_to_fieldset_f90(const F90state &, const F90geom &, const oops::Variables &,
+                                     atlas::field::FieldSetImpl *);
+  void fv3jedi_state_from_fieldset_f90(const F90state &, const F90geom &, const oops::Variables &,
+                                       const atlas::field::FieldSetImpl *);
   void fv3jedi_state_sersize_f90(const F90state &, int &);
 
   void fv3jedi_state_serialize_f90(const F90state &, const std::size_t &, double[]);

@@ -236,30 +236,14 @@ double State::norm() const {
 
 // -------------------------------------------------------------------------------------------------
 
-void State::setAtlas(atlas::FieldSet * afieldset) const {
-  const bool include_halo = false;
-  fv3jedi_state_set_atlas_f90(keyState_, geom_->toFortran(), vars_, afieldset->get(), include_halo);
+void State::toFieldSet(atlas::FieldSet & fset) const {
+  fv3jedi_state_to_fieldset_f90(keyState_, geom_->toFortran(), vars_, fset.get());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void State::toAtlas(atlas::FieldSet * afieldset) const {
-  const bool include_halo = false;
-  fv3jedi_state_to_atlas_f90(keyState_, geom_->toFortran(), vars_, afieldset->get(), include_halo);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void State::fromAtlas(atlas::FieldSet * afieldset) {
-  fv3jedi_state_from_atlas_f90(keyState_, geom_->toFortran(), vars_, afieldset->get());
-}
-
-// -----------------------------------------------------------------------------
-
-void State::getFieldSet(const oops::Variables & vars, atlas::FieldSet & fset) const {
-  const bool include_halo = true;
-  fv3jedi_state_set_atlas_f90(keyState_, geom_->toFortran(), vars, fset.get(), include_halo);
-  fv3jedi_state_to_atlas_f90(keyState_, geom_->toFortran(), vars, fset.get(), include_halo);
+void State::fromFieldSet(const atlas::FieldSet & fset) {
+  fv3jedi_state_from_fieldset_f90(keyState_, geom_->toFortran(), vars_, fset.get());
 }
 
 // -----------------------------------------------------------------------------

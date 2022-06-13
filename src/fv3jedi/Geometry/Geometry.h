@@ -53,8 +53,10 @@ class Geometry : public util::Printable,
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
   const eckit::mpi::Comm & getComm() const {return comm_;}
-  atlas::FunctionSpace * atlasFunctionSpace() const {return atlasFunctionSpace_.get();}
-  atlas::FieldSet * atlasFieldSet() const {return atlasFieldSet_.get();}
+  const atlas::FunctionSpace & functionSpace() const {return functionSpaceIncludingHalo_;}
+  atlas::FunctionSpace & functionSpace() {return functionSpaceIncludingHalo_;}
+  const atlas::FieldSet & extraFields() const {return extraFields_;}
+  atlas::FieldSet & extraFields() {return extraFields_;}
   void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
 
   std::vector<size_t> variableSizes(const oops::Variables &) const;
@@ -66,9 +68,9 @@ class Geometry : public util::Printable,
   void print(std::ostream &) const;
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
-  std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpace_;
-  std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpaceIncludingHalo_;
-  std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
+  atlas::FunctionSpace functionSpace_;
+  atlas::FunctionSpace functionSpaceIncludingHalo_;
+  atlas::FieldSet extraFields_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
 };
 // -------------------------------------------------------------------------------------------------
