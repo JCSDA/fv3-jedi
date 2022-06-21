@@ -699,6 +699,10 @@
            "longname",  "NH3"
            "units",     "ppmV"
            "profile_type", "fixed", "surface_value=1.e-7" /
+ "TRACER", "atmos_mod", "OH"
+           "longname",  "OH"
+           "units",     "ppmV"
+           "profile_type", "fixed", "surface_value=1.e-7" /
  "TRACER", "atmos_mod", "SV_ALK1"
            "longname",  "SV_ALK1"
            "units",     "ppmV"
@@ -763,6 +767,19 @@
            "longname",  "LV_PCSOG"
            "units",     "ppmV"
            "profile_type", "fixed", "surface_value=1.e-7" /
+# diagnostic air quality tracers
+ "TRACER", "atmos_mod", "PM25AT"
+           "longname",  "PM25AT"
+           "units",     "1"
+           "profile_type", "fixed", "surface_value=0.0" /
+ "TRACER", "atmos_mod", "PM25AC"
+           "longname",  "PM25AC"
+           "units",     "1"
+           "profile_type", "fixed", "surface_value=0.0" /
+ "TRACER", "atmos_mod", "PM25CO"
+           "longname",  "PM25CO"
+           "units",     "1"
+           "profile_type", "fixed", "surface_value=0.0" /
 # non-prognostic cloud amount
  "TRACER", "atmos_mod", "cld_amt"
            "longname",     "cloud amount"
