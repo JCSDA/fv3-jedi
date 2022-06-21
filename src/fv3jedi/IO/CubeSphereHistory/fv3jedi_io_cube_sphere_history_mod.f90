@@ -18,7 +18,7 @@ use datetime_mod
 use string_utils, only: swap_name_member
 
 ! fv3-jedi
-use fv3jedi_constants_mod,    only: rad2deg
+use fv3jedi_constants_mod,    only: rad2deg, nan
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use fv3jedi_field_mod,        only: fv3jedi_field
 use fv3jedi_io_utils_mod
@@ -671,6 +671,12 @@ integer, pointer :: istart(:), icount(:)
 integer, allocatable, target :: is_r3_tile(:), is_r3_noti(:)
 real(kind=kind_real), allocatable :: arrayg(:,:), delp(:,:,:)
 
+integer :: natt, nAtts, i, j, k
+character(len=2055) :: attname
+real(4) :: fill_value_f
+real(kind=kind_real) :: fill_value
+logical :: fill_value_found
+logical, allocatable :: fill_value_mask(:,:,:)
 
 ! Get ncid and varid for each field
 ! ---------------------------------
@@ -695,6 +701,24 @@ allocate(arrayg(1:self%npx-1,1:self%npy-1))
 ! Loop over fields
 ! ----------------
 do var = 1,size(fields)
+
+
+  ! Get attributes and look for _FillValue
+  ! --------------------------------------
+  fill_value_found = .false.
+  call nccheck ( nf90_inquire_variable(self%ncid(file_index(var)), varid(var), nAtts = nAtts), &
+                 "nf90_inquire_variable "//trim(fields(var)%io_name) )
+
+  do natt = 1, nAtts
+    call nccheck ( nf90_inq_attname(self%ncid(file_index(var)), varid(var), natt, attname), &
+                   "nf90_inq_attname"//trim(fields(var)%io_name) )
+    if (trim(attname) == "_FillValue") then
+      call nccheck ( nf90_get_att(self%ncid(file_index(var)), varid(var), trim(attname), &
+                     fill_value_f), "nf90_get_att"//trim(fields(var)%io_name)//" "//trim(attname) )
+      fill_value = real(fill_value_f, kind=kind_real)
+      fill_value_found = .true.
+    endif
+  enddo
 
 
   ! Special case of determining ps from delp
@@ -750,6 +774,7 @@ do var = 1,size(fields)
       ! Read the level
       call nccheck ( nf90_get_var( self%ncid(file_index(var)), varid(var), arrayg, istart, icount), &
                     "nf90_get_var "//trim(fields(var)%io_name) )
+
     endif
 
     ! Scatter the field to all processors on the tile
@@ -778,6 +803,23 @@ do var = 1,size(fields)
     fields(var)%npz = 1
     fields(var)%array(:,:,1) = sum(delp,3)
     deallocate(delp)
+  endif
+
+  ! Set data to nan
+  ! ---------------
+  if (fill_value_found) then
+
+    ! If a _FillValue was found, use it to set data to nan
+    do k = 1, fields(var)%npz
+      do j = fields(var)%jsc, fields(var)%jec
+        do i = fields(var)%isc, fields(var)%iec
+          if (fields(var)%array(i,j,k) == fill_value) then
+            fields(var)%array(i,j,k) = nan()
+          endif
+        enddo
+      enddo
+    enddo
+
   endif
 
 enddo

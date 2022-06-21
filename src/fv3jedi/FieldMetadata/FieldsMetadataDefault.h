@@ -1,4 +1,5 @@
-/*
+
+          asdaddFieldMetadata(fieldsmetadat/*
  * (C) Copyright 2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -27,6 +28,7 @@ namespace fv3jedi {
     std::string horizontalStaggerLocation;
     std::string levels;
     std::string space;
+    std::string mask;
   };
 
   // -----------------------------------------------------------------------------------------------
@@ -40,6 +42,7 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "horizontal stagger location";
     md.levels = "levels";
     md.space = "space";
+    md.mask = "mask";
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -55,6 +58,7 @@ namespace fv3jedi {
     ASSERT_MSG(md.horizontalStaggerLocation != "horizontal stagger location", "stagger not set");
     ASSERT_MSG(md.levels != "levels", "levels was not set");
     ASSERT_MSG(md.space != "space", "space was not set");
+    ASSERT_MSG(md.mask != "mask", "mask was not set");
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -75,6 +79,7 @@ namespace fv3jedi {
     fieldmetadata.setNumLevls(md.levels);
     fieldmetadata.setMathSpac(md.space);
     fieldmetadata.setIsTracer(md.tracer);
+    fieldmetadata.setGridMask(md.mask);
     fieldmetadata.setInOuName(md.shortName);  // Default to short, can only be set using override
     fieldmetadata.setInOuFile("default");     // Can only be set using override
     fieldmetadata.setIntrpTyp("default");     // Can only be set using override
@@ -111,7 +116,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "northsouth";
     md.levels = "full";
     md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "v_component_of_native_D_grid_wind";
     md.shortName = "vd";
@@ -121,7 +127,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "eastwest";
     md.levels = "full";
     md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "u_component_of_native_C_grid_wind";
     md.shortName = "uc";
@@ -131,7 +138,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "eastwest";
     md.levels = "full";
     md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "v_component_of_native_C_grid_wind";
     md.shortName = "vc";
@@ -141,7 +149,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "northsouth";
     md.levels = "full";
     md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "eastward_wind";
     md.shortName = "ua";
@@ -151,7 +160,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "northward_wind";
     md.shortName = "va";
@@ -161,7 +171,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_temperature";
     md.shortName = "t";
@@ -171,7 +182,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "virtual_temperature";
     md.shortName = "tv";
@@ -181,7 +193,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "potential_temperature";
     md.shortName = "pt";
@@ -191,7 +204,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_pressure_thickness";
     md.shortName = "delp";
@@ -201,7 +215,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_pressure_to_kappa";
     md.shortName = "pkz";
@@ -211,7 +226,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_pressure_levels";
     md.shortName = "pe";
@@ -221,7 +237,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_pressure";
     md.shortName = "p";
@@ -231,7 +248,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_pressure";
     md.shortName = "ps";
@@ -241,7 +259,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "specific_humidity";
     md.shortName = "sphum";
@@ -251,7 +270,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "relative_humidity";
     md.shortName = "rh";
@@ -261,7 +281,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_liquid_ice";
     md.shortName = "ice_wat";
@@ -271,7 +292,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_liquid_water";
     md.shortName = "liq_wat";
@@ -281,7 +303,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_large_scale_cloud_ice_water";
     md.shortName = "qils";
@@ -291,7 +314,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_convective_cloud_ice_water";
     md.shortName = "qicn";
@@ -301,7 +325,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_large_scale_cloud_liquid_water";
     md.shortName = "qlls";
@@ -311,7 +336,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_convective_cloud_liquid_water";
     md.shortName = "qlcn";
@@ -321,7 +347,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_large_scale_cloud_that_is_ice";
     md.shortName = "qilsf";
@@ -331,7 +358,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_convective_cloud_that_is_ice";
     md.shortName = "qicnf";
@@ -341,7 +369,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "snow_water";
     md.shortName = "snowwat";
@@ -351,7 +380,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "rain_water";
     md.shortName = "rainwat";
@@ -361,7 +391,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "graupel";
     md.shortName = "graupel";
@@ -371,7 +402,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_droplet_number_concentration";
     md.shortName = "qncloud";
@@ -381,7 +413,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_ice_number_concentration";
     md.shortName = "qnice";
@@ -391,7 +424,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "rain_number_concentration";
     md.shortName = "qnrain";
@@ -401,7 +435,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aerosol_water_number_concentration";
     md.shortName = "qnwfa";
@@ -411,7 +446,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aerosol_ice_number_concentration";
     md.shortName = "qnifa";
@@ -421,7 +457,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_area_fraction_in_atmosphere_layer";
     md.shortName = "cld_amt";
@@ -431,7 +468,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sgs_tke";
     md.shortName = "sgs_tke";
@@ -441,7 +479,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ozone_mass_mixing_ratio";
     md.shortName = "o3mr";
@@ -451,7 +490,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mole_fraction_of_ozone_in_air";
     md.shortName = "o3ppmv";
@@ -461,7 +501,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "odd_oxygen_mixing_ratio";
     md.shortName = "ox";
@@ -471,7 +512,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "upward_air_velocity";
     md.shortName = "w";
@@ -481,7 +523,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "layer_thickness";
     md.shortName = "delz";
@@ -491,7 +534,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sfc_geopotential_height_times_grav";
     md.shortName = "phis";
@@ -501,7 +545,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "stream_function";
     md.shortName = "psi";
@@ -511,7 +556,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "velocity_potential";
     md.shortName = "chi";
@@ -521,7 +567,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vorticity";
     md.shortName = "vort";
@@ -531,7 +578,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "divergence";
     md.shortName = "divg";
@@ -541,7 +589,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "slmsk";
     md.shortName = "slmsk";
@@ -551,7 +600,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sheleg";
     md.shortName = "sheleg";
@@ -561,7 +611,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_surface_temperature";
     md.shortName = "tsea";
@@ -571,7 +622,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vtype";
     md.shortName = "vtype";
@@ -581,7 +633,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "stype";
     md.shortName = "stype";
@@ -591,7 +644,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vfrac";
     md.shortName = "vfrac";
@@ -601,7 +655,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "stc";
     md.shortName = "stc";
@@ -611,7 +666,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "4";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "tslb";
     md.shortName = "tslb";
@@ -621,7 +677,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "9";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "soilt";
     md.shortName = "soilt";
@@ -631,7 +688,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "smc";
     md.shortName = "smc";
@@ -641,7 +699,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "4";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "smois";
     md.shortName = "smois";
@@ -651,7 +710,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "9";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "soilm";
     md.shortName = "soilm";
@@ -661,9 +721,10 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
-    md.longName = "totalSnowDepth";
+    md.longName = "total snow depth";
     md.shortName = "snwdph";
     md.units = "mm";
     md.kind = "double";
@@ -671,7 +732,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "land";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_eastward_wind";
     md.shortName = "u_srf";
@@ -681,7 +743,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_northward_wind";
     md.shortName = "v_srf";
@@ -691,7 +754,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "f10m";
     md.shortName = "f10m";
@@ -701,7 +765,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_surface_salinity";
     md.shortName = "sss";
@@ -711,7 +776,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "initial_mass_fraction_of_large_scale_cloud_condensate";
     md.shortName = "qls";
@@ -721,7 +787,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "initial_mass_fraction_of_convective_cloud_condensate";
     md.shortName = "qcn";
@@ -731,7 +798,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "convective_cloud_area_fraction";
     md.shortName = "cfcn";
@@ -741,7 +809,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_ocean";
     md.shortName = "frocean";
@@ -751,7 +820,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_land";
     md.shortName = "frland";
@@ -761,7 +831,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_landice";
     md.shortName = "frlandice";
@@ -771,7 +842,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_lake";
     md.shortName = "frlake";
@@ -781,7 +853,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fraction_of_ice";
     md.shortName = "frseaice";
@@ -791,7 +864,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "isotropic_variance_of_filtered_topography";
     md.shortName = "varflt";
@@ -801,7 +875,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_velocity_scale";
     md.shortName = "ustar";
@@ -811,7 +886,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_bouyancy_scale";
     md.shortName = "bstar";
@@ -821,7 +897,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "planetary_boundary_layer_height";
     md.shortName = "zpbl";
@@ -831,7 +908,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_exchange_coefficient_for_momentum";
     md.shortName = "cm";
@@ -841,7 +919,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_exchange_coefficient_for_heat";
     md.shortName = "ct";
@@ -851,7 +930,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_exchange_coefficient_for_moisture";
     md.shortName = "cq";
@@ -861,7 +941,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "KCBL_before_moist";
     md.shortName = "kcbl";
@@ -871,7 +952,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_temp_before_moist";
     md.shortName = "tsm";
@@ -881,7 +963,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "lower_index_where_Kh_greater_than_2";
     md.shortName = "khl";
@@ -891,7 +974,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "upper_index_where_Kh_greater_than_2";
     md.shortName = "khu";
@@ -901,7 +985,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "moist_air_density";
     md.shortName = "airdens";
@@ -911,7 +996,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "zorl";
     md.shortName = "zorl";
@@ -921,7 +1007,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_temperature";
     md.shortName = "t2m";
@@ -931,7 +1018,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "tropopause_pressure";
     md.shortName = "tropopause_pressure";
@@ -941,7 +1029,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "geopotential_height";
     md.shortName = "geopotential_height";
@@ -951,7 +1040,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "geopotential_height_levels";
     md.shortName = "geopotential_height_levels";
@@ -961,7 +1051,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "height";
     md.shortName = "height";
@@ -971,7 +1062,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_altitude";
     md.shortName = "surface_altitude";
@@ -981,7 +1073,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_geopotential_height";
     md.shortName = "surface_geopotential_height";
@@ -991,7 +1084,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "humidity_mixing_ratio";
     md.shortName = "humidity_mixing_ratio";
@@ -1001,7 +1095,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "integrated_layer_ozone_in_air";
     md.shortName = "integrated_layer_ozone_in_air";
@@ -1011,7 +1106,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mole_fraction_of_carbon_dioxide_in_air";
     md.shortName = "mole_fraction_of_carbon_dioxide_in_air";
@@ -1021,7 +1117,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_content_of_cloud_liquid_water_in_atmosphere_layer";
     md.shortName = "mass_content_of_cloud_liquid_water_in_atmosphere_layer";
@@ -1031,7 +1128,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_content_of_cloud_ice_in_atmosphere_layer";
     md.shortName = "mass_content_of_cloud_ice_in_atmosphere_layer";
@@ -1041,7 +1139,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_content_of_rain_in_atmosphere_layer";
     md.shortName = "mass_content_of_rain_in_atmosphere_layer";
@@ -1051,7 +1150,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_content_of_snow_in_atmosphere_layer";
     md.shortName = "mass_content_of_snow_in_atmosphere_layer";
@@ -1061,7 +1161,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_content_of_graupel_in_atmosphere_layer";
     md.shortName = "mass_content_of_graupel_in_atmosphere_layer";
@@ -1071,7 +1172,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_content_of_hail_in_atmosphere_layer";
     md.shortName = "mass_content_of_hail_in_atmosphere_layer";
@@ -1081,7 +1183,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "effective_radius_of_cloud_liquid_water_particle";
     md.shortName = "effective_radius_of_cloud_liquid_water_particle";
@@ -1091,7 +1194,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "effective_radius_of_cloud_ice_particle";
     md.shortName = "effective_radius_of_cloud_ice_particle";
@@ -1101,7 +1205,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "effective_radius_of_rain_particle";
     md.shortName = "effective_radius_of_rain_particle";
@@ -1111,7 +1216,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "effective_radius_of_snow_particle";
     md.shortName = "effective_radius_of_snow_particle";
@@ -1121,7 +1227,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "effective_radius_of_graupel_particle";
     md.shortName = "effective_radius_of_graupel_particle";
@@ -1131,7 +1238,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "effective_radius_of_hail_particle";
     md.shortName = "effective_radius_of_hail_particle";
@@ -1141,7 +1249,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "totalSnowDepth_background_error";
     md.shortName = "totalSnowDepth_background_error";
@@ -1151,7 +1260,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "water_area_fraction";
     md.shortName = "water_area_fraction";
@@ -1161,7 +1271,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "land_area_fraction";
     md.shortName = "land_area_fraction";
@@ -1171,7 +1282,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ice_area_fraction";
     md.shortName = "ice_area_fraction";
@@ -1181,7 +1293,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_snow_area_fraction";
     md.shortName = "surface_snow_area_fraction";
@@ -1191,7 +1304,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_temperature_where_sea";
     md.shortName = "surface_temperature_where_sea";
@@ -1201,7 +1315,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_temperature_where_land";
     md.shortName = "surface_temperature_where_land";
@@ -1211,7 +1326,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_temperature_where_ice";
     md.shortName = "surface_temperature_where_ice";
@@ -1221,7 +1337,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_temperature_where_snow";
     md.shortName = "surface_temperature_where_snow";
@@ -1231,7 +1348,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_snow_thickness";
     md.shortName = "surface_snow_thickness";
@@ -1241,7 +1359,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vegetation_area_fraction";
     md.shortName = "vegetation_area_fraction";
@@ -1251,7 +1370,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_wind_speed";
     md.shortName = "surface_wind_speed";
@@ -1261,7 +1381,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_wind_from_direction";
     md.shortName = "surface_wind_from_direction";
@@ -1271,7 +1392,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "direction";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "leaf_area_index";
     md.shortName = "leaf_area_index";
@@ -1281,7 +1403,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "volume_fraction_of_condensed_water_in_soil";
     md.shortName = "volume_fraction_of_condensed_water_in_soil";
@@ -1291,7 +1414,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "soil_temperature";
     md.shortName = "soil_temperature";
@@ -1301,7 +1425,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "land_type_index_NPOESS";
     md.shortName = "land_type_index_NPOESS";
@@ -1311,7 +1436,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vegetation_type_index";
     md.shortName = "vegetation_type_index";
@@ -1321,7 +1447,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "soil_type";
     md.shortName = "soil_type";
@@ -1331,7 +1458,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_roughness_length";
     md.shortName = "surface_roughness_length";
@@ -1341,7 +1469,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "wind_reduction_factor_at_10m";
     md.shortName = "wind_reduction_factor_at_10m";
@@ -1351,7 +1480,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_emissivity";
     md.shortName = "surface_emissivity";
@@ -1361,7 +1491,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "optical_thickness_of_atmosphere_layer";
     md.shortName = "optical_thickness_of_atmosphere_layer";
@@ -1371,7 +1502,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "toa_outgoing_radiance_per_unit_wavenumber";
     md.shortName = "toa_outgoing_radiance_per_unit_wavenumber";
@@ -1381,7 +1513,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "brightness_temperature";
     md.shortName = "brightness_temperature";
@@ -1391,7 +1524,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "brightness_temperature_assuming_clear_sky";
     md.shortName = "brightness_temperature_assuming_clear_sky";
@@ -1401,7 +1535,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "transmittances_of_atmosphere_layer";
     md.shortName = "transmittances_of_atmosphere_layer";
@@ -1411,7 +1546,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "weightingfunction_of_atmosphere_layer";
     md.shortName = "weightingfunction_of_atmosphere_layer";
@@ -1421,7 +1557,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "pressure_level_at_peak_of_weightingfunction";
     md.shortName = "pressure_level_at_peak_of_weightingfunction";
@@ -1431,7 +1568,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "average_surface_temperature_within_field_of_view";
     md.shortName = "average_surface_temperature_within_field_of_view";
@@ -1441,7 +1579,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "equivalent_reflectivity_factor";
     md.shortName = "equivalent_reflectivity_factor";
@@ -1451,7 +1590,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_ice_category_area_fraction";
     md.shortName = "sea_ice_category_area_fraction";
@@ -1461,7 +1601,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_ice_category_thickness";
     md.shortName = "sea_ice_category_thickness";
@@ -1471,7 +1612,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_surface_height_above_geoid";
     md.shortName = "sea_surface_height_above_geoid";
@@ -1481,7 +1623,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_water_potential_temperature";
     md.shortName = "sea_water_potential_temperature";
@@ -1491,7 +1634,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_water_conservative_temperature";
     md.shortName = "sea_water_conservative_temperature";
@@ -1501,7 +1645,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_water_absolute_salinity";
     md.shortName = "sea_water_absolute_salinity";
@@ -1511,7 +1656,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_water_practical_salinity";
     md.shortName = "sea_water_practical_salinity";
@@ -1521,7 +1667,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_water_salinity";
     md.shortName = "sea_water_salinity";
@@ -1531,7 +1678,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_water_cell_thickness";
     md.shortName = "sea_water_cell_thickness";
@@ -1541,7 +1689,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sea_surface_foundation_temperature";
     md.shortName = "sea_surface_foundation_temperature";
@@ -1551,7 +1700,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "latent_heat_vaporization";
     md.shortName = "latent_heat_vaporization";
@@ -1561,7 +1711,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "net_downwelling_shortwave_radiation";
     md.shortName = "net_downwelling_shortwave_radiation";
@@ -1571,7 +1722,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "upward_latent_heat_flux_in_air";
     md.shortName = "upward_latent_heat_flux_in_air";
@@ -1581,7 +1733,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "upward_sensible_heat_flux_in_air";
     md.shortName = "upward_sensible_heat_flux_in_air";
@@ -1591,7 +1744,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "net_downwelling_longwave_radiation";
     md.shortName = "net_downwelling_longwave_radiation";
@@ -1601,7 +1755,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "friction_velocity_over_water";
     md.shortName = "friction_velocity_over_water";
@@ -1611,7 +1766,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_dust001_in_air";
     md.shortName = "du001";
@@ -1621,7 +1777,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_dust002_in_air";
     md.shortName = "du002";
@@ -1631,7 +1788,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_dust003_in_air";
     md.shortName = "du003";
@@ -1641,7 +1799,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_dust004_in_air";
     md.shortName = "du004";
@@ -1651,7 +1810,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_dust005_in_air";
     md.shortName = "du005";
@@ -1661,7 +1821,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_sea_salt001_in_air";
     md.shortName = "ss001";
@@ -1671,7 +1832,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_sea_salt002_in_air";
     md.shortName = "ss002";
@@ -1681,7 +1843,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_sea_salt003_in_air";
     md.shortName = "ss003";
@@ -1691,7 +1854,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_sea_salt004_in_air";
     md.shortName = "ss004";
@@ -1701,7 +1865,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_sea_salt005_in_air";
     md.shortName = "ss005";
@@ -1711,7 +1876,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_hydrophobic_black_carbon_in_air";
     md.shortName = "bcphobic";
@@ -1721,7 +1887,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_hydrophilic_black_carbon_in_air";
     md.shortName = "bcphilic";
@@ -1731,7 +1898,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_hydrophobic_organic_carbon_in_air";
     md.shortName = "ocphobic";
@@ -1741,7 +1909,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_hydrophilic_organic_carbon_in_air";
     md.shortName = "ocphilic";
@@ -1751,7 +1920,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_nitrate001_in_air";
     md.shortName = "no3an1";
@@ -1761,7 +1931,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_nitrate002_in_air";
     md.shortName = "no3an2";
@@ -1771,7 +1942,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_nitrate003_in_air";
     md.shortName = "no3an3";
@@ -1781,7 +1953,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mass_fraction_of_sulfate_in_air";
     md.shortName = "so4";
@@ -1791,7 +1964,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "volume_extinction_in_air_due_to_aerosol_particles_lambda1";
     md.shortName = "ext1";
@@ -1801,7 +1975,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "volume_extinction_in_air_due_to_aerosol_particles_lambda2";
     md.shortName = "ext2";
@@ -1811,7 +1986,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "volume_extinction_in_air_due_to_aerosol_particles_lambda3";
     md.shortName = "ext3";
@@ -1821,7 +1997,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "no2";
     md.shortName = "no2";
@@ -1831,7 +2008,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "no";
     md.shortName = "no";
@@ -1841,7 +2019,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "o3";
     md.shortName = "o3";
@@ -1851,7 +2030,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "no3";
     md.shortName = "no3";
@@ -1861,7 +2041,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "h2o2";
     md.shortName = "h2o2";
@@ -1871,7 +2052,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "n2o5";
     md.shortName = "n2o5";
@@ -1881,7 +2063,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hno3";
     md.shortName = "hno3";
@@ -1891,7 +2074,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hono";
     md.shortName = "hono";
@@ -1901,7 +2085,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "pna";
     md.shortName = "pna";
@@ -1911,7 +2096,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "so2";
     md.shortName = "so2";
@@ -1921,7 +2107,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "pan";
     md.shortName = "pan";
@@ -1931,7 +2118,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "pacd";
     md.shortName = "pacd";
@@ -1941,7 +2129,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aacd";
     md.shortName = "aacd";
@@ -1951,7 +2140,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ald2";
     md.shortName = "ald2";
@@ -1961,7 +2151,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "panx";
     md.shortName = "panx";
@@ -1971,7 +2162,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "form";
     md.shortName = "form";
@@ -1981,7 +2173,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mepx";
     md.shortName = "mepx";
@@ -1991,7 +2184,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "meoh";
     md.shortName = "meoh";
@@ -2001,7 +2195,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "rooh";
     md.shortName = "rooh";
@@ -2011,7 +2206,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ntr1";
     md.shortName = "ntr1";
@@ -2021,7 +2217,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ntr2";
     md.shortName = "ntr2";
@@ -2031,7 +2228,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "facd";
     md.shortName = "facd";
@@ -2041,7 +2239,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "co";
     md.shortName = "co";
@@ -2051,7 +2250,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aldx";
     md.shortName = "aldx";
@@ -2061,7 +2261,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "glyd";
     md.shortName = "glyd";
@@ -2071,7 +2272,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "gly";
     md.shortName = "gly";
@@ -2081,7 +2283,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "mgly";
     md.shortName = "mgly";
@@ -2091,7 +2294,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "etha";
     md.shortName = "etha";
@@ -2101,7 +2305,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "etoh";
     md.shortName = "etoh";
@@ -2111,7 +2316,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ket";
     md.shortName = "ket";
@@ -2121,7 +2327,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "par";
     md.shortName = "par";
@@ -2131,7 +2338,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "acet";
     md.shortName = "acet";
@@ -2141,7 +2349,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "prpa";
     md.shortName = "prpa";
@@ -2151,7 +2360,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ethy";
     md.shortName = "ethy";
@@ -2161,7 +2371,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "eth";
     md.shortName = "eth";
@@ -2171,7 +2382,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ole";
     md.shortName = "ole";
@@ -2181,7 +2393,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "iole";
     md.shortName = "iole";
@@ -2191,7 +2404,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "isop";
     md.shortName = "isop";
@@ -2201,7 +2415,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ispd";
     md.shortName = "ispd";
@@ -2211,7 +2426,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "intr";
     md.shortName = "intr";
@@ -2221,7 +2437,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ispx";
     md.shortName = "ispx";
@@ -2231,7 +2448,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hpld";
     md.shortName = "hpld";
@@ -2241,7 +2459,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "opo3";
     md.shortName = "opo3";
@@ -2251,7 +2470,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "epox";
     md.shortName = "epox";
@@ -2261,7 +2481,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "terp";
     md.shortName = "terp";
@@ -2271,7 +2492,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "benzene";
     md.shortName = "benzene";
@@ -2281,7 +2503,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cres";
     md.shortName = "cres";
@@ -2291,7 +2514,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "open";
     md.shortName = "open";
@@ -2301,7 +2525,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "tol";
     md.shortName = "tol";
@@ -2311,7 +2536,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "xopn";
     md.shortName = "xopn";
@@ -2321,7 +2547,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "xylmn";
     md.shortName = "xylmn";
@@ -2331,7 +2558,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "naph";
     md.shortName = "naph";
@@ -2341,7 +2569,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cat1";
     md.shortName = "cat1";
@@ -2351,7 +2580,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cron";
     md.shortName = "cron";
@@ -2361,7 +2591,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "opan";
     md.shortName = "opan";
@@ -2371,7 +2602,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ech4";
     md.shortName = "ech4";
@@ -2381,7 +2613,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cl2";
     md.shortName = "cl2";
@@ -2391,7 +2624,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hocl";
     md.shortName = "hocl";
@@ -2401,7 +2635,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "fmcl";
     md.shortName = "fmcl";
@@ -2411,7 +2646,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hcl";
     md.shortName = "hcl";
@@ -2421,7 +2657,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "clno2";
     md.shortName = "clno2";
@@ -2431,7 +2668,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sesq";
     md.shortName = "sesq";
@@ -2441,7 +2679,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "soaalk";
     md.shortName = "soaalk";
@@ -2451,7 +2690,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vlvpo1";
     md.shortName = "vlvpo1";
@@ -2461,7 +2701,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vsvpo1";
     md.shortName = "vsvpo1";
@@ -2471,7 +2712,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vsvpo2";
     md.shortName = "vsvpo2";
@@ -2481,7 +2723,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vsvpo3";
     md.shortName = "vsvpo3";
@@ -2491,7 +2734,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vivpo1";
     md.shortName = "vivpo1";
@@ -2501,7 +2745,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vlvoo1";
     md.shortName = "vlvoo1";
@@ -2511,7 +2756,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vlvoo2";
     md.shortName = "vlvoo2";
@@ -2521,7 +2767,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vsvoo1";
     md.shortName = "vsvoo1";
@@ -2531,7 +2778,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vsvoo2";
     md.shortName = "vsvoo2";
@@ -2541,7 +2789,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "vsvoo3";
     md.shortName = "vsvoo3";
@@ -2551,7 +2800,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "pcvoc";
     md.shortName = "pcvoc";
@@ -2561,7 +2811,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "form_primary";
     md.shortName = "form_primary";
@@ -2571,7 +2822,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ald2_primary";
     md.shortName = "ald2_primary";
@@ -2581,7 +2833,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "butadiene13";
     md.shortName = "butadiene13";
@@ -2591,7 +2844,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "acrolein";
     md.shortName = "acrolein";
@@ -2601,7 +2855,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "acro_primary";
     md.shortName = "acro_primary";
@@ -2611,7 +2866,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "tolu";
     md.shortName = "tolu";
@@ -2621,7 +2877,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hg";
     md.shortName = "hg";
@@ -2631,7 +2888,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "hgiigas";
     md.shortName = "hgiigas";
@@ -2641,7 +2899,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aso4j";
     md.shortName = "aso4j";
@@ -2651,7 +2910,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aso4i";
     md.shortName = "aso4i";
@@ -2661,7 +2921,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "anh4j";
     md.shortName = "anh4j";
@@ -2671,7 +2932,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "anh4i";
     md.shortName = "anh4i";
@@ -2681,7 +2943,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ano3j";
     md.shortName = "ano3j";
@@ -2691,7 +2954,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ano3i";
     md.shortName = "ano3i";
@@ -2701,7 +2965,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aalk1j";
     md.shortName = "aalk1j";
@@ -2711,7 +2976,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aalk2j";
     md.shortName = "aalk2j";
@@ -2721,7 +2987,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "axyl1j";
     md.shortName = "axyl1j";
@@ -2731,7 +2998,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "axyl2j";
     md.shortName = "axyl2j";
@@ -2741,7 +3009,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "axyl3j";
     md.shortName = "axyl3j";
@@ -2751,7 +3020,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "atol1j";
     md.shortName = "atol1j";
@@ -2761,7 +3031,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "atol2j";
     md.shortName = "atol2j";
@@ -2771,7 +3042,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "atol3j";
     md.shortName = "atol3j";
@@ -2781,7 +3053,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "abnz1j";
     md.shortName = "abnz1j";
@@ -2791,7 +3064,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "abnz2j";
     md.shortName = "abnz2j";
@@ -2801,7 +3075,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "abnz3j";
     md.shortName = "abnz3j";
@@ -2811,7 +3086,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "apah1j";
     md.shortName = "apah1j";
@@ -2821,7 +3097,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "apah2j";
     md.shortName = "apah2j";
@@ -2831,7 +3108,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "apah3j";
     md.shortName = "apah3j";
@@ -2841,7 +3119,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "atrp1j";
     md.shortName = "atrp1j";
@@ -2851,7 +3130,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "atrp2j";
     md.shortName = "atrp2j";
@@ -2861,7 +3141,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aiso1j";
     md.shortName = "aiso1j";
@@ -2871,7 +3152,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aiso2j";
     md.shortName = "aiso2j";
@@ -2881,7 +3163,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asqtj";
     md.shortName = "asqtj";
@@ -2891,7 +3174,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aorgcj";
     md.shortName = "aorgcj";
@@ -2901,7 +3185,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aecj";
     md.shortName = "aecj";
@@ -2911,7 +3196,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aeci";
     md.shortName = "aeci";
@@ -2921,7 +3207,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aothrj";
     md.shortName = "aothrj";
@@ -2931,7 +3218,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aothri";
     md.shortName = "aothri";
@@ -2941,7 +3229,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "afej";
     md.shortName = "afej";
@@ -2951,7 +3240,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aalj";
     md.shortName = "aalj";
@@ -2961,7 +3251,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asij";
     md.shortName = "asij";
@@ -2971,7 +3262,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "atij";
     md.shortName = "atij";
@@ -2981,7 +3273,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "acaj";
     md.shortName = "acaj";
@@ -2991,7 +3284,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "amgj";
     md.shortName = "amgj";
@@ -3001,7 +3295,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "akj";
     md.shortName = "akj";
@@ -3011,7 +3306,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "amnj";
     md.shortName = "amnj";
@@ -3021,7 +3317,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "acors";
     md.shortName = "acors";
@@ -3031,7 +3328,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asoil";
     md.shortName = "asoil";
@@ -3041,7 +3339,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "numatkn";
     md.shortName = "numatkn";
@@ -3051,7 +3350,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "numacc";
     md.shortName = "numacc";
@@ -3061,7 +3361,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "numcor";
     md.shortName = "numcor";
@@ -3071,7 +3372,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "srfatkn";
     md.shortName = "srfatkn";
@@ -3081,7 +3383,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "srfacc";
     md.shortName = "srfacc";
@@ -3091,7 +3394,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "srfcor";
     md.shortName = "srfcor";
@@ -3101,7 +3405,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ah2oj";
     md.shortName = "ah2oj";
@@ -3111,7 +3416,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ah2oi";
     md.shortName = "ah2oi";
@@ -3121,7 +3427,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ah3opj";
     md.shortName = "ah3opj";
@@ -3131,7 +3438,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ah3opi";
     md.shortName = "ah3opi";
@@ -3141,7 +3449,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "anaj";
     md.shortName = "anaj";
@@ -3151,7 +3460,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "anai";
     md.shortName = "anai";
@@ -3161,7 +3471,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aclj";
     md.shortName = "aclj";
@@ -3171,7 +3482,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "acli";
     md.shortName = "acli";
@@ -3181,7 +3493,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aseacat";
     md.shortName = "aseacat";
@@ -3191,7 +3504,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aclk";
     md.shortName = "aclk";
@@ -3201,7 +3515,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aso4k";
     md.shortName = "aso4k";
@@ -3211,7 +3526,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "anh4k";
     md.shortName = "anh4k";
@@ -3221,7 +3537,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ano3k";
     md.shortName = "ano3k";
@@ -3231,7 +3548,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ah2ok";
     md.shortName = "ah2ok";
@@ -3241,7 +3559,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ah3opk";
     md.shortName = "ah3opk";
@@ -3251,7 +3570,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aiso3j";
     md.shortName = "aiso3j";
@@ -3261,7 +3581,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aolgaj";
     md.shortName = "aolgaj";
@@ -3271,7 +3592,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aolgbj";
     md.shortName = "aolgbj";
@@ -3281,7 +3603,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aglyj";
     md.shortName = "aglyj";
@@ -3291,7 +3614,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "apcsoj";
     md.shortName = "apcsoj";
@@ -3301,7 +3625,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "alvpo1i";
     md.shortName = "alvpo1i";
@@ -3311,7 +3636,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvpo1i";
     md.shortName = "asvpo1i";
@@ -3321,7 +3647,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvpo2i";
     md.shortName = "asvpo2i";
@@ -3331,7 +3658,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "alvpo1j";
     md.shortName = "alvpo1j";
@@ -3341,7 +3669,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvpo1j";
     md.shortName = "asvpo1j";
@@ -3351,7 +3680,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvpo2j";
     md.shortName = "asvpo2j";
@@ -3361,7 +3691,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvpo3j";
     md.shortName = "asvpo3j";
@@ -3371,7 +3702,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "aivpo1j";
     md.shortName = "aivpo1j";
@@ -3381,7 +3713,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "alvoo1i";
     md.shortName = "alvoo1i";
@@ -3391,7 +3724,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "alvoo2i";
     md.shortName = "alvoo2i";
@@ -3401,7 +3735,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvoo1i";
     md.shortName = "asvoo1i";
@@ -3411,7 +3746,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvoo2i";
     md.shortName = "asvoo2i";
@@ -3421,7 +3757,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "alvoo1j";
     md.shortName = "alvoo1j";
@@ -3431,7 +3768,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "alvoo2j";
     md.shortName = "alvoo2j";
@@ -3441,7 +3779,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvoo1j";
     md.shortName = "asvoo1j";
@@ -3451,7 +3790,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvoo2j";
     md.shortName = "asvoo2j";
@@ -3461,7 +3801,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "asvoo3j";
     md.shortName = "asvoo3j";
@@ -3471,7 +3812,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "nh3";
     md.shortName = "nh3";
@@ -3481,7 +3823,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_alk1";
     md.shortName = "sv_alk1";
@@ -3491,7 +3834,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_alk2";
     md.shortName = "sv_alk2";
@@ -3501,7 +3845,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_xyl1";
     md.shortName = "sv_xyl1";
@@ -3511,7 +3856,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_xyl2";
     md.shortName = "sv_xyl2";
@@ -3521,7 +3867,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_tol1";
     md.shortName = "sv_tol1";
@@ -3531,7 +3878,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_tol2";
     md.shortName = "sv_tol2";
@@ -3541,7 +3889,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_bnz1";
     md.shortName = "sv_bnz1";
@@ -3551,7 +3900,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_bnz2";
     md.shortName = "sv_bnz2";
@@ -3561,7 +3911,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_pah1";
     md.shortName = "sv_pah1";
@@ -3571,7 +3922,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_pah2";
     md.shortName = "sv_pah2";
@@ -3581,7 +3933,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_trp1";
     md.shortName = "sv_trp1";
@@ -3591,7 +3944,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_trp2";
     md.shortName = "sv_trp2";
@@ -3601,7 +3955,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_iso1";
     md.shortName = "sv_iso1";
@@ -3611,7 +3966,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_iso2";
     md.shortName = "sv_iso2";
@@ -3621,7 +3977,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "sv_sqt";
     md.shortName = "sv_sqt";
@@ -3631,7 +3988,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "lv_pcsog";
     md.shortName = "lv_pcsog";
@@ -3641,7 +3999,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "raw_orography";
     md.shortName = "orog_raw";
@@ -3651,7 +4010,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "filtered_orography";
     md.shortName = "orog_filt";
@@ -3672,7 +4032,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "eastwest";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "d_grid_west_face_normal_wind_component_cold_start";
     md.shortName = "v_w_cold";
@@ -3682,7 +4043,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "eastwest";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "d_grid_south_face_tangential_wind_component_cold_start";
     md.shortName = "u_s_cold";
@@ -3692,7 +4054,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "northsouth";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "d_grid_south_face_normal_wind_component_cold_start";
     md.shortName = "v_s_cold";
@@ -3702,7 +4065,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "northsouth";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "u_component_of_native_D_grid_wind_cold_start";
     md.shortName = "ud_cold";
@@ -3712,7 +4076,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "northsouth";
     md.levels = "half";
     md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "v_component_of_native_D_grid_wind_cold_start";
     md.shortName = "vd_cold";
@@ -3722,7 +4087,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "eastwest";
     md.levels = "half";
     md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "surface_pressure_cold_start";
     md.shortName = "ps_cold";
@@ -3732,7 +4098,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_temperature_cold_start";
     md.shortName = "t_cold";
@@ -3742,7 +4109,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "air_pressure_thickness_cold_start";
     md.shortName = "delp_cold";
@@ -3752,7 +4120,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "upward_air_velocity_cold_start";
     md.shortName = "w_cold";
@@ -3762,7 +4131,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "layer_thickness_cold_start";
     md.shortName = "zh_cold";
@@ -3772,7 +4142,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "halfplusone";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "specific_humidity_cold_start";
     md.shortName = "sphum_cold";
@@ -3782,7 +4153,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_liquid_water_cold_start";
     md.shortName = "liq_wat_cold";
@@ -3792,7 +4164,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ozone_mass_mixing_ratio_cold_start";
     md.shortName = "o3mr_cold";
@@ -3802,7 +4175,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "ice_wat_cold_start";
     md.shortName = "ice_wat_cold";
@@ -3812,7 +4186,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "rainwat_cold_start";
     md.shortName = "rainwat_cold";
@@ -3822,7 +4197,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "snowwat_cold_start";
     md.shortName = "snowwat_cold";
@@ -3832,7 +4208,8 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
 
     md.longName = "graupel_cold_start";
     md.shortName = "graupel_cold";
@@ -3842,6 +4219,7 @@ namespace fv3jedi {
     md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
+    md.mask = "none";
+    addFieldMetadata\(fieldsmetadata, nlev, md);
   }
 }  // namespace fv3jedi
