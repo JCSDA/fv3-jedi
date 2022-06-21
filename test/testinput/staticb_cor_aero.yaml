@@ -51,7 +51,6 @@ bump:
     filename_sfcd: cor_rh.sfc_data.nc
     filename_sfcw: cor_rh.fv_srf_wnd.res.nc
     filename_cplr: cor_rh.coupler.res
-    date: 2018-04-15T00:00:00Z
   - parameter: cor_rv
     filetype: fms restart
     datapath: Data/staticb_aero/
@@ -60,7 +59,6 @@ bump:
     filename_sfcd: cor_rv.sfc_data.nc
     filename_sfcw: cor_rv.fv_srf_wnd.res.nc
     filename_cplr: cor_rv.coupler.res
-    date: 2018-04-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_cor_aero.ref

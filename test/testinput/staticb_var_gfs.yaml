@@ -45,6 +45,7 @@ bump:
     variables: [surface_pressure]
   input:
   - parameter: var
+    set datetime on read: true
     datetime: 2020-12-14T21:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
@@ -54,8 +55,8 @@ bump:
     filename_sfcd: 20201214.210000.var.sfc_data.nc
     filename_sfcw: 20201214.210000.var.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.var.coupler.res
-    date: 2020-12-14T21:00:00Z
   - parameter: m4
+    set datetime on read: true
     datetime: 2020-12-14T21:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
@@ -65,8 +66,8 @@ bump:
     filename_sfcd: 20201214.210000.m4.sfc_data.nc
     filename_sfcw: 20201214.210000.m4.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.m4.coupler.res
-    date: 2020-12-14T21:00:00Z
   - parameter: var
+    set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
@@ -76,8 +77,8 @@ bump:
     filename_sfcd: 20201215.000000.var.sfc_data.nc
     filename_sfcw: 20201215.000000.var.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.var.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: m4
+    set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
@@ -87,8 +88,8 @@ bump:
     filename_sfcd: 20201215.000000.m4.sfc_data.nc
     filename_sfcw: 20201215.000000.m4.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.m4.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: var
+    set datetime on read: true
     datetime: 2020-12-15T03:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
@@ -98,8 +99,8 @@ bump:
     filename_sfcd: 20201215.030000.var.sfc_data.nc
     filename_sfcw: 20201215.030000.var.fv_srf_wnd.res.nc
     filename_cplr: 20201215.030000.var.coupler.res
-    date: 2020-12-15T03:00:00Z
   - parameter: m4
+    set datetime on read: true
     datetime: 2020-12-15T03:00:00Z
     filetype: fms restart
     datapath: Data/staticb/
@@ -109,7 +110,6 @@ bump:
     filename_sfcd: 20201215.030000.m4.sfc_data.nc
     filename_sfcw: 20201215.030000.m4.fv_srf_wnd.res.nc
     filename_cplr: 20201215.030000.m4.coupler.res
-    date: 2020-12-15T03:00:00Z
   output:
   - parameter: stddev
     filetype: fms restart
@@ -119,7 +119,6 @@ bump:
     filename_sfcd: stddev.sfc_data.nc
     filename_sfcw: stddev.fv_srf_wnd.res.nc
     filename_cplr: stddev.coupler.res
-    date: 2020-12-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_var_gfs.ref

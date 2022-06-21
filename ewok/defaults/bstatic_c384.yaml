@@ -32,7 +32,6 @@ saber blocks:
       filename_core: cor_rh.fv_core.res.nc
       filename_trcr: cor_rh.fv_tracer.res.nc
       filename_cplr: cor_rh.coupler.res
-      date: 2020-01-31T00:00:00Z
 - saber block name: StdDev
   input variables: *control_vars
   output variables: *control_vars
@@ -46,7 +45,6 @@ saber blocks:
     filename_core: stddev.fv_core.res.nc
     filename_trcr: stddev.fv_tracer.res.nc
     filename_cplr: stddev.coupler.res
-    date: 2020-01-31T00:00:00Z
 - saber block name: BUMP_VerticalBalance
   input variables: *control_vars
   output variables: *control_vars

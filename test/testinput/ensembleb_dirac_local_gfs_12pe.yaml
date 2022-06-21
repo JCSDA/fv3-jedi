@@ -54,7 +54,6 @@ output dirac:
   filename_sfcd: dirac_local_%id%_gfs_12pe.sfc_data.nc
   filename_sfcw: dirac_local_%id%_gfs_12pe.fv_srf_wnd.res.nc
   filename_cplr: dirac_local_%id%_gfs_12pe.coupler.res
-  date: 2020-12-15T00:00:00Z
 dirac:
   ndir: 1
   ixdir: [1]

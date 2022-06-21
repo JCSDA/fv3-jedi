@@ -59,7 +59,6 @@ background error:
         filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
         filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.cor_rh.coupler.res
-        date: 2018-04-15T00:00:00Z
   - saber block name: StdDev
     input variables: [mass_fraction_of_sulfate_in_air,
                       mass_fraction_of_hydrophobic_black_carbon_in_air,
@@ -92,7 +91,6 @@ background error:
       filename_sfcd: 20180415.000000.stddev.sfc_data.nc
       filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
       filename_cplr: 20180415.000000.stddev.coupler.res
-      date: 2018-04-15T00:00:00Z
 output dirac:
   filetype: fms restart
   datapath: Data/staticb_aero/
@@ -101,7 +99,6 @@ output dirac:
   filename_sfcd: dirac_local_%id%_aero_12pe.sfc_data.nc
   filename_sfcw: dirac_local_%id%_aero_12pe.fv_srf_wnd.res.nc
   filename_cplr: dirac_local_%id%_aero_12pe.coupler.res
-  date: 2018-04-15T00:00:00Z
 dirac:
   ndir: 1
   ixdir: [1]    #Xdir

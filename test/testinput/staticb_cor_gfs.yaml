@@ -63,7 +63,6 @@ bump:
     - var-mom_2D_2020121503_gfs_mom
   output number of components:
     filepath: Data/staticb/ncmp
-    date: 2020-12-15T00:00:00Z
   output:
   - parameter: cor_a
     component: 1
@@ -74,7 +73,6 @@ bump:
     filename_sfcd: cor_a_1.sfc_data.nc
     filename_sfcw: cor_a_1.fv_srf_wnd.res.nc
     filename_cplr: cor_a_1.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: cor_a
     component: 2
     filetype: fms restart
@@ -84,7 +82,6 @@ bump:
     filename_sfcd: cor_a_2.sfc_data.nc
     filename_sfcw: cor_a_2.fv_srf_wnd.res.nc
     filename_cplr: cor_a_2.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: cor_rh
     component: 1
     filetype: fms restart
@@ -94,7 +91,6 @@ bump:
     filename_sfcd: cor_rh_1.sfc_data.nc
     filename_sfcw: cor_rh_1.fv_srf_wnd.res.nc
     filename_cplr: cor_rh_1.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: cor_rh
     component: 2
     filetype: fms restart
@@ -104,7 +100,6 @@ bump:
     filename_sfcd: cor_rh_2.sfc_data.nc
     filename_sfcw: cor_rh_2.fv_srf_wnd.res.nc
     filename_cplr: cor_rh_2.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: cor_rv
     component: 1
     filetype: fms restart
@@ -114,7 +109,6 @@ bump:
     filename_sfcd: cor_rv_1.sfc_data.nc
     filename_sfcw: cor_rv_1.fv_srf_wnd.res.nc
     filename_cplr: cor_rv_1.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: cor_rv
     component: 2
     filetype: fms restart
@@ -124,7 +118,6 @@ bump:
     filename_sfcd: cor_rv_2.sfc_data.nc
     filename_sfcw: cor_rv_2.fv_srf_wnd.res.nc
     filename_cplr: cor_rv_2.coupler.res
-    date: 2020-12-15T00:00:00Z
 
 test:
   reference filename: testoutput/staticb_cor_gfs.ref

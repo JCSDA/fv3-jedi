@@ -43,7 +43,6 @@ bump:
     filename_sfcd: bumpparameters_nicas_gfs_aero.cor_rh.sfc_data.nc
     filename_sfcw: bumpparameters_nicas_gfs_aero.cor_rh.fv_srf_wnd.res.nc
     filename_cplr: bumpparameters_nicas_gfs_aero.cor_rh.coupler.res
-    date: 2018-04-14T21:00:00Z
   - parameter: cor_rv
     filetype: fms restart
     datapath: Data/bump/
@@ -52,7 +51,6 @@ bump:
     filename_sfcd: bumpparameters_nicas_gfs_aero.cor_rv.sfc_data.nc
     filename_sfcw: bumpparameters_nicas_gfs_aero.cor_rv.fv_srf_wnd.res.nc
     filename_cplr: bumpparameters_nicas_gfs_aero.cor_rv.coupler.res
-    date: 2018-04-14T21:00:00Z
 
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs_aero.ref

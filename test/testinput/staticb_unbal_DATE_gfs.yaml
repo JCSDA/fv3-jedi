@@ -50,7 +50,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -70,7 +69,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -90,7 +88,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -110,7 +107,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -130,7 +126,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -150,7 +145,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -170,7 +164,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -190,7 +183,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -210,7 +202,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       filetype: fms restart
@@ -230,7 +221,6 @@ bump:
       filename_sfcd: sfc_data.nc
       filename_sfcw: fv_srf_wnd.res.nc
       filename_cplr: coupler.res
-    date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
 
 test:
   reference filename: testoutput/staticb_unbal__YYYY__MM__DD__HH__gfs.ref

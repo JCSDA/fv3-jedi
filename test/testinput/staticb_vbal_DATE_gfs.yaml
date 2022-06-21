@@ -49,7 +49,6 @@ bump:
         filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
         filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
         filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-        date: _YYYY_-_MM_-_DD_T_HH_:00:00Z
       pattern: '%mem%'
       nmembers: 10
       zero padding: 3

@@ -1,7 +1,7 @@
-Norm of var - 1 at 2020-12-14T21:00:00Z: 9.1060175561000549e+11
-Norm of m4 - 1 at 2020-12-14T21:00:00Z: 2.3616877386005828e+25
-Norm of var - 1 at 2020-12-15T00:00:00Z: 8.5076630881579053e+11
-Norm of m4 - 1 at 2020-12-15T00:00:00Z: 2.3009366846222719e+25
-Norm of var - 1 at 2020-12-15T03:00:00Z: 8.0732144020806116e+11
-Norm of m4 - 1 at 2020-12-15T03:00:00Z: 1.6818649460249875e+25
-Norm of stddev - 1 at 2020-12-15T00:00:00Z: 4.8152148073163821e+05
+Norm of input BUMP parameter var - 1: 9.1060175560998389e+11
+Norm of input BUMP parameter m4 - 1: 2.3616877386006112e+25
+Norm of input BUMP parameter var - 1: 8.5076630881574390e+11
+Norm of input BUMP parameter m4 - 1: 2.3009366846217445e+25
+Norm of input BUMP parameter var - 1: 8.0732144020805322e+11
+Norm of input BUMP parameter m4 - 1: 1.6818649460253159e+25
+Norm of BUMP output parameter stddev - 1: 4.8152148073162988e+05

@@ -51,7 +51,6 @@ bump:
     filename_sfcd: loc_rh.sfc_data.nc
     filename_sfcw: loc_rh.fv_srf_wnd.res.nc
     filename_cplr: loc_rh.coupler.res
-    date: 2020-12-15T00:00:00Z
   - parameter: loc_rv
     filetype: fms restart
     datapath: Data/ensembleb/
@@ -60,7 +59,6 @@ bump:
     filename_sfcd: loc_rv.sfc_data.nc
     filename_sfcw: loc_rv.fv_srf_wnd.res.nc
     filename_cplr: loc_rv.coupler.res
-    date: 2020-12-15T00:00:00Z
 
 test:
   reference filename: testoutput/ensembleb_loc_gfs.ref
