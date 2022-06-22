@@ -404,7 +404,7 @@ enddo
 c3 = 1.0_kind_real/(1.0_kind_real-q_pos)
 c3_ad = 1000.0_kind_real*q_pos*qmr_ad
 q_ad_pos = c3_ad/(1.0_kind_real-q_pos)**2 + 1000.0_kind_real*c3*qmr_ad
-qmr_ad = 0.0_8
+qmr_ad = 0.0_kind_real
 
 
 ! Remove negative values adjoint

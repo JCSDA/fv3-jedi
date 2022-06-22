@@ -125,11 +125,11 @@ end subroutine sfc_10m_winds
 
 subroutine psichi_to_udvd(geom, psi_in, chi_in, ud, vd)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(in)    :: psi_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(in)    :: chi_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(inout) ::     ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
-real(kind=kind_real), intent(inout) ::     vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(in)  :: psi_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(in)  :: chi_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(out) ::     ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
+real(kind=kind_real), intent(out) ::     vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
 
 integer :: i,j,k
 
@@ -216,9 +216,9 @@ end subroutine psichi_to_udvd
 
 subroutine psichi_to_udvd_adm(geom, psi_in_ad, chi_in_ad, ud_ad, vd_ad)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(inout) :: psi_in_ad(geom%isc:geom%iec  , geom%jsc:geom%jec  , geom%npz)
-real(kind=kind_real), intent(inout) :: chi_in_ad(geom%isc:geom%iec  , geom%jsc:geom%jec  , geom%npz)
+type(fv3jedi_geom),   intent(in)    :: geom
+real(kind=kind_real), intent(out)   :: psi_in_ad(geom%isc:geom%iec  , geom%jsc:geom%jec  , geom%npz)
+real(kind=kind_real), intent(out)   :: chi_in_ad(geom%isc:geom%iec  , geom%jsc:geom%jec  , geom%npz)
 real(kind=kind_real), intent(inout) ::     ud_ad(geom%isc:geom%iec  , geom%jsc:geom%jec+1, geom%npz)
 real(kind=kind_real), intent(inout) ::     vd_ad(geom%isc:geom%iec+1, geom%jsc:geom%jec  , geom%npz)
 
@@ -233,35 +233,35 @@ real(kind=kind_real) ::    psi_ad(geom%isd:geom%ied  , geom%jsd:geom%jed  , geom
 real(kind=kind_real) ::    chi_ad(geom%isd:geom%ied  , geom%jsd:geom%jed  , geom%npz)
 real(kind=kind_real) :: temp_ad
 
-psi_ad = 0.0_8
-vd_div_ad = 0.0_8
+psi_ad = 0.0_kind_real
+vd_div_ad = 0.0_kind_real
 do k=geom%npz,1,-1
   do j=geom%jec,geom%jsc,-1
     do i=geom%iec,geom%isc,-1
       temp_ad = vd_ad(i,j,k)/geom%dxc(i,j)
       vd_div_ad(i,j,k) = vd_div_ad(i,j,k) + vd_ad(i,j,k)
-      vd_ad(i,j,k) = 0.0_8
+      vd_ad(i,j,k) = 0.0_kind_real
       psi_ad(i,j,k) = psi_ad(i,j,k) + temp_ad
       psi_ad(i-1,j,k) = psi_ad(i-1,j,k) - temp_ad
     end do
   end do
 end do
 
-ud_div_ad = 0.0_8
+ud_div_ad = 0.0_kind_real
 do k=geom%npz,1,-1
   do j=geom%jec,geom%jsc,-1
     do i=geom%iec,geom%isc,-1
       ud_div_ad(i,j,k) = ud_div_ad(i,j,k) + ud_ad(i,j,k)
       temp_ad = -(ud_ad(i,j,k)/geom%dyc(i,j))
-      ud_ad(i,j,k) = 0.0_8
+      ud_ad(i,j,k) = 0.0_kind_real
       psi_ad(i,j,k) = psi_ad(i,j,k) + temp_ad
       psi_ad(i,j-1,k) = psi_ad(i,j-1,k) - temp_ad
     end do
   end do
 end do
 
-ua_div_ad = 0.0_8
-va_div_ad = 0.0_8
+ua_div_ad = 0.0_kind_real
+va_div_ad = 0.0_kind_real
 do k=geom%npz,1,-1
   call acs_to_d_domain_level_adm(geom, ua_div_ad(:,:,k), va_div_ad(:,:,k), ud_div_ad(:,:,k), &
                                   vd_div_ad(:,:,k))
@@ -270,20 +270,20 @@ end do
 call mpp_update_domains_adm(va_div_ad, va_div_ad, geom%domain, complete=.true.)
 call mpp_update_domains_adm(va_div_ad, ua_div_ad, geom%domain, complete=.true.)
 
-vc_div_ad = 0.0_8
-uc_div_ad = 0.0_8
+vc_div_ad = 0.0_kind_real
+uc_div_ad = 0.0_kind_real
 do k=geom%npz,1,-1
   call c_to_acs_domain_level_adm(geom, uc_div_ad(:,:,k), vc_div_ad(:,:,k), ua_div_ad(:,:,k), &
                                   va_div_ad(:,:,k))
 end do
 call fill_cgrid_winds_adm(geom, uc_div_ad, vc_div_ad, fillhalo=.true.)
 
-chi_ad = 0.0_8
+chi_ad = 0.0_kind_real
 do k=geom%npz,1,-1
   do j=geom%jec,geom%jsc,-1
     do i=geom%iec,geom%isc,-1
       temp_ad = vc_div_ad(i,j,k)/geom%dyc(i,j)
-      vc_div_ad(i,j,k) = 0.0_8
+      vc_div_ad(i,j,k) = 0.0_kind_real
       chi_ad(i,j,k) = chi_ad(i,j,k) + temp_ad
       chi_ad(i,j-1,k) = chi_ad(i,j-1,k) - temp_ad
     end do
@@ -291,7 +291,7 @@ do k=geom%npz,1,-1
   do j=geom%jec,geom%jsc,-1
     do i=geom%iec,geom%isc,-1
       temp_ad = uc_div_ad(i,j,k)/geom%dxc(i,j)
-      uc_div_ad(i,j,k) = 0.0_8
+      uc_div_ad(i,j,k) = 0.0_kind_real
       chi_ad(i,j,k) = chi_ad(i,j,k) + temp_ad
       chi_ad(i-1,j,k) = chi_ad(i-1,j,k) - temp_ad
     end do
@@ -301,12 +301,12 @@ end do
 call mpp_update_domains_adm(chi_ad, chi_ad, geom%domain, complete=.true.)
 call mpp_update_domains_adm(psi_ad, psi_ad, geom%domain, complete=.true.)
 
-chi_in_ad = 0.0_8
+chi_in_ad = 0.0_kind_real
 chi_in_ad(geom%isc:geom%iec,geom%jsc:geom%jec,:) = chi_ad(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-psi_in_ad = 0.0_8
+psi_in_ad = 0.0_kind_real
 psi_in_ad(geom%isc:geom%iec,geom%jsc:geom%jec,:) = psi_ad(geom%isc:geom%iec,geom%jsc:geom%jec,:)
-ud_ad = 0.0_8
-vd_ad = 0.0_8
+ud_ad = 0.0_kind_real
+vd_ad = 0.0_kind_real
 
 end subroutine psichi_to_udvd_adm
 
@@ -314,15 +314,15 @@ end subroutine psichi_to_udvd_adm
 
 subroutine vortdivg_to_psichi(geom, grid, oprs, vort, divg, psi, chi, lsize, lev_start, lev_final)
 
- type(fv3jedi_geom),   intent(inout) :: geom
- type(fempsgrid),      intent(in)    :: grid
- type(fempsoprs),      intent(in)    :: oprs
- real(kind=kind_real), intent(in)    :: vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(in)    :: divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(out)   ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- real(kind=kind_real), intent(out)   ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
- integer,              intent(in)    :: lsize
- integer,              intent(in)    :: lev_start(lsize),lev_final(lsize)
+ type(fv3jedi_geom),   intent(in)  :: geom
+ type(fempsgrid),      intent(in)  :: grid
+ type(fempsoprs),      intent(in)  :: oprs
+ real(kind=kind_real), intent(in)  :: vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(in)  :: divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(out) ::  psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ real(kind=kind_real), intent(out) ::  chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+ integer,              intent(in)  :: lsize
+ integer,              intent(in)  :: lev_start(lsize),lev_final(lsize)
 
  integer :: i,j,k
  real(kind=kind_real), allocatable, dimension(:,:,:) :: vorgcomm, divgcomm
@@ -492,15 +492,15 @@ end subroutine vortdivg_to_psichi
 
 subroutine psichi_to_vortdivg(geom, grid, oprs, psi, chi ,vor ,div, lsize, lev_start, lev_final)
 
- type(fv3jedi_geom),             intent(inout) :: geom
- type(fempsgrid),                intent(in)    :: grid
- type(fempsoprs),                intent(in)    :: oprs
- real(kind=kind_real),           intent(in)    :: psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
- real(kind=kind_real),           intent(in)    :: chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
- real(kind=kind_real), optional, intent(out)   :: vor(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Vorticity
- real(kind=kind_real), optional, intent(out)   :: div(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Divergence
- integer,                        intent(in)    :: lsize
- integer,                        intent(in)    :: lev_start(lsize),lev_final(lsize)
+ type(fv3jedi_geom),             intent(in)  :: geom
+ type(fempsgrid),                intent(in)  :: grid
+ type(fempsoprs),                intent(in)  :: oprs
+ real(kind=kind_real),           intent(in)  :: psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Stream function
+ real(kind=kind_real),           intent(in)  :: chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Velocity potential
+ real(kind=kind_real), optional, intent(out) :: vor(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Vorticity
+ real(kind=kind_real), optional, intent(out) :: div(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Divergence
+ integer,                        intent(in)  :: lsize
+ integer,                        intent(in)  :: lev_start(lsize),lev_final(lsize)
 
  integer :: k
  real(kind=kind_real), allocatable, dimension(:,:,:) :: vorgcomm, divgcomm
@@ -598,11 +598,11 @@ end subroutine psichi_to_vortdivg
 
 subroutine udvd_to_vortdivg(geom, ud_in, vd_in, vort, divg)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(in)    :: ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
-real(kind=kind_real), intent(in)    :: vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(out)   ::  vort(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(out)   ::  divg(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(in)  :: ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
+real(kind=kind_real), intent(in)  :: vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(out) ::  vort(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(out) ::  divg(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
 
 ! D-Grid
 integer :: i, j, k
@@ -677,15 +677,15 @@ end subroutine udvd_to_vortdivg
 
 subroutine d_to_a_to_c(geom, ud_in, vd_in, uc_out, vc_out, ua_out, va_out, ut_out, vt_out)
 
-type(fv3jedi_geom), target,     intent(inout) :: geom
-real(kind=kind_real),           intent(in)    ::  ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Dgrid winds
-real(kind=kind_real),           intent(in)    ::  vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Dgrid winds
-real(kind=kind_real),           intent(out)   :: uc_out(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Cgrid winds
-real(kind=kind_real),           intent(out)   :: vc_out(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Cgrid winds
-real(kind=kind_real), optional, intent(out)   :: ua_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
-real(kind=kind_real), optional, intent(out)   :: va_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
-real(kind=kind_real), optional, intent(out)   :: ut_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), optional, intent(out)   :: vt_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+type(fv3jedi_geom), target,     intent(in)  :: geom
+real(kind=kind_real),           intent(in)  ::  ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Dgrid winds
+real(kind=kind_real),           intent(in)  ::  vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Dgrid winds
+real(kind=kind_real),           intent(out) :: uc_out(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Cgrid winds
+real(kind=kind_real),           intent(out) :: vc_out(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Cgrid winds
+real(kind=kind_real), optional, intent(out) :: ua_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
+real(kind=kind_real), optional, intent(out) :: va_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
+real(kind=kind_real), optional, intent(out) :: ut_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), optional, intent(out) :: vt_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
 
 ! Locals
 integer :: k
@@ -726,15 +726,15 @@ end subroutine d_to_a_to_c
 
 subroutine d_to_a_to_c_domain_level(geom, u, v, uc, vc, ua_out, va_out, ut_out, vt_out)
 
-type(fv3jedi_geom), target,     intent(inout) :: geom
-real(kind=kind_real),           intent(in)    ::      u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
-real(kind=kind_real),           intent(in)    ::      v(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
-real(kind=kind_real),           intent(out)   ::     uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
-real(kind=kind_real),           intent(out)   ::     vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
-real(kind=kind_real), optional, intent(out)   :: ua_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
-real(kind=kind_real), optional, intent(out)   :: va_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
-real(kind=kind_real), optional, intent(out)   :: ut_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
-real(kind=kind_real), optional, intent(out)   :: vt_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
+type(fv3jedi_geom), target,     intent(in)  :: geom
+real(kind=kind_real),           intent(in)  ::      u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
+real(kind=kind_real),           intent(in)  ::      v(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
+real(kind=kind_real),           intent(out) ::     uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
+real(kind=kind_real),           intent(out) ::     vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
+real(kind=kind_real), optional, intent(out) :: ua_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
+real(kind=kind_real), optional, intent(out) :: va_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
+real(kind=kind_real), optional, intent(out) :: ut_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
+real(kind=kind_real), optional, intent(out) :: vt_out(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
 
 ! Local
 real(kind=kind_real), dimension(geom%isd:geom%ied,geom%jsd:geom%jed):: utmp, vtmp
@@ -1089,13 +1089,13 @@ end subroutine d_to_a_to_c_domain_level
 
 subroutine c_to_a_to_d(geom, uc, vc, ud, vd, ua, va)
 
-type(fv3jedi_geom), target,     intent(inout) :: geom
-real(kind=kind_real),           intent(in)    :: uc(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Cgrid winds
-real(kind=kind_real),           intent(in)    :: vc(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Cgrid winds
-real(kind=kind_real),           intent(out)   :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Dgrid winds
-real(kind=kind_real),           intent(out)   :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Dgrid winds
-real(kind=kind_real), optional, intent(out)   :: ua(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
-real(kind=kind_real), optional, intent(out)   :: va(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
+type(fv3jedi_geom), target,     intent(in)  :: geom
+real(kind=kind_real),           intent(in)  :: uc(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Cgrid winds
+real(kind=kind_real),           intent(in)  :: vc(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Cgrid winds
+real(kind=kind_real),           intent(out) :: ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz) !Dgrid winds
+real(kind=kind_real),           intent(out) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz) !Dgrid winds
+real(kind=kind_real), optional, intent(out) :: ua(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
+real(kind=kind_real), optional, intent(out) :: va(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz) !Agrid winds
 
 integer :: k
 real(kind=kind_real) :: ua_tmp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !Agrid winds
@@ -1117,11 +1117,11 @@ end subroutine c_to_a_to_d
 
 subroutine a_to_d(geom, ua, va, ud, vd)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(in)    :: ua(geom%isc:geom%iec,  geom%jsc:geom%jec,  geom%npz)
-real(kind=kind_real), intent(in)    :: va(geom%isc:geom%iec,  geom%jsc:geom%jec,  geom%npz)
-real(kind=kind_real), intent(inout) :: ud(geom%isc:geom%iec,  geom%jsc:geom%jec+1,geom%npz)
-real(kind=kind_real), intent(inout) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec,  geom%npz)
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(in)  :: ua(geom%isc:geom%iec,  geom%jsc:geom%jec,  geom%npz)
+real(kind=kind_real), intent(in)  :: va(geom%isc:geom%iec,  geom%jsc:geom%jec,  geom%npz)
+real(kind=kind_real), intent(out) :: ud(geom%isc:geom%iec,  geom%jsc:geom%jec+1,geom%npz)
+real(kind=kind_real), intent(out) :: vd(geom%isc:geom%iec+1,geom%jsc:geom%jec,  geom%npz)
 
 integer :: is ,ie , js ,je
 integer :: npx, npy, npz
@@ -1287,11 +1287,11 @@ end subroutine a_to_d
 
 subroutine a_to_d_ad(geom, ua_ad, va_ad, ud_ad, vd_ad)
 
-type(fv3jedi_geom), intent(inout) :: geom
+type(fv3jedi_geom), intent(in)      :: geom
 real(kind=kind_real), intent(inout) :: ua_ad(geom%isc:geom%iec,  geom%jsc:geom%jec,  geom%npz)
 real(kind=kind_real), intent(inout) :: va_ad(geom%isc:geom%iec,  geom%jsc:geom%jec,  geom%npz)
-real(kind=kind_real), intent(inout) :: ud_ad(geom%isc:geom%iec,  geom%jsc:geom%jec+1,geom%npz)
-real(kind=kind_real), intent(inout) :: vd_ad(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz)
+real(kind=kind_real), intent(out)   :: ud_ad(geom%isc:geom%iec,  geom%jsc:geom%jec+1,geom%npz)
+real(kind=kind_real), intent(out)   :: vd_ad(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz)
 
 integer :: is, ie, js, je
 integer :: npx, npy, npz
@@ -1323,17 +1323,17 @@ jm2 = (npy-1)/2
 uatemp(:, :, :) = 0.0
 vatemp(:, :, :) = 0.0
 
-v3_ad = 0.0_8
-uatemp_ad = 0.0_8
-ue_ad = 0.0_8
-vt1_ad = 0.0_8
-vt2_ad = 0.0_8
-vt3_ad = 0.0_8
-ve_ad = 0.0_8
-vatemp_ad = 0.0_8
-ut1_ad = 0.0_8
-ut2_ad = 0.0_8
-ut3_ad = 0.0_8
+v3_ad = 0.0_kind_real
+uatemp_ad = 0.0_kind_real
+ue_ad = 0.0_kind_real
+vt1_ad = 0.0_kind_real
+vt2_ad = 0.0_kind_real
+vt3_ad = 0.0_kind_real
+ve_ad = 0.0_kind_real
+vatemp_ad = 0.0_kind_real
+ut1_ad = 0.0_kind_real
+ut2_ad = 0.0_kind_real
+ut3_ad = 0.0_kind_real
 
 do k=npz,1,-1
 
@@ -1343,7 +1343,7 @@ do k=npz,1,-1
       ve_ad(i, j, 1) = ve_ad(i, j, 1) + geom%ew(1, i, j, 2)*temp_ad0
       ve_ad(i, j, 2) = ve_ad(i, j, 2) + geom%ew(2, i, j, 2)*temp_ad0
       ve_ad(i, j, 3) = ve_ad(i, j, 3) + geom%ew(3, i, j, 2)*temp_ad0
-      vd_ad(i, j, k) = 0.0_8
+      vd_ad(i, j, k) = 0.0_kind_real
     end do
   end do
 
@@ -1353,40 +1353,40 @@ do k=npz,1,-1
       ue_ad(i, j, 1) = ue_ad(i, j, 1) + geom%es(1, i, j, 1)*temp_ad
       ue_ad(i, j, 2) = ue_ad(i, j, 2) + geom%es(2, i, j, 1)*temp_ad
       ue_ad(i, j, 3) = ue_ad(i, j, 3) + geom%es(3, i, j, 1)*temp_ad
-      ud_ad(i, j, k) = 0.0_8
+      ud_ad(i, j, k) = 0.0_kind_real
     end do
   end do
  if (.not. geom%bounded_domain) then
   if (je + 1 .eq. npy) then
     do i=ie,is,-1
       ut3_ad(i) = ut3_ad(i) + ue_ad(i, npy, 3)
-      ue_ad(i, npy, 3) = 0.0_8
+      ue_ad(i, npy, 3) = 0.0_kind_real
       ut2_ad(i) = ut2_ad(i) + ue_ad(i, npy, 2)
-      ue_ad(i, npy, 2) = 0.0_8
+      ue_ad(i, npy, 2) = 0.0_kind_real
       ut1_ad(i) = ut1_ad(i) + ue_ad(i, npy, 1)
-      ue_ad(i, npy, 1) = 0.0_8
+      ue_ad(i, npy, 1) = 0.0_kind_real
     end do
     do i=ie,is,-1
       if (i .le. im2) then
         ue_ad(i+1, npy, 3) = ue_ad(i+1, npy, 3) + geom%edge_vect_n(i)*ut3_ad(i)
         ue_ad(i, npy, 3) = ue_ad(i, npy, 3) + (1.-geom%edge_vect_n(i))*ut3_ad(i)
-        ut3_ad(i) = 0.0_8
+        ut3_ad(i) = 0.0_kind_real
         ue_ad(i+1, npy, 2) = ue_ad(i+1, npy, 2) + geom%edge_vect_n(i)*ut2_ad(i)
         ue_ad(i, npy, 2) = ue_ad(i, npy, 2) + (1.-geom%edge_vect_n(i))*ut2_ad(i)
-        ut2_ad(i) = 0.0_8
+        ut2_ad(i) = 0.0_kind_real
         ue_ad(i+1, npy, 1) = ue_ad(i+1, npy, 1) + geom%edge_vect_n(i)*ut1_ad(i)
         ue_ad(i, npy, 1) = ue_ad(i, npy, 1) + (1.-geom%edge_vect_n(i))*ut1_ad(i)
-        ut1_ad(i) = 0.0_8
+        ut1_ad(i) = 0.0_kind_real
       else
         ue_ad(i-1, npy, 3) = ue_ad(i-1, npy, 3) + geom%edge_vect_n(i)*ut3_ad(i)
         ue_ad(i, npy, 3) = ue_ad(i, npy, 3) + (1.-geom%edge_vect_n(i))*ut3_ad(i)
-        ut3_ad(i) = 0.0_8
+        ut3_ad(i) = 0.0_kind_real
         ue_ad(i-1, npy, 2) = ue_ad(i-1, npy, 2) + geom%edge_vect_n(i)*ut2_ad(i)
         ue_ad(i, npy, 2) = ue_ad(i, npy, 2) + (1.-geom%edge_vect_n(i))*ut2_ad(i)
-        ut2_ad(i) = 0.0_8
+        ut2_ad(i) = 0.0_kind_real
         ue_ad(i-1, npy, 1) = ue_ad(i-1, npy, 1) + geom%edge_vect_n(i)*ut1_ad(i)
         ue_ad(i, npy, 1) = ue_ad(i, npy, 1) + (1.-geom%edge_vect_n(i))*ut1_ad(i)
-        ut1_ad(i) = 0.0_8
+        ut1_ad(i) = 0.0_kind_real
       end if
     end do
   end if
@@ -1394,33 +1394,33 @@ do k=npz,1,-1
   if (js .eq. 1) then
     do i=ie,is,-1
       ut3_ad(i) = ut3_ad(i) + ue_ad(i, 1, 3)
-      ue_ad(i, 1, 3) = 0.0_8
+      ue_ad(i, 1, 3) = 0.0_kind_real
       ut2_ad(i) = ut2_ad(i) + ue_ad(i, 1, 2)
-      ue_ad(i, 1, 2) = 0.0_8
+      ue_ad(i, 1, 2) = 0.0_kind_real
       ut1_ad(i) = ut1_ad(i) + ue_ad(i, 1, 1)
-      ue_ad(i, 1, 1) = 0.0_8
+      ue_ad(i, 1, 1) = 0.0_kind_real
     end do
     do i=ie,is,-1
       if (i .le. im2) then
         ue_ad(i+1, 1, 3) = ue_ad(i+1, 1, 3) + geom%edge_vect_s(i)*ut3_ad(i)
         ue_ad(i, 1, 3) = ue_ad(i, 1, 3) + (1.-geom%edge_vect_s(i))*ut3_ad(i)
-        ut3_ad(i) = 0.0_8
+        ut3_ad(i) = 0.0_kind_real
         ue_ad(i+1, 1, 2) = ue_ad(i+1, 1, 2) + geom%edge_vect_s(i)*ut2_ad(i)
         ue_ad(i, 1, 2) = ue_ad(i, 1, 2) + (1.-geom%edge_vect_s(i))*ut2_ad(i)
-        ut2_ad(i) = 0.0_8
+        ut2_ad(i) = 0.0_kind_real
         ue_ad(i+1, 1, 1) = ue_ad(i+1, 1, 1) + geom%edge_vect_s(i)*ut1_ad(i)
         ue_ad(i, 1, 1) = ue_ad(i, 1, 1) + (1.-geom%edge_vect_s(i))*ut1_ad(i)
-        ut1_ad(i) = 0.0_8
+        ut1_ad(i) = 0.0_kind_real
       else
         ue_ad(i-1, 1, 3) = ue_ad(i-1, 1, 3) + geom%edge_vect_s(i)*ut3_ad(i)
         ue_ad(i, 1, 3) = ue_ad(i, 1, 3) + (1.-geom%edge_vect_s(i))*ut3_ad(i)
-        ut3_ad(i) = 0.0_8
+        ut3_ad(i) = 0.0_kind_real
         ue_ad(i-1, 1, 2) = ue_ad(i-1, 1, 2) + geom%edge_vect_s(i)*ut2_ad(i)
         ue_ad(i, 1, 2) = ue_ad(i, 1, 2) + (1.-geom%edge_vect_s(i))*ut2_ad(i)
-        ut2_ad(i) = 0.0_8
+        ut2_ad(i) = 0.0_kind_real
         ue_ad(i-1, 1, 1) = ue_ad(i-1, 1, 1) + geom%edge_vect_s(i)*ut1_ad(i)
         ue_ad(i, 1, 1) = ue_ad(i, 1, 1) + (1.-geom%edge_vect_s(i))*ut1_ad(i)
-        ut1_ad(i) = 0.0_8
+        ut1_ad(i) = 0.0_kind_real
       end if
     end do
   end if
@@ -1428,33 +1428,33 @@ do k=npz,1,-1
   if (ie + 1 .eq. npx) then
     do j=je,js,-1
       vt3_ad(j) = vt3_ad(j) + ve_ad(npx, j, 3)
-      ve_ad(npx, j, 3) = 0.0_8
+      ve_ad(npx, j, 3) = 0.0_kind_real
       vt2_ad(j) = vt2_ad(j) + ve_ad(npx, j, 2)
-      ve_ad(npx, j, 2) = 0.0_8
+      ve_ad(npx, j, 2) = 0.0_kind_real
       vt1_ad(j) = vt1_ad(j) + ve_ad(npx, j, 1)
-      ve_ad(npx, j, 1) = 0.0_8
+      ve_ad(npx, j, 1) = 0.0_kind_real
     end do
     do j=je,js,-1
       if (j .le. jm2) then
         ve_ad(npx, j+1, 3) = ve_ad(npx, j+1, 3) + geom%edge_vect_e(j)*vt3_ad(j)
         ve_ad(npx, j, 3) = ve_ad(npx, j, 3) + (1.-geom%edge_vect_e(j))*vt3_ad(j)
-        vt3_ad(j) = 0.0_8
+        vt3_ad(j) = 0.0_kind_real
         ve_ad(npx, j+1, 2) = ve_ad(npx, j+1, 2) + geom%edge_vect_e(j)*vt2_ad(j)
         ve_ad(npx, j, 2) = ve_ad(npx, j, 2) + (1.-geom%edge_vect_e(j))*vt2_ad(j)
-        vt2_ad(j) = 0.0_8
+        vt2_ad(j) = 0.0_kind_real
         ve_ad(npx, j+1, 1) = ve_ad(npx, j+1, 1) + geom%edge_vect_e(j)*vt1_ad(j)
         ve_ad(npx, j, 1) = ve_ad(npx, j, 1) + (1.-geom%edge_vect_e(j))*vt1_ad(j)
-        vt1_ad(j) = 0.0_8
+        vt1_ad(j) = 0.0_kind_real
       else
         ve_ad(npx, j-1, 3) = ve_ad(npx, j-1, 3) + geom%edge_vect_e(j)*vt3_ad(j)
         ve_ad(npx, j, 3) = ve_ad(npx, j, 3) + (1.-geom%edge_vect_e(j))*vt3_ad(j)
-        vt3_ad(j) = 0.0_8
+        vt3_ad(j) = 0.0_kind_real
         ve_ad(npx, j-1, 2) = ve_ad(npx, j-1, 2) + geom%edge_vect_e(j)*vt2_ad(j)
         ve_ad(npx, j, 2) = ve_ad(npx, j, 2) + (1.-geom%edge_vect_e(j))*vt2_ad(j)
-        vt2_ad(j) = 0.0_8
+        vt2_ad(j) = 0.0_kind_real
         ve_ad(npx, j-1, 1) = ve_ad(npx, j-1, 1) + geom%edge_vect_e(j)*vt1_ad(j)
         ve_ad(npx, j, 1) = ve_ad(npx, j, 1) + (1.-geom%edge_vect_e(j))*vt1_ad(j)
-        vt1_ad(j) = 0.0_8
+        vt1_ad(j) = 0.0_kind_real
       end if
     end do
   end if
@@ -1462,33 +1462,33 @@ do k=npz,1,-1
   if (is .eq. 1) then
     do j=je,js,-1
       vt3_ad(j) = vt3_ad(j) + ve_ad(1, j, 3)
-      ve_ad(1, j, 3) = 0.0_8
+      ve_ad(1, j, 3) = 0.0_kind_real
       vt2_ad(j) = vt2_ad(j) + ve_ad(1, j, 2)
-      ve_ad(1, j, 2) = 0.0_8
+      ve_ad(1, j, 2) = 0.0_kind_real
       vt1_ad(j) = vt1_ad(j) + ve_ad(1, j, 1)
-      ve_ad(1, j, 1) = 0.0_8
+      ve_ad(1, j, 1) = 0.0_kind_real
     end do
     do j=je,js,-1
       if (j .le. jm2) then
         ve_ad(1, j+1, 3) = ve_ad(1, j+1, 3) + geom%edge_vect_w(j)*vt3_ad(j)
         ve_ad(1, j, 3) = ve_ad(1, j, 3) + (1.-geom%edge_vect_w(j))*vt3_ad(j)
-        vt3_ad(j) = 0.0_8
+        vt3_ad(j) = 0.0_kind_real
         ve_ad(1, j+1, 2) = ve_ad(1, j+1, 2) + geom%edge_vect_w(j)*vt2_ad(j)
         ve_ad(1, j, 2) = ve_ad(1, j, 2) + (1.-geom%edge_vect_w(j))*vt2_ad(j)
-        vt2_ad(j) = 0.0_8
+        vt2_ad(j) = 0.0_kind_real
         ve_ad(1, j+1, 1) = ve_ad(1, j+1, 1) + geom%edge_vect_w(j)*vt1_ad(j)
         ve_ad(1, j, 1) = ve_ad(1, j, 1) + (1.-geom%edge_vect_w(j))*vt1_ad(j)
-        vt1_ad(j) = 0.0_8
+        vt1_ad(j) = 0.0_kind_real
       else
         ve_ad(1, j-1, 3) = ve_ad(1, j-1, 3) + geom%edge_vect_w(j)*vt3_ad(j)
         ve_ad(1, j, 3) = ve_ad(1, j, 3) + (1.-geom%edge_vect_w(j))*vt3_ad(j)
-        vt3_ad(j) = 0.0_8
+        vt3_ad(j) = 0.0_kind_real
         ve_ad(1, j-1, 2) = ve_ad(1, j-1, 2) + geom%edge_vect_w(j)*vt2_ad(j)
         ve_ad(1, j, 2) = ve_ad(1, j, 2) + (1.-geom%edge_vect_w(j))*vt2_ad(j)
-        vt2_ad(j) = 0.0_8
+        vt2_ad(j) = 0.0_kind_real
         ve_ad(1, j-1, 1) = ve_ad(1, j-1, 1) + geom%edge_vect_w(j)*vt1_ad(j)
         ve_ad(1, j, 1) = ve_ad(1, j, 1) + (1.-geom%edge_vect_w(j))*vt1_ad(j)
-        vt1_ad(j) = 0.0_8
+        vt1_ad(j) = 0.0_kind_real
       end if
     end do
   end if
@@ -1498,13 +1498,13 @@ do k=npz,1,-1
     do i=ie+1,is,-1
       v3_ad(i-1, j, 3) = v3_ad(i-1, j, 3) + ve_ad(i, j, 3)
       v3_ad(i, j, 3) = v3_ad(i, j, 3) + ve_ad(i, j, 3)
-      ve_ad(i, j, 3) = 0.0_8
+      ve_ad(i, j, 3) = 0.0_kind_real
       v3_ad(i-1, j, 2) = v3_ad(i-1, j, 2) + ve_ad(i, j, 2)
       v3_ad(i, j, 2) = v3_ad(i, j, 2) + ve_ad(i, j, 2)
-      ve_ad(i, j, 2) = 0.0_8
+      ve_ad(i, j, 2) = 0.0_kind_real
       v3_ad(i-1, j, 1) = v3_ad(i-1, j, 1) + ve_ad(i, j, 1)
       v3_ad(i, j, 1) = v3_ad(i, j, 1) + ve_ad(i, j, 1)
-      ve_ad(i, j, 1) = 0.0_8
+      ve_ad(i, j, 1) = 0.0_kind_real
     end do
   end do
 
@@ -1512,13 +1512,13 @@ do k=npz,1,-1
     do i=ie+1,is-1,-1
       v3_ad(i, j-1, 3) = v3_ad(i, j-1, 3) + ue_ad(i, j, 3)
       v3_ad(i, j, 3) = v3_ad(i, j, 3) + ue_ad(i, j, 3)
-      ue_ad(i, j, 3) = 0.0_8
+      ue_ad(i, j, 3) = 0.0_kind_real
       v3_ad(i, j-1, 2) = v3_ad(i, j-1, 2) + ue_ad(i, j, 2)
       v3_ad(i, j, 2) = v3_ad(i, j, 2) + ue_ad(i, j, 2)
-      ue_ad(i, j, 2) = 0.0_8
+      ue_ad(i, j, 2) = 0.0_kind_real
       v3_ad(i, j-1, 1) = v3_ad(i, j-1, 1) + ue_ad(i, j, 1)
       v3_ad(i, j, 1) = v3_ad(i, j, 1) + ue_ad(i, j, 1)
-      ue_ad(i, j, 1) = 0.0_8
+      ue_ad(i, j, 1) = 0.0_kind_real
     end do
   end do
 
@@ -1526,13 +1526,13 @@ do k=npz,1,-1
     do i=ie+1,is-1,-1
       uatemp_ad(i, j, k) = uatemp_ad(i, j, k) + geom%vlon(i, j, 3)*v3_ad(i, j, 3)
       vatemp_ad(i, j, k) = vatemp_ad(i, j, k) + geom%vlat(i, j, 3)*v3_ad(i, j, 3)
-      v3_ad(i, j, 3) = 0.0_8
+      v3_ad(i, j, 3) = 0.0_kind_real
       uatemp_ad(i, j, k) = uatemp_ad(i, j, k) + geom%vlon(i, j, 2)*v3_ad(i, j, 2)
       vatemp_ad(i, j, k) = vatemp_ad(i, j, k) + geom%vlat(i, j, 2)*v3_ad(i, j, 2)
-      v3_ad(i, j, 2) = 0.0_8
+      v3_ad(i, j, 2) = 0.0_kind_real
       uatemp_ad(i, j, k) = uatemp_ad(i, j, k) + geom%vlon(i, j, 1)*v3_ad(i, j, 1)
       vatemp_ad(i, j, k) = vatemp_ad(i, j, k) + geom%vlat(i, j, 1)*v3_ad(i, j, 1)
-      v3_ad(i, j, 1) = 0.0_8
+      v3_ad(i, j, 1) = 0.0_kind_real
     end do
   end do
 end do
@@ -1549,11 +1549,11 @@ end subroutine a_to_d_ad
 
 subroutine d_to_a(geom, ud_in, vd_in, ua_out, va_out)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(inout) ::  ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz)
-real(kind=kind_real), intent(inout) ::  vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz)
-real(kind=kind_real), intent(inout) :: ua_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
-real(kind=kind_real), intent(inout) :: va_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(in)  ::  ud_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz)
+real(kind=kind_real), intent(in)  ::  vd_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz)
+real(kind=kind_real), intent(out) :: ua_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
+real(kind=kind_real), intent(out) :: va_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,geom%npz)
 
 integer :: k
 real(kind=kind_real) :: ud(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,geom%npz)
@@ -1584,7 +1584,7 @@ end subroutine d_to_a
 
 subroutine d_to_a_domain_level(geom, u, v, ua, va)
 
-type(fv3jedi_geom),   intent(inout) :: geom
+type(fv3jedi_geom),   intent(in)    :: geom
 real(kind=kind_real), intent(in)    ::  u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
 real(kind=kind_real), intent(in)    ::  v(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
 real(kind=kind_real), intent(out)   :: ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  )
@@ -1693,11 +1693,11 @@ end subroutine d_to_a_domain_level
 
 subroutine d_to_a_ad(geom, u_ad_comp, v_ad_comp, ua_ad_comp, va_ad_comp)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(inout) ::  u_ad_comp(geom%isc:geom%iec,  geom%jsc:geom%jec+1,1:geom%npz)
-real(kind=kind_real), intent(inout) ::  v_ad_comp(geom%isc:geom%iec+1,geom%jsc:geom%jec,  1:geom%npz)
-real(kind=kind_real), intent(inout) :: ua_ad_comp(geom%isc:geom%iec,  geom%jsc:geom%jec,  1:geom%npz)
-real(kind=kind_real), intent(inout) :: va_ad_comp(geom%isc:geom%iec,  geom%jsc:geom%jec,  1:geom%npz)
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(out) ::  u_ad_comp(geom%isc:geom%iec,  geom%jsc:geom%jec+1,1:geom%npz)
+real(kind=kind_real), intent(out) ::  v_ad_comp(geom%isc:geom%iec+1,geom%jsc:geom%jec,  1:geom%npz)
+real(kind=kind_real), intent(in)  :: ua_ad_comp(geom%isc:geom%iec,  geom%jsc:geom%jec,  1:geom%npz)
+real(kind=kind_real), intent(in)  :: va_ad_comp(geom%isc:geom%iec,  geom%jsc:geom%jec,  1:geom%npz)
 
 real(kind=kind_real) ::  u(geom%isd:geom%ied,  geom%jsd:geom%jed+1,geom%npz)
 real(kind=kind_real) ::  v(geom%isd:geom%ied+1,geom%jsd:geom%jed,  geom%npz)
@@ -1831,17 +1831,17 @@ do k=1,npz
     call pushinteger4(i)
   end do
 end do
-vtmp_ad = 0.0_8
-wu_ad = 0.0_8
-wv_ad = 0.0_8
-utmp_ad = 0.0_8
+vtmp_ad = 0.0_kind_real
+wu_ad = 0.0_kind_real
+wv_ad = 0.0_kind_real
+utmp_ad = 0.0_kind_real
 do k=npz,1,-1
   do j=je,js,-1
     do i=ie,is,-1
       utmp_ad(i, j) = utmp_ad(i, j) + geom%a11(i, j)*ua_ad(i, j, k) + geom%a21(i, j)*va_ad(i, j, k)
       vtmp_ad(i, j) = vtmp_ad(i, j) + geom%a12(i, j)*ua_ad(i, j, k) + geom%a22(i, j)*va_ad(i, j, k)
-      va_ad(i, j, k) = 0.0_8
-      ua_ad(i, j, k) = 0.0_8
+      va_ad(i, j, k) = 0.0_kind_real
+      ua_ad(i, j, k) = 0.0_kind_real
     end do
     call popinteger4(i)
   end do
@@ -1852,21 +1852,21 @@ do k=npz,1,-1
       temp_ad5 = 2.*vtmp_ad(i, j)/(geom%dy(i, j)+geom%dy(i+1, j))
       wv_ad(i, j) = wv_ad(i, j) + temp_ad5
       wv_ad(i+1, j) = wv_ad(i+1, j) + temp_ad5
-      vtmp_ad(i, j) = 0.0_8
+      vtmp_ad(i, j) = 0.0_kind_real
       temp_ad6 = 2.*utmp_ad(i, j)/(geom%dx(i, j)+geom%dx(i, j+1))
       wu_ad(i, j) = wu_ad(i, j) + temp_ad6
       wu_ad(i, j+1) = wu_ad(i, j+1) + temp_ad6
-      utmp_ad(i, j) = 0.0_8
+      utmp_ad(i, j) = 0.0_kind_real
     end do
     do j=je+1,js,-1
       u_ad(i, j, k) = u_ad(i, j, k) + geom%dx(i, j)*wu_ad(i, j)
-      wu_ad(i, j) = 0.0_8
+      wu_ad(i, j) = 0.0_kind_real
     end do
     do j=je,js,-1
       v_ad(i+1, j, k) = v_ad(i+1, j, k) + geom%dy(i+1, j)*wv_ad(i+1, j)
-      wv_ad(i+1, j) = 0.0_8
+      wv_ad(i+1, j) = 0.0_kind_real
       v_ad(i, j, k) = v_ad(i, j, k) + geom%dy(i, j)*wv_ad(i, j)
-      wv_ad(i, j) = 0.0_8
+      wv_ad(i, j) = 0.0_kind_real
     end do
     call popinteger4(j)
     call popinteger4(i)
@@ -1877,21 +1877,21 @@ do k=npz,1,-1
       temp_ad3 = 2.*vtmp_ad(i, j)/(geom%dy(1, j)+geom%dy(2, j))
       wv_ad(1, j) = wv_ad(1, j) + temp_ad3
       wv_ad(2, j) = wv_ad(2, j) + temp_ad3
-      vtmp_ad(i, j) = 0.0_8
+      vtmp_ad(i, j) = 0.0_kind_real
       temp_ad4 = 2.*utmp_ad(i, j)/(geom%dx(i, j)+geom%dx(i, j+1))
       wu_ad(i, j) = wu_ad(i, j) + temp_ad4
       wu_ad(i, j+1) = wu_ad(i, j+1) + temp_ad4
-      utmp_ad(i, j) = 0.0_8
+      utmp_ad(i, j) = 0.0_kind_real
     end do
     do j=je+1,js,-1
       u_ad(i, j, k) = u_ad(i, j, k) + geom%dx(i, j)*wu_ad(i, j)
-      wu_ad(i, j) = 0.0_8
+      wu_ad(i, j) = 0.0_kind_real
     end do
     do j=je,js,-1
       v_ad(2, j, k) = v_ad(2, j, k) + geom%dy(2, j)*wv_ad(2, j)
-      wv_ad(2, j) = 0.0_8
+      wv_ad(2, j) = 0.0_kind_real
       v_ad(1, j, k) = v_ad(1, j, k) + geom%dy(1, j)*wv_ad(1, j)
-      wv_ad(1, j) = 0.0_8
+      wv_ad(1, j) = 0.0_kind_real
     end do
     call popinteger4(j)
     call popinteger4(i)
@@ -1902,15 +1902,15 @@ do k=npz,1,-1
       temp_ad1 = 2.*utmp_ad(i, j)/(geom%dx(i, j)+geom%dx(i, j+1))
       u_ad(i, j, k) = u_ad(i, j, k) + geom%dx(i, j)*temp_ad1
       u_ad(i, j+1, k) = u_ad(i, j+1, k) + geom%dx(i, j+1)*temp_ad1
-      utmp_ad(i, j) = 0.0_8
+      utmp_ad(i, j) = 0.0_kind_real
       temp_ad2 = 2.*vtmp_ad(i, j)/(geom%dy(i, j)+geom%dy(i+1, j))
       wv_ad(i, j) = wv_ad(i, j) + temp_ad2
       wv_ad(i+1, j) = wv_ad(i+1, j) + temp_ad2
-      vtmp_ad(i, j) = 0.0_8
+      vtmp_ad(i, j) = 0.0_kind_real
     end do
     do i=ie+1,is,-1
       v_ad(i, j, k) = v_ad(i, j, k) + geom%dy(i, j)*wv_ad(i, j)
-      wv_ad(i, j) = 0.0_8
+      wv_ad(i, j) = 0.0_kind_real
     end do
     call popinteger4(i)
   end if
@@ -1920,15 +1920,15 @@ do k=npz,1,-1
       temp_ad = 2.*utmp_ad(i, 1)/(geom%dx(i, 1)+geom%dx(i, 2))
       u_ad(i, 1, k) = u_ad(i, 1, k) + geom%dx(i, 1)*temp_ad
       u_ad(i, 2, k) = u_ad(i, 2, k) + geom%dx(i, 2)*temp_ad
-      utmp_ad(i, 1) = 0.0_8
+      utmp_ad(i, 1) = 0.0_kind_real
       temp_ad0 = 2.*vtmp_ad(i, 1)/(geom%dy(i, 1)+geom%dy(i+1, 1))
       wv_ad(i, 1) = wv_ad(i, 1) + temp_ad0
       wv_ad(i+1, 1) = wv_ad(i+1, 1) + temp_ad0
-      vtmp_ad(i, 1) = 0.0_8
+      vtmp_ad(i, 1) = 0.0_kind_real
     end do
     do i=ie+1,is,-1
       v_ad(i, 1, k) = v_ad(i, 1, k) + geom%dy(i, 1)*wv_ad(i, 1)
-      wv_ad(i, 1) = 0.0_8
+      wv_ad(i, 1) = 0.0_kind_real
     end do
     call popinteger4(i)
   end if
@@ -1942,12 +1942,12 @@ do k=npz,1,-1
       v_ad(i+2, j, k) = v_ad(i+2, j, k) + c2*vtmp_ad(i, j)
       v_ad(i, j, k) = v_ad(i, j, k) + c1*vtmp_ad(i, j)
       v_ad(i+1, j, k) = v_ad(i+1, j, k) + c1*vtmp_ad(i, j)
-      vtmp_ad(i, j) = 0.0_8
+      vtmp_ad(i, j) = 0.0_kind_real
       u_ad(i, j-1, k) = u_ad(i, j-1, k) + c2*utmp_ad(i, j)
       u_ad(i, j+2, k) = u_ad(i, j+2, k) + c2*utmp_ad(i, j)
       u_ad(i, j, k) = u_ad(i, j, k) + c1*utmp_ad(i, j)
       u_ad(i, j+1, k) = u_ad(i, j+1, k) + c1*utmp_ad(i, j)
-      utmp_ad(i, j) = 0.0_8
+      utmp_ad(i, j) = 0.0_kind_real
     end do
     call popinteger4(i)
   end do
@@ -1991,12 +1991,12 @@ end subroutine d_to_a_ad
 
 subroutine c_to_t_domain_level(geom, uc, vc, ut, vt, dt)
 
- type(fv3jedi_geom),   intent(inout) :: geom
- real(kind=kind_real), intent(in   ) ::  uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
- real(kind=kind_real), intent(in   ) ::  vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
- real(kind=kind_real), intent(inout) ::  ut(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
- real(kind=kind_real), intent(inout) ::  vt(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
- real(kind=kind_real), intent(in   ) :: dt
+ type(fv3jedi_geom),   intent(in)  :: geom
+ real(kind=kind_real), intent(in)  ::  uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
+ real(kind=kind_real), intent(in)  ::  vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
+ real(kind=kind_real), intent(out) ::  ut(geom%isd:geom%ied+1,geom%jsd:geom%jed  )
+ real(kind=kind_real), intent(out) ::  vt(geom%isd:geom%ied  ,geom%jsd:geom%jed+1)
+ real(kind=kind_real), intent(in)  :: dt
 
 ! Local vars
   integer :: is,js,ie,je,isd,jsd,ied,jed,npx,npy
@@ -2210,12 +2210,12 @@ end subroutine c_to_t_domain_level
 
 subroutine c_to_acs(geom, uc_in, vc_in, ua_out, va_out, interp_order_in)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(in)    ::  uc_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(in)    ::  vc_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
-real(kind=kind_real), intent(out)   :: ua_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(out)   :: va_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-integer, optional,    intent(in)    :: interp_order_in
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(in)  ::  uc_in(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(in)  ::  vc_in(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
+real(kind=kind_real), intent(out) :: ua_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(out) :: va_out(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+integer, optional,    intent(in)  :: interp_order_in
 
 integer :: k
 real(kind=kind_real) :: uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
@@ -2340,12 +2340,12 @@ end subroutine c_to_acs_domain_level_adm
 
 subroutine acs_to_d(geom, ua_in, va_in, ud_out, vd_out, interp_order_in)
 
-type(fv3jedi_geom),   intent(inout) :: geom
-real(kind=kind_real), intent(in)    ::  ua_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(in)    ::  va_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
-real(kind=kind_real), intent(out)   :: ud_out(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
-real(kind=kind_real), intent(out)   :: vd_out(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
-integer, optional,    intent(in)    :: interp_order_in
+type(fv3jedi_geom),   intent(in)  :: geom
+real(kind=kind_real), intent(in)  ::  ua_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(in)  ::  va_in(geom%isc:geom%iec  ,geom%jsc:geom%jec  ,1:geom%npz)
+real(kind=kind_real), intent(out) :: ud_out(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz)
+real(kind=kind_real), intent(out) :: vd_out(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz)
+integer, optional,    intent(in)  :: interp_order_in
 
 integer :: k
 real(kind=kind_real) :: ua(geom%isd:geom%ied  ,geom%jsd:geom%jed  ,1:geom%npz)
@@ -2470,7 +2470,7 @@ end subroutine acs_to_d_domain_level_adm
 
 subroutine fill_agrid_winds(geom, ua, va)
 
-type(fv3jedi_geom),   intent(inout) :: geom
+type(fv3jedi_geom),   intent(in)    :: geom
 real(kind=kind_real), intent(inout) :: ua(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 real(kind=kind_real), intent(inout) :: va(geom%isd:geom%ied,geom%jsd:geom%jed,1:geom%npz)
 
@@ -2483,7 +2483,7 @@ end subroutine fill_agrid_winds
 
 subroutine fill_dgrid_winds(geom,u,v,fillhalo)
 
-type(fv3jedi_geom),   intent(inout) :: geom
+type(fv3jedi_geom),   intent(in)    :: geom
 real(kind=kind_real), intent(inout) :: u(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz)
 real(kind=kind_real), intent(inout) :: v(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
 logical, optional,    intent(in)    :: fillhalo
@@ -2545,7 +2545,7 @@ end subroutine fill_dgrid_winds
 
 subroutine fill_dgrid_winds_adm(geom, u, u_ad, v, v_ad, fillhalo)
 
-  type(fv3jedi_geom), intent(inout) :: geom
+  type(fv3jedi_geom), intent(in)      :: geom
   real(kind=kind_real), intent(inout) ::    u(geom%isd:geom%ied  , geom%jsd:geom%jed+1, geom%npz)
   real(kind=kind_real), intent(inout) :: u_ad(geom%isd:geom%ied  , geom%jsd:geom%jed+1, geom%npz)
   real(kind=kind_real), intent(inout) ::    v(geom%isd:geom%ied+1, geom%jsd:geom%jed  , geom%npz)
@@ -2597,7 +2597,7 @@ end subroutine fill_dgrid_winds_adm
 
 subroutine fill_cgrid_winds(geom, uc, vc, fillhalo)
 
-type(fv3jedi_geom),   intent(inout) :: geom
+type(fv3jedi_geom),   intent(in)    :: geom
 real(kind=kind_real), intent(inout) :: uc(geom%isd:geom%ied+1,geom%jsd:geom%jed  ,1:geom%npz)
 real(kind=kind_real), intent(inout) :: vc(geom%isd:geom%ied  ,geom%jsd:geom%jed+1,1:geom%npz)
 logical, optional,    intent(in)    :: fillhalo
@@ -2658,7 +2658,7 @@ end subroutine fill_cgrid_winds
 
 subroutine fill_cgrid_winds_adm(geom, uc_ad, vc_ad, fillhalo)
 
-type(fv3jedi_geom),   intent(inout) :: geom
+type(fv3jedi_geom),   intent(in)    :: geom
 real(kind=kind_real), intent(inout) :: uc_ad(geom%isd:geom%ied+1, geom%jsd:geom%jed, geom%npz)
 real(kind=kind_real), intent(inout) :: vc_ad(geom%isd:geom%ied, geom%jsd:geom%jed+1, geom%npz)
 logical, optional,    intent(in)    :: fillhalo
@@ -2800,7 +2800,7 @@ subroutine interp_left_edge_1d_adm(ifirst, ilast, ilastout, qout_ad, qin_ad)
   integer,              intent(in)    :: ilast
   integer,              intent(in)    :: ilastout
   real(kind=kind_real), intent(inout) :: qout_ad(ifirst:ilastout)
-  real(kind=kind_real), intent(inout) :: qin_ad(ifirst:ilast)
+  real(kind=kind_real), intent(out)   :: qin_ad(ifirst:ilast)
 
   integer :: i
 
