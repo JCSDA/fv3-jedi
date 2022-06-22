@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2022 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -406,8 +406,8 @@ end subroutine fv3jedi_increment_dot_prod_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_diff_incr_c(c_key_lhs,c_key_x1,c_key_x2,c_key_geom) &
-           bind(c,name='fv3jedi_increment_diff_incr_f90')
+subroutine fv3jedi_increment_diff_states_c(c_key_lhs,c_key_x1,c_key_x2,c_key_geom) &
+           bind(c,name='fv3jedi_increment_diff_states_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_lhs
@@ -425,9 +425,9 @@ call fv3jedi_state_registry%get(c_key_x1,x1)
 call fv3jedi_state_registry%get(c_key_x2,x2)
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call self%diff_incr(x1%fields,x2%fields,geom)
+call self%diff_states(x1%fields,x2%fields,geom)
 
-end subroutine fv3jedi_increment_diff_incr_c
+end subroutine fv3jedi_increment_diff_states_c
 
 ! --------------------------------------------------------------------------------------------------
 

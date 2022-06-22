@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2022 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -149,24 +149,21 @@ end subroutine fv3jedi_state_axpy_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_add_incr_c(c_key_geom,c_key_self,c_key_rhs) &
-           bind(c,name='fv3jedi_state_add_incr_f90')
+subroutine fv3jedi_state_add_increment_c(c_key_self,c_key_rhs) &
+           bind(c,name='fv3jedi_state_add_increment_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
-type(fv3jedi_geom), pointer :: geom
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_increment), pointer :: rhs
 
 call fv3jedi_state_registry%get(c_key_self,self)
 call fv3jedi_increment_registry%get(c_key_rhs,rhs)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call self%add_incr(geom,rhs%fields)
+call self%add_increment(rhs%fields)
 
-end subroutine fv3jedi_state_add_incr_c
+end subroutine fv3jedi_state_add_increment_c
 
 ! --------------------------------------------------------------------------------------------------
 

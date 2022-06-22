@@ -1,30 +1,26 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2022 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_increment_mod
 
+! iso
 use iso_c_binding
-use fckit_configuration_module, only: fckit_configuration
-use datetime_mod
-use oops_variables_mod, only: oops_variables
 
-use random_mod
-use fckit_mpi_module
+! fckit
+use fckit_configuration_module,  only: fckit_configuration
+use fckit_mpi_module,            only: fckit_mpi_sum
 
-use fields_metadata_mod, only: field_metadata
+! oops
+use random_mod,                  only: normal_distribution
 
-use fv3jedi_field_mod,           only: fv3jedi_field, checksame, hasfield, get_field
+! fv3jedi
+use fv3jedi_field_mod,           only: fv3jedi_field, checksame, get_field
 use fv3jedi_fields_mod,          only: fv3jedi_fields
-use fv3jedi_constants_mod,       only: constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_geom_iter_mod,       only: fv3jedi_geom_iter
 use fv3jedi_kinds_mod,           only: kind_real
-
-use wind_vt_mod, only: d_to_a
-
-use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north, center
 
 implicit none
 private
@@ -39,7 +35,7 @@ contains
   procedure, public :: self_sub
   procedure, public :: self_mul
   procedure, public :: dot_prod
-  procedure, public :: diff_incr
+  procedure, public :: diff_states
   procedure, public :: dirac
   procedure, public :: getpoint
   procedure, public :: setpoint
@@ -194,123 +190,34 @@ end subroutine dot_prod
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine diff_incr(self, x1_fields, x2_fields, geom)
+subroutine diff_states(self, state1_fields, state2_fields, geom)
 
+! Arguments
 class(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_field),      intent(in)    :: x1_fields(:)
-type(fv3jedi_field),      intent(in)    :: x2_fields(:)
+type(fv3jedi_field),      intent(in)    :: state1_fields(:)
+type(fv3jedi_field),      intent(in)    :: state2_fields(:)
 type(fv3jedi_geom),       intent(inout) :: geom
 
-integer :: var, isc, iec, jsc, jec, npz
-type(fv3jedi_field), pointer :: x1p, x2p
-real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
-real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
-real(kind=kind_real), pointer :: x1_ud(:,:,:), x1_vd(:,:,:)
-real(kind=kind_real), pointer :: x2_ud(:,:,:), x2_vd(:,:,:)
-real(kind=kind_real), pointer :: x1_delp(:,:,:)
-real(kind=kind_real), pointer :: x2_delp(:,:,:)
-real(kind=kind_real), allocatable :: x1_ps(:,:,:), x2_ps(:,:,:)
+! Locals
+integer :: f
+type(fv3jedi_field), pointer :: state1p, state2p
 
-! Make sure two states have same fields and in same position
-call checksame(x1_fields, x2_fields, "fv3jedi_increment_mod.diff_incr x1 vs x2")
+! Loop over increment vars and set data to diff of two states
+do f = 1, self%nf
 
-! Convenience
-isc = geom%isc
-iec = geom%iec
-jsc = geom%jsc
-jec = geom%jec
-npz = geom%npz
+  !Get pointers to states
+  call get_field(state1_fields, self%fields(f)%short_name, state1p)
+  call get_field(state2_fields, self%fields(f)%short_name, state2p)
 
+  !inc = state - state
+  self%fields(f)%array = state1p%array - state2p%array
 
-!D-Grid to A-Grid (if needed)
-if (self%has_field('ua')) then
-  allocate(x1_ua(isc:iec,jsc:jec,1:npz))
-  allocate(x1_va(isc:iec,jsc:jec,1:npz))
-  allocate(x2_ua(isc:iec,jsc:jec,1:npz))
-  allocate(x2_va(isc:iec,jsc:jec,1:npz))
-  if (hasfield(x1_fields, 'ua')) then
-    call get_field(x1_fields, 'ua', x1_ua)
-    call get_field(x1_fields, 'va', x1_va)
-    call get_field(x2_fields, 'ua', x2_ua)
-    call get_field(x2_fields, 'va', x2_va)
-  elseif (hasfield(x1_fields, 'ud')) then
-    call get_field(x1_fields, 'ud', x1_ud)
-    call get_field(x1_fields, 'vd', x1_vd)
-    call get_field(x2_fields, 'ud', x2_ud)
-    call get_field(x2_fields, 'vd', x2_vd)
-    call d_to_a(geom, x1_ud, x1_vd, x1_ua, x1_va)
-    call d_to_a(geom, x2_ud, x2_vd, x2_ua, x2_va)
-  else
-    call abor1_ftn("fv3jedi_increment_mod.diff_incr: no way to determine A grid winds")
-  endif
-endif
-
-!delp to ps
-if (self%has_field('ps')) then
-
-  allocate(x1_ps(isc:iec,jsc:jec,1))
-  allocate(x2_ps(isc:iec,jsc:jec,1))
-
-  if (hasfield(x1_fields, 'delp')) then
-    call get_field(x1_fields, 'delp', x1_delp)
-    x1_ps(:,:,1) = sum(x1_delp,3)
-  elseif (hasfield(x1_fields, 'ps')) then
-    call get_field(x1_fields, 'ps', x1_ps)
-  else
-    call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x1")
-  endif
-
-  if (hasfield(x2_fields, 'delp')) then
-    call get_field(x2_fields, 'delp', x2_delp)
-    x2_ps(:,:,1) = sum(x2_delp,3)
-  elseif (hasfield(x2_fields, 'ps')) then
-    call get_field(x2_fields, 'ps', x2_ps)
-  else
-    call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x2")
-  endif
-
-endif
-
-do var = 1,self%nf
-
-  !A-Grid winds can be a special case
-  if (self%fields(var)%short_name == 'ua') then
-
-    self%fields(var)%array = x1_ua - x2_ua
-
-  elseif (self%fields(var)%short_name == 'va') then
-
-    self%fields(var)%array = x1_va - x2_va
-
-  !Ps can be a special case
-  elseif (self%fields(var)%short_name == 'ps') then
-
-    self%fields(var)%array = x1_ps - x2_ps
-
-  else
-
-    !Get pointer to states
-    call get_field(x1_fields, self%fields(var)%short_name, x1p)
-    call get_field(x2_fields, self%fields(var)%short_name, x2p)
-
-    !inc = state - state
-    self%fields(var)%array = x1p%array - x2p%array
-
-    !Nullify pointers
-    nullify(x1p,x2p)
-
-  endif
+  !Nullify pointers
+  nullify(state1p, state2p)
 
 enddo
 
-if (allocated(x1_ua)) deallocate(x1_ua)
-if (allocated(x1_va)) deallocate(x1_va)
-if (allocated(x2_ua)) deallocate(x2_ua)
-if (allocated(x2_va)) deallocate(x2_va)
-if (allocated(x1_ps)) deallocate(x1_ps)
-if (allocated(x2_ps)) deallocate(x2_ps)
-
-end subroutine diff_incr
+end subroutine diff_states
 
 ! --------------------------------------------------------------------------------------------------
 

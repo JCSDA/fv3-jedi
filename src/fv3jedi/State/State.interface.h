@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,7 +19,7 @@ extern "C" {
   void fv3jedi_state_copy_f90(const F90state &, const F90state &);
   void fv3jedi_state_zero_f90(const F90state &);
   void fv3jedi_state_axpy_f90(const F90state &, const double &, const F90state &);
-  void fv3jedi_state_add_incr_f90(const F90geom &, const F90state &, const F90inc &);
+  void fv3jedi_state_add_increment_f90(const F90state &, const F90inc &);
   void fv3jedi_state_change_resol_f90(const F90state &, const F90geom &, const F90state &,
                                       const F90geom &);
   void fv3jedi_state_update_fields_f90(F90state &, const F90geom &, const oops::Variables &);

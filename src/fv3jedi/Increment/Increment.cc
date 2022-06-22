@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2021 UCAR
+ * (C) Copyright 2017-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -76,10 +76,14 @@ Increment::~Increment() {
 void Increment::diff(const State & x1, const State & x2) {
   ASSERT(this->validTime() == x1.validTime());
   ASSERT(this->validTime() == x2.validTime());
+  // States should have the same variables
+  ASSERT(x1.variables() == x2.variables());
+  // Increment variables must be a equal to or a subset of the State variables
+  ASSERT(vars_ <= x1.variables());
   // States at increment resolution
   State x1_ir(*geom_, x1);
   State x2_ir(*geom_, x2);
-  fv3jedi_increment_diff_incr_f90(keyInc_, x1_ir.toFortran(), x2_ir.toFortran(),
+  fv3jedi_increment_diff_states_f90(keyInc_, x1_ir.toFortran(), x2_ir.toFortran(),
                                   geom_->toFortran());
 }
 // -------------------------------------------------------------------------------------------------

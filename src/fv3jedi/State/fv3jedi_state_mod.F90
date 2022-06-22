@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2022 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,11 +19,10 @@ use fckit_configuration_module, only: fckit_configuration
 use fckit_log_module, only : log
 
 ! fv3jedi uses
-use fv3jedi_field_mod,           only: checksame, fv3jedi_field, hasfield, get_field
+use fv3jedi_field_mod,           only: fv3jedi_field
 use fv3jedi_fields_mod,          only: fv3jedi_fields
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_kinds_mod,           only: kind_real
-use wind_vt_mod,                 only: a_to_d
 
 implicit none
 private
@@ -32,7 +31,7 @@ public :: fv3jedi_state
 !> Fortran derived type to hold FV3JEDI state
 type, extends(fv3jedi_fields) :: fv3jedi_state
 contains
-  procedure, public :: add_incr
+  procedure, public :: add_increment
   procedure, public :: analytic_IC
   procedure, public :: set_geom_orography
 end type fv3jedi_state
@@ -43,160 +42,37 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine add_incr(self, geom, rhs_fields)
+subroutine add_increment(self, increment)
 
+! Arguments
 class(fv3jedi_state), intent(inout) :: self
-type(fv3jedi_geom),   intent(inout) :: geom
-type(fv3jedi_field),  intent(in)    :: rhs_fields(:)
+type(fv3jedi_field),  intent(in)    :: increment(:)
 
-integer :: var, i, j, k, isc, iec, jsc, jec, npz
+! Locals
+integer :: f, i, j, k
 logical :: found_neg
-type(fv3jedi_field), pointer :: field_pointer
+type(fv3jedi_field), pointer :: state
 
-real(kind=kind_real), allocatable :: rhs_ud(:,:,:), rhs_vd(:,:,:)
-real(kind=kind_real), allocatable :: rhs_delp(:,:,:)
+! Loop over the increment fields and add them to the state
+do f = 1, size(increment)
 
-real(kind=kind_real), pointer :: self_ua(:,:,:)
-real(kind=kind_real), pointer :: self_va(:,:,:)
-real(kind=kind_real), pointer :: self_ud(:,:,:)
-real(kind=kind_real), pointer :: self_vd(:,:,:)
-real(kind=kind_real), pointer :: self_t (:,:,:)
-real(kind=kind_real), pointer :: self_pt(:,:,:)
-real(kind=kind_real), pointer :: self_delp(:,:,:)
-real(kind=kind_real), pointer :: self_ps(:,:,:)
+  !Get pointer to state
+  call self%get_field(increment(f)%short_name, state)
 
-real(kind=kind_real), pointer :: rhs_ua(:,:,:)
-real(kind=kind_real), pointer :: rhs_va(:,:,:)
-real(kind=kind_real), pointer :: rhs_t (:,:,:)
-real(kind=kind_real), pointer :: rhs_pt(:,:,:)
-real(kind=kind_real), pointer :: rhs_ps(:,:,:)
+  !Add increment to state
+  state%array = state%array + increment(f)%array
 
-! Convenience
-! -----------
-isc = geom%isc
-iec = geom%iec
-jsc = geom%jsc
-jec = geom%jec
-npz = geom%npz
-
-! Handle special cases, e.g. D grid winds to A grid winds
-! -------------------------------------------------------
-
-! Get D-Grid winds if necessary
-if (hasfield(rhs_fields, 'ua')) then !A-Grid in increment
-  if (.not.hasfield(rhs_fields, 'ud')) then !D-Grid not in increment
-    if (self%has_field('ud')) then !D-grid in state
-      allocate(rhs_ud(isc:iec  ,jsc:jec+1,1:npz))
-      allocate(rhs_vd(isc:iec+1,jsc:jec  ,1:npz))
-      call get_field(rhs_fields, 'ua', rhs_ua)
-      call get_field(rhs_fields, 'va', rhs_va)
-      call a_to_d(geom, rhs_ua, rhs_va, rhs_ud, rhs_vd) !Linear
-    endif
-  endif
-endif
-
-
-! Convert ps to delp if necessary
-! -------------------------------
-if (hasfield(rhs_fields, 'ps')) then !ps in increment
-  if (.not.hasfield(rhs_fields, 'delp')) then !delp not in increment
-    if (self%has_field('delp')) then !delp in state
-      allocate(rhs_delp(isc:iec,jsc:jec,1:npz))
-      call get_field(rhs_fields, 'ps', rhs_ps)
-      do k = 1, npz
-        rhs_delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*rhs_ps(:,:,1) !TLM
-      enddo
-    endif
-  endif
-endif
-
-!Fields to add determined from increment
-do var = 1, size(rhs_fields)
-
-  !Winds are a special case
-  if (rhs_fields(var)%short_name == 'ua') then
-
-    if (self%has_field('ua')) then
-      call get_field(rhs_fields,  'ua', rhs_ua)
-      call self%get_field('ua', self_ua)
-      self_ua = self_ua + rhs_ua
-    endif
-    if (self%has_field('ud') .and. .not.hasfield(rhs_fields, 'ud')) then
-      call self%get_field('ud', self_ud)
-      self_ud = self_ud + rhs_ud
-    endif
-
-  elseif (rhs_fields(var)%short_name == 'va') then
-
-    if (self%has_field('va')) then
-      call get_field(rhs_fields,  'va', rhs_va)
-      call self%get_field('va', self_va)
-      self_va = self_va + rhs_va
-    endif
-    if (self%has_field('vd') .and. .not.hasfield(rhs_fields, 'vd')) then
-      call self%get_field('vd', self_vd)
-      self_vd = self_vd + rhs_vd
-    endif
-
-  elseif (rhs_fields(var)%short_name == 't') then
-
-    if (self%has_field('t')) then
-      call get_field(rhs_fields,  't', rhs_t)
-      call self%get_field('t', self_t)
-      self_t = self_t + rhs_t
-    endif
-
-    if (self%has_field('pt')) then
-      call get_field(rhs_fields,  'pt', rhs_pt)
-      call self%get_field('pt', self_pt)
-      self_pt = self_pt + rhs_pt
-    endif
-
-  elseif (rhs_fields(var)%short_name == 'ps') then
-
-    if (self%has_field('ps')) then
-      call get_field(rhs_fields,  'ps', rhs_ps)
-      call self%get_field('ps', self_ps)
-      self_ps = self_ps + rhs_ps
-    endif
-
-    if (self%has_field('delp') .and. .not. hasfield(rhs_fields, 'delp')) then
-      call self%get_field('delp', self_delp)
-      self_delp = self_delp + rhs_delp
-    endif
-
-  else
-
-    !Get pointer to state
-    call self%get_field(rhs_fields(var)%short_name, field_pointer)
-
-    !Add increment to state
-    field_pointer%array = field_pointer%array + rhs_fields(var)%array
-
-    !Nullify pointer
-    nullify(field_pointer)
-
-  endif
-
-enddo
-
-if (allocated(rhs_ud)) deallocate(rhs_ud)
-if (allocated(rhs_vd)) deallocate(rhs_vd)
-if (allocated(rhs_delp)) deallocate(rhs_delp)
-
-!Check for negative tracers and increase to 0.0
-do var = 1,self%nf
-
-  if (self%fields(var)%tracer) then
+  ! Disallow tracers to become negative
+  if (state%tracer) then
 
     found_neg = .false.
 
-    do k = 1, self%fields(var)%npz
-      do j = jsc, jec
-        do i = isc, iec
-          if (self%fields(var)%array(i,j,k) < 0.0_kind_real) then
+    do k = 1, state%npz
+      do j = state%jsc, state%jec
+        do i = state%isc, state%iec
+          if (state%array(i,j,k) < 0.0_kind_real) then
             found_neg = .true.
-            self%fields(var)%array(i,j,k) = 0.0_kind_real
+            state%array(i,j,k) = 0.0_kind_real
           endif
         enddo
       enddo
@@ -204,14 +80,16 @@ do var = 1,self%nf
 
     !Print message warning about negative tracer removal
     if (found_neg .and. self%f_comm%rank() == 0) print*, &
-             'fv3jedi_state_mod.add_incr: Removed negative values for '&
-             //trim(self%fields(var)%short_name)
+      'fv3jedi_state_mod.add_incr: Removed negative values for '//trim(state%long_name)
 
   endif
 
+  !Nullify pointer
+  nullify(state)
+
 enddo
 
-end subroutine add_incr
+end subroutine add_increment
 
 ! --------------------------------------------------------------------------------------------------
 !> Analytic Initialization for the FV3 Model

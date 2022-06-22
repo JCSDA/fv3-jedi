@@ -27,8 +27,8 @@ extern "C" {
   void fv3jedi_increment_dot_prod_f90(const F90inc &, const F90inc &, double &);
   void fv3jedi_increment_self_schur_f90(const F90inc &, const F90inc &);
   void fv3jedi_increment_random_f90(const F90inc &);
-  void fv3jedi_increment_diff_incr_f90(const F90inc &, const F90state &, const F90state &,
-                                       const F90geom &);
+  void fv3jedi_increment_diff_states_f90(const F90inc &, const F90state &, const F90state &,
+                                         const F90geom &);
   void fv3jedi_increment_change_resol_f90(const F90inc &, const F90geom &, const F90inc &,
                                           const F90geom &);
   void fv3jedi_increment_sizes_f90(const F90inc &, int &);

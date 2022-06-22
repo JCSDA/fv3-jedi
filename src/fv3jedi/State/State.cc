@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2021 UCAR
+ * (C) Copyright 2017-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -137,10 +137,12 @@ void State::updateFields(const oops::Variables & newVars) {
 
 State & State::operator+=(const Increment & dx) {
   ASSERT(this->validTime() == dx.validTime());
+  // Increment variables must be a equal to or a subset of the State variables
+  ASSERT(dx.variables() <= vars_);
   // Interpolate increment to state resolution
   Increment dx_sr(*geom_, dx);
   // Call transform and add
-  fv3jedi_state_add_incr_f90(geom_->toFortran(), keyState_, dx_sr.toFortran());
+  fv3jedi_state_add_increment_f90(keyState_, dx_sr.toFortran());
   return *this;
 }
 
