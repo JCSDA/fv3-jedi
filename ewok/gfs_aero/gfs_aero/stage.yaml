@@ -1,0 +1,9 @@
+copy_files:
+  directories:
+    - [../../test/Data/fieldsets/dynamics.yaml, fieldsets/]
+    - [../../test/Data/fieldsets/ufo.yaml, fieldsets/]
+    - [../../test/Data/fv3files/akbk$(vertical_resolution).nc4, fv3files/]
+    - [../../test/Data/fv3files/field_table_gfdl, fv3files/]
+    - [../../test/Data/fv3files/fmsmpp.nml, fv3files/]
+    - [../../test/Data/fv3files/inputpert_4dvar.nml, fv3files/]
+#    - [../../test/Data/fv3files/input_gfs_$(horizontal_resolution).nml, fv3files/]

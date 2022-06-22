@@ -1,0 +1,2 @@
+filename: $(run_dir)/{{local_current_cycle}}.$(file_type).tile$(tile).nc
+type: an
