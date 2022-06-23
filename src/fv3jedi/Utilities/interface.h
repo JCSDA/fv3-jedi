@@ -27,24 +27,11 @@ typedef int F90iter;
 typedef int F90model;
 // Tlm key type
 typedef int F90tlm;
-// Locations key type
-typedef int F90locs;
-// Goms key type
-typedef int F90goms;
 // Trajectory key type
 typedef int F90traj;
-// Background error covariance key type
-typedef int F90bmat;
-// ObOp trajectory
-typedef int F90ootrj;
 // State key
 typedef int F90state;
 // Increment key
 typedef int F90inc;
-// Variable change
-typedef int F90varcha;
-// GetValues key
-typedef int F90getvalues;
-typedef int F90lineargetvalues;
 
 }  // namespace fv3jedi
