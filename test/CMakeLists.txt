@@ -3,7 +3,12 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
+# Use external jedi-cmake or bundle build
+if(DEFINED ENV{jedi_cmake_ROOT})
+  include( $ENV{jedi_cmake_ROOT}/share/jedicmake/Functions/git_functions.cmake )
+else()
+  include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
+endif()
 
 # Option not to run with large tests
 # ----------------------------------
