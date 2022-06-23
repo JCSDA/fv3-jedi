@@ -404,9 +404,17 @@ type(fv3jedi_field), pointer :: field
 type(atlas_metadata) :: meta
 
 real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
-integer :: ngrid
+integer :: max_npz
 
-ngrid = geom%ngrid_including_halo()
+! To allocate tmp_fv3_data just once, we need the max number of levels
+max_npz = -1
+do jvar = 1,vars%nvars()
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+  max_npz = max(max_npz, field%npz)
+end do
+
+allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
 
 do jvar = 1,vars%nvars()
 
@@ -414,15 +422,15 @@ do jvar = 1,vars%nvars()
   call self%get_field(trim(vars%variable(jvar)), field)
 
   ! Fill tmp buffer with local data
-  allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, field%npz))
+  ! Note: if field%npz < max_npz, then some of the memory allocated is unused
   tmp_fv3_data = 0.0_kind_real
-  tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, :) = &
-    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, :)
+  tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = &
+    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz)
 
   ! Perform halo exchange to fill halos -- this uses MPI to exchange halo data
   call mpp_update_domains(tmp_fv3_data, geom%domain)
 
-  ! Variable dimension
+  ! Reset npz for indexing into atlas fields of different ranks
   npz = field%npz
   if (npz==1) npz = 0
 
@@ -455,9 +463,9 @@ do jvar = 1,vars%nvars()
   ! Release pointer
   call afield%final()
 
-  deallocate(tmp_fv3_data)
-
 enddo
+
+deallocate(tmp_fv3_data)
 
 end subroutine to_fieldset
 
@@ -479,18 +487,25 @@ type(fv3jedi_field), pointer :: field
 character(len=1024) :: errmsg
 
 real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
+integer :: max_npz
 integer :: ngrid
 
 ngrid = geom%ngrid_including_halo()
+
+! To allocate tmp_fv3_data just once, we need the max number of levels
+max_npz = -1
+do jvar = 1,vars%nvars()
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+  max_npz = max(max_npz, field%npz)
+end do
+
+allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
 
 do jvar = 1,vars%nvars()
 
   ! Get field
   call self%get_field(trim(vars%variable(jvar)), field)
-
-  ! Variable dimension
-  npz = field%npz
-  if (npz==1) npz = 0
 
   ! Get atlas field
   afield = afieldset%field(field%long_name)
@@ -502,12 +517,13 @@ do jvar = 1,vars%nvars()
     call abor1_ftn(trim(errmsg))
   end if
 
-  ! Allocate buffer for 2d fv3-jedi field (local + halo)
-  allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, field%npz))
-  tmp_fv3_data = 0.0
+  ! Reset npz for indexing into atlas fields of different ranks
+  npz = field%npz
+  if (npz==1) npz = 0
 
   ! (Adjoint of) Copy fv3-jedi field data into atlas field
   ! Note: this includes reshaping of the 1d afield data (local + halo) into 2d fv3-jedi field
+  tmp_fv3_data = 0.0
   if (npz==0) then
     call afield%data(real_ptr_1)
     call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,1), real_ptr_1(:))
@@ -522,16 +538,16 @@ do jvar = 1,vars%nvars()
   call mpp_update_domains_ad(tmp_fv3_data, geom%domain)
 
   ! (Adjoint of) Fill tmp buffer with local data
-  field%array(geom%isc:geom%iec, geom%jsc:geom%jec, :) = &
-    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, :) &
-    + tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, :)
-
-  deallocate(tmp_fv3_data)
+  field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = &
+    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) &
+    + tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz)
 
   ! Release pointer
   call afield%final()
 
 enddo
+
+deallocate(tmp_fv3_data)
 
 end subroutine to_fieldset_ad
 
@@ -564,10 +580,6 @@ do jvar = 1,vars%nvars()
   ! Get field
   call self%get_field(trim(vars%variable(jvar)), field)
 
-  ! Variable dimension
-  npz = field%npz
-  if (npz==1) npz = 0
-
   ! Get Atlas field
   afield = afieldset%field(field%long_name)
 
@@ -577,6 +589,10 @@ do jvar = 1,vars%nvars()
                      ", but got afield ngrid = ", afield%size()/field%npz
     call abor1_ftn(trim(errmsg))
   end if
+
+  ! Reset npz for indexing into atlas fields of different ranks
+  npz = field%npz
+  if (npz==1) npz = 0
 
   ! Reshape the first portion of afield, the local data, into 2d fv3-jedi field
   if (npz==0) then
