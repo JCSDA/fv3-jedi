@@ -15,5 +15,6 @@ field metadata:
 - long name: stc
   io file: surface
 
-- long name: smc
+- long name: soilMoistureVolumetric 
+  io name: smc
   io file: surface

@@ -633,7 +633,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "smc";
+    md.longName = "soilMoistureVolumetric";
     md.shortName = "smc";
     md.units = "none";
     md.kind = "double";
