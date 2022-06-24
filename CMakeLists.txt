@@ -11,6 +11,8 @@ cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
 project( fv3jedi VERSION 1.1.0 LANGUAGES C CXX Fortran )
 
+option(OPENMP "Build fv3-jedi with OpenMP support" ON)
+
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 
 set( CMAKE_DIRECTORY_LABELS "fv3-jedi" )
@@ -90,7 +92,9 @@ find_package( femps 1.0.0 REQUIRED )
 find_package( vader 1.0.0 REQUIRED )
 
 #OpenMP
-find_package( OpenMP COMPONENTS Fortran )
+if(OPENMP)
+  find_package( OpenMP COMPONENTS Fortran )
+endif()
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )

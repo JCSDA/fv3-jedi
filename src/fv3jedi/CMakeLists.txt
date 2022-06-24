@@ -185,8 +185,8 @@ list( APPEND fv3jedi_ufs_src_files
 #Requirement libraries
 set(FV3JEDI_LIB_DEP oops saber ufo vader femps atlas atlas_f fv3jedilm ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES})
 
-# Optional openMP
-if(OpenMP_Fortran_FOUND)
+# If explicitly requested
+if(OPENMP)
   list( APPEND FV3JEDI_LIB_DEP OpenMP::OpenMP_Fortran)
 endif()
 
