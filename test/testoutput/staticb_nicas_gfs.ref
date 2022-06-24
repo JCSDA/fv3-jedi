@@ -5,11 +5,11 @@ Number of input BUMP components for relative_humidity: 2
 Number of input BUMP components for cloud_liquid_water: 2
 Number of input BUMP components for ozone_mass_mixing_ratio: 2
 Number of input BUMP components for surface_pressure: 2
-Norm of input BUMP parameter a - 1: 8.2553314777191900e-01
-Norm of input BUMP parameter a - 2: 2.3234137828120441e-01
-Norm of input BUMP parameter rh - 1: 8.3832619061755491e+06
-Norm of input BUMP parameter rh - 2: 1.4192491965178542e+06
-Norm of input BUMP parameter rv - 1: 7.4178230567054226e-01
-Norm of input BUMP parameter rv - 2: 3.5088213098785466e-02
+Norm of input BUMP parameter a - 1: 8.2524223146841347e-01
+Norm of input BUMP parameter a - 2: 2.3267510311239703e-01
+Norm of input BUMP parameter rh - 1: 8.1803609806009391e+06
+Norm of input BUMP parameter rh - 2: 1.4099820980692129e+06
+Norm of input BUMP parameter rv - 1: 7.4127124695535784e-01
+Norm of input BUMP parameter rv - 2: 3.5064040874928870e-02
 Norm of BUMP output parameter nicas_norm - 1: 1.0307421110466040e+00
 Norm of BUMP output parameter nicas_norm - 2: 1.0074085678839588e+00
