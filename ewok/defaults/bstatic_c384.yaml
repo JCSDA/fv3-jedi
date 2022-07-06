@@ -53,7 +53,7 @@ saber blocks:
     datadir: /work/noaa/da/menetrie/StaticBTraining/c384/bump_1.0
     prefix: vbal_2020010100-2020013100/vbal_2020010100-2020013100
     verbosity: main
-    universe_rad: 2000.0e3
+    universe_rad: 2000.0e+3
     load_vbal: true
     fname_samp: vbal_2020013100/vbal_2020013100_sampling
     load_samp_local: true
@@ -67,5 +67,5 @@ saber blocks:
     datadir: /work/noaa/da/menetrie/StaticBTraining/c384/bump_1.0
     prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
     verbosity: main
-    universe_rad: 2000.0e3
+    universe_rad: 2000.0e+3
     load_wind_local: true
