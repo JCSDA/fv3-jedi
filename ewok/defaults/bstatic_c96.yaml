@@ -8,7 +8,7 @@ saber blocks:
   active variables: [psi,chi,t,ps,sphum,liq_wat,o3mr]
   bump:
     prefix: nicas_2020010100-2020013100/nicas_2020010100-2020013100
-    datadir: /work/noaa/da/menetrie/regrid/c96/bump_1.0
+    datadir: $(static_data)/skylab-1.0.0/staticb/c96
     verbosity: main
     strategy: specific_univariate
     load_nicas_local: true
@@ -24,7 +24,7 @@ saber blocks:
       filetype: fms restart
       set datetime on read: true
       psinfile: true
-      datapath: /work/noaa/da/menetrie/regrid/c96/bump_1.0/cor_2020010100-2020013100
+      datapath: $(static_data)/skylab-1.0.0/staticb/c96/cor_2020010100-2020013100
       filename_core: cor_rh.fv_core.res.nc
       filename_trcr: cor_rh.fv_tracer.res.nc
       filename_cplr: cor_rh.coupler.res
@@ -37,7 +37,7 @@ saber blocks:
     filetype: fms restart
     set datetime on read: true
     psinfile: true
-    datapath: /work/noaa/da/menetrie/regrid/c96/bump_1.0/var_2020010100-2020013100
+    datapath: $(static_data)/skylab-1.0.0/staticb/c96/var_2020010100-2020013100
     filename_core: stddev.fv_core.res.nc
     filename_trcr: stddev.fv_tracer.res.nc
     filename_cplr: stddev.coupler.res
@@ -46,7 +46,7 @@ saber blocks:
   output variables: [psi,chi,t,ps,sphum,liq_wat,o3mr]
   active variables: [psi,chi,t,ps,sphum,liq_wat,o3mr]
   bump:
-    datadir: /work/noaa/da/menetrie/regrid/c96/bump_1.0
+    datadir: $(static_data)/skylab-1.0.0/staticb/c96
     prefix: vbal_2020010100-2020013100/vbal_2020010100-2020013100
     verbosity: main
     universe_rad: 2000.0e+3
@@ -59,7 +59,7 @@ saber blocks:
   output variables: [ua,va,t,ps,sphum,liq_wat,o3mr]
   active variables: [psi,chi,ua,va]
   bump:
-    datadir: /work/noaa/da/menetrie/regrid/c96/bump_1.0
+    datadir: $(static_data)/skylab-1.0.0/staticb/c96
     prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
     verbosity: main
     universe_rad: 2000.0e+3
