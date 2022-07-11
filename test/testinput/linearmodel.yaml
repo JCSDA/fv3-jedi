@@ -1,41 +1,39 @@
+analysis variables: &anavars [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 background error:
-  covariance model: ID
-  date: '2018-04-15T00:00:00Z'
+  covariance model: SABER
+  saber blocks:
+  - saber block name: ID
+    input variables: *anavars
+    output variables: *anavars
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  akbk: Data/fv3files/akbk64.nc4
-  layout: [1,1]
-  io_layout: [1,1]
+  fms initialization:
+    namelist filename: Data/fv3files/input_gfs_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 linear model:
   name: FV3JEDITLM
-  nml_file: Data/fv3files/input_gfs_c12.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  namelist filename: Data/fv3files/input_gfs_c12.nml
+  linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
   tstep: PT15M
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+  tlm variables: *anavars
   trajectory:
-    model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+    model variables: *anavars
 linear model test:
-  forecast length: PT1H
-  first multiplier TL: 0.01
-  iterations TL: 10
-  tolerance AD: 1.0e-12
+  forecast length: PT30M
+  first multiplier TL: 1.e-11 # use weaker multipliers (e.g. 0.01) and more iterations for debugging
+  iterations TL: 1            # use more iterations (e.g. 10) for debugging, and adjust first multiplier
+  tolerance AD: 2.0e-11
   tolerance TL: 1.0
 model:
   name: FV3LM
-  nml_file: Data/fv3files/input_gfs_c12.nml
-  trc_file: Data/fv3files/field_table
-  nml_file_pert: Data/fv3files/inputpert_4dvar.nml
+  use internal namelist: true
   tstep: PT15M
   lm_do_dyn: 1
   lm_do_trb: 0
@@ -43,12 +41,12 @@ model:
   model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 model aux control: null
 initial condition:
-  filetype: gfs
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20180415.000000.fv_core.res.nc
-  filename_trcr: 20180415.000000.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.sfc_data.nc
-  filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.coupler.res
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
   state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
-analysis variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]

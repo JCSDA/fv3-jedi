@@ -1,19 +1,15 @@
-window begin: '2020-09-03T15:00:00Z'
+window begin: 2020-09-03T15:00:00Z
 window length: PT6H
 geometry:
-  nml_file: Data/fv3files/input_lam_cmaq.nml
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_lam_cmaq
+  namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  npz: 64
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
-    - fieldset: Data/fieldsets/lam_cmaq.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 state:
-  date: '2020-09-03T18:00:00Z'
-  filetype: gfs
+  datetime: 2020-09-03T18:00:00Z
+  filetype: fms restart
   datapath: Data/inputs/lam_cmaq/bkg/
   filename_core: 20200903.180000.fv_core.res.tile1.nc
   filename_trcr: 20200903.180000.fv_tracer.res.tile1.nc
@@ -59,35 +55,27 @@ state:
                     sv_pah2,sv_trp1,sv_trp2,sv_iso1,sv_iso2,
                     sv_sqt,lv_pcsog,cld_amt,phis]
 observations:
-- obs space:
-    name: NO2
-    obsdatain:
-      obsfile: Data/obs/testinput_tier_1/tropomi_no2_2020090318_m.nc4
-    obsdataout:
-      obsfile: Data/hofx/tropomi_no2_hofx_lam_cmaq_2020090318_m.nc4
-    simulated variables: [nitrogen_dioxide_in_tropospheric_column]
-  obs operator:
-    name: AvgKernel
-    obs options:
+  observers:
+  - obs space:
+      name: NO2
+      obsdatain:
+        obsfile: Data/obs/testinput_tier_1/tropomi_no2_2020090318_m.nc4
+      obsdataout:
+        obsfile: Data/hofx/tropomi_no2_hofx_lam_cmaq_2020090318_m.nc4
+      simulated variables: [nitrogen_dioxide_in_tropospheric_column]
+    obs operator:
+      name: AvgKernel
       nlayers_kernel: 34
-      ak: [0, 22.83594, 424.4141, 1387.547, 3057.266, 5564.383,
-           8163.375, 11901.34, 14898.45, 17471.84, 19290.23,
-           20361.82, 20337.86, 19859.39, 19031.29, 18308.43,
-           17008.79, 15508.26, 13881.33, 12766.87, 11116.66,
-           9562.683, 8608.525, 7311.869, 6156.074, 4490.817,
-           3381.744, 2265.432, 1423.77, 823.9678, 427.5925,
-           191.3386, 69.52058, 18.60893, 0]
-      bk: [1, 0.991984, 0.969513, 0.931881, 0.873929, 0.790717,
-           0.704669, 0.576692, 0.466003, 0.358254, 0.263242,
-           0.16891, 0.111505, 0.077958, 0.051773, 0.038026,
-           0.022355, 0.011806, 0.005378, 0.002857, 0.00089,
-           0.000199, 5.9e-05, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0 ]
+      PresLevVar: pressure_level
       AvgKernelVar: averaging_kernel_level
       tracer variables: [no2]
       tropospheric column: true
       total column: false
       model units coeff: 1e-6 # ppmv to 1/1
       hofx units coeff: 1.6605392e-20 # molec/cm2 to mol/m2
-  obs error:
-    covariance model: diagonal
+    obs error:
+      covariance model: diagonal
+
+test:
+  reference filename: testoutput/hofx_nomodel_lam_cmaq.ref
+  test output filename: testoutput/hofx_nomodel_lam_cmaq.test.out

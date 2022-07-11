@@ -1,5 +1,5 @@
-filetype: gfs
-datapath: '$(experiment_dir)/{{current_cycle}}'
+filetype: fms restart
+datapath: '$(run_dir)'
 filename_core: '{{local_current_cycle}}.fv_core.res.nc'
 filename_trcr: '{{local_current_cycle}}.fv_tracer.res.nc'
 filename_sfcd: '{{local_current_cycle}}.sfc_data.nc'

@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_GEOMETRY_GEOMETRY_H_
-#define FV3JEDI_GEOMETRY_GEOMETRY_H_
+#pragma once
 
 #include <memory>
 #include <ostream>
@@ -24,14 +23,14 @@
 
 #include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 #include "fv3jedi/Geometry/Geometry.interface.h"
+#include "fv3jedi/Geometry/GeometryParameters.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
 
-namespace eckit {
-  class Configuration;
+namespace oops {
+  class Variables;
 }
 
 namespace fv3jedi {
-
   class GeometryIterator;
 
 // -------------------------------------------------------------------------------------------------
@@ -40,9 +39,10 @@ namespace fv3jedi {
 class Geometry : public util::Printable,
                  private util::ObjectCounter<Geometry> {
  public:
+  typedef GeometryParameters Parameters_;
   static const std::string classname() {return "fv3jedi::Geometry";}
 
-  explicit Geometry(const eckit::Configuration &, const eckit::mpi::Comm &);
+  explicit Geometry(const Parameters_ &, const eckit::mpi::Comm &);
   Geometry(const Geometry &);
   ~Geometry();
 
@@ -53,20 +53,26 @@ class Geometry : public util::Printable,
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
   const eckit::mpi::Comm & getComm() const {return comm_;}
-  atlas::FunctionSpace * atlasFunctionSpace() const {return atlasFunctionSpace_.get();}
-  atlas::FieldSet * atlasFieldSet() const {return atlasFieldSet_.get();}
+  const atlas::FunctionSpace & functionSpace() const {return functionSpaceIncludingHalo_;}
+  atlas::FunctionSpace & functionSpace() {return functionSpaceIncludingHalo_;}
+  const atlas::FieldSet & extraFields() const {return extraFields_;}
+  atlas::FieldSet & extraFields() {return extraFields_;}
+  void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
+
+  std::vector<size_t> variableSizes(const oops::Variables &) const;
+
+  const FieldsMetadata & fieldsMetaData() const {return *fieldsMeta_;}
 
  private:
   Geometry & operator=(const Geometry &);
   void print(std::ostream &) const;
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
-  std::unique_ptr<atlas::functionspace::PointCloud> atlasFunctionSpace_;
-  std::unique_ptr<atlas::FieldSet> atlasFieldSet_;
-  const FieldsMetadata fieldsMeta_;
+  atlas::FunctionSpace functionSpace_;
+  atlas::FunctionSpace functionSpaceIncludingHalo_;
+  atlas::FieldSet extraFields_;
+  std::shared_ptr<FieldsMetadata> fieldsMeta_;
 };
 // -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-
-#endif  // FV3JEDI_GEOMETRY_GEOMETRY_H_

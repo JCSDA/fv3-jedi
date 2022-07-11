@@ -7,12 +7,10 @@
 
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/Run.h"
-#include "saber/oops/instantiateVariableChangeFactory.h"
 #include "test/interface/LinearVariableChange.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   test::LinearVariableChange<fv3jedi::Traits> tests;
   return run.execute(tests);
 }

@@ -1,30 +1,26 @@
 cost function:
   cost type: 3D-Var
-  window begin: '2018-04-14T21:00:00Z'
+  window begin: '2020-12-14T21:00:00Z'
   window length: PT6H
-  analysis variables: &3dvars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+  analysis variables: &3dvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
   geometry:
-    nml_file_mpp: Data/fv3files/fmsmpp.nml
-    trc_file: Data/fv3files/field_table
-    akbk: Data/fv3files/akbk64.nc4
-    # input.nml
-    layout: [1,1]
-    io_layout: [1,1]
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+      field table filename: Data/fv3files/field_table_gfdl
+    akbk: Data/fv3files/akbk127.nc4
     npx: 13
     npy: 13
-    npz: 64
-    ntiles: 6
-    fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+    npz: 127
+    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   background:
-    filetype: gfs
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
     datapath: Data/inputs/gfs_c12/bkg
-    filename_core: 20180415.000000.fv_core.res.nc
-    filename_trcr: 20180415.000000.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.sfc_data.nc
-    filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.coupler.res
+    filename_core: 20201215.000000.fv_core.res.nc
+    filename_trcr: 20201215.000000.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.sfc_data.nc
+    filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.coupler.res
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
@@ -32,197 +28,121 @@ cost function:
     covariance model: hybrid
     components:
     - covariance:
-        covariance model: BUMP
-        bump:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-          method: cor
-          strategy: specific_univariate
-          load_nicas: 1
-          mpicom: 2
-          verbosity: main
-          io_keys:
-          - "ua-ua"
-          - "va-va"
-          - "T-T"
-          - "ps-ps"
-          - "sphum-sphum"
-          - "ice_wat-ice_wat"
-          - "liq_wat-liq_wat"
-          - "o3mr-o3mr"
-          io_values:
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
-          - "fixed_2500km_0.3"
+        covariance model: SABER
+        saber blocks:
+        - saber block name: BUMP_NICAS
+          saber central block: true
+          input variables: *3dvars
+          output variables: *3dvars
+          bump:
+            prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+            method: cor
+            strategy: specific_univariate
+            load_nicas_local: true
+            verbosity: main
+            io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,air_pressure_thickness-air_pressure_thickness,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
+            io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
       weight:
         value: 0.1
     - covariance:
         covariance model: ensemble
-        members:
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem001/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem002/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem003/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem004/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem005/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem006/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem007/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem008/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem009/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
-        - filetype: gfs
-          state variables: *3dvars
-          datapath: Data/inputs/gfs_c12/mem010/
-          filename_core: 20180415.000000.fv_core.res.nc
-          filename_trcr: 20180415.000000.fv_tracer.res.nc
-          filename_sfcd: 20180415.000000.sfc_data.nc
-          filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-          filename_cplr: 20180415.000000.coupler.res
+        members from template:
+          template:
+            datetime: 2020-12-15T00:00:00Z
+            filetype: fms restart
+            state variables: *3dvars
+            datapath: Data/inputs/gfs_c12/mem%mem%/
+            filename_core: 20201215.000000.fv_core.res.nc
+            filename_trcr: 20201215.000000.fv_tracer.res.nc
+            filename_sfcd: 20201215.000000.sfc_data.nc
+            filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+            filename_cplr: 20201215.000000.coupler.res
+          pattern: '%mem%'
+          nmembers: 10
+          zero padding: 3
         localization:
-          localization method: BUMP
-          localization variables: *3dvars
-          bump:
-            prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
-            method: loc
-            strategy: common
-            load_nicas: 1
-            mpicom: 2
-            verbosity: main
-            io_keys: ["common"]
-            io_values: ["fixed_2500km_0.3"]
+          localization method: SABER
+          saber block:
+            saber block name: BUMP_NICAS
+            input variables: *3dvars
+            output variables: *3dvars
+            bump:
+              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+              method: loc
+              strategy: common
+              load_nicas_local: true
+              verbosity: main
+              io_keys: ["common"]
+              io_values: ["fixed_2500km_0.3"]
       weight:
         value: 0.9
   observations:
+    observers:
 
-  - obs space:
-      name: GnssroBndROPP1D
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
-        obsgrouping:
-          group variables: ["record_number"]
-      obsdataout:
-        obsfile: Data/hofx/GnssroBndROPP1D_hyb-3dvar_gfs2018041500_m.nc4
-      simulated variables: [bending_angle]
-    obs operator:
-      name:  GnssroBndROPP1D
-      obs options:
-    obs filters:
-    - filter: Domain Check
-      filter variables:
-      - name: bending_angle
-      where :
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - filter: ROobserror
-      filter variables:
-      - name: bending_angle
-      errmodel: NRL
-      variable: bending_angle
-    - filter: Background Check
-      filter variables:
-      - name: bending_angle
-      threshold: 3
-  - obs space:
-      name: GnssroBndROPP2D
-      obsdatain:
-        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2018041500_m.nc4
-        obsgrouping:
-          group variables: ["record_number"]
-      obsdataout:
-        obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2018041500_m.nc4
-      simulated variables: [bending_angle]
-    obs operator:
-      name:  GnssroBndROPP2D
-      obs options:
+    - obs space:
+        name: GnssroBndROPP1D
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+          obsgrouping:
+            group variables: [record_number]
+        obsdataout:
+          obsfile: Data/hofx/GnssroBndROPP1D_hyb-3dvar_gfs2020121500_m.nc4
+        simulated variables: [bending_angle]
+      obs operator:
+        name:  GnssroBndROPP1D
+        obs options:
+      obs filters:
+      - filter: Domain Check
+        filter variables:
+        - name: bending_angle
+        where :
+        - variable:
+            name: impact_height@MetaData
+          minvalue: 0
+          maxvalue: 50000
+      - filter: ROobserror
+        filter variables:
+        - name: bending_angle
+        errmodel: NRL
+        variable: bending_angle
+      - filter: Background Check
+        filter variables:
+        - name: bending_angle
+        threshold: 3
+    - obs space:
+        name: GnssroBndROPP2D
+        obsdatain:
+          obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+          obsgrouping:
+            group variables: [record_number]
+        obsdataout:
+          obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2020121500_m.nc4
+        simulated variables: [bending_angle]
+      obs operator:
+        name:  GnssroBndROPP2D
+        obs options:
+          n_horiz: 3
+          res: 40.0
+          top_2d: 10.0
+      obs filters:
+      - filter: Domain Check
+        filter variables:
+        - name: bending_angle
+        where :
+        - variable:
+            name: impact_height@MetaData
+          minvalue: 0
+          maxvalue: 50000
+      - filter: ROobserror
         n_horiz: 3
-        res: 40.0
-        top_2d: 10.0
-    obs filters:
-    - filter: Domain Check
-      filter variables:
-      - name: bending_angle
-      where :
-      - variable:
-          name: impact_height@MetaData
-        minvalue: 0
-        maxvalue: 50000
-    - filter: ROobserror
-      n_horiz: 3
-      filter variables:
-      - name: bending_angle
-      errmodel: NRL
-      variable: bending_angle
-    - filter: Background Check
-      filter variables:
-      - name: bending_angle
-      threshold: 3
+        filter variables:
+        - name: bending_angle
+        errmodel: NRL
+        variable: bending_angle
+      - filter: Background Check
+        filter variables:
+        - name: bending_angle
+        threshold: 3
 
 variational:
   minimizer:
@@ -232,30 +152,22 @@ variational:
     gradient norm reduction: 1e-10
     test: on
     geometry:
-      trc_file: Data/fv3files/field_table
-      akbk: Data/fv3files/akbk64.nc4
-      # input.nml
-      layout: [1,1]
-      io_layout: [1,1]
+      akbk: Data/fv3files/akbk127.nc4
       npx: 13
       npy: 13
-      npz: 64
-      ntiles: 6
-      fieldsets:
-      - fieldset: Data/fieldsets/dynamics.yaml
-      - fieldset: Data/fieldsets/ufo.yaml
+      npz: 127
+      field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
 final:
   diagnostics:
     departures: oman
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/analysis/
-  filename_core: hyb-3dvar-gfs_ropp.fv_core.res.nc
-  filename_trcr: hyb-3dvar-gfs_ropp.fv_tracer.res.nc
-  filename_sfcd: hyb-3dvar-gfs_ropp.sfc_data.nc
-  filename_sfcw: hyb-3dvar-gfs_ropp.fv_srf_wnd.res.nc
-  filename_cplr: hyb-3dvar-gfs_ropp.coupler.res
-  first: PT0H
+  prefix: hyb-3dvar-gfs_ropp
   frequency: PT1H
+
+test:
+  reference filename: testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
+  test output filename: testoutput/hyb-3dvar_gfs_gnssro_ropp.test.out

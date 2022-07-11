@@ -1,16 +1,12 @@
 geometry:
-  nml_file: Data/fv3files/input_lam_cmaq.nml
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table_lam_cmaq
-  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_lam_cmaq
+  namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  npz: 64
-  fieldsets:
-    - fieldset: Data/fieldsets/lam_cmaq.yaml
-    - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 increment test:
-  date: '2018-04-14T21:00:00Z'
+  date: 2018-04-14T21:00:00Z
 inc variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,
                 no2,'no',o3,no3,h2o2,n2o5,
                 hno3,hono,pna,so2,sulf,

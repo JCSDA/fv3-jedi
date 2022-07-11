@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2022 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,6 +12,9 @@ use iso_c_binding
 
 ! fckit
 use fckit_configuration_module,     only: fckit_configuration
+
+! atlas
+use atlas_module, only: atlas_fieldset
 
 ! oops
 use datetime_mod
@@ -50,13 +53,14 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars) &
+subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars, c_time) &
            bind(c,name='fv3jedi_state_create_f90')
 
 implicit none
 integer(c_int), intent(inout)  :: c_key_self
 integer(c_int), intent(in)     :: c_key_geom !< Geometry
 type(c_ptr), value, intent(in) :: c_vars     !< List of variables
+type(c_ptr), value, intent(in) :: c_time     !< Datetime
 
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_geom),  pointer :: geom
@@ -68,6 +72,10 @@ call fv3jedi_state_registry%add(c_key_self)
 call fv3jedi_state_registry%get(c_key_self,self)
 
 vars = oops_variables(c_vars)
+
+! Create Fortran pointer to datetime
+call c_f_datetime(c_time, self%time)
+
 call self%create(geom, vars)
 
 end subroutine fv3jedi_state_create_c
@@ -141,24 +149,21 @@ end subroutine fv3jedi_state_axpy_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_add_incr_c(c_key_geom,c_key_self,c_key_rhs) &
-           bind(c,name='fv3jedi_state_add_incr_f90')
+subroutine fv3jedi_state_add_increment_c(c_key_self,c_key_rhs) &
+           bind(c,name='fv3jedi_state_add_increment_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_geom
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
-type(fv3jedi_geom), pointer :: geom
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_increment), pointer :: rhs
 
 call fv3jedi_state_registry%get(c_key_self,self)
 call fv3jedi_increment_registry%get(c_key_rhs,rhs)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
 
-call self%add_incr(geom,rhs%fields)
+call self%add_increment(rhs%fields)
 
-end subroutine fv3jedi_state_add_incr_c
+end subroutine fv3jedi_state_add_increment_c
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -185,77 +190,55 @@ end subroutine fv3jedi_state_change_resol_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_read_file_c(c_key_geom, c_key_state, c_conf, c_dt) &
-           bind(c,name='fv3jedi_state_read_file_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_state  !< State
-type(c_ptr), intent(in)    :: c_conf !< Configuration
-type(c_ptr), intent(inout) :: c_dt   !< DateTime
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-
-type(fv3jedi_state), pointer :: self
-type(datetime) :: fdate
-type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration) :: f_conf
-
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,self)
-call c_f_datetime(c_dt, fdate)
-f_conf = fckit_configuration(c_conf)
-
-call self%read(geom, f_conf, fdate)
-
-end subroutine fv3jedi_state_read_file_c
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf, c_dt) &
+subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf) &
            bind(c,name='fv3jedi_state_analytic_init_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_state  !< State
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
-type(c_ptr), intent(in)    :: c_conf !< Configuration
-type(c_ptr), intent(inout) :: c_dt   !< DateTime
+integer(c_int),     intent(in)    :: c_key_state
+integer(c_int),     intent(in)    :: c_key_geom
+type(c_ptr), value, intent(in)    :: c_conf
 
-type(fv3jedi_state), pointer :: self
-type(fv3jedi_geom), pointer :: geom
-type(datetime) :: fdate
+type(fv3jedi_state), pointer :: f_self
+type(fv3jedi_geom), pointer :: f_geom
 type(fckit_configuration) :: f_conf
 
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,self)
-call c_f_datetime(c_dt, fdate)
+! Linked list
+! -----------
+call fv3jedi_geom_registry%get(c_key_geom, f_geom)
+call fv3jedi_state_registry%get(c_key_state, f_self)
+
+! Fortran APIs
+! ------------
 f_conf = fckit_configuration(c_conf)
-call self%analytic_IC(geom, f_conf, fdate)
+
+! Call implementation
+! -------------------
+call f_self%analytic_IC(f_geom, f_conf)
 
 end subroutine fv3jedi_state_analytic_init_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_write_file_c(c_key_geom, c_key_state, c_conf, c_dt) &
-           bind(c,name='fv3jedi_state_write_file_f90')
+subroutine fv3jedi_state_fill_geom_orography_c(c_key_state, c_key_geom) &
+           bind(c,name='fv3jedi_state_fill_geom_orography_f90')
 
 implicit none
-integer(c_int), intent(in) :: c_key_state  !< State
-type(c_ptr), intent(in) :: c_conf !< Configuration
-type(c_ptr), intent(in) :: c_dt   !< DateTime
-integer(c_int), intent(in) :: c_key_geom  !< Geometry
+integer(c_int),     intent(in)    :: c_key_state
+integer(c_int),     intent(in)    :: c_key_geom
 
-type(fv3jedi_state), pointer :: self
-type(datetime) :: fdate
-type(fv3jedi_geom),  pointer :: geom
-type(fckit_configuration) :: f_conf
+type(fv3jedi_state), pointer :: f_self
+type(fv3jedi_geom), pointer :: f_geom
 
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_state,self)
-call c_f_datetime(c_dt, fdate)
-f_conf = fckit_configuration(c_conf)
+! Linked list
+! -----------
+call fv3jedi_geom_registry%get(c_key_geom, f_geom)
+call fv3jedi_state_registry%get(c_key_state, f_self)
 
-call self%write(geom, f_conf, fdate)
+! Call implementation
+! -------------------
+call f_self%set_geom_orography(f_geom)
 
-end subroutine fv3jedi_state_write_file_c
+end subroutine fv3jedi_state_fill_geom_orography_c
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -323,6 +306,56 @@ end subroutine fv3jedi_state_getminmaxrms_c
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine fv3jedi_state_to_fieldset_c(c_key_self, c_key_geom, c_vars, c_afieldset) &
+ & bind (c,name='fv3jedi_state_to_fieldset_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr), intent(in), value :: c_afieldset
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(atlas_fieldset) :: afieldset
+
+call fv3jedi_state_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+afieldset = atlas_fieldset(c_afieldset)
+
+call self%to_fieldset(geom, vars, afieldset)
+
+end subroutine fv3jedi_state_to_fieldset_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_from_fieldset_c(c_key_self, c_key_geom, c_vars, c_afieldset) &
+ & bind (c,name='fv3jedi_state_from_fieldset_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+type(c_ptr), value, intent(in) :: c_vars
+type(c_ptr), intent(in), value :: c_afieldset
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables) :: vars
+type(atlas_fieldset) :: afieldset
+
+call fv3jedi_state_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+vars = oops_variables(c_vars)
+afieldset = atlas_fieldset(c_afieldset)
+
+call self%from_fieldset(geom, vars, afieldset)
+
+end subroutine fv3jedi_state_from_fieldset_c
+
+! --------------------------------------------------------------------------------------------------
+
 subroutine fv3jedi_state_sersize_c(c_key_self,inc_size) bind(c,name='fv3jedi_state_sersize_f90')
 
 implicit none
@@ -384,6 +417,28 @@ call self%deserialize(c_vsize,c_vect_inc,c_index)
 
 
 end subroutine fv3jedi_state_deserialize_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_update_fields_c(c_key_state, c_key_geom, c_vars) &
+  bind(c,name='fv3jedi_state_update_fields_f90')
+
+implicit none
+integer(c_int), intent(inout)  :: c_key_state
+integer(c_int), intent(in)     :: c_key_geom !< Geometry
+type(c_ptr), value, intent(in) :: c_vars     !< List of variables
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+type(oops_variables)         :: vars
+
+call fv3jedi_state_registry%get(c_key_state,self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+
+vars = oops_variables(c_vars)
+call self%update_fields(geom, vars)
+
+end subroutine fv3jedi_state_update_fields_c
 
 ! --------------------------------------------------------------------------------------------------
 

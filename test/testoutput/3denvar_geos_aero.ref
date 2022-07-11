@@ -1,59 +1,59 @@
-Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 68.54, nobs = 100, Jo/n = 0.6854, err = 0.05
-Test     : CostFunction: Nonlinear J = 68.54
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.00741583
-Test     : CostFunction::addIncrement: Analysis: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 20 | cube sphere face size: C12
-Test     :    DELP                          : Min = +1.000000e+00, Max = +5.114039e+03, RMS = +1.952166e+03
-Test     :    RH                            : Min = +1.856580e-06, Max = +1.009854e+00, RMS = +4.529769e-01
-Test     :    DU001                         : Min = +0.000000e+00, Max = +1.671863e-07, RMS = +4.399194e-09
-Test     :    DU002                         : Min = +0.000000e+00, Max = +5.424880e-07, RMS = +1.422608e-08
-Test     :    DU003                         : Min = +0.000000e+00, Max = +6.062894e-07, RMS = +1.562929e-08
-Test     :    DU004                         : Min = +0.000000e+00, Max = +4.159743e-07, RMS = +6.840284e-09
-Test     :    DU005                         : Min = +0.000000e+00, Max = +2.168439e-07, RMS = +2.881162e-09
-Test     :    SS001                         : Min = +0.000000e+00, Max = +1.424937e-10, RMS = +7.032485e-12
-Test     :    SS002                         : Min = +0.000000e+00, Max = +4.497960e-09, RMS = +2.156344e-10
-Test     :    SS003                         : Min = +0.000000e+00, Max = +4.337923e-08, RMS = +2.136878e-09
-Test     :    SS004                         : Min = +0.000000e+00, Max = +1.239630e-07, RMS = +6.883704e-09
-Test     :    SS005                         : Min = +0.000000e+00, Max = +4.274278e-08, RMS = +1.638608e-09
-Test     :    BCPHOBIC                      : Min = +0.000000e+00, Max = +4.632864e-09, RMS = +5.894882e-11
-Test     :    BCPHILIC                      : Min = +0.000000e+00, Max = +3.265045e-09, RMS = +7.644737e-11
-Test     :    OCPHOBIC                      : Min = +0.000000e+00, Max = +6.050151e-08, RMS = +4.715456e-10
-Test     :    OCPHILIC                      : Min = +0.000000e+00, Max = +7.834458e-08, RMS = +1.203074e-09
-Test     :    NO3AN1                        : Min = +0.000000e+00, Max = +3.425501e-09, RMS = +5.301489e-11
-Test     :    NO3AN2                        : Min = +0.000000e+00, Max = +4.572676e-09, RMS = +1.859913e-10
-Test     :    NO3AN3                        : Min = +0.000000e+00, Max = +6.087553e-11, RMS = +1.720084e-12
-Test     :    SO4                           : Min = +0.000000e+00, Max = +1.028447e-08, RMS = +5.338721e-10
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 11.0225, nobs = 100, Jo/n = 0.110225, err = 0.05
-Test     : CostFunction: Nonlinear J = 11.0225
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.0401943
-Test     : CostFunction::addIncrement: Analysis: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 20 | cube sphere face size: C12
-Test     :    DELP                          : Min = +1.000000e+00, Max = +5.114039e+03, RMS = +1.952166e+03
-Test     :    RH                            : Min = +1.856580e-06, Max = +1.009854e+00, RMS = +4.529769e-01
-Test     :    DU001                         : Min = +0.000000e+00, Max = +1.671863e-07, RMS = +4.399179e-09
-Test     :    DU002                         : Min = +0.000000e+00, Max = +5.424880e-07, RMS = +1.422608e-08
-Test     :    DU003                         : Min = +0.000000e+00, Max = +6.062894e-07, RMS = +1.562929e-08
-Test     :    DU004                         : Min = +0.000000e+00, Max = +4.159743e-07, RMS = +6.840284e-09
-Test     :    DU005                         : Min = +0.000000e+00, Max = +2.168439e-07, RMS = +2.881162e-09
-Test     :    SS001                         : Min = +0.000000e+00, Max = +5.394212e-10, RMS = +7.870223e-12
-Test     :    SS002                         : Min = +0.000000e+00, Max = +4.497960e-09, RMS = +2.155307e-10
-Test     :    SS003                         : Min = +0.000000e+00, Max = +4.337923e-08, RMS = +2.136830e-09
-Test     :    SS004                         : Min = +0.000000e+00, Max = +1.239630e-07, RMS = +6.883687e-09
-Test     :    SS005                         : Min = +0.000000e+00, Max = +4.274278e-08, RMS = +1.638604e-09
-Test     :    BCPHOBIC                      : Min = +0.000000e+00, Max = +4.632864e-09, RMS = +5.901999e-11
-Test     :    BCPHILIC                      : Min = +0.000000e+00, Max = +3.265045e-09, RMS = +7.634226e-11
-Test     :    OCPHOBIC                      : Min = +0.000000e+00, Max = +6.050151e-08, RMS = +4.715002e-10
-Test     :    OCPHILIC                      : Min = +0.000000e+00, Max = +7.834458e-08, RMS = +1.202698e-09
-Test     :    NO3AN1                        : Min = +0.000000e+00, Max = +3.425501e-09, RMS = +5.344851e-11
-Test     :    NO3AN2                        : Min = +0.000000e+00, Max = +4.572676e-09, RMS = +1.859873e-10
-Test     :    NO3AN3                        : Min = +0.000000e+00, Max = +6.087553e-11, RMS = +1.721425e-12
-Test     :    SO4                           : Min = +0.000000e+00, Max = +1.028447e-08, RMS = +5.332111e-10
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aod) = 17.5628, nobs = 100, Jo/n = 0.175628, err = 0.05
-Test     : CostFunction: Nonlinear J = 17.5628
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+CostJo   : Nonlinear Jo(Aod) = 6.8538574435837262e+01, nobs = 100, Jo/n = 6.8538574435837263e-01, err = 5.0000000745058060e-02
+CostFunction: Nonlinear J = 6.8538574435837262e+01
+DRIPCGMinimizer: reduction in residual norm = 7.4196028565068186e-03
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 20 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+1.0000001192092896e+00 Max:+5.1140385742187500e+03 RMS:+1.9521661102096482e+03
+relative_humidity                            | Min:+1.8565798427516711e-06 Max:+1.0098544359207153e+00 RMS:+4.5297688637914069e-01
+mass_fraction_of_dust001_in_air              | Min:+0.0000000000000000e+00 Max:+1.6718632878109929e-07 RMS:+4.3991937189765927e-09
+mass_fraction_of_dust002_in_air              | Min:+0.0000000000000000e+00 Max:+5.4248795322564547e-07 RMS:+1.4226084612433133e-08
+mass_fraction_of_dust003_in_air              | Min:+0.0000000000000000e+00 Max:+6.0628940445894841e-07 RMS:+1.5629293476701962e-08
+mass_fraction_of_dust004_in_air              | Min:+0.0000000000000000e+00 Max:+4.1597431277295982e-07 RMS:+6.8402842015875490e-09
+mass_fraction_of_dust005_in_air              | Min:+0.0000000000000000e+00 Max:+2.1684385842490883e-07 RMS:+2.8811621521975797e-09
+mass_fraction_of_sea_salt001_in_air          | Min:+0.0000000000000000e+00 Max:+1.4284505497499329e-10 RMS:+7.0326633786161582e-12
+mass_fraction_of_sea_salt002_in_air          | Min:+0.0000000000000000e+00 Max:+4.4979597824124085e-09 RMS:+2.1563442375032536e-10
+mass_fraction_of_sea_salt003_in_air          | Min:+0.0000000000000000e+00 Max:+4.3379234426765834e-08 RMS:+2.1368776602152772e-09
+mass_fraction_of_sea_salt004_in_air          | Min:+0.0000000000000000e+00 Max:+1.2396301940498233e-07 RMS:+6.8837040392770366e-09
+mass_fraction_of_sea_salt005_in_air          | Min:+0.0000000000000000e+00 Max:+4.2742779982063439e-08 RMS:+1.6386083181819901e-09
+mass_fraction_of_hydrophobic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+4.6328638703130309e-09 RMS:+5.8948934698051107e-11
+mass_fraction_of_hydrophilic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+3.2650449011129012e-09 RMS:+7.6447427465342370e-11
+mass_fraction_of_hydrophobic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+6.0501513132749096e-08 RMS:+4.7154563304024316e-10
+mass_fraction_of_hydrophilic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+7.8344584153455799e-08 RMS:+1.2030737511787249e-09
+mass_fraction_of_nitrate001_in_air           | Min:+0.0000000000000000e+00 Max:+3.4255007719252717e-09 RMS:+5.3015080756127392e-11
+mass_fraction_of_nitrate002_in_air           | Min:+0.0000000000000000e+00 Max:+4.5726755715236322e-09 RMS:+1.8599128734858536e-10
+mass_fraction_of_nitrate003_in_air           | Min:+0.0000000000000000e+00 Max:+6.0875526841641658e-11 RMS:+1.7200851709481229e-12
+mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+1.0284470164378945e-08 RMS:+5.3387205519279635e-10
+----------------------------------------------------------------------------------------------------
+CostJb   : Nonlinear Jb = 0
+CostJo   : Nonlinear Jo(Aod) = 11.02230290657661, nobs = 100, Jo/n = 0.1102230290657661, err = 0.05000000074505806
+CostFunction: Nonlinear J = 11.02230290657661
+DRIPCGMinimizer: reduction in residual norm = 0.04002459706430617
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 20 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+1.0000001192092896e+00 Max:+5.1140385742187500e+03 RMS:+1.9521661102096482e+03
+relative_humidity                            | Min:+1.8565798427516711e-06 Max:+1.0098544359207153e+00 RMS:+4.5297688637914069e-01
+mass_fraction_of_dust001_in_air              | Min:+0.0000000000000000e+00 Max:+1.6718632878109929e-07 RMS:+4.3991786347758311e-09
+mass_fraction_of_dust002_in_air              | Min:+0.0000000000000000e+00 Max:+5.4248795322564547e-07 RMS:+1.4226080305945996e-08
+mass_fraction_of_dust003_in_air              | Min:+0.0000000000000000e+00 Max:+6.0628940445894841e-07 RMS:+1.5629291794606131e-08
+mass_fraction_of_dust004_in_air              | Min:+0.0000000000000000e+00 Max:+4.1597431277295982e-07 RMS:+6.8402841031120180e-09
+mass_fraction_of_dust005_in_air              | Min:+0.0000000000000000e+00 Max:+2.1684385842490883e-07 RMS:+2.8811621513150702e-09
+mass_fraction_of_sea_salt001_in_air          | Min:+0.0000000000000000e+00 Max:+5.4207012739917534e-10 RMS:+7.8728597212778632e-12
+mass_fraction_of_sea_salt002_in_air          | Min:+0.0000000000000000e+00 Max:+4.4979597824124085e-09 RMS:+2.1553070590979488e-10
+mass_fraction_of_sea_salt003_in_air          | Min:+0.0000000000000000e+00 Max:+4.3379234426765834e-08 RMS:+2.1368302228713578e-09
+mass_fraction_of_sea_salt004_in_air          | Min:+0.0000000000000000e+00 Max:+1.2396301940498233e-07 RMS:+6.8836874825457292e-09
+mass_fraction_of_sea_salt005_in_air          | Min:+0.0000000000000000e+00 Max:+4.2742779982063439e-08 RMS:+1.6386040276086286e-09
+mass_fraction_of_hydrophobic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+4.6328638703130309e-09 RMS:+5.9019884079719600e-11
+mass_fraction_of_hydrophilic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+3.2650449011129012e-09 RMS:+7.6342058707158519e-11
+mass_fraction_of_hydrophobic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+6.0501513132749096e-08 RMS:+4.7150018984281655e-10
+mass_fraction_of_hydrophilic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+7.8344584153455799e-08 RMS:+1.2026979440197269e-09
+mass_fraction_of_nitrate001_in_air           | Min:+0.0000000000000000e+00 Max:+3.4255007719252717e-09 RMS:+5.3448477463513383e-11
+mass_fraction_of_nitrate002_in_air           | Min:+0.0000000000000000e+00 Max:+4.5726755715236322e-09 RMS:+1.8598729920980045e-10
+mass_fraction_of_nitrate003_in_air           | Min:+0.0000000000000000e+00 Max:+6.0875526841641658e-11 RMS:+1.7214235985767425e-12
+mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+1.0284470164378945e-08 RMS:+5.3321075289189497e-10
+----------------------------------------------------------------------------------------------------
+CostJb   : Nonlinear Jb = 0
+CostJo   : Nonlinear Jo(Aod) = 17.55714908125399, nobs = 100, Jo/n = 0.1755714908125399, err = 0.05000000074505806
+CostFunction: Nonlinear J = 17.55714908125399

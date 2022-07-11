@@ -1,0 +1,11 @@
+fms initialization:
+  namelist filename: '$(stage_dir)/fv3files/fmsmpp.nml'
+  field table filename: '$(stage_dir)/fv3files/field_table_gfdl'
+akbk: '$(stage_dir)/fv3files/akbk64.nc4'
+layout: [1,1]
+npx: 97
+npy: 97
+npz: 64
+fieldsets:
+  - fieldset: '$(stage_dir)/fieldsets/dynamics.yaml'
+  - fieldset: '$(stage_dir)/fieldsets/ufo.yaml'

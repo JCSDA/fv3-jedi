@@ -9,7 +9,7 @@ module fv3jedi_interpolation_mod
 use fckit_mpi_module,               only: fckit_mpi_comm, fckit_mpi_max, fckit_mpi_min
 
 ! oops
-use unstructured_interpolation_mod, only: unstrc_interp
+use slow_unstructured_interpolation_mod, only: unstrc_interp
 
 ! saber
 use interpolatorbump_mod,         only: bump_interpolator
@@ -19,7 +19,7 @@ use fv3jedi_kinds_mod,              only: kind_real
 use fv3jedi_field_mod,              only: fv3jedi_field, get_field, hasfield
 use fv3jedi_geom_mod,               only: fv3jedi_geom
 use fv3jedi_constants_mod,          only: rad2deg
-use wind_vt_mod,                    only: d2a, a2d
+use wind_vt_mod,                    only: d_to_a, a_to_d
 
 implicit none
 private
@@ -78,13 +78,15 @@ endif
 ! ----------------------------
 if (self%need_bump) then
   call self%bumpinterp%init(geom_in%f_comm, afunctionspace_in=geom_in%afunctionspace, afunctionspace_out=geom_ou%afunctionspace, &
-     & nl=geom_in%npz)
+     & nl0=geom_in%npz)
 endif
 
 ! Initialize unstructured interpolation object
 ! --------------------------------------------
 self%nnearest = 4
 if (self%need_bary) then
+  ! This uses the slower Fortran unstructure interpolation copied into fv3-jedi at time of
+  ! early-2022 GetValues optimization.
   call self%unsinterp%create( geom_in%f_comm, self%nnearest, trim(us_interp_type), &
                               geom_in%ngrid, rad2deg*geom_in%lat_us, rad2deg*geom_in%lon_us, &
                               geom_ou%ngrid, rad2deg*geom_ou%lat_us, rad2deg*geom_ou%lon_us )
@@ -118,7 +120,7 @@ type(fv3jedi_field),       intent(inout) :: fields_ou(nf)  !Output fields
 integer :: var, i, j, k, n
 real(kind=kind_real), allocatable :: field_in(:), field_ou(:)
 
-logical :: do_d2a
+logical :: do_d_to_a
 real(kind=kind_real), allocatable :: ua(:,:,:)
 real(kind=kind_real), allocatable :: va(:,:,:)
 real(kind=kind_real), allocatable :: ud(:,:,:)
@@ -130,10 +132,10 @@ type(fv3jedi_field), pointer :: v_ou
 
 ! Special case of D-grid winds
 ! ----------------------------
-do_d2a = .false.
+do_d_to_a = .false.
 if (hasfield(fields_in,'ud')) then
 
-  do_d2a = .true.
+  do_d_to_a = .true.
 
   call get_field(fields_in, 'ud', u_in)
   call get_field(fields_in, 'vd', v_in)
@@ -141,7 +143,7 @@ if (hasfield(fields_in,'ud')) then
   allocate(ua(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
   allocate(va(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
 
-  call d2a(geom_in, u_in%array, v_in%array, ua, va)
+  call d_to_a(geom_in, u_in%array, v_in%array, ua, va)
 
   ! Reallocate without staggering
   deallocate(u_in%array)
@@ -178,7 +180,7 @@ do var = 1,nf
     ! Use BUMP
     call self%bumpinterp%apply(fields_in(var)%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:fields_in(var)%npz), &
        & fields_ou(var)%array(:,:,1:fields_ou(var)%npz), &
-       & nn=(fields_in(var)%integerfield .or. trim(fields_in(var)%space) == 'direction'))
+       & .not. trim(fields_in(var)%interpolation_type) == 'default')
 
   else
 
@@ -198,16 +200,15 @@ do var = 1,nf
       enddo
 
       ! Interpolate
-      if (.not. fields_in(var)%integerfield .and. trim(fields_in(var)%space) == 'magnitude' .and. &
-          trim(self%interp_type) == 'barycent') then
+      if ( trim(fields_in(var)%interpolation_type) == 'default' .and. trim(self%interp_type) == 'barycent') then
 
         call self%unsinterp%apply(field_in, field_ou)
 
-      elseif (fields_in(var)%integerfield) then
+      elseif ( trim(fields_in(var)%interpolation_type) == 'integer' ) then
 
         call unsinterp_integer_apply(self%unsinterp, field_in, field_ou)
 
-      elseif (trim(fields_in(var)%space) == 'direction') then
+      elseif ( trim(fields_in(var)%interpolation_type) == 'nearest' ) then
 
         call unsinterp_nearest_apply(self%unsinterp, field_in, field_ou)
 
@@ -235,7 +236,7 @@ enddo
 
 ! Back to D-Grid
 ! --------------
-if (do_d2a) then
+if (do_d_to_a) then
 
   call get_field(fields_ou, 'ud', u_ou)
   call get_field(fields_ou, 'vd', v_ou)
@@ -243,7 +244,7 @@ if (do_d2a) then
   allocate(ud(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
   allocate(vd(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
 
-  call a2d(geom_ou, u_ou%array, v_ou%array, ud, vd)
+  call a_to_d(geom_ou, u_ou%array, v_ou%array, ud, vd)
 
   ! Reallocate with staggering
   deallocate(u_ou%array)

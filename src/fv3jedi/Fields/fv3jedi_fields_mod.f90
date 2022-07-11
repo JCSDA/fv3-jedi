@@ -5,24 +5,28 @@
 
 module fv3jedi_fields_mod
 
+! atlas
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_metadata
+
 ! fckit
 use fckit_mpi_module
 use fckit_configuration_module
 
 ! oops
 use datetime_mod
+use missing_values_mod
 use oops_variables_mod
 use string_utils
 
 ! fv3jedi
-use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, hasfield
+use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
+                                     hasfield, create_field
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_interpolation_mod, only: field2field_interp
-use fv3jedi_io_gfs_mod,        only: fv3jedi_io_gfs
-use fv3jedi_io_geos_mod,       only: fv3jedi_io_geos
-use fv3jedi_io_latlon_mod,     only: fv3jedi_llgeom
 use fv3jedi_kinds_mod,         only: kind_real
 use fields_metadata_mod,       only: field_metadata
+
+use mpp_domains_mod, only: mpp_update_domains, mpp_update_domains_ad
 
 implicit none
 private
@@ -34,9 +38,9 @@ public :: fv3jedi_fields
 type :: fv3jedi_fields
 
   integer :: isc, iec, jsc, jec, npx, npy, npz, nf             ! Geometry convenience
-  integer :: calendar_type, date_init(6)                       ! FMS style datetime
   type(fckit_mpi_comm) :: f_comm                               ! Communicator
   type(fv3jedi_field), allocatable :: fields(:)                ! Array of fields
+  type(datetime) :: time
 
   contains
 
@@ -48,11 +52,13 @@ type :: fv3jedi_fields
     procedure, public :: norm
     procedure, public :: change_resol
     procedure, public :: minmaxrms
-    procedure, public :: read
-    procedure, public :: write
     procedure, public :: accumul
     procedure, public :: serialize
     procedure, public :: deserialize
+    procedure, public :: to_fieldset
+    procedure, public :: to_fieldset_ad
+    procedure, public :: from_fieldset
+    procedure, public :: update_fields
 
     ! Public array/field accessor functions
     procedure, public :: has_field => has_field_
@@ -74,76 +80,36 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, geom, vars, increment)
+subroutine create(self, geom, vars)
 
   class(fv3jedi_fields), intent(inout) :: self
   type(fv3jedi_geom),    intent(in)    :: geom
   type(oops_variables),  intent(in)    :: vars
-  logical, optional,     intent(in)    :: increment
 
   integer :: var, fc
-  type(field_metadata) :: fmd
-  logical :: is_increment, field_fail
+  logical :: field_fail
 
   ! Allocate fields structure
   ! -------------------------
   self%nf = vars%nvars()
   allocate(self%fields(self%nf))
 
-  ! Check if this is an increment rather than state
-  ! -----------------------------------------------
-  if (.not. present(increment)) then
-    is_increment = .false.
-  else
-    is_increment = increment
-  endif
-
   ! Loop through and allocate actual fields
   ! ---------------------------------------
   fc = 0
   do var = 1, vars%nvars()
 
-    fmd = geom%fields%get_field(trim(vars%variable(var)))
-
     ! Uptick counter
     fc=fc+1;
 
+    ! Copy geometry
     self%fields(fc)%isc = geom%isc
     self%fields(fc)%iec = geom%iec
     self%fields(fc)%jsc = geom%jsc
     self%fields(fc)%jec = geom%jec
-    self%fields(fc)%npz = fmd%levels
 
-    field_fail = len(trim(fmd%field_name)) > field_clen
-    if (field_fail) call abor1_ftn("fv3jedi_fields.create: " //trim(fmd%field_name)// " too long")
-
-    if(.not.self%fields(fc)%lalloc) then
-
-      if (trim(fmd%stagger_loc) == 'center') then
-        allocate(self%fields(fc)%array(geom%isc:geom%iec,geom%jsc:geom%jec,1:fmd%levels))
-      elseif (trim(fmd%stagger_loc) == 'northsouth') then
-        allocate(self%fields(fc)%array(geom%isc:geom%iec,geom%jsc:geom%jec+1,1:fmd%levels))
-      elseif (trim(fmd%stagger_loc) == 'eastwest') then
-        allocate(self%fields(fc)%array(geom%isc:geom%iec+1,geom%jsc:geom%jec,1:fmd%levels))
-      endif
-
-    endif
-
-    self%fields(fc)%lalloc = .true.
-
-    self%fields(fc)%short_name   = trim(fmd%field_io_name)
-    if (is_increment) then
-      self%fields(fc)%long_name    = "increment_of_"//trim(fmd%long_name)
-    else
-      self%fields(fc)%long_name    = trim(fmd%long_name)
-    endif
-    self%fields(fc)%fv3jedi_name = trim(fmd%field_name)
-    self%fields(fc)%units        = trim(fmd%units)
-    self%fields(fc)%io_file      = trim(fmd%io_file)
-    self%fields(fc)%space        = trim(fmd%space)
-    self%fields(fc)%staggerloc   = trim(fmd%stagger_loc)
-    self%fields(fc)%tracer       = fmd%tracer
-    self%fields(fc)%integerfield = trim(fmd%array_kind)=='integer'
+    ! Set this fields meta data
+    call create_field(self%fields(fc), geom%fields%get_field(trim(vars%variable(var))), geom%f_comm)
 
   enddo
 
@@ -179,7 +145,7 @@ subroutine create(self, geom, vars, increment)
   field_fail = self%has_field('o3mr') .and. self%has_field('o3ppmv')
   if (field_fail) call abor1_ftn("fv3jedi_fields.create: o3mr and o3ppmv created")
 
-endsubroutine create
+end subroutine create
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -189,12 +155,10 @@ class(fv3jedi_fields), intent(inout) :: self
 
 integer :: var
 
-do var = 1, self%nf
-  if(self%fields(var)%lalloc) deallocate(self%fields(var)%array)
-  self%fields(var)%lalloc = .false.
+do var = 1, size(self%fields)
+  if (self%fields(var)%lalloc) deallocate(self%fields(var)%array)
 enddo
 deallocate(self%fields)
-
 end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
@@ -211,9 +175,6 @@ call checksame(self%fields, other%fields, "fv3jedi_fields_mod.copy")
 do var = 1, self%nf
   self%fields(var)%array = other%fields(var)%array
 enddo
-
-self%calendar_type = other%calendar_type
-self%date_init = other%date_init
 
 end subroutine copy
 
@@ -249,8 +210,10 @@ do var = 1, self%nf
   do k = 1, self%fields(var)%npz
     do j = self%fields(var)%jsc, self%fields(var)%jec
       do i = self%fields(var)%isc, self%fields(var)%iec
-        zz = zz + self%fields(var)%array(i,j,k)**2
-        ii = ii + 1
+        if (self%fields(var)%array(i,j,k)/=missing_value(0.0_kind_real)) then
+           zz = zz + self%fields(var)%array(i,j,k)**2
+           ii = ii + 1
+        endif
       enddo
     enddo
   enddo
@@ -289,15 +252,12 @@ else
 
   ! Check if integer interp needed
   do var = 1, self%nf
-    if (other%fields(var)%integerfield) integer_interp = .true.
+    if (trim(other%fields(var)%interpolation_type) == "integer") integer_interp = .true.
   enddo
 
   call interp%create(geom%interp_method, integer_interp, geom_other, geom)
   call interp%apply(self%nf, geom_other, other%fields, geom, self%fields)
   call interp%delete()
-
-  self%calendar_type = other%calendar_type
-  self%date_init = other%date_init
 
 endif
 
@@ -321,16 +281,19 @@ jsc = self%fields(field_num)%jsc
 jec = self%fields(field_num)%jec
 npz = self%fields(field_num)%npz
 
-field_name = self%fields(field_num)%short_name
+field_name = self%fields(field_num)%long_name
 
 ! Compute global sum over the field
 gs3 = real((iec-isc+1)*(jec-jsc+1)*npz, kind_real)
 call self%f_comm%allreduce(gs3,gs3g,fckit_mpi_sum())
 
 ! Min/Max/SumSquares
-tmp(1) = minval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz))
-tmp(2) = maxval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz))
-tmp(3) =    sum(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)**2)
+tmp(1) = minval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz), &
+ & mask=self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)/=missing_value(0.0_kind_real))
+tmp(2) = maxval(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz), &
+ & mask=self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)/=missing_value(0.0_kind_real))
+tmp(3) =    sum(self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)**2, &
+ & mask=self%fields(field_num)%array(isc:iec,jsc:jec,1:npz)/=missing_value(0.0_kind_real))
 
 ! Get global min/max/sum
 call self%f_comm%allreduce(tmp(1), minmaxrmsout(1), fckit_mpi_min())
@@ -341,97 +304,6 @@ call self%f_comm%allreduce(tmp(3), minmaxrmsout(3), fckit_mpi_sum())
 minmaxrmsout(3) = sqrt(minmaxrmsout(3)/gs3g)
 
 endsubroutine minmaxrms
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine read(self, geom, conf, vdate)
-
-class(fv3jedi_fields),     intent(inout) :: self
-type(fv3jedi_geom),        intent(inout) :: geom
-type(fckit_configuration), intent(in)    :: conf
-type(datetime),            intent(inout) :: vdate
-
-type(fv3jedi_io_gfs)  :: gfs
-type(fv3jedi_io_geos) :: geos
-
-character(len=10) :: filetype
-character(len=:), allocatable :: str
-
-
-! IO type
-call conf%get_or_die("filetype",str)
-filetype = str
-deallocate(str)
-
-
-if (trim(filetype) == 'gfs') then
-
-  call gfs%setup_conf(conf)
-  call gfs%read_meta(geom, vdate, self%calendar_type, self%date_init)
-  call gfs%read_fields(geom, self%fields)
-
-elseif (trim(filetype) == 'geos') then
-
-  call geos%setup_conf(geom, conf)
-  call geos%read_meta(geom, vdate, self%calendar_type, self%date_init, self%fields)
-  call geos%read_fields(geom, self%fields)
-  call geos%delete()
-
-else
-
-  call abor1_ftn("fv3jedi_fields_mod.read: restart type not supported")
-
-endif
-
-endsubroutine read
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine write(self, geom, conf, vdate)
-
-class(fv3jedi_fields),     intent(inout) :: self
-type(fv3jedi_geom),        intent(inout) :: geom
-type(fckit_configuration), intent(in)    :: conf
-type(datetime),            intent(inout) :: vdate
-
-type(fv3jedi_io_gfs)  :: gfs
-type(fv3jedi_io_geos) :: geos
-type(fv3jedi_llgeom)  :: latlon
-
-character(len=10) :: filetype
-character(len=:), allocatable :: str
-
-! IO type
-call conf%get_or_die("filetype",str)
-filetype = str
-deallocate(str)
-
-if (trim(filetype) == 'gfs') then
-
-  call gfs%setup_conf(conf)
-  call gfs%setup_date(vdate)
-  call gfs%write(geom, self%fields, vdate, self%calendar_type, self%date_init)
-
-elseif (trim(filetype) == 'geos') then
-
-  call geos%setup_conf(geom, conf)
-  call geos%setup_date(vdate)
-  call geos%write(geom, self%fields, vdate)
-  call geos%delete()
-
-elseif (trim(filetype) == 'latlon') then
-
-  call latlon%setup_conf(geom)
-  call latlon%setup_date(vdate)
-  call latlon%write(geom, self%fields, conf, vdate)
-
-else
-
-    call abor1_ftn("fv3jedi_fields.write: restart type not supported")
-
-endif
-
-endsubroutine write
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -511,6 +383,287 @@ do var = 1, self%nf
 enddo
 
 end subroutine deserialize
+
+! --------------------------------------------------------------------------------------------------
+
+! Fills a FieldSet with model data, including halos
+! - exchanges halo data between fv3 grid tiles
+! - stores fv3-jedi field (local + halo) data in atlas FieldSet as 1d fields
+subroutine to_fieldset(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(in)    :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(inout) :: afieldset
+
+integer :: jvar, npz, jl
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+type(atlas_metadata) :: meta
+
+real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
+integer :: max_npz
+
+! To allocate tmp_fv3_data just once, we need the max number of levels
+max_npz = -1
+do jvar = 1,vars%nvars()
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+  max_npz = max(max_npz, field%npz)
+end do
+
+allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
+
+do jvar = 1,vars%nvars()
+
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+
+  ! Fill tmp buffer with local data
+  ! Note: if field%npz < max_npz, then some of the memory allocated is unused
+  tmp_fv3_data = 0.0_kind_real
+  tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = &
+    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz)
+
+  ! Perform halo exchange to fill halos -- this uses MPI to exchange halo data
+  call mpp_update_domains(tmp_fv3_data, geom%domain)
+
+  ! Reset npz for indexing into atlas fields of different ranks
+  npz = field%npz
+  if (npz==1) npz = 0
+
+  ! Get/create atlas field
+  if (afieldset%has_field(field%long_name)) then
+    afield = afieldset%field(field%long_name)
+  else
+    afield = geom%afunctionspace_incl_halo%create_field( name=field%long_name, &
+                                                         kind=atlas_real(kind_real), &
+                                                         levels=npz )
+    call afieldset%add(afield)
+  endif
+
+  ! Copy fv3-jedi field data into atlas field
+  ! Note the jedi interp grid excludes fv3's corner halos at cubed-sphere grid corners, which
+  ! results in irregularly-shaped data. We pack this irregular data into a 1d atlas field array.
+  if (npz==0) then
+    call afield%data(real_ptr_1)
+    call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,1), real_ptr_1)
+  else
+    call afield%data(real_ptr_2)
+    do jl=1, npz
+      call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,jl), real_ptr_2(jl,:))
+    enddo
+  endif
+
+  meta = afield%metadata()
+  call meta%set('interp_type', trim(field%interpolation_type))
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+deallocate(tmp_fv3_data)
+
+end subroutine to_fieldset
+
+! --------------------------------------------------------------------------------------------------
+
+! (Adjoint of) Fills a FieldSet with model data, including halos
+subroutine to_fieldset_ad(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(inout) :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(in)    :: afieldset
+
+integer :: jvar, npz, jl
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+character(len=1024) :: errmsg
+
+real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
+integer :: max_npz
+integer :: ngrid
+
+ngrid = geom%ngrid_including_halo()
+
+! To allocate tmp_fv3_data just once, we need the max number of levels
+max_npz = -1
+do jvar = 1,vars%nvars()
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+  max_npz = max(max_npz, field%npz)
+end do
+
+allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
+
+do jvar = 1,vars%nvars()
+
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+
+  ! Get atlas field
+  afield = afieldset%field(field%long_name)
+
+  ! Sanity check that afield has expected size, i.e., includes halo points
+  if (ngrid /= afield%size()/field%npz) then
+    write (errmsg,*) "Bad afield size in to_fieldset_ad: expect ngrid = ", ngrid, &
+                     ", but got afield ngrid = ", afield%size()/field%npz
+    call abor1_ftn(trim(errmsg))
+  end if
+
+  ! Reset npz for indexing into atlas fields of different ranks
+  npz = field%npz
+  if (npz==1) npz = 0
+
+  ! (Adjoint of) Copy fv3-jedi field data into atlas field
+  ! Note: this includes reshaping of the 1d afield data (local + halo) into 2d fv3-jedi field
+  tmp_fv3_data = 0.0
+  if (npz==0) then
+    call afield%data(real_ptr_1)
+    call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,1), real_ptr_1(:))
+  else
+    call afield%data(real_ptr_2)
+    do jl=1,field%npz
+      call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,jl), real_ptr_2(jl,:))
+    enddo
+  endif
+
+  ! (Adjoint of) Perform halo exchange
+  call mpp_update_domains_ad(tmp_fv3_data, geom%domain)
+
+  ! (Adjoint of) Fill tmp buffer with local data
+  field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = &
+    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) &
+    + tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz)
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+deallocate(tmp_fv3_data)
+
+end subroutine to_fieldset_ad
+
+! --------------------------------------------------------------------------------------------------
+
+! Fills model data from an atlas FieldSet
+! - copies local portion of packed (local + halo) data into fv3-jedi field
+! - Note 1: assumes the local data occupies the first contiguous portion of the packed data
+! - Note 2: does NOT copy the halo data; halo data values are out-of-sync after this call
+subroutine from_fieldset(self, geom, vars, afieldset)
+
+implicit none
+class(fv3jedi_fields), intent(inout) :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: vars
+type(atlas_fieldset),  intent(in)    :: afieldset
+
+integer :: jvar, npz, jl
+real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+type(atlas_field) :: afield
+type(fv3jedi_field), pointer :: field
+character(len=1024) :: errmsg
+
+integer :: ngrid
+
+ngrid = geom%ngrid_including_halo()
+
+do jvar = 1,vars%nvars()
+
+  ! Get field
+  call self%get_field(trim(vars%variable(jvar)), field)
+
+  ! Get Atlas field
+  afield = afieldset%field(field%long_name)
+
+  ! Sanity check that afield has expected size, i.e., includes halo points
+  if (ngrid /= afield%size()/field%npz) then
+    write (errmsg,*) "Bad afield size in from_fieldset: expect ngrid = ", ngrid, &
+                     ", but got afield ngrid = ", afield%size()/field%npz
+    call abor1_ftn(trim(errmsg))
+  end if
+
+  ! Reset npz for indexing into atlas fields of different ranks
+  npz = field%npz
+  if (npz==1) npz = 0
+
+  ! Reshape the first portion of afield, the local data, into 2d fv3-jedi field
+  if (npz==0) then
+    call afield%data(real_ptr_1)
+    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1) = &
+      reshape(real_ptr_1(1:geom%ngrid), (/geom%iec-geom%isc+1, geom%jec-geom%jsc+1/))
+  else
+    call afield%data(real_ptr_2)
+    do jl=1,field%npz
+      field%array(geom%isc:geom%iec, geom%jsc:geom%jec, jl) = &
+        reshape(real_ptr_2(jl, 1:geom%ngrid), (/geom%iec-geom%isc+1, geom%jec-geom%jsc+1/))
+    enddo
+  endif
+
+  ! Release pointer
+  call afield%final()
+
+enddo
+
+end subroutine from_fieldset
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine update_fields(self, geom, new_vars)
+
+implicit none
+
+! Passed variables
+class(fv3jedi_fields), intent(inout) :: self
+type(fv3jedi_geom),    intent(in)    :: geom
+type(oops_variables),  intent(in)    :: new_vars
+
+type(fv3jedi_field), allocatable :: fields_tmp(:)
+integer :: f, findex
+type(field_metadata) :: fmd
+
+! Allocate temporary array to hold fields
+allocate(fields_tmp(new_vars%nvars()))
+
+! Loop over and move fields or allocate new fields
+do f = 1, new_vars%nvars()
+
+  fields_tmp(f)%isc = geom%isc
+  fields_tmp(f)%iec = geom%iec
+  fields_tmp(f)%jsc = geom%jsc
+  fields_tmp(f)%jec = geom%jec
+
+  fmd = geom%fields%get_field(trim(new_vars%variable(f)))
+
+  if (self%has_field(trim(fmd%short_name), findex)) then
+
+    ! If already allocated then move to temporary
+    call move_alloc(self%fields(findex)%array, fields_tmp(f)%array)
+    self%fields(findex)%lalloc = .false.
+    fields_tmp(f)%lalloc = .true.
+
+  endif
+
+  ! Create field in temporary (allocate will be skipped if moved)
+  call create_field(fields_tmp(f), fmd, geom%f_comm)
+
+enddo
+
+! Move the temporary array back to self
+call self%delete()
+call move_alloc(fields_tmp, self%fields)
+
+! Update number of fields
+self%nf = size(self%fields)
+
+end subroutine update_fields
 
 ! --------------------------------------------------------------------------------------------------
 

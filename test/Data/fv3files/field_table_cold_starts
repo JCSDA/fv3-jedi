@@ -1,3 +1,5 @@
+# added by FRE: sphum must be present in atmos
+# specific humidity for moist runs
  "TRACER", "atmos_mod", "sphum"
            "longname",     "specific humidity"
            "units",        "kg/kg"

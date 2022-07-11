@@ -1,0 +1,22 @@
+field metadata:
+
+- long name: eastward_wind
+  io name: ugrd
+
+- long name: northward_wind
+  io name: vgrd
+
+- long name: air_temperature
+  io name: tmp
+
+- long name: specific_humidity
+  io name: spfh
+
+- long name: air_pressure_thickness
+  io name: dpres
+
+- long name: surface_pressure
+  io name: pressfc
+
+- long name: sfc_geopotential_height_times_grav
+  io name: hgtsfc

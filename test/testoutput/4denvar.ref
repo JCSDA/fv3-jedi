@@ -1,80 +1,24 @@
-Test     : CostJb   : Nonlinear Jb = 0
-Test     : CostJo   : Nonlinear Jo(Aircraft) = 2752.8, nobs = 1430, Jo/n = 1.92504, err = 2.6781
-Test     : CostFunction: Nonlinear J = 2752.8
-Test     : DRIPCGMinimizer: reduction in residual norm = 0.361882
-Test     : CostFunction::addIncrement: Analysis: 
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 21 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.631078e+01, Max = +9.136493e+01, RMS = +1.640378e+01
-Test     :    va                            : Min = -6.126158e+01, Max = +7.380730e+01, RMS = +8.405776e+00
-Test     :    T                             : Min = +1.847642e+02, Max = +3.102424e+02, RMS = +2.484559e+02
-Test     :    ps                            : Min = +5.451119e+04, Max = +1.038108e+05, RMS = +9.902526e+04
-Test     :    sphum                         : Min = +0.000000e+00, Max = +1.906352e-02, RMS = +4.763274e-03
-Test     :    ice_wat                       : Min = +0.000000e+00, Max = +6.911474e-04, RMS = +1.500316e-05
-Test     :    liq_wat                       : Min = +0.000000e+00, Max = +1.722476e-03, RMS = +2.854805e-05
-Test     :    o3mr                          : Min = +0.000000e+00, Max = +1.754712e-05, RMS = +5.601335e-06
-Test     :    phis                          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
-Test     :    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
-Test     :    sheleg                        : Min = +0.000000e+00, Max = +2.006071e+02, RMS = +2.381962e+01
-Test     :    tsea                          : Min = +2.106771e+02, Max = +3.207028e+02, RMS = +2.885841e+02
-Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
-Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
-Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.667599e-01, RMS = +2.046357e-01
-Test     :    stc                           : Min = +2.176983e+02, Max = +3.129809e+02, RMS = +2.893035e+02
-Test     :    smc                           : Min = +3.382334e-02, Max = +1.000000e+00, RMS = +8.649826e-01
-Test     :    snwdph                        : Min = +0.000000e+00, Max = +1.982824e+03, RMS = +2.064952e+02
-Test     :    u_srf                         : Min = -1.555369e+01, Max = +1.976049e+01, RMS = +6.330083e+00
-Test     :    v_srf                         : Min = -1.756579e+01, Max = +1.931054e+01, RMS = +5.555046e+00
-Test     :    f10m                          : Min = +6.113575e-01, Max = +9.982263e-01, RMS = +8.980390e-01
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 21 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.531172e+01, Max = +9.446785e+01, RMS = +1.647090e+01
-Test     :    va                            : Min = -5.432927e+01, Max = +6.517229e+01, RMS = +8.290076e+00
-Test     :    T                             : Min = +1.845484e+02, Max = +3.082121e+02, RMS = +2.484270e+02
-Test     :    ps                            : Min = +5.447601e+04, Max = +1.037935e+05, RMS = +9.902478e+04
-Test     :    sphum                         : Min = +0.000000e+00, Max = +1.879050e-02, RMS = +4.754448e-03
-Test     :    ice_wat                       : Min = +0.000000e+00, Max = +5.096676e-04, RMS = +1.467961e-05
-Test     :    liq_wat                       : Min = +0.000000e+00, Max = +9.161694e-04, RMS = +2.856685e-05
-Test     :    o3mr                          : Min = +0.000000e+00, Max = +1.752379e-05, RMS = +5.609118e-06
-Test     :    phis                          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
-Test     :    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
-Test     :    sheleg                        : Min = +0.000000e+00, Max = +2.011737e+02, RMS = +2.385674e+01
-Test     :    tsea                          : Min = +2.093163e+02, Max = +3.130520e+02, RMS = +2.885626e+02
-Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
-Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
-Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.665497e-01, RMS = +2.046822e-01
-Test     :    stc                           : Min = +2.163042e+02, Max = +3.112298e+02, RMS = +2.892546e+02
-Test     :    smc                           : Min = +3.380891e-02, Max = +1.000000e+00, RMS = +8.649664e-01
-Test     :    snwdph                        : Min = +0.000000e+00, Max = +1.975640e+03, RMS = +2.045413e+02
-Test     :    u_srf                         : Min = -1.811848e+01, Max = +2.248272e+01, RMS = +6.390146e+00
-Test     :    v_srf                         : Min = -1.956833e+01, Max = +1.854067e+01, RMS = +5.532443e+00
-Test     :    f10m                          : Min = +6.137456e-01, Max = +1.147246e+00, RMS = +9.020324e-01
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  -----------------------------------------------------------------------------------------------
-Test     :  State print | number of fields = 21 | cube sphere face size: C12
-Test     :    ua                            : Min = -4.458521e+01, Max = +8.873914e+01, RMS = +1.644550e+01
-Test     :    va                            : Min = -5.514554e+01, Max = +6.500325e+01, RMS = +8.237571e+00
-Test     :    T                             : Min = +1.848038e+02, Max = +3.085401e+02, RMS = +2.484122e+02
-Test     :    ps                            : Min = +5.456248e+04, Max = +1.037203e+05, RMS = +9.902109e+04
-Test     :    sphum                         : Min = +0.000000e+00, Max = +1.863209e-02, RMS = +4.743331e-03
-Test     :    ice_wat                       : Min = +0.000000e+00, Max = +4.711386e-04, RMS = +1.585751e-05
-Test     :    liq_wat                       : Min = +0.000000e+00, Max = +1.000201e-03, RMS = +2.953588e-05
-Test     :    o3mr                          : Min = +3.055439e-08, Max = +1.751602e-05, RMS = +5.613643e-06
-Test     :    phis                          : Min = -2.647795e+02, Max = +4.987891e+04, RMS = +5.969167e+03
-Test     :    slmsk                         : Min = +0.000000e+00, Max = +2.000000e+00, RMS = +6.329512e-01
-Test     :    sheleg                        : Min = +0.000000e+00, Max = +2.018775e+02, RMS = +2.389094e+01
-Test     :    tsea                          : Min = +2.138441e+02, Max = +3.227009e+02, RMS = +2.890271e+02
-Test     :    vtype                         : Min = +0.000000e+00, Max = +1.900000e+01, RMS = +5.812324e+00
-Test     :    stype                         : Min = +0.000000e+00, Max = +1.600000e+01, RMS = +4.236361e+00
-Test     :    vfrac                         : Min = +0.000000e+00, Max = +8.665480e-01, RMS = +2.047554e-01
-Test     :    stc                           : Min = +2.155950e+02, Max = +3.102270e+02, RMS = +2.892441e+02
-Test     :    smc                           : Min = +3.379362e-02, Max = +1.000000e+00, RMS = +8.649479e-01
-Test     :    snwdph                        : Min = +0.000000e+00, Max = +1.975041e+03, RMS = +2.038075e+02
-Test     :    u_srf                         : Min = -1.973487e+01, Max = +2.514699e+01, RMS = +6.419913e+00
-Test     :    v_srf                         : Min = -1.758323e+01, Max = +2.023139e+01, RMS = +5.484483e+00
-Test     :    f10m                          : Min = +6.157255e-01, Max = +1.123031e+00, RMS = +9.048770e-01
-Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 51.9921
-Test     : CostJo   : Nonlinear Jo(Aircraft) = 2215.54, nobs = 1430, Jo/n = 1.54933, err = 2.6781
-Test     : CostFunction: Nonlinear J = 2267.53
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+CostJo   : Nonlinear Jo(Aircraft) = 5.2885270294510701e+03, nobs = 2807, Jo/n = 1.8840495295515034e+00, err = 2.2013630514825842e+00
+CostFunction: Nonlinear J = 5.2885270294510701e+03
+DRIPCGMinimizer: reduction in residual norm = 1.8328644251593074e-01
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 5 | cube sphere face size: C12
+eastward_wind                                | Min:-9.9870309951732608e+01 Max:+1.6846199862531310e+02 RMS:+2.2147682547312606e+01
+northward_wind                               | Min:-9.8786769912619121e+01 Max:+1.1111138963306223e+02 RMS:+1.0636326767336282e+01
+air_temperature                              | Min:+1.5727112567986427e+02 Max:+3.0671885029730902e+02 RMS:+2.4964167464460914e+02
+surface_pressure                             | Min:+5.4000669613677550e+04 Max:+1.0482784354611806e+05 RMS:+9.8980389425334040e+04
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8639534078307159e-02 RMS:+4.6949161001360413e-03
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 5 | cube sphere face size: C12
+eastward_wind                                | Min:-1.0866781446436227e+02 Max:+1.4913413719149503e+02 RMS:+2.2119924191591384e+01
+northward_wind                               | Min:-1.0881063950802562e+02 Max:+9.8993997644380414e+01 RMS:+1.0465006082106488e+01
+air_temperature                              | Min:+1.5902301655471913e+02 Max:+3.1006128438842745e+02 RMS:+2.4963517324109279e+02
+surface_pressure                             | Min:+5.4091928012206285e+04 Max:+1.0465315049206340e+05 RMS:+9.8979348176748856e+04
+specific_humidity                            | Min:+1.9976904892789862e-09 Max:+1.8404740572866889e-02 RMS:+4.6910221588708162e-03
+----------------------------------------------------------------------------------------------------
+CostJb   : Nonlinear Jb = 3.1930749281559349e+02
+CostJo   : Nonlinear Jo(Aircraft) = 4.2557667625268787e+03, nobs = 2807, Jo/n = 1.5161263849401063e+00, err = 2.2013630514825842e+00
+CostFunction: Nonlinear J = 4.5750742553424725e+03

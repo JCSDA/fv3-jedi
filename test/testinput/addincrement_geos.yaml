@@ -1,40 +1,41 @@
 state geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
   interpolation method: bump
   layout: [1,2]
-  io_layout: [1,1]
   npx: 13
   npy: 13
   npz: 72
-  ntiles: 6
-  fieldsets:
-  - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 increment geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
   akbk: Data/fv3files/akbk72.nc4
   interpolation method: bump
   layout: [1,2]
-  io_layout: [1,1]
   npx: 13
   npy: 13
   npz: 72
-  ntiles: 6
-  fieldsets:
-  - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 state:
-  filetype: geos
+  datetime: 2020-12-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
-  state variables: [ua,va,t,q,qi,ql,o3ppmv]
+  filename: geos.bkg.20201214_210000z.nc4
+  state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
 increment:
-  filetype: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/increment
-  filename_bkgd: hyb-4dvar-geos.inc.20180414_210000z.nc4
-  added variables: [ua,va,t,q,qi,ql,o3ppmv]
+  filename: hyb-4dvar-geos.inc.20201214_210000z.nc4
+  added variables: [u,v,t,delp,q,qi,ql,o3ppmv]
 output:
-  filetype: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/analysis
-  filename_bkgd: hyb-3dvar-geos.bkg+inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: hyb-3dvar-geos.bkg+inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+
+test:
+  reference filename: testoutput/addincrement_geos.ref
+  test output filename: testoutput/addincrement_geos.test.out

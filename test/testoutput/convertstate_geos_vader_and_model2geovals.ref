@@ -1,0 +1,26 @@
+Input state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 3 | cube sphere face size: C12
+air_temperature                              | Min:+1.6475966767142899e+02 Max:+3.0610194334043456e+02 RMS:+2.4634246724992562e+02
+surface_pressure                             | Min:+5.3775458927445892e+04 Max:+1.0491548534484887e+05 RMS:+9.8974274781970133e+04
+specific_humidity                            | Min:+7.6032568348887588e-08 Max:+1.9126818581745503e-02 RMS:+3.9561269579490386e-03
+----------------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
+Variable change from: 3 variables: air_temperature, surface_pressure, specific_humidity
+Variable change to: 4 variables: t, pt, tv, humidity_mixing_ratio
+State after variable transform: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 4 | cube sphere face size: C12
+air_temperature                              | Min:+1.6475966767142899e+02 Max:+3.0610194334043456e+02 RMS:+2.4634246724992562e+02
+potential_temperature                        | Min:+1.6415686974838209e+02 Max:+3.2958687095896266e+02 RMS:+2.4742018231595719e+02
+virtual_temperature                          | Min:+1.6475997353121602e+02 Max:+3.0774804170245261e+02 RMS:+2.4668893669688831e+02
+humidity_mixing_ratio                        | Min:+7.6032574129839488e-05 Max:+1.9499787479243587e+01 RMS:+4.0031173263021964e+00
+----------------------------------------------------------------------------------------------------
+Output state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 4 | cube sphere face size: C12
+air_temperature                              | Min:+1.6475966767142899e+02 Max:+3.0610194334043456e+02 RMS:+2.4634246724992562e+02
+potential_temperature                        | Min:+1.6415686974838209e+02 Max:+3.2958687095896266e+02 RMS:+2.4742018231595719e+02
+virtual_temperature                          | Min:+1.6475997353121602e+02 Max:+3.0774804170245261e+02 RMS:+2.4668893669688831e+02
+humidity_mixing_ratio                        | Min:+7.6032574129839488e-05 Max:+1.9499787479243587e+01 RMS:+4.0031173263021964e+00
+----------------------------------------------------------------------------------------------------

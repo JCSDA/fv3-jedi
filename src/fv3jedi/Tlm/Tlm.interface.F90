@@ -50,7 +50,7 @@ subroutine c_fv3jedi_tlm_create(c_key_self, c_key_geom, c_conf) &
 implicit none
 integer(c_int), intent(inout)  :: c_key_self  !< Key to tlm data
 integer(c_int), intent(in)     :: c_key_geom  !< Geometry
-type(c_ptr),    intent(in)     :: c_conf      !< pointer to object of class Config
+type(c_ptr), value, intent(in) :: c_conf      !< pointer to object of class Config
 
 type(fv3jedi_tlm),  pointer :: self
 type(fv3jedi_geom), pointer :: geom

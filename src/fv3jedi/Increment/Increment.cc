@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,11 +12,11 @@
 #include <numeric>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "atlas/field.h"
 
-#include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
@@ -29,33 +29,38 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
 
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
-                     const util::DateTime & time): geom_(new Geometry(geom)), vars_(vars),
-                     time_(time) {
+                     const util::DateTime & time)
+  : geom_(new Geometry(geom)), time_(time),
+    vars_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
+{
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
   fv3jedi_increment_zero_f90(keyInc_);
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-Increment::Increment(const Geometry & geom, const Increment & other): geom_(new Geometry(geom)),
-                     vars_(other.vars_), time_(other.time_) {
+Increment::Increment(const Geometry & geom, const Increment & other)
+  : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_)
+{
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
   fv3jedi_increment_change_resol_f90(keyInc_, geom_->toFortran(), other.keyInc_,
                                      other.geometry()->toFortran());
   oops::Log::trace() << "Increment::Increment (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-Increment::Increment(const Increment & other, const bool copy): geom_(other.geom_),
-                     vars_(other.vars_), time_(other.time_) {
+Increment::Increment(const Increment & other, const bool copy)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
+{
   oops::Log::trace() << "Increment::Increment (from other and bool copy) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_);
+  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
   if (copy) {
     fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
   } else {
@@ -71,10 +76,14 @@ Increment::~Increment() {
 void Increment::diff(const State & x1, const State & x2) {
   ASSERT(this->validTime() == x1.validTime());
   ASSERT(this->validTime() == x2.validTime());
+  // States should have the same variables
+  ASSERT(x1.variables() == x2.variables());
+  // Increment variables must be a equal to or a subset of the State variables
+  ASSERT(vars_ <= x1.variables());
   // States at increment resolution
   State x1_ir(*geom_, x1);
   State x2_ir(*geom_, x2);
-  fv3jedi_increment_diff_incr_f90(keyInc_, x1_ir.toFortran(), x2_ir.toFortran(),
+  fv3jedi_increment_diff_states_f90(keyInc_, x1_ir.toFortran(), x2_ir.toFortran(),
                                   geom_->toFortran());
 }
 // -------------------------------------------------------------------------------------------------
@@ -82,6 +91,11 @@ Increment & Increment::operator=(const Increment & rhs) {
   fv3jedi_increment_copy_f90(keyInc_, rhs.keyInc_);
   time_ = rhs.time_;
   return *this;
+}
+// -------------------------------------------------------------------------------------------------
+void Increment::updateFields(const oops::Variables & newVars) {
+  vars_ = newVars;
+  fv3jedi_increment_update_fields_f90(keyInc_, geom_->toFortran(), newVars);
 }
 // -------------------------------------------------------------------------------------------------
 Increment & Increment::operator+=(const Increment & dx) {
@@ -138,8 +152,8 @@ void Increment::random() {
 }
 // -------------------------------------------------------------------------------------------------
 oops::LocalIncrement Increment::getLocal(const GeometryIterator & iter) const {
-  int ist, iend, jst, jend, npz;
-  fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, npz);
+  int ist, iend, jst, jend, kst, kend, npz;
+  fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, kst, kend, npz);
 
   oops::Variables fieldNames = vars_;
 
@@ -164,28 +178,38 @@ void Increment::setLocal(const oops::LocalIncrement & values, const GeometryIter
   fv3jedi_increment_setpoint_f90(keyInc_, iter.toFortran(), vals[0], vals.size());
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::setAtlas(atlas::FieldSet * afieldset) const {
-  fv3jedi_increment_set_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
+void Increment::toFieldSet(atlas::FieldSet & fset) const {
+  fv3jedi_increment_to_fieldset_f90(keyInc_, geom_->toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::toAtlas(atlas::FieldSet * afieldset) const {
-  fv3jedi_increment_to_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
+void Increment::toFieldSetAD(const atlas::FieldSet & fset) {
+  fv3jedi_increment_to_fieldset_ad_f90(keyInc_, geom_->toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::fromAtlas(atlas::FieldSet * afieldset) {
-  fv3jedi_increment_from_atlas_f90(keyInc_, geom_->toFortran(), vars_, afieldset->get());
+void Increment::fromFieldSet(const atlas::FieldSet & fset) {
+  fv3jedi_increment_from_fieldset_f90(keyInc_, geom_->toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::read(const eckit::Configuration & config) {
-  const eckit::Configuration * conf = &config;
-  util::DateTime * dtp = &time_;
-  fv3jedi_increment_read_file_f90(geom_->toFortran(), keyInc_, &conf, &dtp);
+void Increment::read(const ReadParameters_ & params) {
+  // Optionally set the datetime on read (needed for some bump applications)
+  if (params.setdatetime.value() != boost::none) {
+    if (*params.setdatetime.value() && params.datetime.value() != boost::none) {
+      time_ = *params.datetime.value();
+    }
+  }
+  // Create IO object
+  std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
+                                               *params.ioParametersWrapper.ioParameters.value()));
+  // Perform read
+  io->read(*this);
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::write(const eckit::Configuration & config) const {
-  const eckit::Configuration * conf = &config;
-  const util::DateTime * dtp = &time_;
-  fv3jedi_increment_write_file_f90(geom_->toFortran(), keyInc_, &conf, &dtp);
+void Increment::write(const WriteParameters_ & params) const {
+  // Create IO object
+  std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
+                                               *params.ioParametersWrapper.ioParameters.value()));
+  // Perform read
+  io->write(*this);
 }
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {
@@ -202,36 +226,34 @@ void Increment::print(std::ostream & os) const {
 
   // Header
   os << std::endl
-     << " -----------------------------------------------"
-        "------------------------------------------------";
-  os << std::endl << " Increment print | number of fields = " << numberFields
+     << "--------------------------------------------------"
+        "--------------------------------------------------";
+  os << std::endl << "Increment print | number of fields = " << numberFields
                   << " | cube sphere face size: C" << cubeSize;
 
   // Print info field by field
-  const int FieldNameLen = 31;
+  const int FieldNameLen = 45;
   char fieldName[FieldNameLen];
   std::vector<double> minMaxRms(3);
   for (int f = 0; f < numberFields; f++) {
     int fp1 = f+1;
     fv3jedi_increment_getminmaxrms_f90(keyInc_, fp1, FieldNameLen, fieldName, minMaxRms[0]);
     std::string fieldNameStr(fieldName);
-    os << std::endl << std::scientific << std::showpos << "   "
-                    << fieldNameStr.substr(0, FieldNameLen-1) << ": Min = " << minMaxRms[0]
-                    << ", Max = " << minMaxRms[1] << ", RMS = " << minMaxRms[2]
-                    << std::noshowpos;  //  << std::defaultfloat;
+    os << std::endl << std::scientific << std::showpos << fieldNameStr.substr(0, FieldNameLen-1)
+                    << " | Min:" << minMaxRms[0] << " Max:" << minMaxRms[1]
+                    << " RMS:" << minMaxRms[2] << std::noshowpos;
   }
 
   os.unsetf(std::ios_base::floatfield);
 
   // Footer
   os << std::endl
-     << " -----------------------------------------------"
-        "------------------------------------------------";
+     << "--------------------------------------------------"
+        "--------------------------------------------------";
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::dirac(const eckit::Configuration & config) {
-  const eckit::Configuration * conf = &config;
-  fv3jedi_increment_dirac_f90(keyInc_, &conf, geom_->toFortran());
+void Increment::dirac(const DiracParameters_ & params) {
+  fv3jedi_increment_dirac_f90(keyInc_, params.toConfiguration(), geom_->toFortran());
 }
 // -------------------------------------------------------------------------------------------------
 size_t Increment::serialSize() const {

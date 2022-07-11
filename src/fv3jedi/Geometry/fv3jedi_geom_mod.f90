@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2021 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,43 +12,48 @@ use mpi
 use string_f_c_mod
 
 ! atlas uses
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real, atlas_functionspace
+use atlas_module, only: atlas_field, atlas_fieldset, atlas_integer, atlas_real, atlas_functionspace
 
 ! fckit uses
 use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use fms_io_mod,                 only: fms_io_init, fms_io_exit, set_domain
-use fms_mod,                    only: fms_init, check_nml_error
-use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE, input_nml_file
+use fms_io_mod,                 only: set_domain, nullify_domain
+use fms_mod,                    only: fms_init
+use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
                                       mpp_define_mosaic, mpp_define_io_domain, mpp_domains_exit, &
                                       mpp_domains_set_stack_size
+use field_manager_mod,          only: fm_string_len, field_manager_init
 
 ! fv3 uses
 use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 
 ! fv3jedi uses
 use fields_metadata_mod,         only: fields_metadata, field_metadata
-use fv3jedi_constants_mod,       only: ps, rad2deg, kappa
-use fv3jedi_kinds_mod,           only: kind_real
+use fv3jedi_constants_mod,       only: ps, rad2deg, kap1, kapr
+use fv3jedi_kinds_mod,           only: kind_int, kind_real
 use fv3jedi_netcdf_utils_mod,    only: nccheck
 use fv_init_mod,                 only: fv_init
+use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
+use fv3jedi_io_fms_mod,          only: fv3jedi_io_fms, read_fields
+use fv3jedi_field_mod,           only: fv3jedi_field
 
 implicit none
 private
-public :: fv3jedi_geom, getVerticalCoordLogP, initialize
+public :: fv3jedi_geom, getVerticalCoord, getVerticalCoordLogP, initialize, pedges2pmidlayer
 
 ! --------------------------------------------------------------------------------------------------
 
 !> Fortran derived type to hold geometry data for the FV3JEDI model
 type :: fv3jedi_geom
   integer :: isd, ied, jsd, jed                                                     !data domain
-  integer :: isc, iec, jsc, jec                                                     !compute domain
+  integer :: isc, iec, jsc, jec, kec                                                !compute domain
   integer :: npx,npy,npz,ngrid                                                      !x/y/z-dir grid edge points per tile
   integer :: layout(2), io_layout(2)                                                !Processor layouts
   integer :: ntile, ntiles                                                          !Tile number and total
+  integer :: iterator_dimension                                                     !iterator dimension
   real(kind=kind_real) :: ptop                                                      !Pressure at top of domain
   type(domain2D) :: domain_fix                                                      !MPP domain
   type(domain2D), pointer :: domain                                                 !MPP domain
@@ -58,6 +63,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
   real(kind=kind_real), allocatable, dimension(:)       :: lon_us, lat_us           !Lat/lon centers unstructured
   real(kind=kind_real), allocatable, dimension(:,:)     :: area                     !Grid area
+  real(kind=kind_real), allocatable, dimension(:,:,:)   :: orography                !Grid surface elevation
   real(kind=kind_real), allocatable, dimension(:,:)     :: dx, dy                   !dx/dy at edges
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxc, dyc                 !dx/dy c grid
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: grid, vlon, vlat
@@ -67,6 +73,9 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
   type(fields_metadata) :: fields
+  ! Vertical Coordinate
+  real(kind=kind_real), allocatable, dimension(:)       :: vCoord                   !Model vertical coordinate
+  real(kind=kind_real), allocatable, dimension(:,:)     :: surface_pressure         !Grid surface pressure
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -85,12 +94,17 @@ type :: fv3jedi_geom
   integer :: grid_type = 0
   logical :: dord4 = .true.
   type(atlas_functionspace) :: afunctionspace
+  type(atlas_functionspace) :: afunctionspace_incl_halo
+
   contains
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
-    procedure, public :: set_atlas_lonlat
-    procedure, public :: fill_atlas_fieldset
+    procedure, public :: set_lonlat
+    procedure, public :: fill_extra_fields
+    procedure, public :: ngrid_including_halo
+    procedure, public :: trim_fv3_grid_to_jedi_interp_grid
+    procedure, public :: trim_fv3_grid_to_jedi_interp_grid_ad
 end type fv3jedi_geom
 
 ! --------------------------------------------------------------------------------------------------
@@ -104,26 +118,43 @@ subroutine initialize(conf, comm)
 type(fckit_configuration), intent(in) :: conf
 type(fckit_mpi_comm),      intent(in) :: comm
 
-integer :: stackmax = 4000000
+integer :: stackmax
+character(len=1024) :: nml_filename, field_table_filename
+character(len=:), allocatable :: str
+
+! Path for input.nml file
+call conf%get_or_die("namelist filename",str)
+if (len(str) > 1024) call abor1_ftn("Length of fms namelist filename too long")
+nml_filename = str
+deallocate(str)
+
+! Field table file
+call conf%get_or_die("field table filename",str)
+if (len(str) > fm_string_len) call abor1_ftn("Length of fms field table filename too long")
+field_table_filename = str
+deallocate(str)
 
 ! Initialize fms, mpp, etc.
-call fms_init(localcomm=comm%communicator())
+call fms_init(localcomm=comm%communicator(), alt_input_nml_path = nml_filename)
 
 ! Set max stacksize
-if (conf%has("stackmax")) call conf%get_or_die("stackmax",stackmax)
+call conf%get_or_die("stackmax", stackmax)
 call mpp_domains_set_stack_size(stackmax)
+
+! Initialize the tracers
+call field_manager_init(table_name = field_table_filename)
 
 end subroutine initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, conf, comm, fields)
+subroutine create(self, conf, comm, nlevs)
 
 !Arguments
 class(fv3jedi_geom), target, intent(inout) :: self
 type(fckit_configuration),   intent(in)    :: conf
 type(fckit_mpi_comm),        intent(in)    :: comm
-type(fields_metadata),       intent(in)    :: fields
+integer,                     intent(out)   :: nlevs
 
 !Locals
 character(len=256)                    :: file_akbk
@@ -137,18 +168,9 @@ integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 character(len=:), allocatable :: str
 logical :: do_write_geom = .false.
 logical :: logp = .false.
+integer :: iterator_dimension = 2
 
-! Namelist for geometry
-integer :: nmls, ios, ierr
-logical :: skip_nml_read = .false.
-integer :: npx, npy, npz, ntiles, nwat
-integer, allocatable :: layout(:), io_layout(:)
-logical :: nested, regional, do_schmidt, hydrostatic
-real(kind=kind_real) :: stretch_fac, target_lat, target_lon
-
-namelist /fv_core_nml/ npx, npy, npz, ntiles, layout, io_layout, regional, nested, do_schmidt, &
-                       target_lat, target_lon, stretch_fac, hydrostatic, nwat
-
+type(fv3jedi_fmsnamelist) :: fmsnamelist
 
 ! Add the communicator to the geometry
 ! ------------------------------------
@@ -156,64 +178,33 @@ self%f_comm = comm
 
 ! Interpolation type
 ! ------------------
-self%interp_method = 'barycent'
-if (conf%has("interpolation method")) then
-  call conf%get_or_die("interpolation method",str)
-  self%interp_method = str
-  deallocate(str)
-endif
+call conf%get_or_die("interpolation method",str)
+self%interp_method = str
+deallocate(str)
 
-! Local pointer to field meta data
-! --------------------------------
-self%fields = fields
+call conf%get_or_die("iterator dimension", iterator_dimension)
+self%iterator_dimension = iterator_dimension
 
-! Replace FMS namelist file
-! -------------------------
-if (.not. conf%has("nml_file") .and. .not. conf%has("prepare external nml file")) then
-  ! Set namelist variables using JEDI config
-
-  allocate(layout(2))
-  allocate(io_layout(2))
-
-  nmls = 1
-  nmls = nmls + 1; if (.not. conf%get('npx',         npx        )) npx         = 1
-  nmls = nmls + 1; if (.not. conf%get('npy',         npy        )) npy         = 1
-  nmls = nmls + 1; if (.not. conf%get('npz'        , npz        )) npz         = 1
-  nmls = nmls + 1; if (.not. conf%get('ntiles'     , ntiles     )) ntiles      = 1
-  nmls = nmls + 1; if (.not. conf%get('nwat'       , nwat       )) nwat        = 1
-  nmls = nmls + 1; if (.not. conf%get('layout'     , layout     )) layout      = (/1,1/)
-  nmls = nmls + 1; if (.not. conf%get('io_layout'  , io_layout  )) io_layout   = (/1,1/)
-  nmls = nmls + 1; if (.not. conf%get('nested'     , nested     )) nested      = .false.
-  nmls = nmls + 1; if (.not. conf%get('regional'   , regional   )) regional    = .false.
-  nmls = nmls + 1; if (.not. conf%get('do_schmidt' , do_schmidt )) do_schmidt  = .false.
-  nmls = nmls + 1; if (.not. conf%get('hydrostatic', hydrostatic)) hydrostatic = .true.
-  nmls = nmls + 1; if (.not. conf%get('stretch_fac', stretch_fac)) stretch_fac = 0.0_kind_real
-  nmls = nmls + 1; if (.not. conf%get('target_lat' , target_lat )) target_lat  = 0.0_kind_real
-  nmls = nmls + 1; if (.not. conf%get('target_lon' , target_lon )) target_lon  = 0.0_kind_real
-
-  ! Deallocate existing FMS namelist array and reallocate
-  if (allocated(input_nml_file)) deallocate(input_nml_file)
-  allocate(input_nml_file(nmls))
-
-  ! Write new namelist to internal FMS namelist
-  write (input_nml_file, fv_core_nml, iostat=ios)
-  ierr = check_nml_error(ios,'fv3jedi geom writing input_nml_file')
-
-  skip_nml_read = .true.
-endif
+! Update the fms namelist with this Geometry
+! ------------------------------------------
+call fmsnamelist%replace_namelist(conf)
 
 !Intialize using the model setup routine
 ! --------------------------------------
-call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, skip_nml_read)
+call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, .true.)
 
+! Copy relevant contents of Atm
+! -----------------------------
 self%isd = Atm(1)%bd%isd
 self%ied = Atm(1)%bd%ied
 self%jsd = Atm(1)%bd%jsd
 self%jed = Atm(1)%bd%jed
+
 self%isc = Atm(1)%bd%isc
 self%iec = Atm(1)%bd%iec
 self%jsc = Atm(1)%bd%jsc
 self%jec = Atm(1)%bd%jec
+self%kec = Atm(1)%npz
 
 self%ntile  = gtile
 self%ntiles = Atm(1)%flagstruct%ntiles
@@ -221,6 +212,8 @@ self%ntiles = Atm(1)%flagstruct%ntiles
 self%npx = Atm(1)%npx
 self%npy = Atm(1)%npy
 self%npz = Atm(1)%npz
+
+nlevs = self%npz
 
 self%layout(1) = Atm(1)%layout(1)
 self%layout(2) = Atm(1)%layout(2)
@@ -314,7 +307,7 @@ else
 endif
 
 ! Arrays from the Atm Structure
-! --------------------------------
+! -----------------------------
 
 self%grid_lon  = real(Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
 self%grid_lat  = real(Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
@@ -360,13 +353,13 @@ self%nw_corner = Atm(1)%gridstruct%nw_corner
 self%nested    = Atm(1)%gridstruct%nested
 self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
-if (conf%has("logp")) then
-  call conf%get_or_die("logp",logp)
-  self%logp = logp
-else
-  self%logp =.false.
-endif
+allocate(self%vCoord(self%npz))
+allocate(self%surface_pressure(self%isd:self%ied, self%jsd:self%jed))
 
+self%surface_pressure = real(Atm(1)%ps ,kind_real)
+
+call conf%get_or_die("logp",logp)
+self%logp = logp
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -395,16 +388,19 @@ call setup_domain( self%domain_fix, self%npx-1, self%npy-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
 
 self%domain => self%domain_fix
+call nullify_domain()
 
 ! Optionally write the geometry to file
 ! -------------------------------------
-if (conf%has("do_write_geom")) then
-  call conf%get_or_die("do_write_geom",do_write_geom)
-endif
+call conf%get_or_die("write geom",do_write_geom)
 
 if (do_write_geom) then
   call write_geom(self)
 endif
+
+! Revert the fms namelist
+! -----------------------
+call fmsnamelist%revert_namelist
 
 end subroutine create
 
@@ -476,6 +472,8 @@ self%jec             = other%jec
 self%jed             = other%jed
 self%ntile           = other%ntile
 self%ntiles          = other%ntiles
+self%iterator_dimension = other%iterator_dimension
+
 self%ptop            = other%ptop
 self%ak              = other%ak
 self%bk              = other%bk
@@ -522,6 +520,7 @@ self%nw_corner = other%nw_corner
 self%domain => other%domain
 
 self%afunctionspace = atlas_functionspace(other%afunctionspace%c_ptr())
+self%afunctionspace_incl_halo = atlas_functionspace(other%afunctionspace_incl_halo%c_ptr())
 
 self%fields = fields
 
@@ -532,6 +531,11 @@ self%nested = other%nested
 self%bounded_domain = other%bounded_domain
 
 self%logp = other%logp
+
+if (allocated(other%orography)) then
+  allocate(self%orography(other%isc:other%iec,other%jsc:other%jec,1))
+  self%orography = other%orography
+endif
 
 end subroutine clone
 
@@ -581,10 +585,13 @@ deallocate(self%dya   )
 deallocate(self%lat_us)
 deallocate(self%lon_us)
 
+if (allocated(self%orography)) deallocate(self%orography)
+
 ! Required memory leak, since copying this causes problems
 !call mpp_deallocate_domain(self%domain_fix)
 
 call self%afunctionspace%final()
+call self%afunctionspace_incl_halo%final()
 
 ! Could finalize the fms routines. Possibly needs to be done only when key = 0
 !call fms_io_exit
@@ -595,52 +602,90 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_atlas_lonlat(self, afieldset)
+subroutine set_lonlat(self, afieldset, include_halo)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
+logical,              intent(in) :: include_halo
 
 !Locals
 real(kind_real), pointer :: real_ptr(:,:)
-type(atlas_field) :: afield
+type(atlas_field) :: afield, afield_incl_halo
+integer :: ngrid
+
+ngrid = self%ngrid
 
 ! Create lon/lat field
-afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,(self%iec-self%isc+1)*(self%jec-self%jsc+1)/))
+afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,ngrid/))
 call afield%data(real_ptr)
-real_ptr(1,:) = rad2deg*pack(self%grid_lon(self%isc:self%iec,self%jsc:self%jec),.true.)
-real_ptr(2,:) = rad2deg*pack(self%grid_lat(self%isc:self%iec,self%jsc:self%jec),.true.)
+real_ptr(1,:) = rad2deg*reshape(self%grid_lon(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
+real_ptr(2,:) = rad2deg*reshape(self%grid_lat(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
 call afieldset%add(afield)
 
-end subroutine set_atlas_lonlat
+if (include_halo) then
+  nullify(real_ptr)
+  ngrid = ngrid_including_halo(self)
+
+  ! Create an additional lon/lat field containing owned points (as above) and also halo
+  afield_incl_halo = atlas_field(name="lonlat_including_halo", kind=atlas_real(kind_real), &
+                                 shape=(/2,ngrid/))
+  call afield_incl_halo%data(real_ptr)
+  call trim_fv3_grid_to_jedi_interp_grid(self, self%grid_lon, real_ptr(1,:))
+  call trim_fv3_grid_to_jedi_interp_grid(self, self%grid_lat, real_ptr(2,:))
+  ! Convert rad -> degree
+  real_ptr(:,:) = rad2deg * real_ptr(:,:)
+  call afieldset%add(afield_incl_halo)
+endif
+
+end subroutine set_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fill_atlas_fieldset(self, afieldset)
+subroutine fill_extra_fields(self, afieldset)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
-integer :: jl
+integer :: jl, ngrid
+integer, pointer :: int_ptr(:)
 real(kind=kind_real) :: sigmaup, sigmadn
 real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+real(kind=kind_real), allocatable :: hmask_1(:), hmask_2(:,:)
 type(atlas_field) :: afield
-real(kind=kind_real) :: plevli(self%npz+1)
-real(kind=kind_real) :: kapr, kap1
+real(kind=kind_real) :: plevli(self%npz+1),logp(self%npz)
+
+! Prepare halo mask
+ngrid = ngrid_including_halo(self)
+allocate(hmask_1(ngrid))
+allocate(hmask_2(self%isd:self%ied,self%jsd:self%jed))
+hmask_2 = 0.0_kind_real
+hmask_2(self%isc:self%iec,self%jsc:self%jec) = 1.0_kind_real
+call trim_fv3_grid_to_jedi_interp_grid(self, hmask_2, hmask_1)
+
+! Add halo mask
+afield = self%afunctionspace_incl_halo%create_field(name='hmask', kind=atlas_integer(kind_int), levels=0)
+call afield%data(int_ptr)
+int_ptr = int(hmask_1)
+call afieldset%add(afield)
+call afield%final()
+
+! Release memory
+deallocate(hmask_1)
+deallocate(hmask_2)
 
 ! Add area
-afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=0)
+afield = self%afunctionspace_incl_halo%create_field(name='area', kind=atlas_real(kind_real), levels=0)
 call afield%data(real_ptr_1)
-real_ptr_1 = pack(self%area(self%isc:self%iec,self%jsc:self%jec),.true.)
+call trim_fv3_grid_to_jedi_interp_grid(self, self%area, real_ptr_1)
 call afieldset%add(afield)
 call afield%final()
 
 ! Add vertical unit
-afield = self%afunctionspace%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
+afield = self%afunctionspace_incl_halo%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
 call afield%data(real_ptr_2)
-
 if (.not. self%logp) then
    do jl=1,self%npz
       sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
@@ -648,20 +693,210 @@ if (.not. self%logp) then
       real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
    enddo
 else
-   kapr = 1.0/kappa
-   kap1 = kappa + 1.0
-   do jl=1,self%npz+1
-      plevli(jl) = self%ak(jl) + self%bk(jl)*ps
-   enddo
+   call getVerticalCoordLogP(self,logp,self%npz,ps)
    do jl=1,self%npz
-      real_ptr_2(jl,:) = -log(((plevli(jl)**kap1-plevli(jl+1)**kap1)/(kap1*(plevli(jl)-plevli(jl+1))))**kapr)
+      real_ptr_2(jl,:) = logp(jl)
    enddo
 endif
-
 call afieldset%add(afield)
 call afield%final()
 
-end subroutine fill_atlas_fieldset
+end subroutine fill_extra_fields
+
+! --------------------------------------------------------------------------------------------------
+
+! A helper function for the size of the grid constructed by trim_fv3_grid_to_jedi_interp_grid; for
+! details, see that subroutine's documentation.
+function ngrid_including_halo(self)
+  class(fv3jedi_geom), intent(in) :: self
+  integer :: ngrid_including_halo
+
+  logical :: remove_sw_corner, remove_se_corner, remove_nw_corner, remove_ne_corner
+  integer :: halo_width
+
+  ! Identify which corners of the grid patch are corners of the cubed sphere:
+  remove_sw_corner = (self%isc == 1 .and. self%jsc == 1)
+  remove_se_corner = (self%iec == self%npx-1 .and. self%jsc == 1)
+  remove_nw_corner = (self%isc == 1 .and. self%jec == self%npy-1)
+  remove_ne_corner = (self%iec == self%npx-1 .and. self%jec == self%npy-1)
+
+  ! In the code below, we assume halos have the same width all around the grid patch. This could
+  ! be generalized fairly easily, but for now we just check the assumption:
+  halo_width = self%ied - self%iec
+  if (halo_width /= self%isc - self%isd .or. halo_width /= self%jed - self%jec &
+      .or. halo_width /= self%jsc - self%jsd) then
+    call abor1_ftn("fv3jedi_geom_mod: code must be generalized to use non-uniform halo widths")
+  endif
+
+  ! Total size of grid to keep is: local grid + 4 edge halos + <kept corner halos>
+  ! This is easier to compute as: full grid - <removed corner halos>
+  ngrid_including_halo = (self%ied - self%isd + 1) * (self%jed - self%jsd + 1)
+  if (remove_sw_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+  if (remove_se_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+  if (remove_nw_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+  if (remove_ne_corner) ngrid_including_halo = ngrid_including_halo - halo_width*halo_width
+end function ngrid_including_halo
+
+! --------------------------------------------------------------------------------------------------
+
+! The fv3jedi modules interfacing with FV3 give access to grid data with full halos
+! (edges + corners) for FV3 quantities like coordinates and fields.
+!
+! This is almost always what we want as the interpolation source grid, except that the FV3 corner
+! halo points are meaningless at the corner of the cubed-sphere grids, where the 6 "cube faces"
+! meet. This is because at this location the coordinates kink so the two edge halos touch.
+!
+! This subroutine takes FV3 grid data and cuts out the meaningless data from halo corner regions at
+! cubed-sphere grid corners. The result is the source grid needed for JEDI interpolations. Because
+! the result has unpredictable structure, the field is stored in a 1D array. This function ensures
+! all fields are represented in 1D with the same ordering.
+subroutine trim_fv3_grid_to_jedi_interp_grid(self, fv3_halo, interp_halo)
+  class(fv3jedi_geom), intent(in) :: self
+  real(kind_real), intent(in) :: fv3_halo(self%isd:self%ied, self%jsd:self%jed)
+  real(kind_real), intent(inout) :: interp_halo(:)
+
+  integer :: a, b, ngrid_to_keep, nsection, halo_width
+  logical :: remove_sw_corner, remove_se_corner, remove_nw_corner, remove_ne_corner
+
+  ! Check inputs are correctly sized
+  ngrid_to_keep = ngrid_including_halo(self)
+  if (ngrid_to_keep /= size(interp_halo)) then
+    call abor1_ftn("fv3jedi_geom_mod: bad array dimension for interp_halo")
+  endif
+
+  ! First, copy ngrid owned data points
+  nsection = self%ngrid
+  a = 1
+  b = nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isc:self%iec, self%jsc:self%jec), (/nsection/))
+
+  ! In ngrid_including_halo, halo_width was checked to be uniform
+  halo_width = self%ied - self%iec
+
+  ! Copy west + east edge halos
+  nsection = halo_width * (self%jec - self%jsc + 1)
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isd:self%isc-1, self%jsc:self%jec), (/nsection/))
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%iec+1:self%ied, self%jsc:self%jec), (/nsection/))
+
+  ! Copy south + north edge halos
+  nsection = halo_width * (self%iec - self%isc + 1)
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isc:self%iec, self%jsd:self%jsc-1), (/nsection/))
+  a = b + 1
+  b = b + nsection
+  interp_halo(a:b) = reshape(fv3_halo(self%isc:self%iec, self%jec+1:self%jed), (/nsection/))
+
+  remove_sw_corner = (self%isc == 1 .and. self%jsc == 1)
+  remove_se_corner = (self%iec == self%npx-1 .and. self%jsc == 1)
+  remove_nw_corner = (self%isc == 1 .and. self%jec == self%npy-1)
+  remove_ne_corner = (self%iec == self%npx-1 .and. self%jec == self%npy-1)
+
+  ! Copy corner halos as needed
+  nsection = halo_width * halo_width
+  if (.not. remove_sw_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%isd:self%isc-1, self%jsd:self%jsc-1), (/nsection/))
+  endif
+  if (.not. remove_se_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%iec+1:self%ied, self%jsd:self%jsc-1), (/nsection/))
+  endif
+  if (.not. remove_nw_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%isd:self%isc-1, self%jec+1:self%jed), (/nsection/))
+  endif
+  if (.not. remove_ne_corner) then
+    a = b + 1
+    b = b + nsection
+    interp_halo(a:b) = reshape(fv3_halo(self%iec+1:self%ied, self%jec+1:self%jed), (/nsection/))
+  endif
+endsubroutine trim_fv3_grid_to_jedi_interp_grid
+
+! --------------------------------------------------------------------------------------------------
+
+! Adjoint of trim_fv3_grid_to_jedi_interp_grid: takes 1D data (ordered with owned points first,
+! then halo points second), and unpacks into a 2D fv3-jedi grid. If the grid is at the corner of
+! the cubed sphere, such that there is no input data to fill the "corner" halo with, then set
+! those points to 0.
+subroutine trim_fv3_grid_to_jedi_interp_grid_ad(self, fv3_halo, interp_halo)
+  class(fv3jedi_geom), intent(in) :: self
+  real(kind_real), intent(inout) :: fv3_halo(self%isd:self%ied, self%jsd:self%jed)
+  real(kind_real), intent(in) :: interp_halo(:)
+
+  integer :: a, b, ngrid_to_keep, halo_width, nsection
+  logical :: remove_sw_corner, remove_se_corner, remove_nw_corner, remove_ne_corner
+
+  ! Check inputs are correctly sized
+  ngrid_to_keep = ngrid_including_halo(self)
+  if (ngrid_to_keep /= size(interp_halo)) then
+    call abor1_ftn("fv3jedi_geom_mod: bad array dimension for interp_halo")
+  endif
+
+  fv3_halo(:,:) = 0.0
+
+  ! First, copy ngrid owned data points
+  nsection = self%ngrid
+  a = 1
+  b = nsection
+  fv3_halo(self%isc:self%iec, self%jsc:self%jec) = reshape(interp_halo(a:b), (/self%iec - self%isc + 1, self%jec - self%jsc + 1/))
+
+  ! In ngrid_including_halo, halo_width was checked to be uniform
+  halo_width = self%ied - self%iec
+
+  ! Copy west + east edge halos
+  nsection = halo_width * (self%jec - self%jsc + 1)
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%isd:self%isc-1, self%jsc:self%jec) = reshape(interp_halo(a:b), (/self%isc - self%isd, self%jec - self%jsc + 1/))
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%iec+1:self%ied, self%jsc:self%jec) = reshape(interp_halo(a:b), (/self%ied - self%iec, self%jec - self%jsc + 1/))
+
+  ! Copy south + north edge halos
+  nsection = halo_width * (self%iec - self%isc + 1)
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%isc:self%iec, self%jsd:self%jsc-1) = reshape(interp_halo(a:b), (/self%iec - self%isc + 1, self%jsc - self%jsd/))
+  a = b + 1
+  b = b + nsection
+  fv3_halo(self%isc:self%iec, self%jec+1:self%jed) = reshape(interp_halo(a:b), (/self%iec - self%isc + 1, self%jsc - self%jsd/))
+
+  remove_sw_corner = (self%isc == 1 .and. self%jsc == 1)
+  remove_se_corner = (self%iec == self%npx-1 .and. self%jsc == 1)
+  remove_nw_corner = (self%isc == 1 .and. self%jec == self%npy-1)
+  remove_ne_corner = (self%iec == self%npx-1 .and. self%jec == self%npy-1)
+
+  ! Copy corner halos as needed
+  nsection = halo_width * halo_width
+  if (.not. remove_sw_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%isd:self%isc-1, self%jsd:self%jsc-1) = reshape(interp_halo(a:b), (/self%isc - self%isd, self%jsc - self%jsd/))
+  endif
+  if (.not. remove_se_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%iec+1:self%ied, self%jsd:self%jsc-1) = reshape(interp_halo(a:b), (/self%ied - self%iec, self%jsc - self%jsd/))
+  endif
+  if (.not. remove_nw_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%isd:self%isc-1, self%jec+1:self%jed) = reshape(interp_halo(a:b), (/self%isc - self%isd, self%jed - self%jec/))
+  endif
+  if (.not. remove_ne_corner) then
+    a = b + 1
+    b = b + nsection
+    fv3_halo(self%iec+1:self%ied, self%jec+1:self%jed) = reshape(interp_halo(a:b), (/self%ied - self%iec, self%jed - self%jec/))
+  endif
+endsubroutine trim_fv3_grid_to_jedi_interp_grid_ad
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -797,7 +1032,6 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
 
   if (io_layout(1) /= 1 .or. io_layout(2) /= 1) call mpp_define_io_domain(domain, io_layout)
 
-  call set_domain(domain)
   deallocate(pe_start, pe_end)
   deallocate(layout2D, global_indices)
   deallocate(tile1, tile2, tile_id)
@@ -913,8 +1147,51 @@ subroutine write_geom(self)
 
 end subroutine write_geom
 
-!--------------------------------------------------------------------------------------------------
+!----------------------------------------------------------------------------
+! 1d pressure_edge to pressure_mid
+!----------------------------------------------------------------------------
 
+subroutine pedges2pmidlayer(npz,ptype,pe1d,p1d)
+ integer,              intent(in)  :: npz       !number of model layers
+ character(len=*),     intent(in)  :: ptype     !midlayer pressure definition: 'average' or 'Philips'
+ real(kind=kind_real), intent(in)  :: pe1d(npz+1) !pressure edge
+ real(kind=kind_real), intent(out) :: p1d(npz)    !pressure mid
+
+ select case (ptype)
+   case('Philips')
+     p1d = ((pe1d(2:npz+1)**kap1 - pe1d(1:npz)**kap1)/&
+            (kap1*(pe1d(2:npz+1) - pe1d(1:npz))))**kapr
+   case default
+     p1d = 0.5*(pe1d(2:npz+1) + pe1d(1:npz))
+ end select
+
+end subroutine pedges2pmidlayer
+
+!--------------------------------------------------------------------------------------------------
+subroutine getVerticalCoord(self, vc, npz, psurf)
+  ! returns log(pressure) at mid level of the vertical column with surface
+  ! prsssure of psurf
+  ! coded using an example from Jeff Whitaker used in GSI ENKF pacakge
+
+  type(fv3jedi_geom),   intent(in) :: self
+  integer,              intent(in) :: npz
+  real(kind=kind_real), intent(in) :: psurf
+  real(kind=kind_real), intent(out) :: vc(npz)
+
+  real(kind=kind_real) :: plevli(npz+1), p(npz)
+  integer :: k
+
+  ! compute interface pressure
+  do k=1,npz+1
+    plevli(k) = self%ak(k) + self%bk(k)*psurf
+  enddo
+
+  ! compute presure at mid level and convert it to logp
+  call pedges2pmidlayer(npz,'Philips',plevli,vc)
+
+end subroutine getVerticalCoord
+
+!--------------------------------------------------------------------------------------------------
 subroutine getVerticalCoordLogP(self, vc, npz, psurf)
   ! returns log(pressure) at mid level of the vertical column with surface prsssure of psurf
   ! coded using an example from Jeff Whitaker used in GSI ENKF pacakge
@@ -924,29 +1201,10 @@ subroutine getVerticalCoordLogP(self, vc, npz, psurf)
   real(kind=kind_real), intent(in) :: psurf
   real(kind=kind_real), intent(out) :: vc(npz)
 
-  real :: plevli(npz+1), plevlm
-  real :: rd, cp, kap, kapr, kap1
-  integer :: k
+  real(kind=kind_real) :: p(npz)
 
-  ! constants
-  rd = 2.8705e+2
-  cp = 1.0046e+3
-  kap = rd/cp
-  kapr = cp/rd
-  kap1 = kap + 1.0
-
-  ! compute interface pressure
-  do k=1,self%npz+1
-    plevli(k) = self%ak(k) + self%bk(k)*psurf
-  enddo
-
-  ! compute presure at mid level and convert it to logp
-  do k=1,self%npz
-    ! phillips vertical interpolation from guess_grids.F90 in GSI
-    ! (used for global model)
-    plevlm = ((plevli(k)**kap1-plevli(k+1)**kap1)/(kap1*(plevli(k)-plevli(k+1))))**kapr
-    vc(k) = - log(plevlm)
-  enddo
+  call getVerticalCoord(self, p, npz, psurf)
+  vc = - log(p)
 
 end subroutine getVerticalCoordLogP
 ! --------------------------------------------------------------------------------------------------

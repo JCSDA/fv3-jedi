@@ -1,0 +1,29 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+state:
+  analytic init:
+    method: dcmip-test-4-0
+  datetime: 2020-12-15T00:00:00Z
+variables: [air_temperature, air_pressure]
+locations:
+  window begin: 2020-12-14T21:00:00Z
+  window end: 2020-12-15T03:00:00Z
+  obs space:
+    name: Random Locations
+    simulated variables: [air_temperature, air_pressure]
+    generate:
+      random:
+        nobs: 100
+        lat1: -90
+        lat2: 90
+        lon1: 0
+        lon2: 360
+        random seed: 560921
+      obs errors: [1.2, 2.5]
+tolerance interpolation: 1.e-2

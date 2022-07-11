@@ -1,0 +1,14 @@
+# (C) Copyright 2020-2022 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+filetype: fms restart
+datetime: $(andatetime)
+datapath: '{{workdir}}'
+filename_core: $(expid).an.$(andatetime).fv_core.res.nc
+filename_trcr: $(expid).an.$(andatetime).fv_tracer.res.nc
+filename_sfcd: $(expid).an.$(andatetime).sfc_data.nc
+filename_sfcw: $(expid).an.$(andatetime).fv_srf_wnd.res.nc
+filename_cplr: $(expid).an.$(andatetime).coupler.res
+state variables: [u, v, ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m]

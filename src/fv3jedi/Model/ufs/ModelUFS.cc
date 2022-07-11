@@ -18,22 +18,22 @@
 #include "fv3jedi/Model/ufs/ModelUFS.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
+static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 // -------------------------------------------------------------------------------------------------
-ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables") {
+ModelUFS::ModelUFS(const Geometry & resol, const Parameters_ & params)
+  : keyConfig_(0), tstep_(0), geom_(resol),
+    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables))
+{
   char tmpdir_[10000];
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
   getcwd(tmpdir_, 10000);
-  tstep_ = util::Duration(mconf.getString("tstep"));
-  strcpy(ufsdir_, mconf.getString("ufs_run_directory").c_str());
-  const eckit::Configuration * configc = &mconf;
+  tstep_ = params.tstep;
+  strcpy(ufsdir_, params.ufsRunDirectory.value().c_str());
   chdir(ufsdir_);
-  fv3jedi_ufs_create_f90(keyConfig_, &configc, geom_.toFortran());
+  fv3jedi_ufs_create_f90(keyConfig_, params.toConfiguration(), geom_.toFortran());
   oops::Log::trace() << "ModelUFS::ModelUFS done" << std::endl;
   chdir(tmpdir_);
 }
@@ -49,8 +49,7 @@ void ModelUFS::initialize(State & xx) const {
   oops::Log::trace() << "ModelUFS::cd to " << ufsdir_ << std::endl;
 
   chdir(ufsdir_);
-  util::DateTime * dtp = &xx.validTime();
-  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), &dtp);
+  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran());
   oops::Log::trace() << "ModelUFS::initialize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -72,8 +71,7 @@ void ModelUFS::step(State & xx, const ModelBias &) const
 // -------------------------------------------------------------------------------------------------
 void ModelUFS::finalize(State & xx) const {
   oops::Log::trace() << "ModelUFS::finalize starting" << std::endl;
-  util::DateTime * dtp = &xx.validTime();
-  fv3jedi_ufs_finalize_f90(keyConfig_, xx.toFortran(), &dtp);
+  fv3jedi_ufs_finalize_f90(keyConfig_, xx.toFortran());
   oops::Log::trace() << "ModelUFS::finalize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

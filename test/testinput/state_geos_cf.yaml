@@ -1,0 +1,26 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos-cf.yaml
+state test:
+  statefile:
+    datetime: 2019-01-02T03:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/inputs/geos_c12
+    filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    tile is a dimension: [true]
+    clobber existing files: [false]
+    state variables: [delp,no2,'no',o3,ps,sphu]
+  state generate:
+    analytic init:
+      method: dcmip-test-4-0
+    datetime: 2019-01-02T03:00:00Z
+  date: 2019-01-02T03:00:00Z
+  norm file: 5280.9533376899999
+  tolerance: 1.0e-08

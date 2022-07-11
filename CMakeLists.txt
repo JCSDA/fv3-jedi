@@ -1,4 +1,4 @@
-# (C) Copyright 2017-2019 UCAR.
+# (C) Copyright 2017-2022 UCAR.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,7 +9,9 @@
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
-project( fv3jedi VERSION 1.1.0 LANGUAGES C CXX Fortran )
+project( fv3jedi VERSION 1.2.0 LANGUAGES C CXX Fortran )
+
+option(OPENMP "Build fv3-jedi with OpenMP support" ON)
 
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 
@@ -60,13 +62,13 @@ find_package( jedicmake QUIET )
 find_package( NetCDF REQUIRED COMPONENTS Fortran )
 
 # atlas
-find_package( atlas 0.20.2 REQUIRED )
+find_package( atlas 0.27.0 REQUIRED )
 
 # oops
-find_package( oops 1.0.0 REQUIRED )
+find_package( oops 1.3.0 REQUIRED )
 
 # saber
-find_package( saber 1.0.0 REQUIRED )
+find_package( saber 1.3.0 REQUIRED )
 
 # crtm
 find_package( crtm 2.2.3 REQUIRED )
@@ -77,14 +79,22 @@ find_package( ropp-ufo QUIET )
 # geos-aero
 find_package( geos-aero QUIET )
 
+# gsibclim
+find_package( gsibclim QUIET )
+
 # ufo
-find_package( ufo 1.0.0 REQUIRED )
+find_package( ufo 1.3.0 REQUIRED )
 
 # femps
 find_package( femps 1.0.0 REQUIRED )
 
+# vader
+find_package( vader 1.0.0 REQUIRED )
+
 #OpenMP
-find_package( OpenMP COMPONENTS Fortran )
+if(OPENMP)
+  find_package( OpenMP COMPONENTS Fortran )
+endif()
 
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
@@ -163,6 +173,9 @@ if (FV3_FORECAST_MODEL MATCHES UFS)
   find_package(w3nco REQUIRED )
   find_package(nemsio REQUIRED )
   find_package(fms REQUIRED )
+  find_package(stochastic_physics REQUIRED )
+  find_package(ccpp REQUIRED )
+  find_package(ccppphys REQUIRED )
   find_package(fv3atm REQUIRED )
   find_package(ufs REQUIRED )
 endif()

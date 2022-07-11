@@ -1,16 +1,21 @@
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  akbk: Data/fv3files/akbk64.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   ntiles: 6
-  do_write_geom: true #Output the grid so it can be read by e.g. femps
-  fieldsets:
-    - fieldset: Data/fieldsets/aerosols_gfs.yaml
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  nwat: 1
+  layout: [1,1]
+  io_layout: [1,1]
+  nested: false
+  regional: false
+  do_schmidt: false
+  hydrostatic: true
+  stretch_fac: 0.0
+  target_lat: 0.0
+  target_lon: 0.0
+  write geom: true #Output the grid so it can be read by e.g. femps
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml

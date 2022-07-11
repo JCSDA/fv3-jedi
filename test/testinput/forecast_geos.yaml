@@ -1,31 +1,28 @@
 forecast length: PT6H
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  # input.nml
   layout: [4,4]
-  io_layout: [1,1]
   npx: 91
   npy: 91
   npz: 72
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: GEOS
   tstep: PT15M
   geos_run_directory: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
   model variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
 initial condition:
-  filetype: geos
+  datetime: 2020-12-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: /gpfsm/dnb31/drholdaw/Models/GEOS/Exps/jedi-geos-c90/scratch
-  filename_core: fvcore_internal_rst
-  filename_mois: moist_internal_rst
-  filename_surf: fvcore_internal_rst
+  filenames: [fvcore_internal_rst, moist_internal_rst, fvcore_internal_rst]
   state variables: [U,V,PT,PE,Q,QICN,QLCN,QILS,QLLS]
 output:
-  filetype: geos
+  filetype: cube sphere history
   datapath: Data/forecast
   filename: forecast.jediex.
   first: PT0H

@@ -17,21 +17,18 @@
 #include "fv3jedi/Model/fv3lm/ModelFV3LM.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
+static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
 // -------------------------------------------------------------------------------------------------
-ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & mconf)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(mconf, "model variables")
+ModelFV3LM::ModelFV3LM(const Geometry & resol, const Parameters_ & params)
+  : keyConfig_(0), tstep_(0), geom_(resol),
+    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables))
 {
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM" << std::endl;
-  tstep_ = util::Duration(mconf.getString("tstep"));
-  const eckit::Configuration * configc = &mconf;
-  stageFv3Files(mconf, geom_.getComm());
-  fv3jedi_fv3lm_create_f90(&configc, geom_.toFortran(), keyConfig_);
-  removeFv3Files(geom_.getComm());
+  tstep_ = params.tstep;
+  fv3jedi_fv3lm_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
   oops::Log::trace() << "ModelFV3LM created" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -47,8 +44,7 @@ void ModelFV3LM::initialize(State & xx) const {
 // -------------------------------------------------------------------------------------------------
 void ModelFV3LM::step(State & xx, const ModelBias &) const {
   xx.validTime() += tstep_;
-  util::DateTime * dtp = &xx.validTime();
-  fv3jedi_fv3lm_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran(), &dtp);
+  fv3jedi_fv3lm_step_f90(keyConfig_, xx.toFortran(), geom_.toFortran());
   oops::Log::debug() << "ModelFV3LM::step" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

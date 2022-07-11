@@ -1,37 +1,33 @@
 /*
- * (C) Copyright 2017-2020 UCAR
+ * (C) Copyright 2017-2022 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_STATE_STATE_H_
-#define FV3JEDI_STATE_STATE_H_
+#pragma once
 
 #include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
-#include "oops/util/DateTime.h"
+#include "oops/base/WriteParametersBase.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
-#include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Increment/Increment.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
+
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.interface.h"
 
-namespace eckit {
-  class Configuration;
-}
-
-namespace ufo {
-  class GeoVaLs;
-  class Locations;
-}
-
 namespace oops {
+  class DateTime;
   class Variables;
 }
 
@@ -39,16 +35,52 @@ namespace fv3jedi {
   class Geometry;
   class Increment;
 
-// FV3JEDI model state
+// -------------------------------------------------------------------------------------------------
+
+class AnalyticICParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(AnalyticICParameters, Parameters)
+ public:
+  // Analytic initial condition parameters
+  oops::RequiredParameter<std::string> method{ "method", this};
+};
 
 // -------------------------------------------------------------------------------------------------
+
+class StateParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(StateParameters, Parameters)
+ public:
+  // Analytic initial condition parameters
+  oops::OptionalParameter<oops::Variables> stateVariables{ "state variables", this};
+  oops::OptionalParameter<AnalyticICParameters> analytic{ "analytic init", this};
+  oops::OptionalParameter<util::DateTime> datetime{"datetime", this};
+  // Read parameters
+  IOParametersWrapper ioParametersWrapper{this};
+  oops::OptionalParameter<bool> setdatetime{"set datetime on read", this};
+};
+
+// -------------------------------------------------------------------------------------------------
+
+class StateWriteParameters : public oops::WriteParametersBase {
+  OOPS_CONCRETE_PARAMETERS(StateWriteParameters, WriteParametersBase)
+ public:
+  IOParametersWrapper ioParametersWrapper{this};
+};
+
+// -------------------------------------------------------------------------------------------------
+
 class State : public util::Printable, private util::ObjectCounter<State> {
  public:
   static const std::string classname() {return "fv3jedi::State";}
 
+  typedef StateParameters Parameters_;
+  typedef StateWriteParameters WriteParameters_;
+  typedef AnalyticICParameters AnalyticICParameters_;
+
+  typedef std::unique_ptr<IOBase> IOBase_;
+
 // Constructor, destructor and basic operators
   State(const Geometry &, const oops::Variables &, const util::DateTime &);
-  State(const Geometry &, const eckit::Configuration &);
+  State(const Geometry &, const Parameters_ &);
   State(const Geometry &, const State &);
   State(const State &);
   virtual ~State();
@@ -64,15 +96,19 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   State & operator+=(const Increment &);
 
 // IO and diagnostics
-  void read(const eckit::Configuration &);
-  void analytic_init(const eckit::Configuration &, const Geometry &);
-  void write(const eckit::Configuration &) const;
+  void analytic_init(const AnalyticICParameters_ &, const Geometry &);
+  void fillGeomOrography(Geometry &) const;
+  void read(const Parameters_ &);
+  void write(const WriteParameters_ &) const;
   double norm() const;
 
-/// Serialize and deserialize
+// Serialize and deserialize
   size_t serialSize() const;
   void serialize(std::vector<double> &) const;
   void deserialize(const std::vector<double> &, size_t &);
+
+// Add or remove fields
+  void updateFields(const oops::Variables &);
 
 // Utilities
   std::shared_ptr<const Geometry> geometry() const {return geom_;}
@@ -83,6 +119,10 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   const util::DateTime & validTime() const {return time_;}
   util::DateTime & validTime() {return time_;}
   void updateTime(const util::Duration & dt) {time_ += dt;}
+
+// Accessors to the ATLAS fieldset
+  void toFieldSet(atlas::FieldSet &) const;
+  void fromFieldSet(const atlas::FieldSet &);
 
   int & toFortran() {return keyState_;}
   const int & toFortran() const {return keyState_;}
@@ -99,5 +139,3 @@ class State : public util::Printable, private util::ObjectCounter<State> {
 // -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-
-#endif  // FV3JEDI_STATE_STATE_H_
