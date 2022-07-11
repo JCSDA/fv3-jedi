@@ -57,5 +57,7 @@ real(kind=kind_real), parameter, public :: rho_snow      = 330.0_kind_real
 real(kind=kind_real), parameter, public :: f_coriolis_angle = 0.0_kind_real
 !real(kind=kind_real), parameter, public :: kg_kg_to_ppmv_o3 = 1.0e6_kind_real*airmw/o3mw ! kg/kg -> ppmv 
 real(kind=kind_real), parameter, public :: constoz = 604229.0_kind_real ! kg/kg -> ppmv (what the GSI uses, but of unknown origin) 
+real(kind=kind_real), parameter, public :: kap1 = kappa + 1.0_kind_real
+real(kind=kind_real), parameter, public :: kapr = 1.0_kind_real/kappa
 
 end module fv3jedi_constants_mod

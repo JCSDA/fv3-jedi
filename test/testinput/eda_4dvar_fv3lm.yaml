@@ -1,3 +1,8 @@
 files:
-  - "testinput/eda_4dvar_fv3lm_1.yaml"
-  - "testinput/eda_4dvar_fv3lm_2.yaml"
+  - testinput/eda_4dvar_fv3lm_1.yaml
+  - testinput/eda_4dvar_fv3lm_2.yaml
+
+test:
+  reference filename: testoutput/eda_4dvar_fv3lm.ref
+  float absolute tolerance: 1.0e-8
+  test output filename: testoutput/eda_4dvar_fv3lm.test.out

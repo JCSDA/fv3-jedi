@@ -1,12 +1,11 @@
-nml_file_mpp: '$(experiment_dir)/Data/fv3files/fmsmpp.nml'
-trc_file: '$(experiment_dir)/Data/fv3files/field_table'
-akbk: '$(experiment_dir)/Data/fv3files/akbk72.nc4'
-# input.nml
-layout: [2,2]
-io_layout: [1,1]
-npx: 25
-npy: 25
-npz: 72
-ntiles: 6
+fms initialization:
+  namelist filename: '$(stage_dir)/Data/fv3files/fmsmpp.nml'
+  field table filename: '$(stage_dir)/Data/fv3files/field_table_gmao'
+akbk: '$(stage_dir)/Data/fv3files/akbk$(npz).nc4'
+layout: [$(npx_proc),$(npy_proc)]
+npx: $(npx)
+npy: $(npy)
+npz: $(npz)
 fieldsets:
-  - fieldset: '$(experiment_dir)/Data/fieldsets/dynamics.yaml'
+  - fieldset: '$(stage_dir)/Data/fieldsets/dynamics.yaml'
+  - fieldset: '$(stage_dir)/Data/fieldsets/ufo.yaml'

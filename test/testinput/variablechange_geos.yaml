@@ -1,62 +1,63 @@
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
   npx: 13
   npy: 13
   npz: 72
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 variable change tests:
-
-  # Analysis2Model
-  - variable change: Analysis2Model
-    tolerance inverse: 1.0e-4
-    # Possible to read variable with this variable change
-    filetype: geos
-    datapath: Data/inputs/geos_c12
-    filename_bkgd: geos.bkg.20180414_210000z.nc4
-    filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
-    output variables: [u,v,ua,va,delp,t,q,vtype]
+  - variable change:
+      variable change name: Analysis2Model
+      output variables: [u,v,ua,va,delp,t,q,vtype]
+      input variables: [ua,va,t,ps]
     state:
-      filetype: geos
+      datetime: 2020-12-14T21:00:00Z
+      filetype: cube sphere history
+      provider: geos
       datapath: Data/inputs/geos_c12
-      filename_bkgd: geos.bkg.20180414_210000z.nc4
+      filename: geos.bkg.20201214_210000z.nc4
       state variables: [ua,va,t,ps]
+    tolerance inverse: 1.0e-4
 
   # Control2Analysis
-  - variable change: Control2Analysis
-    tolerance inverse: 1.0e-4
-    femps_iterations: 50
-    femps_ngrids: 2
-    femps_path2fv3gridfiles: Data/femps
-    inverse first: true #Switched input and output variables
-    input variables: [psi,chi,vort,divg,t,tv,delp,ps,q,rh,qi,ql,qilsf,qicnf]
+  - variable change:
+      variable change name: Control2Analysis
+      femps_iterations: 50
+      femps_ngrids: 2
+      femps_path2fv3gridfiles: Data/femps
+      input variables: [psi,chi,vort,divg,t,tv,delp,ps,q,rh,qi,ql,qilsf,qicnf]
+      output variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
     state:
-      filetype: geos
+      datetime: 2020-12-14T21:00:00Z
+      filetype: cube sphere history
+      provider: geos
       datapath: Data/inputs/geos_c12
-      filename_core: fvcore_internal_rst.20180414_21z.nc4
-      filename_mois: moist_internal_rst.20180414_21z.nc4
-      filename_surf: surf_import_rst.20180414_21z.nc4
+      filenames: [fvcore_internal_rst.20201214_21z.nc4, moist_internal_rst.20201214_21z.nc4,
+                  surf_import_rst.20201214_21z.nc4]
+      tile is a dimension: [false, false, false]
       state variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
+    tolerance inverse: 10.0
+    inverse first: true #Switched input and output variables
 
   # GEOS restart to background
-  - variable change: GeosRst2Bkg
-    tolerance inverse: 1.0e-5
-    do_clouds: true
-    do_wind: true
-    do_temperature: true
-    do_pressure: true
-    pres_var: delp
-    output variables: [ua,va,t,delp,ps,q,qi,ql,qilsf,qicnf]
+  - variable change:
+      variable change name: GeosRst2Bkg
+      do_clouds: true
+      do_wind: true
+      do_temperature: true
+      do_pressure: true
+      pres_var: delp
+      input variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
+      output variables: [ua,va,t,delp,ps,q,qi,ql,qilsf,qicnf]
     state:
-      filetype: geos
+      datetime: 2020-12-14T21:00:00Z
+      filetype: cube sphere history
+      provider: geos
       datapath: Data/inputs/geos_c12
-      filename_core: fvcore_internal_rst.20180414_21z.nc4
-      filename_mois: moist_internal_rst.20180414_21z.nc4
-      filename_surf: surf_import_rst.20180414_21z.nc4
+      filenames: [fvcore_internal_rst.20201214_21z.nc4, moist_internal_rst.20201214_21z.nc4,
+                  surf_import_rst.20201214_21z.nc4]
+      tile is a dimension: [false, false, false]
       state variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
+    tolerance inverse: 10

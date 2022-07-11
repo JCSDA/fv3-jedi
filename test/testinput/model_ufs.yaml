@@ -1,19 +1,17 @@
 geometry:
-  nml_file_mpp: Data/ModelDirs/ufs/c96/input.nml
-  trc_file: Data/ModelDirs/ufs/c96/field_table
-  akbk: Data/fv3files/akbk64.nc4
+  fms initialization:
+    namelist filename: Data/ModelDirs/ufs/stc/input.nml
+    field table filename: Data/ModelDirs/ufs/stc/field_table
+  akbk: Data/fv3files/akbk127.nc4
   layout: [1,1]
-  io_layout: [1,1]
   npx: 97
   npy: 97
-  npz: 64
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 model:
-  name: UFS 
+  name: UFS
   tstep: PT1H
-  ufs_run_directory: Data/ModelDirs/ufs/c96
+  ufs_run_directory: Data/ModelDirs/ufs/stc
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3mr,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
@@ -21,12 +19,13 @@ model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
-  final norm: 144.55226995514263 
+  final norm: 143.96545506196134
   tolerance: 1.0e-4
   test reforecast: false
 initial condition:
-  filetype: gfs
-  datapath: Data/ModelDirs/ufs/c96/INPUT
+  datetime: 2020-12-14T21:00:00Z
+  filetype: fms restart
+  datapath: Data/ModelDirs/ufs/stc/INPUT
   filename_core: fv_core.res.nc
   filename_trcr: fv_tracer.res.nc
   filename_sfcd: sfc_data.nc

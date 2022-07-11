@@ -1,0 +1,33 @@
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+CostJo   : Nonlinear Jo(Radiosonde) = 0.0000000000000000e+00 --- No Observations
+CostFunction: Nonlinear J = 0.0000000000000000e+00
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 5 | cube sphere face size: C24
+eastward_wind                                | Min:-1.0098586533865841e+02 Max:+1.3678343808875499e+02 RMS:+2.1177037317445055e+01
+northward_wind                               | Min:-8.7704933115039680e+01 Max:+9.5893968445746808e+01 RMS:+8.9475029779502240e+00
+air_temperature                              | Min:+1.6137739106657494e+02 Max:+3.0488418198297626e+02 RMS:+2.4961257380175579e+02
+air_pressure_thickness                       | Min:+6.0599996038085224e-01 Max:+1.7771300461488913e+03 RMS:+9.5705082626830688e+02
+specific_humidity                            | Min:+4.5694057912323413e-07 Max:+1.8142040102488568e-02 RMS:+4.6032572389854906e-03
+----------------------------------------------------------------------------------------------------
+
+
+
+CostJb   : Nonlinear Jb = 0
+CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
+CostFunction: Nonlinear J = 0
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 5 | cube sphere face size: C24
+eastward_wind                                | Min:-1.0098586533865841e+02 Max:+1.3678343808875499e+02 RMS:+2.1177037317445055e+01
+northward_wind                               | Min:-8.7704933115039680e+01 Max:+9.5893968445746808e+01 RMS:+8.9475029779502240e+00
+air_temperature                              | Min:+1.6137739106657494e+02 Max:+3.0488418198297626e+02 RMS:+2.4961257380175579e+02
+air_pressure_thickness                       | Min:+6.0599996038085224e-01 Max:+1.7771300461488913e+03 RMS:+9.5705082626830688e+02
+specific_humidity                            | Min:+4.5694057912323413e-07 Max:+1.8142040102488568e-02 RMS:+4.6032572389854906e-03
+----------------------------------------------------------------------------------------------------
+
+
+
+CostJb   : Nonlinear Jb = 0
+CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
+CostFunction: Nonlinear J = 0

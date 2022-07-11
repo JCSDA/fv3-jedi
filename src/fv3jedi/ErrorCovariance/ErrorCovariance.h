@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_ERRORCOVARIANCE_ERRORCOVARIANCE_H_
-#define FV3JEDI_ERRORCOVARIANCE_ERRORCOVARIANCE_H_
+#pragma once
 
 #include <memory>
 #include <ostream>
@@ -51,4 +50,3 @@ class ErrorCovariance : public util::Printable, private eckit::NonCopyable,
 // -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_ERRORCOVARIANCE_ERRORCOVARIANCE_H_

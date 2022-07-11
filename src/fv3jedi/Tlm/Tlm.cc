@@ -20,28 +20,22 @@
 #include "fv3jedi/Tlm/Tlm.interface.h"
 #include "fv3jedi/Tlm/Traj.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "fv3jedi/Utilities/Utilities.h"
 
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
-static oops::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
+static oops::interface::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
-Tlm::Tlm(const Geometry & resol, const eckit::Configuration & tlConf) : keySelf_(0), tstep_(),
-  trajmap_(), linvars_(tlConf, "tlm variables")
+Tlm::Tlm(const Geometry & resol, const Parameters_ & params) : keySelf_(0), tstep_(), trajmap_(),
+  linvars_(resol.fieldsMetaData().getLongNameFromAnyName(params.tlmVariables))
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 
   // Store time step
-  tstep_ = util::Duration(tlConf.getString("tstep"));
-
-  // Pointer to configuration
-  const eckit::Configuration * configc = &tlConf;
+  tstep_ = params.tstep;
 
   // Implementation
-  stageFv3Files(tlConf, resol.getComm());
-  fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), &configc);
-  removeFv3Files(resol.getComm());
+  fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), params.toConfiguration());
 
   oops::Log::trace() << "Tlm::Tlm done" << std::endl;
 }
@@ -65,7 +59,7 @@ void Tlm::setTrajectory(const State & xx, State & xlr, const ModelBias & bias) {
   // Interpolate to resolution of the trajectory
   xlr.changeResolution(xx);
 
-  // Set trajecotry
+  // Set trajectory
   int keyTraj = 0;
   fv3jedi_traj_set_f90(keyTraj, xlr.toFortran());
   ASSERT(keyTraj != 0);

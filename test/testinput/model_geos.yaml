@@ -1,15 +1,12 @@
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  layout: [2,2]
-  io_layout: [1,1]
-  npx: 25
-  npy: 25
+  npx: 13
+  npy: 13
   npz: 72
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: GEOS
   tstep: PT30M
@@ -24,9 +21,10 @@ model test:
   tolerance: 1.0e-4
   test reforecast: true
 initial condition:
-  filetype: geos
+  datetime: 2020-12-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/ModelRunDirs/GEOS
-  filename_core: fvcore_internal_rst
-  filename_mois: moist_internal_rst
-  filename_surf: fvcore_internal_rst
+  filenames: [fvcore_internal_rst, moist_internal_rst, fvcore_internal_rst]
+  tile is a dimension: [false, false, false]
   state variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]

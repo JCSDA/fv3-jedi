@@ -11,9 +11,15 @@
 #include <ostream>
 #include <string>
 
-#include "oops/base/LinearModelBase.h"
+#include "oops/base/ParameterTraitsVariables.h"
+#include "oops/generic/LinearModelBase.h"
+#include "oops/interface/LinearModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Utilities/Traits.h"
@@ -25,17 +31,37 @@ namespace eckit {
 
 namespace fv3jedi {
 
+/// Options taken by ModelTLM
+  class ModelTLMParameters : public oops::LinearModelParametersBase {
+    OOPS_CONCRETE_PARAMETERS(ModelTLMParameters, LinearModelParametersBase)
+
+   public:
+    oops::RequiredParameter<oops::Variables> tlmVariables{ "tlm variables", this};
+    oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+    oops::RequiredParameter<eckit::LocalConfiguration> traj{ "trajectory", this};
+    oops::OptionalParameter<std::string> varChange{"variable change", this};
+
+    oops::RequiredParameter<int> lm_do_dyn{ "lm_do_dyn", this};
+    oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
+    oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
+
+    oops::Parameter<std::string> lmnamelistFilename{ "linear model namelist filename",
+            "inputpert.nml", this};
+    oops::OptionalParameter<std::string> namelistFilename{"namelist filename", this};
+  };
+
 // -------------------------------------------------------------------------------------------------
 
 // Linear model definition.
 
-class Tlm: public oops::LinearModelBase<Traits>,
+class Tlm: public oops::interface::LinearModelBase<Traits>,
                 private util::ObjectCounter<Tlm> {
  public:
+  typedef ModelTLMParameters Parameters_;
   static const std::string classname() {return "fv3jedi::Tlm";}
 
   // Constructor/destructor
-  Tlm(const Geometry &, const eckit::Configuration &);
+  Tlm(const Geometry &, const Parameters_ &);
   ~Tlm();
 
   // Set the trajectory

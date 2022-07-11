@@ -9,14 +9,10 @@
 #include "oops/runs/Dirac.h"
 #include "oops/runs/Run.h"
 #include "saber/oops/instantiateCovarFactory.h"
-#include "saber/oops/instantiateLocalizationFactory.h"
-#include "saber/oops/instantiateVariableChangeFactory.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   saber::instantiateCovarFactory<fv3jedi::Traits>();
-  saber::instantiateLocalizationFactory<fv3jedi::Traits>();
-  saber::instantiateVariableChangeFactory<fv3jedi::Traits>();
   oops::Dirac<fv3jedi::Traits> dir;
   return run.execute(dir);
 }

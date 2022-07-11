@@ -8,13 +8,11 @@
 #include "fv3jedi/Utilities/Traits.h"
 #include "oops/runs/Run.h"
 #include "saber/oops/instantiateCovarFactory.h"
-#include "saber/oops/instantiateLocalizationFactory.h"
 #include "test/interface/ErrorCovariance.h"
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
   saber::instantiateCovarFactory<fv3jedi::Traits>();
-  saber::instantiateLocalizationFactory<fv3jedi::Traits>();
   test::ErrorCovariance<fv3jedi::Traits> tests;
   return run.execute(tests);
 }

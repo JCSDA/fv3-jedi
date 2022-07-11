@@ -5,8 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_UTILITIES_INTERFACE_H_
-#define FV3JEDI_UTILITIES_INTERFACE_H_
+#pragma once
 
 // Forward declarations
 namespace eckit {
@@ -28,23 +27,11 @@ typedef int F90iter;
 typedef int F90model;
 // Tlm key type
 typedef int F90tlm;
-// Locations key type
-typedef int F90locs;
-// Goms key type
-typedef int F90goms;
 // Trajectory key type
 typedef int F90traj;
-// Background error covariance key type
-typedef int F90bmat;
-// ObOp trajectory
-typedef int F90ootrj;
 // State key
 typedef int F90state;
 // Increment key
 typedef int F90inc;
-// GetValues key
-typedef int F90getvalues;
-typedef int F90lineargetvalues;
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_UTILITIES_INTERFACE_H_

@@ -1,48 +1,59 @@
 /*
- * (C) Copyright 2019 UCAR
+ * (C) Copyright 2019-2021 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef FV3JEDI_MODEL_PSEUDO_MODELPSEUDO_H_
-#define FV3JEDI_MODEL_PSEUDO_MODELPSEUDO_H_
+#pragma once
 
+#include <memory>
 #include <ostream>
 #include <string>
 
-#include "oops/base/ModelBase.h"
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
+#include "oops/generic/ModelBase.h"
+#include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
-#include "oops/util/Printable.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
-#include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Model/pseudo/ModelPseudo.interface.h"
+#include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/Utilities/Traits.h"
 
-// Forward declarations
-namespace eckit {
-  class Configuration;
-}
-
 namespace fv3jedi {
+  class Geometry;
   class ModelBias;
   class Increment;
   class State;
 
-// -----------------------------------------------------------------------------
-/// FV3JEDI model definition.
-/*!
- *  FV3JEDI nonlinear model definition and configuration parameters.
- */
+// -------------------------------------------------------------------------------------------------
 
-class ModelPseudo: public oops::ModelBase<Traits>,
-                       private util::ObjectCounter<ModelPseudo> {
+class ModelPseudoParameters : public oops::ModelParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ModelPseudoParameters, ModelParametersBase)
+ public:
+  oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
+  oops::Parameter<bool> runstagecheck{ "run stage check", "turn off subsequent forecasts "
+                                       "in multiple forecast applications such as outer loop data "
+                                       "assimilation", false, this};
+  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+  // Include IO parameters
+  IOParametersWrapper ioParametersWrapper{this};
+};
+
+// -------------------------------------------------------------------------------------------------
+
+class ModelPseudo: public oops::interface::ModelBase<Traits>,
+                   private util::ObjectCounter<ModelPseudo> {
  public:
   static const std::string classname() {return "fv3jedi::ModelPseudo";}
 
-  ModelPseudo(const Geometry &, const eckit::Configuration &);
+  typedef ModelPseudoParameters Parameters_;
+
+  ModelPseudo(const Geometry &, const Parameters_ &);
   ~ModelPseudo();
 
 /// Prepare model integration
@@ -60,14 +71,12 @@ class ModelPseudo: public oops::ModelBase<Traits>,
 
  private:
   void print(std::ostream &) const;
-  F90model keyConfig_;
   util::Duration tstep_;
-  const Geometry geom_;
-  const oops::Variables vars_;
-  int runstagecheck_ = 0;
+  oops::Variables vars_;
+  bool runstagecheck_;
   mutable bool runstage_ = true;
+  std::unique_ptr<IOBase> io_;
 };
-// -----------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi
-#endif  // FV3JEDI_MODEL_PSEUDO_MODELPSEUDO_H_

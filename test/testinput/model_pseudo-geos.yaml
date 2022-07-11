@@ -1,16 +1,12 @@
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
   npx: 13
   npy: 13
   npz: 72
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: PSEUDO
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
@@ -18,21 +14,22 @@ model:
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   tstep: PT1H
-  pseudo_type: geos
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  filename_crtm: geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
 model aux control: null
 model aux error: null
 model test:
   forecast length: PT2H
-  final norm: 38346657026646.617
+  final norm: 38064110333508.109
   tolerance: 1.0e-4
 initial condition:
-  filetype: geos
+  datetime: 2020-12-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
   datapath: Data/inputs/geos_c12
-  filename_bkgd: geos.bkg.20180414_210000z.nc4
-  filename_crtm: geos.bkg.crtmsrf.20180414_210000z.nc4
+  filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
   state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                     qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                     zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,

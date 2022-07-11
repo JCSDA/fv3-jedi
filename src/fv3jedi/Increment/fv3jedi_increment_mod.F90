@@ -1,31 +1,26 @@
-! (C) Copyright 2017-2020 UCAR
+! (C) Copyright 2017-2022 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 module fv3jedi_increment_mod
 
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_real
+! iso
 use iso_c_binding
-use fckit_configuration_module, only: fckit_configuration
-use datetime_mod
-use oops_variables_mod, only: oops_variables
 
-use random_mod
-use fckit_mpi_module
+! fckit
+use fckit_configuration_module,  only: fckit_configuration
+use fckit_mpi_module,            only: fckit_mpi_sum
 
-use fields_metadata_mod, only: field_metadata
+! oops
+use random_mod,                  only: normal_distribution
 
-use fv3jedi_field_mod,           only: fv3jedi_field, checksame, hasfield, get_field
+! fv3jedi
+use fv3jedi_field_mod,           only: fv3jedi_field, checksame, get_field
 use fv3jedi_fields_mod,          only: fv3jedi_fields
-use fv3jedi_constants_mod,       only: constoz, cp, alhl, rgas
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_geom_iter_mod,       only: fv3jedi_geom_iter
 use fv3jedi_kinds_mod,           only: kind_real
-
-use wind_vt_mod, only: d2a
-
-use mpp_domains_mod, only: mpp_global_sum, bitwise_efp_sum, center, east, north, center
 
 implicit none
 private
@@ -35,15 +30,12 @@ type, extends(fv3jedi_fields) :: fv3jedi_increment
 contains
   procedure, public :: ones
   procedure, public :: random
-  procedure, public :: set_atlas
-  procedure, public :: to_atlas
-  procedure, public :: from_atlas
   procedure, public :: self_add
   procedure, public :: self_schur
   procedure, public :: self_sub
   procedure, public :: self_mul
   procedure, public :: dot_prod
-  procedure, public :: diff_incr
+  procedure, public :: diff_states
   procedure, public :: dirac
   procedure, public :: getpoint
   procedure, public :: setpoint
@@ -72,7 +64,6 @@ contains
 
 subroutine ones(self)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
@@ -87,7 +78,6 @@ end subroutine ones
 
 subroutine random(self)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 
 integer :: var
@@ -101,144 +91,8 @@ end subroutine random
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_atlas(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_increment), intent(in)    :: self
-type(fv3jedi_geom),       intent(in)    :: geom
-type(oops_variables),     intent(in)    :: vars
-type(atlas_fieldset),     intent(inout) :: afieldset
-
-integer :: jvar, jf
-logical :: var_found
-type(atlas_field) :: afield
-
-do jvar = 1,vars%nvars()
-  var_found = .false.
-  do jf = 1,self%nf
-    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      if (.not.afieldset%has_field(vars%variable(jvar))) then
-        ! Create field
-        afield = geom%afunctionspace%create_field(name=vars%variable(jvar),&
-                 kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
-
-        ! Add field
-        call afieldset%add(afield)
-
-        ! Release pointer
-        call afield%final()
-      endif
-
-      ! Set flag
-      var_found = .true.
-      exit
-    endif
-  enddo
-  if (.not.var_found) call abor1_ftn('Field '//trim(vars%variable(jvar))//' not found in increment')
-enddo
-
-end subroutine set_atlas
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine to_atlas(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_increment), intent(in)    :: self
-type(fv3jedi_geom),       intent(in)    :: geom
-type(oops_variables),     intent(in)    :: vars
-type(atlas_fieldset),     intent(inout) :: afieldset
-
-integer :: jvar, jf, jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
-logical :: var_found
-type(atlas_field) :: afield
-
-do jvar = 1,vars%nvars()
-  var_found = .false.
-  do jf = 1,self%nf
-    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      if (afieldset%has_field(vars%variable(jvar))) then
-        ! Get field
-        afield = afieldset%field(vars%variable(jvar))
-      else
-        ! Create field
-        afield = geom%afunctionspace%create_field(name=vars%variable(jvar),&
-                 kind=atlas_real(kind_real),levels=self%fields(jvar)%npz)
-
-        ! Add field
-        call afieldset%add(afield)
-      endif
-
-      ! Copy data
-      call afield%data(real_ptr_2)
-      do jl=1,self%fields(jf)%npz
-        real_ptr_2(jl,:) = pack(self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl),.true.)
-      enddo
-
-      ! Release pointer
-      call afield%final()
-
-      ! Set flag
-      var_found = .true.
-      exit
-    endif
-  enddo
-  if (.not.var_found) call abor1_ftn('Field '//trim(vars%variable(jvar))//' not found in increment')
-enddo
-
-end subroutine to_atlas
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine from_atlas(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_geom),       intent(in)    :: geom
-type(oops_variables),     intent(in)    :: vars
-type(atlas_fieldset),     intent(in)    :: afieldset
-
-integer :: jvar, jf, jl
-real(kind=kind_real), pointer :: real_ptr_2(:,:)
-logical :: umask(geom%isc:geom%iec,geom%jsc:geom%jec),var_found
-type(atlas_field) :: afield
-
-! Initialization
-umask = .true.
-
-do jvar = 1,vars%nvars()
-  var_found = .false.
-  do jf = 1,self%nf
-    if (trim(vars%variable(jvar))==trim(self%fields(jf)%short_name)) then
-      ! Get field
-      afield = afieldset%field(vars%variable(jvar))
-
-      ! Copy data
-      call afield%data(real_ptr_2)
-      do jl=1,self%fields(jf)%npz
-        self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl) = unpack(real_ptr_2(jl,:), &
-      & umask,self%fields(jf)%array(geom%isc:geom%iec,geom%jsc:geom%jec,jl))
-      enddo
-
-      ! Release pointer
-      call afield%final()
-
-      ! Set flag
-      var_found = .true.
-      exit
-    endif
-  enddo
-  if (.not.var_found) call abor1_ftn('Field '//trim(vars%variable(jvar))//' not found in increment')
-enddo
-
-end subroutine from_atlas
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine self_add(self,rhs)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
@@ -256,7 +110,6 @@ end subroutine self_add
 
 subroutine self_schur(self,rhs)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
@@ -274,7 +127,6 @@ end subroutine self_schur
 
 subroutine self_sub(self,rhs)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
@@ -292,7 +144,6 @@ end subroutine self_sub
 
 subroutine self_mul(self,zz)
 
-implicit none
 class(fv3jedi_increment), intent(inout) :: self
 real(kind=kind_real),     intent(in)    :: zz
 
@@ -308,7 +159,6 @@ end subroutine self_mul
 
 subroutine dot_prod(self,other,zprod)
 
-implicit none
 class(fv3jedi_increment), intent(in)    :: self
 class(fv3jedi_increment), intent(in)    :: other
 real(kind=kind_real),     intent(inout) :: zprod
@@ -340,167 +190,72 @@ end subroutine dot_prod
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine diff_incr(self, x1_fields, x2_fields, geom)
+subroutine diff_states(self, state1_fields, state2_fields, geom)
 
-implicit none
+! Arguments
 class(fv3jedi_increment), intent(inout) :: self
-type(fv3jedi_field),      intent(in)    :: x1_fields(:)
-type(fv3jedi_field),      intent(in)    :: x2_fields(:)
+type(fv3jedi_field),      intent(in)    :: state1_fields(:)
+type(fv3jedi_field),      intent(in)    :: state2_fields(:)
 type(fv3jedi_geom),       intent(inout) :: geom
 
-integer :: var, isc, iec, jsc, jec, npz
-type(fv3jedi_field), pointer :: x1p, x2p
-real(kind=kind_real), allocatable :: x1_ua(:,:,:), x1_va(:,:,:)
-real(kind=kind_real), allocatable :: x2_ua(:,:,:), x2_va(:,:,:)
-real(kind=kind_real), pointer :: x1_ud(:,:,:), x1_vd(:,:,:)
-real(kind=kind_real), pointer :: x2_ud(:,:,:), x2_vd(:,:,:)
-real(kind=kind_real), pointer :: x1_delp(:,:,:)
-real(kind=kind_real), pointer :: x2_delp(:,:,:)
-real(kind=kind_real), allocatable :: x1_ps(:,:,:), x2_ps(:,:,:)
+! Locals
+integer :: f
+type(fv3jedi_field), pointer :: state1p, state2p
 
-! Make sure two states have same fields and in same position
-call checksame(x1_fields, x2_fields, "fv3jedi_increment_mod.diff_incr x1 vs x2")
+! Loop over increment vars and set data to diff of two states
+do f = 1, self%nf
 
-! Convenience
-isc = geom%isc
-iec = geom%iec
-jsc = geom%jsc
-jec = geom%jec
-npz = geom%npz
+  !Get pointers to states
+  call get_field(state1_fields, self%fields(f)%short_name, state1p)
+  call get_field(state2_fields, self%fields(f)%short_name, state2p)
 
+  !inc = state - state
+  self%fields(f)%array = state1p%array - state2p%array
 
-!D-Grid to A-Grid (if needed)
-if (self%has_field('ua')) then
-  allocate(x1_ua(isc:iec,jsc:jec,1:npz))
-  allocate(x1_va(isc:iec,jsc:jec,1:npz))
-  allocate(x2_ua(isc:iec,jsc:jec,1:npz))
-  allocate(x2_va(isc:iec,jsc:jec,1:npz))
-  if (hasfield(x1_fields, 'ua')) then
-    call get_field(x1_fields, 'ua', x1_ua)
-    call get_field(x1_fields, 'va', x1_va)
-    call get_field(x2_fields, 'ua', x2_ua)
-    call get_field(x2_fields, 'va', x2_va)
-  elseif (hasfield(x1_fields, 'ud')) then
-    call get_field(x1_fields, 'ud', x1_ud)
-    call get_field(x1_fields, 'vd', x1_vd)
-    call get_field(x2_fields, 'ud', x2_ud)
-    call get_field(x2_fields, 'vd', x2_vd)
-    call d2a(geom, x1_ud, x1_vd, x1_ua, x1_va)
-    call d2a(geom, x2_ud, x2_vd, x2_ua, x2_va)
-  else
-    call abor1_ftn("fv3jedi_increment_mod.diff_incr: no way to determine A grid winds")
-  endif
-endif
-
-!delp to ps
-if (self%has_field('ps')) then
-
-  allocate(x1_ps(isc:iec,jsc:jec,1))
-  allocate(x2_ps(isc:iec,jsc:jec,1))
-
-  if (hasfield(x1_fields, 'delp')) then
-    call get_field(x1_fields, 'delp', x1_delp)
-    x1_ps(:,:,1) = sum(x1_delp,3)
-  elseif (hasfield(x1_fields, 'ps')) then
-    call get_field(x1_fields, 'ps', x1_ps)
-  else
-    call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x1")
-  endif
-
-  if (hasfield(x2_fields, 'delp')) then
-    call get_field(x2_fields, 'delp', x2_delp)
-    x2_ps(:,:,1) = sum(x2_delp,3)
-  elseif (hasfield(x2_fields, 'ps')) then
-    call get_field(x2_fields, 'ps', x2_ps)
-  else
-    call abor1_ftn("fv3jedi_increment_mod.diff_incr: problem getting ps from state x2")
-  endif
-
-endif
-
-do var = 1,self%nf
-
-  !A-Grid winds can be a special case
-  if (self%fields(var)%fv3jedi_name == 'ua') then
-
-    self%fields(var)%array = x1_ua - x2_ua
-
-  elseif (self%fields(var)%fv3jedi_name == 'va') then
-
-    self%fields(var)%array = x1_va - x2_va
-
-  !Ps can be a special case
-  elseif (self%fields(var)%fv3jedi_name == 'ps') then
-
-    self%fields(var)%array = x1_ps - x2_ps
-
-  else
-
-    !Get pointer to states
-    call get_field(x1_fields, self%fields(var)%fv3jedi_name, x1p)
-    call get_field(x2_fields, self%fields(var)%fv3jedi_name, x2p)
-
-    !inc = state - state
-    self%fields(var)%array = x1p%array - x2p%array
-
-    !Nullify pointers
-    nullify(x1p,x2p)
-
-  endif
+  !Nullify pointers
+  nullify(state1p, state2p)
 
 enddo
 
-if (allocated(x1_ua)) deallocate(x1_ua)
-if (allocated(x1_va)) deallocate(x1_va)
-if (allocated(x2_ua)) deallocate(x2_ua)
-if (allocated(x2_va)) deallocate(x2_va)
-if (allocated(x1_ps)) deallocate(x1_ps)
-if (allocated(x2_ps)) deallocate(x2_ps)
-
-end subroutine diff_incr
+end subroutine diff_states
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine dirac(self, c_conf, geom)
+subroutine dirac(self, conf, geom)
 
-implicit none
-class(fv3jedi_increment), intent(inout) :: self
-type(c_ptr),              intent(in)    :: c_conf
-type(fv3jedi_geom),       intent(in)    :: geom
+! Arguments
+class(fv3jedi_increment),  intent(inout) :: self
+type(fckit_configuration), intent(in)    :: conf
+type(fv3jedi_geom),        intent(in)    :: geom
 
-integer :: ndir,idir,var
-
+! Locals
+integer :: ndir,idir
 integer, allocatable :: ixdir(:),iydir(:),ildir(:),itdir(:)
 character(len=32), allocatable :: ifdir(:)
-
-logical :: found
-type(fckit_configuration) :: f_conf
-character(len=:), allocatable :: str
 character(len=:), allocatable :: str_array(:)
-
-f_conf = fckit_configuration(c_conf)
+type(fv3jedi_field), pointer :: dirac_field
 
 ! Get Diracs positions
-call f_conf%get_or_die("ndir",ndir)
+call conf%get_or_die("ndir",ndir)
 
 allocate(ixdir(ndir))
 allocate(iydir(ndir))
 allocate(ildir(ndir))
 allocate(itdir(ndir))
 
-if ((f_conf%get_size("ixdir")/=ndir) .or. &
-    (f_conf%get_size("iydir")/=ndir) .or. &
-    (f_conf%get_size("ildir")/=ndir) .or. &
-    (f_conf%get_size("itdir")/=ndir) .or. &
-    (f_conf%get_size("ifdir")/=ndir)) &
+if ((conf%get_size("ixdir")/=ndir) .or. &
+    (conf%get_size("iydir")/=ndir) .or. &
+    (conf%get_size("ildir")/=ndir) .or. &
+    (conf%get_size("itdir")/=ndir) .or. &
+    (conf%get_size("ifdir")/=ndir)) &
   call abor1_ftn("fv3jedi_increment_mod.diracL=: dimension inconsistency")
 
-call f_conf%get_or_die("ixdir",ixdir)
-call f_conf%get_or_die("iydir",iydir)
-call f_conf%get_or_die("ildir",ildir)
-call f_conf%get_or_die("itdir",itdir)
+call conf%get_or_die("ixdir",ixdir)
+call conf%get_or_die("iydir",iydir)
+call conf%get_or_die("ildir",ildir)
+call conf%get_or_die("itdir",itdir)
 
-call f_conf%get_or_die("ifdir",str_array)
+call conf%get_or_die("ifdir",str_array)
 ifdir = str_array
 deallocate(str_array)
 
@@ -510,22 +265,16 @@ call self%zero()
 ! only u, v, T, ps and tracers allowed
 do idir=1,ndir
 
-  found = .false.
+  ! Get the field
+  call get_field(self%fields, trim(ifdir(idir)), dirac_field)
 
   ! is specified grid point, tile number on this processor
   if (geom%ntile == itdir(idir) .and. &
     ixdir(idir) >= self%isc .and. ixdir(idir) <= self%iec .and. &
     iydir(idir) >= self%jsc .and. iydir(idir) <= self%jec) then
 
-    ! If so, perturb desired increment and level
-    do var = 1,self%nf
-      if (trim(self%fields(var)%fv3jedi_name) == trim(ifdir(idir))) then
-        found = .true.
-        self%fields(var)%array(ixdir(idir),iydir(idir),ildir) = 1.0
-      endif
-    enddo
-
-    if (.not.found) call abor1_ftn("fv3jedi_increment_mod.dirac: dirac not found")
+    ! Make perturbation
+    dirac_field%array(ixdir(idir),iydir(idir),ildir(idir)) = 1.0_kind_real
 
   endif
 
@@ -537,8 +286,6 @@ end subroutine dirac
 
 subroutine getpoint(self, geoiter, values)
 
-implicit none
-
 class(fv3jedi_increment), intent(in)    :: self
 type(fv3jedi_geom_iter),  intent(in)    :: geoiter
 real(kind=kind_real),     intent(inout) :: values(:)
@@ -548,7 +295,7 @@ integer :: var, nz, ii
 ii = 0
 do var = 1,self%nf
   nz = self%fields(var)%npz
-  values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iind, geoiter%jind,:)
+  values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iindex, geoiter%jindex,:)
   ii = ii + nz
 enddo
 
@@ -557,8 +304,6 @@ end subroutine getpoint
 ! --------------------------------------------------------------------------------------------------
 
 subroutine setpoint(self, geoiter, values)
-
-implicit none
 
 ! Passed variables
 class(fv3jedi_increment), intent(inout) :: self
@@ -570,7 +315,7 @@ integer :: var, nz, ii
 ii = 0
 do var = 1,self%nf
   nz = self%fields(var)%npz
-  self%fields(var)%array(geoiter%iind, geoiter%jind,:) = values(ii+1:ii+nz)
+  self%fields(var)%array(geoiter%iindex, geoiter%jindex,:) = values(ii+1:ii+nz)
   ii = ii + nz
 enddo
 

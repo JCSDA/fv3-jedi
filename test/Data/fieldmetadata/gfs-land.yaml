@@ -1,0 +1,10 @@
+field metadata:
+
+- long name: slmsk
+  interpolation type: nearest
+
+- long name: totalSnowDepth
+  interpolation type: nearest
+
+- long name: vtype
+  interpolation type: nearest

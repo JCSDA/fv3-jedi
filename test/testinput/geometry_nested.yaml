@@ -1,13 +1,13 @@
 geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  akbk: Data/fv3files/akbk64.nc4
-  # input.nml
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
   layout: [1,1]
   io_layout: [1,1]
   npx: 13
   npy: 13
-  npz: 64
+  npz: 127
   ntiles: 6
   nested: false
   do_schmidt: true
@@ -16,6 +16,4 @@ geometry:
   stretch_fac: 2.0
   hydrostatic: false
   nwat: 6
-  prepare external nml file: true
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml

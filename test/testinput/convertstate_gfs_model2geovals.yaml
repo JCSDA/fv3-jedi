@@ -1,62 +1,54 @@
 input geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  akbk: Data/fv3files/akbk64.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 output geometry:
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  trc_file: Data/fv3files/field_table
-  akbk: Data/fv3files/akbk64.nc4
-  # input.nml
-  layout: [1,1]
-  io_layout: [1,1]
+  akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
-  npz: 64
-  ntiles: 6
-  fieldsets:
-    - fieldset: Data/fieldsets/dynamics.yaml
-    - fieldset: Data/fieldsets/ufo.yaml
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 
-variable changes:
-
-  - variable change: Model2GeoVaLs
-    input variables: &inputvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,slmsk,sheleg,tsea,
-                                 vtype,stype,vfrac,stc,smc,snwdph,u_srf,v_srf,f10m]
-    output variables: [rh,ps,tv,mole_fraction_of_ozone_in_air,geopotential_height,surface_altitude,
-                       mole_fraction_of_carbon_dioxide_in_air,humidity_mixing_ratio,
-                       mass_content_of_cloud_liquid_water_in_atmosphere_layer,
-                       mass_content_of_cloud_ice_in_atmosphere_layer,
-                       effective_radius_of_cloud_liquid_water_particle,
-                       effective_radius_of_cloud_ice_particle,water_area_fraction,
-                       land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
-                       surface_temperature_where_sea, surface_temperature_where_land,
-                       surface_temperature_where_ice,surface_temperature_where_snow,
-                       surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
-                       surface_wind_from_direction,leaf_area_index,
-                       volume_fraction_of_condensed_water_in_soil,soil_temperature,
-                       land_type_index,vegetation_type_index,soil_type,
-                       vort,tropopause_pressure]
+variable change:
+  variable change name: Model2GeoVaLs
+  input variables: &inputvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,slmsk,sheleg,tsea,
+                               vtype,stype,vfrac,stc,smc,snwdph,u_srf,v_srf,f10m]
+  output variables: [rh,ps,tv,mole_fraction_of_ozone_in_air,geopotential_height,surface_altitude,
+                     mole_fraction_of_carbon_dioxide_in_air,humidity_mixing_ratio,
+                     mass_content_of_cloud_liquid_water_in_atmosphere_layer,
+                     mass_content_of_cloud_ice_in_atmosphere_layer,
+                     effective_radius_of_cloud_liquid_water_particle,
+                     effective_radius_of_cloud_ice_particle,water_area_fraction,
+                     land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
+                     surface_temperature_where_sea, surface_temperature_where_land,
+                     surface_temperature_where_ice,surface_temperature_where_snow,
+                     surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
+                     surface_wind_from_direction,leaf_area_index,
+                     volume_fraction_of_condensed_water_in_soil,soil_temperature,
+                     land_type_index_NPOESS,vegetation_type_index,soil_type,
+                     vort,tropopause_pressure]
 states:
 - input:
-    filetype: gfs
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
     state variables: *inputvars
     datapath: Data/inputs/gfs_c12/bkg/
-    filename_core: 20180415.000000.fv_core.res.nc
-    filename_trcr: 20180415.000000.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.sfc_data.nc
-    filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.coupler.res
+    filename_core: 20201215.000000.fv_core.res.nc
+    filename_trcr: 20201215.000000.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.sfc_data.nc
+    filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.coupler.res
   output:
-   filetype: geos # GFS can only handle specific names of output
+   filetype: cube sphere history # GFS can only handle specific names of output
+   provider: geos
    datapath: Data/
-   filename_bkgd: geovals.gfs.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geovals.gfs.%yyyy%mm%dd_%hh%MM%ssz.nc4
+
+test:
+  reference filename: testoutput/convertstate_gfs_model2geovals.ref
+  test output filename: testoutput/convertstate_gfs_model2geovals.test.out

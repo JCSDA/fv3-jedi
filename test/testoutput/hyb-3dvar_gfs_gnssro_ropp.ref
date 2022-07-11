@@ -30,7 +30,7 @@ Test     :    u_srf                         : Min = -1.811848e+01, Max = +2.2482
 Test     :    v_srf                         : Min = -1.956833e+01, Max = +1.854067e+01, RMS = +5.532443e+00
 Test     :    f10m                          : Min = +6.137456e-01, Max = +1.147246e+00, RMS = +9.020324e-01
 Test     :  -----------------------------------------------------------------------------------------------
-Test     : CostJb   : Nonlinear Jb = 1.24022e-06
+Test     : CostJb   : Nonlinear Jb = 2.72277e-06
 Test     : CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 39.452, nobs = 148, Jo/n = 0.266567, err = 0.000316607
 Test     : CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 39.7426, nobs = 148, Jo/n = 0.268531, err = 0.000316607
 Test     : CostFunction: Nonlinear J = 79.1945

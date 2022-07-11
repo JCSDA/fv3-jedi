@@ -1,27 +1,17 @@
 state geometry:
-  nml_file: Data/fv3files/input_lam_cmaq.nml
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
-  trc_file: Data/fv3files/field_table
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_lam_cmaq
+  namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  npz: 64
-  fieldsets:
-  - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
-  - fieldset: Data/fieldsets/lam_cmaq.yaml
-  - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 increment geometry:
-  nml_file: Data/fv3files/input_lam_cmaq.nml
-  nml_file_mpp: Data/fv3files/fmsmpp.nml
-  fv3_input_dir: Data/inputs/lam_cmaq/INPUT
-  trc_file: Data/fv3files/field_table
+  namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  npz: 64
-  fieldsets:
-  - fieldset: Data/fieldsets/dynamics_lam_cmaq.yaml
-  - fieldset: Data/fieldsets/lam_cmaq.yaml
-  - fieldset: Data/fieldsets/ufo.yaml
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 state1: #Analysis
-  filetype: gfs
+  datetime: 2020-09-03T18:00:00Z
+  filetype: fms restart
   datapath: Data/analysis
   filename_core: 20200903.180000.3dvar_lam_cmaq_no2.fv_core.res.nc
   filename_trcr: 20200903.180000.3dvar_lam_cmaq_no2.fv_tracer.res.nc
@@ -30,7 +20,8 @@ state1: #Analysis
   filename_cplr: 20200903.180000.3dvar_lam_cmaq_no2.coupler.res
   state variables: [no2]
 state2: #background
-  filetype: gfs
+  datetime: 2020-09-03T18:00:00Z
+  filetype: fms restart
   datapath: Data/inputs/lam_cmaq/bkg/
   filename_core: 20200903.180000.fv_core.res.tile1.nc
   filename_trcr: 20200903.180000.fv_tracer.res.tile1.nc
@@ -39,10 +30,10 @@ state2: #background
   filename_cplr: 20200903.180000.coupler.res
   state variables: [no2]
 output:
-  filetype: gfs
+  filetype: fms restart
   datapath: Data/increment/
-  filename_core: 3dvar_lam_cmaq_no2.fv_core.res.nc
-  filename_trcr: 3dvar_lam_cmaq_no2.fv_tracer.res.nc
-  filename_sfcd: 3dvar_lam_cmaq_no2.sfc_data.nc
-  filename_sfcw: 3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
-  filename_cplr: 3dvar_lam_cmaq_no2.coupler.res
+  prefix: 3dvar_lam_cmaq_no2
+
+test:
+  reference filename: testoutput/diffstates_lam_cmaq.ref
+  test output filename: testoutput/diffstates_lam_cmaq.test.out
