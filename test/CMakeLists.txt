@@ -503,7 +503,7 @@ function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
     if( DEFINED ENV{ECBUILD_DOWNLOAD_BASE_URL} )
       set( ECBUILD_DOWNLOAD_BASE_URL "$ENV{ECBUILD_DOWNLOAD_BASE_URL}/${repo}/${GIT_TAG_FUNC}" )
     else()
-      set( ECBUILD_DOWNLOAD_BASE_URL https://dashrepo.ucar.edu/api/v1/dataset/147_miesch/version/1.1.0/file )
+      set( ECBUILD_DOWNLOAD_BASE_URL https://gdex.ucar.edu/dataset/jedi-skylab/file )
     endif()
 
     set( DIRNAME ${GIT_TAG_FUNC} )
@@ -513,22 +513,13 @@ function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
     # Create test-data-release in source directory
     file( MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/test-data-release )
     # temporary solution for release 1.1.0
-    if ( ${repo} STREQUAL "crtm" )
-      list( APPEND REPO_DATA_DOWNLOADER_ARGS
-	          ${ECBUILD_DOWNLOAD_BASE_URL}
-            ${TESTFILE_DIR_REPO}
-            ${test_files_dirname}
-            ${checksum} )
-      file( MAKE_DIRECTORY ${TESTFILE_DIR_REPO} )
-    else()
-      list( APPEND REPO_DATA_DOWNLOADER_ARGS
-            ${ECBUILD_DOWNLOAD_BASE_URL}
-            ${CMAKE_SOURCE_DIR}/test-data-release
-            ${test_files_dirname}
-            ${checksum} )
-    endif()
+    list( APPEND REPO_DATA_DOWNLOADER_ARGS
+          ${ECBUILD_DOWNLOAD_BASE_URL}
+          ${CMAKE_SOURCE_DIR}/test-data-release
+          ${test_files_dirname}
+          ${checksum} )
     message( STATUS "ECBUILD_DOWNLOAD_BASE_URL is set, ${repo} test files will
-    be downloaded from ${ECBUILD_DOWNLOAD_BASE_URL}/test-data-release")
+    be downloaded from ${ECBUILD_DOWNLOAD_BASE_URL}")
     set ( REPO_DATA_DOWNLOADER fv3jedi_testdata_downloader.py )
 
   # Any branch of REPO is being built.
@@ -571,8 +562,8 @@ endfunction()
 #############################################
 # add tests to download fv3-jedi & crtm data
 
-ADD_DOWNLOAD_TEST( "fv3-jedi" fv3-jedi_testinput_tier_1.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
-ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
+ADD_DOWNLOAD_TEST( "fv3-jedi" fv3-jedi_testinput_tier_1_1.2.0.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
+ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients_2.3.0.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
 
@@ -1165,7 +1156,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_0obs
                   MPI      6
                   ARGS     --no-validate testinput/3dvar_gfs_0obs.yaml
                   COMMAND  fv3jedi_var.x )
-                  
+
 # 3DVar with zero obs in one of the obs spaces
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs_inoneobsspace_validate
                   ARGS     --validate-only testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
