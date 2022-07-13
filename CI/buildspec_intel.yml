@@ -126,9 +126,6 @@ phases:
       # ropp
       - ./clone.sh jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ropp-ufo ${GIT_BASE_BRANCH} develop
 
-      #gsw
-      - ./clone.sh jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsw ${GIT_BASE_BRANCH} develop
-
       # fv3-jedi-test
       - ./clone.sh jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-data ${GIT_BASE_BRANCH} develop
 
