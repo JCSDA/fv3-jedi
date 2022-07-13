@@ -220,7 +220,6 @@ observations:
 
 
 driver:
-  update obs config with geometry info: true
   save posterior ensemble: false
   save posterior mean increment: true
 

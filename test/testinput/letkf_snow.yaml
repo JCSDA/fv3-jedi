@@ -87,6 +87,9 @@ driver:
   save posterior mean: true
   save posterior mean increment: true
   save posterior ensemble: false
+ # update obs config is set to true by default (which also implies halo distribution is used)
+ # need set to false here because halo distribution is NOT used for this run
+  update obs config with geometry info: false
 
 local ensemble DA:
   solver: LETKF
