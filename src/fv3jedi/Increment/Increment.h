@@ -137,7 +137,7 @@ class Increment : public util::Printable,
   void deserialize(const std::vector<double> &, size_t &);
 
 // Utilities
-  std::shared_ptr<const Geometry> geometry() const {return geom_;}
+  const Geometry & geometry() const {return geom_;}
   const oops::Variables & variables() const {return vars_;}
   const oops::Variables & variablesLongName() const {return varsLongName_;}
 
@@ -153,7 +153,7 @@ class Increment : public util::Printable,
  private:
   void print(std::ostream &) const;
   F90inc keyInc_;
-  std::shared_ptr<const Geometry> geom_;
+  const Geometry & geom_;
   oops::Variables vars_;
   oops::Variables varsLongName_;
   util::DateTime time_;

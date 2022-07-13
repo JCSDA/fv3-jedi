@@ -87,7 +87,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // ---------------------------------------
 
   // Create output state
-  State xout(*x.geometry(), vars, x.time());
+  State xout(x.geometry(), vars, x.time());
 
   // Call variable change
   variableChange_->changeVar(x, xout);
@@ -156,7 +156,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // ---------------------------------------
 
   // Create output state
-  State xout(*x.geometry(), vars, x.time());
+  State xout(x.geometry(), vars, x.time());
 
   // Call variable change
   variableChange_->changeVarInverse(x, xout);

@@ -21,7 +21,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 LinearVariableChange::LinearVariableChange(const Geometry & geom, const Parameters_ & params)
-  : geom_(new Geometry(geom)), params_(params), linearVariableChange_(),
+  : geom_(geom), params_(params), linearVariableChange_(),
     fieldsMetadata_(geom.fieldsMetaData()) {}
 
 // -------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ LinearVariableChange::~LinearVariableChange() {}
 void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variables & vars) {
   oops::Log::trace() << "LinearVariableChange::changeVarTraj starting" << std::endl;
   // Create the variable change
-  linearVariableChange_.reset(LinearVariableChangeFactory::create(xfg, xfg, *geom_,
+  linearVariableChange_.reset(LinearVariableChangeFactory::create(xfg, xfg, geom_,
              params_.linearVariableChangeParameters.value()));
   oops::Log::trace() << "LinearVariableChange::changeVarTraj done" << std::endl;
 }
@@ -51,7 +51,7 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   }
 
   // Create output state
-  Increment dxout(*dx.geometry(), vars, dx.time());
+  Increment dxout(dx.geometry(), vars, dx.time());
 
   // Call variable change
   linearVariableChange_->multiply(dx, dxout);
@@ -78,7 +78,7 @@ void LinearVariableChange::changeVarInverseTL(Increment & dx, const oops::Variab
   }
 
   // Create output state
-  Increment dxout(*dx.geometry(), vars, dx.time());
+  Increment dxout(dx.geometry(), vars, dx.time());
 
   // Call variable change
   linearVariableChange_->multiplyInverse(dx, dxout);
@@ -105,7 +105,7 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   }
 
   // Create output state
-  Increment dxout(*dx.geometry(), vars, dx.time());
+  Increment dxout(dx.geometry(), vars, dx.time());
 
   // Call variable change
   linearVariableChange_->multiplyAD(dx, dxout);
@@ -132,7 +132,7 @@ void LinearVariableChange::changeVarInverseAD(Increment & dx, const oops::Variab
   }
 
   // Create output state
-  Increment dxout(*dx.geometry(), vars, dx.time());
+  Increment dxout(dx.geometry(), vars, dx.time());
 
   // Call variable change
   linearVariableChange_->multiplyInverseAD(dx, dxout);
