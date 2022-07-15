@@ -47,7 +47,6 @@ observations:
       simulated variables: [bending_angle]
     obs operator:
       name:  GnssroBndROPP1D
-      obs options:
     obs filters:
     - filter: Domain Check
       filter variables:

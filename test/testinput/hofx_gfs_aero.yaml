@@ -49,7 +49,7 @@ observations:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
         AerosolOption: aerosols_gocart_merra_2
-        RCFile: [geosaod.rc]
+        RCFile: geosaod.rc
     obs error:
       covariance model: diagonal
   - obs space:
@@ -65,7 +65,7 @@ observations:
       obs options:
         Sensor_ID: aeronet
         AerosolOption: aerosols_gocart_merra_2
-        RCFile: [geosaod_aeronet.rc]
+        RCFile: geosaod_aeronet.rc
     obs filters:
     - filter: Temporal Thinning
       seed_time: 2018-04-15T00:00:00Z
@@ -86,7 +86,7 @@ observations:
       obs options:
         Sensor_ID: aeronet
         AerosolOption: aerosols_gocart_merra_2
-        RCFile: [geosaod_aeronet.rc]
+        RCFile: geosaod_aeronet.rc
         AbsorptionAod: true
     obs filters:
     - filter: Temporal Thinning
