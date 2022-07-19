@@ -328,7 +328,7 @@ integer :: ncid, varid
 integer :: x_dimid, y_dimid, z_dimid, e_dimid, t_dimid
 integer, target  :: dimids3(4), dimids2(3), dimidse(4)
 integer, pointer :: dimids(:), istart(:), icount(:)
-real(kind_real),allocatable :: array_with_halo(:,:,:)
+real(kind_real),allocatable :: array_without_halo(:,:,:)
 
 ! Loop over fields
 ! ----------------
@@ -346,14 +346,12 @@ do var = 1, size(fields)
     llfield = 0.0_kind_real
     llngrid = self%nx*self%ny
 
-    ! Copy field in array with halo points
-    allocate(array_with_halo(self%isd:self%ied,self%jsd:self%jed,1:fields(var)%npz))
-    array_with_halo = 0.0_kind_real
-    array_with_halo(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz) = &
-       fields(var)%array(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz)
+    ! Copy field in array without halo points
+    allocate(array_without_halo(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz))
+    array_without_halo = fields(var)%array(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz)
 
     ! Interpolate
-    call self%bumpinterp%apply(array_with_halo,llfield(:,:,1:fields(var)%npz))
+    call self%bumpinterp%apply(array_without_halo, llfield(:,:,1:fields(var)%npz))
 
     !Open file
     call nccheck( nf90_open( self%filename, ior(NF90_WRITE, NF90_MPIIO), ncid, &
@@ -411,7 +409,7 @@ do var = 1, size(fields)
     call self%comm%barrier()
 
     deallocate(llfield)
-    deallocate(array_with_halo)
+    deallocate(array_without_halo)
   endif
 
 enddo
