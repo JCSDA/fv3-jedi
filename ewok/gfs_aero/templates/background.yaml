@@ -5,7 +5,7 @@
 
 filetype: fms restart
 datetime: '{{background_time}}'
-datapath: '{{workdir}}'
+datapath: $(bgworkdir)
 filename_core: $(expid).fc.$(fcdatetime).$(fcstep).fv_core.res.nc
 filename_trcr: $(expid).fc.$(fcdatetime).$(fcstep).fv_tracer.res.nc
 filename_sfcd: $(expid).fc.$(fcdatetime).$(fcstep).sfc_data.nc
