@@ -650,14 +650,17 @@ type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
 integer :: jl, ngrid
-integer, pointer :: int_ptr(:)
+integer, pointer :: int_ptr(:,:)
 real(kind=kind_real) :: sigmaup, sigmadn
-real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+real(kind=kind_real), pointer :: real_ptr(:,:)
 real(kind=kind_real), allocatable :: hmask_1(:), hmask_2(:,:)
 type(atlas_field) :: afield
 real(kind=kind_real) :: plevli(self%npz+1),logp(self%npz)
 
 ! Prepare halo mask
+! This could be simplified by taking advantage of the known ordering of points in the result of
+! trim_fv3_grid_to_jedi_interp_grid, where owned points (mask=1) come first, and masked points
+! (mask=0) come second. But this below is more general, and would work for any implementation.
 ngrid = ngrid_including_halo(self)
 allocate(hmask_1(ngrid))
 allocate(hmask_2(self%isd:self%ied,self%jsd:self%jed))
@@ -666,9 +669,9 @@ hmask_2(self%isc:self%iec,self%jsc:self%jec) = 1.0_kind_real
 call trim_fv3_grid_to_jedi_interp_grid(self, hmask_2, hmask_1)
 
 ! Add halo mask
-afield = self%afunctionspace_incl_halo%create_field(name='hmask', kind=atlas_integer(kind_int), levels=0)
+afield = self%afunctionspace_incl_halo%create_field(name='hmask', kind=atlas_integer(kind_int), levels=1)
 call afield%data(int_ptr)
-int_ptr = int(hmask_1)
+int_ptr(1,:) = int(hmask_1)
 call afieldset%add(afield)
 call afield%final()
 
@@ -677,25 +680,25 @@ deallocate(hmask_1)
 deallocate(hmask_2)
 
 ! Add area
-afield = self%afunctionspace_incl_halo%create_field(name='area', kind=atlas_real(kind_real), levels=0)
-call afield%data(real_ptr_1)
-call trim_fv3_grid_to_jedi_interp_grid(self, self%area, real_ptr_1)
+afield = self%afunctionspace_incl_halo%create_field(name='area', kind=atlas_real(kind_real), levels=1)
+call afield%data(real_ptr)
+call trim_fv3_grid_to_jedi_interp_grid(self, self%area, real_ptr(1,:))
 call afieldset%add(afield)
 call afield%final()
 
 ! Add vertical unit
 afield = self%afunctionspace_incl_halo%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
-call afield%data(real_ptr_2)
+call afield%data(real_ptr)
 if (.not. self%logp) then
    do jl=1,self%npz
       sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
       sigmadn = self%ak(jl  )/ps+self%bk(jl  )
-      real_ptr_2(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
+      real_ptr(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
    enddo
 else
    call getVerticalCoordLogP(self,logp,self%npz,ps)
    do jl=1,self%npz
-      real_ptr_2(jl,:) = logp(jl)
+      real_ptr(jl,:) = logp(jl)
    enddo
 endif
 call afieldset%add(afield)
