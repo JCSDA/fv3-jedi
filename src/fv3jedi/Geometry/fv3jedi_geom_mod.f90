@@ -73,9 +73,6 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
   type(fields_metadata) :: fields
-  ! Vertical Coordinate
-  real(kind=kind_real), allocatable, dimension(:)       :: vCoord                   !Model vertical coordinate
-  real(kind=kind_real), allocatable, dimension(:,:)     :: surface_pressure         !Grid surface pressure
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -352,11 +349,6 @@ self%sw_corner = Atm(1)%gridstruct%sw_corner
 self%nw_corner = Atm(1)%gridstruct%nw_corner
 self%nested    = Atm(1)%gridstruct%nested
 self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
-
-allocate(self%vCoord(self%npz))
-allocate(self%surface_pressure(self%isd:self%ied, self%jsd:self%jed))
-
-self%surface_pressure = real(Atm(1)%ps ,kind_real)
 
 call conf%get_or_die("logp",logp)
 self%logp = logp

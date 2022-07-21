@@ -26,8 +26,8 @@ module fv3jedi_geom_iter_mod
   type :: fv3jedi_geom_iter
     type(fv3jedi_geom), pointer :: geom => null() !< Geometry
     integer :: iindex = 1  !< index e.g. lat(iindex,jindex)
-    integer :: jindex = 1  !< 
-    integer :: kindex = 1  !< 
+    integer :: jindex = 1  !<
+    integer :: kindex = 1  !<
   end type fv3jedi_geom_iter
 
 #define LISTED_TYPE fv3jedi_geom_iter
@@ -149,7 +149,7 @@ contains
 !     vCoord = missing_value(0.0_kind_real)
       vCoord = -99999
     case (3) ! 3-d iterator
-      psurf = self%geom%surface_pressure(self%iindex,self%jindex)
+      psurf = 0.0_kind_real
       call getVerticalCoord(self%geom, prs, self%geom%npz, psurf)
       if (self%kindex == -1) then
         ! special case of {-1} means end of the grid
