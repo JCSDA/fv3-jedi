@@ -189,6 +189,7 @@ list( APPEND fv3jedi_testinput
   testinput/ensembleb_loc_gfs.yaml
   testinput/ensembleb_nicas_gfs.yaml
   testinput/ensembleb_dirac_local_gfs_12pe.yaml
+  testinput/unstructured_interpolator.yaml
   testinput/variablechange_geos.yaml
   testinput/variablechange_gfs.yaml
 )
@@ -601,6 +602,10 @@ ecbuild_add_executable( TARGET  test_fv3jedi_getvalues.x
                         SOURCES mains/TestGetValues.cc
                         LIBS    fv3jedi )
 
+ecbuild_add_executable( TARGET  test_fv3jedi_unstructured_interpolator.x
+                        SOURCES mains/TestUnstructuredInterpolator.cc
+                        LIBS    fv3jedi )
+
 ecbuild_add_executable( TARGET  test_fv3jedi_increment.x
                         SOURCES mains/TestIncrement.cc
                         LIBS    fv3jedi )
@@ -775,6 +780,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues
                   MPI      6
                   ARGS     testinput/getvalues.yaml
                   COMMAND  test_fv3jedi_getvalues.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_unstructured_interpolator
+                  MPI      6
+                  ARGS     testinput/unstructured_interpolator.yaml
+                  COMMAND  test_fv3jedi_unstructured_interpolator.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gfs
                   MPI      6
