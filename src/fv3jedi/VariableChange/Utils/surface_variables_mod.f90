@@ -185,6 +185,9 @@ do jj = geom%jsc, geom%jec
 
     ssavg = ss00
 
+    ! Potential for missing values in sno00 (if missing set to 0.0)
+    if (abs(sno00) > 10.0e10_kind_real) sno00 = 0.0_kind_real
+
     if (istyp00 >=1 .and. sno00 > minsnow) istyp00 = 3
 
     sfcpct = 0.0_kind_real
