@@ -20,6 +20,8 @@
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
 
+#include "vader/vader.h"
+
 #include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 #include "fv3jedi/LinearVariableChange/Base/LinearVariableChangeBase.h"
 
@@ -49,6 +51,7 @@ class LinearVariableChange : public util::Printable {
   const Geometry & geom_;
   std::unique_ptr<LinearVariableChangeBase> linearVariableChange_;
   FieldsMetadata fieldsMetadata_;
+  vader::Vader vader_;
 };
 
 // -------------------------------------------------------------------------------------------------
