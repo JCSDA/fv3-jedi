@@ -22,7 +22,8 @@ namespace fv3jedi {
 
 LinearVariableChange::LinearVariableChange(const Geometry & geom, const Parameters_ & params)
   : geom_(geom), params_(params), linearVariableChange_(),
-    fieldsMetadata_(geom.fieldsMetaData()) {}
+    fieldsMetadata_(geom.fieldsMetaData()),
+    vader_(params.linearVariableChangeParameters.value().vader) {}
 
 // -------------------------------------------------------------------------------------------------
 
@@ -32,7 +33,34 @@ LinearVariableChange::~LinearVariableChange() {}
 
 void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variables & vars) {
   oops::Log::trace() << "LinearVariableChange::changeVarTraj starting" << std::endl;
-  // Create the variable change
+
+  // Call Vader's changeVarTraj to populate its trajectory
+  // ------------------------------------------------------
+  State vader_xfg(xfg);
+
+  // Record start variables
+  oops::Variables varsFilled = vader_xfg.variables();
+
+  // Set first guess to have all possible variables
+  oops::Variables varsTotal = vader_xfg.variables();
+  varsTotal += vars;
+  vader_xfg.updateFields(varsTotal);
+
+  oops::Variables varsVader = vars;
+  varsVader -= varsFilled;  // Pass only the needed variables
+
+  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
+  // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
+  // vader_.changeVarTraj also returns the variables fulfilled by Vader.
+  atlas::FieldSet xfgfs;
+  vader_xfg.toFieldSet(xfgfs);
+  varsFilled += vader_.changeVarTraj(xfgfs, varsVader);
+  vader_xfg.fromFieldSet(xfgfs);
+
+  // Ahead of creating fv3jedi linear variable transform, add vader computed fields to first guess
+  vader_xfg.updateFields(varsFilled);
+
+  // Create the model variable change
   linearVariableChange_.reset(LinearVariableChangeFactory::create(xfg, xfg, geom_,
              params_.linearVariableChangeParameters.value()));
   oops::Log::trace() << "LinearVariableChange::changeVarTraj done" << std::endl;
