@@ -233,11 +233,13 @@ local ensemble DA:
 # for realistic output, use gfs filetype for output
 # here we are using latlon for ease of visualisation
 output:
-  filetype: latlon
+  filetype: auxgrid
+  gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
 
 output increment:
-  filetype: latlon
+  filetype: auxgrid
+  gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
 
 test:

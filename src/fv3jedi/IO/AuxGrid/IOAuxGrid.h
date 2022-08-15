@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 UCAR.
+ * (C) Copyright 2022 NOAA
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,19 +16,22 @@
 #include "oops/util/parameters/Parameters.h"
 
 #include "fv3jedi/IO/Utils/IOBase.h"
-#include "IOLatLon.interface.h"
+#include "IOAuxGrid.interface.h"
 
 namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class IOLatLonParameters : public IOParametersBase {
-  OOPS_CONCRETE_PARAMETERS(IOLatLonParameters, IOParametersBase)
+class IOAuxGridParameters : public IOParametersBase {
+  OOPS_CONCRETE_PARAMETERS(IOAuxGridParameters, IOParametersBase)
 
  public:
+  // Type of gridded output
+  oops::Parameter<std::string> gridtype{"gridtype", "gridtype to be populated",
+                                        "gaussian", this};
   // Path and name of the file to be written
   oops::Parameter<std::string> filename{"filename", "filename to be written",
-                                        "Data/fv3jedi.latlon.", this};
+                                        "Data/fv3jedi.auxgrid.", this};
 
   // Optionally config may contain member
   oops::OptionalParameter<int> member{"member", "ensemble member number", this};
@@ -39,21 +42,21 @@ class IOLatLonParameters : public IOParametersBase {
 };
 
 // -------------------------------------------------------------------------------------------------
-class IOLatLon : public IOBase, private util::ObjectCounter<IOLatLon> {
+class IOAuxGrid : public IOBase, private util::ObjectCounter<IOAuxGrid> {
  public:
-  static const std::string classname() {return "fv3jedi::IOLatLon";}
+  static const std::string classname() {return "fv3jedi::IOAuxGrid";}
 
-  typedef IOLatLonParameters Parameters_;
+  typedef IOAuxGridParameters Parameters_;
 
-  IOLatLon(const Geometry &, const Parameters_ &);
-  ~IOLatLon();
+  IOAuxGrid(const Geometry &, const Parameters_ &);
+  ~IOAuxGrid();
   void read(State &) const override;
   void read(Increment &) const override;
   void write(const State &) const override;
   void write(const Increment &) const override;
 
  private:
-  F90iolatlon objectKeyForFortran_;
+  F90ioauxgrid objectKeyForFortran_;
   void print(std::ostream &) const override;
 };
 

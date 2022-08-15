@@ -28,9 +28,9 @@ states:
     filename_cplr: 20201215.000000.coupler.res
   output:
     filetype: auxgrid
-    gridtype: latlon
-    filename: Data/gfs.bkg.lonlat.
+    gridtype: gaussian
+    filename: Data/gfs.bkg.gaussian.
 
 test:
-  reference filename: testoutput/convertstate_gfs_c2ll.ref
-  test output filename: testoutput/convertstate_gfs_c2ll.test.out
+  reference filename: testoutput/convertstate_gfs_c2gaussian.ref
+  test output filename: testoutput/convertstate_gfs_c2gaussianax.test.out
