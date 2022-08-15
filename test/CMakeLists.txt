@@ -402,6 +402,12 @@ SpcCoeff/Little_Endian/airs_aqua.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/airs_aqua.TauCoeff.bin
 SpcCoeff/Little_Endian/v.viirs-m_npp.SpcCoeff.bin
 TauCoeff/ODAS/Little_Endian/v.viirs-m_npp.TauCoeff.bin
+SpcCoeff/Little_Endian/v.viirs-m_j1.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/v.viirs-m_j1.TauCoeff.bin
+SpcCoeff/Little_Endian/v.modis_aqua.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/v.modis_aqua.TauCoeff.bin
+SpcCoeff/Little_Endian/v.modis_terra.SpcCoeff.bin
+TauCoeff/ODAS/Little_Endian/v.modis_terra.TauCoeff.bin
 SpcCoeff/Little_Endian/abi_g16.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/abi_g16.TauCoeff.bin
 SpcCoeff/Little_Endian/ahi_himawari8.SpcCoeff.bin
@@ -453,8 +459,8 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # Repo wide configuration for getting test data
 # ---------------------------------------------
-# Currently only use 2.3.0 CRTM coefficients
-set( CRTM_COEFFS_BRANCH "2.3.0" )
+# Currently only use jedi_release_2.4.0 CRTM coefficients
+set( CRTM_COEFFS_BRANCH "jedi_release_2.4.0" )
 
 function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
   # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
@@ -470,8 +476,6 @@ function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
   elseif( DEFINED GIT_TAG_FUNC )
     set( REPO_GIT_BRANCH ${GIT_TAG_FUNC} )
   endif()
-
-
 
   # When env veriable LOCAL_PATH_JEDI_TESTFILES is set, simply link test files
   # to build directory. get_${repo}_test_data checks the existence of test file directory.
@@ -566,7 +570,7 @@ endfunction()
 # add tests to download fv3-jedi & crtm data
 
 ADD_DOWNLOAD_TEST( "fv3-jedi" fv3-jedi_testinput_tier_1_1.2.0.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
-ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients_2.3.0.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
+ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients_${CRTM_COEFFS_BRANCH}.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
 
