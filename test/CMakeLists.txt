@@ -82,6 +82,7 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_gfs_model2geovals.yaml
   testinput/convertstate_gfs.yaml
   testinput/convertstate_gfs_c2ll.yaml
+  testinput/convertstate_gfs_c2gaussian.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
   testinput/diffstates_lam_cmaq.yaml
@@ -226,6 +227,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_gfs_model2geovals.ref
   testoutput/convertstate_gfs.ref
   testoutput/convertstate_gfs_c2ll.ref
+  testoutput/convertstate_gfs_c2gaussian.ref
   testoutput/diffstates_geos.ref
   testoutput/diffstates_gfs.ref
   testoutput/diffstates_lam_cmaq.ref
@@ -866,6 +868,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_crtm_surface
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_c2ll
                   MPI      6
                   ARGS     testinput/convertstate_gfs_c2ll.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_c2gaussian
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs_c2gaussian.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
