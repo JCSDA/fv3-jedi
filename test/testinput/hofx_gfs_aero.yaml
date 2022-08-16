@@ -48,8 +48,9 @@ observations:
         Sensor_ID: v.viirs-m_npp
         EndianType: little_endian
         CoefficientPath: Data/crtm/
-        AerosolOption: aerosols_gocart_merra_2
+        AerosolOption: aerosols_gocart_1
         RCFile: geosaod.rc
+        model units coeff: 1.e-9
     obs error:
       covariance model: diagonal
   - obs space:
@@ -64,8 +65,9 @@ observations:
       name: AodLUTs
       obs options:
         Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_merra_2
+        AerosolOption: aerosols_gocart_1
         RCFile: geosaod_aeronet.rc
+        model units coeff: 1.e-9
     obs filters:
     - filter: Temporal Thinning
       seed_time: 2018-04-15T00:00:00Z
@@ -85,9 +87,10 @@ observations:
       name: AodLUTs
       obs options:
         Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_merra_2
+        AerosolOption: aerosols_gocart_1
         RCFile: geosaod_aeronet.rc
         AbsorptionAod: true
+        model units coeff: 1.e-9
     obs filters:
     - filter: Temporal Thinning
       seed_time: 2018-04-15T00:00:00Z
