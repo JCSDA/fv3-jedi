@@ -5,3 +5,4 @@
 
 name: Identity
 tstep: PT1H
+increment variables: $(an_variables)
