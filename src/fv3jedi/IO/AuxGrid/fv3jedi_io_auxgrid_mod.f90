@@ -88,7 +88,7 @@ if ( conf%has("gridtype") ) then
     self%gridtype=str
 endif
 
-# Create auxgrid
+! Create auxgrid
 call create_auxgrid(self, geom)
 
 ! Naming convention for the file
