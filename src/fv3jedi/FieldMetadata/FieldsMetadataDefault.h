@@ -546,7 +546,7 @@ namespace fv3jedi {
     md.longName = "slmsk";
     md.shortName = "slmsk";
     md.units = "none";
-    md.kind = "double";
+    md.kind = "integer";
     md.tracer = "false";
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
