@@ -46,6 +46,8 @@ class Geometry : public util::Printable,
   Geometry(const Geometry &);
   ~Geometry();
 
+  bool levelsAreTopDown() const {return true;}
+
   GeometryIterator begin() const;
   GeometryIterator end() const;
   std::vector<double> verticalCoord(std::string &) const;
