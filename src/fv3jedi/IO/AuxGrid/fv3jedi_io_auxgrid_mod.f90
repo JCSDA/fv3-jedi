@@ -1,9 +1,9 @@
-! (C) Copyright 2017-2021 UCAR
+! (C) Copyright 2022 NOAA
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-module fv3jedi_io_latlon_mod
+module fv3jedi_io_auxgrid_mod
 
 ! libs
 use netcdf
@@ -27,9 +27,9 @@ use fv3jedi_netcdf_utils_mod,   only: nccheck
 
 implicit none
 private
-public fv3jedi_io_latlon
+public fv3jedi_io_auxgrid
 
-type fv3jedi_io_latlon
+type fv3jedi_io_auxgrid
  type(fckit_mpi_comm) :: comm
  type(bump_interpolator) :: bumpinterp
  integer :: llcomm
@@ -41,6 +41,7 @@ type fv3jedi_io_latlon
  integer :: isd, ied, jsd, jed
  real(kind=kind_real), allocatable :: lons(:)
  real(kind=kind_real), allocatable :: lats(:)
+ character(len=24) :: gridtype
  character(len=1024) :: filename
  integer, allocatable :: istart2(:), icount2(:)
  integer, allocatable :: istart3(:), icount3(:)
@@ -50,7 +51,7 @@ type fv3jedi_io_latlon
   procedure :: delete
   procedure :: write
   final :: dummy_final
-end type fv3jedi_io_latlon
+end type fv3jedi_io_auxgrid
 
 contains
 
@@ -59,7 +60,7 @@ contains
 subroutine create(self, geom, conf)
 
 ! Arguments
-class(fv3jedi_io_latlon),  intent(inout) :: self
+class(fv3jedi_io_auxgrid),  intent(inout) :: self
 type(fv3jedi_geom),        intent(in)    :: geom
 type(fckit_configuration), intent(in)    :: conf
 
@@ -80,11 +81,19 @@ self%npy  = geom%npy
 self%npz  = geom%npz
 self%comm = geom%f_comm
 
-call create_latlon(self, geom)
+! Set output grid type
+self%gridtype = "latlon"
+if ( conf%has("gridtype") ) then
+    call conf%get_or_die("gridtype", str)
+    self%gridtype=str
+endif
+
+! Create auxgrid
+call create_auxgrid(self, geom)
 
 ! Naming convention for the file
 ! For ensemble methods switch out member template
-self%filename = 'Data/fv3jedi.latlon.'
+self%filename = 'Data/fv3jedi.auxgrid.'
 call conf%get_or_die("filename",str)
 call swap_name_member(conf, str)
 call add_iteration(conf, str)
@@ -98,9 +107,9 @@ end subroutine create
 subroutine delete(self)
 
 ! Arguments
-class(fv3jedi_io_latlon), intent(inout) :: self
+class(fv3jedi_io_auxgrid), intent(inout) :: self
 
-call delete_latlon(self)
+call delete_auxgrid(self)
 
 end subroutine delete
 
@@ -109,36 +118,40 @@ end subroutine delete
 subroutine write(self, vdate, fields)
 
 ! Arguments
-class(fv3jedi_io_latlon),  intent(inout) :: self
+class(fv3jedi_io_auxgrid),  intent(inout) :: self
 type(datetime),            intent(in)    :: vdate
 type(fv3jedi_field),       intent(in)    :: fields(:)
 
 ! Write metadata
 ! --------------
-call write_latlon_metadata(self, vdate)
+call write_auxgrid_metadata(self, vdate)
 
 ! Write fields
 ! ------------
-call write_latlon_fields(self, fields)
+call write_auxgrid_fields(self, fields)
 
 end subroutine write
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create_latlon(self, geom)
+subroutine create_auxgrid(self, geom)
+
+use fckit_log_module, only: fckit_log
 
 ! Arguments
-type(fv3jedi_io_latlon), intent(inout) :: self
+type(fv3jedi_io_auxgrid), intent(inout) :: self
 type(fv3jedi_geom),      intent(in)    :: geom
 
 ! Locals
 integer :: color
-real(kind=kind_real) :: dx, dy
-integer :: i, ierr
+real(kind=kind_real) :: dx, dy, rad2deg
+real(kind=kind_real),allocatable :: slat(:), wlat(:)
+integer :: i, ierr, jmax
+character(len=48) :: debug_msg
 
 
-! Create lat lon grid and interpolation object for going from cube to lat-lon
-! --------------------------------------------------------------------------
+! Create output grid and interpolation object for going from cube to output grid
+! -------------------------------------------------------------------------------
 !Maximum of 12 IO processors
 if (self%comm%size() >= 12) then
   self%layout(1) = 12
@@ -147,7 +160,7 @@ elseif (self%comm%size() >= 6) then
   self%layout(1) = 6
   self%layout(2) = 1
 else
-  call abor1_ftn("create_latlon error: fewer than 6 npes not anticipated")
+  call abor1_ftn("create_auxgrid error: fewer than 6 npes not anticipated")
 endif
 self%npes = self%layout(1) * self%layout(2)
 
@@ -187,10 +200,28 @@ if (self%comm%rank() <= self%npes-1) then
   enddo
 
   !Each processor has all lats
-  self%lats(1) = -90.0_kind_real
-  do i = 2,self%ny
-    self%lats(i) = self%lats(i-1) + dy
-  enddo
+
+  write(debug_msg,*)'create ouptut grid for ',trim(self%gridtype)
+  call fckit_log%debug(debug_msg)
+  if ( trim(self%gridtype) == 'latlon' ) then
+     self%lats(1) = -90.0_kind_real
+     do i = 2,self%ny
+        self%lats(i) = self%lats(i-1) + dy
+     enddo
+  elseif ( trim(self%gridtype) == 'gaussian' ) then
+     allocate(slat(self%ny))
+     allocate(wlat(self%ny))
+     jmax=self%ny
+     rad2deg = 180.0_kind_real / (4.0_kind_real * atan(1.0_kind_real))
+     call splat(4, jmax, slat, wlat)
+     do i = 1,self%ny
+        self%lats(i) = -(90.0_kind_real - (acos(slat(i))* rad2deg))
+     enddo
+     deallocate(slat)
+     deallocate(wlat)
+  else
+     call abor1_ftn("create_auxgrid error: invalid output gridtype")
+  endif
 
 else
 
@@ -224,14 +255,14 @@ self%istarte = self%istarte
 self%icounte = self%icount3
 self%istarte(3) = self%npz + 1
 
-end subroutine create_latlon
+end subroutine create_auxgrid
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine delete_latlon(self)
+subroutine delete_auxgrid(self)
 
 !Arguments
-type(fv3jedi_io_latlon), intent(inout) :: self  !< LatLon Geometry
+type(fv3jedi_io_auxgrid), intent(inout) :: self  !< Auxgrid Geometry
 
 if (self%thispe) then
   deallocate(self%lons)
@@ -244,14 +275,14 @@ endif
 
 call self%bumpinterp%delete()
 
-end subroutine delete_latlon
+end subroutine delete_auxgrid
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_latlon_metadata(self, vdate)
+subroutine write_auxgrid_metadata(self, vdate)
 
 !Arguments
-type(fv3jedi_io_latlon), intent(inout) :: self
+type(fv3jedi_io_auxgrid), intent(inout) :: self
 type(datetime),          intent(in)    :: vdate
 
 integer :: date(6)
@@ -308,17 +339,17 @@ endif
 ! Close file
 call nccheck( nf90_close(ncid), "nf90_close" )
 
-!Let LatLon PEs catch up
+!Let Auxgrid PEs catch up
 call self%comm%barrier()
 
-end subroutine write_latlon_metadata
+end subroutine write_auxgrid_metadata
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_latlon_fields(self, fields)
+subroutine write_auxgrid_fields(self, fields)
 
 !Arguments
-type(fv3jedi_io_latlon), target, intent(inout)   :: self
+type(fv3jedi_io_auxgrid), target, intent(inout)   :: self
 type(fv3jedi_field),             intent(in)      :: fields(:)
 
 integer :: var, ji, jj, jk, llngrid, ii, i, j, k, n
@@ -340,8 +371,8 @@ do var = 1, size(fields)
        trim(fields(var)%horizontal_stagger_location) == 'center' .and. &
        .not. fields(var)%kind == 'integer' ) then
 
-    ! Interpolate the field to the lat-lon grid
-    ! -----------------------------------------
+    ! Interpolate the field to the output grid grid
+    ! ---------------------------------------------
     allocate(llfield(1:self%nx,1:self%ny,1:self%npz))
     llfield = 0.0_kind_real
     llngrid = self%nx*self%ny
@@ -405,7 +436,7 @@ do var = 1, size(fields)
     ! Close file
     call nccheck( nf90_close(ncid), "nf90_close" )
 
-    !Let LatLon PEs catch up
+    !Let Auxgrid PEs catch up
     call self%comm%barrier()
 
     deallocate(llfield)
@@ -414,14 +445,136 @@ do var = 1, size(fields)
 
 enddo
 
-end subroutine write_latlon_fields
+end subroutine write_auxgrid_fields
 
 ! --------------------------------------------------------------------------------------------------
 
 subroutine dummy_final(self)
-type(fv3jedi_io_latlon), intent(inout) :: self
+type(fv3jedi_io_auxgrid), intent(inout) :: self
 end subroutine dummy_final
 
 ! --------------------------------------------------------------------------------------------------
 
-end module fv3jedi_io_latlon_mod
+subroutine splat(idrt,jmax,slat,wlat)
+! AUTHOR:
+!   IREDELL (NOAA/NWS/EMC) date 96-02-20
+!
+! Computes cosines of colatitude and gaussian weights
+! for one of the following specific global sets of latitudes.
+! - Gaussian latitudes (IDRT=4)
+! - Equally-spaced latitudes including poles (IDRT=0)
+! - Equally-spaced latitudes excluding poles (IDRT=256)
+! The gaussian latitudes are located at the zeroes of the
+! legendre polynomial of the given order.  these latitudes
+! are efficient for reversible transforms from spectral space.
+! (About twice as many equally-spaced latitudes are needed.)
+! The weights for the equally-spaced latitudes are based on
+! Ellsaesser (JAM,1966). (No weight is given the pole point.)
+! Note that when analyzing grid to spectral in latitude pairs,
+! if an equator point exists, its weight should be halved.
+! This version invokes the ibm essl matrix solver.
+!
+! PROGRAM HISTORY LOG:
+! - 1996-02-20  IREDELL
+! - 1997-10-20  IREDELL  ADJUST PRECISION
+! - 1998-06-11  IREDELL  GENERALIZE PRECISION USING FORTRAN 90 INTRINSIC
+! - 1998-12-03  IREDELL  GENERALIZE PRECISION FURTHER
+! - 1998-12-03  IREDELL  USES AIX ESSL BLAS CALLS
+! - 2009-12-27  DSTARK   updated to switch between ESSL calls on an AIX
+!                        platform, and Numerical Recipies calls elsewise.
+! - 2010-12-30  SLOVACEK update alignment so preprocessor does not cause
+!                        compilation failure
+! - 2012-09-01  E.Mirvis & M.Iredell merging & debugging linux errors 
+!                        of _d and _8 using generic LU factorization.   
+! - 2012-11-05  E.Mirvis generic FFTPACK and LU lapack were removed
+!
+! ARGUMENTS:
+!   IDRT       - INTEGER GRID IDENTIFIER
+!                (IDRT=4 FOR GAUSSIAN GRID,
+!                 IDRT=0 FOR EQUALLY-SPACED GRID INCLUDING POLES,
+!                 IDRT=256 FOR EQUALLY-SPACED GRID EXCLUDING POLES)
+!   JMAX       - INTEGER NUMBER OF LATITUDES.
+!   SLAT (out) - REAL (JMAX) SINES OF LATITUDE.
+!   WLAT (out) - REAL (JMAX) GAUSSIAN WEIGHTS.
+!
+  integer:: idrt,jmax
+  REAL(kind=kind_real) SLAT(JMAX),WLAT(JMAX)
+  integer:: jh,j,n
+  real(kind=kind_real):: r,c
+  INTEGER,PARAMETER:: KD=SELECTED_REAL_KIND(15,45)
+  REAL(KIND=kind_real):: PK(JMAX/2),PKM1(JMAX/2),PKM2(JMAX/2)
+  REAL(KIND=kind_real):: SLATD(JMAX/2),SP,SPMAX,EPS=10.*EPSILON(SP)
+  integer,PARAMETER:: JZ=50
+  REAL(kind=kind_real) BZ(JZ)
+  DATA BZ        / 2.4048255577,  5.5200781103, &
+       8.6537279129, 11.7915344391, 14.9309177086, 18.0710639679, &
+       21.2116366299, 24.3524715308, 27.4934791320, 30.6346064684, &
+       33.7758202136, 36.9170983537, 40.0584257646, 43.1997917132, &
+       46.3411883717, 49.4826098974, 52.6240518411, 55.7655107550, &
+       58.9069839261, 62.0484691902, 65.1899648002, 68.3314693299, &
+       71.4729816036, 74.6145006437, 77.7560256304, 80.8975558711, &
+       84.0390907769, 87.1806298436, 90.3221726372, 93.4637187819, &
+       96.6052679510, 99.7468198587, 102.888374254, 106.029930916, &
+       109.171489649, 112.313050280, 115.454612653, 118.596176630, &
+       121.737742088, 124.879308913, 128.020877005, 131.162446275, &
+       134.304016638, 137.445588020, 140.587160352, 143.728733573, &
+       146.870307625, 150.011882457, 153.153458019, 156.295034268 /
+  REAL(kind=kind_real):: DLT,D1=1.
+  REAL(kind=kind_real) AWORK((JMAX+1)/2,((JMAX+1)/2)),BWORK(((JMAX+1)/2))
+  INTEGER:: JHE,JHO,J0=0
+  INTEGER IPVT((JMAX+1)/2)
+  real(kind=kind_real),PARAMETER :: PI=3.14159265358979
+
+  C=(1.-(2./PI)**2)*0.25
+
+!  GAUSSIAN LATITUDES
+IF(IDRT.EQ.4) THEN
+   JH=JMAX/2
+   JHE=(JMAX+1)/2
+   R=1./SQRT((JMAX+0.5)**2+C)
+   DO J=1,MIN(JH,JZ)
+      SLATD(J)=COS(BZ(J)*R)
+   ENDDO
+   DO J=JZ+1,JH
+      SLATD(J)=COS((BZ(JZ)+(J-JZ)*PI)*R)
+   ENDDO
+   SPMAX=1.
+   DO WHILE(SPMAX.GT.EPS)
+      SPMAX=0.
+      DO J=1,JH
+         PKM1(J)=1.
+         PK(J)=SLATD(J)
+      ENDDO
+      DO N=2,JMAX
+         DO J=1,JH
+            PKM2(J)=PKM1(J)
+            PKM1(J)=PK(J)
+            PK(J)=((2*N-1)*SLATD(J)*PKM1(J)-(N-1)*PKM2(J))/N
+         ENDDO
+      ENDDO
+      DO J=1,JH
+         SP=PK(J)*(1.-SLATD(J)**2)/(JMAX*(PKM1(J)-SLATD(J)*PK(J)))
+         SLATD(J)=SLATD(J)-SP
+         SPMAX=MAX(SPMAX,ABS(SP))
+      ENDDO
+   ENDDO
+!!DIR$ IVDEP
+   DO J=1,JH
+      SLAT(J)=SLATD(J)
+      WLAT(J)=(2.*(1.-SLATD(J)**2))/(JMAX*PKM1(J))**2
+      SLAT(JMAX+1-J)=-SLAT(J)
+      WLAT(JMAX+1-J)=WLAT(J)
+   ENDDO
+   IF(JHE.GT.JH) THEN
+      SLAT(JHE)=0.
+      WLAT(JHE)=2./JMAX**2
+      DO N=2,JMAX,2
+         WLAT(JHE)=WLAT(JHE)*N**2/(N-1)**2
+      ENDDO
+   ENDIF
+endif
+end subroutine splat
+
+! --------------------------------------------------------------------------------------------------
+
+end module fv3jedi_io_auxgrid_mod

@@ -1,5 +1,6 @@
 increment test:
   date: 2020-12-15T00:00:00Z
+  skip atlas: 1
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
