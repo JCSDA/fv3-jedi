@@ -59,7 +59,7 @@ observations:
       obs options:
         sr_steps: 2
         vertlayer: full
-        compress: 1
+        use_compress: 1
         super_ref_qc: NBAM
 #   - obs space:
 #       name: SBUV2-NOAA19-OZ
