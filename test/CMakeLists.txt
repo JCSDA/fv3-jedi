@@ -1199,12 +1199,11 @@ endif()
 
 # Chemistry / AQ Variational Tests
 # -----------
-#TODO: debug and turn on this test
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_lam_cmaq
-#                  MPI      6
-#                  ARGS     testinput/3dvar_lam_cmaq.yaml
-#                  COMMAND  fv3jedi_var.x
-#                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/3dvar_lam_cmaq.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos-cf
                   MPI      6
@@ -1324,12 +1323,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffstates_geos
                   COMMAND  fv3jedi_diffstates.x
                   TEST_DEPENDS fv3jedi_test_tier1_hyb-4dvar_pseudo-geos )
 
-# TODO: debug and turn on the test
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffstates_lam_cmaq
-#                  MPI      6
-#                  ARGS     testinput/diffstates_lam_cmaq.yaml
-#                  COMMAND  fv3jedi_diffstates.x
-#                  TEST_DEPENDS fv3jedi_test_tier1_3dvar_lam_cmaq )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffstates_lam_cmaq
+                  MPI      6
+                  ARGS     testinput/diffstates_lam_cmaq.yaml
+                  COMMAND  fv3jedi_diffstates.x
+                  TEST_DEPENDS fv3jedi_test_tier1_3dvar_lam_cmaq )
 
 # Add increment
 # -------------
