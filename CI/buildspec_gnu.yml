@@ -89,7 +89,7 @@ phases:
       - ./clone.sh jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle jedicmake ${GIT_BASE_BRANCH} develop
 
       # FV3-JEDI (testing repo)
-      - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH}s develop
+      - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH} develop
 
       # fv3-jedi-lm
       - ./clone.sh jcsda-internal/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-lm ${GIT_BASE_BRANCH} develop
