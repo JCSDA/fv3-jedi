@@ -1,7 +1,0 @@
-filetype: geos
-datapath: '$(run_dir)/Data/'
-filename_core: fvcore_internal_rst.%yyyy%mm%dd_%hh.nc4
-filename_mois: moist_internal_rst.%yyyy%mm%dd_%hh.nc4
-filename_bkgd: forecast.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
-first: PT0H
-frequency: PT6H

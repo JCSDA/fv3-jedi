@@ -1,7 +1,0 @@
-name: FV3LM
-namelist filename: '$(stage_dir)/fv3files/input_gfs_$(horizontal_resolution).nml'
-tstep: PT15M
-lm_do_dyn: 1
-lm_do_trb: 0
-lm_do_mst: 0
-model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
