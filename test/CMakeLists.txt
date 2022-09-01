@@ -76,6 +76,7 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_geos_vader_and_model2geovals.yaml
   testinput/convertstate_geos.yaml
   testinput/convertstate_geos_cf.yaml
+  testinput/convertstate_gchp.yaml
   testinput/convertstate_gfs_ana2bvars.yaml
   testinput/convertstate_gfs_coldstartwinds.yaml
   testinput/convertstate_gfs_vertremap.yaml
@@ -167,6 +168,7 @@ list( APPEND fv3jedi_testinput
   testinput/state_geos_aerosol.yaml
   testinput/state_geos.yaml
   testinput/state_geos_cf.yaml
+  testinput/state_gchp.yaml
   testinput/state_gfs.yaml
   testinput/state_gfs_history.yaml
   testinput/state_lam_cmaq.yaml
@@ -221,6 +223,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_geos_vader_and_model2geovals.ref
   testoutput/convertstate_geos.ref
   testoutput/convertstate_geos_cf.ref
+  testoutput/convertstate_gchp.ref
   testoutput/convertstate_gfs_ana2bvars.ref
   testoutput/convertstate_gfs_coldstartwinds.ref
   testoutput/convertstate_gfs_vertremap.ref
@@ -327,6 +330,7 @@ LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_
 # Field sets
 # ----------
 list( APPEND fv3jedi_field_metadata
+Data/fieldmetadata/gchp.yaml
 Data/fieldmetadata/geos.yaml
 Data/fieldmetadata/geos-cf.yaml
 Data/fieldmetadata/gfs-aerosol.yaml
@@ -812,6 +816,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_geos_cf
                   ARGS     testinput/state_geos_cf.yaml
                   COMMAND  test_fv3jedi_state.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gchp
+                  MPI      6
+                  ARGS     testinput/state_gchp.yaml
+                  COMMAND  test_fv3jedi_state.x )
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_lam_cmaq
                   MPI      6
                   ARGS     testinput/state_lam_cmaq.yaml
@@ -862,6 +871,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_cf
                   MPI      6
                   ARGS     testinput/convertstate_geos_cf.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gchp
+                  MPI      6
+                  ARGS     testinput/convertstate_gchp.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_crtm_surface
