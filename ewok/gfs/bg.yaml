@@ -1,9 +1,0 @@
-filetype: fms restart
-datapath: '$(run_dir)'
-filename_core: '{{local_background_time}}.fv_core.res.nc'
-filename_trcr: '{{local_background_time}}.fv_tracer.res.nc'
-filename_sfcd: '{{local_background_time}}.sfc_data.nc'
-filename_sfcw: '{{local_background_time}}.fv_srf_wnd.res.nc'
-filename_cplr: '{{local_background_time}}.coupler.res'
-state variables: [u, v, ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m, zorl, t2m]
-filename: $(run_dir)/$(valid_date).$(file_type).tile$(tile).nc
