@@ -14,7 +14,7 @@ linear variable change tests:
 - linear variable change:
     linear variable change name: Model2GeoVaLs
     input variables: [t,sphum]
-    output variables: [t,tv]
+    output variables: [tv]
   test inverse: false
   tolerance inverse: 1000
 geometry:
