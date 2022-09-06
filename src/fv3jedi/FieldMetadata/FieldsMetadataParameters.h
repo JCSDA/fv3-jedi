@@ -33,6 +33,7 @@ class FieldOverrideParameters : public oops::Parameters {
   oops::OptionalParameter<std::string> InOuName{"io name", this};
   oops::OptionalParameter<std::string> InOuFile{"io file", this};
   oops::OptionalParameter<std::string> IntrpTyp{"interpolation type", this};
+  oops::OptionalParameter<std::string> IntrpMsk{"interpolation source point mask", this};
 };
 
 // -----------------------------------------------------------------------------------------------

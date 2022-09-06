@@ -74,6 +74,11 @@ namespace fv3jedi {
         if (fieldOverride.IntrpTyp.value() != boost::none) {
           fieldMetadata.setIntrpTyp(*fieldOverride.IntrpTyp.value());
         }
+
+        // Interpolation source-point mask
+        if (fieldOverride.IntrpMsk.value() != boost::none) {
+          fieldMetadata.setIntrpMsk(*fieldOverride.IntrpMsk.value());
+        }
       }
     }
 

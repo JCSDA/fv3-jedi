@@ -37,6 +37,7 @@ type field_metadata
  character(len=clen) :: io_name
  character(len=clen) :: io_file
  character(len=clen) :: interpolation_type
+ character(len=clen) :: interpolation_source_point_mask
 end type field_metadata
 
 interface fields_metadata
@@ -48,7 +49,8 @@ end interface
 interface
   subroutine c_fields_metadata_get_field(ptr, longshortio_name, long_name, short_name, &
                                          units, kindd, tracer, horizontal_stagger_location, &
-                                         levels, space, io_name, io_file, interpolation_type) &
+                                         levels, space, io_name, io_file, interpolation_type, &
+                                         interpolation_source_point_mask) &
                                          bind(c, name='fields_metadata_get_field_f')
     use iso_c_binding
     integer, parameter :: clen = 2048
@@ -65,6 +67,7 @@ interface
     character(len=1, kind=c_char) :: io_name(clen)
     character(len=1, kind=c_char) :: io_file(clen)
     character(len=1, kind=c_char) :: interpolation_type(clen)
+    character(len=1, kind=c_char) :: interpolation_source_point_mask(clen)
   end subroutine c_fields_metadata_get_field
 end interface
 
@@ -105,6 +108,7 @@ character(len=1, kind=c_char), allocatable :: space(:)
 character(len=1, kind=c_char), allocatable :: io_name(:)
 character(len=1, kind=c_char), allocatable :: io_file(:)
 character(len=1, kind=c_char), allocatable :: interpolation_type(:)
+character(len=1, kind=c_char), allocatable :: interpolation_source_point_mask(:)
 
 integer :: n, longshortiolen
 
@@ -127,6 +131,7 @@ allocate(space(clen))
 allocate(io_name(clen))
 allocate(io_file(clen))
 allocate(interpolation_type(clen))
+allocate(interpolation_source_point_mask(clen))
 
 long_name = c_null_char
 short_name = c_null_char
@@ -137,11 +142,12 @@ space = c_null_char
 io_name = c_null_char
 io_file = c_null_char
 interpolation_type = c_null_char
+interpolation_source_point_mask = c_null_char
 
 ! Get information from C++ object
 call c_fields_metadata_get_field(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
                                  tracer, horizontal_stagger_location, levels, space, io_name, &
-                                 io_file, interpolation_type)
+                                 io_file, interpolation_type, interpolation_source_point_mask)
 
 ! Copy non string
 field%tracer = tracer
@@ -157,6 +163,7 @@ call c_f_string(space, field%space)
 call c_f_string(io_name, field%io_name)
 call c_f_string(io_file, field%io_file)
 call c_f_string(interpolation_type, field%interpolation_type)
+call c_f_string(interpolation_source_point_mask, field%interpolation_source_point_mask)
 
 end function get_field
 

@@ -78,6 +78,7 @@ namespace fv3jedi {
     fieldmetadata.setInOuName(md.shortName);  // Default to short, can only be set using override
     fieldmetadata.setInOuFile("default");     // Can only be set using override
     fieldmetadata.setIntrpTyp("default");     // Can only be set using override
+    fieldmetadata.setIntrpMsk("default");     // Can only be set using override
 
     // Validate the choices
     fieldmetadata.validate();

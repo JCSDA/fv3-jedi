@@ -54,6 +54,7 @@ namespace fv3jedi {
     std::string getInOuName() const {return inOuName_;}
     std::string getInOuFile() const {return inOuFile_;}
     std::string getIntrpTyp() const {return intrpTyp_;}
+    std::string getIntrpMsk() const {return intrpMsk_;}
 
     // Set functions (strings)
     // -----------------------
@@ -65,6 +66,7 @@ namespace fv3jedi {
     void setInOuName(std::string inOuName) {inOuName_ = inOuName;}
     void setInOuFile(std::string inOuFile) {inOuFile_ = inOuFile;}
     void setIntrpTyp(std::string intrpTyp) {intrpTyp_ = intrpTyp;}
+    void setIntrpMsk(std::string intrpMsk) {intrpMsk_ = intrpMsk;}
 
     // Set number of levels
     // --------------------
@@ -131,6 +133,7 @@ namespace fv3jedi {
     std::string inOuName_;
     std::string inOuFile_;
     std::string intrpTyp_;
+    std::string intrpMsk_;
 
     // Number of levels for the model
     int nlev_;
@@ -154,6 +157,7 @@ namespace fv3jedi {
       os << std::endl << "   IO name: " << inOuName_;
       os << std::endl << "   IO file: " << inOuFile_;
       os << std::endl << "   Interpolation type: " << intrpTyp_;
+      os << std::endl << "   Interpolation source-point mask: " << intrpMsk_;
     }
   };
 

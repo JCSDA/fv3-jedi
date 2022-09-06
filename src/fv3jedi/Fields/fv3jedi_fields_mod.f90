@@ -450,6 +450,10 @@ do jvar = 1,vars%nvars()
 
   meta = afield%metadata()
   call meta%set('interp_type', trim(field%interpolation_type))
+  ! Set atlas::Field metadata for interp mask IFF the user specifically requested a non-default mask
+  if (trim(field%interpolation_source_point_mask) .ne. 'default') then
+    call meta%set('interp_source_point_mask', trim(field%interpolation_source_point_mask))
+  end if
 
   ! Release pointer
   call afield%final()
