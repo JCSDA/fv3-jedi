@@ -33,13 +33,12 @@ extern "C" {
   void fv3jedi_geom_setup_f90(F90geom &, const eckit::Configuration &,
                              const eckit::mpi::Comm *, int &);
   void fv3jedi_geom_addfmd_f90(F90geom &, FieldsMetadata *);
-  // void fv3jedi_geom_read_orography_f90(F90geom &, const eckit::LocalConfiguration &);
   void fv3jedi_geom_set_lonlat_f90(const F90geom &, atlas::field::FieldSetImpl *,
                                    const bool &);
   void fv3jedi_geom_set_functionspace_pointer_f90(const F90geom &,
                                                   atlas::functionspace::FunctionSpaceImpl *,
                                                   atlas::functionspace::FunctionSpaceImpl *);
-  void fv3jedi_geom_fill_extra_fields_f90(const F90geom &, atlas::field::FieldSetImpl *);
+  void fv3jedi_geom_set_and_fill_extra_fields_f90(const F90geom &, atlas::field::FieldSetImpl *);
   void fv3jedi_geom_clone_f90(F90geom &, const F90geom &, const FieldsMetadata *);
   void fv3jedi_geom_print_f90(const F90geom &, int &);
   void fv3jedi_geom_delete_f90(F90geom &);

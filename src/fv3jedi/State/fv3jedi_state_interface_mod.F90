@@ -219,29 +219,6 @@ end subroutine fv3jedi_state_analytic_init_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_fill_geom_orography_c(c_key_state, c_key_geom) &
-           bind(c,name='fv3jedi_state_fill_geom_orography_f90')
-
-implicit none
-integer(c_int),     intent(in)    :: c_key_state
-integer(c_int),     intent(in)    :: c_key_geom
-
-type(fv3jedi_state), pointer :: f_self
-type(fv3jedi_geom), pointer :: f_geom
-
-! Linked list
-! -----------
-call fv3jedi_geom_registry%get(c_key_geom, f_geom)
-call fv3jedi_state_registry%get(c_key_state, f_self)
-
-! Call implementation
-! -------------------
-call f_self%set_geom_orography(f_geom)
-
-end subroutine fv3jedi_state_fill_geom_orography_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_state_norm_c(c_key_state, prms) bind(c,name='fv3jedi_state_norm_f90')
 
 implicit none

@@ -59,7 +59,8 @@ class GeometryParameters : public oops::Parameters {
   oops::OptionalParameter<int> npz{ "npz", this};
   oops::Parameter<int> iterator_dimension{ "iterator dimension", 2, this};
   oops::Parameter<int> nwat{ "nwat", 1, this};
-  oops::OptionalParameter<StateParameters> orography{ "orography", this};
+  oops::OptionalParameter<StateParameters> timeInvariantFields{ "time invariant state fields",
+                                                                this};
   oops::Parameter<bool> regional{ "regional", false, this};
   oops::Parameter<double> stretchFac{ "stretch_fac", 0.0, this};
   oops::Parameter<double> targetLat{ "target_lat", 0.0, this};

@@ -60,14 +60,17 @@ Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
   fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
                                              functionSpaceIncludingHalo_.get());
 
-  // Fill extra fields
+  // Fill extra fields. This contains both SABER-related fields and any fields requested to be
+  // read from state files in the yamls.
   extraFields_ = atlas::FieldSet();
-  fv3jedi_geom_fill_extra_fields_f90(keyGeom_, extraFields_.get());
-
-  // Read the orography
-  if (params.orography.value() != boost::none) {
-    State orogstate(*this, *params.orography.value());
-    orogstate.fillGeomOrography(*this);
+  fv3jedi_geom_set_and_fill_extra_fields_f90(keyGeom_, extraFields_.get());
+  if (params.timeInvariantFields.value() != boost::none) {
+    const State extraFieldsState(*this, *params.timeInvariantFields.value());
+    atlas::FieldSet extraFieldSet{};
+    extraFieldsState.toFieldSet(extraFieldSet);
+    for (const auto & ef : extraFieldSet) {
+      extraFields_.add(ef);
+    }
   }
 }
 

@@ -8,7 +8,7 @@ geometry:
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
   iterator dimension: 2
-  orography:
+  time invariant state fields:
     datetime: 2019-12-15T18:00:00Z
     filetype: fms restart
     skip coupler file: true

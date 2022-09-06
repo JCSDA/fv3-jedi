@@ -25,7 +25,6 @@ extern "C" {
   void fv3jedi_state_update_fields_f90(F90state &, const F90geom &, const oops::Variables &);
   void fv3jedi_state_analytic_init_f90(const F90state &, const F90geom &,
                                        const eckit::Configuration &);
-  void fv3jedi_state_fill_geom_orography_f90(const F90state &, F90geom &);
   void fv3jedi_state_to_fieldset_f90(const F90state &, const F90geom &, const oops::Variables &,
                                      atlas::field::FieldSetImpl *);
   void fv3jedi_state_from_fieldset_f90(const F90state &, const F90geom &, const oops::Variables &,

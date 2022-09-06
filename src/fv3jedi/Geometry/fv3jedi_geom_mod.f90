@@ -63,7 +63,6 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
   real(kind=kind_real), allocatable, dimension(:)       :: lon_us, lat_us           !Lat/lon centers unstructured
   real(kind=kind_real), allocatable, dimension(:,:)     :: area                     !Grid area
-  real(kind=kind_real), allocatable, dimension(:,:,:)   :: orography                !Grid surface elevation
   real(kind=kind_real), allocatable, dimension(:,:)     :: dx, dy                   !dx/dy at edges
   real(kind=kind_real), allocatable, dimension(:,:)     :: dxc, dyc                 !dx/dy c grid
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: grid, vlon, vlat
@@ -73,6 +72,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
   type(fields_metadata) :: fields
+  type(atlas_fieldset) :: extra_fields
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -98,7 +98,7 @@ type :: fv3jedi_geom
     procedure, public :: clone
     procedure, public :: delete
     procedure, public :: set_lonlat
-    procedure, public :: fill_extra_fields
+    procedure, public :: set_and_fill_extra_fields
     procedure, public :: ngrid_including_halo
     procedure, public :: trim_fv3_grid_to_jedi_interp_grid
     procedure, public :: trim_fv3_grid_to_jedi_interp_grid_ad
@@ -514,6 +514,8 @@ self%domain => other%domain
 self%afunctionspace = atlas_functionspace(other%afunctionspace%c_ptr())
 self%afunctionspace_incl_halo = atlas_functionspace(other%afunctionspace_incl_halo%c_ptr())
 
+self%extra_fields = atlas_fieldset(other%extra_fields%c_ptr())
+
 self%fields = fields
 
 self%lat_us = other%lat_us
@@ -523,11 +525,6 @@ self%nested = other%nested
 self%bounded_domain = other%bounded_domain
 
 self%logp = other%logp
-
-if (allocated(other%orography)) then
-  allocate(self%orography(other%isc:other%iec,other%jsc:other%jec,1))
-  self%orography = other%orography
-endif
 
 end subroutine clone
 
@@ -576,8 +573,6 @@ deallocate(self%dya   )
 
 deallocate(self%lat_us)
 deallocate(self%lon_us)
-
-if (allocated(self%orography)) deallocate(self%orography)
 
 ! Required memory leak, since copying this causes problems
 !call mpp_deallocate_domain(self%domain_fix)
@@ -634,7 +629,7 @@ end subroutine set_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fill_extra_fields(self, afieldset)
+subroutine set_and_fill_extra_fields(self, afieldset)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
@@ -648,6 +643,9 @@ real(kind=kind_real), pointer :: real_ptr(:,:)
 real(kind=kind_real), allocatable :: hmask_1(:), hmask_2(:,:)
 type(atlas_field) :: afield
 real(kind=kind_real) :: plevli(self%npz+1),logp(self%npz)
+
+! Assign extra_fields variable
+self%extra_fields = afieldset
 
 ! Prepare halo mask
 ! This could be simplified by taking advantage of the known ordering of points in the result of
@@ -696,7 +694,7 @@ endif
 call afieldset%add(afield)
 call afield%final()
 
-end subroutine fill_extra_fields
+end subroutine set_and_fill_extra_fields
 
 ! --------------------------------------------------------------------------------------------------
 
