@@ -8,6 +8,7 @@ module fv3jedi_geom_iter_mod
 
   use iso_c_binding
   use kinds
+  use atlas_module, only: atlas_field
   use fv3jedi_geom_mod, only: fv3jedi_geom, getVerticalCoord
   use fv3jedi_constants_mod, only: rad2deg
 
@@ -178,17 +179,30 @@ contains
     type(fv3jedi_geom_iter), intent( in) :: self !< Geometry iterator
     real(kind_real),    intent(out) :: oro  !< Orography
 
+    type(atlas_field) :: orog_field
+    real(kind=kind_real), pointer :: orog_ptr(:,:)
+    integer :: orog_index
+
+    ! Get pointer to orography data
+    ! Note: data in the atlas::FieldSet is stored as unstructured 1D array (owned points first,
+    ! halo points second). To access the orography value, we'll compute the 1D index into the
+    ! owned points corresponding to the current iterator. (Alternatively, we could reshape the
+    ! array, but this would require an allocation.)
+    orog_field = self%geom%extra_fields%field('filtered_orography')
+    call orog_field%data(orog_ptr)
+
     ! Check iindex/jindex
     if (self%iindex == -1 .AND. self%jindex == -1) then
       ! special case of {-1,-1} means end of the grid
-      oro = self%geom%orography(self%geom%iec,self%geom%jec,1)
+      oro = orog_ptr(self%geom%ngrid, 1)
     elseif (self%iindex < self%geom%isc .OR. self%iindex > self%geom%iec .OR. &
             self%jindex < self%geom%jsc .OR. self%jindex > self%geom%jec) then
       ! outside of the grid
       call abor1_ftn('fv3jedi_geom_iter_orography: iterator out of bounds')
     else
       ! inside of the grid
-      oro = self%geom%orography(self%iindex,self%jindex,1)
+      orog_index = self%iindex + (self%jindex - 1) * (self%geom%iec-self%geom%isc+1)
+      oro = orog_ptr(orog_index, 1)
     endif
 
   end subroutine fv3jedi_geom_iter_orography

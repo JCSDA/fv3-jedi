@@ -16,7 +16,8 @@ extern "C" {
                                    const char longshortioNameC[], char longNameC[],
                                    char shrtNameC[], char varUnitsC[], char dataKindC[],
                                    bool& tracer, char stagrLocC[], int & levels, char mathSpacC[],
-                                   char inOuNameC[], char inOuFileC[], char intrpTypC[]);
+                                   char inOuNameC[], char inOuFileC[], char intrpTypC[],
+                                   char intrpMskC[]);
 
 }
 

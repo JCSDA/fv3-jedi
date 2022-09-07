@@ -74,6 +74,7 @@ GeometryIterator& GeometryIterator::operator++() {
 // -----------------------------------------------------------------------------
 
 double GeometryIterator::getOrography() const {
+  ASSERT(geom_.extraFields().has_field("filtered_orography"));
   double orography;
   fv3jedi_geom_iter_orography_f90(keyIter_, orography);
   return orography;

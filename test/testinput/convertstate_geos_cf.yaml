@@ -16,7 +16,7 @@ output geometry:
   field metadata override: Data/fieldmetadata/geos-cf.yaml
 states:
 - input:
-    datetime: 2019-01-02T03:00:00Z
+    datetime: 2020-09-03T18:00:00Z
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
