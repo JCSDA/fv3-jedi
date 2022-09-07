@@ -295,8 +295,8 @@ call unsinterp%apply(field_in, field_ou_tmp, field_neighbours)
 
 ! Global min and max integers in field
 ! ------------------------------------
-maxtypel = int(maxval(field_in))
-mintypel = int(minval(field_in))
+maxtypel = nint(maxval(field_in))
+mintypel = nint(minval(field_in))
 call unsinterp%comm%allreduce(maxtypel,maxtype,fckit_mpi_max())
 call unsinterp%comm%allreduce(mintypel,mintype,fckit_mpi_min())
 
@@ -309,7 +309,7 @@ field_ou = 0.0_kind_real
 do i = 1,ngrid_ou
   field_types = 0.0
   do n = 1, unsinterp%nn
-    index = int(field_neighbours(n,i))
+    index = nint(field_neighbours(n,i))
     field_types(index) = field_types(index) + unsinterp%interp_w(n,i)
   enddo
   field_ou(i) = real(maxloc(field_types,1)+(mintype-1),kind_real)
