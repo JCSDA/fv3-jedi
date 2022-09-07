@@ -1,13 +1,22 @@
 field metadata:
 
+- long name: air_pressure_thickness
+  io name: DELP
+
+- long name: surface_pressure
+  io name: PS
+
 - long name: no2
+  io name: NO2
   units: mol mol-1 dry
 
 - long name: 'no'
+  io name: NO
   units: mol mol-1 dry
 
 - long name: o3
+  io name: O3
   units: mol mol-1 dry
 
 - long name: specific_humidity
-  io name: sphu
+  io name: SPHU

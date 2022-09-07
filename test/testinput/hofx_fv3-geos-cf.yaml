@@ -22,7 +22,7 @@ initial condition:
   filetype: cube sphere history
   datapath: Data/inputs/geos_c12
   filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  state variables: [delp,no2,'no',o3,ps,sphu]
+  state variables: [DELP,NO2,NO,O3,PS,SPHU]
 observations:
   observers:
   - obs space:
