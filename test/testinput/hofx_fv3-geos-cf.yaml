@@ -16,7 +16,7 @@ model:
   datapath: Data/inputs/geos_c12
   filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   tstep: PT3H
-  model variables: [delp,no2,'no',o3,ps,sphu]
+  model variables: [DELP,NO2,NO,O3,PS,SPHU]
 initial condition:
   datetime: 2020-09-03T15:00:00Z
   filetype: cube sphere history
