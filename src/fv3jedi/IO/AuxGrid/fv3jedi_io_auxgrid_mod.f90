@@ -170,11 +170,7 @@ self%npes = self%layout(1) * self%layout(2)
 !to write to the same file.
 
 self%nxg = 4*(self%npx - 1)
-if ( trim(self%gridtype) == 'latlon' ) then
-   self%nyg = 2*(self%npy - 1) + 1
-else
-   self%nyg = 2*(self%npy - 1)
-endif
+self%nyg = 2*(self%npy - 1)
 self%nx = 0
 self%ny = 0
 
@@ -199,28 +195,22 @@ if (self%comm%rank() <= self%npes-1) then
   ! Populate lons and lats arrays for requested auxgrid type
   ! Each processor has subset of lons and all lats.
 
+  dx = 360.0_kind_real / real(self%nxg,kind_real)
+
+  self%lons(1) = dx * self%nx * self%comm%rank()
+  do i = 2,self%nx
+     self%lons(i) = self%lons(i-1) + dx
+  enddo
+
   if ( trim(self%gridtype) == 'latlon' ) then
-     dx = 360.0_kind_real / (real(self%nxg,kind_real) - 1.0_kind_real)
-     dy = 180.0_kind_real / (real(self%nyg,kind_real) - 1.0_kind_real)
+     dy = 180.0_kind_real / real(self%nyg,kind_real)
 
-     self%lons(1) = dx * self%nx * self%comm%rank()
-     do i = 2,self%nx
-        self%lons(i) = self%lons(i-1) + dx
-     enddo
-
-     self%lats(1) = -90.0_kind_real
+     self%lats(1) = -90.0_kind_real + 0.5_kind_real * dy
      do i = 2,self%ny
         self%lats(i) = self%lats(i-1) + dy
      enddo
 
   elseif ( trim(self%gridtype) == 'gaussian' ) then
-     dx = 360.0_kind_real / (real(self%nxg,kind_real))
-
-     self%lons(1) = dx * self%nx * self%comm%rank()
-     do i = 2,self%nx
-        self%lons(i) = self%lons(i-1) + dx
-     enddo
-
      allocate(slat(self%ny))
      allocate(wlat(self%ny))
 
