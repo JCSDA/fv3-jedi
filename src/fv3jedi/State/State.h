@@ -97,7 +97,6 @@ class State : public util::Printable, private util::ObjectCounter<State> {
 
 // IO and diagnostics
   void analytic_init(const AnalyticICParameters_ &, const Geometry &);
-  void fillGeomOrography(Geometry &) const;
   void read(const Parameters_ &);
   void write(const WriteParameters_ &) const;
   double norm() const;

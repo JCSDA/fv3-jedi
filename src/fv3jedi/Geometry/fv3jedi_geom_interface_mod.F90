@@ -259,8 +259,8 @@ end subroutine c_fv3jedi_geom_set_functionspace_pointer
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_fill_extra_fields(c_key_self, c_afieldset) &
-                                                     bind(c,name='fv3jedi_geom_fill_extra_fields_f90')
+subroutine c_fv3jedi_geom_set_and_fill_extra_fields(c_key_self, c_afieldset) &
+                                       bind(c,name='fv3jedi_geom_set_and_fill_extra_fields_f90')
 
 implicit none
 
@@ -277,9 +277,9 @@ afieldset = atlas_fieldset(c_afieldset)
 
 ! Call implementation
 ! -------------------
-call self%fill_extra_fields(afieldset)
+call self%set_and_fill_extra_fields(afieldset)
 
-end subroutine c_fv3jedi_geom_fill_extra_fields
+end subroutine c_fv3jedi_geom_set_and_fill_extra_fields
 
 ! --------------------------------------------------------------------------------------------------
 

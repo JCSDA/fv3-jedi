@@ -154,14 +154,6 @@ void State::analytic_init(const AnalyticICParameters_ & params, const Geometry &
 
 // -------------------------------------------------------------------------------------------------
 
-void State::fillGeomOrography(Geometry & geom) const {
-  oops::Log::info() << "Attempting to fv3jedi_state_fill_geom_orography_f90" << std::endl;
-  fv3jedi_state_fill_geom_orography_f90(keyState_, geom.toFortran());
-  oops::Log::info() << "Managed to fv3jedi_state_fill_geom_orography_f90" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
 void State::read(const Parameters_ & params) {
   // Optionally set the datetime on read (needed for some bump applications)
   if (params.setdatetime.value() != boost::none) {

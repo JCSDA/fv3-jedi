@@ -45,6 +45,7 @@ type :: fv3jedi_field
  character(len=field_clen) :: io_name                         ! Name used for IO
  character(len=field_clen) :: io_file                         ! File used for IO
  character(len=field_clen) :: interpolation_type              ! Type of interpolation to use
+ character(len=field_clen) :: interpolation_source_point_mask ! Source-point mask to use when interpolating this field
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
  type(fckit_mpi_comm) :: comm                       ! Communicator
@@ -84,6 +85,7 @@ self%space = fmd%space
 self%io_name = fmd%io_name
 self%io_file = fmd%io_file
 self%interpolation_type = fmd%interpolation_type
+self%interpolation_source_point_mask = fmd%interpolation_source_point_mask
 
 ! Allocate the field array data
 ! -----------------------------

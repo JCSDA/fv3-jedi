@@ -7,7 +7,7 @@ geometry:
   npy: 49
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-land.yaml
-  orography:
+  time invariant state fields:
     datetime: 2019-12-15T18:00:00Z
     filetype: fms restart
     skip coupler file: true

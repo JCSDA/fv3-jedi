@@ -170,7 +170,7 @@ self%npes = self%layout(1) * self%layout(2)
 !to write to the same file.
 
 self%nxg = 4*(self%npx - 1)
-self%nyg = 2*(self%npy - 1) + 1
+self%nyg = 2*(self%npy - 1)
 self%nx = 0
 self%ny = 0
 
@@ -183,40 +183,44 @@ if (self%comm%rank() <= self%npes-1) then
 
   self%thispe = .true.
 
-  !Resolution
-  dx = 360.0_kind_real / (real(self%nxg,kind_real) - 1.0_kind_real)
-  dy = 180.0_kind_real / (real(self%nyg,kind_real) - 1.0_kind_real)
-
   self%nx = self%nxg / self%layout(1)
   self%ny = self%nyg / self%layout(2)
 
   allocate(self%lons(self%nx))
   allocate(self%lats(self%ny))
 
-  !Each processor has subset of lons
-  self%lons(1) = dx * self%nx * self%comm%rank()
-  do i = 2,self%nx
-    self%lons(i) = self%lons(i-1) + dx
-  enddo
-
-  !Each processor has all lats
-
   write(debug_msg,*)'create ouptut grid for ',trim(self%gridtype)
   call fckit_log%debug(debug_msg)
+
+  ! Populate lons and lats arrays for requested auxgrid type
+  ! Each processor has subset of lons and all lats.
+
+  dx = 360.0_kind_real / real(self%nxg,kind_real)
+
+  self%lons(1) = dx * self%nx * self%comm%rank()
+  do i = 2,self%nx
+     self%lons(i) = self%lons(i-1) + dx
+  enddo
+
   if ( trim(self%gridtype) == 'latlon' ) then
-     self%lats(1) = -90.0_kind_real
+     dy = 180.0_kind_real / real(self%nyg,kind_real)
+
+     self%lats(1) = -90.0_kind_real + 0.5_kind_real * dy
      do i = 2,self%ny
         self%lats(i) = self%lats(i-1) + dy
      enddo
+
   elseif ( trim(self%gridtype) == 'gaussian' ) then
      allocate(slat(self%ny))
      allocate(wlat(self%ny))
+
      jmax=self%ny
      rad2deg = 180.0_kind_real / (4.0_kind_real * atan(1.0_kind_real))
      call splat(4, jmax, slat, wlat)
      do i = 1,self%ny
-        self%lats(i) = -(90.0_kind_real - (acos(slat(i))* rad2deg))
+        self%lats(i) = -asin(slat(i)) * rad2deg
      enddo
+
      deallocate(slat)
      deallocate(wlat)
   else
@@ -484,8 +488,8 @@ subroutine splat(idrt,jmax,slat,wlat)
 !                        platform, and Numerical Recipies calls elsewise.
 ! - 2010-12-30  SLOVACEK update alignment so preprocessor does not cause
 !                        compilation failure
-! - 2012-09-01  E.Mirvis & M.Iredell merging & debugging linux errors 
-!                        of _d and _8 using generic LU factorization.   
+! - 2012-09-01  E.Mirvis & M.Iredell merging & debugging linux errors
+!                        of _d and _8 using generic LU factorization.
 ! - 2012-11-05  E.Mirvis generic FFTPACK and LU lapack were removed
 !
 ! ARGUMENTS:
