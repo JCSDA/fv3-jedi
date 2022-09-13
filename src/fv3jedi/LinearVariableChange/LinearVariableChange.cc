@@ -200,17 +200,23 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   // vader_.changeVarTraj also returns the variables fulfilled by Vader.
   atlas::FieldSet dxfs;
   dx.toFieldSet(dxfs);
-  oops::Variables varsAdjointed;
-  varsAdjointed += vader_.changeVarAD(dxfs, varsToAdjoint);
+//   oops::Variables varsAdjointed;
+  /*varsAdjointed += */ vader_.changeVarAD(dxfs, varsToAdjoint);
   dx.fromFieldSet(dxfs);
 
   oops::Log::debug() << "LinearVariableChange::changeVarAD varsToAdjoint post-vader: " << std::endl << varsToAdjoint << std::endl;
-  varsTotal -= varsAdjointed;
-  oops::Log::debug() << "LinearVariableChange::changeVarAD varsTotal post-vader: " << std::endl << varsTotal << std::endl;
-  dx.updateFields(varsTotal);
+//   varsTotal -= varsAdjointed;
+//   oops::Log::debug() << "LinearVariableChange::changeVarAD varsTotal post-vader: " << std::endl << varsTotal << std::endl;
+//    dx.updateFields(varsTotal);
 
   // Create output state
-  Increment dxout(dx.geometry(), vars, dx.time());
+
+//    Increment dxout(dx.geometry(), vars, dx.time());
+  Increment dxout(dx.geometry(), varsTotal, dx.time());
+//   Increment dxout(dx);
+  dxout = dx;
+  dxout.updateFields(vars);
+  dx.updateFields(varsToAdjoint);
 
   // Call variable change
   linearVariableChange_->multiplyAD(dx, dxout);
