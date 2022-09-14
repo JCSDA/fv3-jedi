@@ -30,7 +30,8 @@ initial_time = time.perf_counter()
 # -----------------------------------------------------------------------------
 # Harvest values from the config
 
-conf = yamltools.configure_runtime(sys.argv[1])
+# conf = yamltools.configure_runtime(sys.argv[1])
+conf = yamltools.parse_config('/Users/cgas/Projects/JEDI/jedi-bundle/ewok/createFieldsPlots.yaml')
 
 filepath = conf['filepath']
 variables = conf['variables']
@@ -96,7 +97,6 @@ fld = [None] * nvars
 vmin = [None] * nvars
 vmax = [None] * nvars
 
-
 for itile in range(0, 6):
     # Open data file
     filename = filepath.replace(".nc", ".tile" + str(itile+1) + ".nc")
@@ -120,14 +120,6 @@ for itile in range(0, 6):
             # Initialize field
             fld[var] = np.zeros((6, nz, ny[var], nx[var]))
 
-            # Open grid file -- ONLY ONCE?
-            fgrid = Dataset(gridfiledir + "/fv3grid_c" + str(grid).zfill(4) + ".nc4",
-                            "r", format="NETCDF4")
-
-            # Read grid vertices lons/lats -- ONLY ONCE?
-            vlons = np.degrees(fgrid["vlons"][:,:,:])
-            vlats = np.degrees(fgrid["vlats"][:,:,:])
-
         # Copy field
         fld[var][itile,:,:,:] = fld_tmp
 
@@ -140,6 +132,21 @@ for itile in range(0, 6):
             vmax[var] = np.max(fld[var])
 
 
+# Open grid file and read lons/lats + levels to pressure
+fgrid = Dataset(gridfiledir + "/fv3grid_c" + str(grid).zfill(4) + ".nc4",
+                "r", format="NETCDF4")
+vlons = np.degrees(fgrid["vlons"][:,:,:])
+vlats = np.degrees(fgrid["vlats"][:,:,:])
+
+# Compute all pressures in hPa: P = ak + bk Ps
+# I got a point in the water for the Ps and we are looking at levels 850hPa and less
+akbk = Dataset(gridfiledir + "/akbk127.nc4", "r", format="NETCDF4")
+ak = akbk["ak"]
+bk = akbk["bk"]
+pressure = [None] * np.shape(ak)[0]
+for ll in range(0, np.shape(ak)[0]):
+    pressure[ll] = (ak[ll] + bk[ll] * 101300)/100
+
 for iz in range(0, nz):
 
     # Projection
@@ -147,7 +154,7 @@ for iz in range(0, nz):
 
     for var in range(nvars):
         # Figure title
-        title = long_name[var] + " (" + units[var] + ") at level " + str(levels[iz]) + " - C" + str(nx[var])
+        title = long_name[var] + " (" + units[var] + ") at pressure " + str(round(pressure[levels[iz]], 0)) + " hPa - C" + str(nx[var])
         title = title.replace("_", " ")
 
         # Output
@@ -192,6 +199,7 @@ for iz in range(0, nz):
         # Save and close figure
         plt.savefig(outputname + ".png", format="png", dpi=300)
         plt.close()
+        print("Created ", outputname+".png")
 
         # Trim figure with mogrify if available
         info = subprocess.getstatusoutput('mogrify -help')
