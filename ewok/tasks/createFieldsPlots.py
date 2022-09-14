@@ -27,8 +27,6 @@ class createFieldsPlots(Task):
         self.RUNTIME_YAML['gridfiledir'] = os.path.join(config['model_path'],
                                                     'tasks/plots/fv3grid')
 
-        # self.output['imgname'] = []
-
         imgname = config['expid']
 
         self.RUNTIME_YAML['output'] = os.path.join(fieldfile['datapath'], imgname)
@@ -37,9 +35,8 @@ class createFieldsPlots(Task):
         self.command = os.path.join(config['model_path'],
                                 "tasks/plots/plot_gfs.py")
 
-        # self.output['imgname'].append(self.RUNTIME_YAML['output'])
 
         self.walltime = '00:20:00'
 
-        # self.output['obsname'] = obsname
-        # self.output['obsfile'] = statefile['obsfile']
+        self.output['obsname'] = obsname
+        self.output['obsfile'] = statefile['obsfile']

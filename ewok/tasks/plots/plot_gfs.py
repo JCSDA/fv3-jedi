@@ -30,8 +30,8 @@ initial_time = time.perf_counter()
 # -----------------------------------------------------------------------------
 # Harvest values from the config
 
-# conf = yamltools.configure_runtime(sys.argv[1])
-conf = yamltools.parse_config('/Users/cgas/Projects/JEDI/jedi-bundle/ewok/createFieldsPlots.yaml')
+conf = yamltools.configure_runtime(sys.argv[1])
+# conf = yamltools.parse_config('/Users/cgas/Projects/JEDI/jedi-bundle/ewok/createFieldsPlots.yaml')
 
 filepath = conf['filepath']
 variables = conf['variables']
