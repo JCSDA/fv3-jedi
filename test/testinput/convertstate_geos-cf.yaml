@@ -20,13 +20,13 @@ states:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     state variables: [DELP,NO2,NO,O3,PS,SPHU]
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
-   filename: geos.cf.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos-cf.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
 test:
-  reference filename: testoutput/convertstate_geos_cf.ref
-  test output filename: testoutput/convertstate_geos_cf.test.out
+  reference filename: testoutput/convertstate_geos-cf.ref
+  test output filename: testoutput/convertstate_geos-cf.test.out

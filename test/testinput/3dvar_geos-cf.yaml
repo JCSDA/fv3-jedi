@@ -15,7 +15,7 @@ cost function:
     datetime: 2020-09-03T18:00:00Z
     filetype: cube sphere history
     datapath: Data/inputs/geos_c12
-    filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     state variables: [DELP,NO2,NO,O3,PS,SPHU]
 
   background error:
@@ -42,7 +42,7 @@ cost function:
         set datetime on read: true
         filetype: cube sphere history
         datapath: Data/inputs/geos_c12
-        filename: geos.cf.stddev.nox_50_o3_25.nc4
+        filename: geos-cf.stddev.nox_50_o3_25.nc4
 
   observations:
     observers:
@@ -72,7 +72,7 @@ output:
   filetype: cube sphere history
   provider: geos
   datapath: Data/analysis
-  filename: geos.cf.3dvar_ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: geos-cf.3dvar_ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT6H
 variational:

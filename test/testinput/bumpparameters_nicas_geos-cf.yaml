@@ -12,7 +12,7 @@ background:
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   state variables: [no2]
 bump:
   verbosity: main

@@ -13,7 +13,7 @@ state test:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     tile is a dimension: [true]
     clobber existing files: [false]
     state variables: [DELP,NO2,NO,O3,PS,SPHU]
