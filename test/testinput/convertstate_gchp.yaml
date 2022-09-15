@@ -21,7 +21,14 @@ states:
     provider: geos
     datapath: Data/inputs/GEOSChem_c48
     filename: GEOSChem.DefaultCollection.%yyyy%mm%dd_%hh%MMz.nc4
-    state variables: [air_temperature,pm25at,co,'no',no2,o3,oh]
+    state variables:
+    - air_temperature
+    - pm25at
+    - volume_mixing_ratio_of_co
+    - volume_mixing_ratio_of_no
+    - volume_mixing_ratio_of_no2
+    - volume_mixing_ratio_of_o3
+    - volume_mixing_ratio_of_oh
   output:
    filetype: cube sphere history
    provider: geos

@@ -16,13 +16,20 @@ model:
   datapath: Data/inputs/geos_c12
   filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
   tstep: PT3H
-  model variables: [DELP,NO2,NO,O3,PS,SPHU]
+  model variables: 
+  - DELP 
+  - volume_mixing_ratio_of_no2 
+  - volume_mixing_ratio_of_no
+  - volume_mixing_ratio_of_o3
+  - ps
+  - SPHU
+
 initial condition:
   datetime: 2020-09-03T15:00:00Z
   filetype: cube sphere history
   datapath: Data/inputs/geos_c12
-  filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  state variables: [DELP,NO2,NO,O3,PS,SPHU]
+  filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  state variables: [DELP,volume_mixing_ratio_of_no2,volume_mixing_ratio_of_no,volume_mixing_ratio_of_o3,PS,SPHU]
 observations:
   observers:
   - obs space:
@@ -37,7 +44,7 @@ observations:
       nlayers_retrieval: 34
       AvgKernelVar: averaging_kernel_level
       PresLevVar: pressure_level
-      tracer variables: [no2]
+      tracer variables: [volume_mixing_ratio_of_no2]
       isApriori: false
       isAveragingKernel: true
       stretchVertices: topbottom #options: top, bottom, topbottom, none

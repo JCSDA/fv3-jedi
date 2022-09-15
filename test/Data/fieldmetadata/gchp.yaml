@@ -8,23 +8,23 @@ field metadata:
   io name: PM25
   units: ug m-3
 
-- long name: co
+- long name: volume_mixing_ratio_of_co
   io name: SpeciesConc_CO
   units: mol mol-1 dry
 
-- long name: 'no'
+- long name: volume_mixing_ratio_of_no
   io name: SpeciesConc_NO
   units: mol mol-1 dry
 
-- long name: no2
+- long name: volume_mixing_ratio_of_no2
   io name: SpeciesConc_NO2
   units: mol mol-1 dry
 
-- long name: o3
+- long name: volume_mixing_ratio_of_o3
   io name: SpeciesConc_O3
   units: mol mol-1 dry
 
-- long name: oh
+- long name: volume_mixing_ratio_of_oh
   io name: SpeciesConc_OH
   units: mol mol-1 dry
 

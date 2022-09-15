@@ -337,6 +337,7 @@ Data/fieldmetadata/gfs-aerosol.yaml
 Data/fieldmetadata/gfs-history.yaml
 Data/fieldmetadata/gfs-land.yaml
 Data/fieldmetadata/gfs-restart.yaml
+Data/fieldmetadata/lam_cmaq.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fieldmetadata)
