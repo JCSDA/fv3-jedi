@@ -194,7 +194,7 @@ contains
     ! Check iindex/jindex
     if (self%iindex == -1 .AND. self%jindex == -1) then
       ! special case of {-1,-1} means end of the grid
-      oro = orog_ptr(self%geom%ngrid, 1)
+      oro = orog_ptr(1, self%geom%ngrid)
     elseif (self%iindex < self%geom%isc .OR. self%iindex > self%geom%iec .OR. &
             self%jindex < self%geom%jsc .OR. self%jindex > self%geom%jec) then
       ! outside of the grid
@@ -202,7 +202,7 @@ contains
     else
       ! inside of the grid
       orog_index = self%iindex + (self%jindex - 1) * (self%geom%iec-self%geom%isc+1)
-      oro = orog_ptr(orog_index, 1)
+      oro = orog_ptr(1, orog_index)
     endif
 
   end subroutine fv3jedi_geom_iter_orography
