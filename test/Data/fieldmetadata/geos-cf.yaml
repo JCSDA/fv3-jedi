@@ -6,15 +6,15 @@ field metadata:
 - long name: surface_pressure
   io name: PS
 
-- long name: no2
+- long name: volume_mixing_ratio_of_no2
   io name: NO2
   units: mol mol-1 dry
 
-- long name: 'no'
+- long name: volume_mixing_ratio_of_no
   io name: NO
   units: mol mol-1 dry
 
-- long name: o3
+- long name: volume_mixing_ratio_of_o3
   io name: O3
   units: mol mol-1 dry
 
