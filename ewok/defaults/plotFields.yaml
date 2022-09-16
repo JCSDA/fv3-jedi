@@ -5,6 +5,3 @@
 
 variables: [u, v, T]  # list of variables
 levels: [99, 75, 59]    # list of levels
-# centered:
-# colormap:
-# diagnostic:

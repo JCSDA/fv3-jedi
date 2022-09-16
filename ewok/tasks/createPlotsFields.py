@@ -16,12 +16,6 @@ class createPlotsFields(Task):
         plotsconf = yamltools.parse_config(os.path.join(config['model_path'], 'defaults/plotFields.yaml'))
 
         self.RUNTIME_YAML['levels'] = plotsconf['levels']
-
-        # self.RUNTIME_YAML['colormap'] = plotsconf['colormap'] # if there?
-        # self.RUNTIME_YAML['centered'] = plotsconf['centered'] # if there?
-        # self.RUNTIME_YAML['variables'] = plotsconf['variables']
-        # self.RUNTIME_YAML['diagnostic'] = plotsconf['diagnostic'] # if there
-
         self.RUNTIME_YAML['filepath'] = os.path.join(fieldfile['datapath'],
                                                     fieldfile['filename_core'])
         self.RUNTIME_YAML['gridfiledir'] = os.path.join(config['model_path'],

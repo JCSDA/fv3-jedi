@@ -7,7 +7,7 @@ CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 7.1666675694226751e+02, nobs = 838, Jo/n
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
 CostFunction: Nonlinear J = 9.3065348048044834e+03
 DRIPCGMinimizer: reduction in residual norm = 1.1709406607187545e+00
-CostFunction::addIncrement: Analysis:
+CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0099848843070816e+02 Max:+1.3678492957706524e+02 RMS:+2.1178175304422481e+01
@@ -42,7 +42,7 @@ CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 702.5154070088611, nobs = 838, Jo/n = 0.
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
 CostFunction: Nonlinear J = 8865.885599783493
 DRIPCGMinimizer: reduction in residual norm = 0.7664200570549126
-CostFunction::addIncrement: Analysis:
+CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0099935569503327e+02 Max:+1.3678503234795815e+02 RMS:+2.1178242468073023e+01

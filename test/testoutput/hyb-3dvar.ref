@@ -6,7 +6,7 @@ CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
 CostJo   : Nonlinear Jo(Radiosonde) = 2.6044925209613416e+03, nobs = 1342, Jo/n = 1.9407544865583768e+00, err = 2.0633682883633488e+00 (Monitoring only)
 CostFunction: Nonlinear J = 6.6292637725843360e+03
 DRIPCGMinimizer: reduction in residual norm = 1.1846113230441327e-01
-CostFunction::addIncrement: Analysis:
+CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0098586515034123e+02 Max:+1.3678343789975577e+02 RMS:+2.1177105404004145e+01
@@ -31,7 +31,7 @@ surface_eastward_wind                        | Min:-1.0470398524550978e+01 Max:+
 surface_northward_wind                       | Min:-1.2872012009019215e+01 Max:+1.1969010517948401e+01 RMS:+3.7141543423206231e+00
 f10m                                         | Min:+9.4335181158921488e-01 Max:+1.0569367110649799e+00 RMS:+9.9581351853841926e-01
 ----------------------------------------------------------------------------------------------------
-Obs bias coefficients:
+Obs bias coefficients: 
 ---------------------------------------------------------------
             constant:  Min= -1.1263610156431711,  Max= 1.1478229723730569,  Norm= 2.5248301579179304
   lapse_rate_order_2:  Min= -0.2122399873336066,  Max= 28.9371774898335090,  Norm= 29.0182434712107771
@@ -50,7 +50,7 @@ CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000 --- No Observations
 CostJo   : Nonlinear Jo(Radiosonde) = 2604.4915257769548589, nobs = 1342, Jo/n = 1.9407537449902794, err = 2.0633682883633488 (Monitoring only)
 CostFunction: Nonlinear J = 6312.4796762661962930
 DRIPCGMinimizer: reduction in residual norm = 0.1503194512990123
-CostFunction::addIncrement: Analysis:
+CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0098586502910614e+02 Max:+1.3678343785089183e+02 RMS:+2.1177105438351713e+01
@@ -75,7 +75,7 @@ surface_eastward_wind                        | Min:-1.0470398524550978e+01 Max:+
 surface_northward_wind                       | Min:-1.2872012009019215e+01 Max:+1.1969010517948401e+01 RMS:+3.7141543423206231e+00
 f10m                                         | Min:+9.4335181158921488e-01 Max:+1.0569367110649799e+00 RMS:+9.9581351853841926e-01
 ----------------------------------------------------------------------------------------------------
-Obs bias coefficients:
+Obs bias coefficients: 
 ---------------------------------------------------------------
             constant:  Min= -1.1263610164710802,  Max= 1.1478229723822646,  Norm= 2.5248301576625947
   lapse_rate_order_2:  Min= -0.2122399831175614,  Max= 28.9371774472390726,  Norm= 29.0182434288888977
