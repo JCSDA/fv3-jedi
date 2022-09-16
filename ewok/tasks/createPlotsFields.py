@@ -8,7 +8,7 @@ from ewok import Task
 import yamltools
 
 
-class createFieldsPlots(Task):
+class createPlotsFields(Task):
 
     def setup(self, config, statefile):
         fieldfile = statefile['an']
@@ -38,5 +38,6 @@ class createFieldsPlots(Task):
 
         self.walltime = '00:20:00'
 
-        self.output['obsname'] = obsname
-        self.output['obsfile'] = statefile['obsfile']
+        self.output['datapath'] = fieldfile['datapath']
+        self.output['levels'] = plotsconf['levels']
+        self.output['variables'] = plotsconf['variables']
