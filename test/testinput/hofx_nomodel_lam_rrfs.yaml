@@ -27,9 +27,13 @@ observations:
   - obs space:
       name: Aircraft
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
 #     obsdataout:
-#       obsfile: Data/hofx/aircraft_hofx_rrfs_2020121500.nc
+#       engine:
+#         type: H5File
+#         obsfile: Data/hofx/aircraft_hofx_rrfs_2020121500.nc
       simulated variables: [eastward_wind, northward_wind, air_temperature, specific_humidity]
     obs operator:
       name: VertInterp
