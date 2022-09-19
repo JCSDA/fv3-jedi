@@ -1,0 +1,16 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+
+number of target points per mpi rank: 16
+latitude bounds of target points: [-90.0, 90.0]
+longitude bounds of target points: [0.0, 360.0]
+number of levels: 3
+variable name: air_temperature
+
+tolerance interpolation: 5.e-2
