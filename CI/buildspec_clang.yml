@@ -84,9 +84,6 @@ phases:
       - chmod 0700 ~/.git-credentials
       - echo "https://${GIT_USER}:${GIT_PASS}@github.com" >~/.git-credentials
 
-      # jedi-cmake
-      - ./clone.sh jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle jedicmake ${GIT_BASE_BRANCH} develop
-
       # FV3-JEDI (testing repo)
       - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH} develop
 
@@ -147,6 +144,8 @@ phases:
       # configure and build
       - cd /build_container
       - source /etc/profile.d/z10_spack_environment.sh
+      # for jedi-cmake
+      - export jedi_cmake_ROOT=/opt/view
       - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DCDASH_OVERRIDE_SYSTEM_NAME=ClangContainer -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUILD_LARGE_TESTS=OFF /jcsda/fv3-bundle/
       - cd fv3-jedi
       - cp ../DartConfiguration.tcl .

@@ -85,9 +85,6 @@ phases:
       - chmod 0700 ~/.git-credentials
       - echo "https://${GIT_USER}:${GIT_PASS}@github.com" >~/.git-credentials
 
-      # jedi-cmake
-      - ./clone.sh jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle jedicmake ${GIT_BASE_BRANCH} develop
-
       # FV3-JEDI (testing repo)
       - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH} develop
 
@@ -149,14 +146,10 @@ phases:
       - echo $BUILD_STATUS
 
       - su - nonroot -c "cd /home/nonroot
-        && echo $CC
-        && echo $CXX
-        && echo $FC
-        && CC=mpicc CXX=mpicxx FC=mpifort
+        && export jedi_cmake_ROOT=/opt/view
         && ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SYSTEM_NAME=GNUContainer -DCTEST_UPDATE_VERSION_ONLY=FALSE -DENABLE_GPROF=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUILD_LARGE_TESTS=OFF /jcsda/fv3-bundle"
 
       - su - nonroot -c "cd /home/nonroot/fv3-jedi
-        && CC=mpicc CXX=mpicxx FC=mpifort
         && cp ../DartConfiguration.tcl .
         && sed -i 's/fv3-bundle/fv3-bundle\/fv3-jedi/' DartConfiguration.tcl
         && sed -i 's/home\/nonroot/home\/nonroot\/fv3-jedi/' DartConfiguration.tcl
@@ -171,14 +164,12 @@ phases:
       - echo $BUILD_STATUS
 
      # run ctest
-      - su - nonroot -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/nonroot/fv3-jedi
+      - su - nonroot -c "cd /home/nonroot/fv3-jedi
         && ctest -C RelWithDebInfo -D ExperimentalTest"
 
     finally:
       # upload ctest report to CDASH
-      - su - nonroot -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/nonroot/fv3-jedi
+      - su - nonroot -c "cd /home/nonroot/fv3-jedi
         && ctest -C RelWithDebInfo -D ExperimentalSubmit -M Continuous -- --track Continuous --group Continuous"
 
   post_build:
@@ -200,8 +191,7 @@ phases:
 
       - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
         then echo "Build passed, rerun failed tests";
-        su - nonroot -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/nonroot/fv3-jedi
+        su - nonroot -c "cd /home/nonroot/fv3-jedi
         && ctest -VV --rerun-failed";
         fi
 

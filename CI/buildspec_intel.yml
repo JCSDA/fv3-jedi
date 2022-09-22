@@ -87,9 +87,6 @@ phases:
       - chmod 0700 ~/.git-credentials
       - echo "https://${GIT_USER}:${GIT_PASS}@github.com" >~/.git-credentials
 
-      # jedi-cmake
-      - ./clone.sh jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle jedicmake ${GIT_BASE_BRANCH} develop
-
       # FV3-JEDI (testing repo)
       - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH} develop
 
@@ -154,6 +151,8 @@ phases:
 
       - export FV3JEDI_TEST_TIER=1
       - cd /build_container
+      # for jedi-cmake
+      - export jedi_cmake_ROOT=/opt/view
       - ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=IntelContainer -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF
 
       - cd /build_container/fv3-jedi
