@@ -1,0 +1,8 @@
+fms initialization:
+  namelist filename: '$(stage_dir)/fv3files/fmsmpp.nml'
+akbk: '$(stage_dir)/fv3files/akbk72.nc4'
+layout: [1,1]
+npx: 91
+npy: 91
+npz: 72
+field metadata override: '$(stage_dir)/fv3files/geos_cf.yaml'

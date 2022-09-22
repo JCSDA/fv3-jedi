@@ -8,11 +8,15 @@ geometry:
 increment test:
   date: 2018-04-14T21:00:00Z
 inc variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,
-                no2,'no',o3,no3,h2o2,n2o5,
+                volume_mixing_ratio_of_no2,
+                volume_mixing_ratio_of_no,
+                volume_mixing_ratio_of_o3,
+                volume_mixing_ratio_of_co,
+                no3,h2o2,n2o5,
                 hno3,hono,pna,so2,sulf,
                 pan,pacd,aacd,ald2,panx,
                 form,mepx,meoh,rooh,ntr1,
-                ntr2,facd,co,aldx,glyd,
+                ntr2,facd,aldx,glyd,
                 gly,mgly,etha,etoh,ket,
                 par,acet,prpa,ethy,eth,
                 ole,iole,isop,ispd,intr,
