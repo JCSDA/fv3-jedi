@@ -5,14 +5,14 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos-cf.yaml
+  field metadata override: Data/fieldmetadata/geos_cf.yaml
 input variables: [volume_mixing_ratio_of_no2]
 background:
   datetime: 2020-09-03T18:00:00Z
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4  ##here it's no2
+  filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4  ##here it's no2
   state variables: [volume_mixing_ratio_of_no2]
 bump:
   verbosity: main
@@ -23,7 +23,7 @@ bump:
   resol: 6
   forced_radii: true
   grids:
-  - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos-cf #doesnt have variables
+  - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos_cf #doesnt have variables
     variables: [volume_mixing_ratio_of_no2] # this will be needed to be changed to long name
     rh:
       volume_mixing_ratio_of_no2: [2500000.0]
@@ -36,13 +36,13 @@ bump:
     filetype: cube sphere history
     provider: geos
     datapath: Data/bump/
-    filename: bumpparameters_nicas_geos-cf.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: bumpparameters_nicas_geos_cf.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
   - parameter: cor_rv
     filetype: cube sphere history
     provider: geos
     datapath: Data/bump/
-    filename: bumpparameters_nicas_geos-cf.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: bumpparameters_nicas_geos_cf.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
-  reference filename: testoutput/bumpparameters_nicas_geos-cf.ref
-  test output filename: testoutput/bumpparameters_nicas_geos-cf.test.out
+  reference filename: testoutput/bumpparameters_nicas_geos_cf.ref
+  test output filename: testoutput/bumpparameters_nicas_geos_cf.test.out

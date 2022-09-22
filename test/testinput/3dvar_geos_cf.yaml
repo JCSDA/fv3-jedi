@@ -10,12 +10,12 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    field metadata override: Data/fieldmetadata/geos-cf.yaml
+    field metadata override: Data/fieldmetadata/geos_cf.yaml
   background:
     datetime: 2020-09-03T18:00:00Z
     filetype: cube sphere history
     datapath: Data/inputs/geos_c12
-    filename: geos-cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     state variables: [DELP, volume_mixing_ratio_of_no2, volume_mixing_ratio_of_no, volume_mixing_ratio_of_o3, PS, SPHU]
 
   background error:
@@ -27,7 +27,7 @@ cost function:
       input variables: [volume_mixing_ratio_of_no2]
       output variables: [volume_mixing_ratio_of_no2]
       bump:
-        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos-cf
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos_cf
         method: cor
         strategy: specific_univariate
         load_nicas_local: true
@@ -42,7 +42,7 @@ cost function:
         set datetime on read: true
         filetype: cube sphere history
         datapath: Data/inputs/geos_c12
-        filename: geos-cf.stddev.nox_50_o3_25.nc4
+        filename: geos_cf.stddev.nox_50_o3_25.nc4
 
   observations:
     observers:
@@ -76,7 +76,7 @@ output:
   filetype: cube sphere history
   provider: geos
   datapath: Data/analysis
-  filename: geos-cf.3dvar_ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  filename: geos_cf.3dvar_ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT6H
 variational:
@@ -91,12 +91,12 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos-cf.yaml
+      field metadata override: Data/fieldmetadata/geos_cf.yaml
     diagnostics:
       departures: ombg
 
 test:
-  reference filename: testoutput/3dvar_geos-cf.ref
-  test output filename: testoutput/3dvar_geos-cf.test.out
+  reference filename: testoutput/3dvar_geos_cf.ref
+  test output filename: testoutput/3dvar_geos_cf.test.out
   integer tolerance: 3
   float relative tolerance: 1.0e-3
