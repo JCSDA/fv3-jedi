@@ -40,7 +40,9 @@ phases:
       - echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} > /jcsda/artifacts/commit_sha.txt
 
       - cd CI
-      - . /etc/profile.d/intel.sh
+      - source /etc/profile.d/z10_spack_environment.sh
+      - source /opt/intel/oneapi/compiler/latest/env/vars.sh
+      - source /opt/intel/oneapi/mpi/latest/env/vars.sh
 
       # read cdash url from s3
       - wget https://ci-test-cdash-url.s3.amazonaws.com/cdash_url.txt
@@ -97,6 +99,18 @@ phases:
       # fv3-jedi-test
       - ./clone.sh jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-data ${GIT_BASE_BRANCH} develop
 
+      # ioda-data
+      - ./clone.sh jcsda-internal/ioda-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda-data ${GIT_BASE_BRANCH} develop
+
+      # ufo-data
+      - ./clone.sh jcsda-internal/ufo-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ufo-data ${GIT_BASE_BRANCH} develop
+
+      # saber-data
+      - ./clone.sh jcsda-internal/saber-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber-data ${GIT_BASE_BRANCH} develop
+
+
+
+
       # move CMakeLists.txt
       - cp CMakeLists_nightly.txt /jcsda/fv3-bundle/CMakeLists.txt
       - cp -r cmake /jcsda/fv3-bundle/
@@ -114,27 +128,16 @@ phases:
       - export BUILD_STATUS="0"
       - echo $BUILD_STATUS
 
-      - su - jedi -c "export FV3JEDI_TEST_TIER=2
-        && cd /home/jedi
-        && export CC=mpiicc
-        && export FC=mpiifort
-        && export CXX=mpiicpc
-        && echo $LD_LIBRARY_PATH
-        && echo $PATH
-        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-        && export PATH=/usr/local/lib:$PATH
-        && ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SITE=NightlyCodeBuild -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF /jcsda/fv3-bundle/
-        && ls /home/jedi"
+      - mkdir /build_container
+      - chmod 777 /build_container
 
-      - su - jedi -c "export FV3JEDI_TEST_TIER=2
-        && cd /home/jedi
-        && export CC=mpiicc
-        && export FC=mpiifort
-        && export CXX=mpiicpc
-        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-        && export PATH=/usr/local/lib:$PATH
-        && cat DartConfiguration.tcl
-        && make -j4"
+      - export FV3JEDI_TEST_TIER=2
+      - cd /build_container
+      # for jedi-cmake
+      - export jedi_cmake_ROOT=/opt/view
+
+      - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SITE=NightlyCodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=IntelContainer -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF /jcsda/fv3-bundle/
+      - make -j2
 
       - echo $CODEBUILD_BUILD_SUCCEEDING
       - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
@@ -143,26 +146,13 @@ phases:
         fi
       - echo $BUILD_STATUS
 
-      # Run all tests in fv3-bundle
-      - su - jedi -c "export CC=mpiicc
-        && export FC=mpiifort
-        && export CXX=mpiicpc
-        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-        && export PATH=/usr/local/lib:$PATH
-        && cd /home/jedi
-        && ctest -D NightlyTest
-        && ls /home/jedi/Testing
-        && cat /home/jedi/Testing/TAG"
+      - cd /build_container
+      - ctest -D NightlyTest
 
     finally:
       # upload ctest report to CDASH
-      - su - jedi -c "export CC=mpiicc
-        && export FC=mpiifort
-        && export CXX=mpiicpc
-        && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-        && export PATH=/usr/local/lib:$PATH
-        && cd /home/jedi
-        && ctest -D NightlySubmit -M Nightly -- --track Nightly --group Nightly"
+      - cd /build_container
+      - ctest -D NightlySubmit -M Nightly -- --track Nightly --group Nightly
 
   post_build:
     commands:
@@ -170,7 +160,7 @@ phases:
       # upload find cdash url and upload it as CodeBuild artifact to S3
       - if [ "$BUILD_STATUS" = "1" ];
         then echo "Build & tests passed, find cdash url";
-        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/Testing $CDASH_URL);
+        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /build_container/Testing $CDASH_URL);
         echo $url;
         echo ${url} > /jcsda/artifacts/cdash-url.txt;
         cat /jcsda/artifacts/cdash-url.txt;
