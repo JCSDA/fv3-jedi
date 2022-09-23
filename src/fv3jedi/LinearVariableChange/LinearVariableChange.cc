@@ -211,8 +211,9 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
 
   // Create output state
 
-//    Increment dxout(dx.geometry(), vars, dx.time());
-  Increment dxout(dx.geometry(), varsTotal, dx.time());
+  Increment dxout(dx.geometry(), vars, dx.time());
+  dxout.updateFields(varsTotal);
+//   Increment dxout(dx.geometry(), varsTotal, dx.time());
 //   Increment dxout(dx);
   dxout = dx;
   dxout.updateFields(vars);
