@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2021 UCAR
+# (C) Copyright 2020-2022 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -11,7 +11,8 @@ from ewok import Task
 class getStaticB(Task):
 
     def setup(self, config, build):
-        if ('BACKGROUND_ERROR' in config and '_balfile' in config['BACKGROUND_ERROR']):
+
+        if ('_balfile' in config['BACKGROUND_ERROR']):
             balfile = config['BACKGROUND_ERROR']['_balfile']
             bump2d = config['BACKGROUND_ERROR']['_prefix2d']
             bump3d = config['BACKGROUND_ERROR']['_prefix3d']

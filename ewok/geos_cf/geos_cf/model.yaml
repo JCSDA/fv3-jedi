@@ -1,0 +1,11 @@
+name: PSEUDO
+filetype: cube sphere history
+tstep: PT1H
+model variables:
+- DELP
+- volume_mixing_ratio_of_no2
+- volume_mixing_ratio_of_no
+- volume_mixing_ratio_of_o3
+- volume_mixing_ratio_of_co
+- PS
+- SPHU
