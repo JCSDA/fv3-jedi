@@ -11,7 +11,8 @@ import yamltools
 class createPlotsFields(Task):
 
     def setup(self, config, statefile):
-        fieldfile = statefile['an']
+        yamltools.print_template("the template", statefile)
+        fieldfile = statefile[0]['an']
 
         plotsconf = yamltools.parse_config(os.path.join(config['model_path'], 'defaults/plotFields.yaml'))
 
