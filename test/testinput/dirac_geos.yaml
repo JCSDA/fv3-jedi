@@ -13,7 +13,7 @@ initial condition:
   provider: geos
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
-  state variables: &vars [eastward_wind,northward_wind,air_temperature,surface_pressure,q,qi,ql,o3ppmv]
+  state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: ensemble
   localization:

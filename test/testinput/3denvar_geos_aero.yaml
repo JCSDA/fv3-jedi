@@ -5,7 +5,7 @@ cost function:
     provider: geos
     datapath : Data/inputs/geos_c12
     filenames: [geos.aero.bkg.20180415_000000z.nc4]
-    state variables: [air_pressure_thickness, relative_humidity, du001, du002, du003, du004, du005, ss001, ss002, ss003, ss004,
+    state variables: [delp, rh, du001, du002, du003, du004, du005, ss001, ss002, ss003, ss004,
                       ss005, bcphobic, bcphilic, ocphobic, ocphilic, no3an1, no3an2, no3an3, so4 ]
   background error:
     covariance model: hybrid

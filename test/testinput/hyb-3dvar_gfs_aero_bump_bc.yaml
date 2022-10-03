@@ -30,7 +30,7 @@ cost function:
     filename_core: 20180415.000000.fv_core.res.nc
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_cplr: 20180415.000000.coupler.res
-    state variables: &state_vars [air_temperature,air_pressure_thickness,specific_humidity,sulf,bc1,bc2,oc1,oc2,
+    state variables: &state_vars [t,delp,sphum,sulf,bc1,bc2,oc1,oc2,
                       dust1,dust2,dust3,dust4,dust5,
                       seas1,seas2,seas3,seas4]
   background error:

@@ -19,7 +19,7 @@ cost function:
     filename_sfcd: 20200903.180000.sfc_data.res.tile1.nc
     filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
     filename_cplr: 20200903.180000.coupler.res
-    state variables: [u,v,T,DELP,surface_pressure,specific_humidity,phis,volume_mixing_ratio_of_no2]
+    state variables: [u,v,T,DELP,ps,sphum,phis,volume_mixing_ratio_of_no2]
   background error:
     covariance model: SABER
     saber central block:

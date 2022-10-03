@@ -6,7 +6,7 @@ cost function:
     filename_core: 20180414.210000.fv_core.res.nc
     filename_trcr: 20180414.210000.fv_tracer.res.nc
     filename_cplr: 20180414.210000.coupler.res
-    state variables: [T,DELP,specific_humidity,
+    state variables: [T,DELP,sphum,
                       sulf,bc1,bc2,oc1,oc2,
                       dust1,dust2,dust3,dust4,dust5,
                       seas1,seas2,seas3,seas4]
@@ -88,7 +88,7 @@ cost function:
     filename_trcr: '%yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc'
     filename_cplr: '%yyyy%mm%dd.%hh%MM%ss.coupler.res'
     tstep: PT3H
-    model variables: [T,DELP,specific_humidity,
+    model variables: [T,DELP,sphum,
                       sulf,bc1,bc2,oc1,oc2,
                       dust1,dust2,dust3,dust4,dust5,
                       seas1,seas2,seas3,seas4]

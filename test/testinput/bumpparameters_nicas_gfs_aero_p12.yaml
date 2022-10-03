@@ -18,7 +18,7 @@ background:
   filename_sfcd: 20180414.210000.sfc_data.nc
   filename_sfcw: 20180414.210000.fv_srf_wnd.res.nc
   filename_cplr: 20180414.210000.coupler.res
-  state variables: [mass_fraction_of_sulfate_in_air,bc1,bc2,oc1,oc2,dust1, dust2, dust3, dust4, dust5,seas1, seas2, seas3, seas4]
+  state variables: [mass_fraction_of_sulfate_in_air,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 bump:
   prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
   verbosity: main
