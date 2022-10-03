@@ -377,8 +377,9 @@ do fm = 1, size(dxm%fields)
   if (.not.trim(dxm%fields(fm)%short_name) == 'ua' .and. &
       .not.trim(dxm%fields(fm)%short_name) == 'va' .and. &
       dxg%has_field( dxm%fields(fm)%short_name, dxg_index)) then
-    call dxg%get_field(dxm%fields(fm)%short_name, field_ptr)
-    dxm%fields(fm)%array = dxm%fields(fm)%array + field_ptr
+    ! This copy is now happening in the C++ LinearVariableChange class
+    ! call dxg%get_field(dxm%fields(fm)%short_name, field_ptr)
+    ! dxm%fields(fm)%array = dxm%fields(fm)%array + field_ptr
     field_passed(dxg_index) = .true.
   else
     num_not_copied = num_not_copied + 1
@@ -535,14 +536,14 @@ do fm = 1, size(fields_to_do)
 
     if (have_awinds) then
       field_passed(ua_index) = .true.
-      field_ptr = field_ptr + ua
+    !   field_ptr = field_ptr + ua
     endif
 
   case ("va")
 
     if (have_awinds) then
       field_passed(va_index) = .true.
-      field_ptr = field_ptr + va
+    !   field_ptr = field_ptr + va
     endif
 
   case ("delp")

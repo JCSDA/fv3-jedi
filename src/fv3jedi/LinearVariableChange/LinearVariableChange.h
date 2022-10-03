@@ -52,6 +52,7 @@ class LinearVariableChange : public util::Printable {
   std::unique_ptr<LinearVariableChangeBase> linearVariableChange_;
   FieldsMetadata fieldsMetadata_;
   vader::Vader vader_;
+  oops::Variables varsVaderPopulates_;
 };
 
 // -------------------------------------------------------------------------------------------------

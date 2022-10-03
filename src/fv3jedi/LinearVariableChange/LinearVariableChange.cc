@@ -52,18 +52,19 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   varsTotal += vars;
   vader_xfg.updateFields(varsTotal);
 
-  oops::Variables varsVader = vars;
-  varsVader -= varsPopulated;  // Pass only the needed variables
-  oops::Log::debug() << "varsVader: " << std::endl << varsVader << std::endl;
+  oops::Variables neededVars = vars;
+  neededVars -= varsPopulated;  // Pass only the needed variables
+  oops::Log::debug() << "neededVars: " << std::endl << neededVars << std::endl;
 
-  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
+  // Call Vader. On entry, neededVars holds the vars requested from Vader; on exit,
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
   // vader_.changeVarTraj also returns the variables fulfilled by Vader.
   atlas::FieldSet xfgfs;
   oops::Log::debug() << "before vader_xfg.toFieldSet" << std::endl;
   vader_xfg.toFieldSet(xfgfs);
   oops::Log::debug() << "before vader_.changeVarTraj" << std::endl;
-  varsPopulated += vader_.changeVarTraj(xfgfs, varsVader);
+  varsVaderPopulates_ = vader_.changeVarTraj(xfgfs, neededVars);
+  varsPopulated += varsVaderPopulates_;
   vader_xfg.fromFieldSet(xfgfs);
 
   // Ahead of creating fv3jedi linear variable transform, add vader computed fields to first guess
@@ -72,7 +73,7 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   oops::Log::debug() << "before linearVariableChange_.reset" << std::endl;
 
   // Create the model variable change
-  linearVariableChange_.reset(LinearVariableChangeFactory::create(xfg, xfg, geom_,
+  linearVariableChange_.reset(LinearVariableChangeFactory::create(vader_xfg, vader_xfg, geom_,
              params_.linearVariableChangeParameters.value()));
   oops::Log::trace() << "LinearVariableChange::changeVarTraj done" << std::endl;
 }
@@ -99,31 +100,23 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   oops::Variables varsPopulated = dx.variables();
 
   // Set first guess to have all possible variables
-  oops::Variables varsTotal = dx.variables();
-  varsTotal += vars;
-  dx.updateFields(varsTotal);
+  oops::Variables varsVader = dx.variables();
+  oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
+  varsVader += varsVaderWillPopulate;
+  dx.updateFields(varsVader);
 
-  oops::Variables varsVader = vars;
-  varsVader -= varsPopulated;  // Pass only the needed variables
-
-  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_.changeVarTraj also returns the variables fulfilled by Vader.
+  // Call Vader. On entry, varsVaderWillPopulate holds the vars requested from Vader; on exit,
+  // it should be empty, since we know which variables Vader will do from the changeVarTraj call.
   atlas::FieldSet dxfs;
   dx.toFieldSet(dxfs);
-  atlas::Field tl_temperature = dxfs.field("air_temperature");
-  auto tl_temperature_view = atlas::array::make_view<double, 2>(tl_temperature);
-  oops::Log::debug() << "Before vader_.changeVarTL" << std::endl;
-  oops::Log::debug() << "tl_Temp(0,0): " << tl_temperature_view(0,0) << std::endl;
+//   atlas::Field tl_temperature = dxfs.field("air_temperature");
+//   auto tl_temperature_view = atlas::array::make_view<double, 2>(tl_temperature);
+//   oops::Log::debug() << "Before vader_.changeVarTL" << std::endl;
+//   oops::Log::debug() << "tl_Temp(0,0): " << tl_temperature_view(0,0) << std::endl;
 
-  varsPopulated += vader_.changeVarTL(dxfs, varsVader);
-  oops::Log::debug() << "After vader_.changeVarTL" << std::endl;
+  vader_.changeVarTL(dxfs, varsVaderWillPopulate);
+  ASSERT(varsVaderWillPopulate.size() == 0);
   dx.fromFieldSet(dxfs);
-
-  oops::Log::debug() << "LinearVariableChange::changeVarTL varsPopulated post-vader: " << std::endl << varsPopulated << std::endl;
-
-  // Ahead of performing model linear variable transform, add vader computed fields to increment
-  dx.updateFields(varsPopulated);
 
   // Create output state
   Increment dxout(dx.geometry(), vars, dx.time());
@@ -174,6 +167,7 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   oops::Log::trace() << "LinearVariableChange::changeVarAD starting" << std::endl;
   oops::Log::debug() << "LinearVariableChange::changeVarAD vars_out: " << std::endl << vars_out << std::endl;
   oops::Log::debug() << "LinearVariableChange::changeVarAD dx vars: " << std::endl << dx.variables() << std::endl;
+  oops::Log::debug() << "LinearVariableChange::changeVarAD varsVaderPopulates_: " << std::endl << varsVaderPopulates_.variables() << std::endl;
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (vars_out <= dx.variables()) {
@@ -186,47 +180,38 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Record start variables
-  oops::Variables varsToAdjoint = dx.variables();
+  // Create dxin as a copy of dx, minus the variables created by Vader (in the forward direction)
+  // This way we ensure the model code will not try to do the adjoint for these vars
+  Increment dxin(dx.geometry(), dx.variables(), dx.time());
+  dxin = dx;
+  oops::Variables varsVaderWillAdjoint = varsVaderPopulates_;
+  oops::Variables varsModelNeedsToAdjoint = dx.variables();
+//   varsModelNeedsToAdjoint -= vars;
+  varsModelNeedsToAdjoint -= varsVaderWillAdjoint;
+  dxin.updateFields(varsModelNeedsToAdjoint);
 
-  // Set first guess to have all possible variables
-  oops::Variables varsTotal = dx.variables();
-  varsTotal += vars;
+  // dx is expanded to have all variables so that it can later be passed to Vader's changeVarAD
+  oops::Variables varsTotal = vars;
+  varsTotal += varsVaderWillAdjoint;
   dx.updateFields(varsTotal);
 
-  // Call Vader. On entry, varsToAdjoint holds the vars originally requested from Vader; on exit,
-  // it holds the vars whos adjoints were NOT fullfilled by Vader, i.e., the vars that are produced
-  // by tranforms whose adjoints have not yet been performed.
-  // vader_.changeVarTraj also returns the variables fulfilled by Vader.
+  // Call model's adjoint variable change. This code should not copy identical fields from dxin to dx since
+  // dx already has them.
+  linearVariableChange_->multiplyAD(dxin, dx);
+
   atlas::FieldSet dxfs;
   dx.toFieldSet(dxfs);
-//   oops::Variables varsAdjointed;
-  /*varsAdjointed += */ vader_.changeVarAD(dxfs, varsToAdjoint);
+// //   oops::Variables varsAdjointed;
+  vader_.changeVarAD(dxfs, varsVaderWillAdjoint);
+  ASSERT(varsVaderWillAdjoint.size() == 0);
   dx.fromFieldSet(dxfs);
 
-  oops::Log::debug() << "LinearVariableChange::changeVarAD varsToAdjoint post-vader: " << std::endl << varsToAdjoint << std::endl;
-//   varsTotal -= varsAdjointed;
-//   oops::Log::debug() << "LinearVariableChange::changeVarAD varsTotal post-vader: " << std::endl << varsTotal << std::endl;
-//    dx.updateFields(varsTotal);
-
-  // Create output state
-
-  Increment dxout(dx.geometry(), vars, dx.time());
-  dxout.updateFields(varsTotal);
-//   Increment dxout(dx.geometry(), varsTotal, dx.time());
-//   Increment dxout(dx);
-  dxout = dx;
-  dxout.updateFields(vars);
-  dx.updateFields(varsToAdjoint);
-
-  // Call variable change
-  linearVariableChange_->multiplyAD(dx, dxout);
+// //   varsTotal -= varsAdjointed;
+// //   oops::Log::debug() << "LinearVariableChange::changeVarAD varsTotal post-vader: " << std::endl << varsTotal << std::endl;
+// //    dx.updateFields(varsTotal);
 
   // Allocate any extra fields and remove fields no longer needed
   dx.updateFields(vars);
-
-  // Copy data from temporary state
-  dx = dxout;
 
   oops::Log::trace() << "LinearVariableChange::changeVarAD done" << std::endl;
 }
