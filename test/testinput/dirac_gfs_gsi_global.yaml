@@ -19,26 +19,23 @@ initial condition:
   state variables: &anavars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: gsi covariance
-    input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
-                             specific_humidity,cloud_liquid_ice,cloud_liquid_water,
-                             ozone_mass_mixing_ratio]
-    output variables: *bvars
+  saber central block:
+    saber block name: gsi covariance
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false
+  saber outer blocks:
   - saber block name: gsi interpolation to model grid
-    input variables: *bvars
-    output variables: *bvars
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: *bvars
+    input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
+                             specific_humidity,cloud_liquid_ice,cloud_liquid_water,
+                             ozone_mass_mixing_ratio]
     output variables: *anavars
 dirac:
   ndir: 1

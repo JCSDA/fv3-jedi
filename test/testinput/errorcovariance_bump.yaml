@@ -10,7 +10,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-analysis variables: &vars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+analysis variables: &vars [eastward_wind,northward_wind,T,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -23,11 +23,8 @@ background:
   filename_cplr: 20201214.210000.coupler.res
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: BUMP_NICAS
-    saber central block: true
-    input variables: *vars
-    output variables: *vars
+  saber central block:
+    saber block name: BUMP_NICAS
     bump:
       method: cor
       strategy: specific_univariate

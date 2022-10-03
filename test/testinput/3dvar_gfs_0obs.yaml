@@ -24,11 +24,8 @@ cost function:
     state variables: [ua,va,T,DELP,sphum]
   background error:
     covariance model: SABER
-    saber blocks:
-    - saber block name: ID
-      saber central block: true
-      input variables: *3dvars
-      output variables: *3dvars
+    saber central block:
+      saber block name: ID
   observations:
     observers:
     - obs space:

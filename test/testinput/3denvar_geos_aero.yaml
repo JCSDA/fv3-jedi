@@ -5,21 +5,15 @@ cost function:
     provider: geos
     datapath : Data/inputs/geos_c12
     filenames: [geos.aero.bkg.20180415_000000z.nc4]
-    state variables: [delp, rh, du001, du002, du003, du004, du005, ss001, ss002, ss003, ss004,
+    state variables: [air_pressure_thickness, relative_humidity, du001, du002, du003, du004, du005, ss001, ss002, ss003, ss004,
                       ss005, bcphobic, bcphilic, ocphobic, ocphilic, no3an1, no3an2, no3an3, so4 ]
   background error:
     covariance model: hybrid
     components:
     - covariance:
         covariance model: SABER
-        saber blocks:
-        - saber block name: ID
-          saber central block: true
-          input variables: &aerovars [du001, du002, du003, du004, du005,
-                                      ss001, ss002, ss003, ss004, ss005,
-                                      bcphobic, bcphilic, ocphobic, ocphilic,
-                                      no3an1, no3an2, no3an3, so4 ]
-          output variables: *aerovars
+        saber central block:
+          saber block name: ID
       weight:
         value: 0.01
     - covariance:
@@ -29,7 +23,10 @@ cost function:
             datetime: 2018-04-15T00:00:00Z
             filetype: cube sphere history
             provider: geos
-            state variables: *aerovars
+            state variables: &aerovars [du001, du002, du003, du004, du005,
+                                        ss001, ss002, ss003, ss004, ss005,
+                                        bcphobic, bcphilic, ocphobic, ocphilic,
+                                        no3an1, no3an2, no3an3, so4 ]
             datapath: Data/inputs/geos_c12
             filename: geos.aero.bkg.20180415_000000z.mem%mem%.nc4
           pattern: '%mem%'
@@ -37,10 +34,12 @@ cost function:
           zero padding: 3
         localization:
           localization method: SABER
-          saber block:
+          saber central block:
             saber block name: BUMP_NICAS
-            input variables: *aerovars
-            output variables: *aerovars
+            active variables: [mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
+                               mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air,mass_fraction_of_sea_salt005_in_air,
+                               mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                               mass_fraction_of_nitrate001_in_air,mass_fraction_of_nitrate002_in_air,mass_fraction_of_nitrate003_in_air,mass_fraction_of_sulfate_in_air]
             bump:
               prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
               method: loc

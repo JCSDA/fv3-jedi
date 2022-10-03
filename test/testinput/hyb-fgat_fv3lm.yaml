@@ -1,6 +1,6 @@
 cost function:
   cost type: 4D-Var
-  analysis variables: &fgatvars [ua,va,t,ps,q,qi,ql,o3ppmv]
+  analysis variables: &fgatvars [eastward_wind,northward_wind,air_temperature,surface_pressure,q,qi,ql,o3ppmv]
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   model:
@@ -10,7 +10,7 @@ cost function:
     lm_do_trb: 0
     lm_do_mst: 0
     tstep: PT1H
-    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
+    model variables: [u,v,eastward_wind,northward_wind,air_temperature,air_pressure_thickness,q,qi,ql,o3ppmv,phis,frocean,frlake,
                       frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   variable change:
     variable change name: Analysis2Model
@@ -29,18 +29,15 @@ cost function:
     provider: geos
     datapath: Data/inputs/geos_c12
     filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-    state variables: [ua,va,t,ps,q,qi,ql,o3ppmv,phis,frocean,frlake,
+    state variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,q,qi,ql,o3ppmv,phis,frocean,frlake,
                       frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   background error:
     covariance model: hybrid
     components:
     - covariance:
         covariance model: SABER
-        saber blocks:
-        - saber block name: BUMP_NICAS
-          saber central block: true
-          input variables: *fgatvars
-          output variables: *fgatvars
+        saber central block:
+          saber block name: BUMP_NICAS
           bump:
             method: cor
             strategy: specific_univariate
@@ -72,10 +69,9 @@ cost function:
           zero padding: 3
         localization:
           localization method: SABER
-          saber block:
+          saber central block:
             saber block name: BUMP_NICAS
-            input variables: *fgatvars
-            output variables: *fgatvars
+            active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
             bump:
               prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
               method: loc
