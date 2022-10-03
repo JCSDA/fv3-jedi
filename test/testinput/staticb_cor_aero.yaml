@@ -53,21 +53,23 @@ bump:
   - var-mom_2018041503_aero_mom
 output:
 - parameter: cor_rh
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: cor_rh.fv_core.res.nc
-  filename_trcr: cor_rh.fv_tracer.res.nc
-  filename_sfcd: cor_rh.sfc_data.nc
-  filename_sfcw: cor_rh.fv_srf_wnd.res.nc
-  filename_cplr: cor_rh.coupler.res
+  file:
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: cor_rh.fv_core.res.nc
+    filename_trcr: cor_rh.fv_tracer.res.nc
+    filename_sfcd: cor_rh.sfc_data.nc
+    filename_sfcw: cor_rh.fv_srf_wnd.res.nc
+    filename_cplr: cor_rh.coupler.res
 - parameter: cor_rv
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: cor_rv.fv_core.res.nc
-  filename_trcr: cor_rv.fv_tracer.res.nc
-  filename_sfcd: cor_rv.sfc_data.nc
-  filename_sfcw: cor_rv.fv_srf_wnd.res.nc
-  filename_cplr: cor_rv.coupler.res
+  file:
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: cor_rv.fv_core.res.nc
+    filename_trcr: cor_rv.fv_tracer.res.nc
+    filename_sfcd: cor_rv.sfc_data.nc
+    filename_sfcw: cor_rv.fv_srf_wnd.res.nc
+    filename_cplr: cor_rv.coupler.res
 
 test:
   reference filename: testoutput/staticb_cor_aero.ref

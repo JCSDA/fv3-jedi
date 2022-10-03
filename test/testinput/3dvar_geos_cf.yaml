@@ -34,11 +34,12 @@ cost function:
     - saber block name: StdDev
       input fields:
       - parameter: StdDev
-        datetime: 2020-09-03T18:00:00Z
-        set datetime on read: true
-        filetype: cube sphere history
-        datapath: Data/inputs/geos_c12
-        filename: geos_cf.stddev.nox_50_o3_25.nc4
+        file:
+          datetime: 2020-09-03T18:00:00Z
+          set datetime on read: true
+          filetype: cube sphere history
+          datapath: Data/inputs/geos_c12
+          filename: geos_cf.stddev.nox_50_o3_25.nc4
 
   observations:
     observers:

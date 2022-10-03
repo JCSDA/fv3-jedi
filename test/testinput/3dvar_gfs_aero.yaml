@@ -45,31 +45,33 @@ cost function:
         load_nicas_local: true
       input fields:
       - parameter: universe radius
-        set datetime on read: true
-        datetime: 2018-04-15T00:00:00Z
-        filetype: fms restart
-        datapath: Data/staticb_aero/
-        filename_core: 20180415.000000.cor_rh.fv_core.res.nc
-        filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
-        filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.cor_rh.coupler.res
-        date: 2018-04-15T00:00:00Z
+        file:
+          set datetime on read: true
+          datetime: 2018-04-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+          filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+          filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.cor_rh.coupler.res
+          date: 2018-04-15T00:00:00Z
     saber outer blocks:
     - saber block name: StdDev
       input fields:
       - parameter: StdDev
-        datetime: 2018-04-15T00:00:00Z
-        set datetime on read: true
-        filetype: fms restart
-        psinfile: true
-        datapath: Data/staticb_aero/
-        filename_core: 20180415.000000.stddev.fv_core.res.nc
-        filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
-        filename_sfcd: 20180415.000000.stddev.sfc_data.nc
-        filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
-        filename_cplr: 20180415.000000.stddev.coupler.res
-        date: 2018-04-15T00:00:00Z
+        file:
+          datetime: 2018-04-15T00:00:00Z
+          set datetime on read: true
+          filetype: fms restart
+          psinfile: true
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.000000.stddev.fv_core.res.nc
+          filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.stddev.sfc_data.nc
+          filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.stddev.coupler.res
+          date: 2018-04-15T00:00:00Z
   observations:
     observers:
     - obs space:

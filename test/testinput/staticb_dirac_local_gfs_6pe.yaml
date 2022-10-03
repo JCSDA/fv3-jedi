@@ -34,31 +34,33 @@ background error:
         variables: [surface_pressure]
     input fields:
     - parameter: universe radius
-      datetime: 2020-12-15T00:00:00Z
-      set datetime on read: true
-      filetype: fms restart
-      psinfile: true
-      datapath: Data/staticb/
-      filename_core: 20201215.000000.cor_rh_1.fv_core.res.nc
-      filename_trcr: 20201215.000000.cor_rh_1.fv_tracer.res.nc
-      filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
-      filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
-      filename_cplr: 20201215.000000.cor_rh_1.coupler.res
+      file:
+        datetime: 2020-12-15T00:00:00Z
+        set datetime on read: true
+        filetype: fms restart
+        psinfile: true
+        datapath: Data/staticb/
+        filename_core: 20201215.000000.cor_rh_1.fv_core.res.nc
+        filename_trcr: 20201215.000000.cor_rh_1.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
+        filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.cor_rh_1.coupler.res
   saber outer blocks:
   - saber block name: StdDev
     active variables: *active_vars
     input fields:
     - parameter: StdDev
-      set datetime on read: true
-      datetime: 2020-12-15T00:00:00Z
-      filetype: fms restart
-      psinfile: true
-      datapath: Data/staticb/
-      filename_core: 20201215.000000.stddev.fv_core.res.nc
-      filename_trcr: 20201215.000000.stddev.fv_tracer.res.nc
-      filename_sfcd: 20201215.000000.stddev.sfc_data.nc
-      filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
-      filename_cplr: 20201215.000000.stddev.coupler.res
+      file:
+        set datetime on read: true
+        datetime: 2020-12-15T00:00:00Z
+        filetype: fms restart
+        psinfile: true
+        datapath: Data/staticb/
+        filename_core: 20201215.000000.stddev.fv_core.res.nc
+        filename_trcr: 20201215.000000.stddev.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.stddev.sfc_data.nc
+        filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.stddev.coupler.res
   - saber block name: BUMP_VerticalBalance
     active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
     bump:

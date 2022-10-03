@@ -55,74 +55,87 @@ bump:
     mass_fraction_of_sea_salt004_in_air: [300.0e3]
   ne: 30
 input fields:
-- parameter: var::1
-  set datetime on read: true
-  datetime: 2018-04-14T21:00:00Z
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: 20180414.210000.var.fv_core.res.nc
-  filename_trcr: 20180414.210000.var.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.var.sfc_data.nc
-  filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.var.coupler.res
-- parameter: m4::1
-  set datetime on read: true
-  datetime: 2018-04-14T21:00:00Z
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: 20180414.210000.m4.fv_core.res.nc
-  filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
-  filename_sfcd: 20180414.210000.m4.sfc_data.nc
-  filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
-  filename_cplr: 20180414.210000.m4.coupler.res
-- parameter: var::2
-  set datetime on read: true
-  datetime: 2018-04-15T00:00:00Z
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: 20180415.000000.var.fv_core.res.nc
-  filename_trcr: 20180415.000000.var.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.var.sfc_data.nc
-  filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.var.coupler.res
-- parameter: m4::2
-  datetime: 2018-04-15T00:00:00Z
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: 20180415.000000.m4.fv_core.res.nc
-  filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
-  filename_sfcd: 20180415.000000.m4.sfc_data.nc
-  filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.000000.m4.coupler.res
-- parameter: var::3
-  set datetime on read: true
-  datetime: 2018-04-15T03:00:00Z
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: 20180415.030000.var.fv_core.res.nc
-  filename_trcr: 20180415.030000.var.fv_tracer.res.nc
-  filename_sfcd: 20180415.030000.var.sfc_data.nc
-  filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.030000.var.coupler.res
-- parameter: m4::3
-  set datetime on read: true
-  datetime: 2018-04-15T03:00:00Z
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: 20180415.030000.m4.fv_core.res.nc
-  filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
-  filename_sfcd: 20180415.030000.m4.sfc_data.nc
-  filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
-  filename_cplr: 20180415.030000.m4.coupler.res
+- parameter: var
+  component: 1
+  file:
+    set datetime on read: true
+    datetime: 2018-04-14T21:00:00Z
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: 20180414.210000.var.fv_core.res.nc
+    filename_trcr: 20180414.210000.var.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.var.sfc_data.nc
+    filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.var.coupler.res
+- parameter: m4
+  component: 1
+  file:
+    set datetime on read: true
+    datetime: 2018-04-14T21:00:00Z
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: 20180414.210000.m4.fv_core.res.nc
+    filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
+    filename_sfcd: 20180414.210000.m4.sfc_data.nc
+    filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20180414.210000.m4.coupler.res
+- parameter: var
+  component: 2
+  file:
+    set datetime on read: true
+    datetime: 2018-04-15T00:00:00Z
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.000000.var.fv_core.res.nc
+    filename_trcr: 20180415.000000.var.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.var.sfc_data.nc
+    filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.var.coupler.res
+- parameter: m4
+  component: 2
+  file:
+    datetime: 2018-04-15T00:00:00Z
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.000000.m4.fv_core.res.nc
+    filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
+    filename_sfcd: 20180415.000000.m4.sfc_data.nc
+    filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.000000.m4.coupler.res
+- parameter: var
+  component: 3
+  file:
+    set datetime on read: true
+    datetime: 2018-04-15T03:00:00Z
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.030000.var.fv_core.res.nc
+    filename_trcr: 20180415.030000.var.fv_tracer.res.nc
+    filename_sfcd: 20180415.030000.var.sfc_data.nc
+    filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.030000.var.coupler.res
+- parameter: m4
+  component: 3
+  file:
+    set datetime on read: true
+    datetime: 2018-04-15T03:00:00Z
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: 20180415.030000.m4.fv_core.res.nc
+    filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
+    filename_sfcd: 20180415.030000.m4.sfc_data.nc
+    filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
+    filename_cplr: 20180415.030000.m4.coupler.res
 output:
 - parameter: stddev
-  filetype: fms restart
-  datapath: Data/staticb_aero/
-  filename_core: stddev.fv_core.res.nc
-  filename_trcr: stddev.fv_tracer.res.nc
-  filename_sfcd: stddev.sfc_data.nc
-  filename_sfcw: stddev.fv_srf_wnd.res.nc
-  filename_cplr: stddev.coupler.res
+  file:
+    filetype: fms restart
+    datapath: Data/staticb_aero/
+    filename_core: stddev.fv_core.res.nc
+    filename_trcr: stddev.fv_tracer.res.nc
+    filename_sfcd: stddev.sfc_data.nc
+    filename_sfcw: stddev.fv_srf_wnd.res.nc
+    filename_cplr: stddev.coupler.res
 
 test:
   reference filename: testoutput/staticb_var_aero.ref
