@@ -170,7 +170,11 @@ self%npes = self%layout(1) * self%layout(2)
 !to write to the same file.
 
 self%nxg = 4*(self%npx - 1)
-self%nyg = 2*(self%npy - 1)
+if ( trim(self%gridtype) == 'latlon' ) then
+  self%nyg = 2*(self%npy - 1) + 1
+else
+  self%nyg = 2*(self%npy - 1)
+endif
 self%nx = 0
 self%ny = 0
 
@@ -203,12 +207,13 @@ if (self%comm%rank() <= self%npes-1) then
   enddo
 
   if ( trim(self%gridtype) == 'latlon' ) then
-     dy = 180.0_kind_real / real(self%nyg,kind_real)
+     dy = 180.0_kind_real / real(self%nyg-1,kind_real)
 
-     self%lats(1) = -90.0_kind_real + 0.5_kind_real * dy
+     self%lats(1) = -90.0_kind_real
      do i = 2,self%ny
-        self%lats(i) = self%lats(i-1) + dy
+        self%lats(i) = (i-1)*dy + self%lats(1)
      enddo
+     self%lats(self%ny) = 90.0_kind_real
 
   elseif ( trim(self%gridtype) == 'gaussian' ) then
      allocate(slat(self%ny))
