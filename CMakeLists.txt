@@ -79,8 +79,15 @@ find_package( ropp-ufo QUIET )
 # geos-aero
 find_package( geos-aero QUIET )
 
-# gsibclim
-find_package( gsibclim QUIET )
+# gsibec
+find_package( gsibec 1.0.6 QUIET )
+if( gsibec_FOUND )
+    message( STATUS "FV3-SABER block GSI is enabled" )
+    add_definitions(-DENABLE_GSIBEC=1)
+endif()
+
+# ncep-sp
+find_package( sp QUIET )
 
 # ufo
 find_package( ufo 1.3.0 REQUIRED )

@@ -18,7 +18,7 @@ output geometry:
 
 variable change:
   variable change name: Control2Analysis
-  output variables: [psi,chi,t,ps,rh,liq_wat,ice_wat,o3mr]
+  output variables: [psi,chi,t,ps,sphum,liq_wat,ice_wat,o3mr]
   do inverse: true
   femps_iterations: 60
   femps_ngrids: 2

@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -40,7 +40,7 @@ bump:
     stream_function: 2
     velocity_potential: 2
     air_temperature: 2
-    relative_humidity: 2
+    specific_humidity: 2
     cloud_liquid_water: 2
     ozone_mass_mixing_ratio: 2
     surface_pressure: 2
@@ -48,7 +48,7 @@ bump:
   ne: 30
   grids:
   - prefix: cor_3D_gfs
-    variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
     fname_samp: var-mom_3D_2020121421_gfs_sampling
     fname_mom:
     - var-mom_3D_2020121421_gfs_mom

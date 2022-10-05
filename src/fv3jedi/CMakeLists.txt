@@ -20,6 +20,8 @@ list( APPEND fv3jedi_src_files
   Geometry/Geometry.interface.h
   Geometry/fv3jedi_geom_interface_mod.F90
   Geometry/fv3jedi_geom_mod.f90
+  Geometry/TimeInvariantFieldsHelpers.cc
+  Geometry/TimeInvariantFieldsHelpers.h
   GeometryIterator/GeometryIterator.cc
   GeometryIterator/GeometryIterator.h
   GeometryIterator/GeometryIterator.interface.h

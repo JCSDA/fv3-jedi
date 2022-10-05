@@ -11,12 +11,12 @@ cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------
-Norm of StdDev:481521.4807316289
-Norm of universe radius:8180360.980600939
-Norm of nicas_a::1:0.8252422314684135
-Norm of nicas_a::2:0.232675103112397
-Norm of nicas_norm::1:1.030742111046604
-Norm of nicas_norm::2:1.007408567883959
+Norm of input parameter StdDev: 481521.4807316289
+Norm of input parameter universe radius: 8292676.255724362
+Norm of input parameter nicas_a::1: 0.8134823311185116
+Norm of input parameter nicas_a::2: 0.2589849126784687
+Norm of input parameter nicas_norm::1: 1.033199906827785
+Norm of input parameter nicas_norm::2: 1.007691843628437
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 9 | cube sphere face size: C12
@@ -25,7 +25,7 @@ northward_wind                               | Min:-3.8748942004522821e-02 Max:+
 air_temperature                              | Min:-3.8652722469235706e-02 Max:+3.6526245395114731e-01 RMS:+2.2163416734734135e-03
 air_pressure_thickness                       | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 surface_pressure                             | Min:-9.2695004988731255e-01 Max:+3.5488461988336573e-01 RMS:+1.0810613143329957e-01
-specific_humidity                            | Min:-1.7528844812991633e-11 Max:+0.0000000000000000e+00 RMS:+7.8254599403652167e-14
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00

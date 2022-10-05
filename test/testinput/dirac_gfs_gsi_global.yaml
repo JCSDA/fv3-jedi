@@ -3,6 +3,8 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
   akbk: Data/fv3files/akbk127.nc4
+  layout: [1,1]
+  io_layout: [1,1]
   npx: 13
   npy: 13
   npz: 127
@@ -21,13 +23,17 @@ background error:
   covariance model: SABER
   saber central block:
     saber block name: gsi covariance
-    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
+    gsi akbk: Data/fv3files/akbk127.nc4
+    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
+    gsi berror namelist file: Data/gsibec/gfs_gsi_global_192x96x127.nml
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false
   saber outer blocks:
   - saber block name: gsi interpolation to model grid
-    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
+    gsi akbk: Data/fv3files/akbk127.nc4
+    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
+    gsi berror namelist file: Data/gsibec/gfs_gsi_global_192x96x127.nml
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false

@@ -1,0 +1,228 @@
+cost function:
+  cost type: 3D-Var
+# analysis variables: &3dvars [ua,va,t,ps,q,qi,ql,o3ppmv]
+  analysis variables: &3dvars [ua,va,t,ps,q]
+  window begin: 2020-12-14T21:00:00Z
+  window length: PT6H
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/input_geos_c12.nml
+      field table filename: Data/fv3files/field_table_gmao
+    akbk: Data/fv3files/akbk72.nc4
+    layout: [1,1]
+    npx: 13
+    npy: 13
+    npz: 72
+    field metadata override: Data/fieldmetadata/geos.yaml
+  background:
+    datetime: 2020-12-15T00:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/inputs/geos_c12
+#   filenames: [geos.bkg.20201215_000000z.nc4, geos.bkg.crtmsrf.20201215_000000z.nc4]
+    filename: geos.bkg.20201215_000000z.nc4
+    state variables: [ua,va,t,delp,ps,q,phis]
+#   state variables: [ua,va,t,ps,q,qi,ql,qr,qs,o3ppmv,phis,frocean,frlake,frseaice,vtype,
+#                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+#---------------------------------
+  background error:
+    covariance model: hybrid
+    components:
+    - covariance:
+        covariance model: SABER
+        saber blocks:
+        - saber block name: gsi covariance
+          saber central block: true
+          input variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                                   specific_humidity]
+          output variables: *bvars
+          gsi akbk: Data/fv3files/akbk72.nc4
+          gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+          gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
+          processor layout x direction: 3
+          processor layout y direction: 2
+##        debugging bypass gsi: true
+          debugging mode: false
+        - saber block name: gsi interpolation to model grid
+          input variables: *bvars
+          output variables: *bvars
+          gsi akbk: Data/fv3files/akbk72.nc4
+          gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+          gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
+          processor layout x direction: 3
+          processor layout y direction: 2
+          debugging mode: false
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables: *bvars
+          output variables: *3dvars
+      weight:
+        value: 1.00
+ 
+    - covariance:
+        covariance model: FV3JEDI-ID
+        date: &adate 2020-12-15T00:00:00Z
+      weight:
+        value: 0.0
+
+#   - covariance:
+#       covariance model: ensemble
+#       members from template:
+#         template:
+#           datetime: 2020-12-15T00:00:00Z
+#           filetype: cube sphere history
+#           provider: geos
+#           state variables: *3dvars
+#           datapath: Data/inputs/geos_c12/ensemble
+#           filename: mem%mem%/x0044.traj_lcv.20201215_0000z.nc4
+#         pattern: '%mem%'
+#         nmembers: 10
+#         zero padding: 3
+#       localization:
+#         localization method: SABER
+#         saber block:
+#           saber block name: BUMP_NICAS
+#           input variables: *3dvars
+#           output variables: *3dvars
+#           bump:
+#             prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+#             method: loc
+#             strategy: common
+#             load_nicas_local: true
+#             verbosity: main
+#             io_keys: [common]
+#             io_values: [fixed_2500km_0.3]
+#     weight:
+#       value: 0.00
+#---------------------------------
+  observations:
+    observers:
+    - obs space:
+        name: Radiosonde
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/hofx/sondes_hyb-3dvar-geos_2020121500_m.nc4
+        simulated variables: [eastward_wind, northward_wind, air_temperature, surface_pressure, specific_humidity]
+      obs operator:
+        name: Composite
+        components:
+        - name: VertInterp
+          variables:
+          - name: eastward_wind
+          - name: northward_wind
+          - name: air_temperature
+#         - name: virtual_temperature
+          - name: specific_humidity
+        - name: SfcPCorrected
+          variables:
+          - name: surface_pressure
+          da_psfc_scheme: GSI
+ 
+      linear obs operator:
+        name: Composite
+        components:
+        - name: VertInterp
+          variables:
+          - name: eastward_wind
+          - name: northward_wind
+          - name: air_temperature
+#         - name: virtual_temperature
+          - name: specific_humidity
+        - name: Identity
+          variables:
+          - name: surface_pressure
+
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      - filter: PreQC
+        maxvalue: 4
+#     - filter: Background Check
+#       filter variables:
+#       - name: eastward_wind
+#       - name: northward_wind
+#       - name: air_temperature
+#       - name: surface_pressure
+#       threshold: 6.0
+      - filter: Perform Action
+        filter variables: [eastward_wind, northward_wind, air_temperature, specific_humidity]
+##      filter variables: [eastward_wind, northward_wind, air_temperature, virtual_temperature]
+        action:
+          name: assign error
+          error function:
+            name: GsiFinalObsError/eastward_wind
+            name: GsiFinalObsError/northward_wind
+            name: GsiFinalObsError/air_temperature
+##          name: GsiFinalObsError/virtual_temperature
+            name: GsiFinalObsError/specific_humidity
+      - filter: Perform Action
+        filter variables: [surface_pressure]
+        action:
+          name: assign error
+          error function:
+            name: GsiFinalObsError/surface_pressure
+ 
+
+final:
+  diagnostics:
+    departures: oman
+output:
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/analysis
+  filename: 3dvar-sondes-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  first: PT0H
+  frequency: PT1H
+variational:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 5
+    gradient norm reduction: 1e-10
+##  test: on
+    geometry:
+      akbk: Data/fv3files/akbk72.nc4
+      layout: [1,1]
+      npx: 13
+      npy: 13
+      npz: 72
+      field metadata override: Data/fieldmetadata/geos.yaml
+    diagnostics:
+      departures: ombg
+#   online diagnostics:
+#     write increment: true
+#     increment:
+#       filetype: cube sphere history
+#       provider: geos
+#       datapath: Data/analysis
+#       filename: 3dvar_sondes_geos.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
+# - ninner: 5
+#   gradient norm reduction: 1e-10
+##  test: on
+#   geometry:
+#     akbk: Data/fv3files/akbk72.nc4
+#     layout: [1,1]
+#     npx: 13
+#     npy: 13
+#     npz: 72
+#     field metadata override: Data/fieldmetadata/geos.yaml
+#   diagnostics:
+#     departures: ombg
+#   online diagnostics:
+#     write increment: true
+#     increment:
+#       filetype: cube sphere history
+#       provider: geos
+#       datapath: Data/analysis
+#       filename: 3dvar_sondes_geos.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
+
+test:
+  reference filename: testoutput/3dvar_geos_sondes.ref
+  float relative tolerance: 1.0e-1
+  integer tolerance: 3
+  test output filename: testoutput/3dvar_geos_sondes.test.out
