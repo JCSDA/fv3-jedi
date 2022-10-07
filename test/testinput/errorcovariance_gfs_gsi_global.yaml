@@ -10,7 +10,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-analysis variables: &anavars [psi,chi,T,ps,sphum,ice_wat,liq_wat,o3mr]
+analysis variables: &anavars [psi,chi,t,ps,sphum]
 background:
   filetype: fms restart
   datetime: 2020-12-15T00:00:00Z
@@ -26,20 +26,26 @@ background error:
   covariance model: SABER
   saber blocks:
   - saber block name: gsi covariance
+    saber central block: true
     input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
-                             specific_humidity,cloud_liquid_ice,cloud_liquid_water,
-                             ozone_mass_mixing_ratio]
+                             specific_humidity]
     output variables: *bvars
-    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
+    gsi akbk: Data/fv3files/akbk127.nc4
+    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
+    gsi berror namelist file: Data/gsibec/gfs_gsicv_global_192x96x127.nml
     processor layout x direction: 3
     processor layout y direction: 2
+    debugging deep bypass gsi B error: true
     debugging mode: false
   - saber block name: gsi interpolation to model grid
     input variables: *bvars
     output variables: *bvars
-    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-global-l127y192.nc4
+    gsi akbk: Data/fv3files/akbk127.nc4
+    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
+    gsi berror namelist file: Data/gsibec/gfs_gsicv_global_192x96x127.nml
     processor layout x direction: 3
     processor layout y direction: 2
+    debugging deep bypass gsi B error: true
     debugging mode: false
   # Does nothing except rename the variables seen by saber (psi -> stream_function etc).
   linear variable change:

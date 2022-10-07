@@ -11,8 +11,7 @@ from ewok import Task
 class getStaticB(Task):
 
     def setup(self, config, build):
-
-        if ('_balfile' in config['BACKGROUND_ERROR']):
+        if ('BACKGROUND_ERROR' in config and '_balfile' in config['BACKGROUND_ERROR']):
             balfile = config['BACKGROUND_ERROR']['_balfile']
             bump2d = config['BACKGROUND_ERROR']['_prefix2d']
             bump3d = config['BACKGROUND_ERROR']['_prefix3d']

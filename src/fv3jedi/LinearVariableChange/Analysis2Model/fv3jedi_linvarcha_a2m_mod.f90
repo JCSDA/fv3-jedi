@@ -85,6 +85,7 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ps
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_ud
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_vd
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_delp
+real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_ps
 
 do index_mod = 1, xmod%nf
 
@@ -131,7 +132,7 @@ do index_mod = 1, xmod%nf
       !Already done above
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
-          "A2M Multiply: analysis increment va         => linearized model ud"
+          "A2M Multiply: analysis increment va         => linearized model vd"
     endif
 
   elseif (xmod%fields(index_mod)%short_name == 'delp') then
@@ -143,9 +144,15 @@ do index_mod = 1, xmod%nf
       do k = 1,geom%npz
         xmod_delp(:,:,k) = (geom%bk(k+1)-geom%bk(k))*xana_ps(:,:,1)
       enddo
+      ! when ps in model, need to make it consistent w/ delp change
+      ! NOTE: note changed, not to change ctests; but this should be revisited
+!     if (xmod%fields(index_mod)%short_name == 'ps') then
+!        call xmod%get_field('ps', xmod_ps)
+!        xmod_ps(:,:,1) = sum(xmod_delp,3)
+!     endif
       failed = .false.
       if (xmod%f_comm%rank() == 0) write(*,"(A)") &
-          "A2M Multiply: analysis increment ps         => linearized model ud"
+          "A2M Multiply: analysis increment ps         => linearized model delp"
     endif
 
   endif

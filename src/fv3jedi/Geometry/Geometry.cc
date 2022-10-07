@@ -18,6 +18,7 @@
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
+#include "fv3jedi/Geometry/TimeInvariantFieldsHelpers.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.interface.h"
 
 // -------------------------------------------------------------------------------------------------
@@ -63,13 +64,21 @@ Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
   // Fill extra fields. This contains both SABER-related fields and any fields requested to be
   // read from state files in the yamls.
   extraFields_ = atlas::FieldSet();
+  // Add SABER fields
   fv3jedi_geom_set_and_fill_extra_fields_f90(keyGeom_, extraFields_.get());
   if (params.timeInvariantFields.value() != boost::none) {
-    const State extraFieldsState(*this, *params.timeInvariantFields.value());
+    const auto & timeInvFieldsParams = params.timeInvariantFields.value().value();
+    State extraFieldsState(*this, timeInvFieldsParams.stateFields.value());
+    // Add fields read directly from file
     atlas::FieldSet extraFieldSet{};
     extraFieldsState.toFieldSet(extraFieldSet);
     for (const auto & ef : extraFieldSet) {
       extraFields_.add(ef);
+    }
+    // Compute and add derived time-invariant fields
+    if (timeInvFieldsParams.derivedFields.value() != boost::none) {
+      const oops::Variables derivedFields = timeInvFieldsParams.derivedFields.value().value();
+      insertDerivedTimeInvariantFields(extraFields_, derivedFields);
     }
   }
 }

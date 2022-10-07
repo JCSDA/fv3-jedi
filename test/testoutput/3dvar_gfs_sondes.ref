@@ -1,0 +1,23 @@
+ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+ CostJo   : Nonlinear Jo(Radiosonde) = 5.0887536877541657e+04, nobs = 1457, Jo/n = 3.4926243567290086e+01, err = 2.0329386501381626e+00
+ CostJo   : Nonlinear Jo(ompsnm_npp) = 9.0691745675646525e+03, nobs = 6835, Jo/n = 1.3268726507044115e+00, err = 6.0000000000000000e+00
+ CostJo   : Nonlinear Jo(omi_aura) = 9.0691745675646525e+03, nobs = 6835, Jo/n = 1.3268726507044115e+00, err = 6.0000000000000000e+00
+ CostFunction: Nonlinear J = 6.9025886012670962e+04
+ DRIPCGMinimizer: reduction in residual norm = 7.7389231154124060e-04
+ CostFunction::addIncrement: Analysis: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 8 | cube sphere face size: C12
+ eastward_wind                                | Min:-1.0807749437253621e+02 Max:+1.5254043464186790e+02 RMS:+2.2162933497638551e+01
+ northward_wind                               | Min:-1.0151424696654098e+02 Max:+1.0656734002773096e+02 RMS:+1.0398155215782605e+01
+ air_temperature                              | Min:+1.5865032003860040e+02 Max:+3.0652567459757842e+02 RMS:+2.4962365610377856e+02
+ air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079794e+02
+ surface_pressure                             | Min:+5.3983442603527634e+04 Max:+1.0473443059499377e+05 RMS:+9.8983812846881381e+04
+ specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8723704386097544e-02 RMS:+4.6967810887229211e-03
+ sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+ ozone_mass_mixing_ratio                      | Min:+2.8166014356040369e-09 Max:+1.7471054542208555e-05 RMS:+4.3563714362995376e-06
+ ----------------------------------------------------------------------------------------------------
+ CostJb   : Nonlinear Jb = 242.0526792767981
+ CostJo   : Nonlinear Jo(Radiosonde) = 50412.44571194971, nobs = 1457, Jo/n = 34.6001686423814, err = 2.032938650138163
+ CostJo   : Nonlinear Jo(ompsnm_npp) = 7632.008160920499, nobs = 6835, Jo/n = 1.116606899915216, err = 6
+ CostJo   : Nonlinear Jo(omi_aura) = 7632.008160920499, nobs = 6835, Jo/n = 1.116606899915216, err = 6
+ CostFunction: Nonlinear J = 65918.5147130675

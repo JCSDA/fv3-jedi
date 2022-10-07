@@ -47,7 +47,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // --------------------------------
   if (vars <= x.variables()) {
     x.updateFields(vars);
-    oops::Log::info() << "VariableChange::changeVarInverse done (identity)" << std::endl;
+    oops::Log::info() << "VariableChange::changeVar done (identity)" << std::endl;
     return;
   }
 

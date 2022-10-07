@@ -7,13 +7,14 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-  time invariant state fields:
-    datetime: 2019-12-15T18:00:00Z
-    filetype: fms restart
-    skip coupler file: true
-    state variables: [orog_filt]
-    datapath: Data/inputs/gfs_land_c48/grid/
-    filename_orog: C48_oro_data.nc
+  time invariant fields:
+    state fields:
+      datetime: 2019-12-15T18:00:00Z
+      filetype: fms restart
+      skip coupler file: true
+      state variables: [orog_filt]
+      datapath: Data/inputs/gfs_land_c48/grid/
+      filename_orog: C48_oro_data.nc
 
 window begin: &date '2019-12-15T00:00:00Z'
 window end: 2019-12-16T00:00:00Z
