@@ -34,19 +34,19 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
-  : geom_(new Geometry(geom)), time_(time),
-    vars_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
+  : geom_(geom), time_(time),
+    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars))
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
 
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
+  fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
   oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const Parameters_ & params)
-  : geom_(new Geometry(geom)), time_(util::DateTime())
+  : geom_(geom), time_(util::DateTime())
 {
   oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
 
@@ -67,10 +67,10 @@ State::State(const Geometry & geom, const Parameters_ & params)
   }
 
   // Set long name variables
-  vars_ = geom_->fieldsMetaData().getLongNameFromAnyName(vars_);
+  vars_ = geom_.fieldsMetaData().getLongNameFromAnyName(vars_);
 
   // Allocate state
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
+  fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
 
   // Generate analytical state or read from file
   if (params.analytic.value() != boost::none) {
@@ -85,12 +85,12 @@ State::State(const Geometry & geom, const Parameters_ & params)
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & resol, const State & other)
-  : geom_(new Geometry(resol)), vars_(other.vars_), time_(other.time_)
+  : geom_(resol), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
-  fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
-                                 other.geom_->toFortran());
+  fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
+  fv3jedi_state_change_resol_f90(keyState_, geom_.toFortran(), other.keyState_,
+                                 other.geom_.toFortran());
   oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
 }
 
@@ -100,7 +100,7 @@ State::State(const State & other)
   : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "State::State (from other) starting" << std::endl;
-  fv3jedi_state_create_f90(keyState_, geom_->toFortran(), vars_, time_);
+  fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
   fv3jedi_state_copy_f90(keyState_, other.keyState_);
   oops::Log::trace() << "State::State (from other) done" << std::endl;
 }
@@ -122,15 +122,15 @@ State & State::operator=(const State & rhs) {
 // -------------------------------------------------------------------------------------------------
 
 void State::changeResolution(const State & other) {
-  fv3jedi_state_change_resol_f90(keyState_, geom_->toFortran(), other.keyState_,
-                                 other.geom_->toFortran());
+  fv3jedi_state_change_resol_f90(keyState_, geom_.toFortran(), other.keyState_,
+                                 other.geom_.toFortran());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void State::updateFields(const oops::Variables & newVars) {
   vars_ = oops::Variables(newVars);
-  fv3jedi_state_update_fields_f90(keyState_, geom_->toFortran(), newVars);
+  fv3jedi_state_update_fields_f90(keyState_, geom_.toFortran(), newVars);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ State & State::operator+=(const Increment & dx) {
   // Increment variables must be a equal to or a subset of the State variables
   ASSERT(dx.variables() <= vars_);
   // Interpolate increment to state resolution
-  Increment dx_sr(*geom_, dx);
+  Increment dx_sr(geom_, dx);
   // Call transform and add
   fv3jedi_state_add_increment_f90(keyState_, dx_sr.toFortran());
   return *this;
@@ -154,14 +154,6 @@ void State::analytic_init(const AnalyticICParameters_ & params, const Geometry &
 
 // -------------------------------------------------------------------------------------------------
 
-void State::fillGeomOrography(Geometry & geom) const {
-  oops::Log::info() << "Attempting to fv3jedi_state_fill_geom_orography_f90" << std::endl;
-  fv3jedi_state_fill_geom_orography_f90(keyState_, geom.toFortran());
-  oops::Log::info() << "Managed to fv3jedi_state_fill_geom_orography_f90" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
 void State::read(const Parameters_ & params) {
   // Optionally set the datetime on read (needed for some bump applications)
   if (params.setdatetime.value() != boost::none) {
@@ -169,14 +161,14 @@ void State::read(const Parameters_ & params) {
       time_ = *params.datetime.value();
     }
   }
-  IOBase_ io(IOFactory::create(*geom_, *params.ioParametersWrapper.ioParameters.value()));
+  IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
   io->read(*this);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void State::write(const WriteParameters_ & params) const {
-  IOBase_ io(IOFactory::create(*geom_, *params.ioParametersWrapper.ioParameters.value()));
+  IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
   io->write(*this);
 }
 
@@ -239,13 +231,13 @@ double State::norm() const {
 // -------------------------------------------------------------------------------------------------
 
 void State::toFieldSet(atlas::FieldSet & fset) const {
-  fv3jedi_state_to_fieldset_f90(keyState_, geom_->toFortran(), vars_, fset.get());
+  fv3jedi_state_to_fieldset_f90(keyState_, geom_.toFortran(), vars_, fset.get());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void State::fromFieldSet(const atlas::FieldSet & fset) {
-  fv3jedi_state_from_fieldset_f90(keyState_, geom_->toFortran(), vars_, fset.get());
+  fv3jedi_state_from_fieldset_f90(keyState_, geom_.toFortran(), vars_, fset.get());
 }
 
 // -----------------------------------------------------------------------------

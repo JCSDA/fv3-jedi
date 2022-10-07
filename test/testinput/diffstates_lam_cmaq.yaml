@@ -4,11 +4,11 @@ state geometry:
     field table filename: Data/fv3files/field_table_lam_cmaq
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+  field metadata override: Data/fieldmetadata/lam_cmaq.yaml
 increment geometry:
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+  field metadata override: Data/fieldmetadata/lam_cmaq.yaml
 state1: #Analysis
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart
@@ -18,7 +18,7 @@ state1: #Analysis
   filename_sfcd: 20200903.180000.3dvar_lam_cmaq_no2.sfc_data.nc
   filename_sfcw: 20200903.180000.3dvar_lam_cmaq_no2.fv_srf_wnd.res.nc
   filename_cplr: 20200903.180000.3dvar_lam_cmaq_no2.coupler.res
-  state variables: [no2]
+  state variables: [volume_mixing_ratio_of_no2]
 state2: #background
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart
@@ -28,7 +28,7 @@ state2: #background
   filename_sfcd: 20200903.180000.sfc_data.res.tile1.nc
   filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
   filename_cplr: 20200903.180000.coupler.res
-  state variables: [no2]
+  state variables: [volume_mixing_ratio_of_no2]
 output:
   filetype: fms restart
   datapath: Data/increment/

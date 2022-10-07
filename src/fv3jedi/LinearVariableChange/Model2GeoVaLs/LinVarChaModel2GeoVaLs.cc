@@ -26,11 +26,11 @@ static LinearVariableChangeMaker<LinVarChaModel2GeoVaLs> makerDefault_("default"
 // -------------------------------------------------------------------------------------------------
 LinVarChaModel2GeoVaLs::LinVarChaModel2GeoVaLs(const State & bg, const State & fg,
                                     const Geometry & resol, const eckit::LocalConfiguration & conf)
-  : LinearVariableChangeBase(), geom_(new Geometry(resol))
+  : LinearVariableChangeBase(), geom_(resol)
 {
   util::Timer timer(classname(), "LinVarChaModel2GeoVaLs");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
-  fv3jedi_lvc_model2geovals_create_f90(keyFtnConfig_, geom_->toFortran(), bg.toFortran(),
+  fv3jedi_lvc_model2geovals_create_f90(keyFtnConfig_, geom_.toFortran(), bg.toFortran(),
                                        fg.toFortran(), conf);
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
@@ -45,7 +45,7 @@ LinVarChaModel2GeoVaLs::~LinVarChaModel2GeoVaLs() {
 void LinVarChaModel2GeoVaLs::multiply(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiply");
   oops::Log::trace() << classname() << " multiply starting" << std::endl;
-  fv3jedi_lvc_model2geovals_multiply_f90(keyFtnConfig_, geom_->toFortran(),
+  fv3jedi_lvc_model2geovals_multiply_f90(keyFtnConfig_, geom_.toFortran(),
                                          dxin.toFortran(), dxout.toFortran());
   oops::Log::trace() << classname() << " multiply done" << std::endl;
 }
@@ -60,7 +60,7 @@ void LinVarChaModel2GeoVaLs::multiplyInverse(const Increment & dxin, Increment &
 void LinVarChaModel2GeoVaLs::multiplyAD(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiplyAD");
   oops::Log::trace() << classname() << " multiplyAD starting" << std::endl;
-  fv3jedi_lvc_model2geovals_multiplyadjoint_f90(keyFtnConfig_, geom_->toFortran(),
+  fv3jedi_lvc_model2geovals_multiplyadjoint_f90(keyFtnConfig_, geom_.toFortran(),
                                                 dxin.toFortran(), dxout.toFortran());
   oops::Log::trace() << classname() << " multiplyAD done" << std::endl;
 }

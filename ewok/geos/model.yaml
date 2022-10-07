@@ -1,4 +1,0 @@
-name: GEOS
-tstep: PT30M
-geos_run_directory: '$(run_dir)/Data/GeosRunDir'
-model variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]

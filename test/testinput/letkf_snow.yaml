@@ -7,7 +7,7 @@ geometry:
   npy: 49
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-land.yaml
-  orography:
+  time invariant state fields:
     datetime: 2019-12-15T18:00:00Z
     filetype: fms restart
     skip coupler file: true
@@ -42,7 +42,9 @@ observations:
         name: InefficientDistribution
       simulated variables: [totalSnowDepth]
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
     obs operator:
       name: Identity
     obs error:
@@ -87,6 +89,9 @@ driver:
   save posterior mean: true
   save posterior mean increment: true
   save posterior ensemble: false
+ # update obs config is set to true by default (which also implies halo distribution is used)
+ # need set to false here because halo distribution is NOT used for this run
+  update obs config with geometry info: false
 
 local ensemble DA:
   solver: LETKF
@@ -96,11 +101,13 @@ local ensemble DA:
     mult: 1.0
 
 output:
-  filetype: latlon
+  filetype: auxgrid
+  gridtype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/letkf.
 
 output increment:
-  filetype: latlon
+  filetype: auxgrid
+  gridtype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/xainc.
 
 test:

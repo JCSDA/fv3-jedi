@@ -6,27 +6,27 @@ input geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos-cf.yaml
+  field metadata override: Data/fieldmetadata/geos_cf.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
   interpolation method: bump
   npx: 25
   npy: 25
   npz: 72
-  field metadata override: Data/fieldmetadata/geos-cf.yaml
+  field metadata override: Data/fieldmetadata/geos_cf.yaml
 states:
 - input:
-    datetime: 2019-01-02T03:00:00Z
+    datetime: 2020-09-03T18:00:00Z
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    state variables: [delp,no2,'no',o3,ps,sphu]
+    filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    state variables: [DELP,NO2,NO,O3,PS,SPHU]
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
-   filename: geos.cf.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   filename: geos_cf.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
 test:
   reference filename: testoutput/convertstate_geos_cf.ref
   test output filename: testoutput/convertstate_geos_cf.test.out

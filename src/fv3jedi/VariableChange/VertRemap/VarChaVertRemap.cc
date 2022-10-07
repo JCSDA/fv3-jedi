@@ -23,10 +23,10 @@ namespace fv3jedi {
 static VariableChangeMaker<VarChaVertRemap> makerVarChaA2M_("VertRemap");
 // -------------------------------------------------------------------------------------------------
 VarChaVertRemap::VarChaVertRemap(const Geometry & resol, const eckit::LocalConfiguration & conf)
-  : VariableChangeBase(), geom_(new Geometry(resol)) {
+  : VariableChangeBase(), geom_(resol) {
   util::Timer timer(classname(), "VarChaVertRemap");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
-  fv3jedi_vc_vertremap_create_f90(keyFtn_, geom_->toFortran(), conf);
+  fv3jedi_vc_vertremap_create_f90(keyFtn_, geom_.toFortran(), conf);
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

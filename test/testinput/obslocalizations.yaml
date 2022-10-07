@@ -7,7 +7,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-  orography:
+  time invariant state fields:
     datetime: 2019-12-15T18:00:00Z
     filetype: fms restart
     skip coupler file: true
@@ -24,7 +24,10 @@ observations:
     distribution:
       name: InefficientDistribution
     simulated variables: ['totalSnowDepth']
-    obsdatain:  {obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc}
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
   obs localizations:
   - localization method: Horizontal SOAR
     lengthscale: 250e3

@@ -32,26 +32,54 @@ sdate = yamltools.jediformat(andate)
 filename = base + sdate + '.$(file_type).tile$(tile).nc'
 cplrfile = base + sdate + '.coupler.res'
 
-fetch(
-    model=conf['experiment']['model'],
-    type='an',
-    experiment=exp_read,
-    resolution=conf['resolution'],
-    date=yamltools.jediformat(andate),
-    target_file=filename,
-    file_format='netcdf',
-    file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-    tile=[1, 2, 3, 4, 5, 6],
-    fc_date_rendering='analysis',
-)
+if 'member' in conf:
+    print("trying to get member", conf['member'])
+    fetch(
+        model=conf['experiment']['model'],
+        type='an_ens',
+        experiment=exp_read,
+        resolution=conf['resolution'],
+        date=yamltools.jediformat(andate),
+        target_file=filename,
+        file_format='netcdf',
+        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        tile=[1, 2, 3, 4, 5, 6],
+        fc_date_rendering='analysis',
+        member=conf['member'],
+    )
 
-fetch(
-    model='gfs_metadata',
-    type='an',
-    experiment=exp_read,
-    resolution=conf['resolution'],
-    date=yamltools.jediformat(andate),
-    target_file=cplrfile,
-    file_type=['coupler.res'],
-    fc_date_rendering='analysis',
-)
+    fetch(
+        model='gfs_metadata',
+        type='an_ens',
+        experiment=exp_read,
+        resolution=conf['resolution'],
+        date=yamltools.jediformat(andate),
+        target_file=cplrfile,
+        file_type=['coupler.res'],
+        fc_date_rendering='analysis',
+        member=conf['member'],
+    )
+else:
+    fetch(
+        model=conf['experiment']['model'],
+        type='an',
+        experiment=exp_read,
+        resolution=conf['resolution'],
+        date=yamltools.jediformat(andate),
+        target_file=filename,
+        file_format='netcdf',
+        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        tile=[1, 2, 3, 4, 5, 6],
+        fc_date_rendering='analysis',
+    )
+
+    fetch(
+        model='gfs_metadata',
+        type='an',
+        experiment=exp_read,
+        resolution=conf['resolution'],
+        date=yamltools.jediformat(andate),
+        target_file=cplrfile,
+        file_type=['coupler.res'],
+        fc_date_rendering='analysis',
+    )

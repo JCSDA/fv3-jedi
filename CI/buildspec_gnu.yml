@@ -51,23 +51,16 @@ phases:
       - git lfs install # creates .gitconfig
       - mkdir -p /jcsda/fv3-bundle
 
-      #  Set crtm branch name
-      - export CRTM_JEDI_BRANCH="release/crtm_jedi"
-
       # when testing develop branch
       - if [ "$CODEBUILD_GIT_BRANCH" = "develop" ];
-        then export CODEBUILD_GIT_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
-        export CODEBUILD_GIT_BRANCH_FV3CORE="release-stable";
-        else export CODEBUILD_GIT_BRANCH_CRTM=${CODEBUILD_GIT_BRANCH};
-        export CODEBUILD_GIT_BRANCH_FV3CORE=${CODEBUILD_GIT_BRANCH};
+        then export CODEBUILD_GIT_BRANCH_FV3CORE="release-stable";
+        else export CODEBUILD_GIT_BRANCH_FV3CORE=${CODEBUILD_GIT_BRANCH};
         fi
 
       # if merging to develop
       - if [ "$GIT_BASE_BRANCH" = "develop" ];
-        then export GIT_BASE_BRANCH_CRTM=${CRTM_JEDI_BRANCH};
-        export GIT_BASE_BRANCH_FV3CORE="release-stable";
-        else export GIT_BASE_BRANCH_CRTM=${GIT_BASE_BRANCH};
-        export GIT_BASE_BRANCH_FV3CORE=${GIT_BASE_BRANCH};
+        then export GIT_BASE_BRANCH_FV3CORE="release-stable";
+        else export GIT_BASE_BRANCH_FV3CORE=${GIT_BASE_BRANCH};
         fi
 
       # Upload branch name and commit sha as CodeBuild artifact to S3
@@ -85,17 +78,11 @@ phases:
       - chmod 0700 ~/.git-credentials
       - echo "https://${GIT_USER}:${GIT_PASS}@github.com" >~/.git-credentials
 
-      # jedi-cmake
-      - ./clone.sh jcsda-internal/jedi-cmake $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle jedicmake ${GIT_BASE_BRANCH} develop
-
       # FV3-JEDI (testing repo)
-      - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH}s develop
+      - ./clone.sh jcsda-internal/fv3-jedi $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi ${GIT_BASE_BRANCH} develop
 
       # fv3-jedi-lm
       - ./clone.sh jcsda-internal/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-lm ${GIT_BASE_BRANCH} develop
-
-      # crtm
-      - ./clone.sh jcsda-internal/crtm $CODEBUILD_GIT_BRANCH_CRTM /jcsda/fv3-bundle crtm ${GIT_BASE_BRANCH_CRTM} $CRTM_JEDI_BRANCH
 
       # ioda
       - ./clone.sh jcsda-internal/ioda $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda ${GIT_BASE_BRANCH} develop
@@ -128,9 +115,6 @@ phases:
       # ropp
       - ./clone.sh jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ropp-ufo ${GIT_BASE_BRANCH} develop
 
-      #gsw
-      - ./clone.sh jcsda-internal/GSW-Fortran $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsw ${GIT_BASE_BRANCH} develop
-
       # fv3-jedi-test
       - ./clone.sh jcsda-internal/fv3-jedi-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-data ${GIT_BASE_BRANCH} develop
 
@@ -151,20 +135,16 @@ phases:
       - export BUILD_STATUS="0"
       - echo $BUILD_STATUS
 
-      - su - jedi -c "cd /home/jedi
-        && echo $CC
-        && echo $CXX
-        && echo $FC
-        && CC=mpicc CXX=mpicxx FC=mpifort
-        && ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DENABLE_GPROF=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUILD_LARGE_TESTS=OFF /jcsda/fv3-bundle"
+      - su - nonroot -c "cd /home/nonroot
+        && export jedi_cmake_ROOT=/opt/view
+        && ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SYSTEM_NAME=GNUContainer -DCTEST_UPDATE_VERSION_ONLY=FALSE -DENABLE_GPROF=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUILD_LARGE_TESTS=OFF /jcsda/fv3-bundle"
 
-      - su - jedi -c "cd /home/jedi/fv3-jedi
-        && CC=mpicc CXX=mpicxx FC=mpifort
+      - su - nonroot -c "cd /home/nonroot/fv3-jedi
         && cp ../DartConfiguration.tcl .
         && sed -i 's/fv3-bundle/fv3-bundle\/fv3-jedi/' DartConfiguration.tcl
-        && sed -i 's/home\/jedi/home\/jedi\/fv3-jedi/' DartConfiguration.tcl
+        && sed -i 's/home\/nonroot/home\/nonroot\/fv3-jedi/' DartConfiguration.tcl
         && cat DartConfiguration.tcl
-        && make -j3"
+        && make -j2"
 
       - echo $CODEBUILD_BUILD_SUCCEEDING
       - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
@@ -174,14 +154,12 @@ phases:
       - echo $BUILD_STATUS
 
      # run ctest
-      - su - jedi -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/jedi/fv3-jedi
+      - su - nonroot -c "cd /home/nonroot/fv3-jedi
         && ctest -C RelWithDebInfo -D ExperimentalTest"
 
     finally:
       # upload ctest report to CDASH
-      - su - jedi -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/jedi/fv3-jedi
+      - su - nonroot -c "cd /home/nonroot/fv3-jedi
         && ctest -C RelWithDebInfo -D ExperimentalSubmit -M Continuous -- --track Continuous --group Continuous"
 
   post_build:
@@ -193,7 +171,7 @@ phases:
       # find cdash url and upload it as CodeBuild artifact to S3
       - if [ "$BUILD_STATUS" = "1" ];
         then echo "Build & tests passed, find cdash url";
-        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/jedi/fv3-jedi/Testing $CDASH_URL);
+        url=$(bash /jcsda/fv3-bundle/fv3-jedi/CI/cdash-url.sh /home/nonroot/fv3-jedi/Testing $CDASH_URL);
         echo $url;
         echo ${url} > /jcsda/artifacts/cdash-url.txt;
         cat /jcsda/artifacts/cdash-url.txt;
@@ -203,14 +181,13 @@ phases:
 
       - if [ "$BUILD_STATUS" = "1" ] && [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ];
         then echo "Build passed, rerun failed tests";
-        su - jedi -c "CC=mpicc CXX=mpicxx FC=mpifort
-        && cd /home/jedi/fv3-jedi
+        su - nonroot -c "cd /home/nonroot/fv3-jedi
         && ctest -VV --rerun-failed";
         fi
 
 
       - echo 'Connect to CodeCov'
-      - cd /home/jedi/fv3-jedi
+      - cd /home/nonroot/fv3-jedi
       - pwd
       - ls
       - bash /jcsda/fv3-bundle/fv3-jedi/CI/codecov_script_$org_name.sh

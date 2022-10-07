@@ -23,28 +23,58 @@ base = conf['experiment']['expid'] + '.an.' + andate
 filename = base + '.$(file_type).tile$(tile).nc'
 cplrfile = base + '.coupler.res'
 
-print("saveAnalysisRun filename = ", filename)
+if 'member' in conf:
+    print("trying to save member", conf['member'])
+    print("saveAnalysisRun filename = ", filename)
 
-r2d2.store(
-    model=conf['experiment']['model'],
-    type='an',
-    experiment=conf['experiment']['expid'],
-    resolution=conf['resolution'],
-    date=andate,
-    source_file=filename,
-    file_format='netcdf',
-    file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-    tile=[1, 2, 3, 4, 5, 6],
-)
+    r2d2.store(
+        model=conf['experiment']['model'],
+        type='an_ens',
+        experiment=conf['experiment']['expid'],
+        resolution=conf['resolution'],
+        date=andate,
+        source_file=filename,
+        file_format='netcdf',
+        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        tile=[1, 2, 3, 4, 5, 6],
+        member=conf['member']
+    )
 
-print("saveAnalysisRun cplrfile = ", cplrfile)
+    print("saveAnalysisRun cplrfile = ", cplrfile)
 
-r2d2.store(
-    model='gfs_metadata',
-    type='an',
-    experiment=conf['experiment']['expid'],
-    resolution=conf['resolution'],
-    date=andate,
-    source_file=cplrfile,
-    file_type=['coupler.res'],
-)
+    r2d2.store(
+        model='gfs_metadata',
+        type='an_ens',
+        experiment=conf['experiment']['expid'],
+        resolution=conf['resolution'],
+        date=andate,
+        source_file=cplrfile,
+        file_type=['coupler.res'],
+        member=conf['member']
+    )
+else:
+    print("saveAnalysisRun filename = ", filename)
+
+    r2d2.store(
+        model=conf['experiment']['model'],
+        type='an',
+        experiment=conf['experiment']['expid'],
+        resolution=conf['resolution'],
+        date=andate,
+        source_file=filename,
+        file_format='netcdf',
+        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        tile=[1, 2, 3, 4, 5, 6],
+    )
+
+    print("saveAnalysisRun cplrfile = ", cplrfile)
+
+    r2d2.store(
+        model='gfs_metadata',
+        type='an',
+        experiment=conf['experiment']['expid'],
+        resolution=conf['resolution'],
+        date=andate,
+        source_file=cplrfile,
+        file_type=['coupler.res'],
+    )

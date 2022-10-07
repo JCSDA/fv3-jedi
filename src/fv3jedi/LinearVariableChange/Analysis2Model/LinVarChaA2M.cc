@@ -25,11 +25,11 @@ static LinearVariableChangeMaker<LinVarChaA2M> makerVarChaA2M_("Analysis2Model")
 // -------------------------------------------------------------------------------------------------
 LinVarChaA2M::LinVarChaA2M(const State & bg, const State & fg, const Geometry & resol,
                            const eckit::LocalConfiguration & conf)
-  : LinearVariableChangeBase(), geom_(new Geometry(resol))
+  : LinearVariableChangeBase(), geom_(resol)
 {
   util::Timer timer(classname(), "LinVarChaA2M");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
-  fv3jedi_linvarcha_a2m_create_f90(keyFtnConfig_, geom_->toFortran(), bg.toFortran(),
+  fv3jedi_linvarcha_a2m_create_f90(keyFtnConfig_, geom_.toFortran(), bg.toFortran(),
                                    fg.toFortran(), conf);
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
@@ -44,7 +44,7 @@ LinVarChaA2M::~LinVarChaA2M() {
 void LinVarChaA2M::multiply(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiply");
   oops::Log::trace() << classname() << " multiply starting" << std::endl;
-  fv3jedi_linvarcha_a2m_multiply_f90(keyFtnConfig_, geom_->toFortran(), dxin.toFortran(),
+  fv3jedi_linvarcha_a2m_multiply_f90(keyFtnConfig_, geom_.toFortran(), dxin.toFortran(),
                                      dxout.toFortran());
   oops::Log::trace() << classname() << " multiply done" << std::endl;
   dxout.validTime() = dxin.validTime();
@@ -53,7 +53,7 @@ void LinVarChaA2M::multiply(const Increment & dxin, Increment & dxout) const {
 void LinVarChaA2M::multiplyInverse(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiplyInverse");
   oops::Log::trace() << classname() << " multiplyInverse starting" << std::endl;
-  fv3jedi_linvarcha_a2m_multiplyinverse_f90(keyFtnConfig_, geom_->toFortran(), dxin.toFortran(),
+  fv3jedi_linvarcha_a2m_multiplyinverse_f90(keyFtnConfig_, geom_.toFortran(), dxin.toFortran(),
                                             dxout.toFortran());
   oops::Log::trace() << classname() << " multiplyInverse done" << std::endl;
   dxout.validTime() = dxin.validTime();
@@ -62,7 +62,7 @@ void LinVarChaA2M::multiplyInverse(const Increment & dxin, Increment & dxout) co
 void LinVarChaA2M::multiplyAD(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiplyAD");
   oops::Log::trace() << classname() << " multiplyAD starting" << std::endl;
-  fv3jedi_linvarcha_a2m_multiplyadjoint_f90(keyFtnConfig_, geom_->toFortran(), dxin.toFortran(),
+  fv3jedi_linvarcha_a2m_multiplyadjoint_f90(keyFtnConfig_, geom_.toFortran(), dxin.toFortran(),
                                             dxout.toFortran());
   oops::Log::trace() << classname() << " multiplyAD done" << std::endl;
   dxout.validTime() = dxin.validTime();
@@ -71,7 +71,7 @@ void LinVarChaA2M::multiplyAD(const Increment & dxin, Increment & dxout) const {
 void LinVarChaA2M::multiplyInverseAD(const Increment & dxin, Increment & dxout) const {
   util::Timer timer(classname(), "multiplyInverseAD");
   oops::Log::trace() << classname() << " multiplyInverseAD starting" << std::endl;
-  fv3jedi_linvarcha_a2m_multiplyinverseadjoint_f90(keyFtnConfig_, geom_->toFortran(),
+  fv3jedi_linvarcha_a2m_multiplyinverseadjoint_f90(keyFtnConfig_, geom_.toFortran(),
                                                    dxin.toFortran(), dxout.toFortran());
   oops::Log::trace() << classname() << " multiplyInverseAD done" << std::endl;
   dxout.validTime() = dxin.validTime();

@@ -37,9 +37,13 @@ observations:
   - obs space:
       name: SeaSurfaceTemp
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sst_obs_2020121500.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/sst_obs_2020121500.nc4
       obsdataout:
-        obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
       simulated variables: [sea_surface_temperature]
     obs operator:
       name: Identity
@@ -48,9 +52,13 @@ observations:
   - obs space:
       name: SeaSurfaceSalinity
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/sss_obs_20201215_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
       simulated variables: [sea_surface_salinity]
     obs operator:
       name: Identity
@@ -59,31 +67,43 @@ observations:
   - obs space:
       name: Aircraft
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
       simulated variables: [eastward_wind,northward_wind,air_temperature]
     obs operator:
       name: VertInterp
   - obs space:
       name: Radiosonde
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sondes_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/sondes_hofx_gfs_2020121500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
 #   - obs space:
 #       name: SBUV2-NOAA19-OZ
 #       obsdatain:
-#         obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
+#         engine:
+#           type: H5File
+#           obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
 #         obsgrouping:
 #           group variables: [ longitude ]
 #           sort variable: air_pressure
 #           sort order: ascending
 #       obsdataout:
-#         obsfile: Data/hofx/sbuv2_n19_obs_2020121500_m_out.nc4
+#         engine:
+#           type: H5File
+#           obsfile: Data/hofx/sbuv2_n19_obs_2020121500_m_out.nc4
 #       simulated variables: [integrated_layer_ozone_in_air]
 #     obs operator:
 #       name: AtmVertInterpLay
@@ -93,9 +113,13 @@ observations:
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs operator:
@@ -110,9 +134,13 @@ observations:
   - obs space:
       name: AIRS-AQUA
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/airs_aqua_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/airs_aqua_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/airs_aqua_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1,6-7
     obs operator:
@@ -125,23 +153,31 @@ observations:
   - obs space:
       name: GnssroBndNBAM
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/gnssro_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/gnssro_hofx_gfs_2020121500_m.nc4
       simulated variables: [bending_angle]
     obs operator:
       name: GnssroBndNBAM
       obs options:
         sr_steps: 2
         vertlayer: full
-        compress: 1
+        use_compress: 1
         super_ref_qc: NBAM
   - obs space:
       name: HIRS4-METOPA
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/hirs4_metop-a_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-15
     obs operator:
@@ -154,9 +190,13 @@ observations:
   - obs space:
       name: CRIS-NPP
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/cris-fsr_npp_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 24,26,28,32,37,39,42,44,47,49,51,53,55,57,59,61,63,
                 65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,
@@ -175,18 +215,26 @@ observations:
   - obs space:
       name: Satwind
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/satwind_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/satwind_hofx_gfs_2020121500_m.nc4
       simulated variables: [eastward_wind, northward_wind]
     obs operator:
       name: VertInterp
   - obs space:
       name: MHS-N19
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/mhs_n19_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/mhs_n19_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/mhs_n19_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 1-5
     obs operator:
@@ -199,9 +247,13 @@ observations:
   - obs space:
       name: IASI-METOPA
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/iasi_metop-a_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 16,29,32,35,38,41,44
     obs operator:
@@ -214,9 +266,13 @@ observations:
   - obs space:
       name: SEVIRI-METEOSAT8
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/seviri_m08_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/seviri_m08_hofx_gfs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/seviri_m08_hofx_gfs_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 5
     obs operator:

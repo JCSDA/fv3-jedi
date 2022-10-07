@@ -1,0 +1,26 @@
+field metadata:
+
+- long name: air_pressure_thickness
+  io name: DELP
+
+- long name: surface_pressure
+  io name: PS
+
+- long name: volume_mixing_ratio_of_no2
+  io name: NO2
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_no
+  io name: NO
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_o3
+  io name: O3
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_co
+  io name: CO
+  units: mol mol-1 dry
+
+- long name: specific_humidity
+  io name: SPHU

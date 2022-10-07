@@ -37,9 +37,13 @@ observations:
   - obs space:
       name: Aod
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf42.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf42.nc4
       obsdataout:
-        obsfile: Data/hofx/aod_viirs_hofx_2018041500_sf42.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aod_viirs_hofx_2018041500_sf42.nc4
       simulated variables: [aerosol_optical_depth]
       channels: 4
     obs operator:
@@ -48,24 +52,30 @@ observations:
         Sensor_ID: v.viirs-m_npp
         EndianType: little_endian
         CoefficientPath: Data/crtm/
-        AerosolOption: aerosols_gocart_merra_2
-        RCFile: [geosaod.rc]
+        AerosolOption: aerosols_gocart_1
+        RCFile: geosaod.rc
+        model units coeff: 1.e-9
     obs error:
       covariance model: diagonal
   - obs space:
       name: Aod
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aod_aeronet_obs_2018041500.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aod_aeronet_obs_2018041500.nc4
       obsdataout:
-        obsfile: Data/hofx/aod_aeronet_hofx_2018041500.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aod_aeronet_hofx_2018041500.nc4
       simulated variables: [aerosol_optical_depth]
       channels: 1-8
     obs operator:
       name: AodLUTs
       obs options:
         Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_merra_2
-        RCFile: [geosaod_aeronet.rc]
+        AerosolOption: aerosols_gocart_1
+        RCFile: geosaod_aeronet.rc
+        model units coeff: 1.e-9
     obs filters:
     - filter: Temporal Thinning
       seed_time: 2018-04-15T00:00:00Z
@@ -76,18 +86,23 @@ observations:
   - obs space:
       name: Aod
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aaod_aeronet_obs_2018041500.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aaod_aeronet_obs_2018041500.nc4
       obsdataout:
-        obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
       simulated variables: [absorption_aerosol_optical_depth]
       channels: 3,5-7
     obs operator:
       name: AodLUTs
       obs options:
         Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_merra_2
-        RCFile: [geosaod_aeronet.rc]
+        AerosolOption: aerosols_gocart_1
+        RCFile: geosaod_aeronet.rc
         AbsorptionAod: true
+        model units coeff: 1.e-9
     obs filters:
     - filter: Temporal Thinning
       seed_time: 2018-04-15T00:00:00Z

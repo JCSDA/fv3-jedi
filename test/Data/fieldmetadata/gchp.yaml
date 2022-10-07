@@ -1,0 +1,30 @@
+field metadata:
+
+- long name: air_temperature
+  io name: Met_T
+  units: K
+
+- long name: pm25at
+  io name: PM25
+  units: ug m-3
+
+- long name: volume_mixing_ratio_of_co
+  io name: SpeciesConc_CO
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_no
+  io name: SpeciesConc_NO
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_no2
+  io name: SpeciesConc_NO2
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_o3
+  io name: SpeciesConc_O3
+  units: mol mol-1 dry
+
+- long name: volume_mixing_ratio_of_oh
+  io name: SpeciesConc_OH
+  units: mol mol-1 dry
+

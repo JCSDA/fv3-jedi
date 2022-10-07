@@ -97,7 +97,6 @@ class State : public util::Printable, private util::ObjectCounter<State> {
 
 // IO and diagnostics
   void analytic_init(const AnalyticICParameters_ &, const Geometry &);
-  void fillGeomOrography(Geometry &) const;
   void read(const Parameters_ &);
   void write(const WriteParameters_ &) const;
   double norm() const;
@@ -111,7 +110,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   void updateFields(const oops::Variables &);
 
 // Utilities
-  std::shared_ptr<const Geometry> geometry() const {return geom_;}
+  const Geometry & geometry() const {return geom_;}
   const oops::Variables & variables() const {return vars_;}
 
   const util::DateTime & time() const {return time_;}
@@ -131,7 +130,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
  private:
   void print(std::ostream &) const;
   F90state keyState_;
-  std::shared_ptr<const Geometry> geom_;
+  const Geometry & geom_;
   oops::Variables vars_;
   util::DateTime time_;
 };

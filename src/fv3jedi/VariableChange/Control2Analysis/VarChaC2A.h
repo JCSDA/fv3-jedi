@@ -30,7 +30,7 @@ class VarChaC2A: public VariableChangeBase {
   void changeVarInverse(const State &, State &) const override;
 
  private:
-  std::shared_ptr<const Geometry> geom_;
+  const Geometry & geom_;
   F90vc_C2A keyFtnConfig_;
   void print(std::ostream &) const override;
 };

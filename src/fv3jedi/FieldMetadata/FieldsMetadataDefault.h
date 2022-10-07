@@ -78,6 +78,7 @@ namespace fv3jedi {
     fieldmetadata.setInOuName(md.shortName);  // Default to short, can only be set using override
     fieldmetadata.setInOuFile("default");     // Can only be set using override
     fieldmetadata.setIntrpTyp("default");     // Can only be set using override
+    fieldmetadata.setIntrpMsk("default");     // Can only be set using override
 
     // Validate the choices
     fieldmetadata.validate();
@@ -443,36 +444,6 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "ozone_mass_mixing_ratio";
-    md.shortName = "o3mr";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "mole_fraction_of_ozone_in_air";
-    md.shortName = "o3ppmv";
-    md.units = "mole_fraction_of_ozone_in_air";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "odd_oxygen_mixing_ratio";
-    md.shortName = "ox";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
     md.longName = "upward_air_velocity";
     md.shortName = "w";
     md.units = "ms-1";
@@ -546,7 +517,7 @@ namespace fv3jedi {
     md.longName = "slmsk";
     md.shortName = "slmsk";
     md.units = "none";
-    md.kind = "double";
+    md.kind = "integer";
     md.tracer = "false";
     md.horizontalStaggerLocation = "center";
     md.levels = "1";
@@ -1005,16 +976,6 @@ namespace fv3jedi {
 
     md.longName = "integrated_layer_ozone_in_air";
     md.shortName = "integrated_layer_ozone_in_air";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "mole_fraction_of_carbon_dioxide_in_air";
-    md.shortName = "mole_fraction_of_carbon_dioxide_in_air";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
@@ -1613,6 +1574,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    // Aerosols
     md.longName = "mass_fraction_of_dust001_in_air";
     md.shortName = "du001";
     md.units = "kgkg-1";
@@ -1823,8 +1785,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "no2";
-    md.shortName = "no2";
+    md.longName = "pm25at";
+    md.shortName = "pm25at";
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
@@ -1833,8 +1795,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "no";
-    md.shortName = "no";
+    md.longName = "pm25ac";
+    md.shortName = "pm25ac";
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
@@ -1843,8 +1805,130 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "o3";
-    md.shortName = "o3";
+    md.longName = "pm25co";
+    md.shortName = "pm25co";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    // Trace gases
+    md.longName = "volume_mixing_ratio_of_no2";
+    md.shortName = "vmr_no2";
+    md.units = "mol mol-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "volume_mixing_ratio_of_no";
+    md.shortName = "vmr_no";
+    md.units = "mol mol-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "volume_mixing_ratio_of_o3";
+    md.shortName = "vmr_o3";
+    md.units = "mol mol-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "volume_mixing_ratio_of_oh";
+    md.shortName = "vmr_oh";
+    md.units = "mol mol-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "volume_mixing_ratio_of_co";
+    md.shortName = "vmr_co";
+    md.units = "mol mol-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "form";
+    md.shortName = "form";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mole_fraction_of_carbon_dioxide_in_air";
+    md.shortName = "mole_fraction_of_carbon_dioxide_in_air";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "ech4";
+    md.shortName = "ech4";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "ozone_mass_mixing_ratio";
+    md.shortName = "o3mr";
+    md.units = "kgkg-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mole_fraction_of_ozone_in_air";
+    md.shortName = "o3ppmv";
+    md.units = "mole_fraction_of_ozone_in_air";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "odd_oxygen_mixing_ratio";
+    md.shortName = "ox";
+    md.units = "kgkg-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    // CMAQ variables
+    md.longName = "form_primary";
+    md.shortName = "form_primary";
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
@@ -1973,16 +2057,6 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "form";
-    md.shortName = "form";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
     md.longName = "mepx";
     md.shortName = "mepx";
     md.units = "none";
@@ -2035,16 +2109,6 @@ namespace fv3jedi {
 
     md.longName = "facd";
     md.shortName = "facd";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "co";
-    md.shortName = "co";
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
@@ -2373,16 +2437,6 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "ech4";
-    md.shortName = "ech4";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
     md.longName = "cl2";
     md.shortName = "cl2";
     md.units = "none";
@@ -2555,16 +2609,6 @@ namespace fv3jedi {
 
     md.longName = "pcvoc";
     md.shortName = "pcvoc";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "form_primary";
-    md.shortName = "form_primary";
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
@@ -3473,48 +3517,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "pm25at";
-    md.shortName = "pm25at";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "pm25ac";
-    md.shortName = "pm25ac";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "pm25co";
-    md.shortName = "pm25co";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
     md.longName = "nh3";
     md.shortName = "nh3";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "oh";
-    md.shortName = "oh";
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
@@ -3885,3 +3889,4 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
   }
 }  // namespace fv3jedi
+

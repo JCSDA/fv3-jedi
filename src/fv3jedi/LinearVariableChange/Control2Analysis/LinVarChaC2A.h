@@ -36,7 +36,7 @@ class LinVarChaC2A : public LinearVariableChangeBase {
   void multiplyInverseAD(const Increment &, Increment &) const override;
 
  private:
-  std::shared_ptr<const Geometry> geom_;
+  const Geometry &geom_;
   F90lvc_C2A keyFtnConfig_;
   void print(std::ostream &) const override;
 };

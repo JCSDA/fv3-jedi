@@ -23,10 +23,10 @@ namespace fv3jedi {
 static VariableChangeMaker<VarChaC2A> makerVarChaA2M_("Control2Analysis");
 // -------------------------------------------------------------------------------------------------
 VarChaC2A::VarChaC2A(const Geometry & resol, const eckit::LocalConfiguration & conf)
-  : VariableChangeBase(), geom_(new Geometry(resol)) {
+  : VariableChangeBase(), geom_(resol) {
   util::Timer timer(classname(), "VarChaC2A");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
-  fv3jedi_varcha_c2a_create_f90(keyFtnConfig_, geom_->toFortran(), conf);
+  fv3jedi_varcha_c2a_create_f90(keyFtnConfig_, geom_.toFortran(), conf);
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ VarChaC2A::~VarChaC2A() {
 void VarChaC2A::changeVar(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVar");
   oops::Log::trace() << classname() << " changeVar starting" << std::endl;
-  fv3jedi_varcha_c2a_changevar_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
+  fv3jedi_varcha_c2a_changevar_f90(keyFtnConfig_, geom_.toFortran(), xin.toFortran(),
                                    xout.toFortran());
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVar done" << std::endl;
@@ -49,7 +49,7 @@ void VarChaC2A::changeVar(const State & xin, State & xout) const {
 void VarChaC2A::changeVarInverse(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVarInverse");
   oops::Log::trace() << classname() << " changeVarInverse starting" << std::endl;
-  fv3jedi_varcha_c2a_changevarinverse_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
+  fv3jedi_varcha_c2a_changevarinverse_f90(keyFtnConfig_, geom_.toFortran(), xin.toFortran(),
                                           xout.toFortran());
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVarInverse done" << std::endl;

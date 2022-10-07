@@ -85,9 +85,13 @@ cost function:
         # air_temperature@ObsError. In this way we verify derived variables can be assimilated.
         name: Aircraft
         obsdatain:
-          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
         obsdataout:
-          obsfile: Data/hofx/eda/gfs/mem001/aircraft_eda-3dvar-gfs_2020121500_m.nc4
+          engine:
+            type: H5File
+            obsfile: Data/hofx/eda/gfs/mem001/aircraft_eda-3dvar-gfs_2020121500_m.nc4
         simulated variables: [eastward_wind, northward_wind, air_temperature]
         observed variables: [eastward_wind, northward_wind]
         derived variables: [air_temperature]
@@ -129,7 +133,9 @@ cost function:
     - obs space:
         name: GnssroBndNBAM
         obsdatain:
-          obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
         simulated variables: [bending_angle]
         obs perturbations seed: 1
       obs operator:
@@ -137,7 +143,7 @@ cost function:
         obs options:
           sr_steps: 2
           vertlayer: full
-          compress: 1
+          use_compress: 1
           super_ref_qc: NBAM
       obs error:
         covariance model: diagonal
@@ -160,7 +166,9 @@ cost function:
     - obs space:
         name: AMSUA-NOAA19
         obsdatain:
-          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
         simulated variables: [brightness_temperature]
         channels: 1-15
         obs perturbations seed: 1
@@ -188,7 +196,9 @@ cost function:
     - obs space:
         name: Radiosonde
         obsdatain:
-          obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
         simulated variables: [eastward_wind, northward_wind, air_temperature]
         obs perturbations seed: 1
       obs operator:

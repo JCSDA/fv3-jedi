@@ -26,7 +26,8 @@ namespace fv3jedi {
                                    const char longshortioNameC[], char longNameC[],
                                    char shrtNameC[], char varUnitsC[], char dataKindC[],
                                    bool& tracer, char stagrLocC[], int & levels, char mathSpacC[],
-                                   char inOuNameC[], char inOuFileC[], char intrpTypC[]) {
+                                   char inOuNameC[], char inOuFileC[], char intrpTypC[],
+                                   char intrpMskC[]) {
     // Get meta data for requested field
     const std::string longshortioName(longshortioNameC);
     FieldMetadata fieldMetadata = fieldsMetadata->getField(longshortioName);
@@ -45,6 +46,7 @@ namespace fv3jedi {
     std::string inOuName = fieldMetadata.getInOuName();
     std::string inOuFile = fieldMetadata.getInOuFile();
     std::string intrpTyp = fieldMetadata.getIntrpTyp();
+    std::string intrpMsk = fieldMetadata.getIntrpMsk();
 
     // Check string lengths
     checkStringLength(longName);
@@ -56,6 +58,7 @@ namespace fv3jedi {
     checkStringLength(inOuName);
     checkStringLength(inOuFile);
     checkStringLength(intrpTyp);
+    checkStringLength(intrpMsk);
 
     // Fill char outputs
     std::copy(longName.begin(), longName.end(), longNameC);
@@ -67,6 +70,7 @@ namespace fv3jedi {
     std::copy(inOuName.begin(), inOuName.end(), inOuNameC);
     std::copy(inOuFile.begin(), inOuFile.end(), inOuFileC);
     std::copy(intrpTyp.begin(), intrpTyp.end(), intrpTypC);
+    std::copy(intrpMsk.begin(), intrpMsk.end(), intrpMskC);
   }
 
 }  // namespace fv3jedi

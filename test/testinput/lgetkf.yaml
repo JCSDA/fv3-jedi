@@ -38,9 +38,13 @@ observations:
         name: Halo
         halo size: 5000e3
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/scatwind_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/scatwind_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/scatwind_lgetkf-geos_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/scatwind_lgetkf-geos_2020121500_m.nc4
       simulated variables: [eastward_wind, northward_wind]
     obs operator:
       name: VertInterp
@@ -56,9 +60,13 @@ observations:
         name: Halo
         halo size: 5000e3
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sondes_lgetkf-geos_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/sondes_lgetkf-geos_2020121500_m.nc4
       simulated variables: [eastward_wind, northward_wind, air_temperature]
     obs operator:
       name: VertInterp
@@ -83,9 +91,13 @@ observations:
         name: Halo
         halo size: 5000e3
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/amsua_n19_lgetkf-geos_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/amsua_n19_lgetkf-geos_2020121500_m.nc4
       simulated variables: [brightness_temperature]
       channels: 4-6,9-14
     obs operator:
@@ -154,9 +166,13 @@ observations:
         name: Halo
         halo size: 5000e3
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/sfc_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/sfc_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/sfc_lgetkf-geos_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/sfc_lgetkf-geos_2020121500_m.nc4
       simulated variables: [surface_pressure]
     obs operator:
       name: SfcPCorrected
@@ -178,9 +194,13 @@ observations:
         name: Halo
         halo size: 5000e3
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/satwind_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/satwind_lgetkf-geos_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/satwind_lgetkf-geos_2020121500_m.nc4
       simulated variables: [eastward_wind, northward_wind]
     obs operator:
       name: VertInterp
@@ -196,9 +216,13 @@ observations:
         name: Halo
         halo size: 5000e3
       obsdatain:
-        obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
       obsdataout:
-        obsfile: Data/hofx/aircraft_lgetkf-geos_2020121500_m.nc4
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aircraft_lgetkf-geos_2020121500_m.nc4
       simulated variables: [eastward_wind,northward_wind,air_temperature]
     obs operator:
       name: VertInterp
@@ -219,7 +243,6 @@ observations:
       max nobs: 1000
 
 driver:
-  update obs config with geometry info: true
   save posterior ensemble: false
   save posterior mean increment: true
 

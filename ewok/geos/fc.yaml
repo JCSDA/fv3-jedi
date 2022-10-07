@@ -1,1 +1,0 @@
-filename: $(run_dir)/{{current_cycle}}/$(date).$(file_type).nc4

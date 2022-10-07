@@ -27,7 +27,8 @@ states:
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
   output:
-    filetype: latlon
+    filetype: auxgrid
+    gridtype: latlon
     filename: Data/gfs.bkg.lonlat.
 
 test:

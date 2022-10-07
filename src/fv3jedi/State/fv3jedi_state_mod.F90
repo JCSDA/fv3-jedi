@@ -33,7 +33,6 @@ type, extends(fv3jedi_fields) :: fv3jedi_state
 contains
   procedure, public :: add_increment
   procedure, public :: analytic_IC
-  procedure, public :: set_geom_orography
 end type fv3jedi_state
 
 ! --------------------------------------------------------------------------------------------------
@@ -330,20 +329,6 @@ select case (method)
 end select
 
 end subroutine analytic_ic
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine set_geom_orography(self, geom)
-
-  class(fv3jedi_state),      intent(in) :: self    !< State
-  type(fv3jedi_geom),        intent(inout) :: geom    !< Geometry
-
-  real(kind=kind_real), pointer :: orog(:,:,:)
-
-  call self%get_field('orog_filt', orog)
-  geom%orography = orog
-
-end subroutine set_geom_orography
 
 ! --------------------------------------------------------------------------------------------------
 

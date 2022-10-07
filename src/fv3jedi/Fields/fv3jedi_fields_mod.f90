@@ -397,8 +397,8 @@ type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(inout) :: afieldset
 
-integer :: jvar, npz, jl
-real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+integer :: jvar, jl
+real(kind=kind_real), pointer :: real_ptr(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 type(atlas_metadata) :: meta
@@ -430,35 +430,30 @@ do jvar = 1,vars%nvars()
   ! Perform halo exchange to fill halos -- this uses MPI to exchange halo data
   call mpp_update_domains(tmp_fv3_data, geom%domain)
 
-  ! Reset npz for indexing into atlas fields of different ranks
-  npz = field%npz
-  if (npz==1) npz = 0
-
   ! Get/create atlas field
   if (afieldset%has_field(field%long_name)) then
     afield = afieldset%field(field%long_name)
   else
     afield = geom%afunctionspace_incl_halo%create_field( name=field%long_name, &
                                                          kind=atlas_real(kind_real), &
-                                                         levels=npz )
+                                                         levels=field%npz )
     call afieldset%add(afield)
   endif
 
   ! Copy fv3-jedi field data into atlas field
   ! Note the jedi interp grid excludes fv3's corner halos at cubed-sphere grid corners, which
   ! results in irregularly-shaped data. We pack this irregular data into a 1d atlas field array.
-  if (npz==0) then
-    call afield%data(real_ptr_1)
-    call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,1), real_ptr_1)
-  else
-    call afield%data(real_ptr_2)
-    do jl=1, npz
-      call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,jl), real_ptr_2(jl,:))
-    enddo
-  endif
+  call afield%data(real_ptr)
+  do jl=1, field%npz
+    call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,jl), real_ptr(jl,:))
+  enddo
 
   meta = afield%metadata()
   call meta%set('interp_type', trim(field%interpolation_type))
+  ! Set atlas::Field metadata for interp mask IFF the user specifically requested a non-default mask
+  if (trim(field%interpolation_source_point_mask) .ne. 'default') then
+    call meta%set('interp_source_point_mask', trim(field%interpolation_source_point_mask))
+  end if
 
   ! Release pointer
   call afield%final()
@@ -480,8 +475,8 @@ type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(in)    :: afieldset
 
-integer :: jvar, npz, jl
-real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+integer :: jvar, jl
+real(kind=kind_real), pointer :: real_ptr(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=1024) :: errmsg
@@ -517,22 +512,13 @@ do jvar = 1,vars%nvars()
     call abor1_ftn(trim(errmsg))
   end if
 
-  ! Reset npz for indexing into atlas fields of different ranks
-  npz = field%npz
-  if (npz==1) npz = 0
-
   ! (Adjoint of) Copy fv3-jedi field data into atlas field
   ! Note: this includes reshaping of the 1d afield data (local + halo) into 2d fv3-jedi field
   tmp_fv3_data = 0.0
-  if (npz==0) then
-    call afield%data(real_ptr_1)
-    call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,1), real_ptr_1(:))
-  else
-    call afield%data(real_ptr_2)
-    do jl=1,field%npz
-      call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,jl), real_ptr_2(jl,:))
-    enddo
-  endif
+  call afield%data(real_ptr)
+  do jl=1,field%npz
+    call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,jl), real_ptr(jl,:))
+  enddo
 
   ! (Adjoint of) Perform halo exchange
   call mpp_update_domains_ad(tmp_fv3_data, geom%domain)
@@ -565,8 +551,8 @@ type(fv3jedi_geom),    intent(in)    :: geom
 type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(in)    :: afieldset
 
-integer :: jvar, npz, jl
-real(kind=kind_real), pointer :: real_ptr_1(:), real_ptr_2(:,:)
+integer :: jvar, jl
+real(kind=kind_real), pointer :: real_ptr(:,:)
 type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
 character(len=1024) :: errmsg
@@ -590,22 +576,12 @@ do jvar = 1,vars%nvars()
     call abor1_ftn(trim(errmsg))
   end if
 
-  ! Reset npz for indexing into atlas fields of different ranks
-  npz = field%npz
-  if (npz==1) npz = 0
-
   ! Reshape the first portion of afield, the local data, into 2d fv3-jedi field
-  if (npz==0) then
-    call afield%data(real_ptr_1)
-    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1) = &
-      reshape(real_ptr_1(1:geom%ngrid), (/geom%iec-geom%isc+1, geom%jec-geom%jsc+1/))
-  else
-    call afield%data(real_ptr_2)
-    do jl=1,field%npz
-      field%array(geom%isc:geom%iec, geom%jsc:geom%jec, jl) = &
-        reshape(real_ptr_2(jl, 1:geom%ngrid), (/geom%iec-geom%isc+1, geom%jec-geom%jsc+1/))
-    enddo
-  endif
+  call afield%data(real_ptr)
+  do jl=1,field%npz
+    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, jl) = &
+      reshape(real_ptr(jl, 1:geom%ngrid), (/geom%iec-geom%isc+1, geom%jec-geom%jsc+1/))
+  enddo
 
   ! Release pointer
   call afield%final()

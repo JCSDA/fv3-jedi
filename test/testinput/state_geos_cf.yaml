@@ -6,21 +6,21 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos-cf.yaml
+  field metadata override: Data/fieldmetadata/geos_cf.yaml
 state test:
   statefile:
-    datetime: 2019-01-02T03:00:00Z
+    datetime: 2020-09-03T18:00:00Z
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filename: geos.cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     tile is a dimension: [true]
     clobber existing files: [false]
-    state variables: [delp,no2,'no',o3,ps,sphu]
+    state variables: [DELP,NO2,NO,O3,PS,SPHU]
   state generate:
     analytic init:
       method: dcmip-test-4-0
-    datetime: 2019-01-02T03:00:00Z
-  date: 2019-01-02T03:00:00Z
+    datetime: 2020-09-03T18:00:00Z
+  date: 2020-09-03T18:00:00Z
   norm file: 5280.9533376899999
   tolerance: 1.0e-08

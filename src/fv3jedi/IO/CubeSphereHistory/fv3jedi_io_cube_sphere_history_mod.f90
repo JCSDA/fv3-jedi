@@ -15,7 +15,7 @@ use fckit_mpi_module
 
 ! oops
 use datetime_mod
-use string_utils, only: swap_name_member
+use string_utils, only: swap_name_member, replace_string
 
 ! fv3-jedi
 use fv3jedi_constants_mod,    only: rad2deg
@@ -160,6 +160,8 @@ allocate(self%filenames(self%nfiles)) ! To be filled in later with datetime
 allocate(self%filenames_save(self%nfiles))
 do n = 1, self%nfiles
   self%filenames_save(n) = trim(self%conf%datapath)//'/'//trim(self%conf%filenames(n))
+  ! Replace any double // with single / in the full filename
+  self%filenames_save(n) = replace_string(self%filenames_save(n), '//', '/')
   str = self%filenames_save(n)
   call swap_name_member(conf, str)
   self%filenames_save(n) = str

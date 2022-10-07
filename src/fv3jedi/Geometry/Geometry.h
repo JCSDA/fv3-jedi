@@ -46,6 +46,10 @@ class Geometry : public util::Printable,
   Geometry(const Geometry &);
   ~Geometry();
 
+  Geometry & operator=(const Geometry &) = delete;
+
+  bool levelsAreTopDown() const {return true;}
+
   GeometryIterator begin() const;
   GeometryIterator end() const;
   std::vector<double> verticalCoord(std::string &) const;
@@ -64,8 +68,8 @@ class Geometry : public util::Printable,
   const FieldsMetadata & fieldsMetaData() const {return *fieldsMeta_;}
 
  private:
-  Geometry & operator=(const Geometry &);
   void print(std::ostream &) const;
+
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
   atlas::FunctionSpace functionSpace_;

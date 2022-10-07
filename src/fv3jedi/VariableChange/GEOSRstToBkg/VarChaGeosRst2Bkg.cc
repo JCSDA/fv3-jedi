@@ -23,10 +23,10 @@ namespace fv3jedi {
 static VariableChangeMaker<VarChaGeosRst2Bkg> makerVarChaA2M_("GeosRst2Bkg");
 // -------------------------------------------------------------------------------------------------
 VarChaGeosRst2Bkg::VarChaGeosRst2Bkg(const Geometry & resol, const eckit::LocalConfiguration & conf)
-  : VariableChangeBase(), geom_(new Geometry(resol)) {
+  : VariableChangeBase(), geom_(resol) {
   util::Timer timer(classname(), "VarChaGeosRst2Bkg");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
-  fv3jedi_vc_geosrst2bkg_create_f90(keyFtnConfig_, geom_->toFortran(), conf);
+  fv3jedi_vc_geosrst2bkg_create_f90(keyFtnConfig_, geom_.toFortran(), conf);
   oops::Log::trace() << classname() << " constructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ VarChaGeosRst2Bkg::~VarChaGeosRst2Bkg() {
 void VarChaGeosRst2Bkg::changeVar(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVar");
   oops::Log::trace() << classname() << " changeVar starting" << std::endl;
-  fv3jedi_vc_geosrst2bkg_changevar_f90(keyFtnConfig_, geom_->toFortran(), xin.toFortran(),
+  fv3jedi_vc_geosrst2bkg_changevar_f90(keyFtnConfig_, geom_.toFortran(), xin.toFortran(),
                                        xout.toFortran());
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVar done" << std::endl;
@@ -49,7 +49,7 @@ void VarChaGeosRst2Bkg::changeVar(const State & xin, State & xout) const {
 void VarChaGeosRst2Bkg::changeVarInverse(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVarInverse");
   oops::Log::trace() << classname() << " changeVarInverse starting" << std::endl;
-  fv3jedi_vc_geosrst2bkg_changevarinverse_f90(keyFtnConfig_, geom_->toFortran(),
+  fv3jedi_vc_geosrst2bkg_changevarinverse_f90(keyFtnConfig_, geom_.toFortran(),
                                           xin.toFortran(), xout.toFortran());
   xout.validTime() = xin.validTime();
   oops::Log::trace() << classname() << " changeVarInverse done" << std::endl;

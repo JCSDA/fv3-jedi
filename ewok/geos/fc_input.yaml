@@ -1,5 +1,0 @@
-filetype: geos
-datapath: $(run_dir)/Data/GeosRunDir
-filename_core: fvcore_internal_rst
-filename_mois: moist_internal_rst
-state variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]

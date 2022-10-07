@@ -37,22 +37,22 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
                      const util::DateTime & time)
-  : geom_(new Geometry(geom)), time_(time),
-    vars_(geom_->fieldsMetaData().getLongNameFromAnyName(vars))
+  : geom_(geom), time_(time),
+    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars))
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
+  fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
   fv3jedi_increment_zero_f90(keyInc_);
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const Increment & other)
-  : geom_(new Geometry(geom)), vars_(other.vars_), time_(other.time_)
+  : geom_(geom), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
-  fv3jedi_increment_change_resol_f90(keyInc_, geom_->toFortran(), other.keyInc_,
-                                     other.geometry()->toFortran());
+  fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
+  fv3jedi_increment_change_resol_f90(keyInc_, geom_.toFortran(), other.keyInc_,
+                                     other.geom_.toFortran());
   oops::Log::trace() << "Increment::Increment (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ Increment::Increment(const Increment & other, const bool copy)
   : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from other and bool copy) starting" << std::endl;
-  fv3jedi_increment_create_f90(keyInc_, geom_->toFortran(), vars_, time_);
+  fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
   if (copy) {
     fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
   } else {
@@ -81,10 +81,10 @@ void Increment::diff(const State & x1, const State & x2) {
   // Increment variables must be a equal to or a subset of the State variables
   ASSERT(vars_ <= x1.variables());
   // States at increment resolution
-  State x1_ir(*geom_, x1);
-  State x2_ir(*geom_, x2);
+  State x1_ir(geom_, x1);
+  State x2_ir(geom_, x2);
   fv3jedi_increment_diff_states_f90(keyInc_, x1_ir.toFortran(), x2_ir.toFortran(),
-                                  geom_->toFortran());
+                                  geom_.toFortran());
 }
 // -------------------------------------------------------------------------------------------------
 Increment & Increment::operator=(const Increment & rhs) {
@@ -95,7 +95,7 @@ Increment & Increment::operator=(const Increment & rhs) {
 // -------------------------------------------------------------------------------------------------
 void Increment::updateFields(const oops::Variables & newVars) {
   vars_ = newVars;
-  fv3jedi_increment_update_fields_f90(keyInc_, geom_->toFortran(), newVars);
+  fv3jedi_increment_update_fields_f90(keyInc_, geom_.toFortran(), newVars);
 }
 // -------------------------------------------------------------------------------------------------
 Increment & Increment::operator+=(const Increment & dx) {
@@ -153,7 +153,7 @@ void Increment::random() {
 // -------------------------------------------------------------------------------------------------
 oops::LocalIncrement Increment::getLocal(const GeometryIterator & iter) const {
   int ist, iend, jst, jend, kst, kend, npz;
-  fv3jedi_geom_start_end_f90(geom_->toFortran(), ist, iend, jst, jend, kst, kend, npz);
+  fv3jedi_geom_start_end_f90(geom_.toFortran(), ist, iend, jst, jend, kst, kend, npz);
 
   oops::Variables fieldNames = vars_;
 
@@ -179,15 +179,15 @@ void Increment::setLocal(const oops::LocalIncrement & values, const GeometryIter
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::toFieldSet(atlas::FieldSet & fset) const {
-  fv3jedi_increment_to_fieldset_f90(keyInc_, geom_->toFortran(), vars_, fset.get());
+  fv3jedi_increment_to_fieldset_f90(keyInc_, geom_.toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::toFieldSetAD(const atlas::FieldSet & fset) {
-  fv3jedi_increment_to_fieldset_ad_f90(keyInc_, geom_->toFortran(), vars_, fset.get());
+  fv3jedi_increment_to_fieldset_ad_f90(keyInc_, geom_.toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::fromFieldSet(const atlas::FieldSet & fset) {
-  fv3jedi_increment_from_fieldset_f90(keyInc_, geom_->toFortran(), vars_, fset.get());
+  fv3jedi_increment_from_fieldset_f90(keyInc_, geom_.toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::read(const ReadParameters_ & params) {
@@ -198,7 +198,7 @@ void Increment::read(const ReadParameters_ & params) {
     }
   }
   // Create IO object
-  std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
+  std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
   // Perform read
   io->read(*this);
@@ -206,7 +206,7 @@ void Increment::read(const ReadParameters_ & params) {
 // -------------------------------------------------------------------------------------------------
 void Increment::write(const WriteParameters_ & params) const {
   // Create IO object
-  std::unique_ptr<IOBase> io(IOFactory::create(*geom_,
+  std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
   // Perform read
   io->write(*this);
@@ -253,7 +253,46 @@ void Increment::print(std::ostream & os) const {
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::dirac(const DiracParameters_ & params) {
-  fv3jedi_increment_dirac_f90(keyInc_, params.toConfiguration(), geom_->toFortran());
+  fv3jedi_increment_dirac_f90(keyInc_, params.toConfiguration(), geom_.toFortran());
+}
+// -------------------------------------------------------------------------------------------------
+std::vector<double> Increment::rmsByLevel(const std::string & var) const {
+  atlas::FieldSet fset;
+  toFieldSet(fset);
+  const auto fieldView = atlas::array::make_view<double, 2>(fset[var]);
+
+  // Get halo mask from Geometry
+  const auto haloMask = geom_.extraFields().field("hmask");
+  const auto haloMaskView = atlas::array::make_view<int, 2>(haloMask);
+  ASSERT(haloMaskView.shape(0) == fieldView.shape(0));
+  ASSERT(haloMaskView.shape(1) == 1);
+
+  // Find number of owned grid points on this task
+  size_t num_owned = 0;
+  for (atlas::idx_t i = 0; i < haloMaskView.shape(0); ++i) {
+    if (haloMaskView(i, 0) > 0) {
+      ++num_owned;
+    }
+  }
+
+  // Find RMS sum-of-squares contribution from this task
+  std::vector<double> rms(fieldView.shape(1), 0.0);
+  for (atlas::idx_t k = 0; k < fieldView.shape(1); ++k) {
+    for (atlas::idx_t i = 0; i < fieldView.shape(0); ++i) {
+      if (haloMaskView(i, 0) > 0) {
+        rms[k] += fieldView(i, k) * fieldView(i, k);
+      }
+    }
+  }
+
+  geom_.getComm().allReduceInPlace(num_owned, eckit::mpi::Operation::SUM);
+  geom_.getComm().allReduceInPlace(rms.data(), fieldView.shape(1), eckit::mpi::Operation::SUM);
+
+  for (atlas::idx_t k = 0; k < fieldView.shape(1); ++k) {
+    rms[k] = sqrt(rms[k] / num_owned);
+  }
+
+  return rms;
 }
 // -------------------------------------------------------------------------------------------------
 size_t Increment::serialSize() const {
