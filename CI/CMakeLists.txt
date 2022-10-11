@@ -35,10 +35,9 @@ option("BUNDLE_SKIP_ROPP-UFO"  "Don't build ROPP-UFO"  "ON") # Skip ropp-ufo bui
 ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda-internal/geos-aero.git" )
 ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-test.git" )
 
-# External (required) observation operators
-# ------------------------------
-option("BUNDLE_SKIP_CRTM" "Don't build CRTM" "OFF") # Build crtm unless user passes -DBUNDLE_SKIP_CRTM=ON
-ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda-internal/crtm.git" )
+# Outside JEDI repositories
+# -------------------------
+ecbuild_bundle( PROJECT gsibec GIT "https://github.com/GEOS-ESM/GSIbec" )
 
 # Core JEDI repositories
 # ----------------------

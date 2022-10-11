@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "oops/base/ParameterTraitsVariables.h"
+#include "oops/base/Variables.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/Parameters.h"
@@ -39,6 +40,16 @@ class FMSinitParameters : public oops::Parameters {
 
 // -------------------------------------------------------------------------------------------------
 
+class TimeInvariantFieldsParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(TimeInvariantFieldsParameters, Parameters)
+
+ public:
+  oops::RequiredParameter<StateParameters> stateFields{ "state fields", this };
+  oops::OptionalParameter<oops::Variables> derivedFields{ "derived fields", this };
+};
+
+// -------------------------------------------------------------------------------------------------
+
 class GeometryParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(GeometryParameters, Parameters)
 
@@ -59,8 +70,8 @@ class GeometryParameters : public oops::Parameters {
   oops::OptionalParameter<int> npz{ "npz", this};
   oops::Parameter<int> iterator_dimension{ "iterator dimension", 2, this};
   oops::Parameter<int> nwat{ "nwat", 1, this};
-  oops::OptionalParameter<StateParameters> timeInvariantFields{ "time invariant state fields",
-                                                                this};
+  oops::OptionalParameter<TimeInvariantFieldsParameters> timeInvariantFields{
+    "time invariant fields", this};
   oops::Parameter<bool> regional{ "regional", false, this};
   oops::Parameter<double> stretchFac{ "stretch_fac", 0.0, this};
   oops::Parameter<double> targetLat{ "target_lat", 0.0, this};

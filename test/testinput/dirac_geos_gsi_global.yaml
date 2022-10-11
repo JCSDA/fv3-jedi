@@ -1,64 +1,66 @@
 geometry:
   fms initialization:
-    namelist filename: Data/fv3files/fmsmpp.nml
-    field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk127.nc4
+    namelist filename: Data/fv3files/input_geos_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
   layout: [1,1]
   io_layout: [1,1]
   npx: 13
   npy: 13
-  npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
 initial condition:
-  datetime: 2020-12-15T00:00:00Z
-  filetype: fms restart
-  datapath: Data/inputs/gfs_c12/bkg/
-  filename_core: 20201215.000000.fv_core.res.nc
-  filename_trcr: 20201215.000000.fv_tracer.res.nc
-  filename_sfcd: 20201215.000000.sfc_data.nc
-  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
-  filename_cplr: 20201215.000000.coupler.res
-  state variables: &anavars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+  datetime: 2020-12-14T21:00:00Z
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/inputs/geos_c12
+  filename: geos.bkg.20201214_210000z.nc4
+  state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: SABER
   saber blocks:
   - saber block name: gsi covariance
     saber central block: true
+#   input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
     input variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
                              specific_humidity,cloud_liquid_ice,cloud_liquid_water,
                              mole_fraction_of_ozone_in_air]
     output variables: *bvars
-    gsi akbk: Data/fv3files/akbk127.nc4
-    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
-    gsi berror namelist file: Data/gsibec/gfs_gsi_global_192x96x127.nml
+    gsi akbk: Data/fv3files/akbk72.nc4
+    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+    gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
     processor layout x direction: 3
     processor layout y direction: 2
+#   debugging bypass gsi: true
     debugging mode: false
   - saber block name: gsi interpolation to model grid
     input variables: *bvars
     output variables: *bvars
-    gsi akbk: Data/fv3files/akbk127.nc4
-    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
-    gsi berror namelist file: Data/gsibec/gfs_gsi_global_192x96x127.nml
+    gsi akbk: Data/fv3files/akbk72.nc4
+    gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+    gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false
   linear variable change:
     linear variable change name: Control2Analysis
     input variables: *bvars
-    output variables: *anavars
+    output variables: *vars
 dirac:
   ndir: 1
   ixdir: [6]  #Xdir
   iydir: [6]  #Ydir
-  ildir: [50] #Level
   itdir: [1]  #Tile
-  ifdir: [eastward_wind] #Field
+  ildir: [72] #Level
+  ifdir: [t] #Field
+# ifdir: [t] #Field
+# ildir: [1] #Level
+# ifdir: [ps] #Field
 output dirac:
   filetype: cube sphere history
   provider: geos
   datapath: Data/
   filename: gsi_dirac_%id%_.%yyyy%mm%dd_%hh%MM%ssz.nc4
 test:
-  reference filename: testoutput/dirac_gfs_gsi_global.ref
+  reference filename: testoutput/dirac_geos_gsi_global.ref
   test output filename: testoutput/dirac_gfs_gsi_global.test.out

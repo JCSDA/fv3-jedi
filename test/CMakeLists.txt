@@ -45,6 +45,17 @@ Data/fv3files/inputpert_fsoi.nml
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fv3files)
 LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
+# gsibec config files
+# -------------------
+list( APPEND gsibec_test_gsibec
+Data/gsibec/geos_gsi_global_72x46x72.nml
+Data/gsibec/geos_gsi_global_o3_72x46x72.nml
+Data/gsibec/gfs_gsi_global_192x96x127.nml
+Data/gsibec/gfs_gsicv_global_192x96x127.nml
+)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/gsibec)
+LINK_FILES( "${gsibec_test_gsibec}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
 # Static B-specific dates
 # -----------------------
 set(staticb_dates 2020121421;2020121500;2020121503)
@@ -55,6 +66,9 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 list( APPEND fv3jedi_testinput
   testinput/3denvar_geos_aero.yaml
   testinput/3dvar_geos_cf.yaml
+  testinput/3dvar_geos_sondes_c12.yaml
+  testinput/3dvar_geos_ozone_c12.yaml
+  testinput/3dvar_gfs_sondes_c12.yaml
   testinput/3dvar_gfs_0obs.yaml
   testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
@@ -88,6 +102,7 @@ list( APPEND fv3jedi_testinput
   testinput/diffstates_gfs.yaml
   testinput/diffstates_lam_cmaq.yaml
   testinput/dirac_geos.yaml
+  testinput/dirac_geos_gsi_global.yaml
   testinput/dirac_gfs.yaml
   testinput/dirac_gfs_gsi_global.yaml
   testinput/eda_3dvar_1.yaml
@@ -205,6 +220,9 @@ LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_B
 # -------------------
 list( APPEND fv3jedi_testoutput
   testoutput/3dvar_geos_cf.ref
+  testoutput/3dvar_geos_sondes.ref
+  testoutput/3dvar_geos_ozone.ref
+  testoutput/3dvar_gfs_sondes.ref
   testoutput/3dvar_lam_cmaq.ref
   testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
@@ -237,6 +255,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/diffstates_lam_cmaq.ref
   testoutput/dirac_geos.ref
   testoutput/dirac_gfs.ref
+  testoutput/dirac_geos_gsi_global.ref
   testoutput/dirac_gfs_gsi_global.ref
   testoutput/eda_3dvar.ref
   testoutput/eda_4dvar_fv3lm.ref
@@ -465,8 +484,7 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # Repo wide configuration for getting test data
 # ---------------------------------------------
-# Currently only use jedi_release_2.4.0 CRTM coefficients
-set( CRTM_COEFFS_BRANCH "jedi_release_2.4.0" )
+set( CRTM_COEFFS_BRANCH "2.4.0_skylab_2.0" )
 
 function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
   # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
@@ -575,7 +593,7 @@ endfunction()
 #############################################
 # add tests to download fv3-jedi & crtm data
 
-ADD_DOWNLOAD_TEST( "fv3-jedi" fv3-jedi_testinput_tier_1_1.2.0.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
+ADD_DOWNLOAD_TEST( "fv3-jedi" fv3-jedi_testinput_tier_1_1.3.0.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
 ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients_${CRTM_COEFFS_BRANCH}.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
@@ -1127,13 +1145,15 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_bump
                   ARGS     testinput/errorcovariance_bump.yaml
                   COMMAND  test_fv3jedi_errorcovariance.x )
 
-if( ${gsibclim_FOUND} )
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_gfs_gsi_global
-                  MPI      6
-                  ARGS     testinput/errorcovariance_gfs_gsi_global.yaml
-                  COMMAND  test_fv3jedi_errorcovariance.x
-                  TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_ana2bvars )
-endif ()
+#if( ${gsibec_FOUND} )
+#  if( ${sp_FOUND} )
+#  ecbuild_add_test( TARGET   fv3jedi_test_tier1_errorcovariance_gfs_gsi_global
+#                    MPI      6
+#                    ARGS     testinput/errorcovariance_gfs_gsi_global.yaml
+#                    COMMAND  test_fv3jedi_errorcovariance.x
+#                    TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_ana2bvars )
+#  endif ()
+#endif ()
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_localization_bump
                   MPI      6
@@ -1150,11 +1170,36 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
                   ARGS     testinput/dirac_gfs.yaml
                   COMMAND  fv3jedi_dirac.x )
 
-if( ${gsibclim_FOUND} )
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_gsi_global
+if( ${gsibec_FOUND} )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_geos_gsi_global
                   MPI      6
-                  ARGS     testinput/dirac_gfs_gsi_global.yaml
+                  ARGS     testinput/dirac_geos_gsi_global.yaml
                   COMMAND  fv3jedi_dirac.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_sondes
+                  MPI      6
+                  ARGS     testinput/3dvar_geos_sondes_c12.yaml
+                  COMMAND  fv3jedi_var.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_ozone
+                  MPI      6
+                  ARGS     testinput/3dvar_geos_ozone_c12.yaml
+                  COMMAND  fv3jedi_var.x )
+
+
+if( ${sp_FOUND} )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_gsi_global
+                    MPI      6
+                    ARGS     testinput/dirac_gfs_gsi_global.yaml
+                    COMMAND  fv3jedi_dirac.x )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_sondes
+                    MPI      6
+                    ARGS     testinput/3dvar_gfs_sondes_c12.yaml
+                    COMMAND  fv3jedi_var.x )
+endif()
+
 endif()
 
 # Ensemble variance
@@ -1279,6 +1324,9 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-fgat_gfs_aero
                   ARGS     --no-validate testinput/hyb-fgat_gfs_aero.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
+
+# 3DVar
+# -----
 
 # 4DEnVar
 # -------

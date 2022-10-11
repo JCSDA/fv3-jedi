@@ -27,10 +27,8 @@ phases:
       - echo Executing pre_build phase
       # for nightly builds/tests use develop branch
       - export CODEBUILD_GIT_BRANCH="develop"
-      - export CODEBUILD_GIT_BRANCH_CRTM="release/crtm_jedi"
       - export CODEBUILD_GIT_BRANCH_FV3CORE="release-stable";
       - export GIT_BASE_BRANCH="develop"
-      - export GIT_BASE_BRANCH_CRTM="release/crtm_jedi"
       - export CODEBUILD_GIT_BRANCH_FV3CORE="release-stable";
 
 
@@ -62,11 +60,11 @@ phases:
       # fv3-jedi-lm
       - ./clone.sh jcsda-internal/fv3-jedi-linearmodel $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle fv3-jedi-lm ${GIT_BASE_BRANCH} develop
 
-      # crtm
-      - ./clone.sh jcsda-internal/crtm $CODEBUILD_GIT_BRANCH_CRTM /jcsda/fv3-bundle crtm ${GIT_BASE_BRANCH_CRTM} $GIT_BASE_BRANCH_CRTM
-
       # ioda
       - ./clone.sh jcsda-internal/ioda $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda ${GIT_BASE_BRANCH} develop
+
+      # gsibec
+      - ./clone.sh geos-esm/GSIbec $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsibec ${GIT_BASE_BRANCH} 1.0.6
 
       # saber
       - ./clone.sh jcsda-internal/saber $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber ${GIT_BASE_BRANCH} develop
