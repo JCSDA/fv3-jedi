@@ -1,0 +1,65 @@
+\can mode verify
+! Usage: go plot_cubesphere_ortho [com vals lons lats vlon vlat zoom hoff voff rotation]
+!                                 [ $1  $2   $3   $4   $5   $6   $7   $8   $9     $10  ]
+!
+! Plot a cubed-sphere variable with an orthographic
+! (earth from space) projection.
+!
+! atw 2008aug11
+! Benjamin Menetrier 2022/04/14
+
+! Where are we?
+say In plot_cubesphere_ortho:
+
+! Arguments
+def sym pcso_com "$1%shade/nolab%" !< Command
+say pcso_com: ($pcso_com)
+def sym pcsf_vals $2               !< values to plot (PxQ)
+say pcsf_vals: ($pcsf_vals)
+def sym pcsf_lons $3               !< Data longitudes (P centers or P+1 corners/vertices)
+say pcsf_lons: ($pcsf_lons)
+def sym pcsf_lats $4               !< Data latitudes (Q centers or Q+1 corners/vertices)
+say pcsf_lats: ($pcsf_lats)
+let pcso_vlon=$5"0"                !< View longitude
+say pcso_vlon: `pcso_vlon`
+let pcso_vlat=$6"0"                !< View latitude
+say pcso_vlat: `pcso_vlat`
+let pcsf_zoom=$7"1"                !< Zoom factor (at 1, globe fills the screen)
+say pcsf_zoom: `pcsf_zoom`
+let pcsf_hoff=$8"0"                !< Horizontal offset, in screens
+say pcsf_hoff: `pcsf_hoff`
+let pcsf_voff=$9"0"                !< Vertical offset, in screens
+say pcsf_voff: `pcsf_voff`
+let pcsf_rotate=$10"0"             !< Counterclockwise rotation angle, in degrees
+say pcsf_rotate: `pcsf_rotate`
+
+! Define the mapping factors for this viewpoint (this also defines the factor deg2rad)
+go mp_orthographic `pcso_vlon` `pcso_vlat`
+let pcso_rotate_rad=pcso_rotate*deg2rad
+
+! Setup a plot of face #1, to see if it has valid data (i.e. data visible from the selected viewpoint).
+! If it doesn't, then plot the opposite face (#4) first.
+can sym lab1
+go plot_cubesphere_face 1 "($pcso_com)/set"
+IF `"($lab1)" EQ "No Valid Data"` THEN
+   go plot_cubesphere_face 4 "($pcso_com)"
+   go plot_cubesphere_face 1 "($pcso_com)/ov"
+ELSE
+   go plot_cubesphere_face 1 "($pcso_com)"
+   go plot_cubesphere_face 4 "($pcso_com)/ov"
+ENDIF
+
+! Other faces
+go plot_cubesphere_face 2 "($pcso_com)/ov"
+go plot_cubesphere_face 3 "($pcso_com)/ov"
+go plot_cubesphere_face 5 "($pcso_com)/ov"
+go plot_cubesphere_face 6 "($pcso_com)/ov"
+
+! Render plot
+can sym pcso_com
+can sym pcsf_vals pcsf_lons pcsf_lats
+can var pcso_vlon pcso_vlat
+can var pcsf_zoom pcsf_hoff pcsf_voff pcsf_rotate
+can var pcso_rotate_rad
+
+set mode/last verify
