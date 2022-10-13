@@ -8,7 +8,16 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
+input variables: &inputVars [mass_fraction_of_sulfate_in_air,
+                             mass_fraction_of_hydrophobic_black_carbon_in_air,
+                             mass_fraction_of_hydrophilic_black_carbon_in_air,
+                             mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                             mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                             mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                             mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                             mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                             mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                             mass_fraction_of_sea_salt004_in_air]
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
@@ -45,8 +54,10 @@ bump:
     mass_fraction_of_sea_salt003_in_air: [300.0e3]
     mass_fraction_of_sea_salt004_in_air: [300.0e3]
   ne: 30
-  input:
-  - parameter: var
+input fields:
+- parameter: var
+  component: 1
+  file:
     set datetime on read: true
     datetime: 2018-04-14T21:00:00Z
     filetype: fms restart
@@ -56,7 +67,9 @@ bump:
     filename_sfcd: 20180414.210000.var.sfc_data.nc
     filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.var.coupler.res
-  - parameter: m4
+- parameter: m4
+  component: 1
+  file:
     set datetime on read: true
     datetime: 2018-04-14T21:00:00Z
     filetype: fms restart
@@ -66,7 +79,9 @@ bump:
     filename_sfcd: 20180414.210000.m4.sfc_data.nc
     filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
     filename_cplr: 20180414.210000.m4.coupler.res
-  - parameter: var
+- parameter: var
+  component: 2
+  file:
     set datetime on read: true
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
@@ -76,7 +91,9 @@ bump:
     filename_sfcd: 20180415.000000.var.sfc_data.nc
     filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.var.coupler.res
-  - parameter: m4
+- parameter: m4
+  component: 2
+  file:
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
     datapath: Data/staticb_aero/
@@ -85,7 +102,9 @@ bump:
     filename_sfcd: 20180415.000000.m4.sfc_data.nc
     filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.m4.coupler.res
-  - parameter: var
+- parameter: var
+  component: 3
+  file:
     set datetime on read: true
     datetime: 2018-04-15T03:00:00Z
     filetype: fms restart
@@ -95,7 +114,9 @@ bump:
     filename_sfcd: 20180415.030000.var.sfc_data.nc
     filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
     filename_cplr: 20180415.030000.var.coupler.res
-  - parameter: m4
+- parameter: m4
+  component: 3
+  file:
     set datetime on read: true
     datetime: 2018-04-15T03:00:00Z
     filetype: fms restart
@@ -105,8 +126,9 @@ bump:
     filename_sfcd: 20180415.030000.m4.sfc_data.nc
     filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
     filename_cplr: 20180415.030000.m4.coupler.res
-  output:
-  - parameter: stddev
+output:
+- parameter: stddev
+  file:
     filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: stddev.fv_core.res.nc

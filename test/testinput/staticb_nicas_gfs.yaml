@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
+input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -34,10 +34,12 @@ bump:
     cloud_liquid_water: 125
   grids:
   - prefix: nicas_3D_gfs
-    variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   - prefix: nicas_2D_gfs
     variables: [surface_pressure]
-  universe radius:
+input fields:
+- parameter: universe radius
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -48,11 +50,9 @@ bump:
     filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_rh_1.coupler.res
-  input number of components:
-    filepath: Data/staticb/ncmp
-  input:
-  - parameter: a
-    component: 1
+- parameter: a
+  component: 1
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -63,8 +63,9 @@ bump:
     filename_sfcd: 20201215.000000.cor_a_1.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_a_1.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_a_1.coupler.res
-  - parameter: a
-    component: 2
+- parameter: a
+  component: 2
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -75,8 +76,9 @@ bump:
     filename_sfcd: 20201215.000000.cor_a_2.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_a_2.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_a_2.coupler.res
-  - parameter: rh
-    component: 1
+- parameter: rh
+  component: 1
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -87,8 +89,9 @@ bump:
     filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_rh_1.coupler.res
-  - parameter: rh
-    component: 2
+- parameter: rh
+  component: 2
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -99,8 +102,9 @@ bump:
     filename_sfcd: 20201215.000000.cor_rh_2.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_rh_2.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_rh_2.coupler.res
-  - parameter: rv
-    component: 1
+- parameter: rv
+  component: 1
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -111,8 +115,9 @@ bump:
     filename_sfcd: 20201215.000000.cor_rv_1.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_rv_1.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_rv_1.coupler.res
-  - parameter: rv
-    component: 2
+- parameter: rv
+  component: 2
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -123,9 +128,10 @@ bump:
     filename_sfcd: 20201215.000000.cor_rv_2.sfc_data.nc
     filename_sfcw: 20201215.000000.cor_rv_2.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.cor_rv_2.coupler.res
-  output:
-  - parameter: nicas_norm
-    component: 1
+output:
+- parameter: nicas_norm
+  component: 1
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: nicas_norm_1.fv_core.res.nc
@@ -133,8 +139,9 @@ bump:
     filename_sfcd: nicas_norm_1.sfc_data.nc
     filename_sfcw: nicas_norm_1.fv_srf_wnd.res.nc
     filename_cplr: nicas_norm_1.coupler.res
-  - parameter: nicas_norm
-    component: 2
+- parameter: nicas_norm
+  component: 2
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: nicas_norm_2.fv_core.res.nc

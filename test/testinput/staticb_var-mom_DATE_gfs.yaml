@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
+input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: fms restart
@@ -37,7 +37,7 @@ bump:
   diag_draw_type: octahedral
   grids:
   - prefix: var-mom_3D__YYYY__MM__DD__HH__gfs
-    variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   - prefix: var-mom_2D__YYYY__MM__DD__HH__gfs
     variables: [surface_pressure]
   ensemble:
@@ -55,8 +55,9 @@ bump:
       pattern: '%mem%'
       nmembers: 10
       zero padding: 3
-  output:
-  - parameter: var
+output:
+- parameter: var
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: var.fv_core.res.nc
@@ -64,7 +65,8 @@ bump:
     filename_sfcd: var.sfc_data.nc
     filename_sfcw: var.fv_srf_wnd.res.nc
     filename_cplr: var.coupler.res
-  - parameter: m4
+- parameter: m4
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: m4.fv_core.res.nc

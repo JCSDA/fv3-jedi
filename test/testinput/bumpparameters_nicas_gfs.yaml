@@ -7,7 +7,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: [T,ps]
+input variables: [air_temperature,surface_pressure]
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -17,7 +17,7 @@ background:
   filename_sfcd: 20201214.210000.sfc_data.nc
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
-  state variables: [T,ps]
+  state variables: [air_temperature,surface_pressure]
 bump:
   verbosity: main
   universe_rad: 2500.0e3
@@ -43,8 +43,9 @@ bump:
       surface_pressure: [0.0]
     io_keys: [surface_pressure-surface_pressure]
     io_values: [fixed_2500km]
-  output:
-  - parameter: cor_rh
+output:
+- parameter: cor_rh
+  file:
     filetype: fms restart
     datapath: Data/bump/
     filename_core: bumpparameters_nicas_gfs.cor_rh.fv_core.res.nc
@@ -52,7 +53,8 @@ bump:
     filename_sfcd: bumpparameters_nicas_gfs.cor_rh.sfc_data.nc
     filename_sfcw: bumpparameters_nicas_gfs.cor_rh.fv_srf_wnd.res.nc
     filename_cplr: bumpparameters_nicas_gfs.cor_rh.coupler.res
-  - parameter: cor_rv
+- parameter: cor_rv
+  file:
     filetype: fms restart
     datapath: Data/bump/
     filename_core: bumpparameters_nicas_gfs.cor_rv.fv_core.res.nc

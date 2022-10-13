@@ -8,7 +8,16 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
+input variables: &inputVars [mass_fraction_of_sulfate_in_air,
+                             mass_fraction_of_hydrophobic_black_carbon_in_air,
+                             mass_fraction_of_hydrophilic_black_carbon_in_air,
+                             mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                             mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                             mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                             mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                             mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                             mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                             mass_fraction_of_sea_salt004_in_air]
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: fms restart
@@ -50,8 +59,9 @@ bump:
       pattern: '%mem%'
       nmembers: 5
       zero padding: 3
-  output:
-  - parameter: var
+output:
+- parameter: var
+  file:
     filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: var.fv_core.res.nc
@@ -59,7 +69,8 @@ bump:
     filename_sfcd: var.sfc_data.nc
     filename_sfcw: var.fv_srf_wnd.res.nc
     filename_cplr: var.coupler.res
-  - parameter: m4
+- parameter: m4
+  file:
     filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: m4.fv_core.res.nc

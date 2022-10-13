@@ -8,13 +8,11 @@ geometry:
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 test date: 2020-12-14T21:00:00Z
-loc variables: &vars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+loc variables: &vars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
 localization:
   localization method: SABER
-  saber block:
+  saber central block:
     saber block name: BUMP_NICAS
-    input variables: *vars
-    output variables: *vars
     bump:
       prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
       method: loc

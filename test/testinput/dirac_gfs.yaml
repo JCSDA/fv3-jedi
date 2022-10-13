@@ -19,11 +19,8 @@ initial condition:
   state variables: &vars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: BUMP_NICAS
-    saber central block: true
-    input variables: *vars
-    output variables: *vars
+  saber central block:
+    saber block name: BUMP_NICAS
     bump:
       strategy: specific_univariate
       load_nicas_local: true

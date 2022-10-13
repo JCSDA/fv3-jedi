@@ -20,36 +20,17 @@ initial condition:
   filename_cplr: 20180415.000000.coupler.res
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: BUMP_NICAS
-    saber central block: true
-    input variables: [mass_fraction_of_sulfate_in_air,
-                      mass_fraction_of_hydrophobic_black_carbon_in_air,
-                      mass_fraction_of_hydrophilic_black_carbon_in_air,
-                      mass_fraction_of_hydrophobic_organic_carbon_in_air,
-                      mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                      mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                      mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                      mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                      mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                      mass_fraction_of_sea_salt004_in_air]
-    output variables: [mass_fraction_of_sulfate_in_air,
-                      mass_fraction_of_hydrophobic_black_carbon_in_air,
-                      mass_fraction_of_hydrophilic_black_carbon_in_air,
-                      mass_fraction_of_hydrophobic_organic_carbon_in_air,
-                      mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                      mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                      mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                      mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                      mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                      mass_fraction_of_sea_salt004_in_air]
+  saber central block:
+    saber block name: BUMP_NICAS
     bump:
       datadir: Data/staticb_aero
       prefix: nicas_aero
       verbosity: main
       strategy: specific_univariate
       load_nicas_local: true
-      universe radius:
+    input fields:
+    - parameter: universe radius
+      file:
         datetime: 2018-04-15T00:00:00Z
         set datetime on read: true
         filetype: fms restart
@@ -59,38 +40,21 @@ background error:
         filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
         filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.cor_rh.coupler.res
+  saber outer blocks:
   - saber block name: StdDev
-    input variables: [mass_fraction_of_sulfate_in_air,
-                      mass_fraction_of_hydrophobic_black_carbon_in_air,
-                      mass_fraction_of_hydrophilic_black_carbon_in_air,
-                      mass_fraction_of_hydrophobic_organic_carbon_in_air,
-                      mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                      mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                      mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                      mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                      mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                      mass_fraction_of_sea_salt004_in_air]
-    output variables: [mass_fraction_of_sulfate_in_air,
-                      mass_fraction_of_hydrophobic_black_carbon_in_air,
-                      mass_fraction_of_hydrophilic_black_carbon_in_air,
-                      mass_fraction_of_hydrophobic_organic_carbon_in_air,
-                      mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                      mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                      mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                      mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                      mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                      mass_fraction_of_sea_salt004_in_air]
-    file:
-      datetime: 2018-04-15T00:00:00Z
-      set datetime on read: true
-      filetype: fms restart
-      psinfile: true
-      datapath: Data/staticb_aero/
-      filename_core: 20180415.000000.stddev.fv_core.res.nc
-      filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
-      filename_sfcd: 20180415.000000.stddev.sfc_data.nc
-      filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
-      filename_cplr: 20180415.000000.stddev.coupler.res
+    input fields:
+    - parameter: StdDev
+      file:
+        datetime: 2018-04-15T00:00:00Z
+        set datetime on read: true
+        filetype: fms restart
+        psinfile: true
+        datapath: Data/staticb_aero/
+        filename_core: 20180415.000000.stddev.fv_core.res.nc
+        filename_trcr: 20180415.000000.stddev.fv_tracer.res.nc
+        filename_sfcd: 20180415.000000.stddev.sfc_data.nc
+        filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
+        filename_cplr: 20180415.000000.stddev.coupler.res
 output dirac:
   filetype: fms restart
   datapath: Data/staticb_aero/

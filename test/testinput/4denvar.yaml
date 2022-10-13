@@ -28,10 +28,8 @@ cost function:
     covariance model: ensemble
     localization:
       localization method: SABER
-      saber block:
+      saber central block:
         saber block name: ID
-        input variables: *vars
-        output variables: *vars
     members from template:
       template:
         states:

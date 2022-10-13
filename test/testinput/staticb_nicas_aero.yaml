@@ -8,7 +8,16 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
+input variables: &inputVars [mass_fraction_of_sulfate_in_air,
+                             mass_fraction_of_hydrophobic_black_carbon_in_air,
+                             mass_fraction_of_hydrophilic_black_carbon_in_air,
+                             mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                             mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                             mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                             mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                             mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                             mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                             mass_fraction_of_sea_salt004_in_air]
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
@@ -27,7 +36,9 @@ bump:
   new_nicas: true
   write_nicas_local: true
   resol: 6.0
-  universe radius:
+input fields:
+- parameter: universe radius
+  file:
     datetime: 2018-04-15T00:00:00Z
     set datetime on read: true
     filetype: fms restart
@@ -37,8 +48,8 @@ bump:
     filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
     filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.cor_rh.coupler.res
-  input:
-  - parameter: rh
+- parameter: rh
+  file:
     set datetime on read: true
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
@@ -48,7 +59,8 @@ bump:
     filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
     filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.cor_rh.coupler.res
-  - parameter: rv
+- parameter: rv
+  file:
     set datetime on read: true
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
@@ -58,8 +70,9 @@ bump:
     filename_sfcd: 20180415.000000.cor_rv.sfc_data.nc
     filename_sfcw: 20180415.000000.cor_rv.fv_srf_wnd.res.nc
     filename_cplr: 20180415.000000.cor_rv.coupler.res
-  output:
-  - parameter: nicas_norm
+output:
+- parameter: nicas_norm
+  file:
     filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: nicas_norm.fv_core.res.nc

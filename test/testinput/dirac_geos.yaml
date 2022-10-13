@@ -18,10 +18,8 @@ background error:
   covariance model: ensemble
   localization:
     localization method: SABER
-    saber block:
+    saber central block:
       saber block name: BUMP_NICAS
-      input variables: *vars
-      output variables: *vars
       bump:
         prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
         method: loc

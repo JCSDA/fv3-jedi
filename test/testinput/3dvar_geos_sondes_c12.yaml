@@ -30,12 +30,8 @@ cost function:
     components:
     - covariance:
         covariance model: SABER
-        saber blocks:
-        - saber block name: gsi covariance
-          saber central block: true
-          input variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                                   specific_humidity]
-          output variables: *bvars
+        saber central block:
+          saber block name: gsi covariance
           gsi akbk: Data/fv3files/akbk72.nc4
           gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
           gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
@@ -43,9 +39,8 @@ cost function:
           processor layout y direction: 2
 ##        debugging bypass gsi: true
           debugging mode: false
+        saber outer blocks:
         - saber block name: gsi interpolation to model grid
-          input variables: *bvars
-          output variables: *bvars
           gsi akbk: Data/fv3files/akbk72.nc4
           gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
           gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
@@ -54,7 +49,8 @@ cost function:
           debugging mode: false
         linear variable change:
           linear variable change name: Control2Analysis
-          input variables: *bvars
+          input variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                            specific_humidity]
           output variables: *3dvars
       weight:
         value: 1.00

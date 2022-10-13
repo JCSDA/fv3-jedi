@@ -8,7 +8,16 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-input variables: &inputVars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
+input variables: &inputVars [mass_fraction_of_sulfate_in_air,
+                             mass_fraction_of_hydrophobic_black_carbon_in_air,
+                             mass_fraction_of_hydrophilic_black_carbon_in_air,
+                             mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                             mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                             mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                             mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                             mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                             mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                             mass_fraction_of_sea_salt004_in_air]
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
@@ -42,8 +51,9 @@ bump:
   - var-mom_2018041421_aero_mom
   - var-mom_2018041500_aero_mom
   - var-mom_2018041503_aero_mom
-  output:
-  - parameter: cor_rh
+output:
+- parameter: cor_rh
+  file:
     filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: cor_rh.fv_core.res.nc
@@ -51,7 +61,8 @@ bump:
     filename_sfcd: cor_rh.sfc_data.nc
     filename_sfcw: cor_rh.fv_srf_wnd.res.nc
     filename_cplr: cor_rh.coupler.res
-  - parameter: cor_rv
+- parameter: cor_rv
+  file:
     filetype: fms restart
     datapath: Data/staticb_aero/
     filename_core: cor_rv.fv_core.res.nc

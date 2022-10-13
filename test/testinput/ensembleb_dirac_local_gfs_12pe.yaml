@@ -24,7 +24,7 @@ background error:
     template:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
-      state variables: *state_vars
+      state variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
       datapath: Data/inputs/gfs_c12/mem%mem%/
       filename_core: 20201215.000000.fv_core.res.nc
       filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -36,10 +36,8 @@ background error:
     zero padding: 3
   localization:
     localization method: SABER
-    saber block:
+    saber central block:
       saber block name: BUMP_NICAS
-      input variables: *state_vars
-      output variables: *state_vars
       bump:
         prefix: Data/ensembleb/nicas_gfs
         method: loc

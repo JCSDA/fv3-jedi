@@ -16,11 +16,12 @@ mass_fraction_of_sea_salt002_in_air          | Min:+0.0000000000000000e+00 Max:+
 mass_fraction_of_sea_salt003_in_air          | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 mass_fraction_of_sea_salt004_in_air          | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------
-Norm of stddev: 0.6420837757068941
+Norm of StdDev:0.6420837757068941
+Norm of universe radius:1286268.658636601
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 14 | cube sphere face size: C12
-mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+2.3028595404053288e-05 RMS:+2.4636048149255679e-07
+mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+2.3028595404053291e-05 RMS:+2.4636048149255679e-07
 mass_fraction_of_hydrophobic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 mass_fraction_of_hydrophilic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 mass_fraction_of_hydrophobic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
