@@ -1,13 +1,6 @@
-Number of BUMP output components for stream_function: 2
-Number of BUMP output components for velocity_potential: 2
-Number of BUMP output components for air_temperature: 2
-Number of BUMP output components for relative_humidity: 2
-Number of BUMP output components for cloud_liquid_water: 2
-Number of BUMP output components for ozone_mass_mixing_ratio: 2
-Number of BUMP output components for surface_pressure: 2
-Norm of BUMP output parameter cor_a - 1: 8.2524223146841347e-01
-Norm of BUMP output parameter cor_a - 2: 2.3267510311239703e-01
-Norm of BUMP output parameter cor_rh - 1: 8.1803609806009391e+06
-Norm of BUMP output parameter cor_rh - 2: 1.4099820980692129e+06
-Norm of BUMP output parameter cor_rv - 1: 7.4127124695535784e-01
-Norm of BUMP output parameter cor_rv - 2: 3.5064040874928870e-02
+Norm of BUMP output parameter cor_a - 1: 8.1348233111851165e-01
+Norm of BUMP output parameter cor_a - 2: 2.5898491267846868e-01
+Norm of BUMP output parameter cor_rh - 1: 8.2926762557243621e+06
+Norm of BUMP output parameter cor_rh - 2: 1.4139333439850516e+06
+Norm of BUMP output parameter cor_rv - 1: 7.4200403628052902e-01
+Norm of BUMP output parameter cor_rv - 2: 3.5105382918424258e-02

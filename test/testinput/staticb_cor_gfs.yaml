@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [psi,chi,t,ps,rh,liq_wat,o3mr]
+input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -40,7 +40,7 @@ bump:
     stream_function: 2
     velocity_potential: 2
     air_temperature: 2
-    relative_humidity: 2
+    specific_humidity: 2
     cloud_liquid_water: 2
     ozone_mass_mixing_ratio: 2
     surface_pressure: 2
@@ -48,7 +48,7 @@ bump:
   ne: 30
   grids:
   - prefix: cor_3D_gfs
-    variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
     fname_samp: var-mom_3D_2020121421_gfs_sampling
     fname_mom:
     - var-mom_3D_2020121421_gfs_mom
@@ -61,11 +61,10 @@ bump:
     - var-mom_2D_2020121421_gfs_mom
     - var-mom_2D_2020121500_gfs_mom
     - var-mom_2D_2020121503_gfs_mom
-  output number of components:
-    filepath: Data/staticb/ncmp
-  output:
-  - parameter: cor_a
-    component: 1
+output:
+- parameter: cor_a
+  component: 1
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_a_1.fv_core.res.nc
@@ -73,8 +72,9 @@ bump:
     filename_sfcd: cor_a_1.sfc_data.nc
     filename_sfcw: cor_a_1.fv_srf_wnd.res.nc
     filename_cplr: cor_a_1.coupler.res
-  - parameter: cor_a
-    component: 2
+- parameter: cor_a
+  component: 2
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_a_2.fv_core.res.nc
@@ -82,8 +82,9 @@ bump:
     filename_sfcd: cor_a_2.sfc_data.nc
     filename_sfcw: cor_a_2.fv_srf_wnd.res.nc
     filename_cplr: cor_a_2.coupler.res
-  - parameter: cor_rh
-    component: 1
+- parameter: cor_rh
+  component: 1
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_rh_1.fv_core.res.nc
@@ -91,8 +92,9 @@ bump:
     filename_sfcd: cor_rh_1.sfc_data.nc
     filename_sfcw: cor_rh_1.fv_srf_wnd.res.nc
     filename_cplr: cor_rh_1.coupler.res
-  - parameter: cor_rh
-    component: 2
+- parameter: cor_rh
+  component: 2
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_rh_2.fv_core.res.nc
@@ -100,8 +102,9 @@ bump:
     filename_sfcd: cor_rh_2.sfc_data.nc
     filename_sfcw: cor_rh_2.fv_srf_wnd.res.nc
     filename_cplr: cor_rh_2.coupler.res
-  - parameter: cor_rv
-    component: 1
+- parameter: cor_rv
+  component: 1
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_rv_1.fv_core.res.nc
@@ -109,8 +112,9 @@ bump:
     filename_sfcd: cor_rv_1.sfc_data.nc
     filename_sfcw: cor_rv_1.fv_srf_wnd.res.nc
     filename_cplr: cor_rv_1.coupler.res
-  - parameter: cor_rv
-    component: 2
+- parameter: cor_rv
+  component: 2
+  file:
     filetype: fms restart
     datapath: Data/staticb/
     filename_core: cor_rv_2.fv_core.res.nc

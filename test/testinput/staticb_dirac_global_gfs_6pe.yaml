@@ -19,12 +19,9 @@ initial condition:
   filename_cplr: 20201215.000000.coupler.res
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: BUMP_NICAS
-    saber central block: true
-    input variables: &control_vars [psi,chi,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
-    output variables: *control_vars
-    active variables: &active_vars [psi,chi,t,ps,rh,liq_wat,o3mr]
+  saber central block:
+    saber block name: BUMP_NICAS
+    active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
     bump:
       datadir: Data/staticb
       verbosity: main
@@ -32,12 +29,14 @@ background error:
       load_nicas_global: true
       grids:
       - prefix: nicas_3D_gfs
-        variables: [stream_function,velocity_potential,air_temperature,relative_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+        variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
       - prefix: nicas_2D_gfs
         variables: [surface_pressure]
-      universe radius:
-        datetime: 2020-12-15T00:00:00Z
+    input fields:
+    - parameter: universe radius
+      file:
         set datetime on read: true
+        datetime: 2020-12-15T00:00:00Z
         filetype: fms restart
         psinfile: true
         datapath: Data/staticb/
@@ -47,11 +46,9 @@ background error:
         filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.cor_rh_1.coupler.res
         date: 2020-12-15T00:00:00Z
-      input number of components:
-        filepath: Data/staticb/ncmp
-      input:
-      - parameter: nicas_a
-        component: 1
+    - parameter: nicas_a
+      component: 1
+      file:
         set datetime on read: true
         datetime: 2020-12-15T00:00:00Z
         filetype: fms restart
@@ -62,8 +59,9 @@ background error:
         filename_sfcd: 20201215.000000.cor_a_1.sfc_data.nc
         filename_sfcw: 20201215.000000.cor_a_1.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.cor_a_1.coupler.res
-      - parameter: nicas_a
-        component: 2
+    - parameter: nicas_a
+      component: 2
+      file:
         set datetime on read: true
         datetime: 2020-12-15T00:00:00Z
         filetype: fms restart
@@ -74,8 +72,9 @@ background error:
         filename_sfcd: 20201215.000000.cor_a_2.sfc_data.nc
         filename_sfcw: 20201215.000000.cor_a_2.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.cor_a_2.coupler.res
-      - parameter: nicas_norm
-        component: 1
+    - parameter: nicas_norm
+      component: 1
+      file:
         set datetime on read: true
         datetime: 2020-12-15T00:00:00Z
         filetype: fms restart
@@ -86,8 +85,9 @@ background error:
         filename_sfcd: 20201215.000000.nicas_norm_1.sfc_data.nc
         filename_sfcw: 20201215.000000.nicas_norm_1.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.nicas_norm_1.coupler.res
-      - parameter: nicas_norm
-        component: 2
+    - parameter: nicas_norm
+      component: 2
+      file:
         set datetime on read: true
         datetime: 2020-12-15T00:00:00Z
         filetype: fms restart
@@ -98,25 +98,24 @@ background error:
         filename_sfcd: 20201215.000000.nicas_norm_2.sfc_data.nc
         filename_sfcw: 20201215.000000.nicas_norm_2.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.nicas_norm_2.coupler.res
+  saber outer blocks:
   - saber block name: StdDev
-    input variables: *control_vars
-    output variables: *control_vars
     active variables: *active_vars
-    file:
-      datetime: 2020-12-15T00:00:00Z
-      set datetime on read: true
-      filetype: fms restart
-      psinfile: true
-      datapath: Data/staticb/
-      filename_core: 20201215.000000.stddev.fv_core.res.nc
-      filename_trcr: 20201215.000000.stddev.fv_tracer.res.nc
-      filename_sfcd: 20201215.000000.stddev.sfc_data.nc
-      filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
-      filename_cplr: 20201215.000000.stddev.coupler.res
+    input fields:
+    - parameter: StdDev
+      file:
+        set datetime on read: true
+        datetime: 2020-12-15T00:00:00Z
+        filetype: fms restart
+        psinfile: true
+        datapath: Data/staticb/
+        filename_core: 20201215.000000.stddev.fv_core.res.nc
+        filename_trcr: 20201215.000000.stddev.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.stddev.sfc_data.nc
+        filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.stddev.coupler.res
   - saber block name: BUMP_VerticalBalance
-    input variables: *control_vars
-    output variables: *control_vars
-    active variables: [psi,chi,t,ps]
+    active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
     bump:
       datadir: Data/staticb
       prefix: vbal_gfs
@@ -127,19 +126,13 @@ background error:
       fname_samp: vbal_2020121421_gfs_sampling
       vbal_block: [true,true,false,true]
   - saber block name: BUMP_PsiChiToUV
-    input variables: *control_vars
-    output variables: &state_vars_with_rh [ua,va,t,delp,ps,rh,ice_wat,liq_wat,o3mr]
-    active variables: [ua,va,psi,chi]
+    active variables: [eastward_wind,northward_wind,stream_function,velocity_potential]
     bump:
       datadir: Data/staticb
       prefix: psichitouv_gfs
       verbosity: main
       universe_rad: 2000.0e3
       load_wind_local: true
-  linear variable change:
-    linear variable change name: Control2Analysis
-    input variables: *state_vars_with_rh
-    output variables: *state_vars
 output dirac:
   filetype: fms restart
   datapath: Data/staticb/

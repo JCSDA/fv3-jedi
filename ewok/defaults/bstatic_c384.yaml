@@ -2,14 +2,9 @@ covariance model: SABER
 #_balfile: global_berror.l64y192.nc
 #_prefix2d: fv3jedi_bumpparameters_nicas_2D_gfs
 #_prefix3d: fv3jedi_bumpparameters_nicas_3D_gfs
-full inverse: true
-saber blocks:
-- saber block name: BUMP_NICAS
-  saber central block: true
- # iterative inverse: true
-  input variables: &control_vars [psi,chi,t,ps,sphum,liq_wat,o3mr]
-  output variables: *control_vars
-  active variables: &active_vars [psi,chi,t,ps,sphum,liq_wat,o3mr]
+saber central block:
+  saber block name: BUMP_NICAS
+  active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   bump:
     prefix: nicas_2020010100-2020013100/nicas_2020010100-2020013100
     datadir: $(static_data)/skylab-1.0.0/staticb/c384
@@ -23,20 +18,21 @@ saber blocks:
       fname_nicas: nicas_2020010100-2020013100/nicas_2020010100-2020013100_3D_nicas
     - variables: [surface_pressure]
       fname_nicas: nicas_2020010100-2020013100/nicas_2020010100-2020013100_2D_nicas
-    universe radius:
-      filetype: fms restart
-      datetime: 2020-01-31T00:00:00Z
-      set datetime on read: true
-      psinfile: true
-      datapath: $(static_data)/skylab-1.0.0/staticb/c384/cor_2020010100-2020013100
-      filename_core: cor_rh.fv_core.res.nc
-      filename_trcr: cor_rh.fv_tracer.res.nc
-      filename_cplr: cor_rh.coupler.res
+  input fields:
+  - parameter: universe radius
+    filetype: fms restart
+    datetime: 2020-01-31T00:00:00Z
+    set datetime on read: true
+    psinfile: true
+    datapath: $(static_data)/skylab-1.0.0/staticb/c384/cor_2020010100-2020013100
+    filename_core: cor_rh.fv_core.res.nc
+    filename_trcr: cor_rh.fv_tracer.res.nc
+    filename_cplr: cor_rh.coupler.res
+saber outer blocks:
 - saber block name: StdDev
-  input variables: *control_vars
-  output variables: *control_vars
   active variables: *active_vars
-  file:
+  input fields:
+  - parameter: StdDev
     filetype: fms restart
     datetime: 2020-01-31T00:00:00Z
     set datetime on read: true
@@ -46,8 +42,6 @@ saber blocks:
     filename_trcr: stddev.fv_tracer.res.nc
     filename_cplr: stddev.coupler.res
 - saber block name: BUMP_VerticalBalance
-  input variables: *control_vars
-  output variables: *control_vars
   active variables: *active_vars
   bump:
     datadir: $(static_data)/skylab-1.0.0/staticb/c384
@@ -59,10 +53,7 @@ saber blocks:
     load_samp_local: true
     vbal_block: [true, true,false, true,false,false]
 - saber block name: BUMP_PsiChiToUV
-  #iterative inverse: true
-  input variables: *control_vars
-  output variables: [ua,va,t,ps,sphum,liq_wat,o3mr]
-  active variables: [psi,chi,ua,va]
+  active variables: [eastward_wind,northward_wind,stream_function,velocity_potential]
   bump:
     datadir: $(static_data)/skylab-1.0.0/staticb/c384
     prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100

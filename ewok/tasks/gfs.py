@@ -4,6 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 import ewok.tasks.GenericModel
+import createPlotsFields
 import getBackgroundGFS
 import getExpInitGFS
 import getFcInitGFS
@@ -28,4 +29,6 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS
         self.saveForecast = saveForecastGFS.saveForecastGFS
         self.createPlots = ewok.createPlots
+        self.createPlotsFields = createPlotsFields.createPlotsFields
         self.savePlots = ewok.savePlots
+        self.savePlotsFields = ewok.savePlotsFields

@@ -1,38 +1,38 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Aircraft) = 5.1290055789958460e+03, nobs = 2813, Jo/n = 1.8233222819039623e+00, err = 2.2002585239962191e+00
+CostJo   : Nonlinear Jo(Aircraft) = 5.1290055789958506e+03, nobs = 2813, Jo/n = 1.8233222819039638e+00, err = 2.2002585239962191e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5918241304128323e+03, nobs = 1349, Jo/n = 1.9212929061622182e+00, err = 2.0640970266122181e+00
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.4930393928185504e+02, nobs = 133, Jo/n = 3.3782251073823688e+00, err = 3.8270876319048953e-04
-CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 5.2191297931216195e+02, nobs = 598, Jo/n = 8.7276417945177587e-01, err = 1.8644522673578614e+00
-CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 4.2030756196882868e+02, nobs = 564, Jo/n = 7.4522617370359689e-01, err = 1.8154854230723765e+00
-CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 3.7965247316421591e+02, nobs = 641, Jo/n = 5.9228154939815270e-01, err = 9.2755988685895940e-01
-CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 4.4764925910658570e+02, nobs = 484, Jo/n = 9.2489516344335887e-01, err = 2.1363179619039920e+00
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 5.2140953781617736e+02, nobs = 610, Jo/n = 8.5476973412488089e-01, err = 1.9388868289824617e+00
-CostJo   : Nonlinear Jo(MHS-N19) = 6.8093835214784377e+01, nobs = 131, Jo/n = 5.1980026881514796e-01, err = 6.7267985199774785e+00
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.4930393928187550e+02, nobs = 133, Jo/n = 3.3782251073825225e+00, err = 3.8270876319048953e-04
+CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 5.2457896384236847e+02, nobs = 598, Jo/n = 8.7722234756248907e-01, err = 1.8644522673578614e+00
+CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 4.2024149156940786e+02, nobs = 564, Jo/n = 7.4510902760533304e-01, err = 1.8154854230723765e+00
+CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 3.8114631617578220e+02, nobs = 641, Jo/n = 5.9461203771572890e-01, err = 9.2755988685895940e-01
+CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 4.5238021424230499e+02, nobs = 486, Jo/n = 9.3082348609527776e-01, err = 2.1321204608829092e+00
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 5.2056098082814754e+02, nobs = 607, Jo/n = 8.5759634403319196e-01, err = 1.9415816831324557e+00
+CostJo   : Nonlinear Jo(MHS-N19) = 6.8093835214972160e+01, nobs = 131, Jo/n = 5.1980026881658137e-01, err = 6.7267985199774785e+00
 CostJo   : Nonlinear Jo(MHS-METOP-A) = 0.0000000000000000e+00 --- No Observations
-CostJo   : Nonlinear Jo(MHS-METOP-B) = 1.4717758367135184e+02, nobs = 181, Jo/n = 8.1313582138868423e-01, err = 5.9902061492227432e+00
-CostJo   : Nonlinear Jo(ATMS-NPP) = 9.9991419670751964e+02, nobs = 1233, Jo/n = 8.1096041906530381e-01, err = 3.3410665091069252e+00
-CostJo   : Nonlinear Jo(AMSR2-GCOM) = 3.3957492754549065e+01, nobs = 111, Jo/n = 3.0592335814909066e-01, err = 1.0082800866545291e+01
-CostJo   : Nonlinear Jo(GMI-GPM) = 1.0367564042947404e+02, nobs = 424, Jo/n = 2.4451801988083502e-01, err = 1.0399452730157464e+02
-CostJo   : Nonlinear Jo(AIRS-AQUA) = 7.5534210528456279e+03, nobs = 8890, Jo/n = 8.4965366173741597e-01, err = 9.4130396080397316e-01
-CostJo   : Nonlinear Jo(IASI-METOPA) = 5.7034618259696599e+03, nobs = 8374, Jo/n = 6.8109169166105321e-01, err = 1.0160086884715114e+00
-CostJo   : Nonlinear Jo(IASI-METOPB) = 6.3992176854921863e+03, nobs = 8959, Jo/n = 7.1427812093896492e-01, err = 1.1693248217079726e+00
-CostJo   : Nonlinear Jo(CRIS-NPP) = 4.0923072391457868e+02, nobs = 639, Jo/n = 6.4042366809793216e-01, err = 7.2175795139673760e-01
+CostJo   : Nonlinear Jo(MHS-METOP-B) = 1.4717758367136196e+02, nobs = 181, Jo/n = 8.1313582138874008e-01, err = 5.9902061492227432e+00
+CostJo   : Nonlinear Jo(ATMS-NPP) = 1.0000617281923469e+03, nobs = 1232, Jo/n = 8.1173841574054129e-01, err = 3.3401313641214125e+00
+CostJo   : Nonlinear Jo(AMSR2-GCOM) = 3.3957492166287729e+01, nobs = 111, Jo/n = 3.0592335284943900e-01, err = 1.0082801235544494e+01
+CostJo   : Nonlinear Jo(GMI-GPM) = 1.0367564042684168e+02, nobs = 424, Jo/n = 2.4451801987462660e-01, err = 1.0399452730157464e+02
+CostJo   : Nonlinear Jo(AIRS-AQUA) = 7.5534210528527929e+03, nobs = 8890, Jo/n = 8.4965366173822188e-01, err = 9.4130396080397316e-01
+CostJo   : Nonlinear Jo(IASI-METOPA) = 5.7034618259683411e+03, nobs = 8374, Jo/n = 6.8109169166089578e-01, err = 1.0160086884715114e+00
+CostJo   : Nonlinear Jo(IASI-METOPB) = 6.3992176854926365e+03, nobs = 8959, Jo/n = 7.1427812093901510e-01, err = 1.1693248217079726e+00
+CostJo   : Nonlinear Jo(CRIS-NPP) = 4.0923072391413109e+02, nobs = 639, Jo/n = 6.4042366809723172e-01, err = 7.2175795139673760e-01
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
-CostFunction: Nonlinear J = 3.1879215497058231e+04
-DRIPCGMinimizer: reduction in residual norm = 5.8173371769226601e-01
+CostFunction: Nonlinear J = 3.1887339183248281e+04
+DRIPCGMinimizer: reduction in residual norm = 5.8171066439477181e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 23 | cube sphere face size: C12
-eastward_wind                                | Min:-1.0730965415307158e+02 Max:+1.7027683614294730e+02 RMS:+2.6626975378840402e+01
-northward_wind                               | Min:-1.0635166423252811e+02 Max:+1.0491759880947470e+02 RMS:+1.1297892571977606e+01
-air_temperature                              | Min:+1.6603869876010472e+02 Max:+3.0529023048401746e+02 RMS:+2.4633346227608877e+02
-surface_pressure                             | Min:+5.3773865676358881e+04 Max:+1.0482524402842358e+05 RMS:+9.8975197490093225e+04
-specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.9582455642692027e-02 RMS:+3.9593156915553873e-03
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+4.2806288416439659e-04 RMS:+9.0648054027438719e-06
-cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+4.0520827909753903e-04 RMS:+2.1207576635647345e-05
+eastward_wind                                | Min:-1.0730965415307402e+02 Max:+1.7027683614294654e+02 RMS:+2.6626975378889078e+01
+northward_wind                               | Min:-1.0635166423256517e+02 Max:+1.0491759880949284e+02 RMS:+1.1297892571963988e+01
+air_temperature                              | Min:+1.6603869876010717e+02 Max:+3.0529023048401740e+02 RMS:+2.4633346227615490e+02
+surface_pressure                             | Min:+5.3773865676337155e+04 Max:+1.0482524402841902e+05 RMS:+9.8975197490092192e+04
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.9582455642692027e-02 RMS:+3.9593155632989714e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+4.2806288416432367e-04 RMS:+9.0648054029009982e-06
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+4.0520827909749354e-04 RMS:+2.1207576636044502e-05
 rain_water                                   | Min:+0.0000000000000000e+00 Max:+6.1279811173028389e-04 RMS:+1.3145649074739178e-05
 snow_water                                   | Min:+0.0000000000000000e+00 Max:+4.8839511767370127e-04 RMS:+1.2726985345138990e-05
-mole_fraction_of_ozone_in_air                | Min:+1.2327866368453625e-02 Max:+3.8071811332128760e+01 RMS:+3.7079707698198034e+00
+mole_fraction_of_ozone_in_air                | Min:+1.2327866366354339e-02 Max:+3.8071811332130451e+01 RMS:+3.7079707698198066e+00
 sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
@@ -47,41 +47,41 @@ soilm                                        | Min:+1.0988816455122317e-03 Max:+
 surface_eastward_wind                        | Min:-1.4631289361976737e+01 Max:+2.0071757657543859e+01 RMS:+5.4868549560189432e+00
 surface_northward_wind                       | Min:-1.4834912659890456e+01 Max:+1.8979258912037594e+01 RMS:+4.4479201325957609e+00
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 4.385464404623118e-08
-CostJo   : Nonlinear Jo(Aircraft) = 5129.004344639181, nobs = 2813, Jo/n = 1.823321843099602, err = 2.200258523996219
-CostJo   : Nonlinear Jo(Radiosonde) = 2591.823899428341, nobs = 1349, Jo/n = 1.921292734935761, err = 2.064097026612218
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 363.8718866506259, nobs = 133, Jo/n = 2.735878846997188, err = 0.0003827087631904895
-CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 521.7248557314779, nobs = 598, Jo/n = 0.8724495915242105, err = 1.864452267357861
-CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 420.2805575791422, nobs = 564, Jo/n = 0.7451782935800394, err = 1.815485423072376
-CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 379.5848513777664, nobs = 641, Jo/n = 0.5921760551915232, err = 0.9275598868589594
-CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 447.5334278434994, nobs = 484, Jo/n = 0.9246558426518583, err = 2.136317961903992
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 521.4079773934055, nobs = 610, Jo/n = 0.8547671760547632, err = 1.938886828982462
-CostJo   : Nonlinear Jo(MHS-N19) = 52.28994425746798, nobs = 131, Jo/n = 0.3991598798279998, err = 6.726798519977478
+CostJb   : Nonlinear Jb = 4.385333014522812e-08
+CostJo   : Nonlinear Jo(Aircraft) = 5129.004343974045, nobs = 2813, Jo/n = 1.823321842863151, err = 2.200258523996219
+CostJo   : Nonlinear Jo(Radiosonde) = 2591.823899268618, nobs = 1349, Jo/n = 1.921292734817359, err = 2.064097026612218
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 363.8759516121787, nobs = 133, Jo/n = 2.735909410617885, err = 0.0003827087631904895
+CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 524.3986294523877, nobs = 598, Jo/n = 0.8769207850374376, err = 1.864452267357861
+CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 420.2144967886145, nobs = 564, Jo/n = 0.74506116451882, err = 1.815485423072376
+CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 381.0784257946447, nobs = 641, Jo/n = 0.594506124484625, err = 0.9275598868589594
+CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 452.2487824709267, nobs = 486, Jo/n = 0.930553050351701, err = 2.132120460882909
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 520.5402766449641, nobs = 607, Jo/n = 0.8575622349999409, err = 1.941581683132456
+CostJo   : Nonlinear Jo(MHS-N19) = 52.29022502463542, nobs = 131, Jo/n = 0.39916202308882, err = 6.726798519977478
 CostJo   : Nonlinear Jo(MHS-METOP-A) = 0 --- No Observations
-CostJo   : Nonlinear Jo(MHS-METOP-B) = 121.445150180283, nobs = 181, Jo/n = 0.6709676805540494, err = 5.990206149222743
-CostJo   : Nonlinear Jo(ATMS-NPP) = 969.7177816672958, nobs = 1233, Jo/n = 0.7864702203303291, err = 3.341066509106925
-CostJo   : Nonlinear Jo(AMSR2-GCOM) = 33.33946013113909, nobs = 111, Jo/n = 0.3003554966769287, err = 10.08280086654529
-CostJo   : Nonlinear Jo(GMI-GPM) = 100.3175369573406, nobs = 423, Jo/n = 0.2371572977714908, err = 104.1172948067327
-CostJo   : Nonlinear Jo(AIRS-AQUA) = 6943.646045578732, nobs = 8890, Jo/n = 0.7810625473091937, err = 0.9413039608039732
-CostJo   : Nonlinear Jo(IASI-METOPA) = 5629.528537363101, nobs = 8374, Jo/n = 0.6722627821068905, err = 1.016008688471511
-CostJo   : Nonlinear Jo(IASI-METOPB) = 6338.498007082919, nobs = 8959, Jo/n = 0.7075006146983948, err = 1.169324821707973
-CostJo   : Nonlinear Jo(CRIS-NPP) = 376.460463377198, nobs = 639, Jo/n = 0.5891400052851299, err = 0.7217579513967376
+CostJo   : Nonlinear Jo(MHS-METOP-B) = 121.4456477327957, nobs = 181, Jo/n = 0.6709704294629596, err = 5.990206149222743
+CostJo   : Nonlinear Jo(ATMS-NPP) = 969.9382364205599, nobs = 1232, Jo/n = 0.7872875295621428, err = 3.340131364121413
+CostJo   : Nonlinear Jo(AMSR2-GCOM) = 33.33947356697548, nobs = 111, Jo/n = 0.3003556177204998, err = 10.08280123554449
+CostJo   : Nonlinear Jo(GMI-GPM) = 100.3175074049869, nobs = 423, Jo/n = 0.2371572279077706, err = 104.1172948067327
+CostJo   : Nonlinear Jo(AIRS-AQUA) = 6943.648835883918, nobs = 8890, Jo/n = 0.7810628611792934, err = 0.9413039608039732
+CostJo   : Nonlinear Jo(IASI-METOPA) = 5629.53415945995, nobs = 8374, Jo/n = 0.672263453482201, err = 1.016008688471511
+CostJo   : Nonlinear Jo(IASI-METOPB) = 6338.50715202199, nobs = 8959, Jo/n = 0.7075016354528396, err = 1.169324821707973
+CostJo   : Nonlinear Jo(CRIS-NPP) = 376.4619845428504, nobs = 639, Jo/n = 0.5891423858260569, err = 0.7217579513967376
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
-CostFunction: Nonlinear J = 30940.47472728277
-DRIPCGMinimizer: reduction in residual norm = 0.4380108181727908
+CostFunction: Nonlinear J = 30948.66802810889
+DRIPCGMinimizer: reduction in residual norm = 0.4380103501912162
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 23 | cube sphere face size: C12
-eastward_wind                                | Min:-1.0730965413665490e+02 Max:+1.7027683614723807e+02 RMS:+2.6626975378598402e+01
-northward_wind                               | Min:-1.0635166405843795e+02 Max:+1.0491759882512260e+02 RMS:+1.1297892573347131e+01
-air_temperature                              | Min:+1.6603869878594867e+02 Max:+3.0529023048442821e+02 RMS:+2.4633346227463724e+02
-surface_pressure                             | Min:+5.3773865676576534e+04 Max:+1.0482524403425744e+05 RMS:+9.8975197489941900e+04
-specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.9582455642689615e-02 RMS:+3.9593763864430023e-03
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+4.2806288465799220e-04 RMS:+9.0648053931868500e-06
-cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+4.0520827941873256e-04 RMS:+2.1207576635842827e-05
+eastward_wind                                | Min:-1.0730965413665275e+02 Max:+1.7027683614723847e+02 RMS:+2.6626975378657992e+01
+northward_wind                               | Min:-1.0635166405842911e+02 Max:+1.0491759882514968e+02 RMS:+1.1297892573330868e+01
+air_temperature                              | Min:+1.6603869878595970e+02 Max:+3.0529023048442826e+02 RMS:+2.4633346227471807e+02
+surface_pressure                             | Min:+5.3773865676549976e+04 Max:+1.0482524403425367e+05 RMS:+9.8975197489940590e+04
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.9582455642689615e-02 RMS:+3.9593762598523824e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+4.2806288465805715e-04 RMS:+9.0648053933768649e-06
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+4.0520827941877718e-04 RMS:+2.1207576636330433e-05
 rain_water                                   | Min:+0.0000000000000000e+00 Max:+6.1279811173028389e-04 RMS:+1.3145649074739178e-05
 snow_water                                   | Min:+0.0000000000000000e+00 Max:+4.8839511767370127e-04 RMS:+1.2726985345138990e-05
-mole_fraction_of_ozone_in_air                | Min:+1.2327867517882599e-02 Max:+3.8071811324880009e+01 RMS:+3.7079707701920599e+00
+mole_fraction_of_ozone_in_air                | Min:+1.2327867515666205e-02 Max:+3.8071811324879818e+01 RMS:+3.7079707701921762e+00
 sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
@@ -96,24 +96,24 @@ soilm                                        | Min:+1.0988816455122317e-03 Max:+
 surface_eastward_wind                        | Min:-1.4631289361976737e+01 Max:+2.0071757657543859e+01 RMS:+5.4868549560189432e+00
 surface_northward_wind                       | Min:-1.4834912659890456e+01 Max:+1.8979258912037594e+01 RMS:+4.4479201325957609e+00
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 5.202853053628485e-08
-CostJo   : Nonlinear Jo(Aircraft) = 5129.004066058331, nobs = 2813, Jo/n = 1.823321744066239, err = 2.200258523996219
-CostJo   : Nonlinear Jo(Radiosonde) = 2591.823847340207, nobs = 1349, Jo/n = 1.921292696323356, err = 2.064097026612218
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 351.3668865483, nobs = 133, Jo/n = 2.641856289836842, err = 0.0003827087631904895
-CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 521.7831160250819, nobs = 598, Jo/n = 0.872547016764351, err = 1.864452267357861
-CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 420.2824024779189, nobs = 564, Jo/n = 0.7451815646771612, err = 1.815485423072376
-CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 379.5972475914417, nobs = 641, Jo/n = 0.5921953940584114, err = 0.9275598868589594
-CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 447.5804737520336, nobs = 484, Jo/n = 0.9247530449422181, err = 2.136317961903992
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 521.4579261136845, nobs = 610, Jo/n = 0.8548490592027614, err = 1.938886828982462
-CostJo   : Nonlinear Jo(MHS-N19) = 45.07887957140337, nobs = 131, Jo/n = 0.3441135845145296, err = 6.726798519977478
+CostJb   : Nonlinear Jb = 5.202993911692334e-08
+CostJo   : Nonlinear Jo(Aircraft) = 5129.004065156818, nobs = 2813, Jo/n = 1.823321743745758, err = 2.200258523996219
+CostJo   : Nonlinear Jo(Radiosonde) = 2591.823847128319, nobs = 1349, Jo/n = 1.921292696166286, err = 2.064097026612218
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 351.3674109262145, nobs = 133, Jo/n = 2.641860232527928, err = 0.0003827087631904895
+CostJo   : Nonlinear Jo(AMSUA-METOP-A) = 524.4564655783083, nobs = 598, Jo/n = 0.8770175009670708, err = 1.864452267357861
+CostJo   : Nonlinear Jo(AMSUA-METOP-B) = 420.2163442742719, nobs = 564, Jo/n = 0.7450644402026098, err = 1.815485423072376
+CostJo   : Nonlinear Jo(AMSUA-NOAA15) = 381.0909843902126, nobs = 641, Jo/n = 0.5945257166773987, err = 0.9275598868589594
+CostJo   : Nonlinear Jo(AMSUA-NOAA18) = 452.3029450762601, nobs = 486, Jo/n = 0.9306644960416876, err = 2.132120460882909
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 520.5928956875723, nobs = 607, Jo/n = 0.8576489220553086, err = 1.941581683132456
+CostJo   : Nonlinear Jo(MHS-N19) = 45.07841492986104, nobs = 131, Jo/n = 0.344110037632527, err = 6.726798519977478
 CostJo   : Nonlinear Jo(MHS-METOP-A) = 0 --- No Observations
-CostJo   : Nonlinear Jo(MHS-METOP-B) = 112.7070617512611, nobs = 181, Jo/n = 0.6226909489019953, err = 5.990206149222743
-CostJo   : Nonlinear Jo(ATMS-NPP) = 955.8325054272661, nobs = 1233, Jo/n = 0.7752088446287642, err = 3.341066509106925
-CostJo   : Nonlinear Jo(AMSR2-GCOM) = 33.33610632808658, nobs = 111, Jo/n = 0.3003252822350142, err = 10.08280086654529
-CostJo   : Nonlinear Jo(GMI-GPM) = 98.14928020763202, nobs = 423, Jo/n = 0.2320313952899102, err = 104.1172948067327
-CostJo   : Nonlinear Jo(AIRS-AQUA) = 6743.582143260051, nobs = 8890, Jo/n = 0.7585581713453377, err = 0.9413039608039732
-CostJo   : Nonlinear Jo(IASI-METOPA) = 5623.882066843739, nobs = 8374, Jo/n = 0.6715884961599879, err = 1.016008688471511
-CostJo   : Nonlinear Jo(IASI-METOPB) = 6330.042225473791, nobs = 8959, Jo/n = 0.7065567837340988, err = 1.169324821707973
-CostJo   : Nonlinear Jo(CRIS-NPP) = 374.1521023034927, nobs = 639, Jo/n = 0.5855275466408336, err = 0.7217579513967376
+CostJo   : Nonlinear Jo(MHS-METOP-B) = 112.7083814751021, nobs = 181, Jo/n = 0.6226982401939343, err = 5.990206149222743
+CostJo   : Nonlinear Jo(ATMS-NPP) = 956.0517243171372, nobs = 1232, Jo/n = 0.7760160099976763, err = 3.340131364121413
+CostJo   : Nonlinear Jo(AMSR2-GCOM) = 33.33610948558061, nobs = 111, Jo/n = 0.3003253106809064, err = 10.08280123554449
+CostJo   : Nonlinear Jo(GMI-GPM) = 98.14918322536894, nobs = 423, Jo/n = 0.2320311660174207, err = 104.1172948067327
+CostJo   : Nonlinear Jo(AIRS-AQUA) = 6743.618486130265, nobs = 8890, Jo/n = 0.7585622594072289, err = 0.9413039608039732
+CostJo   : Nonlinear Jo(IASI-METOPA) = 5623.886917611031, nobs = 8374, Jo/n = 0.6715890754252485, err = 1.016008688471511
+CostJo   : Nonlinear Jo(IASI-METOPB) = 6330.051908648336, nobs = 8959, Jo/n = 0.7065578645661722, err = 1.169324821707973
+CostJo   : Nonlinear Jo(CRIS-NPP) = 374.1523941976587, nobs = 639, Jo/n = 0.5855280034392155, err = 0.7217579513967376
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
-CostFunction: Nonlinear J = 30679.65833712575
+CostFunction: Nonlinear J = 30687.88847829035

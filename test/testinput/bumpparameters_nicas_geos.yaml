@@ -7,14 +7,14 @@ geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-input variables: [t,ps]
+input variables: [air_temperature,surface_pressure]
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
   filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-  state variables: [t,ps]
+  state variables: [air_temperature,surface_pressure]
 bump:
   verbosity: main
   universe_rad: 2500.0e3
@@ -48,13 +48,15 @@ bump:
       surface_pressure: [0.0]
     io_keys: [surface_pressure-surface_pressure]
     io_values: [fixed_2500km]
-  output:
-  - parameter: cor_rh
+output:
+- parameter: cor_rh
+  file:
     filetype: cube sphere history
     provider: geos
     datapath: Data/bump/
     filename: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  - parameter: cor_rv
+- parameter: cor_rv
+  file:
     filetype: cube sphere history
     provider: geos
     datapath: Data/bump/

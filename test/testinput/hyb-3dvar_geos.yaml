@@ -1,6 +1,6 @@
 cost function:
   cost type: 3D-Var
-  analysis variables: &3dvars [ua,va,t,ps,q,qi,ql,o3ppmv]
+  analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   geometry:
@@ -43,10 +43,9 @@ cost function:
           zero padding: 3
         localization:
           localization method: SABER
-          saber block:
+          saber central block:
             saber block name: BUMP_NICAS
-            input variables: *3dvars
-            output variables: *3dvars
+            active variables: *3dvars
             bump:
               prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
               method: loc

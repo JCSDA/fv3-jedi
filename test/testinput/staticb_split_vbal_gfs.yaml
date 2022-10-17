@@ -7,7 +7,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [psi,chi,t,ps]
+input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure]
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart

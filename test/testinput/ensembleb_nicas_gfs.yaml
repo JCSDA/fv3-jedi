@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [ua,va,t,ps,sphum,liq_wat,ice_wat,o3mr]
+input variables: &inputVars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -28,7 +28,9 @@ bump:
   write_nicas_global: true
   write_nicas_local: true
   resol: 6
-  universe radius:
+input fields:
+- parameter: universe radius
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -39,8 +41,8 @@ bump:
     filename_sfcd: 20201215.000000.loc_rh.sfc_data.nc
     filename_sfcw: 20201215.000000.loc_rh.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.loc_rh.coupler.res
-  input:
-  - parameter: rh
+- parameter: rh
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -51,7 +53,8 @@ bump:
     filename_sfcd: 20201215.000000.loc_rh.sfc_data.nc
     filename_sfcw: 20201215.000000.loc_rh.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.loc_rh.coupler.res
-  - parameter: rv
+- parameter: rv
+  file:
     set datetime on read: true
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -62,8 +65,9 @@ bump:
     filename_sfcd: 20201215.000000.loc_rv.sfc_data.nc
     filename_sfcw: 20201215.000000.loc_rv.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.loc_rv.coupler.res
-  output:
-  - parameter: nicas_norm
+output:
+- parameter: nicas_norm
+  file:
     filetype: fms restart
     datapath: Data/ensembleb/
     filename_core: nicas_norm.fv_core.res.nc

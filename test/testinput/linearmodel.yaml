@@ -1,10 +1,8 @@
 analysis variables: &anavars [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: ID
-    input variables: *anavars
-    output variables: *anavars
+  saber central block:
+    saber block name: ID
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/input_gfs_c12.nml

@@ -18,14 +18,8 @@ initial condition:
   state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: gsi covariance
-    saber central block: true
-#   input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
-    input variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                             specific_humidity,cloud_liquid_ice,cloud_liquid_water,
-                             mole_fraction_of_ozone_in_air]
-    output variables: *bvars
+  saber central block:
+    saber block name: gsi covariance
     gsi akbk: Data/fv3files/akbk72.nc4
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
     gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
@@ -33,9 +27,8 @@ background error:
     processor layout y direction: 2
 #   debugging bypass gsi: true
     debugging mode: false
+  saber outer blocks:
   - saber block name: gsi interpolation to model grid
-    input variables: *bvars
-    output variables: *bvars
     gsi akbk: Data/fv3files/akbk72.nc4
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
     gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
@@ -44,7 +37,9 @@ background error:
     debugging mode: false
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: *bvars
+    input variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                      specific_humidity,cloud_liquid_ice,cloud_liquid_water,
+                      mole_fraction_of_ozone_in_air]
     output variables: *vars
 dirac:
   ndir: 1

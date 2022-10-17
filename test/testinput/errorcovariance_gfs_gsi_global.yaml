@@ -24,12 +24,8 @@ background:
   state variables: *anavars
 background error:
   covariance model: SABER
-  saber blocks:
-  - saber block name: gsi covariance
-    saber central block: true
-    input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
-                             specific_humidity]
-    output variables: *bvars
+  saber central block:
+    saber block name: gsi covariance
     gsi akbk: Data/fv3files/akbk127.nc4
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
     gsi berror namelist file: Data/gsibec/gfs_gsicv_global_192x96x127.nml
@@ -37,9 +33,8 @@ background error:
     processor layout y direction: 2
     debugging deep bypass gsi B error: true
     debugging mode: false
+  saber outer blocks:
   - saber block name: gsi interpolation to model grid
-    input variables: *bvars
-    output variables: *bvars
     gsi akbk: Data/fv3files/akbk127.nc4
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
     gsi berror namelist file: Data/gsibec/gfs_gsicv_global_192x96x127.nml
@@ -50,5 +45,7 @@ background error:
   # Does nothing except rename the variables seen by saber (psi -> stream_function etc).
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: *bvars
+    input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
+                             specific_humidity,cloud_liquid_ice,cloud_liquid_water,
+                             ozone_mass_mixing_ratio]
     output variables: *anavars
