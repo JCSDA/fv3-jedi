@@ -249,8 +249,8 @@ size_t State::serialSize() const {
   fv3jedi_state_sersize_f90(keyState_, sz);
   nn += sz;
   nn += time_.serialSize();
-  return nn;
   oops::Log::trace() << "State serialSize done" << std::endl;
+  return nn;
 }
 
 // -------------------------------------------------------------------------------------------------
