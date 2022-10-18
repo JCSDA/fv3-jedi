@@ -160,7 +160,7 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // Create dxin as a copy of dx, minus the variables created by Vader (in the forward direction)
-  // This way we ensure the model code will not try to do the adjoint for these vars
+  // This way we ensure the model code will not be able to do the adjoint for these vars
   Increment dxin(dx.geometry(), dx.variables(), dx.time());
   dxin = dx;
   oops::Variables varsVaderDidntPopulate = dx.variables();
