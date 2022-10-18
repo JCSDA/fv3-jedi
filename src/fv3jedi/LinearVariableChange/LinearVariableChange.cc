@@ -163,28 +163,40 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   // This way we ensure the model code will not try to do the adjoint for these vars
   Increment dxin(dx.geometry(), dx.variables(), dx.time());
   dxin = dx;
+  oops::Variables varsVaderDidntPopulate = dx.variables();
+  varsVaderDidntPopulate -= varsVaderPopulates_;
+  dxin.updateFields(varsVaderDidntPopulate);
+
+  dx.updateFields(varsVaderPopulates_);
+
+  // Create empty output state
+  Increment dxout(dx.geometry(), vars, dx.time());
+
+  // Call model's adjoint variable change.
+  linearVariableChange_->multiplyAD(dxin, dxout);
+
+  // dxout needs to temporarily have the variables that Vader populated put into it before
+  // being passed into vader_.changeVarAD, so Vader can do its adjoints.
+  atlas::FieldSet dxout_fs;
+  dxout.toFieldSet(dxout_fs);
+  atlas::FieldSet dx_fs;
+  dx.toFieldSet(dx_fs);
+  for (const auto field : dx_fs) {
+    dxout_fs.add(field);
+  }
+
   oops::Variables varsVaderWillAdjoint = varsVaderPopulates_;
-  oops::Variables varsModelNeedsToAdjoint = dx.variables();
-  varsModelNeedsToAdjoint -= varsVaderWillAdjoint;
-  dxin.updateFields(varsModelNeedsToAdjoint);
+  vader_.changeVarAD(dxout_fs, varsVaderWillAdjoint);
 
-  // dx is expanded to have all variables so that it can later be passed to Vader's changeVarAD
-  oops::Variables varsTotal = vars;
-  varsTotal += varsVaderWillAdjoint;
-  dx.updateFields(varsTotal);
-
-  // Call model's adjoint variable change. This code should not copy identical fields from dxin
-  // to dx since dx already has them.
-  linearVariableChange_->multiplyAD(dxin, dx);
-
-  atlas::FieldSet dxfs;
-  dx.toFieldSet(dxfs);
-  vader_.changeVarAD(dxfs, varsVaderWillAdjoint);
+  // After changeVarAD, vader should have removed everything from varsVaderWillAdjoint,
+  // indicating it did all the adjoints we expected it to.
   ASSERT(varsVaderWillAdjoint.size() == 0);
-  dx.fromFieldSet(dxfs);
 
-  // Allocate any extra fields and remove fields no longer needed
+  // Copy dxout into dx for return
+  dxout.fromFieldSet(dxout_fs);
+  dxout.updateFields(vars);
   dx.updateFields(vars);
+  dx = dxout;
 
   oops::Log::trace() << "LinearVariableChange::changeVarAD done" << std::endl;
 }
