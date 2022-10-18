@@ -767,10 +767,8 @@ do f = 1, size(fields_to_do)
     if (.not. have_t) call field_fail(fields_to_do(f))
     field_ptr = t
 
+!  Virtual Temperature now done in VADER
 !   case ("tv")
-
-!     if (.not. have_tv) call field_fail(fields_to_do(f))
-!     field_ptr = tv
 
   case ("mole_fraction_of_ozone_in_air", "o3ppmv")
 
