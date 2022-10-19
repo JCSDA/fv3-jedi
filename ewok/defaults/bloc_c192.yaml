@@ -4,10 +4,8 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 localization method: SABER
-saber block:
+saber central block:
   saber block name: BUMP_NICAS
-  input variables:  [ua,va,t,ps,sphum,liq_wat,o3mr]
-  output variables: [ua,va,t,ps,sphum,liq_wat,o3mr]
   bump:
     prefix: nicas_gfs
     datadir: $(static_data)/skylab-2.0.0/ensb_localization/c192
