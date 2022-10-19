@@ -179,17 +179,8 @@ elseif (dxm%has_field('ua')) then
 endif
 
 
-! Virtual temperature
-! -------------------
-have_tv = .false.
-if (allocated(self%t) .and. allocated(self%t) .and. &
-    dxm%has_field('t') .and. dxm%has_field('sphum')) then
-  call dxm%get_field('t', t)
-  call dxm%get_field('sphum', q)
-  allocate(tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call T_to_Tv_tl(geom, self%t, t, self%q, q, tv )
-  have_tv = .true.
-endif
+! Virtual temperature needed but now done in VADER
+! ------------------------------------------------
 
 
 ! Humidity mixing ratio
@@ -262,10 +253,8 @@ do f = 1, size(fields_to_do)
     if (.not. have_winds) call field_fail(fields_to_do(f))
     field_ptr = va
 
-  case ("tv")
-
-    if (.not. have_tv) call field_fail(fields_to_do(f))
-    field_ptr = tv
+! Virtual temperature needed but now done in VADER
+!   case ("tv")
 
   case ("ps")
 
@@ -413,19 +402,8 @@ if (dxg%has_field( "ua", ua_index) .and. dxg%has_field( "va", va_index)) then
 endif
 
 
-! Virtual temperature
-! -------------------
-have_tv = .false.
-if (allocated(self%t) .and. allocated(self%t) .and. dxg%has_field('tv', tv_index)) then
-  call dxg%get_field('tv', tv)
-  allocate(t_tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  allocate(q_tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  t_tv = 0.0_kind_real
-  q_tv = 0.0_kind_real
-  call T_to_Tv_ad(geom, self%t, t_tv, self%q, q_tv, tv )
-  have_tv = .true.
-endif
-
+! Virtual temperature needed but now done in VADER
+! ------------------------------------------------
 
 ! Humidity mixing ratio
 ! ---------------------
@@ -585,15 +563,6 @@ do fg = 1, size(dxg%fields)
   if (.not. field_passed(fg)) then
 
     select case(trim(dxg%fields(fg)%short_name))
-
-    case ("tv")
-
-      if (.not. have_tv) call field_fail(trim(dxg%fields(fg)%short_name))
-      field_passed(tv_index) = .true.
-      call dxm%get_field("t", tptr)
-      call dxm%get_field("sphum", qptr)
-      tptr = tptr + t_tv
-      qptr = qptr + q_tv
 
     case ("humidity_mixing_ratio")
 
