@@ -193,10 +193,8 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   ASSERT(varsVaderWillAdjoint.size() == 0);
 
   // Copy dxout into dx for return
-  dxout.fromFieldSet(dxout_fs);
-  dxout.updateFields(vars);
   dx.updateFields(vars);
-  dx = dxout;
+  dx.fromFieldSet(dxout_fs);
 
   oops::Log::trace() << "LinearVariableChange::changeVarAD done" << std::endl;
 }
