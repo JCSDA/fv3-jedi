@@ -353,7 +353,10 @@ endif
 ! Virtual temperature
 ! -------------------
 have_tv = .false.
-if (have_t .and. have_q) then
+if (xm%has_field( 'tv')) then
+    call xm%get_field('tv', tv)
+    have_tv = .true.
+elseif (have_t .and. have_q) then
   allocate(tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call t_to_tv(geom, t, q, tv)
   have_tv = .true.
@@ -764,10 +767,8 @@ do f = 1, size(fields_to_do)
     if (.not. have_t) call field_fail(fields_to_do(f))
     field_ptr = t
 
-  case ("tv")
-
-    if (.not. have_tv) call field_fail(fields_to_do(f))
-    field_ptr = tv
+!  Virtual Temperature now done in VADER
+!   case ("tv")
 
   case ("mole_fraction_of_ozone_in_air", "o3ppmv")
 
