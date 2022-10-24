@@ -10,7 +10,6 @@ import getExpInitGFS
 import getFcInitGFS
 import getFixFilesGFS
 import getInitialConditionsGFS
-import getStaticB
 import saveAnalysisGFS
 import saveForecastGFS
 
@@ -23,7 +22,6 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         self.getBackground = getBackgroundGFS.getBackgroundGFS
         self.getExpInit = getExpInitGFS.getExpInitGFS
         self.getFcInit = getFcInitGFS.getFcInitGFS
-        self.getStaticB = getStaticB.getStaticB
         self.getStaticModel = getFixFilesGFS.getFixFilesGFS
         self.getInitialConditions = getInitialConditionsGFS.getInitialConditionsGFS
         self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS

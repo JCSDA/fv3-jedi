@@ -3,13 +3,12 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-_balfile: gsi-coeffs-global-l127y192.nc4
-_prefix2d: fv3jedi_bumpparameters_nicas_2D_gfs
-_prefix3d: fv3jedi_bumpparameters_nicas_3D_gfs
 covariance model: SABER
 saber central block:
   saber block name: BUMP_NICAS
+  active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
   bump:
+    datadir: ${JEDI_BUILD}/fv3-jedi/test/Data/bump/
     method: cor
     strategy: specific_univariate
     load_nicas_local: true
