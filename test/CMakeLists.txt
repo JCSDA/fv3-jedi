@@ -286,6 +286,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
   testoutput/hyb-3dvar_gfs.ref
   testoutput/hyb-3dvar.ref
+  testoutput/hyb-3dvar_p12.ref
   testoutput/hyb-4dvar_pseudo-geos.ref
   testoutput/hyb-fgat_fv3lm.ref
   testoutput/hyb-fgat_gfs_aero.ref
@@ -1235,7 +1236,7 @@ if (BUILD_LARGE_TESTS)
                     MPI      12
                     ARGS     --no-validate testinput/hyb-3dvar_p12.yaml
                     COMMAND  fv3jedi_var.x
-                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_p12 fv3jedi_test_tier1_hyb-3dvar )
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_p12 )
 endif()
 
 # 3DVar with zero obs
