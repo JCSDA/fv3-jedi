@@ -2,7 +2,7 @@ cost function:
   cost type: 3D-Var
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
-  analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+  analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -42,19 +42,6 @@ cost function:
               variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
             - prefix: nicas_2D_gfs
               variables: [surface_pressure]
-          input fields:
-          - parameter: universe radius
-            file:
-              datetime: 2020-12-15T00:00:00Z
-              set datetime on read: true
-              filetype: fms restart
-              psinfile: true
-              datapath: Data/staticb/
-              filename_core: 20201215.000000.cor_rh_1.fv_core.res.nc
-              filename_trcr: 20201215.000000.cor_rh_1.fv_tracer.res.nc
-              filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
-              filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
-              filename_cplr: 20201215.000000.cor_rh_1.coupler.res
         saber outer blocks:
         - saber block name: StdDev
           active variables: *active_vars
@@ -81,13 +68,10 @@ cost function:
             load_samp_local: true
             fname_samp: vbal_2020121421_gfs_sampling
             vbal_block: [true,true,false,true]
-        - saber block name: BUMP_PsiChiToUV
-          active variables: [eastward_wind,northward_wind,stream_function,velocity_potential]
-          bump:
-            datadir: Data/staticb
-            prefix: psichitouv_gfs
-            universe_rad: 2000.0e3
-            load_wind_local: true
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+          output variables: *3dvars
       weight:
         value: 0.1
     - covariance:
