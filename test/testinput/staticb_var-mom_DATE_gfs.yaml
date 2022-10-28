@@ -22,7 +22,6 @@ background:
   filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
 bump:
   datadir: Data/staticb
-  verbosity: main
   universe_rad: 5000.0e3
   method: cor
   strategy: specific_univariate

@@ -21,7 +21,6 @@ cost function:
             method: cor
             strategy: specific_univariate
             load_nicas_local: true
-            verbosity: main
             grids:
             - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
               variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
@@ -56,7 +55,6 @@ cost function:
               method: loc
               strategy: common
               load_nicas_local: true
-              verbosity: main
               io_keys: [common]
               io_values: [fixed_2500km_0.3]
       weight:

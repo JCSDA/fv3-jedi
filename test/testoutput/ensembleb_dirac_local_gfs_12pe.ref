@@ -16,7 +16,7 @@ Covariance(ensemble) * Increment:
 Increment print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:-1.2306985191571540e+00 Max:+1.1653579392673559e+00 RMS:+9.4053981799801789e-03
 northward_wind                               | Min:-7.3197333322992753e-01 Max:+7.7831625444988850e-01 RMS:+7.4500945533372796e-03
-air_temperature                              | Min:-1.3793669758614666e-01 Max:+2.8635353626114268e-01 RMS:+2.1059029171760345e-03
+air_temperature                              | Min:-1.3793669758614666e-01 Max:+5.7270707252228548e-01 RMS:+2.5839290207998237e-03
 air_pressure_thickness                       | Min:-3.9517197848204698e-02 Max:+3.4618455775899969e-02 RMS:+4.1588910147655997e-04
 surface_pressure                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 specific_humidity                            | Min:-4.5050512321297518e-07 Max:+3.4415173470805148e-07 RMS:+3.0521502411884210e-09
@@ -29,7 +29,7 @@ Localization(ensemble) * Increment:
 Increment print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:+0.0000000000000000e+00 Max:+9.9999999999999967e-01 RMS:+1.9873846463563376e-02
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+9.9999999999999967e-01 RMS:+1.9873846463563376e-02
-air_temperature                              | Min:+0.0000000000000000e+00 Max:+9.9999999999999967e-01 RMS:+1.9873846463563376e-02
+air_temperature                              | Min:+0.0000000000000000e+00 Max:+1.9999999999999996e+00 RMS:+2.0550185053077579e-02
 air_pressure_thickness                       | Min:+0.0000000000000000e+00 Max:+9.9999999999999967e-01 RMS:+1.9873846463563376e-02
 surface_pressure                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+9.9999999999999967e-01 RMS:+1.9873846463563376e-02

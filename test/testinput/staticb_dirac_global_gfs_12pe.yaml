@@ -25,7 +25,6 @@ background error:
     active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
     bump:
       datadir: Data/staticb
-      verbosity: main
       strategy: specific_univariate
       load_nicas_global: true
       grids:
@@ -119,7 +118,6 @@ background error:
     bump:
       datadir: Data/staticb
       prefix: vbal_gfs
-      verbosity: main
       universe_rad: 2000.0e3
       load_vbal: true
       load_samp_global: true
@@ -130,7 +128,6 @@ background error:
     bump:
       datadir: Data/staticb
       prefix: psichitouv_gfs
-      verbosity: main
       universe_rad: 2000.0e3
       load_wind_local: true
 output dirac:

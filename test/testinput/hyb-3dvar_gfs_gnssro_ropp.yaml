@@ -36,7 +36,6 @@ cost function:
             method: cor
             strategy: specific_univariate
             load_nicas_local: true
-            verbosity: main
             io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,air_pressure_thickness-air_pressure_thickness,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,ozone_mass_mixing_ratio-ozone_mass_mixing_ratio]
             io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
       weight:
@@ -66,7 +65,6 @@ cost function:
               method: loc
               strategy: common
               load_nicas_local: true
-              verbosity: main
               io_keys: ["common"]
               io_values: ["fixed_2500km_0.3"]
       weight:

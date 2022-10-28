@@ -22,7 +22,6 @@ background:
 bump:
   datadir: Data/staticb
   prefix: psichitouv_gfs
-  verbosity: main
   universe_rad: 2000.0e3
   new_wind: true
   write_wind_local: true
