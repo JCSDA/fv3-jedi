@@ -1,18 +1,18 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 0.0000000000000000e+00 --- No Observations
-CostJo   : Nonlinear Jo(Aircraft) = 5.4237499070419253e+03, nobs = 2799, Jo/n = 1.9377455902257683e+00, err = 2.1997888747869121e+00
-CostFunction: Nonlinear J = 5.4237499070419253e+03
-DRIPCGMinimizer: reduction in residual norm = 9.1259292400610852e-03
+CostJo   : Nonlinear Jo(Aircraft) = 5.4237499070419453e+03, nobs = 2799, Jo/n = 1.9377455902257754e+00, err = 2.1997888747869121e+00
+CostFunction: Nonlinear J = 5.4237499070419453e+03
+DRIPCGMinimizer: reduction in residual norm = 8.5844889940344688e-03
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 5 | cube sphere face size: C24
-eastward_wind                                | Min:-1.0093603191869356e+02 Max:+1.3676026221651523e+02 RMS:+2.1178352319272452e+01
-northward_wind                               | Min:-8.7720318557476702e+01 Max:+9.5894255494949562e+01 RMS:+8.9614217224723429e+00
-air_temperature                              | Min:+1.6134332130432799e+02 Max:+3.0487232830960886e+02 RMS:+2.4964002342181288e+02
-air_pressure_thickness                       | Min:+6.0599996053651850e-01 Max:+1.7771169788742600e+03 RMS:+9.5704248906150747e+02
-specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8142073859568113e-02 RMS:+4.6018185702766928e-03
+eastward_wind                                | Min:-1.0093233047727223e+02 Max:+1.3675793939697979e+02 RMS:+2.1177736622781222e+01
+northward_wind                               | Min:-8.7721454832680351e+01 Max:+9.5894541779725159e+01 RMS:+8.9614316009874635e+00
+air_temperature                              | Min:+1.6134107850053351e+02 Max:+3.0487202704554073e+02 RMS:+2.4964083854615023e+02
+air_pressure_thickness                       | Min:+6.0599996054975902e-01 Max:+1.7771160091711411e+03 RMS:+9.5704497411273360e+02
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8142075645757070e-02 RMS:+4.6017471108130556e-03
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 180.1044031564423
+CostJb   : Nonlinear Jb = 172.5728395558306
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
-CostJo   : Nonlinear Jo(Aircraft) = 3249.376021256159, nobs = 2799, Jo/n = 1.160906045464866, err = 2.199788874786912
-CostFunction: Nonlinear J = 3429.480424412602
+CostJo   : Nonlinear Jo(Aircraft) = 3681.156761805059, nobs = 2799, Jo/n = 1.315168546554147, err = 2.199788874786912
+CostFunction: Nonlinear J = 3853.729601360889
