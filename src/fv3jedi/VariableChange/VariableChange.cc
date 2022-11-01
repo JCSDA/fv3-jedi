@@ -57,24 +57,18 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // Record start variables
   oops::Variables varsFilled = x.variables();
 
-  // Set state to have all possible variables
-  oops::Variables varsTotal = x.variables();
-  varsTotal += vars;
-  x.updateFields(varsTotal);
-
   oops::Variables varsVader = vars;
   varsVader -= varsFilled;  // Pass only the needed variables
 
   // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_.changeVar also returns the variables fulfilled by Vader.
+  // vader_.changeVar also returns the variables fulfilled by Vader. These variables are allocated
+  // and populated and added to the FieldSet (xfs).
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
   varsFilled += vader_.changeVar(xfs, varsVader);
-  x.fromFieldSet(xfs);
-
-  // Ahead of calling fv3jedi variable transform add vader computed fields to input
   x.updateFields(varsFilled);
+  x.fromFieldSet(xfs);
 
   // Perform fv3jedi factory variable change
   // ---------------------------------------
