@@ -6,9 +6,11 @@ CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5762252711864758e+03, nobs = 1342, Jo/n = 1.9196909621359730e+00, err = 2.0629782247321424e+00 (Monitoring only)
 CostFunction: Nonlinear J = 6.4582274102260462e+03
 DRIPCGMinimizer: reduction in residual norm = 1.3087079757335934e-01
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 21 | cube sphere face size: C24
+State print | number of fields = 23 | cube sphere face size: C24
+u_component_of_native_D_grid_wind            | Min:-1.2200441106094040e+02 Max:+1.1947469566806248e+02 RMS:+1.5159785899986558e+01
+v_component_of_native_D_grid_wind            | Min:-1.1407443962650864e+02 Max:+1.0999180320771821e+02 RMS:+1.5963059266045837e+01
 eastward_wind                                | Min:-1.0098586484386080e+02 Max:+1.3678343784167978e+02 RMS:+2.1177013909474525e+01
 northward_wind                               | Min:-8.7704933444192420e+01 Max:+9.5893966277078377e+01 RMS:+8.9474072817141366e+00
 air_temperature                              | Min:+1.6137739326034338e+02 Max:+3.0488418192569731e+02 RMS:+2.4961255591759462e+02
@@ -31,7 +33,7 @@ surface_eastward_wind                        | Min:-1.0470398524550975e+01 Max:+
 surface_northward_wind                       | Min:-1.2872012009019215e+01 Max:+1.1969010517948401e+01 RMS:+3.7141230262404568e+00
 f10m                                         | Min:+9.4335181158921488e-01 Max:+1.0569367110649799e+00 RMS:+9.9581348617451071e-01
 ----------------------------------------------------------------------------------------------------
-Obs bias coefficients: 
+Obs bias coefficients:
 ---------------------------------------------------------------
             constant:  Min= -1.1263610145312835,  Max= 1.1478229739347345,  Norm= 2.5248301601361232
   lapse_rate_order_2:  Min= -0.2122399787959876,  Max= 28.9371774449709989,  Norm= 29.0182434287300381
@@ -50,9 +52,11 @@ CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000 --- No Observations
 CostJo   : Nonlinear Jo(Radiosonde) = 2576.2238453444892912, nobs = 1342, Jo/n = 1.9196898996605734, err = 2.0629782247321424 (Monitoring only)
 CostFunction: Nonlinear J = 6144.0576422559479397
 DRIPCGMinimizer: reduction in residual norm = 0.1782546604514801
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 21 | cube sphere face size: C24
+State print | number of fields = 23 | cube sphere face size: C24
+u_component_of_native_D_grid_wind            | Min:-1.2200441106094040e+02 Max:+1.1947469566806248e+02 RMS:+1.5159785899986558e+01
+v_component_of_native_D_grid_wind            | Min:-1.1407443962650864e+02 Max:+1.0999180320771821e+02 RMS:+1.5963059266045837e+01
 eastward_wind                                | Min:-1.0098586468882073e+02 Max:+1.3678343778785887e+02 RMS:+2.1177013945892860e+01
 northward_wind                               | Min:-8.7704933551936776e+01 Max:+9.5893965803404939e+01 RMS:+8.9474073527305897e+00
 air_temperature                              | Min:+1.6137739373045136e+02 Max:+3.0488418190995520e+02 RMS:+2.4961255603422737e+02
@@ -75,7 +79,7 @@ surface_eastward_wind                        | Min:-1.0470398524550975e+01 Max:+
 surface_northward_wind                       | Min:-1.2872012009019215e+01 Max:+1.1969010517948401e+01 RMS:+3.7141230262404568e+00
 f10m                                         | Min:+9.4335181158921488e-01 Max:+1.0569367110649799e+00 RMS:+9.9581348617451071e-01
 ----------------------------------------------------------------------------------------------------
-Obs bias coefficients: 
+Obs bias coefficients:
 ---------------------------------------------------------------
             constant:  Min= -1.1263610149762491,  Max= 1.1478229737833419,  Norm= 2.5248301599994698
   lapse_rate_order_2:  Min= -0.2122399746527479,  Max= 28.9371773978225022,  Norm= 29.0182433821403052
