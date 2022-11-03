@@ -45,11 +45,6 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   // Record start variables
   oops::Variables varsPopulated = vader_xfg.variables();
 
-  // Set first guess to have all possible variables
-  oops::Variables varsTotal = vader_xfg.variables();
-  varsTotal += vars;
-  vader_xfg.updateFields(varsTotal);
-
   oops::Variables neededVars = vars;
   neededVars -= varsPopulated;  // Pass only the needed variables
 
@@ -60,10 +55,8 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   vader_xfg.toFieldSet(xfgfs);
   varsVaderPopulates_ = vader_.changeVarTraj(xfgfs, neededVars);
   varsPopulated += varsVaderPopulates_;
-  vader_xfg.fromFieldSet(xfgfs);
-
-  // Ahead of creating fv3jedi linear variable transform, add vader computed fields to first guess
   vader_xfg.updateFields(varsPopulated);
+  vader_xfg.fromFieldSet(xfgfs);
 
   // Create the model variable change
   linearVariableChange_.reset(LinearVariableChangeFactory::create(vader_xfg, vader_xfg, geom_,
@@ -85,10 +78,7 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Record start variables
-  oops::Variables varsPopulated = dx.variables();
-
-  // Set first guess to have all possible variables
+  // Set first guess to have its original fields plus the ones Vader is going to do
   oops::Variables varsVader = dx.variables();
   oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
   varsVader += varsVaderWillPopulate;
