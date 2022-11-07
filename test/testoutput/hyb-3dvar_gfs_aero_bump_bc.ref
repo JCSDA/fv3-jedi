@@ -3,7 +3,7 @@ Norm of input parameter universe radius: 1.2862686586366014e+06
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aod) = 2.1605858003394764e+02, nobs = 6, Jo/n = 3.6009763338991270e+01, err = 2.1260290846545027e-01
 CostFunction: Nonlinear J = 2.1605858003394764e+02
-DRIPCGMinimizer: reduction in residual norm = 1.9501442447756284e-15
+DRIPCGMinimizer: reduction in residual norm = 1.9501442446989673e-15
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 17 | cube sphere face size: C12
@@ -16,8 +16,8 @@ mass_fraction_of_hydrophilic_black_carbon_in | Min:+8.2721252070427909e-09 Max:+
 mass_fraction_of_hydrophobic_organic_carbon_ | Min:+7.2261929773276279e-09 Max:+2.8359249114990234e+01 RMS:+4.3183275443610902e-01
 mass_fraction_of_hydrophilic_organic_carbon_ | Min:+8.4881710549211675e-09 Max:+4.2539978027343750e+00 RMS:+2.1386954632630761e-01
 mass_fraction_of_dust001_in_air              | Min:+9.9999995068658927e-17 Max:+4.8945539443136006e+01 RMS:+1.6817417113204209e+00
-mass_fraction_of_dust002_in_air              | Min:+9.9999995068658927e-17 Max:+4.8015619161150639e+01 RMS:+1.6079451659899324e+00
-mass_fraction_of_dust003_in_air              | Min:+9.9999995068658927e-17 Max:+9.4463090638325440e+01 RMS:+2.9517937654274888e+00
+mass_fraction_of_dust002_in_air              | Min:+9.9999995068658927e-17 Max:+4.8015619161150646e+01 RMS:+1.6079451659899324e+00
+mass_fraction_of_dust003_in_air              | Min:+9.9999995068658927e-17 Max:+9.4463090638325454e+01 RMS:+2.9517937654274888e+00
 mass_fraction_of_dust004_in_air              | Min:+9.9999995068639600e-17 Max:+1.8519291001125490e+02 RMS:+4.6945617492900089e+00
 mass_fraction_of_dust005_in_air              | Min:+9.9999995068495546e-17 Max:+2.2678504564879550e+01 RMS:+4.3649428423083236e-01
 mass_fraction_of_sea_salt001_in_air          | Min:+9.9999995068658927e-17 Max:+8.5856385529041290e-02 RMS:+4.2096216673862905e-03
@@ -31,7 +31,7 @@ Obs bias coefficients:
 ---------------------------------------------------------------
 Norm of input parameter StdDev: 0.6420837757068957
 Norm of input parameter universe radius: 1286268.6586366014089435
-CostJb   : Nonlinear Jb = 0.3237303646225117
+CostJb   : Nonlinear Jb = 0.3237303646225118
 CostJo   : Nonlinear Jo(Aod) = 215.3675119714857829, nobs = 6, Jo/n = 35.8945853285809662, err = 0.2126029084654503
 CostFunction: Nonlinear J = 215.6912423361083029
 CostFunction::addIncrement: Analysis: 
@@ -46,8 +46,8 @@ mass_fraction_of_hydrophilic_black_carbon_in | Min:+8.2721252070427909e-09 Max:+
 mass_fraction_of_hydrophobic_organic_carbon_ | Min:+7.2261929773276279e-09 Max:+2.8359249114990234e+01 RMS:+4.3183275443610902e-01
 mass_fraction_of_hydrophilic_organic_carbon_ | Min:+8.4881710549211675e-09 Max:+4.2539978027343750e+00 RMS:+2.1386954632630761e-01
 mass_fraction_of_dust001_in_air              | Min:+9.9999995068658927e-17 Max:+4.8945539443136006e+01 RMS:+1.6817417113204209e+00
-mass_fraction_of_dust002_in_air              | Min:+9.9999995068658927e-17 Max:+4.8015619161150639e+01 RMS:+1.6079451659899324e+00
-mass_fraction_of_dust003_in_air              | Min:+9.9999995068658927e-17 Max:+9.4463090638325440e+01 RMS:+2.9517937654274888e+00
+mass_fraction_of_dust002_in_air              | Min:+9.9999995068658927e-17 Max:+4.8015619161150646e+01 RMS:+1.6079451659899324e+00
+mass_fraction_of_dust003_in_air              | Min:+9.9999995068658927e-17 Max:+9.4463090638325454e+01 RMS:+2.9517937654274888e+00
 mass_fraction_of_dust004_in_air              | Min:+9.9999995068639600e-17 Max:+1.8519291001125490e+02 RMS:+4.6945617492900089e+00
 mass_fraction_of_dust005_in_air              | Min:+9.9999995068495546e-17 Max:+2.2678504564879550e+01 RMS:+4.3649428423083236e-01
 mass_fraction_of_sea_salt001_in_air          | Min:+9.9999995068658927e-17 Max:+8.5856385529041290e-02 RMS:+4.2096216673862905e-03
@@ -59,6 +59,6 @@ Obs bias coefficients:
 ---------------------------------------------------------------
             constant:  Min= -0.0155842249356798,  Max= -0.0155842249356798,  Norm= 0.0155842249356798
 ---------------------------------------------------------------
-CostJb   : Nonlinear Jb = 0.3237303646225117
+CostJb   : Nonlinear Jb = 0.3237303646225118
 CostJo   : Nonlinear Jo(Aod) = 215.3675119714857829, nobs = 6, Jo/n = 35.8945853285809662, err = 0.2126029084654503
 CostFunction: Nonlinear J = 215.6912423361083029
