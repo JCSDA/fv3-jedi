@@ -86,7 +86,7 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   vader_.changeVarTL(dxfs, varsVaderWillPopulate);
   ASSERT(varsVaderWillPopulate.size() == 0);
 
-  // Set first guess to have its original fields plus the ones Vader has done
+  // Set intermediate state for the Increment containing original fields plus the ones Vader has done
   oops::Variables varsVader = dx.variables();
   varsVader += varsVaderPopulates_;
   dx.updateFields(varsVader);
