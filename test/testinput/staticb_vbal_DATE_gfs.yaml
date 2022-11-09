@@ -23,7 +23,6 @@ background:
 bump:
   datadir: Data/staticb
   prefix: vbal__YYYY__MM__DD__HH__gfs
-  verbosity: main
   universe_rad: 2500.0e3
   update_vbal_cov: true
   write_vbal_cov: true

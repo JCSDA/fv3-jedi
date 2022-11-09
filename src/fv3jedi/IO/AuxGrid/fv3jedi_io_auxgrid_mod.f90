@@ -9,6 +9,9 @@ module fv3jedi_io_auxgrid_mod
 use netcdf
 use mpi
 
+! atlas
+use atlas_module,               only: atlas_field, atlas_real, atlas_functionspace, atlas_functionspace_pointcloud
+
 ! fckit
 use fckit_configuration_module, only: fckit_configuration
 use fckit_mpi_module,           only: fckit_mpi_comm
@@ -143,12 +146,14 @@ type(fv3jedi_io_auxgrid), intent(inout) :: self
 type(fv3jedi_geom),      intent(in)    :: geom
 
 ! Locals
-integer :: color
+integer :: color, ix, iy, inode
 real(kind=kind_real) :: dx, dy, rad2deg
 real(kind=kind_real),allocatable :: slat(:), wlat(:)
+real(kind=kind_real),pointer :: lonlat_ptr(:,:)
 integer :: i, ierr, jmax
 character(len=48) :: debug_msg
-
+type(atlas_field) :: lonlat_field
+type(atlas_functionspace) :: afunctionspace_out
 
 ! Create output grid and interpolation object for going from cube to output grid
 ! -------------------------------------------------------------------------------
@@ -241,9 +246,21 @@ else
 
 endif
 
+! Output function space
+lonlat_field = atlas_field(name='lonlat',kind=atlas_real(kind_real),shape=(/2,self%nx*self%ny/))
+call lonlat_field%data(lonlat_ptr)
+inode = 0
+do iy=1,self%ny
+   do ix=1,self%nx
+      inode = inode+1
+      lonlat_ptr(1,inode) = self%lons(ix)
+      lonlat_ptr(2,inode) = self%lats(iy)
+   end do
+end do
+afunctionspace_out = atlas_functionspace_pointcloud(lonlat_field)
+
 ! Initialize bump interpolator
-call self%bumpinterp%init(self%comm, afunctionspace_in=geom%afunctionspace, lon1d_out=self%lons, &
-                          lat1d_out=self%lats, nl0=self%npz)
+call self%bumpinterp%init(self%comm, geom%afunctionspace, afunctionspace_out, self%npz)
 
 !IO communicator
 !call MPI_Comm_split(self%comm%communicator(), color, self%comm%rank(), self%llcomm, ierr)

@@ -51,7 +51,6 @@ cost function:
               method: loc
               strategy: common
               load_nicas_local: true
-              verbosity: main
               io_keys: [common]
               io_values: [fixed_2500km_0.3]
       weight:

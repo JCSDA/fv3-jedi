@@ -77,8 +77,7 @@ endif
 ! Initialize bump interpolator
 ! ----------------------------
 if (self%need_bump) then
-  call self%bumpinterp%init(geom_in%f_comm, afunctionspace_in=geom_in%afunctionspace, afunctionspace_out=geom_ou%afunctionspace, &
-     & nl0=geom_in%npz)
+  call self%bumpinterp%init(geom_in%f_comm, geom_in%afunctionspace, geom_ou%afunctionspace, geom_in%npz)
 endif
 
 ! Initialize unstructured interpolation object

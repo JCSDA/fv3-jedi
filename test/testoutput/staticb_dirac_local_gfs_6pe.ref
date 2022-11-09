@@ -1,28 +1,24 @@
 Input Dirac increment:
 ----------------------------------------------------------------------------------------------------
-Increment print | number of fields = 9 | cube sphere face size: C12
+Increment print | number of fields = 7 | cube sphere face size: C12
 eastward_wind                                | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_temperature                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+3.0188481500092435e-03
-air_pressure_thickness                       | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 surface_pressure                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------
-Norm of input parameter StdDev: 481521.4807316088
-Norm of input parameter universe radius: 8292676.255724136
+Norm of input parameter StdDev: 484001.1545948647
+Norm of input parameter universe radius: 8303151.981321488
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
-Increment print | number of fields = 9 | cube sphere face size: C12
-eastward_wind                                | Min:-5.1600152289196267e-02 Max:+5.4912108011899524e-02 RMS:+3.3742851564394264e-03
-northward_wind                               | Min:-5.0530016073190374e-02 Max:+6.2939632484210514e-02 RMS:+3.7143849482941388e-03
-air_temperature                              | Min:-5.0303815619729762e-02 Max:+8.7983762116527142e-01 RMS:+3.9036758308953448e-03
-air_pressure_thickness                       | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-surface_pressure                             | Min:-9.5386748193808113e-01 Max:+4.7252950316472975e-01 RMS:+1.1784289881669606e-01
+Increment print | number of fields = 7 | cube sphere face size: C12
+eastward_wind                                | Min:-4.7803638010177403e-02 Max:+3.2846186580534169e-02 RMS:+2.6138353400232068e-03
+northward_wind                               | Min:-4.8704627198374775e-02 Max:+4.9450186118881280e-02 RMS:+2.8458835686978202e-03
+air_temperature                              | Min:-2.8298053743317116e-02 Max:+8.5791329662751914e-01 RMS:+3.5013280225445775e-03
+surface_pressure                             | Min:-6.1279537976256593e-01 Max:+1.0227603033474954e-01 RMS:+8.7637811323186834e-02
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------
