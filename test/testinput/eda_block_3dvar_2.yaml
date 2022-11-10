@@ -61,6 +61,7 @@ cost function:
       weight:
         value: 0.9
   observations:
+    obs perturbations: true
     observers:
     - obs space:
         name: Radiosonde
@@ -139,4 +140,3 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    obs perturbations: true

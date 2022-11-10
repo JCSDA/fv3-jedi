@@ -73,7 +73,6 @@ cost function:
             type: H5File
             obsfile: Data/hofx/eda/gfs/mem001/block_sondes_eda-3dvar-gfs_2020121500_m.nc4
         simulated variables: [eastward_wind, northward_wind, air_temperature]
-        obs perturbations seed: 1
       obs operator:
         name: VertInterp
       obs error:
@@ -139,4 +138,3 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    obs perturbations: false

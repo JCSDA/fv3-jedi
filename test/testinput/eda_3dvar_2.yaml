@@ -74,6 +74,7 @@ cost function:
       weight:
         value: 0.9
   observations:
+    obs perturbations: true
     observers:
     - obs space:
         # The input file does not contain a variable called 'air_temperature', but contains one
@@ -236,7 +237,6 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    obs perturbations: true
 final:
   diagnostics:
     departures: oman
