@@ -1208,12 +1208,12 @@ endif()
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_gfs
                   MPI      6
                   ARGS     testinput/ensvariance_gfs.yaml
-                 COMMAND   fv3jedi_ensmeanvariance.x )
+                  COMMAND  fv3jedi_ensmeanvariance.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_geos
                   MPI      6
                   ARGS     testinput/ensvariance_geos.yaml
-                 COMMAND   fv3jedi_ensmeanvariance.x )
+                  COMMAND  fv3jedi_ensmeanvariance.x )
 
 # hybrid 3DVar
 # -------------------------------
