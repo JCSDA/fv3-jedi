@@ -9,7 +9,8 @@ saber central block:
   active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   bump:
     prefix: nicas_gfs
-    datadir: $(static_data)/skylab-2.0.0/ensb_localization/c192
+    #datadir: $(static_data)/skylab-2.0.0/ensb_localization/c192
+    datadir: /work/noaa/da/menetrie/localization/c192/error_covariance_training_nicas_gfs/
     strategy: common
     load_nicas_local: true
     verbosity: main
