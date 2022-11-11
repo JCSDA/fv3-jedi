@@ -48,6 +48,12 @@ ecbuild_add_executable( TARGET  fv3jedi_ensvariance.x
                         )
 oops_output_json_schema(fv3jedi_ensvariance.x)
 
+ecbuild_add_executable( TARGET  fv3jedi_ensmeanvariance.x
+                        SOURCES fv3jediEnsMeanVariance.cc
+                        LIBS    fv3jedi
+                        )
+oops_output_json_schema(fv3jedi_ensmeanvariance.x)
+
 ecbuild_add_executable( TARGET  fv3jedi_forecast.x
                         SOURCES fv3jediForecast.cc
                         LIBS    fv3jedi
