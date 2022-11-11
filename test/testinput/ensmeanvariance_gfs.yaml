@@ -1,0 +1,44 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_geos_c12.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+variance output:
+  filetype: fms restart
+  datapath: Data/ensvariance
+  filename_core: ensemblevariance.fv_core.res.nc
+  filename_trcr: ensemblevariance.fv_tracer.res.nc
+  filename_sfcd: ensemblevariance.sfc_data.nc
+  filename_sfcw: ensemblevariance.fv_srf_wnd.res.nc
+  filename_cplr: ensemblevariance.coupler.res
+mean output:
+  filetype: fms restart
+  datapath: Data/ensvariance
+  filename_core: ensemblemean.fv_core.res.nc
+  filename_trcr: ensemblemean.fv_tracer.res.nc
+  filename_sfcd: ensemblemean.sfc_data.nc
+  filename_sfcw: ensemblemean.fv_srf_wnd.res.nc
+  filename_cplr: ensemblemean.coupler.res
+ensemble:
+  members from template:
+    template:
+      datetime: 2020-12-15T00:00:00Z
+      filetype: fms restart
+      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      datapath: Data/inputs/gfs_c12/mem%mem%/
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
+    pattern: '%mem%'
+    nmembers: 10
+    zero padding: 3
+
+test:
+  reference filename: testoutput/ensmeanvariance_gfs.ref
+  test output filename: testoutput/ensmeanvariance_gfs.test.out
