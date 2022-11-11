@@ -117,8 +117,8 @@ list( APPEND fv3jedi_testinput
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
-  testinput/ensvariance_geos.yaml
-  testinput/ensvariance_gfs.yaml
+  testinput/ensmeanvariance_geos.yaml
+  testinput/ensmeanvariance_gfs.yaml
   testinput/errorcovariance_bump.yaml
   testinput/errorcovariance_gfs_gsi_global.yaml
   testinput/errorcovariance.yaml
@@ -260,8 +260,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/eda_3dvar.ref
   testoutput/eda_4dvar_fv3lm.ref
   testoutput/eda_block_3dvar.ref
-  testoutput/ensvariance_geos.ref
-  testoutput/ensvariance_gfs.ref
+  testoutput/ensmeanvariance_geos.ref
+  testoutput/ensmeanvariance_gfs.ref
   testoutput/forecast_fv3-geos.ref
   testoutput/forecast_fv3-gfs.ref
   testoutput/forecast_fv3lm.ref
@@ -1203,17 +1203,17 @@ endif()
 
 endif()
 
-# Ensemble variance
-# -----------------
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_gfs
+# Ensemble mean and variance
+# --------------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensmeanvariance_gfs
                   MPI      6
-                  ARGS     testinput/ensvariance_gfs.yaml
-                  COMMAND  fv3jedi_ensvariance.x )
+                  ARGS     testinput/ensmeanvariance_gfs.yaml
+                  COMMAND  fv3jedi_ensmeanvariance.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_geos
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensmeanvariance_geos
                   MPI      6
-                  ARGS     testinput/ensvariance_geos.yaml
-                  COMMAND  fv3jedi_ensvariance.x )
+                  ARGS     testinput/ensmeanvariance_geos.yaml
+                  COMMAND  fv3jedi_ensmeanvariance.x )
 
 # hybrid 3DVar
 # -------------------------------
