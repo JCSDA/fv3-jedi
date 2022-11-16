@@ -149,21 +149,30 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Remove the variables created by Vader (in the forward direction) from dx
+  // Create dxin as a copy of dx, minus the variables created by Vader (in the forward direction)
   // This way we ensure the model code will not be able to do the adjoint for these vars
+  Increment dxin(dx.geometry(), dx.variables(), dx.time());
+  dxin = dx;
   oops::Variables varsVaderDidntPopulate = dx.variables();
   varsVaderDidntPopulate -= varsVaderPopulates_;
-  dx.updateFields(varsVaderDidntPopulate);
+  dxin.updateFields(varsVaderDidntPopulate);
 
+  dx.updateFields(varsVaderPopulates_);
   // Create empty output state
   Increment dxout(dx.geometry(), vars, dx.time());
 
   // Call model's adjoint variable change.
-  linearVariableChange_->multiplyAD(dx, dxout);
-
-  // Call vader's adjoint variable change for the variables that vader populates.
+  linearVariableChange_->multiplyAD(dxin, dxout);
+  // dxout needs to temporarily have the variables that Vader populated put into it before
+  // being passed into vader_.changeVarAD, so Vader can do its adjoints.
   atlas::FieldSet dxout_fs;
   dxout.toFieldSet(dxout_fs);
+  atlas::FieldSet dx_fs;
+  dx.toFieldSet(dx_fs);
+  for (const auto field : dx_fs) {
+    dxout_fs.add(field);
+  }
+
   oops::Variables varsVaderWillAdjoint = varsVaderPopulates_;
   vader_.changeVarAD(dxout_fs, varsVaderWillAdjoint);
 
