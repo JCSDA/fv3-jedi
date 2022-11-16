@@ -13,15 +13,15 @@ Norm of input parameter StdDev: 484001.1545948647
 Norm of input parameter universe radius: 8303151.981321488
 Norm of input parameter nicas_a::1: 0.8103441505508706
 Norm of input parameter nicas_a::2: 0.2603243960439376
-Norm of input parameter nicas_norm::1: 1.032717837439007
-Norm of input parameter nicas_norm::2: 1.007555041573183
+Norm of input parameter nicas_norm::1: 1.03445356959823
+Norm of input parameter nicas_norm::2: 1.007588544342429
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 7 | cube sphere face size: C12
-eastward_wind                                | Min:-4.7803638010177403e-02 Max:+3.2846186580534169e-02 RMS:+2.6138353400232068e-03
-northward_wind                               | Min:-4.8704627198374775e-02 Max:+4.9450186118881280e-02 RMS:+2.8458835686978202e-03
-air_temperature                              | Min:-2.8298053743317116e-02 Max:+8.5791329662751914e-01 RMS:+3.5013280225445775e-03
-surface_pressure                             | Min:-6.1279537976256593e-01 Max:+1.0227603033474954e-01 RMS:+8.7637811323186834e-02
+eastward_wind                                | Min:-4.8349709700646705e-02 Max:+3.3633412027917607e-02 RMS:+2.6440515267059862e-03
+northward_wind                               | Min:-5.1813350225362938e-02 Max:+4.7482893656639241e-02 RMS:+2.8859959595742093e-03
+air_temperature                              | Min:-2.8630999674550652e-02 Max:+8.5808844185443500e-01 RMS:+3.5074078399554213e-03
+surface_pressure                             | Min:-6.4154746618165315e-01 Max:+1.0346461866911573e-01 RMS:+8.9308615264216337e-02
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
