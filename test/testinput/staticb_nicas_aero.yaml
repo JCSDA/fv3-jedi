@@ -31,7 +31,6 @@ background:
 bump:
   datadir: Data/staticb_aero
   prefix: nicas_aero
-  verbosity: main
   strategy: specific_univariate
   new_nicas: true
   write_nicas_local: true

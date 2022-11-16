@@ -40,7 +40,6 @@ cost function:
       bump:
         datadir: Data/staticb_aero
         prefix: nicas_aero
-        verbosity: main
         strategy: specific_univariate
         load_nicas_local: true
       input fields:

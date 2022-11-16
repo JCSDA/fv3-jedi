@@ -43,7 +43,6 @@ background error:
         method: loc
         strategy: common
         load_nicas_local: true
-        verbosity: main
 output dirac:
   filetype: fms restart
   datapath: Data/ensembleb/

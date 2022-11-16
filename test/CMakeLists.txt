@@ -117,8 +117,8 @@ list( APPEND fv3jedi_testinput
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
-  testinput/ensvariance_geos.yaml
-  testinput/ensvariance_gfs.yaml
+  testinput/ensmeanvariance_geos.yaml
+  testinput/ensmeanvariance_gfs.yaml
   testinput/errorcovariance_bump.yaml
   testinput/errorcovariance_gfs_gsi_global.yaml
   testinput/errorcovariance.yaml
@@ -195,9 +195,7 @@ list( APPEND fv3jedi_testinput
   testinput/staticb_dirac_local_gfs_6pe.yaml
   testinput/staticb_dirac_local_gfs_12pe.yaml
   testinput/staticb_nicas_gfs.yaml
-  testinput/staticb_psichitouv_gfs.yaml
   testinput/staticb_split_nicas_gfs.yaml
-  testinput/staticb_split_psichitouv_gfs.yaml
   testinput/staticb_split_vbal_gfs.yaml
   testinput/staticb_var_gfs.yaml
   testinput/staticb_vbal_gfs.yaml
@@ -260,8 +258,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/eda_3dvar.ref
   testoutput/eda_4dvar_fv3lm.ref
   testoutput/eda_block_3dvar.ref
-  testoutput/ensvariance_geos.ref
-  testoutput/ensvariance_gfs.ref
+  testoutput/ensmeanvariance_geos.ref
+  testoutput/ensmeanvariance_gfs.ref
   testoutput/forecast_fv3-geos.ref
   testoutput/forecast_fv3-gfs.ref
   testoutput/forecast_fv3lm.ref
@@ -300,9 +298,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/staticb_dirac_local_gfs_6pe.ref
   testoutput/staticb_dirac_local_gfs_12pe.ref
   testoutput/staticb_nicas_gfs.ref
-  testoutput/staticb_psichitouv_gfs.ref
   testoutput/staticb_split_vbal_gfs.ref
-  testoutput/staticb_split_psichitouv_gfs.ref
   testoutput/staticb_split_nicas_gfs.ref
   testoutput/staticb_var_gfs.ref
   testoutput/staticb_vbal_gfs.ref
@@ -1203,17 +1199,17 @@ endif()
 
 endif()
 
-# Ensemble variance
-# -----------------
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_gfs
+# Ensemble mean and variance
+# --------------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensmeanvariance_gfs
                   MPI      6
-                  ARGS     testinput/ensvariance_gfs.yaml
-                  COMMAND  fv3jedi_ensvariance.x )
+                  ARGS     testinput/ensmeanvariance_gfs.yaml
+                  COMMAND  fv3jedi_ensmeanvariance.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensvariance_geos
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensmeanvariance_geos
                   MPI      6
-                  ARGS     testinput/ensvariance_geos.yaml
-                  COMMAND  fv3jedi_ensvariance.x )
+                  ARGS     testinput/ensmeanvariance_geos.yaml
+                  COMMAND  fv3jedi_ensmeanvariance.x )
 
 # hybrid 3DVar
 # -------------------------------
@@ -1580,25 +1576,12 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     COMMAND      fv3jedi_error_covariance_training.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_cor_gfs )
 
-  # Compute psi/chi to u/v operator
-  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_psichitouv_gfs
-                    MPI          12
-                    ARGS         testinput/staticb_psichitouv_gfs.yaml
-                    COMMAND      fv3jedi_error_covariance_training.x )
-
   # Split VBAL operator to get local files on 6 PEs
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_vbal_gfs
                     MPI          6
                     ARGS         testinput/staticb_split_vbal_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_training.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs )
-
-  # Split PSICHITOUV operator to get local files on 6 PEs
-  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_psichitouv_gfs
-                    MPI          6
-                    ARGS         testinput/staticb_split_psichitouv_gfs.yaml
-                    COMMAND      fv3jedi_error_covariance_training.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_psichitouv_gfs )
 
   # Split NICAS operator to get local files on 6 PEs
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_nicas_gfs
@@ -1614,8 +1597,7 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     COMMAND      fv3jedi_dirac.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_split_vbal_gfs
                                  fv3jedi_test_tier2_staticb_var_gfs
-                                 fv3jedi_test_tier2_staticb_split_nicas_gfs
-                                 fv3jedi_test_tier2_staticb_split_psichitouv_gfs )
+                                 fv3jedi_test_tier2_staticb_split_nicas_gfs )
 
   # Dirac test using the full BUMP static covariance, local files 12 PEs
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_dirac_local_gfs_12pe
@@ -1624,8 +1606,7 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
                     COMMAND      fv3jedi_dirac.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
                                  fv3jedi_test_tier2_staticb_var_gfs
-                                 fv3jedi_test_tier2_staticb_nicas_gfs
-                                 fv3jedi_test_tier2_staticb_psichitouv_gfs )
+                                 fv3jedi_test_tier2_staticb_nicas_gfs )
 
   # Dirac test using the full BUMP static covariance, global files, 6 PEs
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_dirac_global_gfs_6pe

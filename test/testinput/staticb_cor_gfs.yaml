@@ -22,7 +22,6 @@ background:
   filename_cplr: 20201215.000000.coupler.res
 bump:
   datadir: Data/staticb
-  verbosity: main
   universe_rad: 5000.0e3
   method: cor
   strategy: specific_univariate
@@ -36,14 +35,7 @@ bump:
   nc3: 10
   dc: 500.0e3
   nl0r: 5
-  fit_ncmp:
-    stream_function: 2
-    velocity_potential: 2
-    air_temperature: 2
-    specific_humidity: 2
-    cloud_liquid_water: 2
-    ozone_mass_mixing_ratio: 2
-    surface_pressure: 2
+  fit_ncmp: 2
   diag_rvflt: 0.1
   ne: 30
   grids:

@@ -31,7 +31,6 @@ background:
 bump:
   datadir: Data/staticb_aero
   prefix: var_aero
-  verbosity: main
   universe_rad: 3000.0e3
   method: cor
   strategy: specific_univariate

@@ -15,7 +15,6 @@ background:
   filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4  ##here it's no2
   state variables: [volume_mixing_ratio_of_no2]
 bump:
-  verbosity: main
   universe_rad: 2500.0e3
   strategy: specific_univariate
   new_nicas: true

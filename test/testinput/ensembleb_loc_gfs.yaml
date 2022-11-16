@@ -22,7 +22,6 @@ background:
 bump:
   datadir: Data/ensembleb
   prefix: loc_gfs
-  verbosity: main
   universe_rad: 5000.0e3
   method: loc
   strategy: common
