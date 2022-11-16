@@ -22,7 +22,6 @@ background:
 bump:
   datadir: Data/ensembleb
   prefix: nicas_gfs
-  verbosity: main
   strategy: common
   new_nicas: true
   write_nicas_global: true

@@ -21,7 +21,6 @@ background:
   filename_cplr: 20201215.000000.coupler.res
 bump:
   datadir: Data/staticb
-  verbosity: main
   strategy: specific_univariate
   load_nicas_global: true
   write_nicas_local: true
