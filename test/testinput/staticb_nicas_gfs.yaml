@@ -31,6 +31,11 @@ bump:
     cloud_liquid_water: 74
   max_lev:
     cloud_liquid_water: 125
+  nicas_interp_type:
+    stream_function: si
+    velocity_potential: si
+    air_temperature: si
+    surface_pressure: si
   grids:
   - prefix: nicas_3D_gfs
     variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
