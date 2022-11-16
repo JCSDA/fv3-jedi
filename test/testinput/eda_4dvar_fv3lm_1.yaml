@@ -80,7 +80,6 @@ cost function:
         name: VertInterp
       obs error:
         covariance model: diagonal
-        random amplitude: 0.4
       obs filters:
       - filter: PreQC
         maxvalue: 3
@@ -109,7 +108,6 @@ cost function:
         name: VertInterp
       obs error:
         covariance model: diagonal
-        random amplitude: 0.2
       obs filters:
       - filter: PreQC
         maxvalue: 3
@@ -176,7 +174,6 @@ cost function:
           CoefficientPath: Data/crtm/
       obs error:
         covariance model: diagonal
-        random amplitude: 0.3
       obs filters:
       - filter: Bounds Check
         filter variables:

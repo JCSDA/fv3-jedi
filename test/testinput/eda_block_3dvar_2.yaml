@@ -77,7 +77,7 @@ cost function:
         name: VertInterp
       obs error:
         covariance model: diagonal
-        random amplitude: 0.5
+        obs perturbations amplitude: 0.5
       obs filters:
       - filter: PreQC
         maxvalue: 3
