@@ -12,4 +12,3 @@ saber central block:
     datadir: $(static_data)/skylab-2.0.0/ensb_localization/c192
     strategy: common
     load_nicas_local: true
-    verbosity: main
