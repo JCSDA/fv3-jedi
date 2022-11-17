@@ -90,7 +90,6 @@ cost function:
         simulated variables: [eastward_wind, northward_wind, air_temperature]
         observed variables: [eastward_wind, northward_wind]
         derived variables: [air_temperature]
-        obs perturbations seed: 1
       obs operator:
         name: VertInterp
       obs error:
@@ -132,7 +131,6 @@ cost function:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
         simulated variables: [bending_angle]
-        obs perturbations seed: 1
       obs operator:
         name: GnssroBndNBAM
         obs options:
@@ -166,7 +164,6 @@ cost function:
             obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
         simulated variables: [brightness_temperature]
         channels: 1-15
-        obs perturbations seed: 1
       obs operator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -195,7 +192,6 @@ cost function:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
         simulated variables: [eastward_wind, northward_wind, air_temperature]
-        obs perturbations seed: 1
       obs operator:
         name: VertInterp
       obs error:
@@ -234,7 +230,6 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    obs perturbations: false
 final:
   diagnostics:
     departures: oman
