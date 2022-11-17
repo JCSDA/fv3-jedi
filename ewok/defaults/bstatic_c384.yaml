@@ -8,7 +8,6 @@ saber central block:
   bump:
     prefix: nicas_2020010100-2020013100/nicas_2020010100-2020013100
     datadir: $(static_data)/skylab-1.0.0/staticb/c384
-    verbosity: main
     strategy: specific_univariate
     load_nicas_local: true
     min_lev:
@@ -48,7 +47,6 @@ saber outer blocks:
   bump:
     datadir: $(static_data)/skylab-1.0.0/staticb/c384
     prefix: vbal_2020010100-2020013100/vbal_2020010100-2020013100
-    verbosity: main
     universe_rad: 2000.0e+3
     load_vbal: true
     fname_samp: vbal_2020013100/vbal_2020013100_sampling
@@ -59,6 +57,5 @@ saber outer blocks:
   bump:
     datadir: $(static_data)/skylab-1.0.0/staticb/c384
     prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
-    verbosity: main
     universe_rad: 2000.0e+3
     load_wind_local: true
