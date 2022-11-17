@@ -70,10 +70,13 @@ background error:
       load_vbal: true
       load_samp_local: true
       fname_samp: vbal_2020121421_gfs_sampling
-      vbal_block:
-        stream_function-velocity_potential: true
-        stream_function-air_temperature: true
-        stream_function-surface_pressure: true
+      vbal:
+      - balanced: velocity_potential
+        unbalanced: stream_function
+      - balanced: air_temperature
+        unbalanced: stream_function
+      - balanced: surface_pressure
+        unbalanced: stream_function
   linear variable change:
     linear variable change name: Control2Analysis
     input variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]

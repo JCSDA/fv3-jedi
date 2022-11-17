@@ -32,10 +32,13 @@ bump:
   nc1: 500
   nc2: 200
   diag_draw_type: octahedral
-  vbal_block:
-    stream_function-velocity_potential: true
-    stream_function-air_temperature: true
-    stream_function-surface_pressure: true
+  vbal:
+  - balanced: velocity_potential
+    unbalanced: stream_function
+  - balanced: air_temperature
+    unbalanced: stream_function
+  - balanced: surface_pressure
+    unbalanced: stream_function
   vbal_rad: 2000.0e3
   vbal_pseudo_inv: true
   vbal_pseudo_inv_var_th: 0.1

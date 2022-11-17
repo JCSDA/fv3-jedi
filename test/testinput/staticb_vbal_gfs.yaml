@@ -35,10 +35,13 @@ bump:
   ens1_nsub: 3
   load_samp_local: true
   write_samp_global: true
-  vbal_block:
-    stream_function-velocity_potential: true
-    stream_function-air_temperature: true
-    stream_function-surface_pressure: true
+  vbal:
+  - balanced: velocity_potential
+    unbalanced: stream_function
+  - balanced: air_temperature
+    unbalanced: stream_function
+  - balanced: surface_pressure
+    unbalanced: stream_function
   vbal_dlat: 10.0
   vbal_pseudo_inv: true
   vbal_pseudo_inv_var_th: 0.1

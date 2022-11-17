@@ -28,10 +28,13 @@ bump:
   fname_samp: vbal__YYYY__MM__DD__HH__gfs_sampling
   fname_vbal: vbal__YYYY__MM__DD__HH__gfs_vbal
   load_samp_local: true
-  vbal_block:
-    stream_function-velocity_potential: true
-    stream_function-air_temperature: true
-    stream_function-surface_pressure: true
+  vbal:
+  - balanced: velocity_potential
+    unbalanced: stream_function
+  - balanced: air_temperature
+    unbalanced: stream_function
+  - balanced: surface_pressure
+    unbalanced: stream_function
   operators application:
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
