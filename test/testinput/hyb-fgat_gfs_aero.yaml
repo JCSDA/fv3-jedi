@@ -42,12 +42,17 @@ cost function:
                                mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
                                mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air]
             bump:
-              prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
-              method: loc
-              strategy: common
-              load_nicas_local: true
-              io_keys: [common]
-              io_values: [fixed_3000km_0.2]
+              general:
+                prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+              drivers:
+                method: loc
+                strategy: common
+                load_nicas_local: true
+              model:
+                io_keys:
+                - common
+                io_values:
+                - fixed_3000km_0.2
       weight:
         value: 0.9
   observations:

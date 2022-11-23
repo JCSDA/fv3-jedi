@@ -14,9 +14,14 @@ localization:
   saber central block:
     saber block name: BUMP_NICAS
     bump:
-      prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
-      method: loc
-      strategy: common
-      load_nicas_local: true
-      io_keys: [common]
-      io_values: [fixed_2500km_0.3]
+      general:
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+      drivers:
+        method: loc
+        strategy: common
+        load_nicas_local: true
+      model:
+        io_keys:
+        - common
+        io_values:
+        - fixed_2500km_0.3

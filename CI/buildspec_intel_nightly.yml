@@ -103,11 +103,6 @@ phases:
       # ufo-data
       - ./clone.sh jcsda-internal/ufo-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ufo-data ${GIT_BASE_BRANCH} develop
 
-      # saber-data
-      - ./clone.sh jcsda-internal/saber-data $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber-data ${GIT_BASE_BRANCH} develop
-
-
-
 
       # move CMakeLists.txt
       - cp CMakeLists_nightly.txt /jcsda/fv3-bundle/CMakeLists.txt

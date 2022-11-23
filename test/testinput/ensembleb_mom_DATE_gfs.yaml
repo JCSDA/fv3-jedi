@@ -20,19 +20,22 @@ background:
   filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
   filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
 bump:
-  datadir: Data/ensembleb
-  prefix: mom__YYYY__MM__DD__HH__gfs
-  universe_rad: 5000.0e3
-  method: loc
-  strategy: common
-  update_mom: true
-  write_mom: true
-  write_samp_local: true
-  nc1: 500
-  nc3: 10
-  dc: 500.0e3
-  nl0r: 5
-  diag_draw_type: octahedral
+  general:
+    datadir: Data/ensembleb
+    prefix: mom__YYYY__MM__DD__HH__gfs
+    universe_rad: 5000.0e3
+  drivers:
+    method: loc
+    strategy: common
+    write_samp_local: true
+    update_mom: true
+    write_mom: true
+  sampling:
+    nc1: 500
+    nc3: 10
+    dc: 500.0e3
+    nl0r: 5
+    samp_draw_type: octahedral
   ensemble:
     members from template:
       template:

@@ -39,18 +39,47 @@ cost function:
         saber central block:
           saber block name: BUMP_NICAS
           bump:
-            method: cor
-            strategy: specific_univariate
-            load_nicas_local: true
+            drivers:
+              method: cor
+              strategy: specific_univariate
+              load_nicas_local: true
             grids:
-            - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-              variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
-              io_keys: [eastward_wind-eastward_wind,northward_wind-northward_wind,air_temperature-air_temperature,specific_humidity-specific_humidity,cloud_liquid_ice-cloud_liquid_ice,cloud_liquid_water-cloud_liquid_water,mole_fraction_of_ozone_in_air-mole_fraction_of_ozone_in_air]
-              io_values: [fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3,fixed_2500km_0.3]
-            - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
-              variables: [surface_pressure]
-              io_keys: [surface_pressure-surface_pressure]
-              io_values: [fixed_2500km]
+            - general:
+                prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+              model:
+                variables:
+                - eastward_wind
+                - northward_wind
+                - air_temperature
+                - specific_humidity
+                - cloud_liquid_ice
+                - cloud_liquid_water
+                - mole_fraction_of_ozone_in_air
+                io_keys:
+                - eastward_wind-eastward_wind
+                - northward_wind-northward_wind
+                - air_temperature-air_temperature
+                - specific_humidity-specific_humidity
+                - cloud_liquid_ice-cloud_liquid_ice
+                - cloud_liquid_water-cloud_liquid_water
+                - mole_fraction_of_ozone_in_air-mole_fraction_of_ozone_in_air
+                io_values:
+                - fixed_2500km_0.3
+                - fixed_2500km_0.3
+                - fixed_2500km_0.3
+                - fixed_2500km_0.3
+                - fixed_2500km_0.3
+                - fixed_2500km_0.3
+                - fixed_2500km_0.3
+            - general:
+                prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
+              model:
+                variables:
+                - surface_pressure
+                io_keys:
+                - surface_pressure-surface_pressure
+                io_values:
+                - fixed_2500km
       weight:
         value: 0.1
     - covariance:
@@ -72,12 +101,17 @@ cost function:
             saber block name: BUMP_NICAS
             active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
             bump:
-              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-              method: loc
-              strategy: common
-              load_nicas_local: true
-              io_keys: [common]
-              io_values: [fixed_2500km_0.3]
+              general:
+                prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+              drivers:
+                method: loc
+                strategy: common
+                load_nicas_local: true
+              model:
+                io_keys:
+                - common
+                io_values:
+                - fixed_2500km_0.3
       weight:
         value: 0.9
   observations:
