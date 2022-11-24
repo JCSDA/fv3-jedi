@@ -21,17 +21,12 @@ background error:
     saber central block:
       saber block name: BUMP_NICAS
       bump:
-        general:
-          prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-        drivers:
-          method: loc
-          strategy: common
-          load_nicas_local: true
-        model:
-          io_keys:
-          - common
-          io_values:
-          - fixed_2500km_0.3
+        prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+        method: loc
+        strategy: common
+        load_nicas_local: true
+        io_keys: [common]
+        io_values: [fixed_2500km_0.3]
   members from template:
     template:
       datetime: 2020-12-14T21:00:00Z

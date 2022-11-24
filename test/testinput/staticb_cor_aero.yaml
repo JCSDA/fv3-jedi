@@ -29,34 +29,27 @@ background:
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
 bump:
-  general:
-    datadir: Data/staticb_aero
-    prefix: cor_aero
-    universe_rad: 5000.0e3
-  drivers:
-    method: cor
-    strategy: specific_univariate
-    load_samp_local: true
-    load_mom: true
-    new_hdiag: true
-    write_hdiag: true
-  files:
-    fname_samp: var-mom_2018041421_aero_sampling
-    fname_mom:
-    - var-mom_2018041421_aero_mom
-    - var-mom_2018041500_aero_mom
-    - var-mom_2018041503_aero_mom
-  ensemble sizes:
-    ens1_ne: 30
-    ens1_nsub: 3
-  sampling:
-    nc3: 10
-    dc: 500.0e3
-    nl0r: 15
-  localization:
-    ne: 30
-  fit:
-    diag_rvflt: 0.1
+  datadir: Data/staticb_aero
+  prefix: cor_aero
+  universe_rad: 5000.0e3
+  method: cor
+  strategy: specific_univariate
+  load_mom: true
+  new_hdiag: true
+  write_hdiag: true
+  ens1_ne: 30
+  ens1_nsub: 3
+  load_samp_local: true
+  nc3: 10
+  dc: 500.0e3
+  nl0r: 15
+  diag_rvflt: 0.1
+  ne: 30
+  fname_samp: var-mom_2018041421_aero_sampling
+  fname_mom:
+  - var-mom_2018041421_aero_mom
+  - var-mom_2018041500_aero_mom
+  - var-mom_2018041503_aero_mom
 output:
 - parameter: cor_rh
   file:

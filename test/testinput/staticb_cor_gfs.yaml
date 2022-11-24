@@ -21,57 +21,38 @@ background:
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
 bump:
-  general:
-    datadir: Data/staticb
-    universe_rad: 5000.0e3
-  drivers:
-    method: cor
-    strategy: specific_univariate
-    load_samp_local: true
-    load_mom: true
-    new_hdiag: true
-    write_hdiag: true
-    write_hdiag_detail: true
-  ensemble sizes:
-    ens1_ne: 30
-    ens1_nsub: 3
-  sampling:
-    nc3: 10
-    dc: 500.0e3
-    nl0r: 5
-  localization:
-    ne: 30
-  fit:
-    diag_rvflt: 0.1
-    fit_ncmp: 2
+  datadir: Data/staticb
+  universe_rad: 5000.0e3
+  method: cor
+  strategy: specific_univariate
+  load_mom: true
+  new_hdiag: true
+  write_hdiag: true
+  write_hdiag_detail: true
+  ens1_ne: 30
+  ens1_nsub: 3
+  load_samp_local: true
+  nc3: 10
+  dc: 500.0e3
+  nl0r: 5
+  fit_ncmp: 2
+  diag_rvflt: 0.1
+  ne: 30
   grids:
-  - general:
-      prefix: cor_3D_gfs
-    files:
-      fname_samp: var-mom_3D_2020121421_gfs_sampling
-      fname_mom:
-      - var-mom_3D_2020121421_gfs_mom
-      - var-mom_3D_2020121500_gfs_mom
-      - var-mom_3D_2020121503_gfs_mom
-    model:
-      variables:
-      - stream_function
-      - velocity_potential
-      - air_temperature
-      - specific_humidity
-      - cloud_liquid_water
-      - ozone_mass_mixing_ratio
-  - general:
-      prefix: cor_2D_gfs
-    files:
-      fname_samp: var-mom_2D_2020121421_gfs_sampling
-      fname_mom:
-      - var-mom_2D_2020121421_gfs_mom
-      - var-mom_2D_2020121500_gfs_mom
-      - var-mom_2D_2020121503_gfs_mom
-    model:
-      variables:
-      - surface_pressure
+  - prefix: cor_3D_gfs
+    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    fname_samp: var-mom_3D_2020121421_gfs_sampling
+    fname_mom:
+    - var-mom_3D_2020121421_gfs_mom
+    - var-mom_3D_2020121500_gfs_mom
+    - var-mom_3D_2020121503_gfs_mom
+  - prefix: cor_2D_gfs
+    variables: [surface_pressure]
+    fname_samp: var-mom_2D_2020121421_gfs_sampling
+    fname_mom:
+    - var-mom_2D_2020121421_gfs_mom
+    - var-mom_2D_2020121500_gfs_mom
+    - var-mom_2D_2020121503_gfs_mom
 output:
 - parameter: cor_a
   component: 1

@@ -29,15 +29,12 @@ background:
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
 bump:
-  general:
-    datadir: Data/staticb_aero
-    prefix: nicas_aero
-  drivers:
-    strategy: specific_univariate
-    new_nicas: true
-    write_nicas_local: true
-  nicas:
-    resol: 6.0
+  datadir: Data/staticb_aero
+  prefix: nicas_aero
+  strategy: specific_univariate
+  new_nicas: true
+  write_nicas_local: true
+  resol: 6.0
 input fields:
 - parameter: universe radius
   file:

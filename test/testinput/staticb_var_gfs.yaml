@@ -21,50 +21,27 @@ background:
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
 bump:
-  general:
-    datadir: Data/staticb
-    universe_rad: 3000.0e3
-  drivers:
-    method: cor
-    strategy: specific_univariate
-  ensemble sizes:
-    ens1_nsub: 3
-  localization:
-    ne: 30
-  variance:
-    var_filter: true
-    var_niter: 1
-    var_rhflt:
-      stream_function:
-      - 3000.0e3
-      velocity_potential:
-      - 3000.0e3
-      air_temperature:
-      - 300.0e3
-      surface_pressure:
-      - 300.0e3
-      specific_humidity:
-      - 300.0e3
-      cloud_liquid_water:
-      - 300.0e3
-      ozone_mass_mixing_ratio:
-      - 300.0e3
+  datadir: Data/staticb
+  universe_rad: 3000.0e3
+  method: cor
+  strategy: specific_univariate
+  ens1_nsub: 3
+  var_filter: true
+  var_niter: 1
+  var_rhflt:
+    stream_function: [3000.0e3]
+    velocity_potential: [3000.0e3]
+    air_temperature: [300.0e3]
+    surface_pressure: [300.0e3]
+    specific_humidity: [300.0e3]
+    cloud_liquid_water: [300.0e3]
+    ozone_mass_mixing_ratio: [300.0e3]
+  ne: 30
   grids:
-  - general:
-      prefix: var_3D_gfs
-    model:
-      variables:
-      - stream_function
-      - velocity_potential
-      - air_temperature
-      - specific_humidity
-      - cloud_liquid_water
-      - ozone_mass_mixing_ratio
-  - general:
-      prefix: var_2D_gfs
-    model:
-      variables:
-      - surface_pressure
+  - prefix: var_3D_gfs
+    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  - prefix: var_2D_gfs
+    variables: [surface_pressure]
 input fields:
 - parameter: var
   component: 1
