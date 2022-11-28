@@ -610,20 +610,23 @@ implicit none
 integer(c_int),               intent(in)    :: c_key_self
 integer(c_int),               intent(in)    :: c_f_num
 integer(c_int),               intent(in)    :: c_f_name_len
-character(len=1,kind=c_char), intent(inout) :: c_f_name(c_f_name_len)
+character(len=1,kind=c_char), intent(inout) :: c_f_name(c_f_name_len + 1)
 real(c_double),               intent(inout) :: c_minmaxrms(3)
 
 type(fv3jedi_increment), pointer :: self
 character(len=field_clen) :: field_name
-integer :: n
+integer :: n, trunc_name_len
 
 call fv3jedi_increment_registry%get(c_key_self,self)
 
 call self%minmaxrms(c_f_num, field_name, c_minmaxrms)
 
-do n = 1,c_f_name_len
+! logic from oops f_c_string, but without allocation of c string array
+trunc_name_len = min(len_trim(field_name), c_f_name_len)
+do n = 1,trunc_name_len
   c_f_name(n) = field_name(n:n)
 enddo
+c_f_name(trunc_name_len+1:c_f_name_len+1) = c_null_char
 
 end subroutine fv3jedi_increment_getminmaxrms_c
 

@@ -188,12 +188,12 @@ void State::print(std::ostream & os) const {
                   << " | cube sphere face size: C" << cubeSize;
 
   // Print info field by field
-  const int FieldNameLen = 45;
+  const int FieldNameLen = 46;
   char fieldName[FieldNameLen];
   std::vector<double> minMaxRms(3);
   for (int f = 0; f < numberFields; f++) {
     int fp1 = f+1;
-    fv3jedi_state_getminmaxrms_f90(keyState_, fp1, FieldNameLen, fieldName, minMaxRms[0]);
+    fv3jedi_state_getminmaxrms_f90(keyState_, fp1, FieldNameLen-1, fieldName, minMaxRms[0]);
     std::string fieldNameStr(fieldName);
     os << std::endl << std::scientific << std::showpos << fieldNameStr.substr(0, FieldNameLen-1)
                     << " | Min:" << minMaxRms[0] << " Max:" << minMaxRms[1]
