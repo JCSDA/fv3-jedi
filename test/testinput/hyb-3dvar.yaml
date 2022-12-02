@@ -288,6 +288,20 @@ variational:
 final:
   diagnostics:
     departures: oman
+  increment to latlon:
+    resolution in degrees: 15.0  # low resolution for testing
+    variables to output: [air_temperature, eastward_wind, northward_wind]
+    levels to output: [100, 76, 60]
+    datapath: Data/analysis
+    filename prefix: latlon.inc.hyb-3dvar
+  analysis to latlon:
+    resolution in degrees: 15.0  # low resolution for testing
+    variables to output: [air_temperature, eastward_wind, northward_wind]
+    levels to output: [100, 76, 60]
+    frequency: PT3H
+    datapath: Data/analysis
+    filename prefix: latlon.an.hyb-3dvar
+
 output:
   filetype: fms restart
   datapath: Data/analysis/
