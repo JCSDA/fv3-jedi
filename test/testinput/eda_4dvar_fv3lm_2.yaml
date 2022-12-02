@@ -64,6 +64,7 @@ cost function:
       weight:
         value: 0.9
   observations:
+    obs perturbations: true
     observers:
     - obs space:
         name: Aircraft
@@ -81,7 +82,7 @@ cost function:
         name: VertInterp
       obs error:
         covariance model: diagonal
-        random amplitude: 0.4
+        obs perturbations amplitude: 0.4
       obs filters:
       - filter: PreQC
         maxvalue: 3
@@ -111,7 +112,7 @@ cost function:
         name: VertInterp
       obs error:
         covariance model: diagonal
-        random amplitude: 0.2
+        obs perturbations amplitude: 0.2
       obs filters:
       - filter: PreQC
         maxvalue: 3
@@ -180,7 +181,7 @@ cost function:
           CoefficientPath: Data/crtm/
       obs error:
         covariance model: diagonal
-        random amplitude: 0.3
+        obs perturbations amplitude: 0.3
       obs filters:
       - filter: Bounds Check
         filter variables:
@@ -241,7 +242,6 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-    obs perturbations: true
     linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
