@@ -7,6 +7,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
+
 variance output:
   filetype: fms restart
   datapath: Data/ensvariance
@@ -15,6 +16,14 @@ variance output:
   filename_sfcd: ensemblevariance.sfc_data.nc
   filename_sfcw: ensemblevariance.fv_srf_wnd.res.nc
   filename_cplr: ensemblevariance.coupler.res
+
+ensvariance to latlon:
+  resolution in degrees: 15.0  # low resolution for testing
+  variables to output: [air_temperature, eastward_wind, northward_wind]
+  levels to output: [100, 76, 60]
+  datapath: Data/ensvariance
+  filename prefix: latlon.ensemblevariance
+
 mean output:
   filetype: fms restart
   datapath: Data/ensvariance
@@ -23,6 +32,14 @@ mean output:
   filename_sfcd: ensemblemean.sfc_data.nc
   filename_sfcw: ensemblemean.fv_srf_wnd.res.nc
   filename_cplr: ensemblemean.coupler.res
+
+ensmean to latlon:
+  resolution in degrees: 15.0  # low resolution for testing
+  variables to output: [air_temperature, eastward_wind, northward_wind]
+  levels to output: [100, 76, 60]
+  datapath: Data/ensvariance
+  filename prefix: latlon.ensemblemean
+
 ensemble:
   members from template:
     template:
