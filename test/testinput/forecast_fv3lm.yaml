@@ -33,6 +33,13 @@ output:
   exp: forecast_fv3
   date: 2020-12-14T21:00:00Z
   frequency: PT15M
+forecast to latlon:
+  resolution in degrees: 15.0  # low resolution for testing
+  variables to output: [air_temperature, eastward_wind, northward_wind]
+  levels to output: [0, 63, 126]
+  frequency: PT15M
+  datapath: Data/forecast
+  filename prefix: latlon.forecast_fv3
 
 test:
   reference filename: testoutput/forecast_fv3lm.ref
