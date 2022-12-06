@@ -116,7 +116,6 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // Set state to have all possible variables
   oops::Variables varsTotal = x.variables();
   varsTotal += vars;
-  x.updateFields(varsTotal);
 
   // Record variables either side of Vader
   oops::Variables varsVaderFinal = vars;
