@@ -78,19 +78,19 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Set first guess to have its original fields plus the ones Vader is going to do
-  oops::Variables varsVader = dx.variables();
-  oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
-  varsVader += varsVaderWillPopulate;
-  dx.updateFields(varsVader);
-
   // Call Vader. On entry, varsVaderWillPopulate holds the vars requested from Vader; on exit,
   // it should be empty, since we know which variables Vader will do from the changeVarTraj call.
   atlas::FieldSet dxfs;
   dx.toFieldSet(dxfs);
-
+  oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
   vader_.changeVarTL(dxfs, varsVaderWillPopulate);
   ASSERT(varsVaderWillPopulate.size() == 0);
+
+  // Set intermediate state for the Increment containing original fields plus the ones
+  // Vader has done
+  oops::Variables varsVader = dx.variables();
+  varsVader += varsVaderPopulates_;
+  dx.updateFields(varsVader);
   dx.fromFieldSet(dxfs);
 
   // Create output state
@@ -158,13 +158,11 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   dxin.updateFields(varsVaderDidntPopulate);
 
   dx.updateFields(varsVaderPopulates_);
-
   // Create empty output state
   Increment dxout(dx.geometry(), vars, dx.time());
 
   // Call model's adjoint variable change.
   linearVariableChange_->multiplyAD(dxin, dxout);
-
   // dxout needs to temporarily have the variables that Vader populated put into it before
   // being passed into vader_.changeVarAD, so Vader can do its adjoints.
   atlas::FieldSet dxout_fs;
