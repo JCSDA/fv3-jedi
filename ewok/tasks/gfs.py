@@ -6,6 +6,7 @@
 import ewok.tasks.GenericModel
 import createPlotsFields
 import getBackgroundGFS
+import getBackgroundErrorGFS
 import getExpInitGFS
 import getFcInitGFS
 import getFixFilesGFS
@@ -20,6 +21,7 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         ewok.tasks.GenericModel.ModelTasks.__init__(self)
 
         self.getBackground = getBackgroundGFS.getBackgroundGFS
+        self.getBackgroundError = getBackgroundErrorGFS.getBackgroundErrorGFS
         self.getExpInit = getExpInitGFS.getExpInitGFS
         self.getFcInit = getFcInitGFS.getFcInitGFS
         self.getStaticModel = getFixFilesGFS.getFixFilesGFS
