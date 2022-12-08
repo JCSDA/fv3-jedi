@@ -40,7 +40,7 @@ bump:
     distance classes: 10
     distance class width: 500.0e3
     reduced levels: 5
-  localization:
+  diagnostics:
     target ensemble size: 30
   fit:
     vertical filtering length-scale: 0.1
