@@ -24,8 +24,7 @@ filename = base + '.$(file_type).tile$(tile).nc'
 cplrfile = base + '.coupler.res'
 
 if 'member' in conf:
-    print("trying to save member", conf['member'])
-    print("saveAnalysisRun filename = ", filename)
+    print("saveAnalysisRun filename = ", filename, ", member ", conf['member'])
 
     r2d2.store(
         model=conf['experiment']['model'],
@@ -40,7 +39,7 @@ if 'member' in conf:
         member=conf['member']
     )
 
-    print("saveAnalysisRun cplrfile = ", cplrfile)
+    print("saveAnalysisRun cplrfile = ", cplrfile, ", member ", conf['member'])
 
     r2d2.store(
         model='gfs_metadata',

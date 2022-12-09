@@ -36,7 +36,6 @@ if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
 hackstep = yamltools.jediformat(fcstep)
 
 if 'member' in conf:
-    print("trying to get member", conf['member'])
     fetch(
         model=conf['experiment']['model'],
         type='fc_ens',
