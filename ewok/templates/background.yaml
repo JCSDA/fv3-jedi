@@ -4,6 +4,9 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 filetype: fms restart
+###### hack to be removed ######
+skip coupler file: true
+###### hack to be removed ######
 datetime: '{{background_time}}'
 datapath: $(bgworkdir)
 filename_core: $(expid).fc.$(fcdatetime).$(fcstep).fv_core.res.nc

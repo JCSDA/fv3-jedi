@@ -29,6 +29,12 @@ sdate = conf['fcdate'] + '.' + conf['fcstep']
 filename = base + sdate + '.$(file_type).tile$(tile).nc'
 cplrfile = base + sdate + '.coupler.res'
 
+fcstep = yamltools.parse_timedelta(conf['fcstep'])
+if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
+    pt3h = yamltools.parse_timedelta('PT3H')
+    fcstep -= pt3h
+hackstep = yamltools.jediformat(fcstep)
+
 if 'member' in conf:
     print("trying to get member", conf['member'])
     fetch(
@@ -37,7 +43,7 @@ if 'member' in conf:
         experiment=exp_read,
         resolution=conf['resolution'],
         date=conf['fcdate'],
-        step=conf['fcstep'],
+        step=hackstep,
         target_file=filename,
         file_format='netcdf',
         file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
@@ -52,7 +58,7 @@ if 'member' in conf:
         experiment=exp_read,
         resolution=conf['resolution'],
         date=conf['fcdate'],
-        step=conf['fcstep'],
+        step=hackstep,
         target_file=cplrfile,
         file_type=['coupler.res'],
         fc_date_rendering='analysis',
@@ -65,7 +71,7 @@ else:
         experiment=exp_read,
         resolution=conf['resolution'],
         date=conf['fcdate'],
-        step=conf['fcstep'],
+        step=hackstep,
         target_file=filename,
         file_format='netcdf',
         file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
@@ -79,7 +85,7 @@ else:
         experiment=exp_read,
         resolution=conf['resolution'],
         date=conf['fcdate'],
-        step=conf['fcstep'],
+        step=hackstep,
         target_file=cplrfile,
         file_type=['coupler.res'],
         fc_date_rendering='analysis',
