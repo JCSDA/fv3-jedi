@@ -29,7 +29,7 @@ bump:
     multivariate strategy: specific_univariate
   ensemble sizes:
     sub-ensembles: 3
-  localization:
+  diagnostics:
     target ensemble size: 30
   variance:
     objective filtering: true
