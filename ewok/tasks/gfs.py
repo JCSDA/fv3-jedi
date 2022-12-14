@@ -19,6 +19,9 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
     def __init__(self):
         ewok.tasks.GenericModel.ModelTasks.__init__(self)
 
+        self.createPlots = ewok.createPlots
+        self.createPlotsFields = ewok.createPlotsFields
+        self.createPlotsStats = ewok.createPlotsStats
         self.enstats = ewok.enstats
         self.getBackground = getBackgroundGFS.getBackgroundGFS
         self.getBackgroundError = getBackgroundErrorGFS.getBackgroundErrorGFS
@@ -28,7 +31,6 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         self.getInitialConditions = getInitialConditionsGFS.getInitialConditionsGFS
         self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS
         self.saveForecast = saveForecastGFS.saveForecastGFS
-        self.createPlots = ewok.createPlots
-        self.createPlotsFields = ewok.createPlotsFields
         self.savePlots = ewok.savePlots
         self.savePlotsFields = ewok.savePlotsFields
+        self.savePlotsStats = ewok.savePlotsStats
