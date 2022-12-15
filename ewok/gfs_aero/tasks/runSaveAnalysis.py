@@ -43,7 +43,7 @@ if 'member' in conf:
     print("saveAnalysisRun cplrfile = ", cplrfile)
 
     r2d2.store(
-        model='gfs_metadata',
+        model='gfs_aero_metadata',
         type='an_ens',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
@@ -65,12 +65,13 @@ else:
         file_format='netcdf',
         file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
         tile=[1, 2, 3, 4, 5, 6],
+        ignore_missing='yes',
     )
 
     print("saveAnalysisRun cplrfile = ", cplrfile)
 
     r2d2.store(
-        model='gfs_metadata',
+        model='gfs_aero_metadata',
         type='an',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
