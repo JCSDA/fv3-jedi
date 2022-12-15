@@ -27,5 +27,8 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         self.saveForecast = saveForecastGFS.saveForecastGFS
         self.createPlots = ewok.createPlots
         self.createPlotsFields = ewok.createPlotsFields
+        self.createPlotsStats = ewok.createPlotsStats
+        self.enstats = ewok.enstats
         self.savePlots = ewok.savePlots
         self.savePlotsFields = ewok.savePlotsFields
+        self.savePlotsStats = ewok.savePlotsStats
