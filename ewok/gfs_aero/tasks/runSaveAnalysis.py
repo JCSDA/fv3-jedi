@@ -37,7 +37,8 @@ if 'member' in conf:
         file_format='netcdf',
         file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
         tile=[1, 2, 3, 4, 5, 6],
-        member=conf['member']
+        member=conf['member'],
+        ignore_missing='yes',
     )
 
     print("saveAnalysisRun cplrfile = ", cplrfile)
