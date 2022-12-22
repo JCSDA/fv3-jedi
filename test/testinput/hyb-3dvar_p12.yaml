@@ -91,21 +91,21 @@ cost function:
         - name: DerivedObsValue/airTemperature
           type: float
           source variable:
-            name: ObsValue/renamed_airTemperature
+            name: ObsValue/renamed_air_temperature
       # Populate its ObsError estimates (filled with missing values up to now)
       - filter: Perform Action
-        filter variables: [air_temperature]
+        filter variables: [airTemperature]
         action:
           name: assign error
           error function:
-            name: ObsError/renamed_airTemperature
+            name: ObsError/renamed_air_temperature
       # Populate its PreQC flags
       - filter: Variable Assignment
         assignments:
         - name: PreQC/airTemperature
           type: int
           source variable:
-            name: PreQC/renamed_airTemperature
+            name: PreQC/renamed_air_temperature
       - filter: PreQC
         maxvalue: 3
       - filter: Background Check
