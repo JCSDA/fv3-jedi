@@ -34,7 +34,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
-        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
       obs error:
@@ -42,12 +42,12 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: air_temperature
+        - name: airTemperature
         minvalue: 500.0  # filter out all temperature obs on earth.
       - filter: Bounds Check
         filter variables:
-        - name: eastward_wind
-        - name: northward_wind
+        - name: windEastward
+        - name: windNorthward
         minvalue: 250.0 # filter out the winds too -- zero obs will be assimilated.
 output:
   filetype: fms restart

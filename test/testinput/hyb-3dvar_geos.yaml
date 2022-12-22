@@ -67,7 +67,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/aircraft_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
       obs error:
@@ -77,9 +77,9 @@ cost function:
         maxvalue: 3
       - filter: Background Check
         filter variables:
-        - name: eastward_wind
-        - name: northward_wind
-        - name: air_temperature
+        - name: windEastward
+        - name: windNorthward
+        - name: airTemperature
         threshold: 6.0
     - obs space:
         name: Radiosonde
@@ -91,7 +91,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sondes_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
       obs error:
@@ -101,9 +101,9 @@ cost function:
         maxvalue: 3
       - filter: Background Check
         filter variables:
-        - name: eastward_wind
-        - name: northward_wind
-        - name: air_temperature
+        - name: windEastward
+        - name: windNorthward
+        - name: airTemperature
         threshold: 6.0
     - obs space:
         name: GnssroBndNBAM
@@ -115,7 +115,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/gnssro_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [bending_angle]
+        simulated variables: [bendingAngle]
       obs operator:
         name: GnssroBndNBAM
         obs options:
@@ -128,21 +128,21 @@ cost function:
       obs filters:
       - filter: Domain Check
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
         where:
         - variable:
-            name: impact_height@MetaData
+            name: MetaData/impactHeightRO
           minvalue: 0
           maxvalue: 50000
       - filter: ROobserror
         apply at iterations: 0, 1
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
         errmodel: NBAM
       - filter: Background Check RONBAM
         apply at iterations: 0, 1
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
     - obs space:
         name: AMSUA-METOP-A
         obsdatain:
@@ -153,7 +153,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_metop-a_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 4-6,9-14
       obs operator:
         name: CRTM
@@ -169,46 +169,46 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4-6,9-14
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4-6,9-14
         threshold: 3.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4-6,9-14
         where:
         - variable:
-            name: scan_position@MetaData
+            name: MetaData/sensorScanPosition
           minvalue: 4
           maxvalue: 27
         - variable:
-            name: brightness_temperature_1@ObsValue
+            name: ObsValue/brightnessTemperature_1
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_2@ObsValue
+            name: ObsValue/brightnessTemperature_2
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_3@ObsValue
+            name: ObsValue/brightnessTemperature_3
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_4@ObsValue
+            name: ObsValue/brightnessTemperature_4
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_6@ObsValue
+            name: ObsValue/brightnessTemperature_6
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_15@ObsValue
+            name: ObsValue/brightnessTemperature_15
           minvalue: 50.0
           maxvalue: 550.0
     - obs space:
@@ -221,7 +221,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_metop-b_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 7-14
       obs operator:
         name: CRTM
@@ -237,47 +237,47 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 7-14
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 7-14
         threshold: 3.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 7-14
         where:
         - variable:
-            name: scan_position@MetaData
+            name: MetaData/sensorScanPosition
           minvalue: 4
           maxvalue: 27
         - variable:
-            name: brightness_temperature_1@ObsValue
+            name: ObsValue/brightnessTemperature_1
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_2@ObsValue
+            name: ObsValue/brightnessTemperature_2
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_3@ObsValue
+            name: ObsValue/brightnessTemperature_3
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_4@ObsValue
+            name: ObsValue/brightnessTemperature_4
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_6@ObsValue
+            name: ObsValue/brightnessTemperature_6
           minvalue: 50.0
           maxvalue: 550.0
 ### All ch5 are missing in current obs file.
 #2        - variable:
-#2            name: brightness_temperature_15@ObsValue
+#2            name: ObsValue/brightnessTemperature_15
 #2          minvalue: 50.0
 #2          maxvalue: 550.0
     - obs space:
@@ -290,7 +290,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n15_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 4,5,7-10,12,13
       obs operator:
         name: CRTM
@@ -306,46 +306,46 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4,5,7-10,12,13
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4,5,7-10,12,13
         threshold: 3.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4,5,7-10,12,13
         where:
         - variable:
-            name: scan_position@MetaData
+            name: MetaData/sensorScanPosition
           minvalue: 4
           maxvalue: 27
         - variable:
-            name: brightness_temperature_1@ObsValue
+            name: ObsValue/brightnessTemperature_1
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_2@ObsValue
+            name: ObsValue/brightnessTemperature_2
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_3@ObsValue
+            name: ObsValue/brightnessTemperature_3
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_4@ObsValue
+            name: ObsValue/brightnessTemperature_4
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_6@ObsValue
+            name: ObsValue/brightnessTemperature_6
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_15@ObsValue
+            name: ObsValue/brightnessTemperature_15
           minvalue: 50.0
           maxvalue: 550.0
     - obs space:
@@ -358,7 +358,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n18_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 4,6,7,10-14
       obs operator:
         name: CRTM
@@ -374,46 +374,46 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4,6,7,10-14
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4,6,7,10-14
         threshold: 3.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4,6,7,10-14
         where:
         - variable:
-            name: scan_position@MetaData
+            name: MetaData/sensorScanPosition
           minvalue: 4
           maxvalue: 27
         - variable:
-            name: brightness_temperature_1@ObsValue
+            name: ObsValue/brightnessTemperature_1
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_2@ObsValue
+            name: ObsValue/brightnessTemperature_2
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_3@ObsValue
+            name: ObsValue/brightnessTemperature_3
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_4@ObsValue
+            name: ObsValue/brightnessTemperature_4
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_6@ObsValue
+            name: ObsValue/brightnessTemperature_6
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_15@ObsValue
+            name: ObsValue/brightnessTemperature_15
           minvalue: 50.0
           maxvalue: 550.0
     - obs space:
@@ -426,7 +426,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n19_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 4-6,9-14
       obs operator:
         name: CRTM
@@ -442,46 +442,46 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4-6,9-14
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4-6,9-14
         threshold: 3.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 4-6,9-14
         where:
         - variable:
-            name: scan_position@MetaData
+            name: MetaData/sensorScanPosition
           minvalue: 4
           maxvalue: 27
         - variable:
-            name: brightness_temperature_1@ObsValue
+            name: ObsValue/brightnessTemperature_1
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_2@ObsValue
+            name: ObsValue/brightnessTemperature_2
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_3@ObsValue
+            name: ObsValue/brightnessTemperature_3
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_4@ObsValue
+            name: ObsValue/brightnessTemperature_4
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_6@ObsValue
+            name: ObsValue/brightnessTemperature_6
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_15@ObsValue
+            name: ObsValue/brightnessTemperature_15
           minvalue: 50.0
           maxvalue: 550.0
     - obs space:
@@ -494,7 +494,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/mhs_n19_hofx_geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1-5
       obs operator:
         name: CRTM
@@ -508,14 +508,14 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-5
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-5
         threshold: 3.0
     - obs space:
@@ -528,7 +528,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/mhs_metop-a_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1-5
       obs operator:
         name: CRTM
@@ -544,14 +544,14 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-5
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-5
         threshold: 3.0
     - obs space:
@@ -564,7 +564,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/mhs_metop-b_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1-5
       obs operator:
         name: CRTM
@@ -580,14 +580,14 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-5
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-5
         threshold: 3.0
     - obs space:
@@ -600,7 +600,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/atms_npp_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 5-15,17-22
       obs operator:
         name: CRTM
@@ -614,35 +614,35 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5-15,17-22
         minvalue: 50.0
         maxvalue: 550.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5-15,17-22
         where:
         - variable:
-            name: brightness_temperature_1@ObsValue
+            name: ObsValue/brightnessTemperature_1
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_2@ObsValue
+            name: ObsValue/brightnessTemperature_2
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_16@ObsValue
+            name: ObsValue/brightnessTemperature_16
           minvalue: 50.0
           maxvalue: 550.0
         - variable:
-            name: brightness_temperature_17@ObsValue
+            name: ObsValue/brightnessTemperature_17
           minvalue: 50.0
           maxvalue: 550.0
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5-15,17-22
         threshold: 3.0
     - obs space:
@@ -655,7 +655,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsr2_gcom-w1_hyb-3dvar-geos_2020121500.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1-14
       obs operator:
         name: ObsAtmSfcInterp
@@ -674,49 +674,49 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         minvalue: 50.0
         maxvalue: 340.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         where:
         - variable:
-            name: water_area_fraction@GeoVaLs
+            name: GeoVaLs/water_area_fraction
           minvalue: 1
         - variable:
-            name: surface_temperature_where_sea@GeoVaLs
+            name: GeoVaLs/surface_temperature_where_sea
           minvalue: 275
         - variable:
-            name: surface_wind_speed@GeoVaLs
+            name: GeoVaLs/surface_wind_speed
           maxvalue: 12
         - variable:
-            name: latitude@MetaData
+            name: MetaData/latitude
           minvalue: -60.0
           maxvalue: 60.0
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         test variables:
-        - name: TotalColumnVaporGuess@ObsFunction
+        - name: ObsFunction/TotalColumnVaporGuess
         minvalue: 10.0
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         test variables:
-        - name: SunGlintAngle@ObsFunction
+        - name: ObsFunction/SunGlintAngle
         minvalue: 20.0
       #  Ckeck CLW retrievals from observations
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         test variables:
-        - name: CLWRetMW@ObsFunction
+        - name: ObsFunction/CLWRetMW
           options:
             clwret_ch18v: 7
             clwret_ch18h: 8
@@ -732,10 +732,10 @@ cost function:
       #  Ckeck CLW retrievals from HofX
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         test variables:
-        - name: CLWRetMW@ObsFunction
+        - name: ObsFunction/CLWRetMW
           options:
             clwret_ch18v: 7
             clwret_ch18h: 8
@@ -746,10 +746,10 @@ cost function:
         maxvalue: 1.0
       - filter: Difference Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         value:
-          name: CLWRetMW@ObsFunction
+          name: ObsFunction/CLWRetMW
           options:
             clwret_ch18v: 7
             clwret_ch18h: 8
@@ -758,7 +758,7 @@ cost function:
             sys_bias: *amsr2_sys_bias
             clwret_types: [ObsValue]
         reference:
-          name: CLWRetMW@ObsFunction
+          name: ObsFunction/CLWRetMW
           options:
             clwret_ch18v: 7
             clwret_ch18h: 8
@@ -770,17 +770,17 @@ cost function:
         maxvalue: 0.5
       - filter: BlackList
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         action:
           name: assign error
           error function:
-            name: ObsErrorModelRamp@ObsFunction
+            name: ObsFunction/ObsErrorModelRamp
             channels: 1-14
             options:
               channels: 1-14
               xvar:
-                name: CLWRetSymmetricMW@ObsFunction
+                name: ObsFunction/CLWRetSymmetricMW
                 options:
                   clwret_ch18v: 7
                   clwret_ch18h: 8
@@ -803,7 +803,7 @@ cost function:
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-14
         threshold: 2.0
         action:
@@ -811,7 +811,7 @@ cost function:
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 7-10
         absolute threshold: 30
         action:
@@ -819,7 +819,7 @@ cost function:
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 11-14
         absolute threshold: 50
         action:
@@ -827,7 +827,7 @@ cost function:
       # Only keep ch 9 and 11 active.
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-8,10,12-14
         maxvalue: 50.0
     - obs space:
@@ -840,7 +840,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/gmi_gpm_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 5,6,7,10,12,13
       obs operator:
         name: ObsAtmSfcInterp
@@ -859,59 +859,59 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7
         minvalue: 50.0
         maxvalue: 320.0
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 10,12,13
         minvalue: 70.0
         maxvalue: 320.0
       - filter: Domain Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7,10,12,13
         where:
         - variable:
-            name: scan_position@MetaData
+            name: MetaData/sensorScanPosition
           minvalue: 5
           maxvalue: 70
 #2   Filter out all sample obs.
 #2        - variable:
-#2            name: latitude@MetaData
+#2            name: MetaData/latitude
 #2          minvalue: -55.0
 #2          maxvalue: 55.0
         - variable:
-            name: height_above_mean_sea_level@MetaData
+            name: MetaData/height
           maxvalue: 2000
         - variable:
-            name: water_area_fraction@GeoVaLs
+            name: GeoVaLs/water_area_fraction
           minvalue: 1
 #2        - variable:
-#2            name: surface_temperature_where_sea@GeoVaLs
+#2            name: GeoVaLs/surface_temperature_where_sea
 #2          minvalue: 275
       - filter: BlackList
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7,10,12,13
         where:
         - variable:
-            name: latitude@MetaData
+            name: MetaData/latitude
           minvalue: -25.0
           maxvalue: 0.0
         - variable:
-            name: longitude@MetaData
+            name: MetaData/longitude
           minvalue: 25.0
           maxvalue: 40.0
       #  CLW Retrieval Check from ObsValue
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7,10,12,13
         test variables:
-        - name: CLWRetMW@ObsFunction
+        - name: ObsFunction/CLWRetMW
           options:
             clwret_ch37v: 6
             clwret_ch37h: 7
@@ -922,10 +922,10 @@ cost function:
       #  CLW Retrieval Check from HofX
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7,10,12,13
         test variables:
-        - name: CLWRetMW@ObsFunction
+        - name: ObsFunction/CLWRetMW
           options:
             clwret_ch37v: 6
             clwret_ch37h: 7
@@ -936,17 +936,17 @@ cost function:
       # Assign observational error in all-sky DA.
       - filter: BlackList
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7,10,12,13
         action:
           name: assign error
           error function:
-            name: ObsErrorModelRamp@ObsFunction
+            name: ObsFunction/ObsErrorModelRamp
             channels: 5,6,7,10,12,13
             options:
               channels: 5,6,7,10,12,13
               xvar:
-                name: CLWRetSymmetricMW@ObsFunction
+                name: ObsFunction/CLWRetSymmetricMW
                 options:
                   clwret_ch37v: 6
                   clwret_ch37h: 7
@@ -966,7 +966,7 @@ cost function:
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 5,6,7,10,12,13
         threshold: 2.0
     - obs space:
@@ -979,7 +979,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/airs_aqua_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 7,15,20,21,22,27,28,40,52,69,
                   72,92,93,98,99,104,105,110,111,116,
                   117,123,128,129,138,139,144,145,150,151,
@@ -1004,7 +1004,7 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 7,15,20,21,22,27,28,40,52,69,
                     72,92,93,98,99,104,105,110,111,116,
                     117,123,128,129,138,139,144,145,150,151,
@@ -1021,7 +1021,7 @@ cost function:
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 7,15,20,21,22,27,28,40,52,69,
                     72,92,93,98,99,104,105,110,111,116,
                     117,123,128,129,138,139,144,145,150,151,
@@ -1047,7 +1047,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/iasi_metop-a_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -1075,7 +1075,7 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 16,38,49,51,55,57,59,61,63,66,
                     70,72,74,79,81,83,85,87,104,106,
                     109,111,113,116,119,122,125,128,131,133,
@@ -1095,7 +1095,7 @@ cost function:
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 16,38,49,51,55,57,59,61,63,66,
                     70,72,74,79,81,83,85,87,104,106,
                     109,111,113,116,119,122,125,128,131,133,
@@ -1122,7 +1122,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/iasi_metop-b_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -1150,7 +1150,7 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 16,38,49,51,55,57,59,61,63,66,
                     70,72,74,79,81,83,85,87,104,106,
                     109,111,113,116,119,122,125,128,131,133,
@@ -1170,7 +1170,7 @@ cost function:
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 16,38,49,51,55,57,59,61,63,66,
                     70,72,74,79,81,83,85,87,104,106,
                     109,111,113,116,119,122,125,128,131,133,
@@ -1197,7 +1197,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/cris-fsr_npp_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 27,83,89,95,99,104,107,116,120,123,
                   126,130,133,136,138,142,145,150,153,157,
                   160,163,166,170,173,198,208,211,216,224,
@@ -1215,7 +1215,7 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 27,83,89,95,99,104,107,116,120,123,
                     126,130,133,136,138,142,145,150,153,157,
                     160,163,166,170,173,198,208,211,216,224,
@@ -1226,7 +1226,7 @@ cost function:
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 27,83,89,95,99,104,107,116,120,123,
                     126,130,133,136,138,142,145,150,153,157,
                     160,163,166,170,173,198,208,211,216,224,
@@ -1243,7 +1243,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sfc_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [surface_pressure]
+        simulated variables: [stationPressure]
       obs operator:
         name: SfcPCorrected
         da_psfc_scheme: UKMO

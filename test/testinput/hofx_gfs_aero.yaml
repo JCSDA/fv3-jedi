@@ -44,7 +44,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aod_viirs_hofx_2018041500_sf42.nc4
-      simulated variables: [aerosol_optical_depth]
+      simulated variables: [aerosolOpticalDepth]
       channels: 4
     obs operator:
       name: AodLUTs
@@ -67,7 +67,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aod_aeronet_hofx_2018041500.nc4
-      simulated variables: [aerosol_optical_depth]
+      simulated variables: [aerosolOpticalDepth]
       channels: 1-8
     obs operator:
       name: AodLUTs
@@ -81,7 +81,7 @@ observations:
       seed_time: 2018-04-15T00:00:00Z
       min_spacing: PT03H
       category_variable:
-        name: station_id@MetaData
+        name: MetaData/stationIdentification
 
   - obs space:
       name: Aod
@@ -93,7 +93,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
-      simulated variables: [absorption_aerosol_optical_depth]
+      simulated variables: [absorption_aerosolOpticalDepth]
       channels: 3,5-7
     obs operator:
       name: AodLUTs
@@ -108,14 +108,14 @@ observations:
       seed_time: 2018-04-15T00:00:00Z
       min_spacing: PT03H
       category_variable:
-        name: station_id@MetaData
+        name: MetaData/stationIdentification
     - filter: Domain Check
       where:
       - variable:
-          name: aod_l2_qc@MetaData
+          name: MetaData/aod_l2_qc
         is_in: 0
       - variable:
-          name: aaod_l2_qc_without_aod440_le_0.4_threshold@MetaData
+          name: MetaData/aaod_l2_qc_without_aod440_le_0.4_threshold
         is_in: 0
 
 prints:

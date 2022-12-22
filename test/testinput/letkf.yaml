@@ -45,7 +45,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/scatwind_letkf-gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind]
+      simulated variables: [windEastward, windNorthward]
     obs operator:
       name: VertInterp
     obs error:
@@ -67,7 +67,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sondes_letkf-gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
+      simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
     obs error:
@@ -77,9 +77,9 @@ observations:
       maxvalue: 3
     - filter: Background Check
       filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
+      - name: windEastward
+      - name: windNorthward
+      - name: airTemperature
       threshold: 6.0
     obs localizations:
     - localization method: Horizontal Gaspari-Cohn
@@ -98,7 +98,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_letkf-gfs_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 4-6,9-14
     obs operator:
       name: CRTM
@@ -114,46 +114,46 @@ observations:
     obs filters:
     - filter: Bounds Check
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
         channels: 4-6,9-14
       minvalue: 100.0
       maxvalue: 500.0
     - filter: Background Check
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
         channels: 4-6,9-14
       threshold: 3.0
     - filter: Domain Check
       filter variables:
-      - name: brightness_temperature
+      - name: brightnessTemperature
         channels: 4-6,9-14
       where:
       - variable:
-          name: scan_position@MetaData
+          name: MetaData/sensorScanPosition
         minvalue: 4
         maxvalue: 27
       - variable:
-          name: brightness_temperature_1@ObsValue
+          name: ObsValue/brightnessTemperature_1
         minvalue: 50.0
         maxvalue: 550.0
       - variable:
-          name: brightness_temperature_2@ObsValue
+          name: ObsValue/brightnessTemperature_2
         minvalue: 50.0
         maxvalue: 550.0
       - variable:
-          name: brightness_temperature_3@ObsValue
+          name: ObsValue/brightnessTemperature_3
         minvalue: 50.0
         maxvalue: 550.0
       - variable:
-          name: brightness_temperature_4@ObsValue
+          name: ObsValue/brightnessTemperature_4
         minvalue: 50.0
         maxvalue: 550.0
       - variable:
-          name: brightness_temperature_6@ObsValue
+          name: ObsValue/brightnessTemperature_6
         minvalue: 50.0
         maxvalue: 550.0
       - variable:
-          name: brightness_temperature_15@ObsValue
+          name: ObsValue/brightnessTemperature_15
         minvalue: 50.0
         maxvalue: 550.0
     obs localizations:
@@ -173,7 +173,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sfc_letkf-gfs_2020121500_m.nc4
-      simulated variables: [surface_pressure]
+      simulated variables: [stationPressure]
     obs operator:
       name: SfcPCorrected
       da_psfc_scheme: UKMO
@@ -201,7 +201,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/satwind_letkf-gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind]
+      simulated variables: [windEastward, windNorthward]
     obs operator:
       name: VertInterp
     obs error:
@@ -223,7 +223,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_letkf-gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind,northward_wind,air_temperature]
+      simulated variables: [windEastward,windNorthward,airTemperature]
     obs operator:
       name: VertInterp
     obs error:
@@ -233,9 +233,9 @@ observations:
       maxvalue: 3
     - filter: Background Check
       filter variables:
-      - name: eastward_wind
-      - name: northward_wind
-      - name: air_temperature
+      - name: windEastward
+      - name: windNorthward
+      - name: airTemperature
       threshold: 6.0
     obs localizations:
     - localization method: Horizontal Gaspari-Cohn

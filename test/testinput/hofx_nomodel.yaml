@@ -37,7 +37,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
-      simulated variables: [eastward_wind,northward_wind,air_temperature]
+      simulated variables: [windEastward,windNorthward,airTemperature]
     obs operator:
       name: VertInterp
   - obs space:
@@ -50,7 +50,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 1-15
     obs operator:
       name: CRTM

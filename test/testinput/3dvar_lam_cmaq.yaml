@@ -48,13 +48,13 @@ cost function:
       - filter: Domain Check
         where:
         - variable:
-            name: quality_assurance_value@MetaData
+            name: MetaData/quality_assurance_value
           minvalue: 0.9
       - filter: Bounds Check
         filter variables:
         - name: nitrogen_dioxide_in_tropospheric_column
         test variables:
-        - name: LAMDomainCheck@ObsFunction
+        - name: ObsFunction/LAMDomainCheck
           options:
             map_projection: gnomonic_ed # only option currently supported
             save: true # will save the DerivedValue to IODA output file

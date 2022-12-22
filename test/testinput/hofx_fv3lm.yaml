@@ -43,7 +43,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_hofx_geos_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
+      simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
     obs error:
@@ -56,7 +56,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
-      simulated variables: [bending_angle]
+      simulated variables: [bendingAngle]
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -74,7 +74,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 1-15
     obs operator:
       name: CRTM

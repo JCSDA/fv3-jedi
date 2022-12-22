@@ -76,7 +76,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/eda/gfs/mem002/aircraft_eda-4dvar-gfs_2020121500_m.nc4
-        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        simulated variables: [windEastward, windNorthward, airTemperature]
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
@@ -88,9 +88,9 @@ cost function:
         maxvalue: 3
       - filter: Background Check
         filter variables:
-        - name: eastward_wind
-        - name: northward_wind
-        - name: air_temperature
+        - name: windEastward
+        - name: windNorthward
+        - name: airTemperature
         threshold: 6.0
 #       - filter: BlackList
 #         where:
@@ -106,7 +106,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/eda/gfs/mem002/sondes_eda-4dvar-gfs_2020121500_m.nc4
-        simulated variables: [eastward_wind, northward_wind, air_temperature]
+        simulated variables: [windEastward, windNorthward, airTemperature]
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
@@ -118,9 +118,9 @@ cost function:
         maxvalue: 3
       - filter: Background Check
         filter variables:
-        - name: eastward_wind
-        - name: northward_wind
-        - name: air_temperature
+        - name: windEastward
+        - name: windNorthward
+        - name: airTemperature
         threshold: 6.0
     - obs space:
         name: GnssroBndNBAM
@@ -132,7 +132,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/eda/gfs/mem002/gnssro_eda-4dvar-gfs_2020121500_m.nc4
-        simulated variables: [bending_angle]
+        simulated variables: [bendingAngle]
         obs perturbations seed: 2
       obs operator:
         name: GnssroBndNBAM
@@ -146,19 +146,19 @@ cost function:
       obs filters:
       - filter: Domain Check
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
         where:
         - variable:
-            name: impact_height@MetaData
+            name: MetaData/impactHeightRO
           minvalue: 0
           maxvalue: 50000
       - filter: ROobserror
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
         errmodel: NBAM
       - filter: Background Check RONBAM
         filter variables:
-        - name: bending_angle
+        - name: bendingAngle
     - obs space:
         name: AMSUA-NOAA19
         obsdatain:
@@ -169,7 +169,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/eda/gfs/mem002/amsua_n19_eda-4dvar-gfs_2020121500_m.nc4
-        simulated variables: [brightness_temperature]
+        simulated variables: [brightnessTemperature]
         channels: 1-15
         obs perturbations seed: 2
       obs operator:
@@ -185,13 +185,13 @@ cost function:
       obs filters:
       - filter: Bounds Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-15
         minvalue: 100.0
         maxvalue: 500.0
       - filter: Background Check
         filter variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: 1-15
         threshold: 3.0
   cost type: 4D-Var
