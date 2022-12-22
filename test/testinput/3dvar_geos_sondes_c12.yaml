@@ -159,7 +159,7 @@ cost function:
 ##          name: GsiFinalObsError/virtualTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
-        filter variables: [surface_pressure]
+        filter variables: [stationPressure]
         action:
           name: assign error
           error function:
