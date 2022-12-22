@@ -81,6 +81,7 @@ cost function:
         name: Composite
         components:
         - name: VertInterp
+          observation alias file: testinput/obsop_name_map.yaml
           variables:
           - name: windEastward
           - name: windNorthward
@@ -96,6 +97,7 @@ cost function:
         name: Composite
         components:
         - name: VertInterp
+          observation alias file: testinput/obsop_name_map.yaml
           variables:
           - name: windEastward
           - name: windNorthward
@@ -103,6 +105,7 @@ cost function:
 #         - name: virtualTemperature
           - name: specificHumidity
         - name: Identity
+          observation alias file: testinput/obsop_name_map.yaml
           variables:
           - name: stationPressure
 

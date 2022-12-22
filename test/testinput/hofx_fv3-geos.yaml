@@ -42,6 +42,7 @@ observations:
       simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
+      observation alias file: testinput/obsop_name_map.yaml
   - obs space:
       name: Radiosonde
       obsdatain:
@@ -55,6 +56,7 @@ observations:
       simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
+      observation alias file: testinput/obsop_name_map.yaml
   - obs space:
       name: GnssroBndNBAM
       obsdatain:

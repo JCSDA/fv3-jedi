@@ -81,6 +81,7 @@ cost function:
         derived variables: [airTemperature]
       obs operator:
         name: VertInterp
+        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal ufo
       obs filters:
@@ -216,6 +217,7 @@ cost function:
         da_psfc_scheme: UKMO
       linear obs operator:
         name: Identity
+        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal ufo
       obs filters:
@@ -230,6 +232,7 @@ cost function:
         simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
+        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal ufo
       obs filters:
