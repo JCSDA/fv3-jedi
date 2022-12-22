@@ -157,7 +157,7 @@ cost function:
         nlevels: [1]
       obs filters:
 #     - filter: Perform Action
-#       filter variables: [integrated_layer_ozone_in_air]
+#       filter variables: [ozoneTotal]
 #       action:
 #         name: assign error
 #         error function:
@@ -211,7 +211,7 @@ cost function:
         nlevels: [1]
       obs filters:
 ##    - filter: Perform Action
-##      filter variables: [integrated_layer_ozone_in_air]
+##      filter variables: [ozoneTotal]
 ##      action:
 ##        name: assign error
 ##        error function:
