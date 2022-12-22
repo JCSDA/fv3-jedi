@@ -93,7 +93,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
-      simulated variables: [absorption_aerosolOpticalDepth]
+      simulated variables: [absorption_aerosol_optical_depth]
       channels: 3,5-7
     obs operator:
       name: AodLUTs

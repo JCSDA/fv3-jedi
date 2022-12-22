@@ -148,8 +148,8 @@ cost function:
 #       - name: stationPressure
 #       threshold: 6.0
       - filter: Perform Action
-        filter variables: [eastward_wind, northward_wind, air_temperature, specific_humidity]
-##      filter variables: [eastward_wind, northward_wind, air_temperature, virtual_temperature]
+        filter variables: [windEastward, windNorthward, airTemperature, specificHumidity]
+##      filter variables: [windEastward, windNorthward, airTemperature, virtualTemperature]
         action:
           name: assign error
           error function:
