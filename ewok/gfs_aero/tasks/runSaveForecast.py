@@ -41,13 +41,14 @@ for sstep in conf['fc']['fcout']:
         file_format='netcdf',
         file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
         tile=[1, 2, 3, 4, 5, 6],
+        ignore_missing='yes',
         fc_date_rendering='analysis',
     )
 
     print("saveForecastRun cplrfile = ", cplrfile)
 
     r2d2.store(
-        model='gfs_metadata',
+        model='gfs_aero_metadata',
         type='fc',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],

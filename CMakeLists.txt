@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
-project( fv3jedi VERSION 1.3.0 LANGUAGES C CXX Fortran )
+project( fv3jedi VERSION 1.4.0 LANGUAGES C CXX Fortran )
 
 option(OPENMP "Build fv3-jedi with OpenMP support" ON)
 

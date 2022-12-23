@@ -1,8 +1,0 @@
-filetype: fms restart
-datapath: '$(run_dir)'
-filename_core: '{{local_current_cycle}}.fv_core.res.nc'
-filename_trcr: '{{local_current_cycle}}.fv_tracer.res.nc'
-filename_sfcd: '{{local_current_cycle}}.sfc_data.nc'
-filename_sfcw: '{{local_current_cycle}}.fv_srf_wnd.res.nc'
-filename_cplr: '{{local_current_cycle}}.coupler.res'
-state variables: [t,delp,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,saes4,seas5]

@@ -7,4 +7,4 @@ akbk: $(fixdir)/akbk$(nlevs).nc4
 fms initialization:
   namelist filename: $(fixdir)/fmsmpp.nml
   field table filename: $(fixdir)/field_table_gfdl
-field metadata override: $(fixdir)/gfs-restart.yaml
+field metadata override: $(fixdir)/gfs_aero-restart.yaml
