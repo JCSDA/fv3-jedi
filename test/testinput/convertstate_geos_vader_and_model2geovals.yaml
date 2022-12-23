@@ -22,7 +22,7 @@ variable change:
   output variables: [t,pt,tv,humidity_mixing_ratio]
   vader:
     recipe parameters:
-    - recipe name: TempToPTemp
+    - recipe name: AirPotentialTemperature_A
       p0: 100000.0
 states:
 - input:
