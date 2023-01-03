@@ -29,7 +29,6 @@ filename = base + conf['andate'] + '.$(file_type).tile$(tile).nc'
 cplrfile = base + conf['andate'] + '.coupler.res'
 
 if 'member' in conf:
-    print("trying to get member", conf['member'])
     fetch(
         model=conf['experiment']['model'],
         type='an_ens',

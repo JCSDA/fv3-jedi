@@ -5,15 +5,15 @@
 
 import os
 import yamltools
-import ewok.tasks.getBackground as generic
+import ewok.tasks.getBackgroundError as generic
 
 
-class getBackgroundGFS(generic.getBackground):
+class getBackgroundErrorGFS(generic.getBackgroundError):
 
     def setup(self, config, fc):
 
         # Get generic defaults
-        generic.getBackground.setup(self, config, fc)
+        generic.getBackgroundError.setup(self, config, fc)
 
         if 'hack_step_bg' in config and config['hack_step_bg'] == True:
             self.RUNTIME_YAML['hack_step_bg'] = True

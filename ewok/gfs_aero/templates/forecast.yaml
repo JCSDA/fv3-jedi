@@ -10,4 +10,26 @@ filename_trcr: $(expid).fc.$(fcdatetime).$(fcstep).fv_tracer.res.nc
 filename_sfcd: $(expid).fc.$(fcdatetime).$(fcstep).sfc_data.nc
 filename_sfcw: $(expid).fc.$(fcdatetime).$(fcstep).fv_srf_wnd.res.nc
 filename_cplr: $(expid).fc.$(fcdatetime).$(fcstep).coupler.res
-state variables: [u, v, ua, va, T, DELP, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m]
+state variables:
+- u
+- v
+- T
+- DELP
+- sphum
+- ice_wat
+- liq_wat
+- phis
+- sulf
+- bc1
+- bc2
+- oc1
+- oc2
+- dust1
+- dust2
+- dust3
+- dust4
+- dust5
+- seas1
+- seas2
+- seas3
+- seas4

@@ -4,7 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 name: FV3LM
-tstep: PT225S
+tstep: PT300S
 lm_do_dyn: 1
 lm_do_trb: 0
 lm_do_mst: 0

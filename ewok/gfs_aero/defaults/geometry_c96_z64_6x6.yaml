@@ -3,9 +3,10 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-type: fc
-exp: $(expid)
-date: $(fcdatetime)
-frequency: $(forecast_output_frequency)
-filetype: fms restart
-datapath: $(fcworkdir)
+npx: 97
+npy: 97
+npz: 64
+ntiles: 6
+layout: [6,6]
+io_layout: [1,1]
+_resol_name: c96
