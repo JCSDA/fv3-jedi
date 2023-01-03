@@ -60,6 +60,5 @@ else:
         target_file=filename,
         file_format='netcdf',
         file_type=['bkg'],
-        #tile=[1, 2, 3, 4, 5, 6],
         fc_date_rendering='analysis',
     )
