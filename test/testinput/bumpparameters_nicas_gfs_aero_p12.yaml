@@ -20,19 +20,28 @@ background:
   filename_cplr: 20180414.210000.coupler.res
   state variables: [mass_fraction_of_sulfate_in_air,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]
 bump:
-  prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
-  universe_rad: 3000.0e3
-  strategy: specific_univariate
-  new_nicas: true
-  write_nicas_local: true
-  resol: 6.0
-  forced_radii: true
-  rh:
-    mass_fraction_of_sulfate_in_air: [3000000.0]
-  rv:
-    mass_fraction_of_sulfate_in_air: [0.2]
-  io_keys: [mass_fraction_of_sulfate_in_air-mass_fraction_of_sulfate_in_air]
-  io_values: [fixed_3000km_0.2]
+  general:
+    universe length-scale: 3000.0e3
+  io:
+    files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+    alias:
+    - in code: mass_fraction_of_sulfate_in_air-mass_fraction_of_sulfate_in_air
+      in file: fixed_3000km_0.2
+  drivers:
+    multivariate strategy: specific_univariate
+    compute nicas: true
+    write local nicas: true
+  nicas:
+    resolution: 6.0
+    explicit length-scales: true
+    horizontal length-scale:
+    - variables:
+      - mass_fraction_of_sulfate_in_air
+      value: 3000000.0
+    vertical length-scale:
+    - variables:
+      - mass_fraction_of_sulfate_in_air
+      value: 0.2
 output:
 - parameter: cor_rh
   file:

@@ -47,12 +47,14 @@ cost function:
             saber block name: BUMP_NICAS
             active variables: *3dvars
             bump:
-              prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-              method: loc
-              strategy: common
-              load_nicas_local: true
-              io_keys: [common]
-              io_values: [fixed_2500km_0.3]
+              io:
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+                alias:
+                - in code: common
+                  in file: fixed_2500km_0.3
+              drivers:
+                multivariate strategy: common
+                read local nicas: true
       weight:
         value: 0.9
   observations:
