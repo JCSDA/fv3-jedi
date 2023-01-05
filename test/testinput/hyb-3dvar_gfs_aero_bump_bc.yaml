@@ -41,10 +41,12 @@ cost function:
         saber central block:
           saber block name: BUMP_NICAS
           bump:
-            datadir: Data/staticb_aero
-            prefix: nicas_aero
-            strategy: specific_univariate
-            load_nicas_local: true
+            io:
+              data directory: Data/staticb_aero
+              files prefix: nicas_aero
+            drivers:
+              multivariate strategy: specific_univariate
+              read local nicas: true
           input fields:
           - parameter: universe radius
             file:
@@ -96,12 +98,14 @@ cost function:
             saber block name: BUMP_NICAS
             active variables: *aerovars
             bump:
-              prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
-              method: loc
-              strategy: common
-              load_nicas_local: true
-              io_keys: [common]
-              io_values: [fixed_3000km_0.2]
+              io:
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+                alias:
+                - in code: common
+                  in file: fixed_3000km_0.2
+              drivers:
+                multivariate strategy: common
+                read local nicas: true
       weight:
         value: 0.9
   observations:

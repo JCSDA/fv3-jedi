@@ -29,30 +29,37 @@ background:
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
 bump:
-  datadir: Data/staticb_aero
-  prefix: var_aero
-  universe_rad: 3000.0e3
-  method: cor
-  strategy: specific_univariate
-  ens1_nsub: 3
-  var_filter: true
-  var_niter: 1
-  var_rhflt:
-    mass_fraction_of_sulfate_in_air: [300.0e3]
-    mass_fraction_of_hydrophobic_black_carbon_in_air: [300.0e3]
-    mass_fraction_of_hydrophilic_black_carbon_in_air: [300.0e3]
-    mass_fraction_of_hydrophobic_organic_carbon_in_air: [300.0e3]
-    mass_fraction_of_hydrophilic_organic_carbon_in_air: [300.0e3]
-    mass_fraction_of_dust001_in_air: [300.0e3]
-    mass_fraction_of_dust002_in_air: [300.0e3]
-    mass_fraction_of_dust003_in_air: [300.0e3]
-    mass_fraction_of_dust004_in_air: [300.0e3]
-    mass_fraction_of_dust005_in_air: [300.0e3]
-    mass_fraction_of_sea_salt001_in_air: [300.0e3]
-    mass_fraction_of_sea_salt002_in_air: [300.0e3]
-    mass_fraction_of_sea_salt003_in_air: [300.0e3]
-    mass_fraction_of_sea_salt004_in_air: [300.0e3]
-  ne: 30
+  general:
+    universe length-scale: 3000.0e3
+  io:
+    data directory: Data/staticb_aero
+    files prefix: var_aero
+  drivers:
+    multivariate strategy: specific_univariate
+  ensemble sizes:
+    sub-ensembles: 3
+  diagnostics:
+    target ensemble size: 30
+  variance:
+    objective filtering: true
+    filtering iterations: 1
+    initial length-scale:
+    - variables:
+      - mass_fraction_of_sulfate_in_air
+      - mass_fraction_of_hydrophobic_black_carbon_in_air
+      - mass_fraction_of_hydrophilic_black_carbon_in_air
+      - mass_fraction_of_hydrophobic_organic_carbon_in_air
+      - mass_fraction_of_hydrophilic_organic_carbon_in_air
+      - mass_fraction_of_dust001_in_air
+      - mass_fraction_of_dust002_in_air
+      - mass_fraction_of_dust003_in_air
+      - mass_fraction_of_dust004_in_air
+      - mass_fraction_of_dust005_in_air
+      - mass_fraction_of_sea_salt001_in_air
+      - mass_fraction_of_sea_salt002_in_air
+      - mass_fraction_of_sea_salt003_in_air
+      - mass_fraction_of_sea_salt004_in_air
+      value: 300.0e3
 input fields:
 - parameter: var
   component: 1

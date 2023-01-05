@@ -23,10 +23,12 @@ background error:
   saber central block:
     saber block name: BUMP_NICAS
     bump:
-      datadir: Data/staticb_aero
-      prefix: nicas_aero
-      strategy: specific_univariate
-      load_nicas_local: true
+      io:
+        data directory: Data/staticb_aero
+        files prefix: nicas_aero
+      drivers:
+        multivariate strategy: specific_univariate
+        read local nicas: true
     input fields:
     - parameter: universe radius
       file:

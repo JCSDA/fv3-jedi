@@ -17,37 +17,118 @@ background:
   filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
   state variables: [air_temperature,surface_pressure]
 bump:
-  universe_rad: 2500.0e3
-  strategy: specific_univariate
-  new_nicas: true
-  write_nicas_local: true
-  resol: 6
-  forced_radii: true
+  general:
+    universe length-scale: 2500.0e3
+  io:
+    alias:
+    - in code: air_temperature-air_temperature
+      in file: fixed_2500km_0.3
+    - in code: surface_pressure-surface_pressure
+      in file: fixed_2500km
+  drivers:
+    multivariate strategy: specific_univariate
+    compute nicas: true
+    write local nicas: true
+  nicas:
+    resolution: 6
+    explicit length-scales: true
+    horizontal length-scale:
+    - variables:
+      - air_temperature
+      profile:
+      - 1300000.0
+      - 1300000.0
+      - 1300000.0
+      - 1300000.0
+      - 1300000.0
+      - 1300000.0
+      - 1300000.0
+      - 1200000.0
+      - 1200000.0
+      - 1200000.0
+      - 1200000.0
+      - 1100000.0
+      - 1100000.0
+      - 1100000.0
+      - 1000000.0
+      - 1000000.0
+      - 1000000.0
+      - 1000000.0
+      - 1000000.0
+      - 1000000.0
+      - 1000000.0
+      - 950000.0
+      - 900000.0
+      - 850000.0
+      - 850000.0
+      - 800000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 700000.0
+      - 650000.0
+      - 550000.0
+      - 500000.0
+      - 480000.0
+      - 460000.0
+      - 420000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+      - 400000.0
+    - variables:
+      - surface_pressure
+      value: 2500000.0
+    vertical length-scale:
+    - variables:
+      - air_temperature
+      value: 0.3
+    - variables:
+      - surface_pressure
+      value: 0.0
   grids:
-  - prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-    variables: [air_temperature]
-    rh:
-      air_temperature: [1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1300000.0,1200000.0,
-                        1200000.0,1200000.0, 1200000.0,1100000.0,1100000.0,1100000.0,1000000.0,1000000.0,
-                        1000000.0,1000000.0,1000000.0,1000000.0,1000000.0,950000.0,900000.0,850000.0,
-                        850000.0,800000.0,700000.0,700000.0,700000.0,700000.0,700000.0,700000.0,700000.0,
-                        700000.0,700000.0,700000.0,700000.0,700000.0,650000.0,550000.0,500000.0,480000.0,
-                        460000.0,420000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
-                        400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
-                        400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,400000.0,
-                        400000.0,400000.0,400000.0]
-    rv:
-      air_temperature: [0.3]
-    io_keys: [air_temperature-air_temperature]
-    io_values: [fixed_2500km_0.3]
-  - prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
-    variables: [surface_pressure]
-    rh:
-      surface_pressure: [2500000.0]
-    rv:
-      surface_pressure: [0.0]
-    io_keys: [surface_pressure-surface_pressure]
-    io_values: [fixed_2500km]
+  - model:
+      variables:
+      - air_temperature
+    io:
+      files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+  - model:
+      variables:
+      - surface_pressure
+    io:
+      files prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
 output:
 - parameter: cor_rh
   file:

@@ -20,13 +20,16 @@ background:
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
 bump:
-  datadir: Data/ensembleb
-  prefix: nicas_gfs
-  strategy: common
-  new_nicas: true
-  write_nicas_global: true
-  write_nicas_local: true
-  resol: 6
+  io:
+    data directory: Data/ensembleb
+    files prefix: nicas_gfs
+  drivers:
+    multivariate strategy: common
+    compute nicas: true
+    write local nicas: true
+    write global nicas: true
+  nicas:
+    resolution: 6
 input fields:
 - parameter: universe radius
   file:
