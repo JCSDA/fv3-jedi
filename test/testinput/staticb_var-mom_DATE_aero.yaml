@@ -29,20 +29,24 @@ background:
   filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
   filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
 bump:
-  datadir: Data/staticb_aero
-  prefix: var-mom__YYYY__MM__DD__HH__aero
-  universe_rad: 5000.0e3
-  method: cor
-  strategy: specific_univariate
-  update_var: true
-  update_mom: true
-  write_mom: true
-  write_samp_local: true
-  nc1: 1000
-  nc3: 10
-  dc: 500.0e3
-  nl0r: 15
-  diag_draw_type: octahedral
+  general:
+    universe length-scale: 5000.0e3
+  io:
+    data directory: Data/staticb_aero
+    files prefix: var-mom__YYYY__MM__DD__HH__aero
+  drivers:
+    multivariate strategy: specific_univariate
+    write local sampling: true
+    compute variance: true
+    iterative algorithm: true
+    compute moments: true
+    write moments: true
+  sampling:
+    computation grid size: 1000
+    distance classes: 10
+    distance class width: 500.0e3
+    reduced levels: 15
+    grid type: octahedral
   ensemble:
     members from template:
       template:

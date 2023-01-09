@@ -21,26 +21,46 @@ background:
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
 bump:
-  datadir: Data/staticb
-  strategy: specific_univariate
-  new_nicas: true
-  write_nicas_global: true
-  write_nicas_local: true
-  resol: 6
-  min_lev:
-    cloud_liquid_water: 74
-  max_lev:
-    cloud_liquid_water: 125
-  nicas_interp_type:
-    stream_function: si
-    velocity_potential: si
-    air_temperature: si
-    surface_pressure: si
+  io:
+    data directory: Data/staticb
+  drivers:
+    multivariate strategy: specific_univariate
+    compute nicas: true
+    write local nicas: true
+    write global nicas: true
+  nicas:
+    resolution: 6
+    minimum level:
+    - variables:
+      - cloud_liquid_water
+      value: 74
+    maximum level:
+    - variables:
+      - cloud_liquid_water
+      value: 125
+    interpolation type:
+    - variables:
+      - stream_function
+      - velocity_potential
+      - air_temperature
+      - surface_pressure
+      type: si
   grids:
-  - prefix: nicas_3D_gfs
-    variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-  - prefix: nicas_2D_gfs
-    variables: [surface_pressure]
+  - model:
+      variables:
+      - stream_function
+      - velocity_potential
+      - air_temperature
+      - specific_humidity
+      - cloud_liquid_water
+      - ozone_mass_mixing_ratio
+    io:
+      files prefix: nicas_3D_gfs
+  - model:
+      variables:
+      - surface_pressure
+    io:
+      files prefix: nicas_2D_gfs
 input fields:
 - parameter: universe radius
   file:

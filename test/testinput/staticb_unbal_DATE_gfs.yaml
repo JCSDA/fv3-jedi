@@ -21,14 +21,24 @@ background:
   filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
   filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
 bump:
-  datadir: Data/staticb
-  prefix: unbal__YYYY__MM__DD__HH__gfs
-  universe_rad: 2500.0e3
-  load_vbal: true
-  fname_samp: vbal__YYYY__MM__DD__HH__gfs_sampling
-  fname_vbal: vbal__YYYY__MM__DD__HH__gfs_vbal
-  load_samp_local: true
-  vbal_block: [true,true,false,true]
+  general:
+    universe length-scale: 2500.0e3
+  io:
+    data directory: Data/staticb
+    files prefix: unbal__YYYY__MM__DD__HH__gfs
+    overriding sampling file: vbal__YYYY__MM__DD__HH__gfs_sampling
+    overriding vertical balance file: vbal__YYYY__MM__DD__HH__gfs_vbal
+  drivers:
+    read local sampling: true
+    read vertical balance: true
+  vertical balance:
+    vbal:
+    - balanced variable: velocity_potential
+      unbalanced variable: stream_function
+    - balanced variable: air_temperature
+      unbalanced variable: stream_function
+    - balanced variable: surface_pressure
+      unbalanced variable: stream_function
   operators application:
   - input:
       datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
@@ -40,7 +50,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem001/
@@ -59,7 +70,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem002/
@@ -78,7 +90,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem003/
@@ -97,7 +110,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem004/
@@ -116,7 +130,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem005/
@@ -135,7 +150,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem006/
@@ -154,7 +170,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem007/
@@ -173,7 +190,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem008/
@@ -192,7 +210,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem009/
@@ -211,7 +230,8 @@ bump:
       filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
       filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
       filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
-    bump operators: [inverseMultiplyVbal]
+    bump operators:
+    - inverseMultiplyVbal
     output:
       filetype: fms restart
       datapath: Data/staticb/unbalanced/mem010/

@@ -39,10 +39,11 @@ background error:
     saber central block:
       saber block name: BUMP_NICAS
       bump:
-        prefix: Data/ensembleb/nicas_gfs
-        method: loc
-        strategy: common
-        load_nicas_local: true
+        io:
+          files prefix: Data/ensembleb/nicas_gfs
+        drivers:
+          multivariate strategy: common
+          read local nicas: true
 output dirac:
   filetype: fms restart
   datapath: Data/ensembleb/
