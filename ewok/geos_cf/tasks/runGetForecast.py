@@ -22,28 +22,43 @@ exp_read = conf['experiment']['expid']
 if 'exp_source' in conf:
     exp_read = conf['exp_source']
 
-# Date and step
-date = yamltools.parse_datetime(conf['date'])
-offset = yamltools.parse_timedelta(conf['offset'])
-fcdate = date - offset
-fcstep = yamltools.parse_timedelta(conf['fcstep'])
-vdate = fcdate + fcstep
-
 # Fetch state
 
 base = conf['experiment']['expid'] + '.fc.'
-sdate = yamltools.jediformat(fcdate) + '.' + yamltools.jediformat(fcstep)
+sdate = conf['fcdate'] + '.' + conf['fcstep']
 filename = base + sdate + '.$(file_type).nc'
 
-fetch(
-    model=conf['experiment']['model'],
-    type='fc',
-    experiment=exp_read,
-    resolution=conf['resolution'],
-    date=yamltools.jediformat(fcdate),
-    step=conf['fcstep'],
-    target_file=filename,
-    file_format='netcdf',
-    file_type=['bkg'],
-    fc_date_rendering='forecast',
-)
+fcstep = yamltools.parse_timedelta(conf['fcstep'])
+if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
+    pt3h = yamltools.parse_timedelta('PT3H')
+    fcstep -= pt3h
+hackstep = yamltools.jediformat(fcstep)
+
+if 'member' in conf:
+    fetch(
+        model=conf['experiment']['model'],
+        type='fc_ens',
+        experiment=exp_read,
+        resolution=conf['resolution'],
+        date=conf['fcdate'],
+        step=hackstep,
+        target_file=filename,
+        file_format='netcdf',
+        file_type=['bkg'],
+        fc_date_rendering='analysis',
+        member=conf['member'],
+    )
+
+else:
+    fetch(
+        model=conf['experiment']['model'],
+        type='fc',
+        experiment=exp_read,
+        resolution=conf['resolution'],
+        date=conf['fcdate'],
+        step=hackstep,
+        target_file=filename,
+        file_format='netcdf',
+        file_type=['bkg'],
+        fc_date_rendering='analysis',
+    )

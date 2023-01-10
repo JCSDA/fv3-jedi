@@ -3,17 +3,33 @@ saber central block:
   saber block name: BUMP_NICAS
   active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   bump:
-    prefix: nicas_2020010100-2020013100/nicas_2020010100-2020013100
-    datadir: $(static_data)/skylab-1.0.0/staticb/c96
-    strategy: specific_univariate
-    load_nicas_local: true
-    min_lev:
-      liq_wat: 76
+    io:
+      data directory: $(static_data)/skylab-3.0.0/staticb/c96
+      files prefix: nicas_2020010100-2020013100/nicas_2020010100-2020013100
+    drivers:
+      multivariate strategy: specific_univariate
+      read local nicas: true
+    nicas:
+      minimum level:
+      - variables:
+        - liq_wat
+        value: 76
     grids:
-    - variables: [stream_function,velocity_potential,air_temperature,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-      fname_nicas: nicas_2020010100-2020013100/nicas_2020010100-2020013100_3D_nicas
-    - variables: [surface_pressure]
-      fname_nicas: nicas_2020010100-2020013100/nicas_2020010100-2020013100_2D_nicas
+    - model:
+        variables:
+        - stream_function
+        - velocity_potential
+        - air_temperature
+        - specific_humidity
+        - cloud_liquid_water
+        - ozone_mass_mixing_ratio
+      io:
+        overriding nicas file: nicas_2020010100-2020013100/nicas_2020010100-2020013100_3D_nicas
+    - model:
+        variables:
+        - surface_pressure
+      io:
+        overriding nicas file: nicas_2020010100-2020013100/nicas_2020010100-2020013100_2D_nicas
   input fields:
   - parameter: universe radius
     file:
@@ -21,7 +37,7 @@ saber central block:
       filetype: fms restart
       set datetime on read: true
       psinfile: true
-      datapath: $(static_data)/skylab-1.0.0/staticb/c96/cor_2020010100-2020013100
+      datapath: $(static_data)/skylab-3.0.0/staticb/c96/cor_2020010100-2020013100
       filename_core: cor_rh.fv_core.res.nc
       filename_trcr: cor_rh.fv_tracer.res.nc
       filename_cplr: cor_rh.coupler.res
@@ -35,24 +51,37 @@ saber outer blocks:
       filetype: fms restart
       set datetime on read: true
       psinfile: true
-      datapath: $(static_data)/skylab-1.0.0/staticb/c96/var_2020010100-2020013100
+      datapath: $(static_data)/skylab-3.0.0/staticb/c96/var_2020010100-2020013100
       filename_core: stddev.fv_core.res.nc
       filename_trcr: stddev.fv_tracer.res.nc
       filename_cplr: stddev.coupler.res
 - saber block name: BUMP_VerticalBalance
   active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
   bump:
-    datadir: $(static_data)/skylab-1.0.0/staticb/c96
-    prefix: vbal_2020010100-2020013100/vbal_2020010100-2020013100
-    universe_rad: 2000.0e+3
-    load_vbal: true
-    fname_samp: vbal_2020013100/vbal_2020013100_sampling
-    load_samp_local: true
-    vbal_block: [true, true,false, true,false,false]
+    general:
+      universe length-scale: 2000000.0
+    io:
+      data directory: $(static_data)/skylab-3.0.0/staticb/c96
+      files prefix: vbal_2020010100-2020013100/vbal_2020010100-2020013100
+      overriding sampling file: vbal_2020013100/vbal_2020013100_sampling
+    drivers:
+      read local sampling: true
+      read vertical balance: true
+    vertical balance:
+      vbal:
+      - balanced variable: velocity_potential
+        unbalanced variable: stream_function
+      - balanced variable: air_temperature
+        unbalanced variable: stream_function
+      - balanced variable: surface_pressure
+        unbalanced variable: stream_function
 - saber block name: BUMP_PsiChiToUV
   active variables: [eastward_wind,northward_wind,stream_function,velocity_potential]
   bump:
-    datadir: $(static_data)/skylab-1.0.0/staticb/c96
-    prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
-    universe_rad: 2000.0e+3
-    load_wind_local: true
+    general:
+      universe length-scale: 2000000.0
+    io:
+      data directory: $(static_data)/skylab-3.0.0/staticb/c96
+      files prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
+    drivers:
+      read local psichitouv: true

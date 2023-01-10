@@ -20,15 +20,25 @@ background:
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
 bump:
-  datadir: Data/staticb/
-  prefix: vbal_gfs
-  universe_rad: 2500.0e3
-  load_vbal: true
-  write_vbal: true
-  fname_samp: vbal_2020121421_gfs_sampling
-  load_samp_global: true
-  write_samp_local: true
-  vbal_block: [true,true,false,true]
+  general:
+    universe length-scale: 2500.0e3
+  io:
+    data directory: Data/staticb/
+    files prefix: vbal_gfs
+    overriding sampling file: vbal_2020121421_gfs_sampling
+  drivers:
+    read global sampling: true
+    write local sampling: true
+    read vertical balance: true
+    write vertical balance: true
+  vertical balance:
+    vbal:
+    - balanced variable: velocity_potential
+      unbalanced variable: stream_function
+    - balanced variable: air_temperature
+      unbalanced variable: stream_function
+    - balanced variable: surface_pressure
+      unbalanced variable: stream_function
 
 test:
   reference filename: testoutput/staticb_split_vbal_gfs.ref

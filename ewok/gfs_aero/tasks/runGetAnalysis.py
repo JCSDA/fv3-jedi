@@ -45,7 +45,7 @@ if 'member' in conf:
     )
 
     fetch(
-        model='gfs_metadata',
+        model='gfs_aero_metadata',
         type='an_ens',
         experiment=exp_read,
         resolution=conf['resolution'],
@@ -70,7 +70,7 @@ else:
     )
 
     fetch(
-        model='gfs_metadata',
+        model='gfs_aero_metadata',
         type='an',
         experiment=exp_read,
         resolution=conf['resolution'],

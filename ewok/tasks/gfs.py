@@ -4,8 +4,8 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 import ewok.tasks.GenericModel
-import createPlotsFields
 import getBackgroundGFS
+import getBackgroundErrorGFS
 import getExpInitGFS
 import getFcInitGFS
 import getFixFilesGFS
@@ -19,14 +19,18 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
     def __init__(self):
         ewok.tasks.GenericModel.ModelTasks.__init__(self)
 
+        self.createPlots = ewok.createPlots
+        self.createPlotsFields = ewok.createPlotsFields
+        self.createPlotsStats = ewok.createPlotsStats
+        self.enstats = ewok.enstats
         self.getBackground = getBackgroundGFS.getBackgroundGFS
+        self.getBackgroundError = getBackgroundErrorGFS.getBackgroundErrorGFS
         self.getExpInit = getExpInitGFS.getExpInitGFS
         self.getFcInit = getFcInitGFS.getFcInitGFS
         self.getStaticModel = getFixFilesGFS.getFixFilesGFS
         self.getInitialConditions = getInitialConditionsGFS.getInitialConditionsGFS
         self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS
         self.saveForecast = saveForecastGFS.saveForecastGFS
-        self.createPlots = ewok.createPlots
-        self.createPlotsFields = createPlotsFields.createPlotsFields
         self.savePlots = ewok.savePlots
         self.savePlotsFields = ewok.savePlotsFields
+        self.savePlotsStats = ewok.savePlotsStats
