@@ -60,7 +60,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
-      simulated variables: [sea_surface_salinity]
+      simulated variables: [seaSurfaceSalinity]
     obs operator:
       name: Identity
       observation alias file: testinput/obsop_name_map.yaml
