@@ -64,7 +64,6 @@ observations:
       filter variables:
       - name: bendingAngle
       errmodel: NRL
-      variable: bending_angle
     - filter: Background Check
       filter variables:
       - name: bendingAngle
@@ -104,7 +103,6 @@ observations:
       filter variables:
       - name: bendingAngle
       errmodel: NRL
-      variable: bending_angle
     - filter: Background Check
       filter variables:
       - name: bendingAngle
