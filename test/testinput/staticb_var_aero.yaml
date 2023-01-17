@@ -35,7 +35,7 @@ bump:
     data directory: Data/staticb_aero
     files prefix: var_aero
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
   ensemble sizes:
     sub-ensembles: 3
   diagnostics:

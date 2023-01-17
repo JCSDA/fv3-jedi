@@ -48,7 +48,7 @@ cost function:
                 - in code: common
                   in file: fixed_3000km_0.2
               drivers:
-                multivariate strategy: common
+                multivariate strategy: duplicated
                 read local nicas: true
       weight:
         value: 0.99

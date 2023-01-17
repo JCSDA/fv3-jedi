@@ -37,7 +37,7 @@ cost function:
             io:
               data directory: Data/staticb
             drivers:
-              multivariate strategy: specific_univariate
+              multivariate strategy: univariate
               read local nicas: true
             grids:
             - model:
@@ -136,7 +136,7 @@ cost function:
                 data directory: Data/ensembleb
                 files prefix: nicas_gfs
               drivers:
-                multivariate strategy: common
+                multivariate strategy: duplicated
                 read local nicas: true
       weight:
         value: 0.9

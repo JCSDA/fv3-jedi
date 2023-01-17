@@ -21,12 +21,12 @@ bump:
     universe length-scale: 2500.0e3
   io:
     alias:
-    - in code: air_temperature-air_temperature
+    - in code: air_temperature
       in file: fixed_2500km_0.3
-    - in code: surface_pressure-surface_pressure
+    - in code: surface_pressure
       in file: fixed_2500km
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
   nicas:

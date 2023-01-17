@@ -36,24 +36,24 @@ cost function:
             io:
               files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
               alias:
-              - in code: eastward_wind-eastward_wind
+              - in code: eastward_wind
                 in file: fixed_2500km_0.3
-              - in code: northward_wind-northward_wind
+              - in code: northward_wind
                 in file: fixed_2500km_0.3
-              - in code: air_temperature-air_temperature
+              - in code: air_temperature
                 in file: fixed_2500km_0.3
-              - in code: air_pressure_thickness-air_pressure_thickness
+              - in code: air_pressure_thickness
                 in file: fixed_2500km_0.3
-              - in code: specific_humidity-specific_humidity
+              - in code: specific_humidity
                 in file: fixed_2500km_0.3
-              - in code: cloud_liquid_ice-cloud_liquid_ice
+              - in code: cloud_liquid_ice
                 in file: fixed_2500km_0.3
-              - in code: cloud_liquid_water-cloud_liquid_water
+              - in code: cloud_liquid_water
                 in file: fixed_2500km_0.3
-              - in code: ozone_mass_mixing_ratio-ozone_mass_mixing_ratio
+              - in code: ozone_mass_mixing_ratio
                 in file: fixed_2500km_0.3
             drivers:
-              multivariate strategy: specific_univariate
+              multivariate strategy: univariate
               read local nicas: true
       weight:
         value: 0.1
@@ -85,7 +85,7 @@ cost function:
                 - in code: common
                   in file: fixed_2500km_0.3
               drivers:
-                multivariate strategy: common
+                multivariate strategy: duplicated
                 read local nicas: true
       weight:
         value: 0.9

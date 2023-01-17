@@ -26,7 +26,7 @@ bump:
     data directory: Data/ensembleb
     files prefix: mom__YYYY__MM__DD__HH__gfs
   drivers:
-    multivariate strategy: common
+    multivariate strategy: duplicated
     write local sampling: true
     compute moments: true
     iterative algorithm: true

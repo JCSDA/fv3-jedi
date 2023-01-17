@@ -19,10 +19,10 @@ bump:
     universe length-scale: 2500.0e3
   io:
     alias:
-    - in code: volume_mixing_ratio_of_no2-volume_mixing_ratio_of_no2
+    - in code: volume_mixing_ratio_of_no2
       in file: fixed_2500km_0.3
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
   nicas:
