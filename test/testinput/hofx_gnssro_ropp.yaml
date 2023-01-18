@@ -41,33 +41,32 @@ observations:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
         obsgrouping:
-          group variables: [record_number]
-          sort variable: impact_height
+          group variables: [sequenceNumber]
+          sort variable: impactHeightRO
           sort order: ascending
       obsdataout:
         engine:
           type: H5File
           obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2020121500_m.nc4
-      simulated variables: [bending_angle]
+      simulated variables: [bendingAngle]
     obs operator:
       name:  GnssroBndROPP1D
     obs filters:
     - filter: Domain Check
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       where :
       - variable:
-          name: impact_height@MetaData
+          name: MetaData/impactHeightRO
         minvalue: 0
         maxvalue: 50000
     - filter: ROobserror
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       errmodel: NRL
-      variable: bending_angle
     - filter: Background Check
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       threshold: 3
   - obs space:
       name: GnssroBndROPP2D
@@ -76,14 +75,14 @@ observations:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
         obsgrouping:
-          group variables: [record_number]
-          sort variable: impact_height
+          group variables: [sequenceNumber]
+          sort variable: impactHeightRO
           sort order: ascending
       obsdataout:
         engine:
           type: H5File
           obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2020121500_m.nc4
-      simulated variables: [bending_angle]
+      simulated variables: [bendingAngle]
     obs operator:
       name:  GnssroBndROPP2D
       obs options:
@@ -93,21 +92,20 @@ observations:
     obs filters:
     - filter: Domain Check
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       where :
       - variable:
-          name: impact_height@MetaData
+          name: MetaData/impactHeightRO
         minvalue: 0
         maxvalue: 50000
     - filter: ROobserror
       n_horiz: 3
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       errmodel: NRL
-      variable: bending_angle
     - filter: Background Check
       filter variables:
-      - name: bending_angle
+      - name: bendingAngle
       threshold: 3
 prints:
   frequency: PT3H
