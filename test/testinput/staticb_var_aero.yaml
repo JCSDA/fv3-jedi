@@ -145,4 +145,3 @@ output:
 
 test:
   reference filename: testoutput/staticb_var_aero.ref
-  test output filename: testoutput/staticb_var_aero.test.out

@@ -31,15 +31,15 @@ bump:
   nicas:
     resolution: 6
     minimum level:
-    - variables:
+    - groups:
       - cloud_liquid_water
       value: 74
     maximum level:
-    - variables:
+    - groups:
       - cloud_liquid_water
       value: 125
     interpolation type:
-    - variables:
+    - groups:
       - stream_function
       - velocity_potential
       - air_temperature

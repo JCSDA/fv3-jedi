@@ -33,11 +33,11 @@ bump:
     resolution: 6
     explicit length-scales: true
     horizontal length-scale:
-    - variables:
+    - groups:
       - mass_fraction_of_sulfate_in_air
       value: 3000000.0
     vertical length-scale:
-    - variables:
+    - groups:
       - mass_fraction_of_sulfate_in_air
       value: 1.5
 output:

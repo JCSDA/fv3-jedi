@@ -36,17 +36,17 @@ bump:
     resolution: 6
     explicit length-scales: true
     horizontal length-scale:
-    - variables:
+    - groups:
       - air_temperature
       value: 2500000.0
-    - variables:
+    - groups:
       - surface_pressure
       value: 2500000.0
     vertical length-scale:
-    - variables:
+    - groups:
       - air_temperature
       value: 0.3
-    - variables:
+    - groups:
       - surface_pressure
       value: 0.0
   grids:
