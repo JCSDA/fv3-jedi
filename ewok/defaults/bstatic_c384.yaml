@@ -1,7 +1,9 @@
+# (C) Copyright 2020-2023 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
 covariance model: SABER
-#_balfile: global_berror.l64y192.nc
-#_prefix2d: fv3jedi_bumpparameters_nicas_2D_gfs
-#_prefix3d: fv3jedi_bumpparameters_nicas_3D_gfs
 saber central block:
   saber block name: BUMP_NICAS
   active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
@@ -36,8 +38,8 @@ saber central block:
   input fields:
   - parameter: universe radius
     file:
-      filetype: fms restart
       datetime: 2020-01-31T00:00:00Z
+      filetype: fms restart
       set datetime on read: true
       psinfile: true
       datapath: $(static_data)/skylab-3.0.0/staticb/c384/cor_2020010100-2020013100
@@ -50,8 +52,8 @@ saber outer blocks:
   input fields:
   - parameter: StdDev
     file:
-      filetype: fms restart
       datetime: 2020-01-31T00:00:00Z
+      filetype: fms restart
       set datetime on read: true
       psinfile: true
       datapath: $(static_data)/skylab-3.0.0/staticb/c384/var_2020010100-2020013100
@@ -78,13 +80,7 @@ saber outer blocks:
         unbalanced variable: stream_function
       - balanced variable: surface_pressure
         unbalanced variable: stream_function
-- saber block name: BUMP_PsiChiToUV
-  active variables: [eastward_wind,northward_wind,stream_function,velocity_potential]
-  bump:
-    general:
-      universe length-scale: 2000000.0
-    io:
-      data directory: $(static_data)/skylab-3.0.0/staticb/c384
-      files prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
-    drivers:
-      read local psichitouv: true
+linear variable change:
+  linear variable change name: Control2Analysis
+  input variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  output variables: $(an_variables)

@@ -98,7 +98,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/ompsnm_npp_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [integrated_layer_ozone_in_air]
+        simulated variables: [ozoneTotal]
       obs operator:
         name: AtmVertInterpLay
         geovals: [mole_fraction_of_ozone_in_air]
@@ -106,21 +106,21 @@ cost function:
         nlevels: [1]
       obs filters:
 #     - filter: Perform Action
-#       filter variables: [integrated_layer_ozone_in_air]
+#       filter variables: [ozoneTotal]
 #       action:
 #         name: assign error
 #         error function:
-#           name: GsiFinalObsError/integrated_layer_ozone_in_air
+#           name: GsiFinalObsError/ozoneTotal
       - filter: Perform Action
         filter variables:
-        - name: integrated_layer_ozone_in_air
+        - name: ozoneTotal
         action:
           name: assign error
           error parameter: 6.0
        # range sanity check
       - filter: Bounds Check
         filter variables:
-        - name: integrated_layer_ozone_in_air
+        - name: ozoneTotal
         minvalue: 0
         maxvalue: 1000
         action:
@@ -128,16 +128,16 @@ cost function:
 #     # Reject SZA > 84
 #     - filter: Bounds Check
 #       filter variables:
-#       - name: integrated_layer_ozone_in_air
+#       - name: ozoneTotal
 #       test variables:
-#       - name: solar_zenith_angle@MetaData
+#       - name: MetaData/solarZenithAngle
 #       maxvalue: 84.
 #       action:
 #         name: reject
 #     # Gross check
 #     - filter: Background Check
 #       filter variables:
-#       - name: integrated_layer_ozone_in_air
+#       - name: ozoneTotal
 #       threshold: 5.0
 #       action:
 #         name: reject  
@@ -152,7 +152,7 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/omi_aura_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [integrated_layer_ozone_in_air]
+        simulated variables: [ozoneTotal]
       obs operator:
         name: AtmVertInterpLay
         geovals: [mole_fraction_of_ozone_in_air]
@@ -160,21 +160,21 @@ cost function:
         nlevels: [1]
       obs filters:
 ##    - filter: Perform Action
-##      filter variables: [integrated_layer_ozone_in_air]
+##      filter variables: [ozoneTotal]
 ##      action:
 ##        name: assign error
 ##        error function:
-##          name: GsiFinalObsError/integrated_layer_ozone_in_air
+##          name: GsiFinalObsError/ozoneTotal
       - filter: Perform Action
         filter variables:
-        - name: integrated_layer_ozone_in_air
+        - name: ozoneTotal
         action:
           name: assign error
           error parameter: 6.0
        # range sanity check
       - filter: Bounds Check
         filter variables:
-        - name: integrated_layer_ozone_in_air
+        - name: ozoneTotal
         minvalue: 0
         maxvalue: 1000
         action:
@@ -182,18 +182,18 @@ cost function:
       # Reject SZA > 84
       - filter: Bounds Check
         filter variables:
-        - name: integrated_layer_ozone_in_air
+        - name: ozoneTotal
         test variables:
-        - name: solar_zenith_angle@MetaData
+        - name: MetaData/solarZenithAngle
         maxvalue: 84.
         action:
           name: reject
       # Reject rows 25+ (somewhat stringent but thats what we do in GEOS)
 #     - filter: Bounds Check
 #       filter variables:
-#       - name: integrated_layer_ozone_in_air
+#       - name: ozoneTotal
 #       test variables:
-#       - name: scan_position@MetaData
+#       - name: MetaData/sensorScanPosition
 #       minvalue: 3
 #       maxvalue: 24
 #       action:
@@ -201,7 +201,7 @@ cost function:
 #     # Gross check
 #     - filter: Background Check
 #       filter variables:
-#       - name: integrated_layer_ozone_in_air
+#       - name: ozoneTotal
 #       threshold: 5.0
 #       action:
 #         name: reject

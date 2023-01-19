@@ -16,7 +16,7 @@ locations:
   window end: 2020-12-15T03:00:00Z
   obs space:
     name: Random Locations
-    simulated variables: [air_temperature, air_pressure]
+    simulated variables: [airTemperature, pressure]
     obsdatain:
       engine:
         type: GenRandom

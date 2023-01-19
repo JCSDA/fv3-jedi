@@ -39,9 +39,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_hofx_geos_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
+      simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
+      observation alias file: testinput/obsop_name_map.yaml
   - obs space:
       name: Radiosonde
       obsdatain:
@@ -52,9 +53,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sondes_hofx_geos_2020121500_m.nc4
-      simulated variables: [eastward_wind, northward_wind, air_temperature]
+      simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
+      observation alias file: testinput/obsop_name_map.yaml
   - obs space:
       name: GnssroBndNBAM
       obsdatain:
@@ -65,7 +67,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/gnssro_hofx_geos_2020121500_m.nc4
-      simulated variables: [bending_angle]
+      simulated variables: [bendingAngle]
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -81,13 +83,13 @@ observations:
 #           obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
 #         obsgrouping:
 #           group variables: [ longitude ]
-#           sort variable: air_pressure
+#           sort variable: pressure
 #           sort order: ascending
 #       obsdataout:
 #         engine:
 #           type: H5File
 #           obsfile: Data/hofx/sbuv2_n19_hofx_geos_2020121500_m_out.nc4
-#       simulated variables: [integrated_layer_ozone_in_air]
+#       simulated variables: [ozoneTotal]
 #     obs operator:
 #       name: AtmVertInterpLay
 #       geovals: [mole_fraction_of_ozone_in_air]
@@ -103,7 +105,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_metop-a_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 4-6,9-14
     obs operator:
       name: CRTM
@@ -123,7 +125,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_metop-b_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 7-14
     obs operator:
       name: CRTM
@@ -143,7 +145,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n15_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 4,5,7-10,12,13
     obs operator:
       name: CRTM
@@ -163,7 +165,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n18_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 4,6,7,10-14
     obs operator:
       name: CRTM
@@ -183,7 +185,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 1-15
     obs operator:
       name: CRTM
@@ -204,7 +206,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/atms_npp_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 5-15,17-22
     obs operator:
       name: CRTM
@@ -223,7 +225,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/gmi_gpm_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 5,6,7,10,12,13
     obs operator:
       name: CRTM
@@ -244,7 +246,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_n19_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 1-5
     obs operator:
       name: CRTM
@@ -265,7 +267,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_metop-a_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 1-5
     obs operator:
       name: CRTM
@@ -286,7 +288,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_metop-b_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 1-5
     obs operator:
       name: CRTM
@@ -307,7 +309,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/airs_aqua_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 7,15,20,21,22,27,28,40,52,69
                 72,92,93,98,99,104,105,110,111,116,
                 117,123,128,129,138,139,144,145,150,151,
@@ -337,7 +339,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/iasi_metop-a_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -370,7 +372,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/iasi_metop-b_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 16,38,49,51,55,57,59,61,63,66,
                 70,72,74,79,81,83,85,87,104,106,
                 109,111,113,116,119,122,125,128,131,133,
@@ -403,7 +405,7 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/cris-fsr_npp_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightness_temperature]
+      simulated variables: [brightnessTemperature]
       channels: 27,83,89,95,99,104,107,116,120,123,
                   126,130,133,136,138,142,145,150,153,157,
                   160,163,166,170,173,198,208,211,216,224,
