@@ -11,22 +11,28 @@ import yamltools
 from r2d2 import fetch
 
 conf = yamltools.configure_runtime(sys.argv[1])
-
+print(conf)
 # Check for working directory
 if not os.path.exists(conf['workdir']):
     raise RuntimeError('Working directory does not exist')
 os.chdir(conf['workdir'])
 
+print("Change workdir")
+
 # Define experiment to read from, current experiment by default
 exp_read = conf['experiment']['expid']
+print(exp_read)
 if 'exp_source' in conf:
     exp_read = conf['exp_source']
 
 # Fetch state
 
 base = conf['experiment']['expid'] + '.fc.'
+print(base)
 sdate = conf['fcdate'] + '.' + conf['fcstep']
+print(sdate)
 filename = base + sdate + '.$(file_type).nc'
+print(filename)
 
 fcstep = yamltools.parse_timedelta(conf['fcstep'])
 if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
