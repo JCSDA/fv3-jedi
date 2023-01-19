@@ -36,6 +36,13 @@ class VariableChangeParametersBase : public oops::VariableChangeParametersBase {
   OOPS_ABSTRACT_PARAMETERS(VariableChangeParametersBase, oops::VariableChangeParametersBase)
  public:
   oops::OptionalParameter<std::string> name{"variable change name", this};
+  oops::Parameter<std::map<std::string, std::vector<std::string>>> vaderCustomCookbook{
+    "vader custom cookbook",
+    // Default VADER cookbook for fv3-jedi
+    {{"potential_temperature",  {"AirPotentialTemperature_A"}},
+      {"virtual_temperature",   {"AirVirtualTemperature_A"}}
+    },
+    this};
   oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
 };
 
