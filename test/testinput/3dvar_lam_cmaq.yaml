@@ -45,18 +45,18 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/tropomi_no2_3dvar_lam_cmaq_2020090318_m.nc4
-        simulated variables: [nitrogen_dioxide_in_tropospheric_column]
+        simulated variables: [nitrogendioxideColumn]
       obs filters:
       - filter: Domain Check
         where:
         - variable:
-            name: quality_assurance_value@MetaData
+            name: MetaData/quality_assurance_value
           minvalue: 0.9
       - filter: Bounds Check
         filter variables:
-        - name: nitrogen_dioxide_in_tropospheric_column
+        - name: nitrogendioxideColumn
         test variables:
-        - name: LAMDomainCheck@ObsFunction
+        - name: ObsFunction/LAMDomainCheck
           options:
             map_projection: gnomonic_ed # only option currently supported
             save: true # will save the DerivedValue to IODA output file

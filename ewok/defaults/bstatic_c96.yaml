@@ -1,3 +1,8 @@
+# (C) Copyright 2020-2023 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
 covariance model: SABER
 saber central block:
   saber block name: BUMP_NICAS
@@ -75,13 +80,7 @@ saber outer blocks:
         unbalanced variable: stream_function
       - balanced variable: surface_pressure
         unbalanced variable: stream_function
-- saber block name: BUMP_PsiChiToUV
-  active variables: [eastward_wind,northward_wind,stream_function,velocity_potential]
-  bump:
-    general:
-      universe length-scale: 2000000.0
-    io:
-      data directory: $(static_data)/skylab-3.0.0/staticb/c96
-      files prefix: psichitouv_2020010100-2020013100/psichitouv_2020010100-2020013100
-    drivers:
-      read local psichitouv: true
+linear variable change:
+  linear variable change name: Control2Analysis
+  input variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  output variables: $(an_variables)
