@@ -5,8 +5,10 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <map>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "boost/none_t.hpp"
 
