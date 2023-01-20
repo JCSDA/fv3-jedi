@@ -180,6 +180,7 @@ list( APPEND fv3jedi_testinput
   testinput/model_pseudo-gfs.yaml
   testinput/obslocalization.yaml
   testinput/obslocalizations.yaml
+  testinput/obsop_name_map.yaml
   testinput/state_geos_aerosol_ext.yaml
   testinput/state_geos_aerosol.yaml
   testinput/state_geos.yaml

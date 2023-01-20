@@ -4,7 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 obs space:
-  name: Aircraft
+  name: Sondes
   obsdatain:
     engine:
       type: H5File
@@ -16,3 +16,4 @@ obs space:
   simulated variables: [eastward_wind, northward_wind, air_temperature]
 obs operator:
   name: VertInterp
+  observation alias file: $(observation_alias_file)
