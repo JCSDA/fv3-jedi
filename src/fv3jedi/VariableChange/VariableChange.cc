@@ -30,7 +30,7 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
                                         params.variableChangeParameters.value().vaderCustomCookbook;
   // Create vader with fv3-jedi custom cookbook
   vader_.reset(new vader::Vader(params.variableChangeParameters.value().vader,
-                                &vaderCustomCookbook));
+                                vaderCustomCookbook));
   // Create the variable change
   variableChange_.reset(VariableChangeFactory::create(geometry,
                                                       params.variableChangeParameters.value()));
