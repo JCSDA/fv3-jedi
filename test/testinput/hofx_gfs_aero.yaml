@@ -45,78 +45,18 @@ observations:
           type: H5File
           obsfile: Data/hofx/aod_viirs_hofx_2018041500_sf42.nc4
       simulated variables: [aerosolOpticalDepth]
+      observed variables: [aerosolOpticalDepth]
       channels: 4
     obs operator:
-      name: AodLUTs
+      name: AodCRTM
+      Absorbers: [H2O,O3]
       obs options:
         Sensor_ID: v.viirs-m_npp
         EndianType: little_endian
         CoefficientPath: Data/crtm/
-        AerosolOption: aerosols_gocart_1
-        RCFile: geosaod.rc
-        model units coeff: 1.e-9
+        AerosolOption: aerosols_gocart_default
     obs error:
       covariance model: diagonal
-  - obs space:
-      name: Aod
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/obs/testinput_tier_1/aod_aeronet_obs_2018041500.nc4
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: Data/hofx/aod_aeronet_hofx_2018041500.nc4
-      simulated variables: [aerosolOpticalDepth]
-      channels: 1-8
-    obs operator:
-      name: AodLUTs
-      obs options:
-        Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_1
-        RCFile: geosaod_aeronet.rc
-        model units coeff: 1.e-9
-    obs filters:
-    - filter: Temporal Thinning
-      seed_time: 2018-04-15T00:00:00Z
-      min_spacing: PT03H
-      category_variable:
-        name: MetaData/stationIdentification
-
-  - obs space:
-      name: Aod
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/obs/testinput_tier_1/aaod_aeronet_obs_2018041500.nc4
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
-      simulated variables: [absorptionAerosolOpticalDepth]
-      channels: 3,5-7
-    obs operator:
-      name: AodLUTs
-      obs options:
-        Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_1
-        RCFile: geosaod_aeronet.rc
-        AbsorptionAod: true
-        model units coeff: 1.e-9
-    obs filters:
-    - filter: Temporal Thinning
-      seed_time: 2018-04-15T00:00:00Z
-      min_spacing: PT03H
-      category_variable:
-        name: MetaData/stationIdentification
-    - filter: Domain Check
-      where:
-      - variable:
-          name: MetaData/aod_l2_qc
-        is_in: 0
-      - variable:
-          name: MetaData/aaod_l2_qc_without_aod440_le_0.4_threshold
-        is_in: 0
 
 prints:
   frequency: PT3H
