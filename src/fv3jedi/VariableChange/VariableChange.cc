@@ -26,7 +26,7 @@ namespace fv3jedi {
 VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
   : fieldsMetadata_(geometry.fieldsMetaData()), vader_() {
   // Create vader cookbook
-  std::map<std::string, std::vector<std::string>> vaderCustomCookbook =
+  vader::Vader::cookbookConfigType vaderCustomCookbook =
                                         params.variableChangeParameters.value().vaderCustomCookbook;
   // Create vader with fv3-jedi custom cookbook
   vader_.reset(new vader::Vader(params.variableChangeParameters.value().vader,
