@@ -18,13 +18,13 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
     def __init__(self):
         ewok.tasks.GenericModel.ModelTasks.__init__(self)
 
-        self.getBackground = getBackgroundGFS.getBackgroundGFS
-        self.getExpInit = getExpInitGFS.getExpInitGFS
-        self.getFcInit = getFcInitGFS.getFcInitGFS
-        self.getStaticModel = getFixFilesGFS.getFixFilesGFS
-        self.getInitialConditions = getInitialConditionsGFS.getInitialConditionsGFS
-        self.saveAnalysis = saveAnalysisGFS.saveAnalysisGFS
-        self.saveForecast = saveForecastGFS.saveForecastGFS
+        self.getBackground = getBackgroundGEOS.getBackgroundGEOS
+        self.getExpInit = getExpInitGEOS.getExpInitGEOS
+        self.getFcInit = getFcInitGEOS.getFcInitGEOS
+        self.getStaticModel = getFixFilesGEOS.getFixFilesGEOS
+        self.getInitialConditions = getInitialConditionsGEOS.getInitialConditionsGEOS
+        self.saveAnalysis = saveAnalysisGEOS.saveAnalysisGEOS
+        self.saveForecast = saveForecastGEOS.saveForecastGEOS
         self.plotAnalysis = ewok.plotAnalysis
         self.plotEnsStats = ewok.plotEnsStats
         self.plotObsStats = ewok.plotObsStats
