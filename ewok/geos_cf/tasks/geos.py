@@ -9,7 +9,6 @@ import getExpInitGEOS
 import getFcInitGEOS
 import getFixFilesGEOS
 import getInitialConditionsGEOS
-import getStaticB
 import saveAnalysisGEOS
 import saveForecastGEOS
 
@@ -22,9 +21,14 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         self.getBackground = getBackgroundGEOS.getBackgroundGEOS
         self.getExpInit = getExpInitGEOS.getExpInitGEOS
         self.getFcInit = getFcInitGEOS.getFcInitGEOS
-        self.getStaticB = getStaticB.getStaticB
         self.getStaticModel = getFixFilesGEOS.getFixFilesGEOS
         self.getInitialConditions = getInitialConditionsGEOS.getInitialConditionsGEOS
         self.saveAnalysis = saveAnalysisGEOS.saveAnalysisGEOS
         self.saveForecast = saveForecastGEOS.saveForecastGEOS
+        self.plotAnalysis = ewok.plotAnalysis
+        self.plotEnsStats = ewok.plotEnsStats
+        self.plotObsStats = ewok.plotObsStats
+        self.publishAnalysisPlots = ewok.publishAnPlots
+        self.publishEnsPlots = ewok.publishEnsPlots
         self.publishObsPlots = ewok.publishObsPlots
+        self.enstats = ewok.enstats
