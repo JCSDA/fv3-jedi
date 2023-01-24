@@ -16,4 +16,4 @@ obs space:
   simulated variables: [eastward_wind, northward_wind, air_temperature]
 obs operator:
   name: VertInterp
-  observation alias file: $(observation_alias_file)
+  # observation alias file: $(observation_alias_file)
