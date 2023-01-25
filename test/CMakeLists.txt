@@ -143,6 +143,7 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_fv3-gfs.yaml
   testinput/hofx_fv3lm.yaml
   testinput/hofx_gfs_aero.yaml
+  testinput/hofx_gfs_aero_aodluts.yaml
   testinput/hofx_gnssro_ropp.yaml
   testinput/hofx_nomodel.yaml
   testinput/hofx_nomodel_lam_cmaq.yaml
@@ -270,6 +271,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_fv3-gfs.ref
   testoutput/hofx_fv3lm.ref
   testoutput/hofx_gfs_aero.ref
+  testoutput/hofx_gfs_aero_aodluts.ref
   testoutput/hofx_gnssro_ropp.ref
   testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_lam_rrfs.ref
@@ -997,13 +999,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_fv3lm
                   COMMAND  test_fv3jedi_model.x )
 
 
-#if( FV3_FORECAST_MODEL MATCHES "UFS" AND BUILD_LARGE_TESTS)
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_ufs
-#                  MPI      6
-#                  ARGS     testinput/model_ufs.yaml
-#                  COMMAND  test_fv3jedi_model.x )
-#endif()
-
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_geos
                   MPI      6
@@ -1034,6 +1029,12 @@ if( FV3_FORECAST_MODEL MATCHES "UFS" AND BUILD_LARGE_TESTS)
                     MPI      6
                     ARGS     testinput/forecast_ufs.yaml
                     COMMAND  fv3jedi_forecast.x )
+
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_ufs
+#                  MPI      6
+#                  ARGS     testinput/model_ufs.yaml
+#                  COMMAND  test_fv3jedi_model.x )
+
 endif()
 
 if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
@@ -1054,6 +1055,16 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_fv3lm
                   ARGS     --no-validate testinput/hofx_fv3lm.yaml
                   COMMAND  fv3jedi_hofx.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_fv3-geos_cf
+                  MPI      6
+                  ARGS     testinput/hofx_fv3-geos_cf.yaml
+                  COMMAND  fv3jedi_hofx.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gfs_aero
+                  MPI      6
+                  ARGS     testinput/hofx_gfs_aero.yaml
+                  COMMAND  fv3jedi_hofx.x )
+
 # H(x) when ROPP is enabled
 # -------------------------
 if( ${ropp-ufo_FOUND} )
@@ -1070,12 +1081,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel
                   ARGS     testinput/hofx_nomodel.yaml
                   COMMAND  fv3jedi_hofx_nomodel.x )
 
-if( ${geos-aero_FOUND} )
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gfs_aero
-                    MPI      6
-                    ARGS     testinput/hofx_gfs_aero.yaml
-                    COMMAND  fv3jedi_hofx.x )
-endif()
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel_lam_cmaq
                   MPI      6
@@ -1299,6 +1304,11 @@ if( ${geos-aero_FOUND} )
                     ARGS     --no-validate testinput/3denvar_geos_aero.yaml
                     COMMAND  fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gfs_aero_aodluts
+                    MPI      6
+                    ARGS     testinput/hofx_gfs_aero_aodluts.yaml
+                    COMMAND  fv3jedi_hofx.x )
 endif()
 
 # Hybrid FGAT
@@ -1742,11 +1752,6 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-geos
                     MPI      6
                     ARGS     testinput/hofx_fv3-geos.yaml
-                    COMMAND  fv3jedi_hofx.x )
-
-  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_fv3-geos_cf
-                    MPI      6
-                    ARGS     testinput/hofx_fv3-geos_cf.yaml
                     COMMAND  fv3jedi_hofx.x )
 
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_nomodel_lam_rrfs

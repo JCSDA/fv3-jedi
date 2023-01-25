@@ -1,0 +1,49 @@
+Initial state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 18 | cube sphere face size: C12
+air_temperature                              | Min:+1.9041804504394531e+02 Max:+3.0889224243164062e+02 RMS:+2.4697795264851192e+02
+air_pressure_thickness                       | Min:+4.4247001647949219e+01 Max:+3.7003615722656250e+03 RMS:+1.9381328875332806e+03
+specific_humidity                            | Min:+3.0044125765016361e-07 Max:+1.6234034672379494e-02 RMS:+3.9169664417726601e-03
+mass_fraction_of_sulfate_in_air              | Min:+1.0764881735667586e-03 Max:+9.0113363265991211e+00 RMS:+2.7729024326230245e-01
+mass_fraction_of_hydrophobic_black_carbon_in | Min:+6.8921661977583426e-07 Max:+1.7078076601028442e+00 RMS:+3.6441727133042633e-02
+mass_fraction_of_hydrophilic_black_carbon_in | Min:+8.5273450167733245e-06 Max:+4.0985453128814697e-01 RMS:+1.9351520803007137e-02
+mass_fraction_of_hydrophobic_organic_carbon_ | Min:+7.4682964168459876e-07 Max:+1.1551486968994141e+01 RMS:+2.5709736040996317e-01
+mass_fraction_of_hydrophilic_organic_carbon_ | Min:+8.6835425463505089e-06 Max:+3.4426171779632568e+00 RMS:+1.4505887237223228e-01
+mass_fraction_of_dust001_in_air              | Min:+9.9999995068793452e-17 Max:+4.0872680664062500e+01 RMS:+1.0456264742206327e+00
+mass_fraction_of_dust002_in_air              | Min:+9.9999995068793452e-17 Max:+3.9702785491943359e+01 RMS:+9.9874785897186669e-01
+mass_fraction_of_dust003_in_air              | Min:+9.9999995068793452e-17 Max:+7.5720764160156250e+01 RMS:+1.8302345307048802e+00
+mass_fraction_of_dust004_in_air              | Min:+9.9999995068793452e-17 Max:+1.3259957885742188e+02 RMS:+2.8322880285590348e+00
+mass_fraction_of_dust005_in_air              | Min:+9.9999995068793452e-17 Max:+1.3462160110473633e+01 RMS:+2.0529231323810740e-01
+mass_fraction_of_sea_salt001_in_air          | Min:+9.9999995068793452e-17 Max:+4.4165544211864471e-02 RMS:+3.4413473133962135e-03
+mass_fraction_of_sea_salt002_in_air          | Min:+9.9999995068793452e-17 Max:+1.4410126209259033e+00 RMS:+1.1191668302302785e-01
+mass_fraction_of_sea_salt003_in_air          | Min:+9.9999995068793452e-17 Max:+1.4720928192138672e+01 RMS:+1.1044758459284074e+00
+mass_fraction_of_sea_salt004_in_air          | Min:+9.9999995068793452e-17 Max:+4.9258842468261719e+01 RMS:+3.2874687857340201e+00
+mass_fraction_of_sea_salt005_in_air          | Min:+9.9999995068793452e-17 Max:+1.5342001914978027e+01 RMS:+6.3630962281963199e-01
+----------------------------------------------------------------------------------------------------
+Final state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 18 | cube sphere face size: C12
+air_temperature                              | Min:+1.8408851623535156e+02 Max:+3.1182553100585938e+02 RMS:+2.4822548457681560e+02
+air_pressure_thickness                       | Min:+4.4247001647949219e+01 Max:+3.7266032714843750e+03 RMS:+1.9373637476662495e+03
+specific_humidity                            | Min:+5.5191453185443606e-08 Max:+1.8444731831550598e-02 RMS:+4.6125068355510057e-03
+mass_fraction_of_sulfate_in_air              | Min:+2.2416488718590699e-05 Max:+1.0437757492065430e+01 RMS:+4.7485950152639333e-01
+mass_fraction_of_hydrophobic_black_carbon_in | Min:+8.1516615679788629e-09 Max:+4.4606242179870605e+00 RMS:+6.2124639946453751e-02
+mass_fraction_of_hydrophilic_black_carbon_in | Min:+2.0531688349478827e-08 Max:+1.0728693008422852e+00 RMS:+4.2499287942867330e-02
+mass_fraction_of_hydrophobic_organic_carbon_ | Min:+9.9659018815145828e-09 Max:+2.9946744918823242e+01 RMS:+4.3153207357252255e-01
+mass_fraction_of_hydrophilic_organic_carbon_ | Min:+5.7117759411084990e-08 Max:+1.0476997375488281e+01 RMS:+3.3553225146263993e-01
+mass_fraction_of_dust001_in_air              | Min:+9.9999995068793452e-17 Max:+4.4923912048339844e+01 RMS:+1.6412090072361163e+00
+mass_fraction_of_dust002_in_air              | Min:+9.9999995068793452e-17 Max:+3.7473899841308594e+01 RMS:+1.5611283632080843e+00
+mass_fraction_of_dust003_in_air              | Min:+9.9999995068793452e-17 Max:+5.9156745910644531e+01 RMS:+2.8353749734353668e+00
+mass_fraction_of_dust004_in_air              | Min:+9.9999995068793452e-17 Max:+9.9667495727539062e+01 RMS:+4.3330549391177833e+00
+mass_fraction_of_dust005_in_air              | Min:+9.9999995068793452e-17 Max:+8.9141979217529297e+00 RMS:+3.1823262359989885e-01
+mass_fraction_of_sea_salt001_in_air          | Min:+9.9999995068793452e-17 Max:+1.2038994580507278e-01 RMS:+4.2023170893149111e-03
+mass_fraction_of_sea_salt002_in_air          | Min:+9.9999995068793452e-17 Max:+3.9346516132354736e+00 RMS:+1.3673148029912069e-01
+mass_fraction_of_sea_salt003_in_air          | Min:+9.9999995068793452e-17 Max:+4.1030170440673828e+01 RMS:+1.3561011553780318e+00
+mass_fraction_of_sea_salt004_in_air          | Min:+9.9999995068793452e-17 Max:+1.5508995056152344e+02 RMS:+4.1237802992384784e+00
+mass_fraction_of_sea_salt005_in_air          | Min:+9.9999995068793452e-17 Max:+5.9271724700927734e+01 RMS:+9.6387939172573189e-01
+----------------------------------------------------------------------------------------------------
+H(x): 
+Aod nobs= 42 Min=0.002076514672241667, Max=0.17411561370882, RMS=0.05897962180342359
+Aod nobs= 800 Min=0.0008779300893786208, Max=0.2075819154639114, RMS=0.03227337151296835
+Aod nobs= 144 Min=4.890382985097212e-05, Max=0.02385914277629459, RMS=0.004062738049803811
+End H(x)
