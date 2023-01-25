@@ -47,7 +47,6 @@ observations:
       simulated variables: [seaSurfaceTemperature]
     obs operator:
       name: Identity
-      observation alias file: testinput/obsop_name_map.yaml
     obs error:
       covariance model: diagonal
   - obs space:
@@ -63,7 +62,6 @@ observations:
       simulated variables: [seaSurfaceSalinity]
     obs operator:
       name: Identity
-      observation alias file: testinput/obsop_name_map.yaml
     obs error:
       covariance model: diagonal
   - obs space:
@@ -79,7 +77,6 @@ observations:
       simulated variables: [windEastward,windNorthward,airTemperature]
     obs operator:
       name: VertInterp
-      observation alias file: testinput/obsop_name_map.yaml
   - obs space:
       name: Radiosonde
       obsdatain:
@@ -93,7 +90,6 @@ observations:
       simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
-      observation alias file: testinput/obsop_name_map.yaml
 #   - obs space:
 #       name: SBUV2-NOAA19-OZ
 #       obsdatain:
@@ -229,7 +225,6 @@ observations:
       simulated variables: [windEastward, windNorthward]
     obs operator:
       name: VertInterp
-      observation alias file: testinput/obsop_name_map.yaml
   - obs space:
       name: MHS-N19
       obsdatain:

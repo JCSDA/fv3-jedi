@@ -1,2 +1,0 @@
-filename: $(run_dir)/{{local_current_cycle}}.$(file_type).nc
-type: an

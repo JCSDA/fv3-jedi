@@ -108,7 +108,6 @@ cost function:
         derived variables: [airTemperature]
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
       obs filters:

@@ -108,7 +108,6 @@ cost function:
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
         obs perturbations amplitude: 0.4
@@ -139,7 +138,6 @@ cost function:
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
         obs perturbations amplitude: 0.2

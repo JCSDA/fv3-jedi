@@ -4,7 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 obs space:
-  name: AMSUA_N19
+  name: Aircraft
   obsdatain:
     engine:
       type: H5File
@@ -13,13 +13,6 @@ obs space:
       type: H5File
       allow overwrite: true
   _source: ncdiag
-  simulated variables: [brightness_temperature]
-  channels: 1-15
+  simulated variables: [windEastward, windNorthward, airTemperature]
 obs operator:
-  name: CRTM
-  Absorbers: [H2O,O3]
-  Clouds: [Water, Ice]
-  Cloud_Fraction: 1.0
-  obs options:
-    Sensor_ID: amsua_n19
-    EndianType: little_endian
+  name: VertInterp
