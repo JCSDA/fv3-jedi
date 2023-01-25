@@ -20,19 +20,19 @@ bump:
     universe length-scale: 2500.0e3
   io:
     alias:
-    - in code: air_temperature-air_temperature
+    - in code: air_temperature
       in file: fixed_2500km_0.3
-    - in code: surface_pressure-surface_pressure
+    - in code: surface_pressure
       in file: fixed_2500km
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
   nicas:
     resolution: 6
     explicit length-scales: true
     horizontal length-scale:
-    - variables:
+    - groups:
       - air_temperature
       profile:
       - 1300000.0
@@ -107,14 +107,14 @@ bump:
       - 400000.0
       - 400000.0
       - 400000.0
-    - variables:
+    - groups:
       - surface_pressure
       value: 2500000.0
     vertical length-scale:
-    - variables:
+    - groups:
       - air_temperature
       value: 0.3
-    - variables:
+    - groups:
       - surface_pressure
       value: 0.0
   grids:

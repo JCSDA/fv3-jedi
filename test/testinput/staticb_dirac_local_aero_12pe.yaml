@@ -27,7 +27,7 @@ background error:
         data directory: Data/staticb_aero
         files prefix: nicas_aero
       drivers:
-        multivariate strategy: specific_univariate
+        multivariate strategy: univariate
         read local nicas: true
     input fields:
     - parameter: universe radius

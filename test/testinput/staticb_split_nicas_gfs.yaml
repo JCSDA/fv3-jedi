@@ -23,7 +23,7 @@ bump:
   io:
     data directory: Data/staticb
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     read global nicas: true
     write local nicas: true
   grids:

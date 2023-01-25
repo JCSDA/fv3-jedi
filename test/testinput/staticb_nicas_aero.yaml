@@ -33,7 +33,7 @@ bump:
     data directory: Data/staticb_aero
     files prefix: nicas_aero
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
   nicas:

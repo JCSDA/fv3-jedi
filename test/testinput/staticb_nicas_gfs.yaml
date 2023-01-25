@@ -24,22 +24,22 @@ bump:
   io:
     data directory: Data/staticb
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
     write global nicas: true
   nicas:
     resolution: 6
     minimum level:
-    - variables:
+    - groups:
       - cloud_liquid_water
       value: 74
     maximum level:
-    - variables:
+    - groups:
       - cloud_liquid_water
       value: 125
     interpolation type:
-    - variables:
+    - groups:
       - stream_function
       - velocity_potential
       - air_temperature

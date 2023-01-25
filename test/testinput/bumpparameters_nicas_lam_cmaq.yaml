@@ -22,21 +22,21 @@ bump:
   io:
     files prefix: Data/bump/fv3jedi_bumpparameters_nicas_lam_cmaq
     alias:
-    - in code: volume_mixing_ratio_of_no2-volume_mixing_ratio_of_no2
+    - in code: volume_mixing_ratio_of_no2
       in file: fixed_2500km_0.3
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
   nicas:
     resolution: 6
     explicit length-scales: true
     horizontal length-scale:
-    - variables:
+    - groups:
       - volume_mixing_ratio_of_no2
       value: 2500000.0
     vertical length-scale:
-    - variables:
+    - groups:
       - volume_mixing_ratio_of_no2
       value: 0.3
 output:

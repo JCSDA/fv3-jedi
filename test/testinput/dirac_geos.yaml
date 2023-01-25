@@ -27,7 +27,7 @@ background error:
           - in code: common
             in file: fixed_2500km_0.3
         drivers:
-          multivariate strategy: common
+          multivariate strategy: duplicated
           read local nicas: true
   members from template:
     template:

@@ -22,21 +22,21 @@ bump:
   io:
     files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
     alias:
-    - in code: mass_fraction_of_sulfate_in_air-mass_fraction_of_sulfate_in_air
+    - in code: mass_fraction_of_sulfate_in_air
       in file: fixed_3000km_0.2
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     compute nicas: true
     write local nicas: true
   nicas:
     resolution: 6
     explicit length-scales: true
     horizontal length-scale:
-    - variables:
+    - groups:
       - mass_fraction_of_sulfate_in_air
       value: 3000000.0
     vertical length-scale:
-    - variables:
+    - groups:
       - mass_fraction_of_sulfate_in_air
       value: 0.2
 output:
