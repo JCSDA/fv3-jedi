@@ -106,7 +106,6 @@ cost function:
         simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
       obs filters:
@@ -135,7 +134,6 @@ cost function:
         simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
       obs filters:
