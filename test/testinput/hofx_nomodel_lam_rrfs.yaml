@@ -37,7 +37,6 @@ observations:
       simulated variables: [windEastward, windNorthward, airTemperature, specificHumidity]
     obs operator:
       name: VertInterp
-      observation alias file: testinput/obsop_name_map.yaml
 
 test:
   reference filename: testoutput/hofx_nomodel_lam_rrfs.ref
