@@ -12,5 +12,5 @@ saber central block:
       data directory: $(static_data)/skylab-3.0.0/ensb_localization/c384
       files prefix: nicas_gfs
     drivers:
-      multivariate strategy: common
+      multivariate strategy: duplicated
       read local nicas: true

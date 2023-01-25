@@ -45,7 +45,7 @@ cost function:
               data directory: Data/staticb_aero
               files prefix: nicas_aero
             drivers:
-              multivariate strategy: specific_univariate
+              multivariate strategy: univariate
               read local nicas: true
           input fields:
           - parameter: universe radius
@@ -104,7 +104,7 @@ cost function:
                 - in code: common
                   in file: fixed_3000km_0.2
               drivers:
-                multivariate strategy: common
+                multivariate strategy: duplicated
                 read local nicas: true
       weight:
         value: 0.9

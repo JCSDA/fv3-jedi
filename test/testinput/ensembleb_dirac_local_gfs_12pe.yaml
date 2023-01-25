@@ -42,7 +42,7 @@ background error:
         io:
           files prefix: Data/ensembleb/nicas_gfs
         drivers:
-          multivariate strategy: common
+          multivariate strategy: duplicated
           read local nicas: true
 output dirac:
   filetype: fms restart

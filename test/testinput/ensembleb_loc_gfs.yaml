@@ -34,7 +34,7 @@ bump:
     compute covariance: true
     compute correlation: true
     compute localization: true
-    multivariate strategy: common
+    multivariate strategy: duplicated
     read local sampling: true
     read moments: true
     write diagnostics: true
@@ -73,5 +73,6 @@ output:
 test:
   reference filename: testoutput/ensembleb_loc_gfs.ref
   test output filename: testoutput/ensembleb_loc_gfs.test.out
+  log output filename: testoutput/ensembleb_loc_gfs.run
   float relative tolerance: 1.0e-5
   float absolute tolerance: 1.0e-5
