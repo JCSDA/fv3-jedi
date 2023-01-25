@@ -5,8 +5,10 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <map>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "boost/none_t.hpp"
 
@@ -22,8 +24,13 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
-  : fieldsMetadata_(geometry.fieldsMetaData()),
-    vader_(params.variableChangeParameters.value().vader) {
+  : fieldsMetadata_(geometry.fieldsMetaData()), vader_() {
+  // Create vader cookbook
+  vader::Vader::cookbookConfigType vaderCustomCookbook =
+                                        params.variableChangeParameters.value().vaderCustomCookbook;
+  // Create vader with fv3-jedi custom cookbook
+  vader_.reset(new vader::Vader(params.variableChangeParameters.value().vader,
+                                vaderCustomCookbook));
   // Create the variable change
   variableChange_.reset(VariableChangeFactory::create(geometry,
                                                       params.variableChangeParameters.value()));
@@ -62,11 +69,11 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
   // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_.changeVar also returns the variables fulfilled by Vader. These variables are allocated
+  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
   // and populated and added to the FieldSet (xfs).
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
-  varsFilled += vader_.changeVar(xfs, varsVader);
+  varsFilled += vader_->changeVar(xfs, varsVader);
   x.updateFields(varsFilled);
   x.fromFieldSet(xfs);
 
@@ -126,7 +133,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
-  vader_.changeVar(xfs, varsVaderFinal);
+  vader_->changeVar(xfs, varsVaderFinal);
   x.fromFieldSet(xfs);
 
   // List of variables Vader added

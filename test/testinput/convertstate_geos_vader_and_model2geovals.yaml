@@ -20,6 +20,9 @@ variable change:
   cloud effective radius method: gmao
   input variables: &inputvars [t,ps,q]
   output variables: [t,pt,tv,humidity_mixing_ratio]
+  vader custom cookbook:
+    potential_temperature: [AirPotentialTemperature_A]
+    virtual_temperature: [AirVirtualTemperature_A]
   vader:
     recipe parameters:
     - recipe name: AirPotentialTemperature_A
