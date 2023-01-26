@@ -26,7 +26,7 @@ bump:
   io:
     data directory: Data/staticb
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
   ensemble sizes:
     sub-ensembles: 3
   diagnostics:

@@ -27,7 +27,7 @@ background error:
       io:
         data directory: Data/staticb
       drivers:
-        multivariate strategy: specific_univariate
+        multivariate strategy: univariate
         read local nicas: true
       grids:
       - model:

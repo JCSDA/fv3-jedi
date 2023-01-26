@@ -13,7 +13,7 @@ obs space:
       type: H5File
       allow overwrite: true
   _source: ncdiag
-  simulated variables: [brightness_temperature]
+  simulated variables: [brightnessTemperature]
   channels: 1-15
 obs operator:
   name: CRTM

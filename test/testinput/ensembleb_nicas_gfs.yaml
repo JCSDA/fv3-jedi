@@ -24,7 +24,7 @@ bump:
     data directory: Data/ensembleb
     files prefix: nicas_gfs
   drivers:
-    multivariate strategy: common
+    multivariate strategy: duplicated
     compute nicas: true
     write local nicas: true
     write global nicas: true

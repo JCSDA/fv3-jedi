@@ -35,7 +35,7 @@ bump:
     data directory: Data/staticb_aero
     files prefix: var-mom__YYYY__MM__DD__HH__aero
   drivers:
-    multivariate strategy: specific_univariate
+    multivariate strategy: univariate
     write local sampling: true
     compute variance: true
     iterative algorithm: true

@@ -1,0 +1,126 @@
+window begin: 2018-04-14T21:00:00Z
+window length: PT6H
+forecast length: PT6H
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk64.nc4
+  npx: 13
+  npy: 13
+  npz: 64
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+model:
+  name: PSEUDO
+  filetype: fms restart
+  filename is datetime templated: true
+  datapath: Data/inputs/gfs_aero_c12/bkg/
+  filename_core: '%yyyy%mm%dd.%hh%MM%ss.fv_core.res.nc'
+  filename_trcr: '%yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc'
+  filename_cplr: '%yyyy%mm%dd.%hh%MM%ss.coupler.res'
+  tstep: PT3H
+  model variables: [T,DELP,sphum,
+                    sulf,bc1,bc2,oc1,oc2,
+                    dust1,dust2,dust3,dust4,dust5,
+                    seas1,seas2,seas3,seas4,seas5]
+initial condition:
+  datetime: 2018-04-14T21:00:00Z
+  filetype: fms restart
+  datapath: Data/inputs/gfs_aero_c12/bkg/
+  filename_core: 20180414.210000.fv_core.res.nc
+  filename_trcr: 20180414.210000.fv_tracer.res.nc
+  filename_cplr: 20180414.210000.coupler.res
+  state variables: [T,DELP,sphum,sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,
+              dust5,seas1,seas2,seas3,seas4,seas5]
+observations:
+  observers:
+  - obs space:
+      name: Aod
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf42.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aod_viirs_hofx_2018041500_sf42.nc4
+      simulated variables: [aerosolOpticalDepth]
+      channels: 4
+    obs operator:
+      name: AodLUTs
+      obs options:
+        Sensor_ID: v.viirs-m_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+        AerosolOption: aerosols_gocart_1
+        RCFile: geosaod.rc
+        model units coeff: 1.e-9
+    obs error:
+      covariance model: diagonal
+  - obs space:
+      name: Aod
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aod_aeronet_obs_2018041500.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aod_aeronet_hofx_2018041500.nc4
+      simulated variables: [aerosolOpticalDepth]
+      channels: 1-8
+    obs operator:
+      name: AodLUTs
+      obs options:
+        Sensor_ID: aeronet
+        AerosolOption: aerosols_gocart_1
+        RCFile: geosaod_aeronet.rc
+        model units coeff: 1.e-9
+    obs filters:
+    - filter: Temporal Thinning
+      seed_time: 2018-04-15T00:00:00Z
+      min_spacing: PT03H
+      category_variable:
+        name: MetaData/stationIdentification
+
+  - obs space:
+      name: Aod
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/aaod_aeronet_obs_2018041500.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/aaod_aeronet_hofx_2018041500.nc4
+      simulated variables: [absorptionAerosolOpticalDepth]
+      channels: 3,5-7
+    obs operator:
+      name: AodLUTs
+      obs options:
+        Sensor_ID: aeronet
+        AerosolOption: aerosols_gocart_1
+        RCFile: geosaod_aeronet.rc
+        AbsorptionAod: true
+        model units coeff: 1.e-9
+    obs filters:
+    - filter: Temporal Thinning
+      seed_time: 2018-04-15T00:00:00Z
+      min_spacing: PT03H
+      category_variable:
+        name: MetaData/stationIdentification
+    - filter: Domain Check
+      where:
+      - variable:
+          name: MetaData/aod_l2_qc
+        is_in: 0
+      - variable:
+          name: MetaData/aaod_l2_qc_without_aod440_le_0.4_threshold
+        is_in: 0
+
+prints:
+  frequency: PT3H
+
+test:
+  reference filename: testoutput/hofx_gfs_aero_aodluts.ref
+  test output filename: testoutput/hofx_gfs_aero_aodluts.test.out

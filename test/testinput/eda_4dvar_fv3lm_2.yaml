@@ -21,24 +21,24 @@ cost function:
           bump:
             io:
               alias:
-              - in code: eastward_wind-eastward_wind
+              - in code: eastward_wind
                 in file: fixed_2500km_0.3
-              - in code: northward_wind-northward_wind
+              - in code: northward_wind
                 in file: fixed_2500km_0.3
-              - in code: air_temperature-air_temperature
+              - in code: air_temperature
                 in file: fixed_2500km_0.3
-              - in code: specific_humidity-specific_humidity
+              - in code: specific_humidity
                 in file: fixed_2500km_0.3
-              - in code: cloud_liquid_ice-cloud_liquid_ice
+              - in code: cloud_liquid_ice
                 in file: fixed_2500km_0.3
-              - in code: cloud_liquid_water-cloud_liquid_water
+              - in code: cloud_liquid_water
                 in file: fixed_2500km_0.3
-              - in code: ozone_mass_mixing_ratio-ozone_mass_mixing_ratio
+              - in code: ozone_mass_mixing_ratio
                 in file: fixed_2500km_0.3
-              - in code: surface_pressure-surface_pressure
+              - in code: surface_pressure
                 in file: fixed_2500km
             drivers:
-              multivariate strategy: specific_univariate
+              multivariate strategy: univariate
               read local nicas: true
             grids:
             - model:
@@ -87,7 +87,7 @@ cost function:
                 - in code: common
                   in file: fixed_2500km_0.3
               drivers:
-                multivariate strategy: common
+                multivariate strategy: duplicated
                 read local nicas: true
       weight:
         value: 0.9
@@ -108,7 +108,6 @@ cost function:
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
         obs perturbations amplitude: 0.4
@@ -139,7 +138,6 @@ cost function:
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
-        observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
         obs perturbations amplitude: 0.2
