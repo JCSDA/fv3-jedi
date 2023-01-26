@@ -12,7 +12,7 @@ echo "FIXDIR  = ${FIXDIR}"
 
 echo "RESOL = ${RESOL}"
 echo "NLEVS = ${NLEVS}"
-#echo "LAYOUT = ${LAYOUT}"
+echo "LAYOUT = ${LAYOUT}"
 
 cp ${FV3REPO}/test/Data/fv3files/akbk${NLEVS}.nc4 ${FIXDIR}/akbk${NLEVS}.nc4
 cp ${FV3REPO}/test/Data/fv3files/fmsmpp.nml       ${FIXDIR}/fmsmpp.nml

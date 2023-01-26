@@ -6,7 +6,7 @@
 npx: 91
 npy: 91
 npz: 72
-#ntiles: 6
-#layout: [2,2]
-#io_layout: [1,1]
+ntiles: 6
+layout: [2,2]
+io_layout: [1,1]
 _resol_name: c90
