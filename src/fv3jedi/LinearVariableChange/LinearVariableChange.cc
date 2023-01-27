@@ -21,7 +21,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 LinearVariableChange::LinearVariableChange(const Geometry & geom, const Parameters_ & params)
-  : geom_(geom), params_(params), linearVariableChange_(),
+  : params_(params), geom_(geom), linearVariableChange_(),
     fieldsMetadata_(geom.fieldsMetaData()),
     vader_(params.linearVariableChangeParameters.value().vader) {}
 

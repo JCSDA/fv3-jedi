@@ -34,8 +34,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
-  : geom_(geom), time_(time),
-    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars))
+  : geom_(geom),
+    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)), time_(time)
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
 
