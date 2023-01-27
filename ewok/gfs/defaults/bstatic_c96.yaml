@@ -16,7 +16,7 @@ saber central block:
       read local nicas: true
     nicas:
       minimum level:
-      - variables:
+      - groups:
         - liq_wat
         value: 76
     grids:
