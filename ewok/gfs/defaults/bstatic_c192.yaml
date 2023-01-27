@@ -17,7 +17,7 @@ saber central block:
     nicas:
       minimum level:
       - groups:
-        - liq_wat
+        - cloud_liquid_water
         value: 76
     grids:
     - model:
