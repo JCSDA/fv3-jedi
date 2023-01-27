@@ -37,8 +37,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
                      const util::DateTime & time)
-  : geom_(geom), time_(time),
-    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars))
+  : geom_(geom), vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)),
+    time_(time)
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
