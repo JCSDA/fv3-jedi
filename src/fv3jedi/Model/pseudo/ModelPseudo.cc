@@ -24,8 +24,9 @@ namespace fv3jedi {
 static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::ModelPseudo(const Geometry & resol, const Parameters_ & params)
-  : tstep_(0), io_(),
-    vars_(resol.fieldsMetaData().getLongNameFromAnyName(params.modelVariables))
+  : tstep_(0),
+    vars_(resol.fieldsMetaData().getLongNameFromAnyName(params.modelVariables)),
+    io_()
 {
   oops::Log::trace() << "ModelPseudo::ModelPseudo starting" << std::endl;
   // Create IO object

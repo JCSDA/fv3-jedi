@@ -40,7 +40,6 @@ namespace fv3jedi {
       // List of fields
       const std::vector<FieldOverrideParameters> fieldsOverride =
                                                             fieldsOverrideParamsDict.fields.value();
-      int nfields = fieldsOverride.size();
 
       // Loop over list within field metadata key (main list of override field metadata)
       for (const auto & fieldOverride : fieldsOverride) {
