@@ -2,7 +2,7 @@ covariance model: SABER
 saber central block:
   saber block name: BUMP_NICAS
   bump:
-    datadir: $(static_data)/skylab-3.0.0/staticb_aero/c96
+    datadir: $(static_data)/skylab-4.0.0/staticb_aero/c96
     prefix: nicas_2021080100-2021083118/nicas_2021080100-2021083118
     verbosity: main
     strategy: specific_univariate
@@ -33,7 +33,7 @@ saber central block:
       datetime: 2021-08-31T18:00:00Z
       filetype: fms restart
       psinfile: true
-      datapath: $(static_data)/skylab-3.0.0/staticb_aero/c96/cor_2021080100-2021083118
+      datapath: $(static_data)/skylab-4.0.0/staticb_aero/c96/cor_2021080100-2021083118
       filename_core: cor_rh.fv_core.res.nc
       filename_trcr: cor_rh.fv_tracer.res.nc
       filename_cplr: cor_rh.coupler.res
@@ -47,7 +47,7 @@ saber outer blocks:
       filetype: fms restart
       set datetime on read: true
       psinfile: true
-      datapath: $(static_data)/skylab-3.0.0/staticb_aero/c96/var_2021080100-2021083118
+      datapath: $(static_data)/skylab-4.0.0/staticb_aero/c96/var_2021080100-2021083118
       filename_core: stddev.fv_core.res.nc
       filename_trcr: stddev.fv_tracer.res.nc
       filename_cplr: stddev.coupler.res
