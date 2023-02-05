@@ -19,13 +19,19 @@ os.chdir(conf['workdir'])
 
 # Date
 fcdate = conf['fc']['date']
-base = conf['experiment']['expid'] + '.fc.' + fcdate + "."
+base = conf['experiment']['expid'] + '.fc.'
 
 # Loop over steps
 for sstep in conf['fc']['fcout']:
     print("saveForecastRun step = ", sstep)
 
-    filename = base + sstep + '.$(file_type).nc'
+    fcstep = yamltools.parse_timedelta(sstep)
+    forecast_date = yamltools.parse_datetime(fcdate) + fcstep
+    file_date = yamltools.jediformat(forecast_date)
+
+    print("saveForecastRun for time = ", file_date)
+
+    filename = base + file_date + '.$(file_type).nc'
 
     print("saveForecastRun filename = ", filename)
 
