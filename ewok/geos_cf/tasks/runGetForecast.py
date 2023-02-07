@@ -11,7 +11,6 @@ import yamltools
 from r2d2 import fetch
 
 conf = yamltools.configure_runtime(sys.argv[1])
-
 # Check for working directory
 if not os.path.exists(conf['workdir']):
     raise RuntimeError('Working directory does not exist')
