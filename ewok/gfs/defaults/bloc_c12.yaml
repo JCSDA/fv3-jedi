@@ -6,7 +6,7 @@
 localization method: SABER
 saber central block:
   saber block name: BUMP_NICAS
-  active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+  active variables: $(AN_VARIABLES)
   bump:
     io:
       data directory: ${JEDI_BUILD}/fv3-jedi/test/Data/bump

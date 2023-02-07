@@ -7,6 +7,6 @@ npx: 97
 npy: 97
 npz: 127
 ntiles: 6
-layout: [2,2]
+layout: $(mpi_layout)
 io_layout: [1,1]
 _resol_name: c96

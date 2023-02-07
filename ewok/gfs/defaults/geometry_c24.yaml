@@ -6,5 +6,5 @@
 npx: 25
 npy: 25
 npz: 127
-layout: [1,1]
+layout: $(mpi_layout)
 _resol_name: c24

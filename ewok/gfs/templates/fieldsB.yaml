@@ -14,4 +14,4 @@ filename_trcr: $(expid).fc.$(fcdatetime).$(fcstep).fv_tracer.res.nc
 filename_sfcd: $(expid).fc.$(fcdatetime).$(fcstep).sfc_data.nc
 filename_sfcw: $(expid).fc.$(fcdatetime).$(fcstep).fv_srf_wnd.res.nc
 filename_cplr: $(expid).fc.$(fcdatetime).$(fcstep).coupler.res
-state variables: $(an_variables)
+state variables: $(AN_VARIABLES)
