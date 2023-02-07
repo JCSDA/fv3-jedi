@@ -7,4 +7,4 @@ filetype: cube sphere history
 datetime: '{{background_time}}'
 datapath: $(bgworkdir)
 filename: $(expid).fc.$(fcdatetime).$(fcstep).bkg.nc
-state variables: $(an_variables)
+state variables: $(AN_VARIABLES)

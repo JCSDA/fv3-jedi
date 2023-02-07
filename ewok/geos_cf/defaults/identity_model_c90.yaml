@@ -3,10 +3,13 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-filetype: cube sphere history
-datetime: '{{background_time}}'
-datapath: $(anworkdir)
-filename: $(expid).an.$(andatetime).bkg.nc
-state variables: $(BG_VARIABLES)
-# should not be analysis variables
+name: Identity
+tstep: PT1H
+state variables: $(MODEL_VARIABLES)
+# - DELP
 # - volume_mixing_ratio_of_no2
+# - volume_mixing_ratio_of_no
+# - volume_mixing_ratio_of_o3
+# - volume_mixing_ratio_of_co
+# - PS
+# - SPHU

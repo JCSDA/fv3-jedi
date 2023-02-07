@@ -6,7 +6,7 @@
 covariance model: SABER
 saber central block:
   saber block name: BUMP_NICAS
-  active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  active variables: &active_vars $(AN_VARIABLES)
   bump:
     io:
       data directory: $(static_data)/skylab-4.0.0/staticb/c384
@@ -83,4 +83,4 @@ saber outer blocks:
 linear variable change:
   linear variable change name: Control2Analysis
   input variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-  output variables: $(an_variables)
+  output variables: $(AN_VARIABLES)
