@@ -455,6 +455,18 @@ do jvar = 1,vars%nvars()
     call meta%set('interp_source_point_mask', trim(field%interpolation_source_point_mask))
   end if
 
+  ! Add npz to the metadata
+  call meta%set('nLevels', geom%npz)
+
+  ! Add top level pressure to delp
+  if (field%long_name == 'air_pressure_thickness') call meta%set('ptop', geom%ptop)
+
+  ! Add ak/bk with ps
+  if (field%long_name == 'surface_pressure') then
+    call meta%set('ak', geom%ak)
+    call meta%set('bk', geom%bk)
+  endif
+
   ! Release pointer
   call afield%final()
 

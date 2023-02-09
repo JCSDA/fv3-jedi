@@ -265,7 +265,7 @@ have_pressures = .false.
 if (xm%has_field('delp')) then
   call xm%get_field('delp', delp)
   allocate(ps(self%isc:self%iec, self%jsc:self%jec, 1))
-  ps(:,:,1) = sum(delp,3)
+  ps(:,:,1) = geom%ptop + sum(delp,3)
   have_pressures = .true.
 elseif (xm%has_field('ps')) then
   call xm%get_field('ps', ps)
@@ -756,11 +756,6 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_pressures) call field_fail(fields_to_do(f))
     field_ptr = delp
-
-  case ("ps")
-
-    if (.not. have_pressures) call field_fail(fields_to_do(f))
-    field_ptr = ps
 
   case ("t")
 

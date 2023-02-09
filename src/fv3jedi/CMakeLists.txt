@@ -115,11 +115,6 @@ list( APPEND fv3jedi_src_files
   VariableChange/Control2Analysis/VarChaC2A.cc
   VariableChange/Control2Analysis/VarChaC2A.h
   VariableChange/Control2Analysis/VarChaC2A.interface.h
-  VariableChange/GEOSRstToBkg/fv3jedi_vc_geosrst2bkg.interface.F90
-  VariableChange/GEOSRstToBkg/fv3jedi_vc_geosrst2bkg_mod.f90
-  VariableChange/GEOSRstToBkg/VarChaGeosRst2Bkg.cc
-  VariableChange/GEOSRstToBkg/VarChaGeosRst2Bkg.h
-  VariableChange/GEOSRstToBkg/VarChaGeosRst2Bkg.interface.h
   VariableChange/Model2GeoVaLs/fv3jedi_vc_model2geovals.interface.F90
   VariableChange/Model2GeoVaLs/fv3jedi_vc_model2geovals_mod.f90
   VariableChange/Model2GeoVaLs/VarChaModel2GeoVaLs.cc

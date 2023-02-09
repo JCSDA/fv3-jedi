@@ -39,7 +39,9 @@ class VariableChangeParametersBase : public oops::VariableChangeParametersBase {
   oops::Parameter<std::map<std::string, std::vector<std::string>>> vaderCustomCookbook{
     "vader custom cookbook",
     // Default VADER cookbook for fv3-jedi
-    {{"potential_temperature",  {"AirPotentialTemperature_A"}},
+    {
+      {"potential_temperature", {"AirPotentialTemperature_A"}},
+      {"surface_pressure",      {"SurfaceAirPressure_A"}},
       {"virtual_temperature",   {"AirVirtualTemperature_A"}}
     },
     this};

@@ -344,11 +344,6 @@ do f = 1, size(fields_to_do)
     if (.not. have_vodi) call field_fail(fields_to_do(f))
     field_ptr = divg
 
-  case ("ps")
-
-    if (.not. have_pres) call field_fail(fields_to_do(f))
-    field_ptr = ps
-
   case ("delp")
 
     if (.not. have_pres) call field_fail(fields_to_do(f))
@@ -589,11 +584,6 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_pcvd) call field_fail(fields_to_do(f))
     field_ptr = divg
-
-  case ("ps")
-
-    if (.not. have_pres) call field_fail(fields_to_do(f))
-    field_ptr = ps
 
   case ("delp")
 

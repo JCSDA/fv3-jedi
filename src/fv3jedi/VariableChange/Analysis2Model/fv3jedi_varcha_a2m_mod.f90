@@ -203,16 +203,6 @@ do index_ana = 1, xana%nf
       failed = .false.
     endif
 
-  elseif (xana%fields(index_ana)%short_name == 'ps') then
-
-    !Special case: ps in analysis, delp in model
-    if (xmod%has_field('delp')) then
-      call xana%get_field('ps',   xana_ps)
-      call xmod%get_field('delp', xmod_delp)
-      xana_ps(:,:,1) = sum(xmod_delp,3)
-      failed = .false.
-    endif
-
   endif
 
   if (failed) &

@@ -41,23 +41,3 @@ variable change tests:
     tolerance inverse: 10.0
     inverse first: true #Switched input and output variables
 
-  # GEOS restart to background
-  - variable change:
-      variable change name: GeosRst2Bkg
-      do_clouds: true
-      do_wind: true
-      do_temperature: true
-      do_pressure: true
-      pres_var: delp
-      input variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
-      output variables: [ua,va,t,delp,ps,q,qi,ql,qilsf,qicnf]
-    state:
-      datetime: 2020-12-14T21:00:00Z
-      filetype: cube sphere history
-      provider: geos
-      datapath: Data/inputs/geos_c12
-      filenames: [fvcore_internal_rst.20201214_21z.nc4, moist_internal_rst.20201214_21z.nc4,
-                  surf_import_rst.20201214_21z.nc4]
-      tile is a dimension: [false, false, false]
-      state variables: [U,V,PT,PE,PKZ,Q,QILS,QLLS,QICN,QLCN,PHIS]
-    tolerance inverse: 10
