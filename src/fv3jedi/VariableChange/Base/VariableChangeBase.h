@@ -40,9 +40,16 @@ class VariableChangeParametersBase : public oops::VariableChangeParametersBase {
     "vader custom cookbook",
     // Default VADER cookbook for fv3-jedi
     {
-      {"potential_temperature", {"AirPotentialTemperature_A"}},
-      {"surface_pressure",      {"SurfaceAirPressure_A"}},
-      {"virtual_temperature",   {"AirVirtualTemperature_A"}}
+      // P: from delp, from ps (and ak/bk)
+      {"air_pressure_levels",    {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
+      // delp: from p
+      {"air_pressure_thickness", {"AirPressureThickness_A"}},
+      // pt: from t and ps
+      {"potential_temperature",  {"AirPotentialTemperature_A"}},
+      // ps: from delp
+      {"surface_pressure",       {"SurfaceAirPressure_A"}},
+      // tv: from t and q
+      {"virtual_temperature",    {"AirVirtualTemperature_A"}}
     },
     this};
   oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};

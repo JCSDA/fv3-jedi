@@ -747,16 +747,6 @@ do f = 1, size(fields_to_do)
     if (.not. have_pressures) call field_fail(fields_to_do(f))
     field_ptr = prs
 
-  case ("pe")
-
-    if (.not. have_pressures) call field_fail(fields_to_do(f))
-    field_ptr = prsi
-
-  case ("delp")
-
-    if (.not. have_pressures) call field_fail(fields_to_do(f))
-    field_ptr = delp
-
   case ("t")
 
     if (.not. have_t) call field_fail(fields_to_do(f))

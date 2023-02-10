@@ -73,11 +73,9 @@ logical :: failed
 
 real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
 real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ps
 
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_ud
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_vd
-real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_delp
 
 do index_mod = 1, xmod%nf
 
@@ -120,18 +118,6 @@ do index_mod = 1, xmod%nf
       failed = .false.
     endif
 
-  elseif (xmod%fields(index_mod)%short_name == 'delp') then
-
-    !Special case: ps in analysis, delp in model
-    if (xana%has_field('ps')) then
-      call xana%get_field('ps',   xana_ps)
-      call xmod%get_field('delp', xmod_delp)
-      do k = 1,geom%npz
-        xmod_delp(:,:,k) = (geom%ak(k+1)-geom%ak(k)) + (geom%bk(k+1)-geom%bk(k))*xana_ps(:,:,1)
-      enddo
-      failed = .false.
-    endif
-
   endif
 
   if (failed) &
@@ -156,11 +142,9 @@ logical :: failed
 
 real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ua
 real(kind=kind_real), pointer, dimension(:,:,:) :: xana_va
-real(kind=kind_real), pointer, dimension(:,:,:) :: xana_ps
 
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_ud
 real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_vd
-real(kind=kind_real), pointer, dimension(:,:,:) :: xmod_delp
 
 do index_ana = 1, xana%nf
 
