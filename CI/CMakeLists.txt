@@ -37,7 +37,8 @@ ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-tes
 
 # Outside JEDI repositories
 # -------------------------
-ecbuild_bundle( PROJECT gsibec GIT "https://github.com/GEOS-ESM/GSIbec" )
+option("BUNDLE_SKIP_GSIBEC"  "Don't build GSIBEC"  "ON") # Skip gsibec build unless user passes -DBUNDLE_SKIP_GSIBEC=OFF
+ecbuild_bundle( PROJECT gsibec GIT "https://github.com/GEOS-ESM/GSIbec.git" )
 
 # Core JEDI repositories
 # ----------------------
