@@ -10,10 +10,6 @@ else()
   include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
 endif()
 
-# Option not to run with large tests
-# ----------------------------------
-option(BUILD_LARGE_TESTS "build tests with more than 6 processors" ON)
-
 # Create the Data/ directory
 # --------------------------
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
@@ -1006,7 +1002,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_fv3lm
                   COMMAND  test_fv3jedi_model.x )
 
 
-if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "GEOS")
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_geos
                   MPI      6
                   ARGS     testinput/model_geos.yaml
@@ -1031,7 +1027,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_fv3lm
                   ARGS     testinput/forecast_fv3lm.yaml
                   COMMAND  fv3jedi_forecast.x )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS" AND BUILD_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "UFS")
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs
                     MPI      6
                     ARGS     testinput/forecast_ufs.yaml
@@ -1044,7 +1040,7 @@ if( FV3_FORECAST_MODEL MATCHES "UFS" AND BUILD_LARGE_TESTS)
 
 endif()
 
-if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
+if( FV3_FORECAST_MODEL MATCHES "GEOS")
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_geos
                     MPI      6
                     ARGS     testinput/forecast_geos.yaml
@@ -1133,18 +1129,19 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq
                   ARGS     testinput/bumpparameters_nicas_lam_cmaq.yaml
                   COMMAND  fv3jedi_error_covariance_training.x )
 
-if (BUILD_LARGE_TESTS)
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_geos_p12
+
+if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_bumpparameters_nicas_geos_p12
                     MPI      12
                     ARGS     testinput/bumpparameters_nicas_geos_p12.yaml
                     COMMAND  fv3jedi_error_covariance_training.x )
 
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_gfs_p12
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_bumpparameters_nicas_gfs_p12
                     MPI      12
                     ARGS     testinput/bumpparameters_nicas_gfs_p12.yaml
                     COMMAND  fv3jedi_error_covariance_training.x )
 
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero_p12
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_bumpparameters_nicas_gfs_aero_p12
                     MPI      12
                     ARGS     testinput/bumpparameters_nicas_gfs_aero_p12.yaml
                     COMMAND  fv3jedi_error_covariance_training.x )
@@ -1236,12 +1233,12 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
-if (BUILD_LARGE_TESTS)
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_p12_validate
+if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_p12_validate
                     ARGS     --validate-only testinput/hyb-3dvar_p12.yaml
                     COMMAND  fv3jedi_var.x)
 
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_p12
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_p12
                     MPI      12
                     ARGS     --no-validate testinput/hyb-3dvar_p12.yaml
                     COMMAND  fv3jedi_var.x
@@ -1425,8 +1422,8 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_addincrement_gfs
                   COMMAND  fv3jedi_addincrement.x
                   TEST_DEPENDS fv3jedi_test_tier1_diffstates_gfs )
 
-if (BUILD_LARGE_TESTS)
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_addincrement_geos
+if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_addincrement_geos
                     MPI      12
                     ARGS     testinput/addincrement_geos.yaml
                     COMMAND  fv3jedi_addincrement.x
@@ -1470,27 +1467,23 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalizations
 
 # EnsHofx tests
 # -------------
-if (BUILD_LARGE_TESTS)
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
-                    MPI      12
-                    ARGS     testinput/enshofx_fv3lm.yaml
-                    COMMAND  fv3jedi_enshofx.x )
-endif()
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
+                  MPI      12
+                  ARGS     testinput/enshofx_fv3lm.yaml
+                  COMMAND  fv3jedi_enshofx.x )
 
 # Ensemble data assimilation tests
 # --------------------------------
-if (BUILD_LARGE_TESTS)
-  # 3DVar
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar_validate
-                    ARGS     --validate-only testinput/eda_3dvar.yaml
-                    COMMAND  fv3jedi_eda.x )
+# 3DVar
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar_validate
+                  ARGS     --validate-only testinput/eda_3dvar.yaml
+                  COMMAND  fv3jedi_eda.x )
 
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar
-                    MPI      12
-                    ARGS     --no-validate testinput/eda_3dvar.yaml
-                    COMMAND  fv3jedi_eda.x
-                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
-endif()
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar
+                  MPI      12
+                  ARGS     --no-validate testinput/eda_3dvar.yaml
+                  COMMAND  fv3jedi_eda.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_block_3dvar_validate
                   ARGS     --validate-only testinput/eda_block_3dvar.yaml
@@ -1505,7 +1498,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_block_3dvar
 # Tier 2 tests
 # ------------
 
-if (FV3JEDI_TEST_TIER GREATER_EQUAL 2 AND BUILD_LARGE_TESTS)
+if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
 
   # Full BUMP static covariance setup
   # ----------------------------------
