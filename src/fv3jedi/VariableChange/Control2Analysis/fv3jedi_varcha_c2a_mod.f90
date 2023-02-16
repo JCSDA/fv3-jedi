@@ -197,19 +197,6 @@ real(kind=kind_real), allocatable ::  divg(:,:,:)     ! Divergence
 real(kind=kind_real), allocatable ::    ua(:,:,:)     ! D-grid u wind
 real(kind=kind_real), allocatable ::    va(:,:,:)     ! D-grid v wind
 
-! Pressure
-logical :: have_pres
-real(kind=kind_real), pointer     ::    ps(:,:,:)     ! Surface pressure
-real(kind=kind_real), allocatable ::  delp(:,:,:)     ! Pressure thickness
-real(kind=kind_real), allocatable ::    pe(:,:,:)     ! Pressure edges
-real(kind=kind_real), allocatable ::     p(:,:,:)     ! Pressure mid
-real(kind=kind_real), allocatable ::   pkz(:,:,:)     ! Pressure ^ kappa
-
-! Temperaure
-logical :: have_t, have_pt
-real(kind=kind_real), pointer     ::    t (:,:,:)     ! Temperature
-real(kind=kind_real), allocatable ::   pt (:,:,:)     ! Potential temperature
-
 ! Clouds
 logical :: have_cld4
 real(kind=kind_real), pointer     :: qi   (:,:,:)     ! Cloud liquid ice
@@ -258,35 +245,6 @@ if (have_udvd) then
   allocate(va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   call d_to_a(geom, ud, vd, ua, va)
   have_uava = .true.
-endif
-
-! Pressure
-! --------
-have_pres = .false.
-if (xctl%has_field('ps')) then
-  call xctl%get_field('ps', ps)
-  allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  allocate(  pe(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1))
-  allocate(   p(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  allocate( pkz(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call ps_to_delp(geom, ps, delp)
-  call delp_to_pe_p_logp(geom, delp, pe, p)
-  call pe_to_pkz(geom, pe, pkz)
-  have_pres = .true.
-endif
-
-! Temperature
-! -----------
-have_t  = .false.
-have_pt = .false.
-if (xctl%has_field('t')) then
-  call xctl%get_field('t', t)
-  have_t = .true.
-  if (have_pres) then
-    allocate(pt(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-    call t_to_pt(geom, pkz, t, pt)
-    have_pt = .true.
-  endif
 endif
 
 ! Clouds
@@ -344,29 +302,24 @@ do f = 1, size(fields_to_do)
     if (.not. have_vodi) call field_fail(fields_to_do(f))
     field_ptr = divg
 
-  case ("pkz")
-
-    if (.not. have_pres) call field_fail(fields_to_do(f))
-    field_ptr = pkz
-
   case ("qils")
 
-    if (.not. have_pres) call field_fail(fields_to_do(f))
+    if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qils
 
   case ("qicn")
 
-    if (.not. have_pres) call field_fail(fields_to_do(f))
+    if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qicn
 
   case ("qlls")
 
-    if (.not. have_pres) call field_fail(fields_to_do(f))
+    if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qlls
 
   case ("qlcn")
 
-    if (.not. have_pres) call field_fail(fields_to_do(f))
+    if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qlcn
 
   end select
@@ -400,21 +353,10 @@ real(kind=kind_real), allocatable ::   chi(:,:,:)     ! Velocity potentail
 real(kind=kind_real), allocatable ::  vort(:,:,:)     ! Vorticity
 real(kind=kind_real), allocatable ::  divg(:,:,:)     ! Divergence
 
-! Pressure
-logical :: have_pres
-real(kind=kind_real), allocatable ::  delp(:,:,:)     ! Pressure thickness
-real(kind=kind_real), pointer     ::    ps(:,:,:)     ! Pressure edges
-real(kind=kind_real), pointer     ::    pe(:,:,:)     ! Pressure mid
-real(kind=kind_real), allocatable ::     p(:,:,:)     ! Pressure mid
-
-! Temperature
-logical :: have_temp
-real(kind=kind_real), pointer     ::    pt(:,:,:)     ! Potential temperature
-real(kind=kind_real), allocatable ::   pkz(:,:,:)     ! Pressure ^ kappa
-real(kind=kind_real), allocatable ::     t(:,:,:)     ! Temperature
-
 ! Humidity
 logical :: have_rhum
+real(kind=kind_real), pointer     ::  delp(:,:,:)     ! Pressure thickness
+real(kind=kind_real), pointer     ::     t(:,:,:)     ! Temperature
 real(kind=kind_real), pointer     ::     q(:,:,:)     ! Specific humidity
 real(kind=kind_real), allocatable ::  qsat(:,:,:)     ! Saturation specific humidity
 real(kind=kind_real), allocatable ::    rh(:,:,:)     ! Relative humidity
@@ -430,9 +372,6 @@ real(kind=kind_real), pointer     :: qlcn (:,:,:)     ! Cloud liquid water conve
 real(kind=kind_real), allocatable :: qilsf(:,:,:)     ! Fraction ice large scale
 real(kind=kind_real), allocatable :: qicnf(:,:,:)     ! Fraction ice convective
 
-! Virtual temperature
-logical :: have_virt
-real(kind=kind_real), allocatable ::   tv(:,:,:)      ! Virtual temperature
 
 ! Copy fields that are the same in both
 ! -------------------------------------
@@ -470,47 +409,13 @@ if (have_udvd) then
   have_pcvd = .true.
 endif
 
-! Pressure
-! --------
-have_pres = .false.
-if (xana%has_field('delp')) then
-  call xana%get_field('delp', delp)
-  allocate(ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
-  ps(:,:,1) = sum(delp,3)
-  have_pres = .true.
-elseif (xana%has_field('pe')) then
-  call xana%get_field('pe', pe )
-  allocate(  ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
-  allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call pe_to_delp(geom, pe, delp)
-  ps(:,:,1) = pe(:,:,geom%npz+1)
-  have_pres = .true.
-endif
-
-! Temperature
-! -----------
-have_temp = .false.
-if (xana%has_field('t')) then
-  call xana%get_field('t', t)
-  have_temp = .true.
-elseif (xana%has_field('pt')) then
-  allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call xana%get_field('pt', pt)
-  if (xana%has_field('pkz')) then
-    call xana%get_field('pkz', pkz)
-    have_temp = .true.
-  elseif (have_pres) then
-    allocate( pkz(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-    call ps_to_pkz(geom, ps, pkz)
-    have_temp = .true.
-  endif
-  if (have_temp) call pt_to_t(geom, pkz, pt, t)
-endif
 
 ! Humidity
 ! --------
 have_rhum = .false.
-if (xana%has_field('sphum') .and. have_temp .and. have_pres) then
+if (xana%has_field('sphum') .and. xana%has_field('t') .and. xana%has_field('delp')) then
+  call xana%get_field('delp', delp)
+  call xana%get_field('t', t)
   allocate(qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(  rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   call xana%get_field('sphum', q)
@@ -542,15 +447,6 @@ elseif (xana%has_field('qils') .and. xana%has_field('qicn') .and. &
   have_qiql = .true.
 endif
 
-! Virtual temperature
-! -------------------
-have_virt = .false.
-if (have_temp .and. xana%has_field('sphum')) then
-  allocate(tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call xana%get_field('sphum', q)
-  call t_to_tv(geom, t, q, tv)
-  have_virt = .true.
-endif
 
 ! Loop over the fields not found in the input state and work through cases
 ! ------------------------------------------------------------------------
@@ -579,16 +475,6 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_pcvd) call field_fail(fields_to_do(f))
     field_ptr = divg
-
-  case ("t")
-
-    if (.not. have_temp) call field_fail(fields_to_do(f))
-    field_ptr = t
-
-  case ("tv")
-
-    if (.not. have_virt) call field_fail(fields_to_do(f))
-    field_ptr = tv
 
   case ("rh")
 

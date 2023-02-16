@@ -244,6 +244,16 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "ln_air_pressure_at_interface";
+    md.shortName = "lnpe";
+    md.units = "Pa";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "half";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "specific_humidity";
     md.shortName = "sphum";
     md.units = "kgkg-1";

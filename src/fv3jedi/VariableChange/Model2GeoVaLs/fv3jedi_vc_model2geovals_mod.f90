@@ -103,12 +103,11 @@ real(kind=kind_real), allocatable :: ps    (:,:,:)         !Surface pressure
 real(kind=kind_real), allocatable :: delp  (:,:,:)         !Pressure thickness
 real(kind=kind_real), allocatable :: prsi  (:,:,:)         !Pressure, interfaces
 real(kind=kind_real), allocatable :: prs   (:,:,:)         !Pressure, midpoint
+real(kind=kind_real), allocatable :: pkz   (:,:,:)         !Pressure to the kapaa
 
 ! Temperature fields
 logical :: have_t
 real(kind=kind_real), allocatable :: t     (:,:,:)         !Temperature
-real(kind=kind_real), pointer     :: pt    (:,:,:)         !Potential temperature
-real(kind=kind_real), allocatable :: pkz   (:,:,:)         !Pressure to the kapaa
 
 ! Vitual temperature
 logical :: have_tv
@@ -288,9 +287,9 @@ endif
 if (have_pressures) then
   if (.not.allocated(prsi)) allocate(prsi(self%isc:self%iec,self%jsc:self%jec,self%npz+1))
   if (.not.allocated(prs )) allocate(prs (self%isc:self%iec,self%jsc:self%jec,self%npz  ))
-  call delp_to_pe_p_logp(geom, delp, prsi, prs)
+  if (.not.allocated(pkz )) allocate(pkz (self%isc:self%iec,self%jsc:self%jec,self%npz  ))
+  call delp_to_pe_p_logp(geom, delp, prsi, prs, pkz=pkz)
 endif
-
 
 ! Temperature
 ! -----------
@@ -298,17 +297,7 @@ have_t = .false.
 if (xm%has_field( 't')) then
   call xm%get_field('t', t)
   have_t = .true.
-elseif (xm%has_field( 'pt')) then
-  if (.not. have_pressures) &
-    call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar: a state with pt needs pressures")
-  allocate(t  (self%isc:self%iec, self%jsc:self%jec, self%npz))
-  allocate(pkz(self%isc:self%iec, self%jsc:self%jec, self%npz))
-  call xm%get_field('pt',  pt)
-  call pe_to_pkz(geom, prsi, pkz)
-  call pt_to_t(geom, pkz, pt, t)
-  have_t = .true.
 endif
-
 
 ! Specific humidity
 ! -----------------
@@ -317,7 +306,6 @@ if (xm%has_field( 'sphum')) then
   call xm%get_field('sphum',  q)
   have_q = .true.
 endif
-
 
 ! Relative humidity
 ! -----------------
@@ -742,19 +730,6 @@ do f = 1, size(fields_to_do)
     if (.not. have_rh) call field_fail(fields_to_do(f))
     field_ptr = rh
 
-  case ("p")
-
-    if (.not. have_pressures) call field_fail(fields_to_do(f))
-    field_ptr = prs
-
-  case ("t")
-
-    if (.not. have_t) call field_fail(fields_to_do(f))
-    field_ptr = t
-
-!  Virtual Temperature now done in VADER
-!   case ("tv")
-
   case ("mole_fraction_of_ozone_in_air", "o3ppmv")
 
     if (.not. have_o3) call field_fail(fields_to_do(f))
@@ -978,7 +953,6 @@ if (associated(zorl)) nullify(zorl)
 if (associated(field_ptr)) nullify(field_ptr)
 if (associated(q)) nullify(q)
 if (associated(qsat)) nullify(qsat)
-if (associated(pt)) nullify(pt)
 if (associated(phis)) nullify(phis)
 if (associated(ud)) nullify(ud)
 if (associated(vd)) nullify(vd)

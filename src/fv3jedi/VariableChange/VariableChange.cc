@@ -24,7 +24,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
-  : fieldsMetadata_(geometry.fieldsMetaData()), vader_() {
+  : fieldsMetadata_(geometry.fieldsMetaData()), vader_(), run_vader_(params.run_vader.value()),
+    run_fv3jedi_(params.run_fv3jedi.value()) {
   // Create vader cookbook
   vader::Vader::cookbookConfigType vaderCustomCookbook =
                                         params.variableChangeParameters.value().vaderCustomCookbook;
@@ -68,13 +69,15 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   varsVader -= varsFilled;  // Pass only the needed variables
 
   // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
+  // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
   // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
   // and populated and added to the FieldSet (xfs).
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
-  varsFilled += vader_->changeVar(xfs, varsVader);
-  x.updateFields(varsFilled);
+  if (run_vader_) {
+    varsFilled += vader_->changeVar(xfs, varsVader);
+    x.updateFields(varsFilled);
+  }
   x.fromFieldSet(xfs);
 
   // Perform fv3jedi factory variable change
@@ -84,7 +87,9 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   State xout(x.geometry(), vars, x.time());
 
   // Call variable change
-  variableChange_->changeVar(x, xout);
+  if (run_fv3jedi_) {
+    variableChange_->changeVar(x, xout);
+  }
 
   // Remove fields not in output
   x.updateFields(vars);
@@ -124,7 +129,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   varsVader -= varsFilled;  // Pass only the needed variables
 
   // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
+  // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
   // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
   // and populated and added to the FieldSet (xfs).
   atlas::FieldSet xfs;

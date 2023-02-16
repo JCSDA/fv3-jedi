@@ -1,0 +1,20 @@
+Input state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 3 | cube sphere face size: C12
+air_temperature | Min:+1.6475966767142899e+02 Max:+3.0610194334043456e+02 RMS:+2.4634246724992562e+02
+specific_humidity | Min:+7.6032568348887588e-08 Max:+1.9126818581745503e-02 RMS:+3.9561269579490386e-03
+surface_pressure | Min:+5.3775458927445892e+04 Max:+1.0491548534484887e+05 RMS:+9.8974274781970133e+04
+----------------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
+Variable change from: 3 variables: air_temperature, specific_humidity, surface_pressure
+Variable change to: 1 variables: rh
+State after variable transform: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 1 | cube sphere face size: C12
+relative_humidity | Min:+3.3406253696514563e-08 Max:+1.1166020697895709e+00 RMS:+4.0799955062067039e-01
+----------------------------------------------------------------------------------------------------
+Output state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 1 | cube sphere face size: C12
+relative_humidity | Min:+3.3406253696514563e-08 Max:+1.1166020697895709e+00 RMS:+4.0799955062067039e-01
+----------------------------------------------------------------------------------------------------

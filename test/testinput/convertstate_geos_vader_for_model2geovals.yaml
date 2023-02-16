@@ -16,13 +16,11 @@ output geometry:
 
 variable change:
   variable change name: Model2GeoVaLs
-  tropopause pressure method: thompson
-  cloud effective radius method: gmao
-  input variables: &inputvars [t,ps,q]
-  output variables: [t,pt,tv,humidity_mixing_ratio]
-  vader custom cookbook:
-    potential_temperature: [AirPotentialTemperature_A]
-    virtual_temperature: [AirVirtualTemperature_A]
+  input variables: &inputvars [ps, t, q]
+  output variables: [delp, pe, lnpe, pkz, p, pt, tv]
+  #vader custom cookbook:
+  #  potential_temperature: [AirPotentialTemperature_A]
+  #  virtual_temperature: [AirVirtualTemperature_A]
   vader:
     recipe parameters:
     - recipe name: AirPotentialTemperature_A
@@ -42,5 +40,5 @@ states:
    filename: geovals_vader.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
-  reference filename: testoutput/convertstate_geos_vader_and_model2geovals.ref
-  test output filename: testoutput/convertstate_geos_vader_and_model2geovals.test.out
+  reference filename: testoutput/convertstate_geos_vader_for_model2geovals.ref
+  test output filename: testoutput/convertstate_geos_vader_for_model2geovals.test.out

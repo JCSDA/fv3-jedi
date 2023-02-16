@@ -12,10 +12,10 @@ use fv3jedi_kinds_mod, only: kind_real
 implicit none
 private
 
-public t_to_tv, t_to_tv_tl, t_to_tv_ad
-public tv_to_t, tv_to_t_tl, tv_to_t_ad
-public pt_to_t, pt_to_t_tl, pt_to_t_ad
-public t_to_pt
+public t_to_tv
+public t_to_tv_tl, t_to_tv_ad
+public tv_to_t_tl, tv_to_t_ad
+public pt_to_t_tl, pt_to_t_ad
 
 contains
 
@@ -73,20 +73,6 @@ end subroutine t_to_tv_ad
 ! Virtual Temperature to Temperature ----------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine tv_to_t(geom,tv,q,t)
-
- implicit none
- type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: tv(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Temperature (K)
- real(kind=kind_real), intent(in ) :: q (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Specific humidity (kg/kg)
- real(kind=kind_real), intent(out) :: t (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Virtual temperature (K)
-
- t = tv/(1.0_kind_real + epsilon*q)
-
-end subroutine tv_to_t
-
-!----------------------------------------------------------------------------
-
 subroutine tv_to_t_tl(geom,tv,tv_tl,q,q_tl,t_tl)
 
  implicit none
@@ -127,20 +113,6 @@ end subroutine tv_to_t_ad
 ! Potential Temperature to Temperature --------------------------------------
 !----------------------------------------------------------------------------
 
-subroutine pt_to_t(geom,pkz,pt,t)
-
- implicit none
- type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: pkz(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Pressure to the kappa
- real(kind=kind_real), intent(in ) :: pt (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Potential temperature (K)
- real(kind=kind_real), intent(out) :: t  (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Temperature (K)
-
- t = pt*pkz
-
-end subroutine pt_to_t
-
-!----------------------------------------------------------------------------
-
 subroutine pt_to_t_tl(geom,pkz,pkz_tl,pt,pt_tl,t_tl)
 
  implicit none
@@ -172,20 +144,6 @@ subroutine pt_to_t_ad(geom,pkz,pkz_ad,pt,pt_ad,t_ad)
  t_ad = 0.0
 
 end subroutine pt_to_t_ad
-
-!----------------------------------------------------------------------------
-
-subroutine t_to_pt(geom,pkz,t,pt)
-
- implicit none
- type(fv3jedi_geom)  , intent(in ) :: geom !Geometry for the model
- real(kind=kind_real), intent(in ) :: pkz(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Pressure to the kappa
- real(kind=kind_real), intent(in ) :: t  (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Potential temperature (K)
- real(kind=kind_real), intent(out) :: pt (geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)  !Temperature (K)
-
- pt = t/pkz
-
-end subroutine t_to_pt
 
 !----------------------------------------------------------------------------
 

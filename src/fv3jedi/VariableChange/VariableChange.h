@@ -47,6 +47,8 @@ class VariableChange : public util::Printable {
   void print(std::ostream &) const override;
   std::unique_ptr<VariableChangeBase> variableChange_;
   FieldsMetadata fieldsMetadata_;
+  bool run_fv3jedi_;
+  bool run_vader_;
   std::unique_ptr<vader::Vader> vader_;
 };
 

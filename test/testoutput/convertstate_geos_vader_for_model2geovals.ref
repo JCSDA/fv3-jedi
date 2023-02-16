@@ -1,0 +1,32 @@
+Input state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 3 | cube sphere face size: C12
+surface_pressure | Min:+5.3775458927445892e+04 Max:+1.0491548534484887e+05 RMS:+9.8974274781970133e+04
+air_temperature | Min:+1.6475966767142899e+02 Max:+3.0610194334043456e+02 RMS:+2.4634246724992562e+02
+specific_humidity | Min:+7.6032568348887588e-08 Max:+1.9126818581745503e-02 RMS:+3.9561269579490386e-03
+----------------------------------------------------------------------------------------------------
+Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
+Variable change from: 3 variables: surface_pressure, air_temperature, specific_humidity
+Variable change to: 7 variables: delp, pe, lnpe, pkz, p, pt, tv
+State after variable transform: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 7 | cube sphere face size: C12
+air_pressure_thickness | Min:+1.0000002384185791e+00 Max:+5.1868960315102049e+03 RMS:+1.9541004001276274e+03
+air_pressure_levels | Min:+1.0000000000000000e+00 Max:+1.0491548534484887e+05 RMS:+4.7249539608490501e+04
+ln_air_pressure_at_interface | Min:+0.0000000000000000e+00 Max:+1.1560910403554908e+01 RMS:+8.6787771622090446e+00
+air_pressure_to_kappa | Min:+1.1058947142816824e+00 Max:+2.7138642122102635e+01 RMS:+1.6677160862304348e+01
+air_pressure | Min:+1.4797193625079075e+00 Max:+1.0412779414059367e+05 RMS:+4.6843538126996747e+04
+potential_temperature | Min:+8.8296942494960309e+00 Max:+1.8623845352642743e+02 RMS:+5.5736875430449601e+01
+virtual_temperature | Min:+1.6475997353121602e+02 Max:+3.0774804170245261e+02 RMS:+2.4668893669688831e+02
+----------------------------------------------------------------------------------------------------
+Output state: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 7 | cube sphere face size: C12
+air_pressure_thickness | Min:+1.0000002384185791e+00 Max:+5.1868960315102049e+03 RMS:+1.9541004001276274e+03
+air_pressure_levels | Min:+1.0000000000000000e+00 Max:+1.0491548534484887e+05 RMS:+4.7249539608490501e+04
+ln_air_pressure_at_interface | Min:+0.0000000000000000e+00 Max:+1.1560910403554908e+01 RMS:+8.6787771622090446e+00
+air_pressure_to_kappa | Min:+1.1058947142816824e+00 Max:+2.7138642122102635e+01 RMS:+1.6677160862304348e+01
+air_pressure | Min:+1.4797193625079075e+00 Max:+1.0412779414059367e+05 RMS:+4.6843538126996747e+04
+potential_temperature | Min:+8.8296942494960309e+00 Max:+1.8623845352642743e+02 RMS:+5.5736875430449601e+01
+virtual_temperature | Min:+1.6475997353121602e+02 Max:+3.0774804170245261e+02 RMS:+2.4668893669688831e+02
+----------------------------------------------------------------------------------------------------
