@@ -8,7 +8,7 @@ import yamltools
 import ewok.tasks.saveForecast as generic
 
 
-class saveForecastGFS(generic.saveForecast):
+class saveForecastGFSAero(generic.saveForecast):
 
     def setup(self, config, fc):
 
@@ -18,4 +18,4 @@ class saveForecastGFS(generic.saveForecast):
         self.walltime = '00:10:00'
 
         # Use GFS specific script
-        self.command = os.path.join(config['model_path'], "tasks/runSaveForecast.py")
+        self.command = os.path.join(config['model_path'], "tasks/runSaveForecastAero.py")

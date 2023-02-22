@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-# (C) Copyright 2020-2021 UCAR
+# (C) Copyright 2020-2022 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -20,6 +20,7 @@ os.chdir(conf['workdir'])
 # Date
 fcdate = conf['fc']['date']
 base = conf['experiment']['expid'] + '.fc.' + fcdate + "."
+model_metadata=conf['experiment']['model'] + '_metadata'
 
 # Loop over steps
 for sstep in conf['fc']['fcout']:
@@ -40,7 +41,8 @@ for sstep in conf['fc']['fcout']:
             step=sstep,
             source_file=filename,
             file_format='netcdf',
-            file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+            #file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+            file_type=['fv_tracer.res'],
             tile=[1, 2, 3, 4, 5, 6],
             fc_date_rendering='analysis',
             member=conf['member']
@@ -49,7 +51,7 @@ for sstep in conf['fc']['fcout']:
         print("saveForecastRun cplrfile = ", cplrfile)
 
         r2d2.store(
-            model=conf['experiment']['model'] + '_metadata',
+            model=model_metadata,
             type='fc_ens',
             experiment=conf['experiment']['expid'],
             resolution=conf['resolution'],
@@ -72,7 +74,8 @@ for sstep in conf['fc']['fcout']:
             step=sstep,
             source_file=filename,
             file_format='netcdf',
-            file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+            #file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+            file_type=['fv_tracer.res'],
             tile=[1, 2, 3, 4, 5, 6],
             fc_date_rendering='analysis',
         )
@@ -80,7 +83,7 @@ for sstep in conf['fc']['fcout']:
         print("saveForecastRun cplrfile = ", cplrfile)
 
         r2d2.store(
-            model=conf['experiment']['model'] + '_metadata',
+            model=model_metadata,
             type='fc',
             experiment=conf['experiment']['expid'],
             resolution=conf['resolution'],

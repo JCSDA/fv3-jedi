@@ -27,6 +27,7 @@ if 'exp_source' in conf:
 base = conf['experiment']['expid'] + '.an.'
 filename = base + conf['andate'] + '.$(file_type).tile$(tile).nc'
 cplrfile = base + conf['andate'] + '.coupler.res'
+model_metadata=conf['experiment']['model'] + '_metadata'
 
 if 'member' in conf:
     fetch(
@@ -42,9 +43,9 @@ if 'member' in conf:
         fc_date_rendering='analysis',
         member=conf['member'],
     )
-
+    
     fetch(
-        model='gfs_metadata',
+        model=model_metadata,
         type='an_ens',
         experiment=exp_read,
         resolution=conf['resolution'],
@@ -69,7 +70,7 @@ else:
     )
 
     fetch(
-        model='gfs_metadata',
+        model=model_metadata,
         type='an',
         experiment=exp_read,
         resolution=conf['resolution'],

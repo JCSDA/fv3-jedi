@@ -22,10 +22,10 @@ andate = conf['an']['datetime']
 base = conf['experiment']['expid'] + '.an.' + andate
 filename = base + '.$(file_type).tile$(tile).nc'
 cplrfile = base + '.coupler.res'
+model_metadata=conf['experiment']['model'] + '_metadata'
 
 if 'member' in conf:
-    print("trying to save member", conf['member'])
-    print("saveAnalysisRun filename = ", filename)
+    print("saveAnalysisRun filename = ", filename, ", member ", conf['member'])
 
     r2d2.store(
         model=conf['experiment']['model'],
@@ -35,16 +35,16 @@ if 'member' in conf:
         date=andate,
         source_file=filename,
         file_format='netcdf',
-        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        #file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        file_type=['fv_tracer.res'],
         tile=[1, 2, 3, 4, 5, 6],
         member=conf['member'],
-        ignore_missing='yes',
     )
 
-    print("saveAnalysisRun cplrfile = ", cplrfile)
+    print("saveAnalysisRun cplrfile = ", cplrfile, ", member ", conf['member'])
 
     r2d2.store(
-        model='gfs_aero_metadata',
+        model=model_metadata,
         type='an_ens',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
@@ -64,15 +64,15 @@ else:
         date=andate,
         source_file=filename,
         file_format='netcdf',
-        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        #file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
+        file_type=['fv_tracer.res'],
         tile=[1, 2, 3, 4, 5, 6],
-        ignore_missing='yes',
     )
 
     print("saveAnalysisRun cplrfile = ", cplrfile)
 
     r2d2.store(
-        model='gfs_aero_metadata',
+        model=model_metadata,
         type='an',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],

@@ -8,7 +8,7 @@ import yamltools
 from ewok import Task
 
 
-class getFixFilesGFS(Task):
+class getFixFilesGFSAero(Task):
 
     def setup(self, config, **inputs):
 
@@ -35,4 +35,4 @@ class getFixFilesGFS(Task):
         self.RUNTIME_ENV['RESOL'] = config['GEOMETRY']['_resol_name']
         self.RUNTIME_ENV['NLEVS'] = config['GEOMETRY']['npz']
         self.RUNTIME_ENV['LAYOUT'] = layout
-        self.command = os.path.join(config['model_path'], "tasks/getfixfiles.sh")
+        self.command = os.path.join(config['model_path'], "tasks/getfixfilesaero.sh")

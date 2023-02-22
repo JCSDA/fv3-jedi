@@ -28,6 +28,7 @@ base = conf['experiment']['expid'] + '.fc.'
 sdate = conf['fcdate'] + '.' + conf['fcstep']
 filename = base + sdate + '.$(file_type).tile$(tile).nc'
 cplrfile = base + sdate + '.coupler.res'
+model_metadata=conf['experiment']['model'] + '_metadata'
 
 fcstep = yamltools.parse_timedelta(conf['fcstep'])
 if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
@@ -52,7 +53,7 @@ if 'member' in conf:
     )
 
     fetch(
-        model='gfs_metadata',
+        model=model_metadata,
         type='fc_ens',
         experiment=exp_read,
         resolution=conf['resolution'],
@@ -79,7 +80,7 @@ else:
     )
 
     fetch(
-        model='gfs_metadata',
+        model=model_metadata,
         type='fc',
         experiment=exp_read,
         resolution=conf['resolution'],

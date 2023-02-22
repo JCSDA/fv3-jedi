@@ -1,4 +1,4 @@
-# (C) Copyright 2020-2022 UCAR
+# (C) Copyright 2020-2021 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,7 +8,7 @@ import yamltools
 import ewok.tasks.saveAnalysis as generic
 
 
-class saveAnalysisGFS(generic.saveAnalysis):
+class saveAnalysisGFSAero(generic.saveAnalysis):
 
     def setup(self, config, an):
 
@@ -16,4 +16,4 @@ class saveAnalysisGFS(generic.saveAnalysis):
         generic.saveAnalysis.setup(self, config, an)
 
         # Use GFS specific script
-        self.command = os.path.join(config['model_path'], "tasks/runSaveAnalysis.py")
+        self.command = os.path.join(config['model_path'], "tasks/runSaveAnalysisAero.py")

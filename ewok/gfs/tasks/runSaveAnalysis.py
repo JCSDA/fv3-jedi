@@ -22,6 +22,7 @@ andate = conf['an']['datetime']
 base = conf['experiment']['expid'] + '.an.' + andate
 filename = base + '.$(file_type).tile$(tile).nc'
 cplrfile = base + '.coupler.res'
+model_metadata=conf['experiment']['model'] + '_metadata'
 
 if 'member' in conf:
     print("saveAnalysisRun filename = ", filename, ", member ", conf['member'])
@@ -42,7 +43,7 @@ if 'member' in conf:
     print("saveAnalysisRun cplrfile = ", cplrfile, ", member ", conf['member'])
 
     r2d2.store(
-        model='gfs_metadata',
+        model=model_metadata
         type='an_ens',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
@@ -69,7 +70,7 @@ else:
     print("saveAnalysisRun cplrfile = ", cplrfile)
 
     r2d2.store(
-        model='gfs_metadata',
+        model=model_metadata
         type='an',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
