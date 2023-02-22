@@ -188,7 +188,7 @@ void State::print(std::ostream & os) const {
                   << " | cube sphere face size: C" << cubeSize;
 
   // Print info field by field
-  const int FieldNameLen = 46;
+  const int FieldNameLen = 45;
   char fieldName[FieldNameLen];
   std::vector<double> minMaxRms(3);
   for (int f = 0; f < numberFields; f++) {

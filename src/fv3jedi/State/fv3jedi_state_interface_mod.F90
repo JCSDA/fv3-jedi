@@ -280,7 +280,12 @@ trunc_name_len = min(len_trim(field_name), c_f_name_len)
 do n = 1,trunc_name_len
   c_f_name(n) = field_name(n:n)
 enddo
-c_f_name(trunc_name_len+1:c_f_name_len+1) = c_null_char
+
+! if field_name is shorter than C char array, pad with spaces before adding null terminator
+do n = trunc_name_len+1,c_f_name_len
+  c_f_name(n) = ' '
+enddo
+c_f_name(c_f_name_len+1) = c_null_char
 
 end subroutine fv3jedi_state_getminmaxrms_c
 
