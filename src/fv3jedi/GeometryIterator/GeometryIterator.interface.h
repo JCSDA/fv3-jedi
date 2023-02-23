@@ -26,6 +26,7 @@ extern "C" {
   void fv3jedi_geom_iter_current_f90(const F90iter &, double &, double &, double &);
   void fv3jedi_geom_iter_next_f90(const F90iter &);
   void fv3jedi_geom_iter_orography_f90(const F90iter &, double &);
+  void fv3jedi_geom_iter_nominal_surface_pressure_f90(const F90iter &, double &);
   void fv3jedi_geom_iter_dimension_f90(const F90iter &, int &);
 
 }  // extern "C"

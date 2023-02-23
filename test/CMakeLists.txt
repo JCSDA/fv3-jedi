@@ -178,6 +178,7 @@ list( APPEND fv3jedi_testinput
   testinput/model_pseudo-gfs.yaml
   testinput/obslocalization.yaml
   testinput/obslocalizations.yaml
+  testinput/obslocalization_vertical.yaml
   testinput/obsop_name_map.yaml
   testinput/state_geos_aerosol_ext.yaml
   testinput/state_geos_aerosol.yaml
@@ -1458,6 +1459,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_snow
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalization
                   MPI      6
                   ARGS     testinput/obslocalization.yaml
+                  COMMAND  test_fv3jedi_obslocalization.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalization_vertical
+                  MPI      6
+                  ARGS     testinput/obslocalization_vertical.yaml
                   COMMAND  test_fv3jedi_obslocalization.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalizations

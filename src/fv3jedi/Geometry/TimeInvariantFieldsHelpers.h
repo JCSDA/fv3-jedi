@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include "atlas/field.h"
+#include "atlas/functionspace.h"
+#include "atlas/functionspace/FunctionSpace.h"
+
 namespace atlas {
 class FieldSet;
 }  // namespace atlas
@@ -21,5 +25,7 @@ namespace fv3jedi {
 /// varsToAdd lists the new time-invariant fields to be computed and inserted
 /// fset on input should contain all the inputs needed to compute varsToAdd; on output also
 /// contains the varsToAdd.
-void insertDerivedTimeInvariantFields(atlas::FieldSet & fset, const oops::Variables & varsToAdd);
+void insertDerivedTimeInvariantFields(atlas::FieldSet & fset,
+                                      const oops::Variables & varsToAdd);
 }  // namespace fv3jedi
+

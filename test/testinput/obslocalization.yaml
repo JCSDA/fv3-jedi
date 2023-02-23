@@ -16,6 +16,7 @@ geometry:
       state variables: [orog_filt]
       datapath: Data/inputs/gfs_land_c48/grid/
       filename_orog: C48_oro_data.nc
+    derived fields: [nominal_surface_pressure]
 
 window begin: &date '2019-12-15T00:00:00Z'
 window end: 2019-12-16T00:00:00Z

@@ -60,5 +60,8 @@ real(kind=kind_real), parameter, public :: f_coriolis_angle = 0.0_kind_real
 real(kind=kind_real), parameter, public :: constoz = 603447.6_kind_real ! kg/kg -> ppmv ((28.9644 g/mol)/(47.9982 g/mol))*1e+6(mol/mol)
 real(kind=kind_real), parameter, public :: kap1 = kappa + 1.0_kind_real
 real(kind=kind_real), parameter, public :: kapr = 1.0_kind_real/kappa
+real(kind=kind_real), parameter, public :: lapse_rate = -0.0065_kind_real
+! lapse_exponent = -g*molar_mass_air/(univ_gas_constant*lapse rate)
+real(kind=kind_real), parameter, public :: lapse_exponent = -(grav*0.0289644_kind_real)/(runiv/1000*lapse_rate)
 
 end module fv3jedi_constants_mod

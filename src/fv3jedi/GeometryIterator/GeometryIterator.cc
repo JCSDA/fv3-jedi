@@ -82,6 +82,15 @@ double GeometryIterator::getOrography() const {
 
 // -----------------------------------------------------------------------------
 
+double GeometryIterator::getNominalSurfacePressure() const {
+  ASSERT(geom_.extraFields().has("nominal_surface_pressure"));
+  double nsp;
+  fv3jedi_geom_iter_nominal_surface_pressure_f90(keyIter_, nsp);
+  return nsp;
+}
+
+// -----------------------------------------------------------------------------
+
 void GeometryIterator::print(std::ostream & os) const {
   double lat, lon, vCoord;
   fv3jedi_geom_iter_current_f90(keyIter_, lon, lat, vCoord);

@@ -352,7 +352,6 @@ call fv3jedi_geom_registry%get(c_key_self, self)
 call getVerticalCoordLogP(self, vc, npz, psurf)
 
 end subroutine c_fv3jedi_geom_verticalCoord
-
 ! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_geom_interface_mod

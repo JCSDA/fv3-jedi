@@ -7,41 +7,34 @@
 
 #include "fv3jedi/Geometry/TimeInvariantFieldsHelpers.h"
 
-#include "atlas/field.h"
-#include "atlas/functionspace/FunctionSpace.h"
-
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
 
-namespace detail {
-
-void computeExample(atlas::Field & exampleOutput,
-                    const atlas::Field & exampleInput0,
-                    const atlas::Field & exampleInput1) {
-  // math here
-}
-
-}  // namespace detail
-
 namespace fv3jedi {
 
-void insertDerivedTimeInvariantFields(atlas::FieldSet & fset, const oops::Variables & varsToAdd) {
+extern "C" {
+  void fv3jedi_nominal_surface_pressure_f90(atlas::field::FieldSetImpl *);
+}
+
+void insertDerivedTimeInvariantFields(atlas::FieldSet & fset,
+                                      const oops::Variables & varsToAdd) {
   for (const auto & var : varsToAdd.variables()) {
-    if (var == "example_output") {
+    if (var == "nominal_surface_pressure") {
       // Check requested field doesn't already exist
       ASSERT(!fset.has(var));
       // Check necessary inputs are present
-      ASSERT(fset.has("example_input0"));
-      ASSERT(fset.has("example_input1"));
+      ASSERT(fset.has("filtered_orography"));
 
-      const auto & exampleInput0 = fset.field("example_input0");
-      const auto & exampleInput1 = fset.field("example_input1");
-      atlas::Field exampleOutput =
-          exampleInput0.functionspace().template createField<double>(atlas::option::name(var)
-                                                                     | atlas::option::levels(1));
-      detail::computeExample(exampleOutput, exampleInput0, exampleInput1);
-      fset.add(exampleOutput);
+      // Add new atlas::Field for nominal surface pressure
+      const auto & orog = fset.field("filtered_orography");
+      atlas::Field nsp =
+          orog.functionspace().template createField<double>(atlas::option::name(var)
+                                                            | atlas::option::levels(1));
+      fset.add(nsp);
+
+      // Call fortran to set values in the new NSP field
+      fv3jedi_nominal_surface_pressure_f90(fset.get());
     } else {
       throw eckit::UserError("Unsupported time-invariant derived field: " + var);
     }

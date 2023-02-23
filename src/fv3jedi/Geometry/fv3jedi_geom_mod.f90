@@ -1,4 +1,4 @@
-! (C) Copyright 2017-2021 UCAR
+! (C) Copyright 2017-2023 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -39,6 +39,7 @@ use fv_init_mod,                 only: fv_init
 use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
 use fv3jedi_io_fms_mod,          only: fv3jedi_io_fms, read_fields
 use fv3jedi_field_mod,           only: fv3jedi_field
+!use fv3jedi_geom_iter_mod
 
 implicit none
 private
@@ -73,6 +74,8 @@ type :: fv3jedi_geom
   type(fckit_mpi_comm) :: f_comm
   type(fields_metadata) :: fields
   type(atlas_fieldset) :: extra_fields
+  ! Vertical Coordinate
+  real(kind=kind_real), allocatable, dimension(:)       :: vCoord                   !Model vertical coordinate
   ! For D to (A to) C grid
   real(kind=kind_real), allocatable, dimension(:,:)     :: rarea
   real(kind=kind_real), allocatable, dimension(:,:,:)   :: sin_sg
@@ -349,6 +352,8 @@ self%sw_corner = Atm(1)%gridstruct%sw_corner
 self%nw_corner = Atm(1)%gridstruct%nw_corner
 self%nested    = Atm(1)%gridstruct%nested
 self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
+
+allocate(self%vCoord(self%npz))
 
 call conf%get_or_die("logp",logp)
 self%logp = logp

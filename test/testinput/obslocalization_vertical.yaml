@@ -1,0 +1,73 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+  iterator dimension: 3
+  time invariant fields:
+    state fields:
+      datetime: 2020-12-15T00:00:00Z
+      filetype: fms restart
+      skip coupler file: true
+      state variables: [orog_filt]
+      datapath: Data/inputs/gfs_land_c48/grid/
+      filename_orog: C48_oro_data.nc
+    derived fields: [nominal_surface_pressure]
+
+window begin: 2020-12-14T21:00:00Z
+window end: 2020-12-16T21:00:00Z
+
+observations:
+- obs space:
+    name: 'Vertical Box Car'
+    distribution:
+      name: InefficientDistribution
+    simulated variables: ['windEastward']
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: ./Data/obs/testinput_tier_1/scatwind_obs_2020121500_s.nc4
+  obs localizations:
+  - localization method: Vertical localization
+    apply log transformation: true
+    vertical lengthscale: 2
+    ioda vertical coordinate: pressure
+    ioda vertical coordinate group: MetaData
+    localization function: Box Car
+    reference gridpoints:
+      lons: [197.949958505, 197.949958505, 197.949958505]
+      lats: [-38.2922802892, -38.2922802892, -38.2922802892]
+      depths: [101174.784887, 20811.6873632, 9786.18619135]
+    reference local nobs: [1, 1, 0]
+    reference rms: [1.0, 1.0, 0.0]
+    print iterator: false
+
+- obs space:
+    name: 'Vertical Gaspari Cohn'
+    distribution:
+      name: InefficientDistribution
+    simulated variables: ['windEastward']
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: ./Data/obs/testinput_tier_1/scatwind_obs_2020121500_s.nc4
+  obs localizations:
+  - localization method: Vertical localization
+    apply log transformation: true
+    vertical lengthscale: 2
+    ioda vertical coordinate: pressure
+    ioda vertical coordinate group: MetaData
+    localization function: Gaspari Cohn
+    reference gridpoints:
+      lons: [197.949958505, 197.949958505, 197.949958505]
+      lats: [-38.2922802892, -38.2922802892, -38.2922802892]
+      depths: [101174.784887, 20811.6873632, 9786.18619135]
+    reference local nobs: [1, 1, 0]
+    reference rms: [0.999339, 0.00999979, 0]
+    print iterator: false
+
+

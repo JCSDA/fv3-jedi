@@ -40,6 +40,7 @@ class GeometryIterator: public std::iterator<std::forward_iterator_tag,
   eckit::geometry::Point3 operator*() const;
   GeometryIterator& operator++();
   double getOrography() const;
+  double getNominalSurfacePressure() const;
 
 // Utilities
   F90iter & toFortran() {return keyIter_;}

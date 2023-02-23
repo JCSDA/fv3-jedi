@@ -143,6 +143,26 @@ contains
   end subroutine fv3jedi_geom_iter_orography_c
 
   ! ------------------------------------------------------------------------------
+  !> Get geometry iterator current nominal_surface_pressure
+  subroutine fv3jedi_geom_iter_nominal_surface_pressure_c(c_key_self, c_nsp) &
+                     bind(c, name='fv3jedi_geom_iter_nominal_surface_pressure_f90')
+
+    ! Passed variables
+    integer(c_int), intent(   in) :: c_key_self !< Geometry iterator
+    real(c_double), intent(inout) :: c_nsp      !< Orography
+
+    ! Local variables
+    type(fv3jedi_geom_iter), pointer :: self
+
+    ! Interface
+    call fv3jedi_geom_iter_registry%get(c_key_self, self)
+
+    ! Call Fortran
+    call fv3jedi_geom_iter_nominal_surface_pressure(self, c_nsp)
+
+  end subroutine fv3jedi_geom_iter_nominal_surface_pressure_c
+
+  ! ------------------------------------------------------------------------------
   !> Update geometry iterator to next point
   subroutine fv3jedi_geom_iter_next_c(c_key_self) bind(c, name='fv3jedi_geom_iter_next_f90')
 
