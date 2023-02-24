@@ -43,7 +43,7 @@ if 'member' in conf:
     print("saveAnalysisRun cplrfile = ", cplrfile, ", member ", conf['member'])
 
     r2d2.store(
-        model=model_metadata
+        model=model_metadata,
         type='an_ens',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
@@ -70,7 +70,7 @@ else:
     print("saveAnalysisRun cplrfile = ", cplrfile)
 
     r2d2.store(
-        model=model_metadata
+        model=model_metadata,
         type='an',
         experiment=conf['experiment']['expid'],
         resolution=conf['resolution'],
