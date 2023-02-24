@@ -1,0 +1,37 @@
+states to latlon:
+- state geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+      field table filename: Data/fv3files/field_table_gfdl
+    akbk: Data/fv3files/akbk127.nc4
+    npx: 13
+    npy: 13
+    npz: 127
+    field metadata override: Data/fieldmetadata/gfs-restart.yaml
+
+  state:
+    state variables: [air_temperature]
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
+    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
+    datapath: Data/inputs/gfs_c12/bkg
+    filename_core: 20201215.000000.fv_core.res.nc
+    filename_trcr: 20201215.000000.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.sfc_data.nc
+    filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.coupler.res
+
+  latlon interpolation:
+    resolution in degrees: 1
+    variables to output: [air_temperature]
+    levels to output: [10,20,30]
+    datapath: Data
+    filename prefix: latlon_
+
+test:
+  reference filename: testoutput/converttolatlon_gfs.ref
+  test output filename: testoutput/converttolatlon_gfs.test.out
+  float relative tolerance: 1.0e-3
+

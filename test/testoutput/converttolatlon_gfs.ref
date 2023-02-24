@@ -1,0 +1,4 @@
+LatLonGridWriter::<FV3JEDI>
+Grid Resolution: 90
+Variables: 1 variables: air_temperature
+Levels: 10 20 30

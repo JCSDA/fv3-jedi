@@ -18,6 +18,12 @@ ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
                        )
 oops_output_json_schema(fv3jedi_convertstate.x)
 
+ecbuild_add_executable( TARGET  fv3jedi_converttolatlon.x
+                        SOURCES fv3jediConvertToLatLon.cc
+                        LIBS    fv3jedi
+                       )
+oops_output_json_schema(fv3jedi_converttolatlon.x)
+
 ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
                         SOURCES fv3jediDiffStates.cc
                         LIBS	fv3jedi
