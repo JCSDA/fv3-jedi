@@ -69,5 +69,17 @@ field metadata:
   units: ugkg-1
 
 - long name: mass_fraction_of_sulfate_in_air
-  io name: sulf
+  io name: so4
+  units: ugkg-1
+
+- long name: mass_fraction_of_nitrate001_in_air
+  io name: no3an1
+  units: ugkg-1
+
+- long name: mass_fraction_of_nitrate002_in_air
+  io name: no3an2
+  units: ugkg-1
+
+- long name: mass_fraction_of_nitrate003_in_air
+  io name: no3an3
   units: ugkg-1
