@@ -24,9 +24,6 @@
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
 
-#include "ufo/GeoVaLs.h"
-#include "ufo/Locations.h"
-
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/IO/Utils/IOBase.h"
