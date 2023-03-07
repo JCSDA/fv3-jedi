@@ -1,17 +1,67 @@
 covariance model: SABER
 saber central block:
   saber block name: BUMP_NICAS
+  active variables: $(AN_VARIABLES)
   bump:
-    datadir: $(static_data)/skylab-4.0.0/staticb_aero/c96
-    prefix: nicas_2021080100-2021083118/nicas_2021080100-2021083118
-    verbosity: main
-    strategy: specific_univariate
-    load_nicas_local: true
-    min_lev:
-      liq_wat: 76
+    io:
+      data directory: $(static_data)/skylab-4.0.0/staticb_aero/c96
+      files prefix: nicas_2021080100-2021083118/nicas_2021080100-2021083118
+      alias:
+      - in code: mass_fraction_of_sulfate_in_air
+        in file: mass_fraction_of_sulfate_in_air-mass_fraction_of_sulfate_in_air
+
+      - in code: mass_fraction_of_hydrophobic_black_carbon_in_air
+        in file: mass_fraction_of_hydrophobic_black_carbon_in_air-mass_fraction_of_hydrophobic_black_carbon_in_air
+
+      - in code: mass_fraction_of_hydrophilic_black_carbon_in_air
+        in file: mass_fraction_of_hydrophilic_black_carbon_in_air-mass_fraction_of_hydrophilic_black_carbon_in_air
+
+      - in code: mass_fraction_of_hydrophobic_organic_carbon_in_air
+        in file: mass_fraction_of_hydrophobic_organic_carbon_in_air-mass_fraction_of_hydrophobic_organic_carbon_in_air
+
+      - in code: mass_fraction_of_hydrophilic_organic_carbon_in_air
+        in file: mass_fraction_of_hydrophilic_organic_carbon_in_air-mass_fraction_of_hydrophilic_organic_carbon_in_air
+
+      - in code: mass_fraction_of_dust001_in_air
+        in file: mass_fraction_of_dust001_in_air-mass_fraction_of_dust001_in_air
+
+      - in code: mass_fraction_of_dust002_in_air
+        in file: mass_fraction_of_dust002_in_air-mass_fraction_of_dust002_in_air
+
+      - in code: mass_fraction_of_dust003_in_air
+        in file: mass_fraction_of_dust003_in_air-mass_fraction_of_dust003_in_air
+
+      - in code: mass_fraction_of_dust004_in_air
+        in file: mass_fraction_of_dust004_in_air-mass_fraction_of_dust004_in_air
+
+      - in code: mass_fraction_of_dust005_in_air
+        in file: mass_fraction_of_dust005_in_air-mass_fraction_of_dust005_in_air
+
+      - in code: mass_fraction_of_sea_salt001_in_air
+        in file: mass_fraction_of_sea_salt001_in_air-mass_fraction_of_sea_salt001_in_air
+
+      - in code: mass_fraction_of_sea_salt002_in_air
+        in file: mass_fraction_of_sea_salt002_in_air-mass_fraction_of_sea_salt002_in_air
+
+      - in code: mass_fraction_of_sea_salt003_in_air
+        in file: mass_fraction_of_sea_salt003_in_air-mass_fraction_of_sea_salt003_in_air
+
+      - in code: mass_fraction_of_sea_salt004_in_air
+        in file: mass_fraction_of_sea_salt004_in_air-mass_fraction_of_sea_salt004_in_air
+
+    drivers:
+      multivariate strategy: univariate
+      read local nicas: true
+    nicas:
+      minimum level:
+      - groups:
+        - cloud_liquid_water
+        value: 76
     grids:
-    - variables: $(AN_VARIABLES)
-    fname_nicas:  nicas_2021080100-2021083118/nicas_2021080100-2021083118_3D_nicas
+    - model:
+        variables: $(AN_VARIABLES)
+      io:
+        overriding nicas file: nicas_2021080100-2021083118/nicas_2021080100-2021083118_3D_nicas
 
   input fields:
   - parameter: universe radius
@@ -27,6 +77,7 @@ saber central block:
 
 saber outer blocks:
 - saber block name: StdDev
+  active variables: $(AN_VARIABLES)
   input fields:
   - parameter: StdDev
     file:
