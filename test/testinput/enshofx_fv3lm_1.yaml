@@ -32,6 +32,8 @@ observations:
     variable change:
       variable change name: Model2GeoVaLs
       tropopause pressure method: thompson
+      hydrometeor effective radii method: gsi
+      mask over: land
   observers:
   - obs space:
       name: Aircraft

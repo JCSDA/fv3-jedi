@@ -17,7 +17,8 @@ output geometry:
 variable change:
   variable change name: Model2GeoVaLs
   tropopause pressure method: thompson
-  cloud effective radius method: gmao
+  hydrometeor effective radii method: gsi
+  mask over: land
   input variables: &inputvars [u,v,t,delp,q,qi,ql,qr,qs,phis,frocean,frlake,frseaice,
                                vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   output variables: [rh,ps,tv,geopotential_height,

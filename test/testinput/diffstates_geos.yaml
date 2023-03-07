@@ -34,5 +34,6 @@ output:
   filename: hyb-4dvar-geos.inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
+  float absolute tolerance: 1.0e-7
   reference filename: testoutput/diffstates_geos.ref
   test output filename: testoutput/diffstates_geos.test.out

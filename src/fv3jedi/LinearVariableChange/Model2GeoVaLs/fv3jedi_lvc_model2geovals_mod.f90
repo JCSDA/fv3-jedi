@@ -276,6 +276,7 @@ do f = 1, size(fields_to_do)
   case ("mass_content_of_cloud_ice_in_atmosphere_layer")
   case ("mass_content_of_rain_in_atmosphere_layer")
   case ("mass_content_of_snow_in_atmosphere_layer")
+  case ("mass_content_of_graupel_in_atmosphere_layer")
   case ("pe")
   case ("p")
 
@@ -471,6 +472,8 @@ if (dxg%has_field( "mass_content_of_cloud_ice_in_atmosphere_layer", noassim_inde
 if (dxg%has_field( "mass_content_of_rain_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "mass_content_of_snow_in_atmosphere_layer", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_graupel_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "p", noassim_index)) &
   field_passed(noassim_index) = .true.

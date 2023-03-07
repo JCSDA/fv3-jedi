@@ -385,7 +385,7 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_droplet_number_concentration";
-    md.shortName = "qncloud";
+    md.shortName = "water_nc";
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
@@ -395,7 +395,7 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "cloud_ice_number_concentration";
-    md.shortName = "qnice";
+    md.shortName = "ice_nc";
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
@@ -405,7 +405,7 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "rain_number_concentration";
-    md.shortName = "qnrain";
+    md.shortName = "rain_nc";
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
@@ -415,7 +415,7 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "aerosol_water_number_concentration";
-    md.shortName = "qnwfa";
+    md.shortName = "liq_aero";
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
@@ -425,7 +425,7 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "aerosol_ice_number_concentration";
-    md.shortName = "qnifa";
+    md.shortName = "ice_aero";
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";

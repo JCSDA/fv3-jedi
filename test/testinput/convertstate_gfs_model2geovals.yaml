@@ -16,6 +16,8 @@ output geometry:
 
 variable change:
   variable change name: Model2GeoVaLs
+  hydrometeor effective radii method: gsi
+  mask over: land
   input variables: &inputvars [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,slmsk,sheleg,tsea,
                                vtype,stype,vfrac,stc,smc,snwdph,u_srf,v_srf,f10m]
   output variables: [rh,ps,tv,mole_fraction_of_ozone_in_air,geopotential_height,surface_altitude,

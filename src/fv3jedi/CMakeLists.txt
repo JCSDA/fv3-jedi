@@ -124,6 +124,7 @@ list( APPEND fv3jedi_src_files
   VariableChange/Model2GeoVaLs/VarChaModel2GeoVaLs.interface.h
   VariableChange/Utils/fv3jedi_fieldfail_mod.f90
   VariableChange/Utils/height_variables_mod.f90
+  VariableChange/Utils/hydrometeor_radii_variables_mod.f90
   VariableChange/Utils/moisture_variables_mod.f90
   VariableChange/Utils/pressure_variables_mod.f90
   VariableChange/Utils/surface_variables_mod.f90

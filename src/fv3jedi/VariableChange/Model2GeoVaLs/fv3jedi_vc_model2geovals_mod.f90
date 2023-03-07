@@ -21,6 +21,7 @@ use fv3jedi_state_mod,     only: fv3jedi_state
 
 use height_vt_mod
 use moisture_vt_mod
+use radii_vt_mod, only: crtm_ade_efr
 use pressure_vt_mod
 use surface_vt_mod
 use temperature_vt_mod
@@ -34,6 +35,8 @@ public :: fv3jedi_vc_model2geovals
 type :: fv3jedi_vc_model2geovals
   integer :: isc, iec, jsc, jec, npz
   character(len=10) :: tropprs_method
+  character(len=16) :: radii_method
+  character(len=8) :: use_mask
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -57,6 +60,14 @@ character(len=:), allocatable :: str
 ! Method to use for tropopause pressure ([gsi] or thompson)
 if (.not. conf%get("tropopause pressure method", str)) str = 'gsi'
 self%tropprs_method = trim(str)
+
+! Method to use for calculating effective radii (thompson, [gfdl], or gsi)
+if (.not. conf%get("hydrometeor effective radii method", str)) str = 'gfdl'
+self%radii_method = trim(str)
+
+! We can mask either the land or the sea, default is neither.
+if (.not. conf%get("mask over", str)) str = 'none'
+self%use_mask = trim(str)
 
 ! Grid convenience
 self%isc = geom%isc
@@ -162,14 +173,25 @@ real(kind=kind_real), pointer     :: qicn    (:,:,:)
 real(kind=kind_real), pointer     :: qlls    (:,:,:)
 real(kind=kind_real), pointer     :: qlcn    (:,:,:)
 
-!qrqs
-logical :: have_qrqs
+!qr, qs, and qg (rain, snow, and graupel)
+logical :: have_qr
+logical :: have_qs
+logical :: have_qg
 real(kind=kind_real), allocatable :: qr      (:,:,:)
 real(kind=kind_real), allocatable :: qs      (:,:,:)
+real(kind=kind_real), allocatable :: qg      (:,:,:)
 real(kind=kind_real), pointer     :: qrls    (:,:,:)
 real(kind=kind_real), pointer     :: qrcn    (:,:,:)
 real(kind=kind_real), pointer     :: qsls    (:,:,:)
 real(kind=kind_real), pointer     :: qscn    (:,:,:)
+
+! Number mixing ratio variables (2-moment microphysics)
+logical :: have_nc
+real(kind=kind_real), allocatable :: nc      (:,:,:)
+logical :: have_ni
+real(kind=kind_real), allocatable :: ni      (:,:,:)
+logical :: have_nr
+real(kind=kind_real), allocatable :: nr      (:,:,:)
 
 !CRTM mixing ratio
 logical :: have_qmr
@@ -181,10 +203,12 @@ real(kind=kind_real), allocatable :: ql_ade  (:,:,:)
 real(kind=kind_real), allocatable :: qi_ade  (:,:,:)
 real(kind=kind_real), allocatable :: qr_ade  (:,:,:)
 real(kind=kind_real), allocatable :: qs_ade  (:,:,:)
+real(kind=kind_real), allocatable :: qg_ade  (:,:,:)
 real(kind=kind_real), allocatable :: ql_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qi_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qr_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qs_efr  (:,:,:)
+real(kind=kind_real), allocatable :: qg_efr  (:,:,:)
 real(kind=kind_real), allocatable :: watercov(:,:)
 
 !Salinity
@@ -497,23 +521,52 @@ elseif (xm%has_field( 'qils') .and. xm%has_field( 'qicn') .and. &
   ql = qlls + qlcn
   have_qiql = .true.
 endif
-! ------
-have_qrqs = .false.
-if (xm%has_field( 'rainwat') .and. xm%has_field( 'snowwat')) then
+! ------ Rain, snow, and graupel
+have_qr = .false.
+if (xm%has_field( 'rainwat')) then
   call xm%get_field('rainwat', qr)
-  call xm%get_field('snowwat', qs)
-  have_qrqs = .true.
-elseif (xm%has_field( 'qrls') .and. xm%has_field( 'qrcn') .and. &
-        xm%has_field( 'qsls') .and. xm%has_field( 'qscn')) then
+  have_qr = .true.
+elseif (xm%has_field( 'qrls') .and. xm%has_field( 'qrcn')) then
   call xm%get_field('qrls', qrls)
   call xm%get_field('qrcn', qrcn)
+  allocate(qr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  qr = qrls + qrcn
+  have_qr = .true.
+endif
+! ------
+have_qs = .false.
+if (xm%has_field( 'snowwat')) then
+  call xm%get_field('snowwat', qs)
+  have_qs = .true.
+elseif (xm%has_field( 'qsls') .and. xm%has_field( 'qscn')) then
   call xm%get_field('qsls', qsls)
   call xm%get_field('qscn', qscn)
-  allocate(qr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(qs(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  qr = qrls + qrcn
   qs = qsls + qscn
-  have_qrqs = .true.
+  have_qs = .true.
+endif
+! ------
+have_qg = .false.
+if (xm%has_field('graupel')) then
+  call xm%get_field('graupel', qg)
+  have_qg = .true.
+endif
+
+! 2-moment microphysics number mixing ratios (concentrations)
+have_nc = .false.
+if (xm%has_field('water_nc')) then
+  call xm%get_field('water_nc', nc)
+  have_nc = .true.
+endif
+have_ni = .false.
+if (xm%has_field('ice_nc')) then
+  call xm%get_field('ice_nc', ni)
+  have_ni = .true.
+endif
+have_nr = .false.
+if (xm%has_field('rain_nc')) then
+  call xm%get_field('rain_nc', nr)
+  have_nr = .true.
 endif
 
 
@@ -538,21 +591,89 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
       if (slmsk(i,j,1) == 0) watercov(i,j) = 1.0_kind_real
     enddo
   enddo
-  if (have_qrqs ) then
+  if (have_qr ) then
     allocate(qr_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
-    allocate(qs_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
     allocate(qr_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
-    allocate(qs_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
     qr_ade = 0.0_kind_real
-    qs_ade = 0.0_kind_real
     qr_efr = 0.0_kind_real
+  endif
+  if (have_qs ) then
+    allocate(qs_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qs_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    qs_ade = 0.0_kind_real
     qs_efr = 0.0_kind_real
-    call crtm_ade_efr( geom, prs, t, delp, watercov, q, ql, qi, &
-                     ql_ade, qi_ade, ql_efr, qi_efr, &
-                     qr, qs, qr_ade, qs_ade, qr_efr, qs_efr )
+  endif
+  if (have_qg ) then
+    allocate(qg_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(qg_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    qg_ade = 0.0_kind_real
+    qg_efr = 0.0_kind_real
+  endif
+
+! Call routine that computes liquid/ice water paths and effective radii.
+! Different complexity for number of species and 1- or 2-moment microphysics.
+! ------------------------
+
+  if (have_nc .and. have_ni .and. have_nr .and. have_qr .and. have_qs .and. have_qg) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, nc=nc, ni=ni, nr=nr,             &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_ni .and. have_nr .and. have_qr .and. have_qg) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, ni=ni, nr=nr,                    &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_ni .and. have_qs .and. have_qr .and. have_qg) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, ni=ni,                           &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_qr .and. have_qs .and. have_qg) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg,                                  &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_qr .and. have_qs) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr, qs=qs,                                         &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,                 &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,                 &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_qr .and. have_qg) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr, qg=qg,                                         &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qg_ade=qg_ade,                 &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qg_efr=qg_efr,                 &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_qs .and. have_qg) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qs=qs, qg=qg,                                         &
+          ql_ade=ql_ade,qi_ade=qi_ade,qs_ade=qs_ade,qg_ade=qg_ade,                 &
+          ql_efr=ql_efr,qi_efr=qi_efr,qs_efr=qs_efr,qg_efr=qg_efr,                 &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_qs) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qs=qs,                                                &
+          ql_ade=ql_ade,qi_ade=qi_ade,qs_ade=qs_ade,                               &
+          ql_efr=ql_efr,qi_efr=qi_efr,qs_efr=qs_efr,                               &
+          method=self%radii_method, use_mask=self%use_mask)
+  elseif (have_qr) then
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi, qr=qr,                                                &
+          ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,                               &
+          ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,                               &
+          method=self%radii_method, use_mask=self%use_mask)
   else
-    call crtm_ade_efr( geom, prs, t, delp, watercov, q, ql, qi, &
-                     ql_ade, qi_ade, ql_efr, qi_efr )
+    call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
+          q=q, ql=ql, qi=qi,                                                       &
+          ql_ade=ql_ade,qi_ade=qi_ade,                                             &
+          ql_efr=ql_efr,qi_efr=qi_efr,                                             &
+          method=self%radii_method, use_mask=self%use_mask)
   endif
   have_crtm_cld = .true.
 endif
@@ -783,6 +904,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qs_ade
 
+  case ("mass_content_of_graupel_in_atmosphere_layer")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qg_ade
+
   case ("effective_radius_of_cloud_liquid_water_particle")
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
@@ -802,6 +928,11 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qs_efr
+
+  case ("effective_radius_of_graupel_particle")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qg_efr
 
   case ("water_area_fraction")
 
@@ -994,15 +1125,21 @@ if (allocated(ql)) deallocate(ql)
 if (allocated(qi)) deallocate(qi)
 if (allocated(qr)) deallocate(qr)
 if (allocated(qs)) deallocate(qs)
+if (allocated(qg)) deallocate(qg)
 if (allocated(qmr)) deallocate(qmr)
+if (allocated(nc)) deallocate(nc)
+if (allocated(ni)) deallocate(ni)
+if (allocated(nr)) deallocate(nr)
 if (allocated(ql_ade)) deallocate(ql_ade)
 if (allocated(qi_ade)) deallocate(qi_ade)
 if (allocated(qr_ade)) deallocate(qr_ade)
 if (allocated(qs_ade)) deallocate(qs_ade)
+if (allocated(qg_ade)) deallocate(qg_ade)
 if (allocated(ql_efr)) deallocate(ql_efr)
 if (allocated(qi_efr)) deallocate(qi_efr)
 if (allocated(qr_efr)) deallocate(qr_efr)
 if (allocated(qs_efr)) deallocate(qs_efr)
+if (allocated(qg_efr)) deallocate(qg_efr)
 if (allocated(watercov)) deallocate(watercov)
 if (allocated(sss)) deallocate(sss)
 if (allocated(land_type_index_npoess)) deallocate(land_type_index_npoess)

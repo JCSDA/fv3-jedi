@@ -88,6 +88,11 @@ cost function:
       weight:
          value: 0.9
   observations:
+    get values:
+      variable change:
+        variable change name: Model2GeoVaLs
+        hydrometeor effective radii method: gsi
+        mask over: land
     observers:
     - obs space:
         # The input file does not contain a variable called 'air_temperature', but contains one

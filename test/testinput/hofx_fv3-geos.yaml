@@ -28,6 +28,11 @@ model:
   model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
                     frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
 observations:
+  get values:
+    variable change:
+      variable change name: Model2GeoVaLs
+      hydrometeor effective radii method: gsi
+      mask over: land
   observers:
   - obs space:
       name: Aircraft
