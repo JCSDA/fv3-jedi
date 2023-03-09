@@ -6,7 +6,7 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+  field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
 input variables: [mass_fraction_of_sulfate_in_air]
 background:
   datetime: 2020-12-14T21:00:00Z

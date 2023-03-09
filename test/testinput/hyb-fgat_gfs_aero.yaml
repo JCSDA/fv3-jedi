@@ -101,7 +101,7 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+    field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
 final:
   diagnostics:
     departures: oman
@@ -122,7 +122,7 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+      field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
     diagnostics:
       departures: ombg
     linear model:

@@ -359,6 +359,7 @@ Data/fieldmetadata/gchp.yaml
 Data/fieldmetadata/geos.yaml
 Data/fieldmetadata/geos_cf.yaml
 Data/fieldmetadata/gfs-aerosol.yaml
+Data/fieldmetadata/ufs-aerosol.yaml
 Data/fieldmetadata/gfs-history.yaml
 Data/fieldmetadata/gfs-land.yaml
 Data/fieldmetadata/gfs-restart.yaml
