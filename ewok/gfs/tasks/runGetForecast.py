@@ -8,7 +8,7 @@
 import sys
 import os
 import yamltools
-from r2d2 import fetch
+from r2d2 import R2D2Data
 
 conf = yamltools.configure_runtime(sys.argv[1])
 
@@ -26,9 +26,6 @@ if 'exp_source' in conf:
 
 base = conf['experiment']['expid'] + '.fc.'
 sdate = conf['fcdate'] + '.' + conf['fcstep']
-filename = base + sdate + '.$(file_type).tile$(tile).nc'
-cplrfile = base + sdate + '.coupler.res'
-model_metadata=conf['experiment']['model'] + '_metadata'
 
 fcstep = yamltools.parse_timedelta(conf['fcstep'])
 if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
@@ -36,57 +33,38 @@ if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
     fcstep -= pt3h
 hackstep = yamltools.jediformat(fcstep)
 
+member = R2D2Data.DEFAULT_INT_VALUE
 if 'member' in conf:
-    fetch(
-        model=conf['experiment']['model'],
-        type='fc_ens',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['fcdate'],
-        step=hackstep,
-        target_file=filename,
-        file_format='netcdf',
-        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-        tile=[1, 2, 3, 4, 5, 6],
-        fc_date_rendering='analysis',
-        member=conf['member'],
-    )
+    member = conf['member']
 
-    fetch(
-        model=model_metadata,
-        type='fc_ens',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['fcdate'],
-        step=hackstep,
-        target_file=cplrfile,
-        file_type=['coupler.res'],
-        fc_date_rendering='analysis',
-        member=conf['member'],
-    )
-else:
-    fetch(
-        model=conf['experiment']['model'],
-        type='fc',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['fcdate'],
-        step=hackstep,
-        target_file=filename,
-        file_format='netcdf',
-        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-        tile=[1, 2, 3, 4, 5, 6],
-        fc_date_rendering='analysis',
-    )
+R2D2Data.fetch(
+    model=conf['experiment']['model'],
+    item='forecast',
+    step=hackstep,
+    experiment=exp_read,
+    resolution=conf['resolution'],
+    date=conf['fcdate'],
+    target_file=f'{base}{sdate}.coupler.res',
+    file_extension='',
+    file_type='coupler.res',
+    member=member,
+)
 
-    fetch(
-        model=model_metadata,
-        type='fc',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['fcdate'],
-        step=hackstep,
-        target_file=cplrfile,
-        file_type=['coupler.res'],
-        fc_date_rendering='analysis',
-    )
+file_types = ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data']
+tiles = [1, 2, 3, 4, 5, 6]
+
+for file_type in file_types:
+    for tile in tiles:
+        R2D2Data.fetch(
+            model=conf['experiment']['model'],
+            item='forecast',
+            experiment=exp_read,
+            step=hackstep,
+            resolution=conf['resolution'],
+            date=conf['fcdate'],
+            target_file=f'{base}{sdate}.{file_type}.tile{tile}.nc',
+            file_extension='nc',
+            file_type=file_type,
+            tile=tile,
+            member=member,
+        )

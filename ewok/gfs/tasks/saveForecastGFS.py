@@ -19,3 +19,7 @@ class saveForecastGFS(generic.saveForecast):
 
         # Use GFS specific script
         self.command = os.path.join(config['model_path'], "tasks/runSaveForecast.py")
+
+        self.exec_cmd = ''   # Run on login node for S3 and R2D2 Database access
+        self.include_header = ''
+        self.login_node_limit = 'True'

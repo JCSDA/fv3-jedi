@@ -8,7 +8,7 @@
 import sys
 import os
 import yamltools
-import r2d2
+from r2d2 import R2D2Data
 
 conf = yamltools.configure_runtime(sys.argv[1])
 
@@ -20,63 +20,37 @@ os.chdir(conf['workdir'])
 # Date
 andate = conf['an']['datetime']
 base = conf['experiment']['expid'] + '.an.' + andate
-filename = base + '.$(file_type).tile$(tile).nc'
-cplrfile = base + '.coupler.res'
-model_metadata=conf['experiment']['model'] + '_metadata'
 
+member = R2D2Data.DEFAULT_INT_VALUE
 if 'member' in conf:
-    print("saveAnalysisRun filename = ", filename, ", member ", conf['member'])
+    member = conf['member']
 
-    r2d2.store(
-        model=conf['experiment']['model'],
-        type='an_ens',
-        experiment=conf['experiment']['expid'],
-        resolution=conf['resolution'],
-        date=andate,
-        source_file=filename,
-        file_format='netcdf',
-        #file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-        file_type=['fv_tracer.res'],
-        tile=[1, 2, 3, 4, 5, 6],
-        member=conf['member'],
-    )
+R2D2Data.store(
+    model=conf['experiment']['model'],
+    item='analysis',
+    experiment=conf['experiment']['expid'],
+    resolution=conf['resolution'],
+    date=andate,
+    source_file=f'{base}.coupler.res',
+    file_extension='',
+    file_type='coupler.res',
+    member=member,
+)
 
-    print("saveAnalysisRun cplrfile = ", cplrfile, ", member ", conf['member'])
+file_types = ['fv_tracer.res']
+tiles = [1, 2, 3, 4, 5, 6]
 
-    r2d2.store(
-        model=model_metadata,
-        type='an_ens',
-        experiment=conf['experiment']['expid'],
-        resolution=conf['resolution'],
-        date=andate,
-        source_file=cplrfile,
-        file_type=['coupler.res'],
-        member=conf['member']
-    )
-else:
-    print("saveAnalysisRun filename = ", filename)
-
-    r2d2.store(
-        model=conf['experiment']['model'],
-        type='an',
-        experiment=conf['experiment']['expid'],
-        resolution=conf['resolution'],
-        date=andate,
-        source_file=filename,
-        file_format='netcdf',
-        #file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-        file_type=['fv_tracer.res'],
-        tile=[1, 2, 3, 4, 5, 6],
-    )
-
-    print("saveAnalysisRun cplrfile = ", cplrfile)
-
-    r2d2.store(
-        model=model_metadata,
-        type='an',
-        experiment=conf['experiment']['expid'],
-        resolution=conf['resolution'],
-        date=andate,
-        source_file=cplrfile,
-        file_type=['coupler.res'],
-    )
+for file_type in file_types:
+    for tile in tiles:
+        R2D2Data.store(
+            model=conf['experiment']['model'],
+            item='analysis',
+            experiment=conf['experiment']['expid'],
+            resolution=conf['resolution'],
+            date=andate,
+            source_file=f'{base}.{file_type}.tile{tile}.nc',
+            file_extension='nc',
+            file_type=file_type,
+            tile=tile,
+            member=member,
+        )

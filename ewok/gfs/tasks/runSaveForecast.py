@@ -8,7 +8,7 @@
 import sys
 import os
 import yamltools
-import r2d2
+from r2d2 import R2D2Data
 
 conf = yamltools.configure_runtime(sys.argv[1])
 
@@ -23,70 +23,39 @@ base = conf['experiment']['expid'] + '.fc.' + fcdate + "."
 
 # Loop over steps
 for sstep in conf['fc']['fcout']:
-    print("saveForecastRun step = ", sstep)
 
-    filename = base + sstep + '.$(file_type).tile$(tile).nc'
-    cplrfile = base + sstep + '.coupler.res'
-
+    member = R2D2Data.DEFAULT_INT_VALUE
     if 'member' in conf:
-        print("saveForecastRun filename = ", filename)
+        member = conf['member']
 
-        r2d2.store(
-            model=conf['experiment']['model'],
-            type='fc_ens',
-            experiment=conf['experiment']['expid'],
-            resolution=conf['resolution'],
-            date=fcdate,
-            step=sstep,
-            source_file=filename,
-            file_format='netcdf',
-            file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-            tile=[1, 2, 3, 4, 5, 6],
-            fc_date_rendering='analysis',
-            member=conf['member']
-        )
+    R2D2Data.store(
+        model=conf['experiment']['model'],
+        item='forecast',
+        step=sstep,
+        experiment=conf['experiment']['expid'],
+        resolution=conf['resolution'],
+        date=fcdate,
+        file_extension='',
+        source_file=f'{base}{sstep}.coupler.res',
+        file_type='coupler.res',
+        member=member,
+    )
 
-        print("saveForecastRun cplrfile = ", cplrfile)
+    file_types = ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data']
+    tiles = [1, 2, 3, 4, 5, 6]
 
-        r2d2.store(
-            model=conf['experiment']['model'] + '_metadata',
-            type='fc_ens',
-            experiment=conf['experiment']['expid'],
-            resolution=conf['resolution'],
-            date=fcdate,
-            step=sstep,
-            source_file=cplrfile,
-            file_type=['coupler.res'],
-            fc_date_rendering='analysis',
-            member=conf['member']
-        )
-    else:
-        print("saveForecastRun filename = ", filename)
-
-        r2d2.store(
-            model=conf['experiment']['model'],
-            type='fc',
-            experiment=conf['experiment']['expid'],
-            resolution=conf['resolution'],
-            date=fcdate,
-            step=sstep,
-            source_file=filename,
-            file_format='netcdf',
-            file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-            tile=[1, 2, 3, 4, 5, 6],
-            fc_date_rendering='analysis',
-        )
-
-        print("saveForecastRun cplrfile = ", cplrfile)
-
-        r2d2.store(
-            model=conf['experiment']['model'] + '_metadata',
-            type='fc',
-            experiment=conf['experiment']['expid'],
-            resolution=conf['resolution'],
-            date=fcdate,
-            step=sstep,
-            source_file=cplrfile,
-            file_type=['coupler.res'],
-            fc_date_rendering='analysis',
-        )
+    for file_type in file_types:
+        for tile in tiles:
+            R2D2Data.store(
+                model=conf['experiment']['model'],
+                item='forecast',
+                experiment=conf['experiment']['expid'],
+                step=sstep,
+                resolution=conf['resolution'],
+                date=fcdate,
+                source_file=f'{base}{sstep}.{file_type}.tile{tile}.nc',
+                file_extension='nc',
+                file_type=file_type,
+                tile=tile,
+                member=member,
+            )

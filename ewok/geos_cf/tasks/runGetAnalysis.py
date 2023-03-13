@@ -8,7 +8,7 @@
 import sys
 import os
 import yamltools
-from r2d2 import fetch
+from r2d2 import R2D2Data
 
 conf = yamltools.configure_runtime(sys.argv[1])
 
@@ -29,16 +29,14 @@ andate = yamltools.parse_datetime(conf['date'])
 
 base = conf['experiment']['expid'] + '.an.'
 sdate = yamltools.jediformat(andate)
-filename = base + sdate + '.$(file_type).nc'
 
-fetch(
+R2D2Data.fetch(
     model=conf['experiment']['model'],
-    type='an',
+    item='analysis',
     experiment=exp_read,
     resolution=conf['resolution'],
     date=yamltools.jediformat(andate),
-    target_file=filename,
-    file_format='netcdf',
-    file_type=['bkg'],
-    fc_date_rendering='analysis',
+    target_file=f'{base}{sdate}.bkg.nc',
+    file_extension='nc',
+    file_type='bkg',
 )

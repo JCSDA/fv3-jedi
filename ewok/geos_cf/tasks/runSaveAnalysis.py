@@ -8,7 +8,7 @@
 import sys
 import os
 import yamltools
-import r2d2
+from r2d2 import R2D2Data
 
 conf = yamltools.configure_runtime(sys.argv[1])
 
@@ -20,17 +20,14 @@ os.chdir(conf['workdir'])
 # Date
 andate = conf['an']['datetime']
 base = conf['experiment']['expid'] + '.an.' + andate
-filename = base + '.$(file_type).nc'
 
-print("saveAnalysisRun filename = ", filename)
-
-r2d2.store(
+R2D2Data.store(
     model=conf['experiment']['model'],
-    type='an',
+    item='analysis',
     experiment=conf['experiment']['expid'],
     resolution=conf['resolution'],
     date=andate,
-    source_file=filename,
-    file_format='netcdf',
-    file_type=['bkg'],
+    source_file=f'{base}.bkg.nc',
+    file_extension='nc',
+    file_type='bkg',
 )

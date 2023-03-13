@@ -8,7 +8,8 @@
 import sys
 import os
 import yamltools
-from r2d2 import fetch
+
+from r2d2 import R2D2Data
 
 conf = yamltools.configure_runtime(sys.argv[1])
 
@@ -23,59 +24,39 @@ if 'exp_source' in conf:
     exp_read = conf['exp_source']
 
 # Fetch state
-
+date = conf['andate']
 base = conf['experiment']['expid'] + '.an.'
-filename = base + conf['andate'] + '.$(file_type).tile$(tile).nc'
-cplrfile = base + conf['andate'] + '.coupler.res'
-model_metadata=conf['experiment']['model'] + '_metadata'
 
+member = R2D2Data.DEFAULT_INT_VALUE
 if 'member' in conf:
-    fetch(
-        model=conf['experiment']['model'],
-        type='an_ens',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['andate'],
-        target_file=filename,
-        file_format='netcdf',
-        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-        tile=[1, 2, 3, 4, 5, 6],
-        fc_date_rendering='analysis',
-        member=conf['member'],
-    )
-    
-    fetch(
-        model=model_metadata,
-        type='an_ens',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['andate'],
-        target_file=cplrfile,
-        file_type=['coupler.res'],
-        fc_date_rendering='analysis',
-        member=conf['member'],
-    )
-else:
-    fetch(
-        model=conf['experiment']['model'],
-        type='an',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['andate'],
-        target_file=filename,
-        file_format='netcdf',
-        file_type=['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data'],
-        tile=[1, 2, 3, 4, 5, 6],
-        fc_date_rendering='analysis',
-    )
+    member = conf['member']
 
-    fetch(
-        model=model_metadata,
-        type='an',
-        experiment=exp_read,
-        resolution=conf['resolution'],
-        date=conf['andate'],
-        target_file=cplrfile,
-        file_type=['coupler.res'],
-        fc_date_rendering='analysis',
-    )
+R2D2Data.fetch(
+    model=conf['experiment']['model'],
+    item='analysis',
+    experiment=exp_read,
+    resolution=conf['resolution'],
+    date=date,
+    target_file=f'{base}{date}.coupler.res',
+    file_type='coupler.res',
+    file_extension='',
+    member=member,
+)
+
+file_types = ['fv_core.res', 'fv_srf_wnd.res', 'fv_tracer.res', 'sfc_data']
+tiles = [1, 2, 3, 4, 5, 6]
+
+for file_type in file_types:
+    for tile in tiles:
+        R2D2Data.fetch(
+            model=conf['experiment']['model'],
+            item='analysis',
+            experiment=exp_read,
+            resolution=conf['resolution'],
+            date=date,
+            target_file=f'{base}{date}.{file_type}.tile{tile}.nc',
+            file_extension='nc',
+            file_type=file_type,
+            tile=tile,
+            member=member,
+        )
