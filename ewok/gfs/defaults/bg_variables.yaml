@@ -13,6 +13,9 @@
 - specific_humidity
 - cloud_liquid_ice
 - cloud_liquid_water
+- rainwat
+- snowwat
+- graupel
 - ozone_mass_mixing_ratio
 - sfc_geopotential_height_times_grav
 - slmsk
