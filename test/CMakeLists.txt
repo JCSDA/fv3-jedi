@@ -1290,11 +1290,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_0obs_inoneobsspace
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 if( ${ropp-ufo_FOUND} )
-#  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_gnssro_ropp
-#                    MPI      6
-#                    ARGS     testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
-#                    COMMAND  fv3jedi_var.x
-#                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_gnssro_ropp
+                    MPI      6
+                    ARGS     testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
+                    COMMAND  fv3jedi_var.x
+                    TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 endif()
 
 # Chemistry / AQ Variational Tests
