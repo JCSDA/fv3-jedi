@@ -12,7 +12,7 @@ use fckit_log_module,           only: fckit_log
 
 use datetime_mod
 
-use fv3jedi_constants_mod, only: constoz
+use fv3jedi_constants_mod, only: constant
 use fv3jedi_geom_mod,      only: fv3jedi_geom
 use fv3jedi_fieldfail_mod, only: field_fail
 use fv3jedi_field_mod,     only: copy_subset, field_clen
@@ -200,7 +200,7 @@ have_o3   = .false.
 if (dxm%has_field( 'o3mr')) then
   call dxm%get_field('o3mr', o3mr)
   allocate(o3ppmv(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  o3ppmv = o3mr * constoz
+  o3ppmv = o3mr * constant('constoz')
   have_o3 = .true.
 elseif (dxm%has_field('o3ppmv')) then
   call dxm%get_field('o3ppmv', o3ppmv)
@@ -459,7 +459,7 @@ if (have_o3ppmv) then
 
   ! Adjoint of ppmv to mixing ratio
   allocate(o3mr(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  o3mr = o3ppmv * constoz
+  o3mr = o3ppmv * constant('constoz')
   have_o3mr = .true.
 
 endif

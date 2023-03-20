@@ -67,6 +67,12 @@ class Geometry : public util::Printable,
 
   const FieldsMetadata & fieldsMetaData() const {return *fieldsMeta_;}
 
+  // Functions to retrieve geometry features
+  const std::vector<double> & ak() const {return ak_;}
+  const std::vector<double> & bk() const {return bk_;}
+  const double & pTop() const {return pTop_;}
+  const int & nLevels() const {return nLevels_;}
+
  private:
   void print(std::ostream &) const;
 
@@ -76,6 +82,10 @@ class Geometry : public util::Printable,
   atlas::FunctionSpace functionSpaceIncludingHalo_;
   atlas::FieldSet extraFields_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
+  std::vector<double> ak_;
+  std::vector<double> bk_;
+  int nLevels_;
+  double pTop_;
 };
 // -------------------------------------------------------------------------------------------------
 

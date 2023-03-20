@@ -455,12 +455,6 @@ do jvar = 1,vars%nvars()
     call meta%set('interp_source_point_mask', trim(field%interpolation_source_point_mask))
   end if
 
-  ! Add geometry features that are needed to give complete description of the grid
-  call meta%set('nLevels', geom%npz)
-  call meta%set('ptop', geom%ptop)
-  call meta%set('ak', geom%ak)
-  call meta%set('bk', geom%bk)
-
   ! Release pointer
   call afield%final()
 

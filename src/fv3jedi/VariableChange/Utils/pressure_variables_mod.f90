@@ -5,7 +5,7 @@
 
 module pressure_vt_mod
 
-use fv3jedi_constants_mod, only: kappa, grav, rad2deg, constoz
+use fv3jedi_constants_mod, only: constant
 use fv3jedi_geom_mod, only: fv3jedi_geom, pedges2pmidlayer
 use fv3jedi_kinds_mod, only: kind_real
 
@@ -39,11 +39,14 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp,logpe,pkz)
  integer :: isc,iec,jsc,jec,i,j,k
  real(kind=kind_real) :: peln(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1)
  real(kind=kind_real) ::   pk(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1)
+ real(kind=kind_real) :: kappa
 
  isc = geom%isc
  iec = geom%iec
  jsc = geom%jsc
  jec = geom%jec
+
+ kappa = constant('kappa')
 
  !Pressure at layer edge
  pe(isc:iec,jsc:jec,1) = geom%ptop
@@ -54,7 +57,7 @@ subroutine delp_to_pe_p_logp(geom,delp,pe,p,logp,logpe,pkz)
  !Midpoint pressure
  do i = isc,iec
    do j = jsc,jec
-       call pedges2pmidlayer(geom%npz,'Philips',pe(i,j,:),p(i,j,:))
+       call pedges2pmidlayer(geom%npz,'Philips',pe(i,j,:),kappa,p(i,j,:))
    enddo
  enddo
 
@@ -177,6 +180,7 @@ subroutine tropprs(geom, ps, prs, tv, o3, vort, tprs)
  real(kind=kind_real) :: prsl(geom%npz), pvort(geom%npz)
  real(kind=kind_real) :: o3mr(geom%npz)
  real(kind=kind_real) :: lat, wgt
+ real(kind=kind_real) :: rad2deg, constoz, kappa, grav
 
  ! Domain
  isc = geom%isc
@@ -184,6 +188,12 @@ subroutine tropprs(geom, ps, prs, tv, o3, vort, tprs)
  jsc = geom%jsc
  jec = geom%jec
  npz = geom%npz
+
+ ! Constants
+ rad2deg = constant('rad2deg')
+ constoz = constant('constoz')
+ kappa = constant('kappa')
+ grav = constant('grav')
 
  ! Loop through locations
  do j = jsc, jec

@@ -20,7 +20,6 @@ use mpp_domains_mod,              only: east, north, center, domain2D
 use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
 ! fv3jedi
-use fv3jedi_constants_mod,        only: rad2deg
 use fv3jedi_field_mod,            only: fv3jedi_field, hasfield, field_clen
 use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text, add_iteration
 use fv3jedi_kinds_mod,            only: kind_real

@@ -7,7 +7,7 @@ module radii_vt_mod
 
       use fv3jedi_kinds_mod, only: kind_real
       use fv3jedi_geom_mod, only: fv3jedi_geom
-      use fv3jedi_constants_mod, only: rdry,grav,tice,zvir
+      use fv3jedi_constants_mod, only: constant
       use fckit_log_module, only: fckit_log
 
       implicit none
@@ -117,13 +117,19 @@ real :: tempK, wcontent, nconc, answer, ygra1, zans1
 integer :: mu, idx_rei
 real(kind=kind_real), allocatable :: rho_air(:,:,:)
 real, allocatable :: nnc(:,:,:), nnr(:,:,:), nng(:,:,:)
-
+real(kind=kind_real) :: rdry, grav, tice, zvir
 !+---+
 
 if (geom%f_comm%rank() == 0 ) then
   debug_msg = 'Inside crtm_ade_efr routine to compute effective radii'
   call fckit_log%debug(debug_msg)
 endif
+
+! Constants
+rdry = constant('rdry')
+grav = constant('grav')
+tice = constant('tice')
+zvir = constant('zvir')
 
 mask_land = .false.
 mask_sea = .false.
@@ -642,7 +648,7 @@ deallocate(rho_air)
 
 end subroutine crtm_ade_efr
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       real function effectiveRadius(rx, nx, a, b, mu)
 
@@ -687,7 +693,7 @@ end subroutine crtm_ade_efr
 
    end function effectiveRadius
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       real function calculateNumber(rx, N0_exp, a, b, mu)
 
@@ -734,7 +740,7 @@ end subroutine crtm_ade_efr
          ocg3(n) = 1./cg(3,n)
       enddo
 
-      !..Always assuming the intercept is from exponential distribution, 
+      !..Always assuming the intercept is from exponential distribution,
       !.. then if user wants a gamma distrib with N0_exp reference, we
       !.. can convert to the proper lambda to get final number.
 
@@ -745,11 +751,11 @@ end subroutine crtm_ade_efr
       !..intercept = N0_exp/(cg(1,mu_x)*lam_exp) * lambda**ce(1,mu_x)
       !..print*, '    double-CHECK intercept = ', intercept
 
-      calculateNumber = cg(1,mu_x)*ocg2(mu_x)*rx*lambda**b_mass / a_mass 
+      calculateNumber = cg(1,mu_x)*ocg2(mu_x)*rx*lambda**b_mass / a_mass
 
    end function calculateNumber
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       real function thompson08_snow(rs, temp)
 
@@ -766,7 +772,7 @@ end subroutine crtm_ade_efr
       real, dimension(1), parameter :: cse = (/ bm_s + 1. /)
       real :: tc0, smo2, smob, smoc, smoz, a_, b_, loga_, rs_eff
 
-      !..Calculate bm_s+1 (th) moment, smoc.  Useful for diameter calcs. 
+      !..Calculate bm_s+1 (th) moment, smoc.  Useful for diameter calcs.
       tc0 = MIN(-0.1, temp-273.15)
       smob = rs/am_s
       loga_ = sa(1) + sa(2)*tc0 + sa(3)*cse(1) &
@@ -787,7 +793,7 @@ end subroutine crtm_ade_efr
 
       end function thompson08_snow
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
       REAL FUNCTION GAMMLN(XX)
 !     --- RETURNS THE VALUE LN(GAMMA(XX)) FOR XX > 0.
       IMPLICIT NONE
@@ -812,7 +818,7 @@ end subroutine crtm_ade_efr
       GAMMLN=TMP+LOG(STP*SER/X)
       END FUNCTION GAMMLN
 !  (C) Copr. 1986-92 Numerical Recipes Software 2.02
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
       REAL FUNCTION WGAMMA(y)
 
       IMPLICIT NONE

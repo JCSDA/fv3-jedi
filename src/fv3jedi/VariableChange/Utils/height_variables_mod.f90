@@ -5,7 +5,7 @@
 
 module height_vt_mod
 
-use fv3jedi_constants_mod, only: grav, rvap, tice,rdry, zvir
+use fv3jedi_constants_mod, only: constant
 use fv3jedi_geom_mod,  only: fv3jedi_geom
 use fv3jedi_kinds_mod,             only: kind_real
 
@@ -56,6 +56,7 @@ integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
 real(kind=kind_real)  :: prs_sv, prs_v
 real(kind=kind_real)  :: ehn_fct,x_v,cmpr
+real(kind=kind_real)  :: zvir, tice, rdry, rvap, grav
 
 isc = geom%isc
 iec = geom%iec
@@ -63,6 +64,12 @@ jsc = geom%jsc
 jec = geom%jec
 npz = geom%npz
 
+! Constants
+zvir = constant('zvir')
+tice = constant('tice')
+rdry = constant('rdry')
+rvap = constant('rvap')
+grav = constant('grav')
 
 !get qmr--mixing ratio and virtual temeprature
 qmr(isc:iec,jsc:jec,:) = q(isc:iec,jsc:jec,:)/(1.0 - q(isc:iec,jsc:jec,:))
@@ -150,12 +157,21 @@ integer               :: isc,iec,jsc,jec,npz,i,j,k
 real(kind=kind_real)  :: Tkk,Tvk,Tc, qmk,Pak,dpk,dz
 real(kind=kind_real)  :: prs_sv, prs_v
 real(kind=kind_real)  :: ehn_fct,x_v,cmpr
+real(kind=kind_real)  :: zvir, tice, rdry, rvap, grav
 
 isc = geom%isc
 iec = geom%iec
 jsc = geom%jsc
 jec = geom%jec
 npz = geom%npz
+
+! Constants
+zvir = constant('zvir')
+tice = constant('tice')
+rdry = constant('rdry')
+rvap = constant('rvap')
+grav = constant('grav')
+
 !get qmr--mixing ratio and virtual temeprature
 qmr(isc:iec,jsc:jec,:) = q(isc:iec,jsc:jec,:)/(1.0 - q(isc:iec,jsc:jec,:))
 Tv(isc:iec,jsc:jec,:)  = T(isc:iec,jsc:jec,:)*(1.0 + zvir*qmr(isc:iec,jsc:jec,:))

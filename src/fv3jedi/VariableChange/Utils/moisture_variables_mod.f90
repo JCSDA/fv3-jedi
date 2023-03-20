@@ -7,7 +7,7 @@ module moisture_vt_mod
 
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_geom_mod, only: fv3jedi_geom
-use fv3jedi_constants_mod, only: rdry,grav,tice,zvir
+use fv3jedi_constants_mod, only: constant
 
 use pressure_vt_mod, only: delp_to_pe_p_logp
 
@@ -365,11 +365,7 @@ subroutine get_qsat(geom,delp,t,q,qsat)
 
   call delp_to_pe_p_logp(geom,delp,pe,pm)
 
-  do j = geom%jsc,geom%jec
-    do i = geom%isc,geom%iec
-      call qsmith(geom%npz,t(i,j,:),q(i,j,:),pm(i,j,:),qsat(i,j,:))
-    enddo
-  enddo
+  call qsmith(geom,t,q,pm,qsat)
 
   deallocate(pm)
   deallocate(pe)
@@ -378,22 +374,26 @@ end subroutine get_qsat
 
 !----------------------------------------------------------------------------
 
-subroutine qsmith(nlev,t,sphum,pl,qs)
+subroutine qsmith(geom,t,sphum,pl,qs)
 
   implicit none
-  integer,         intent(in)  :: nlev
-  real(kind_real), intent(in)  :: t(nlev)
-  real(kind_real), intent(in)  :: sphum(nlev)
-  real(kind_real), intent(in)  :: pl(nlev)
-  real(kind_real), intent(out) :: qs(nlev)
+  type(fv3jedi_geom), intent(in)  :: geom
+  real(kind_real),    intent(in)  ::     t(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind_real),    intent(in)  :: sphum(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind_real),    intent(in)  ::    pl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
+  real(kind_real),    intent(out) ::    qs(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)
 
   real(kind_real), parameter :: esl = 0.621971831
   real(kind_real), allocatable :: table(:), des(:)
 
-  real(kind_real) :: es
+  real(kind_real) :: es, tice,zvir
   real(kind_real) :: ap1, eps10
-  integer :: k, it
+  integer :: i, j, k, it
   integer, parameter :: length=2621
+
+  ! Constants
+  tice = constant('tice')
+  zvir = constant('zvir')
 
   eps10  = 10.0_kind_real*esl
 
@@ -406,12 +406,16 @@ subroutine qsmith(nlev,t,sphum,pl,qs)
   enddo
   des(length) = des(length-1)
 
-  do k=1,nlev
-    ap1 = 10.0_kind_real*dim(t(k), tice-160.0_kind_real) + 1.0_kind_real
-    ap1 = min(2621.0_kind_real, ap1)
-    it = int(ap1)
-    es = table(it) + (ap1-it)*des(it)
-    qs(k) = esl*es*(1.0_kind_real+zvir*sphum(k))/(pl(k))
+  do k=1,geom%npz
+    do j = geom%jsc,geom%jec
+      do i = geom%isc,geom%iec
+        ap1 = 10.0_kind_real*dim(t(i,j,k), tice-160.0_kind_real) + 1.0_kind_real
+        ap1 = min(2621.0_kind_real, ap1)
+        it = int(ap1)
+        es = table(it) + (ap1-it)*des(it)
+        qs(i,j,k) = esl*es*(1.0_kind_real+zvir*sphum(i,j,k))/(pl(i,j,k))
+      enddo
+    enddo
   enddo
 
   deallocate(table,des)

@@ -8,7 +8,7 @@ module surface_vt_mod
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
 use crtm_module, only: crtm_irlandcoeff_classification
-use fv3jedi_constants_mod, only: rad2deg, deg2rad, pi
+use fv3jedi_constants_mod, only: constant
 
 use slow_unstructured_interpolation_mod, only: unstrc_interp
 
@@ -152,6 +152,12 @@ real(kind=kind_real) :: u_srf
 real(kind=kind_real) :: v_srf
 real(kind=kind_real) :: f10m
 real(kind=kind_real) :: sss
+
+real(kind=kind_real) :: pi, rad2deg
+
+! Constants
+pi = constant('pi')
+rad2deg = constant('rad2deg')
 
 ! Loop over all grid points
 do jj = geom%jsc, geom%jec

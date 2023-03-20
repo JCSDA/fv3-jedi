@@ -46,8 +46,6 @@ contains
 
 subroutine c_fv3jedi_geom_initialize(c_conf, c_comm) bind(c,name='fv3jedi_geom_initialize_f90')
 
-implicit none
-
 type(c_ptr), value, intent(in) :: c_conf
 type(c_ptr), value, intent(in) :: c_comm
 
@@ -67,8 +65,6 @@ end subroutine c_fv3jedi_geom_initialize
 
 subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_nlev) &
                                bind(c, name='fv3jedi_geom_setup_f90')
-
-implicit none
 
 !Arguments
 integer(c_int),     intent(inout) :: c_key_self
@@ -107,7 +103,6 @@ end subroutine c_fv3jedi_geom_setup
 subroutine c_fv3jedi_addfmd_setup(c_key_self, c_fields_meta) &
                                   bind(c, name='fv3jedi_geom_addfmd_f90')
 
-implicit none
 !Arguments
 integer(c_int),     intent(inout) :: c_key_self
 type(c_ptr), value, intent(in)    :: c_fields_meta
@@ -132,8 +127,6 @@ end subroutine c_fv3jedi_addfmd_setup
 ! --------------------------------------------------------------------------------------------------
 
 subroutine c_fv3jedi_geom_clone(c_key_self, c_key_other, c_fields_meta) bind(c,name='fv3jedi_geom_clone_f90')
-
-implicit none
 
 integer(c_int),     intent(inout) :: c_key_self
 integer(c_int),     intent(in)    :: c_key_other
@@ -163,8 +156,6 @@ end subroutine c_fv3jedi_geom_clone
 
 subroutine c_fv3jedi_geom_delete(c_key_self) bind(c,name='fv3jedi_geom_delete_f90')
 
-implicit none
-
 integer(c_int), intent(inout) :: c_key_self
 type(fv3jedi_geom), pointer :: self
 
@@ -186,8 +177,6 @@ end subroutine c_fv3jedi_geom_delete
 
 subroutine c_fv3jedi_geom_print(c_key_self, c_cube) bind(c,name='fv3jedi_geom_print_f90')
 
-implicit none
-
 integer(c_int), intent(in)    :: c_key_self
 integer(c_int), intent(inout) :: c_cube
 
@@ -207,8 +196,6 @@ end subroutine c_fv3jedi_geom_print
 
 subroutine c_fv3jedi_geom_set_lonlat(c_key_self, c_afieldset, c_include_halo) &
                                      bind(c,name='fv3jedi_geom_set_lonlat_f90')
-
-implicit none
 
 !Arguments
 integer(c_int), intent(in) :: c_key_self
@@ -262,8 +249,6 @@ end subroutine c_fv3jedi_geom_set_functionspace_pointer
 subroutine c_fv3jedi_geom_set_and_fill_extra_fields(c_key_self, c_afieldset) &
                                        bind(c,name='fv3jedi_geom_set_and_fill_extra_fields_f90')
 
-implicit none
-
 integer(c_int),     intent(in) :: c_key_self
 type(c_ptr), value, intent(in) :: c_afieldset
 
@@ -285,8 +270,6 @@ end subroutine c_fv3jedi_geom_set_and_fill_extra_fields
 
 subroutine c_fv3jedi_geom_start_end(c_key_self, ist, iend, jst, jend, kst, kend, npz) &
                                     bind(c, name='fv3jedi_geom_start_end_f90')
-
-implicit none
 
 integer(c_int), intent( in) :: c_key_self
 integer(c_int), intent(out) :: ist, iend, jst, jend, kst, kend, npz
@@ -334,8 +317,6 @@ end subroutine c_fv3jedi_geom_iterator_dimension_f90
 subroutine c_fv3jedi_geom_verticalCoord(c_key_self, vc, npz, psurf) &
                                     bind(c, name='fv3jedi_geom_verticalCoord_f90')
 
-implicit none
-
 integer(c_int),    intent( in) :: c_key_self
 integer(c_int),    intent( in) :: npz
 real(c_double), intent( in) :: psurf
@@ -352,6 +333,41 @@ call fv3jedi_geom_registry%get(c_key_self, self)
 call getVerticalCoordLogP(self, vc, npz, psurf)
 
 end subroutine c_fv3jedi_geom_verticalCoord
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_get_data(c_key_self, c_nlev, c_ak, c_bk, c_ptop) &
+           bind(c,name='fv3jedi_geom_get_data_f90')
+
+! Arguments
+integer(c_int), intent(in)  :: c_key_self
+integer(c_int), intent(in)  :: c_nlev
+real(c_double), intent(out) :: c_ak(c_nlev+1)
+real(c_double), intent(out) :: c_bk(c_nlev+1)
+real(c_double), intent(out) :: c_ptop
+
+! Locals
+type(fv3jedi_geom), pointer :: self
+real(kind=kind_real) :: f_ak(c_nlev+1)
+real(kind=kind_real) :: f_bk(c_nlev+1)
+real(kind=kind_real) :: f_ptop
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self, self)
+
+! Call implementation
+! -------------------
+call self%get_data(f_ak, f_bk, f_ptop)
+
+! Precision changes
+! -----------------
+c_ak = real(f_ak, kind=c_double)
+c_bk = real(f_bk, kind=c_double)
+c_ptop = real(f_ptop, kind=c_double)
+
+end subroutine c_fv3jedi_geom_get_data
+
 ! --------------------------------------------------------------------------------------------------
 
 end module fv3jedi_geom_interface_mod

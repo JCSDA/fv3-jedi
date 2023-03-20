@@ -46,6 +46,7 @@ extern "C" {
                                   int &, int &);
   void fv3jedi_geom_verticalCoord_f90(const F90geom &, double &, int &, double &);
   int fv3jedi_geom_iterator_dimension_f90(const F90geom &, int &);
+  void fv3jedi_geom_get_data_f90(const F90geom &, const int &, double *, double *, double &);
 
 }  // extern "C"
 // -----------------------------------------------------------------------------

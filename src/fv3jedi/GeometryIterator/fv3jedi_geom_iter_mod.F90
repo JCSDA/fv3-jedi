@@ -10,7 +10,7 @@ module fv3jedi_geom_iter_mod
   use kinds
   use atlas_module, only: atlas_field
   use fv3jedi_geom_mod, only: fv3jedi_geom, getVerticalCoord
-  use fv3jedi_constants_mod, only: rad2deg
+  use fv3jedi_constants_mod, only: constant
 
 ! oops
   use missing_values_mod
@@ -158,8 +158,8 @@ contains
     endif
 
     !convert to degrees from radians
-    lat = rad2deg*lat
-    lon = rad2deg*lon
+    lat = constant('rad2deg')*lat
+    lon = constant('rad2deg')*lon
 
     ! check kindex
     select case(self%geom%iterator_dimension)

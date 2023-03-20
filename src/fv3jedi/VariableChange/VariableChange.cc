@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 UCAR.
+ * (C) Copyright 2021-2023 UCAR.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,13 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "boost/none_t.hpp"
-
 #include "oops/mpi/mpi.h"
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/State/State.h"
+#include "fv3jedi/Utilities/Constants.h"
 #include "fv3jedi/VariableChange/VariableChange.h"
 
 namespace fv3jedi {
@@ -27,11 +26,30 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
   : fieldsMetadata_(geometry.fieldsMetaData()), vader_(), run_vader_(params.run_vader.value()),
     run_fv3jedi_(params.run_fv3jedi.value()) {
   // Create vader cookbook
-  vader::Vader::cookbookConfigType vaderCustomCookbook =
+  vader::cookbookConfigType vaderCustomCookbook =
                                         params.variableChangeParameters.value().vaderCustomCookbook;
+
+  // Create the VaderConstructConfig object
+  vader::VaderConstructConfig vaderConstructConfig(vaderCustomCookbook);
+
+  // Add all constants to vader constructor config
+  std::vector<std::string> allConstantsNames = getAllConstantsNames();
+  for (std::string allConstantsName : allConstantsNames) {
+    vaderConstructConfig.addToConfig<double>(allConstantsName, getConstant(allConstantsName));
+  }
+
+  // Add geometry data to vader constructor config
+  vaderConstructConfig.addToConfig<double>("air_pressure_at_top_of_atmosphere_model",
+                                           geometry.pTop());
+  vaderConstructConfig.addToConfig<std::vector<double>>
+                                  ("sigma_pressure_hybrid_coordinate_a_coefficient", geometry.ak());
+  vaderConstructConfig.addToConfig<std::vector<double>>
+                                  ("sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
+  vaderConstructConfig.addToConfig<int>("nLevels", geometry.nLevels());
+
   // Create vader with fv3-jedi custom cookbook
   vader_.reset(new vader::Vader(params.variableChangeParameters.value().vader,
-                                vaderCustomCookbook));
+                                vaderConstructConfig));
   // Create the variable change
   variableChange_.reset(VariableChangeFactory::create(geometry,
                                                       params.variableChangeParameters.value()));

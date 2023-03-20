@@ -28,7 +28,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
-                   comm_(comm) {
+                   comm_(comm), ak_(), bk_() {
   // Call the initialize phase, done only once.
   static bool initialized = false;
   if (!initialized) {
@@ -37,11 +37,10 @@ Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
   }
 
   // Geometry constructor
-  int nlev;
-  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nlev);
+  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nLevels_);
 
   // Construct the field sets and add to Geometry
-  fieldsMeta_.reset(new FieldsMetadata(params.fieldsMetadataParameters, nlev));
+  fieldsMeta_.reset(new FieldsMetadata(params.fieldsMetadataParameters, nLevels_));
   fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
 
   // Set lon/lat field, include halo so we can set up function spaces with/without halo
@@ -81,11 +80,17 @@ Geometry::Geometry(const Parameters_ & params, const eckit::mpi::Comm & comm) :
       insertDerivedTimeInvariantFields(extraFields_, derivedFields);
     }
   }
+
+  // Copy some Fortran data to C++
+  ak_.resize(nLevels_+1);
+  bk_.resize(nLevels_+1);
+  fv3jedi_geom_get_data_f90(keyGeom_, nLevels_, ak_.data(), bk_.data(), pTop_);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Geometry::Geometry(const Geometry & other) : comm_(other.comm_) {
+Geometry::Geometry(const Geometry & other) : comm_(other.comm_), ak_(other.ak_), bk_(other.bk_),
+nLevels_(other.nLevels_), pTop_(other.pTop_) {
   fieldsMeta_ = std::make_shared<FieldsMetadata>(*other.fieldsMeta_);
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, fieldsMeta_.get());
   functionSpace_ = atlas::functionspace::PointCloud(other.functionSpace_.lonlat());

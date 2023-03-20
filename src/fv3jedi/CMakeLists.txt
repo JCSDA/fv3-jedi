@@ -89,6 +89,8 @@ list( APPEND fv3jedi_src_files
   State/State.interface.h
   State/fv3jedi_state_interface_mod.F90
   State/fv3jedi_state_mod.F90
+  Utilities/Constants.cc
+  Utilities/Constants.h
   Utilities/Traits.h
   Utilities/interface.h
   Utilities/fv3jedi_communication_mod.f90

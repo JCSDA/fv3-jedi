@@ -18,7 +18,7 @@ use datetime_mod
 use string_utils, only: swap_name_member, replace_string
 
 ! fv3-jedi
-use fv3jedi_constants_mod,    only: rad2deg
+use fv3jedi_constants_mod,    only: constant
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use fv3jedi_field_mod,        only: fv3jedi_field
 use fv3jedi_io_utils_mod
@@ -244,8 +244,8 @@ self%npz = geom%npz
 self%ntiles = geom%ntiles
 allocate(self%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec))
 allocate(self%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec))
-self%grid_lat = rad2deg*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
-self%grid_lon = rad2deg*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
+self%grid_lat = constant('rad2deg')*geom%grid_lat(geom%isc:geom%iec,geom%jsc:geom%jec)
+self%grid_lon = constant('rad2deg')*geom%grid_lon(geom%isc:geom%iec,geom%jsc:geom%jec)
 allocate(self%ak(geom%npz+1))
 allocate(self%bk(geom%npz+1))
 self%ak = geom%ak

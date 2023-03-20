@@ -9,7 +9,7 @@ module wind_vt_mod
 use mpi
 use netcdf
 
-use fv3jedi_constants_mod, only: pi, rad2deg
+use fv3jedi_constants_mod, only: constant
 use fv3jedi_geom_mod,  only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_communication_mod, only: gather_field, scatter_field
@@ -82,6 +82,7 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
                                                               1.0_kind_real,  2.0_kind_real, &
                                                               1.0_kind_real, -1.0_kind_real, &
                                                               1.0_kind_real, -1.0_kind_real /), (/4, 2/))
+ real(kind=kind_real) :: pi, rad2deg
 
  !In GSI these calculations are done after interpolation to obs location
 
@@ -89,6 +90,10 @@ subroutine sfc_10m_winds(geom,usrf,vsrf,f10r,spd10m,dir10m)
  iec = geom%iec
  jsc = geom%jsc
  jec = geom%jec
+
+! Constants
+ pi = constant('pi')
+ rad2deg = constant('rad2deg')
 
  !10m wind speed
  spd10m(isc:iec,jsc:jec) = f10r(isc:iec,jsc:jec)*sqrt( usrf(isc:iec,jsc:jec)*usrf(isc:iec,jsc:jec) + &

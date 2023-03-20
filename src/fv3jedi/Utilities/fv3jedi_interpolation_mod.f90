@@ -18,7 +18,7 @@ use interpolatorbump_mod,         only: bump_interpolator
 use fv3jedi_kinds_mod,              only: kind_real
 use fv3jedi_field_mod,              only: fv3jedi_field, get_field, hasfield
 use fv3jedi_geom_mod,               only: fv3jedi_geom
-use fv3jedi_constants_mod,          only: rad2deg
+use fv3jedi_constants_mod,          only: constant
 use wind_vt_mod,                    only: d_to_a, a_to_d
 
 implicit none
@@ -87,8 +87,8 @@ if (self%need_bary) then
   ! This uses the slower Fortran unstructure interpolation copied into fv3-jedi at time of
   ! early-2022 GetValues optimization.
   call self%unsinterp%create( geom_in%f_comm, self%nnearest, trim(us_interp_type), &
-                              geom_in%ngrid, rad2deg*geom_in%lat_us, rad2deg*geom_in%lon_us, &
-                              geom_ou%ngrid, rad2deg*geom_ou%lat_us, rad2deg*geom_ou%lon_us )
+                              geom_in%ngrid, constant('rad2deg')*geom_in%lat_us, constant('rad2deg')*geom_in%lon_us, &
+                              geom_ou%ngrid, constant('rad2deg')*geom_ou%lat_us, constant('rad2deg')*geom_ou%lon_us )
 endif
 
 end subroutine create

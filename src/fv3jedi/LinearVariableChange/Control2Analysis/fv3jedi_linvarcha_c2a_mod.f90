@@ -9,7 +9,7 @@ module fv3jedi_linvarcha_c2a_mod
 use fckit_configuration_module, only: fckit_configuration
 
 ! fv3jedi
-use fv3jedi_constants_mod, only: constoz
+use fv3jedi_constants_mod, only: constant
 use fv3jedi_fieldfail_mod, only: field_fail
 use fv3jedi_field_mod,     only: copy_subset, field_clen
 use fv3jedi_geom_mod,      only: fv3jedi_geom
@@ -233,13 +233,13 @@ have_o3ppmv = .false.
 if (dxc%has_field('o3ppmv').and.dxa%has_field('o3mr')) then
    call dxc%get_field('o3ppmv', o3ctl)
    allocate(o3ana(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-   o3ana = o3ctl / constoz
+   o3ana = o3ctl / constant('constoz')
    have_o3mr=.true.
 endif
 if (dxc%has_field('o3mr').and.dxa%has_field('o3ppmv')) then
    call dxc%get_field('o3mr', o3ctl)
    allocate(o3ana(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-   o3ana = o3ctl * constoz
+   o3ana = o3ctl * constant('constoz')
    have_o3ppmv=.true.
 endif
 
@@ -423,13 +423,13 @@ have_o3ppmv = .false.
 if (dxc%has_field('o3ppmv').and.dxa%has_field('o3mr')) then
    call dxa%get_field('o3mr', o3ana)
    allocate(o3ctl(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
-   o3ctl = o3ana * constoz
+   o3ctl = o3ana * constant('constoz')
    have_o3ppmv = .true.
 endif
 if (dxc%has_field('o3mr').and.dxa%has_field('o3ppmv')) then
    call dxa%get_field('o3ppmv', o3ana)
    allocate(o3ctl(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
-   o3ctl = o3ana / constoz
+   o3ctl = o3ana / constant('constoz')
    have_o3mr = .true.
 endif
 
