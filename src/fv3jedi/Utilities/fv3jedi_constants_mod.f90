@@ -8,6 +8,9 @@ module fv3jedi_constants_mod
 ! Bindings to c++ code
 use iso_c_binding
 
+! oops uses
+use string_f_c_mod, only: f_c_string
+
 ! fv3jedi uses
 use fv3jedi_kinds_mod, only: kind_real
 
@@ -41,10 +44,11 @@ function constant(constant_name) result(constant_value)
 
     ! Locals
     real(kind=c_double) :: constant_value_c
-    real(kind=kind_real) :: constant_value_tmp
+    character(len=1, kind=c_char), allocatable :: constant_name_c(:)
 
     ! Get constant from cpp code
-    call get_constant_c([constant_name, C_NULL_CHAR], constant_value_c)
+    call f_c_string(constant_name, constant_name_c)
+    call get_constant_c(constant_name_c, constant_value_c)
     constant_value = real(constant_value_c, kind=kind_real)
 
 end function
