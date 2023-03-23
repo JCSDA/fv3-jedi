@@ -10,10 +10,10 @@ import ewok.tasks.getBackground as generic
 
 class getBackgroundGEOS(generic.getBackground):
 
-    def setup(self, config, fc):
+    def setup(self, config, fc, fix):
 
         # Get generic defaults
-        generic.getBackground.setup(self, config, fc)
+        generic.getBackground.setup(self, config, fc, fix)
 
         # Use GEOS specific script
         self.command = os.path.join(config['model_path'], "tasks/runGetForecast.py")

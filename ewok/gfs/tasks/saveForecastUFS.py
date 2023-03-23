@@ -5,21 +5,23 @@
 
 import os
 import yamltools
-import ewok.tasks.getBackground as generic
+import ewok.tasks.saveForecast as generic
 
 
-class getBackgroundGFS(generic.getBackground):
+class saveForecastUFS(generic.saveForecast):
 
-    def setup(self, config, fc, fix):
+    def setup(self, config, fc):
 
         # Get generic defaults
-        generic.getBackground.setup(self, config, fc, fix)
+        generic.saveForecast.setup(self, config, fc)
 
-        if 'hack_step_bg' in config and config['hack_step_bg'] == True:
-            self.RUNTIME_YAML['hack_step_bg'] = True
+        self.walltime = '00:10:00'
+
+#       Copy the 6hrs forecast
+        self.RUNTIME_YAML['fc']['fcout']['PT6H RESTART'] = self.RUNTIME_YAML['fc']['fcout']['PT6H']
 
         # Use GFS specific script
-        self.command = os.path.join(config['model_path'], "tasks/runGetForecast.py")
+        self.command = os.path.join(config['model_path'], "tasks/runSaveForecastUFS.py")
 
         self.exec_cmd = ''   # Run on login node for S3 and R2D2 Database access
         self.include_header = ''

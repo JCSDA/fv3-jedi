@@ -1,0 +1,90 @@
+field metadata:
+
+- long name: u_component_of_native_D_grid_wind
+  io name: u
+
+- long name: v_component_of_native_D_grid_wind
+  io name: v
+
+- long name: air_temperature
+  io name: T
+
+- long name: air_pressure_thickness
+  io name: DELP
+
+- long name: stc
+  io file: surface
+
+- long name: soilMoistureVolumetric
+  io name: smc
+  io file: surface
+
+- long name: eastward_wind
+  io name: ua
+
+- long name: northward_wind
+  io name: va
+
+- long name: specific_humidity
+  io name: sphum
+  io file: tracer
+
+- long name: cloud_liquid_ice
+  io name: ice_wat
+  io file: tracer
+
+- long name: ozone_mass_mixing_ratio
+  io name: o3mr
+  io file: tracer
+
+- long name: sfc_geopotential_height_times_grav
+  io name: phis
+  io file: core
+
+- long name: slmsk
+  io name: slmsk
+  io file: surface
+
+- long name: sheleg
+  io name: sheleg
+  io file: surface
+
+- long name: sea_surface_temperature
+  io name: tsea
+  io file: surface
+
+- long name: vtype
+  io name: vtype
+  io file: surface
+
+- long name: stype
+  io name: stype
+  io file: surface
+
+- long name: vfrac
+  io name: vfrac
+  io file: surface
+
+- long name: stc
+  io name: stc
+  io file: surface
+
+#- long name: smc
+#  io name: smc
+#  io file: surface
+
+- long name: totalSnowDepth
+  io name: snwdph
+  io file: surface
+
+#- long name: u10m
+#  io name: u_srf
+#  io file: surface_wind
+
+#- long name: v10m
+#  io name: v_srf
+#  io file: surface_wind
+
+#- long name: f10m
+#  io name: f10m
+#  io file: surface

@@ -1,0 +1,36 @@
+print_esmf:              .true.
+start_year:              %year%
+start_month:             %month%
+start_day:               %day%
+start_hour:              %hour%
+start_minute:            0
+start_second:            0
+calendar:                %calendar%
+nhours_fcst:             %fc_length%
+fhrot:                   6
+
+dt_atmos:                1200
+restart_interval:        %fc_freq%, -1
+output_1st_tstep_rst:    .false.
+
+quilting:                .false.
+write_groups:            1
+write_tasks_per_group:   2
+itasks:                  1
+output_history:          .true.
+write_dopost:            .false.
+write_nsflip:            .false.
+num_files:               2
+filename_base:           'atm' 'sfc'
+output_grid:             gaussian_grid
+output_file:             'netcdf'
+ideflate:                0
+nbits:                   0
+ichunk3d:                0
+jchunk3d:                0
+kchunk3d:                0
+imo:                     192
+jmo:                     94
+
+output_fh:               24 -1
+iau_offset:              0

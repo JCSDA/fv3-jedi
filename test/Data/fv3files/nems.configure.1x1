@@ -1,0 +1,7 @@
+ logKindFlag:          ESMF_LOGKIND_MULTI
+ EARTH_component_list: ATM
+ ATM_model:            fv3
+ ATM_petlist_bounds:   0 5
+ runSeq::
+   ATM
+ ::

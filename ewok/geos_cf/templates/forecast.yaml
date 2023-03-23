@@ -7,9 +7,3 @@ filetype: cube sphere history
 datapath: $(fcworkdir)
 filename: $(expid).fc.$(fcdatetime).$(fcstep).bkg.nc
 state variables: $(BG_VARIABLES)
-# - DELP
-# - volume_mixing_ratio_of_no2
-# - volume_mixing_ratio_of_no
-# - volume_mixing_ratio_of_o3
-# - volume_mixing_ratio_of_co
-# - PS
