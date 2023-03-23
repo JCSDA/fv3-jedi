@@ -28,6 +28,7 @@ bump:
   drivers:
     multivariate strategy: univariate
     write local sampling: true
+    compute correlation: true
     compute variance: true
     iterative algorithm: true
     compute moments: true
