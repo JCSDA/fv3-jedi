@@ -1,30 +1,38 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(ompsnm_npp) = 7.7347429500298695e+03, nobs = 6835, Jo/n = 1.1316375932743041e+00, err = 6.0000000000000000e+00
-CostJo   : Nonlinear Jo(omi_aura) = 7.7347429500298695e+03, nobs = 6835, Jo/n = 1.1316375932743041e+00, err = 6.0000000000000000e+00
-CostFunction: Nonlinear J = 1.5469485900059739e+04
-DRIPCGMinimizer: reduction in residual norm = 1.5730238720409476e-01
+CostJo   : Nonlinear Jo(ompsnm_npp) = 7.4340864060906088e+03, nobs = 6835, Jo/n = 1.0876498033782895e+00, err = 6.0000000000000000e+00
+CostJo   : Nonlinear Jo(omi_aura) = 7.4340864060906088e+03, nobs = 6835, Jo/n = 1.0876498033782895e+00, err = 6.0000000000000000e+00
+CostFunction: Nonlinear J = 1.4868172812181218e+04
+DRIPCGMinimizer: reduction in residual norm = 1.9741961339884170e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 4 | cube sphere face size: C12
 surface_pressure                             | Min:+5.3773865675393987e+04 Max:+1.0482524400256196e+05 RMS:+9.8975197490751860e+04
-air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934647e+03
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944940e+03
-mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+3.8071811265549663e+01 RMS:+3.7080406704294626e+00
+air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934658e+03
+sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+3.8071811302618862e+01 RMS:+3.7080492403010092e+00
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 515.248256698545
-CostJo   : Nonlinear Jo(ompsnm_npp) = 3261.379991480155, nobs = 6835, Jo/n = 0.4771587405237973, err = 6
-CostJo   : Nonlinear Jo(omi_aura) = 3261.379991480155, nobs = 6835, Jo/n = 0.4771587405237973, err = 6
-CostFunction: Nonlinear J = 7038.008239658855
-DRIPCGMinimizer: reduction in residual norm = 0.3687693744901681
+
+
+
+
+CostJb   : Nonlinear Jb = 1.668269376246745e-09
+CostJo   : Nonlinear Jo(ompsnm_npp) = 3126.100632944881, nobs = 6835, Jo/n = 0.4573665885800851, err = 6
+CostJo   : Nonlinear Jo(omi_aura) = 3126.100632944881, nobs = 6835, Jo/n = 0.4573665885800851, err = 6
+CostFunction: Nonlinear J = 6252.201265891431
+DRIPCGMinimizer: reduction in residual norm = 0.5048923957377185
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 4 | cube sphere face size: C12
 surface_pressure                             | Min:+5.3773865675393987e+04 Max:+1.0482524400256196e+05 RMS:+9.8975197490751860e+04
-air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934647e+03
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944940e+03
-mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+3.8071811303799919e+01 RMS:+3.7080610534180249e+00
+air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934658e+03
+sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+3.8071811349897331e+01 RMS:+3.7080793575118705e+00
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 651.3932101628214
-CostJo   : Nonlinear Jo(ompsnm_npp) = 3045.659311656637, nobs = 6835, Jo/n = 0.4455975583989228, err = 6
-CostJo   : Nonlinear Jo(omi_aura) = 3045.659311656637, nobs = 6835, Jo/n = 0.4455975583989228, err = 6
-CostFunction: Nonlinear J = 6742.711833476096
+
+
+
+
+CostJb   : Nonlinear Jb = 2.474424271039099e-09
+CostJo   : Nonlinear Jo(ompsnm_npp) = 2881.762588959705, nobs = 6835, Jo/n = 0.4216185206963723, err = 6
+CostJo   : Nonlinear Jo(omi_aura) = 2881.762588959705, nobs = 6835, Jo/n = 0.4216185206963723, err = 6
+CostFunction: Nonlinear J = 5763.525177921884
