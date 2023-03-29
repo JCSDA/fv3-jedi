@@ -29,6 +29,10 @@ fcstep = conf['fcstep']
 final_date = yamltools.parse_datetime(fcdate) + yamltools.parse_timedelta(fcstep)
 base = 'RESTART/' + final_date.strftime("%Y%m%d.%H%M%S")
 
+basedir = os.path.join(conf['workdir'], 'RESTART/')
+if not os.path.exists(basedir):
+    os.mkdir(basedir)
+
 fcstep = yamltools.parse_timedelta(conf['fcstep'])
 if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
     pt3h = yamltools.parse_timedelta('PT3H')

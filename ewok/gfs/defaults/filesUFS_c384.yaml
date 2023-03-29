@@ -1,3 +1,4 @@
+release: skylab-4.0.0
 fix files:
 - aerosol.dat
 - CFSR.SEAICE.1982.2012.monthly.clim.grb

@@ -50,10 +50,11 @@ ufsfiles_dir = os.path.join(fixdir, 'UFSFixFiles')
 if not os.path.exists(ufsfiles_dir):
     os.mkdir(ufsfiles_dir)
 
+release = conf['listfiles']['release']
 cycle_src = conf['listfiles']['fix files']
 
 for ii in range(len(cycle_src)):
-    src = static_data+'/ufs/'+resol+'/'+cycle_src[ii]
+    src = static_data+'/'+release+'/ufs/'+resol+'/'+cycle_src[ii]
     dest = ufsfiles_dir+'/'+cycle_src[ii]
     if not os.path.isfile(dest):
         shutil.copy(src, dest)
@@ -66,7 +67,7 @@ if not os.path.exists(ufsfiles_input_dir):
 cycle_input_src = conf['listfiles']['input fix files']
 
 for ii in range(len(cycle_input_src)):
-    src = static_data+'/ufs/'+resol+'/INPUT/'+cycle_input_src[ii]
+    src = static_data+'/'+release+'/ufs/'+resol+'/INPUT/'+cycle_input_src[ii]
     dest = ufsfiles_input_dir+'/'+cycle_input_src[ii]
     if not os.path.isfile(dest):
         shutil.copy(src, dest)

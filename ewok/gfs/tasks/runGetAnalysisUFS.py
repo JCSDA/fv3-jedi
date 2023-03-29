@@ -25,7 +25,9 @@ if 'exp_source' in conf:
     exp_read = conf['exp_source']
 
 base = 'INPUT/'
-
+basedir = os.path.join(conf['workdir'], base)
+if not os.path.exists(basedir):
+    os.mkdir(basedir)
 
 member = R2D2Data.DEFAULT_INT_VALUE
 if 'member' in conf:
