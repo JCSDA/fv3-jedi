@@ -25,6 +25,7 @@ if 'exp_source' in conf:
 
 # Fetch state
 date = conf['andate']
+sdate = yamltools.jedifnformat(date)
 base = conf['experiment']['expid'] + '.an.'
 
 member = R2D2Data.DEFAULT_INT_VALUE
@@ -37,7 +38,7 @@ R2D2Data.fetch(
     experiment=exp_read,
     resolution=conf['resolution'],
     date=date,
-    target_file=f'{base}{date}.coupler.res',
+    target_file=f'{base}{sdate}.coupler.res',
     file_type='coupler.res',
     file_extension='',
     member=member,
@@ -54,7 +55,7 @@ for file_type in file_types:
             experiment=exp_read,
             resolution=conf['resolution'],
             date=date,
-            target_file=f'{base}{date}.{file_type}.tile{tile}.nc',
+            target_file=f'{base}{sdate}.{file_type}.tile{tile}.nc',
             file_extension='nc',
             file_type=file_type,
             tile=tile,

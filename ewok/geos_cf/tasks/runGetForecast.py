@@ -24,7 +24,7 @@ if 'exp_source' in conf:
 # Fetch state
 
 base = conf['experiment']['expid'] + '.fc.'
-sdate = conf['fcdate'] + '.' + conf['fcstep']
+sdate = yamltools.jedifnformat(conf['fcdate']) + '.' + conf['fcstep']
 
 fcstep = yamltools.parse_timedelta(conf['fcstep'])
 if 'hack_step_bg' in conf and conf['hack_step_bg']:

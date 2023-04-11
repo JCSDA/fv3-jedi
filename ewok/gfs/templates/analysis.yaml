@@ -6,9 +6,9 @@
 filetype: fms restart
 datetime: $(andatetime)
 datapath: $(anworkdir)
-filename_core: $(expid).an.$(andatetime).fv_core.res.nc
-filename_trcr: $(expid).an.$(andatetime).fv_tracer.res.nc
-filename_sfcd: $(expid).an.$(andatetime).sfc_data.nc
-filename_sfcw: $(expid).an.$(andatetime).fv_srf_wnd.res.nc
-filename_cplr: $(expid).an.$(andatetime).coupler.res
+filename_core: $(expid).an.$(fndatetime).fv_core.res.nc
+filename_trcr: $(expid).an.$(fndatetime).fv_tracer.res.nc
+filename_sfcd: $(expid).an.$(fndatetime).sfc_data.nc
+filename_sfcw: $(expid).an.$(fndatetime).fv_srf_wnd.res.nc
+filename_cplr: $(expid).an.$(fndatetime).coupler.res
 state variables: $(BG_VARIABLES)

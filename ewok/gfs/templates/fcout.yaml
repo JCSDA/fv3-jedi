@@ -5,7 +5,8 @@
 
 type: fc
 exp: $(expid)
-date: $(fcdatetime) 
+date: $(fcdatetime)
+date colons: false
 frequency: $(forecast_output_frequency)
 filetype: fms restart
 datapath: $(fcworkdir)

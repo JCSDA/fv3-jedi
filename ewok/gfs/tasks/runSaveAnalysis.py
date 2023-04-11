@@ -19,7 +19,7 @@ os.chdir(conf['workdir'])
 
 # Date
 andate = conf['an']['datetime']
-base = conf['experiment']['expid'] + '.an.' + andate
+base = conf['experiment']['expid'] + '.an.' + yamltools.jedifnformat(andate)
 
 member = R2D2Data.DEFAULT_INT_VALUE
 if 'member' in conf:

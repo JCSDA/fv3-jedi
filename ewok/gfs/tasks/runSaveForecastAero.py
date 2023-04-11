@@ -19,7 +19,7 @@ os.chdir(conf['workdir'])
 
 # Date
 fcdate = conf['fc']['date']
-base = conf['experiment']['expid'] + '.fc.' + fcdate + "."
+base = conf['experiment']['expid'] + '.fc.' + yamltools.jedifnformat(fcdate) + "."
 
 # Loop over steps
 for sstep in conf['fc']['fcout']:

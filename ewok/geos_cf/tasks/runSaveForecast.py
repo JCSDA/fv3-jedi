@@ -26,8 +26,7 @@ for sstep in conf['fc']['fcout']:
 
     fcstep = yamltools.parse_timedelta(sstep)
     forecast_date = yamltools.parse_datetime(fcdate) + fcstep
-    file_date = yamltools.jediformat(forecast_date)
-    
+    file_date = yamltools.jedifnformat(forecast_date)
     R2D2Data.store(
         model=conf['experiment']['model'],
         item='forecast',

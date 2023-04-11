@@ -10,4 +10,4 @@ first: PT0H
 frequency: $(forecast_output_frequency)
 filetype: cube sphere history
 datapath: $(fcworkdir)
-filename: $(expid).fc.%yyyy-%mm-%ddT%hh:%MM:%ssZ.bkg.nc
+filename: $(expid).fc.%yyyy%mm%ddT%hh%MM%ssZ.bkg.nc

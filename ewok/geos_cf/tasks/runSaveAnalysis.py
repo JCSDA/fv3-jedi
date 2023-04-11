@@ -19,7 +19,7 @@ os.chdir(conf['workdir'])
 
 # Date
 andate = conf['an']['datetime']
-base = conf['experiment']['expid'] + '.an.' + andate
+base = conf['experiment']['expid'] + '.an.' + yamltools.jedifnformat(andate)
 
 R2D2Data.store(
     model=conf['experiment']['model'],

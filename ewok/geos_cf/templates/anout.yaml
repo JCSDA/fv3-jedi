@@ -10,4 +10,4 @@ first: $(an_first)
 frequency: $(an_frequency)
 filetype: cube sphere history
 datapath: $(anworkdir)
-filename: $(expid).an.{{current_cycle}}.bkg.nc
+filename: $(expid).an.{{fndate}}.bkg.nc

@@ -28,7 +28,7 @@ andate = yamltools.parse_datetime(conf['date'])
 # Fetch state
 
 base = conf['experiment']['expid'] + '.an.'
-sdate = yamltools.jediformat(andate)
+sdate = yamltools.jedifnformat(andate)
 
 R2D2Data.fetch(
     model=conf['experiment']['model'],
