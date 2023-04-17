@@ -168,6 +168,7 @@ list( APPEND fv3jedi_testinput
   testinput/letkf.yaml
   testinput/lgetkf.yaml
   testinput/letkf_snow.yaml
+  testinput/letkf_observer_soil_moisture.yaml
   testinput/adjointforecast.yaml
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
@@ -298,6 +299,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-fgat_gfs_aero.ref
   testoutput/letkf.ref
   testoutput/letkf_snow.ref
+  testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
   testoutput/adjointforecast.ref
   testoutput/staticb_cor_gfs.ref
@@ -1475,6 +1477,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_snow
                   MPI      6
                   ARGS     testinput/letkf_snow.yaml
+                  COMMAND  fv3jedi_letkf.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_observer_soil_moisture
+                  MPI      6
+                  ARGS     testinput/letkf_observer_soil_moisture.yaml
                   COMMAND  fv3jedi_letkf.x )
 
 # Obs Localizaton Tests

@@ -1,0 +1,99 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 49
+  npy: 49
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-land.yaml
+  time invariant fields:
+    state fields:
+      datetime: 2019-12-15T18:00:00Z
+      filetype: fms restart
+      skip coupler file: true
+      state variables: [orog_filt]
+      datapath: Data/inputs/gfs_land_c48/grid
+      filename_orog: C48_oro_data.nc
+
+window begin: 2019-12-15T15:00:00Z
+window length: PT6H
+
+background:
+ date: &date 2019-12-15T18:00:00Z
+ members:
+   - datetime: 2019-12-15T18:00:00Z
+     filetype: fms restart
+     state variables: [smc, vtype, sheleg, slmsk, stc]
+     datapath: Data/inputs/gfs_land_c48/mem001/
+     filename_sfcd: 20191215.180000.sfc_data.nc
+     filename_cplr: 20191215.180000.coupler.res
+
+driver:
+  save posterior mean: false
+  save posterior mean increment: true
+  save posterior ensemble: false
+  run as observer only: true
+  update obs config with geometry info: false # for inefficient distribution
+
+local ensemble DA:
+  solver: LETKF
+  inflation:
+    rtps: 0.0
+    rtpp: 0.0
+    mult: 1.0
+
+output increment:
+  filetype: fms restart
+  filename_sfcd: xainc.sfc_data.nc
+
+observations:
+  observers:
+  - obs space:
+      name: SoilMoistureSMAP
+      distribution:
+        name: InefficientDistribution 
+      simulated variables: [soilMoistureVolumetric]
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/smap_smc_ioda_20191215.nc
+    obs operator:
+      name: VertInterp
+      constant vertical coordinate values: [0.1, 0.5, 1.0, 2.0]
+      interpolation method: nearest-neighbor 
+      observation vertical coordinate group: MetaData
+      observation vertical coordinate: depthBelowSoilSurface
+    obs error:
+      covariance model: diagonal
+    obs localizations:
+    - localization method: Horizontal SOAR
+      lengthscale: 250e3
+      soar horizontal decay: 0.000021
+    obs filters:
+    - filter: Domain Check
+      where:
+      - variable: # high-quality retrievals
+          name: PreQC/soilMoistureVolumetric
+        is_in: 0, 8
+    - filter: Domain Check
+      where:
+      - variable: # no snow
+          name: GeoVaLs/sheleg
+        maxvalue: 0.0
+    - filter: Domain Check
+      where:
+      - variable: # land only
+          name: GeoVaLs/slmsk
+        minvalue: 0.5
+        maxvalue: 1.5
+    - filter: BlackList 
+      where:
+      - variable: # exclude certain IGBP vegetation types
+          name: GeoVaLs/vtype
+        absolute_tolerance: 1.0e-3
+        is_close_to_any_of: [1, 2, 3, 4, 13, 15, 17]
+
+test:
+  reference filename: testoutput/letkf_observer_soil_moisture.ref
+  test output filename: testoutput/letkf_observer_soil_moisture.test.out

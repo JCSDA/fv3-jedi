@@ -8,3 +8,10 @@ field metadata:
 
 - long name: vtype
   interpolation type: nearest
+
+- long name: stc
+  io file: surface
+
+- long name: soilMoistureVolumetric
+  io file: surface
+
