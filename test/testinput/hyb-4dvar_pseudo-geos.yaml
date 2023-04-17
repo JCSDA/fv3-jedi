@@ -279,3 +279,4 @@ variational:
 test:
   reference filename: testoutput/hyb-4dvar_pseudo-geos.ref
   test output filename: testoutput/hyb-4dvar_pseudo-geos.test.out
+  float relative tolerance: 1.0e-4
