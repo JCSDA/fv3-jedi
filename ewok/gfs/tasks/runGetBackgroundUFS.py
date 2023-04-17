@@ -23,6 +23,10 @@ if 'exp_source' in conf:
     exp_read = conf['exp_source']
 base = 'INPUT/'
 
+basedir = os.path.join(conf['workdir'], base)
+if not os.path.exists(basedir):
+    os.mkdir(basedir)
+
 fcstep = yamltools.parse_timedelta(conf['fcstep'])
 if 'hack_step_bg' in conf and conf['hack_step_bg'] == True:
     pt3h = yamltools.parse_timedelta('PT3H')
