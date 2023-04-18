@@ -15,7 +15,7 @@ initial condition:
   filetype: cube sphere history
   provider: geos
   state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
-                    frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+                    frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m,co2]
   datapath: Data/inputs/geos_c12
   filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
 model:

@@ -211,6 +211,10 @@ real(kind=kind_real), allocatable :: qs_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qg_efr  (:,:,:)
 real(kind=kind_real), allocatable :: watercov(:,:)
 
+! CO2
+logical :: have_co2
+real(kind=kind_real), allocatable :: co2     (:,:,:)
+
 !Salinity
 logical :: have_sss
 real(kind=kind_real), allocatable :: sss     (:,:,:)
@@ -501,6 +505,14 @@ if (have_q) then
   have_qmr = .true.
 endif
 
+! CO2
+! ---
+allocate(co2(self%isc:self%iec,self%jsc:self%jec,self%npz))
+co2 = 407.0_kind_real
+if (xm%has_field('co2')) then
+  call xm%get_field('co2', co2)
+endif
+have_co2 = .true.
 
 ! Clouds
 ! ------
@@ -871,9 +883,10 @@ do f = 1, size(fields_to_do)
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = suralt
 
-  case ("mole_fraction_of_carbon_dioxide_in_air")
+  case ("mole_fraction_of_carbon_dioxide_in_air", "co2")
 
-    field_ptr = 407.0_kind_real
+    if (.not. have_co2) call field_fail(fields_to_do(f))
+    field_ptr = co2
 
   case ("totalSnowDepth_background_error")
 
@@ -1130,6 +1143,7 @@ if (allocated(qmr)) deallocate(qmr)
 if (allocated(nc)) deallocate(nc)
 if (allocated(ni)) deallocate(ni)
 if (allocated(nr)) deallocate(nr)
+if (allocated(co2)) deallocate(co2)
 if (allocated(ql_ade)) deallocate(ql_ade)
 if (allocated(qi_ade)) deallocate(qi_ade)
 if (allocated(qr_ade)) deallocate(qr_ade)

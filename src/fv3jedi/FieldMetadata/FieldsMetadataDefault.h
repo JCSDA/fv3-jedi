@@ -1887,7 +1887,7 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "mole_fraction_of_carbon_dioxide_in_air";
-    md.shortName = "mole_fraction_of_carbon_dioxide_in_air";
+    md.shortName = "co2";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
