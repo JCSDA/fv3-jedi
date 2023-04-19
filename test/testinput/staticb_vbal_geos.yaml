@@ -1,0 +1,58 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_geos_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
+background:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: cube sphere history
+  provider: geos
+  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
+  datapath: Data/staticb/balanced/mem001/
+  filename: geos.20201215.000000z.nc4
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: ID
+  saber outer blocks:
+  - saber block name: BUMP_VerticalBalance
+    calibration:
+      general:
+        universe length-scale: 2500.0e3
+      io:
+        data directory: Data/staticb/
+        files prefix: vbal_geos
+        overriding sampling file: vbal_2020121421_geos_sampling
+        overriding vertical covariance file:
+        - vbal_2020121421_geos_vbal_cov
+        - vbal_2020121500_geos_vbal_cov
+        - vbal_2020121503_geos_vbal_cov
+      drivers:
+        read local sampling: true
+        write global sampling: true
+        read vertical covariance: true
+        compute vertical balance: true
+        write vertical balance: true
+      ensemble sizes:
+        sub-ensembles: 3
+      sampling:
+        averaging latitude width: 10.0
+      vertical balance:
+        vbal:
+        - balanced variable: velocity_potential
+          unbalanced variable: stream_function
+        - balanced variable: air_temperature
+          unbalanced variable: stream_function
+        - balanced variable: surface_pressure
+          unbalanced variable: stream_function
+        pseudo inverse: true
+        variance threshold: 0.1
+
+test:
+  reference filename: testoutput/staticb_vbal_geos.ref
+  test output filename: testoutput/staticb_vbal_geos.test.out

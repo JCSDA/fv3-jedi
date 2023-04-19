@@ -5,7 +5,6 @@ geometry:
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
   field metadata override: Data/fieldmetadata/lam_cmaq.yaml
-input variables: [volume_mixing_ratio_of_no2]
 background:
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart
@@ -16,48 +15,52 @@ background:
   filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
   filename_cplr: 20200903.180000.coupler.res
   state variables: [volume_mixing_ratio_of_no2]
-bump:
-  general:
-    universe length-scale: 2500.0e3
-  io:
-    files prefix: Data/bump/fv3jedi_bumpparameters_nicas_lam_cmaq
-    alias:
-    - in code: volume_mixing_ratio_of_no2
-      in file: fixed_2500km_0.3
-  drivers:
-    multivariate strategy: univariate
-    compute nicas: true
-    write local nicas: true
-  nicas:
-    resolution: 6
-    explicit length-scales: true
-    horizontal length-scale:
-    - groups:
-      - volume_mixing_ratio_of_no2
-      value: 2500000.0
-    vertical length-scale:
-    - groups:
-      - volume_mixing_ratio_of_no2
-      value: 0.3
-output:
-- parameter: cor_rh
-  file:
-    filetype: fms restart
-    datapath: Data/bump/
-    filename_core: bumpparameters_nicas_lam_cmaq.cor_rh.fv_core.res.nc
-    filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rh.fv_tracer.res.nc
-    filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rh.sfc_data.nc
-    filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rh.fv_srf_wnd.res.nc
-    filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rh.coupler.res
-- parameter: cor_rv
-  file:
-    filetype: fms restart
-    datapath: Data/bump/
-    filename_core: bumpparameters_nicas_lam_cmaq.cor_rv.fv_core.res.nc
-    filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rv.fv_tracer.res.nc
-    filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rv.sfc_data.nc
-    filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rv.fv_srf_wnd.res.nc
-    filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rv.coupler.res
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        universe length-scale: 2500.0e3
+      io:
+        files prefix: Data/bump/fv3jedi_bumpparameters_nicas_lam_cmaq
+        alias:
+        - in code: volume_mixing_ratio_of_no2
+          in file: fixed_2500km_0.3
+      drivers:
+        multivariate strategy: univariate
+        compute nicas: true
+        write local nicas: true
+      nicas:
+        resolution: 6
+        explicit length-scales: true
+        horizontal length-scale:
+        - groups:
+          - volume_mixing_ratio_of_no2
+          value: 2500000.0
+        vertical length-scale:
+        - groups:
+          - volume_mixing_ratio_of_no2
+          value: 0.3
+      output model files:
+      - parameter: cor_rh
+        file:
+          filetype: fms restart
+          datapath: Data/bump/
+          filename_core: bumpparameters_nicas_lam_cmaq.cor_rh.fv_core.res.nc
+          filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rh.fv_tracer.res.nc
+          filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rh.sfc_data.nc
+          filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rh.fv_srf_wnd.res.nc
+          filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rh.coupler.res
+      - parameter: cor_rv
+        file:
+          filetype: fms restart
+          datapath: Data/bump/
+          filename_core: bumpparameters_nicas_lam_cmaq.cor_rv.fv_core.res.nc
+          filename_trcr: bumpparameters_nicas_lam_cmaq.cor_rv.fv_tracer.res.nc
+          filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rv.sfc_data.nc
+          filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rv.fv_srf_wnd.res.nc
+          filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rv.coupler.res
 
 test:
   reference filename: testoutput/bumpparameters_nicas_lam_cmaq.ref

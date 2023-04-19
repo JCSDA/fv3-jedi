@@ -7,7 +7,7 @@ localization method: SABER
 saber central block:
   saber block name: BUMP_NICAS
   active variables: $(AN_VARIABLES)
-  bump:
+  read:
     io:
       data directory: $(static_data)/skylab-4.0.0/ensb_localization/c384
       files prefix: nicas_gfs

@@ -38,7 +38,7 @@ background error:
     localization method: SABER
     saber central block:
       saber block name: BUMP_NICAS
-      bump:
+      read:
         io:
           files prefix: Data/ensembleb/nicas_gfs
         drivers:

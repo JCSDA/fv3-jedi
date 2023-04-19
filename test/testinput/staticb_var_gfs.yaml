@@ -8,11 +8,10 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-input variables: &inputVars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: *inputVars
+  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   psinfile: true
   datapath: Data/staticb/unbalanced/mem001
   filename_core: 20201215.000000.fv_core.res.nc
@@ -20,137 +19,143 @@ background:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-bump:
-  general:
-    universe length-scale: 3000.0e3
-  io:
-    data directory: Data/staticb
-  drivers:
-    multivariate strategy: univariate
-  ensemble sizes:
-    sub-ensembles: 3
-  diagnostics:
-    target ensemble size: 30
-  variance:
-    objective filtering: true
-    filtering iterations: 1
-    initial length-scale:
-    - variables:
-      - stream_function
-      - velocity_potential
-      value: 3000.0e3
-    - variables:
-      - air_temperature
-      - surface_pressure
-      - specific_humidity
-      - cloud_liquid_water
-      - ozone_mass_mixing_ratio
-      value: 300.0e3
-  grids:
-  - model:
-      variables:
-      - stream_function
-      - velocity_potential
-      - air_temperature
-      - specific_humidity
-      - cloud_liquid_water
-      - ozone_mass_mixing_ratio
-    io:
-      files prefix: var_3D_gfs
-  - model:
-      variables:
-      - surface_pressure
-    io:
-      files prefix: var_2D_gfs
-input fields:
-- parameter: var
-  component: 1
-  file:
-    set datetime on read: true
-    datetime: 2020-12-14T21:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb/
-    psinfile: true
-    filename_core: 20201214.210000.var.fv_core.res.nc
-    filename_trcr: 20201214.210000.var.fv_tracer.res.nc
-    filename_sfcd: 20201214.210000.var.sfc_data.nc
-    filename_sfcw: 20201214.210000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20201214.210000.var.coupler.res
-- parameter: m4
-  component: 1
-  file:
-    set datetime on read: true
-    datetime: 2020-12-14T21:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb/
-    psinfile: true
-    filename_core: 20201214.210000.m4.fv_core.res.nc
-    filename_trcr: 20201214.210000.m4.fv_tracer.res.nc
-    filename_sfcd: 20201214.210000.m4.sfc_data.nc
-    filename_sfcw: 20201214.210000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20201214.210000.m4.coupler.res
-- parameter: var
-  component: 2
-  file:
-    set datetime on read: true
-    datetime: 2020-12-15T00:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb/
-    psinfile: true
-    filename_core: 20201215.000000.var.fv_core.res.nc
-    filename_trcr: 20201215.000000.var.fv_tracer.res.nc
-    filename_sfcd: 20201215.000000.var.sfc_data.nc
-    filename_sfcw: 20201215.000000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20201215.000000.var.coupler.res
-- parameter: m4
-  component: 2
-  file:
-    set datetime on read: true
-    datetime: 2020-12-15T00:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb/
-    psinfile: true
-    filename_core: 20201215.000000.m4.fv_core.res.nc
-    filename_trcr: 20201215.000000.m4.fv_tracer.res.nc
-    filename_sfcd: 20201215.000000.m4.sfc_data.nc
-    filename_sfcw: 20201215.000000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20201215.000000.m4.coupler.res
-- parameter: var
-  component: 3
-  file:
-    set datetime on read: true
-    datetime: 2020-12-15T03:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb/
-    psinfile: true
-    filename_core: 20201215.030000.var.fv_core.res.nc
-    filename_trcr: 20201215.030000.var.fv_tracer.res.nc
-    filename_sfcd: 20201215.030000.var.sfc_data.nc
-    filename_sfcw: 20201215.030000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20201215.030000.var.coupler.res
-- parameter: m4
-  component: 3
-  file:
-    set datetime on read: true
-    datetime: 2020-12-15T03:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb/
-    psinfile: true
-    filename_core: 20201215.030000.m4.fv_core.res.nc
-    filename_trcr: 20201215.030000.m4.fv_tracer.res.nc
-    filename_sfcd: 20201215.030000.m4.sfc_data.nc
-    filename_sfcw: 20201215.030000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20201215.030000.m4.coupler.res
-output:
-- parameter: stddev
-  file:
-    filetype: fms restart
-    datapath: Data/staticb/
-    filename_core: stddev.fv_core.res.nc
-    filename_trcr: stddev.fv_tracer.res.nc
-    filename_sfcd: stddev.sfc_data.nc
-    filename_sfcw: stddev.fv_srf_wnd.res.nc
-    filename_cplr: stddev.coupler.res
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: ID
+  saber outer blocks:
+  - saber block name: BUMP_StdDev
+    calibration:
+      general:
+        universe length-scale: 3000.0e3
+      io:
+        data directory: Data/staticb
+      drivers:
+        multivariate strategy: univariate
+      ensemble sizes:
+        sub-ensembles: 3
+      diagnostics:
+        target ensemble size: 30
+      variance:
+        objective filtering: true
+        filtering iterations: 1
+        initial length-scale:
+        - variables:
+          - stream_function
+          - velocity_potential
+          value: 3000.0e3
+        - variables:
+          - air_temperature
+          - surface_pressure
+          - specific_humidity
+          - cloud_liquid_water
+          - ozone_mass_mixing_ratio
+          value: 300.0e3
+      grids:
+      - model:
+          variables:
+          - stream_function
+          - velocity_potential
+          - air_temperature
+          - specific_humidity
+          - cloud_liquid_water
+          - ozone_mass_mixing_ratio
+        io:
+          files prefix: var_3D_gfs
+      - model:
+          variables:
+          - surface_pressure
+        io:
+          files prefix: var_2D_gfs
+      input model files:
+      - parameter: var
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2020-12-14T21:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb/
+          psinfile: true
+          filename_core: 20201214.210000.var.fv_core.res.nc
+          filename_trcr: 20201214.210000.var.fv_tracer.res.nc
+          filename_sfcd: 20201214.210000.var.sfc_data.nc
+          filename_sfcw: 20201214.210000.var.fv_srf_wnd.res.nc
+          filename_cplr: 20201214.210000.var.coupler.res
+      - parameter: m4
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2020-12-14T21:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb/
+          psinfile: true
+          filename_core: 20201214.210000.m4.fv_core.res.nc
+          filename_trcr: 20201214.210000.m4.fv_tracer.res.nc
+          filename_sfcd: 20201214.210000.m4.sfc_data.nc
+          filename_sfcw: 20201214.210000.m4.fv_srf_wnd.res.nc
+          filename_cplr: 20201214.210000.m4.coupler.res
+      - parameter: var
+        component: 2
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb/
+          psinfile: true
+          filename_core: 20201215.000000.var.fv_core.res.nc
+          filename_trcr: 20201215.000000.var.fv_tracer.res.nc
+          filename_sfcd: 20201215.000000.var.sfc_data.nc
+          filename_sfcw: 20201215.000000.var.fv_srf_wnd.res.nc
+          filename_cplr: 20201215.000000.var.coupler.res
+      - parameter: m4
+        component: 2
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb/
+          psinfile: true
+          filename_core: 20201215.000000.m4.fv_core.res.nc
+          filename_trcr: 20201215.000000.m4.fv_tracer.res.nc
+          filename_sfcd: 20201215.000000.m4.sfc_data.nc
+          filename_sfcw: 20201215.000000.m4.fv_srf_wnd.res.nc
+          filename_cplr: 20201215.000000.m4.coupler.res
+      - parameter: var
+        component: 3
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T03:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb/
+          psinfile: true
+          filename_core: 20201215.030000.var.fv_core.res.nc
+          filename_trcr: 20201215.030000.var.fv_tracer.res.nc
+          filename_sfcd: 20201215.030000.var.sfc_data.nc
+          filename_sfcw: 20201215.030000.var.fv_srf_wnd.res.nc
+          filename_cplr: 20201215.030000.var.coupler.res
+      - parameter: m4
+        component: 3
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T03:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb/
+          psinfile: true
+          filename_core: 20201215.030000.m4.fv_core.res.nc
+          filename_trcr: 20201215.030000.m4.fv_tracer.res.nc
+          filename_sfcd: 20201215.030000.m4.sfc_data.nc
+          filename_sfcw: 20201215.030000.m4.fv_srf_wnd.res.nc
+          filename_cplr: 20201215.030000.m4.coupler.res
+      output model files:
+      - parameter: stddev
+        file:
+          filetype: fms restart
+          datapath: Data/staticb/
+          filename_core: stddev.fv_core.res.nc
+          filename_trcr: stddev.fv_tracer.res.nc
+          filename_sfcd: stddev.sfc_data.nc
+          filename_sfcw: stddev.fv_srf_wnd.res.nc
+          filename_cplr: stddev.coupler.res
 
 test:
   reference filename: testoutput/staticb_var_gfs.ref

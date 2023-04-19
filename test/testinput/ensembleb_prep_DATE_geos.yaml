@@ -1,0 +1,54 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_geos_c90.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
+background:
+  datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+  filetype: cube sphere history
+  provider: geos
+  state variables: &stateVariables [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
+  datapath: Data/inputs/geos_c12
+  filename: geos.mem001._YYYY__MM__DD_._HH_0000z.nc4
+background error:
+  covariance model: SABER
+  iterative ensemble loading: true
+  ensemble:
+    members from template:
+      template:
+        datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+        filetype: cube sphere history
+        provider: geos
+        state variables: *stateVariables
+        datapath: Data/inputs/geos_c12/
+        filename: geos.mem%mem%._YYYY__MM__DD_._HH_0000z.nc4
+      pattern: '%mem%'
+      nmembers: 10
+      zero padding: 3
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        universe length-scale: 5000.0e3
+      io:
+        data directory: Data/ensembleb
+        files prefix: mom__YYYY__MM__DD__HH__geos
+      drivers:
+        multivariate strategy: duplicated
+        write local sampling: true
+        compute moments: true
+        write moments: true
+      sampling:
+        computation grid size: 500
+        distance classes: 10
+        distance class width: 500.0e3
+        reduced levels: 5
+        grid type: octahedral
+
+test:
+  reference filename: testoutput/ensembleb_prep__YYYY__MM__DD__HH__geos.ref

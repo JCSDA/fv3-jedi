@@ -13,7 +13,7 @@ localization:
   localization method: SABER
   saber central block:
     saber block name: BUMP_NICAS
-    bump:
+    read:
       io:
         files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
         alias:

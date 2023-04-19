@@ -28,13 +28,14 @@ cost function:
         covariance model: SABER
         saber central block:
           saber block name: gsi covariance
-          gsi akbk: Data/fv3files/akbk72.nc4
-          gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-          gsi berror namelist file: Data/gsibec//geos_gsi_global_o3_72x46x72.nml
-          processor layout x direction: 3
-          processor layout y direction: 2
-#         debugging bypass gsi: true
-          debugging mode: false
+          read:
+            gsi akbk: Data/fv3files/akbk72.nc4
+            gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+            gsi berror namelist file: Data/gsibec//geos_gsi_global_o3_72x46x72.nml
+            processor layout x direction: 3
+            processor layout y direction: 2
+  #         debugging bypass gsi: true
+            debugging mode: false
         saber outer blocks:
         - saber block name: gsi interpolation to model grid
           gsi akbk: Data/fv3files/akbk72.nc4
@@ -75,7 +76,7 @@ cost function:
 #           saber block name: BUMP_NICAS
 #           input variables: *3dvars
 #           output variables: *3dvars
-#           bump:
+#           read:
 #             prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
 #             method: loc
 #             strategy: common

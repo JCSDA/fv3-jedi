@@ -1,0 +1,120 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_geos_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
+background:
+  datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+  filetype: cube sphere history
+  provider: geos
+  state variables: &stateVariables [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity]
+  datapath: Data/staticb/balanced/mem001/
+  filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+background error:
+  covariance model: SABER
+  iterative ensemble loading: true
+  ensemble:
+    members from template:
+      template:
+        datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+        filetype: cube sphere history
+        provider: geos
+        state variables: *stateVariables
+        datapath: Data/staticb/balanced/mem%mem%/
+        filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+      pattern: '%mem%'
+      nmembers: 10
+      zero padding: 3
+  output ensemble:
+    first member only: true
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/unbalanced/mem%{member}%/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        universe length-scale: 5000.0e3
+      io:
+        data directory: Data/staticb
+      drivers:
+        multivariate strategy: univariate
+        write local sampling: true
+        compute variance: true
+        compute correlation: true
+        compute moments: true
+        write moments: true
+      sampling:
+        computation grid size: 500
+        distance classes: 10
+        distance class width: 500.0e3
+        reduced levels: 5
+        grid type: octahedral
+      grids:
+      - model:
+          variables:
+          - stream_function
+          - velocity_potential
+          - air_temperature
+          - specific_humidity
+#         - cloud_liquid_water
+#         - ozone_mass_mixing_ratio
+        io:
+          files prefix: var-mom_3D__YYYY__MM__DD__HH__geos
+      - model:
+          variables:
+          - surface_pressure
+        io:
+          files prefix: var-mom_2D__YYYY__MM__DD__HH__geos
+      output model files:
+      - parameter: var
+        file:
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.var._YYYY__MM__DD_._HH_0000.nc4
+      - parameter: m4
+        file:
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.m4._YYYY__MM__DD_._HH_0000.nc4
+  saber outer blocks:
+  - saber block name: BUMP_VerticalBalance
+    active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
+    calibration:
+      general:
+        universe length-scale: 2500.0e3
+      io:
+        data directory: Data/staticb
+        files prefix: vbal__YYYY__MM__DD__HH__geos
+      drivers:
+        write local sampling: true
+        compute vertical covariance: true
+        write vertical covariance: true
+        compute vertical balance: true
+        write vertical balance: true
+      sampling:
+        computation grid size: 500
+        diagnostic grid size: 200
+        grid type: octahedral
+        averaging length-scale: 2000.0e3
+      vertical balance:
+        vbal:
+        - balanced variable: velocity_potential
+          unbalanced variable: stream_function
+        - balanced variable: air_temperature
+          unbalanced variable: stream_function
+        - balanced variable: surface_pressure
+          unbalanced variable: stream_function
+        pseudo inverse: true
+        variance threshold: 0.1
+
+test:
+  reference filename: testoutput/staticb_prep__YYYY__MM__DD__HH__geos.ref

@@ -1,6 +1,6 @@
 cost function:
   cost type: 4D-Var
-  analysis variables: &fgatvars [eastward_wind,northward_wind,air_temperature,surface_pressure,q,qi,ql,o3ppmv]
+  analysis variables: &fgatvars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   model:
@@ -38,7 +38,7 @@ cost function:
         covariance model: SABER
         saber central block:
           saber block name: BUMP_NICAS
-          bump:
+          read:
             io:
               alias:
               - in code: eastward_wind
@@ -97,7 +97,7 @@ cost function:
           saber central block:
             saber block name: BUMP_NICAS
             active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
-            bump:
+            read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
                 alias:

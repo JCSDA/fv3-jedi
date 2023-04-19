@@ -18,7 +18,7 @@ cost function:
         covariance model: SABER
         saber central block:
           saber block name: BUMP_NICAS
-          bump:
+          read:
             io:
               alias:
               - in code: eastward_wind
@@ -80,7 +80,7 @@ cost function:
           saber central block:
             saber block name: BUMP_NICAS
             active variables: *incvars
-            bump:
+            read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
                 alias:

@@ -1,0 +1,300 @@
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-9.9651585331358945e+01 Max:+1.6447553434039227e+02 RMS:+2.6712998522638191e+01
+ northward_wind                               | Min:-1.0625518669397074e+02 Max:+1.0198055227324616e+02 RMS:+1.1313194467827481e+01
+ air_temperature                              | Min:+1.7095470843307623e+02 Max:+3.0905152758022382e+02 RMS:+2.4633141447393430e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1777891432875194e+03 RMS:+1.9532997876519360e+03
+ specific_humidity                            | Min:+6.6781356897743057e-07 Max:+1.9665516319906533e-02 RMS:+4.0166015639324553e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8823304631657118e+08 Max:+1.7625727132417288e+08 RMS:+5.9450258041634627e+07
+ velocity_potential                           | Min:-7.8459101743864611e+07 Max:+9.4276707768449873e+07 RMS:+1.2276055714726947e+07
+ air_temperature                              | Min:+1.7095470843307623e+02 Max:+3.0905152758022382e+02 RMS:+2.4633141447393430e+02
+ surface_pressure                             | Min:+5.3194114301740519e+04 Max:+1.0473293119608774e+05 RMS:+9.8937023316580642e+04
+ specific_humidity                            | Min:+6.6781356897743057e-07 Max:+1.9665516319906533e-02 RMS:+4.0166015639324553e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8823304631657118e+08 Max:+1.7625727132417288e+08 RMS:+5.9450258041634627e+07
+ velocity_potential                           | Min:-7.8459101743864611e+07 Max:+9.4276707768449873e+07 RMS:+1.2276055714726947e+07
+ air_temperature                              | Min:+1.7095470843307623e+02 Max:+3.0905152758022382e+02 RMS:+2.4633141447393430e+02
+ surface_pressure                             | Min:+5.3194114301740519e+04 Max:+1.0473293119608774e+05 RMS:+9.8937023316580642e+04
+ specific_humidity                            | Min:+6.6781356897743057e-07 Max:+1.9665516319906533e-02 RMS:+4.0166015639324553e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-1.0301373386800502e+02 Max:+1.6315215138680253e+02 RMS:+2.6681414891651055e+01
+ northward_wind                               | Min:-1.0481080188755840e+02 Max:+1.0154947347728540e+02 RMS:+1.1248148710366005e+01
+ air_temperature                              | Min:+1.6987392769337987e+02 Max:+3.0870802229999953e+02 RMS:+2.4633912383193814e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1756197267642410e+03 RMS:+1.9533300385985067e+03
+ specific_humidity                            | Min:+6.6727333088331251e-07 Max:+2.0212372761471101e-02 RMS:+4.0033165343016210e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8815835285617900e+08 Max:+1.7668495456166223e+08 RMS:+5.9417500196855389e+07
+ velocity_potential                           | Min:-7.9989850293696642e+07 Max:+9.2397484226463124e+07 RMS:+1.2259834771681735e+07
+ air_temperature                              | Min:+1.6987392769337987e+02 Max:+3.0870802229999953e+02 RMS:+2.4633912383193814e+02
+ surface_pressure                             | Min:+5.3195955890582489e+04 Max:+1.0468944021309543e+05 RMS:+9.8938402944845875e+04
+ specific_humidity                            | Min:+6.6727333088331251e-07 Max:+2.0212372761471101e-02 RMS:+4.0033165343016210e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8815835285617900e+08 Max:+1.7668495456166223e+08 RMS:+5.9417500196855389e+07
+ velocity_potential                           | Min:-7.9989850293696642e+07 Max:+9.2397484226463124e+07 RMS:+1.2259834771681735e+07
+ air_temperature                              | Min:+1.6987392769337987e+02 Max:+3.0870802229999953e+02 RMS:+2.4633912383193814e+02
+ surface_pressure                             | Min:+5.3195955890582489e+04 Max:+1.0468944021309543e+05 RMS:+9.8938402944845875e+04
+ specific_humidity                            | Min:+6.6727333088331251e-07 Max:+2.0212372761471101e-02 RMS:+4.0033165343016210e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-9.8026651105216487e+01 Max:+1.6436632520139239e+02 RMS:+2.6697278961743422e+01
+ northward_wind                               | Min:-1.0380578823769048e+02 Max:+1.0260478378422727e+02 RMS:+1.1275872094313776e+01
+ air_temperature                              | Min:+1.7157243751407123e+02 Max:+3.0846953180068641e+02 RMS:+2.4633204850572758e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1784637607584191e+03 RMS:+1.9532746093985147e+03
+ specific_humidity                            | Min:+6.6942924165221493e-07 Max:+1.9453674298801543e-02 RMS:+4.0019735641050706e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8856497119093031e+08 Max:+1.7727258156323418e+08 RMS:+5.9359542678740785e+07
+ velocity_potential                           | Min:-7.9058990607865840e+07 Max:+9.4116652877806574e+07 RMS:+1.2322675144934023e+07
+ air_temperature                              | Min:+1.7157243751407123e+02 Max:+3.0846953180068641e+02 RMS:+2.4633204850572758e+02
+ surface_pressure                             | Min:+5.3127879924935238e+04 Max:+1.0474641824593223e+05 RMS:+9.8935791928649182e+04
+ specific_humidity                            | Min:+6.6942924165221493e-07 Max:+1.9453674298801543e-02 RMS:+4.0019735641050706e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8856497119093031e+08 Max:+1.7727258156323418e+08 RMS:+5.9359542678740785e+07
+ velocity_potential                           | Min:-7.9058990607865840e+07 Max:+9.4116652877806574e+07 RMS:+1.2322675144934023e+07
+ air_temperature                              | Min:+1.7157243751407123e+02 Max:+3.0846953180068641e+02 RMS:+2.4633204850572758e+02
+ surface_pressure                             | Min:+5.3127879924935238e+04 Max:+1.0474641824593223e+05 RMS:+9.8935791928649182e+04
+ specific_humidity                            | Min:+6.6942924165221493e-07 Max:+1.9453674298801543e-02 RMS:+4.0019735641050706e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-1.0255066948459880e+02 Max:+1.6429540801668097e+02 RMS:+2.6693325963536434e+01
+ northward_wind                               | Min:-1.0394284545165436e+02 Max:+1.0123892755139900e+02 RMS:+1.1305261532718406e+01
+ air_temperature                              | Min:+1.6640139779984156e+02 Max:+3.0976709579434646e+02 RMS:+2.4632424618428908e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1791516479952697e+03 RMS:+1.9533054246407198e+03
+ specific_humidity                            | Min:+6.6837857592372185e-07 Max:+1.9184326910433057e-02 RMS:+4.0047890439907034e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8821875911803389e+08 Max:+1.7644579706043860e+08 RMS:+5.9397744940716349e+07
+ velocity_potential                           | Min:-7.8167022200569823e+07 Max:+9.3582802592433050e+07 RMS:+1.2302912579457093e+07
+ air_temperature                              | Min:+1.6640139779984156e+02 Max:+3.0976709579434646e+02 RMS:+2.4632424618428908e+02
+ surface_pressure                             | Min:+5.3224682279950874e+04 Max:+1.0476021637857374e+05 RMS:+9.8937316618935496e+04
+ specific_humidity                            | Min:+6.6837857592372185e-07 Max:+1.9184326910433057e-02 RMS:+4.0047890439907034e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8821875911803389e+08 Max:+1.7644579706043860e+08 RMS:+5.9397744940716349e+07
+ velocity_potential                           | Min:-7.8167022200569823e+07 Max:+9.3582802592433050e+07 RMS:+1.2302912579457093e+07
+ air_temperature                              | Min:+1.6640139779984156e+02 Max:+3.0976709579434646e+02 RMS:+2.4632424618428908e+02
+ surface_pressure                             | Min:+5.3224682279950874e+04 Max:+1.0476021637857374e+05 RMS:+9.8937316618935496e+04
+ specific_humidity                            | Min:+6.6837857592372185e-07 Max:+1.9184326910433057e-02 RMS:+4.0047890439907034e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-1.0115118511504045e+02 Max:+1.6241225335787877e+02 RMS:+2.6712846780664389e+01
+ northward_wind                               | Min:-1.0576332900576433e+02 Max:+1.0306873289641248e+02 RMS:+1.1289959803749346e+01
+ air_temperature                              | Min:+1.6771029679330871e+02 Max:+3.0914772125320724e+02 RMS:+2.4633057493837563e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1829565060724726e+03 RMS:+1.9533300528283039e+03
+ specific_humidity                            | Min:+6.6701685618740125e-07 Max:+1.9561335740141104e-02 RMS:+4.0046241296394008e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8750330624429804e+08 Max:+1.7589462281693566e+08 RMS:+5.9436975036783829e+07
+ velocity_potential                           | Min:-7.7185355077632338e+07 Max:+9.2577120025003955e+07 RMS:+1.2310780645639541e+07
+ air_temperature                              | Min:+1.6771029679330871e+02 Max:+3.0914772125320724e+02 RMS:+2.4633057493837563e+02
+ surface_pressure                             | Min:+5.3129598820658866e+04 Max:+1.0483651643580027e+05 RMS:+9.8938395848709566e+04
+ specific_humidity                            | Min:+6.6701685618740125e-07 Max:+1.9561335740141104e-02 RMS:+4.0046241296394008e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8750330624429804e+08 Max:+1.7589462281693566e+08 RMS:+5.9436975036783829e+07
+ velocity_potential                           | Min:-7.7185355077632338e+07 Max:+9.2577120025003955e+07 RMS:+1.2310780645639541e+07
+ air_temperature                              | Min:+1.6771029679330871e+02 Max:+3.0914772125320724e+02 RMS:+2.4633057493837563e+02
+ surface_pressure                             | Min:+5.3129598820658866e+04 Max:+1.0483651643580027e+05 RMS:+9.8938395848709566e+04
+ specific_humidity                            | Min:+6.6701685618740125e-07 Max:+1.9561335740141104e-02 RMS:+4.0046241296394008e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-9.7673446048973318e+01 Max:+1.6528992627752882e+02 RMS:+2.6748031036752849e+01
+ northward_wind                               | Min:-1.0573199681770902e+02 Max:+1.0057072785172664e+02 RMS:+1.1301344963705708e+01
+ air_temperature                              | Min:+1.7088949794014042e+02 Max:+3.0930102933831841e+02 RMS:+2.4633636078932997e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1729098561532028e+03 RMS:+1.9533179321911637e+03
+ specific_humidity                            | Min:+6.6720422407443071e-07 Max:+1.9150274470202823e-02 RMS:+4.0008954260217552e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8748192731127143e+08 Max:+1.7698193356099427e+08 RMS:+5.9531933751611561e+07
+ velocity_potential                           | Min:-7.8737638486653775e+07 Max:+9.3431285542671978e+07 RMS:+1.2247228233841032e+07
+ air_temperature                              | Min:+1.7088949794014042e+02 Max:+3.0930102933831841e+02 RMS:+2.4633636078932997e+02
+ surface_pressure                             | Min:+5.3100253380718335e+04 Max:+1.0463507039007707e+05 RMS:+9.8937884112701242e+04
+ specific_humidity                            | Min:+6.6720422407443071e-07 Max:+1.9150274470202823e-02 RMS:+4.0008954260217552e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8748192731127143e+08 Max:+1.7698193356099427e+08 RMS:+5.9531933751611561e+07
+ velocity_potential                           | Min:-7.8737638486653775e+07 Max:+9.3431285542671978e+07 RMS:+1.2247228233841032e+07
+ air_temperature                              | Min:+1.7088949794014042e+02 Max:+3.0930102933831841e+02 RMS:+2.4633636078932997e+02
+ surface_pressure                             | Min:+5.3100253380718335e+04 Max:+1.0463507039007707e+05 RMS:+9.8937884112701242e+04
+ specific_humidity                            | Min:+6.6720422407443071e-07 Max:+1.9150274470202823e-02 RMS:+4.0008954260217552e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-9.4120789562947436e+01 Max:+1.6586933831141400e+02 RMS:+2.6705672909001827e+01
+ northward_wind                               | Min:-1.0525430253935619e+02 Max:+1.0206868202958054e+02 RMS:+1.1310468172771513e+01
+ air_temperature                              | Min:+1.7053807720071032e+02 Max:+3.0826815415104005e+02 RMS:+2.4634329396936965e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1825043544244163e+03 RMS:+1.9533172782136667e+03
+ specific_humidity                            | Min:+6.6839009554990670e-07 Max:+1.9823573623679442e-02 RMS:+4.0156836108535387e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8684226029933459e+08 Max:+1.7648393465984488e+08 RMS:+5.9412299806228198e+07
+ velocity_potential                           | Min:-7.8112384215723902e+07 Max:+9.3338190571230203e+07 RMS:+1.2289090926996043e+07
+ air_temperature                              | Min:+1.7053807720071032e+02 Max:+3.0826815415104005e+02 RMS:+2.4634329396936965e+02
+ surface_pressure                             | Min:+5.3215723192771999e+04 Max:+1.0482747990725804e+05 RMS:+9.8937767273258010e+04
+ specific_humidity                            | Min:+6.6839009554990670e-07 Max:+1.9823573623679442e-02 RMS:+4.0156836108535387e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8684226029933459e+08 Max:+1.7648393465984488e+08 RMS:+5.9412299806228198e+07
+ velocity_potential                           | Min:-7.8112384215723902e+07 Max:+9.3338190571230203e+07 RMS:+1.2289090926996043e+07
+ air_temperature                              | Min:+1.7053807720071032e+02 Max:+3.0826815415104005e+02 RMS:+2.4634329396936965e+02
+ surface_pressure                             | Min:+5.3215723192771999e+04 Max:+1.0482747990725804e+05 RMS:+9.8937767273258010e+04
+ specific_humidity                            | Min:+6.6839009554990670e-07 Max:+1.9823573623679442e-02 RMS:+4.0156836108535387e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-9.9407055519872088e+01 Max:+1.6420727964726996e+02 RMS:+2.6707365650254978e+01
+ northward_wind                               | Min:-1.0677840560693912e+02 Max:+1.0231839886933268e+02 RMS:+1.1281429238880534e+01
+ air_temperature                              | Min:+1.7078874244443557e+02 Max:+3.0847266069855601e+02 RMS:+2.4633573011660636e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1801895485711520e+03 RMS:+1.9532841760518536e+03
+ specific_humidity                            | Min:+6.6613854166326874e-07 Max:+1.9823216473169928e-02 RMS:+4.0136253822561406e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8828960749405050e+08 Max:+1.7661615124556762e+08 RMS:+5.9385295785332508e+07
+ velocity_potential                           | Min:-7.8289900856969923e+07 Max:+9.0409364627737194e+07 RMS:+1.2255715830286840e+07
+ air_temperature                              | Min:+1.7078874244443557e+02 Max:+3.0847266069855601e+02 RMS:+2.4633573011660636e+02
+ surface_pressure                             | Min:+5.3190254037137733e+04 Max:+1.0478102998882848e+05 RMS:+9.8936233711913505e+04
+ specific_humidity                            | Min:+6.6613854166326874e-07 Max:+1.9823216473169928e-02 RMS:+4.0136253822561406e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8828960749405050e+08 Max:+1.7661615124556762e+08 RMS:+5.9385295785332508e+07
+ velocity_potential                           | Min:-7.8289900856969923e+07 Max:+9.0409364627737194e+07 RMS:+1.2255715830286840e+07
+ air_temperature                              | Min:+1.7078874244443557e+02 Max:+3.0847266069855601e+02 RMS:+2.4633573011660636e+02
+ surface_pressure                             | Min:+5.3190254037137733e+04 Max:+1.0478102998882848e+05 RMS:+9.8936233711913505e+04
+ specific_humidity                            | Min:+6.6613854166326874e-07 Max:+1.9823216473169928e-02 RMS:+4.0136253822561406e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-1.0088459388557871e+02 Max:+1.6568096847505160e+02 RMS:+2.6711840308882145e+01
+ northward_wind                               | Min:-1.0557808067089550e+02 Max:+1.0133761059718320e+02 RMS:+1.1290472272481171e+01
+ air_temperature                              | Min:+1.7087003400612971e+02 Max:+3.0879568179204739e+02 RMS:+2.4632444525285709e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1655841281757721e+03 RMS:+1.9532770016311638e+03
+ specific_humidity                            | Min:+6.6748916943144275e-07 Max:+1.9141469991177572e-02 RMS:+4.0034820530754061e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8836190449783373e+08 Max:+1.7616169640621716e+08 RMS:+5.9383132405178159e+07
+ velocity_potential                           | Min:-7.8892601444708601e+07 Max:+9.3063659777372018e+07 RMS:+1.2387669722222567e+07
+ air_temperature                              | Min:+1.7087003400612971e+02 Max:+3.0879568179204739e+02 RMS:+2.4632444525285709e+02
+ surface_pressure                             | Min:+5.3166465795829456e+04 Max:+1.0448822005363800e+05 RMS:+9.8935891487008223e+04
+ specific_humidity                            | Min:+6.6748916943144275e-07 Max:+1.9141469991177572e-02 RMS:+4.0034820530754061e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8836190449783373e+08 Max:+1.7616169640621716e+08 RMS:+5.9383132405178159e+07
+ velocity_potential                           | Min:-7.8892601444708601e+07 Max:+9.3063659777372018e+07 RMS:+1.2387669722222567e+07
+ air_temperature                              | Min:+1.7087003400612971e+02 Max:+3.0879568179204739e+02 RMS:+2.4632444525285709e+02
+ surface_pressure                             | Min:+5.3166465795829456e+04 Max:+1.0448822005363800e+05 RMS:+9.8935891487008223e+04
+ specific_humidity                            | Min:+6.6748916943144275e-07 Max:+1.9141469991177572e-02 RMS:+4.0034820530754061e-03
+ ----------------------------------------------------------------------------------------------------
+ Input state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ eastward_wind                                | Min:-1.0177857029398885e+02 Max:+1.6417916432300285e+02 RMS:+2.6699487691414436e+01
+ northward_wind                               | Min:-1.0447663755079074e+02 Max:+1.0110135090475724e+02 RMS:+1.1313362299953509e+01
+ air_temperature                              | Min:+1.7078874537665450e+02 Max:+3.1023249726579456e+02 RMS:+2.4631521335009640e+02
+ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1759104757772411e+03 RMS:+1.9533351675723097e+03
+ specific_humidity                            | Min:+6.6792670575895294e-07 Max:+1.9180797254363859e-02 RMS:+4.0001790167012935e-03
+ ----------------------------------------------------------------------------------------------------
+ Variable transform: fv3jedi::VarChaC2A variable change
+ Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+ Variable change to: 5 variables: psi, chi, t, ps, sphum
+ State after variable transform: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8778133221773458e+08 Max:+1.7563445222827652e+08 RMS:+5.9347020424895577e+07
+ velocity_potential                           | Min:-7.7985250796926856e+07 Max:+8.9996479494849682e+07 RMS:+1.2292738545229601e+07
+ air_temperature                              | Min:+1.7078874537665450e+02 Max:+3.1023249726579456e+02 RMS:+2.4631521335009640e+02
+ surface_pressure                             | Min:+5.3084128073435815e+04 Max:+1.0469524969070421e+05 RMS:+9.8938605924693635e+04
+ specific_humidity                            | Min:+6.6792670575895294e-07 Max:+1.9180797254363859e-02 RMS:+4.0001790167012935e-03
+ ----------------------------------------------------------------------------------------------------
+ Output state: 
+ ----------------------------------------------------------------------------------------------------
+ State print | number of fields = 5 | cube sphere face size: C12
+ stream_function                              | Min:-2.8778133221773458e+08 Max:+1.7563445222827652e+08 RMS:+5.9347020424895577e+07
+ velocity_potential                           | Min:-7.7985250796926856e+07 Max:+8.9996479494849682e+07 RMS:+1.2292738545229601e+07
+ air_temperature                              | Min:+1.7078874537665450e+02 Max:+3.1023249726579456e+02 RMS:+2.4631521335009640e+02
+ surface_pressure                             | Min:+5.3084128073435815e+04 Max:+1.0469524969070421e+05 RMS:+9.8938605924693635e+04
+ specific_humidity                            | Min:+6.6792670575895294e-07 Max:+1.9180797254363859e-02 RMS:+4.0001790167012935e-03
+ ----------------------------------------------------------------------------------------------------

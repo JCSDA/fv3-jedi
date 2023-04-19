@@ -8,140 +8,145 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-input variables: &inputVars [mass_fraction_of_sulfate_in_air,
-                             mass_fraction_of_hydrophobic_black_carbon_in_air,
-                             mass_fraction_of_hydrophilic_black_carbon_in_air,
-                             mass_fraction_of_hydrophobic_organic_carbon_in_air,
-                             mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                             mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                             mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                             mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                             mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                             mass_fraction_of_sea_salt004_in_air]
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
-  state variables: *inputVars
+  state variables: [mass_fraction_of_sulfate_in_air,
+                    mass_fraction_of_hydrophobic_black_carbon_in_air,
+                    mass_fraction_of_hydrophilic_black_carbon_in_air,
+                    mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                    mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                    mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                    mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                    mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                    mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                    mass_fraction_of_sea_salt004_in_air]
   datapath: Data/inputs/gfs_aero_c12/mem001
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-bump:
-  general:
-    universe length-scale: 3000.0e3
-  io:
-    data directory: Data/staticb_aero
-    files prefix: var_aero
-  drivers:
-    multivariate strategy: univariate
-  ensemble sizes:
-    sub-ensembles: 3
-  diagnostics:
-    target ensemble size: 30
-  variance:
-    objective filtering: true
-    filtering iterations: 1
-    initial length-scale:
-    - variables:
-      - mass_fraction_of_sulfate_in_air
-      - mass_fraction_of_hydrophobic_black_carbon_in_air
-      - mass_fraction_of_hydrophilic_black_carbon_in_air
-      - mass_fraction_of_hydrophobic_organic_carbon_in_air
-      - mass_fraction_of_hydrophilic_organic_carbon_in_air
-      - mass_fraction_of_dust001_in_air
-      - mass_fraction_of_dust002_in_air
-      - mass_fraction_of_dust003_in_air
-      - mass_fraction_of_dust004_in_air
-      - mass_fraction_of_dust005_in_air
-      - mass_fraction_of_sea_salt001_in_air
-      - mass_fraction_of_sea_salt002_in_air
-      - mass_fraction_of_sea_salt003_in_air
-      - mass_fraction_of_sea_salt004_in_air
-      value: 300.0e3
-input fields:
-- parameter: var
-  component: 1
-  file:
-    set datetime on read: true
-    datetime: 2018-04-14T21:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180414.210000.var.fv_core.res.nc
-    filename_trcr: 20180414.210000.var.fv_tracer.res.nc
-    filename_sfcd: 20180414.210000.var.sfc_data.nc
-    filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.210000.var.coupler.res
-- parameter: m4
-  component: 1
-  file:
-    set datetime on read: true
-    datetime: 2018-04-14T21:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180414.210000.m4.fv_core.res.nc
-    filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
-    filename_sfcd: 20180414.210000.m4.sfc_data.nc
-    filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20180414.210000.m4.coupler.res
-- parameter: var
-  component: 2
-  file:
-    set datetime on read: true
-    datetime: 2018-04-15T00:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.000000.var.fv_core.res.nc
-    filename_trcr: 20180415.000000.var.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.var.sfc_data.nc
-    filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.var.coupler.res
-- parameter: m4
-  component: 2
-  file:
-    datetime: 2018-04-15T00:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.000000.m4.fv_core.res.nc
-    filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.m4.sfc_data.nc
-    filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.m4.coupler.res
-- parameter: var
-  component: 3
-  file:
-    set datetime on read: true
-    datetime: 2018-04-15T03:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.030000.var.fv_core.res.nc
-    filename_trcr: 20180415.030000.var.fv_tracer.res.nc
-    filename_sfcd: 20180415.030000.var.sfc_data.nc
-    filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.030000.var.coupler.res
-- parameter: m4
-  component: 3
-  file:
-    set datetime on read: true
-    datetime: 2018-04-15T03:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.030000.m4.fv_core.res.nc
-    filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
-    filename_sfcd: 20180415.030000.m4.sfc_data.nc
-    filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.030000.m4.coupler.res
-output:
-- parameter: stddev
-  file:
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: stddev.fv_core.res.nc
-    filename_trcr: stddev.fv_tracer.res.nc
-    filename_sfcd: stddev.sfc_data.nc
-    filename_sfcw: stddev.fv_srf_wnd.res.nc
-    filename_cplr: stddev.coupler.res
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: ID
+  saber outer blocks:
+  - saber block name: BUMP_StdDev
+    calibration:
+      general:
+        universe length-scale: 3000.0e3
+      io:
+        data directory: Data/staticb_aero
+        files prefix: var_aero
+      drivers:
+        multivariate strategy: univariate
+      ensemble sizes:
+        sub-ensembles: 3
+      diagnostics:
+        target ensemble size: 30
+      variance:
+        objective filtering: true
+        filtering iterations: 1
+        initial length-scale:
+        - variables:
+          - mass_fraction_of_sulfate_in_air
+          - mass_fraction_of_hydrophobic_black_carbon_in_air
+          - mass_fraction_of_hydrophilic_black_carbon_in_air
+          - mass_fraction_of_hydrophobic_organic_carbon_in_air
+          - mass_fraction_of_hydrophilic_organic_carbon_in_air
+          - mass_fraction_of_dust001_in_air
+          - mass_fraction_of_dust002_in_air
+          - mass_fraction_of_dust003_in_air
+          - mass_fraction_of_dust004_in_air
+          - mass_fraction_of_dust005_in_air
+          - mass_fraction_of_sea_salt001_in_air
+          - mass_fraction_of_sea_salt002_in_air
+          - mass_fraction_of_sea_salt003_in_air
+          - mass_fraction_of_sea_salt004_in_air
+          value: 300.0e3
+      input model files:
+      - parameter: var
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2018-04-14T21:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180414.210000.var.fv_core.res.nc
+          filename_trcr: 20180414.210000.var.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.var.sfc_data.nc
+          filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.var.coupler.res
+      - parameter: m4
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2018-04-14T21:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180414.210000.m4.fv_core.res.nc
+          filename_trcr: 20180414.210000.m4.fv_tracer.res.nc
+          filename_sfcd: 20180414.210000.m4.sfc_data.nc
+          filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
+          filename_cplr: 20180414.210000.m4.coupler.res
+      - parameter: var
+        component: 2
+        file:
+          set datetime on read: true
+          datetime: 2018-04-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.000000.var.fv_core.res.nc
+          filename_trcr: 20180415.000000.var.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.var.sfc_data.nc
+          filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.var.coupler.res
+      - parameter: m4
+        component: 2
+        file:
+          datetime: 2018-04-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.000000.m4.fv_core.res.nc
+          filename_trcr: 20180415.000000.m4.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.m4.sfc_data.nc
+          filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.m4.coupler.res
+      - parameter: var
+        component: 3
+        file:
+          set datetime on read: true
+          datetime: 2018-04-15T03:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.030000.var.fv_core.res.nc
+          filename_trcr: 20180415.030000.var.fv_tracer.res.nc
+          filename_sfcd: 20180415.030000.var.sfc_data.nc
+          filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.030000.var.coupler.res
+      - parameter: m4
+        component: 3
+        file:
+          set datetime on read: true
+          datetime: 2018-04-15T03:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.030000.m4.fv_core.res.nc
+          filename_trcr: 20180415.030000.m4.fv_tracer.res.nc
+          filename_sfcd: 20180415.030000.m4.sfc_data.nc
+          filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.030000.m4.coupler.res
+      output model files:
+      - parameter: stddev
+        file:
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: stddev.fv_core.res.nc
+          filename_trcr: stddev.fv_tracer.res.nc
+          filename_sfcd: stddev.sfc_data.nc
+          filename_sfcw: stddev.fv_srf_wnd.res.nc
+          filename_cplr: stddev.coupler.res
 
 test:
   reference filename: testoutput/staticb_var_aero.ref

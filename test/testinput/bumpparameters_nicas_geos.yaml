@@ -7,7 +7,6 @@ geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-input variables: [air_temperature,surface_pressure]
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
@@ -15,132 +14,136 @@ background:
   datapath: Data/inputs/geos_c12
   filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
   state variables: [air_temperature,surface_pressure]
-bump:
-  general:
-    universe length-scale: 2500.0e3
-  io:
-    alias:
-    - in code: air_temperature
-      in file: fixed_2500km_0.3
-    - in code: surface_pressure
-      in file: fixed_2500km
-  drivers:
-    multivariate strategy: univariate
-    compute nicas: true
-    write local nicas: true
-  nicas:
-    resolution: 6
-    explicit length-scales: true
-    horizontal length-scale:
-    - groups:
-      - air_temperature
-      profile:
-      - 1300000.0
-      - 1300000.0
-      - 1300000.0
-      - 1300000.0
-      - 1300000.0
-      - 1300000.0
-      - 1300000.0
-      - 1200000.0
-      - 1200000.0
-      - 1200000.0
-      - 1200000.0
-      - 1100000.0
-      - 1100000.0
-      - 1100000.0
-      - 1000000.0
-      - 1000000.0
-      - 1000000.0
-      - 1000000.0
-      - 1000000.0
-      - 1000000.0
-      - 1000000.0
-      - 950000.0
-      - 900000.0
-      - 850000.0
-      - 850000.0
-      - 800000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 700000.0
-      - 650000.0
-      - 550000.0
-      - 500000.0
-      - 480000.0
-      - 460000.0
-      - 420000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-      - 400000.0
-    - groups:
-      - surface_pressure
-      value: 2500000.0
-    vertical length-scale:
-    - groups:
-      - air_temperature
-      value: 0.3
-    - groups:
-      - surface_pressure
-      value: 0.0
-  grids:
-  - model:
-      variables:
-      - air_temperature
-    io:
-      files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-  - model:
-      variables:
-      - surface_pressure
-    io:
-      files prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
-output:
-- parameter: cor_rh
-  file:
-    filetype: cube sphere history
-    provider: geos
-    datapath: Data/bump/
-    filename: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
-- parameter: cor_rv
-  file:
-    filetype: cube sphere history
-    provider: geos
-    datapath: Data/bump/
-    filename: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        universe length-scale: 2500.0e3
+      io:
+        alias:
+        - in code: air_temperature
+          in file: fixed_2500km_0.3
+        - in code: surface_pressure
+          in file: fixed_2500km
+      drivers:
+        multivariate strategy: univariate
+        compute nicas: true
+        write local nicas: true
+      nicas:
+        resolution: 6
+        explicit length-scales: true
+        horizontal length-scale:
+        - groups:
+          - air_temperature
+          profile:
+          - 1300000.0
+          - 1300000.0
+          - 1300000.0
+          - 1300000.0
+          - 1300000.0
+          - 1300000.0
+          - 1300000.0
+          - 1200000.0
+          - 1200000.0
+          - 1200000.0
+          - 1200000.0
+          - 1100000.0
+          - 1100000.0
+          - 1100000.0
+          - 1000000.0
+          - 1000000.0
+          - 1000000.0
+          - 1000000.0
+          - 1000000.0
+          - 1000000.0
+          - 1000000.0
+          - 950000.0
+          - 900000.0
+          - 850000.0
+          - 850000.0
+          - 800000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 700000.0
+          - 650000.0
+          - 550000.0
+          - 500000.0
+          - 480000.0
+          - 460000.0
+          - 420000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+          - 400000.0
+        - groups:
+          - surface_pressure
+          value: 2500000.0
+        vertical length-scale:
+        - groups:
+          - air_temperature
+          value: 0.3
+        - groups:
+          - surface_pressure
+          value: 0.0
+      grids:
+      - model:
+          variables:
+          - air_temperature
+        io:
+          files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+      - model:
+          variables:
+          - surface_pressure
+        io:
+          files prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
+      output model files:
+      - parameter: cor_rh
+        file:
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/bump/
+          filename: bumpparameters_nicas_geos.cor_rh.%yyyy%mm%dd_%hh%MM%ssz.nc4
+      - parameter: cor_rv
+        file:
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/bump/
+          filename: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
 
 test:
   reference filename: testoutput/bumpparameters_nicas_geos.ref

@@ -33,11 +33,12 @@ cost function:
         saber central block:
           saber block name: BUMP_NICAS
           active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-          bump:
+          read:
             io:
               data directory: Data/staticb
             drivers:
               multivariate strategy: univariate
+              read universe radius: true
               read local nicas: true
             grids:
             - model:
@@ -50,30 +51,18 @@ cost function:
                 - ozone_mass_mixing_ratio
               io:
                 files prefix: nicas_3D_gfs
+                overriding universe radius file: cor_3D_gfs_universe_radius
             - model:
                 variables:
                 - surface_pressure
               io:
                 files prefix: nicas_2D_gfs
-          input fields:
-          - parameter: universe radius
-            file:
-              datetime: 2020-12-15T00:00:00Z
-              set datetime on read: true
-              filetype: fms restart
-              psinfile: true
-              datapath: Data/staticb/
-              filename_core: 20201215.000000.cor_rh_1.fv_core.res.nc
-              filename_trcr: 20201215.000000.cor_rh_1.fv_tracer.res.nc
-              filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
-              filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
-              filename_cplr: 20201215.000000.cor_rh_1.coupler.res
+                overriding universe radius file: cor_2D_gfs_universe_radius
         saber outer blocks:
         - saber block name: StdDev
           active variables: *active_vars
-          input fields:
-          - parameter: StdDev
-            file:
+          read:
+            model file:
               datetime: 2020-12-15T00:00:00Z
               set datetime on read: true
               filetype: fms restart
@@ -86,7 +75,7 @@ cost function:
               filename_cplr: 20201215.000000.stddev.coupler.res
         - saber block name: BUMP_VerticalBalance
           active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
-          bump:
+          read:
             general:
               universe length-scale: 2000.0e3
             io:
@@ -131,7 +120,7 @@ cost function:
           saber central block:
             saber block name: BUMP_NICAS
             active variables: *3dvars
-            bump:
+            read:
               io:
                 data directory: Data/ensembleb
                 files prefix: nicas_gfs

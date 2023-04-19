@@ -7,7 +7,7 @@ covariance model: SABER
 saber central block:
   saber block name: BUMP_NICAS
   active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
-  bump:
+  read:
     io:
       data directory: $(static_data)/skylab-4.0.0/staticb/c96
       files prefix: nicas_2020010100-2020013100/nicas_2020010100-2020013100
@@ -35,23 +35,11 @@ saber central block:
         - surface_pressure
       io:
         overriding nicas file: nicas_2020010100-2020013100/nicas_2020010100-2020013100_2D_nicas
-  input fields:
-  - parameter: universe radius
-    file:
-      datetime: 2020-01-31T00:00:00Z
-      filetype: fms restart
-      set datetime on read: true
-      psinfile: true
-      datapath: $(static_data)/skylab-4.0.0/staticb/c96/cor_2020010100-2020013100
-      filename_core: cor_rh.fv_core.res.nc
-      filename_trcr: cor_rh.fv_tracer.res.nc
-      filename_cplr: cor_rh.coupler.res
 saber outer blocks:
 - saber block name: StdDev
   active variables: *active_vars
-  input fields:
-  - parameter: StdDev
-    file:
+  read:
+    model file:
       datetime: 2020-01-31T00:00:00Z
       filetype: fms restart
       set datetime on read: true
@@ -62,7 +50,7 @@ saber outer blocks:
       filename_cplr: stddev.coupler.res
 - saber block name: BUMP_VerticalBalance
   active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
-  bump:
+  read:
     general:
       universe length-scale: 2000000.0
     io:

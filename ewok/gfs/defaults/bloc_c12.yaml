@@ -7,7 +7,7 @@ localization method: SABER
 saber central block:
   saber block name: BUMP_NICAS
   active variables: $(AN_VARIABLES)
-  bump:
+  read:
     io:
       data directory: ${JEDI_BUILD}/fv3-jedi/test/Data/bump
       files prefix: fv3jedi_bumpparameters_nicas_3D_gfs

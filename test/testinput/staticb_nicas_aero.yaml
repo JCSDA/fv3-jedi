@@ -8,80 +8,74 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-input variables: &inputVars [mass_fraction_of_sulfate_in_air,
-                             mass_fraction_of_hydrophobic_black_carbon_in_air,
-                             mass_fraction_of_hydrophilic_black_carbon_in_air,
-                             mass_fraction_of_hydrophobic_organic_carbon_in_air,
-                             mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                             mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
-                             mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
-                             mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
-                             mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
-                             mass_fraction_of_sea_salt004_in_air]
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
-  state variables: *inputVars
+  state variables: [mass_fraction_of_sulfate_in_air,
+                    mass_fraction_of_hydrophobic_black_carbon_in_air,
+                    mass_fraction_of_hydrophilic_black_carbon_in_air,
+                    mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                    mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                    mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                    mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                    mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                    mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                    mass_fraction_of_sea_salt004_in_air]
   datapath: Data/inputs/gfs_aero_c12/mem001
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
-bump:
-  io:
-    data directory: Data/staticb_aero
-    files prefix: nicas_aero
-  drivers:
-    multivariate strategy: univariate
-    compute nicas: true
-    write local nicas: true
-  nicas:
-    resolution: 6.0
-input fields:
-- parameter: universe radius
-  file:
-    datetime: 2018-04-15T00:00:00Z
-    set datetime on read: true
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.000000.cor_rh.fv_core.res.nc
-    filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
-    filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.cor_rh.coupler.res
-- parameter: rh
-  file:
-    set datetime on read: true
-    datetime: 2018-04-15T00:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.000000.cor_rh.fv_core.res.nc
-    filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
-    filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.cor_rh.coupler.res
-- parameter: rv
-  file:
-    set datetime on read: true
-    datetime: 2018-04-15T00:00:00Z
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: 20180415.000000.cor_rv.fv_core.res.nc
-    filename_trcr: 20180415.000000.cor_rv.fv_tracer.res.nc
-    filename_sfcd: 20180415.000000.cor_rv.sfc_data.nc
-    filename_sfcw: 20180415.000000.cor_rv.fv_srf_wnd.res.nc
-    filename_cplr: 20180415.000000.cor_rv.coupler.res
-output:
-- parameter: nicas_norm
-  file:
-    filetype: fms restart
-    datapath: Data/staticb_aero/
-    filename_core: nicas_norm.fv_core.res.nc
-    filename_trcr: nicas_norm.fv_tracer.res.nc
-    filename_sfcd: nicas_norm.sfc_data.nc
-    filename_sfcw: nicas_norm.fv_srf_wnd.res.nc
-    filename_cplr: nicas_norm.coupler.res
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      io:
+        data directory: Data/staticb_aero
+        files prefix: nicas_aero
+        overriding universe radius file: cor_aero_universe_radius
+      drivers:
+        multivariate strategy: univariate
+        read universe radius: true
+        compute nicas: true
+        write local nicas: true
+      nicas:
+        resolution: 6.0
+      input model files:
+      - parameter: rh
+        file:
+          set datetime on read: true
+          datetime: 2018-04-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.000000.cor_rh.fv_core.res.nc
+          filename_trcr: 20180415.000000.cor_rh.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.cor_rh.sfc_data.nc
+          filename_sfcw: 20180415.000000.cor_rh.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.cor_rh.coupler.res
+      - parameter: rv
+        file:
+          set datetime on read: true
+          datetime: 2018-04-15T00:00:00Z
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: 20180415.000000.cor_rv.fv_core.res.nc
+          filename_trcr: 20180415.000000.cor_rv.fv_tracer.res.nc
+          filename_sfcd: 20180415.000000.cor_rv.sfc_data.nc
+          filename_sfcw: 20180415.000000.cor_rv.fv_srf_wnd.res.nc
+          filename_cplr: 20180415.000000.cor_rv.coupler.res
+      output model files:
+      - parameter: nicas_norm
+        file:
+          filetype: fms restart
+          datapath: Data/staticb_aero/
+          filename_core: nicas_norm.fv_core.res.nc
+          filename_trcr: nicas_norm.fv_tracer.res.nc
+          filename_sfcd: nicas_norm.sfc_data.nc
+          filename_sfcw: nicas_norm.fv_srf_wnd.res.nc
+          filename_cplr: nicas_norm.coupler.res
 
 test:
   reference filename: testoutput/staticb_nicas_aero.ref

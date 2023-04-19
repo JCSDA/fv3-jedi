@@ -22,7 +22,7 @@ cost function:
     covariance model: SABER
     saber central block:
       saber block name: BUMP_NICAS
-      bump:
+      read:
         io:
           files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos_cf
           alias:
@@ -33,9 +33,8 @@ cost function:
           read local nicas: true
     saber outer blocks:
     - saber block name: StdDev
-      input fields:
-      - parameter: StdDev
-        file:
+      read:
+        model file:
           datetime: 2020-09-03T18:00:00Z
           set datetime on read: true
           filetype: cube sphere history

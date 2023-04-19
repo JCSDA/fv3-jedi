@@ -7,7 +7,6 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
-input variables: [mass_fraction_of_sulfate_in_air]
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -15,43 +14,47 @@ background:
   filename_core: 20201214.210000.fv_core.res.nc
   filename_trcr: 20201214.210000.fv_tracer.res.nc
   filename_cplr: 20201214.210000.coupler.res
-  state variables: [mass_fraction_of_sulfate_in_air,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4,seas5,no3an1,no3an2,no3an3]
-bump:
-  general:
-    universe length-scale: 3000.0e3
-  io:
-    files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
-    alias:
-    - in code: mass_fraction_of_sulfate_in_air
-      in file: fixed_3000km_0.2
-  drivers:
-    multivariate strategy: univariate
-    compute nicas: true
-    write local nicas: true
-  nicas:
-    resolution: 6
-    explicit length-scales: true
-    horizontal length-scale:
-    - groups:
-      - mass_fraction_of_sulfate_in_air
-      value: 3000000.0
-    vertical length-scale:
-    - groups:
-      - mass_fraction_of_sulfate_in_air
-      value: 0.2
-output:
-- parameter: cor_rh
-  file:
-    filetype: fms restart
-    datapath: Data/bump/
-    filename_core: bumpparameters_nicas_gfs_aero.cor_rh.fv_core.res.nc
-    filename_trcr: bumpparameters_nicas_gfs_aero.cor_rh.fv_tracer.res.nc
-- parameter: cor_rv
-  file:
-    filetype: fms restart
-    datapath: Data/bump/
-    filename_core: bumpparameters_nicas_gfs_aero.cor_rv.fv_core.res.nc
-    filename_trcr: bumpparameters_nicas_gfs_aero.cor_rv.fv_tracer.res.nc
+  state variables: [mass_fraction_of_sulfate_in_air]
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        universe length-scale: 3000.0e3
+      io:
+        files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
+        alias:
+        - in code: mass_fraction_of_sulfate_in_air
+          in file: fixed_3000km_0.2
+      drivers:
+        multivariate strategy: univariate
+        compute nicas: true
+        write local nicas: true
+      nicas:
+        resolution: 6
+        explicit length-scales: true
+        horizontal length-scale:
+        - groups:
+          - mass_fraction_of_sulfate_in_air
+          value: 3000000.0
+        vertical length-scale:
+        - groups:
+          - mass_fraction_of_sulfate_in_air
+          value: 0.2
+      output model files:
+      - parameter: cor_rh
+        file:
+          filetype: fms restart
+          datapath: Data/bump/
+          filename_core: bumpparameters_nicas_gfs_aero.cor_rh.fv_core.res.nc
+          filename_trcr: bumpparameters_nicas_gfs_aero.cor_rh.fv_tracer.res.nc
+      - parameter: cor_rv
+        file:
+          filetype: fms restart
+          datapath: Data/bump/
+          filename_core: bumpparameters_nicas_gfs_aero.cor_rv.fv_core.res.nc
+          filename_trcr: bumpparameters_nicas_gfs_aero.cor_rv.fv_tracer.res.nc
 
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs_aero.ref

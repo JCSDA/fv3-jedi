@@ -1,0 +1,131 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_geos_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
+background:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/staticb/balanced/mem001/
+  filename: geos.20201215.000000z.nc4
+  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity]
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: ID
+  saber outer blocks:
+  - saber block name: BUMP_StdDev
+    calibration:
+      general:
+        universe length-scale: 3000.0e3
+      io:
+        data directory: Data/staticb
+      drivers:
+        multivariate strategy: univariate
+      ensemble sizes:
+        sub-ensembles: 3
+      diagnostics:
+        target ensemble size: 30
+      variance:
+        objective filtering: true
+        filtering iterations: 1
+        initial length-scale:
+        - variables:
+          - stream_function
+          - velocity_potential
+          value: 3000.0e3
+        - variables:
+          - air_temperature
+          - surface_pressure
+          - specific_humidity
+#         - cloud_liquid_water
+#         - ozone_mass_mixing_ratio
+          value: 300.0e3
+      grids:
+      - model:
+          variables:
+          - stream_function
+          - velocity_potential
+          - air_temperature
+          - specific_humidity
+#         - cloud_liquid_water
+#         - ozone_mass_mixing_ratio
+        io:
+          files prefix: var_3D_geos
+      - model:
+          variables:
+          - surface_pressure
+        io:
+          files prefix: var_2D_geos
+      input model files:
+      - parameter: var
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2020-12-14T21:00:00Z
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb
+          filename: geos.var.20201214.210000.nc4
+      - parameter: m4
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2020-12-14T21:00:00Z
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.m4.20201214.210000.nc4
+      - parameter: var
+        component: 2
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T00:00:00Z
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.var.20201215.000000.nc4
+      - parameter: m4
+        component: 2
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T00:00:00Z
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.m4.20201215.000000.nc4
+      - parameter: var
+        component: 3
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T03:00:00Z
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.var.20201215.030000.nc4
+      - parameter: m4
+        component: 3
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T03:00:00Z
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.m4.20201215.030000.nc4
+      output model files:
+      - parameter: stddev
+        file:
+          filetype: cube sphere history
+          provider: geos
+          datapath: Data/staticb/
+          filename: geos.stddev.nc4
+
+test:
+  reference filename: testoutput/staticb_var_geos.ref
+  test output filename: testoutput/staticb_var_geos.test.out

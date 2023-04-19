@@ -1,0 +1,161 @@
+input geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_geos_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
+output geometry:
+  akbk: Data/fv3files/akbk72.nc4
+  layout: [1,2]
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos.yaml
+
+variable change:
+  variable change name: Control2Analysis
+  output variables: [psi,chi,t,ps,sphum]
+  do inverse: true
+  femps_iterations: 60
+  femps_ngrids: 2
+  femps_path2fv3gridfiles: Data/femps/
+  femps_checkconvergence: false
+
+states:
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem001._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem001/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem002._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem002/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem003._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem003/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem004._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem004/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem005._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem005/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem006._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem006/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem007._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem007/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem008._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem008/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem009._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem009/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+- input:
+    datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    state variables: &readvars [ua,va,t,delp,sphum]
+    datapath: Data/inputs/geos_c12
+    filename: geos.mem010._YYYY__MM__DD___HH_0000z.nc4
+  output:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/staticb/balanced/mem010/
+    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+
+test:
+  reference filename: testoutput/staticb_ens-to-psichi__YYYY__MM__DD__HH__geos.ref
+  test output filename: testoutput/staticb_ens-to-psichi__YYYY__MM__DD__HH__geos.test.out
