@@ -152,6 +152,7 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_fsoi_backward.yaml
   testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
+  testinput/hyb-3dvar_geos_sondes_c12.yaml
   testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
   testinput/hyb-3dvar_gfs_aero.yaml
   testinput/hyb-3dvar_gfs_aero_bump.yaml
@@ -161,6 +162,7 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_p12.yaml
   testinput/hyb-3dvar.yaml
   testinput/hyb-4dvar_pseudo-geos.yaml
+  testinput/hyb-4denvar_geos_sondes_c12.yaml
   testinput/hyb-fgat_fv3lm.yaml
   testinput/hyb-fgat_gfs_aero.yaml
   testinput/increment_geos.yaml
@@ -291,6 +293,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_fsoi_backward.ref
   testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
+  testoutput/hyb-3dvar_geos_sondes_c12.ref
   testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.ref
   testoutput/hyb-3dvar_gfs_aero.ref
   testoutput/hyb-3dvar_gfs_aero_bump.ref
@@ -300,6 +303,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar.ref
   testoutput/hyb-3dvar_p12.ref
   testoutput/hyb-4dvar_pseudo-geos.ref
+  testoutput/hyb-4denvar_geos_sondes_c12.ref
   testoutput/hyb-fgat_fv3lm.ref
   testoutput/hyb-fgat_gfs_aero.ref
   testoutput/letkf.ref
@@ -1237,6 +1241,17 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_ozone
                   ARGS     testinput/3dvar_geos_ozone_c12.yaml
                   COMMAND  fv3jedi_var.x )
 
+if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_geos_sondes
+                  MPI      6
+                  ARGS     testinput/hyb-3dvar_geos_sondes_c12.yaml
+                  COMMAND  fv3jedi_var.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-4denvar_geos_sondes
+                  MPI      12
+                  ARGS     testinput/hyb-4denvar_geos_sondes_c12.yaml
+                  COMMAND  fv3jedi_var.x )
+endif()
 
 if( ${sp_FOUND} )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_gsi_global

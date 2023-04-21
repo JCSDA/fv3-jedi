@@ -64,7 +64,7 @@ phases:
       - ./clone.sh jcsda-internal/ioda $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda ${GIT_BASE_BRANCH} develop
 
       # gsibec
-      - ./clone.sh geos-esm/GSIbec $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsibec ${GIT_BASE_BRANCH} 1.0.6
+      - ./clone.sh geos-esm/GSIbec $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsibec ${GIT_BASE_BRANCH} 1.1.1
 
       # saber
       - ./clone.sh jcsda-internal/saber $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber ${GIT_BASE_BRANCH} develop
@@ -129,7 +129,7 @@ phases:
       # for jedi-cmake
       - export jedi_cmake_ROOT=/opt/view
 
-      - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SITE=NightlyCodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=IntelContainer -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF /jcsda/fv3-bundle/
+      - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCDASH_OVERRIDE_SITE=NightlyCodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=IntelContainer -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUNDLE_SKIP_GSIBEC=OFF /jcsda/fv3-bundle/
       - make -j2
 
       - echo $CODEBUILD_BUILD_SUCCEEDING

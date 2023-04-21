@@ -90,7 +90,7 @@ phases:
       - ./clone.sh jcsda-internal/ioda $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda ${GIT_BASE_BRANCH} develop
 
       # gsibec
-      - ./clone.sh geos-esm/GSIbec $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsibec ${GIT_BASE_BRANCH} 1.0.6
+      - ./clone.sh geos-esm/GSIbec $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsibec ${GIT_BASE_BRANCH} 1.1.1
 
       # saber
       - ./clone.sh jcsda-internal/saber $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber ${GIT_BASE_BRANCH} develop
@@ -146,7 +146,7 @@ phases:
       - cd /build_container
       # for jedi-cmake
       - export jedi_cmake_ROOT=/opt/view
-      - ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=IntelContainer -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF
+      - ecbuild /jcsda/fv3-bundle/ -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_SYSTEM_NAME=IntelContainer -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUNDLE_SKIP_GSIBEC=OFF
 
       - cd /build_container/fv3-jedi
       - cp ../DartConfiguration.tcl .

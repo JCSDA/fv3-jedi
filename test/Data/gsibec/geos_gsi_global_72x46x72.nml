@@ -1,6 +1,6 @@
  &SETUP
    qoption=2,
-   pseudo_q2=.true.,
+!  pseudo_q2=.true.,
  /
  &GRIDOPTS
    JCAP=42,JCAP_B=42,NLAT=46,NLON=72,nsig=72,use_sp_eqspace=.true.,
@@ -19,6 +19,9 @@
 !  simcv=.true,
 !  bkgv_write_sv='geos_svbundle',
    simcv=.false,
+ /
+
+ &HYBRID_ENSEMBLE
  /
 
 met_guess::
@@ -58,29 +61,29 @@ met_guess::
 
 state_derivatives::
 !var  level  src
-#ps   1      met_guess
-#u    72     met_guess
-#v    72     met_guess
-#tv   72     met_guess
-#q    72     met_guess
+ ps   1      met_guess
+ u    72     met_guess
+ v    72     met_guess
+ tv   72     met_guess
+ q    72     met_guess
 #oz   72     met_guess
 #cw   72     met_guess
 #ql   72     met_guess
 #qi   72     met_guess
 #qr   72     met_guess
 #qs   72     met_guess
-#prse 73     met_guess
+ prse 73     met_guess
 #sst  central  --> I don't think this is needed
 ::
 
 state_tendencies::
 !var  levels  source
-#prse 73      met_guess
+ prse 73      met_guess
+ u    72      met_guess
+ v    72      met_guess
+ tv   72      met_guess
+ q    72      met_guess
 #oz   72      met_guess
-#u    72      met_guess
-#v    72      met_guess
-#tv   72      met_guess
-#q    72      met_guess
 #cw   72      met_guess
 #ql   72      met_guess
 #qi   72      met_guess

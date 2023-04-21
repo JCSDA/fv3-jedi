@@ -19,6 +19,9 @@
    simcv=.false,
  /
 
+ &HYBRID_ENSEMBLE
+ /
+
 met_guess::
 !var     level   crtm_use    desc                 orig_name
   ps        1      -1         surface_pressure     ps
@@ -43,29 +46,29 @@ met_guess::
 
 state_derivatives::
 !var  level  src
-#ps   1      met_guess
-#u    127    met_guess
-#v    127    met_guess
-#tv   127    met_guess
-#q    127    met_guess
+ ps   1      met_guess
+ u    127    met_guess
+ v    127    met_guess
+ tv   127    met_guess
+ q    127    met_guess
 #oz   127    met_guess
 #cw   127    met_guess
 #ql   127    met_guess
 #qi   127    met_guess
 #qr   127    met_guess
 #qs   127    met_guess
-#prse 128    met_guess
+ prse 128    met_guess
 #sst  central  --> I don't think this is needed
 ::
 
 state_tendencies::
 !var  levels  source
-#prse 128     met_guess
+ prse 128     met_guess
+ u    127     met_guess
+ v    127     met_guess
+ tv   127     met_guess
+ q    127     met_guess
 #oz   127     met_guess
-#u    127     met_guess
-#v    127     met_guess
-#tv   127     met_guess
-#q    127     met_guess
 #cw   127     met_guess
 #ql   127     met_guess
 #qi   127     met_guess
@@ -99,7 +102,9 @@ control_vector::
  vp      127      0       0.55        -1.0     state    u:v     -1.00
  t       127      0       0.90        -1.0     state    tv      -1.00
  q       127      1       0.60        -1.0     state    q       -1.00
- oz      127      1       0.20        -1.0     state    oz      -1.00
+#oz      127      1       0.20        -1.0     state    oz      -1.00
+# 2.0 / 603447.6
+ oz      127      1 0.00000331        -1.0     state    oz      -1.00
 #co      127      1       0.20        -1.0     state    co      -1.00
 #cw      127      1       1.00        -1.0     state    cw      -1.00
 #ql      127      1       0.00        -1.0     state    ql      -1.00

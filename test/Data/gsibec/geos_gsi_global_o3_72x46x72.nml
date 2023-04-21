@@ -18,6 +18,9 @@
    simcv=.false,
  /
 
+ &HYBRID_ENSEMBLE
+ /
+
 met_guess::
 !var     level   crtm_use    desc                 orig_name
   ps        1      -1         surface_pressure     ps
@@ -42,9 +45,7 @@ state_vector::
 
 control_vector::
 !var     level  itracer as/tsfc_sdv  an_amp0   source  funcof  be
-#oz       72      1       0.20        -1.0     state    oz      -1.00
-# 0.2 * 603447.6 - this is needed because UFO is wired to mol/mol
- oz       72      1  120689.52        -1.0     state    oz      -1.00
+ oz       72      1       0.20        -1.0     state    oz      -1.00
  ps        1      0       0.75        -1.0     state    prse    -1.00
 !             sf    vp    t    q    oz   q2 qi ql qr qs    ps
 ! afcts_ = "0.51  0.65 0.98 0.62  0.20 0.64  1  1  1  1  0.83"

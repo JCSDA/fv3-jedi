@@ -26,70 +26,31 @@ cost function:
 #                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
 #---------------------------------
   background error:
-    covariance model: hybrid
-    components:
-    - covariance:
-        covariance model: SABER
-        saber central block:
-          saber block name: gsi covariance
-          read:
-            gsi akbk: Data/fv3files/akbk72.nc4
-            gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-            gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
-            processor layout x direction: 3
-            processor layout y direction: 2
-  ##        debugging bypass gsi: true
-            debugging mode: false
-        saber outer blocks:
-        - saber block name: gsi interpolation to model grid
-          gsi akbk: Data/fv3files/akbk72.nc4
-          gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-          gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
-          processor layout x direction: 3
-          processor layout y direction: 2
-          debugging mode: false
-        linear variable change:
-          linear variable change name: Control2Analysis
-          input variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                            specific_humidity]
-          output variables: *3dvars
-      weight:
-        value: 1.00
- 
-    - covariance:
-        covariance model: FV3JEDI-ID
-        date: &adate 2020-12-15T00:00:00Z
-      weight:
-        value: 0.0
+    covariance model: SABER
+    saber central block:
+      saber block name: gsi covariance
+      read:
+        gsi akbk: Data/fv3files/akbk72.nc4
+        gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+        gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
+        processor layout x direction: 3
+        processor layout y direction: 2
+##      debugging bypass gsi: true
+        debugging mode: false
+    saber outer blocks:
+    - saber block name: gsi interpolation to model grid
+      gsi akbk: Data/fv3files/akbk72.nc4
+      gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
+      gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
+      processor layout x direction: 3
+      processor layout y direction: 2
+      debugging mode: false
+    linear variable change:
+      linear variable change name: Control2Analysis
+      input variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                        specific_humidity]
+      output variables: *3dvars
 
-#   - covariance:
-#       covariance model: ensemble
-#       members from template:
-#         template:
-#           datetime: 2020-12-15T00:00:00Z
-#           filetype: cube sphere history
-#           provider: geos
-#           state variables: *3dvars
-#           datapath: Data/inputs/geos_c12/ensemble
-#           filename: mem%mem%/x0044.traj_lcv.20201215_0000z.nc4
-#         pattern: '%mem%'
-#         nmembers: 10
-#         zero padding: 3
-#       localization:
-#         localization method: SABER
-#         saber block:
-#           saber block name: BUMP_NICAS
-#           input variables: *3dvars
-#           output variables: *3dvars
-#           read:
-#             prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
-#             method: loc
-#             strategy: common
-#             load_nicas_local: true
-#             io_keys: [common]
-#             io_values: [fixed_2500km_0.3]
-#     weight:
-#       value: 0.00
 #---------------------------------
   observations:
     observers:
@@ -112,7 +73,6 @@ cost function:
           - name: windEastward
           - name: windNorthward
           - name: airTemperature
-#         - name: virtualTemperature
           - name: specificHumidity
         - name: SfcPCorrected
           variables:
@@ -127,7 +87,6 @@ cost function:
           - name: windEastward
           - name: windNorthward
           - name: airTemperature
-#         - name: virtualTemperature
           - name: specificHumidity
         - name: Identity
           variables:
@@ -147,14 +106,12 @@ cost function:
 #       threshold: 6.0
       - filter: Perform Action
         filter variables: [windEastward, windNorthward, airTemperature, specificHumidity]
-##      filter variables: [windEastward, windNorthward, airTemperature, virtualTemperature]
         action:
           name: assign error
           error function:
             name: GsiFinalObsError/windEastward
             name: GsiFinalObsError/windNorthward
             name: GsiFinalObsError/airTemperature
-##          name: GsiFinalObsError/virtualTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
         filter variables: [stationPressure]

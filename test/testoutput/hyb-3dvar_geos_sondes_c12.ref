@@ -1,0 +1,19 @@
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+CostJo   : Nonlinear Jo(Radiosonde) = 8.7347941163008305e+04, nobs = 1457, Jo/n = 5.9950543008241802e+01, err = 2.0329386501381626e+00
+CostFunction: Nonlinear J = 8.7347941163008305e+04
+DRIPCGMinimizer: reduction in residual norm = 9.7698389941848873e-01
+CostFunction::addIncrement: Analysis:
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 7 | cube sphere face size: C12
+eastward_wind | Min:-1.0730966954460224e+02 Max:+1.7026938582815768e+02 RMS:+2.6629933797736310e+01
+northward_wind | Min:-1.0635241075237492e+02 Max:+1.0491873150620820e+02 RMS:+1.1300846170671418e+01
+air_temperature | Min:+1.6599938294229560e+02 Max:+3.0529028051955970e+02 RMS:+2.4633378362982648e+02
+air_pressure_thickness | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934658e+03
+surface_pressure | Min:+5.3773867270762508e+04 Max:+1.0482524013402949e+05 RMS:+9.8975336585800746e+04
+specific_humidity | Min:+2.1540177316104648e-09 Max:+1.9582455642608076e-02 RMS:+3.9589509356315169e-03
+sfc_geopotential_height_times_grav | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+----------------------------------------------------------------------------------------------------
+CostJb   : Nonlinear Jb = 253.9120204853508
+CostJo   : Nonlinear Jo(Radiosonde) = 2740.801500415546, nobs = 1457, Jo/n = 1.881126630346977, err = 2.032938650138163
+CostFunction: Nonlinear J = 2994.713520900897
+
