@@ -87,7 +87,7 @@ phases:
       - ./clone.sh jcsda-internal/ioda $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ioda ${GIT_BASE_BRANCH} develop
 
       # gsibec
-      - ./clone.sh GEOS-esm/GSIbec $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle gsibec ${GIT_BASE_BRANCH} 1.1.1
+      - git clone --depth 1 -b 1.1.2 https://github.com/geos-esm/GSIbec /jcsda/fv3-bundle/gsibec
 
       # saber
       - ./clone.sh jcsda-internal/saber $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle saber ${GIT_BASE_BRANCH} develop
