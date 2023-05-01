@@ -74,12 +74,10 @@ cost function:
       obs operator:
         name: ColumnRetrieval
         nlayers_retrieval: 34
-        AvgKernelVar: averaging_kernel_level
-        PresLevVar: pressure_level
         tracer variables: [volume_mixing_ratio_of_no2]
+        stretchVertices: topbottom #options: top, bottom, topbottom, none
         isApriori: false
         isAveragingKernel: true
-        stretchVertices: topbottom #options: top, bottom, topbottom, none
         model units coeff: 1e-6 # ppmv to 1/1
       obs error:
         covariance model: diagonal

@@ -33,6 +33,11 @@ observations:
       simulated variables: [windEastward,windNorthward,airTemperature]
     obs operator:
       name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
+
 #   GOMsaver is the filter to extract GeoVaLs needed by the specified obs operator
 #   filename is the output path to the GeoVaLs file
     obs filters:

@@ -37,6 +37,10 @@ observations:
       simulated variables: [windEastward, windNorthward, airTemperature, specificHumidity]
     obs operator:
       name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
 
 test:
   reference filename: testoutput/hofx_nomodel_lam_rrfs.ref

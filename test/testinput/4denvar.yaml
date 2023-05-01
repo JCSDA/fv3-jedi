@@ -69,6 +69,9 @@ cost function:
         simulated variables: [windEastward, windNorthward, airTemperature]
       obs operator:
         name: VertInterp
+        vertical coordinate: air_pressure
+        observation vertical coordinate: pressure
+        interpolation method: log-linear
       obs error:
         covariance model: diagonal
       obs filters:

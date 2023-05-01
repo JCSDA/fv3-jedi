@@ -112,6 +112,9 @@ cost function:
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
+        vertical coordinate: air_pressure
+        observation vertical coordinate: pressure
+        interpolation method: log-linear
       obs error:
         covariance model: diagonal
       obs filters:
@@ -217,6 +220,9 @@ cost function:
         obs perturbations seed: 2
       obs operator:
         name: VertInterp
+        vertical coordinate: air_pressure
+        observation vertical coordinate: pressure
+        interpolation method: log-linear
       obs error:
         covariance model: diagonal
       obs filters:

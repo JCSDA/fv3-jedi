@@ -48,6 +48,10 @@ observations:
       simulated variables: [windEastward, windNorthward]
     obs operator:
       name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
     obs error:
       covariance model: diagonal
     obs localizations:
@@ -70,6 +74,10 @@ observations:
       simulated variables: [windEastward, windNorthward, airTemperature]
     obs operator:
       name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
     obs error:
       covariance model: diagonal
     obs filters:
@@ -204,6 +212,10 @@ observations:
       simulated variables: [windEastward, windNorthward]
     obs operator:
       name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
     obs error:
       covariance model: diagonal
     obs localizations:
@@ -226,6 +238,10 @@ observations:
       simulated variables: [windEastward,windNorthward,airTemperature]
     obs operator:
       name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
     obs error:
       covariance model: diagonal
     obs filters:

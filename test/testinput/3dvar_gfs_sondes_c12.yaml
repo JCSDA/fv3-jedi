@@ -71,6 +71,10 @@ cost function:
         name: Composite
         components:
         - name: VertInterp
+          vertical coordinate: air_pressure
+          observation vertical coordinate: pressure
+          observation vertical coordinate group: MetaData
+          interpolation method: log-linear
           variables:
           - name: windEastward
           - name: windNorthward
@@ -86,6 +90,10 @@ cost function:
         name: Composite
         components:
         - name: VertInterp
+          vertical coordinate: air_pressure
+          observation vertical coordinate: pressure
+          observation vertical coordinate group: MetaData
+          interpolation method: log-linear
           variables:
           - name: windEastward
           - name: windNorthward
