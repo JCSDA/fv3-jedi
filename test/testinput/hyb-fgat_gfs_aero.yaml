@@ -24,9 +24,9 @@ cost function:
           template:
             datetime: 2020-12-14T21:00:00Z
             filetype: fms restart
-            state variables: &aerovars [so4,bc1,bc2,oc1,oc2,
-                                        dust1,dust2,dust3,dust4,dust5,
-                                        seas1,seas2,seas3,seas4]
+            state variables: &aerovars [mass_fraction_of_sulfate_in_air,mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                               mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
+                               mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air]
             datapath: Data/inputs/gfs_aero_c12/mem%mem%/
             filename_core: 20201214.210000.fv_core.res.nc
             filename_trcr: 20201214.210000.fv_tracer.res.nc
@@ -38,9 +38,7 @@ cost function:
           localization method: SABER
           saber central block:
             saber block name: BUMP_NICAS
-            active variables: [mass_fraction_of_sulfate_in_air,mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                               mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
-                               mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air]
+            active variables: *aerovars
             read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_aero
