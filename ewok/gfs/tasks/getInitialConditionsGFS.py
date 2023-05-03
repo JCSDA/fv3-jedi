@@ -17,6 +17,9 @@ class getInitialConditionsGFS(generic.getInitialConditions):
 
         self.walltime = '00:05:00'
 
+        if 'hack_step_bg' in config and config['hack_step_bg'] == True:
+            self.RUNTIME_YAML['hack_step_bg'] = True
+
         # Use specific script
         self.command = os.path.join(config['model_path'], "tasks/runGetForecast.py")
 
