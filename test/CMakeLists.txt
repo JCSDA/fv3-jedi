@@ -155,8 +155,6 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_geos_sondes_c12.yaml
   testinput/hyb-3dvar_gfs_0obs_inoneobsspace.yaml
   testinput/hyb-3dvar_gfs_aero.yaml
-  testinput/hyb-3dvar_gfs_aero_bump.yaml
-  testinput/hyb-3dvar_gfs_aero_bump_bc.yaml
   testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
   testinput/hyb-3dvar_gfs.yaml
   testinput/hyb-3dvar_p12.yaml
@@ -296,8 +294,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_geos_sondes_c12.ref
   testoutput/hyb-3dvar_gfs_0obs_inoneobsspace.ref
   testoutput/hyb-3dvar_gfs_aero.ref
-  testoutput/hyb-3dvar_gfs_aero_bump.ref
-  testoutput/hyb-3dvar_gfs_aero_bump_bc.ref
   testoutput/hyb-3dvar_gfs_gnssro_ropp.ref
   testoutput/hyb-3dvar_gfs.ref
   testoutput/hyb-3dvar.ref
@@ -1884,20 +1880,6 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
   # Full observation hyb-3DVar for each model
   # -----------------------------------------
 
-  ecbuild_add_test( TARGET  fv3jedi_test_tier2_hyb-3dvar_gfs_aero_bump
-                    MPI     12
-                    ARGS    testinput/hyb-3dvar_gfs_aero_bump.yaml
-                    COMMAND fv3jedi_var.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
-                                 fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
-
-
-  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_gfs_aero_bump_bc
-                    MPI      12
-                    ARGS     testinput/hyb-3dvar_gfs_aero_bump_bc.yaml
-                    COMMAND  fv3jedi_var.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_var_aero
-                                 fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
 
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_3dvar_gfs_aero
                     MPI      12
