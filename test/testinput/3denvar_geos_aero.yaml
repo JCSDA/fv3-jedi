@@ -24,9 +24,9 @@ cost function:
             filetype: cube sphere history
             provider: geos
             state variables: &aerovars [mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
-                               mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air,mass_fraction_of_sea_salt005_in_air,
-                               mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                               mass_fraction_of_nitrate001_in_air,mass_fraction_of_nitrate002_in_air,mass_fraction_of_nitrate003_in_air,mass_fraction_of_sulfate_in_air]
+                                        mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air,mass_fraction_of_sea_salt005_in_air,
+                                        mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                                        mass_fraction_of_nitrate001_in_air,mass_fraction_of_nitrate002_in_air,mass_fraction_of_nitrate003_in_air,mass_fraction_of_sulfate_in_air]
             datapath: Data/inputs/geos_c12
             filename: geos.aero.bkg.20180415_000000z.mem%mem%.nc4
           pattern: '%mem%'
@@ -39,7 +39,7 @@ cost function:
             active variables: *aerovars
             read:
               io:
-                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
                 alias:
                 - in code: common
                   in file: fixed_2500km_0.3

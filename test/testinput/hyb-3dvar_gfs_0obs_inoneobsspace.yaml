@@ -31,7 +31,7 @@ cost function:
           saber block name: BUMP_NICAS
           read:
             io:
-              files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+              files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
               alias:
               - in code: eastward_wind
                 in file: fixed_2500km_0.3
@@ -76,7 +76,7 @@ cost function:
             saber block name: BUMP_NICAS
             read:
               io:
-                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
                 alias:
                 - in code: common
                   in file: fixed_2500km_0.3

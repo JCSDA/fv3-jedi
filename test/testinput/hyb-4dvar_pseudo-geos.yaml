@@ -19,6 +19,7 @@ cost function:
           saber block name: BUMP_NICAS
           read:
             io:
+              files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
               alias:
               - in code: eastward_wind
                 in file: fixed_2500km_0.3
@@ -49,13 +50,9 @@ cost function:
                 - cloud_liquid_ice
                 - cloud_liquid_water
                 - mole_fraction_of_ozone_in_air
-              io:
-                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
             - model:
                 variables:
                 - surface_pressure
-              io:
-                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
       weight:
         value: 0.1
     - covariance:
@@ -78,7 +75,7 @@ cost function:
             active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
             read:
               io:
-                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
                 alias:
                 - in code: common
                   in file: fixed_2500km_0.3

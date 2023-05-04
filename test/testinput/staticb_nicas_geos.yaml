@@ -22,6 +22,7 @@ background error:
     calibration:
       io:
         data directory: Data/staticb
+        files prefix: nicas_geos
       drivers:
         multivariate strategy: univariate
         read universe radius: true
@@ -55,13 +56,11 @@ background error:
 #         - cloud_liquid_water
 #         - ozone_mass_mixing_ratio
         io:
-          files prefix: nicas_3D_geos
           overriding universe radius file: cor_3D_geos_universe_radius
       - model:
           variables:
           - surface_pressure
         io:
-          files prefix: nicas_2D_geos
           overriding universe radius file: cor_2D_geos_universe_radius
       input model files:
       - parameter: a

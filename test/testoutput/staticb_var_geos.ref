@@ -1,7 +1,7 @@
- Norm of input parameter var::1: 3.3122513713465228e+11
- Norm of input parameter m4::1: 1.1027342439716787e+24
- Norm of input parameter var::2: 3.4192161747331140e+11
- Norm of input parameter m4::2: 1.1693864562942991e+24
- Norm of input parameter var::3: 3.7605789441941510e+11
- Norm of input parameter m4::3: 1.4058861299678494e+24
- Norm of output parameter stddev - 1: 3.9895481716288201e+05
+Norm of input parameter var - 1: 3.3122513713464929e+11
+Norm of input parameter m4 - 1: 1.1027342439716647e+24
+Norm of input parameter var - 2: 3.4192161747330920e+11
+Norm of input parameter m4 - 2: 1.1693864562942543e+24
+Norm of input parameter var - 3: 3.7605789441941394e+11
+Norm of input parameter m4 - 3: 1.4058861299678116e+24
+Norm of output parameter stddev - 1: 3.9895481716288155e+05

@@ -22,6 +22,7 @@ background error:
       general:
         universe length-scale: 2500.0e3
       io:
+        files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
         alias:
         - in code: air_temperature
           in file: fixed_2500km_0.3
@@ -124,13 +125,9 @@ background error:
       - model:
           variables:
           - air_temperature
-        io:
-          files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_geos
       - model:
           variables:
           - surface_pressure
-        io:
-          files prefix: Data/bump/fv3jedi_bumpparameters_nicas_2D_geos
       output model files:
       - parameter: cor_rh
         file:

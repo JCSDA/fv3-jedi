@@ -14,11 +14,6 @@ saber central block:
     drivers:
       multivariate strategy: univariate
       read local nicas: true
-    nicas:
-      minimum level:
-      - groups:
-        - cloud_liquid_water
-        value: 76
     grids:
     - model:
         variables:

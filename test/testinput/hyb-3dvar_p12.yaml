@@ -31,7 +31,7 @@ cost function:
           active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
           read:
             io:
-              files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
+              files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_p12
               alias:
               - in code: eastward_wind
                 in file: fixed_2500km_0.3
@@ -73,7 +73,7 @@ cost function:
             active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
             read:
               io:
-                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_3D_gfs_p12
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs_p12
                 alias:
                 - in code: common
                   in file: fixed_2500km_0.3
