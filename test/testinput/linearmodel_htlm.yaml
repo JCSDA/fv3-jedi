@@ -1,0 +1,118 @@
+analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: ID
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_gfs_c12.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+linear model:
+  simplified linear model:
+    name: FV3JEDITLM
+    namelist filename: Data/fv3files/input_gfs_c12.nml
+    linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+    tstep: PT15M
+    lm_do_dyn: 1
+    lm_do_trb: 0
+    lm_do_mst: 0
+    tlm variables: *anavars
+    trajectory:
+      model variables: *anavars
+  tstep: PT15M
+  increment variables: *anavars
+  htlm coefficient calc:
+    training variables: [air_temperature]
+    window length: PT30M
+    window begin: 2020-12-15T00:00:00Z
+    htlm calculator:
+      influence region size: 2
+      #regularization param: 100
+      rms scaling: false
+    htlm ensemble:
+      ensemble size: 3
+      model:
+        name: FV3LM
+        use internal namelist: true
+        tstep: PT15M
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+        model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+      coeff linear model:
+        name: FV3JEDITLM
+        namelist filename: Data/fv3files/input_gfs_c12.nml
+        linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+        tstep: PT15M
+        lm_do_dyn: 1
+        lm_do_trb: 0
+        lm_do_mst: 0
+        tlm variables: *anavars
+        trajectory:
+          model variables: *anavars
+      state geometry:
+        fms initialization:
+          namelist filename: Data/fv3files/input_gfs_c12.nml
+          field table filename: Data/fv3files/field_table_gmao
+        akbk: Data/fv3files/akbk127.nc4
+        npx: 13
+        npy: 13
+        npz: 127
+        field metadata override: Data/fieldmetadata/gfs-restart.yaml
+      control member:
+        datetime: 2020-12-15T00:00:00Z
+        filetype: fms restart
+        datapath: Data/inputs/gfs_c12/bkg/
+        filename_core: 20201215.000000.fv_core.res.nc
+        filename_trcr: 20201215.000000.fv_tracer.res.nc
+        filename_sfcd: 20201215.000000.sfc_data.nc
+        filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+        filename_cplr: 20201215.000000.coupler.res
+        state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+      non linear ensemble:
+        perturbed members:
+          members from template:
+            template:
+              datetime: 2020-12-15T00:00:00Z
+              filetype: fms restart
+              state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+              datapath: Data/inputs/gfs_c12/mem%mem%/
+              filename_core: 20201215.000000.fv_core.res.nc
+              filename_trcr: 20201215.000000.fv_tracer.res.nc
+              filename_sfcd: 20201215.000000.sfc_data.nc
+              filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+              filename_cplr: 20201215.000000.coupler.res
+            pattern: '%mem%'
+            nmembers: 3
+            zero padding: 3
+  name: HTLM
+linear model test:
+  forecast length: PT30M
+  first multiplier TL: 1.e-11 # use weaker multipliers (e.g. 0.01) and more iterations for debugging
+  iterations TL: 1            # use more iterations (e.g. 10) for debugging, and adjust first multiplier
+  tolerance AD: 2.0e-11
+  tolerance TL: 1.0
+model:
+  name: FV3LM
+  use internal namelist: true
+  tstep: PT15M
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+model aux control: null
+initial condition:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
+  state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]

@@ -69,6 +69,7 @@ list( APPEND fv3jedi_testinput
   testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
+  testinput/4dvar_htlm_fv3lm.yaml
   testinput/addincrement_geos.yaml
   testinput/addincrement_gfs.yaml
   testinput/bumpparameters_nicas_geos_p12.yaml
@@ -172,6 +173,7 @@ list( APPEND fv3jedi_testinput
   testinput/adjointforecast.yaml
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
+  testinput/linearmodel_htlm.yaml
   testinput/linearvariablechange_geos.yaml
   testinput/linearvariablechange_gfs.yaml
   testinput/localization_bump.yaml
@@ -235,6 +237,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/3dvar_gfs_aero.ref
   testoutput/3denvar_geos_aero.ref
   testoutput/4denvar.ref
+  testoutput/4dvar_htlm_fv3lm.ref
   testoutput/addincrement_geos.ref
   testoutput/addincrement_gfs.ref
   testoutput/bumpparameters_nicas_geos.ref
@@ -995,7 +998,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_converttolatlon_gfs
                   MPI      6
                   ARGS     testinput/converttolatlon_gfs.yaml
                   COMMAND  fv3jedi_converttolatlon.x )
-                  
+
 # Remaining interface tests
 # -------------------------
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_variablechange_gfs
@@ -1051,7 +1054,12 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_physics
                   MPI      6
                   ARGS     testinput/linearmodel_physics.yaml
                   COMMAND  test_fv3jedi_linearmodel.x )
-                  
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_htlm
+                  MPI      6
+                  ARGS     testinput/linearmodel_htlm.yaml
+                  COMMAND  test_fv3jedi_linearmodel.x )
+
 
 # Forecast tests
 # --------------
@@ -1417,6 +1425,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-4dvar_pseudo-geos
                   ARGS     --no-validate testinput/hyb-4dvar_pseudo-geos.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
+
+# HTLM 4dvar
+#-----------
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_htlm_4dvar_fv3lm
+                  MPI      6
+                  ARGS     --no-validate testinput/4dvar_htlm_fv3lm.yaml
+                  COMMAND  fv3jedi_var.x )
 
 # FSOI
 # ----
