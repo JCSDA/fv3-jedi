@@ -10,7 +10,7 @@ saber central block:
   read:
     io:
       data directory: ${JEDI_BUILD}/fv3-jedi/test/Data/bump/
-      files prefix: fv3jedi_bumpparameters_nicas_3D_gfs
+      files prefix: fv3jedi_bumpparameters_nicas_gfs
       alias:
       - in code: eastward_wind
         in file: fixed_2500km_0.3
