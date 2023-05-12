@@ -1755,6 +1755,16 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "mass_fraction_of_so2_in_air";
+    md.shortName = "so2";
+    md.units = "kgkg-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "mass_fraction_of_sulfate_in_air";
     md.shortName = "so4";
     md.units = "kgkg-1";
