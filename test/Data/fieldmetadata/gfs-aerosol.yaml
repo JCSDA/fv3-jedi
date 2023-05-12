@@ -71,3 +71,7 @@ field metadata:
 - long name: mass_fraction_of_sulfate_in_air
   io name: sulf
   units: ugkg-1
+
+- long name: mass_fraction_of_so2_in_air
+  io name: so2
+  units: ugkg-1

@@ -6,6 +6,7 @@
 import getFixFilesGFSAero
 import saveAnalysisGFSAero
 import saveForecastGFSAero
+import saveForecastGFS_DB
 
 import gfs
 
@@ -17,3 +18,4 @@ class ModelTasks(gfs.ModelTasks):
         self.getStaticModel = getFixFilesGFSAero.getFixFilesGFSAero
         self.saveAnalysis = saveAnalysisGFSAero.saveAnalysisGFSAero
         self.saveForecast = saveForecastGFSAero.saveForecastGFSAero
+        self.saveForecastDB = saveForecastGFS_DB.saveForecastGFS_DB

@@ -11,6 +11,7 @@ import getFixFilesGEOS
 import getInitialConditionsGEOS
 import saveAnalysisGEOS
 import saveForecastGEOS
+import saveForecastGEOS_DB
 
 
 class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
@@ -18,6 +19,7 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
     def __init__(self):
         ewok.tasks.GenericModel.ModelTasks.__init__(self)
 
+        self.convertstate = ewok.convertstate
         self.getBackground = getBackgroundGEOS.getBackgroundGEOS
         self.getExpInit = getExpInitGEOS.getExpInitGEOS
         self.getFcInit = getFcInitGEOS.getFcInitGEOS
@@ -32,3 +34,4 @@ class ModelTasks(ewok.tasks.GenericModel.ModelTasks):
         self.publishEnsPlots = ewok.publishEnsPlots
         self.publishObsPlots = ewok.publishObsPlots
         self.enstats = ewok.enstats
+        self.saveForecastDB = saveForecastGEOS_DB.saveForecastGEOS_DB

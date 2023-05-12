@@ -8,6 +8,9 @@ filetype: fms restart
 skip coupler file: true
 ###### hack to be removed ######
 datapath: $(fcworkdir)
+###### hack to be removed ######
+skip coupler file: true
+###### hack to be removed ######
 filename_core: $(expid).fc.$(fcdatetime).$(fcstep).fv_core.res.nc
 filename_trcr: $(expid).fc.$(fcdatetime).$(fcstep).fv_tracer.res.nc
 filename_sfcd: $(expid).fc.$(fcdatetime).$(fcstep).sfc_data.nc
