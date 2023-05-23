@@ -46,6 +46,9 @@ type fv3jedi_io_csh_conf
   ! Option to clobber existing files
   logical, allocatable :: clobber(:)
 
+  ! Optional list of fields to write out
+  character(len=:), allocatable :: fields_to_write(:)
+
   ! By default the tile is a dimension in the file (npx by npy by ntile), alternatively the faces
   ! can be stacked in the y direction (npx by ntile*npy) by setting the following to false
   logical, allocatable :: tile_is_a_dimension(:)
@@ -390,6 +393,15 @@ if (conf%has("set datetime on read")) then
   call conf%get_or_die('set datetime on read', self%conf%set_datetime_on_read)
 else
   self%conf%set_datetime_on_read = .false.
+endif
+
+! are optional fields to write specified?
+! ------------------
+if (conf%has("fields to write")) then
+  call conf%get_or_die('fields to write', self%conf%fields_to_write)
+else
+  allocate(character(len=2048) :: self%conf%fields_to_write(1))
+  self%conf%fields_to_write(1)='All'
 endif
 
 end subroutine parse_conf
@@ -946,15 +958,15 @@ if (self%iam_io_proc) then
       ! Time dimension
       call nccheck ( nf90_def_dim(self%ncid(n), "time", 1, self%t_dimid), "nf90_def_dim time" )
 
-      if (trim(self%conf%provider) == 'geos') then
-        ! In case the four level surface fields need to be written
-        do var = 1,size(fields)
-          if (fields(var)%npz == 4) then
-            call nccheck ( nf90_def_dim(self%ncid(n), "lev4", 4, self%f_dimid), "nf90_def_dim lev"  )
-            exit
-          endif
-        enddo
+      ! In case the four level surface fields need to be written
+      do var = 1,size(fields)
+        if (fields(var)%npz == 4) then
+          call nccheck ( nf90_def_dim(self%ncid(n), "lev4", 4, self%f_dimid), "nf90_def_dim lev"  )
+          exit
+        endif
+      enddo
 
+      if (trim(self%conf%provider) == 'geos') then
         ! Meta data required by the model
         call nccheck ( nf90_def_dim(self%ncid(n), "ncontact",          4, self%c_dimid), &
                        "nf90_def_dim ncontact" )
@@ -1186,6 +1198,7 @@ integer, allocatable, target :: is_r3_tile(:), is_r3_noti(:)
 real(kind=kind_real), allocatable :: arrayg(:,:)
 integer, pointer :: istart(:), icount(:)
 character(10) :: coordstr
+logical :: write_field
 
 
 ! Whole level of tile array
@@ -1232,123 +1245,135 @@ end if
 ! --------------------
 do var = 1,size(fields)
 
-  if (self%iam_io_proc) then
+  write_field = .false.
+  if (trim(self%conf%fields_to_write(1)) == 'All') then
+    write_field = .true.
+  else
+    do n = 1,size(self%conf%fields_to_write)
+      if (trim(self%conf%fields_to_write(n)) == trim(fields(var)%io_name)) then
+        write_field = .true.
+      end if
+    end do
+  end if
 
-    ! ncid for this field
-    ! -------------------
-    ncid = self%ncid(1)
-
-    ! Redefine
-    ! --------
-    if (self%conf%clobber(1)) then
-
-      call nccheck( nf90_redef(ncid), "nf90_redef" )
-
-      ! Dimension IDs for this field
-      ! ----------------------------
-      if (associated(dimids2)) nullify(dimids2)
-      if (associated(dimids3)) nullify(dimids3)
-      if (associated(dimidse)) nullify(dimidse)
-      if (associated(dimids4)) nullify(dimids4)
-
-      if (self%conf%tile_is_a_dimension(1)) then
-        dimids2 => dimids2_tile
-        dimids3 => dimids3_tile
-        dimidse => dimidse_tile
-        dimids4 => dimids4_tile
-      else
-        dimids2 => dimids2_noti
-        dimids3 => dimids3_noti
-        dimidse => dimidse_noti
-        dimids4 => dimids4_noti
-      endif
-
-      if (associated(dimids)) nullify (dimids)
-
-      if (fields(var)%npz == 1) then
-        dimids => dimids2
-      elseif (fields(var)%npz == self%npz) then
-        dimids => dimids3
-      elseif (fields(var)%npz == self%npz+1) then
-        dimids => dimidse
-      elseif (fields(var)%npz == 4) then
-        dimids => dimids4
-      else
-        call abor1_ftn("write_cube_sphere_history: vertical dimension not supported")
-      endif
-
-      ! Define field
-      call nccheck( nf90_def_var(ncid, trim(fields(var)%io_name), NF90_DOUBLE, dimids, varid), &
-                    "nf90_def_var "//trim(fields(var)%io_name))
-
-      ! Write attributes if clobbering
-      if (self%conf%clobber(1)) then
-
-        ! Long name and units
-        call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
-        call nccheck( nf90_put_att(ncid, varid, "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
-
-        ! Additional attributes for history and or plotting compatibility
-        call nccheck( nf90_put_att(ncid, varid, "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
-        call nccheck( nf90_put_att(ncid, varid, "coordinates"  , trim(coordstr)              ), "nf90_put_att" )
-        call nccheck( nf90_put_att(ncid, varid, "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
-
-      endif
-
-      ! End define mode
-      call nccheck( nf90_enddef(ncid), "nf90_enddef" )
-
-    else
-
-      ! Get existing variable id to write to
-      call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%io_name), varid), &
-                    "nf90_inq_varid "//trim(fields(var)%io_name) )
-
-    endif
-
-    ! Set starts and counts based on levels and tiledim flag
-    ! ------------------------------------------------------
-
-    if (associated(istart)) nullify(istart)
-    if (associated(icount)) nullify(icount)
-
-    if (fields(var)%npz == 1) then
-      if (self%conf%tile_is_a_dimension(1)) then
-        istart => self%is_r2_tile; icount => self%ic_r2_tile
-      else
-        istart => self%is_r2_noti; icount => self%ic_r2_noti
-      endif
-    elseif (fields(var)%npz > 1) then
-      if (self%conf%tile_is_a_dimension(1)) then
-        istart => is_r3_tile; icount => self%ic_r3_tile
-      else
-        istart => is_r3_noti; icount => self%ic_r3_noti
-      endif
-    endif
-
-  endif
-
-  do lev = 1,fields(var)%npz
-
-    if (self%csize > 6) then
-      call gather_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, 1, &
-                       fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev), arrayg)
-    else
-      arrayg = fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev)
-    endif
-
+  if (write_field) then
     if (self%iam_io_proc) then
 
-      is_r3_tile(self%vindex_tile) = lev
-      is_r3_noti(self%vindex_noti) = lev
+      ! ncid for this field
+      ! -------------------
+      ncid = self%ncid(1)
 
-      call nccheck( nf90_put_var( ncid, varid, arrayg, start = istart, count = icount ), &
-                                  "nf90_put_var "//trim(fields(var)%io_name) )
+      ! Redefine
+      ! --------
+      if (self%conf%clobber(1)) then
+
+        call nccheck( nf90_redef(ncid), "nf90_redef" )
+
+        ! Dimension IDs for this field
+        ! ----------------------------
+        if (associated(dimids2)) nullify(dimids2)
+        if (associated(dimids3)) nullify(dimids3)
+        if (associated(dimidse)) nullify(dimidse)
+        if (associated(dimids4)) nullify(dimids4)
+
+        if (self%conf%tile_is_a_dimension(1)) then
+          dimids2 => dimids2_tile
+          dimids3 => dimids3_tile
+          dimidse => dimidse_tile
+          dimids4 => dimids4_tile
+        else
+          dimids2 => dimids2_noti
+          dimids3 => dimids3_noti
+          dimidse => dimidse_noti
+          dimids4 => dimids4_noti
+        endif
+
+        if (associated(dimids)) nullify (dimids)
+
+        if (fields(var)%npz == 1) then
+          dimids => dimids2
+        elseif (fields(var)%npz == self%npz) then
+          dimids => dimids3
+        elseif (fields(var)%npz == self%npz+1) then
+          dimids => dimidse
+        elseif (fields(var)%npz == 4) then
+          dimids => dimids4
+        else
+          call abor1_ftn("write_cube_sphere_history: vertical dimension not supported")
+        endif
+
+        ! Define field
+        call nccheck( nf90_def_var(ncid, trim(fields(var)%io_name), NF90_DOUBLE, dimids, varid), &
+                      "nf90_def_var "//trim(fields(var)%io_name))
+
+        ! Write attributes if clobbering
+        if (self%conf%clobber(1)) then
+
+          ! Long name and units
+          call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
+          call nccheck( nf90_put_att(ncid, varid, "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
+
+          ! Additional attributes for history and or plotting compatibility
+          call nccheck( nf90_put_att(ncid, varid, "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
+          call nccheck( nf90_put_att(ncid, varid, "coordinates"  , trim(coordstr)              ), "nf90_put_att" )
+          call nccheck( nf90_put_att(ncid, varid, "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
+
+        endif
+
+        ! End define mode
+        call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+
+      else
+
+        ! Get existing variable id to write to
+        call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%io_name), varid), &
+                      "nf90_inq_varid "//trim(fields(var)%io_name) )
+
+      endif
+
+      ! Set starts and counts based on levels and tiledim flag
+      ! ------------------------------------------------------
+
+      if (associated(istart)) nullify(istart)
+      if (associated(icount)) nullify(icount)
+
+      if (fields(var)%npz == 1) then
+        if (self%conf%tile_is_a_dimension(1)) then
+          istart => self%is_r2_tile; icount => self%ic_r2_tile
+        else
+          istart => self%is_r2_noti; icount => self%ic_r2_noti
+        endif
+      elseif (fields(var)%npz > 1) then
+        if (self%conf%tile_is_a_dimension(1)) then
+          istart => is_r3_tile; icount => self%ic_r3_tile
+        else
+          istart => is_r3_noti; icount => self%ic_r3_noti
+        endif
+      endif
 
     endif
 
-  enddo
+    do lev = 1,fields(var)%npz
 
+      if (self%csize > 6) then
+        call gather_tile(self%isc, self%iec, self%jsc, self%jec, self%npx, self%npy, self%tcomm, 1, &
+                         fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev), arrayg)
+      else
+        arrayg = fields(var)%array(self%isc:self%iec,self%jsc:self%jec,lev)
+      endif
+
+      if (self%iam_io_proc) then
+
+        is_r3_tile(self%vindex_tile) = lev
+        is_r3_noti(self%vindex_noti) = lev
+
+        call nccheck( nf90_put_var( ncid, varid, arrayg, start = istart, count = icount ), &
+                                    "nf90_put_var "//trim(fields(var)%io_name) )
+
+      endif
+
+    enddo
+  endif
 enddo
 
 ! Deallocate locals

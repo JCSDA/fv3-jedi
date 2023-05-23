@@ -82,6 +82,11 @@ class IOCubeSphereHistoryParameters : public IOParametersBase {
   // Things BUMP puts in write config not needed in IO but specified to avoid failures
   oops::OptionalParameter<std::string> bumpparameter{"parameter", "bump parameter", this};
   oops::OptionalParameter<util::DateTime> bumpdatetime{"date", "bump datetime", this};
+
+  // Optional list of fields to write out
+  oops::OptionalParameter<std::vector<std::string>> fieldsToWrite{"fields to write",
+                                                                  "names of the fields to write",
+                                                                  this};
 };
 
 // -------------------------------------------------------------------------------------------------
