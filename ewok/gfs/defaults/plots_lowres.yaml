@@ -1,0 +1,20 @@
+# (C) Copyright 2022- UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+# For model plots
+plotModel:
+  plot_geom: 10
+  plot_variables: [air_temperature, eastward_wind, northward_wind, specific_humidity]
+  plot_levels: [100, 76, 60] # Equivalent to ~850hPa, ~500hPa and ~250hPa
+
+# Plots of variational diagnostics
+plotVarDiagnostics:
+- CostFunction # line plot of minimization-related diagnostics
+- JoJb         # time-series of Jo & Jb
+- trHKbyp      # time-series of the trace of HK scaled by the number of observations
+- ObCnt        # barplot of the mean observation count per cycle
+- TotImp       # barplot of the mean total impact per cycle (Jo reduction)
+- ImpPerOb     # barplot of the mean impact per observation per cycle (Jo reduction)
+- FracImp      # barplot of the mean fractional impact per cycle (Jo reduction)
