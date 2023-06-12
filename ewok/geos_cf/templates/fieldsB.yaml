@@ -4,7 +4,7 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 filetype: cube sphere history
-datetime: '{{background_time}}'
+datetime: $(bdatetime)
 datapath: $(bgworkdir)
 filename: $(expid).fc.$(fcdatetime).$(fcstep).bkg.nc
 state variables: $(AN_VARIABLES)
