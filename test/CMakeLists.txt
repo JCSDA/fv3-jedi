@@ -115,6 +115,7 @@ list( APPEND fv3jedi_testinput
   testinput/enshofx_fv3lm.yaml
   testinput/ensmeanvariance_geos.yaml
   testinput/ensmeanvariance_gfs.yaml
+  testinput/ensrecenter_gfs.yaml
   testinput/errorcovariance_bump.yaml
   testinput/errorcovariance_gfs_gsi_global.yaml
   testinput/errorcovariance.yaml
@@ -267,6 +268,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/eda_block_3dvar.ref
   testoutput/ensmeanvariance_geos.ref
   testoutput/ensmeanvariance_gfs.ref
+  testoutput/ensrecenter_gfs.ref
   testoutput/forecast_fv3-geos.ref
   testoutput/forecast_fv3-gfs.ref
   testoutput/forecast_fv3lm.ref
@@ -1287,6 +1289,13 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensmeanvariance_geos
                   MPI      6
                   ARGS     testinput/ensmeanvariance_geos.yaml
                   COMMAND  fv3jedi_ensmeanvariance.x )
+
+# Ensemble recentering
+# -------------------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_ensrecenter_gfs
+                  MPI      6
+                  ARGS     testinput/ensrecenter_gfs.yaml
+                  COMMAND  fv3jedi_ensrecenter.x )
 
 # hybrid 3DVar
 # -------------------------------

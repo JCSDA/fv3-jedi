@@ -48,6 +48,12 @@ ecbuild_add_executable( TARGET  fv3jedi_enshofx.x
                         LIBS    fv3jedi
                       )
 
+ecbuild_add_executable( TARGET  fv3jedi_ensrecenter.x
+                        SOURCES fv3jediEnsRecenter.cc
+                        LIBS    fv3jedi
+                        )
+oops_output_json_schema(fv3jedi_ensrecenter.x)
+
 ecbuild_add_executable( TARGET  fv3jedi_ensvariance.x
                         SOURCES fv3jediEnsVariance.cc
                         LIBS    fv3jedi
