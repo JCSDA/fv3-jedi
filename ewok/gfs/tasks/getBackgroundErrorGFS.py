@@ -15,7 +15,7 @@ class getBackgroundErrorGFS(generic.getBackgroundError):
         # Get generic defaults
         generic.getBackgroundError.setup(self, config, fc)
 
-        if 'hack_step_bg' in config and config['hack_step_bg'] == True:
+        if 'hack_step_ens' in config and config['hack_step_ens'] == True:
             self.RUNTIME_YAML['hack_step_bg'] = True
 
         # Use GFS specific script
