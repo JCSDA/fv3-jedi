@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
-project( fv3jedi VERSION 1.5.0 LANGUAGES C CXX Fortran )
+project( fv3jedi VERSION 1.6.0 LANGUAGES C CXX Fortran )
 
 option(OPENMP "Build fv3-jedi with OpenMP support" ON)
 
@@ -62,13 +62,13 @@ find_package( jedicmake QUIET )
 find_package( NetCDF REQUIRED COMPONENTS Fortran )
 
 # atlas
-find_package( atlas 0.27.0 REQUIRED )
+find_package( atlas 0.33.0 REQUIRED )
 
 # oops
-find_package( oops 1.3.0 REQUIRED )
+find_package( oops 1.7.0 REQUIRED )
 
 # saber
-find_package( saber 1.3.0 REQUIRED )
+find_package( saber 1.7.0 REQUIRED )
 
 # crtm
 find_package( crtm 2.2.3 REQUIRED )
@@ -90,13 +90,13 @@ endif()
 find_package( sp QUIET )
 
 # ufo
-find_package( ufo 1.3.0 REQUIRED )
+find_package( ufo 1.7.0 REQUIRED )
 
 # femps
 find_package( femps 1.0.0 REQUIRED )
 
 # vader
-find_package( vader 1.0.0 REQUIRED )
+find_package( vader 1.4.0 REQUIRED )
 
 #OpenMP
 if(OPENMP)
