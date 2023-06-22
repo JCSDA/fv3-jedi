@@ -1,0 +1,36 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gmao
+  akbk: Data/fv3files/akbk72.nc4
+  npx: 13
+  npy: 13
+  npz: 72
+  do_schmidt: true
+  stretch_fac: 2.2
+  target_lat: 40.0
+  target_lon: 262.0
+  field metadata override: Data/fieldmetadata/gchp.yaml
+state test:
+  statefile:
+    datetime: 2021-08-15T03:00:00Z
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/inputs/GEOSChem_c12
+    filename: GEOSChem.geoscf_jedi_sg.c13_2.2_262_40.%yyyy%mm%dd_%hh%MMz.nc4
+    tile is a dimension: [true]
+    clobber existing files: [false]
+    state variables:
+    - air_temperature
+    - pm25at
+    - volume_mixing_ratio_of_co
+    - volume_mixing_ratio_of_no
+    - volume_mixing_ratio_of_no2
+    - volume_mixing_ratio_of_o3
+  state generate:
+    analytic init:
+      method: dcmip-test-4-0
+    datetime: 2021-08-15T03:00:00Z
+  date: 2021-08-15T03:00:00Z
+  norm file: 101.58104065376983
+  tolerance: 1.0e-08

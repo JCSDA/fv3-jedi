@@ -3,6 +3,14 @@ field metadata:
 - long name: air_pressure_thickness
   io name: DELP
 
+- long name: air_temperature
+  io name: T
+  units: K
+
+- long name: pm25at
+  io name: PM25
+  units: ug m-3
+
 - long name: surface_pressure
   io name: PS
 

@@ -244,9 +244,12 @@ logical :: integer_interp = .false.
 
 call checksame(self%fields, other%fields, "fv3jedi_fields_mod.change_resol")
 
-if ((other%iec-other%isc+1)-(self%iec-self%isc+1) == 0) then
+if ((other%iec-other%isc+1)-(self%iec-self%isc+1) == 0 .AND. &
+     geom%stretch_fac == geom_other%stretch_fac .AND. &
+     geom%target_lat == geom_other%target_lat .AND. &
+     geom%target_lon == geom_other%target_lon) then
 
-  call self%copy(other)
+     call self%copy(other)
 
 else
 

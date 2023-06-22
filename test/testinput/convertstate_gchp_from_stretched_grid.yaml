@@ -3,9 +3,13 @@ input geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  npx: 49
-  npy: 49
+  npx: 13
+  npy: 13
   npz: 72
+  do_schmidt: true
+  stretch_fac: 2.2
+  target_lat: 40.0
+  target_lon: 262.0
   field metadata override: Data/fieldmetadata/gchp.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
@@ -13,15 +17,14 @@ output geometry:
   npx: 13
   npy: 13
   npz: 72
-
   field metadata override: Data/fieldmetadata/gchp.yaml
 states:
 - input:
     datetime: 2021-08-15T03:00:00Z
     filetype: cube sphere history
     provider: geos
-    datapath: Data/inputs/GEOSChem_c48
-    filename: GEOSChem.DefaultCollection.%yyyy%mm%dd_%hh%MMz.nc4
+    datapath: Data/
+    filename: GEOSChem.DefaultCollection.converted.to.sg.%yyyy%mm%dd_%hh%MMz.nc4
     state variables:
     - air_temperature
     - pm25at
@@ -34,7 +37,7 @@ states:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
-   filename: GEOSChem.DefaultCollection.converted.%yyyy%mm%dd_%hh%MMz.nc4
+   filename: GEOSChem.DefaultCollection.converted.from.sg.%yyyy%mm%dd_%hh%MMz.nc4
 test:
-  reference filename: testoutput/convertstate_gchp.ref
-  test output filename: testoutput/convertstate_gchp.test.out
+  reference filename: testoutput/convertstate_gchp_from_stretched_grid.ref
+  test output filename: testoutput/convertstate_gchp_from_stretched_grid.test.out

@@ -59,6 +59,7 @@ type :: fv3jedi_geom
   type(domain2D) :: domain_fix                                                      !MPP domain
   type(domain2D), pointer :: domain                                                 !MPP domain
   character(len=10) :: interp_method                                                !Interpolation type
+  real(kind=kind_real) :: stretch_fac, target_lon, target_lat
   real(kind=kind_real), allocatable, dimension(:)       :: ak, bk                   !Model level coefficients
   real(kind=kind_real), allocatable, dimension(:,:)     :: grid_lon, grid_lat       !Lat/lon centers
   real(kind=kind_real), allocatable, dimension(:,:)     :: egrid_lon, egrid_lat     !Lat/lon edges
@@ -167,6 +168,7 @@ integer                               :: ncstat, ncid, akvarid, bkvarid, readdim
 integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 
 character(len=:), allocatable :: str
+real(kind=kind_real) :: sf, t_lon, t_lat
 logical :: do_write_geom = .false.
 logical :: logp = .false.
 integer :: iterator_dimension = 2
@@ -182,6 +184,15 @@ self%f_comm = comm
 call conf%get_or_die("interpolation method",str)
 self%interp_method = str
 deallocate(str)
+
+! Stretch factor, target_lon, and target_lat
+! --------------
+call conf%get_or_die("stretch_fac",sf)
+call conf%get_or_die("target_lon",t_lon)
+call conf%get_or_die("target_lat",t_lat)
+self%stretch_fac = sf
+self%target_lon = t_lon
+self%target_lat = t_lat
 
 call conf%get_or_die("iterator dimension", iterator_dimension)
 self%iterator_dimension = iterator_dimension
@@ -499,6 +510,9 @@ self%a21             = other%a21
 self%a22             = other%a22
 self%f_comm          = other%f_comm
 self%interp_method   = other%interp_method
+self%stretch_fac     = other%stretch_fac
+self%target_lon      = other%target_lon
+self%target_lat      = other%target_lat
 
 self%rarea     = other%rarea
 self%sin_sg    = other%sin_sg
