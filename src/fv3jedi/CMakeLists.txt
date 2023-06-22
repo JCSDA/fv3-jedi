@@ -81,6 +81,8 @@ list( APPEND fv3jedi_src_files
   ModelBias/ModelBiasCovariance.h
   ModelBias/ModelBias.h
   ModelBias/ModelBiasIncrement.h
+  ModelData/ModelData.cc
+  ModelData/ModelData.h
   NormGradient/NormGradient.h
   ObsLocalization/instantiateObsLocFactory.h
   ObsLocalization/ObsLocVerticalBrasnett.h
@@ -100,6 +102,7 @@ list( APPEND fv3jedi_src_files
   Utilities/fv3jedi_kinds_mod.f90
   Utilities/fv3jedi_netcdf_utils_mod.F90
   Utilities/slow_unstructured_interpolation_mod.F90
+  VariableChange/VaderCookbook.h
   VariableChange/VariableChange.cc
   VariableChange/VariableChange.h
   VariableChange/Analysis2Model/fv3jedi_varcha_a2m.interface.F90

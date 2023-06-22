@@ -21,10 +21,6 @@ variable change:
   #vader custom cookbook:
   #  potential_temperature: [AirPotentialTemperature_A]
   #  virtual_temperature: [AirVirtualTemperature_A]
-  vader:
-    recipe parameters:
-    - recipe name: AirPotentialTemperature_A
-      p0: 100000.0
 states:
 - input:
     datetime: 2020-12-14T21:00:00Z

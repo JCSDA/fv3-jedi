@@ -14,6 +14,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "fv3jedi/VariableChange/VaderCookbook.h"
+
 #include "oops/base/LinearVariableChangeParametersBase.h"
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
@@ -36,8 +38,11 @@ namespace fv3jedi {
 class LinearVariableChangeParametersBase : public oops::LinearVariableChangeParametersBase {
   OOPS_ABSTRACT_PARAMETERS(LinearVariableChangeParametersBase,
                                                            oops::LinearVariableChangeParametersBase)
+
  public:
   oops::OptionalParameter<std::string> name{"linear variable change name", this};
+  oops::Parameter<std::map<std::string, std::vector<std::string>>> vaderCustomCookbook{
+    "vader custom cookbook", vaderFV3CustomCookbook(), this};
   oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
 };
 

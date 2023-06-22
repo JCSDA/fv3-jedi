@@ -14,6 +14,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "fv3jedi/VariableChange/VaderCookbook.h"
+
 #include "oops/base/VariableChangeParametersBase.h"
 #include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
@@ -38,29 +40,7 @@ class VariableChangeParametersBase : public oops::VariableChangeParametersBase {
  public:
   oops::OptionalParameter<std::string> name{"variable change name", this};
   oops::Parameter<std::map<std::string, std::vector<std::string>>> vaderCustomCookbook{
-    "vader custom cookbook",
-    // Default VADER cookbook for fv3-jedi
-    {
-      // pt: from t and pkz
-      {"potential_temperature",        {"AirPotentialTemperature_B"}},
-      // P: from delp, from ps (and ak/bk)
-      {"air_pressure_levels",          {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
-      // p: from pe
-      {"air_pressure",                 {"AirPressure_A"}},
-      // ln(p) from pe
-      {"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}},
-      // p^kappa from pe and ln(p)
-      {"air_pressure_to_kappa",        {"AirPressureToKappa_A"}},
-      // delp: from p
-      {"air_pressure_thickness",       {"AirPressureThickness_A"}},
-      // pt: from t and ps
-      {"potential_temperature",        {"AirPotentialTemperature_A"}},
-      // ps: from delp
-      {"surface_pressure",             {"SurfaceAirPressure_A"}},
-      // tv: from t and q
-      {"virtual_temperature",          {"AirVirtualTemperature_A"}}
-    },
-    this};
+    "vader custom cookbook", vaderFV3CustomCookbook(), this};
   oops::Parameter<vader::VaderParameters> vader{"vader", {}, this};
 };
 

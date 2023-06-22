@@ -14,6 +14,7 @@
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Increment/Increment.h"
+#include "fv3jedi/ModelData/ModelData.h"
 #include "fv3jedi/State/State.h"
 
 namespace fv3jedi {
@@ -23,7 +24,18 @@ namespace fv3jedi {
 LinearVariableChange::LinearVariableChange(const Geometry & geom, const Parameters_ & params)
   : params_(params), geom_(geom), linearVariableChange_(),
     fieldsMetadata_(geom.fieldsMetaData()),
-    vader_(params.linearVariableChangeParameters.value().vader) {}
+    vader_() {
+  eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
+  ModelData modelData{geom};
+  eckit::LocalConfiguration vaderConfig;
+  vaderConfig.set(vader::configCookbookKey,
+                                variableChangeConfig.getSubConfiguration("vader custom cookbook"));
+  vaderConfig.set(vader::configModelVarsKey, modelData.modelData());
+
+  // Create vader with fv3-jedi custom cookbook
+  vader_.reset(new vader::Vader(params.linearVariableChangeParameters.value().vader,
+                                vaderConfig));
+}
 
 // -------------------------------------------------------------------------------------------------
 
@@ -53,7 +65,7 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   // vader_.changeVarTraj also returns the variables fulfilled by Vader.
   atlas::FieldSet xfgfs;
   vader_xfg.toFieldSet(xfgfs);
-  varsVaderPopulates_ = vader_.changeVarTraj(xfgfs, neededVars);
+  varsVaderPopulates_ = vader_->changeVarTraj(xfgfs, neededVars);
   varsPopulated += varsVaderPopulates_;
   vader_xfg.updateFields(varsPopulated);
   vader_xfg.fromFieldSet(xfgfs);
@@ -83,7 +95,7 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   atlas::FieldSet dxfs;
   dx.toFieldSet(dxfs);
   oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
-  vader_.changeVarTL(dxfs, varsVaderWillPopulate);
+  vader_->changeVarTL(dxfs, varsVaderWillPopulate);
   ASSERT(varsVaderWillPopulate.size() == 0);
 
   // Set intermediate state for the Increment containing original fields plus the ones
@@ -174,7 +186,7 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   }
 
   oops::Variables varsVaderWillAdjoint = varsVaderPopulates_;
-  vader_.changeVarAD(dxout_fs, varsVaderWillAdjoint);
+  vader_->changeVarAD(dxout_fs, varsVaderWillAdjoint);
 
   // After changeVarAD, vader should have removed everything from varsVaderWillAdjoint,
   // indicating it did all the adjoints we expected it to.
