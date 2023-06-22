@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-initial condition:
+background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
   state variables: &state_vars [sulf,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4]

@@ -8,7 +8,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-initial condition:
+background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
   state variables: &state_vars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]

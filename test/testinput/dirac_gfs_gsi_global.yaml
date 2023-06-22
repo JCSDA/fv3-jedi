@@ -9,7 +9,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-initial condition:
+background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
   datapath: Data/inputs/gfs_c12/bkg/

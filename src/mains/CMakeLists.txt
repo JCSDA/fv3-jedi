@@ -30,13 +30,6 @@ ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
                       )
 oops_output_json_schema(fv3jedi_diffstates.x)
 
-ecbuild_add_executable( TARGET  fv3jedi_dirac.x
-                        SOURCES fv3jediDirac.cc
-                        LIBS	fv3jedi
-                                saber
-                      )
-oops_output_json_schema(fv3jedi_dirac.x)
-
 ecbuild_add_executable( TARGET  fv3jedi_eda.x
                         SOURCES fv3jediEDA.cc
                         LIBS	fv3jedi
@@ -90,8 +83,8 @@ ecbuild_add_executable( TARGET  fv3jedi_letkf.x
                       )
 oops_output_json_schema(fv3jedi_letkf.x)
 
-ecbuild_add_executable( TARGET  fv3jedi_error_covariance_training.x
-                        SOURCES fv3jediErrorCovarianceTraining.cc
+ecbuild_add_executable( TARGET  fv3jedi_error_covariance_toolbox.x
+                        SOURCES fv3jediErrorCovarianceToolbox.cc
                         LIBS    fv3jedi
                                 saber
                       )

@@ -9,7 +9,7 @@ geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-initial condition:
+background:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
@@ -57,6 +57,7 @@ output dirac:
   provider: geos
   datapath: Data/
   filename: gsi_dirac_%id%_.%yyyy%mm%dd_%hh%MM%ssz.nc4
+
 test:
   reference filename: testoutput/dirac_geos_gsi_global.ref
   test output filename: testoutput/dirac_gfs_gsi_global.test.out

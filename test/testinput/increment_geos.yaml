@@ -1,5 +1,12 @@
 increment test:
   date: 2020-12-14T21:00:00Z
+  dirac:
+    ndir: 1
+    ixdir: [1]
+    iydir: [1]
+    ildir: [50]
+    itdir: [1]
+    ifdir: [air_temperature]
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml

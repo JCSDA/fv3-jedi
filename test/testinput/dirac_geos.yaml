@@ -7,7 +7,7 @@ geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-initial condition:
+background:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
@@ -52,7 +52,6 @@ dirac:
   ildir: [50]
   itdir: [1]
   ifdir: [air_temperature]
-
 
 test:
   reference filename: testoutput/dirac_geos.ref
