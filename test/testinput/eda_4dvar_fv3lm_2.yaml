@@ -122,7 +122,7 @@ cost function:
         threshold: 6.0
 #       - filter: BlackList
 #         where:
-#         - variable: Land_Fraction@GeoVaLs
+#         - variable: GeoVaLs/Land_Fraction
 #           maxvalue: 0.0
     - obs space:
         name: Radiosonde

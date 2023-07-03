@@ -86,9 +86,9 @@ cost function:
     observers:
     - obs space:
         # The input file does not contain a variable called 'air_temperature', but contains one
-        # called 'renamed_airTemperature'. We use filters to copy renamed_airTemperature@ObsValue
-        # to air_temperature@DerivedObsValue and renamed_airTemperature@ObsError to
-        # air_temperature@ObsError. In this way we verify derived variables can be assimilated.
+        # called 'renamed_airTemperature'. We use filters to copy ObsValue/renamed_airTemperature
+        # to DerivedObsValue/air_temperature and ObsError/renamed_airTemperature to
+        # ObsError/air_temperature. In this way we verify derived variables can be assimilated.
         name: Aircraft
         obsdatain:
           engine:
