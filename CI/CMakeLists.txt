@@ -34,6 +34,7 @@ option("BUNDLE_SKIP_ROPP-UFO"  "Don't build ROPP-UFO"  "ON") # Skip ropp-ufo bui
 
 ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda-internal/geos-aero.git" )
 ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-test.git" )
+ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda/CRTMv3.git" )
 
 # Outside JEDI repositories
 # -------------------------

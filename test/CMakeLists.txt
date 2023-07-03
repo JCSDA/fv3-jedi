@@ -538,8 +538,8 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # Repo wide configuration for getting test data
 # ---------------------------------------------
-set( CRTM_COEFFS_BRANCH "2.4.1_skylab_4.0" )
-#set( CRTM_COEFFS_BRANCH "3.0.0_skylab_4.0" )
+#set( CRTM_COEFFS_BRANCH "2.4.1_skylab_4.0" )
+set( CRTM_COEFFS_BRANCH "3.0.0_skylab_4.0" )
 
 function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
   # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
@@ -590,7 +590,8 @@ function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
       set( ECBUILD_DOWNLOAD_BASE_URL "$ENV{ECBUILD_DOWNLOAD_BASE_URL}/${repo}/${GIT_TAG_FUNC}" )
     else()
 #      set( ECBUILD_DOWNLOAD_BASE_URL https://gdex.ucar.edu/dataset/jedi-skylab/file )
-      set( ECBUILD_DOWNLOAD_BASE_URL https://ftp.ssec.wisc.edu/pub/s4/CRTM/file )
+#      set( ECBUILD_DOWNLOAD_BASE_URL https://ftp.ssec.wisc.edu/pub/s4/CRTM/file )
+      set( ECBUILD_DOWNLOAD_BASE_URL https://bin.ssec.wisc.edu/pub/s4/CRTM/file )
     endif()
 
     set( DIRNAME ${GIT_TAG_FUNC} )
