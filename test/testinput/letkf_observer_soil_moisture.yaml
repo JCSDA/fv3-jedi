@@ -9,25 +9,25 @@ geometry:
   field metadata override: Data/fieldmetadata/gfs-land.yaml
   time invariant fields:
     state fields:
-      datetime: 2019-12-15T18:00:00Z
+      datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
       state variables: [orog_filt]
       datapath: Data/inputs/gfs_land_c48/grid
       filename_orog: C48_oro_data.nc
 
-window begin: 2019-12-15T15:00:00Z
-window length: PT6H
+window begin: 2023-05-01T00:00:00Z
+window length: PT24H
 
 background:
- date: &date 2019-12-15T18:00:00Z
+ date: &date 2023-05-01T12:00:00Z
  members:
-   - datetime: 2019-12-15T18:00:00Z
+   - datetime: 2023-05-01T12:00:00Z
      filetype: fms restart
      state variables: [smc, vtype, sheleg, slmsk, stc]
      datapath: Data/inputs/gfs_land_c48/mem001/
-     filename_sfcd: 20191215.180000.sfc_data.nc
-     filename_cplr: 20191215.180000.coupler.res
+     filename_sfcd: 20230501.120000.sfc_data.nc
+     filename_cplr: 20230501.120000.coupler.res
 
 driver:
   save posterior mean: false
@@ -57,7 +57,7 @@ observations:
       obsdatain:
         engine:
           type: H5File
-          obsfile: Data/obs/testinput_tier_1/smap_smc_ioda_20191215.nc
+          obsfile: Data/obs/testinput_tier_1/smap_smc_ioda_20230501.nc
     obs operator:
       name: VertInterp
       constant vertical coordinate values: [0.1, 0.5, 1.0, 2.0]

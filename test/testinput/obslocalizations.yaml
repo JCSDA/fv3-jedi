@@ -9,7 +9,7 @@ geometry:
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
   time invariant fields:
     state fields:
-      datetime: 2019-12-15T18:00:00Z
+      datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
       state variables: [orog_filt]
@@ -17,8 +17,8 @@ geometry:
       filename_orog: C48_oro_data.nc
     derived fields: [nominal_surface_pressure]
 
-window begin: &date '2019-12-15T00:00:00Z'
-window end: 2019-12-16T00:00:00Z
+window begin: &date '2023-05-01T00:00:00Z'
+window end: 2023-05-02T00:00:00Z
 
 observations:
 - obs space:
@@ -29,7 +29,7 @@ observations:
     obsdatain:
       engine:
         type: H5File
-        obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20191215.nc
+        obsfile: ./Data/obs/testinput_tier_1/ghcn_snwd_ioda_20230501.nc
   obs localizations:
   - localization method: Horizontal SOAR
     lengthscale: 250e3
@@ -39,8 +39,8 @@ observations:
 
 observation localizations reference:
   gridpoints:
-    lons: [200.610019, 75.8489626, 301.789939]
-    lats: [66.736118, 41.6938865, -21.5839479]
+    lons: [297.044776, 200.610019, 301.789939]
+    lats: [48.6443356, 66.73611, -21.5839479]
     depths: [-99999, -99999, -99999]
-  local nobs: [2, 1, 0]
-  rms: [0.122327,0.00637097,0]
+  local nobs: [3, 1, 0]
+  rms: [0.112458589,0.162094,0]

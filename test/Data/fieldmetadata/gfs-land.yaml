@@ -4,6 +4,7 @@ field metadata:
   interpolation type: nearest
 
 - long name: totalSnowDepth
+  io name: snodl
   interpolation type: nearest
 
 - long name: vtype
@@ -14,4 +15,8 @@ field metadata:
 
 - long name: soilMoistureVolumetric
   io file: surface
+
+- long name: fraction_of_ice
+  io name: fice
+  interpolation type: nearest
 
