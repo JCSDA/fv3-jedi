@@ -101,6 +101,9 @@ phases:
       # vader
       - ./clone.sh jcsda-internal/vader $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle vader ${GIT_BASE_BRANCH} develop
 
+      # crtm
+      - ./clone.sh jcsda/CRTMv3 $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle crtm ${GIT_BASE_BRANCH} develop
+
       # femps
       - ./clone.sh jcsda-internal/femps $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle femps ${GIT_BASE_BRANCH} develop
 

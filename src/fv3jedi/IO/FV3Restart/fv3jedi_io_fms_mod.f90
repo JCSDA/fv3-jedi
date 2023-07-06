@@ -302,8 +302,9 @@ integer :: calendar_type
 integer :: date_init(6)
 character(len=64) :: vdate_string_file, vdate_string
 
-! Get datetime from coupler.res
-open(101, file=trim(adjustl(self%datapath))//'/'//self%filenames(self%index_cplr), form='formatted')
+! Get datetime from coupler.res - this file must exist, therefore set status='old'
+open(101, file=trim(adjustl(self%datapath))//'/'//self%filenames(self%index_cplr), &
+     form='formatted', status='old')
 read(101, '(i6)')  calendar_type
 read(101, '(6i6)') date_init
 read(101, '(6i6)') date
