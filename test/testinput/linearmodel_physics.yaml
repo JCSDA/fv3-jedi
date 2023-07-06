@@ -31,7 +31,7 @@ linear model test:
   first multiplier TL: 0.01
   iterations TL: 1
   tolerance AD: 1.0e-11
-  tolerance TL: 1.0e6 # With physics on the tl test will not pass (perturbation model)
+  tolerance TL: 1.0e3 # With physics on the tl test will not pass (perturbation model)
 model:
   name: PSEUDO
   filetype: cube sphere history

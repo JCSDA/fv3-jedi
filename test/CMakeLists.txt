@@ -173,6 +173,7 @@ list( APPEND fv3jedi_testinput
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
   testinput/linearmodel_htlm.yaml
+  testinput/linearmodel_htlm_physics.yaml
   testinput/linearvariablechange_geos.yaml
   testinput/linearvariablechange_gfs.yaml
   testinput/localization_bump.yaml
@@ -1102,6 +1103,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_physics
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_htlm
                   MPI      6
                   ARGS     testinput/linearmodel_htlm.yaml
+                  COMMAND  test_fv3jedi_linearmodel.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_htlm_physics
+                  MPI      6
+                  ARGS     testinput/linearmodel_htlm_physics.yaml
                   COMMAND  test_fv3jedi_linearmodel.x )
 
 
