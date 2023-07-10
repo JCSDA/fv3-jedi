@@ -7,7 +7,6 @@ module surface_vt_mod
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
-use crtm_module, only: crtm_irlandcoeff_classification
 use fv3jedi_constants_mod, only: constant
 
 use slow_unstructured_interpolation_mod, only: unstrc_interp
