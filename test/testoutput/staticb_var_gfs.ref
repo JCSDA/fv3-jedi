@@ -1,7 +1,7 @@
-Norm of input parameter var::1: 9.1460381860836084e+11
-Norm of input parameter m4::1: 2.3649919177330469e+25
-Norm of input parameter var::2: 8.5438783489082764e+11
-Norm of input parameter m4::2: 2.3040834703845189e+25
-Norm of input parameter var::3: 8.1097793227429211e+11
-Norm of input parameter m4::3: 1.6857754596546790e+25
-Norm of BUMP output parameter stddev - 1: 4.8400115459488175e+05
+Norm of input parameter var - 1: 9.1460381860836084e+11
+Norm of input parameter m4 - 1: 2.3649919177330482e+25
+Norm of input parameter var - 2: 8.5438783489082751e+11
+Norm of input parameter m4 - 2: 2.3040834703845185e+25
+Norm of input parameter var - 3: 8.1097793227429224e+11
+Norm of input parameter m4 - 3: 1.6857754596546790e+25
+Norm of output parameter stddev - 1: 4.8400115459488175e+05
