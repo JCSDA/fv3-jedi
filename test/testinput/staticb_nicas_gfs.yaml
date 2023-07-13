@@ -35,13 +35,6 @@ background error:
         write global nicas: true
       nicas:
         resolution: 6
-        interpolation type:
-        - groups:
-          - stream_function
-          - velocity_potential
-          - air_temperature
-          - surface_pressure
-          type: si
       grids:
       - model:
           variables:

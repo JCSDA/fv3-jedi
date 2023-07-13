@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5749895686837299e+03, nobs = 1342, Jo/n = 1.9187701704051638e+00, err = 2.0629782247321424e+00
 CostFunction: Nonlinear J = 2.5749895686837299e+03
-DRIPCGMinimizer: reduction in residual norm = 4.0457681308741036e-09
+DRIPCGMinimizer: reduction in residual norm = 7.0111185379837636e-09
 FSOI increment test within tolerance.
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
@@ -28,6 +28,9 @@ surface_eastward_wind                        | Min:-1.0470398524550975e+01 Max:+
 surface_northward_wind                       | Min:-1.2872012009019215e+01 Max:+1.1969010517948401e+01 RMS:+3.7141230262404568e+00
 f10m                                         | Min:+9.4335181158921488e-01 Max:+1.0569367110649799e+00 RMS:+9.9581348617451071e-01
 ----------------------------------------------------------------------------------------------------
+
+
+
 CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 2574.98956868373, nobs = 1342, Jo/n = 1.918770170405164, err = 2.062978224732142
 CostFunction: Nonlinear J = 2574.98956868373

@@ -39,13 +39,6 @@ background error:
 #       - groups:
 #         - cloud_liquid_water
 #         value: 125
-        interpolation type:
-        - groups:
-          - stream_function
-          - velocity_potential
-          - air_temperature
-          - surface_pressure
-          type: si
       grids:
       - model:
           variables:

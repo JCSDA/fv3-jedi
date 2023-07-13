@@ -1,18 +1,18 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5749895686837299e+03, nobs = 1342, Jo/n = 1.9187701704051638e+00, err = 2.0629782247321424e+00
 CostFunction: Nonlinear J = 2.5749895686837299e+03
-DRIPCGMinimizer: reduction in residual norm = 7.6569704679136149e-10
+DRIPCGMinimizer: reduction in residual norm = 9.9369495124725895e-10
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C24
-eastward_wind                                | Min:-1.0093232218239153e+02 Max:+1.3625755774076919e+02 RMS:+2.1186597240448410e+01
-northward_wind                               | Min:-8.7783445790231085e+01 Max:+9.5984613744372368e+01 RMS:+8.9488679249608865e+00
-air_temperature                              | Min:+1.6165935845742064e+02 Max:+3.0496977775288519e+02 RMS:+2.4961387748298409e+02
-air_pressure_thickness                       | Min:+6.0599996212338247e-01 Max:+1.7771298027200235e+03 RMS:+9.5704596090334678e+02
-specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8144786300059276e-02 RMS:+4.6024494216303164e-03
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+2.1216866399168826e-04 RMS:+9.1111856253510799e-06
-cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+5.7484220160461418e-04 RMS:+2.1941380661231474e-05
-ozone_mass_mixing_ratio                      | Min:+2.7253945233715180e-08 Max:+1.7083897218280417e-05 RMS:+4.3522919490191202e-06
+eastward_wind                                | Min:-9.8935010082171274e+01 Max:+1.3586565107648994e+02 RMS:+2.1183225523939459e+01
+northward_wind                               | Min:-8.7783060292133229e+01 Max:+9.5988199711287479e+01 RMS:+8.9488905790882107e+00
+air_temperature                              | Min:+1.6168882843914739e+02 Max:+3.0504801183523841e+02 RMS:+2.4961360900526654e+02
+air_pressure_thickness                       | Min:+6.0599996114025478e-01 Max:+1.7771296908609131e+03 RMS:+9.5704340570152863e+02
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8157522608990569e-02 RMS:+4.6032802349758716e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+2.1217022222953241e-04 RMS:+9.1361566751142228e-06
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+5.6738531466592288e-04 RMS:+2.1985754030654146e-05
+ozone_mass_mixing_ratio                      | Min:+2.7254007315864012e-08 Max:+1.7071124244549839e-05 RMS:+4.3520734465731718e-06
 sfc_geopotential_height_times_grav           | Min:+0.0000000000000000e+00 Max:+3.7892930682172460e+04 RMS:+5.0354946045897923e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.5880784586841235e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+1.6788163230136718e+02 RMS:+1.9247612638551356e+01
@@ -27,6 +27,9 @@ surface_eastward_wind                        | Min:-1.0470398524550975e+01 Max:+
 surface_northward_wind                       | Min:-1.2872012009019215e+01 Max:+1.1969010517948401e+01 RMS:+3.7141230262404568e+00
 f10m                                         | Min:+9.4335181158921488e-01 Max:+1.0569367110649799e+00 RMS:+9.9581348617451071e-01
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 122.1868653093233
-CostJo   : Nonlinear Jo(Radiosonde) = 1893.859958431216, nobs = 1342, Jo/n = 1.411222025656644, err = 2.062978224732142
-CostFunction: Nonlinear J = 2016.046823740539
+
+
+
+CostJb   : Nonlinear Jb = 130.2143520833303
+CostJo   : Nonlinear Jo(Radiosonde) = 1904.860587368713, nobs = 1342, Jo/n = 1.419419215624972, err = 2.062978224732142
+CostFunction: Nonlinear J = 2035.074939452043

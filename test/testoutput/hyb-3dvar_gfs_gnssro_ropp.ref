@@ -2,20 +2,20 @@ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 7.8422179996566967e+01, nobs = 132, Jo/n = 5.9410742421641638e-01, err = 8.8915342725866394e-04
 CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 8.0332458400892051e+01, nobs = 132, Jo/n = 6.0857923030978822e-01, err = 8.8915342725866394e-04
 CostFunction: Nonlinear J = 1.5875463839745902e+02
-DRIPCGMinimizer: reduction in residual norm = 1.4554200734611317e-01
+DRIPCGMinimizer: reduction in residual norm = 1.3198172436933717e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 23 | cube sphere face size: C12
 u_component_of_native_D_grid_wind            | Min:-1.3264378074042199e+02 Max:+1.2905970568873809e+02 RMS:+1.5886323431501999e+01
 v_component_of_native_D_grid_wind            | Min:-1.2536309805703813e+02 Max:+1.1867617397795367e+02 RMS:+1.7204080076122647e+01
-eastward_wind                                | Min:-1.0808004986354601e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197185704e+01
-northward_wind                               | Min:-1.0151447606349581e+02 Max:+1.0656765405669046e+02 RMS:+1.0393969795844450e+01
-air_temperature                              | Min:+1.5865009406700153e+02 Max:+3.0653885708773061e+02 RMS:+2.4962364131169528e+02
-air_pressure_thickness                       | Min:+6.0599994659421674e-01 Max:+1.7927172479194910e+03 RMS:+9.5771383766955012e+02
-specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8723621514228638e-02 RMS:+4.7058792354392849e-03
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.4908640853194224e-04 RMS:+1.4451341925261489e-05
-cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+1.0694775100156446e-03 RMS:+3.4817857145585190e-05
-ozone_mass_mixing_ratio                      | Min:+2.8166108797515518e-09 Max:+1.7470990209352953e-05 RMS:+4.3563484869348822e-06
+eastward_wind                                | Min:-1.0808005057324787e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197954351e+01
+northward_wind                               | Min:-1.0151447607930564e+02 Max:+1.0656765405745023e+02 RMS:+1.0393969798580423e+01
+air_temperature                              | Min:+1.5865009406632925e+02 Max:+3.0653885708773061e+02 RMS:+2.4962364131172802e+02
+air_pressure_thickness                       | Min:+6.0599994659422973e-01 Max:+1.7927172479173648e+03 RMS:+9.5771383766747419e+02
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8723704386097544e-02 RMS:+4.7048371775231419e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.4908640041285134e-04 RMS:+1.4451342066882545e-05
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+1.0694775100156446e-03 RMS:+3.4817857877518313e-05
+ozone_mass_mixing_ratio                      | Min:+2.8166113247199107e-09 Max:+1.7470990253221853e-05 RMS:+4.3563484866625729e-06
 sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509248e+01
@@ -34,7 +34,7 @@ f10m                                         | Min:+9.4200706791884525e-01 Max:+
 
 
 
-CostJb   : Nonlinear Jb = 0.0002749107342899964
-CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 24.68200982536975, nobs = 132, Jo/n = 0.1869849229194678, err = 0.0008891534272586639
-CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 25.29050154803452, nobs = 132, Jo/n = 0.1915947086972312, err = 0.0008891534272586639
-CostFunction: Nonlinear J = 49.97278628413856
+CostJb   : Nonlinear Jb = 0.0002766555029371882
+CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 24.97072172792411, nobs = 132, Jo/n = 0.1891721343024554, err = 0.0008891534272586639
+CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 25.54681303893394, nobs = 132, Jo/n = 0.1935364624161662, err = 0.0008891534272586639
+CostFunction: Nonlinear J = 50.51781142236099
