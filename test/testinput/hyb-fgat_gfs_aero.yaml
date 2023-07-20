@@ -87,10 +87,6 @@ cost function:
     filename_trcr: '%yyyy%mm%dd.%hh%MM%ss.fv_tracer.res.nc'
     filename_cplr: '%yyyy%mm%dd.%hh%MM%ss.coupler.res'
     tstep: PT3H
-    model variables: [T,DELP,sphum,
-                      so4,bc1,bc2,oc1,oc2,
-                      dust1,dust2,dust3,dust4,dust5,
-                      seas1,seas2,seas3,seas4]
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml

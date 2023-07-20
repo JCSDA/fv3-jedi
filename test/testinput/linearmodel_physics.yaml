@@ -40,10 +40,6 @@ model:
   filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
   run stage check: true
   tstep: PT1H
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
-                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
-                    stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
 model aux control: null
 initial condition:
   datetime: 2020-12-15T00:00:00Z

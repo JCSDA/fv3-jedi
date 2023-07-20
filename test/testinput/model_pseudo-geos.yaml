@@ -9,10 +9,6 @@ geometry:
   field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: PSEUDO
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
-                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
-                    stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   tstep: PT1H
   filetype: cube sphere history
   provider: geos

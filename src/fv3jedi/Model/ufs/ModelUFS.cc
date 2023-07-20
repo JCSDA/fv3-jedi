@@ -24,8 +24,7 @@ namespace fv3jedi {
 static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 // -------------------------------------------------------------------------------------------------
 ModelUFS::ModelUFS(const Geometry & resol, const Parameters_ & params)
-  : keyConfig_(0), tstep_(0), geom_(resol),
-    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables))
+  : keyConfig_(0), tstep_(0), geom_(resol)
 {
   char tmpdir_[10000];
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;

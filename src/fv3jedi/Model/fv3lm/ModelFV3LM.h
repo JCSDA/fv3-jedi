@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -25,6 +26,7 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/fv3lm/ModelFV3LM.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/VariableChange/Base/VariableChangeBase.h"
 
 // Forward declarations
 namespace eckit {
@@ -51,6 +53,9 @@ namespace fv3jedi {
     oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
 
     oops::Parameter<bool> useInternalNamelist{ "use internal namelist", false, this};
+    // Variable Change
+    oops::Parameter<VariableChangeParametersWrapper> variableChange{"variable change",
+            "variable change from B matrix variables to model variables", {}, this};
     oops::OptionalParameter<std::string> namelistFilename{ "namelist filename", this};
   };
 
@@ -78,7 +83,6 @@ class ModelFV3LM: public oops::interface::ModelBase<Traits>,
 
 /// Utilities
   const util::Duration & timeResolution() const {return tstep_;}
-  const oops::Variables & variables() const {return vars_;}
 
  private:
   void print(std::ostream &) const;
@@ -86,6 +90,8 @@ class ModelFV3LM: public oops::interface::ModelBase<Traits>,
   util::Duration tstep_;
   const Geometry geom_;
   const oops::Variables vars_;
+  std::unique_ptr<VariableChange> an2model_;
+  mutable std::unique_ptr<const oops::Variables> finalVars_;
 };
 // -------------------------------------------------------------------------------------------------
 

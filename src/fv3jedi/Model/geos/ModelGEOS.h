@@ -43,7 +43,6 @@ namespace fv3jedi {
     OOPS_CONCRETE_PARAMETERS(ModelGEOSParameters, ModelParametersBase)
 
    public:
-    oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
     oops::RequiredParameter<std::string> geosRunDirectory{ "geos_run_directory", this};
     oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
 
@@ -78,14 +77,12 @@ class ModelGEOS: public oops::interface::ModelBase<Traits>,
 
 /// Utilities
   const util::Duration & timeResolution() const {return tstep_;}
-  const oops::Variables & variables() const {return vars_;}
 
  private:
   void print(std::ostream &) const;
   F90model keyConfig_;
   util::Duration tstep_;
   const Geometry geom_;
-  const oops::Variables vars_;
   char jedidir_[10000];
   char geosscrdir_[10000];
 };

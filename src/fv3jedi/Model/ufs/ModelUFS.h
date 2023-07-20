@@ -43,7 +43,6 @@ namespace fv3jedi {
     OOPS_CONCRETE_PARAMETERS(ModelUFSParameters, ModelParametersBase)
 
    public:
-    oops::RequiredParameter<eckit::LocalConfiguration> modelVariables{ "model variables", this};
     oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
     oops::RequiredParameter<std::string> ufsRunDirectory{ "ufs_run_directory", this};
   };
@@ -68,14 +67,12 @@ class ModelUFS: public oops::interface::ModelBase<Traits>,
   int saveTrajectory(State &, const ModelBias &) const;
 
   const util::Duration & timeResolution() const {return tstep_;}
-  const oops::Variables & variables() const {return vars_;}
 
  private:
   void print(std::ostream &) const;
   F90model keyConfig_;
   util::Duration tstep_;
   const Geometry geom_;
-  const oops::Variables vars_;
   char jedidir_[10000];
   char ufsdir_[10000];
 };

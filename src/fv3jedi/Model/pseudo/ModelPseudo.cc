@@ -25,7 +25,6 @@ static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::ModelPseudo(const Geometry & resol, const Parameters_ & params)
   : tstep_(0),
-    vars_(resol.fieldsMetaData().getLongNameFromAnyName(params.modelVariables)),
     io_()
 {
   oops::Log::trace() << "ModelPseudo::ModelPseudo starting" << std::endl;
@@ -45,7 +44,7 @@ ModelPseudo::~ModelPseudo() {
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::initialize(State & xx) const {
-  oops::Log::trace() << "ModelPseudo::initialize" << std::endl;
+  oops::Log::trace() << "ModelPseudo::initialize starting & also done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::step(State & xx, const ModelBias &) const {
@@ -65,8 +64,9 @@ void ModelPseudo::step(State & xx, const ModelBias &) const {
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::finalize(State & xx) const {
+  oops::Log::trace() << "ModelPseudo::finalize starting" << std::endl;
   if (runstagecheck_) {runstage_ = false;}
-  oops::Log::trace() << "ModelPseudo::finalize" << std::endl;
+  oops::Log::trace() << "ModelPseudo::finalize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelPseudo::print(std::ostream & os) const {

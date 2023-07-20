@@ -39,7 +39,7 @@ VarChaA2M::~VarChaA2M() {
 // -------------------------------------------------------------------------------------------------
 void VarChaA2M::changeVar(const State & xin, State & xout) const {
   util::Timer timer(classname(), "changeVar");
-  oops::Log::trace() << classname() << " changeVar done" << std::endl;
+  oops::Log::trace() << classname() << " changeVar starting" << std::endl;
   fv3jedi_varcha_a2m_changevar_f90(keyFtnConfig_, geom_.toFortran(), xin.toFortran(),
                                    xout.toFortran());
   xout.validTime() = xin.validTime();

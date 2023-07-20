@@ -35,7 +35,6 @@ namespace fv3jedi {
 class ModelPseudoParameters : public oops::ModelParametersBase {
   OOPS_CONCRETE_PARAMETERS(ModelPseudoParameters, ModelParametersBase)
  public:
-  oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
   oops::Parameter<bool> runstagecheck{ "run stage check", "turn off subsequent forecasts "
                                        "in multiple forecast applications such as outer loop data "
                                        "assimilation", false, this};
@@ -67,12 +66,10 @@ class ModelPseudo: public oops::interface::ModelBase<Traits>,
 
 /// Utilities
   const util::Duration & timeResolution() const {return tstep_;}
-  const oops::Variables & variables() const {return vars_;}
 
  private:
   void print(std::ostream &) const;
   util::Duration tstep_;
-  oops::Variables vars_;
   bool runstagecheck_;
   mutable bool runstage_ = true;
   std::unique_ptr<IOBase> io_;
