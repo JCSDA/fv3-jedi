@@ -22,6 +22,9 @@ cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 mole_fraction_of_ozone_in_air                | Min:-9.5517068723144309e-05 Max:+1.0215105049428337e-04 RMS:+8.1375889138131825e-07
 ----------------------------------------------------------------------------------------------------
+Localization(ensemble_localization) diagnostics:
+- Localization at zero separation:
+  + Value for variable air_temperature, subwindow 0, at (longitude, latitude, vertical index) point (308.18225, -33.69390, 50): 1.0000000000000000e+00
 Localization(ensemble) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 8 | cube sphere face size: C12
