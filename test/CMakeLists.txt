@@ -544,8 +544,11 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 
 # Repo wide configuration for getting test data
 # ---------------------------------------------
-#set( CRTM_COEFFS_BRANCH "2.4.1_skylab_4.0" )
-set( CRTM_COEFFS_BRANCH "3.0.0_skylab_4.0" )
+if( crtm_VERSION VERSION_GREATER_EQUAL 3.0.0 )
+    set( CRTM_COEFFS_BRANCH "3.0.0_skylab_4.0" )
+else()
+    set( CRTM_COEFFS_BRANCH "2.4.0_skylab_3.0" )
+endif()
 
 function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
   # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
