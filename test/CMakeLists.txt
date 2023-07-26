@@ -95,6 +95,8 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_gfs.yaml
   testinput/convertstate_gfs_c2ll.yaml
   testinput/convertstate_gfs_c2gaussian.yaml
+  testinput/convertstate_gfs_restart2history.yaml
+  testinput/convertstate_gfs_history2restart.yaml
   testinput/converttolatlon_gfs.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
@@ -259,6 +261,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_gfs.ref
   testoutput/convertstate_gfs_c2ll.ref
   testoutput/convertstate_gfs_c2gaussian.ref
+  testoutput/convertstate_gfs_restart2history.ref
   testoutput/convertstate_gchp_from_stretched_grid.ref
   testoutput/convertstate_gchp_to_stretched_grid.ref
   testoutput/converttolatlon_gfs.ref
@@ -999,6 +1002,17 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_c2gaussian
                   MPI      6
                   ARGS     testinput/convertstate_gfs_c2gaussian.yaml
                   COMMAND  fv3jedi_convertstate.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_restart2history
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs_restart2history.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_history2restart
+                  MPI      6
+                  ARGS     testinput/convertstate_gfs_history2restart.yaml
+                  COMMAND  fv3jedi_convertstate.x
+                  TEST_DEPENDS fv3jedi_test_tier1_restart2history )	
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_coldstartwinds

@@ -20,7 +20,7 @@ use string_utils, only: swap_name_member, replace_string
 ! fv3-jedi
 use fv3jedi_constants_mod,    only: constant
 use fv3jedi_geom_mod,         only: fv3jedi_geom
-use fv3jedi_field_mod,        only: fv3jedi_field
+use fv3jedi_field_mod,        only: fv3jedi_field, field_clen
 use fv3jedi_io_utils_mod
 use fv3jedi_kinds_mod,        only: kind_real
 use fv3jedi_netcdf_utils_mod, only: nccheck
@@ -48,6 +48,12 @@ type fv3jedi_io_csh_conf
 
   ! Optional list of fields to write out
   character(len=:), allocatable :: fields_to_write(:)
+
+  ! Optional list of land fields that are split by level in UFS
+  character(len=:), dimension(:), allocatable :: ufs_fields_to_split
+
+  ! Number of soil levels in UFS
+  integer :: ufs_soil_nlev
 
   ! By default the tile is a dimension in the file (npx by npy by ntile), alternatively the faces
   ! can be stacked in the y direction (npx by ntile*npy) by setting the following to false
@@ -404,6 +410,18 @@ else
   self%conf%fields_to_write(1)='All'
 endif
 
+! Are there fields to be concatenated?
+! ------------------------------------
+if (conf%has('ufs fields split by level')) then
+  call conf%get_or_die('ufs fields split by level', self%conf%ufs_fields_to_split)
+end if
+
+! How many soil levels does UFS have?
+! -----------------------------------
+if (conf%has('ufs soil nlev')) then
+  call conf%get_or_die('ufs soil nlev', self%conf%ufs_soil_nlev)
+end if
+
 end subroutine parse_conf
 
 ! --------------------------------------------------------------------------------------------------
@@ -679,11 +697,12 @@ type(fv3jedi_field),                          intent(inout) :: fields(:)
 
 ! Locals
 integer, allocatable :: file_index(:), varid(:)
-integer :: var, lev
-logical :: tile_is_a_dimension
+integer :: var, lev, n, ifield
+logical :: tile_is_a_dimension, cat_field
 integer, pointer :: istart(:), icount(:)
 integer, allocatable, target :: is_r3_tile(:), is_r3_noti(:)
 real(kind=kind_real), allocatable :: arrayg(:,:)
+character(len=field_clen) :: io_name_local
 
 
 ! Get ncid and varid for each field
@@ -691,7 +710,6 @@ real(kind=kind_real), allocatable :: arrayg(:,:)
 allocate(file_index(size(fields)))
 allocate(varid(size(fields)))
 call get_field_ncid_varid(self, fields, file_index, varid)
-
 
 ! Local copy of starts for rank 3 in order to do one level at a time
 ! ------------------------------------------------------------------
@@ -739,6 +757,17 @@ do var = 1,size(fields)
     endif
   endif
 
+  ! Determine whether field is multi-level UFS surface variable
+  cat_field = .false.
+  if ( trim(self%conf%provider) == 'ufs' .and. allocated(self%conf%ufs_fields_to_split) ) then
+     do ifield = 1,size(self%conf%ufs_fields_to_split)
+        if ( trim(self%conf%ufs_fields_to_split(ifield)) == trim(fields(var)%long_name) .or. &
+             trim(self%conf%ufs_fields_to_split(ifield)) == trim(fields(var)%short_name) ) then
+             cat_field = .true.
+             exit
+        end if
+     end do
+  end if
 
   ! Loop over level and read the data
   ! ---------------------------------
@@ -752,9 +781,29 @@ do var = 1,size(fields)
       is_r3_tile(self%vindex_tile) = lev
       is_r3_noti(self%vindex_noti) = lev
 
+      ! Special case of land variable levels split into separate variables
+      if ( cat_field ) then
+         ! Set to read only one level
+         if ( tile_is_a_dimension ) then
+            istart => self%is_r2_tile
+            icount => self%ic_r2_tile
+         else
+            istart => self%is_r2_noti
+            icount => self%ic_r2_noti
+         endif
+
+         ! Get UFS multi-level surface variable name
+         write (io_name_local, "(A5,I1)") fields(var)%io_name, lev
+
+         ! Get varid
+         call nccheck( nf90_inq_varid(self%ncid(file_index(var)), io_name_local, varid(var)) )
+      else
+         io_name_local = fields(var)%io_name
+      end if
+
       ! Read the level
       call nccheck ( nf90_get_var( self%ncid(file_index(var)), varid(var), arrayg, istart, icount), &
-                    "nf90_get_var "//trim(fields(var)%io_name) )
+                    "nf90_get_var "//trim(io_name_local) )
     endif
 
     ! Scatter the field to all processors on the tile
@@ -785,8 +834,10 @@ integer,                              intent(inout) :: varid(size(fields(:)))
 
 ! Locals
 integer :: f, ff, n
-integer :: status, varid_local
+integer :: status, varid_local, ifield
 integer, allocatable :: found(:)
+character(len=field_clen) :: io_name_local
+logical :: cat_field
 
 ! Array to keep track of all the files the variable was found in
 allocate(found(self%nfiles))
@@ -795,10 +846,30 @@ do f = 1, size(fields)
 
   found = 0
 
+  ! Determine whether field is multi-level UFS soil variable
+  cat_field = .false.
+  if ( trim(self%conf%provider) == 'ufs' .and. allocated(self%conf%ufs_fields_to_split) ) then
+     do ifield = 1,size(self%conf%ufs_fields_to_split)
+        if ( trim(self%conf%ufs_fields_to_split(ifield)) == trim(fields(f)%long_name) .or. &
+             trim(self%conf%ufs_fields_to_split(ifield)) == trim(fields(f)%short_name) ) then
+             cat_field = .true.
+             exit
+        end if
+     end do
+  end if
+
   do n = 1, self%nfiles
 
+    ! Get IO name of first level if UFS multi-level surface variable
+    if ( cat_field ) then
+       ! Use to first level since this is just a placeholder for the entire field
+       write (io_name_local, "(A5,I1)") trim(fields(f)%io_name), 1
+    else
+       io_name_local = fields(f)%io_name 
+    end if
+
     ! Get the varid
-    status = nf90_inq_varid(self%ncid(n), fields(f)%io_name, varid_local)
+    status = nf90_inq_varid(self%ncid(n), io_name_local, varid_local)
 
     ! If found then fill the array
     if (status == nf90_noerr) then
@@ -812,13 +883,13 @@ do f = 1, size(fields)
   ! Check that the field was not found more than once
   if (sum(found) > 1) &
     call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
-                   "Field "//trim(fields(f)%io_name)//" was found in multiple input files. "// &
+                   "Field "//trim(io_name_local)//" was found in multiple input files. "// &
                    "Should only be present in one file that is read.")
 
   ! Check that the field was found
   if (sum(found) == 0) then
     call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
-                    "Field "//trim(fields(f)%io_name)//" was not found in any files. "// &
+                    "Field "//trim(io_name_local)//" was not found in any files. "// &
                     "Should only be present in one file that is read.")
   endif
 
@@ -958,10 +1029,10 @@ if (self%iam_io_proc) then
       ! Time dimension
       call nccheck ( nf90_def_dim(self%ncid(n), "time", 1, self%t_dimid), "nf90_def_dim time" )
 
-      ! In case the four level surface fields need to be written
+      ! In case that UFS multi-level surface fields need to be written
       do var = 1,size(fields)
-        if (fields(var)%npz == 4) then
-          call nccheck ( nf90_def_dim(self%ncid(n), "lev4", 4, self%f_dimid), "nf90_def_dim lev"  )
+        if (fields(var)%npz == self%conf%ufs_soil_nlev) then
+          call nccheck ( nf90_def_dim(self%ncid(n), "lev4", self%conf%ufs_soil_nlev, self%f_dimid), "nf90_def_dim lev"  )
           exit
         endif
       enddo
@@ -1190,15 +1261,17 @@ type(fv3jedi_field),                          intent(in)    :: fields(:)
 type(datetime),                               intent(in)    :: vdate
 
 ! Locals
-integer :: var, lev, n, ncid, varid
+integer :: var, lev, n, ncid, ilev_soil, nlev_soil, ifield
 integer, target :: dimids2_tile(4), dimids3_tile(5), dimidse_tile(5), dimids4_tile(5)
 integer, target :: dimids2_noti(3), dimids3_noti(4), dimidse_noti(4), dimids4_noti(4)
 integer, pointer :: dimids2(:), dimids3(:), dimidse(:), dimids4(:), dimids(:)
 integer, allocatable, target :: is_r3_tile(:), is_r3_noti(:)
 real(kind=kind_real), allocatable :: arrayg(:,:)
 integer, pointer :: istart(:), icount(:)
+integer, allocatable :: varid(:)
 character(10) :: coordstr
 logical :: write_field
+character(len=field_clen) :: io_name_local
 
 
 ! Whole level of tile array
@@ -1213,6 +1286,9 @@ is_r3_tile = self%is_r3_tile
 allocate(is_r3_noti(size(self%is_r3_noti)))
 is_r3_noti = self%is_r3_noti
 
+! Allocate NetCDF varid array 
+! ---------------------------
+allocate(varid(self%conf%ufs_soil_nlev))
 
 ! Dimension ID arrays for the various fields with and without tile dimension
 ! --------------------------------------------------------------------------
@@ -1263,6 +1339,19 @@ do var = 1,size(fields)
       ! -------------------
       ncid = self%ncid(1)
 
+      ! Determine whether field is multi-level UFS surface variable
+      ! ----------------------------------------------------------
+      nlev_soil = 1
+      if ( trim(self%conf%provider) == 'ufs' .and. allocated(self%conf%ufs_fields_to_split) ) then
+         do ifield = 1,size(self%conf%ufs_fields_to_split)
+            if ( trim(self%conf%ufs_fields_to_split(ifield)) == trim(fields(var)%long_name) .or. &
+                 trim(self%conf%ufs_fields_to_split(ifield)) == trim(fields(var)%short_name) ) then
+               nlev_soil = self%conf%ufs_soil_nlev
+               exit
+            end if
+         end do
+      end if
+
       ! Redefine
       ! --------
       if (self%conf%clobber(1)) then
@@ -1290,45 +1379,57 @@ do var = 1,size(fields)
 
         if (associated(dimids)) nullify (dimids)
 
-        if (fields(var)%npz == 1) then
+        if (fields(var)%npz == 1 .or. fields(var)%npz == self%conf%ufs_soil_nlev ) then
           dimids => dimids2
         elseif (fields(var)%npz == self%npz) then
           dimids => dimids3
         elseif (fields(var)%npz == self%npz+1) then
           dimids => dimidse
-        elseif (fields(var)%npz == 4) then
-          dimids => dimids4
         else
           call abor1_ftn("write_cube_sphere_history: vertical dimension not supported")
         endif
 
-        ! Define field
-        call nccheck( nf90_def_var(ncid, trim(fields(var)%io_name), NF90_DOUBLE, dimids, varid), &
-                      "nf90_def_var "//trim(fields(var)%io_name))
+        ! Loop through soil levels if fields is multi-level soil variable
+        ! Defaults to nlev_soil=1 otherwise
+        do ilev_soil = 1,nlev_soil
+           if ( nlev_soil > 1 ) then
+              ! Get UFS land variable name
+              write (io_name_local, "(A5,I1)") fields(var)%io_name, ilev_soil
+           else
+              ! Get variable name
+              io_name_local = fields(var)%io_name
+           end if
 
-        ! Write attributes if clobbering
-        if (self%conf%clobber(1)) then
+           ! Define field
+           call nccheck( nf90_def_var(ncid, trim(io_name_local), NF90_DOUBLE, dimids, varid(ilev_soil)), &
+                         "nf90_def_var "//trim(io_name_local))
 
-          ! Long name and units
-          call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
-          call nccheck( nf90_put_att(ncid, varid, "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
+           ! Long name and units
+           call nccheck( nf90_put_att(ncid, varid(ilev_soil), "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
+           call nccheck( nf90_put_att(ncid, varid(ilev_soil), "units"        , trim(fields(var)%units)     ), "nf90_put_att" )
 
-          ! Additional attributes for history and or plotting compatibility
-          call nccheck( nf90_put_att(ncid, varid, "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
-          call nccheck( nf90_put_att(ncid, varid, "coordinates"  , trim(coordstr)              ), "nf90_put_att" )
-          call nccheck( nf90_put_att(ncid, varid, "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
+           ! Additional attributes for history and or plotting compatibility
+           call nccheck( nf90_put_att(ncid, varid(ilev_soil), "standard_name", trim(fields(var)%long_name) ), "nf90_put_att" )
+           call nccheck( nf90_put_att(ncid, varid(ilev_soil), "coordinates"  , trim(coordstr)              ), "nf90_put_att" )
+           call nccheck( nf90_put_att(ncid, varid(ilev_soil), "grid_mapping" , "cubed_sphere"              ), "nf90_put_att" )
 
-        endif
-
-        ! End define mode
-        call nccheck( nf90_enddef(ncid), "nf90_enddef" )
-
+           ! End define mode
+           call nccheck( nf90_enddef(ncid), "nf90_enddef" )
+        end do
       else
+        do ilev_soil = 1,nlev_soil
+           if ( nlev_soil > 1 ) then
+              ! Get UFS multi-level surface variable name
+              write (io_name_local, "(A5,I1)") fields(var)%io_name, ilev_soil
+           else
+              ! Get variable name
+              io_name_local = fields(var)%io_name
+           end if
 
-        ! Get existing variable id to write to
-        call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%io_name), varid), &
-                      "nf90_inq_varid "//trim(fields(var)%io_name) )
-
+           ! Get existing variable id to write to
+           call nccheck ( nf90_inq_varid (ncid, trim(io_name_local), varid(ilev_soil)), &
+                          "nf90_inq_varid "//trim(io_name_local) )
+        end do
       endif
 
       ! Set starts and counts based on levels and tiledim flag
@@ -1337,7 +1438,7 @@ do var = 1,size(fields)
       if (associated(istart)) nullify(istart)
       if (associated(icount)) nullify(icount)
 
-      if (fields(var)%npz == 1) then
+      if ( fields(var)%npz == 1  .or. nlev_soil > 1 ) then
         if (self%conf%tile_is_a_dimension(1)) then
           istart => self%is_r2_tile; icount => self%ic_r2_tile
         else
@@ -1367,9 +1468,13 @@ do var = 1,size(fields)
         is_r3_tile(self%vindex_tile) = lev
         is_r3_noti(self%vindex_noti) = lev
 
-        call nccheck( nf90_put_var( ncid, varid, arrayg, start = istart, count = icount ), &
-                                    "nf90_put_var "//trim(fields(var)%io_name) )
-
+        if ( nlev_soil == 1 ) then
+           call nccheck( nf90_put_var( ncid, varid(1), arrayg, start = istart, count = icount ), &
+                                       "nf90_put_var "//trim(io_name_local) )
+        else
+           call nccheck( nf90_put_var( ncid, varid(lev), arrayg, start = istart, count = icount ), &
+                                       "nf90_put_var "//trim(io_name_local) )
+        end if
       endif
 
     enddo

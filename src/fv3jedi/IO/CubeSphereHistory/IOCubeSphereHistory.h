@@ -87,6 +87,18 @@ class IOCubeSphereHistoryParameters : public IOParametersBase {
   oops::OptionalParameter<std::vector<std::string>> fieldsToWrite{"fields to write",
                                                                   "names of the fields to write",
                                                                   this};
+
+  // Optional list of UFS fields to split by level
+  oops::OptionalParameter<std::vector<std::string>> \
+    UFSfieldsToSplitByLevel{"ufs fields split by level",
+                            "names of the fields to split by level in ufs history files",
+                            this};
+
+  // Number of UFS soil levels
+  oops::Parameter<int> nlevSoilUFS{"ufs soil nlev",
+                                   "number of soil levels in UFS",
+                                   4,
+                                   this};
 };
 
 // -------------------------------------------------------------------------------------------------
