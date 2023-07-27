@@ -24,6 +24,7 @@ states to latlon:
     filename_cplr: 20201215.000000.coupler.res
 
   latlon interpolation:
+    local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 1
     variables to output: [air_temperature]
     levels to output: [10,20,30]

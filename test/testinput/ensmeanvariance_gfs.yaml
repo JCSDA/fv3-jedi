@@ -18,6 +18,7 @@ variance output:
   filename_cplr: ensemblevariance.coupler.res
 
 ensvariance to latlon:
+  local interpolator type: oops unstructured grid interpolator
   resolution in degrees: 15.0  # low resolution for testing
   variables to output: [air_temperature, eastward_wind, northward_wind]
   levels to output: [100, 76, 60]
@@ -34,6 +35,7 @@ mean output:
   filename_cplr: ensemblemean.coupler.res
 
 ensmean to latlon:
+  local interpolator type: oops unstructured grid interpolator
   resolution in degrees: 15.0  # low resolution for testing
   variables to output: [air_temperature, eastward_wind, northward_wind]
   levels to output: [100, 76, 60]
