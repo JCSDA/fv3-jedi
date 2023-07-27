@@ -226,7 +226,6 @@ ecbuild_add_library( TARGET          fv3jedi
                      LINKER_LANGUAGE ${FV3JEDI_LINKER_LANGUAGE}
                    )
 
-target_compile_features( fv3jedi PUBLIC cxx_std_11 )
 target_include_directories( fv3jedi PUBLIC "$<BUILD_INTERFACE:${FV3JEDI_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${FV3JEDI_EXTRA_INCLUDE_DIRS}>" )
 
 if( FV3_FORECAST_MODEL MATCHES "UFS" )

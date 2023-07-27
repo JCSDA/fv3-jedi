@@ -40,6 +40,16 @@ set( FV3JEDI_LINKER_LANGUAGE CXX )
 # Standard compiler flags
 ################################################################################
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_FORTRAN_STANDARD 08)
+set(CMAKE_FORTRAN_STANDARD_REQUIRED ON)
+set(CMAKE_FORTRAN_EXTENSIONS OFF)
+
 include( fv3jedi_extra_macros )
 option( ENABLE_FV3JEDI_DOC "Build FV3-JEDI documentation" OFF )
 
