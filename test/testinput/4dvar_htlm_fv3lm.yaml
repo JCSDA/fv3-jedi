@@ -99,27 +99,27 @@ variational:
       departures: ombg
     linear model:
       simplified linear model:
-        name: FV3JEDITLM
-        namelist filename: Data/fv3files/input_gfs_c12.nml
-        linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT3H
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
-        tlm variables:  *anavars
-        trajectory:
-          model variables: *anavars
-      tstep: PT3H
-      increment variables: *anavars
-      htlm coefficient calc:
+        linear model:
+          name: FV3JEDITLM
+          namelist filename: Data/fv3files/input_gfs_c12.nml
+          linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+          tstep: PT3H
+          lm_do_dyn: 1
+          lm_do_trb: 0
+          lm_do_mst: 0
+          tlm variables:  *anavars
+          trajectory:
+            model variables: *anavars
+      update tstep: PT3H
+      update variables: *anavars
+      coefficients:
         training variables: [air_temperature]
+        influence region size: 2
         window length: PT6H
         window begin: 2020-12-14T21:00:00Z
-        htlm calculator:
-          influence region size: 2
-          #regularization param: 100
+        calculator:
           rms scaling: false
-        htlm ensemble:
+        ensemble:
           ensemble size: 2
           model:
             name: FV3LM
@@ -129,17 +129,6 @@ variational:
             lm_do_trb: 0
             lm_do_mst: 0
             model variables: *modelvars
-          coeff linear model:
-            name: FV3JEDITLM
-            namelist filename: Data/fv3files/input_gfs_c12.nml
-            linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-            tstep: PT3H
-            lm_do_dyn: 1
-            lm_do_trb: 0
-            lm_do_mst: 0
-            tlm variables: *anavars
-            trajectory:
-              model variables: *anavars
           state geometry:
             fms initialization:
               namelist filename: Data/fv3files/input_gfs_c12.nml

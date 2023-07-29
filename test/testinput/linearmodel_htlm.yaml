@@ -14,27 +14,27 @@ geometry:
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 linear model:
   simplified linear model:
-    name: FV3JEDITLM
-    namelist filename: Data/fv3files/input_gfs_c12.nml
-    linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT15M
-    lm_do_dyn: 1
-    lm_do_trb: 0
-    lm_do_mst: 0
-    tlm variables: *anavars
-    trajectory:
-      model variables: *anavars
-  tstep: PT15M
-  increment variables: *anavars
-  htlm coefficient calc:
+    linear model:
+      name: FV3JEDITLM
+      namelist filename: Data/fv3files/input_gfs_c12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT15M
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      tlm variables: *anavars
+      trajectory:
+        model variables: *anavars
+  update tstep: PT15M
+  update variables: *anavars
+  coefficients:
     training variables: [air_temperature]
+    influence region size: 2
     window length: PT30M
     window begin: 2020-12-15T00:00:00Z
-    htlm calculator:
-      influence region size: 2
-      #regularization param: 100
+    calculator:
       rms scaling: false
-    htlm ensemble:
+    ensemble:
       ensemble size: 3
       model:
         name: FV3LM
@@ -44,17 +44,6 @@ linear model:
         lm_do_trb: 0
         lm_do_mst: 0
         model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
-      coeff linear model:
-        name: FV3JEDITLM
-        namelist filename: Data/fv3files/input_gfs_c12.nml
-        linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT15M
-        lm_do_dyn: 1
-        lm_do_trb: 0
-        lm_do_mst: 0
-        tlm variables: *anavars
-        trajectory:
-          model variables: *anavars
       state geometry:
         fms initialization:
           namelist filename: Data/fv3files/input_gfs_c12.nml

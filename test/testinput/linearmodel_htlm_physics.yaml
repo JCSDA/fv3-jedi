@@ -15,30 +15,30 @@ geometry:
 linear model:
   name: HTLM
   simplified linear model:
-    name: FV3JEDITLM
-    namelist filename: Data/fv3files/input_geos_c12.nml
-    linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-    tstep: PT1H
-    lm_do_dyn: 1
-    lm_do_trb: 1
-    lm_do_mst: 1
-    tlm variables: *anavars
-    trajectory:
-      model variables: &modelvars [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
+    linear model:
+      name: FV3JEDITLM
+      namelist filename: Data/fv3files/input_geos_c12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT1H
+      lm_do_dyn: 1
+      lm_do_trb: 1
+      lm_do_mst: 1
+      tlm variables: *anavars
+      trajectory:
+        model variables: &modelvars [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
                         qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                         zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
                         stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
-  tstep: PT1H
-  increment variables: *anavars
-  htlm coefficient calc:
+  update tstep: PT1H
+  update variables: *anavars
+  coefficients:
     training variables: [air_temperature]
+    influence region size: 2
     window length: PT1H
     window begin: 2020-12-15T00:00:00Z
-    htlm calculator:
-      influence region size: 2
-      #regularization param: 100
+    calculator:
       rms scaling: false
-    htlm ensemble:
+    ensemble:
       ensemble size: 3
       model:
         name: PSEUDO
@@ -48,20 +48,6 @@ linear model:
         filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
         run stage check: true
         tstep: PT1H
-      coeff linear model:
-        name: FV3JEDITLM
-        namelist filename: Data/fv3files/input_geos_c12.nml
-        linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-        tstep: PT1H
-        lm_do_dyn: 1
-        lm_do_trb: 1
-        lm_do_mst: 1
-        tlm variables: *anavars
-        trajectory:
-          model variables: &modelvars [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
-                            qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                            zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
-                            stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
       state geometry:
         fms initialization:
           namelist filename: Data/fv3files/input_geos_c12.nml
