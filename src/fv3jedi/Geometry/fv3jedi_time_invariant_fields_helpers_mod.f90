@@ -50,7 +50,7 @@ subroutine calculate_nominal_surface_pressure(afieldset)
 
   n = 0
   do n=1, nmax
-    if(orog_ptr(1,n) <= 0.0) then
+    if(abs(orog_ptr(1,n)) <= 1.0e-2) then
       nsp_ptr(1,n) = ps
     else
       orog_factor = 1.0 + lapse_rate/288.15_kind_real*orog_ptr(1,n)
