@@ -167,7 +167,7 @@ variational:
       name: HTLM
 
 test:
-  reference filename: testoutput/4dvar_htlm_fv3lm.ref
-  test output filename: testoutput/4dvar_htlm_fv3lm.ref.out
+  reference filename: testoutput/htlm_4dvar_fv3lm.ref
+  test output filename: testoutput/htlm_4dvar_fv3lm.test.out
   float relative tolerance: 1.0e-6
-  float absolute tolerance: 1.0e-6 
+  float absolute tolerance: 1.0e-6

@@ -68,7 +68,6 @@ list( APPEND fv3jedi_testinput
   testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
-  testinput/4dvar_htlm_fv3lm.yaml
   testinput/addincrement_geos.yaml
   testinput/addincrement_gfs.yaml
   testinput/bumpparameters_nicas_geos_p12.yaml
@@ -151,6 +150,7 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_save_geovals.yaml
+  testinput/htlm_4dvar_fv3lm.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
   testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
@@ -238,7 +238,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
   testoutput/4denvar.ref
-  testoutput/4dvar_htlm_fv3lm.ref
   testoutput/addincrement_geos.ref
   testoutput/addincrement_gfs.ref
   testoutput/bumpparameters_nicas_geos.ref
@@ -294,6 +293,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_lam_rrfs.ref
   testoutput/hofx_save_geovals.ref
+  testoutput/htlm_4dvar_fv3lm.ref
   testoutput/hyb-3dvar_fsoi_backward.ref
   testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
@@ -1481,7 +1481,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-4dvar_pseudo-geos
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_htlm_4dvar_fv3lm
                   MPI      6
-                  ARGS     --no-validate testinput/4dvar_htlm_fv3lm.yaml
+                  ARGS     --no-validate testinput/htlm_4dvar_fv3lm.yaml
                   COMMAND  fv3jedi_var.x )
 
 # FSOI
