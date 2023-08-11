@@ -236,14 +236,13 @@ variational:
     algorithm: DRPLanczos
     online diagnostics:
       max eigenvectors: 2
-      eigenvector:
-        filetype: fms restart
+      eigenvector to latlon:
+        local interpolator type: oops unstructured grid interpolator
+        resolution in degrees: 15.0  # low resolution for testing
+        variables to output: [air_temperature, eastward_wind, northward_wind]
+        levels to output: [100, 76, 60]
         datapath: Data/analysis/eda/gfs/mem001
-        filename_core: tt3dvar.eigenvec.fv_core.res.nc
-        filename_trcr: tt3dvar.eigenvec.fv_tracer.res.nc
-        filename_sfcd: tt3dvar.eigenvec.sfc_data.nc
-        filename_sfcw: tt3dvar.eigenvec.fv_srf_wnd.res.nc
-        filename_cplr: tt3dvar.eigenvec.coupler.res
+        filename prefix: latlon.tt3dvar.eigenvec  
   iterations:
   - ninner: 15
     gradient norm reduction: 1e-10
