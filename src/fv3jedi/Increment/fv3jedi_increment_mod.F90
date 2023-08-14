@@ -293,11 +293,35 @@ real(kind=kind_real),     intent(inout) :: values(:)
 integer :: var, nz, ii
 
 ii = 0
-do var = 1,self%nf
-  nz = self%fields(var)%npz
-  values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iindex, geoiter%jindex,:)
-  ii = ii + nz
-enddo
+!2D iterator
+if (geoiter%geom%iterator_dimension .eq. 2) then
+  do var = 1,self%nf
+    nz = self%fields(var)%npz
+    values(ii+1:ii+nz) = self%fields(var)%array(geoiter%iindex, geoiter%jindex,:)
+    ii = ii + nz
+  enddo
+!3D iterator
+else if (geoiter%geom%iterator_dimension .eq. 3) then
+ !2d variables
+  if(0 == geoiter%kindex) then
+    do var = 1,self%nf
+      if(1 == self%fields(var)%npz) then
+        ii = ii + 1
+        values(ii) = self%fields(var)%array(geoiter%iindex, geoiter%jindex, 1)
+      end if
+    enddo
+ !3d variables
+  else if(0 < geoiter%kindex) then
+    do var = 1,self%nf
+      if(1 < self%fields(var)%npz) then
+        ii = ii + 1
+        values(ii) = self%fields(var)%array(geoiter%iindex, geoiter%jindex, geoiter%kindex)
+      end if
+    enddo
+  end if
+else
+  call abor1_ftn('fv3jedi_increment_mod%getpoint: unknown geoiter%geom%iterator_dimension')
+end if
 
 end subroutine getpoint
 
@@ -313,11 +337,35 @@ real(kind=kind_real),     intent(in)    :: values(:)
 integer :: var, nz, ii
 
 ii = 0
-do var = 1,self%nf
-  nz = self%fields(var)%npz
-  self%fields(var)%array(geoiter%iindex, geoiter%jindex,:) = values(ii+1:ii+nz)
-  ii = ii + nz
-enddo
+!2D iterator
+if (geoiter%geom%iterator_dimension .eq. 2) then
+  do var = 1,self%nf
+    nz = self%fields(var)%npz
+    self%fields(var)%array(geoiter%iindex, geoiter%jindex,:) = values(ii+1:ii+nz)
+    ii = ii + nz
+  enddo
+!3D iterator
+else if (geoiter%geom%iterator_dimension .eq. 3) then
+ !2d variables
+  if(0 == geoiter%kindex) then
+    do var = 1,self%nf
+      if(1 == self%fields(var)%npz) then
+        ii = ii + 1
+        self%fields(var)%array(geoiter%iindex, geoiter%jindex, 1) = values(ii)
+      end if
+    enddo
+ !3d variables
+  else if(0 < geoiter%kindex) then
+    do var = 1,self%nf
+      if(1 < self%fields(var)%npz) then
+        ii = ii + 1
+        self%fields(var)%array(geoiter%iindex, geoiter%jindex, geoiter%kindex) = values(ii)
+      end if
+    enddo
+  end if
+else
+  call abor1_ftn('fv3jedi_increment_mod%setpoint: unknown geoiter%geom%iterator_dimension')
+end if
 
 end subroutine setpoint
 

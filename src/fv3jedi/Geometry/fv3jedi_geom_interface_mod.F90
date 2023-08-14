@@ -292,7 +292,7 @@ jend = self%jec
 if (3 == itd) then
    kst = 0
 else
-   kst  = 1
+   kst = 1
 end if
 kend = self%npz
 npz  = self%npz

@@ -8,6 +8,6 @@ geometry:
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
   iterator dimension: 3
-inc variables: [ua,va,T,DELP,sphum,ps,ice_wat,liq_wat,o3mr]
+inc variables: [ua,va,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr]
 increment test:
   date: 2020-12-14T21:00:00Z
