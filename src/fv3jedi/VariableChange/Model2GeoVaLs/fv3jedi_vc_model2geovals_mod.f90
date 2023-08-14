@@ -878,7 +878,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geophi
 
-  case ("surface_altitude", "surface_geopotential_height")
+  case ("surface_altitude", "surface_geopotential_height", "surface_geometric_height")
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = suralt

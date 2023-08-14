@@ -974,6 +974,16 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "surface_geometric_height";
+    md.shortName = "surface_geometric_height";
+    md.units = "m";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "humidity_mixing_ratio";
     md.shortName = "humidity_mixing_ratio";
     md.units = "1";
