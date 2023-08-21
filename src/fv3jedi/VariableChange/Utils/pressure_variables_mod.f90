@@ -166,15 +166,15 @@ subroutine tropprs(geom, ps, prs, tv, o3, vort, tprs)
 
  ! Local
  integer :: isc,iec,jsc,jec
- integer :: i,j,k,kk
+ integer :: i,j,k
  integer :: npz
  integer :: itrop_k
  integer :: ifound_pv, ifound_oz
  integer :: itrp_pv, itrp_oz
 
  real(kind=kind_real), parameter :: r1e5 = 1.0e5
- real(kind=kind_real), parameter :: r2e6 = 2.0e-6
- real(kind=kind_real), parameter :: r3e7 = 3.0e-7
+ real(kind=kind_real), parameter :: r2em6 = 2.0e-6
+ real(kind=kind_real), parameter :: r3em7 = 3.0e-7
  real(kind=kind_real) :: pm1, pp1, thetam1, thetap1, pv
  real(kind=kind_real) :: psi
  real(kind=kind_real) :: prsl(geom%npz), pvort(geom%npz)
@@ -194,7 +194,6 @@ subroutine tropprs(geom, ps, prs, tv, o3, vort, tprs)
  constoz = constant('constoz')
  kappa = constant('kappa')
  grav = constant('grav')
-
  ! Loop through locations
  do j = jsc, jec
    do i = isc, iec
@@ -214,43 +213,42 @@ subroutine tropprs(geom, ps, prs, tv, o3, vort, tprs)
 
      ! Compute potential vortivity (pv) at midpoint pressure
      ! Work from model surface to top
-     do k = 2, npz-1   ! index from top to surface:     2,     3, ..., npz-1
-       kk = npz-k+1    ! index from surface to top: npz-1, npz-2, ..., 2
-       pm1 = prsl(kk-1)
-       pp1 = prsl(kk+1)
-       thetam1 = tv(i,j,kk-1) * (r1e5 / pm1)**kappa
-       thetap1 = tv(i,j,kk-1) * (r1e5 / pp1)**kappa
-       pv = grav * vort(i,j,kk) * (thetam1 - thetap1) / (pm1 - pp1)
-       pvort(kk) = abs(pv)
+     do k =  2, npz-1
+       pm1 = prsl(k+1)
+       pp1 = prsl(k-1)
+       thetam1 = tv(i,j,k+1) * (r1e5 / pm1)**kappa
+       thetap1 = tv(i,j,k-1) * (r1e5 / pp1)**kappa
+       pv = grav * vort(i,j,k) * (thetam1 - thetap1) / (pm1 - pp1)
+       pvort(k) = abs(pv)
      enddo
      pvort(1) = pvort(2)
      pvort(npz) = pvort(npz-1)
 
      ! Locate tropopause using vorticity and ozone
      ! Search upward (decressing pressure) for tropopause above sigma 0.7
-     ifound_pv = 0; itrp_pv = npz
-     ifound_oz = 0; itrp_oz = npz
-     do k = 2, npz-1   ! index from top to surface:     2,     3, ..., npz-1
-       kk = npz-k+1    ! index from surface to top: npz-1, npz-2, ..., 2
-       if (prsl(kk) * psi < 0.7) then  ! sigma level < 0.7
+     ifound_pv = 0; itrp_pv = 1 
+     ifound_oz = 0; itrp_oz = 1 
+     do k = npz-1, 1, -1 
+       if (prsl(k) * psi < 0.7) then  ! sigma level < 0.7
          ! Tropopause at level where pv > 2e-6
-         if (pvort(kk) > r2e6 .and. ifound_pv == 0) then
+         if (pvort(k) > r2em6 .and. ifound_pv == 0) then
            ifound_pv = 1
-           itrp_pv = kk
+           itrp_pv = k
          endif
          !Tropopause at level where o3mr > 3e-7
-         if (o3mr(kk) > r3e7 .and. ifound_oz == 0) then
+         if (o3mr(k) > r3em7 .and. ifound_oz == 0) then
            ifound_oz = 1
-           itrp_oz = kk
+           itrp_oz = k
          endif
        endif
      enddo
 
      ! Merge pv and o3 tropopause levels between 20 and 40 degree latitudes
+     wgt = 0.0
      lat =abs(lat)
      if (lat >= 40.0) then
        itrop_k = itrp_pv
-     elseif (lat >=20) then
+     elseif (lat >=20.0) then
        wgt = (lat - 20.0) / 20.0
        itrop_k = wgt * itrp_pv + (1.0 - wgt) * itrp_oz
      else ! lat
