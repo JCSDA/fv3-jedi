@@ -100,6 +100,12 @@ ecbuild_add_executable( TARGET  fv3jedi_adjointforecast.x
                         LIBS    fv3jedi
                       )
 
+ecbuild_add_executable( TARGET  fv3jedi_genenspertB.x
+                        SOURCES fv3jediGenEnsPertB.cc
+                        LIBS    fv3jedi
+                                saber
+                      )
+
 # Plotting utility
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fv3jedi_plot_field.py ${CMAKE_BINARY_DIR}/bin/fv3jedi_plot_field.x COPYONLY)
 execute_process( COMMAND chmod +x ${CMAKE_BINARY_DIR}/bin/fv3jedi_plot_field.x)

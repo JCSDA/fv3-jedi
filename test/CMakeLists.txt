@@ -118,6 +118,7 @@ list( APPEND fv3jedi_testinput
   testinput/enshofx_fv3lm.yaml
   testinput/ensmeanvariance_geos.yaml
   testinput/ensmeanvariance_gfs.yaml
+  testinput/enspert_geos_cf.yaml
   testinput/ensrecenter_gfs.yaml
   testinput/errorcovariance_bump.yaml
   testinput/errorcovariance_gfs_gsi_global.yaml
@@ -277,6 +278,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/eda_block_3dvar.ref
   testoutput/ensmeanvariance_geos.ref
   testoutput/ensmeanvariance_gfs.ref
+  testoutput/enspert_geos_cf.ref
   testoutput/ensrecenter_gfs.ref
   testoutput/forecast_fv3-geos.ref
   testoutput/forecast_fv3-gfs.ref
@@ -803,6 +805,9 @@ foreach(MEM IN LISTS members)
 endforeach()
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ensembleb)
 
+# Randomization
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/randomization/)
+
 # Stage directory with directories for running the models
 # -------------------------------------------------------
 if(FV3_FORECAST_MODEL MATCHES "GEOS" OR FV3_FORECAST_MODEL MATCHES "UFS")
@@ -1014,7 +1019,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_history2restart
                   MPI      6
                   ARGS     testinput/convertstate_gfs_history2restart.yaml
                   COMMAND  fv3jedi_convertstate.x
-                  TEST_DEPENDS fv3jedi_test_tier1_restart2history )	
+                  TEST_DEPENDS fv3jedi_test_tier1_restart2history )
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_coldstartwinds
@@ -1240,7 +1245,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq
                   ARGS     testinput/bumpparameters_nicas_lam_cmaq.yaml
                   COMMAND  fv3jedi_error_covariance_toolbox.x )
 
-
 if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_bumpparameters_nicas_geos_p12
                     MPI      12
@@ -1325,6 +1329,13 @@ if( ${sp_FOUND} )
 endif()
 
 endif()
+
+# Perturbation Tests
+# ------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_genenspertb_geos_cf
+                  MPI      6
+                  ARGS     testinput/enspert_geos_cf.yaml
+                  COMMAND  fv3jedi_genenspertB.x )
 
 # Ensemble mean and variance
 # --------------------------

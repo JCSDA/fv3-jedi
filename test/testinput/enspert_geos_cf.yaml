@@ -1,0 +1,67 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+  akbk: Data/fv3files/akbk72.nc4
+  npx: 13
+  npy: 13
+  npz: 72
+  field metadata override: Data/fieldmetadata/geos_cf.yaml
+
+model:
+  name: PSEUDO
+  filetype: cube sphere history
+  datapath: Data/inputs/geos_c12
+  filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  tstep: PT0H
+
+initial condition:
+  datetime: 2020-09-03T15:00:00Z
+  filetype: cube sphere history
+  datapath: Data/inputs/geos_c12
+  filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  state variables: &state_vars [volume_mixing_ratio_of_no2,volume_mixing_ratio_of_o3]
+
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    read:
+      io:
+        files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos_cf
+        alias:
+        - in code: volume_mixing_ratio_of_no2
+          in file: fixed_2500km_0.3
+        - in code: volume_mixing_ratio_of_o3
+          in file: fixed_2500km_0.3
+      drivers:
+        multivariate strategy: univariate
+        read local nicas: true
+  saber outer blocks:
+  - saber block name: StdDev
+    read:
+      model file:
+        datetime: 2020-09-03T18:00:00Z
+        set datetime on read: true
+        filetype: cube sphere history
+        datapath: Data/inputs/geos_c12
+        filename: geos_cf.stddev.nox_50_o3_25.nc4
+  randomization size: 2
+
+members: 2
+perturbed variables: *state_vars
+forecast length: PT0H
+include control: true
+
+output:
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/randomization
+  filename: geos_cf.pert%mem%.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  type: ens
+  first: PT0H
+  frequency: PT3H
+  member pattern: '%mem%'
+
+test:
+  reference filename: testoutput/enspert_geos_cf.ref
+  test output filename: testoutput/enspert_geos_cf.test.out
