@@ -57,11 +57,10 @@ namespace fv3jedi {
 class Tlm: public oops::interface::LinearModelBase<Traits>,
                 private util::ObjectCounter<Tlm> {
  public:
-  typedef ModelTLMParameters Parameters_;
   static const std::string classname() {return "fv3jedi::Tlm";}
 
   // Constructor/destructor
-  Tlm(const Geometry &, const Parameters_ &);
+  Tlm(const Geometry &, const eckit::Configuration &);
   ~Tlm();
 
   // Set the trajectory
@@ -89,7 +88,7 @@ class Tlm: public oops::interface::LinearModelBase<Traits>,
   F90model keySelf_;
   util::Duration tstep_;
   std::map< util::DateTime, F90traj> trajmap_;
-  const oops::Variables linvars_;
+  oops::Variables linvars_;
 };
 // -------------------------------------------------------------------------------------------------
 

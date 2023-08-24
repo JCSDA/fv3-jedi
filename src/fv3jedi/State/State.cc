@@ -38,17 +38,18 @@ State::State(const Geometry & geom, const oops::Variables & vars, const util::Da
     vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)), time_(time)
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
-
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
   oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-State::State(const Geometry & geom, const Parameters_ & params)
-  : geom_(geom), time_(util::DateTime())
+State::State(const Geometry & geom, const eckit::Configuration & config)
+  : geom_(geom), time_(util::DateTime()), vars_()
 {
   oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
+  StateParameters params;
+  params.deserialize(config);
 
   // Datetime from the config for read and analytical
   ASSERT(params.datetime.value() != boost::none);
@@ -74,9 +75,9 @@ State::State(const Geometry & geom, const Parameters_ & params)
 
   // Generate analytical state or read from file
   if (params.analytic.value() != boost::none) {
-    this->analytic_init(*params.analytic.value(), geom);
+    this->analytic_init(params.analytic.value()->toConfiguration(), geom);
   } else {
-    this->read(params);
+    this->read(params.toConfiguration());
   }
 
   oops::Log::trace() << "State::State (from geom and parameters) done" << std::endl;
@@ -148,13 +149,15 @@ State & State::operator+=(const Increment & dx) {
 
 // -------------------------------------------------------------------------------------------------
 
-void State::analytic_init(const AnalyticICParameters_ & params, const Geometry & geom) {
-  fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), params.toConfiguration());
+void State::analytic_init(const eckit::Configuration & config, const Geometry & geom) {
+  fv3jedi_state_analytic_init_f90(keyState_, geom.toFortran(), config);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void State::read(const Parameters_ & params) {
+void State::read(const eckit::Configuration & config) {
+  StateParameters params;
+  params.deserialize(config);
   // Optionally set the datetime on read (needed for some bump applications)
   if (params.setdatetime.value() != boost::none) {
     if (*params.setdatetime.value() && params.datetime.value() != boost::none) {
@@ -167,7 +170,9 @@ void State::read(const Parameters_ & params) {
 
 // -------------------------------------------------------------------------------------------------
 
-void State::write(const WriteParameters_ & params) const {
+void State::write(const eckit::Configuration & config) const {
+  StateWriteParameters params;
+  params.deserialize(config);
   IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
   io->write(*this);
 }

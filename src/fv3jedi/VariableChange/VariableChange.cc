@@ -10,8 +10,13 @@
 #include <string>
 #include <vector>
 
+#include "oops/base/VariableChangeParametersBase.h"
 #include "oops/mpi/mpi.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/ModelData/ModelData.h"
@@ -22,9 +27,13 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
-  : fieldsMetadata_(geometry.fieldsMetaData()), vader_(), run_vader_(params.run_vader.value()),
-    run_fv3jedi_(params.run_fv3jedi.value()) {
+VariableChange::VariableChange(const eckit::Configuration & config, const Geometry & geometry)
+  : fieldsMetadata_(geometry.fieldsMetaData()), vader_(), run_vader_(), run_fv3jedi_()
+{
+  VariableChangeParametersWrapper params;
+  params.deserialize(config);
+  run_vader_ = params.run_vader.value();
+  run_fv3jedi_ = params.run_fv3jedi.value();
   eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
   ModelData modelData{geometry};
   eckit::LocalConfiguration vaderConfig;

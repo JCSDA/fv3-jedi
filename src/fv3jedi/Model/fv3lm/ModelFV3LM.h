@@ -11,17 +11,10 @@
 #include <ostream>
 #include <string>
 
-#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
-#include "oops/generic/ModelBase.h"
 #include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
-#include "oops/util/parameters/OptionalParameter.h"
-#include "oops/util/parameters/Parameter.h"
-#include "oops/util/parameters/Parameters.h"
-#include "oops/util/parameters/RequiredParameter.h"
-#include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/fv3lm/ModelFV3LM.interface.h"
@@ -39,37 +32,13 @@ namespace fv3jedi {
   class State;
 
 // -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
-/// Options taken by ModelFV3LM
-  class ModelFV3LMParameters : public oops::ModelParametersBase {
-    OOPS_CONCRETE_PARAMETERS(ModelFV3LMParameters, ModelParametersBase)
-
-   public:
-    oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
-    oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
-
-    oops::RequiredParameter<int> lm_do_dyn{ "lm_do_dyn", this};
-    oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
-    oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
-
-    oops::Parameter<bool> useInternalNamelist{ "use internal namelist", false, this};
-    // Variable Change
-    oops::Parameter<VariableChangeParametersWrapper> variableChange{"variable change",
-            "variable change from B matrix variables to model variables", {}, this};
-    oops::OptionalParameter<std::string> namelistFilename{ "namelist filename", this};
-  };
-
-// -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
 
 class ModelFV3LM: public oops::interface::ModelBase<Traits>,
                   private util::ObjectCounter<ModelFV3LM> {
  public:
-  typedef ModelFV3LMParameters Parameters_;
-
   static const std::string classname() {return "fv3jedi::ModelFV3LM";}
 
-  ModelFV3LM(const Geometry &, const Parameters_ &);
+  ModelFV3LM(const Geometry &, const eckit::Configuration &);
   ~ModelFV3LM();
 
 /// Prepare model integration
@@ -89,7 +58,7 @@ class ModelFV3LM: public oops::interface::ModelBase<Traits>,
   F90model keyConfig_;
   util::Duration tstep_;
   const Geometry geom_;
-  const oops::Variables vars_;
+  oops::Variables vars_;
   std::unique_ptr<VariableChange> an2model_;
   mutable std::unique_ptr<const oops::Variables> finalVars_;
 };

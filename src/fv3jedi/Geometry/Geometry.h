@@ -15,6 +15,7 @@
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
 
+#include "eckit/config/Configuration.h"
 #include "eckit/mpi/Comm.h"
 
 #include "oops/mpi/mpi.h"
@@ -23,7 +24,6 @@
 
 #include "fv3jedi/FieldMetadata/FieldsMetadata.h"
 #include "fv3jedi/Geometry/Geometry.interface.h"
-#include "fv3jedi/Geometry/GeometryParameters.h"
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
 
 namespace oops {
@@ -39,10 +39,9 @@ namespace fv3jedi {
 class Geometry : public util::Printable,
                  private util::ObjectCounter<Geometry> {
  public:
-  typedef GeometryParameters Parameters_;
   static const std::string classname() {return "fv3jedi::Geometry";}
 
-  explicit Geometry(const Parameters_ &, const eckit::mpi::Comm &);
+  explicit Geometry(const eckit::Configuration &, const eckit::mpi::Comm &);
   Geometry(const Geometry &);
   ~Geometry();
 

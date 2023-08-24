@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "eckit/config/Configuration.h"
+
 #include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
 #include "oops/base/WriteParametersBase.h"
@@ -72,15 +74,11 @@ class State : public util::Printable, private util::ObjectCounter<State> {
  public:
   static const std::string classname() {return "fv3jedi::State";}
 
-  typedef StateParameters Parameters_;
-  typedef StateWriteParameters WriteParameters_;
-  typedef AnalyticICParameters AnalyticICParameters_;
-
   typedef std::unique_ptr<IOBase> IOBase_;
 
 // Constructor, destructor and basic operators
   State(const Geometry &, const oops::Variables &, const util::DateTime &);
-  State(const Geometry &, const Parameters_ &);
+  State(const Geometry &, const eckit::Configuration &);
   State(const Geometry &, const State &);
   State(const State &);
   virtual ~State();
@@ -96,9 +94,9 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   State & operator+=(const Increment &);
 
 // IO and diagnostics
-  void analytic_init(const AnalyticICParameters_ &, const Geometry &);
-  void read(const Parameters_ &);
-  void write(const WriteParameters_ &) const;
+  void analytic_init(const eckit::Configuration &, const Geometry &);
+  void read(const eckit::Configuration &);
+  void write(const eckit::Configuration &) const;
   double norm() const;
 
 // Serialize and deserialize

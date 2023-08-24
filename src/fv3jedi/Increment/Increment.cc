@@ -17,6 +17,7 @@
 
 #include "atlas/field.h"
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
 #include "oops/base/Variables.h"
@@ -187,7 +188,9 @@ void Increment::fromFieldSet(const atlas::FieldSet & fset) {
   fv3jedi_increment_from_fieldset_f90(keyInc_, geom_.toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::read(const ReadParameters_ & params) {
+void Increment::read(const eckit::Configuration & config) {
+  ReadParameters_ params;
+  params.deserialize(config);
   // Optionally set the datetime on read (needed for some bump applications)
   if (params.setdatetime.value() != boost::none) {
     if (*params.setdatetime.value() && params.datetime.value() != boost::none) {
@@ -201,7 +204,9 @@ void Increment::read(const ReadParameters_ & params) {
   io->read(*this);
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::write(const WriteParameters_ & params) const {
+void Increment::write(const eckit::Configuration & config) const {
+  WriteParameters_ params;
+  params.deserialize(config);
   // Create IO object
   std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
@@ -249,7 +254,9 @@ void Increment::print(std::ostream & os) const {
         "--------------------------------------------------";
 }
 // -------------------------------------------------------------------------------------------------
-void Increment::dirac(const DiracParameters_ & params) {
+void Increment::dirac(const eckit::Configuration & config) {
+  DiracParameters_ params;
+  params.deserialize(config);
   fv3jedi_increment_dirac_f90(keyInc_, params.toConfiguration(), geom_.toFortran());
 }
 // -------------------------------------------------------------------------------------------------

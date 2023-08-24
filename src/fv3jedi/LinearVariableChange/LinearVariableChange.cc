@@ -8,6 +8,8 @@
 #include <ostream>
 #include <string>
 
+#include "eckit/config/Configuration.h"
+
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/LinearVariableChange/LinearVariableChange.h"
@@ -21,11 +23,13 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-LinearVariableChange::LinearVariableChange(const Geometry & geom, const Parameters_ & params)
-  : params_(params), geom_(geom), linearVariableChange_(),
-    fieldsMetadata_(geom.fieldsMetaData()),
-    vader_() {
-  eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
+LinearVariableChange::LinearVariableChange(const Geometry & geom,
+                                           const eckit::Configuration & config)
+  : geom_(geom), linearVariableChange_(), fieldsMetadata_(geom.fieldsMetaData()),
+    vader_()
+{
+  params_.deserialize(config);
+  eckit::LocalConfiguration variableChangeConfig = params_.toConfiguration();
   ModelData modelData{geom};
   eckit::LocalConfiguration vaderConfig;
   vaderConfig.set(vader::configCookbookKey,
@@ -33,7 +37,7 @@ LinearVariableChange::LinearVariableChange(const Geometry & geom, const Paramete
   vaderConfig.set(vader::configModelVarsKey, modelData.modelData());
 
   // Create vader with fv3-jedi custom cookbook
-  vader_.reset(new vader::Vader(params.linearVariableChangeParameters.value().vader,
+  vader_.reset(new vader::Vader(params_.linearVariableChangeParameters.value().vader,
                                 vaderConfig));
 }
 

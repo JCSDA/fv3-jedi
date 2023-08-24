@@ -13,11 +13,8 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include "oops/base/VariableChangeParametersBase.h"
-#include "oops/util/parameters/OptionalParameter.h"
-#include "oops/util/parameters/Parameter.h"
-#include "oops/util/parameters/Parameters.h"
-#include "oops/util/parameters/RequiredParameter.h"
+#include "eckit/config/Configuration.h"
+
 #include "oops/util/Printable.h"
 
 #include "vader/vader.h"
@@ -35,9 +32,7 @@ class VariableChange : public util::Printable {
  public:
   static const std::string classname() {return "fv3jedi::VariableChange";}
 
-  typedef VariableChangeParametersWrapper Parameters_;
-
-  explicit VariableChange(const Parameters_ &, const Geometry &);
+  explicit VariableChange(const eckit::Configuration &, const Geometry &);
   ~VariableChange();
 
   void changeVar(State &, const oops::Variables &) const;

@@ -9,10 +9,14 @@
 
 #include "eckit/exception/Exceptions.h"
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/mpi/mpi.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/pseudo/ModelPseudo.h"
@@ -21,18 +25,30 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
+class ModelPseudoParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(ModelPseudoParameters, Parameters)
+ public:
+  oops::Parameter<bool> runstagecheck{ "run stage check", "turn off subsequent forecasts "
+                                       "in multiple forecast applications such as outer loop data "
+                                       "assimilation", false, this};
+  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+  // Include IO parameters
+  IOParametersWrapper ioParametersWrapper{this};
+};
+// -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
-ModelPseudo::ModelPseudo(const Geometry & resol, const Parameters_ & params)
-  : tstep_(0),
-    io_()
+ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & config)
+  : tstep_(0), io_()
 {
   oops::Log::trace() << "ModelPseudo::ModelPseudo starting" << std::endl;
+  ModelPseudoParameters params;
+  params.deserialize(config);
+
+  tstep_ = util::Duration(config.getString("tstep"));
+
   // Create IO object
   io_.reset(IOFactory::create(resol, *params.ioParametersWrapper.ioParameters.value()));
-  // Trace
-  // Get timestep from params
-  tstep_ = params.tstep.value();
   // Optionally retrieve run stage check
   runstagecheck_ = params.runstagecheck.value();
   // Trace

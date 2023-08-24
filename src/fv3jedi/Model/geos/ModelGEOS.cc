@@ -12,9 +12,14 @@
 
 #include "eckit/config/Configuration.h"
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/geos/ModelGEOS.h"
@@ -23,13 +28,28 @@
 
 namespace fv3jedi {
 // -----------------------------------------------------------------------------
+/// Options taken by ModelGEOS
+class ModelGEOSParameters : public oops::ModelParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ModelGEOSParameters, ModelParametersBase)
+
+ public:
+  oops::RequiredParameter<std::string> geosRunDirectory{ "geos_run_directory", this};
+  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+
+  oops::OptionalParameter<bool> reforecast{ "reforecast", this};
+  oops::OptionalParameter<bool> esmfLogging{ "ESMF_Logging", this};
+};
+// -----------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelGEOS> makermodel_("GEOS");
 // -----------------------------------------------------------------------------
-ModelGEOS::ModelGEOS(const Geometry & resol, const Parameters_ & params)
+ModelGEOS::ModelGEOS(const Geometry & resol, const eckit::Configuration & config)
   : keyConfig_(0), tstep_(0), geom_(resol)
 {
   oops::Log::trace() << "ModelGEOS::ModelGEOS" << std::endl;
-  tstep_ = params.tstep;
+  ModelGEOSParameters params;
+  params.deserialize(config);
+
+  tstep_ = util::Duration(config.getString("tstep"));
 
   // JEDI to GEOS directory
   getcwd(jedidir_, 10000);
@@ -39,7 +59,7 @@ ModelGEOS::ModelGEOS(const Geometry & resol, const Parameters_ & params)
   chdir(geosscrdir_);
 
   // Create the model
-  fv3jedi_geos_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
+  fv3jedi_geos_create_f90(config, geom_.toFortran(), keyConfig_);
 
   // GEOS to JEDI directory
   chdir(jedidir_);

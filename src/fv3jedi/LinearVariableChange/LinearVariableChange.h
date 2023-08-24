@@ -13,6 +13,8 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
+#include "eckit/config/Configuration.h"
+
 #include "oops/base/LinearVariableChangeParametersBase.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
@@ -33,9 +35,7 @@ class LinearVariableChange : public util::Printable {
  public:
   static const std::string classname() {return "fv3jedi::LinearVariableChange";}
 
-  typedef LinearVariableChangeParametersWrapper Parameters_;
-
-  explicit LinearVariableChange(const Geometry &, const Parameters_ &);
+  explicit LinearVariableChange(const Geometry &, const eckit::Configuration &);
   ~LinearVariableChange();
 
   void changeVarTraj(const State &, const oops::Variables &);
@@ -47,7 +47,7 @@ class LinearVariableChange : public util::Printable {
 
  private:
   void print(std::ostream &) const override;
-  Parameters_ params_;
+  LinearVariableChangeParametersWrapper params_;
   const Geometry & geom_;
   std::unique_ptr<LinearVariableChangeBase> linearVariableChange_;
   FieldsMetadata fieldsMetadata_;

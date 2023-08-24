@@ -9,8 +9,13 @@
 
 #include "eckit/config/Configuration.h"
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
 #include "ModelUFS.interface.h"
 
@@ -21,18 +26,31 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
+/// Options taken by ModelUFS
+class ModelUFSParameters : public oops::ModelParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ModelUFSParameters, ModelParametersBase)
+
+ public:
+  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+  oops::RequiredParameter<std::string> ufsRunDirectory{ "ufs_run_directory", this};
+};
+// -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 // -------------------------------------------------------------------------------------------------
-ModelUFS::ModelUFS(const Geometry & resol, const Parameters_ & params)
+ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & config)
   : keyConfig_(0), tstep_(0), geom_(resol)
 {
+  ModelUFSParameters params;
+  params.deserialize(config);
+
+  tstep_ = util::Duration(config.getString("tstep"));
+
   char tmpdir_[10000];
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
   getcwd(tmpdir_, 10000);
-  tstep_ = params.tstep;
   strcpy(ufsdir_, params.ufsRunDirectory.value().c_str());
   chdir(ufsdir_);
-  fv3jedi_ufs_create_f90(keyConfig_, params.toConfiguration(), geom_.toFortran());
+  fv3jedi_ufs_create_f90(keyConfig_, config, geom_.toFortran());
   oops::Log::trace() << "ModelUFS::ModelUFS done" << std::endl;
   chdir(tmpdir_);
 }

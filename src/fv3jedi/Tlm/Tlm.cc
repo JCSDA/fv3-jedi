@@ -26,16 +26,19 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::interface::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
-Tlm::Tlm(const Geometry & resol, const Parameters_ & params) : keySelf_(0), tstep_(), trajmap_(),
-  linvars_(resol.fieldsMetaData().getLongNameFromAnyName(params.tlmVariables))
+Tlm::Tlm(const Geometry & resol, const eckit::Configuration & config)
+  : keySelf_(0), tstep_(), trajmap_(), linvars_()
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 
+  oops::Variables tlvars(config, "tlm variables");
+  linvars_ = oops::Variables(resol.fieldsMetaData().getLongNameFromAnyName(tlvars));
+
   // Store time step
-  tstep_ = params.tstep;
+  tstep_ = util::Duration(config.getString("tstep"));
 
   // Implementation
-  fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), params.toConfiguration());
+  fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), config);
 
   oops::Log::trace() << "Tlm::Tlm done" << std::endl;
 }

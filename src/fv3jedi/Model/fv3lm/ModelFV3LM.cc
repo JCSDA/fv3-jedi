@@ -9,9 +9,14 @@
 
 #include "eckit/config/Configuration.h"
 
+#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/fv3lm/ModelFV3LM.h"
@@ -20,22 +25,40 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
+
+/// Options taken by ModelFV3LM
+class ModelFV3LMParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(ModelFV3LMParameters, Parameters)
+
+ public:
+  oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
+  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
+
+  oops::RequiredParameter<int> lm_do_dyn{ "lm_do_dyn", this};
+  oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
+  oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
+
+  oops::Parameter<bool> useInternalNamelist{ "use internal namelist", false, this};
+  oops::OptionalParameter<std::string> namelistFilename{ "namelist filename", this};
+};
+
+// -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
 // -------------------------------------------------------------------------------------------------
-ModelFV3LM::ModelFV3LM(const Geometry & resol, const Parameters_ & params)
-  : keyConfig_(0), tstep_(0), geom_(resol),
-    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables)),
-    an2model_(), finalVars_()
+ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & config)
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_(), an2model_(), finalVars_()
 {
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM starting" << std::endl;
-  tstep_ = params.tstep;
+  ModelFV3LMParameters params;
+  params.deserialize(config);
+  vars_ = oops::Variables(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables));
+  tstep_ = util::Duration(config.getString("tstep"));
+  fv3jedi_fv3lm_create_f90(config, geom_.toFortran(), keyConfig_);
 
   // This code prevents having to put VarChange params in yaml, since there is no actual user option
-  VariableChangeParametersWrapper varChangeParams;
   eckit::LocalConfiguration varChangeConfig;
   varChangeConfig.set("variable change name", "Analysis2Model");
-  varChangeParams.deserialize(varChangeConfig);
-  an2model_.reset(new VariableChange(varChangeParams, resol));
+  an2model_.reset(new VariableChange(varChangeConfig, resol));
 
   fv3jedi_fv3lm_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM done" << std::endl;

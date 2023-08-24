@@ -14,6 +14,8 @@
 
 #include "atlas/field.h"
 
+#include "eckit/config/Configuration.h"
+
 #include "oops/base/LocalIncrement.h"
 #include "oops/base/WriteParametersBase.h"
 #include "oops/util/DateTime.h"
@@ -83,10 +85,6 @@ class Increment : public util::Printable,
  public:
   static const std::string classname() {return "fv3jedi::Increment";}
 
-  typedef DiracParameters          DiracParameters_;
-  typedef IncrementReadParameters  ReadParameters_;
-  typedef IncrementWriteParameters WriteParameters_;
-
 /// Constructor, destructor
   Increment(const Geometry &, const oops::Variables &, const util::DateTime &);
   Increment(const Geometry &, const Increment &);
@@ -106,7 +104,7 @@ class Increment : public util::Printable,
   double dot_product_with(const Increment &) const;
   void schur_product_with(const Increment &);
   void random();
-  void dirac(const DiracParameters_ &);
+  void dirac(const eckit::Configuration &);
   std::vector<double> rmsByLevel(const std::string &) const;
 
 /// Get/Set increment values at grid points
@@ -119,8 +117,8 @@ class Increment : public util::Printable,
   void fromFieldSet(const atlas::FieldSet &);
 
 /// I/O and diagnostics
-  void read(const ReadParameters_ &);
-  void write(const WriteParameters_ &) const;
+  void read(const eckit::Configuration &);
+  void write(const eckit::Configuration &) const;
   double norm() const;
 
 // Add or remove fields
@@ -151,6 +149,10 @@ class Increment : public util::Printable,
 
 // Private methods and variables
  private:
+  typedef DiracParameters          DiracParameters_;
+  typedef IncrementReadParameters  ReadParameters_;
+  typedef IncrementWriteParameters WriteParameters_;
+
   void print(std::ostream &) const;
   F90inc keyInc_;
   const Geometry & geom_;
