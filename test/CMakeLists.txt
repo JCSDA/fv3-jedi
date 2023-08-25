@@ -555,9 +555,11 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 # Repo wide configuration for getting test data
 # ---------------------------------------------
 if( crtm_VERSION VERSION_GREATER_EQUAL 3.0.0 )
-    set( CRTM_COEFFS_BRANCH "3.0.0_skylab_4.0" )
+  set( CRTM_COEFFS_BRANCH "3.0.0_skylab_6.0" )
+  set( checksum "1" )
 else()
-    set( CRTM_COEFFS_BRANCH "2.4.0_skylab_3.0" )
+  set( CRTM_COEFFS_BRANCH "2.4.0_skylab_3.0" )
+  set( checksum "0" )
 endif()
 
 function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
@@ -614,7 +616,6 @@ function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
     endif()
 
     set( DIRNAME ${GIT_TAG_FUNC} )
-    set( checksum "0" )
     set( TESTFILE_DIR_REPO "${CMAKE_SOURCE_DIR}/test-data-release/${repo}/${DIRNAME}" )
 
     # Create test-data-release in source directory
