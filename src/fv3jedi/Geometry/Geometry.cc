@@ -63,24 +63,24 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
                                              functionSpaceIncludingHalo_.get());
 
-  // Fill extra fields. This contains both SABER-related fields and any fields requested to be
+  // Fill geometry fields. This contains both SABER-related fields and any fields requested to be
   // read from state files in the yamls.
-  extraFields_ = atlas::FieldSet();
+  fields_ = atlas::FieldSet();
   // Add SABER fields
-  fv3jedi_geom_set_and_fill_extra_fields_f90(keyGeom_, extraFields_.get());
+  fv3jedi_geom_set_and_fill_geometry_fields_f90(keyGeom_, fields_.get());
   if (params.timeInvariantFields.value() != boost::none) {
     const auto & timeInvFieldsParams = params.timeInvariantFields.value().value();
-    State extraFieldsState(*this, timeInvFieldsParams.stateFields.value().toConfiguration());
+    State timeInvState(*this, timeInvFieldsParams.stateFields.value().toConfiguration());
     // Add fields read directly from file
-    atlas::FieldSet extraFieldSet{};
-    extraFieldsState.toFieldSet(extraFieldSet);
-    for (const auto & ef : extraFieldSet) {
-      extraFields_.add(ef);
+    atlas::FieldSet timeInvFieldSet{};
+    timeInvState.toFieldSet(timeInvFieldSet);
+    for (const auto & f : timeInvFieldSet) {
+      fields_.add(f);
     }
     // Compute and add derived time-invariant fields
     if (timeInvFieldsParams.derivedFields.value() != boost::none) {
       const oops::Variables derivedFields = timeInvFieldsParams.derivedFields.value().value();
-      insertDerivedTimeInvariantFields(extraFields_, derivedFields);
+      insertDerivedTimeInvariantFields(fields_, derivedFields);
     }
   }
 
@@ -101,9 +101,9 @@ nLevels_(other.nLevels_), pTop_(other.pTop_) {
     other.functionSpaceIncludingHalo_.lonlat());
   fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
                                                    functionSpaceIncludingHalo_.get());
-  extraFields_ = atlas::FieldSet();
-  for (auto & field : other.extraFields_) {
-    extraFields_->add(field);
+  fields_ = atlas::FieldSet();
+  for (auto & field : other.fields_) {
+    fields_->add(field);
   }
 }
 

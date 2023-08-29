@@ -43,7 +43,7 @@ subroutine calculate_nominal_surface_pressure(afieldset)
     nsp_field = afieldset%field("nominal_surface_pressure")
     call nsp_field%data(nsp_ptr)
   else
-    call abor1_ftn('Need to include nominal_surface_pressure in yaml extra_fields')
+    call abor1_ftn('Need to include nominal_surface_pressure in yaml under time invariant fields')
   end if
 
   nmax = size(orog_ptr)

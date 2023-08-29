@@ -74,7 +74,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
   type(fields_metadata) :: fields
-  type(atlas_fieldset) :: extra_fields
+  type(atlas_fieldset) :: geometry_fields
   ! Vertical Coordinate
   real(kind=kind_real), allocatable, dimension(:)       :: vCoord                   !Model vertical coordinate
   ! For D to (A to) C grid
@@ -102,7 +102,7 @@ type :: fv3jedi_geom
     procedure, public :: clone
     procedure, public :: delete
     procedure, public :: set_lonlat
-    procedure, public :: set_and_fill_extra_fields
+    procedure, public :: set_and_fill_geometry_fields
     procedure, public :: ngrid_including_halo
     procedure, public :: trim_fv3_grid_to_jedi_interp_grid
     procedure, public :: trim_fv3_grid_to_jedi_interp_grid_ad
@@ -534,7 +534,7 @@ self%domain => other%domain
 self%afunctionspace = atlas_functionspace(other%afunctionspace%c_ptr())
 self%afunctionspace_incl_halo = atlas_functionspace(other%afunctionspace_incl_halo%c_ptr())
 
-self%extra_fields = atlas_fieldset(other%extra_fields%c_ptr())
+self%geometry_fields = atlas_fieldset(other%geometry_fields%c_ptr())
 
 self%fields = fields
 
@@ -649,56 +649,42 @@ end subroutine set_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_and_fill_extra_fields(self, afieldset)
+subroutine set_and_fill_geometry_fields(self, afieldset)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
-integer :: jl, ngrid
-integer, pointer :: int_ptr(:,:)
-real(kind=kind_real) :: sigmaup, sigmadn, ps
-real(kind=kind_real), pointer :: real_ptr(:,:)
-real(kind=kind_real), allocatable :: hmask_1(:), hmask_2(:,:)
 type(atlas_field) :: afield
-real(kind=kind_real) :: plevli(self%npz+1),logp(self%npz)
+integer :: jl
+integer, pointer :: int_ptr(:,:)
+real(kind=kind_real), pointer :: real_ptr(:,:)
+real(kind=kind_real) :: sigmaup, sigmadn, ps
+real(kind=kind_real) :: logp(self%npz)
 
-! Assign extra_fields variable
-self%extra_fields = afieldset
+! Assign geometry_fields variable
+self%geometry_fields = afieldset
 
-! Prepare halo mask
-! This could be simplified by taking advantage of the known ordering of points in the result of
-! trim_fv3_grid_to_jedi_interp_grid, where owned points (mask=1) come first, and masked points
-! (mask=0) come second. But this below is more general, and would work for any implementation.
-ngrid = ngrid_including_halo(self)
-allocate(hmask_1(ngrid))
-allocate(hmask_2(self%isd:self%ied,self%jsd:self%jed))
-hmask_2 = 0.0_kind_real
-hmask_2(self%isc:self%iec,self%jsc:self%jec) = 1.0_kind_real
-call trim_fv3_grid_to_jedi_interp_grid(self, hmask_2, hmask_1)
-
-! Add halo mask
-afield = self%afunctionspace_incl_halo%create_field(name='hmask', kind=atlas_integer(kind_int), levels=1)
+! Add owned vs halo/BC field
+afield = self%afunctionspace_incl_halo%create_field(name='owned', kind=atlas_integer(kind_int), levels=1)
 call afield%data(int_ptr)
-int_ptr(1,:) = int(hmask_1)
+int_ptr(1, :) = 0
+int_ptr(1, 1:self%ngrid) = 1
 call afieldset%add(afield)
 call afield%final()
-
-! Release memory
-deallocate(hmask_1)
-deallocate(hmask_2)
 
 ! Add area
 afield = self%afunctionspace_incl_halo%create_field(name='area', kind=atlas_real(kind_real), levels=1)
 call afield%data(real_ptr)
-call trim_fv3_grid_to_jedi_interp_grid(self, self%area, real_ptr(1,:))
+real_ptr(1, :) = -1.0_kind_real
+real_ptr(1, 1:self%ngrid) = reshape(self%area(self%isc:self%iec, self%jsc:self%jec), (/self%ngrid/))
 call afieldset%add(afield)
 call afield%final()
 
 ! Add vertical unit
 ps = constant('ps')
-afield = self%afunctionspace_incl_halo%create_field(name='vunit', kind=atlas_real(kind_real), levels=self%npz)
+afield = self%afunctionspace_incl_halo%create_field(name='vert_coord', kind=atlas_real(kind_real), levels=self%npz)
 call afield%data(real_ptr)
 if (.not. self%logp) then
    do jl=1,self%npz
@@ -715,7 +701,7 @@ endif
 call afieldset%add(afield)
 call afield%final()
 
-end subroutine set_and_fill_extra_fields
+end subroutine set_and_fill_geometry_fields
 
 ! --------------------------------------------------------------------------------------------------
 

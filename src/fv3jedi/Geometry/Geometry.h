@@ -57,9 +57,7 @@ class Geometry : public util::Printable,
   const F90geom & toFortran() const {return keyGeom_;}
   const eckit::mpi::Comm & getComm() const {return comm_;}
   const atlas::FunctionSpace & functionSpace() const {return functionSpaceIncludingHalo_;}
-  atlas::FunctionSpace & functionSpace() {return functionSpaceIncludingHalo_;}
-  const atlas::FieldSet & extraFields() const {return extraFields_;}
-  atlas::FieldSet & extraFields() {return extraFields_;}
+  const atlas::FieldSet & fields() const {return fields_;}
   void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
 
   std::vector<size_t> variableSizes(const oops::Variables &) const;
@@ -79,7 +77,7 @@ class Geometry : public util::Printable,
   const eckit::mpi::Comm & comm_;
   atlas::FunctionSpace functionSpace_;
   atlas::FunctionSpace functionSpaceIncludingHalo_;
-  atlas::FieldSet extraFields_;
+  atlas::FieldSet fields_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
   std::vector<double> ak_;
   std::vector<double> bk_;

@@ -265,16 +265,16 @@ std::vector<double> Increment::rmsByLevel(const std::string & var) const {
   toFieldSet(fset);
   const auto fieldView = atlas::array::make_view<double, 2>(fset[var]);
 
-  // Get halo mask from Geometry
-  const auto haloMask = geom_.extraFields().field("hmask");
-  const auto haloMaskView = atlas::array::make_view<int, 2>(haloMask);
-  ASSERT(haloMaskView.shape(0) == fieldView.shape(0));
-  ASSERT(haloMaskView.shape(1) == 1);
+  // Get owned vs halo from Geometry
+  const auto owned = geom_.fields().field("owned");
+  const auto ownedView = atlas::array::make_view<int, 2>(owned);
+  ASSERT(ownedView.shape(0) == fieldView.shape(0));
+  ASSERT(ownedView.shape(1) == 1);
 
   // Find number of owned grid points on this task
   size_t num_owned = 0;
-  for (atlas::idx_t i = 0; i < haloMaskView.shape(0); ++i) {
-    if (haloMaskView(i, 0) > 0) {
+  for (atlas::idx_t i = 0; i < ownedView.shape(0); ++i) {
+    if (ownedView(i, 0) > 0) {
       ++num_owned;
     }
   }
@@ -283,7 +283,7 @@ std::vector<double> Increment::rmsByLevel(const std::string & var) const {
   std::vector<double> rms(fieldView.shape(1), 0.0);
   for (atlas::idx_t k = 0; k < fieldView.shape(1); ++k) {
     for (atlas::idx_t i = 0; i < fieldView.shape(0); ++i) {
-      if (haloMaskView(i, 0) > 0) {
+      if (ownedView(i, 0) > 0) {
         rms[k] += fieldView(i, k) * fieldView(i, k);
       }
     }

@@ -38,7 +38,7 @@ extern "C" {
   void fv3jedi_geom_set_functionspace_pointer_f90(const F90geom &,
                                                   atlas::functionspace::FunctionSpaceImpl *,
                                                   atlas::functionspace::FunctionSpaceImpl *);
-  void fv3jedi_geom_set_and_fill_extra_fields_f90(const F90geom &, atlas::field::FieldSetImpl *);
+  void fv3jedi_geom_set_and_fill_geometry_fields_f90(const F90geom &, atlas::field::FieldSetImpl *);
   void fv3jedi_geom_clone_f90(F90geom &, const F90geom &, const FieldsMetadata *);
   void fv3jedi_geom_print_f90(const F90geom &, int &);
   void fv3jedi_geom_delete_f90(F90geom &);

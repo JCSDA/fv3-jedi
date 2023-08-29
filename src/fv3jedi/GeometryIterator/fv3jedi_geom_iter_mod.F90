@@ -136,9 +136,9 @@ contains
     ! halo points second). To access the nominal_surface_pressure value, we'll compute the 1D index into the
     ! owned points corresponding to the current iterator. (Alternatively, we could reshape the
     ! array, but this would require an allocation.)
-    has_nsp = self%geom%extra_fields%has_field("nominal_surface_pressure")
+    has_nsp = self%geom%geometry_fields%has_field("nominal_surface_pressure")
     if (has_nsp) then
-       nsp_field = self%geom%extra_fields%field('nominal_surface_pressure')
+       nsp_field = self%geom%geometry_fields%field('nominal_surface_pressure')
        call nsp_field%data(nsp_ptr)
     endif
 
@@ -210,7 +210,7 @@ contains
     ! halo points second). To access the orography value, we'll compute the 1D index into the
     ! owned points corresponding to the current iterator. (Alternatively, we could reshape the
     ! array, but this would require an allocation.)
-    orog_field = self%geom%extra_fields%field('filtered_orography')
+    orog_field = self%geom%geometry_fields%field('filtered_orography')
     call orog_field%data(orog_ptr)
 
     ! Check iindex/jindex
@@ -246,7 +246,7 @@ contains
     ! halo points second). To access the nominal_surface_pressure value, we'll compute the 1D index into the
     ! owned points corresponding to the current iterator. (Alternatively, we could reshape the
     ! array, but this would require an allocation.)
-    nsp_field = self%geom%extra_fields%field('nominal_surface_pressure')
+    nsp_field = self%geom%geometry_fields%field('nominal_surface_pressure')
     call nsp_field%data(nsp_ptr)
 
     ! Check iindex/jindex
