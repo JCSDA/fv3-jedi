@@ -104,9 +104,9 @@ logical :: have_q
 real(kind=kind_real), pointer     :: q     (:,:,:)         !Specific humidity
 
 ! Relative humidity
-logical :: have_rh
+logical :: have_qsat, have_rh
 real(kind=kind_real), allocatable :: rh    (:,:,:)         !Relative humidity
-real(kind=kind_real), pointer     :: qsat   (:,:,:)        !Saturation specific humidity
+real(kind=kind_real), allocatable :: qsat   (:,:,:)        !Saturation specific humidity
 
 ! Pressure fields
 logical :: have_pressures
@@ -335,21 +335,29 @@ if (xm%has_field( 'sphum')) then
   have_q = .true.
 endif
 
+! Saturation specific humidity
+! ----------------------------
+have_qsat = .false.
+if (xm%has_field('qsat')) then
+  call xm%get_field('qsat', qsat)
+  have_qsat = .true.
+elseif (have_t .and. have_pressures .and. have_q) then
+  allocate(qsat(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call get_qsat(geom,delp,t,q,qsat)
+  have_qsat = .true.
+endif
+
 ! Relative humidity
 ! -----------------
 have_rh = .false.
 if (xm%has_field('rh')) then
   call xm%get_field('rh', rh)
   have_rh = .true.
-elseif (have_t .and. have_pressures .and. have_q) then
-  allocate(qsat(self%isc:self%iec,self%jsc:self%jec,self%npz))
+elseif (have_qsat .and. have_q) then
   allocate(rh  (self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call get_qsat(geom,delp,t,q,qsat)
   call q_to_rh(geom,qsat,q,rh)
-  deallocate(qsat)
   have_rh = .true.
 endif
-
 
 ! Geopotential height
 ! -------------------
@@ -858,6 +866,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_q) call field_fail(fields_to_do(f))
     field_ptr = q
 
+  case ("qsat", "saturation_specific_humidity")
+
+    if (.not. have_qsat) call field_fail(fields_to_do(f))
+    field_ptr = qsat
+
   case ("rh")
 
     if (.not. have_rh) call field_fail(fields_to_do(f))
@@ -1096,7 +1109,6 @@ if (allocated(soilm)) deallocate(soilm)
 if (associated(zorl)) nullify(zorl)
 if (associated(field_ptr)) nullify(field_ptr)
 if (associated(q)) nullify(q)
-if (associated(qsat)) nullify(qsat)
 if (associated(phis)) nullify(phis)
 if (associated(ud)) nullify(ud)
 if (associated(vd)) nullify(vd)
@@ -1116,6 +1128,7 @@ if (associated(qrcn)) nullify(qrcn)
 if (associated(qscn)) nullify(qscn)
 
 if (allocated(fields_to_do)) deallocate(fields_to_do)
+if (allocated(qsat)) deallocate(qsat)
 if (allocated(rh)) deallocate(rh)
 if (allocated(t)) deallocate(t)
 if (allocated(tv)) deallocate(tv)

@@ -40,7 +40,7 @@ variable change:
                       surface_wind_from_direction,leaf_area_index,
                       volume_fraction_of_condensed_water_in_soil,soil_temperature,
                       land_type_index_NPOESS,vegetation_type_index,soil_type,
-                      vort,tropopause_pressure]
+                      vort,tropopause_pressure,saturation_specific_humidity]
 states:
 - input:
     datetime: 2020-12-14T21:00:00Z

@@ -264,6 +264,16 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "saturation_specific_humidity";
+    md.shortName = "qsat";
+    md.units = "kgkg-1";
+    md.kind = "double";
+    md.tracer = "true";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "relative_humidity";
     md.shortName = "rh";
     md.units = "1";
