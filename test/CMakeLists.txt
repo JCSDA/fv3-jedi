@@ -68,6 +68,7 @@ list( APPEND fv3jedi_testinput
   testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
   testinput/4denvar.yaml
+  testinput/4denvar_seq.yaml
   testinput/addincrement_geos.yaml
   testinput/addincrement_gfs.yaml
   testinput/bumpparameters_nicas_geos_p12.yaml
@@ -1480,6 +1481,13 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_4denvar
                   ARGS     --no-validate testinput/4denvar.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_4denvar_seq
+                  MPI      6
+                  ARGS     --no-validate testinput/4denvar_seq.yaml
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
 
 # Hybrid 4DVar
 # ------------

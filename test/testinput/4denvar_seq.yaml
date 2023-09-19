@@ -4,6 +4,7 @@ cost function:
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   subwindow: PT6H
+  parallel subwindows: false
   background:
     states:
     - filetype: fms restart
@@ -104,7 +105,7 @@ cost function:
           CoefficientPath: Data/crtm/
       obs bias:
         input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
-        output file: Data/analysis/satbias_amsua_n19_4denvar_out.nc4
+        output file: Data/analysis/satbias_amsua_n19_4denvar_seq_out.nc4
         variational bc:
           predictors:
           - name: constant
@@ -131,7 +132,7 @@ cost function:
             inflation:
               ratio: 1.1
               ratio for small dataset: 2.0
-          output file: Data/analysis/satbias_cov_amsua_n19_4denvar_out.nc4
+          output file: Data/analysis/satbias_cov_amsua_n19_4denvar_seq_out.nc4
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -162,7 +163,7 @@ output:
   filetype: fms restart
   datapath: Data/analysis/
   type: an
-  exp: 4denvar-gfs
+  exp: 4denvar-gfs-seq
   date: 2020-12-14T21:00:00Z
   first: PT0S
   frequency: PT6H
@@ -176,8 +177,8 @@ final:
     variables to output: [air_temperature, eastward_wind, northward_wind]
     levels to output: [100, 76, 60]
     datapath: Data/analysis
-    filename prefix: 4denvar-gfs.latlon
+    filename prefix: 4denvar-gfs-seq.latlon
 
 test:
   reference filename: testoutput/4denvar.ref
-  test output filename: testoutput/4denvar.test.out
+  test output filename: testoutput/4denvar_seq.test.out
