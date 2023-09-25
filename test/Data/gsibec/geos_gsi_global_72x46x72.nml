@@ -1,6 +1,7 @@
  &SETUP
    qoption=2,
 !  pseudo_q2=.true.,
+   mockbkg=.true.,
  /
  &GRIDOPTS
    JCAP=42,JCAP_B=42,NLAT=46,NLON=72,nsig=72,use_sp_eqspace=.true.,

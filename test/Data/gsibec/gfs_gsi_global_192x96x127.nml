@@ -1,6 +1,6 @@
  &SETUP
    qoption=2,
-   pseudo_q2=.true.,
+   mockbkg=.true.,
  /
  &GRIDOPTS
    JCAP=62,JCAP_B=62,NLAT=96,NLON=192,nsig=127,
@@ -51,7 +51,7 @@ state_derivatives::
  v    127    met_guess
  tv   127    met_guess
  q    127    met_guess
-#oz   127    met_guess
+ oz   127    met_guess
 #cw   127    met_guess
 #ql   127    met_guess
 #qi   127    met_guess
@@ -68,7 +68,7 @@ state_tendencies::
  v    127     met_guess
  tv   127     met_guess
  q    127     met_guess
-#oz   127     met_guess
+ oz   127     met_guess
 #cw   127     met_guess
 #ql   127     met_guess
 #qi   127     met_guess

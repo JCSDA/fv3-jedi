@@ -1,4 +1,5 @@
  &SETUP
+ mockbkg=.true.,
  /
  &GRIDOPTS
    JCAP=62,NLAT=46,NLON=72,nsig=72,use_sp_eqspace=.true.,
@@ -25,7 +26,7 @@ met_guess::
 !var     level   crtm_use    desc                 orig_name
   ps        1      -1         surface_pressure     ps
   z         1      -1         geopotential_height  phis
-  oz       72       2         ozone                ozone
+  oz       72       2         ozone                o3ppmv
 ::
 
 state_derivatives::

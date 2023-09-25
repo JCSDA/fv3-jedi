@@ -139,7 +139,8 @@ phases:
 
       # configure and build
       - cd /build_container
-      - source /etc/profile.d/z10_spack_environment.sh
+      - source /opt/spack-environment/activate.sh
+
       # for jedi-cmake
       - export jedi_cmake_ROOT=/opt/view
       - ecbuild -Wno-dev -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCDASH_OVERRIDE_SITE=CodeBuild -DCDASH_OVERRIDE_GIT_BRANCH=$CODEBUILD_GIT_BRANCH -DCTEST_UPDATE_VERSION_ONLY=FALSE -DCDASH_OVERRIDE_SYSTEM_NAME=ClangContainer -DBUNDLE_SKIP_GEOS-AERO=OFF -DBUNDLE_SKIP_ROPP-UFO=OFF -DBUNDLE_SKIP_GSIBEC=OFF /jcsda/fv3-bundle/
