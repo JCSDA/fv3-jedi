@@ -318,14 +318,14 @@ final:
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature, eastward_wind, northward_wind]
-    levels to output: [100, 76, 60]
+    pressure levels in hPa: [850, 500, 250]
     datapath: Data/analysis
     filename prefix: latlon.inc.hyb-3dvar
   analysis to latlon:
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature, eastward_wind, northward_wind]
-    levels to output: [100, 76, 60]
+    pressure levels in hPa: [850, 500, 250]
     frequency: PT3H
     datapath: Data/analysis
     filename prefix: latlon.an.hyb-3dvar

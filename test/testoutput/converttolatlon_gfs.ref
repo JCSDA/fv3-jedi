@@ -1,4 +1,5 @@
 LatLonGridWriter::<FV3JEDI>
-Grid Resolution: 90
-Variables: 1 variables: air_temperature
-Levels: 10 20 30
+Grid Resolution: 18
+Variables: 5 variables: air_temperature, eastward_wind, northward_wind, geopotential_height, surface_pressure
+Output on Levels: Pressure Levels (hPa) = (9.2500000000000000e+02,8.5000000000000000e+02,7.0000000000000000e+02,5.0000000000000000e+02,2.5000000000000000e+02,) and Model Levels = (120,75,10,) and Bottom Model Level
+

@@ -240,9 +240,9 @@ variational:
         local interpolator type: oops unstructured grid interpolator
         resolution in degrees: 15.0  # low resolution for testing
         variables to output: [air_temperature, eastward_wind, northward_wind]
-        levels to output: [100, 76, 60]
+        model levels: [100, 76, 60]
         datapath: Data/analysis/eda/gfs/mem001
-        filename prefix: latlon.tt3dvar.eigenvec  
+        filename prefix: latlon.tt3dvar.eigenvec
   iterations:
   - ninner: 15
     gradient norm reduction: 1e-10

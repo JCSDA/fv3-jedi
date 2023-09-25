@@ -10,12 +10,11 @@ states to latlon:
     field metadata override: Data/fieldmetadata/gfs-restart.yaml
 
   state:
-    state variables: [air_temperature]
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
     state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
+                      u_srf,v_srf,f10m,ps]
     datapath: Data/inputs/gfs_c12/bkg
     filename_core: 20201215.000000.fv_core.res.nc
     filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -25,11 +24,13 @@ states to latlon:
 
   latlon interpolation:
     local interpolator type: oops unstructured grid interpolator
-    resolution in degrees: 1
-    variables to output: [air_temperature]
-    levels to output: [10,20,30]
+    resolution in degrees: 5.0  # low resolution for testing
+    variables to output: [air_temperature, eastward_wind, northward_wind, geopotential_height, surface_pressure]
+    pressure levels in hPa: [925, 850, 700, 500, 250]
+    model levels: [120, 75, 10]
+    bottom model level: true
     datapath: Data
-    filename prefix: latlon_
+    filename prefix: latlon.test
 
 test:
   reference filename: testoutput/converttolatlon_gfs.ref
