@@ -75,7 +75,7 @@ void ObsLocVerticalBrasnett::computeLocalization(const GeometryIterator & geoite
   // compute vertical localization and multiply it by the previously computed localization
   // vloc=exp(- (dz/hfac)^2 )
   const size_t nvars = locvector.nvars();
-  const double missing = util::missingValue(double());
+  const double missing = util::missingValue<double>();
   for (size_t jloc = 0; jloc < locvector.nlocs(); ++jloc) {
     for (size_t jvar = 0; jvar < nvars; ++jvar) {
       if (locvector[jvar + jloc * nvars] != missing) {
