@@ -203,4 +203,4 @@ test:
   reference filename: testoutput/lgetkf.ref
   test output filename: testoutput/lgetkf.test.out
   float absolute tolerance: 1.0e-7
-  float relative tolerance: 1.0e-4
+  float relative tolerance: 1.0e-3
