@@ -23,11 +23,15 @@ namespace fv3jedi {
 class Geometry;
 
 // -----------------------------------------------------------------------------
-class GeometryIterator: public std::iterator<std::forward_iterator_tag,
-                                               eckit::geometry::Point3>,
-                          public util::Printable,
-                          private util::ObjectCounter<GeometryIterator> {
+class GeometryIterator: public util::Printable,
+                        private util::ObjectCounter<GeometryIterator> {
  public:
+  typedef std::forward_iterator_tag iterator_category;
+  typedef eckit::geometry::Point3 value_type;
+  typedef ptrdiff_t difference_type;
+  typedef eckit::geometry::Point3 & reference;
+  typedef eckit::geometry::Point3 * pointer;
+
   static const std::string classname() {return "fv3jedi::GeometryIterator";}
 
   GeometryIterator(const GeometryIterator &);
@@ -38,7 +42,9 @@ class GeometryIterator: public std::iterator<std::forward_iterator_tag,
   bool operator==(const GeometryIterator &) const;
   bool operator!=(const GeometryIterator &) const;
   eckit::geometry::Point3 operator*() const;
+  // pre-increment operator
   GeometryIterator& operator++();
+
   double getOrography() const;
   double getNominalSurfacePressure() const;
 
