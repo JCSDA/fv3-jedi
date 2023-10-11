@@ -64,7 +64,7 @@ cost function:
             datapath: Data/inputs/gfs_c12/mem%mem%/
             prefix: '20201215.000000'
           pattern: '%mem%'
-          nmembers: 10
+          nmembers: 5
           zero padding: 3
         localization:
           localization method: SABER
@@ -183,7 +183,7 @@ cost function:
           CoefficientPath: Data/crtm/
       obs bias:
         input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
-        output file: Data/analysis/satbias_amsua_n19_p12_out.nc4
+        output file: Data/analysis/hyb-3dvar-p12-satbias_amsua_n19_out.nc4
         variational bc:
           predictors:
           - name: constant
@@ -210,7 +210,7 @@ cost function:
             inflation:
               ratio: 1.1
               ratio for small dataset: 2.0
-          output file: Data/analysis/satbias_cov_amsua_n19_p12_out.nc4
+          output file: Data/analysis/hyb-3dvar-p12-satbias_cov_amsua_n19_out.nc4
       obs error:
         covariance model: diagonal
       obs filters:
@@ -270,18 +270,6 @@ variational:
   minimizer:
     algorithm: DRIPCG
   iterations:
-  - ninner: 10
-    gradient norm reduction: 1e-10
-    test: on
-    geometry:
-      akbk: Data/fv3files/akbk127.nc4
-      layout: [1,2]
-      npx: 13
-      npy: 13
-      npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -294,6 +282,30 @@ variational:
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        filetype: fms restart
+        datapath: Data/analysis
+        prefix: 20201215.000000.iter1.hyb-3dvar-p12.c24
+  - ninner: 2
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk127.nc4
+      layout: [1,2]
+      npx: 13
+      npy: 13
+      npz: 127
+      field metadata override: Data/fieldmetadata/gfs-restart.yaml
+    diagnostics:
+      departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        filetype: fms restart
+        datapath: Data/analysis
+        prefix: 20201215.000000.iter2.hyb-3dvar-p12.c24
 final:
   diagnostics:
     departures: oman
