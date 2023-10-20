@@ -1,4 +1,4 @@
-# (C) Copyright 2017-2020 UCAR
+# (C) Copyright 2017-2023 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,7 +7,7 @@
 # fv3-bundle
 # ##########
 
-cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.14 FATAL_ERROR )
 
 project( fv3-bundle VERSION 1.0.0 LANGUAGES C CXX Fortran )
 
@@ -43,9 +43,16 @@ ecbuild_bundle( PROJECT gsibec GIT "https://github.com/GEOS-ESM/GSIbec.git" )
 
 # Core JEDI repositories
 # ----------------------
+option(ENABLE_IODA_DATA "Obtain ufo test data from ioda-data repository (vs tarball)" ON)
+option(ENABLE_UFO_DATA "Obtain ufo test data from ufo-data repository (vs tarball)" ON)
+
 ecbuild_bundle( PROJECT oops  GIT "https://github.com/jcsda-internal/oops.git" )
 ecbuild_bundle( PROJECT saber GIT "https://github.com/jcsda-internal/saber.git" )
+# No need to clone, we only run the fv3-jedi ctests
+#ecbuild_bundle( PROJECT ioda-data GIT "https://github.com/JCSDA-internal/ufo-data.git" )
 ecbuild_bundle( PROJECT ioda  GIT "https://github.com/jcsda-internal/ioda.git" )
+# No need to clone, we only run the fv3-jedi ctests
+#ecbuild_bundle( PROJECT ufo-data GIT "https://github.com/JCSDA-internal/ufo-data.git" )
 ecbuild_bundle( PROJECT ufo   GIT "https://github.com/jcsda-internal/ufo.git" )
 ecbuild_bundle( PROJECT vader GIT "https://github.com/jcsda-internal/vader.git" )
 
@@ -72,23 +79,18 @@ ecbuild_bundle( PROJECT fv3-jedi-lm GIT "https://github.com/jcsda-internal/fv3-j
 
 # fv3-jedi and associated repositories
 # ------------------------------------
+option(ENABLE_FV3_JEDI_DATA "Obtain fv3-jedi test data from fv3-jedi-data repository (vs tarball)" ON)
+
 ecbuild_bundle( PROJECT femps    GIT "https://github.com/jcsda-internal/femps.git" )
+ecbuild_bundle( PROJECT fv3-jedi-data GIT "https://github.com/JCSDA-internal/fv3-jedi-data.git" )
 ecbuild_bundle( PROJECT fv3-jedi GIT "https://github.com/jcsda-internal/fv3-jedi.git" )
 
-# ioda, ufo, and fv3-jedi test data
-#---------------------------------
-
-# If IODA branch is being built set GIT_BRANCH_FUNC to IODA's current branch.
-# If a tagged version of IODA is being built set GIT_TAG_FUNC to ioda's current tag. In this case,
-# IODA test files will be download from UCAR DASH and ioda-data repo will not be cloned.
-# When LOCAL_PATH_JEDI_TESTFILES is set to the directory of IODA test files stored
-# in a local directory, ioda-data repo will not be cloned
-
-# same procedure for fv3-jedi-data
+# Set GIT_BRANCH_FUNC to FV3-JEDI's current branch so that it can be used for fv3-jedi-data
 find_branch_name(REPO_DIR_NAME fv3-jedi)
-if( NOT DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES} AND NOT DEFINED ${GIT_TAG_FUNC} )
-  ecbuild_bundle( PROJECT fv3-jedi-data GIT "https://github.com/JCSDA-internal/fv3-jedi-data.git" )
-endif()
+
+# If FV3-JEDI's current branch is available in fv3-jedi-data repo, that branch will be checked out
+branch_checkout (REPO_DIR_NAME fv3-jedi-data
+                 BRANCH ${GIT_BRANCH_FUNC} )
 
 # Build Doxygen documentation
 # ---------------------------

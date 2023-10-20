@@ -1,18 +1,56 @@
-# (C) Copyright 2017-2022 UCAR
+# (C) Copyright 2017-2023 UCAR
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-# Use external jedi-cmake or bundle build
-if(DEFINED ENV{jedi_cmake_ROOT})
-  include( $ENV{jedi_cmake_ROOT}/share/jedicmake/Functions/git_functions.cmake )
-else()
-  include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
+# If CRTM is found then we know that UFO must be configured with CRTM as well
+# and will have taken care of the data (whether it is provided locally or downloaded);
+# in particular it will have set UFO_CRTM_TESTFILES_PATH at parent scope.
+if (crtm_FOUND)
+  if (NOT UFO_CRTM_TESTFILES_PATH)
+    message(FATAL_ERROR "Found crtm but UFO_CRTM_TESTFILES_PATH was not set by ufo")
+  elseif (NOT EXISTS ${UFO_CRTM_TESTFILES_PATH})
+    message(FATAL_ERROR "Found crtm but ${UFO_CRTM_TESTFILES_PATH}, set by ufo, does not exist")
+  endif()
+  message(STATUS "Use crtm test data provided by ufo in ${UFO_CRTM_TESTFILES_PATH}")
 endif()
 
-# Create the Data/ directory
-# --------------------------
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
+# FV3-JEDI test data - from fv3-jedi-data repo if found, from local directory, or from tarball
+if (fv3-jedi-data_FOUND)
+  message(STATUS "Use test data from fv3-jedi-data repository")
+  set (fv3-jedi_data_testinput_tier_1_local "${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1")
+# It's unclear if anyone is using the local data functionality, therefore comment it out
+# for now and add in if someone complains / remove if completely if not.
+#elseif (DEFINED ENV{FV3_JEDI_TESTFILES})
+#  message(STATUS "Use test data from local directory $ENV{FV3_JEDI_TESTFILES}")
+#  # A bit of guesswork here, I don't know if folks using this option stored it in the same directory structure
+#  set (fv3-jedi_data_testinput_tier_1_local "$ENV{FV3_JEDI_TESTFILES}/fv3-jedi-data/testinput_tier_1")
+else()
+  set (fv3-jedi_data_testinput_tier_1_local "${CMAKE_SOURCE_DIR}/test-data-release/fv3-jedi/${fv3-jedi_data_tag}/testinput_tier_1")
+  if (EXISTS ${fv3-jedi_data_testinput_tier_1_local})
+    message(STATUS "Skipping download of test data from ${fv3-jedi_data_download_url}/${fv3-jedi_data_tarball_name} since it already exists")
+  else()
+    message(STATUS "Download test data from ${fv3-jedi_data_download_url}/${fv3-jedi_data_tarball_name}")
+    include(FetchContent)
+    FetchContent_Declare(
+      fv3-jedi-testdata
+      DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}/test-data-release
+      DOWNLOAD_NO_EXTRACT ON
+      URL      ${fv3-jedi_data_download_url}/${fv3-jedi_data_tarball_name}
+      URL_HASH MD5=${fv3-jedi_data_tarball_hash}
+    )
+    FetchContent_MakeAvailable(fv3-jedi-testdata)
+    file(ARCHIVE_EXTRACT INPUT ${CMAKE_SOURCE_DIR}/test-data-release/${fv3-jedi_data_tarball_name} DESTINATION ${CMAKE_SOURCE_DIR}/test-data-release)
+  endif()
+endif()
+if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Data/inputs")
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
+  file(CREATE_LINK ${fv3-jedi_data_testinput_tier_1_local}/inputs ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs SYMBOLIC)
+endif()
+if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Data/obs/testinput_tier_1")
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
+  file(CREATE_LINK ${fv3-jedi_data_testinput_tier_1_local}/obs ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/testinput_tier_1 SYMBOLIC)
+endif()
 
 # FV3 config files
 # ----------------
@@ -504,6 +542,13 @@ SpcCoeff/Little_Endian/tropics_sv1_srf_v3.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/tropics_sv1_srf_v3.TauCoeff.bin
 )
 
+if( crtm_FOUND AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Data/crtm")
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
+  create_symlink_filename( ${UFO_CRTM_TESTFILES_PATH}
+                           ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
+                           ${crtm_coeff_files} )
+endif()
+
 # Files needed for GEOS aerosol testing
 if( ${geos-aero_FOUND} )
   list( APPEND geos-aero_test_data
@@ -542,143 +587,6 @@ if( DEFINED ENV{FV3JEDI_TEST_TIER} )
 endif()
 
 message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3JEDI_TEST_TIER})
-
-# --------------------------------------------------------------------------------------------------
-
-# Repo wide configuration for getting test data
-# ---------------------------------------------
-if( crtm_VERSION VERSION_GREATER_EQUAL 3.0.0 )
-  set( CRTM_COEFFS_BRANCH "3.0.0_skylab_6.0" )
-  set( checksum "1" )
-else()
-  set( CRTM_COEFFS_BRANCH "2.4.0_skylab_3.0" )
-  set( checksum "0" )
-endif()
-
-function(ADD_DOWNLOAD_TEST repo test_files_dirname output_data_path)
-  # If REPO branch is being built set GIT_BRANCH_FUNC to REPO's current branch.
-  # If a tagged version of REPO is being built set GIT_TAG_FUNC to REPO's current tag.
-  find_branch_name(REPO_DIR_NAME ${repo})
-
-  if ( ${repo} STREQUAL "crtm" )
-    set( GIT_TAG_FUNC ${CRTM_COEFFS_BRANCH} )
-  endif()
-
-  if( DEFINED GIT_BRANCH_FUNC )
-    set( REPO_GIT_BRANCH ${GIT_BRANCH_FUNC} )
-  elseif( DEFINED GIT_TAG_FUNC )
-    set( REPO_GIT_BRANCH ${GIT_TAG_FUNC} )
-  endif()
-
-  # When env veriable LOCAL_PATH_JEDI_TESTFILES is set, simply link test files
-  # to build directory. get_${repo}_test_data checks the existence of test file directory.
-  # ${repo} test data must be stored in
-  # ${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${BRANCH}/testinput_tier_1
-  if( DEFINED ENV{LOCAL_PATH_JEDI_TESTFILES} )
-    set( LOCAL_PATH_JEDI_TESTFILES "$ENV{LOCAL_PATH_JEDI_TESTFILES}" )
-    message( STATUS "use LOCAL_PATH_JEDI_TESTFILES: ${LOCAL_PATH_JEDI_TESTFILES}" )
-    # If test data specific to testing branch exists locally use it.
-    # If not use test data specific to develop branch.
-    if( EXISTS ${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${REPO_GIT_BRANCH} )
-      set( TESTFILE_DIR_REPO "${LOCAL_PATH_JEDI_TESTFILES}/${repo}/${REPO_GIT_BRANCH}" )
-    else()
-      set( TESTFILE_DIR_REPO "${LOCAL_PATH_JEDI_TESTFILES}/${repo}/develop" )
-    endif()
-
-    message( STATUS "Test data in ${TESTFILE_DIR_REPO} is linked to build directory" )
-    list( APPEND REPO_DATA_DOWNLOADER_ARGS
-    ${TESTFILE_DIR_REPO} )
-    set ( REPO_DATA_DOWNLOADER fv3jedi_data_checker.py )
-
-  # Any tagged version of REPO is being built.
-  # Build fv3jedi_get_{repo}_test_data test to download test data from DASH.
-  elseif( DEFINED GIT_TAG_FUNC)
-    message( STATUS "Tagged version of ${repo} is used" )
-    # set ARGS for get_${repo}_test_data
-
-    # ECBUILD_DOWNLOAD_BASE_URL env var can be used to force test files and
-    # crtm coef to be downloaded from other databases such as S3 instead of DASH
-    # example ECBUILD_DOWNLOAD_BASE_URL=https://jedi-test-files.s3.amazonaws.com
-
-    if( DEFINED ENV{ECBUILD_DOWNLOAD_BASE_URL} )
-      set( ECBUILD_DOWNLOAD_BASE_URL "$ENV{ECBUILD_DOWNLOAD_BASE_URL}/${repo}/${GIT_TAG_FUNC}" )
-    else()
-#      set( ECBUILD_DOWNLOAD_BASE_URL https://gdex.ucar.edu/dataset/jedi-skylab/file )
-#      set( ECBUILD_DOWNLOAD_BASE_URL https://ftp.ssec.wisc.edu/pub/s4/CRTM/file )
-      set( ECBUILD_DOWNLOAD_BASE_URL https://bin.ssec.wisc.edu/pub/s4/CRTM/file )
-    endif()
-
-    set( DIRNAME ${GIT_TAG_FUNC} )
-    set( TESTFILE_DIR_REPO "${CMAKE_SOURCE_DIR}/test-data-release/${repo}/${DIRNAME}" )
-
-    # Create test-data-release in source directory
-    file( MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/test-data-release )
-    # temporary solution for release 1.1.0
-    list( APPEND REPO_DATA_DOWNLOADER_ARGS
-          ${ECBUILD_DOWNLOAD_BASE_URL}
-          ${CMAKE_SOURCE_DIR}/test-data-release
-          ${test_files_dirname}
-          ${checksum} )
-    message( STATUS "ECBUILD_DOWNLOAD_BASE_URL is set, ${repo} test files will
-    be downloaded from ${ECBUILD_DOWNLOAD_BASE_URL}")
-    set ( REPO_DATA_DOWNLOADER fv3jedi_testdata_downloader.py )
-
-  # Any branch of REPO is being built.
-  # repo-data repository is already cloned by bundle/CMakeLists.txt.
-  # Link test files in repo-data repo to build directory.
-  # get_repo_test_data checks the existence of test file directory
-  else()
-    set( TESTFILE_DIR_REPO ${CMAKE_SOURCE_DIR}/${repo}-data )
-    list( APPEND REPO_DATA_DOWNLOADER_ARGS
-          ${TESTFILE_DIR_REPO} )
-    set (REPO_DATA_DOWNLOADER fv3jedi_data_checker.py )
-  endif()
-
-  # add test for downloading data
-  ecbuild_add_test( TARGET    fv3jedi_get_${repo}_test_data
-                    TYPE      SCRIPT
-                    COMMAND   ${CMAKE_BINARY_DIR}/bin/${REPO_DATA_DOWNLOADER}
-                    ARGS  ${REPO_DATA_DOWNLOADER_ARGS} )
-
-  # pass output data path back to calling code
-  set(${output_data_path} ${TESTFILE_DIR_REPO} PARENT_SCOPE)
-
-  # Create download script for fv3jedi_get_*_test_data test
-  set ( FILENAME ${REPO_DATA_DOWNLOADER})
-  set ( SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME} )
-  set ( DEST_FILE ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
-
-  if( EXISTS "${SOURCE_FILE}.in" )
-    configure_file( ${SOURCE_FILE}.in ${DEST_FILE} @ONLY )
-  else()
-    configure_file( ${SOURCE_FILE}    ${DEST_FILE} @ONLY )
-  endif()
-
-
-  add_custom_target( bin_fv3jedi_${repo}_test_download_scripts ALL
-    COMMAND chmod +x ${DEST_FILE}
-    DEPENDS ${DEST_FILE} )
-
-endfunction()
-#############################################
-# add tests to download fv3-jedi & crtm data
-
-ADD_DOWNLOAD_TEST( "fv3-jedi" fv3-jedi_testinput_tier_1_1.7.0.tar.gz FV3JEDI_FV3JEDI_TESTFILES_PATH )
-ADD_DOWNLOAD_TEST( "crtm" crtm_coefficients_${CRTM_COEFFS_BRANCH}.tar.gz CRTM_FV3JEDI_TESTFILES_PATH )
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/obs)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm)
-
-execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${FV3JEDI_FV3JEDI_TESTFILES_PATH}/testinput_tier_1/inputs
-                 ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs)
-
-execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                 ${FV3JEDI_FV3JEDI_TESTFILES_PATH}/testinput_tier_1/obs
-               ${CMAKE_CURRENT_BINARY_DIR}/Data/obs/testinput_tier_1)
-
-create_symlink_filename( ${CRTM_FV3JEDI_TESTFILES_PATH}
-                         ${CMAKE_CURRENT_BINARY_DIR}/Data/crtm
-                         ${crtm_coeff_files} )
 
 # --------------------------------------------------------------------------------------------------
 
