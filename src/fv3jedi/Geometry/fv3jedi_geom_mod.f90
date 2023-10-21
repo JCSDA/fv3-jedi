@@ -12,14 +12,15 @@ use mpi
 use string_f_c_mod
 
 ! atlas uses
-use atlas_module, only: atlas_field, atlas_fieldset, atlas_integer, atlas_real, atlas_functionspace
+use atlas_module,               only: atlas_field, atlas_fieldset, &
+                                      atlas_integer, atlas_real, atlas_functionspace
 
 ! fckit uses
 use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use fms_io_mod,                 only: set_domain, nullify_domain
+use fms_io_mod,                 only: nullify_domain
 use fms_mod,                    only: fms_init
 use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
@@ -31,15 +32,12 @@ use field_manager_mod,          only: fm_string_len, field_manager_init
 use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
 
 ! fv3jedi uses
-use fields_metadata_mod,         only: fields_metadata, field_metadata
-use fv3jedi_constants_mod,       only: constant
-use fv3jedi_kinds_mod,           only: kind_int, kind_real
-use fv3jedi_netcdf_utils_mod,    only: nccheck
-use fv_init_mod,                 only: fv_init
-use fv3jedi_fmsnamelist_mod,     only: fv3jedi_fmsnamelist
-use fv3jedi_io_fms_mod,          only: fv3jedi_io_fms, read_fields
-use fv3jedi_field_mod,           only: fv3jedi_field
-!use fv3jedi_geom_iter_mod
+use fields_metadata_mod,        only: fields_metadata
+use fv3jedi_constants_mod,      only: constant
+use fv3jedi_kinds_mod,          only: kind_int, kind_real
+use fv3jedi_netcdf_utils_mod,   only: nccheck
+use fv_init_mod,                only: fv_init
+use fv3jedi_fmsnamelist_mod,    only: fv3jedi_fmsnamelist
 
 implicit none
 private
@@ -73,7 +71,7 @@ type :: fv3jedi_geom
   real(kind=kind_real), allocatable, dimension(:,:,:,:) :: es, ew
   real(kind=kind_real), allocatable, dimension(:,:)     :: a11, a12, a21, a22
   type(fckit_mpi_comm) :: f_comm
-  type(fields_metadata) :: fields
+  type(fields_metadata) :: fmd
   type(atlas_fieldset) :: geometry_fields
   ! Vertical Coordinate
   real(kind=kind_real), allocatable, dimension(:)       :: vCoord                   !Model vertical coordinate
@@ -415,11 +413,11 @@ end subroutine create
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine clone(self, other, fields)
+subroutine clone(self, other, fmd)
 
 class(fv3jedi_geom),        intent(inout) :: self
 type(fv3jedi_geom), target, intent(in)    :: other
-type(fields_metadata),      intent(in)    :: fields
+type(fields_metadata),      intent(in)    :: fmd
 
 allocate(self%ak(other%npz+1) )
 allocate(self%bk(other%npz+1) )
@@ -536,7 +534,7 @@ self%afunctionspace_incl_halo = atlas_functionspace(other%afunctionspace_incl_ha
 
 self%geometry_fields = atlas_fieldset(other%geometry_fields%c_ptr())
 
-self%fields = fields
+self%fmd = fmd
 
 self%lat_us = other%lat_us
 self%lon_us = other%lon_us

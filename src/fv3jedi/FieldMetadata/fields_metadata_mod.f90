@@ -22,7 +22,7 @@ type fields_metadata
  private
  type(c_ptr) :: ptr = c_null_ptr
  contains
-   procedure, public :: get_field
+   procedure, public :: get_field_metadata
 end type fields_metadata
 
 type field_metadata
@@ -47,11 +47,11 @@ end interface
 ! --------------------------------------------------------------------------------------------------
 
 interface
-  subroutine c_fields_metadata_get_field(ptr, longshortio_name, long_name, short_name, &
-                                         units, kindd, tracer, horizontal_stagger_location, &
-                                         levels, space, io_name, io_file, interpolation_type, &
-                                         interpolation_source_point_mask) &
-                                         bind(c, name='fields_metadata_get_field_f')
+  subroutine c_get_field_metadata(ptr, longshortio_name, long_name, short_name, &
+                                  units, kindd, tracer, horizontal_stagger_location, &
+                                  levels, space, io_name, io_file, interpolation_type, &
+                                  interpolation_source_point_mask) &
+                                  bind(c, name='get_field_metadata_f')
     use iso_c_binding
     integer, parameter :: clen = 2048
     type(c_ptr), value :: ptr
@@ -68,7 +68,7 @@ interface
     character(len=1, kind=c_char) :: io_file(clen)
     character(len=1, kind=c_char) :: interpolation_type(clen)
     character(len=1, kind=c_char) :: interpolation_source_point_mask(clen)
-  end subroutine c_fields_metadata_get_field
+  end subroutine c_get_field_metadata
 end interface
 
 ! --------------------------------------------------------------------------------------------------
@@ -88,11 +88,11 @@ end function create
 
 ! --------------------------------------------------------------------------------------------------
 
-function get_field(self, longshortio_name_in) result(field)
+function get_field_metadata(self, longshortio_name_in) result(fmd)
 
 class(fields_metadata), intent(in) :: self
 character(len=*),       intent(in) :: longshortio_name_in
-type(field_metadata) :: field
+type(field_metadata) :: fmd
 
 character(len=1, kind=c_char), allocatable :: longshortio_name(:)
 
@@ -145,27 +145,27 @@ interpolation_type = c_null_char
 interpolation_source_point_mask = c_null_char
 
 ! Get information from C++ object
-call c_fields_metadata_get_field(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
-                                 tracer, horizontal_stagger_location, levels, space, io_name, &
-                                 io_file, interpolation_type, interpolation_source_point_mask)
+call c_get_field_metadata(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
+                          tracer, horizontal_stagger_location, levels, space, io_name, &
+                          io_file, interpolation_type, interpolation_source_point_mask)
 
 ! Copy non string
-field%tracer = tracer
-field%levels = levels
+fmd%tracer = tracer
+fmd%levels = levels
 
 ! Copy string
-call c_f_string(long_name, field%long_name)
-call c_f_string(short_name, field%short_name)
-call c_f_string(units, field%units)
-call c_f_string(kindd, field%kind)
-call c_f_string(horizontal_stagger_location, field%horizontal_stagger_location)
-call c_f_string(space, field%space)
-call c_f_string(io_name, field%io_name)
-call c_f_string(io_file, field%io_file)
-call c_f_string(interpolation_type, field%interpolation_type)
-call c_f_string(interpolation_source_point_mask, field%interpolation_source_point_mask)
+call c_f_string(long_name, fmd%long_name)
+call c_f_string(short_name, fmd%short_name)
+call c_f_string(units, fmd%units)
+call c_f_string(kindd, fmd%kind)
+call c_f_string(horizontal_stagger_location, fmd%horizontal_stagger_location)
+call c_f_string(space, fmd%space)
+call c_f_string(io_name, fmd%io_name)
+call c_f_string(io_file, fmd%io_file)
+call c_f_string(interpolation_type, fmd%interpolation_type)
+call c_f_string(interpolation_source_point_mask, fmd%interpolation_source_point_mask)
 
-end function get_field
+end function get_field_metadata
 
 ! --------------------------------------------------------------------------------------------------
 

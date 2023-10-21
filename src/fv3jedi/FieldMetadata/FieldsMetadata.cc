@@ -110,7 +110,7 @@ namespace fv3jedi {
 
   // -----------------------------------------------------------------------------------------------
 
-  FieldMetadata FieldsMetadata::getField(const std::string & longshortio) const {
+  FieldMetadata FieldsMetadata::getFieldMetadata(const std::string & longshortio) const {
     // Get longname in case incoming is not already long name
     const std::string longName = this->getLongNameFromAnyName(longshortio);
     // Return Field Metadata
@@ -121,7 +121,7 @@ namespace fv3jedi {
 
   size_t FieldsMetadata::getLevels(const std::string & longshortio) const {
     // Get the element
-    const FieldMetadata field = this->getField(longshortio);
+    const FieldMetadata field = this->getFieldMetadata(longshortio);
     // Return number of levels
     return field.getNumLevls();
   }

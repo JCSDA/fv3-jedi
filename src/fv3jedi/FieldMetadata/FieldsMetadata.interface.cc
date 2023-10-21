@@ -22,15 +22,15 @@ namespace fv3jedi {
     }
   }
 
-  void fields_metadata_get_field_f(const FieldsMetadata* fieldsMetadata,
-                                   const char longshortioNameC[], char longNameC[],
-                                   char shrtNameC[], char varUnitsC[], char dataKindC[],
-                                   bool& tracer, char stagrLocC[], int & levels, char mathSpacC[],
-                                   char inOuNameC[], char inOuFileC[], char intrpTypC[],
-                                   char intrpMskC[]) {
+  void get_field_metadata_f(const FieldsMetadata* fieldsMetadata,
+                            const char longshortioNameC[], char longNameC[],
+                            char shrtNameC[], char varUnitsC[], char dataKindC[],
+                            bool& tracer, char stagrLocC[], int & levels, char mathSpacC[],
+                            char inOuNameC[], char inOuFileC[], char intrpTypC[],
+                            char intrpMskC[]) {
     // Get meta data for requested field
     const std::string longshortioName(longshortioNameC);
-    FieldMetadata fieldMetadata = fieldsMetadata->getField(longshortioName);
+    FieldMetadata fieldMetadata = fieldsMetadata->getFieldMetadata(longshortioName);
 
     // Bool, int outputs
     levels = fieldMetadata.getNumLevls();

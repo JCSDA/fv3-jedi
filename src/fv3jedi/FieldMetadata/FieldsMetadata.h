@@ -168,8 +168,8 @@ namespace fv3jedi {
     typedef FieldsMetadataParameters Parameters_;
     FieldsMetadata(const Parameters_ &, int &);
 
-    // Get field from any of the potential field names
-    FieldMetadata getField(const std::string &) const;
+    // Get FieldMetadata from any of the potential field names
+    FieldMetadata getFieldMetadata(const std::string &) const;
 
     // Get levels from any of the potential field names
     size_t getLevels(const std::string &) const;

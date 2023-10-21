@@ -120,7 +120,7 @@ f_fields_metadata = fields_metadata(c_fields_meta)
 
 ! Add to Fortran type
 ! -------------------
-self%fields = f_fields_metadata
+self%fmd = f_fields_metadata
 
 end subroutine c_fv3jedi_addfmd_setup
 

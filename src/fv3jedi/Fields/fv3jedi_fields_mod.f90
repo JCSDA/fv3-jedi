@@ -109,7 +109,8 @@ subroutine create(self, geom, vars)
     self%fields(fc)%jec = geom%jec
 
     ! Set this fields meta data
-    call create_field(self%fields(fc), geom%fields%get_field(trim(vars%variable(var))), geom%f_comm)
+    call create_field(self%fields(fc), geom%fmd%get_field_metadata(trim(vars%variable(var))), &
+                      geom%f_comm)
 
   enddo
 
@@ -619,7 +620,7 @@ do f = 1, new_vars%nvars()
   fields_tmp(f)%jsc = geom%jsc
   fields_tmp(f)%jec = geom%jec
 
-  fmd = geom%fields%get_field(trim(new_vars%variable(f)))
+  fmd = geom%fmd%get_field_metadata(trim(new_vars%variable(f)))
 
   if (self%has_field(trim(fmd%short_name), findex)) then
 
