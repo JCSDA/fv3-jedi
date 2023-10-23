@@ -1,5 +1,5 @@
 cost function:
-  cost type: 4D-Var
+  cost type: 3D-FGAT
   analysis variables: &fgatvars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
@@ -10,7 +10,7 @@ cost function:
     lm_do_trb: 0
     lm_do_mst: 0
     tstep: PT1H
-    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
+    model variables: [u,v,ua,va,t,delp,ps,q,qi,ql,o3ppmv,phis,frocean,frlake,
                       frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   geometry:
     fms initialization:
@@ -27,7 +27,7 @@ cost function:
     provider: geos
     datapath: Data/inputs/geos_c12
     filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-    state variables: [ua,va,t,ps,q,qi,ql,o3ppmv,phis,frocean,frlake,
+    state variables: [ua,va,t,delp,ps,q,qi,ql,o3ppmv,phis,frocean,frlake,
                       frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
   background error:
     covariance model: hybrid
@@ -36,6 +36,7 @@ cost function:
         covariance model: SABER
         saber central block:
           saber block name: BUMP_NICAS
+          active variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air,surface_pressure]
           read:
             io:
               files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
@@ -85,7 +86,7 @@ cost function:
             datapath: Data/inputs/geos_c12
             filename: geos.mem%mem%.20201214_210000z.nc4
           pattern: '%mem%'
-          nmembers: 10
+          nmembers: 5
           zero padding: 3
         localization:
           localization method: SABER
@@ -124,7 +125,7 @@ cost function:
       - filter: PreQC
         maxvalue: 3
       - filter: Background Check
-        apply at iterations: 0, 1
+        apply at iterations: 0
         filter variables:
         - name: windEastward
         - name: windNorthward
@@ -156,17 +157,121 @@ cost function:
           minvalue: 0
           maxvalue: 50000
       - filter: ROobserror
-        apply at iterations: 0, 1
+        apply at iterations: 0
         filter variables:
         - name: bendingAngle
         errmodel: NBAM
       - filter: Background Check RONBAM
-        apply at iterations: 0, 1
+        apply at iterations: 0
         filter variables:
         - name: bendingAngle
+    - obs space:
+        name: AMSUA-NOAA19
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+        simulated variables: [brightnessTemperature]
+        channels: 1-15
+      obs operator:
+        name: CRTM
+        Absorbers: [H2O,O3]
+        obs options:
+          Sensor_ID: amsua_n19
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+      obs bias:
+        input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
+        output file: Data/analysis/hyb-fgat-satbias_amsua_n19_out.nc4
+        variational bc:
+          predictors:
+          - name: constant
+          - name: lapse_rate
+            order: 2
+            tlapse: &amsua19tlap Data/obs/testinput_tier_1/amsua_n19_tlapmean.txt
+          - name: lapse_rate
+            tlapse: *amsua19tlap
+          - name: emissivity
+          - name: scan_angle
+            order: 4
+          - name: scan_angle
+            order: 3
+          - name: scan_angle
+            order: 2
+          - name: scan_angle
+        covariance:
+          minimal required obs number: 20
+          variance range: [1.0e-6, 10.0]
+          step size: 1.0e-4
+          largest analysis variance: 10000.0
+          prior:
+            input file: Data/obs/testinput_tier_1/satbias_amsua_n19.nc4
+            inflation:
+              ratio: 1.1
+              ratio for small dataset: 2.0
+          output file: Data/analysis/hyb-fgat-satbias_cov_amsua_n19_out.nc4
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      - filter: Bounds Check
+        filter variables:
+        - name: brightnessTemperature
+          channels: 1-15
+        minvalue: 100.0
+        maxvalue: 500.0
+      - filter: Background Check
+        filter variables:
+        - name: brightnessTemperature
+          channels: 1-15
+        threshold: 3.0
+
+variational:
+  minimizer:
+    algorithm: DRPLanczos
+  iterations:
+  - ninner: 5
+    gradient norm reduction: 1e-10
+    test: on
+    geometry: &geom
+      akbk: Data/fv3files/akbk72.nc4
+      npx: 13
+      npy: 13
+      npz: 72
+      field metadata override: Data/fieldmetadata/geos.yaml
+    diagnostics:
+      departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        filetype: fms restart
+        datapath: Data/analysis
+        prefix: 20201215.000000.iter1.hyb-fgat.c12
+
 final:
   diagnostics:
     departures: oman
+  increment:
+    geometry: *geom
+    output:
+      filetype: fms restart
+      datapath: Data/analysis
+      prefix: 20201214.210000.inc.hyb-fgat.c12
+  increment to latlon:
+    local interpolator type: oops unstructured grid interpolator
+    resolution in degrees: 15.0  # low resolution for testing
+    variables to output: [air_temperature, eastward_wind, northward_wind]
+    pressure levels in hPa: [250]
+    datapath: Data/analysis
+    filename prefix: latlon.inc.hyb-fgat
+  analysis to latlon:
+    local interpolator type: oops unstructured grid interpolator
+    resolution in degrees: 15.0  # low resolution for testing
+    variables to output: [air_temperature, eastward_wind, northward_wind]
+    pressure levels in hPa: [500]
+    frequency: PT3H
+    datapath: Data/analysis
+    filename prefix: latlon.an.hyb-fgat
+
 output:
   filetype: cube sphere history
   provider: geos
@@ -174,40 +279,7 @@ output:
   filename: hyb-fgat-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
-variational:
-  minimizer:
-    algorithm: DRIPCG
-  iterations:
-  - ninner: 5
-    gradient norm reduction: 1e-10
-    test: on
-    geometry:
-      akbk: Data/fv3files/akbk72.nc4
-      npx: 13
-      npy: 13
-      npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
-    diagnostics:
-      departures: ombg
-    linear model:
-      name: Identity
-      increment variables: *fgatvars
-      tstep: PT1H
-  - ninner: 4
-    gradient norm reduction: 1e-10
-    test: on
-    geometry:
-      akbk: Data/fv3files/akbk72.nc4
-      npx: 13
-      npy: 13
-      npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
-    diagnostics:
-      departures: ombg
-    linear model:
-      name: Identity
-      increment variables: *fgatvars
-      tstep: PT1H
+
 test:
   reference filename: testoutput/hyb-fgat_fv3lm.ref
   test output filename: testoutput/hyb-fgat_fv3lm.test.out
