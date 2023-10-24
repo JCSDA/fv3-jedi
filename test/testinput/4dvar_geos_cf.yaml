@@ -1,0 +1,109 @@
+cost function:
+  cost type: 4D-Var
+  window begin: 2021-08-05T06:00:00Z
+  window length: PT6H
+
+  model:
+    name: PSEUDO
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/inputs/geos_c12
+    filename: geoscf_jedi.%yyyy%mm%dd_%hh%MMz.nc4
+    run stage check: true
+    tstep: PT3H
+
+  analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,
+                       air_temperature,air_pressure_thickness,specific_humidity,volume_mixing_ratio_of_no2] 
+
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+    akbk: Data/fv3files/akbk72.nc4
+    npx: 13
+    npy: 13
+    npz: 72
+    layout: [1,2]
+    field metadata override: Data/fieldmetadata/geoscf_jedi.yaml
+  background:
+    datetime: 2021-08-05T06:00:00Z
+    filetype: cube sphere history
+    datapath: Data/inputs/geos_c12
+    filename: geoscf_jedi.20210805_0600z.nc4
+    state variables: [u,v,T,Q,DELP,NO2]
+
+  background error:
+    covariance model: SABER
+    saber central block:
+      saber block name: ID
+
+  observations:
+    observers:
+    - obs space:
+        name: NO2
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/tropomi_no2_tropo_202108050900.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/hofx/tropomi_no2_hofx_geos_cf_202108050900_m.nc
+        simulated variables: [nitrogendioxideColumn]
+      obs operator:
+        name: ColumnRetrieval
+        nlayers_retrieval: 34
+        tracer variables: [volume_mixing_ratio_of_no2]
+        isApriori: false
+        isAveragingKernel: true
+        stretchVertices: topbottom #options: top, bottom, topbottom, none
+      obs error:
+        covariance model: diagonal
+      get values:
+        time interpolation: linear
+
+final:
+  diagnostics:
+    departures: oman
+output:
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/analysis
+  filename: 4dvar-geos_cf.an.20210805_0600z.nc4
+  first: PT0H
+  frequency: PT6H
+variational:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 2
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk72.nc4
+      npx: 13
+      npy: 13
+      npz: 72
+      layout: [1,2]
+      field metadata override: Data/fieldmetadata/geoscf_jedi.yaml
+    diagnostics:
+      departures: ombg
+
+    linear model:
+      name: FV3JEDITLM
+      namelist filename: Data/fv3files/input_geos_c12_p12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT3H
+      tlm variables: *anavars
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      trajectory:
+        model variables: *anavars
+    linear variable change:
+      linear variable change name: Analysis2Model
+
+test:
+  reference filename: testoutput/4dvar_geos_cf.ref
+  test output filename: testoutput/4dvar_geos_cf.test.out
+  integer tolerance: 3
+  float relative tolerance: 1.0e-3

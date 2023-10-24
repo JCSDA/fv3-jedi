@@ -1,4 +1,4 @@
-analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_water,cloud_liquid_ice,mole_fraction_of_ozone_in_air]
+analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
 background error:
   covariance model: SABER
   saber central block:

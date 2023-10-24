@@ -42,7 +42,7 @@ hybrid linear model:
         lm_do_dyn: 1
         lm_do_trb: 0
         lm_do_mst: 0
-        model variables: &modelvars [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+        model variables: &modelvars [u,v,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
       state geometry:
         fms initialization:
           namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -83,5 +83,5 @@ hybrid linear model:
 test:
   reference filename: testoutput/gen_hybrid_linear_model_coeffs.ref
   test output filename: testoutput/gen_hybrid_linear_model_coeffs.test.out
-  float absolute tolerance: 1.0e-6 
+  float absolute tolerance: 1.0e-6
   float relative tolerance: 1.0e-4

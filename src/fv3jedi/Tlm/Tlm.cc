@@ -74,8 +74,17 @@ void Tlm::setTrajectory(const State & xx, State & xlr, const ModelBias & bias) {
 void Tlm::initializeTL(Increment & dx) const {
   oops::Log::trace() << "Tlm::initializeTL starting" << std::endl;
 
+  // Get traj index
+  trajICst itra = trajmap_.find(dx.validTime());
+
+  // Check traj is available
+  if (itra == trajmap_.end()) {
+    oops::Log::error() << "Tlm: trajectory not available at time " << dx.validTime() << std::endl;
+    ABORT("Tlm: trajectory not available");
+  }
+
   // Implementation
-  fv3jedi_tlm_initialize_tl_f90(keySelf_, dx.toFortran());
+  fv3jedi_tlm_initialize_tl_f90(keySelf_, dx.toFortran(), itra->second);
 
   oops::Log::trace() << "Tlm::initializeTL done" << std::endl;
 }
@@ -113,8 +122,17 @@ void Tlm::finalizeTL(Increment & dx) const {
 void Tlm::initializeAD(Increment & dx) const {
   oops::Log::trace() << "Tlm::initializeAD starting" << std::endl;
 
+  // Get traj index
+  trajICst itra = trajmap_.find(dx.validTime());
+
+  // Check traj is available
+  if (itra == trajmap_.end()) {
+    oops::Log::error() << "Tlm: trajectory not available at time " << dx.validTime() << std::endl;
+    ABORT("Tlm: trajectory not available");
+  }
+
   // Implementation
-  fv3jedi_tlm_initialize_ad_f90(keySelf_, dx.toFortran());
+  fv3jedi_tlm_initialize_ad_f90(keySelf_, dx.toFortran(), itra->second);
 
   oops::Log::trace() << "Tlm::initializeAD done" << std::endl;
 }

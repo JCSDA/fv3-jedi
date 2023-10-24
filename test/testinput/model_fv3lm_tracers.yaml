@@ -1,0 +1,33 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/input_gfs_c12_z64_1x1.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk64.nc4
+  npx: 13
+  npy: 13
+  npz: 64
+  ntiles: 6
+  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+model:
+  name: FV3LM
+  use internal namelist: true
+  tstep: PT15M
+  lm_do_dyn: 1
+  lm_do_trb: 0
+  lm_do_mst: 0
+  model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4,dust5]
+model aux control: null
+model aux error: null
+model test:
+  forecast length: PT1H
+  final norm: 539.72815305207303
+  tolerance: 1.0e-4
+initial condition:
+  datetime: 2021-08-01T06:00:00Z
+  filetype: fms restart
+  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4,dust5]
+  datapath: Data/inputs/gfs_aero_c12/bkg
+  filename_core: 20210801.060000.fv_core.res.nc
+  filename_trcr: 20210801.060000.fv_tracer.res.nc
+  filename_sfcw: 20210801.060000.fv_srf_wnd.res.nc
+  filename_cplr: 20210801.060000.coupler.res

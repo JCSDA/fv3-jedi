@@ -39,3 +39,4 @@ output:
 test:
   reference filename: testoutput/addincrement_geos.ref
   test output filename: testoutput/addincrement_geos.test.out
+  float absolute tolerance: 1.0e-7

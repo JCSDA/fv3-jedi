@@ -32,7 +32,8 @@ implicit none
 type(fv3jedi_traj),  intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: state
 
-integer :: isc,iec,jsc,jec,npz
+integer :: isc,iec,jsc,jec,npz,ft,f,index,number_tracers
+logical :: sphum_found = .false.
 
 ! Pointers to rank 2 state
 real(kind=kind_real), allocatable, dimension(:,:,:) :: u_tmp
@@ -59,6 +60,8 @@ jsc = state%jsc
 jec = state%jec
 npz = state%npz
 
+self%ntracers = state%ntracers
+
 ! Allocate traj
 allocate(self%u      (isc:iec, jsc:jec, npz))
 allocate(self%v      (isc:iec, jsc:jec, npz))
@@ -66,10 +69,6 @@ allocate(self%ua     (isc:iec, jsc:jec, npz))
 allocate(self%va     (isc:iec, jsc:jec, npz))
 allocate(self%t      (isc:iec, jsc:jec, npz))
 allocate(self%delp   (isc:iec, jsc:jec, npz))
-allocate(self%qv     (isc:iec, jsc:jec, npz))
-allocate(self%qi     (isc:iec, jsc:jec, npz))
-allocate(self%ql     (isc:iec, jsc:jec, npz))
-allocate(self%o3     (isc:iec, jsc:jec, npz))
 allocate(self%w      (isc:iec, jsc:jec, npz))
 allocate(self%delz   (isc:iec, jsc:jec, npz))
 allocate(self%qls    (isc:iec, jsc:jec, npz))
@@ -90,17 +89,14 @@ allocate(self%ts     (isc:iec, jsc:jec))
 allocate(self%khl    (isc:iec, jsc:jec))
 allocate(self%khu    (isc:iec, jsc:jec))
 
-!Initialize all to zero incase not in state
+! Initialize all to zero incase not in state
+! ------------------------------------------
 self%u       = 0.0_kind_real
 self%v       = 0.0_kind_real
 self%ua      = 0.0_kind_real
 self%va      = 0.0_kind_real
 self%t       = 0.0_kind_real
 self%delp    = 0.0_kind_real
-self%qv      = 0.0_kind_real
-self%qi      = 0.0_kind_real
-self%ql      = 0.0_kind_real
-self%o3      = 0.0_kind_real
 self%w       = 0.0_kind_real
 self%delz    = 0.0_kind_real
 self%qls     = 0.0_kind_real
@@ -121,32 +117,82 @@ self%ts      = 0.0_kind_real
 self%khl     = 0.0_kind_real
 self%khu     = 0.0_kind_real
 
+
 ! Copy mandatory parts of the trajecotry
+! --------------------------------------
 allocate(u_tmp(isc:iec  , jsc:jec+1, npz))
 allocate(v_tmp(isc:iec+1, jsc:jec  , npz))
 
-call state%get_field('ud'  , u_tmp     )
-call state%get_field('vd'  , v_tmp     )
-call state%get_field('t'   , self%t    )
-call state%get_field('delp', self%delp )
-call state%get_field('sphum'   , self%qv   )
+call state%get_field('ud'   , u_tmp     )
+call state%get_field('vd'   , v_tmp     )
+call state%get_field('t'    , self%t    )
+call state%get_field('delp' , self%delp )
 
 self%u = u_tmp(isc:iec, jsc:jec, :)
 self%v = v_tmp(isc:iec, jsc:jec, :)
 
 deallocate(u_tmp, v_tmp)
 
+
+! Allocate all the tracers that will be part of what gets advected
+! ----------------------------------------------------------------
+
+! First allocate the number of tracers
+number_tracers = state%ntracers
+
+! Remove qls, qcn, cfcn
+if (state%has_field('qls'))  number_tracers = number_tracers - 1
+if (state%has_field('qcn'))  number_tracers = number_tracers - 1
+if (state%has_field('cfcn')) number_tracers = number_tracers - 1
+
+! Allocate the tracers
+
+if (.not. allocated(self%tracers) .or. size(self%tracers, 4) .ne. number_tracers) then
+  if (allocated(self%tracers)) deallocate(self%tracers)
+  allocate(self%tracers(state%isc:state%iec, state%jsc:state%jec, state%npz, number_tracers))
+  if (allocated(self%tracer_names)) deallocate(self%tracer_names)
+  allocate(self%tracer_names(number_tracers))
+end if
+
+! Fill the tracers
+ft = 1
+do f = 1, state%nf
+  if (state%fields(f)%tracer) then
+
+    ! Skip if the short_name is qls, qcn or cfcn
+    if (trim(state%fields(f)%short_name) == 'qls'  ) cycle
+    if (trim(state%fields(f)%short_name) == 'qcn'  ) cycle
+    if (trim(state%fields(f)%short_name) == 'cfcn' ) cycle
+
+    ! Put specific humidity in the first spot
+    if (trim(state%fields(f)%short_name) == 'sphum') then
+      index = 1
+      sphum_found = .true.
+    else
+      ft = ft + 1
+      index = ft
+    end if
+    self%tracers(:,:,:,index) = state%fields(f)%array
+    self%tracer_names(index)  = trim(state%fields(f)%long_name)
+  end if
+end do
+
+if(.not.sphum_found) then
+  call abor1_ftn("fv3jedi_traj_mod:set: sphum is not listed in 'state variables'")
+end if
+
+
+! Copy all the optioanal parts of the trajectory
+! ----------------------------------------------
+
 ! Copy optional parts of the trajecotry (Rank 3)
-if (state%has_field('ua'     )) call state%get_field('ua'     , self%ua  )
-if (state%has_field('va'     )) call state%get_field('va'     , self%va  )
-if (state%has_field('ice_wat')) call state%get_field('ice_wat', self%qi  )
-if (state%has_field('liq_wat')) call state%get_field('liq_wat', self%ql  )
-if (state%has_field('o3mr'   )) call state%get_field('o3mr'   , self%o3  )
-if (state%has_field('w'      )) call state%get_field('w'      , self%w   )
-if (state%has_field('delz'   )) call state%get_field('delz'   , self%delz)
-if (state%has_field('qls'    )) call state%get_field('qls'    , self%qls )
-if (state%has_field('qcn'    )) call state%get_field('qcn'    , self%qcn )
-if (state%has_field('cfcn'   )) call state%get_field('cfcn'   , self%cfcn)
+if (state%has_field('ua'  )) call state%get_field('ua'  , self%ua  )
+if (state%has_field('va'  )) call state%get_field('va'  , self%va  )
+if (state%has_field('w'   )) call state%get_field('w'   , self%w   )
+if (state%has_field('delz')) call state%get_field('delz', self%delz)
+if (state%has_field('qls' )) call state%get_field('qls' , self%qls )
+if (state%has_field('qcn' )) call state%get_field('qcn' , self%qcn )
+if (state%has_field('cfcn')) call state%get_field('cfcn', self%cfcn)
 
 ! Copy optional parts of the trajecotry (Rank 2)
 if (state%has_field('phis')) then

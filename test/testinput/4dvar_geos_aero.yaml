@@ -1,0 +1,125 @@
+cost function:
+  cost type: 4D-Var
+  window begin: 2021-08-04T21:00:00Z
+  window length: PT6H
+
+  model:
+    name: PSEUDO
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/inputs/geos_c12
+    filenames: [aero_x48rt.abkg.eta.%yyyy%mm%dd_%hh%MMz.nc4, met_x48rt.bkg_clcv.%yyyy%mm%dd_%hh%MMz.nc4]
+    run stage check: true
+    tstep: PT3H
+
+  # ud,vd,t,p,delp,q,qi,qw are required by fv3lm
+  analysis variables: &anavars
+                      [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,
+                       air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,
+                       mass_fraction_of_sulfate_in_air,
+                       mass_fraction_of_hydrophobic_black_carbon_in_air,
+                       mass_fraction_of_hydrophilic_black_carbon_in_air,
+                       mass_fraction_of_hydrophobic_organic_carbon_in_air,
+                       mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                       mass_fraction_of_dust001_in_air, mass_fraction_of_dust002_in_air,
+                       mass_fraction_of_dust003_in_air, mass_fraction_of_dust004_in_air,
+                       mass_fraction_of_dust005_in_air, mass_fraction_of_sea_salt001_in_air,
+                       mass_fraction_of_sea_salt002_in_air, mass_fraction_of_sea_salt003_in_air,
+                       mass_fraction_of_sea_salt004_in_air] 
+
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+    akbk: Data/fv3files/akbk72.nc4
+    npx: 13
+    npy: 13
+    npz: 72
+    layout: [1,2]
+    field metadata override: Data/fieldmetadata/geos.yaml
+  background:
+    datetime: 2021-08-04T21:00:00Z
+    filetype: cube sphere history
+    datapath: Data/inputs/geos_c12
+    filenames: [aero_x48rt.abkg.eta.20210804_2100z.nc4, met_x48rt.bkg_clcv.20210804_2100z.nc4]
+    state variables: [ud,vd,t,delp,q,qi,ql,SO4,
+                      BCPHOBIC,BCPHILIC,BRPHOBIC,BRPHILIC,
+                      DU,DU002,DU003,DU004,DU005,
+                      SS,SS002,SS003,SS004]
+
+  background error:
+    covariance model: SABER
+    saber central block:
+      saber block name: ID
+ 
+  observations:
+    observers:
+    - obs space:
+        name: Aod
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_202108042100.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/hofx/aod_viirs_obs_4dvar_geos_aero_202108042100.nc4
+        simulated variables: [aerosolOpticalDepth]
+        channels: 4
+      obs operator:
+        name: AodCRTM
+        Absorbers: [H2O,O3]
+        obs options:
+          Sensor_ID: v.viirs-m_j1
+          EndianType: little_endian
+          CoefficientPath: Data/crtm/
+          AerosolOption: aerosols_gocart_default
+      obs error:
+        covariance model: diagonal
+      get values:
+        time interpolation: linear
+final:
+  diagnostics:
+    departures: oman
+output:
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/analysis
+  filename: 4dvar-geos_aero.an.2021-08-04T2100Z.nc4
+  first: PT0H
+  frequency: PT6H
+variational:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 10
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk72.nc4
+      npx: 13
+      npy: 13
+      npz: 72
+      layout: [1,2]
+      field metadata override: Data/fieldmetadata/geos.yaml 
+    diagnostics:
+      departures: ombg
+
+    linear model:
+      name: FV3JEDITLM
+      namelist filename: Data/fv3files/input_geos_c12_p12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT3H
+      tlm variables: *anavars
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      trajectory:
+        model variables: *anavars
+    linear variable change:
+      linear variable change name: Analysis2Model
+
+test:
+  reference filename: testoutput/4dvar_geos_aero.ref
+  test output filename: testoutput/4dvar_geos_aero.test.out
+  integer tolerance: 3
+  float relative tolerance: 1.0e-3

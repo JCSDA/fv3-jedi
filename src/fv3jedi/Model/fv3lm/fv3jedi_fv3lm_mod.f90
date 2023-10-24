@@ -35,6 +35,7 @@ type :: fv3lm_model
     procedure, public :: initialize
     procedure, public :: step
     procedure, public :: finalize
+    procedure, public :: allocate_tracers
 end type fv3lm_model
 
 ! --------------------------------------------------------------------------------------------------
@@ -65,7 +66,6 @@ deallocate(str)
 
 dtstep = trim(ststep)
 dt = real(duration_seconds(dtstep),kind_real)
-
 
 ! Model configuration and creation
 ! --------------------------------
@@ -119,6 +119,7 @@ implicit none
 class(fv3lm_model),  intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: state
 
+call self%allocate_tracers(state)
 call self%fv3jedi_lm%init_nl()
 
 end subroutine initialize
@@ -135,7 +136,6 @@ type(fv3jedi_geom),  intent(inout) :: geom
 call state_to_lm(state,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_nl()
 call lm_to_state(self%fv3jedi_lm,state)
-
 end subroutine step
 
 ! --------------------------------------------------------------------------------------------------
@@ -155,6 +155,10 @@ end subroutine finalize
 subroutine state_to_lm( state, lm )
 
 implicit none
+
+integer :: ft, f, index
+logical :: sphum_found = .false.
+
 type(fv3jedi_state),   intent(in)    :: state
 type(fv3jedi_lm_type), intent(inout) :: lm
 
@@ -165,9 +169,6 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: va
 real(kind=kind_real), pointer, dimension(:,:,:) :: t
 real(kind=kind_real), pointer, dimension(:,:,:) :: delp
 real(kind=kind_real), pointer, dimension(:,:,:) :: q
-real(kind=kind_real), pointer, dimension(:,:,:) :: qi
-real(kind=kind_real), pointer, dimension(:,:,:) :: ql
-real(kind=kind_real), pointer, dimension(:,:,:) :: o3
 real(kind=kind_real), pointer, dimension(:,:,:) :: w
 real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 real(kind=kind_real), pointer, dimension(:,:,:) :: phis
@@ -176,11 +177,26 @@ call state%get_field('ud'     , ud  )
 call state%get_field('vd'     , vd  )
 call state%get_field('t'      , t   )
 call state%get_field('delp'   , delp)
-call state%get_field('sphum'  , q   )
-call state%get_field('ice_wat', qi  )
-call state%get_field('liq_wat', ql  )
-if (state%has_field('o3mr'  )) call state%get_field('o3mr'  , o3)
-if (state%has_field('o3ppmv')) call state%get_field('o3ppmv', o3)
+
+ft = 1
+do f = 1, state%nf
+  if (state%fields(f)%tracer) then
+    if (trim(state%fields(f)%short_name) == 'sphum') then
+      index = 1
+      sphum_found = .true.
+    else
+      ft = ft + 1
+      index = ft
+    end if 
+    lm%traj%tracers(:,:,:,index) = state%fields(f)%array
+    lm%traj%tracer_names(index)  = trim(state%fields(f)%long_name)
+  end if
+end do
+
+if(.not.sphum_found) then
+  call abor1_ftn("state_to_lm: sphum is not on the tracer list")
+end if
+
 lm%traj%ua = 0.0_kind_real
 lm%traj%va = 0.0_kind_real
 
@@ -188,10 +204,6 @@ lm%traj%u       = ud(state%isc:state%iec,state%jsc:state%jec,:)
 lm%traj%v       = vd(state%isc:state%iec,state%jsc:state%jec,:)
 lm%traj%t       = t
 lm%traj%delp    = delp
-lm%traj%qv      = q
-lm%traj%qi      = qi
-lm%traj%ql      = ql
-lm%traj%o3      = o3
 
 if (state%has_field('ua')) then
   call state%get_field('ua',   ua  )
@@ -209,7 +221,6 @@ endif
 
 call state%get_field('phis', phis )
 lm%traj%phis = phis(:,:,1)
-
 end subroutine state_to_lm
 
 ! --------------------------------------------------------------------------------------------------
@@ -217,6 +228,10 @@ end subroutine state_to_lm
 subroutine lm_to_state( lm, state )
 
 implicit none
+
+integer :: ft, f, index
+logical :: sphum_found = .false.
+
 type(fv3jedi_lm_type), intent(in)    :: lm
 type(fv3jedi_state),   intent(inout) :: state
 
@@ -227,9 +242,6 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: va
 real(kind=kind_real), pointer, dimension(:,:,:) :: t
 real(kind=kind_real), pointer, dimension(:,:,:) :: delp
 real(kind=kind_real), pointer, dimension(:,:,:) :: q
-real(kind=kind_real), pointer, dimension(:,:,:) :: qi
-real(kind=kind_real), pointer, dimension(:,:,:) :: ql
-real(kind=kind_real), pointer, dimension(:,:,:) :: o3
 real(kind=kind_real), pointer, dimension(:,:,:) :: w
 real(kind=kind_real), pointer, dimension(:,:,:) :: delz
 real(kind=kind_real), pointer, dimension(:,:,:) :: phis
@@ -238,19 +250,29 @@ call state%get_field('ud'     , ud  )
 call state%get_field('vd'     , vd  )
 call state%get_field('t'      , t   )
 call state%get_field('delp'   , delp)
-call state%get_field('sphum'  , q   )
-call state%get_field('ice_wat', qi  )
-call state%get_field('liq_wat', ql  )
-if ( state%has_field('o3mr' ) )call state%get_field('o3mr'   , o3  )
-if ( state%has_field('o3ppmv' ) )call state%get_field('o3ppmv'   , o3  )
+
+ft = 1
+do f = 1, state%nf
+  if (state%fields(f)%tracer) then
+    if (trim(state%fields(f)%short_name) == 'sphum') then
+      index = 1
+      sphum_found = .true.
+    else
+      ft = ft + 1
+      index = ft
+    end if
+    state%fields(f)%array = lm%traj%tracers(:,:,:,index)
+  end if
+end do
+
+if(.not.sphum_found) then
+  call abor1_ftn("lm_to_state: sphum is not on the tracer list")
+end if
+
 ud(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%u
 vd(state%isc:state%iec,state%jsc:state%jec,:)      = lm%traj%v
 t       = lm%traj%t
 delp    = lm%traj%delp
-q       = lm%traj%qv
-qi      = lm%traj%qi
-ql      = lm%traj%ql
-o3      = lm%traj%o3
 
 if (state%has_field('ua')) then
   call state%get_field('ua',   ua  )
@@ -270,6 +292,38 @@ call state%get_field('phis', phis )
 phis(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine allocate_tracers(self, state)
+
+class(fv3lm_model),  intent(inout) :: self
+type(fv3jedi_state), intent(in)    :: state
+
+! This routine allocates the tracers based on what is in the state
+! ----------------------------------------------------------------
+
+if (allocated(self%fv3jedi_lm%traj%tracers)) then
+  if (state%ntracers == size(self%fv3jedi_lm%traj%tracers, 4)) then
+    ! tracers are already allocated to correct size, nothing to do
+    return
+  end if
+end if
+
+! Deallocate the tracer names if allocated
+if (allocated(self%fv3jedi_lm%traj%tracer_names)) deallocate (self%fv3jedi_lm%traj%tracer_names)
+
+! Allocate the tracer names
+allocate(self%fv3jedi_lm%traj%tracer_names(state%ntracers))
+
+! Deallocate the tracers if allocated
+if (allocated(self%fv3jedi_lm%traj%tracers)) deallocate (self%fv3jedi_lm%traj%tracers)
+
+! Allocate the tracers
+allocate(self%fv3jedi_lm%traj%tracers(state%isc:state%iec, state%jsc:state%jec, state%npz, &
+                                      state%ntracers))
+
+end subroutine allocate_tracers
 
 ! --------------------------------------------------------------------------------------------------
 

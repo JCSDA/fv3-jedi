@@ -92,22 +92,25 @@ end subroutine c_fv3jedi_tlm_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_tlm_initialize_tl(c_key_self, c_key_incr) &
+subroutine c_fv3jedi_tlm_initialize_tl(c_key_self, c_key_incr, c_key_traj) &
            bind(c,name='fv3jedi_tlm_initialize_tl_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self !< TLM
 integer(c_int), intent(in) :: c_key_incr !< Increment
+integer(c_int), intent(in) :: c_key_traj !< Trajectory
 
 type(fv3jedi_tlm),       pointer :: self
 type(fv3jedi_increment), pointer :: incr
+type(fv3jedi_traj),      pointer :: traj
 
 ! Linked list
 call fv3jedi_increment_registry%get(c_key_incr,incr)
 call fv3jedi_tlm_registry%get(c_key_self, self)
+call fv3jedi_traj_registry%get(c_key_traj,traj)
 
 ! Implementation
-call self%initialize_tl(incr)
+call self%initialize_tl(incr, traj)
 
 end subroutine c_fv3jedi_tlm_initialize_tl
 
@@ -158,22 +161,25 @@ end subroutine c_fv3jedi_tlm_finalize_tl
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_tlm_initialize_ad(c_key_self, c_key_incr) &
+subroutine c_fv3jedi_tlm_initialize_ad(c_key_self, c_key_incr, c_key_traj) &
            bind(c,name='fv3jedi_tlm_initialize_ad_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self !< TLM
 integer(c_int), intent(in) :: c_key_incr !< Increment
+integer(c_int), intent(in) :: c_key_traj !< Trajectory
 
 type(fv3jedi_tlm),       pointer :: self
 type(fv3jedi_increment), pointer :: incr
+type(fv3jedi_traj),      pointer :: traj
 
 ! Linked list
 call fv3jedi_increment_registry%get(c_key_incr,incr)
 call fv3jedi_tlm_registry%get(c_key_self, self)
+call fv3jedi_traj_registry%get(c_key_traj,traj)
 
 ! Implementation
-call self%initialize_ad(incr)
+call self%initialize_ad(incr, traj)
 
 end subroutine c_fv3jedi_tlm_initialize_ad
 

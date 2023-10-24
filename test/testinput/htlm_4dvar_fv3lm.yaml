@@ -65,7 +65,7 @@ cost function:
         - name: airTemperature
         threshold: 6.0
   cost type: 4D-Var
-  analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
+  analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   variable change:
