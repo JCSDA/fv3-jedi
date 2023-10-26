@@ -119,10 +119,9 @@ class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_traj),      intent(in)    :: traj
 
-! Make sure the tracers are allocated
-call allocate_traj_tracers(self%fv3jedi_lm, traj)
-call allocate_pert_tracers(self%fv3jedi_lm, inc)
-
+! Make sure the tracers are allocated (true => both traj and pert tracers)
+call self%fv3jedi_lm%allocate_tracers(inc%isc, inc%iec, inc%jsc, inc%jec, &
+                                      inc%npz, inc%ntracers, .true.)
 call traj_to_traj(traj, self%fv3jedi_lm)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
@@ -139,10 +138,9 @@ class(fv3jedi_tlm),      intent(inout) :: self
 type(fv3jedi_increment), intent(inout) :: inc
 type(fv3jedi_traj),      intent(in)    :: traj
 
-! Make sure the tracers are allocated
-call allocate_traj_tracers(self%fv3jedi_lm, traj)
-call allocate_pert_tracers(self%fv3jedi_lm, inc)
-
+! Make sure the tracers are allocated (true => both traj and pert tracers)
+call self%fv3jedi_lm%allocate_tracers(inc%isc, inc%iec, inc%jsc, inc%jec, &
+                                      inc%npz, inc%ntracers, .true.)
 call traj_to_traj(traj, self%fv3jedi_lm)
 
 call inc_to_lm(inc,self%fv3jedi_lm)
@@ -208,66 +206,6 @@ call self%fv3jedi_lm%final_tl()
 call lm_to_inc(self%fv3jedi_lm,inc)
 
 end subroutine finalize_tl
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine allocate_traj_tracers(lm, traj)
-
-type(fv3jedi_lm_type),   intent(inout) :: lm
-type(fv3jedi_traj),      intent(in)    :: traj
-
-! This routine allocates the perturbation tracers based on what is in the increment
-! ------------------------------------------------------------------------------
-
-if (allocated(lm%traj%tracers)) then
-  if ((traj%ntracers == size(lm%traj%tracers, 4))) then
-    return
-  end if
-end if
-
-! Deallocate the perturbation tracer names if allocated
-if (allocated(lm%traj%tracer_names)) deallocate (lm%traj%tracer_names)
-
-! Allocate the perturbation tracer names
-allocate(lm%traj%tracer_names(traj%ntracers))
-
-! Deallocate the perturbation tracers if allocated
-if (allocated(lm%traj%tracers)) deallocate (lm%traj%tracers)
-
-! Allocate the perturbation tracers
-allocate(lm%traj%tracers(traj%isc:traj%iec, traj%jsc:traj%jec, traj%npz, traj%ntracers))
-
-end subroutine allocate_traj_tracers
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine allocate_pert_tracers(lm, inc)
-
-type(fv3jedi_lm_type),   intent(inout) :: lm
-type(fv3jedi_increment), intent(in)    :: inc
-
-! This routine allocates the perturbation tracers based on what is in the increment
-! ------------------------------------------------------------------------------
-
-if (allocated(lm%pert%tracers)) then
-  if (inc%ntracers == size(lm%pert%tracers, 4)) then
-    return
-  end if
-end if
-
-! Deallocate the perturbation tracer names if allocated
-if (allocated(lm%pert%tracer_names)) deallocate (lm%pert%tracer_names)
-
-! Allocate the perturbation tracer names
-allocate(lm%pert%tracer_names(inc%ntracers))
-
-! Deallocate the perturbation tracers if allocated
-if (allocated(lm%pert%tracers)) deallocate (lm%pert%tracers)
-
-! Allocate the perturbation tracers
-allocate(lm%pert%tracers(inc%isc:inc%iec, inc%jsc:inc%jec, inc%npz, inc%ntracers))
-
-end subroutine allocate_pert_tracers
 
 ! --------------------------------------------------------------------------------------------------
 

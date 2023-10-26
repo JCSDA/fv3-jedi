@@ -166,6 +166,7 @@ do var = 1, size(self%fields)
   if (self%fields(var)%lalloc) deallocate(self%fields(var)%array)
 enddo
 deallocate(self%fields)
+
 end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
@@ -182,7 +183,9 @@ call checksame(self%fields, other%fields, "fv3jedi_fields_mod.copy")
 do var = 1, self%nf
   self%fields(var)%array = other%fields(var)%array
 enddo
+
 self%ntracers = other%ntracers
+
 end subroutine copy
 
 ! --------------------------------------------------------------------------------------------------
@@ -196,6 +199,7 @@ integer :: var
 do var = 1, self%nf
   self%fields(var)%array = 0.0_kind_real
 enddo
+
 endsubroutine zero
 
 ! --------------------------------------------------------------------------------------------------

@@ -35,7 +35,6 @@ type :: fv3lm_model
     procedure, public :: initialize
     procedure, public :: step
     procedure, public :: finalize
-    procedure, public :: allocate_tracers
 end type fv3lm_model
 
 ! --------------------------------------------------------------------------------------------------
@@ -93,7 +92,7 @@ call fmsnamelist%revert_namelist
 !from file or obtained by running GEOS or GFS.
 if ((self%fv3jedi_lm%conf%do_phy_trb .ne. 0) .or. &
     (self%fv3jedi_lm%conf%do_phy_mst .ne. 0) ) then
-   call abor1_ftn("fv3lm_model | FV3LM : unless reading the trajecotory physics should be off")
+   call abor1_ftn("fv3lm_model | FV3LM : unless reading the trajectory physics should be off")
 endif
 
 end subroutine create
@@ -119,7 +118,10 @@ implicit none
 class(fv3lm_model),  intent(inout) :: self
 type(fv3jedi_state), intent(in)    :: state
 
-call self%allocate_tracers(state)
+! Make sure the tracers are allocated (false => trajectory only)
+call self%fv3jedi_lm%allocate_tracers(state%isc, state%iec, state%jsc, state%jec, &
+                                      state%npz, state%ntracers, .false.)
+
 call self%fv3jedi_lm%init_nl()
 
 end subroutine initialize
@@ -292,38 +294,6 @@ call state%get_field('phis', phis )
 phis(:,:,1)    = lm%traj%phis
 
 end subroutine lm_to_state
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine allocate_tracers(self, state)
-
-class(fv3lm_model),  intent(inout) :: self
-type(fv3jedi_state), intent(in)    :: state
-
-! This routine allocates the tracers based on what is in the state
-! ----------------------------------------------------------------
-
-if (allocated(self%fv3jedi_lm%traj%tracers)) then
-  if (state%ntracers == size(self%fv3jedi_lm%traj%tracers, 4)) then
-    ! tracers are already allocated to correct size, nothing to do
-    return
-  end if
-end if
-
-! Deallocate the tracer names if allocated
-if (allocated(self%fv3jedi_lm%traj%tracer_names)) deallocate (self%fv3jedi_lm%traj%tracer_names)
-
-! Allocate the tracer names
-allocate(self%fv3jedi_lm%traj%tracer_names(state%ntracers))
-
-! Deallocate the tracers if allocated
-if (allocated(self%fv3jedi_lm%traj%tracers)) deallocate (self%fv3jedi_lm%traj%tracers)
-
-! Allocate the tracers
-allocate(self%fv3jedi_lm%traj%tracers(state%isc:state%iec, state%jsc:state%jec, state%npz, &
-                                      state%ntracers))
-
-end subroutine allocate_tracers
 
 ! --------------------------------------------------------------------------------------------------
 
