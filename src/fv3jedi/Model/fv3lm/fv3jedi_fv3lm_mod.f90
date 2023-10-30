@@ -122,6 +122,7 @@ type(fv3jedi_state), intent(in)    :: state
 call self%fv3jedi_lm%allocate_tracers(state%isc, state%iec, state%jsc, state%jec, &
                                       state%npz, state%ntracers, .false.)
 
+call state_to_lm(state,self%fv3jedi_lm)
 call self%fv3jedi_lm%init_nl()
 
 end subroutine initialize
@@ -135,9 +136,9 @@ class(fv3lm_model),  intent(inout) :: self
 type(fv3jedi_state), intent(inout) :: state
 type(fv3jedi_geom),  intent(inout) :: geom
 
-call state_to_lm(state,self%fv3jedi_lm)
 call self%fv3jedi_lm%step_nl()
 call lm_to_state(self%fv3jedi_lm,state)
+
 end subroutine step
 
 ! --------------------------------------------------------------------------------------------------
@@ -189,7 +190,7 @@ do f = 1, state%nf
     else
       ft = ft + 1
       index = ft
-    end if 
+    end if
     lm%traj%tracers(:,:,:,index) = state%fields(f)%array
     lm%traj%tracer_names(index)  = trim(state%fields(f)%long_name)
   end if
@@ -223,6 +224,7 @@ endif
 
 call state%get_field('phis', phis )
 lm%traj%phis = phis(:,:,1)
+
 end subroutine state_to_lm
 
 ! --------------------------------------------------------------------------------------------------
