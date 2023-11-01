@@ -433,7 +433,7 @@ Data/fieldmetadata/geoscf_jedi.yaml
 Data/fieldmetadata/gfs-aerosol.yaml
 Data/fieldmetadata/ufs-aerosol.yaml
 Data/fieldmetadata/gfs-history.yaml
-Data/fieldmetadata/gfs-land.yaml
+Data/fieldmetadata/gfs_v17-land.yaml
 Data/fieldmetadata/gfs-restart.yaml
 Data/fieldmetadata/lam_cmaq.yaml
 )

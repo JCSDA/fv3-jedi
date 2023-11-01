@@ -15,6 +15,7 @@ field metadata:
 - long name: stc
   io file: surface
 
-- long name: soilMoistureVolumetric 
+# this yaml is appropriate for gfs v16
+- long name: soilMoistureVolumetric
   io name: smc
   io file: surface

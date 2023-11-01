@@ -60,7 +60,7 @@ ObsLocVerticalBrasnett::ObsLocVerticalBrasnett(const Parameters_ & params,
                     << std::endl;
 
   // read height of measurements
-  obsspace.get_db("MetaData", "height", obsHeight_);
+  obsspace.get_db("MetaData", "stationElevation", obsHeight_);
 }
 // -----------------------------------------------------------------------------
 

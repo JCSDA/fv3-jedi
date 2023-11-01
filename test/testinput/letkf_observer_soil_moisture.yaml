@@ -6,7 +6,7 @@ geometry:
   npx: 49
   npy: 49
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-land.yaml
+  field metadata override: Data/fieldmetadata/gfs_v17-land.yaml
   time invariant fields:
     state fields:
       datetime: 2023-05-01T12:00:00Z
@@ -52,7 +52,7 @@ observations:
   - obs space:
       name: SoilMoistureSMAP
       distribution:
-        name: InefficientDistribution 
+        name: InefficientDistribution
       simulated variables: [soilMoistureVolumetric]
       obsdatain:
         engine:
@@ -61,7 +61,7 @@ observations:
     obs operator:
       name: VertInterp
       constant vertical coordinate values: [0.1, 0.5, 1.0, 2.0]
-      interpolation method: nearest-neighbor 
+      interpolation method: nearest-neighbor
       observation vertical coordinate group: MetaData
       observation vertical coordinate: depthBelowSoilSurface
     obs error:
@@ -87,7 +87,7 @@ observations:
           name: GeoVaLs/slmsk
         minvalue: 0.5
         maxvalue: 1.5
-    - filter: BlackList 
+    - filter: BlackList
       where:
       - variable: # exclude certain IGBP vegetation types
           name: GeoVaLs/vtype
