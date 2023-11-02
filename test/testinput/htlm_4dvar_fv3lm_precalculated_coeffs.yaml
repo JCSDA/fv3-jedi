@@ -124,12 +124,12 @@ variational:
           trajectory:
             model variables: *anavars
       update tstep: PT3H
-      update variables: *anavars
+      variables: *anavars
       coefficients:
         input:
           base filepath: Data/4dvar_htlm_fv3lm_coeffs
           one file per task: true
-        training variables: [air_temperature]
+        update variables: [air_temperature]
         influence region size: 2
         window length: PT6H
         window begin: 2020-12-14T21:00:00Z
