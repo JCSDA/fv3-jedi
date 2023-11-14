@@ -73,6 +73,7 @@ cost function:
           EndianType: little_endian
           CoefficientPath: Data/crtm/
           AerosolOption: aerosols_gocart_default
+          model units coeff: 1.0e9  
       obs error:
         covariance model: diagonal
       get values:
