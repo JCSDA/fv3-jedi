@@ -255,7 +255,7 @@ final:
     output:
       filetype: fms restart
       datapath: Data/analysis
-      prefix: 20201214.210000.inc.hyb-fgat.c12
+      prefix: 20201215.000000.inc.hyb-fgat.c12
   increment to latlon:
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
