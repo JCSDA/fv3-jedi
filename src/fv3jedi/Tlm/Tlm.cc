@@ -31,11 +31,12 @@ Tlm::Tlm(const Geometry & resol, const eckit::Configuration & config)
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 
+  // Store time step
+  tstep_ = util::Duration(config.getString("tstep"));
+
   oops::Variables tlvars(config, "tlm variables");
   linvars_ = oops::Variables(resol.fieldsMetaData().getLongNameFromAnyName(tlvars));
 
-  // Store time step
-  tstep_ = util::Duration(config.getString("tstep"));
 
   // Implementation
   fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), config);

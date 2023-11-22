@@ -121,7 +121,7 @@ subroutine create(self, geom, vars)
   enddo
 
   ! Check field count
-  if (fc .ne. self%nf) call abor1_ftn("fv3jedi_fields_mod create: fc does not equal self%nf")
+  if (fc .ne. self%nf) call abor1_ftn("fv3jedi_fields_mod.create: fc does not equal self%nf")
 
   ! Initialize all arrays to zero
   call self%zero()

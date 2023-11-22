@@ -49,7 +49,7 @@ namespace fv3jedi {
 // Linear model definition.
 
 class Tlm: public oops::interface::LinearModelBase<Traits>,
-                private util::ObjectCounter<Tlm> {
+           private util::ObjectCounter<Tlm> {
  public:
   static const std::string classname() {return "fv3jedi::Tlm";}
 
@@ -81,7 +81,7 @@ class Tlm: public oops::interface::LinearModelBase<Traits>,
 // Data
   F90model keySelf_;
   util::Duration tstep_;
-  std::map< util::DateTime, F90traj> trajmap_;
+  std::map<util::DateTime, F90traj> trajmap_;
   oops::Variables linvars_;
 };
 // -------------------------------------------------------------------------------------------------

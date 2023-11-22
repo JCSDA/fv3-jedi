@@ -210,7 +210,7 @@ void Increment::write(const eckit::Configuration & config) const {
   // Create IO object
   std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
-  // Perform read
+  // Perform write
   io->write(*this);
 }
 // -------------------------------------------------------------------------------------------------

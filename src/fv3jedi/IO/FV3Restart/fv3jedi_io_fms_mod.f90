@@ -85,7 +85,7 @@ character(len=13) :: fileconf(numfiles)
 ! -----------------
 call conf%get_or_die("datapath",str)
 if (len(str) > 128) &
-  call abor1_ftn('fv3jedi_io_fms_mod.setup: datapath too long, max FMS char length= 128')
+  call abor1_ftn('fv3jedi_io_fms_mod.create: datapath too long, max FMS char length= 128')
 
 ! For ensemble methods switch out member template
 ! -----------------------------------------------
@@ -127,7 +127,7 @@ do n = 1, numfiles
   ! Retrieve user input filenames if available
   if (conf%has(fileconf(n))) then
     call conf%get_or_die(fileconf(n),str)
-    if (len(str) > 128) call abor1_ftn("fv3jedi_io_fms_mod.setup: "//fileconf(n)//&
+    if (len(str) > 128) call abor1_ftn("fv3jedi_io_fms_mod.create: "//fileconf(n)//&
                                         " too long, max FMS char length= 128")
     call add_iteration(conf,str)
     self%filenames_conf(n) = str
@@ -206,6 +206,7 @@ subroutine read(self, vdate, fields)
 class(fv3jedi_io_fms), intent(inout) :: self
 type(datetime),        intent(inout) :: vdate
 type(fv3jedi_field),   intent(inout) :: fields(:)
+
 integer :: n
 
 ! Overwrite any datetime templates in the file names
@@ -325,7 +326,7 @@ vdate_string_file = cdate(1:4)//'-'//cdate(5:6)//'-'//cdate(7:8)//'T'// &
 
 ! Assert
 if (trim(vdate_string_file) .ne. trim(vdate_string)) &
-  call abor1_ftn("io_cube_sphere_history.read.check_datetime: Datetime set in config (" &
+  call abor1_ftn("io_cube_sphere_history.read_meta: Datetime set in config (" &
                  //trim(vdate_string)//") does not match that read from the file (" &
                  //trim(vdate_string_file)//").")
 
@@ -374,9 +375,6 @@ do var = 1,size(fields)
     fields(indexof_ps)%io_name = 'DELP'
   endif
 
-  ! Get file to use
-  call get_io_file(self, fields(var), indexrst)
-
   ! Convert fv3jedi position to fms position
   position = center
   if (fields(var)%horizontal_stagger_location == 'northsouth') then
@@ -384,6 +382,9 @@ do var = 1,size(fields)
   elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
     position = east
   endif
+
+  ! Get file to use
+  call get_io_file(self, fields(var), indexrst)
 
   ! Flag to read this restart
   rstflag(indexrst) = .true.
@@ -501,7 +502,6 @@ do var = 1,size(fields)
                                   units = trim(fields(var)%units) )
 
 enddo
-
 
 ! Loop over files and write fields
 ! -------------------------------

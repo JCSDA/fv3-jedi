@@ -166,7 +166,7 @@ call fv3jedi_state_registry%get(c_key_state, f_state)
 
 ! Call implementation
 ! -------------------
-call f_self%write(f_state%fields, f_state%time)
+call f_self%write(f_state%time, f_state%fields)
 
 end subroutine c_fv3jedi_io_cube_sphere_history_write_state
 
@@ -189,7 +189,7 @@ call fv3jedi_increment_registry%get(c_key_increment, f_increment)
 
 ! Call implementation
 ! -------------------
-call f_self%write(f_increment%fields, f_increment%time)
+call f_self%write(f_increment%time, f_increment%fields)
 
 end subroutine c_fv3jedi_io_cube_sphere_history_write_increment
 

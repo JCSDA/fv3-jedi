@@ -41,11 +41,11 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine add_increment(self, increment)
+subroutine add_increment(self, increment_fields)
 
 ! Arguments
 class(fv3jedi_state), intent(inout) :: self
-type(fv3jedi_field),  intent(in)    :: increment(:)
+type(fv3jedi_field),  intent(in)    :: increment_fields(:)
 
 ! Locals
 integer :: f, i, j, k
@@ -53,13 +53,13 @@ logical :: found_neg
 type(fv3jedi_field), pointer :: state
 
 ! Loop over the increment fields and add them to the state
-do f = 1, size(increment)
+do f = 1, size(increment_fields)
 
-  !Get pointer to state
-  call self%get_field(increment(f)%short_name, state)
+  ! Get pointer to state
+  call self%get_field(increment_fields(f)%short_name, state)
 
-  !Add increment to state
-  state%array = state%array + increment(f)%array
+  ! Add increment to state
+  state%array = state%array + increment_fields(f)%array
 
   ! Disallow tracers to become negative
   if (state%tracer) then
@@ -77,13 +77,14 @@ do f = 1, size(increment)
       enddo
     enddo
 
-    !Print message warning about negative tracer removal
-    if (found_neg .and. self%f_comm%rank() == 0) print*, &
-      'fv3jedi_state_mod.add_incr: Removed negative values for '//trim(state%long_name)
+    ! Print message warning about negative tracer removal
+    if (found_neg .and. self%f_comm%rank() == 0) then
+      print*, 'fv3jedi_state_mod.add_incr: Removed negative values for '//trim(state%long_name)
+    end if
 
   endif
 
-  !Nullify pointer
+  ! Nullify pointer
   nullify(state)
 
 enddo

@@ -546,12 +546,12 @@ end subroutine read
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, fields, vdate)
+subroutine write(self, vdate, fields)
 
 ! Arguments
 class(fv3jedi_io_cube_sphere_history), intent(inout) :: self
-type(fv3jedi_field),                   intent(in)    :: fields(:)
 type(datetime),                        intent(in)    :: vdate
+type(fv3jedi_field),                   intent(in)    :: fields(:)
 
 ! Assert that there is only one file for writing
 ! ----------------------------------------------

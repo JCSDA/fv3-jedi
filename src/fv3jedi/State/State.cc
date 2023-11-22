@@ -45,17 +45,13 @@ State::State(const Geometry & geom, const oops::Variables & vars, const util::Da
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const eckit::Configuration & config)
-  : geom_(geom), time_(util::DateTime()), vars_()
+  : geom_(geom), vars_(), time_(util::DateTime())
 {
   oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
   StateParameters params;
   params.deserialize(config);
 
-  // Datetime from the config for read and analytical
-  ASSERT(params.datetime.value() != boost::none);
-  time_ = util::DateTime(*params.datetime.value());
-
-  // Set up time and vars
+  // Set up vars
   if (params.analytic.value() != boost::none) {
     // Variables are hard coded for analytic initial condition (must not be provided)
     ASSERT(params.stateVariables.value() == boost::none);
@@ -69,6 +65,10 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
 
   // Set long name variables
   vars_ = geom_.fieldsMetaData().getLongNameFromAnyName(vars_);
+
+  // Datetime from the config for read and analytical
+  ASSERT(params.datetime.value() != boost::none);
+  time_ = util::DateTime(*params.datetime.value());
 
   // Allocate state
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
