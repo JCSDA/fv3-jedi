@@ -33,7 +33,7 @@ LinearVariableChange::LinearVariableChange(const Geometry & geom,
   ModelData modelData{geom};
   eckit::LocalConfiguration vaderConfig;
   vaderConfig.set(vader::configCookbookKey,
-                                variableChangeConfig.getSubConfiguration("vader custom cookbook"));
+                  variableChangeConfig.getSubConfiguration("vader custom cookbook"));
   vaderConfig.set(vader::configModelVarsKey, modelData.modelData());
 
   // Create vader with fv3-jedi custom cookbook
@@ -51,28 +51,28 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   oops::Log::trace() << "LinearVariableChange::changeVarTraj starting" << std::endl;
 
   // Make sure vars are longname
-  // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // Call Vader's changeVarTraj to populate its trajectory
-  // ------------------------------------------------------
   State vader_xfg(xfg);
 
   // Record start variables
-  oops::Variables varsPopulated = vader_xfg.variables();
+  oops::Variables varsFilled = vader_xfg.variables();
 
-  oops::Variables neededVars = vars;
-  neededVars -= varsPopulated;  // Pass only the needed variables
+  oops::Variables varsVader = vars;
+  varsVader -= varsFilled;  // Pass only the needed variables
 
-  // Call Vader. On entry, neededVars holds the vars requested from Vader; on exit,
+  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
   // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
   // vader_.changeVarTraj also returns the variables fulfilled by Vader.
   atlas::FieldSet xfgfs;
   vader_xfg.toFieldSet(xfgfs);
-  varsVaderPopulates_ = vader_->changeVarTraj(xfgfs, neededVars);
-  varsPopulated += varsVaderPopulates_;
-  vader_xfg.updateFields(varsPopulated);
-  vader_xfg.fromFieldSet(xfgfs);
+  varsVaderPopulates_ = vader_->changeVarTraj(xfgfs, varsVader);
+  if (varsVaderPopulates_.size() > 0) {
+    varsFilled += varsVaderPopulates_;
+    vader_xfg.updateFields(varsFilled);
+    vader_xfg.fromFieldSet(xfgfs);
+  }
 
   // Create the model variable change
   linearVariableChange_.reset(LinearVariableChangeFactory::create(vader_xfg, vader_xfg, geom_,
@@ -83,31 +83,33 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
 // -------------------------------------------------------------------------------------------------
 
 void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & vars_out) const {
+  // Make sure vars are longname
+  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
+
   // If all variables already in incoming state just remove the no longer needed fields
-  if (vars_out <= dx.variables()) {
-    dx.updateFields(vars_out);
+  if (vars <= dx.variables()) {
+    dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::changeVarTL done (identity)" << std::endl;
     return;
   }
 
-  // Make sure vars are longname
-  // ---------------------------
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
-
   // Call Vader. On entry, varsVaderWillPopulate holds the vars requested from Vader; on exit,
-  // it should be empty, since we know which variables Vader will do from the changeVarTraj call.
+  // it should be empty, since we know which variables Vader will do from the changeVarTraj
+  // call.
   atlas::FieldSet dxfs;
   dx.toFieldSet(dxfs);
   oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
-  vader_->changeVarTL(dxfs, varsVaderWillPopulate);
-  ASSERT(varsVaderWillPopulate.size() == 0);
+  if (varsVaderWillPopulate.size() > 0) {
+    vader_->changeVarTL(dxfs, varsVaderWillPopulate);
+    ASSERT(varsVaderWillPopulate.size() == 0);
 
-  // Set intermediate state for the Increment containing original fields plus the ones
-  // Vader has done
-  oops::Variables varsVader = dx.variables();
-  varsVader += varsVaderPopulates_;
-  dx.updateFields(varsVader);
-  dx.fromFieldSet(dxfs);
+    // Set intermediate state for the Increment containing original fields plus the ones
+    // Vader has done
+    oops::Variables varsVader = dx.variables();
+    varsVader += varsVaderPopulates_;
+    dx.updateFields(varsVader);
+    dx.fromFieldSet(dxfs);
+  }
 
   // Create output state
   Increment dxout(dx.geometry(), vars, dx.time());
@@ -126,8 +128,12 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarInverseTL(Increment & dx, const oops::Variables & vars) const {
+void LinearVariableChange::changeVarInverseTL(Increment & dx,
+                                              const oops::Variables & vars_out) const {
   oops::Log::trace() << "LinearVariableChange::changeVarInverseTL starting" << std::endl;
+
+  // Make sure vars are longname
+  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (vars <= dx.variables()) {
@@ -154,16 +160,15 @@ void LinearVariableChange::changeVarInverseTL(Increment & dx, const oops::Variab
 // -------------------------------------------------------------------------------------------------
 
 void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & vars_out) const {
+  // Make sure vars are longname
+  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
+
   // If all variables already in incoming state just remove the no longer needed fields
-  if (vars_out <= dx.variables()) {
-    dx.updateFields(vars_out);
+  if (vars <= dx.variables()) {
+    dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::changeVarAD done (identity)" << std::endl;
     return;
   }
-
-  // Make sure vars are longname
-  // ---------------------------
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // Create dxin as a copy of dx, minus the variables created by Vader (in the forward direction)
   // This way we ensure the model code will not be able to do the adjoint for these vars
@@ -179,22 +184,25 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
 
   // Call model's adjoint variable change.
   linearVariableChange_->multiplyAD(dxin, dxout);
+
   // dxout needs to temporarily have the variables that Vader populated put into it before
   // being passed into vader_.changeVarAD, so Vader can do its adjoints.
   atlas::FieldSet dxout_fs;
   dxout.toFieldSet(dxout_fs);
-  atlas::FieldSet dx_fs;
-  dx.toFieldSet(dx_fs);
-  for (const auto field : dx_fs) {
-    dxout_fs.add(field);
-  }
-
   oops::Variables varsVaderWillAdjoint = varsVaderPopulates_;
-  vader_->changeVarAD(dxout_fs, varsVaderWillAdjoint);
+  if (varsVaderWillAdjoint.size() > 0) {
+    atlas::FieldSet dx_fs;
+    dx.toFieldSet(dx_fs);
+    for (const auto field : dx_fs) {
+      dxout_fs.add(field);
+    }
 
-  // After changeVarAD, vader should have removed everything from varsVaderWillAdjoint,
-  // indicating it did all the adjoints we expected it to.
-  ASSERT(varsVaderWillAdjoint.size() == 0);
+    vader_->changeVarAD(dxout_fs, varsVaderWillAdjoint);
+
+    // After changeVarAD, vader should have removed everything from varsVaderWillAdjoint,
+    // indicating it did all the adjoints we expected it to.
+    ASSERT(varsVaderWillAdjoint.size() == 0);
+  }
 
   // Copy dxout into dx for return
   dx.updateFields(vars);
@@ -205,8 +213,12 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarInverseAD(Increment & dx, const oops::Variables & vars) const {
+void LinearVariableChange::changeVarInverseAD(Increment & dx,
+                                              const oops::Variables & vars_out) const {
   oops::Log::trace() << "LinearVariableChange::changeVarInverseAD starting" << std::endl;
+
+  // Make sure vars are longname
+  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (vars <= dx.variables()) {

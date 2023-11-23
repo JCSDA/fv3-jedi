@@ -38,7 +38,7 @@ VariableChange::VariableChange(const eckit::Configuration & config, const Geomet
   ModelData modelData{geometry};
   eckit::LocalConfiguration vaderConfig;
   vaderConfig.set(vader::configCookbookKey,
-                                variableChangeConfig.getSubConfiguration("vader custom cookbook"));
+                  variableChangeConfig.getSubConfiguration("vader custom cookbook"));
   vaderConfig.set(vader::configModelVarsKey, modelData.modelData());
 
   // Create vader with fv3-jedi custom cookbook
@@ -63,8 +63,8 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Return if required vars in input
-  // --------------------------------
+  // Return if output vars already in input
+  // --------------------------------------
   if (vars <= x.variables()) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVar done (identity)" << std::endl;
@@ -82,15 +82,18 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
   // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
   // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
-  // and populated and added to the FieldSet (xfs).
-  atlas::FieldSet xfs;
-  x.toFieldSet(xfs);
+  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are
+  // allocated and populated and added to the FieldSet (xfs).
   if (run_vader_) {
-    varsFilled += vader_->changeVar(xfs, varsVader);
-    x.updateFields(varsFilled);
+    atlas::FieldSet xfs;
+    x.toFieldSet(xfs);
+    const oops::Variables varsVaderPopulated = vader_->changeVar(xfs, varsVader);
+    if (varsVaderPopulated.size() > 0) {
+      varsFilled += varsVaderPopulated;
+      x.updateFields(varsFilled);
+      x.fromFieldSet(xfs);
+    }
   }
-  x.fromFieldSet(xfs);
 
   // Perform fv3jedi factory variable change
   // ---------------------------------------
@@ -123,8 +126,8 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // ---------------------------
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Return if required vars in input
-  // --------------------------------
+  // Return if output vars already in input
+  // --------------------------------------
   if (vars <= x.variables()) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVarInverse done (identity)" << std::endl;
@@ -142,13 +145,16 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
 
   // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
   // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
-  // and populated and added to the FieldSet (xfs).
+  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are
+  // allocated and populated and added to the FieldSet (xfs).
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
-  varsFilled += vader_->changeVar(xfs, varsVader);
-  x.updateFields(varsFilled);
-  x.fromFieldSet(xfs);
+  const oops::Variables varsVaderPopulated = vader_->changeVar(xfs, varsVader);
+  if (varsVaderPopulated.size() > 0) {
+    varsFilled += varsVaderPopulated;
+    x.updateFields(varsFilled);
+    x.fromFieldSet(xfs);
+  }
 
   // Perform fv3jedi factory variable change
   // ---------------------------------------

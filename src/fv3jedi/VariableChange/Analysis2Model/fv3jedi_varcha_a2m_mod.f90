@@ -121,7 +121,7 @@ do index_mod = 1, xmod%nf
   endif
 
   if (failed) &
-    call abor1_ftn("fv3jedi_linvarcha_a2m_mod.changevar: Found no way of getting " &
+    call abor1_ftn("fv3jedi_varcha_a2m_mod.changevar: Found no way of getting " &
                    // trim(xmod%fields(index_mod)%short_name) // " from the analysis state.")
 
 enddo
@@ -151,7 +151,7 @@ do index_ana = 1, xana%nf
   index_mod_found = -1
   failed = .true.
 
-  !Check analysis for presence of field
+  !Check model for presence of field
   do index_mod = 1, xmod%nf
     if (xana%fields(index_ana)%short_name == xmod%fields(index_mod)%short_name) then
       index_mod_found = index_mod
@@ -190,7 +190,7 @@ do index_ana = 1, xana%nf
   endif
 
   if (failed) &
-    call abor1_ftn("fv3jedi_linvarcha_a2m_mod.changevarinverse: Found no way of getting " &
+    call abor1_ftn("fv3jedi_varcha_a2m_mod.changevarinverse: Found no way of getting " &
                    // trim(xmod%fields(index_mod)%short_name) // " from the model state.")
 
 enddo
