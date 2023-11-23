@@ -109,6 +109,7 @@ list( APPEND fv3jedi_testinput
   testinput/4dvar_geos_cf.yaml
   testinput/4denvar.yaml
   testinput/4denvar_seq.yaml
+  testinput/4dvar_hybrid_linear_model.yaml
   testinput/addincrement_geos.yaml
   testinput/addincrement_gfs.yaml
   testinput/bumpparameters_nicas_geos_p12.yaml
@@ -191,8 +192,8 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_save_geovals.yaml
-  testinput/htlm_4dvar_fv3lm.yaml
-  testinput/htlm_4dvar_fv3lm_precalculated_coeffs.yaml
+  testinput/hybrid_linear_model.yaml
+  testinput/hybrid_linear_model_with_stlm_physics.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
   testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
@@ -216,8 +217,6 @@ list( APPEND fv3jedi_testinput
   testinput/adjointforecast.yaml
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
-  testinput/linearmodel_htlm.yaml
-  testinput/linearmodel_htlm_physics.yaml
   testinput/linearvariablechange_geos.yaml
   testinput/linearvariablechange_gfs.yaml
   testinput/localization_bump.yaml
@@ -280,6 +279,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
   testoutput/4denvar.ref
+  testoutput/4dvar_hybrid_linear_model.ref
   testoutput/4dvar_geos_aero.ref
   testoutput/4dvar_geos_cf.ref
   testoutput/addincrement_geos.ref
@@ -339,7 +339,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_lam_rrfs.ref
   testoutput/hofx_save_geovals.ref
-  testoutput/htlm_4dvar_fv3lm.ref
   testoutput/hyb-3dvar_fsoi_backward.ref
   testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
@@ -1043,14 +1042,15 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_physics
                   ARGS     testinput/linearmodel_physics.yaml
                   COMMAND  test_fv3jedi_linearmodel.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_htlm
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hybrid_linear_model
                   MPI      6
-                  ARGS     testinput/linearmodel_htlm.yaml
-                  COMMAND  test_fv3jedi_linearmodel.x )
+                  ARGS     testinput/hybrid_linear_model.yaml
+                  COMMAND  test_fv3jedi_linearmodel.x
+                  TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel_htlm_physics
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hybrid_linear_model_with_stlm_physics
                   MPI      6
-                  ARGS     testinput/linearmodel_htlm_physics.yaml
+                  ARGS     testinput/hybrid_linear_model_with_stlm_physics.yaml
                   COMMAND  test_fv3jedi_linearmodel.x )
 
 
@@ -1407,19 +1407,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-4dvar_pseudo-geos
 # HTLM 4dvar
 #-----------
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_htlm_4dvar_fv3lm
-                  MPI      6
-                  ARGS     --no-validate testinput/htlm_4dvar_fv3lm.yaml
-                  COMMAND  fv3jedi_var.x )
-
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs
                   MPI      6
                   ARGS     --no-validate testinput/gen_hybrid_linear_model_coeffs.yaml
                   COMMAND  fv3jedi_gen_hybrid_linear_model_coeffs.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_htlm_4dvar_fv3lm_precalculated_coeffs
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_hybrid_linear_model
                   MPI      6
-                  ARGS     --no-validate testinput/htlm_4dvar_fv3lm_precalculated_coeffs.yaml
+                  ARGS     --no-validate testinput/4dvar_hybrid_linear_model.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
 

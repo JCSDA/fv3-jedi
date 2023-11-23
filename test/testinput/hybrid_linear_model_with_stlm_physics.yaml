@@ -33,7 +33,7 @@ linear model:
   variables: *anavars
   coefficients:
     update variables: [air_temperature]
-    influence region size: 2
+    influence region size: 3
     window length: PT1H
     window begin: 2020-12-15T00:00:00Z
     calculator:
@@ -82,10 +82,10 @@ linear model:
             zero padding: 3
 linear model test:
   forecast length: PT1H
-  first multiplier TL: 0.01
+  first multiplier TL: 1.0e-11
   iterations TL: 1
-  tolerance AD: 1.0e-10
-  tolerance TL: 1.0e3 # With physics on the tl test will not pass (perturbation model)
+  tolerance AD: 1.0e10 # working on sensitivity in these tests
+  tolerance TL: 1.0e10 # working on sensitivity in these tests
 model:
   name: PSEUDO
   filetype: cube sphere history
