@@ -111,7 +111,7 @@ variational:
     diagnostics:
       departures: ombg
     linear model:
-      simplified linear model:
+      simple linear model:
         linear model:
           name: FV3JEDITLM
           namelist filename: Data/fv3files/input_gfs_c12.nml

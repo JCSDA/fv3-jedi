@@ -44,13 +44,18 @@ Increment::Increment(const Geometry & geom, const oops::Variables & vars,
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-Increment::Increment(const Geometry & geom, const Increment & other)
+Increment::Increment(const Geometry & geom, const Increment & other, const bool ad)
   : geom_(geom), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
-  fv3jedi_increment_change_resol_f90(keyInc_, geom_.toFortran(), other.keyInc_,
-                                     other.geom_.toFortran());
+  if (ad) {
+    fv3jedi_increment_change_resol_ad_f90(keyInc_, geom_.toFortran(), other.keyInc_,
+                                          other.geom_.toFortran());
+  } else {
+    fv3jedi_increment_change_resol_f90(keyInc_, geom_.toFortran(), other.keyInc_,
+                                       other.geom_.toFortran());
+  }
   oops::Log::trace() << "Increment::Increment (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

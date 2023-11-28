@@ -52,6 +52,7 @@ type :: fv3jedi_fields
     procedure, public :: zero
     procedure, public :: norm
     procedure, public :: change_resol
+    procedure, public :: change_resol_ad
     procedure, public :: minmaxrms
     procedure, public :: accumul
     procedure, public :: serialize
@@ -275,6 +276,38 @@ else
 endif
 
 end subroutine change_resol
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine change_resol_ad(self, geom, other, geom_other)
+
+implicit none
+class(fv3jedi_fields), intent(inout) :: self       ! Target fields
+type(fv3jedi_geom),    intent(in)    :: geom       ! Target geometry
+class(fv3jedi_fields), intent(in)    :: other      ! Source fields
+type(fv3jedi_geom),    intent(in)    :: geom_other ! Source geometry
+
+integer                  :: var
+type(field2field_interp) :: interp
+logical                  :: integer_interp = .false.
+
+call checksame(self%fields, other%fields, "fv3jedi_fields_mod.change_resol_ad")
+
+if ((other%iec - other%isc + 1) - (self%iec - self%isc + 1) == 0 .AND. &
+  geom%stretch_fac == geom_other%stretch_fac .AND. &
+  geom%target_lat == geom_other%target_lat .AND. &
+  geom%target_lon == geom_other%target_lon) then
+  call self%copy(other)
+else
+  do var = 1, self%nf
+    if (trim(other%fields(var)%interpolation_type) == "integer") integer_interp = .true.
+  enddo
+  call interp%create(geom_other%interp_method, integer_interp, geom, geom_other)
+  call interp%apply_ad(self%nf, geom, self%fields, geom_other, other%fields)
+  call interp%delete()
+endif
+
+end subroutine change_resol_ad
 
 ! --------------------------------------------------------------------------------------------------
 

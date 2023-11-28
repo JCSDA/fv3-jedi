@@ -87,7 +87,7 @@ class Increment : public util::Printable,
 
 /// Constructor, destructor
   Increment(const Geometry &, const oops::Variables &, const util::DateTime &);
-  Increment(const Geometry &, const Increment &);
+  Increment(const Geometry &, const Increment &, const bool ad = false);
   Increment(const Increment &, const bool);
   virtual ~Increment();
 

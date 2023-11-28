@@ -19,7 +19,7 @@ use fv3jedi_kinds_mod,              only: kind_real
 use fv3jedi_field_mod,              only: fv3jedi_field, get_field, hasfield
 use fv3jedi_geom_mod,               only: fv3jedi_geom
 use fv3jedi_constants_mod,          only: constant
-use wind_vt_mod,                    only: d_to_a, a_to_d
+use wind_vt_mod,                    only: d_to_a, a_to_d, d_to_a_ad, a_to_d_ad
 
 implicit none
 private
@@ -38,6 +38,7 @@ type field2field_interp
     procedure :: create
     procedure :: delete
     procedure :: apply
+    procedure :: apply_ad
 
 end type field2field_interp
 
@@ -281,6 +282,135 @@ if (do_d_to_a) then
 endif
 
 end subroutine apply
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine apply_ad(self, nf, geom_in, fields_in, geom_ou, fields_ou)
+
+class(field2field_interp), intent(inout) :: self          ! field2field_interp
+integer,                   intent(in)    :: nf            ! Number of fields
+type(fv3jedi_geom),        intent(in)    :: geom_in       ! Geometry of input grid,  ad: target geometry
+type(fv3jedi_field),       intent(inout) :: fields_in(nf) ! Input fields,            ad: target fields
+type(fv3jedi_geom),        intent(in)    :: geom_ou       ! Geometry of output grid, ad: source geometry
+type(fv3jedi_field),       intent(in)    :: fields_ou(nf) ! Output fields,           ad: source fields
+
+integer                           :: var, i, j, k, n
+real(kind=kind_real), allocatable :: field_in(:), field_ou(:)
+
+! For D-grid winds
+logical                           :: do_d_to_a
+real(kind=kind_real), allocatable :: ua(:,:,:)
+real(kind=kind_real), allocatable :: va(:,:,:)
+real(kind=kind_real), allocatable :: ud(:,:,:)
+real(kind=kind_real), allocatable :: vd(:,:,:)
+real(kind=kind_real), allocatable :: ud_tmp(:,:,:)
+real(kind=kind_real), allocatable :: vd_tmp(:,:,:)
+type(fv3jedi_field), pointer      :: u_in
+type(fv3jedi_field), pointer      :: v_in
+type(fv3jedi_field), pointer      :: u_ou
+type(fv3jedi_field), pointer      :: v_ou
+
+! Handle unsupported cases
+do var = 1, nf
+  if (trim(fields_ou(var)%interpolation_type) == 'integer') then
+    call abor1_ftn("In fv3jedi_interpolation_mod.apply_ad: integer interpolation not supported")
+  elseif (trim(fields_ou(var)%interpolation_type) == 'nearest' ) then
+    call abor1_ftn("In fv3jedi_interpolation_mod.apply_ad: nearest interpolation not supported")
+  endif
+enddo
+
+! Handle D-grid winds (identical to forward code except adjoint of d_to_a method called)
+do_d_to_a = .false.
+if (hasfield(fields_ou, 'ud')) then
+  do_d_to_a = .true.
+  call get_field(fields_in, 'ud', u_in)
+  call get_field(fields_in, 'vd', v_in)
+  allocate(ud_tmp(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
+  allocate(vd_tmp(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
+  call get_field(fields_in, 'ud', ud_tmp)
+  call get_field(fields_in, 'vd', vd_tmp)
+  allocate(ua(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
+  allocate(va(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,geom_in%npz))
+  call d_to_a_ad(geom_in, u_in%array, v_in%array, ua, va) ! adjoint call
+  deallocate(u_in%array)
+  deallocate(v_in%array)
+  allocate(u_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:geom_in%npz))
+  allocate(v_in%array(geom_in%isc:geom_in%iec,geom_in%jsc:geom_in%jec,1:geom_in%npz))
+  call get_field(fields_ou, 'ud', u_ou)
+  call get_field(fields_ou, 'vd', v_ou)
+  deallocate(u_ou%array)
+  deallocate(v_ou%array)
+  allocate(u_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,1:geom_ou%npz))
+  allocate(v_ou%array(geom_ou%isc:geom_ou%iec,geom_ou%jsc:geom_ou%jec,1:geom_ou%npz))
+  u_in%array = ua
+  v_in%array = va
+  u_in%space = 'magnitude'
+  v_in%space = 'magnitude'
+  deallocate(ua, va)
+endif
+
+! Interpolate all fields (adjoint)
+do var = 1, nf
+  if (trim(self%interp_type) == 'bump') then
+    ! Interpolate with bump interpolation (adjoint)
+    call self%bumpinterp%apply_ad( &
+      & fields_ou(var)%array(:, :, 1 : fields_ou(var)%npz), &
+      & fields_in(var)%array(geom_in%isc : geom_in%iec, geom_in%jsc : geom_in%jec, 1 : fields_in(var)%npz), &
+      & .not. trim(fields_ou(var)%interpolation_type) == 'default')
+  else
+    allocate(field_in(geom_in%ngrid))
+    allocate(field_ou(geom_ou%ngrid))
+    do k = 1, fields_in(var)%npz
+      ! To unstructured (adjoint of "Back to structured" in forward code)
+      n = geom_ou%jec * geom_ou%iec
+      do j = geom_ou%jec, geom_ou%jsc, -1
+        do i = geom_ou%iec, geom_ou%isc, -1
+          field_ou(n) = fields_ou(var)%array(i, j, k)
+          n = n - 1
+        enddo
+      enddo
+      if (trim(fields_ou(var)%interpolation_type) == 'default' .and. trim(self%interp_type) == 'barycent') then
+        ! Interpolate with oops slow unstructured interpolation (adjoint)
+        call self%unsinterp%apply_ad(field_in, field_ou)
+      endif
+      ! Back to structured (adjoint of "To unstructured" in forward code)
+      n = geom_in%jec * geom_in%iec
+      do j = geom_in%jec, geom_in%jsc, -1
+        do i = geom_in%iec, geom_in%isc, -1
+          fields_in(var)%array(i, j, k) = field_in(n)
+          n = n - 1
+        enddo
+      enddo
+    enddo
+    deallocate(field_in)
+    deallocate(field_ou)
+  endif
+enddo
+
+! Handle D-grid winds (identical to forward code except adjoint of a_to_d method called)
+if (do_d_to_a) then
+  call get_field(fields_ou, 'ud', u_ou)
+  call get_field(fields_ou, 'vd', v_ou)
+  allocate(ud(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,geom_ou%npz))
+  allocate(vd(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,geom_ou%npz))
+  call a_to_d_ad(geom_ou, u_ou%array, v_ou%array, ud, vd) ! adjoint call
+  deallocate(u_ou%array)
+  deallocate(v_ou%array)
+  allocate(u_ou%array(geom_ou%isc:geom_ou%iec  ,geom_ou%jsc:geom_ou%jec+1,1:geom_ou%npz))
+  allocate(v_ou%array(geom_ou%isc:geom_ou%iec+1,geom_ou%jsc:geom_ou%jec  ,1:geom_ou%npz))
+  u_ou%array = ud
+  v_ou%array = vd
+  u_ou%space = 'vector'
+  v_ou%space = 'vector'
+  deallocate(ud, vd)
+  u_in%array = ud_tmp
+  v_in%array = vd_tmp
+  u_in%space = 'vector'
+  v_in%space = 'vector'
+  deallocate(ud_tmp, vd_tmp)
+endif
+
+end subroutine apply_ad
 
 ! --------------------------------------------------------------------------------------------------
 
