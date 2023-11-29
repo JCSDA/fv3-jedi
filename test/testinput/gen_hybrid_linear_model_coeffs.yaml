@@ -34,7 +34,6 @@ hybrid linear model:
     calculator:
       rms scaling: false
     ensemble:
-      ensemble size: 3
       model:
         name: FV3LM
         use internal namelist: true

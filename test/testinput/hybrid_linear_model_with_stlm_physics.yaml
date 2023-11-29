@@ -39,7 +39,6 @@ linear model:
     calculator:
       rms scaling: false
     ensemble:
-      ensemble size: 3
       model:
         name: PSEUDO
         filetype: cube sphere history
