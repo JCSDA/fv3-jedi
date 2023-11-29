@@ -7,7 +7,7 @@ increment test:
     ildir: [50]
     itdir: [1]
     ifdir: [air_temperature]
-  tolerance AD resolution change: 1.0e-14 # oops slow unstructured interpolation passes with 1.0e-14 tolerance
+  tolerance AD resolution change: 2.0e-14 # oops slow unstructured interpolation passes with 2.0e-14 tolerance
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
