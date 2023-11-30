@@ -79,12 +79,12 @@ cost function:
         covariance model: ensemble
         members from template:
           template:
-            datetime: 2020-12-14T21:00:00Z
+            datetime: 2020-12-15T00:00:00Z
             filetype: cube sphere history
             provider: geos
             state variables: *fgatvars
             datapath: Data/inputs/geos_c12
-            filename: geos.mem%mem%.20201214_210000z.nc4
+            filename: geos.mem%mem%.20201215_000000z.nc4
           pattern: '%mem%'
           nmembers: 5
           zero padding: 3
