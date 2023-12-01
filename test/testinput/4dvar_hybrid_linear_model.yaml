@@ -8,7 +8,7 @@ cost function:
     filename_sfcd: 20201214.210000.sfc_data.nc
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: &modelvars [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+    state variables: &modelvars [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
   background error:
     covariance model: SABER
     saber central block:
@@ -65,7 +65,7 @@ cost function:
         - name: airTemperature
         threshold: 6.0
   cost type: 4D-Var
-  analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+  analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
   window begin: 2020-12-14T21:00:00Z
   window length: PT6H
   variable change:
@@ -120,9 +120,9 @@ variational:
           lm_do_dyn: 1
           lm_do_trb: 0
           lm_do_mst: 0
-          tlm variables:  *anavars
+          tlm variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
           trajectory:
-            model variables: *anavars
+            model variables: *modelvars
       update tstep: PT3H
       variables: *anavars
       coefficients:

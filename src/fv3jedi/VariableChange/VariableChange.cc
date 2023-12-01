@@ -118,7 +118,8 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
 // -------------------------------------------------------------------------------------------------
 
-void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_out) const {
+void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_out,
+                                      const bool force_varchange) const {
   // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
@@ -128,7 +129,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
 
   // Return if output vars already in input
   // --------------------------------------
-  if (vars <= x.variables()) {
+  if ((vars <= x.variables()) && !force_varchange) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVarInverse done (identity)" << std::endl;
     return;

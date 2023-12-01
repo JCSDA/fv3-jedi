@@ -239,8 +239,8 @@ cost function:
     lm_do_mst: 0
     tstep: PT1H
     model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
-                slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                u_srf,v_srf,f10m]
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -278,14 +278,12 @@ variational:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables: [ud,vd,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      tlm variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
       trajectory:
         model variables: [ud,vd,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-    linear variable change:
-      linear variable change name: Analysis2Model
   - ninner: 1
     gradient norm reduction: 1e-10
     test: on
@@ -302,11 +300,9 @@ variational:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables: [ud,vd,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      tlm variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
       trajectory:
         model variables: [ud,vd,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-    linear variable change:
-      linear variable change name: Analysis2Model

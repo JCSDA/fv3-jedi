@@ -35,8 +35,11 @@ class VariableChange : public util::Printable {
   explicit VariableChange(const eckit::Configuration &, const Geometry &);
   ~VariableChange();
 
+  // The bool `force_varchange` is used in the "model-to-analysis" var change applied in the model
+  // finalize call; this forces a D-to-A conversion of the winds, even if the model and the
+  // analysis both contain A-grid winds and the var change looks like it can be skipped
   void changeVar(State &, const oops::Variables &) const;
-  void changeVarInverse(State &, const oops::Variables &) const;
+  void changeVarInverse(State &, const oops::Variables &, bool force_varchange = false) const;
 
  private:
   void print(std::ostream &) const override;

@@ -268,8 +268,6 @@ variational:
         model variables: [u,v,t,delp,q,qi,ql,o3ppmv,phis,
                           qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
                           zpbl,cm,ct,cq,kcbl,tsm,khl,khu]
-    linear variable change:
-      linear variable change name: Analysis2Model
 
 test:
   reference filename: testoutput/hyb-4dvar_pseudo-geos.ref

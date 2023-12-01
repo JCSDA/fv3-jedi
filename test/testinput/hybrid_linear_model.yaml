@@ -1,4 +1,4 @@
-analysis variables: &anavars [u_component_of_native_D_grid_wind,v_component_of_native_D_grid_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
 background error:
   covariance model: SABER
   saber central block:
@@ -22,9 +22,9 @@ linear model:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      tlm variables: *anavars
+      tlm variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
       trajectory:
-        model variables: *anavars
+        model variables: &modelvars [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
   update tstep: PT1H
   variables: *anavars
   coefficients:
@@ -42,6 +42,8 @@ linear model test:
   iterations TL: 1
   tolerance AD: 1.0e10 # working on sensitivity in these tests
   tolerance TL: 1.0e10 # working on sensitivity in these tests
+  tolerance zero length forecast: 1.0e10 # working on sensitivity in these tests
+  #tolerance zero length forecast: 0.08 # loose tolerance needed here because of low grid resolution
 model:
   name: FV3LM
   use internal namelist: true
@@ -49,7 +51,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+  model variables: *modelvars
 model aux control: null
 initial condition:
   datetime: 2020-12-14T23:00:00Z
@@ -60,4 +62,4 @@ initial condition:
   filename_sfcd: 20201214.230000.sfc_data.nc
   filename_sfcw: 20201214.230000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.230000.coupler.res
-  state variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]

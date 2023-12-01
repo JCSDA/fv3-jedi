@@ -92,7 +92,8 @@ void ModelFV3LM::finalize(State & xx) const {
   oops::Log::trace() << "ModelFV3LM::finalize starting" << std::endl;
   fv3jedi_fv3lm_finalize_f90(keyConfig_, xx.toFortran());
   if (finalVars_) {
-    an2model_->changeVarInverse(xx, *finalVars_);
+    const bool force_varchange = true;
+    an2model_->changeVarInverse(xx, *finalVars_, force_varchange);
     finalVars_.reset(nullptr);  // reset to null for next initialize
   }
   oops::Log::trace() << "ModelFV3LM::finalize done" << std::endl;

@@ -27,7 +27,7 @@ namespace fv3jedi {
 static oops::interface::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
 Tlm::Tlm(const Geometry & resol, const eckit::Configuration & config)
-  : keySelf_(0), tstep_(), trajmap_(), linvars_()
+  : keySelf_(0), tstep_(), trajmap_(), linvars_(), an2model_(), finalVars_()
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 
@@ -37,6 +37,9 @@ Tlm::Tlm(const Geometry & resol, const eckit::Configuration & config)
   oops::Variables tlvars(config, "tlm variables");
   linvars_ = oops::Variables(resol.fieldsMetaData().getLongNameFromAnyName(tlvars));
 
+  eckit::LocalConfiguration linVarChangeConfig;
+  linVarChangeConfig.set("linear variable change name", "Analysis2Model");
+  an2model_.reset(new LinearVariableChange(resol, linVarChangeConfig));
 
   // Implementation
   fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), config);
@@ -63,6 +66,8 @@ void Tlm::setTrajectory(const State & xx, State & xlr, const ModelBias & bias) {
   // Interpolate to resolution of the trajectory
   xlr.changeResolution(xx);
 
+  an2model_->changeVarTraj(xlr, linvars_);
+
   // Set trajectory
   int keyTraj = 0;
   fv3jedi_traj_set_f90(keyTraj, xlr.toFortran());
@@ -82,6 +87,12 @@ void Tlm::initializeTL(Increment & dx) const {
   if (itra == trajmap_.end()) {
     oops::Log::error() << "Tlm: trajectory not available at time " << dx.validTime() << std::endl;
     ABORT("Tlm: trajectory not available");
+  }
+
+  ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initializeTL");
+  if (!(linvars_ <= dx.variables())) {
+    finalVars_.reset(new oops::Variables(dx.variables()));
+    an2model_->changeVarTL(dx, linvars_);
   }
 
   // Implementation
@@ -117,6 +128,12 @@ void Tlm::finalizeTL(Increment & dx) const {
   // Implementation
   fv3jedi_tlm_finalize_tl_f90(keySelf_, dx.toFortran());
 
+  if (finalVars_) {
+    const bool force_varchange = true;
+    an2model_->changeVarInverseTL(dx, *finalVars_, force_varchange);
+    finalVars_.reset(nullptr);  // reset to null for next initializeTL
+  }
+
   oops::Log::trace() << "Tlm::finalizeTL done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -130,6 +147,12 @@ void Tlm::initializeAD(Increment & dx) const {
   if (itra == trajmap_.end()) {
     oops::Log::error() << "Tlm: trajectory not available at time " << dx.validTime() << std::endl;
     ABORT("Tlm: trajectory not available");
+  }
+
+  ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initializeAD");
+  if (!(linvars_ <= dx.variables())) {
+    finalVars_.reset(new oops::Variables(dx.variables()));
+    an2model_->changeVarInverseAD(dx, linvars_);
   }
 
   // Implementation
@@ -164,6 +187,12 @@ void Tlm::finalizeAD(Increment & dx) const {
 
   // Implementation
   fv3jedi_tlm_finalize_ad_f90(keySelf_, dx.toFortran());
+
+  if (finalVars_) {
+    const bool force_varchange = true;
+    an2model_->changeVarAD(dx, *finalVars_, force_varchange);
+    finalVars_.reset(nullptr);  // reset to null for next initializeAD
+  }
 
   oops::Log::trace() << "Tlm::finalizeAD done" << std::endl;
 }
