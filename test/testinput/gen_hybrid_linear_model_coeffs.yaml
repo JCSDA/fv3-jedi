@@ -14,7 +14,7 @@ hybrid linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-      tstep: PT3H
+      tstep: PT1H
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
@@ -27,7 +27,7 @@ hybrid linear model:
     output:
       base filepath: Data/hybrid_linear_model_coeffs
       one file per task: true
-    update variables: [air_temperature]
+    update variables: [eastward_wind,northward_wind]
     influence region size: 3
     window length: PT6H
     window begin: 2020-12-14T21:00:00Z
@@ -37,7 +37,7 @@ hybrid linear model:
       model:
         name: FV3LM
         use internal namelist: true
-        tstep: PT3H
+        tstep: PT1H
         lm_do_dyn: 1
         lm_do_trb: 0
         lm_do_mst: 0
@@ -75,7 +75,7 @@ hybrid linear model:
               filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
               filename_cplr: 20201214.210000.coupler.res
             pattern: '%mem%'
-            nmembers: 3
+            nmembers: 8
             zero padding: 3
   name: HTLM
 
@@ -83,5 +83,4 @@ test:
   variables: [ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr]
   reference filename: testoutput/gen_hybrid_linear_model_coeffs.ref
   test output filename: testoutput/gen_hybrid_linear_model_coeffs.test.out
-  float absolute tolerance: 1.0e10 # working on sensitivity in these tests
-  float relative tolerance: 1.0e10 # working on sensitivity in these tests
+  float relative tolerance: 1.0e-3

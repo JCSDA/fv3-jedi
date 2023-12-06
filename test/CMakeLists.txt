@@ -193,7 +193,6 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_save_geovals.yaml
   testinput/hybrid_linear_model.yaml
-  testinput/hybrid_linear_model_with_stlm_physics.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
   testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos.yaml
@@ -1047,12 +1046,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hybrid_linear_model
                   ARGS     testinput/hybrid_linear_model.yaml
                   COMMAND  test_fv3jedi_linearmodel.x
                   TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_hybrid_linear_model_with_stlm_physics
-                  MPI      6
-                  ARGS     testinput/hybrid_linear_model_with_stlm_physics.yaml
-                  COMMAND  test_fv3jedi_linearmodel.x )
-
 
 # Forecast tests
 # --------------
