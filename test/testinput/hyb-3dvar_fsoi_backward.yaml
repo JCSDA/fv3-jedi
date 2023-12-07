@@ -1,7 +1,8 @@
 cost function:
   cost type: 3D-Var
-  window begin: 2020-12-14T21:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2020-12-14T21:00:00Z
+    length: PT6H
   analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
   geometry:
     fms initialization:

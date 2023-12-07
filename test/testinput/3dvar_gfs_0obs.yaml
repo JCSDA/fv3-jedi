@@ -1,7 +1,8 @@
 cost function:
   cost type: 3D-Var
-  window begin: 2020-12-14T21:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2020-12-14T21:00:00Z
+    length: PT6H
   analysis variables: &3dvars [ua,va,T,DELP,sphum]
   geometry:
     fms initialization:

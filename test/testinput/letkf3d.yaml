@@ -18,8 +18,9 @@ geometry:
       filename_orog: C48_oro_data.nc
     derived fields: [nominal_surface_pressure]
 
-window begin: &date 2020-12-14T21:00:00Z
-window length: PT6H
+time window:
+  begin: &date 2020-12-14T21:00:00Z
+  length: PT6H
 
 background:
    date: *date

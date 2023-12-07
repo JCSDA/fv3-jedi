@@ -33,8 +33,9 @@ linear model:
       one file per task: true
     update variables: [eastward_wind,northward_wind]
     influence region size: 3
-    window length: PT1H
-    window begin: 2020-12-14T23:00:00Z
+    time window:
+      begin: 2020-12-14T23:00:00Z
+      length: PT1H
   name: HTLM
 linear model test:
   forecast length: PT1H

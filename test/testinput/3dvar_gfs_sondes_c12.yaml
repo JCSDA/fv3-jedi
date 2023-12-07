@@ -1,8 +1,9 @@
 cost function:
   cost type: 3D-Var
   analysis variables: &3dvars [ua,va,t,ps,sphum,o3mr]
-  window begin: 2020-12-14T21:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2020-12-14T21:00:00Z
+    length: PT6H
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml

@@ -211,8 +211,9 @@ cost function:
           channels: 1-15
         threshold: 3.0
   cost type: 4D-Var
-  window begin: 2020-12-14T21:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2020-12-14T21:00:00Z
+    length: PT6H
   model:
     name: PSEUDO
     filetype: cube sphere history

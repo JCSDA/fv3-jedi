@@ -1,5 +1,6 @@
-window begin: 2021-08-01T15:00:00Z
-window length: PT6H
+time window:
+  begin: 2021-08-01T15:00:00Z
+  length: PT6H
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml

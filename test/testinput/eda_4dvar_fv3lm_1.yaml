@@ -219,8 +219,9 @@ cost function:
         threshold: 3.0
   cost type: 4D-Var
   analysis variables: *incvars
-  window begin: 2020-12-14T21:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2020-12-14T21:00:00Z
+    length: PT6H
   variable change:
     variable change name: Analysis2Model
   model:

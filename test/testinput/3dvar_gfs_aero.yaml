@@ -1,7 +1,8 @@
 cost function:
   cost type: 3D-Var
-  window begin: 2018-04-14T21:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2018-04-14T21:00:00Z
+    length: PT6H
   analysis variables: &aerovars
                       [mass_fraction_of_sulfate_in_air,
                        mass_fraction_of_hydrophobic_black_carbon_in_air,

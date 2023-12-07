@@ -1,7 +1,8 @@
 cost function:
   cost type: 3D-Var
-  window begin: 2020-09-03T15:00:00Z
-  window length: PT6H
+  time window:
+    begin: 2020-09-03T15:00:00Z
+    length: PT6H
   analysis variables: [volume_mixing_ratio_of_no2] # long name needs to be changed
   geometry:
     fms initialization:

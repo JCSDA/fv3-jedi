@@ -1,5 +1,6 @@
-window begin: 2020-12-14T23:00:00Z
-window length: PT2H
+time window:
+  begin: 2020-12-14T23:00:00Z
+  length: PT2H
 
 geometry:
   fms initialization:
