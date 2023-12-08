@@ -18,9 +18,9 @@ hybrid linear model:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      tlm variables: [u,v,T,DELP,sphum,liq_wat,ice_wat,o3mr]
+      tlm variables: [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr]
       trajectory:
-        model variables: &modelvars [u,v,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
+        model variables: &modelvars [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
   update tstep: PT3H
   variables: [ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr]
   coefficients:

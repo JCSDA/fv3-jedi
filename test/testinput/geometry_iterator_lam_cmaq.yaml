@@ -7,7 +7,7 @@ geometry:
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 increment test:
   date: 2018-04-14T21:00:00Z
-inc variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,
+inc variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,
                 volume_mixing_ratio_of_no2,
                 volume_mixing_ratio_of_no,
                 volume_mixing_ratio_of_o3,

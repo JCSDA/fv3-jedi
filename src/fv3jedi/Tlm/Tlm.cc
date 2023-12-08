@@ -66,6 +66,9 @@ void Tlm::setTrajectory(const State & xx, State & xlr, const ModelBias & bias) {
   // Interpolate to resolution of the trajectory
   xlr.changeResolution(xx);
 
+  // Make sure interface-specific fields are synchronized
+  xlr.synchronizeInterfaceFields();
+
   an2model_->changeVarTraj(xlr, linvars_);
 
   // Set trajectory
@@ -90,9 +93,13 @@ void Tlm::initializeTL(Increment & dx) const {
   }
 
   ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initializeTL");
-  if (!(linvars_ <= dx.variables())) {
-    finalVars_.reset(new oops::Variables(dx.variables()));
+  if (!(linvars_ <= dx.variablesIncludingInterfaceFields())) {
+    finalVars_.reset(new oops::Variables(dx.variablesIncludingInterfaceFields()));
     an2model_->changeVarTL(dx, linvars_);
+    dx.setInterfaceFieldsOutOfDate(false);  // an2model should have updated model fields
+  } else {
+    // Make sure interface-specific fields are synchronized
+    dx.synchronizeInterfaceFields();
   }
 
   // Implementation
@@ -150,9 +157,12 @@ void Tlm::initializeAD(Increment & dx) const {
   }
 
   ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initializeAD");
-  if (!(linvars_ <= dx.variables())) {
-    finalVars_.reset(new oops::Variables(dx.variables()));
+  if (!(linvars_ <= dx.variablesIncludingInterfaceFields())) {
+    finalVars_.reset(new oops::Variables(dx.variablesIncludingInterfaceFields()));
     an2model_->changeVarInverseAD(dx, linvars_);
+  } else {
+    // Make sure interface-specific fields are synchronized
+    dx.synchronizeInterfaceFields();
   }
 
   // Implementation
@@ -176,6 +186,10 @@ void Tlm::stepAD(Increment & dx, ModelBiasIncrement &) const {
     ABORT("Tlm: trajectory not available");
   }
 
+  // Make sure interface-specific fields are synchronized
+  // They could be desynchronized if an adjoint postprocessor was run before stepAD
+  dx.synchronizeInterfaceFields();
+
   // Implementation
   fv3jedi_tlm_step_ad_f90(keySelf_, dx.toFortran(), itra->second);
 
@@ -184,6 +198,10 @@ void Tlm::stepAD(Increment & dx, ModelBiasIncrement &) const {
 // -------------------------------------------------------------------------------------------------
 void Tlm::finalizeAD(Increment & dx) const {
   oops::Log::trace() << "Tlm::finalizeAD starting" << std::endl;
+
+  // Make sure interface-specific fields are synchronized
+  // They could be desynchronized if an adjoint postprocessor was run before finalizeAD
+  dx.synchronizeInterfaceFields();
 
   // Implementation
   fv3jedi_tlm_finalize_ad_f90(keySelf_, dx.toFortran());

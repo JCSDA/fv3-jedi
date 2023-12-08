@@ -18,7 +18,14 @@ use fields_metadata_mod, only: field_metadata
 
 implicit none
 private
-public :: fv3jedi_field, hasfield, get_field, put_field, checksame, copy_subset, create_field
+public :: fv3jedi_field
+public :: create_field
+public :: hasfield
+public :: get_field
+public :: put_field
+public :: checksame
+public :: checkvalidsubset
+public :: copy_subset
 
 ! These are the same methods as used in fv3jedi_fields but with argument being a list of individual
 ! fields instead of the fv3jedi_fields class
@@ -40,6 +47,7 @@ type :: fv3jedi_field
  character(len=field_clen) :: units                           ! Field units
  character(len=field_clen) :: kind                            ! Data kind, real, integer etc (always allocate real data)
  logical                   :: tracer                          ! Whether field is tracer or not
+ logical                   :: interface_specific              ! Whether field is an interface-specific field
  character(len=field_clen) :: horizontal_stagger_location     ! Stagger location in horizontal
  character(len=field_clen) :: space                           ! Vector, magnitude, direction
  character(len=field_clen) :: io_name                         ! Name used for IO
@@ -79,6 +87,7 @@ self%short_name = fmd%short_name
 self%units = fmd%units
 self%kind = fmd%kind
 self%tracer = fmd%tracer
+self%interface_specific = fmd%interface_specific
 self%horizontal_stagger_location = fmd%horizontal_stagger_location
 self%npz = fmd%levels
 self%space = fmd%space
@@ -338,7 +347,59 @@ enddo
 
 end subroutine checksame
 
-! ------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+! Check fields2 == (fields1 - interface-specific fields)
+subroutine checkvalidsubset(fields1, fields2, calling_method)
+
+implicit none
+type(fv3jedi_field), intent(in) :: fields1(:)
+type(fv3jedi_field), intent(in) :: fields2(:)
+character(len=*),    intent(in) :: calling_method
+
+integer :: var
+integer :: ninterface_specific
+
+ninterface_specific = 0
+do var = 1,size(fields1)
+  if (fields1(var)%interface_specific) ninterface_specific = ninterface_specific + 1
+end do
+
+if (size(fields2) .ne. size(fields1) - ninterface_specific) then
+  if (fields1(1)%comm%rank() == 0) then
+    print*, 'fv3jedi.fields checkvalidsubset inconsistent number of fields'
+  end if
+  call print_fields_debug(fields1, fields2)
+  call abor1_ftn(trim(calling_method)//"(checkvalidsubset): Inconsistent number of fields")
+endif
+
+do var = 1,size(fields1)
+  if (fields1(var)%interface_specific) then
+    ! check interface-specific field is NOT in fields2
+    if (hasfield(fields2, fields1(var)%short_name)) then
+      if (fields1(1)%comm%rank() == 0) then
+        print*, 'fv3jedi.fields checkvalidsubset found unexpected interface-specific field in RHS'
+      end if
+      call print_fields_debug(fields1, fields2)
+      call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%short_name)//&
+                     " is an interface-specific field that should not be in RHS")
+    end if
+  else
+    ! check generic field is in fields2
+    if (.not.hasfield(fields2, fields1(var)%short_name)) then
+      if (fields1(1)%comm%rank() == 0) then
+        print*, 'fv3jedi.fields checkvalidsubset missing an expected field in RHS'
+      end if
+      call print_fields_debug(fields1, fields2)
+      call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%short_name)//&
+                                             " not in RHS")
+    end if
+  end if
+enddo
+
+end subroutine checkvalidsubset
+
+! --------------------------------------------------------------------------------------------------
 
 subroutine copy_subset(field_in, field_ou, not_copied)
 

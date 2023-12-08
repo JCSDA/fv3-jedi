@@ -109,7 +109,7 @@ class State : public util::Printable, private util::ObjectCounter<State> {
 
 // Utilities
   const Geometry & geometry() const {return geom_;}
-  const oops::Variables & variables() const {return vars_;}
+  const oops::Variables & variables() const {return varsJedi_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}
@@ -124,12 +124,19 @@ class State : public util::Printable, private util::ObjectCounter<State> {
   int & toFortran() {return keyState_;}
   const int & toFortran() const {return keyState_;}
 
+  // Const w.r.t. JEDI, but does update internal fortran state (i.e., the interface-specific fields)
+  // to synchronize it with the JEDI-presented fields.
+  void synchronizeInterfaceFields() const;
+  void setInterfaceFieldsOutOfDate(bool) const;
+  const oops::Variables & variablesIncludingInterfaceFields() const {return vars_;}
+
 // Private methods and variables
  private:
   void print(std::ostream &) const;
   F90state keyState_;
   const Geometry & geom_;
   oops::Variables vars_;
+  oops::Variables varsJedi_;  // subset of vars_; excluding interface-specific variables
   util::DateTime time_;
 };
 

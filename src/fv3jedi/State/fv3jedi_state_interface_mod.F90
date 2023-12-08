@@ -59,7 +59,7 @@ subroutine fv3jedi_state_create_c(c_key_self, c_key_geom, c_vars, c_time) &
 implicit none
 integer(c_int), intent(inout)  :: c_key_self
 integer(c_int), intent(in)     :: c_key_geom !< Geometry
-type(c_ptr), value, intent(in) :: c_vars     !< List of variables
+type(c_ptr), value, intent(in) :: c_vars     !< List of all variables
 type(c_ptr), value, intent(in) :: c_time     !< Datetime
 
 type(fv3jedi_state), pointer :: self
@@ -149,19 +149,23 @@ end subroutine fv3jedi_state_axpy_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_add_increment_c(c_key_self,c_key_rhs) &
+subroutine fv3jedi_state_add_increment_c(c_key_self,c_key_rhs,c_key_geom) &
            bind(c,name='fv3jedi_state_add_increment_f90')
 
 implicit none
 integer(c_int), intent(in) :: c_key_self
 integer(c_int), intent(in) :: c_key_rhs
+integer(c_int), intent(in) :: c_key_geom
+
 type(fv3jedi_state), pointer :: self
 type(fv3jedi_increment), pointer :: rhs
+type(fv3jedi_geom),  pointer :: geom
 
 call fv3jedi_state_registry%get(c_key_self,self)
 call fv3jedi_increment_registry%get(c_key_rhs,rhs)
+call fv3jedi_geom_registry%get(c_key_geom,geom)
 
-call self%add_increment(rhs%fields)
+call self%add_increment(rhs%fields,geom)
 
 end subroutine fv3jedi_state_add_increment_c
 
@@ -338,6 +342,42 @@ afieldset = atlas_fieldset(c_afieldset)
 call self%from_fieldset(geom, vars, afieldset)
 
 end subroutine fv3jedi_state_from_fieldset_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_synchronize_interface_fields_c(c_key_self, c_key_geom) &
+ & bind (c,name='fv3jedi_state_synchronize_interface_fields_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+
+type(fv3jedi_state), pointer :: self
+type(fv3jedi_geom),  pointer :: geom
+
+call fv3jedi_state_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+
+call self%synchronize_interface_fields(geom)
+
+end subroutine fv3jedi_state_synchronize_interface_fields_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_state_set_interface_fields_outofdate_c(c_key_self, c_outofdate) &
+ & bind (c,name='fv3jedi_state_set_interface_fields_outofdate_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+logical(c_bool), intent(in) :: c_outofdate
+
+type(fv3jedi_state), pointer :: self
+
+call fv3jedi_state_registry%get(c_key_self, self)
+
+self%interface_fields_are_out_of_date = c_outofdate
+
+end subroutine fv3jedi_state_set_interface_fields_outofdate_c
 
 ! --------------------------------------------------------------------------------------------------
 

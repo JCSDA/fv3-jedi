@@ -21,9 +21,9 @@ linear forecast:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
-    tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+    tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
     trajectory:
-      model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      model variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
 
 # Configuration for the model
 # ---------------------------

@@ -51,9 +51,9 @@ type(c_ptr), value, intent(in)    :: c_vars     !< List of variables
 type(c_ptr), value, intent(in)    :: c_time     !< Datetime
 
 type(fv3jedi_increment), pointer :: self
-type(fv3jedi_geom),  pointer :: geom
-type(oops_variables) :: vars
-type(fckit_configuration)    :: f_conf
+type(fv3jedi_geom),      pointer :: geom
+type(oops_variables)             :: vars
+type(fckit_configuration)        :: f_conf
 
 call fv3jedi_geom_registry%get(c_key_geom, geom)
 call fv3jedi_increment_registry%init()
@@ -249,6 +249,42 @@ afieldset = atlas_fieldset(c_afieldset)
 call self%from_fieldset(geom, vars, afieldset)
 
 end subroutine fv3jedi_increment_from_fieldset_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_synchronize_interface_fields_c(c_key_self, c_key_geom) &
+ & bind (c,name='fv3jedi_increment_synchronize_interface_fields_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_geom
+
+type(fv3jedi_increment), pointer :: self
+type(fv3jedi_geom),      pointer :: geom
+
+call fv3jedi_increment_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_geom, geom)
+
+call self%synchronize_interface_fields(geom)
+
+end subroutine fv3jedi_increment_synchronize_interface_fields_c
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine fv3jedi_increment_set_interface_fields_outofdate_c(c_key_self, c_outofdate) &
+ & bind (c,name='fv3jedi_increment_set_interface_fields_outofdate_f90')
+
+implicit none
+integer(c_int), intent(in) :: c_key_self
+logical(c_bool), intent(in) :: c_outofdate
+
+type(fv3jedi_increment), pointer :: self
+
+call fv3jedi_increment_registry%get(c_key_self, self)
+
+self%interface_fields_are_out_of_date = c_outofdate
+
+end subroutine fv3jedi_increment_set_interface_fields_outofdate_c
 
 ! --------------------------------------------------------------------------------------------------
 

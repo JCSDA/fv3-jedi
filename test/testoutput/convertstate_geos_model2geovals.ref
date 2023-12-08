@@ -25,7 +25,7 @@ surface_eastward_wind                        | Min:-1.8062565674841707e+01 Max:+
 surface_northward_wind                       | Min:-1.4108648338481105e+01 Max:+1.4886593593473570e+01 RMS:+4.5477360637279221e+00
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 22 variables: u_component_of_native_D_grid_wind, v_component_of_native_D_grid_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, rain_water, snow_water, sfc_geopotential_height_times_grav, fraction_of_ocean, fraction_of_lake, fraction_of_ice, vtype, stype, vfrac, sheleg, sea_surface_temperature, soilt, soilm, surface_eastward_wind, surface_northward_wind
+Variable change from: 20 variables: air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, rain_water, snow_water, sfc_geopotential_height_times_grav, fraction_of_ocean, fraction_of_lake, fraction_of_ice, vtype, stype, vfrac, sheleg, sea_surface_temperature, soilt, soilm, surface_eastward_wind, surface_northward_wind
 Variable change to: 36 variables: rh, ps, tv, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, mass_content_of_rain_in_atmosphere_layer, mass_content_of_snow_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, effective_radius_of_rain_particle, effective_radius_of_snow_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure, saturation_specific_humidity
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -43,8 +43,8 @@ mass_content_of_rain_in_atmosphere_layer     | Min:+0.0000000000000000e+00 Max:+
 mass_content_of_snow_in_atmosphere_layer     | Min:+0.0000000000000000e+00 Max:+3.7092074404802772e-01 RMS:+4.6107648594943193e-03
 effective_radius_of_cloud_liquid_water_parti | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+01 RMS:+2.1117988126004010e+00
 effective_radius_of_cloud_ice_particle       | Min:+0.0000000000000000e+00 Max:+1.0413968546821769e+02 RMS:+1.9616199842998242e+01
-effective_radius_of_rain_particle            | Min:+0.0000000000000000e+00 Max:+7.4947009415319576e+02 RMS:+5.1263932252904816e+01
-effective_radius_of_snow_particle            | Min:+0.0000000000000000e+00 Max:+6.7040222530964104e+02 RMS:+6.0054623746186536e+01
+effective_radius_of_rain_particle            | Min:+0.0000000000000000e+00 Max:+7.4947009415319576e+02 RMS:+5.1263932167582553e+01
+effective_radius_of_snow_particle            | Min:+0.0000000000000000e+00 Max:+6.7040222530964104e+02 RMS:+6.0054623637962180e+01
 water_area_fraction                          | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.1720503796420274e-01
 land_area_fraction                           | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.2355418561046959e-01
 ice_area_fraction                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.7677669529663689e-01
@@ -55,7 +55,7 @@ surface_temperature_where_ice                | Min:+2.2610392580881532e+02 Max:+
 surface_temperature_where_snow               | Min:+2.2610392580881532e+02 Max:+2.8000000000000000e+02 RMS:+2.7604553310498341e+02
 surface_snow_thickness                       | Min:+0.0000000000000000e+00 Max:+2.9131404668170280e+03 RMS:+3.1019790919549138e+02
 vegetation_area_fraction                     | Min:+0.0000000000000000e+00 Max:+9.3219258634721580e-01 RMS:+1.8858349794174736e-01
-surface_wind_speed                           | Min:+2.8685842196327072e-04 Max:+6.9517009097715132e+01 RMS:+1.0135432876976296e+01
+surface_wind_speed                           | Min:+2.8685842196327083e-04 Max:+6.9517009097715132e+01 RMS:+1.0135432876976294e+01
 surface_wind_from_direction                  | Min:+2.7984592050615253e-01 Max:+3.5963631376527860e+02 RMS:+2.1049582079978032e+02
 leaf_area_index                              | Min:+0.0000000000000000e+00 Max:+5.8956249999999999e+00 RMS:+1.3767949863120812e+00
 volume_fraction_of_condensed_water_in_soil   | Min:+1.0982974579477110e-03 Max:+1.0000000000000000e+00 RMS:+9.2950299849371587e-01
@@ -63,9 +63,9 @@ soil_temperature                             | Min:+0.0000000000000000e+00 Max:+
 land_type_index_NPOESS                       | Min:+1.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+9.5999855323965058e+00
 vegetation_type_index                        | Min:+1.0000000000000000e+00 Max:+1.2000000000000000e+01 RMS:+4.9233711350388090e+00
 soil_type                                    | Min:+1.0000000000000000e+00 Max:+8.0000000000000000e+00 RMS:+2.6642784444628962e+00
-vorticity                                    | Min:-1.0260457542170988e-04 Max:+1.4098471691367299e-04 RMS:+1.9494892556397620e-05
+vorticity                                    | Min:-1.0260457542170994e-04 Max:+1.4098471691366488e-04 RMS:+1.9494892556397244e-05
 tropopause_pressure                          | Min:+1.6352774839544580e+04 Max:+5.5248814825775386e+04 RMS:+2.2889098896807147e+04
-saturation_specific_humidity                 | Min:+2.1853484618749562e-06 Max:+4.2647335825062711e+01 RMS:+1.1662699105284970e+00
+saturation_specific_humidity                 | Min:+2.1853484618749562e-06 Max:+4.2647335825062619e+01 RMS:+1.1662699105284939e+00
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -83,8 +83,8 @@ mass_content_of_rain_in_atmosphere_layer     | Min:+0.0000000000000000e+00 Max:+
 mass_content_of_snow_in_atmosphere_layer     | Min:+0.0000000000000000e+00 Max:+3.7092074404802772e-01 RMS:+4.6107648594943193e-03
 effective_radius_of_cloud_liquid_water_parti | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+01 RMS:+2.1117988126004010e+00
 effective_radius_of_cloud_ice_particle       | Min:+0.0000000000000000e+00 Max:+1.0413968546821769e+02 RMS:+1.9616199842998242e+01
-effective_radius_of_rain_particle            | Min:+0.0000000000000000e+00 Max:+7.4947009415319576e+02 RMS:+5.1263932252904816e+01
-effective_radius_of_snow_particle            | Min:+0.0000000000000000e+00 Max:+6.7040222530964104e+02 RMS:+6.0054623746186536e+01
+effective_radius_of_rain_particle            | Min:+0.0000000000000000e+00 Max:+7.4947009415319576e+02 RMS:+5.1263932167582553e+01
+effective_radius_of_snow_particle            | Min:+0.0000000000000000e+00 Max:+6.7040222530964104e+02 RMS:+6.0054623637962180e+01
 water_area_fraction                          | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.1720503796420274e-01
 land_area_fraction                           | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.2355418561046959e-01
 ice_area_fraction                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.7677669529663689e-01
@@ -95,7 +95,7 @@ surface_temperature_where_ice                | Min:+2.2610392580881532e+02 Max:+
 surface_temperature_where_snow               | Min:+2.2610392580881532e+02 Max:+2.8000000000000000e+02 RMS:+2.7604553310498341e+02
 surface_snow_thickness                       | Min:+0.0000000000000000e+00 Max:+2.9131404668170280e+03 RMS:+3.1019790919549138e+02
 vegetation_area_fraction                     | Min:+0.0000000000000000e+00 Max:+9.3219258634721580e-01 RMS:+1.8858349794174736e-01
-surface_wind_speed                           | Min:+2.8685842196327072e-04 Max:+6.9517009097715132e+01 RMS:+1.0135432876976296e+01
+surface_wind_speed                           | Min:+2.8685842196327083e-04 Max:+6.9517009097715132e+01 RMS:+1.0135432876976294e+01
 surface_wind_from_direction                  | Min:+2.7984592050615253e-01 Max:+3.5963631376527860e+02 RMS:+2.1049582079978032e+02
 leaf_area_index                              | Min:+0.0000000000000000e+00 Max:+5.8956249999999999e+00 RMS:+1.3767949863120812e+00
 volume_fraction_of_condensed_water_in_soil   | Min:+1.0982974579477110e-03 Max:+1.0000000000000000e+00 RMS:+9.2950299849371587e-01
@@ -103,7 +103,7 @@ soil_temperature                             | Min:+0.0000000000000000e+00 Max:+
 land_type_index_NPOESS                       | Min:+1.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+9.5999855323965058e+00
 vegetation_type_index                        | Min:+1.0000000000000000e+00 Max:+1.2000000000000000e+01 RMS:+4.9233711350388090e+00
 soil_type                                    | Min:+1.0000000000000000e+00 Max:+8.0000000000000000e+00 RMS:+2.6642784444628962e+00
-vorticity                                    | Min:-1.0260457542170988e-04 Max:+1.4098471691367299e-04 RMS:+1.9494892556397620e-05
+vorticity                                    | Min:-1.0260457542170994e-04 Max:+1.4098471691366488e-04 RMS:+1.9494892556397244e-05
 tropopause_pressure                          | Min:+1.6352774839544580e+04 Max:+5.5248814825775386e+04 RMS:+2.2889098896807147e+04
-saturation_specific_humidity                 | Min:+2.1853484618749562e-06 Max:+4.2647335825062711e+01 RMS:+1.1662699105284970e+00
+saturation_specific_humidity                 | Min:+2.1853484618749562e-06 Max:+4.2647335825062619e+01 RMS:+1.1662699105284939e+00
 ----------------------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@ linear variable change tests:
 - linear variable change:
     linear variable change name: Control2Analysis
     input variables: [psi,chi,t,ps,q,qi,ql,o3]
-    output variables: [ud,vd,t,ps,q,qi,ql,o3]
+    output variables: [ua,va,t,ps,q,qi,ql,o3]
   testinverse: 1
   tolerance inverse: 1000
 - linear variable change:

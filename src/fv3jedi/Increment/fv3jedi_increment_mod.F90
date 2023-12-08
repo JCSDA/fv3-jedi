@@ -16,7 +16,7 @@ use fckit_mpi_module,            only: fckit_mpi_sum
 use random_mod,                  only: normal_distribution
 
 ! fv3jedi
-use fv3jedi_field_mod,           only: fv3jedi_field, checksame, get_field
+use fv3jedi_field_mod,           only: fv3jedi_field, checksame, checkvalidsubset, hasfield, get_field
 use fv3jedi_fields_mod,          only: fv3jedi_fields
 use fv3jedi_geom_mod,            only: fv3jedi_geom
 use fv3jedi_geom_iter_mod,       only: fv3jedi_geom_iter
@@ -96,13 +96,29 @@ subroutine self_add(self,rhs)
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: var
+logical :: found
+integer :: var, selfvar
 
-call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.self_add")
-
-do var = 1,self%nf
-  self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
-enddo
+! The variables in self and rhs may differ IFF: rhs vars == (self vars - interface-specific fields)
+! To illustrate:
+! - does NOT support e.g. lhs={ud,vd,bla} += rhs{ua,va,bla}
+! - does support e.g. lhs={ud,vd,ua,va,bla} += rhs{ua,va,bla}
+if (self%nf == rhs%nf) then
+  call checksame(self%fields, rhs%fields, "fv3jedi_increment_mod.self_add")
+  do var = 1,self%nf
+    self%fields(var)%array = self%fields(var)%array + rhs%fields(var)%array
+  enddo
+else if (self%nf > rhs%nf) then
+  call checkvalidsubset(self%fields, rhs%fields, "fv3jedi_increment_mod.self_add")
+  do var = 1,rhs%nf
+    found = hasfield(self%fields, rhs%fields(var)%short_name, selfvar)
+    if (.not. found) call abor1_ftn("fv3jedi_increment_mod.self_add: logic error")
+    self%fields(selfvar)%array = self%fields(selfvar)%array + rhs%fields(var)%array
+  enddo
+  self%interface_fields_are_out_of_date = .true.
+else
+  call abor1_ftn("fv3jedi_increment_mod.self_add: adding rhs with extra variables not supported")
+end if
 
 end subroutine self_add
 
@@ -130,13 +146,29 @@ subroutine self_sub(self,rhs)
 class(fv3jedi_increment), intent(inout) :: self
 class(fv3jedi_increment), intent(in)    :: rhs
 
-integer :: var
+logical :: found
+integer :: var, selfvar
 
-call checksame(self%fields,rhs%fields,"fv3jedi_increment_mod.self_sub")
-
-do var = 1,self%nf
-  self%fields(var)%array = self%fields(var)%array - rhs%fields(var)%array
-enddo
+! The variables in self and rhs may differ IFF: rhs vars == (self vars - interface-specific fields)
+! To illustrate:
+! - does NOT support e.g. lhs={ud,vd,bla} -= rhs{ua,va,bla}
+! - does support e.g. lhs={ud,vd,ua,va,bla} -= rhs{ua,va,bla}
+if (self%nf == rhs%nf) then
+  call checksame(self%fields, rhs%fields, "fv3jedi_increment_mod.self_sub")
+  do var = 1,self%nf
+    self%fields(var)%array = self%fields(var)%array - rhs%fields(var)%array
+  enddo
+else if (self%nf > rhs%nf) then
+  call checkvalidsubset(self%fields, rhs%fields, "fv3jedi_increment_mod.self_sub")
+  do var = 1,rhs%nf
+    found = hasfield(self%fields, rhs%fields(var)%short_name, selfvar)
+    if (.not. found) call abor1_ftn("fv3jedi_increment_mod.self_sub: logic error")
+    self%fields(selfvar)%array = self%fields(selfvar)%array - rhs%fields(var)%array
+  enddo
+  self%interface_fields_are_out_of_date = .true.
+else
+  call abor1_ftn("fv3jedi_increment_mod.self_sub: adding rhs with extra variables not supported")
+end if
 
 end subroutine self_sub
 
@@ -168,6 +200,14 @@ integer :: i,j,k
 integer :: var
 
 call checksame(self%fields,other%fields,"fv3jedi_increment_mod.dot_prod")
+
+if (self%ninterface_specific > 0 .and. self%interface_fields_are_out_of_date) then
+  call abor1_ftn("fv3jedi_increment_mod.dot_prod: interface-specific fields are out-of-date")
+end if
+if (other%ninterface_specific > 0 .and. other%interface_fields_are_out_of_date) then
+  call abor1_ftn("fv3jedi_increment_mod.dot_prod:&
+                 & other's interface-specific fields are out-of-date")
+end if
 
 zp=0.0_kind_real
 do var = 1,self%nf
@@ -204,6 +244,16 @@ type(fv3jedi_field), pointer :: state1p, state2p
 
 ! Loop over increment vars and set data to diff of two states
 do f = 1, self%nf
+
+  !It's ok for interface-specific fields in self to be missing from the states
+  if (.not. hasfield(state1_fields, self%fields(f)%short_name)) then
+    if (self%fields(f)%interface_specific) then
+      self%interface_fields_are_out_of_date = .true.
+      continue
+    else
+      call abor1_ftn("increment_mod.diff_states: missing state field is not interface-specific")
+    end if
+  end if
 
   !Get pointers to states
   call get_field(state1_fields, self%fields(f)%short_name, state1p)

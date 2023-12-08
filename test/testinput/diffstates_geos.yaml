@@ -19,14 +19,14 @@ state1: #Analysis
   provider: geos
   datapath: Data/analysis
   filename: hyb-4dvar-geos.ana.20201214_210000z.nc4
-  state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
 state2: #background
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
-  state variables: [u,v,t,delp,q,qi,ql,o3ppmv]
+  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
 output:
   filetype: cube sphere history
   provider: geos

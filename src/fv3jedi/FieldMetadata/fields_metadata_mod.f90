@@ -31,6 +31,7 @@ type field_metadata
  character(len=clen) :: units
  character(len=clen) :: kind
  logical :: tracer
+ logical :: interface_specific
  character(len=clen) :: horizontal_stagger_location
  integer :: levels
  character(len=clen) :: space
@@ -47,8 +48,8 @@ end interface
 ! --------------------------------------------------------------------------------------------------
 
 interface
-  subroutine c_get_field_metadata(ptr, longshortio_name, long_name, short_name, &
-                                  units, kindd, tracer, horizontal_stagger_location, &
+  subroutine c_get_field_metadata(ptr, longshortio_name, long_name, short_name, units, &
+                                  kindd, tracer, interface_specific, horizontal_stagger_location, &
                                   levels, space, io_name, io_file, interpolation_type, &
                                   interpolation_source_point_mask) &
                                   bind(c, name='get_field_metadata_f')
@@ -61,6 +62,7 @@ interface
     character(len=1, kind=c_char) :: units(clen)
     character(len=1, kind=c_char) :: kindd(clen)
     logical(c_bool) :: tracer
+    logical(c_bool) :: interface_specific
     character(len=1, kind=c_char) :: horizontal_stagger_location(clen)
     integer(kind=c_int) :: levels
     character(len=1, kind=c_char) :: space(clen)
@@ -102,6 +104,7 @@ character(len=1, kind=c_char), allocatable :: short_name(:)
 character(len=1, kind=c_char), allocatable :: units(:)
 character(len=1, kind=c_char), allocatable :: kindd(:)
 logical(c_bool) :: tracer
+logical(c_bool) :: interface_specific
 character(len=1, kind=c_char), allocatable :: horizontal_stagger_location(:)
 integer(kind=c_int) :: levels
 character(len=1, kind=c_char), allocatable :: space(:)
@@ -146,11 +149,12 @@ interpolation_source_point_mask = c_null_char
 
 ! Get information from C++ object
 call c_get_field_metadata(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
-                          tracer, horizontal_stagger_location, levels, space, io_name, &
-                          io_file, interpolation_type, interpolation_source_point_mask)
+                          tracer, interface_specific, horizontal_stagger_location, levels, space, &
+                          io_name, io_file, interpolation_type, interpolation_source_point_mask)
 
 ! Copy non string
 fmd%tracer = tracer
+fmd%interface_specific = interface_specific
 fmd%levels = levels
 
 ! Copy string

@@ -166,6 +166,22 @@ namespace fv3jedi {
 
   // -----------------------------------------------------------------------------------------------
 
+  oops::Variables FieldsMetadata::removeInterfaceSpecificFields(
+      const oops::Variables & vars) const {
+    std::vector<std::string> jediVarsVec;
+
+    for (const auto & var : vars.variables()) {
+      const FieldMetadata & metadata = this->getFieldMetadata(var);
+      if (!metadata.getIsInterfaceSpecificField()) {
+        jediVarsVec.push_back(this->getLongNameFromAnyName(var));
+      }
+    }
+
+    return oops::Variables(jediVarsVec);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+
 }  // namespace fv3jedi
 
 // -------------------------------------------------------------------------------------------------

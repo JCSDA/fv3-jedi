@@ -5,8 +5,8 @@ DRIPCGMinimizer: reduction in residual norm = 1.1468081026200936e+00
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3496839860265715e+02 Max:+1.2784919740746092e+02 RMS:+1.5837341454338318e+01
-v_component_of_native_D_grid_wind            | Min:-1.4277243559862308e+02 Max:+1.2322577990478851e+02 RMS:+1.7374587166101488e+01
+u_component_of_native_D_grid_wind            | Min:-1.3496839860193694e+02 Max:+1.2784919740815921e+02 RMS:+1.5837341463134100e+01
+v_component_of_native_D_grid_wind            | Min:-1.4277243559835136e+02 Max:+1.2322577990215103e+02 RMS:+1.7374587170077902e+01
 eastward_wind                                | Min:-9.9870309951848327e+01 Max:+1.6846199862544401e+02 RMS:+2.2146985110175549e+01
 northward_wind                               | Min:-9.8786769924692052e+01 Max:+1.1111138963331047e+02 RMS:+1.0634298707896505e+01
 air_temperature                              | Min:+1.5727112567976252e+02 Max:+3.0671885031259285e+02 RMS:+2.4964139401657494e+02
@@ -21,5 +21,5 @@ sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+
 
 
 CostJb   : Nonlinear Jb = 0.0005851825525212853
-CostJo   : Nonlinear Jo(Aircraft) = 5836.244536746018, nobs = 2763, Jo/n = 2.112285391511407, err = 2.198421767288576
-CostFunction: Nonlinear J = 5836.24512192857
+CostJo   : Nonlinear Jo(Aircraft) = 5836.242188909533, nobs = 2763, Jo/n = 2.112284541769646, err = 2.198421767288576
+CostFunction: Nonlinear J = 5836.242774092086

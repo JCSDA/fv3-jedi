@@ -57,7 +57,7 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   State vader_xfg(xfg);
 
   // Record start variables
-  oops::Variables varsFilled = vader_xfg.variables();
+  oops::Variables varsFilled = vader_xfg.variablesIncludingInterfaceFields();
 
   oops::Variables varsVader = vars;
   varsVader -= varsFilled;  // Pass only the needed variables
@@ -87,7 +87,7 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
-  if (vars <= dx.variables()) {
+  if (vars <= dx.variablesIncludingInterfaceFields()) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::changeVarTL done (identity)" << std::endl;
     return;
@@ -105,11 +105,16 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
 
     // Set intermediate state for the Increment containing original fields plus the ones
     // Vader has done
-    oops::Variables varsVader = dx.variables();
+    oops::Variables varsVader = dx.variablesIncludingInterfaceFields();
     varsVader += varsVaderPopulates_;
     dx.updateFields(varsVader);
     dx.fromFieldSet(dxfs);
   }
+
+  // The to/fromFieldSet above is for a var change, so we know it's just adding/removing fields,
+  // and is not editing the values within a particular field. So, the interface-specific fields are
+  // still up to date (unless the var changes are coded incorrectly...).
+  dx.setInterfaceFieldsOutOfDate(false);
 
   // Create output state
   Increment dxout(dx.geometry(), vars, dx.time());
@@ -137,7 +142,7 @@ void LinearVariableChange::changeVarInverseTL(Increment & dx,
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
-  if ((vars <= dx.variables()) && !force_varchange) {
+  if ((vars <= dx.variablesIncludingInterfaceFields()) && !force_varchange) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::changeVarInverseTL done (identity)" << std::endl;
     return;
@@ -163,10 +168,27 @@ void LinearVariableChange::changeVarInverseTL(Increment & dx,
 void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & vars_out,
                                        const bool force_varchange) const {
   // Make sure vars are longname
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
+  const oops::Variables vars_long = fieldsMetadata_.getLongNameFromAnyName(vars_out);
+
+  // If LVC is Model2X, then the adjoint needs to know about interface/model-specific variables
+  // that oops isn't able to put into vars_out. Currently, only Model2GeoVaLs starts with model
+  // vars, but this can also appear as "default" in the yaml...
+  oops::Variables vars = vars_long;
+  if (params_.linearVariableChangeParameters.value().name.value().value() == "Model2GeoVaLs"
+      || params_.linearVariableChangeParameters.value().name.value().value() == "default") {
+    // If geovals have winds, then we know model must have winds too. if "vars_out" has no winds,
+    // that must be because there were only D-grid winds and these were hidden from OOPS.
+    if (dx.variables().has("ua") || dx.variables().has("eastward_wind")) {
+      if (!(vars_long.has("eastward_wind") || vars_long.has("u_component_of_native_D_grid_wind"))) {
+        vars = oops::Variables({"u_component_of_native_D_grid_wind",
+                                "v_component_of_native_D_grid_wind"});
+        vars += vars_long;
+      }
+    }
+  }
 
   // If all variables already in incoming state just remove the no longer needed fields
-  if ((vars <= dx.variables()) && !force_varchange) {
+  if ((vars <= dx.variablesIncludingInterfaceFields()) && !force_varchange) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::changeVarAD done (identity)" << std::endl;
     return;
@@ -174,9 +196,8 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
 
   // Create dxin as a copy of dx, minus the variables created by Vader (in the forward direction)
   // This way we ensure the model code will not be able to do the adjoint for these vars
-  Increment dxin(dx.geometry(), dx.variables(), dx.time());
-  dxin = dx;
-  oops::Variables varsVaderDidntPopulate = dx.variables();
+  Increment dxin(dx, true);  // true => full copy
+  oops::Variables varsVaderDidntPopulate = dx.variablesIncludingInterfaceFields();
   varsVaderDidntPopulate -= varsVaderPopulates_;
   dxin.updateFields(varsVaderDidntPopulate);
 
@@ -210,6 +231,11 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   dx.updateFields(vars);
   dx.fromFieldSet(dxout_fs);
 
+  // The to/fromFieldSet above is for a var change, so we know it's just adding/removing fields,
+  // and is not editing the values within a particular field. So, the interface-specific fields are
+  // still up to date (unless the var changes are coded incorrectly...).
+  dx.setInterfaceFieldsOutOfDate(false);
+
   oops::Log::trace() << "LinearVariableChange::changeVarAD done" << std::endl;
 }
 
@@ -223,7 +249,7 @@ void LinearVariableChange::changeVarInverseAD(Increment & dx,
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
-  if (vars <= dx.variables()) {
+  if (vars <= dx.variablesIncludingInterfaceFields()) {
     dx.updateFields(vars);
     oops::Log::trace() << "LinearVariableChange::changeVarInverseAD done (identity)" << std::endl;
     return;

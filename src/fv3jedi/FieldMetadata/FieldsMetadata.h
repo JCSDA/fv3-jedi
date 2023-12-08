@@ -56,6 +56,31 @@ namespace fv3jedi {
     std::string getIntrpTyp() const {return intrpTyp_;}
     std::string getIntrpMsk() const {return intrpMsk_;}
 
+    // Whether a field is a specific to the FV3 dycore or to a model using the FV3 dycore; we lump
+    // these together as "interface specific" fields. This is contrast to fields that have meaning
+    // outside the context of the FV3 dycore or a model, which are used outside of this model
+    // interface by JEDI.
+    //
+    // For now, we determine if a field is interface specific algorithmically:
+    // => a field is interface specific IFF (is it staggered OR its long name ends in _cold)
+    //
+    // But if more fine-grained control is needed, this could be set by a data member, as is done
+    // for other metadata fields.
+    bool getIsInterfaceSpecificField() const {
+      if (stagrLoc_ != "center") {
+        return true;
+      }
+      const std::string ending = "_cold";
+      if (longName_.size() > ending.size()) {
+        // check if last `ending.size` characters of longName equal ending
+        if (std::equal(longName_.begin() + longName_.size() - ending.size(),
+                       longName_.end(), ending.begin())) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     // Set functions (strings)
     // -----------------------
     void setShrtName(std::string shrtName) {shrtName_ = shrtName;}
@@ -177,6 +202,10 @@ namespace fv3jedi {
     // Get long name from any of the potential field names
     oops::Variables getLongNameFromAnyName(const oops::Variables &) const;
     std::string getLongNameFromAnyName(const std::string &) const;
+
+    // Filter out any fields that are specific to the fv3-jedi interface, returns a
+    // Variables containing fields for passing to JEDI
+    oops::Variables removeInterfaceSpecificFields(const oops::Variables &) const;
 
    private:
     std::map<std::string, FieldMetadata> fieldsMetadata_;

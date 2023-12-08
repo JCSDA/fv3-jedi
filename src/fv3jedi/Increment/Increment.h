@@ -136,7 +136,7 @@ class Increment : public util::Printable,
 
 // Utilities
   const Geometry & geometry() const {return geom_;}
-  const oops::Variables & variables() const {return vars_;}
+  const oops::Variables & variables() const {return varsJedi_;}
 
   const util::DateTime & time() const {return time_;}
   util::DateTime & time() {return time_;}
@@ -145,6 +145,12 @@ class Increment : public util::Printable,
 
   int & toFortran() {return keyInc_;}
   const int & toFortran() const {return keyInc_;}
+
+  // Const w.r.t. JEDI, but does update internal fortran state (i.e., the interface-specific fields)
+  // to synchronize it with the JEDI-presented fields.
+  void synchronizeInterfaceFields() const;
+  void setInterfaceFieldsOutOfDate(bool) const;
+  const oops::Variables & variablesIncludingInterfaceFields() const {return vars_;}
 
 // Private methods and variables
  private:
@@ -156,6 +162,7 @@ class Increment : public util::Printable,
   F90inc keyInc_;
   const Geometry & geom_;
   oops::Variables vars_;
+  oops::Variables varsJedi_;  // subset of vars_; excluding interface-specific variables
   util::DateTime time_;
 };
 // -------------------------------------------------------------------------------------------------

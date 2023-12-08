@@ -24,4 +24,4 @@ other geometry:
   npy: 25
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-inc variables: [u,v,T,DELP]
+inc variables: [ua,va,T,DELP]

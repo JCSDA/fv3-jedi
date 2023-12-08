@@ -73,8 +73,8 @@ ModelFV3LM::~ModelFV3LM() {
 void ModelFV3LM::initialize(State & xx) const {
   oops::Log::trace() << "ModelFV3LM::initialize starting" << std::endl;
   ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initialize");
-  if (!(vars_ <= xx.variables())) {
-    finalVars_.reset(new oops::Variables(xx.variables()));
+  if (!(vars_ <= xx.variablesIncludingInterfaceFields())) {
+    finalVars_.reset(new oops::Variables(xx.variablesIncludingInterfaceFields()));
     an2model_->changeVar(xx, vars_);
   }
   fv3jedi_fv3lm_initialize_f90(keyConfig_, xx.toFortran());
