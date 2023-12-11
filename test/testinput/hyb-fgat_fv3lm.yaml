@@ -263,7 +263,8 @@ final:
     variables to output: [air_temperature, eastward_wind, northward_wind]
     pressure levels in hPa: [250]
     datapath: Data/analysis
-    filename prefix: latlon.inc.hyb-fgat
+    exp: hyb-fgat
+    type: inc
   analysis to latlon:
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
@@ -271,7 +272,8 @@ final:
     pressure levels in hPa: [500]
     frequency: PT3H
     datapath: Data/analysis
-    filename prefix: latlon.an.hyb-fgat
+    exp: hyb-fgat
+    type: an
 
 output:
   filetype: cube sphere history

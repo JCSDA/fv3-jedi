@@ -188,14 +188,16 @@ final:
     variables to output: [air_temperature]
     pressure levels in hPa: [250]
     datapath: Data/analysis
-    filename prefix: 4denvar-gfs-seq.latlon.inc
+    type: inc
+    exp: 4denvar-gfs-seq
   analysis to latlon:
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature, eastward_wind, northward_wind]
     pressure levels in hPa: [850, 500, 250]
     datapath: Data/analysis
-    filename prefix: 4denvar-gfs-seq.latlon
+    type: an
+    exp: 4denvar-gfs-seq
 
 test:
   reference filename: testoutput/4denvar.ref

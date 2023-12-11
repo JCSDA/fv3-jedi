@@ -23,7 +23,8 @@ ensvariance to latlon:
   variables to output: [air_temperature, eastward_wind, northward_wind]
   pressure levels in hPa: [850, 500, 250]
   datapath: Data/ensvariance
-  filename prefix: latlon.ensemblevariance
+  exp: test
+  type: ensemblevariance
 
 mean output:
   filetype: fms restart
@@ -40,7 +41,8 @@ ensmean to latlon:
   variables to output: [air_temperature, eastward_wind, northward_wind]
   pressure levels in hPa: [850, 500, 250]
   datapath: Data/ensvariance
-  filename prefix: latlon.ensemblemean
+  exp: test
+  type: ensemblemean
 
 ensemble:
   members from template:

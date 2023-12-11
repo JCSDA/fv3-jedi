@@ -42,7 +42,8 @@ forecast to latlon:
   pressure levels in hPa: [850, 500, 250]
   frequency: PT15M
   datapath: Data/forecast
-  filename prefix: latlon.forecast_fv3_aero
+  type: fc
+  exp: forecast_fv3_aero
 
 test:
   reference filename: testoutput/forecast_fv3lm_tracers.ref

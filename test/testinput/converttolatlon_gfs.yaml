@@ -30,7 +30,7 @@ states to latlon:
     model levels: [120, 75, 10]
     bottom model level: true
     datapath: Data
-    filename prefix: latlon.test
+    prefix: converttolatlon
 
 test:
   reference filename: testoutput/converttolatlon_gfs.ref
