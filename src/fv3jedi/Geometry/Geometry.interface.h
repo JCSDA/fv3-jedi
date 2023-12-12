@@ -48,6 +48,11 @@ extern "C" {
   int fv3jedi_geom_iterator_dimension_f90(const F90geom &, int &);
   void fv3jedi_geom_get_data_f90(const F90geom &, const int &, double *, double *, double &);
 
+  void fv3jedi_geom_get_num_nodes_and_elements_f90(const F90geom &, int &, int &, int &);
+  void fv3jedi_geom_get_coords_and_connectivities_f90(const F90geom &,
+      const int &, double *, double *, int *, int *, int *, int *,
+      const int &, int *, const int &, int *);
+
 }  // extern "C"
 // -----------------------------------------------------------------------------
 

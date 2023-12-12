@@ -252,6 +252,7 @@ double State::norm() const {
 
 void State::toFieldSet(atlas::FieldSet & fset) const {
   fv3jedi_state_to_fieldset_f90(keyState_, geom_.toFortran(), varsJedi_, fset.get());
+  fset.haloExchange();
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -72,7 +72,7 @@ find_package( jedicmake QUIET )
 find_package( NetCDF REQUIRED COMPONENTS Fortran )
 
 # atlas
-find_package( atlas 0.33.0 REQUIRED )
+find_package( atlas 0.35.0 REQUIRED )
 
 # oops
 find_package( oops 1.7.0 REQUIRED )

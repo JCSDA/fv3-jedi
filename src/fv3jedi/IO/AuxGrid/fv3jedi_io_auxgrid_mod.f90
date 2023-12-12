@@ -260,7 +260,7 @@ end do
 afunctionspace_out = atlas_functionspace_pointcloud(lonlat_field)
 
 ! Initialize bump interpolator
-call self%bumpinterp%init(self%comm, geom%afunctionspace, afunctionspace_out, self%npz)
+call self%bumpinterp%init(self%comm, geom%afunctionspace_for_bump, afunctionspace_out, self%npz)
 
 !IO communicator
 !call MPI_Comm_split(self%comm%communicator(), color, self%comm%rank(), self%llcomm, ierr)

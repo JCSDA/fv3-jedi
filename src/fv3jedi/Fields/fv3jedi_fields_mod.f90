@@ -64,7 +64,6 @@ type :: fv3jedi_fields
     procedure, public :: serialize
     procedure, public :: deserialize
     procedure, public :: to_fieldset
-    procedure, public :: to_fieldset_ad
     procedure, public :: from_fieldset
     procedure, public :: update_fields
     procedure, public :: synchronize_interface_fields  ! Update inteface-specific fields
@@ -489,25 +488,29 @@ type(oops_variables),  intent(in)    :: vars
 type(atlas_fieldset),  intent(inout) :: afieldset
 
 integer :: jvar, jl
-real(kind=kind_real), pointer :: real_ptr(:,:)
-type(atlas_field) :: afield
 type(fv3jedi_field), pointer :: field
+real(kind=kind_real), pointer :: ptr(:,:)
+type(atlas_field) :: afield
 type(atlas_metadata) :: meta
 
-real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
-integer :: max_npz
+! Variables needed to handle boundary-condition grid points in a regional grid
+integer :: max_npz, ngrid, dummy_ntris, dummy_nquads
+real(kind=kind_real), allocatable :: tmp(:,:,:)
 
-! To allocate tmp_fv3_data just once, we need the max number of levels
+! To allocate tmp just once, we need the max number of levels
 max_npz = -1
-do jvar = 1,vars%nvars()
-  ! Get field
+do jvar = 1, vars%nvars()
   call self%get_field(trim(vars%variable(jvar)), field)
   max_npz = max(max_npz, field%npz)
 end do
 
-allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
+! Set up regional-grid variables
+if (geom%ntiles == 1) then
+  call geom%get_num_nodes_and_elements(ngrid, dummy_ntris, dummy_nquads)
+  allocate(tmp(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
+end if
 
-do jvar = 1,vars%nvars()
+do jvar = 1, vars%nvars()
 
   ! Get field
   call self%get_field(trim(vars%variable(jvar)), field)
@@ -515,35 +518,45 @@ do jvar = 1,vars%nvars()
     call abor1_ftn("fv3jedi_fields_mod.to_fieldset: interface-specific field requested")
   end if
 
-  ! Fill tmp buffer with local data
-  ! Note: if field%npz < max_npz, then some of the memory allocated is unused
-  tmp_fv3_data = 0.0_kind_real
-  tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = &
-    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz)
-
-  ! Perform halo exchange to fill halos -- this uses MPI to exchange halo data
-  call mpp_update_domains(tmp_fv3_data, geom%domain)
+  ! Sanity check
+  if (trim(field%horizontal_stagger_location) .ne. 'center') then
+    call abor1_ftn("to_fieldset: only cell-centered fields are supported in atlas interface to OOPS")
+  end if
 
   ! Get/create atlas field
   if (afieldset%has_field(field%long_name)) then
     afield = afieldset%field(field%long_name)
   else
-    afield = geom%afunctionspace_incl_halo%create_field( name=field%long_name, &
-                                                         kind=atlas_real(kind_real), &
-                                                         levels=field%npz )
+    afield = geom%afunctionspace%create_field( name=field%long_name, &
+                                               kind=atlas_real(kind_real), &
+                                               levels=field%npz )
     call afieldset%add(afield)
   endif
 
-  ! Copy fv3-jedi field data into atlas field
-  ! Note the jedi interp grid excludes fv3's corner halos at cubed-sphere grid corners, which
-  ! results in irregularly-shaped data. We pack this irregular data into a 1d atlas field array.
-  call afield%data(real_ptr)
-  do jl=1, field%npz
-    call geom%trim_fv3_grid_to_jedi_interp_grid(tmp_fv3_data(:,:,jl), real_ptr(jl,:))
-  enddo
+  ! Copy fv3-jedi's owned field data into atlas field
+  ! For a global model this is easy: copy the owned data. For a regional model extra steps are
+  ! needed to copy the boundary condition points, because these are neither stored in fields nor
+  ! fillable from another MPI task via an atlas halo-exchange.
+  call afield%data(ptr)
+  if (geom%ntiles == 6) then
+    do jl=1, field%npz
+      ptr(jl, 1:geom%ngrid) = reshape(field%array(:, :, jl), (/geom%ngrid/))
+    end do
+  else if (geom%ntiles == 1) then
+    tmp = 0.0_kind_real
+    tmp(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = field%array(:, :, :)
+    call mpp_update_domains(tmp, geom%domain, complete=.true.)
+    do jl=1, field%npz
+      call geom%fv3_nodes_to_atlas_nodes(tmp(:, :, jl), ptr(jl, 1:ngrid))
+    end do
+  end if
+
+  ! Set dirty: halo points are uninitialized and must be filled by calling the atlas haloExchange
+  call afield%set_dirty(.true.)
 
   meta = afield%metadata()
   call meta%set('interp_type', trim(field%interpolation_type))
+
   ! Set atlas::Field metadata for interp mask IFF the user specifically requested a non-default mask
   if (trim(field%interpolation_source_point_mask) .ne. 'default') then
     call meta%set('interp_source_point_mask', trim(field%interpolation_source_point_mask))
@@ -554,90 +567,10 @@ do jvar = 1,vars%nvars()
 
 enddo
 
-deallocate(tmp_fv3_data)
+! Clean up
+if (allocated(tmp)) deallocate(tmp)
 
 end subroutine to_fieldset
-
-! --------------------------------------------------------------------------------------------------
-
-! (Adjoint of) Fills a FieldSet with model data, including halos
-subroutine to_fieldset_ad(self, geom, vars, afieldset)
-
-implicit none
-class(fv3jedi_fields), intent(inout) :: self
-type(fv3jedi_geom),    intent(in)    :: geom
-type(oops_variables),  intent(in)    :: vars
-type(atlas_fieldset),  intent(in)    :: afieldset
-
-integer :: jvar, jl
-real(kind=kind_real), pointer :: real_ptr(:,:)
-type(atlas_field) :: afield
-type(fv3jedi_field), pointer :: field
-character(len=1024) :: errmsg
-
-real(kind=kind_real), allocatable :: tmp_fv3_data(:,:,:)
-integer :: max_npz
-integer :: ngrid
-
-ngrid = geom%ngrid_including_halo()
-
-! To allocate tmp_fv3_data just once, we need the max number of levels
-max_npz = -1
-do jvar = 1,vars%nvars()
-  ! Get field
-  call self%get_field(trim(vars%variable(jvar)), field)
-  max_npz = max(max_npz, field%npz)
-end do
-
-allocate(tmp_fv3_data(geom%isd:geom%ied, geom%jsd:geom%jed, max_npz))
-
-do jvar = 1,vars%nvars()
-
-  ! Get field
-  call self%get_field(trim(vars%variable(jvar)), field)
-  if (field%interface_specific) then
-    call abor1_ftn("fv3jedi_fields_mod.to_fieldset_ad: interface-specific field requested")
-  end if
-
-  ! Get atlas field
-  afield = afieldset%field(field%long_name)
-
-  ! Sanity check that afield has expected size, i.e., includes halo points
-  if (ngrid /= afield%size()/field%npz) then
-    write (errmsg,*) "Bad afield size in to_fieldset_ad: expect ngrid = ", ngrid, &
-                     ", but got afield ngrid = ", afield%size()/field%npz
-    call abor1_ftn(trim(errmsg))
-  end if
-
-  ! (Adjoint of) Copy fv3-jedi field data into atlas field
-  ! Note: this includes reshaping of the 1d afield data (local + halo) into 2d fv3-jedi field
-  tmp_fv3_data = 0.0
-  call afield%data(real_ptr)
-  do jl=1,field%npz
-    call geom%trim_fv3_grid_to_jedi_interp_grid_ad(tmp_fv3_data(:,:,jl), real_ptr(jl,:))
-  enddo
-
-  ! (Adjoint of) Perform halo exchange
-  call mpp_update_domains_ad(tmp_fv3_data, geom%domain)
-
-  ! (Adjoint of) Fill tmp buffer with local data
-  field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = &
-    field%array(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) &
-    + tmp_fv3_data(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz)
-
-  ! Release pointer
-  call afield%final()
-
-enddo
-
-deallocate(tmp_fv3_data)
-
-! Updated fields but not interface-specific fields, because these are not in atlas interface
-if (self%ninterface_specific > 0) then
-  self%interface_fields_are_out_of_date = .true.
-end if
-
-end subroutine to_fieldset_ad
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -661,8 +594,6 @@ character(len=1024) :: errmsg
 
 integer :: ngrid
 
-ngrid = geom%ngrid_including_halo()
-
 do jvar = 1,vars%nvars()
 
   ! Get field
@@ -673,13 +604,6 @@ do jvar = 1,vars%nvars()
 
   ! Get Atlas field
   afield = afieldset%field(field%long_name)
-
-  ! Sanity check that afield has expected size, i.e., includes halo points
-  if (ngrid /= afield%size()/field%npz) then
-    write (errmsg,*) "Bad afield size in from_fieldset: expect ngrid = ", ngrid, &
-                     ", but got afield ngrid = ", afield%size()/field%npz
-    call abor1_ftn(trim(errmsg))
-  end if
 
   ! Reshape the first portion of afield, the local data, into 2d fv3-jedi field
   call afield%data(real_ptr)

@@ -5,15 +5,16 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include <mpi.h>
-
-#include <sstream>
+#include <algorithm>
 
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
 #include "atlas/grid.h"
-#include "atlas/util/Config.h"
+#include "atlas/mesh/actions/BuildHalo.h"
+#include "atlas/mesh/Mesh.h"
+#include "atlas/mesh/MeshBuilder.h"
 
+#include "oops/mpi/mpi.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
 
@@ -46,22 +47,105 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   fieldsMeta_.reset(new FieldsMetadata(params.fieldsMetadataParameters, nLevels_));
   fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
 
+  {
+    // grab local coordinates + global indices from fortran (owned + 1-deep halo points)
+    int num_nodes;
+    int num_tri_elements;
+    int num_quad_elements;
+    fv3jedi_geom_get_num_nodes_and_elements_f90(keyGeom_, num_nodes,
+                                                num_tri_elements, num_quad_elements);
+
+    std::vector<double> lons(num_nodes);
+    std::vector<double> lats(num_nodes);
+    std::vector<int> ghosts(num_nodes);
+    std::vector<int> global_indices(num_nodes);
+    std::vector<int> remote_indices(num_nodes);
+    std::vector<int> partitions(num_nodes);
+
+    const int num_tri_boundary_nodes = 3*num_tri_elements;
+    const int num_quad_boundary_nodes = 4*num_quad_elements;
+    std::vector<int> raw_tri_boundary_nodes(num_tri_boundary_nodes);
+    std::vector<int> raw_quad_boundary_nodes(num_quad_boundary_nodes);
+    fv3jedi_geom_get_coords_and_connectivities_f90(keyGeom_,
+        num_nodes, lons.data(), lats.data(),
+        ghosts.data(), global_indices.data(), remote_indices.data(), partitions.data(),
+        num_tri_boundary_nodes, raw_tri_boundary_nodes.data(),
+        num_quad_boundary_nodes, raw_quad_boundary_nodes.data());
+
+    const int num_elements = num_tri_elements + num_quad_elements;
+    std::vector<int> num_elements_per_rank(comm_.size());
+    comm_.allGather(num_elements, num_elements_per_rank.begin(), num_elements_per_rank.end());
+    int global_element_index = 0;
+    for (size_t i = 0; i < comm_.rank(); ++i) {
+      global_element_index += num_elements_per_rank[i];
+    }
+
+    using atlas::gidx_t;
+    using atlas::idx_t;
+
+    std::vector<std::array<gidx_t, 3>> tri_boundary_nodes(num_tri_elements);
+    std::vector<gidx_t> tri_global_indices(num_tri_elements);
+    for (size_t tri = 0; tri < num_tri_elements; ++tri) {
+      for (size_t i = 0; i < 3; ++i) {
+        tri_boundary_nodes[tri][i] = raw_tri_boundary_nodes[3*tri + i];
+      }
+      tri_global_indices[tri] = global_element_index;
+      ++global_element_index;
+    }
+    std::vector<std::array<gidx_t, 4>> quad_boundary_nodes(num_quad_elements);
+    std::vector<gidx_t> quad_global_indices(num_quad_elements);
+    for (size_t quad = 0; quad < num_quad_elements; ++quad) {
+      for (size_t i = 0; i < 4; ++i) {
+        quad_boundary_nodes[quad][i] = raw_quad_boundary_nodes[4*quad + i];
+      }
+      quad_global_indices[quad] = global_element_index;
+      ++global_element_index;
+    }
+
+    std::vector<atlas::gidx_t> atlas_global_indices(num_nodes);
+    std::transform(global_indices.begin(), global_indices.end(), atlas_global_indices.begin(),
+                   [](const int index) {return atlas::gidx_t{index};});
+
+    const atlas::idx_t remote_index_base = 1;  // 1-based indexing from Fortran
+    std::vector<atlas::idx_t> atlas_remote_indices(num_nodes);
+    std::transform(remote_indices.begin(), remote_indices.end(), atlas_remote_indices.begin(),
+                   [](const int index) {return atlas::idx_t{index};});
+
+    eckit::LocalConfiguration config{};
+    config.set("mpi_comm", comm_.name());
+
+    // establish connectivity
+    const atlas::mesh::MeshBuilder mesh_builder{};
+    atlas::Mesh mesh = mesh_builder(
+        lons,
+        lats,
+        ghosts,
+        atlas_global_indices,
+        atlas_remote_indices,
+        remote_index_base,
+        partitions,
+        tri_boundary_nodes,
+        tri_global_indices,
+        quad_boundary_nodes,
+        quad_global_indices,
+        config);
+
+    atlas::mesh::actions::build_halo(mesh, 1);
+    functionSpace_ = atlas::functionspace::NodeColumns(mesh, config);
+  }
+
   // Set lon/lat field, include halo so we can set up function spaces with/without halo
   atlas::FieldSet fs;
   const bool include_halo = true;
   fv3jedi_geom_set_lonlat_f90(keyGeom_, fs.get(), include_halo);
 
-  // Create function space
-  const atlas::Field lonlatField = fs.field("lonlat");
-  functionSpace_ = atlas::functionspace::PointCloud(lonlatField);
-
-  // Create function space with halo
-  const atlas::Field lonlatFieldInclHalo = fs.field("lonlat_including_halo");
-  functionSpaceIncludingHalo_ = atlas::functionspace::PointCloud(lonlatFieldInclHalo);
+  // Create function space without halo, for constructing the bump interpolator from fv3jedi
+  const atlas::Field lonlatFieldForBump = fs.field("lonlat");
+  functionSpaceForBump_ = atlas::functionspace::PointCloud(lonlatFieldForBump);
 
   // Set function space pointers in Fortran
   fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
-                                             functionSpaceIncludingHalo_.get());
+                                             functionSpaceForBump_.get());
 
   // Fill geometry fields. This contains both SABER-related fields and any fields requested to be
   // read from state files in the yamls.
@@ -96,11 +180,10 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), ak_(other.ak_),
 nLevels_(other.nLevels_), pTop_(other.pTop_) {
   fieldsMeta_ = std::make_shared<FieldsMetadata>(*other.fieldsMeta_);
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, fieldsMeta_.get());
-  functionSpace_ = atlas::functionspace::PointCloud(other.functionSpace_.lonlat());
-  functionSpaceIncludingHalo_ = atlas::functionspace::PointCloud(
-    other.functionSpaceIncludingHalo_.lonlat());
+  functionSpace_ = atlas::functionspace::NodeColumns(other.functionSpace_);
+  functionSpaceForBump_ = atlas::functionspace::PointCloud(other.functionSpaceForBump_.lonlat());
   fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
-                                                   functionSpaceIncludingHalo_.get());
+                                             functionSpaceForBump_.get());
   fields_ = atlas::FieldSet();
   for (auto & field : other.fields_) {
     fields_->add(field);
@@ -173,9 +256,9 @@ void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
                       const bool halo) const {
   const atlas::FunctionSpace * fspace;
   if (halo) {
-    fspace = &functionSpaceIncludingHalo_;
-  } else {
     fspace = &functionSpace_;
+  } else {
+    fspace = &functionSpaceForBump_;
   }
   const auto lonlat = atlas::array::make_view<double, 2>(fspace->lonlat());
   const size_t npts = fspace->size();

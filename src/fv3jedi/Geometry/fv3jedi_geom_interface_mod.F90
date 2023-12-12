@@ -224,12 +224,12 @@ end subroutine c_fv3jedi_geom_set_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_functionspace_pointer(c_key_self,c_afunctionspace,c_afunctionspace_incl_halo) &
-                                                    bind(c,name='fv3jedi_geom_set_functionspace_pointer_f90')
+subroutine c_fv3jedi_geom_set_functionspace_pointer(c_key_self,c_afunctionspace,c_afunctionspace_for_bump) &
+    bind(c,name='fv3jedi_geom_set_functionspace_pointer_f90')
 
 integer(c_int), intent(in)     :: c_key_self
 type(c_ptr), intent(in), value :: c_afunctionspace
-type(c_ptr), intent(in), value :: c_afunctionspace_incl_halo
+type(c_ptr), intent(in), value :: c_afunctionspace_for_bump
 
 type(fv3jedi_geom),pointer :: self
 
@@ -240,7 +240,7 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! Create function space
 ! ---------------------
 self%afunctionspace = atlas_functionspace(c_afunctionspace)
-self%afunctionspace_incl_halo = atlas_functionspace(c_afunctionspace_incl_halo)
+self%afunctionspace_for_bump = atlas_functionspace(c_afunctionspace_for_bump)
 
 end subroutine c_fv3jedi_geom_set_functionspace_pointer
 
@@ -367,6 +367,82 @@ c_bk = real(f_bk, kind=c_double)
 c_ptop = real(f_ptop, kind=c_double)
 
 end subroutine c_fv3jedi_geom_get_data
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_get_num_nodes_and_elements(c_key_self, c_num_nodes, c_num_tris, c_num_quads) &
+    bind(c, name='fv3jedi_geom_get_num_nodes_and_elements_f90')
+  integer(c_int), intent( in) :: c_key_self
+  integer(c_int), intent(out) :: c_num_nodes
+  integer(c_int), intent(out) :: c_num_tris
+  integer(c_int), intent(out) :: c_num_quads
+
+  integer :: num_nodes
+  integer :: num_tris
+  integer :: num_quads
+
+  type(fv3jedi_geom), pointer :: self
+  call fv3jedi_geom_registry%get(c_key_self, self)
+  call self%get_num_nodes_and_elements(num_nodes, num_tris, num_quads)
+
+  c_num_nodes = num_nodes
+  c_num_tris = num_tris
+  c_num_quads = num_quads
+
+end subroutine c_fv3jedi_geom_get_num_nodes_and_elements
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine c_fv3jedi_geom_get_coords_and_connectivities(c_key_self, &
+    c_num_nodes, c_lons, c_lats, c_ghosts, c_global_indices, c_remote_indices, c_partition, &
+    c_num_tri_boundary_nodes, c_raw_tri_boundary_nodes, &
+    c_num_quad_boundary_nodes, c_raw_quad_boundary_nodes) &
+    bind(c, name='fv3jedi_geom_get_coords_and_connectivities_f90')
+  integer(c_int), intent( in) :: c_key_self
+  integer(c_int), intent( in) :: c_num_nodes
+  real(c_double), intent(out) :: c_lons(c_num_nodes)
+  real(c_double), intent(out) :: c_lats(c_num_nodes)
+  integer(c_int), intent(out) :: c_ghosts(c_num_nodes)
+  integer(c_int), intent(out) :: c_global_indices(c_num_nodes)
+  integer(c_int), intent(out) :: c_remote_indices(c_num_nodes)
+  integer(c_int), intent(out) :: c_partition(c_num_nodes)
+  integer(c_int), intent( in) :: c_num_tri_boundary_nodes
+  integer(c_int), intent(out) :: c_raw_tri_boundary_nodes(c_num_tri_boundary_nodes)
+  integer(c_int), intent( in) :: c_num_quad_boundary_nodes
+  integer(c_int), intent(out) :: c_raw_quad_boundary_nodes(c_num_quad_boundary_nodes)
+
+  integer :: num_nodes
+  integer :: num_tri_boundary_nodes
+  integer :: num_quad_boundary_nodes
+  type(fv3jedi_geom), pointer :: self
+
+  real(kind_real) :: lons(c_num_nodes)
+  real(kind_real) :: lats(c_num_nodes)
+  integer :: ghosts(c_num_nodes)
+  integer :: global_indices(c_num_nodes)
+  integer :: remote_indices(c_num_nodes)
+  integer :: partition(c_num_nodes)
+  integer :: raw_tri_boundary_nodes(c_num_tri_boundary_nodes)
+  integer :: raw_quad_boundary_nodes(c_num_quad_boundary_nodes)
+
+  num_nodes = c_num_nodes
+  num_tri_boundary_nodes = c_num_tri_boundary_nodes
+  num_quad_boundary_nodes = c_num_quad_boundary_nodes
+
+  call fv3jedi_geom_registry%get(c_key_self, self)
+  call self%get_coords_and_connectivities(num_nodes, num_tri_boundary_nodes, num_quad_boundary_nodes, &
+    lons, lats, ghosts, global_indices, remote_indices, partition, raw_tri_boundary_nodes, raw_quad_boundary_nodes)
+
+  c_lons = lons
+  c_lats = lats
+  c_ghosts = ghosts
+  c_global_indices = global_indices
+  c_remote_indices = remote_indices
+  c_partition = partition
+  c_raw_tri_boundary_nodes = raw_tri_boundary_nodes
+  c_raw_quad_boundary_nodes = raw_quad_boundary_nodes
+
+end subroutine c_fv3jedi_geom_get_coords_and_connectivities
 
 ! --------------------------------------------------------------------------------------------------
 

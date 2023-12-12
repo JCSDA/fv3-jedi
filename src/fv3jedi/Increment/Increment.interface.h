@@ -38,9 +38,6 @@ extern "C" {
   void fv3jedi_increment_update_fields_f90(F90inc &, const F90geom &, const oops::Variables &);
   void fv3jedi_increment_to_fieldset_f90(const F90inc &, const F90geom &, const oops::Variables &,
                                          atlas::field::FieldSetImpl *);
-  void fv3jedi_increment_to_fieldset_ad_f90(const F90inc &, const F90geom &,
-                                            const oops::Variables &,
-                                            const atlas::field::FieldSetImpl *);
   void fv3jedi_increment_from_fieldset_f90(const F90inc &, const F90geom &, const oops::Variables &,
                                            const atlas::field::FieldSetImpl *);
   void fv3jedi_increment_synchronize_interface_fields_f90(const F90inc &, const F90geom &);

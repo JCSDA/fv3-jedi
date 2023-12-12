@@ -1,26 +1,26 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Radiosonde) = 2.5299875400467135e+03, nobs = 1348, Jo/n = 1.8768453561177401e+00, err = 2.0632451582190372e+00
-CostFunction: Nonlinear J = 2.5299875400467135e+03
-   Norm reduction all members ( 1) = 6.6496409623648611e-01, 6.4122018353630794e-01
-   Quadratic cost function all members: J ( 1) = 2.2310777618170259e+03, 2.3451795310943207e+03
-   Norm reduction all members ( 2) = 2.5625650164240604e-01, 2.5411340423143186e-01
-   Quadratic cost function all members: J ( 2) = 2.1070923382747824e+03, 2.2182598374602694e+03
-DRPBlockLanczosMinimizer: reduction in residual norm = 2.5625650164240604e-01
+CostJo   : Nonlinear Jo(Radiosonde) = 2.5629649009372861e+03, nobs = 1349, Jo/n = 1.8998998524368318e+00, err = 2.0632726466362250e+00
+CostFunction: Nonlinear J = 2.5629649009372861e+03
+   Norm reduction all members ( 1) = 6.6876990407930248e-01, 6.3386533264541334e-01
+   Quadratic cost function all members: J ( 1) = 2.2529985982562275e+03, 2.3445395545248116e+03
+   Norm reduction all members ( 2) = 2.8063294252974352e-01, 2.7525954714220308e-01
+   Quadratic cost function all members: J ( 2) = 2.1402128991587911e+03, 2.2274168680498051e+03
+DRPBlockLanczosMinimizer: reduction in residual norm = 2.8063294252974352e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
-eastward_wind                                | Min:-1.0436246293383951e+02 Max:+1.5487458100400210e+02 RMS:+2.2178815472923620e+01
-northward_wind                               | Min:-1.0224850110493904e+02 Max:+1.0488325523152572e+02 RMS:+1.0406729506159829e+01
-air_temperature                              | Min:+1.5955148098768223e+02 Max:+3.0626728966750244e+02 RMS:+2.4963247156271956e+02
-air_pressure_thickness                       | Min:+6.0599993432493027e-01 Max:+1.7932464579045206e+03 RMS:+9.5773114947456565e+02
-specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8614343020040072e-02 RMS:+4.6902584085271445e-03
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.7709016184063644e-04 RMS:+1.5677849828111219e-05
-cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.7097297267444767e-04 RMS:+3.4672015198837105e-05
-ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+1.8693509985470414e-05 RMS:+4.3559278346109166e-06
+eastward_wind                                | Min:-1.0466196137336691e+02 Max:+1.5487741706302100e+02 RMS:+2.2179551667973413e+01
+northward_wind                               | Min:-1.0263245159126762e+02 Max:+1.0487472082960151e+02 RMS:+1.0409085986361648e+01
+air_temperature                              | Min:+1.5952228565988193e+02 Max:+3.0627961857179594e+02 RMS:+2.4963245284351589e+02
+air_pressure_thickness                       | Min:+6.0599993172068978e-01 Max:+1.7932463884728836e+03 RMS:+9.5773084166734429e+02
+specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.8614343020040072e-02 RMS:+4.6904482732551388e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.7721385440419138e-04 RMS:+1.5584627254634682e-05
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.5624730258797033e-04 RMS:+3.4668582949612675e-05
+ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+1.8689989443796074e-05 RMS:+4.3560137315266227e-06
 ----------------------------------------------------------------------------------------------------
 
 
 
-CostJb   : Nonlinear Jb = 166.1381996255685
-CostJo   : Nonlinear Jo(Radiosonde) = 1908.445801897262, nobs = 1348, Jo/n = 1.415760980635951, err = 2.063245158219037
-CostFunction: Nonlinear J = 2074.58400152283
+CostJb   : Nonlinear Jb = 165.81007368114
+CostJo   : Nonlinear Jo(Radiosonde) = 1944.888447040797, nobs = 1349, Jo/n = 1.441726054144401, err = 2.063272646636225
+CostFunction: Nonlinear J = 2110.698520721937

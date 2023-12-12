@@ -56,7 +56,7 @@ class Geometry : public util::Printable,
   F90geom & toFortran() {return keyGeom_;}
   const F90geom & toFortran() const {return keyGeom_;}
   const eckit::mpi::Comm & getComm() const {return comm_;}
-  const atlas::FunctionSpace & functionSpace() const {return functionSpaceIncludingHalo_;}
+  const atlas::FunctionSpace & functionSpace() const {return functionSpace_;}
   const atlas::FieldSet & fields() const {return fields_;}
   void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
 
@@ -76,7 +76,8 @@ class Geometry : public util::Printable,
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
   atlas::FunctionSpace functionSpace_;
-  atlas::FunctionSpace functionSpaceIncludingHalo_;
+  // temporary hack: FunctionSpace without halos for calling BUMP interpolation from within fv3jedi
+  atlas::FunctionSpace functionSpaceForBump_;
   atlas::FieldSet fields_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
   std::vector<double> ak_;
