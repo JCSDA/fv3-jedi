@@ -138,14 +138,15 @@ variational:
     online diagnostics:
       write basis: false
       krylov basis:
-        filetype: fms restart
-        datapath: Data/analysis/eda/gfs/mem001/
-        filename_core: krylov.fv_core.res.nc
-        filename_trcr: krylov.fv_tracer.res.nc
-        filename_sfcd: krylov.sfc_data.nc
-        filename_sfcw: krylov.fv_srf_wnd.res.nc
-        filename_cplr: krylov.coupler.res
-        analysis variables: *3dvars
+        state component:
+          filetype: fms restart
+          datapath: Data/analysis/eda/gfs/mem001/
+          filename_core: krylov.fv_core.res.nc
+          filename_trcr: krylov.fv_tracer.res.nc
+          filename_sfcd: krylov.sfc_data.nc
+          filename_sfcw: krylov.fv_srf_wnd.res.nc
+          filename_cplr: krylov.coupler.res
+          analysis variables: *3dvars
   iterations:
   - ninner: 2
     gradient norm reduction: 1e-10

@@ -86,7 +86,7 @@ cost function:
           variables:
           - name: stationPressure
           da_psfc_scheme: GSI
- 
+
       linear obs operator:
         name: Composite
         components:
@@ -187,7 +187,7 @@ cost function:
 #       - name: ozoneTotal
 #       threshold: 5.0
 #       action:
-#         name: reject  
+#         name: reject
 
     - obs space:
         name: omi_aura
@@ -244,7 +244,7 @@ cost function:
 #       minvalue: 3
 #       maxvalue: 24
 #       action:
-#         name: reject     
+#         name: reject
 #     # Gross check
 #     - filter: Background Check
 #       filter variables:
@@ -253,7 +253,7 @@ cost function:
 #       action:
 #         name: reject
 
- 
+
 final:
   diagnostics:
     departures: oman
@@ -284,11 +284,12 @@ variational:
 #   online diagnostics:
 #     write increment: true
 #     increment:
-#       filetype: fms restart
-##      provider: gfs
-#       datapath: Data/analysis
-#       filename: 3dvar_sondes_gfs.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
- 
+#       state component:
+#         filetype: fms restart
+#         provider: gfs
+#         datapath: Data/analysis
+#         filename: 3dvar_sondes_gfs.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
+
 # - ninner: 5
 #   gradient norm reduction: 1e-10
 ##  test: on
@@ -304,10 +305,11 @@ variational:
 ##  online diagnostics:
 ##    write increment: true
 ##    increment:
-##      filetype: fms restart
-##      provider: gfs
-##      datapath: Data/analysis
-##      filename: 3dvar_sondes_gfs.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
+##      state component:
+##        filetype: fms restart
+##        provider: gfs
+##        datapath: Data/analysis
+##        filename: 3dvar_sondes_gfs.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
 
 test:
   reference filename: testoutput/3dvar_gfs_sondes.ref

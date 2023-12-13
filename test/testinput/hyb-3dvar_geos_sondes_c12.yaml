@@ -200,7 +200,7 @@ cost function:
           variables:
           - name: stationPressure
           da_psfc_scheme: GSI
- 
+
       linear obs operator:
         name: Composite
         components:
@@ -241,7 +241,7 @@ cost function:
           name: assign error
           error function:
             name: GsiFinalObsError/stationPressure
- 
+
 
 final:
   diagnostics:
@@ -272,10 +272,11 @@ variational:
 #   online diagnostics:
 #     write increment: true
 #     increment:
-#       filetype: cube sphere history
-#       provider: geos
-#       datapath: Data/analysis
-#       filename: 3dvar_sondes_geos.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
+#       state component:
+#         filetype: cube sphere history
+#         provider: geos
+#         datapath: Data/analysis
+#         filename: 3dvar_sondes_geos.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
 # - ninner: 5
 #   gradient norm reduction: 1e-10
 ##  test: on
@@ -291,10 +292,11 @@ variational:
 #   online diagnostics:
 #     write increment: true
 #     increment:
-#       filetype: cube sphere history
-#       provider: geos
-#       datapath: Data/analysis
-#       filename: 3dvar_sondes_geos.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
+#       state component:
+#         filetype: cube sphere history
+#         provider: geos
+#         datapath: Data/analysis
+#         filename: 3dvar_sondes_geos.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
 
 test:
   reference filename: testoutput/hyb-3dvar_geos_sondes_c12.ref

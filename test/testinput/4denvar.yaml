@@ -174,13 +174,14 @@ final:
   increment:
     geometry: *geom
     output:
-      states:
-      - filetype: fms restart
-        datapath: Data/analysis
-        prefix: 20201214.210000.4denvar-gfs.inc
-      - filetype: fms restart
-        datapath: Data/analysis
-        prefix: 20201215.030000.4denvar-gfs.inc
+      state component:
+        states:
+        - filetype: fms restart
+          datapath: Data/analysis
+          prefix: 20201214.210000.4denvar-gfs.inc
+        - filetype: fms restart
+          datapath: Data/analysis
+          prefix: 20201215.030000.4denvar-gfs.inc
   increment to latlon:
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing

@@ -133,13 +133,14 @@ variational:
     online diagnostics:
       write increment: true
       increment:
-        filetype: fms restart
-        datapath: Data/analysis
-        filename_core: iter1.hyb-3dvar_fsoi_forward.c24.fv_core.res.nc
-        filename_trcr: iter1.hyb-3dvar_fsoi_forward.c24.fv_tracer.res.nc
-        filename_sfcd: iter1.hyb-3dvar_fsoi_forward.c24.sfc_data.nc
-        filename_sfcw: iter1.hyb-3dvar_fsoi_forward.c24.fv_srf_wnd.res.nc
-        filename_cplr: iter1.hyb-3dvar_fsoi_forward.c24.coupler.res
+        state component:
+          filetype: fms restart
+          datapath: Data/analysis
+          filename_core: iter1.hyb-3dvar_fsoi_forward.c24.fv_core.res.nc
+          filename_trcr: iter1.hyb-3dvar_fsoi_forward.c24.fv_tracer.res.nc
+          filename_sfcd: iter1.hyb-3dvar_fsoi_forward.c24.sfc_data.nc
+          filename_sfcw: iter1.hyb-3dvar_fsoi_forward.c24.fv_srf_wnd.res.nc
+          filename_cplr: iter1.hyb-3dvar_fsoi_forward.c24.coupler.res
 final:
   diagnostics:
     departures: oman

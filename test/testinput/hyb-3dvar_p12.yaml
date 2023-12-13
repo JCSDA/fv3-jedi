@@ -286,9 +286,10 @@ variational:
     online diagnostics:
       write increment: true
       increment:
-        filetype: fms restart
-        datapath: Data/analysis
-        prefix: 20201215.000000.iter1.hyb-3dvar-p12.c24
+        state component:
+          filetype: fms restart
+          datapath: Data/analysis
+          prefix: 20201215.000000.iter1.hyb-3dvar-p12.c24
   - ninner: 2
     gradient norm reduction: 1e-10
     test: on
@@ -304,9 +305,10 @@ variational:
     online diagnostics:
       write increment: true
       increment:
-        filetype: fms restart
-        datapath: Data/analysis
-        prefix: 20201215.000000.iter2.hyb-3dvar-p12.c24
+        state component:
+          filetype: fms restart
+          datapath: Data/analysis
+          prefix: 20201215.000000.iter2.hyb-3dvar-p12.c24
 final:
   diagnostics:
     departures: oman
