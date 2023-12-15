@@ -149,7 +149,7 @@ phases:
       - sed -i 's/fv3-bundle/fv3-bundle\/fv3-jedi/' DartConfiguration.tcl
       - sed -i 's/build_container/build_container\/fv3-jedi/' DartConfiguration.tcl
       - cat DartConfiguration.tcl
-      - make -j8
+      - make -j6
 
       - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];
         then export BUILD_STATUS="1";

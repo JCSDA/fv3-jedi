@@ -152,7 +152,7 @@ phases:
         && sed -i 's/fv3-bundle/fv3-bundle\/fv3-jedi/' DartConfiguration.tcl
         && sed -i 's/home\/nonroot/home\/nonroot\/fv3-jedi/' DartConfiguration.tcl
         && cat DartConfiguration.tcl
-        && make -j2"
+        && make"
 
       - echo $CODEBUILD_BUILD_SUCCEEDING
       - if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ];

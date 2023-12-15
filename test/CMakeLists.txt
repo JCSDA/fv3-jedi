@@ -146,6 +146,7 @@ list( APPEND fv3jedi_testinput
   testinput/dirac_geos_gsi_global.yaml
   testinput/dirac_gfs.yaml
   testinput/dirac_gfs_gsi_global.yaml
+  testinput/eda_3dvar_control_pert.yaml
   testinput/eda_4dvar_fv3lm_1.yaml
   testinput/eda_4dvar_fv3lm_2.yaml
   testinput/eda_4dvar_fv3lm.yaml
@@ -314,6 +315,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/dirac_gfs.ref
   testoutput/dirac_geos_gsi_global.ref
   testoutput/dirac_gfs_gsi_global.ref
+  testoutput/eda_3dvar_control_pert.ref
   testoutput/eda_4dvar_fv3lm.ref
   testoutput/eda_block_3dvar.ref
   testoutput/ensmeanvariance_geos.ref
@@ -556,6 +558,11 @@ if( crtm_FOUND AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Data/crtm")
                            ${crtm_coeff_files} )
 endif()
 
+# Backgrounds needed for Control-Pert
+execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
+               ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/bkg
+               ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem000)
+
 # Files needed for GEOS aerosol testing
 if( ${geos-aero_FOUND} )
   list( APPEND geos-aero_test_data
@@ -696,6 +703,12 @@ foreach(MEM IN LISTS members)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/gfs/${MEM})
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos/${MEM})
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs/${MEM})
+endforeach()
+
+set(members mem000;mem001)
+foreach(MEM IN LISTS members)
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/gfs/controlpert/${MEM})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs/controlpert/${MEM})
 endforeach()
 
 set(members mem000;mem001;mem002;mem003;mem004;mem005;mem006;mem007;mem008;mem009;mem010)
@@ -1537,6 +1550,13 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
 
 # Ensemble data assimilation tests
 # --------------------------------
+# 3DVar
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar_control_pert
+                  MPI      12
+                  ARGS     --no-validate testinput/eda_3dvar_control_pert.yaml
+                  COMMAND  fv3jedi_controlpert.x
+                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+
 # Block-Lanczos EDA of 3DVars
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_block_3dvar_validate
                   ARGS     --validate-only testinput/eda_block_3dvar.yaml

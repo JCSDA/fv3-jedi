@@ -1,0 +1,119 @@
+assimilation:
+  cost function:
+    cost type: 3D-Var
+    time window:
+      begin: 2020-12-14T21:00:00Z
+      length: PT6H
+    analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+    geometry:
+      fms initialization:
+        namelist filename: Data/fv3files/fmsmpp.nml
+        field table filename: Data/fv3files/field_table
+      akbk: Data/fv3files/akbk127.nc4
+      npx: 13
+      npy: 13
+      npz: 127
+      field metadata override: Data/fieldmetadata/gfs-restart.yaml
+    background:
+      datetime: 2020-12-15T00:00:00Z
+      filetype: fms restart
+      datapath: Data/inputs/gfs_c12/mem%mem_pad%/
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
+      state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
+                        slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                        u_srf,v_srf,f10m]
+    background error:
+      covariance model: SABER
+      saber central block:
+        saber block name: BUMP_NICAS
+        active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+        read:
+          io:
+            files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+            alias:
+            - in code: eastward_wind
+              in file: fixed_2500km_0.3
+            - in code: northward_wind
+              in file: fixed_2500km_0.3
+            - in code: air_temperature
+              in file: fixed_2500km_0.3
+            - in code: air_pressure_thickness
+              in file: fixed_2500km_0.3
+            - in code: specific_humidity
+              in file: fixed_2500km_0.3
+            - in code: cloud_liquid_ice
+              in file: fixed_2500km_0.3
+            - in code: cloud_liquid_water
+              in file: fixed_2500km_0.3
+            - in code: ozone_mass_mixing_ratio
+              in file: fixed_2500km_0.3
+          drivers:
+            multivariate strategy: univariate
+            read local nicas: true
+    observations:
+      observers:
+      - obs space:
+          name: Radiosonde
+          obsdatain:
+            engine:
+              type: H5File
+              obsfile: Data/obs/testinput_tier_1/sondes_obs_2020121500_m.nc4
+          obsdataout:
+            engine:
+              type: H5File
+              obsfile: Data/hofx/eda/gfs/controlpert/mem%mem_pad%/sondes_eda-3dvar-gfs_2020121500_m.nc4
+          simulated variables: [windEastward, windNorthward, airTemperature]
+        obs operator:
+          name: VertInterp
+          vertical coordinate: air_pressure
+          observation vertical coordinate: pressure
+          observation vertical coordinate group: MetaData
+          interpolation method: log-linear
+        obs error:
+          covariance model: diagonal
+        obs filters:
+        - filter: PreQC
+          maxvalue: 3
+        - filter: Background Check
+          filter variables:
+          - name: windEastward
+          - name: windNorthward
+          - name: airTemperature
+          threshold: 6.0
+  variational:
+    minimizer:
+      algorithm: DRPLanczos
+    iterations:
+    - ninner: 3
+      gradient norm reduction: 1e-10
+      test: on
+      geometry:
+        akbk: Data/fv3files/akbk127.nc4
+        npx: 13
+        npy: 13
+        npz: 127
+        field metadata override: Data/fieldmetadata/gfs-restart.yaml
+      diagnostics:
+        departures: ombg
+  final:
+    diagnostics:
+      departures: oman
+  output:
+    filetype: fms restart
+    datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
+    prefix: eda-3dvar-gfs
+    frequency: PT1H
+
+template:
+  pattern with zero padding: %mem_pad%
+  pattern without zero padding: %mem%
+  number of pert members: 1
+  first pert member index: 1
+  run pert members only: false
+
+test:
+ reference filename: testoutput/eda_3dvar_control_pert.ref

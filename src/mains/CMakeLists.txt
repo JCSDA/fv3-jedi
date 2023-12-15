@@ -11,6 +11,12 @@ ecbuild_add_executable( TARGET  fv3jedi_convertincrement.x
                        )
 oops_output_json_schema(fv3jedi_convertincrement.x)
 
+ecbuild_add_executable( TARGET  fv3jedi_controlpert.x
+                        SOURCES fv3jediControlPert.cc
+                        LIBS    fv3jedi
+                                saber
+                       )
+
 ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
                         SOURCES fv3jediConvertState.cc
                         LIBS    fv3jedi
