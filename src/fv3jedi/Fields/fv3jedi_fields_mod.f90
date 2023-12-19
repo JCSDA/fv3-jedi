@@ -534,18 +534,49 @@ do jvar = 1, vars%nvars()
   endif
 
   ! Copy fv3-jedi's owned field data into atlas field
-  ! For a global model this is easy: copy the owned data. For a regional model extra steps are
-  ! needed to copy the boundary condition points, because these are neither stored in fields nor
-  ! fillable from another MPI task via an atlas halo-exchange.
+  ! - For a global model, this is easy: copy the owned data.
+  ! - For a regional model, extra steps are needed because atlas and fv3 have different definitions
+  !   of the halo. The boundary condition points that surround a regional grid are halos in fv3,
+  !   but they are "owned" boundary condition points in atlas. Here we're trying to fill the owned
+  !   data for atlas, so the regional cases has to copy the fv3 owned data AND some fv3 halo data
+  !   from the boundary condition regions into the atlas array.
+  ! In both cases, atlas fills its halo (internal boundaries) by a halo exchange in the C++ layer.
+  ! This could be replaced with a copy from the fv3jedi data IF we manually imported the halo
+  ! structure from fv3jedi into atlas, instead of the current solution of allowing atlas to
+  ! automatically generate the halo from the connectivity.
   call afield%data(ptr)
   if (geom%ntiles == 6) then
     do jl=1, field%npz
       ptr(jl, 1:geom%ngrid) = reshape(field%array(:, :, jl), (/geom%ngrid/))
     end do
   else if (geom%ntiles == 1) then
-    tmp = 0.0_kind_real
+    tmp = missing_value(0.0_kind_real)
+    ! Fill the owned data at the center of the grid patch
     tmp(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = field%array(:, :, :)
+    ! Use a halo-exchange to fill internal boundaries = ghost points (all 3 points deep)
     call mpp_update_domains(tmp, geom%domain, complete=.true.)
+    ! Manually fill in external boundaries = boundary conditions (1 point deep, enough for atlas)
+    ! Now that internal data and internal boundaries are filled, we can fill the external boundaries
+    ! by simply copying the internal data across each external boundary. We do this horizontally
+    ! then vertically, each time copying one point past the end of compute domain. This ensure that
+    ! corners are copied across the external boundary too.
+    ! TODO(): Long term, would be better to grab the actual BC's when running the model.
+    if (self%isc == 1) then  ! left edge
+      tmp(geom%isc-1, geom%jsc-1:geom%jec+1, 1:field%npz) = &
+        tmp(geom%isc, geom%jsc-1:geom%jec+1, 1:field%npz)
+    end if
+    if (self%iec == self%npx-1) then  ! right edge
+      tmp(geom%iec+1, geom%jsc-1:geom%jec+1, 1:field%npz) = &
+        tmp(geom%iec, geom%jsc-1:geom%jec+1, 1:field%npz)
+    end if
+    if (self%jsc == 1) then  ! bottom edge
+      tmp(geom%isc-1:geom%iec+1, geom%jsc-1, 1:field%npz) = &
+        tmp(geom%isc-1:geom%iec+1, geom%jsc, 1:field%npz)
+    end if
+    if (self%jec == self%npy-1) then  ! top edge
+      tmp(geom%isc-1:geom%iec+1, geom%jec+1, 1:field%npz) = &
+        tmp(geom%isc-1:geom%iec+1, geom%jec, 1:field%npz)
+    end if
     do jl=1, field%npz
       call geom%fv3_nodes_to_atlas_nodes(tmp(:, :, jl), ptr(jl, 1:ngrid))
     end do
