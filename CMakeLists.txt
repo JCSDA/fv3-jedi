@@ -185,9 +185,9 @@ if (ENABLE_FV3_JEDI_DATA)
 else()
   # Set values for downloading fv3-jedi test data from tarball
   set (fv3-jedi_data_download_url "https://bin.ssec.wisc.edu/pub/s4/CRTM/file")
-  set (fv3-jedi_data_tag "1.7.0")
+  set (fv3-jedi_data_tag "1.8.0")
   set (fv3-jedi_data_tarball_name "fv3-jedi_testinput_tier_1_${fv3-jedi_data_tag}.tar.gz")
-  set (fv3-jedi_data_tarball_hash "c94cc6f939eb1a345ea9fe2b2c2dc8bf")
+  set (fv3-jedi_data_tarball_hash "ec6904cbf162da89b729af4623bba733")
 endif()
 
 ################################################################################
