@@ -192,6 +192,7 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_nomodel_amsua_radii.yaml
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_nomodel_lam_rrfs.yaml
+  testinput/hofx_nomodel_lam_rrfs_obs_on_lbc.yaml
   testinput/hofx_save_geovals.yaml
   testinput/hybrid_linear_model.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
@@ -339,6 +340,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel_amsua_radii.ref
   testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_lam_rrfs.ref
+  testoutput/hofx_nomodel_lam_rrfs_obs_on_lbc.ref
   testoutput/hofx_save_geovals.ref
   testoutput/hyb-3dvar_fsoi_backward.ref
   testoutput/hyb-3dvar_fsoi_forward.ref
@@ -1883,6 +1885,11 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_nomodel_lam_rrfs
                     MPI      12
                     ARGS     testinput/hofx_nomodel_lam_rrfs.yaml
+                    COMMAND  fv3jedi_hofx_nomodel.x )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hofx_nomodel_lam_rrfs_obs_on_lbc
+                    MPI      12
+                    ARGS     testinput/hofx_nomodel_lam_rrfs_obs_on_lbc.yaml
                     COMMAND  fv3jedi_hofx_nomodel.x )
 
 

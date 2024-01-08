@@ -1,0 +1,50 @@
+time window:
+  begin: 2020-12-14T23:00:00Z
+  length: PT2H
+
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_lam_rrfs
+  akbk: Data/inputs/lam_rrfs/INPUT/akbk65.nc
+  namelist filename: Data/fv3files/input_lam_rrfs.nml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+state:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
+  datapath: Data/inputs/lam_rrfs/bkg
+  filename_core: 20201215.000000.rrfs_C403.fv_core.res.tile1.nc
+  filename_trcr: 20201215.000000.rrfs_C403.fv_tracer.res.tile1.nc
+  filename_sfcw: 20201215.000000.rrfs_C403.fv_srf_wnd.res.tile1.nc
+  filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
+  filename_cplr: 20201215.000000.rrfs_C403.coupler.res
+  state variables: [u,v,T,DELP,sphum]
+# state variables: [u,v,T,DELP,sphum,o3mr,ice_wat,liq_wat,
+#                   rainwat,snowwat,graupel,water_nc,ice_nc,rain_nc,liq_aero,ice_aero,
+#                   phis,slmsk,sheleg,tsea,vtype,stype,vfrac,tslb,smois,snwdph,
+#                   u_srf,v_srf,f10m,zorl,t2m]
+observations:
+  observers:
+  - obs space:
+      name: Aircraft 
+      simulated variables: [air_temperature]
+      observed variables: [air_temperature]
+      obsdatain:
+        engine:
+          type: GenList
+          lats: [ 34.993101,34.993101,34.993101 ]
+          lons: [ 290.25,290.25,290.25 ]
+          vert coord type: pressure
+          vert coords: [ 98780, 70000,1000 ]
+          dateTimes: [ 0, 0, 0 ]
+          epoch: "seconds since 2020-12-15T00:00:00Z"
+          obs errors: [1.0]
+          obs values: [290]
+    obs operator:
+      name: VertInterp
+
+
+test:
+  reference filename: testoutput/hofx_nomodel_lam_rrfs_obs_on_lbc.ref
+  float absolute tolerance: 1.0e-8
+  test output filename: testoutput/hofx_nomodel_lam_rrfs_obs_on_lbc.test.out
