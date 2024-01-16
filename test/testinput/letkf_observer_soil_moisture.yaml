@@ -21,7 +21,6 @@ time window:
   length: PT24H
 
 background:
- date: &date 2023-05-01T12:00:00Z
  members:
    - datetime: 2023-05-01T12:00:00Z
      filetype: fms restart

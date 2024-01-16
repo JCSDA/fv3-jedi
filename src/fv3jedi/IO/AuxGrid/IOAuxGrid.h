@@ -35,10 +35,6 @@ class IOAuxGridParameters : public IOParametersBase {
 
   // Optionally config may contain member
   oops::OptionalParameter<int> member{"member", "ensemble member number", this};
-
-  // Things BUMP puts in write config not needed in IO but specified to avoid failures
-  oops::OptionalParameter<std::string> bumpparameter{"parameter", "bump parameter", this};
-  oops::OptionalParameter<util::DateTime> bumpdatetime{"date", "bump datetime", this};
 };
 
 // -------------------------------------------------------------------------------------------------

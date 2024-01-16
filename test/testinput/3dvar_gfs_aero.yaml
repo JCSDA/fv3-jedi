@@ -61,7 +61,6 @@ cost function:
           filename_sfcd: 20180415.000000.stddev.sfc_data.nc
           filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.stddev.coupler.res
-          date: 2018-04-15T00:00:00Z
   observations:
     observers:
     - obs space:
