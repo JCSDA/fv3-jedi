@@ -240,7 +240,6 @@ list( APPEND fv3jedi_testinput
   testinput/state_gfs_history.yaml
   testinput/state_lam_cmaq.yaml
   testinput/state_lam_atmos.yaml
-  testinput/staticb_cor_gfs.yaml
   testinput/staticb_dirac_global_gfs_6pe.yaml
   testinput/staticb_dirac_global_gfs_12pe.yaml
   testinput/staticb_dirac_local_gfs_6pe.yaml
@@ -248,8 +247,7 @@ list( APPEND fv3jedi_testinput
   testinput/staticb_nicas_gfs.yaml
   testinput/staticb_split_nicas_gfs.yaml
   testinput/staticb_split_vbal_gfs.yaml
-  testinput/staticb_var_gfs.yaml
-  testinput/staticb_vbal_gfs.yaml
+  testinput/staticb_estimate_gfs.yaml
   testinput/staticb_vbal_geos.yaml
   testinput/staticb_var_geos.yaml
   testinput/staticb_cor_geos.yaml
@@ -361,7 +359,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
   testoutput/adjointforecast.ref
-  testoutput/staticb_cor_gfs.ref
   testoutput/staticb_dirac_global_gfs_6pe.ref
   testoutput/staticb_dirac_global_gfs_12pe.ref
   testoutput/staticb_dirac_local_gfs_6pe.ref
@@ -369,8 +366,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/staticb_nicas_gfs.ref
   testoutput/staticb_split_vbal_gfs.ref
   testoutput/staticb_split_nicas_gfs.ref
-  testoutput/staticb_var_gfs.ref
-  testoutput/staticb_vbal_gfs.ref
+  testoutput/staticb_estimate_gfs.ref
   testoutput/staticb_cor_aero.ref
   testoutput/staticb_var_geos.ref
   testoutput/staticb_cor_geos.ref
@@ -1608,28 +1604,11 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                       TEST_DEPENDS fv3jedi_test_tier2_staticb_ens-to-psichi_${DATE}_gfs )
   endforeach()
 
-  # Compute vertical balance using previously pre-computed vertical covariances, and unbalance ensemble members
-  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_vbal_gfs
+  # Compute vertical balance using previously pre-computed vertical covariances, and unbalance ensemble members,
+  # compute variance and correlation length-scales using previously pre-computed moments
+  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_estimate_gfs
                     MPI          12
-                    ARGS         testinput/staticb_vbal_gfs.yaml
-                    COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_prep_2020121421_gfs
-                                 fv3jedi_test_tier2_staticb_prep_2020121500_gfs
-                                 fv3jedi_test_tier2_staticb_prep_2020121503_gfs )
-
-  # Compute variance using pre-computed variance
-  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_var_gfs
-                    MPI          12
-                    ARGS         testinput/staticb_var_gfs.yaml
-                    COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_prep_2020121421_gfs
-                                 fv3jedi_test_tier2_staticb_prep_2020121500_gfs
-                                 fv3jedi_test_tier2_staticb_prep_2020121503_gfs )
-
-  # Compute correlation length-scales using pre-computed moments
-  ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_cor_gfs
-                    MPI          12
-                    ARGS         testinput/staticb_cor_gfs.yaml
+                    ARGS         testinput/staticb_estimate_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_prep_2020121421_gfs
                                  fv3jedi_test_tier2_staticb_prep_2020121500_gfs
@@ -1640,14 +1619,14 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     MPI          12
                     ARGS         testinput/staticb_nicas_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_cor_gfs )
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_estimate_gfs )
 
   # Split VBAL operator to get local files on 6 PEs
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_vbal_gfs
                     MPI          6
                     ARGS         testinput/staticb_split_vbal_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs )
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_estimate_gfs )
 
   # Split NICAS operator to get local files on 6 PEs
   ecbuild_add_test( TARGET       fv3jedi_test_tier2_staticb_split_nicas_gfs
@@ -1662,7 +1641,7 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     ARGS         testinput/staticb_dirac_local_gfs_6pe.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
                     TEST_DEPENDS fv3jedi_test_tier2_staticb_split_vbal_gfs
-                                 fv3jedi_test_tier2_staticb_var_gfs
+                                 fv3jedi_test_tier2_staticb_estimate_gfs
                                  fv3jedi_test_tier2_staticb_split_nicas_gfs )
 
   # Dirac test using the full BUMP static covariance, local files 12 PEs
@@ -1670,8 +1649,7 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     MPI          12
                     ARGS         testinput/staticb_dirac_local_gfs_12pe.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
-                                 fv3jedi_test_tier2_staticb_var_gfs
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_estimate_gfs
                                  fv3jedi_test_tier2_staticb_nicas_gfs )
 
   # Dirac test using the full BUMP static covariance, global files, 6 PEs
@@ -1679,8 +1657,7 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     MPI          6
                     ARGS         testinput/staticb_dirac_global_gfs_6pe.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
-                                 fv3jedi_test_tier2_staticb_var_gfs
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_estimate_gfs
                                  fv3jedi_test_tier2_staticb_nicas_gfs )
 
   # Dirac test using the full BUMP static covariance, global files 12 PEs
@@ -1688,8 +1665,7 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     MPI          12
                     ARGS         testinput/staticb_dirac_global_gfs_12pe.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
-                    TEST_DEPENDS fv3jedi_test_tier2_staticb_vbal_gfs
-                                 fv3jedi_test_tier2_staticb_var_gfs
+                    TEST_DEPENDS fv3jedi_test_tier2_staticb_estimate_gfs
                                  fv3jedi_test_tier2_staticb_nicas_gfs )
 
   # Full BUMP static covariance setup, GEOS case

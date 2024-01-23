@@ -5,3 +5,10 @@ Norm of input parameter m4 - 2: 2.3043964057757637e+25
 Norm of input parameter var - 3: 8.1105135686931763e+11
 Norm of input parameter m4 - 3: 1.6857772604984454e+25
 Norm of output parameter stddev - 1: 4.8422805741030548e+05
+Norm of output parameter cor_a - 1: 8.8767800458699186e-01
+Norm of output parameter cor_a - 2: 1.9554171483894897e-01
+Norm of output parameter cor_rh - 1: 3.8537710261723348e+06
+Norm of output parameter cor_rh - 2: 1.5437095014348042e+06
+Norm of output parameter cor_rv - 1: 1.1220814367510722e-01
+Norm of output parameter cor_rv - 2: 7.3507918224481883e-02
+
