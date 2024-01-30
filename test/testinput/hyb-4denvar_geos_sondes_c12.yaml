@@ -300,7 +300,7 @@ variational:
 #     npz: 72
 #     field metadata override: Data/fieldmetadata/geos.yaml
 #   diagnostics:
-#     departures: ombg
+#     departures: innov2         # output from the 2nd outer-loop.
 #   online diagnostics:
 #     write increment: true
 #     increment:

@@ -278,7 +278,7 @@ variational:
   minimizer:
     algorithm: DRIPCG
   iterations:
-  - ninner: 5
+  - ninner: 5            # 1st outer-loop
     gradient norm reduction: 1e-10
     test: on
     geometry:
@@ -296,7 +296,7 @@ variational:
           filetype: fms restart
           datapath: Data/analysis
           prefix: 20201215.000000.iter1.hyb-3dvar.c24
-  - ninner: 2
+  - ninner: 2             # 2nd outer-loop
     gradient norm reduction: 1e-10
     test: on
     geometry:
@@ -306,7 +306,7 @@ variational:
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
-      departures: ombg
+      departures: innov2        # output from the 2nd outer-loop
     online diagnostics:
       write increment: true
       increment:

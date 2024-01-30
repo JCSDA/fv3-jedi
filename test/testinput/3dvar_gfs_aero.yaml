@@ -112,7 +112,7 @@ variational:
       npz: 64
       field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
     diagnostics:
-      departures: ombg
+      departures: innov2        # output from the 2nd outer-loop
 final:
   diagnostics:
     departures: oman

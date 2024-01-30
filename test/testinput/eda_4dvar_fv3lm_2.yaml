@@ -295,7 +295,7 @@ variational:
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
-      departures: ombg
+      departures: innov2       # from the 2nd outer-loop
     linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml

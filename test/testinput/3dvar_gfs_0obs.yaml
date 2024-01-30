@@ -87,7 +87,7 @@ variational:
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
-      departures: ombg
+      departures: innov2       # output from the 2nd outer-loop
 
 test:
   reference filename: testoutput/3dvar_gfs_0obs.ref

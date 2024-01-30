@@ -1298,7 +1298,7 @@ variational:
       npz: 72
       field metadata override: Data/fieldmetadata/geos.yaml
     diagnostics:
-      departures: ombg
+      departures: innov2         # output from the 2nd outer-loop
 
 test:
   reference filename: testoutput/hyb-3dvar_geos.ref
