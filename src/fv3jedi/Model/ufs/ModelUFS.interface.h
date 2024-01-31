@@ -27,7 +27,8 @@ extern "C" {
   void fv3jedi_ufs_delete_f90(F90model &);
 
 
-  void fv3jedi_ufs_initialize_f90(const F90model &, const F90state &);
+  void fv3jedi_ufs_initialize_f90(const F90model &, const F90state &, util::DateTime * const *,
+                            util::DateTime * const *);
 
   void fv3jedi_ufs_step_f90(const F90model &, const F90state &, util::DateTime * const *,
                             util::DateTime * const *);

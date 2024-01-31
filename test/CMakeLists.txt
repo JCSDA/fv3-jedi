@@ -153,6 +153,7 @@ list( APPEND fv3jedi_testinput
   testinput/eda_block_3dvar_1.yaml
   testinput/eda_block_3dvar_2.yaml
   testinput/eda_block_3dvar.yaml
+  testinput/ensfc_ufs.yaml 
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
@@ -166,7 +167,9 @@ list( APPEND fv3jedi_testinput
   testinput/forecast_fv3lm.yaml
   testinput/forecast_fv3lm_tracers.yaml
   testinput/forecast_geos.yaml
-  testinput/forecast_ufs.yaml
+  testinput/forecast_ufs_1.yaml
+  testinput/forecast_ufs_2.yaml
+  testinput/forecast_ufs_c48_warmstart.yaml
   testinput/gen_hybrid_linear_model_coeffs.yaml
   testinput/geometry_2d.yaml
   testinput/geometry_geos.yaml
@@ -224,7 +227,7 @@ list( APPEND fv3jedi_testinput
   testinput/model_fv3lm.yaml
   testinput/model_fv3lm_tracers.yaml
   testinput/model_geos.yaml
-  testinput/model_ufs.yaml
+  testinput/model_ufs_c48_warmstart.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
   testinput/obslocalization.yaml
@@ -434,6 +437,7 @@ Data/fieldmetadata/gfs-history.yaml
 Data/fieldmetadata/gfs_v17-land.yaml
 Data/fieldmetadata/gfs-restart.yaml
 Data/fieldmetadata/lam_cmaq.yaml
+Data/fieldmetadata/ufs.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/fieldmetadata)
@@ -608,71 +612,71 @@ message(STATUS "Running fv3jedi tests for tiers up to and including tier " ${FV3
 # Executables
 ecbuild_add_executable( TARGET  test_fv3jedi_errorcovariance.x
                         SOURCES mains/TestErrorCovariance.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_geometry.x
                         SOURCES mains/TestGeometry.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_geometryiterator.x
                         SOURCES mains/TestGeometryIterator.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_getvalues.x
                         SOURCES mains/TestGetValues.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_unstructured_interpolator.x
                         SOURCES mains/TestUnstructuredInterpolator.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES} )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_global_interpolator.x
                         SOURCES mains/TestGlobalInterpolator.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES} )
 
 ecbuild_add_executable( TARGET  test_fv3jedi_increment.x
                         SOURCES mains/TestIncrement.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_linearmodel.x
                         SOURCES mains/TestLinearModel.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_linearvariablechange.x
                         SOURCES mains/TestLinVarCha.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_localization.x
                         SOURCES mains/TestLocalization.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 #ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcontrol.x
 #                        SOURCES mains/TestModelAuxControl.cc
-#                        LIBS    fv3jedi )
+#                        LIBS    ${FV3JEDI_LIBRARIES})
 #
 #ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcovariance.x
 #                        SOURCES mains/TestModelAuxCovariance.cc
-#                        LIBS    fv3jedi )
+#                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_model.x
                         SOURCES mains/TestModel.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_obslocalization.x
                         SOURCES mains/TestObsLocalization.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_obslocalizations.x
                         SOURCES mains/TestObsLocalizations.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_state.x
                         SOURCES mains/TestState.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 ecbuild_add_executable( TARGET  test_fv3jedi_variablechange.x
                         SOURCES mains/TestVarCha.cc
-                        LIBS    fv3jedi )
+                        LIBS    ${FV3JEDI_LIBRARIES})
 
 #Make some output directories for test data
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
@@ -733,16 +737,46 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/randomization/)
 
 # Stage directory with directories for running the models
 # -------------------------------------------------------
-if(FV3_FORECAST_MODEL MATCHES "GEOS" OR FV3_FORECAST_MODEL MATCHES "UFS")
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL})
-  file(GLOB model_files "${FV3_FORECAST_MODEL_RUNDIR}/*")
-  LINK_FILES_DIR("${model_files}" ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/)
-  if (FV3_FORECAST_MODEL MATCHES "GEOS")
-    execute_process( COMMAND rm ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/cap_restart )
-    execute_process( COMMAND cp ${FV3_FORECAST_MODEL_RUNDIR}/cap_restart ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/cap_restart )
-    execute_process( COMMAND chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}/cap_restart )
+
+if (FV3_FORECAST_MODEL MATCHES "UFS")
+  if( UFS_APP MATCHES "^(ATM)$" OR UFS_APP MATCHES "^(S2S)$" )
+    set(FV3_FORECAST_MODEL_RUNDIR_WARMSTART ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs/control_c48_intel/)
+    set(FV3_FORECAST_MODEL_TESTDIR_WARMSTART ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}_warmstart/)
+    file(MAKE_DIRECTORY ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART})
+
+    set(FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2 ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs/control_c48_intel/)
+    set(FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2 ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}_warmstart_2/)
+    file(MAKE_DIRECTORY ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2})
+
+    set(FV3_SETUP_UFS_DATA_SCRIPT setup-c48.sh)
+    configure_file(${FV3_SETUP_UFS_DATA_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_DATA_SCRIPT} COPYONLY)
+
+    set(FV3_SETUP_UFS_RUNDIR_SCRIPT fv3jedi_setup_ufs_rundir.py)
+    configure_file(${FV3_SETUP_UFS_RUNDIR_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT} COPYONLY)
+
+    ecbuild_add_test( TARGET  fv3jedi_setup_ufs_c48_data
+                      TYPE    SCRIPT
+                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_DATA_SCRIPT}
+                      ARGS    ${CMAKE_BINARY_DIR} ${UFS_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs )
+
+    ecbuild_add_test( TARGET  fv3jedi_setup_ufs_rundir_warmstart
+                      TYPE    SCRIPT
+                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT}
+                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART} 
+                      TEST_DEPENDS fv3jedi_setup_ufs_c48_data)
+
+    ecbuild_add_test( TARGET  fv3jedi_setup_ufs_rundir_warmstart_2
+                      TYPE    SCRIPT
+                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT}
+                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2} 
+                      TEST_DEPENDS fv3jedi_setup_ufs_c48_data)
+
+  else()
+    message("WARNING: No ctests configured for UFS APP ${UFS_APP}")
   endif()
 endif()
+
+# Setting up RUNDIR for other models would happen here
 
 ecbuild_add_resources( TARGET   fv3jedi_test_scripts
                        SOURCES_PACK
@@ -1035,12 +1069,22 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_fv3lm_tracers
                   ARGS     testinput/model_fv3lm_tracers.yaml
                   COMMAND  test_fv3jedi_model.x )
 
-if( FV3_FORECAST_MODEL MATCHES "GEOS")
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_geos
-                  MPI      6
-                  ARGS     testinput/model_geos.yaml
-                  COMMAND  test_fv3jedi_model.x )
+if( FV3_FORECAST_MODEL MATCHES "UFS")
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_ufs_warmstart
+                    MPI      6
+                    ARGS     testinput/model_ufs_c48_warmstart.yaml
+                    COMMAND  test_fv3jedi_model.x
+                    TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
+
 endif()
+
+# Disabled until setup of GEOS model rundir is added (e.g., see fv3jedi_setup_ufs_rundir_warmstart)
+#if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_geos
+#                  MPI      6
+#                  ARGS     testinput/model_geos.yaml
+#                  COMMAND  test_fv3jedi_model.x )
+#endif()
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearmodel
                   MPI      6
@@ -1072,24 +1116,21 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_fv3lm_tracers
 
 
 if( FV3_FORECAST_MODEL MATCHES "UFS")
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs_warmstart
                     MPI      6
-                    ARGS     testinput/forecast_ufs.yaml
-                    COMMAND  fv3jedi_forecast.x )
-
-#ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_ufs
-#                  MPI      6
-#                  ARGS     testinput/model_ufs.yaml
-#                  COMMAND  test_fv3jedi_model.x )
+                    ARGS     testinput/forecast_ufs_c48_warmstart.yaml
+                    COMMAND  fv3jedi_forecast.x
+                    TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
 
 endif()
 
-if( FV3_FORECAST_MODEL MATCHES "GEOS")
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_geos
-                    MPI      6
-                    ARGS     testinput/forecast_geos.yaml
-                    COMMAND  fv3jedi_forecast.x )
-endif()
+# Disabled until setup of GEOS model rundir is added (e.g., see fv3jedi_setup_ufs_rundir_warmstart)
+#if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
+#  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_geos
+#                    MPI      6
+#                    ARGS     testinput/forecast_geos.yaml
+#                    COMMAND  fv3jedi_forecast.x )
+#endif()
 
 # H(x)
 # ----
@@ -1408,6 +1449,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-4dvar_pseudo-geos
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_adjointforecast
+                  MPI      6
+                  ARGS     testinput/adjointforecast.yaml
+                  COMMAND  fv3jedi_adjointforecast.x )
 # HTLM 4dvar
 #-----------
 
@@ -1443,14 +1488,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_backward
                   ARGS     --no-validate testinput/hyb-3dvar_fsoi_backward.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_hyb-3dvar_fsoi_forward )
-
-# Adjoint Forecast
-# ----------------
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_adjointforecast
-                  MPI      6
-                  ARGS     testinput/adjointforecast.yaml
-                  COMMAND  fv3jedi_adjointforecast.x )
 
 # Diff states
 # -----------

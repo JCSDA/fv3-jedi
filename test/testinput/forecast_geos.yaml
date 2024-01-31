@@ -23,6 +23,6 @@ initial condition:
 output:
   filetype: cube sphere history
   datapath: Data/forecast
-  filename: forecast.jediex.
+  prefix: forecast.jediex.
   first: PT0H
   frequency: PT15H

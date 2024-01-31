@@ -69,7 +69,7 @@ endif()
 find_package( jedicmake QUIET )
 
 # NetCDF
-find_package( NetCDF REQUIRED COMPONENTS Fortran )
+find_package( NetCDF REQUIRED COMPONENTS C Fortran )
 
 # atlas
 find_package( atlas 0.35.0 REQUIRED )
@@ -158,9 +158,52 @@ list( APPEND FV3JEDI_TPLS atlas atlas_f oops ufo saber )
 
 set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
                           ${CMAKE_CURRENT_BINARY_DIR}/src
+                          ${DEPEND_LIB_ROOT}/include
+                          ${DEPEND_LIB_ROOT}/mod
+                          ${DEPEND_LIB_ROOT}/include/fv3
                           ${CMAKE_Fortran_MODULE_DIRECTORY})
-
-set( FV3JEDI_LIBRARIES fv3jedi )
+if (FV3_FORECAST_MODEL MATCHES UFS)
+  if( UFS_APP MATCHES "^(ATM)$" )
+    set( FV3JEDI_LIBRARIES fv3jedi
+                           ccpp_framework
+                           ccpp_physics )
+  elseif( UFS_APP MATCHES "^(ATMAERO)$" )
+    find_package (GFTL_SHARED QUIET)
+    find_package (FARGPARSE QUIET)
+    find_package (MAPL REQUIRED)
+    set( FV3JEDI_LIBRARIES fv3jedi
+                           ufs_aerosols
+                           aerosols_gridcomp
+                           gocart_gridcomp
+                           ca2g_gridcomp
+                           chem_shared
+                           gocart_process
+                           du2g_gridcomp
+                           ni2g_gridcomp
+                           ss2g_gridcomp
+                           su2g_gridcomp
+                           ga_environment
+                           MAPL
+                           ccpp_framework
+                           ccpp_physics
+                           GFTL_SHARED::gftl-shared )
+  elseif( UFS_APP MATCHES "^(S2S)$" )
+    find_package( PIO 2.5.3 REQUIRED COMPONENTS C Fortran)
+    set( FV3JEDI_LIBRARIES fv3jedi
+                           gsw
+                           mom6
+                           cice
+                           cmeps
+                           PIO::PIO_Fortran
+                           PIO::PIO_C
+                           ccpp_framework
+                           ccpp_physics )
+  else()
+    message(FATAL_ERROR "fv3jedi FV3JEDI_LIBRARIES not configured for UFS_APP ${UFS_APP}")
+  endif()
+else()
+  set( FV3JEDI_LIBRARIES fv3jedi )
+endif()
 
 get_directory_property( FV3JEDI_DEFINITIONS COMPILE_DEFINITIONS )
 
@@ -196,24 +239,15 @@ endif()
 
 # ufs
 if (FV3_FORECAST_MODEL MATCHES UFS)
-  # TODO: fms will be seperated from UFS at some point
-  # Requires an installion of ufs-weather-model built with -DJEDI_CONTROL=ON and setting
-  # environment variable CMAKE_Platform to linux.custom to ensure INLINE_POST=OFF
-  # set CMAKE_PREFIX_PATH to include location of hpc-stack install and ufs install using
-  # semi-colon separated lists in quotes e.g.--
-  # ecbuild -DCMAKE_PREFIX_PATH="path-to/ufs-weather-model/build/install;path-to/hpc-stack/install" ...
+  # Building with the UFS is now accomplished only via the ufs-bundle
+  # which will also build the UFS as an external library with a prescribed configuration
+  # There is now a unit test which will pull data from an s3 bucket and convert it
+  # into a run directory to be used with ctests involving UFS coupling (ATM-only) 
   find_package(bacio REQUIRED )
   find_package(sigio REQUIRED )
   find_package(sp REQUIRED )
   find_package(w3emc REQUIRED )
-  find_package(w3nco REQUIRED )
   find_package(nemsio REQUIRED )
-  find_package(fms REQUIRED )
-  find_package(stochastic_physics REQUIRED )
-  find_package(ccpp REQUIRED )
-  find_package(ccppphys REQUIRED )
-  find_package(fv3atm REQUIRED )
-  find_package(ufs REQUIRED )
 endif()
 
 add_subdirectory( src )

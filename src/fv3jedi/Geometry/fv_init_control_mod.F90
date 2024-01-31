@@ -38,12 +38,8 @@ real(kind_fv3) :: dt_atmos
 
 dt_atmos = dt_atmos_in
 
-#ifdef UFS_BUILD
-call fv_control_init(Atm, dt_atmos, this_grid, grids_on_this_pe, p_split)
-#else
 call fv_control_init(Atm, dt_atmos, this_grid, grids_on_this_pe, p_split, &
                      skip_nml_read_in=skip_nml_read)
-#endif
 
 if (this_grid .ne. 1) call abor1_ftn("Geometry not ready for ngrid > 1")
 

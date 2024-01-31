@@ -16,7 +16,7 @@ use tracer_manager_mod,      only: get_number_tracers, get_tracer_names, get_tra
                                    set_tracer_profile
 
 ! fv3
-use external_ic_mod,         only: remap_scalar, remap_dwinds, source
+use external_ic_mod,         only: remap_scalar, remap_dwinds
 use fv_arrays_mod,           only: fv_atmos_type, deallocate_fv_atmos_type, R_GRID
 use fv_grid_utils_mod,       only: mid_pt_sphere, get_unit_vect2, get_latlon_vector, inner_prod
 use test_cases_mod,          only: checker_tracers
@@ -80,7 +80,6 @@ if( .not. conf%get('check tracers nt', self%nt_checker) ) self%nt_checker = 0
 if (.not. conf%get("source of inputs", str)) then
   str = 'FV3GFS GAUSSIAN NETCDF FILE'
 endif
-source = trim(str)
 
 ! Remapping needs nggps_ic to be true
 self%Atm(1)%flagstruct%nggps_ic = .true.

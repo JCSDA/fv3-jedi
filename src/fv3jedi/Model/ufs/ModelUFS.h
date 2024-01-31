@@ -14,6 +14,7 @@
 #include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Utilities/Traits.h"
@@ -47,13 +48,15 @@ class ModelUFS: public oops::interface::ModelBase<Traits>,
   int saveTrajectory(State &, const ModelBias &) const;
 
   const util::Duration & timeResolution() const {return tstep_;}
+  const oops::Variables & variables() const {return vars_;}
 
  private:
   void print(std::ostream &) const;
   F90model keyConfig_;
   util::Duration tstep_;
+  util::Duration fclength_;
   const Geometry geom_;
-  char jedidir_[10000];
+  const oops::Variables vars_;
   char ufsdir_[10000];
 };
 // -----------------------------------------------------------------------------

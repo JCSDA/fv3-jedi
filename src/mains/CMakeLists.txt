@@ -1,114 +1,114 @@
 ecbuild_add_executable( TARGET  fv3jedi_addincrement.x
                         SOURCES fv3jediAddIncrement.cc
-                        LIBS	fv3jedi
+                        LIBS	${FV3JEDI_LIBRARIES}
                       )
 oops_output_json_schema(fv3jedi_addincrement.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_convertincrement.x
                         SOURCES fv3jediConvertIncrement.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
                        )
 oops_output_json_schema(fv3jedi_convertincrement.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_controlpert.x
                         SOURCES fv3jediControlPert.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
                        )
 
 ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
                         SOURCES fv3jediConvertState.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
                        )
 oops_output_json_schema(fv3jedi_convertstate.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_converttolatlon.x
                         SOURCES fv3jediConvertToLatLon.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                        )
 oops_output_json_schema(fv3jedi_converttolatlon.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
                         SOURCES fv3jediDiffStates.cc
-                        LIBS	fv3jedi
+                        LIBS	${FV3JEDI_LIBRARIES}  
                       )
 oops_output_json_schema(fv3jedi_diffstates.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_eda.x
                         SOURCES fv3jediEDA.cc
-                        LIBS	fv3jedi
+                        LIBS	${FV3JEDI_LIBRARIES}
                                 saber
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_enshofx.x
                         SOURCES fv3jediEnsHofX.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_ensrecenter.x
                         SOURCES fv3jediEnsRecenter.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                         )
 oops_output_json_schema(fv3jedi_ensrecenter.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_ensmeanvariance.x
                         SOURCES fv3jediEnsMeanVariance.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                         )
 oops_output_json_schema(fv3jedi_ensmeanvariance.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_forecast.x
                         SOURCES fv3jediForecast.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                        )
 oops_output_json_schema(fv3jedi_forecast.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_gen_hybrid_linear_model_coeffs.x
                         SOURCES fv3jediGenHybridLinearModelCoeffs.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                        )
 oops_output_json_schema(fv3jedi_gen_hybrid_linear_model_coeffs.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_hofx.x
                         SOURCES fv3jediHofX.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                       )
 oops_output_json_schema(fv3jedi_hofx.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_hofx_nomodel.x
                         SOURCES fv3jediHofXNoModel.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                       )
 oops_output_json_schema(fv3jedi_hofx_nomodel.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_letkf.x
                         SOURCES fv3jediLETKF.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                       )
 oops_output_json_schema(fv3jedi_letkf.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_error_covariance_toolbox.x
                         SOURCES fv3jediErrorCovarianceToolbox.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_var.x
                         SOURCES fv3jediVar.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_adjointforecast.x
                         SOURCES fv3jediAdjointForecast.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_genenspertB.x
                         SOURCES fv3jediGenEnsPertB.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
                       )
 

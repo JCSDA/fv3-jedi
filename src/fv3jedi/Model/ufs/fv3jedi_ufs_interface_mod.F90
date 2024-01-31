@@ -81,19 +81,27 @@ end subroutine c_fv3jedi_ufs_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_ufs_initialize(c_key_self, c_key_state) &
+subroutine c_fv3jedi_ufs_initialize(c_key_self, c_key_state, c_dt1, c_dt2) &
            bind(c,name='fv3jedi_ufs_initialize_f90')
 
 integer(c_int), intent(in) :: c_key_self  !< Model
 integer(c_int), intent(in) :: c_key_state !< Model state
+type(c_ptr),    intent(in) :: c_dt1       !< DateTime
+type(c_ptr),    intent(in) :: c_dt2       !< DateTime
 
 type(model_ufs),     pointer :: self
 type(fv3jedi_state), pointer :: state
 
+type(datetime) :: fdate1
+type(datetime) :: fdate2
+
 call fv3jedi_state_registry%get(c_key_state,state)
 call fv3jedi_ufs_registry%get(c_key_self, self)
 
-call self%initialize(state)
+call c_f_datetime(c_dt1, fdate1)
+call c_f_datetime(c_dt2, fdate2)
+
+call self%initialize(state, fdate1, fdate2)
 
 end subroutine c_fv3jedi_ufs_initialize
 
@@ -112,15 +120,12 @@ type(fv3jedi_state), pointer :: state
 
 type(datetime) :: fdate1
 type(datetime) :: fdate2
-character(len=20) :: vdatestrz
 
 call fv3jedi_ufs_registry%get(c_key_self, self)
 call fv3jedi_state_registry%get(c_key_state,state)
 
 call c_f_datetime(c_dt1, fdate1)
-call datetime_to_string(fdate1, vdatestrz)
 call c_f_datetime(c_dt2, fdate2)
-call datetime_to_string(fdate2, vdatestrz)
 call self%step(state, fdate1, fdate2)
 
 end subroutine c_fv3jedi_ufs_step
@@ -138,8 +143,6 @@ type(fv3jedi_state), pointer :: state
 
 call fv3jedi_state_registry%get(c_key_state,state)
 call fv3jedi_ufs_registry%get(c_key_self, self)
-
-call c_f_datetime(c_dt)
 
 end subroutine c_fv3jedi_ufs_finalize
 

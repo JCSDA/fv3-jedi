@@ -5,52 +5,39 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include "fv3jedi/Model/ufs/ModelUFS.h"
+
+#include <ostream>
 #include <vector>
 
 #include "eckit/config/Configuration.h"
 
-#include "oops/base/ParameterTraitsVariables.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
-#include "oops/util/parameters/OptionalParameter.h"
-#include "oops/util/parameters/Parameter.h"
-#include "oops/util/parameters/Parameters.h"
-#include "oops/util/parameters/RequiredParameter.h"
 
 #include "ModelUFS.interface.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Model/ufs/ModelUFS.h"
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/State/State.h"
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-/// Options taken by ModelUFS
-class ModelUFSParameters : public oops::ModelParametersBase {
-  OOPS_CONCRETE_PARAMETERS(ModelUFSParameters, ModelParametersBase)
-
- public:
-  oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
-  oops::RequiredParameter<std::string> ufsRunDirectory{ "ufs_run_directory", this};
-};
-// -------------------------------------------------------------------------------------------------
 static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 // -------------------------------------------------------------------------------------------------
-ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & config)
-  : keyConfig_(0), tstep_(0), geom_(resol)
+ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & modelConf)
+  : keyConfig_(0), tstep_(modelConf.getString("tstep")),
+    fclength_(modelConf.getString("forecast length")), geom_(resol),
+    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(oops::Variables(modelConf,
+                                                                        "model variables")))
 {
-  ModelUFSParameters params;
-  params.deserialize(config);
-
-  tstep_ = util::Duration(config.getString("tstep"));
-
   char tmpdir_[10000];
+  const eckit::LocalConfiguration confcopy(modelConf);
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
   getcwd(tmpdir_, 10000);
-  strcpy(ufsdir_, params.ufsRunDirectory.value().c_str());
+  strcpy(ufsdir_, modelConf.getString("ufs_run_directory").c_str());
   chdir(ufsdir_);
-  fv3jedi_ufs_create_f90(keyConfig_, config, geom_.toFortran());
+  fv3jedi_ufs_create_f90(keyConfig_, modelConf, geom_.toFortran());
   oops::Log::trace() << "ModelUFS::ModelUFS done" << std::endl;
   chdir(tmpdir_);
 }
@@ -64,22 +51,28 @@ ModelUFS::~ModelUFS() {
 void ModelUFS::initialize(State & xx) const {
   oops::Log::trace() << "ModelUFS::initialize starting" << std::endl;
   oops::Log::trace() << "ModelUFS::cd to " << ufsdir_ << std::endl;
-
   chdir(ufsdir_);
-  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran());
+
+  util::DateTime start = xx.validTime();
+  util::DateTime * dtp1 = &start;
+  util::DateTime stop = xx.validTime() + fclength_;
+  util::DateTime * dtp2 = &stop;
+  oops::Log::trace() << "initialize Forecast start time is " << start << std::endl;
+  oops::Log::trace() << "initialize Forecast stop time is " << stop << std::endl;
+
+  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), &dtp1, &dtp2);
   oops::Log::trace() << "ModelUFS::initialize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 void ModelUFS::step(State & xx, const ModelBias &) const
 {
   oops::Log::trace() << "ModelUFS::step starting" << std::endl;
-  oops::Log::trace() << "ModelUFS::cd to " << ufsdir_ << std::endl;
   chdir(ufsdir_);
 
   util::DateTime start = xx.validTime();
   util::DateTime * dtp1 = &start;
-  oops::Log::trace() << "Model start time is " << xx.validTime() << std::endl;
-  oops::Log::trace() << "Forecast time step is " << tstep_ << std::endl;
+  oops::Log::trace() << "step Model start time is " << xx.validTime() << std::endl;
+  oops::Log::trace() << "step Forecast time step is " << tstep_ << std::endl;
   xx.validTime() += tstep_;
   util::DateTime * dtp2 = &xx.validTime();
   fv3jedi_ufs_step_f90(keyConfig_, xx.toFortran(), &dtp1, &dtp2);
