@@ -19,6 +19,7 @@ namespace fv3jedi {
 class ModelData : public util::Printable {
  public:
   static const std::string classname() {return "fv3jedi::ModelData";}
+  static const oops::Variables defaultVariables();
 
   explicit ModelData(const Geometry &);
   ~ModelData();
