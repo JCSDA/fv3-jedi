@@ -33,7 +33,6 @@ hybrid linear model:
       begin: 2020-12-14T21:00:00Z
       length: PT6H
     calculator:
-      rms scaling: false
     ensemble:
       model:
         name: FV3LM

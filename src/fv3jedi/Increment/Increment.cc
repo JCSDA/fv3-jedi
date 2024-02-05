@@ -276,45 +276,6 @@ void Increment::dirac(const eckit::Configuration & config) {
   fv3jedi_increment_dirac_f90(keyInc_, params.toConfiguration(), geom_.toFortran());
 }
 // -------------------------------------------------------------------------------------------------
-std::vector<double> Increment::rmsByLevel(const std::string & var) const {
-  atlas::FieldSet fset;
-  toFieldSet(fset);
-  const auto fieldView = atlas::array::make_view<double, 2>(fset[var]);
-
-  // Get owned vs halo from Geometry
-  const auto owned = geom_.fields().field("owned");
-  const auto ownedView = atlas::array::make_view<int, 2>(owned);
-  ASSERT(ownedView.shape(0) == fieldView.shape(0));
-  ASSERT(ownedView.shape(1) == 1);
-
-  // Find number of owned grid points on this task
-  size_t num_owned = 0;
-  for (atlas::idx_t i = 0; i < ownedView.shape(0); ++i) {
-    if (ownedView(i, 0) > 0) {
-      ++num_owned;
-    }
-  }
-
-  // Find RMS sum-of-squares contribution from this task
-  std::vector<double> rms(fieldView.shape(1), 0.0);
-  for (atlas::idx_t k = 0; k < fieldView.shape(1); ++k) {
-    for (atlas::idx_t i = 0; i < fieldView.shape(0); ++i) {
-      if (ownedView(i, 0) > 0) {
-        rms[k] += fieldView(i, k) * fieldView(i, k);
-      }
-    }
-  }
-
-  geom_.getComm().allReduceInPlace(num_owned, eckit::mpi::Operation::SUM);
-  geom_.getComm().allReduceInPlace(rms.data(), fieldView.shape(1), eckit::mpi::Operation::SUM);
-
-  for (atlas::idx_t k = 0; k < fieldView.shape(1); ++k) {
-    rms[k] = sqrt(rms[k] / num_owned);
-  }
-
-  return rms;
-}
-// -------------------------------------------------------------------------------------------------
 size_t Increment::serialSize() const {
   size_t nn = 1;
   int inc_size;

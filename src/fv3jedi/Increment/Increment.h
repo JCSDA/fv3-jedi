@@ -105,7 +105,6 @@ class Increment : public util::Printable,
   void schur_product_with(const Increment &);
   void random();
   void dirac(const eckit::Configuration &);
-  std::vector<double> rmsByLevel(const std::string &) const;
 
 /// Get/Set increment values at grid points
   oops::LocalIncrement getLocal(const GeometryIterator &) const;
