@@ -319,14 +319,7 @@ output:
   frequency: PT1H
 
 test:
-  # TODO: compare the p12 test.out against the normal (6-proc) test reference.
-  # Context: the improvement to the oops interpolation accuracy (FH, fall 2022) introduced a
-  # dependence on the number of MPI tasks used to partition the grid. This makes it impossible to
-  # compare the p6 and p12 test results without very loose tolerances. It is a goal to improve
-  # the triangulation algorithm used in the interpolator so that the interpolation result no longer
-  # changes with the number of MPI tasks, and once this is done the two tests can compare against
-  # the same reference once again.
-  reference filename: testoutput/hyb-3dvar_p12.ref
+  reference filename: testoutput/hyb-3dvar.ref
   test output filename: testoutput/hyb-3dvar_p12.test.out
   float relative tolerance: 1.0e-3
   float absolute tolerance: 1.0e-6

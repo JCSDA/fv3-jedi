@@ -1,13 +1,13 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Radiosonde) = 2.4717925935263588e+03, nobs = 1346, Jo/n = 1.8363986578947689e+00, err = 2.0637985263796401e+00
-CostFunction: Nonlinear J = 2.4717925935263588e+03
-DRPLanczosMinimizer: reduction in residual norm = 2.0166987879480233e-01
-CostFunction::addIncrement: Analysis:
+CostJo   : Nonlinear Jo(Radiosonde) = 2.4952954557259350e+03, nobs = 1347, Jo/n = 1.8524836345404121e+00, err = 2.0631474620187360e+00
+CostFunction: Nonlinear J = 2.4952954557259350e+03
+DRPLanczosMinimizer: reduction in residual norm = 2.0619145015651971e-01
+CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
-eastward_wind                                | Min:-1.0783350802134453e+02 Max:+1.5250905871227033e+02 RMS:+2.2174476514506821e+01
-northward_wind                               | Min:-1.0112710117019964e+02 Max:+1.0639537500790154e+02 RMS:+1.0366847484067765e+01
-air_temperature                              | Min:+1.5996511253421781e+02 Max:+3.0653885708773061e+02 RMS:+2.4962828306175561e+02
+eastward_wind                                | Min:-1.0781416163154184e+02 Max:+1.5242948631617620e+02 RMS:+2.2172501635361176e+01
+northward_wind                               | Min:-1.0112931369480393e+02 Max:+1.0639566251504785e+02 RMS:+1.0364109229521944e+01
+air_temperature                              | Min:+1.5995365184589326e+02 Max:+3.0653885708773061e+02 RMS:+2.4962488947086428e+02
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079681e+02
 specific_humidity                            | Min:+1.2804727152986153e-09 Max:+1.8723704386097544e-02 RMS:+4.6967978850461283e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
@@ -27,15 +27,18 @@ surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+
 surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 214.7718368598795
-CostJo   : Nonlinear Jo(Radiosonde) = 1855.571311104025, nobs = 1346, Jo/n = 1.378581954757819, err = 2.06379852637964
-CostFunction: Nonlinear J = 2070.343147963904
-CostFunction::addIncrement: Analysis:
+
+
+
+CostJb   : Nonlinear Jb = 217.8699446090479
+CostJo   : Nonlinear Jo(Radiosonde) = 1865.283086229448, nobs = 1347, Jo/n = 1.384768438180733, err = 2.063147462018736
+CostFunction: Nonlinear J = 2083.153030838496
+CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
-eastward_wind                                | Min:-1.0783350802134453e+02 Max:+1.5250905871227033e+02 RMS:+2.2174476514506821e+01
-northward_wind                               | Min:-1.0112710117019964e+02 Max:+1.0639537500790154e+02 RMS:+1.0366847484067765e+01
-air_temperature                              | Min:+1.5996511253421781e+02 Max:+3.0653885708773061e+02 RMS:+2.4962828306175561e+02
+eastward_wind                                | Min:-1.0781416163154184e+02 Max:+1.5242948631617620e+02 RMS:+2.2172501635361176e+01
+northward_wind                               | Min:-1.0112931369480393e+02 Max:+1.0639566251504785e+02 RMS:+1.0364109229521944e+01
+air_temperature                              | Min:+1.5995365184589326e+02 Max:+3.0653885708773061e+02 RMS:+2.4962488947086428e+02
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079681e+02
 specific_humidity                            | Min:+1.2804727152986153e-09 Max:+1.8723704386097544e-02 RMS:+4.6967978850461283e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
@@ -55,3 +58,6 @@ surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+
 surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
+
+
+

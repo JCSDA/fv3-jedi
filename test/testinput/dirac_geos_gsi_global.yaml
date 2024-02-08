@@ -60,4 +60,4 @@ output dirac:
 
 test:
   reference filename: testoutput/dirac_geos_gsi_global.ref
-  test output filename: testoutput/dirac_gfs_gsi_global.test.out
+  test output filename: testoutput/dirac_geos_gsi_global.test.out
