@@ -1,0 +1,44 @@
+geometry1:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+geometry2:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+comparestates test:
+  state1:
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
+    state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20201215.000000.fv_core.res.nc
+    filename_trcr: 20201215.000000.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.sfc_data.nc
+    filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.coupler.res
+  state2:
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
+    state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
+                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                      u_srf,v_srf,f10m]
+    datapath: Data/
+    filename_core: 20201215.000000.history2restart.fv_core.res.nc
+    filename_trcr: 20201215.000000.history2restart.fv_tracer.res.nc
+    filename_sfcd: 20201215.000000.history2restart.sfc_data.nc
+    filename_sfcw: 20201215.000000.history2restart.fv_srf_wnd.res.nc
+    filename_cplr: 20201215.000000.history2restart.coupler.res
+  tolerance: 1.e-08

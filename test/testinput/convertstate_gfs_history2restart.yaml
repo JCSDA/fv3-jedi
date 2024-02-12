@@ -21,18 +21,18 @@ states:
     state variables: [ud,vd,ua,va,tmp,dpres,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
-    filenames: [ cube-sphere-history.nc ]
+    filename: restart2history.nc4
     provider: ufs
     ufs soil nlev: 4	
     ufs fields split by level: [stc, smc]
   output:
     filetype: fms restart
     datapath: Data/
-    filename_core: fv_core.res.nc
-    filename_trcr: fv_tracer.res.nc
-    filename_sfcd: sfc_data.nc
-    filename_sfcw: fv_srf_wnd.res.nc
-    filename_cplr: coupler.res
+    filename_core: history2restart.fv_core.res.nc
+    filename_trcr: history2restart.fv_tracer.res.nc
+    filename_sfcd: history2restart.sfc_data.nc
+    filename_sfcw: history2restart.fv_srf_wnd.res.nc
+    filename_cplr: history2restart.coupler.res
 
 # Note: Same .ref file for both restart2history and history2restart
 test:

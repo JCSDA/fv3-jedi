@@ -138,6 +138,7 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_gfs_c2gaussian.yaml
   testinput/convertstate_gfs_restart2history.yaml
   testinput/convertstate_gfs_history2restart.yaml
+  testinput/comparestates_gfs_restart2history2restart.yaml
   testinput/converttolatlon_gfs.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
@@ -674,6 +675,10 @@ ecbuild_add_executable( TARGET  test_fv3jedi_state.x
                         SOURCES mains/TestState.cc
                         LIBS    ${FV3JEDI_LIBRARIES})
 
+ecbuild_add_executable( TARGET  test_fv3jedi_comparestates.x
+                        SOURCES mains/TestCompareStates.cc
+                        LIBS    ${FV3JEDI_LIBRARIES})
+
 ecbuild_add_executable( TARGET  test_fv3jedi_variablechange.x
                         SOURCES mains/TestVarCha.cc
                         LIBS    ${FV3JEDI_LIBRARIES})
@@ -976,7 +981,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_history2restart
                   MPI      6
                   ARGS     testinput/convertstate_gfs_history2restart.yaml
                   COMMAND  fv3jedi_convertstate.x
-                  TEST_DEPENDS fv3jedi_test_tier1_restart2history )
+                  TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_restart2history )
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_coldstartwinds
@@ -1025,6 +1030,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_converttolatlon_gfs
                   MPI      6
                   ARGS     testinput/converttolatlon_gfs.yaml
                   COMMAND  fv3jedi_converttolatlon.x )
+
+# CompareStates tests
+# -------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_comparestates_gfs_restart2history2restart.yaml
+                  MPI      6
+                  ARGS     testinput/comparestates_gfs_restart2history2restart.yaml
+                  COMMAND  test_fv3jedi_comparestates.x 
+                  TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_history2restart )
 
 # Remaining interface tests
 # -------------------------

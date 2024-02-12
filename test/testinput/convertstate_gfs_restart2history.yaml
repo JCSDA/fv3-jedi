@@ -29,7 +29,7 @@ states:
   output:
     filetype: cube sphere history
     datapath: Data
-    filenames: [ cube-sphere-history.nc ]
+    filename: restart2history.nc4
     provider: ufs
     ufs soil nlev: 4
     ufs fields split by level: [stc, smc]
