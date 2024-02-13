@@ -28,6 +28,7 @@
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
+#include "fv3jedi/VariableChange/VariableChange.h"
 
 namespace fv3jedi {
 
@@ -100,6 +101,18 @@ State::State(const Geometry & resol, const State & other)
   fv3jedi_state_change_resol_f90(keyState_, geom_.toFortran(), other.keyState_,
                                  other.geom_.toFortran());
   oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+State::State(const oops::Variables & vars, const State & other) : State(other)
+{
+  oops::Log::trace() << "State::State (from vars and other) starting" << std::endl;
+  eckit::LocalConfiguration varChangeConfig;
+  varChangeConfig.set("variable change name", "Analysis2Model");
+  VariableChange an2model(varChangeConfig, geom_);
+  an2model.changeVarInverse(*this, vars);
+  oops::Log::trace() << "State::State (from vars and other) done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -18,3 +18,4 @@ state test:
   date: 2021-03-22T12:00:00Z
   norm file: 3357.1428615656268
   tolerance: 1.0e-08
+  construct to variables: [air_temperature,surface_pressure,specific_humidity]

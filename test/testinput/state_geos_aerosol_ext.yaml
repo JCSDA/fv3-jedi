@@ -17,3 +17,4 @@ state test:
   date: 2018-04-15T00:00:00Z
   norm file: 0.034495309744047402
   tolerance: 1.0e-8
+  construct to variables: [volume_extinction_in_air_due_to_aerosol_particles_lambda1 ]

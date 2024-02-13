@@ -24,3 +24,4 @@ state test:
   date: 2020-09-03T18:00:00Z
   norm file: 5280.9533376899999
   tolerance: 1.0e-08
+  construct to variables: [surface_pressure]

@@ -23,3 +23,4 @@ state test:
   date: 2020-09-03T18:00:00Z
   norm file: 5537954.3477927418
   tolerance: 1.0e-08
+  construct to variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water]
