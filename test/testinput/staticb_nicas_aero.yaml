@@ -43,6 +43,8 @@ background error:
         write local nicas: true
       nicas:
         resolution: 6.0
+        min effective resolution: 1.0  # Note: this is very much not recommended (resolution too low), only
+                                       # used because covariance quality is not important for CI tests
       input model files:
       - parameter: rh
         file:

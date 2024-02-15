@@ -31,6 +31,8 @@ background error:
         write global nicas: true
       nicas:
         resolution: 6
+        min effective resolution: 0.2  # Note: this is very much not recommended (resolution too low), only
+                                       # used because covariance quality is not important for CI tests
 #       minimum level:
 #       - groups:
 #         - cloud_liquid_water

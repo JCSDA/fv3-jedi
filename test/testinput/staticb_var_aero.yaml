@@ -48,6 +48,7 @@ background error:
       variance:
         objective filtering: true
         filtering iterations: 1
+        smoother min effective resolution: 0.35
         initial length-scale:
         - variables:
           - mass_fraction_of_sulfate_in_air
