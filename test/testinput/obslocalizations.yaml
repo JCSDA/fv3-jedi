@@ -13,8 +13,8 @@ geometry:
       filetype: fms restart
       skip coupler file: true
       state variables: [orog_filt]
-      datapath: Data/inputs/gfs_land_c48/grid/
-      filename_orog: C48_oro_data.nc
+      datapath: Data/inputs/gfs_c12/oro/
+      filename_orog: C12_oro_data.nc
     derived fields: [nominal_surface_pressure]
 
 time window:
@@ -44,4 +44,4 @@ observation localizations reference:
     lats: [48.6443356, 66.73611, -21.5839479]
     depths: [-99999, -99999, -99999]
   local nobs: [6, 2, 0]
-  rms: [0.206311589,0.122327,0]
+  rms: [0.223955884, 0.122605251, 0]

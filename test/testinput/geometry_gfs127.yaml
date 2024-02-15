@@ -14,6 +14,6 @@ geometry:
       filetype: fms restart
       skip coupler file: true
       state variables: [orog_filt]
-      datapath: Data/inputs/gfs_land_c48/grid/
-      filename_orog: C48_oro_data.nc
+      datapath: Data/inputs/gfs_c12/oro/
+      filename_orog: C12_oro_data.nc
 
