@@ -10,8 +10,8 @@ cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------
 Norm of input parameter StdDev: 484228.0574102859
-Norm of input parameter nicas_a - 1: 0.8876780045870344
-Norm of input parameter nicas_a - 2: 0.1955417148389502
+Norm of input parameter nicas_a - 1: 0.8474490031286105
+Norm of input parameter nicas_a - 2: 0.2563456191290341
 Norm of input parameter nicas_norm - 1: 1.025442378425152
 Norm of input parameter nicas_norm - 2: 1.015840911261604
 Covariance(SABER) * Increment:
