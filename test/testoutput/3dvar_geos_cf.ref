@@ -2,7 +2,7 @@ Norm of input parameter StdDev: 1.5804983844080476e-09
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(NO2) = 1.0424516501811800e+03, nobs = 101, Jo/n = 1.0321303467140396e+01, err = 1.3184535787725379e-05
 CostFunction: Nonlinear J = 1.0424516501811800e+03
-DRIPCGMinimizer: reduction in residual norm = 1.5611435101369017e-09
+DRPCGMinimizer: reduction in residual norm = 1.4426146657322144e-10
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 6 | cube sphere face size: C12

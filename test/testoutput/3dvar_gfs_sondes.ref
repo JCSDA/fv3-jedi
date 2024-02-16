@@ -3,7 +3,7 @@ CostJo   : Nonlinear Jo(Radiosonde) = 7.1171528711280669e+04, nobs = 1457, Jo/n 
 CostJo   : Nonlinear Jo(ompsnm_npp) = 8.1461428862385092e+03, nobs = 6835, Jo/n = 1.1918277814540614e+00, err = 6.0000000000000000e+00
 CostJo   : Nonlinear Jo(omi_aura) = 8.1461428862385092e+03, nobs = 6835, Jo/n = 1.1918277814540614e+00, err = 6.0000000000000000e+00
 CostFunction: Nonlinear J = 8.7463814483757684e+04
-DRIPCGMinimizer: reduction in residual norm = 5.5366320349708320e-01
+DRPCGMinimizer: reduction in residual norm = 5.2137690546823087e-02
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12

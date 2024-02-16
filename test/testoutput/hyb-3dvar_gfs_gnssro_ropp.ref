@@ -2,7 +2,7 @@ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 7.6945817814388874e+01, nobs = 132, Jo/n = 5.8292286223021872e-01, err = 8.8915342725866394e-04
 CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 7.8826487758438887e+01, nobs = 132, Jo/n = 5.9717036180635519e-01, err = 8.8915342725866394e-04
 CostFunction: Nonlinear J = 1.5577230557282775e+02
-DRIPCGMinimizer: reduction in residual norm = 1.3020189728456985e-01
+DRPCGMinimizer: reduction in residual norm = 1.0971157338525474e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 23 | cube sphere face size: C12

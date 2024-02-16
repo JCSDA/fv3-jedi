@@ -3,7 +3,7 @@ CostJo   : Nonlinear Jo(Aircraft) = 4.3197853082374331e+03, nobs = 2822, Jo/n = 
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.0148799250675984e+02, nobs = 122, Jo/n = 3.2908851844816378e+00, err = 3.0065881545449780e-04
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.6349779456666454e+02, nobs = 854, Jo/n = 7.7692950183450182e-01, err = 9.6437301682311869e+00
 CostFunction: Nonlinear J = 5.3847710953108572e+03
-DRIPCGMinimizer: reduction in residual norm = 7.0679273276080135e-01
+DRPCGMinimizer: reduction in residual norm = 6.7512440935946061e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 39 | cube sphere face size: C12

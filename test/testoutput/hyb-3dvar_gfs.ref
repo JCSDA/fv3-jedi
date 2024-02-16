@@ -6,7 +6,7 @@ CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.0597963308471446e+02, nobs = 123, Jo/
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 7.0962054445377680e+02, nobs = 839, Jo/n = 8.4579325918209391e-01, err = 9.7374001950447902e+00
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
 CostFunction: Nonlinear J = 9.1020356948984390e+03
-DRIPCGMinimizer: reduction in residual norm = 2.2288776784125112e-04
+DRPCGMinimizer: reduction in residual norm = 3.0804287255031088e-04
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
@@ -48,7 +48,7 @@ CostJo   : Nonlinear Jo(GnssroBndNBAM) = 293.31084193449, nobs = 123, Jo/n = 2.3
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 610.6433802220627, nobs = 839, Jo/n = 0.7278228608129471, err = 9.73740019504479
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
 CostFunction: Nonlinear J = 7502.654096032573
-DRIPCGMinimizer: reduction in residual norm = 0.01594824201497036
+DRPCGMinimizer: reduction in residual norm = 0.01717545157989346
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24

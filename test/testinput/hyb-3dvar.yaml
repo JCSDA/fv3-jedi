@@ -276,7 +276,7 @@ cost function:
       monitoring only: true
 variational:
   minimizer:
-    algorithm: DRIPCG
+    algorithm: DRPCG
   iterations:
   - ninner: 5            # 1st outer-loop
     gradient norm reduction: 1e-10

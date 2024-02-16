@@ -4,7 +4,7 @@ CostJo   : Nonlinear Jo(Radiosonde) = 3.1675727664742876e+03, nobs = 1328, Jo/n 
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.6716422534129208e+02, nobs = 122, Jo/n = 3.8292149618138693e+00, err = 2.9390144955067967e-04
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.6524094788384150e+02, nobs = 813, Jo/n = 8.1825454844260948e-01, err = 9.8885478716078943e+00
 CostFunction: Nonlinear J = 1.0175026382798234e+04
-DRIPCGMinimizer: reduction in residual norm = 4.6666954388302540e-01
+DRPCGMinimizer: reduction in residual norm = 4.6980051841277076e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 24 | cube sphere face size: C12
@@ -45,7 +45,7 @@ CostJo   : Nonlinear Jo(Radiosonde) = 3166.129786825069, nobs = 1328, Jo/n = 2.3
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 296.5206815492908, nobs = 122, Jo/n = 2.430497389748285, err = 0.0002939014495506797
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 651.7605543189968, nobs = 813, Jo/n = 0.8016734985473516, err = 9.888547871607894
 CostFunction: Nonlinear J = 9988.116112661026
-DRIPCGMinimizer: reduction in residual norm = 0.6067705960895299
+DRPCGMinimizer: reduction in residual norm = 0.5929925375053873
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 24 | cube sphere face size: C12

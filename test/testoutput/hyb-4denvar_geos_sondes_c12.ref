@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 8.7245254917985847e+04, nobs = 1457, Jo/n = 5.9880065146181089e+01, err = 2.0329386501381626e+00
 CostFunction: Nonlinear J = 8.7245254917985847e+04
-DRIPCGMinimizer: reduction in residual norm = 9.9684937262256379e-01
+DRPCGMinimizer: reduction in residual norm = 1.8701540332777801e-02
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 7 | cube sphere face size: C12
