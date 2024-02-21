@@ -168,7 +168,8 @@ contains
       vCoord = -99999
     case (3) ! 3-d iterator
       if (has_nsp) then
-        nsp_index = self%iindex + (self%jindex - self%geom%jsc) * (self%geom%iec-self%geom%isc+1)
+        nsp_index = (self%iindex - self%geom%isc + 1) &
+                    + (self%jindex - self%geom%jsc) * (self%geom%iec - self%geom%isc + 1)
         psurf = nsp_ptr(1, nsp_index)
       else
         psurf = 100000.0_kind_real
@@ -223,7 +224,8 @@ contains
       call abor1_ftn('fv3jedi_geom_iter_orography: iterator out of bounds')
     else
       ! inside of the grid
-      orog_index = self%iindex + (self%jindex - self%geom%jsc) * (self%geom%iec-self%geom%isc+1)
+      orog_index = (self%iindex - self%geom%isc + 1) &
+                   + (self%jindex - self%geom%jsc) * (self%geom%iec - self%geom%isc + 1)
       oro = orog_ptr(1, orog_index)
     endif
 
@@ -259,7 +261,8 @@ contains
       call abor1_ftn('fv3jedi_geom_iter_nominal_surface_pressure: iterator out of bounds')
     else
       ! inside of the grid
-      nsp_index = self%iindex + (self%jindex - self%geom%jsc) * (self%geom%iec-self%geom%isc+1)
+      nsp_index = (self%iindex - self%geom%isc + 1) &
+                  + (self%jindex - self%geom%jsc) * (self%geom%iec - self%geom%isc + 1)
       nsp = nsp_ptr(1, nsp_index)
     endif
 

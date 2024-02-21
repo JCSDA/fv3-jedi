@@ -47,8 +47,6 @@ subroutine calculate_nominal_surface_pressure(afieldset)
   end if
 
   nmax = size(orog_ptr)
-
-  n = 0
   do n=1, nmax
     if(abs(orog_ptr(1,n)) <= 1.0e-2) then
       nsp_ptr(1,n) = ps
