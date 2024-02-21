@@ -129,8 +129,12 @@ logical :: have_geoph
 real(kind=kind_real), allocatable :: geophi(:,:,:)         !Geopotential height, interfaces
 real(kind=kind_real), allocatable :: geoph (:,:,:)         !Geopotential height
 real(kind=kind_real), allocatable :: suralt(:,:,:)         !Surface altitude
-real(kind=kind_real), pointer     :: phis  (:,:,:)         !Surface geopotential height times gravity
+real(kind=kind_real), allocatable :: phis  (:,:,:)         !Surface geopotential height times gravity
 logical,  parameter :: use_compress = .true.
+
+! Hydrostatic layer thickness
+logical :: have_hydrostatic_delz
+real(kind=kind_real), allocatable :: hydrostatic_delz(:,:,:)
 
 ! Ozone
 logical :: have_o3
@@ -251,6 +255,11 @@ real(kind=kind_real), allocatable :: surface_wind_speed                        (
 real(kind=kind_real), allocatable :: surface_wind_from_direction               (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
 
+! Snow depth
+logical :: have_snwdph
+real(kind=kind_real), allocatable :: snwdph(:,:,:)
+real(kind=kind_real), allocatable :: snwdph_meters(:,:,:)
+
 ! Vorticity
 logical :: have_vort
 real(kind=kind_real), allocatable :: vort     (:,:,:)
@@ -362,17 +371,34 @@ endif
 ! Geopotential height
 ! -------------------
 have_geoph = .false.
-if (have_t .and. have_pressures .and. have_q .and. xm%has_field( 'phis')) then
-  call xm%get_field('phis',  phis)
+if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or. xm%has_field('surface_geopotential_height') )) then
+  if (.not.allocated(phis)) allocate(phis(self%isc:self%iec,self%jsc:self%jec,1))
+  if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
+  if ( xm%has_field( 'phis') ) then
+     call xm%get_field('phis',  phis)
+     suralt = phis / constant('grav')
+  else
+     call xm%get_field('surface_geopotential_height', suralt)
+     phis = suralt * constant('grav')
+  end if
   if (.not.allocated(geophi)) allocate(geophi(self%isc:self%iec,self%jsc:self%jec,self%npz+1))
   if (.not.allocated(geoph )) allocate(geoph (self%isc:self%iec,self%jsc:self%jec,self%npz  ))
-  if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
   call geop_height(geom, prs, prsi, t, q, phis(:,:,1), use_compress, geoph)
   call geop_height_levels(geom, prs, prsi, t, q, phis(:,:,1), use_compress, geophi)
-  suralt = phis / constant('grav')
   have_geoph = .true.
 endif
 
+! Hydrostatic layer thickness
+! ---------------
+have_hydrostatic_delz = .false.
+if (xm%has_field('hydrostatic_layer_thickness')) then
+   call xm%get_field('hydrostatic_layer_thickness', hydrostatic_delz)
+   have_hydrostatic_delz = .true.
+elseif (have_geoph) then
+   allocate(hydrostatic_delz(self%isc:self%iec,self%jsc:self%jec,self%npz))
+   hydrostatic_delz = geophi(:,:,2:self%npz+1) - geophi(:,:,1:self%npz)
+   have_hydrostatic_delz = .true.
+endif
 
 ! Virtual temperature
 ! -------------------
@@ -802,6 +828,19 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
 
 endif
 
+! Snow depth
+have_snwdph = .false.
+if (xm%has_field('totalSnowDepth')) then
+   allocate(snwdph_meters(self%isc:self%iec,self%jsc:self%jec,1))
+   call xm%get_field('totalSnowDepth', snwdph)
+   snwdph_meters = 1.e-3_kind_real*snwdph
+   have_snwdph = .true.
+elseif (xm%has_field('totalSnowDepthMeters')) then
+   allocate(snwdph(self%isc:self%iec,self%jsc:self%jec,1))
+   call xm%get_field('totalSnowDepthMeters', snwdph_meters)
+   snwdph = 1.e+3_kind_real*snwdph_meters
+   have_snwdph = .true.
+end if
 
 ! Vorticity
 ! ---------
@@ -881,6 +920,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3ppmv
 
+  case ("sfc_geopotential_height_times_grav", "phis")
+
+    if (.not. have_geoph) call field_fail(fields_to_do(f))
+    field_ptr = phis
+
   case ("geopotential_height", "height")
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
@@ -890,6 +934,11 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geophi
+
+  case ("hydrostatic_layer_thickness", "hydrostatic_delz")
+
+    if (.not. have_hydrostatic_delz) call field_fail(fields_to_do(f))
+    field_ptr = hydrostatic_delz
 
   case ("surface_altitude", "surface_geopotential_height", "surface_geometric_height")
 
@@ -1076,6 +1125,16 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = soil_type
 
+  case ("totalSnowDepth", "snwdph")
+
+    if (.not. have_snwdph) call field_fail(fields_to_do(f))
+    field_ptr = snwdph
+
+  case ("totalSnowDepthMeters", "snwdphMeters")
+
+    if (.not. have_snwdph) call field_fail(fields_to_do(f))
+    field_ptr = snwdph_meters
+
   case ("vorticity", "vort")
 
     if (.not. have_vort) call field_fail(fields_to_do(f))
@@ -1109,7 +1168,6 @@ if (allocated(soilm)) deallocate(soilm)
 if (associated(zorl)) nullify(zorl)
 if (associated(field_ptr)) nullify(field_ptr)
 if (associated(q)) nullify(q)
-if (associated(phis)) nullify(phis)
 if (associated(ud)) nullify(ud)
 if (associated(vd)) nullify(vd)
 if (associated(frocean)) nullify(frocean)
@@ -1137,9 +1195,11 @@ if (allocated(delp)) deallocate(delp)
 if (allocated(prsi)) deallocate(prsi)
 if (allocated(prs)) deallocate(prs)
 if (allocated(pkz)) deallocate(pkz)
+if (allocated(phis)) deallocate(phis)
 if (allocated(geophi)) deallocate(geophi)
 if (allocated(geoph)) deallocate(geoph)
 if (allocated(suralt)) deallocate(suralt)
+if (allocated(hydrostatic_delz)) deallocate(hydrostatic_delz)
 if (allocated(o3mr)) deallocate(o3mr)
 if (allocated(o3ppmv)) deallocate(o3ppmv)
 if (allocated(ua)) deallocate(ua)
@@ -1190,6 +1250,8 @@ if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
 if (allocated(surface_wind_speed)) deallocate(surface_wind_speed)
 if (allocated(surface_wind_from_direction)) deallocate(surface_wind_from_direction)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
+if (allocated(snwdph)) deallocate(snwdph)
+if (allocated(snwdph_meters)) deallocate(snwdph_meters)
 if (allocated(vort)) deallocate(vort)
 if (allocated(tprs)) deallocate(tprs)
 

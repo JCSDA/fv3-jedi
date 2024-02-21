@@ -308,6 +308,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_gfs_c2ll.ref
   testoutput/convertstate_gfs_c2gaussian.ref
   testoutput/convertstate_gfs_restart2history.ref
+  testoutput/convertstate_gfs_history2restart.ref
   testoutput/convertstate_gchp_from_stretched_grid.ref
   testoutput/convertstate_gchp_to_stretched_grid.ref
   testoutput/converttolatlon_gfs.ref

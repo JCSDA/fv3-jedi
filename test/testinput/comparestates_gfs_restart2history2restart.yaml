@@ -41,4 +41,4 @@ comparestates test:
     filename_sfcd: 20201215.000000.history2restart.sfc_data.nc
     filename_sfcw: 20201215.000000.history2restart.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.history2restart.coupler.res
-  tolerance: 1.e-08
+  tolerance: 1.e-06

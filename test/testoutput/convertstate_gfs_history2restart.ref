@@ -9,7 +9,7 @@ specific_humidity                            | Min:+1.2804727152986153e-09 Max:+
 cloud_liquid_ice                             | Min:-4.2004505407201364e-21 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
 cloud_liquid_water                           | Min:-9.4095662968587237e-21 Max:+1.0694775100156446e-03 RMS:+3.4817857684731351e-05
 ozone_mass_mixing_ratio                      | Min:+2.8166011299632619e-09 Max:+1.7470989779275887e-05 RMS:+4.3563484867392150e-06
-sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+surface_geopotential_height                  | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509252e+01
 sea_surface_temperature                      | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798424e+02
@@ -18,14 +18,14 @@ stype                                        | Min:+0.0000000000000000e+00 Max:+
 vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.9051967997010422e-01
 stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric                       | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
-totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3285476634008219e+03 RMS:+1.7913120186264425e+02
+totalSnowDepthMeters                         | Min:+0.0000000000000000e+00 Max:+1.3285477265034498e+00 RMS:+1.7913121037091978e-01
 surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
 surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, sfc_geopotential_height_times_grav, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, surface_eastward_wind, surface_northward_wind, f10m
-Variable change to: 21 variables: ua, va, t, delp, sphum, ice_wat, liq_wat, o3mr, surface_geopotential_height, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdphMeters, u_srf, v_srf, f10m
+Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, surface_geopotential_height, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepthMeters, surface_eastward_wind, surface_northward_wind, f10m
+Variable change to: 21 variables: ua, va, t, delp, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -37,7 +37,7 @@ specific_humidity                            | Min:+1.2804727152986153e-09 Max:+
 cloud_liquid_ice                             | Min:-4.2004505407201364e-21 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
 cloud_liquid_water                           | Min:-9.4095662968587237e-21 Max:+1.0694775100156446e-03 RMS:+3.4817857684731351e-05
 ozone_mass_mixing_ratio                      | Min:+2.8166011299632619e-09 Max:+1.7470989779275887e-05 RMS:+4.3563484867392150e-06
-surface_geopotential_height                  | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
+sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509252e+01
 sea_surface_temperature                      | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798424e+02
@@ -46,7 +46,7 @@ stype                                        | Min:+0.0000000000000000e+00 Max:+
 vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.9051967997010422e-01
 stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric                       | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
-totalSnowDepthMeters                         | Min:+0.0000000000000000e+00 Max:+1.3285477265034498e+00 RMS:+1.7913121037091978e-01
+totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3285477265034497e+03 RMS:+1.7913121037091977e+02
 surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
 surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
@@ -62,7 +62,7 @@ specific_humidity                            | Min:+1.2804727152986153e-09 Max:+
 cloud_liquid_ice                             | Min:-4.2004505407201364e-21 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
 cloud_liquid_water                           | Min:-9.4095662968587237e-21 Max:+1.0694775100156446e-03 RMS:+3.4817857684731351e-05
 ozone_mass_mixing_ratio                      | Min:+2.8166011299632619e-09 Max:+1.7470989779275887e-05 RMS:+4.3563484867392150e-06
-surface_geopotential_height                  | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
+sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509252e+01
 sea_surface_temperature                      | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798424e+02
@@ -71,7 +71,7 @@ stype                                        | Min:+0.0000000000000000e+00 Max:+
 vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.9051967997010422e-01
 stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric                       | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
-totalSnowDepthMeters                         | Min:+0.0000000000000000e+00 Max:+1.3285477265034498e+00 RMS:+1.7913121037091978e-01
+totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3285477265034497e+03 RMS:+1.7913121037091977e+02
 surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
 surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01

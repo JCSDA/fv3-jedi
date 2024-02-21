@@ -484,6 +484,16 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "hydrostatic_layer_thickness";
+    md.shortName = "hydrostatic_delz";
+    md.units = "m";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "sfc_geopotential_height_times_grav";
     md.shortName = "phis";
     md.units = "m";
@@ -657,6 +667,16 @@ namespace fv3jedi {
     md.longName = "totalSnowDepth";
     md.shortName = "snwdph";
     md.units = "mm";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "totalSnowDepthMeters";
+    md.shortName = "snwdphMeters";
+    md.units = "m";
     md.kind = "double";
     md.tracer = "false";
     md.horizontalStaggerLocation = "center";
