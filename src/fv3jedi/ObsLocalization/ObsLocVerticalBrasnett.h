@@ -10,6 +10,8 @@
 #include <ostream>
 #include <vector>
 
+#include "eckit/config/Configuration.h"
+
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
 #include "fv3jedi/Utilities/Traits.h"
 
@@ -23,22 +25,11 @@
 
 namespace fv3jedi {
 
-/// \brief Options controlling vertical Brasnett observation space localization
-/// for snow DA.
-class ObsLocBrasnettParameters : public oops::ObsLocalizationParametersBase {
-  OOPS_CONCRETE_PARAMETERS(ObsLocBrasnettParameters, oops::ObsLocalizationParametersBase)
-
- public:
-  oops::Parameter<double> vertscale{"vertical lengthscale",
-                 "lengthscale of vertical localization in meters", 800., this};
-};
-
 /// Brasnett 99 observation space localization for snow DA (in vertical).
 /// https://doi.org/10.1175/1520-0450(1999)038<0726:AGAOSD>2.0.CO;2
 class ObsLocVerticalBrasnett: public oops::ObsLocalizationBase<Traits, ufo::ObsTraits> {
  public:
-  typedef ObsLocBrasnettParameters Parameters_;
-  ObsLocVerticalBrasnett(const Parameters_ &, const ioda::ObsSpace &);
+  ObsLocVerticalBrasnett(const eckit::Configuration &, const ioda::ObsSpace &);
 
  protected:
   /// compute localization and update localization values in \p locvector
@@ -52,10 +43,10 @@ class ObsLocVerticalBrasnett: public oops::ObsLocalizationBase<Traits, ufo::ObsT
   double VertScale_;  //< vertical localization scale
 };
 // -----------------------------------------------------------------------------
-ObsLocVerticalBrasnett::ObsLocVerticalBrasnett(const Parameters_ & params,
-                                               const ioda::ObsSpace & obsspace):
-       obsHeight_(obsspace.nlocs()),
-       VertScale_(params.vertscale) {
+ObsLocVerticalBrasnett::ObsLocVerticalBrasnett(const eckit::Configuration & config,
+                                               const ioda::ObsSpace & obsspace)
+  : obsHeight_(obsspace.nlocs()), VertScale_(config.getDouble("vertical lengthscale"))
+{
   oops::Log::trace()<< "VerticalBrasnett localization with: vertical scale=" << VertScale_
                     << std::endl;
 
