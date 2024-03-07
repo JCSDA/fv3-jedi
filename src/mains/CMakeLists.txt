@@ -65,6 +65,12 @@ ecbuild_add_executable( TARGET  fv3jedi_forecast.x
                        )
 oops_output_json_schema(fv3jedi_forecast.x)
 
+ecbuild_add_executable( TARGET  fv3jedi_EnsGETKF.x
+                        SOURCES fv3jediEnsGETKF.cc
+                        LIBS    ${FV3JEDI_LIBRARIES}
+                       )
+oops_output_json_schema(fv3jedi_EnsGETKF.x) 
+
 ecbuild_add_executable( TARGET  fv3jedi_gen_hybrid_linear_model_coeffs.x
                         SOURCES fv3jediGenHybridLinearModelCoeffs.cc
                         LIBS    ${FV3JEDI_LIBRARIES}

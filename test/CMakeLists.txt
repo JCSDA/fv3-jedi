@@ -154,7 +154,7 @@ list( APPEND fv3jedi_testinput
   testinput/eda_block_3dvar_1.yaml
   testinput/eda_block_3dvar_2.yaml
   testinput/eda_block_3dvar.yaml
-  testinput/ensfc_ufs.yaml 
+  testinput/ensemble_ufs_forecast.yaml 
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
@@ -1130,12 +1130,17 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_fv3lm_tracers
 
 
 if( FV3_FORECAST_MODEL MATCHES "UFS")
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs_warmstart
-                    MPI      6
-                    ARGS     testinput/forecast_ufs_c48_warmstart.yaml
-                    COMMAND  fv3jedi_forecast.x
-                    TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_forecast_ufs_warmstart
+                  MPI      6
+                  ARGS     testinput/forecast_ufs_c48_warmstart.yaml
+                  COMMAND  fv3jedi_forecast.x
+                  TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_EnsGETKF_ufs_warmstart
+                  MPI      12
+                  ARGS     testinput/ensemble_ufs_forecast.yaml
+                  COMMAND  fv3jedi_EnsGETKF.x
+                  TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
 endif()
 
 # Disabled until setup of GEOS model rundir is added (e.g., see fv3jedi_setup_ufs_rundir_warmstart)

@@ -10,6 +10,7 @@ module fv3jedi_ufs_mod
   ! oops
   use datetime_mod
   use duration_mod
+  use oops_variables_mod
 
   ! fckit
   use fckit_configuration_module, only: fckit_configuration
@@ -19,7 +20,6 @@ module fv3jedi_ufs_mod
   use fv3jedi_state_mod,     only: fv3jedi_state
   use fv3jedi_field_mod,     only: fv3jedi_field, field_clen
   use fckit_mpi_module,           only: fckit_mpi_comm
-
   ! ufs
   use ESMF
   use NUOPC
@@ -96,20 +96,22 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-  subroutine initialize(self, state, vdate_start, vdate_final)
+  subroutine initialize(self, state, vars, vdate_start, vdate_final)
 
     implicit none
 
     class(model_ufs),    intent(inout) :: self
     type(fv3jedi_state), intent(in)    :: state
+    type(oops_variables),  intent(in)    :: vars
 
     type(datetime),      intent(in)    :: vdate_start
     type(datetime),      intent(in)    :: vdate_final
 
-    integer :: rc, urc, phase, cnt
+    integer :: rc, urc, phase, cnt, var
 
     type(ESMF_Time)         :: currTime, stopTime
     type(ESMF_TimeInterval) :: timeStep
+    character(len=ESMF_MAXSTR), allocatable :: stdnames(:)
 
     character(len=20) :: strCurrTime, strStopTime
 
@@ -198,34 +200,19 @@ contains
          rc=rc)
     esmf_err_abort(rc)
 
+    allocate(stdnames(vars%nvars()))
+    do var = 1, vars%nvars()
+       stdnames(var) = trim(vars%variable(var))
+       if(stdnames(var) == 'sheleg') then ! weasd is apparently not a standard name
+          stdnames(var) = 'weasd' 
+       endif
+    enddo
     call ESMF_LogWrite("Advertising export from ESM", ESMF_LOGMSG_INFO)
     ! Advertise fields on the exportState, for data coming out of ESM component
     ! Note--only certain fields are available. Check in GFS_surface_generic to see if they are filled
+    ! Do only for very first initialization
     call NUOPC_Advertise(self%toJedi, &
-         StandardNames=(/ &
-                        "u                                    ", &   ! Example fields
-                        "v                                    ", &   ! Example fields
-                        "ua                                   ", &   ! Example fields
-                        "va                                   ", &   ! Example fields
-                        "t                                    ", &   ! Example fields
-                        "delp                                 ", &   ! Example fields
-                        "sphum                                ", &   ! Example fields
-                        "ice_wat                              ", &   ! Example fields
-                        "liq_wat                              ", &   ! Example fields
-                        "o3mr                                 ", &   ! Example fields
-                        "phis                                 ", &   ! Example fields
-                        "slmsk                                ", &   ! Example fields
-                        "weasd                                ", &   ! Example fields
-                        "tsea                                 ", &   ! Example fields
-                        "vtype                                ", &   ! Example fields
-                        "stype                                ", &   ! Example fields
-                        "vfrac                                ", &   ! Example fields
-                        "stc                                  ", &   ! Example fields
-                        "smc                                  ", &   ! Example fields
-                        "snwdph                               ", &   ! Example fields
-                        "u_srf                                ", &   ! Example fields
-                        "v_srf                                ", &   ! Example fields
-                        "f10m                                 "/), &   ! Example fields
+         StandardNames=stdnames, &
          SharePolicyField="share", &
          TransferOfferGeomObject="cannot provide", rc=rc)
     esmf_err_abort(rc)
@@ -234,37 +221,14 @@ contains
     esmf_err_abort(rc)
 
     write(msg, "(I2)") cnt
-    call ESMF_LogWrite("After filling advertise toJedi state has "//trim(msg)//" items.", &
+    call ESMF_LogWrite("After filling advertise fromJedi state has "//trim(msg)//" items.", &
          ESMF_LOGMSG_INFO)
 
     call ESMF_LogWrite("Advertising imports to ESM", ESMF_LOGMSG_INFO)
     ! Advertise fields on the importState, for data going into ESM component
     ! Note--only certain fields are available. Check ???
     call NUOPC_Advertise(self%fromJedi, &
-         StandardNames=(/ &
-                        "u                                    ", &   ! Example fields
-                        "v                                    ", &   ! Example fields
-                        "ua                                   ", &   ! Example fields
-                        "va                                   ", &   ! Example fields
-                        "t                                    ", &   ! Example fields
-                        "delp                                 ", &   ! Example fields
-                        "sphum                                ", &   ! Example fields
-                        "ice_wat                              ", &   ! Example fields
-                        "liq_wat                              ", &   ! Example fields
-                        "o3mr                                 ", &   ! Example fields
-                        "phis                                 ", &   ! Example fields
-                        "slmsk                                ", &   ! Example fields
-                        "weasd                                ", &   ! Example fields
-                        "tsea                                 ", &   ! Example fields
-                        "vtype                                ", &   ! Example fields
-                        "stype                                ", &   ! Example fields
-                        "vfrac                                ", &   ! Example fields
-                        "stc                                  ", &   ! Example fields
-                        "smc                                  ", &   ! Example fields
-                        "snwdph                               ", &   ! Example fields
-                        "u_srf                                ", &   ! Example fields
-                        "v_srf                                ", &   ! Example fields
-                        "f10m                                 "/), &   ! Example fields
+         StandardNames=stdnames, &
          SharePolicyField="share", &
          TransferOfferGeomObject="cannot provide", rc=rc)
     esmf_err_abort(rc)
@@ -309,6 +273,7 @@ contains
     esmf_err_abort(rc)
 
     deallocate(connectors)
+    deallocate(stdnames)
 
     ! call ExternalRealize phase
     call NUOPC_CompSearchPhaseMap(self%esmComp, &

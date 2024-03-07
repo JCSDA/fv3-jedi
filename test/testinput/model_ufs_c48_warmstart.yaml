@@ -22,7 +22,7 @@ model aux control: null
 model aux error: null
 model test:
   forecast length: PT2H
-  final norm: 358.93702913351143
+  final norm: 355.73749592869899
   tolerance: 1.0e-4
   test reforecast: false
 initial condition:

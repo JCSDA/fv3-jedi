@@ -60,7 +60,8 @@ void ModelUFS::initialize(State & xx) const {
   oops::Log::trace() << "initialize Forecast start time is " << start << std::endl;
   oops::Log::trace() << "initialize Forecast stop time is " << stop << std::endl;
 
-  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), &dtp1, &dtp2);
+  // stdvariables is the list of "standard names" needed by NUOPC_Advertise
+  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), xx.stdvariables(), &dtp1, &dtp2);
   oops::Log::trace() << "ModelUFS::initialize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

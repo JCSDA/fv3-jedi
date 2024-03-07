@@ -1,0 +1,5 @@
+files:
+  - testinput/forecast_ufs_1.yaml
+  - testinput/forecast_ufs_2.yaml
+
+batch: 1

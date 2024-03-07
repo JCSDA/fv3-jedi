@@ -11,6 +11,7 @@ use iso_c_binding
 ! oops
 use datetime_mod
 use duration_mod
+use oops_variables_mod
 
 ! fckit
 use fckit_configuration_module,  only: fckit_configuration
@@ -81,27 +82,29 @@ end subroutine c_fv3jedi_ufs_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_ufs_initialize(c_key_self, c_key_state, c_dt1, c_dt2) &
+subroutine c_fv3jedi_ufs_initialize(c_key_self, c_key_state, c_vars, c_dt1, c_dt2) &
            bind(c,name='fv3jedi_ufs_initialize_f90')
 
 integer(c_int), intent(in) :: c_key_self  !< Model
 integer(c_int), intent(in) :: c_key_state !< Model state
+type(c_ptr),value, intent(in)    :: c_vars     !< List of variables
 type(c_ptr),    intent(in) :: c_dt1       !< DateTime
 type(c_ptr),    intent(in) :: c_dt2       !< DateTime
 
 type(model_ufs),     pointer :: self
 type(fv3jedi_state), pointer :: state
+type(oops_variables)         :: vars
 
 type(datetime) :: fdate1
 type(datetime) :: fdate2
 
 call fv3jedi_state_registry%get(c_key_state,state)
 call fv3jedi_ufs_registry%get(c_key_self, self)
+vars = oops_variables(c_vars)
 
 call c_f_datetime(c_dt1, fdate1)
 call c_f_datetime(c_dt2, fdate2)
-
-call self%initialize(state, fdate1, fdate2)
+call self%initialize(state, vars, fdate1, fdate2)
 
 end subroutine c_fv3jedi_ufs_initialize
 

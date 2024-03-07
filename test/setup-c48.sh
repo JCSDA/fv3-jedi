@@ -16,7 +16,8 @@ export ufsdir=$2
 export fv3jedidata=$3
 
 # Get date used by latest regression tests of the wm for aws sync below
-baseline=`grep baseline $ufsdir/tests/logs/RegressionTests_hera.log | grep "\/control_c48_intel" | awk -F "/" '{print $7}'`
+export lastupdate=`aws s3 ls --no-sign-request s3://noaa-ufs-regtests-pds/ --recursive --human-readable | grep control_c48_intel | grep "\/control_c48_intel\/RESTART" | grep fv_core.res | tail -n 1`
+baseline=`echo $lastupdate  | awk -F "/" '{print $1}' | awk -F " " '{print $5}'`
 
 cd input-data
 # pull the latest fixe files, input data and restart files from aws backup of rt.sh
@@ -65,6 +66,7 @@ ${SED} -i "/submit_and_wait/a exit 0" rt_utils.sh
 # Generate the control_c48_intel regression test experiment directory for a cold start
 ./run_test.sh $PWD $fv3jedidata control_c48 001 001
 
+mv $fv3jedidata/001 $fv3jedidata/control_c48_intel
 cd $fv3jedidata/control_c48_intel
 
 # Now use the restart data to convert the cold start to a warm start, which is required for JEDI coupling

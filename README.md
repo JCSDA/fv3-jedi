@@ -1,4 +1,4 @@
-# Interface between JEDI and FV3 based models
+# Interface between JEDI and FV3 based models 
 
 ### Continuous integration:
 | Platform      |  JCSDA-internal|

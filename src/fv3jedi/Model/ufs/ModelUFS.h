@@ -48,6 +48,8 @@ class ModelUFS: public oops::interface::ModelBase<Traits>,
   int saveTrajectory(State &, const ModelBias &) const;
 
   const util::Duration & timeResolution() const {return tstep_;}
+  // note that this now excludes native u and v grid vars.
+  // to include those, use variablesIncludingInterfaceFields()
   const oops::Variables & variables() const {return vars_;}
 
  private:

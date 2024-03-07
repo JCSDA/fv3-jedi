@@ -65,6 +65,7 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
     ASSERT(params.stateVariables.value() != boost::none);
     vars_ = oops::Variables(*params.stateVariables.value());
   }
+  stdvars_ = vars_;  // The original "standard" names are required by NUOPC_Advertise
 
   // Set long name variables
   vars_ = geom_.fieldsMetaData().getLongNameFromAnyName(vars_);
