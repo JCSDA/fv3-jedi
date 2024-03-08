@@ -7,10 +7,6 @@
 
 #pragma once
 
-#include "atlas/field.h"
-#include "atlas/functionspace.h"
-#include "atlas/functionspace/FunctionSpace.h"
-
 namespace atlas {
 class FieldSet;
 }  // namespace atlas
