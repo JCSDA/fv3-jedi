@@ -49,7 +49,7 @@ observations:
         Sensor_ID: v.viirs-m_npp
         EndianType: little_endian
         CoefficientPath: Data/crtm/
-        AerosolOption: aerosols_gocart_1
+        AerosolOption: aerosols_gocart_gefs
         RCFile: geosaod.rc
         model units coeff: 1.e-9
     obs error:
@@ -70,7 +70,7 @@ observations:
       name: AodLUTs
       obs options:
         Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_1
+        AerosolOption: aerosols_gocart_gefs
         RCFile: geosaod_aeronet.rc
         model units coeff: 1.e-9
     obs filters:
@@ -96,7 +96,7 @@ observations:
       name: AodLUTs
       obs options:
         Sensor_ID: aeronet
-        AerosolOption: aerosols_gocart_1
+        AerosolOption: aerosols_gocart_gefs
         RCFile: geosaod_aeronet.rc
         AbsorptionAod: true
         model units coeff: 1.e-9
