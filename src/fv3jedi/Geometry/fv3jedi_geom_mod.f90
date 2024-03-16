@@ -88,7 +88,7 @@ type :: fv3jedi_geom
   logical :: ne_corner, se_corner, sw_corner, nw_corner
   logical :: nested = .false.
   logical :: bounded_domain = .false.
-  logical :: logp = .false.
+  character(len=10) :: vertcoord_type
 
   integer :: grid_type = 0
   logical :: dord4 = .true.
@@ -182,7 +182,6 @@ integer, dimension(nf90_max_var_dims) :: dimids, dimlens
 character(len=:), allocatable :: str
 real(kind=kind_real) :: sf, t_lon, t_lat
 logical :: do_write_geom = .false.
-logical :: logp = .false.
 integer :: iterator_dimension = 2
 
 type(fv3jedi_fmsnamelist) :: fmsnamelist
@@ -379,8 +378,9 @@ self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
 allocate(self%vCoord(self%npz))
 
-call conf%get_or_die("logp",logp)
-self%logp = logp
+call conf%get_or_die("vert coordinate", str)
+self%vertcoord_type = str
+deallocate(str)
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -556,7 +556,7 @@ self%lon_us = other%lon_us
 self%nested = other%nested
 self%bounded_domain = other%bounded_domain
 
-self%logp = other%logp
+self%vertcoord_type = other%vertcoord_type
 
 end subroutine clone
 
@@ -668,10 +668,10 @@ class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
 
 !Locals
-type(atlas_field) :: afield
+type(atlas_field) :: afield, afield2
 integer :: jl
 integer, pointer :: int_ptr(:,:)
-real(kind=kind_real), pointer :: real_ptr(:,:)
+real(kind=kind_real), pointer :: real_ptr(:,:), real_ptr2(:,:)
 real(kind=kind_real) :: sigmaup, sigmadn, ps
 real(kind=kind_real) :: logp(self%npz)
 
@@ -695,20 +695,32 @@ call afieldset%add(afield)
 call afield%final()
 
 ! Add vertical unit
-ps = constant('ps')
-afield = self%afunctionspace%create_field(name='vert_coord', kind=atlas_real(kind_real), levels=self%npz)
-call afield%data(real_ptr)
-if (.not. self%logp) then
+if (trim(self%vertcoord_type) == 'sigma') then
+   afield = self%afunctionspace%create_field(name='vert_coord', kind=atlas_real(kind_real), levels=self%npz)
+   call afield%data(real_ptr)
+   ps = constant('ps')
    do jl=1,self%npz
       sigmaup = self%ak(jl+1)/ps+self%bk(jl+1) ! si are now sigmas
       sigmadn = self%ak(jl  )/ps+self%bk(jl  )
       real_ptr(jl,:) = 0.5*(sigmaup+sigmadn) ! 'fake' sigma coordinates
    enddo
-else
+else if (trim(self%vertcoord_type) == 'logp') then
+   afield = self%afunctionspace%create_field(name='vert_coord', kind=atlas_real(kind_real), levels=self%npz)
+   call afield%data(real_ptr)
    call getVerticalCoordLogP(self,logp,self%npz,ps)
    do jl=1,self%npz
       real_ptr(jl,:) = logp(jl)
    enddo
+else if (trim(self%vertcoord_type) == 'orography') then
+   !> The orography vertical coordinate can only be used for 2D fields, so allocation here is
+   !> for one level. This option is not compatible with 3D fields.
+   afield = self%afunctionspace%create_field(name='vert_coord', kind=atlas_real(kind_real), levels=1)
+   call afield%data(real_ptr)
+   afield2 = afieldset%field('filtered_orography')
+   call afield2%data(real_ptr2)
+   real_ptr(1,:) = real_ptr2(1,:)
+else
+   call abor1_ftn('fv3jedi_geom_mod%set_and_fill_geometry_fields: unknown vertical coordinate type')
 endif
 call afieldset%add(afield)
 call afield%final()

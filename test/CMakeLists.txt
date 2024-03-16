@@ -217,6 +217,7 @@ list( APPEND fv3jedi_testinput
   testinput/letkf.yaml
   testinput/letkf3d.yaml
   testinput/lgetkf.yaml
+  testinput/3dvar_snow.yaml
   testinput/letkf_snow.yaml
   testinput/letkf_observer_soil_moisture.yaml
   testinput/adjointforecast.yaml
@@ -360,6 +361,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-fgat_gfs_aero.ref
   testoutput/letkf.ref
   testoutput/letkf3d.ref
+  testoutput/3dvar_snow.ref
   testoutput/letkf_snow.ref
   testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
@@ -694,6 +696,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda/gfs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/forecast)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/adjointforecast)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/gfs_land)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/geos)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/eda/gfs)
@@ -1568,6 +1571,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf
 
 # Land DA
 # --------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_snow
+                  MPI      6
+                  ARGS     testinput/3dvar_snow.yaml
+                  COMMAND  fv3jedi_var.x )
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_snow
                   MPI      6
                   ARGS     testinput/letkf_snow.yaml

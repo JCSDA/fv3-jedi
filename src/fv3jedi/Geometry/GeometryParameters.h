@@ -61,7 +61,8 @@ class GeometryParameters : public oops::Parameters {
   oops::Parameter<std::string> interpMethod{ "interpolation method", "barycent", this};
   oops::Parameter<std::vector<int>> ioLayout{ "io_layout", {1, 1}, this};
   oops::Parameter<std::vector<int>> layout{ "layout", {1, 1}, this};
-  oops::Parameter<bool> logp{ "logp", false, this};
+  // vertical coordinate: sigma (default), logp or orography
+  oops::Parameter<std::string> vertCoord{ "vert coordinate", "sigma", this};
   oops::OptionalParameter<std::string> namelistFilename{"namelist filename", this};
   oops::Parameter<bool> nested{ "nested", false, this};
   oops::Parameter<int> ntiles{ "ntiles", 6, this};

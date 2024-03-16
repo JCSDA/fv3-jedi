@@ -151,7 +151,6 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   // read from state files in the yamls.
   fields_ = atlas::FieldSet();
   // Add SABER fields
-  fv3jedi_geom_set_and_fill_geometry_fields_f90(keyGeom_, fields_.get());
   if (params.timeInvariantFields.value() != boost::none) {
     const auto & timeInvFieldsParams = params.timeInvariantFields.value().value();
     State timeInvState(*this, timeInvFieldsParams.stateFields.value().toConfiguration());
@@ -167,6 +166,7 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
       insertDerivedTimeInvariantFields(fields_, derivedFields);
     }
   }
+  fv3jedi_geom_set_and_fill_geometry_fields_f90(keyGeom_, fields_.get());
 
   // Copy some Fortran data to C++
   ak_.resize(nLevels_+1);
