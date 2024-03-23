@@ -193,6 +193,7 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_gnssro_ropp.yaml
   testinput/hofx_nomodel.yaml
   testinput/hofx_nomodel_abi_radii.yaml
+  testinput/hofx_nomodel_amsua_fov.yaml
   testinput/hofx_nomodel_amsua_radii.yaml
   testinput/hofx_nomodel_lam_cmaq.yaml
   testinput/hofx_nomodel_lam_rrfs.yaml
@@ -341,6 +342,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_gnssro_ropp.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_nomodel_abi_radii.ref
+  testoutput/hofx_nomodel_amsua_fov.ref
   testoutput/hofx_nomodel_amsua_radii.ref
   testoutput/hofx_nomodel_lam_cmaq.ref
   testoutput/hofx_nomodel_lam_rrfs.ref
@@ -440,6 +442,7 @@ Data/fieldmetadata/ufs-aerosol.yaml
 Data/fieldmetadata/gfs-history.yaml
 Data/fieldmetadata/gfs_v17-land.yaml
 Data/fieldmetadata/gfs-restart.yaml
+Data/fieldmetadata/gfs-restart-surface-masks.yaml
 Data/fieldmetadata/lam_cmaq.yaml
 Data/fieldmetadata/ufs.yaml
 )
@@ -1190,6 +1193,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel_lam_cmaq
                   MPI      6
                   ARGS     testinput/hofx_nomodel_lam_cmaq.yaml
+                  COMMAND  fv3jedi_hofx_nomodel.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel_amsua_fov
+                  MPI      6
+                  ARGS     testinput/hofx_nomodel_amsua_fov.yaml
                   COMMAND  fv3jedi_hofx_nomodel.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_nomodel_amsua_radii

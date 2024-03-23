@@ -1,0 +1,57 @@
+field metadata:
+
+- long name: u_component_of_native_D_grid_wind
+  io name: u
+
+- long name: v_component_of_native_D_grid_wind
+  io name: v
+
+- long name: air_temperature
+  io name: T
+
+- long name: air_pressure_thickness
+  io name: DELP
+
+- long name: stc
+  io file: surface
+
+- long name: soilMoistureVolumetric
+  io name: smc
+  io file: surface
+
+# interpolation masks of surface fields for CRTM FOV averaging
+- long name: surface_temperature_where_sea
+  interpolation source point mask: water_mask
+
+- long name: surface_temperature_where_land
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: surface_temperature_where_ice
+  interpolation source point mask: ice_uncovered_by_snow_mask
+
+- long name: surface_temperature_where_snow
+  interpolation source point mask: snow_mask
+
+- long name: vegetation_type_index
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: soil_type
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: land_type_index_NPOESS
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: leaf_area_index
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: soil_temperature
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: vegetation_area_fraction
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: volume_fraction_of_condensed_water_in_soil
+  interpolation source point mask: land_uncovered_by_snow_mask
+
+- long name: surface_snow_thickness
+  interpolation source point mask: snow_mask

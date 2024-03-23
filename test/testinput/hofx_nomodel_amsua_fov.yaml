@@ -1,0 +1,67 @@
+time window:
+  begin: 2020-12-14T21:00:00Z
+  length: PT6H
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart-surface-masks.yaml
+  time invariant fields:
+    state fields:
+      datetime: 2020-12-14T21:00:00Z
+      filetype: fms restart
+      skip coupler file: true
+      state variables: [slmsk, sheleg, stype, vtype]
+      datapath: Data/inputs/gfs_c12/bkg/
+      filename_sfcd: 20201214.210000.sfc_data.nc
+    derived fields: [water_mask, land_uncovered_by_snow_mask, ice_uncovered_by_snow_mask, snow_mask]
+state:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
+  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                    u_srf,v_srf,f10m]
+observations:
+  get values:
+    variable change:
+      variable change name: Model2GeoVaLs
+      hydrometeor effective radii method: gsi
+      mask over: land
+  observers:
+  - obs space:
+      name: AMSUA-NOAA19
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
+      simulated variables: [brightnessTemperature]
+      channels: 1-15
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3,CO2]
+      Clouds: [Water, Ice]
+      Cloud_Fraction: 1.0
+      obs options:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+      do fov average: true
+      fov sample points per semimajor axis: 4
+
+test:
+  reference filename: testoutput/hofx_nomodel_amsua_fov.ref
+  test output filename: testoutput/hofx_nomodel_amsua_fov.test.out
