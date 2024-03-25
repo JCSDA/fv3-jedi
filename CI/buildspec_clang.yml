@@ -113,10 +113,6 @@ phases:
       # GFDL_atmos_cubed_sphere
       - ./clone.sh jcsda/GFDL_atmos_cubed_sphere $CODEBUILD_GIT_BRANCH_FV3CORE /jcsda/fv3-bundle fv3 ${GIT_BASE_BRANCH_FV3CORE} release-stable
 
-      #  internal repos
-      # geos-aero
-      - ./clone.sh jcsda-internal/geos-aero $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle geos-aero ${GIT_BASE_BRANCH} develop
-
       # ropp
       - ./clone.sh jcsda-internal/ropp-test $CODEBUILD_GIT_BRANCH /jcsda/fv3-bundle ropp-ufo ${GIT_BASE_BRANCH} develop
 

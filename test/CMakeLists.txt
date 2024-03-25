@@ -189,7 +189,6 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_fv3-geos_cf.yaml
   testinput/hofx_fv3-gfs.yaml
   testinput/hofx_fv3lm.yaml
-  testinput/hofx_gfs_aero_aodluts.yaml
   testinput/hofx_gnssro_ropp.yaml
   testinput/hofx_nomodel.yaml
   testinput/hofx_nomodel_abi_radii.yaml
@@ -338,7 +337,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_fv3-gfs_gnssro_ropp.ref
   testoutput/hofx_fv3-gfs.ref
   testoutput/hofx_fv3lm.ref
-  testoutput/hofx_gfs_aero_aodluts.ref
   testoutput/hofx_gnssro_ropp.ref
   testoutput/hofx_nomodel.ref
   testoutput/hofx_nomodel_abi_radii.ref
@@ -571,32 +569,6 @@ endif()
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
                ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/bkg
                ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem000)
-
-# Files needed for GEOS aerosol testing
-if( ${geos-aero_FOUND} )
-  list( APPEND geos-aero_test_data
-  Data/optics_BC.v1_3_.nc
-  Data/optics_BRC.v1_5_.nc
-  Data/optics_DU.v15_3_.nc
-  Data/optics_NI.v2_5_.nc
-  Data/optics_OC.v1_3_.nc
-  Data/optics_SS.v3_3_.nc
-  Data/optics_SU.v1_3_.nc
-  )
-
-  CREATE_SYMLINK_FILENAME( ${geos-aero_SOURCE_DIR}/test/
-                           ${CMAKE_CURRENT_BINARY_DIR}/Data
-                           ${geos-aero_test_data} )
-
-  list( APPEND geos-aero_testinput
-  testinput/geosaod.rc
-  testinput/geosaod_aeronet.rc
-  testinput/Chem_MieRegistry.rc)
-
-  CREATE_SYMLINK_FILENAME( ${geos-aero_SOURCE_DIR}/test/
-                           ${CMAKE_CURRENT_BINARY_DIR}
-                           ${geos-aero_testinput} )
-endif()
 
 # --------------------------------------------------------------------------------------------------
 
@@ -1415,13 +1387,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_aero
                   ARGS     --no-validate testinput/hyb-3dvar_gfs_aero.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs_aero )
-
-if( ${geos-aero_FOUND} )
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_hofx_gfs_aero_aodluts
-                    MPI      6
-                    ARGS     testinput/hofx_gfs_aero_aodluts.yaml
-                    COMMAND  fv3jedi_hofx.x )
-endif()
 
 # Hybrid FGAT
 # -----------

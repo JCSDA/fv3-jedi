@@ -29,10 +29,8 @@ include( $ENV{jedi_cmake_ROOT}/share/jedicmake/Functions/git_functions.cmake )
 
 # External (optional) observation operators
 # ------------------------------
-option("BUNDLE_SKIP_GEOS-AERO" "Don't build GEOS-AERO" "ON") # Skip geos-aero build unless user passes -DBUNDLE_SKIP_GEOS-AERO=OFF
 option("BUNDLE_SKIP_ROPP-UFO"  "Don't build ROPP-UFO"  "ON") # Skip ropp-ufo build unless user passes -DBUNDLE_SKIP_ROPP-UFO=OFF
 
-ecbuild_bundle( PROJECT geos-aero GIT "https://github.com/jcsda-internal/geos-aero.git" )
 ecbuild_bundle( PROJECT ropp-ufo GIT "https://github.com/jcsda-internal/ropp-test.git" )
 ecbuild_bundle( PROJECT crtm GIT "https://github.com/jcsda/CRTMv3.git" )
 

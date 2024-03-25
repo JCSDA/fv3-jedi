@@ -88,9 +88,6 @@ find_package( crtm 2.2.3 REQUIRED )
 # ropp
 find_package( ropp-ufo QUIET )
 
-# geos-aero
-find_package( geos-aero QUIET )
-
 # gsibec
 find_package( gsibec 1.1.2 QUIET )
 if( gsibec_FOUND )
