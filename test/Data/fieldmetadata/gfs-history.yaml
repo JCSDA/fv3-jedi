@@ -47,6 +47,7 @@ field metadata:
 
 - long name: surface_pressure
   io name: pressfc
+  io file: atmosphere
 
 - long name: sfc_geopotential_height_times_grav
   io name: hgtsfc

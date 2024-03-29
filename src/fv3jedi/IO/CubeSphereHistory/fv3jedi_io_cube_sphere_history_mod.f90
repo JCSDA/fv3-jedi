@@ -837,7 +837,7 @@ integer :: f, ff, n
 integer :: status, varid_local, ifield
 integer, allocatable :: found(:)
 character(len=field_clen) :: io_name_local
-logical :: cat_field
+logical :: cat_field, matches_io_file
 
 ! Array to keep track of all the files the variable was found in
 allocate(found(self%nfiles))
@@ -860,39 +860,55 @@ do f = 1, size(fields)
 
   do n = 1, self%nfiles
 
-    ! Get IO name of first level if UFS multi-level surface variable
-    if ( cat_field ) then
-       ! Use to first level since this is just a placeholder for the entire field
-       write (io_name_local, "(A5,I1)") trim(fields(f)%io_name), 1
-    else
-       io_name_local = fields(f)%io_name 
-    end if
-
-    ! Get the varid
-    status = nf90_inq_varid(self%ncid(n), io_name_local, varid_local)
-
-    ! If found then fill the array
-    if (status == nf90_noerr) then
-      found(n) = 1
-      file_index(f) = n
-      varid(f) = varid_local
-    endif
-
+     ! Check if filename matches IO file specified in fields metadata
+     matches_io_file = .true. ! Default to true for unknown or unspecified provider
+     if ( trim(self%conf%provider) == 'ufs' ) then
+        select case ( trim(fields(f)%io_file) ) 
+        case ( 'default' ) ! No IO file specified in metadata for this field 
+           matches_io_file = .true.
+        case ( 'surface' )
+           matches_io_file = ( index(trim(self%filenames(n)),'sfcf') /= 0 )
+        case ( 'atmosphere' )
+           matches_io_file = ( index(trim(self%filenames(n)),'atmf') /= 0 )
+        case default ! Unknown IO file
+           call abor1_ftn( "fv3jedi_io_cube_sphere_history_mod error: Unknown IO file for field, " // trim(fields(f)%long_name) )
+        end select
+     end if
+     
+     if ( matches_io_file ) then    
+        
+        ! Get IO name of first level if UFS multi-level surface variable
+        if ( cat_field ) then
+           ! Use to first level since this is just a placeholder for the entire field
+           write (io_name_local, "(A5,I1)") trim(fields(f)%io_name), 1
+        else
+           io_name_local = fields(f)%io_name 
+        end if
+        
+        ! Get the varid
+        status = nf90_inq_varid(self%ncid(n), io_name_local, varid_local)
+        
+        ! If found then fill the array
+        if (status == nf90_noerr) then
+           found(n) = 1
+           file_index(f) = n
+           varid(f) = varid_local
+        endif
+     end if
   enddo
-
+    
   ! Check that the field was not found more than once
   if (sum(found) > 1) &
-    call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
-                   "Field "//trim(io_name_local)//" was found in multiple input files. "// &
-                   "Should only be present in one file that is read.")
+       call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
+                      "Field "//trim(io_name_local)//" was found in multiple input files. "// &
+                      "Should only be present in one file that is read.")
 
   ! Check that the field was found
   if (sum(found) == 0) then
-    call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
+     call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
                     "Field "//trim(io_name_local)//" was not found in any files. "// &
                     "Should only be present in one file that is read.")
-  endif
-
+  end if
 enddo
 
 end subroutine get_field_ncid_varid
