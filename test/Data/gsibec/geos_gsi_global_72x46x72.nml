@@ -1,5 +1,5 @@
  &SETUP
-   qoption=2,
+!  qoption=2,
 !  pseudo_q2=.true.,
    mockbkg=.true.,
  /

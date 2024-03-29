@@ -1276,10 +1276,13 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_geos_sondes
                   COMMAND  fv3jedi_var.x )
 
 if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
-ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-4denvar_geos_sondes
-                  MPI      12
-                  ARGS     testinput/hyb-4denvar_geos_sondes_c12.yaml
-                  COMMAND  fv3jedi_var.x )
+# TODO(RT,AS,NC): This test needs to be revisited to use hybrid covariance
+# via GSI block. Once SABER supports GSI covariance as a static component
+# for 4DEnVar, new test can be added with BUMP for localization.
+#ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-4denvar_geos_sondes
+#                  MPI      6
+#                  ARGS     testinput/hyb-4denvar_geos_sondes_c12.yaml
+#                  COMMAND  fv3jedi_var.x )
 endif()
 
 if( ${sp_FOUND} )

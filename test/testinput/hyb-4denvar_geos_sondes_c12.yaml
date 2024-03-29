@@ -5,6 +5,7 @@ cost function:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
   subwindow: PT6H
+  parallel subwindows: false
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/input_geos_c12.nml
