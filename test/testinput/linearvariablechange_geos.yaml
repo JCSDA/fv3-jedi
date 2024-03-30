@@ -3,13 +3,19 @@ linear variable change tests:
     linear variable change name: Control2Analysis
     input variables: [psi,chi,t,ps,q,qi,ql,o3]
     output variables: [ua,va,t,ps,q,qi,ql,o3]
-  testinverse: 1
+  test inverse: true
   tolerance inverse: 1000
 - linear variable change:
     linear variable change name: Analysis2Model
     input variables: [ua,va,t,ps,q,qi,ql,o3]
     output variables: [u,v,t,delp,q,qi,ql,o3]
-  testinverse: 1
+  test inverse: true
+  tolerance inverse: 1000
+- linear variable change:
+    linear variable change name: Model2GeoVaLs
+    input variables: [delp,t,sphum]
+    output variables: [ps,tv]
+  test inverse: false
   tolerance inverse: 1000
 geometry:
   fms initialization:
