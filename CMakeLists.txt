@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
-project( fv3jedi VERSION 1.8.0 LANGUAGES C CXX Fortran )
+project( fv3jedi VERSION 1.9.0 LANGUAGES C CXX Fortran )
 
 option(OPENMP "Build fv3-jedi with OpenMP support" ON)
 
@@ -77,7 +77,7 @@ find_package( NetCDF REQUIRED COMPONENTS C Fortran )
 find_package( atlas 0.35.0 REQUIRED )
 
 # oops
-find_package( oops 1.9.0 REQUIRED )
+find_package( oops 1.10.0 REQUIRED )
 
 # saber
 find_package( saber 1.9.0 REQUIRED )
@@ -89,7 +89,7 @@ find_package( crtm 2.2.3 REQUIRED )
 find_package( ropp-ufo QUIET )
 
 # gsibec
-find_package( gsibec 1.1.2 QUIET )
+find_package( gsibec 1.2.1 QUIET )
 if( gsibec_FOUND )
     message( STATUS "FV3-SABER block GSI is enabled" )
     add_definitions(-DENABLE_GSIBEC=1)
