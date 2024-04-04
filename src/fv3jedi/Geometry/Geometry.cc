@@ -157,6 +157,10 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
     // Add fields read directly from file
     atlas::FieldSet timeInvFieldSet{};
     timeInvState.toFieldSet(timeInvFieldSet);
+    // Populate the atlas halos of the background time-invariant fields. This allows these fields
+    // to be used in setting up halo values of derived fields (e.g. the halo of the JEDI sea mask
+    // depends on the halo of the UFS slmsk + sheleg).
+    timeInvFieldSet.haloExchange();
     for (const auto & f : timeInvFieldSet) {
       fields_.add(f);
     }

@@ -476,9 +476,9 @@ end subroutine deserialize
 
 ! --------------------------------------------------------------------------------------------------
 
-! Fills a FieldSet with model data, including halos
-! - exchanges halo data between fv3 grid tiles
-! - stores fv3-jedi field (local + halo) data in atlas FieldSet as 1d fields
+! Fills a FieldSet with model data (follows "option 2" from guidelines: halos are set to 0)
+! - fills fv3-jedi owned data in owned portion of atlas::FieldSet as 1d array
+! - fills 0 in halo portion of atlas::FieldSet
 subroutine to_fieldset(self, geom, vars, afieldset)
 
 implicit none
@@ -540,49 +540,60 @@ do jvar = 1, vars%nvars()
   !   but they are "owned" boundary condition points in atlas. Here we're trying to fill the owned
   !   data for atlas, so the regional cases has to copy the fv3 owned data AND some fv3 halo data
   !   from the boundary condition regions into the atlas array.
-  ! In both cases, atlas fills its halo (internal boundaries) by a halo exchange in the C++ layer.
-  ! This could be replaced with a copy from the fv3jedi data IF we manually imported the halo
-  ! structure from fv3jedi into atlas, instead of the current solution of allowing atlas to
-  ! automatically generate the halo from the connectivity.
   call afield%data(ptr)
   if (geom%ntiles == 6) then
     do jl=1, field%npz
       ptr(jl, 1:geom%ngrid) = reshape(field%array(:, :, jl), (/geom%ngrid/))
     end do
+    ptr(:, geom%ngrid+1:) = 0.0_kind_real  ! Assign 0 at the atlas-generated halo points
   else if (geom%ntiles == 1) then
-    tmp = missing_value(0.0_kind_real)
+    tmp = 0.0_kind_real
     ! Fill the owned data at the center of the grid patch
     tmp(geom%isc:geom%iec, geom%jsc:geom%jec, 1:field%npz) = field%array(:, :, :)
-    ! Use a halo-exchange to fill internal boundaries = ghost points (all 3 points deep)
-    call mpp_update_domains(tmp, geom%domain, complete=.true.)
-    ! Manually fill in external boundaries = boundary conditions (1 point deep, enough for atlas)
-    ! Now that internal data and internal boundaries are filled, we can fill the external boundaries
-    ! by simply copying the internal data across each external boundary. We do this horizontally
-    ! then vertically, each time copying one point past the end of compute domain. This ensure that
-    ! corners are copied across the external boundary too.
+    ! Manually extend data out into BC regions if BCs are detected. We do this by copying the
+    ! outermost row of points from the owned region into the BC region, filling the innermost row
+    ! of the BC region (1 point deep is enough for atlas).
     ! TODO(): Long term, would be better to grab the actual BC's when running the model.
+    ! First, do the sides,
     if (self%isc == 1) then  ! left edge
-      tmp(geom%isc-1, geom%jsc-1:geom%jec+1, 1:field%npz) = &
-        tmp(geom%isc, geom%jsc-1:geom%jec+1, 1:field%npz)
+      tmp(geom%isc-1, geom%jsc:geom%jec, 1:field%npz) = &
+        tmp(geom%isc, geom%jsc:geom%jec, 1:field%npz)
     end if
     if (self%iec == self%npx-1) then  ! right edge
-      tmp(geom%iec+1, geom%jsc-1:geom%jec+1, 1:field%npz) = &
-        tmp(geom%iec, geom%jsc-1:geom%jec+1, 1:field%npz)
+      tmp(geom%iec+1, geom%jsc:geom%jec, 1:field%npz) = &
+        tmp(geom%iec, geom%jsc:geom%jec, 1:field%npz)
     end if
     if (self%jsc == 1) then  ! bottom edge
-      tmp(geom%isc-1:geom%iec+1, geom%jsc-1, 1:field%npz) = &
-        tmp(geom%isc-1:geom%iec+1, geom%jsc, 1:field%npz)
+      tmp(geom%isc:geom%iec, geom%jsc-1, 1:field%npz) = &
+        tmp(geom%isc:geom%iec, geom%jsc, 1:field%npz)
     end if
     if (self%jec == self%npy-1) then  ! top edge
-      tmp(geom%isc-1:geom%iec+1, geom%jec+1, 1:field%npz) = &
-        tmp(geom%isc-1:geom%iec+1, geom%jec, 1:field%npz)
+      tmp(geom%isc:geom%iec, geom%jec+1, 1:field%npz) = &
+        tmp(geom%isc:geom%iec, geom%jec, 1:field%npz)
     end if
+    ! Then, propagate corners diagonally,
+    if (self%isc == 1 .and. self%jsc == 1) then  ! bottom-left corner
+      tmp(geom%isc-1, geom%jsc-1, 1:field%npz) = tmp(geom%isc, geom%jsc, 1:field%npz)
+    end if
+    if (self%iec == self%npx-1 .and. self%jsc == 1) then  ! bottom-right corner
+      tmp(geom%iec+1, geom%jsc-1, 1:field%npz) = tmp(geom%iec, geom%jsc, 1:field%npz)
+    end if
+    if (self%isc == 1 .and. self%jec == self%npy-1) then  ! top-left corner
+      tmp(geom%isc-1, geom%jec+1, 1:field%npz) = tmp(geom%isc, geom%jec, 1:field%npz)
+    end if
+    if (self%iec == self%npx-1 .and. self%jec == self%npy-1) then  ! top-right corner
+      tmp(geom%iec+1, geom%jec+1, 1:field%npz) = tmp(geom%iec, geom%jec, 1:field%npz)
+    end if
+
+    ! First, assign the entire atlas Field to 0. Then, use the subroutine fv3_nodes_to_atlas_nodes
+    ! to fill the owned and BC points into the atlas array in the correct order
+    ptr = 0.0_kind_real
     do jl=1, field%npz
       call geom%fv3_nodes_to_atlas_nodes(tmp(:, :, jl), ptr(jl, 1:ngrid))
     end do
   end if
 
-  ! Set dirty: halo points are uninitialized and must be filled by calling the atlas haloExchange
+  ! Mark halos as being out-of-date
   call afield%set_dirty(.true.)
 
   meta = afield%metadata()
@@ -605,10 +616,9 @@ end subroutine to_fieldset
 
 ! --------------------------------------------------------------------------------------------------
 
-! Fills model data from an atlas FieldSet
-! - copies local portion of packed (local + halo) data into fv3-jedi field
-! - Note 1: assumes the local data occupies the first contiguous portion of the packed data
-! - Note 2: does NOT copy the halo data; halo data values are out-of-sync after this call
+! Fills model data from an atlas FieldSet (follows "option 2" from guidelines: halos are set to 0)
+! - copies owned portion of atlas array into fv3-jedi field
+! - sets fv3-jedi field halos to 0 (they are out-of-sync after this call)
 subroutine from_fieldset(self, geom, vars, afieldset)
 
 implicit none
@@ -632,6 +642,9 @@ do jvar = 1,vars%nvars()
   if (field%interface_specific) then
     call abor1_ftn("fv3jedi_fields_mod.from_fieldset_ad: interface-specific field requested")
   end if
+
+  ! Set to zero (could be more efficient by doing this only in halos...)
+  field%array = 0.0_kind_real
 
   ! Get Atlas field
   afield = afieldset%field(field%long_name)

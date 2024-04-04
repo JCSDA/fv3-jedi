@@ -188,7 +188,6 @@ void Increment::setLocal(const oops::LocalIncrement & values, const GeometryIter
 // -------------------------------------------------------------------------------------------------
 void Increment::toFieldSet(atlas::FieldSet & fset) const {
   fv3jedi_increment_to_fieldset_f90(keyInc_, geom_.toFortran(), varsJedi_, fset.get());
-  fset.haloExchange();
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::fromFieldSet(const atlas::FieldSet & fset) {

@@ -2,20 +2,20 @@ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(ompsnm_npp) = 7.8008018729142514e+03, nobs = 6835, Jo/n = 1.1413023954519754e+00, err = 6.0000000000000000e+00
 CostJo   : Nonlinear Jo(omi_aura) = 7.8008018729142514e+03, nobs = 6835, Jo/n = 1.1413023954519754e+00, err = 6.0000000000000000e+00
 CostFunction: Nonlinear J = 1.5601603745828503e+04
-DRPCGMinimizer: reduction in residual norm = 1.1515759852868206e-01
+DRPCGMinimizer: reduction in residual norm = 1.0330311377463464e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 4 | cube sphere face size: C12
 surface_pressure                             | Min:+5.3773865675393987e+04 Max:+1.0482524400256196e+05 RMS:+9.8975197490751845e+04
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934645e+03
 sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
-mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+3.8071811246094192e+01 RMS:+3.7080370374243978e+00
+mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+3.8071811233316552e+01 RMS:+3.7080364399725987e+00
 ----------------------------------------------------------------------------------------------------
 
 
 
 
-CostJb   : Nonlinear Jb = 672.7470063174555
-CostJo   : Nonlinear Jo(ompsnm_npp) = 3360.27376812437, nobs = 6835, Jo/n = 0.491627471561722, err = 6
-CostJo   : Nonlinear Jo(omi_aura) = 3360.27376812437, nobs = 6835, Jo/n = 0.491627471561722, err = 6
-CostFunction: Nonlinear J = 7393.294542566196
+CostJb   : Nonlinear Jb = 891.124477930676
+CostJo   : Nonlinear Jo(ompsnm_npp) = 3354.817250279935, nobs = 6835, Jo/n = 0.4908291514674375, err = 6
+CostJo   : Nonlinear Jo(omi_aura) = 3354.817250279935, nobs = 6835, Jo/n = 0.4908291514674375, err = 6
+CostFunction: Nonlinear J = 7600.758978490547
