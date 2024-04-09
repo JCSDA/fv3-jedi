@@ -24,11 +24,11 @@ ecbuild_add_executable( TARGET  fv3jedi_convertstate.x
                        )
 oops_output_json_schema(fv3jedi_convertstate.x)
 
-ecbuild_add_executable( TARGET  fv3jedi_converttolatlon.x
-                        SOURCES fv3jediConvertToLatLon.cc
+ecbuild_add_executable( TARGET  fv3jedi_converttostructuredgrid.x
+                        SOURCES fv3jediConvertToStructuredGrid.cc
                         LIBS    ${FV3JEDI_LIBRARIES}
                        )
-oops_output_json_schema(fv3jedi_converttolatlon.x)
+oops_output_json_schema(fv3jedi_converttostructuredgrid.x)
 
 ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
                         SOURCES fv3jediDiffStates.cc

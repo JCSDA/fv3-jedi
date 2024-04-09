@@ -183,7 +183,8 @@ final:
         - filetype: fms restart
           datapath: Data/analysis
           prefix: 20201215.030000.4denvar-gfs-seq.inc
-  increment to latlon:
+  increment to structured grid:
+    grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature]
@@ -191,7 +192,8 @@ final:
     datapath: Data/analysis
     type: inc
     exp: 4denvar-gfs-seq
-  analysis to latlon:
+  analysis to structured grid:
+    grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature, eastward_wind, northward_wind]

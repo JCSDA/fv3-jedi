@@ -259,7 +259,8 @@ final:
         filetype: fms restart
         datapath: Data/analysis
         prefix: 20201215.000000.inc.hyb-fgat.c12
-  increment to latlon:
+  increment to structured grid:
+    grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature, eastward_wind, northward_wind]
@@ -267,7 +268,8 @@ final:
     datapath: Data/analysis
     exp: hyb-fgat
     type: inc
-  analysis to latlon:
+  analysis to structured grid:
+    grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0  # low resolution for testing
     variables to output: [air_temperature, eastward_wind, northward_wind]

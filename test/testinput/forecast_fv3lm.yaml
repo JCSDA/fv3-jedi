@@ -33,7 +33,8 @@ output:
   exp: forecast_fv3
   date: 2020-12-14T21:00:00Z
   frequency: PT15M
-forecast to latlon:
+forecast to structured grid:
+  grid type: latlon
   local interpolator type: oops unstructured grid interpolator
   resolution in degrees: 15.0  # low resolution for testing
   variables to output: [air_temperature, eastward_wind, northward_wind]

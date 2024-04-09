@@ -139,7 +139,7 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_gfs_restart2history.yaml
   testinput/convertstate_gfs_history2restart.yaml
   testinput/comparestates_gfs_restart2history2restart.yaml
-  testinput/converttolatlon_gfs.yaml
+  testinput/converttogauss_gfs.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
   testinput/diffstates_lam_cmaq.yaml
@@ -311,7 +311,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_gfs_history2restart.ref
   testoutput/convertstate_gchp_from_stretched_grid.ref
   testoutput/convertstate_gchp_to_stretched_grid.ref
-  testoutput/converttolatlon_gfs.ref
+  testoutput/converttogauss_gfs.ref
   testoutput/diffstates_geos.ref
   testoutput/diffstates_gfs.ref
   testoutput/diffstates_lam_cmaq.ref
@@ -1003,10 +1003,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertincrement_geos_model2geoval
                   ARGS     testinput/convertincrement_geos_model2geovals.yaml
                   COMMAND  fv3jedi_convertincrement.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_converttolatlon_gfs
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_converttogauss_gfs
                   MPI      6
-                  ARGS     testinput/converttolatlon_gfs.yaml
-                  COMMAND  fv3jedi_converttolatlon.x )
+                  ARGS     testinput/converttogauss_gfs.yaml
+                  COMMAND  fv3jedi_converttostructuredgrid.x )
 
 # CompareStates tests
 # -------------------

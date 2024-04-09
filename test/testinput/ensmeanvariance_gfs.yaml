@@ -17,7 +17,8 @@ variance output:
   filename_sfcw: ensemblevariance.fv_srf_wnd.res.nc
   filename_cplr: ensemblevariance.coupler.res
 
-ensvariance to latlon:
+ensvariance to structured grid:
+  grid type: latlon
   local interpolator type: oops unstructured grid interpolator
   resolution in degrees: 15.0  # low resolution for testing
   variables to output: [air_temperature, eastward_wind, northward_wind]
@@ -35,7 +36,8 @@ mean output:
   filename_sfcw: ensemblemean.fv_srf_wnd.res.nc
   filename_cplr: ensemblemean.coupler.res
 
-ensmean to latlon:
+ensmean to structured grid:
+  grid type: latlon
   local interpolator type: oops unstructured grid interpolator
   resolution in degrees: 15.0  # low resolution for testing
   variables to output: [air_temperature, eastward_wind, northward_wind]
