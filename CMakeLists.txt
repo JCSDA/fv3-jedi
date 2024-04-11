@@ -161,15 +161,25 @@ set( FV3JEDI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src
                           ${DEPEND_LIB_ROOT}/mod
                           ${DEPEND_LIB_ROOT}/include/fv3
                           ${CMAKE_Fortran_MODULE_DIRECTORY})
-if (FV3_FORECAST_MODEL MATCHES UFS)
+if( FV3_FORECAST_MODEL MATCHES UFS )
+  find_package(HDF5 REQUIRED COMPONENTS C HL )
+  # Use ESMF's own findESMF.cmake - if wanting
+  # the static ESMF library (we don't!), use
+  # set(USE_ESMF_STATIC_LIBS ON)
+  if( NOT DEFINED ENV{esmf_ROOT} )
+    message(FATAL_ERROR "Environmental variable esmf_ROOT not set, is ESMF module loaded?")
+  endif()
+  list(PREPEND CMAKE_MODULE_PATH "$ENV{esmf_ROOT}/cmake")
+  find_package(ESMF MODULE REQUIRED)
+  #
   if( UFS_APP MATCHES "^(ATM)$" )
     set( FV3JEDI_LIBRARIES fv3jedi
                            ccpp_framework
                            ccpp_physics )
   elseif( UFS_APP MATCHES "^(ATMAERO)$" )
-    find_package (GFTL_SHARED QUIET)
-    find_package (FARGPARSE QUIET)
-    find_package (PFLOGGER QUIET)
+    find_package (GFTL_SHARED REQUIRED)
+    find_package (FARGPARSE REQUIRED)
+    find_package (PFLOGGER REQUIRED)
     find_package (MAPL REQUIRED)
     set( FV3JEDI_LIBRARIES fv3jedi
                            ufs_aerosols
