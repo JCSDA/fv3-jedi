@@ -68,11 +68,11 @@ cost function:
         obsdatain:
           engine:
             type: H5File
-            obsfile: Data/obs/testinput_tier_1/aod_viirs_obs_2018041500_sf6.nc4
+            obsfile: Data/obs/testinput_tier_1/aod_viirs_npp_obs_2018041500.nc4
         obsdataout:
           engine:
             type: H5File
-            obsfile: Data/hofx/aod_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
+            obsfile: Data/hofx/aod_viirs_npp_3dvar_gfs_aero_2018041500.nc4
         simulated variables: [aerosolOpticalDepth]
         channels: 4
       obs operator:
@@ -85,6 +85,51 @@ cost function:
           AerosolOption: aerosols_gocart_default
       obs error:
         covariance model: diagonal
+      obs filters:
+      - filter: PreQC
+        maxvalue: 1
+      - filter: Domain Check
+        where:
+        - variable:
+            name: latitude@MetaData
+          minvalue: -60
+          maxvalue: 60
+      - filter: Bounds Check
+        filter variables:
+        - name: aerosolOpticalDepth
+          channels: 4
+        minvalue: 0
+        maxvalue: 4.9
+        action:
+          name: reject
+      - filter: PreQC
+        maxvalue: 0
+        action:
+          name: inflate error
+          inflation factor: 2.0
+      - filter: Background Check
+        channels: 4
+        threshold: 3.0
+        action:
+          name: inflate error
+          inflation factor: 3.0
+      obs bias:
+        input file: Data/obs/testinput_tier_1/VIIRS_npp_bias_coeff.nc4
+        output file: Data/analysis/VIIRS_npp_bias_coeff.nc4
+        variational bc:
+          predictors:
+          - name: constant
+        covariance:
+          minimal required obs number: 20
+          variance range: [1.0e-6, 10.0]
+          step size: 0.0001
+          largest analysis variance: 10000.0
+          prior:
+            input file: Data/obs/testinput_tier_1/VIIRS_npp_bias_error.nc4
+            inflation:
+              ratio: 1.1
+              ratio for small dataset: 2.0
+          output file: Data/analysis/VIIRS_npp_bias_error.nc4
 variational:
   minimizer:
     algorithm: DRPCG
