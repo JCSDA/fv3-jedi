@@ -867,24 +867,23 @@ do f = 1, size(fields)
         case ( 'default' ) ! No IO file specified in metadata for this field 
            matches_io_file = .true.
         case ( 'surface' )
-           matches_io_file = ( index(trim(self%filenames(n)),'sfcf') /= 0 )
+           matches_io_file = ( index(trim(self%filenames(n)),'sfc') /= 0 )
         case ( 'atmosphere' )
-           matches_io_file = ( index(trim(self%filenames(n)),'atmf') /= 0 )
+           matches_io_file = ( index(trim(self%filenames(n)),'atm') /= 0 )
         case default ! Unknown IO file
            call abor1_ftn( "fv3jedi_io_cube_sphere_history_mod error: Unknown IO file for field, " // trim(fields(f)%long_name) )
         end select
      end if
+             
+     ! Get IO name of first level if UFS multi-level surface variable
+     if ( cat_field ) then
+        ! Use to first level since this is just a placeholder for the entire field
+        write (io_name_local, "(A5,I1)") trim(fields(f)%io_name), 1
+     else
+        io_name_local = fields(f)%io_name 
+     end if
      
-     if ( matches_io_file ) then    
-        
-        ! Get IO name of first level if UFS multi-level surface variable
-        if ( cat_field ) then
-           ! Use to first level since this is just a placeholder for the entire field
-           write (io_name_local, "(A5,I1)") trim(fields(f)%io_name), 1
-        else
-           io_name_local = fields(f)%io_name 
-        end if
-        
+     if ( matches_io_file ) then       
         ! Get the varid
         status = nf90_inq_varid(self%ncid(n), io_name_local, varid_local)
         
