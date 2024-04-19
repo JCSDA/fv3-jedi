@@ -47,6 +47,7 @@ export PATHTR=$ufsdir
 export RT_COMPILER=intel
 export MACHINE_ID=hera
 mkdir -p $LOG_DIR
+export RTVERBOSE=0
 touch $LOGDIR/job_001_timestamp.txt
 cd $ufsdir/tests
 touch fv3_001.exe
@@ -66,10 +67,15 @@ ${SED} -i "/submit_and_wait/a exit 0" rt_utils.sh
 # Generate the control_c48_intel regression test experiment directory for a cold start
 ./run_test.sh $PWD $fv3jedidata control_c48 001 001
 
+ls -l $fv3jedidata/001
+ls -l $fv3jedidata
+rm -rf $fv3jedidata/control_c48_intel
 mv $fv3jedidata/001 $fv3jedidata/control_c48_intel
 cd $fv3jedidata/control_c48_intel
 
 # Now use the restart data to convert the cold start to a warm start, which is required for JEDI coupling
+ls -l
+mkdir -p INPUT
 cp $INPUTDATA_ROOT/RESTART/* INPUT
 cd INPUT
 for file in 20210323.060000.*; do new=$(echo $file | cut -c 17-) && mv -v -- "$file" "$new" ; done
