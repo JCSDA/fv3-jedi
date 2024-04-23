@@ -102,6 +102,24 @@ assimilation:
   final:
     diagnostics:
       departures: oman
+    increment to structured grid:
+      grid type: latlon
+      local interpolator type: oops unstructured grid interpolator
+      resolution in degrees: 15.0  # low resolution for testing
+      variables to output: [air_temperature]
+      pressure levels in hPa: [250]
+      datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
+      type: inc
+      exp: eda-3dvar-control-pert
+    analysis to structured grid:
+      grid type: latlon
+      local interpolator type: oops unstructured grid interpolator
+      resolution in degrees: 15.0  # low resolution for testing
+      variables to output: [air_temperature, eastward_wind, northward_wind]
+      pressure levels in hPa: [850, 500, 250]
+      datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
+      type: an
+      exp: eda-3dvar-control-pert
   output:
     filetype: fms restart
     datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
