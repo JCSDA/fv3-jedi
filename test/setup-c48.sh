@@ -3,6 +3,9 @@
 # work on a generic system and generate the experiment directory that is used to run the ufs forecast regression tests.
 set -x
 
+# delete existing input data if it exists
+rm -vfr input-data
+
 # create the input data directory which will be used by run_test.py
 mkdir input-data
 export INPUTDATA_ROOT=$PWD/input-data
@@ -22,6 +25,7 @@ baseline=`echo $lastupdate  | awk -F "/" '{print $1}' | awk -F " " '{print $5}'`
 cd input-data
 # pull the latest fixe files, input data and restart files from aws backup of rt.sh
 aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20221101/FV3_fix FV3_fix
+aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20221101/FV3_fix_tiled/C48 FV3_fix
 aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20221101/FV3_input_data48 FV3_input_data48
 aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/$baseline/control_c48_intel/RESTART RESTART
 
@@ -82,6 +86,17 @@ for file in 20210323.060000.*; do new=$(echo $file | cut -c 17-) && mv -v -- "$f
 ${SED} -i 's/3    22/3    23/g' coupler.res
 cd ..
 
+# Link missing files from fix directory
+ln -svf ${INPUTDATA_ROOT}/FV3_fix/CCN_ACTIVATE.BIN .
+ln -svf ${INPUTDATA_ROOT}/FV3_fix/global_glacier.2x2.grb .
+ln -svf ${INPUTDATA_ROOT}/FV3_fix/global_maxice.2x2.grb .
+ln -svf ${INPUTDATA_ROOT}/FV3_fix/RTGSST.1982.2012.monthly.clim.grb .
+ln -svf ${INPUTDATA_ROOT}/FV3_fix/IMS-NIC.blended.ice.monthly.clim.grb .
+ln -svf ${INPUTDATA_ROOT}/FV3_fix/C48* .
+ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_slmask.t62.192.94.grb .
+ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_soilmgldas.statsgo.t92.192.94.grb .
+ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_snoclim.1.875.grb .
+
 # update model_configure file to turn off write component and do a warm start for our regression test
 ${SED} -i 's/quilting:                .true./quilting:                .false./g' model_configure
 ${SED} -i 's/start_day:               22/start_day:               23/g' model_configure
@@ -105,6 +120,5 @@ ${SED} -i '/&fms_nml/i \
   checksum_required = .false.\
 /' input.nml
 
-
-
-
+# Use C48 instead of C96 everywhere
+${SED} -i 's/C96/C48/g' input.nml
