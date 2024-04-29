@@ -26,7 +26,7 @@ background error:
   covariance model: SABER
   saber central block:
     read:
-      saber block name: gsi covariance
+      saber block name: gsi static covariance
       gsi akbk: Data/fv3files/akbk127.nc4
       gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
       gsi berror namelist file: Data/gsibec/gfs_gsicv_global_192x96x127.nml

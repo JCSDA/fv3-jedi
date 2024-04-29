@@ -37,7 +37,7 @@ cost function:
     - covariance:
         covariance model: SABER
         saber central block:
-          saber block name: gsi covariance
+          saber block name: gsi static covariance
           read:
             gsi akbk: Data/fv3files/akbk72.nc4
             gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
