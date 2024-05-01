@@ -45,18 +45,20 @@ export skip_check_results=false
 export delete_rundir=false
 export WLCLK=30
 export JOB_NR="001"
-touch fv3_001.exe
-touch modules.fv3_001.lua
 export PATHTR=$ufsdir
-export RT_COMPILER=intel
-export MACHINE_ID=hera
+# Need to use something that works with tcl/tk AND lua/lmod
+#export RT_COMPILER=intel
+#export MACHINE_ID=hera
+export RT_COMPILER=gnu
+export MACHINE_ID=linux
 mkdir -p $LOG_DIR
 export RTVERBOSE=0
 touch $LOGDIR/job_001_timestamp.txt
 cd $ufsdir/tests
 touch fv3_001.exe
-touch modules.fv3_001.lua
-source vars
+echo "#%Module" > modules.fv3_001
+# This doesn't exist anymore it seems
+### source vars
 
 if [ "$(uname)" == "Darwin" ]; then
   hash gsed 2>/dev/null || { echo >&2 "GNU SED (gsed) required on macOS, but not installed. Aborting."; exit 1; }
