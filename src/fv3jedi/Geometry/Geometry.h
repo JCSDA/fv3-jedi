@@ -58,7 +58,6 @@ class Geometry : public util::Printable,
   const eckit::mpi::Comm & getComm() const {return comm_;}
   const atlas::FunctionSpace & functionSpace() const {return functionSpace_;}
   const atlas::FieldSet & fields() const {return fields_;}
-  void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
 
   std::vector<size_t> variableSizes(const oops::Variables &) const;
 

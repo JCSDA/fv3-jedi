@@ -194,17 +194,15 @@ end subroutine c_fv3jedi_geom_print
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_lonlat(c_key_self, c_afieldset, c_include_halo) &
-                                     bind(c,name='fv3jedi_geom_set_lonlat_f90')
+subroutine c_fv3jedi_geom_fill_bump_lonlat(c_key_self, c_afieldset) &
+                                           bind(c,name='fv3jedi_geom_fill_bump_lonlat_f90')
 
 !Arguments
 integer(c_int), intent(in) :: c_key_self
 type(c_ptr), intent(in), value :: c_afieldset
-logical(c_bool), intent(in) :: c_include_halo
 
 type(fv3jedi_geom), pointer :: self
 type(atlas_fieldset) :: afieldset
-logical :: include_halo
 
 ! LinkedList
 ! ----------
@@ -214,13 +212,11 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! ------------
 afieldset = atlas_fieldset(c_afieldset)
 
-include_halo = c_include_halo
-
 ! Call implementation
 ! -------------------
-call self%set_lonlat(afieldset, include_halo)
+call self%fill_bump_lonlat(afieldset)
 
-end subroutine c_fv3jedi_geom_set_lonlat
+end subroutine c_fv3jedi_geom_fill_bump_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 

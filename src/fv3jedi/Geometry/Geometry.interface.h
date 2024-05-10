@@ -33,8 +33,7 @@ extern "C" {
   void fv3jedi_geom_setup_f90(F90geom &, const eckit::Configuration &,
                              const eckit::mpi::Comm *, int &);
   void fv3jedi_geom_addfmd_f90(F90geom &, FieldsMetadata *);
-  void fv3jedi_geom_set_lonlat_f90(const F90geom &, atlas::field::FieldSetImpl *,
-                                   const bool &);
+  void fv3jedi_geom_fill_bump_lonlat_f90(const F90geom &, atlas::field::FieldSetImpl *);
   void fv3jedi_geom_set_functionspace_pointer_f90(const F90geom &,
                                                   atlas::functionspace::FunctionSpaceImpl *,
                                                   atlas::functionspace::FunctionSpaceImpl *);

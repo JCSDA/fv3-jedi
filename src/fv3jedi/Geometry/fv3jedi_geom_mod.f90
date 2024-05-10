@@ -103,7 +103,7 @@ type :: fv3jedi_geom
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
-    procedure, public :: set_lonlat
+    procedure, public :: fill_bump_lonlat
     procedure, public :: set_and_fill_geometry_fields
     procedure, public :: get_data
     procedure, public :: get_num_nodes_and_elements
@@ -621,43 +621,27 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_lonlat(self, afieldset, include_halo)
+subroutine fill_bump_lonlat(self, afieldset)
 
 !Arguments
 class(fv3jedi_geom),  intent(inout) :: self
 type(atlas_fieldset), intent(inout) :: afieldset
-logical,              intent(in) :: include_halo
 
 !Locals
 real(kind_real), pointer :: real_ptr(:,:)
-type(atlas_field) :: afield, afield_incl_halo
-integer :: ngrid, dummy_ntris, dummy_nquads
+type(atlas_field) :: afield
+integer :: ngrid
 
 ngrid = self%ngrid
 
-! Create lon/lat field
-afield = atlas_field(name="lonlat", kind=atlas_real(kind_real), shape=(/2,ngrid/))
+! Create lonlat field, without halo, for bump
+afield = atlas_field(name="bump_lonlat", kind=atlas_real(kind_real), shape=(/2,ngrid/))
 call afield%data(real_ptr)
 real_ptr(1,:) = constant('rad2deg')*reshape(self%grid_lon(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
 real_ptr(2,:) = constant('rad2deg')*reshape(self%grid_lat(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
 call afieldset%add(afield)
 
-if (include_halo) then
-  nullify(real_ptr)
-  call self%get_num_nodes_and_elements(ngrid, dummy_ntris, dummy_nquads)
-
-  ! Create an additional lon/lat field containing owned points (as above) and also halo
-  afield_incl_halo = atlas_field(name="lonlat_including_halo", kind=atlas_real(kind_real), &
-                                 shape=(/2,ngrid/))
-  call afield_incl_halo%data(real_ptr)
-  call self%fv3_nodes_to_atlas_nodes(self%grid_lon, real_ptr(1,:))
-  call self%fv3_nodes_to_atlas_nodes(self%grid_lat, real_ptr(2,:))
-  ! Convert rad -> degree
-  real_ptr(:,:) = constant('rad2deg') * real_ptr(:,:)
-  call afieldset%add(afield_incl_halo)
-endif
-
-end subroutine set_lonlat
+end subroutine fill_bump_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
