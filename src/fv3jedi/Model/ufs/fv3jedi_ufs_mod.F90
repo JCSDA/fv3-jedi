@@ -125,16 +125,16 @@ contains
     if (self%initialized) then
         ! May need to reset/adjust the clock here, check later what is needed
         call ESMF_LogWrite("Model already initialized, do nothing", ESMF_LOGMSG_INFO)
-    
+
         call ESMF_ClockPrint(self%clock, options="startTime", &
         preString="Printing startTime to stdout: ", rc=rc)
-    
+
         call ESMF_ClockPrint(self%clock, options="currTime", &
         preString="Printing currTime to stdout: ", rc=rc)
-    
+
         call ESMF_ClockPrint(self%clock, options="stopTime", &
         preString="Printing stopTime to stdout: ", rc=rc)
-    
+
         call ESMF_LogWrite("Exit "//subname, ESMF_LOGMSG_INFO)
         return
     end if
@@ -203,9 +203,6 @@ contains
     allocate(stdnames(vars%nvars()))
     do var = 1, vars%nvars()
        stdnames(var) = trim(vars%variable(var))
-       if(stdnames(var) == 'sheleg') then ! weasd is apparently not a standard name
-          stdnames(var) = 'weasd' 
-       endif
     enddo
     call ESMF_LogWrite("Advertising export from ESM", ESMF_LOGMSG_INFO)
     ! Advertise fields on the exportState, for data coming out of ESM component
@@ -369,10 +366,10 @@ contains
 
     call ESMF_ClockPrint(self%clock, options="startTime", &
     preString="Printing startTime to stdout: ", rc=rc)
-    
+
     call ESMF_ClockPrint(self%clock, options="currTime", &
     preString="Printing currTime to stdout: ", rc=rc)
-    
+
     call ESMF_ClockPrint(self%clock, options="stopTime", &
     preString="Printing stopTime to stdout: ", rc=rc)
 
@@ -509,9 +506,6 @@ contains
     ! ----------------------------------------------
     short_name = trim(item_names(i))
     call ESMF_LogWrite("item name is "//short_name, ESMF_LOGMSG_INFO)
-    if(trim(item_names(i)) == 'u') short_name = 'ud'
-    if(trim(item_names(i)) == 'v') short_name = 'vd'
-    if(trim(item_names(i)) == 'weasd') short_name = 'sheleg'
 
     ! Only need to extract field from UFS if fv3-jedi needs it
     ! ---------------------------------------------------------
@@ -695,9 +689,6 @@ contains
     ! ----------------------------------------------
     short_name = trim(item_names(i))
     call ESMF_LogWrite("state_to_fv3: item name is "//short_name, ESMF_LOGMSG_INFO)
-    if(trim(item_names(i)) == 'u') short_name = 'ud'
-    if(trim(item_names(i)) == 'v') short_name = 'vd'
-    if(trim(item_names(i)) == 'weasd') short_name = 'sheleg'
     ! DH*
     !if(trim(item_names(i)) == 't') short_name = 'air_temperature'
     !if(trim(item_names(i)) == 'T') short_name = 'air_temperature'
@@ -877,7 +868,7 @@ contains
     esmf_err_abort(rc)
 
     ! Set any time interval here, it will be overwritten later
-   
+
     timeStep = date_final - date_current
 !   call ESMF_TimeIntervalSet(timeStep, s=3600, rc=rc)
 
