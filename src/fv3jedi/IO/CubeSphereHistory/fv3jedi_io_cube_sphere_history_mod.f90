@@ -55,6 +55,9 @@ type fv3jedi_io_csh_conf
   ! Number of soil levels in UFS
   integer :: ufs_soil_nlev
 
+  ! NetCDF floating point type
+  integer :: float_type
+
   ! By default the tile is a dimension in the file (npx by npy by ntile), alternatively the faces
   ! can be stacked in the y direction (npx by ntile*npy) by setting the following to false
   logical, allocatable :: tile_is_a_dimension(:)
@@ -288,7 +291,7 @@ character(len=96) :: x_var_units_default
 character(len=96) :: y_var_name_default
 character(len=96) :: y_var_long_name_default
 character(len=96) :: y_var_units_default
-
+integer :: nbytes
 
 ! Provider
 ! --------
@@ -420,6 +423,27 @@ end if
 ! -----------------------------------
 if (conf%has('ufs soil nlev')) then
   call conf%get_or_die('ufs soil nlev', self%conf%ufs_soil_nlev)
+end if
+
+! What is the floating point write precision in bytes for NetCDF?
+! ---------------------------------------------------------------
+if (conf%has('float precision in bytes')) then
+   call conf%get_or_die('float precision in bytes', nbytes)
+   select case (nbytes)
+   case (1)
+      self%conf%float_type = nf90_byte
+   case (2)
+      self%conf%float_type = nf90_short
+   case (4)
+      self%conf%float_type = nf90_float
+   case (8)
+      self%conf%float_type = nf90_double
+   case default
+      call abor1_ftn("Invalid floating point precision for NetCDF write")             
+   end select
+else
+   ! Default to double precision
+   self%conf%float_type = nf90_double
 end if
 
 end subroutine parse_conf
@@ -1089,7 +1113,7 @@ if (self%iam_io_proc) then
       endif
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(XdirVar), NF90_DOUBLE, self%x_dimid, varid(vc)), &
+      call nccheck( nf90_def_var(self%ncid(n), trim(XdirVar), self%conf%float_type, self%x_dimid, varid(vc)), &
                     "nf90_def_var "//trim(XdirVar) )
       if (trim(self%conf%provider) == 'geos') then
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", &
@@ -1100,7 +1124,7 @@ if (self%iam_io_proc) then
       end if
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(YdirVar), NF90_DOUBLE, self%y_dimid, varid(vc)), &
+      call nccheck( nf90_def_var(self%ncid(n), trim(YdirVar), self%conf%float_type, self%y_dimid, varid(vc)), &
                     "nf90_def_var "//trim(YdirVar) )
       if (trim(self%conf%provider) == 'geos') then
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", &
@@ -1111,19 +1135,19 @@ if (self%iam_io_proc) then
       end if
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(XVarStr), NF90_DOUBLE, dimidsg, varid(vc)), &
+      call nccheck( nf90_def_var(self%ncid(n), trim(XVarStr), self%conf%float_type, dimidsg, varid(vc)), &
                     "nf90_def_var "//trim(XVarStr) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", trim(XLongName)) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "units", trim(XUnits) ) )
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(YVarStr), NF90_DOUBLE, dimidsg, varid(vc)), &
+      call nccheck( nf90_def_var(self%ncid(n), trim(YVarStr), self%conf%float_type, dimidsg, varid(vc)), &
                     "nf90_def_var "//trim(YVarStr) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", trim(YLongName)) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "units", trim(YUnits) ) )
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(ZfulVar), NF90_DOUBLE, self%z_dimid, varid(vc)), &
+      call nccheck( nf90_def_var(self%ncid(n), trim(ZfulVar), self%conf%float_type, self%z_dimid, varid(vc)), &
                     "nf90_def_var "//trim(ZfulVar) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "positive", "down") )
       if (trim(self%conf%provider) == 'geos') then
@@ -1139,7 +1163,7 @@ if (self%iam_io_proc) then
       end if
 
       vc=vc+1;
-      call nccheck( nf90_def_var(self%ncid(n), trim(ZhlfVar), NF90_DOUBLE, self%e_dimid, varid(vc)), &
+      call nccheck( nf90_def_var(self%ncid(n), trim(ZhlfVar), self%conf%float_type, self%e_dimid, varid(vc)), &
                     "nf90_def_var "//trim(ZhlfVar) )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "positive", "down") )
       if (trim(self%conf%provider) == 'geos') then
@@ -1160,7 +1184,7 @@ if (self%iam_io_proc) then
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "begin_date", date8), "nf90_def_var time begin_date" )
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "begin_time", time6), "nf90_def_var time begin_time" )
       else if (trim(self%conf%provider) == 'ufs') then
-        call nccheck( nf90_def_var(self%ncid(n), "time", NF90_DOUBLE, self%t_dimid, varid(vc)), "nf90_def_var time" )
+        call nccheck( nf90_def_var(self%ncid(n), "time", self%conf%float_type, self%t_dimid, varid(vc)), "nf90_def_var time" )
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", "time"), "nf90_def_var time long_name" )
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "calendar", "JULIAN"), "nf90_def_var time calendar" )
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "calendar_type", "JULIAN"), "nf90_def_var time calendar_type" )
@@ -1416,7 +1440,7 @@ do var = 1,size(fields)
            end if
 
            ! Define field
-           call nccheck( nf90_def_var(ncid, trim(io_name_local), NF90_DOUBLE, dimids, varid(ilev_soil)), &
+           call nccheck( nf90_def_var(ncid, trim(io_name_local), self%conf%float_type, dimids, varid(ilev_soil)), &
                          "nf90_def_var "//trim(io_name_local))
 
            ! Long name and units

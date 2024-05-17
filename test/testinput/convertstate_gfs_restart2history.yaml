@@ -39,6 +39,7 @@ states:
     provider: ufs
     ufs soil nlev: 4
     ufs fields split by level: [stc, smc]
+    float precision in bytes: 4
 
 test:
   reference filename: testoutput/convertstate_gfs_restart2history.ref

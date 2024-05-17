@@ -46,6 +46,7 @@ type fv3jedi_io_auxgrid
  real(kind=kind_real), allocatable :: lats(:)
  character(len=24) :: gridtype
  character(len=1024) :: filename
+ integer :: float_type
  integer, allocatable :: istart2(:), icount2(:)
  integer, allocatable :: istart3(:), icount3(:)
  integer, allocatable :: istarte(:), icounte(:)
@@ -69,6 +70,7 @@ type(fckit_configuration), intent(in)    :: conf
 
 ! Locals
 character(len=:), allocatable :: str
+integer :: nbytes
 
 ! Local copy of geometry things
 self%isc  = geom%isc
@@ -102,6 +104,26 @@ call swap_name_member(conf, str)
 call add_iteration(conf, str)
 self%filename = str
 deallocate(str)
+
+! Floating point precision in bytes for NetCDF write
+if (conf%has('float precision in bytes')) then
+   call conf%get_or_die('float precision in bytes', nbytes)
+   select case (nbytes)
+   case (1)
+      self%float_type = nf90_byte
+   case (2)
+      self%float_type = nf90_short
+   case (4)
+      self%float_type = nf90_float
+   case (8)
+      self%float_type = nf90_double
+   case default
+      call abor1_ftn("Invalid floating point precision for NetCDF write")
+   end select
+else
+   ! Default to double precision
+   self%float_type = nf90_double
+end if
 
 end subroutine create
 
@@ -342,11 +364,11 @@ call nccheck ( nf90_def_dim(ncid, "edge", self%npz+1 , e_dimid), "nf90_def_dim e
 call nccheck ( nf90_def_dim(ncid, "time", 1          , t_dimid), "nf90_def_dim time")
 
 ! Define fields to be written
-call nccheck( nf90_def_var(ncid, "lon", NF90_DOUBLE, x_dimid, varid(1)), "nf90_def_var lon" )
+call nccheck( nf90_def_var(ncid, "lon", self%float_type, x_dimid, varid(1)), "nf90_def_var lon" )
 call nccheck( nf90_put_att(ncid, varid(1), "long_name", "longitude") )
 call nccheck( nf90_put_att(ncid, varid(1), "units", "degrees_east") )
 
-call nccheck( nf90_def_var(ncid, "lat", NF90_DOUBLE, y_dimid, varid(2)), "nf90_def_var lat" )
+call nccheck( nf90_def_var(ncid, "lat", self%float_type, y_dimid, varid(2)), "nf90_def_var lat" )
 call nccheck( nf90_put_att(ncid, varid(2), "long_name", "latitude") )
 call nccheck( nf90_put_att(ncid, varid(2), "units", "degrees_north") )
 
@@ -446,7 +468,7 @@ do var = 1, size(fields)
     if (associated(dimids)) then
 
       ! Write field to the file
-      call nccheck( nf90_def_var( ncid, trim(fields(var)%io_name), NF90_DOUBLE, dimids, varid), &
+      call nccheck( nf90_def_var( ncid, trim(fields(var)%io_name), self%float_type, dimids, varid), &
                     "nf90_def_var"//trim(fields(var)%io_name) )
       call nccheck( nf90_put_att(ncid, varid, "long_name", trim(fields(var)%long_name) ), "nf90_put_att" )
       call nccheck( nf90_put_att(ncid, varid, "units"    , trim(fields(var)%units)     ), "nf90_put_att" )
