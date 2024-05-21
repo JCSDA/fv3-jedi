@@ -95,7 +95,7 @@ class IOCubeSphereHistoryParameters : public IOParametersBase {
                                    "number of soil levels in UFS",
                                    4,
                                    this};
-  
+
   // Floating point precision in bytes for NetCDF write
   oops::OptionalParameter<int> floatPrecision{"float precision in bytes",
                                               "number of bytes of floating point precision",

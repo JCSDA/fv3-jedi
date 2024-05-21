@@ -38,9 +38,9 @@ class IOAuxGridParameters : public IOParametersBase {
 
   // Floating point precision in bytes for NetCDF write
   oops::OptionalParameter<int> floatPrecision{"float precision in bytes",
-                                              "number of bytes of floating point precision for NetCDF write",
+                                              "number of bytes of floating point precision "
+                                              "for NetCDF write",
                                               this};
-  
 };
 
 // -------------------------------------------------------------------------------------------------
