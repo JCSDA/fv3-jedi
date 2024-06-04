@@ -308,7 +308,7 @@ if (trim(self%conf%provider) == 'geos') then
   y_dimension_name_default = "Ydim"
   z_full_dimension_name_default = "lev"
   z_half_dimension_name_default = "edge"
-  tile_dimension_name_default = "n"
+  tile_dimension_name_default = "nf"
   x_var_name_default = "lons"
   x_var_long_name_default = "longitude"
   x_var_units_default = "degrees_east"
