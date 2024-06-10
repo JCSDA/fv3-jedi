@@ -48,6 +48,32 @@ background error:
         io:
           overriding universe radius file: cor_2D_gfs_universe_radius
       input model files:
+      - parameter: rh
+        component: 1
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T00:00:00Z
+          filetype: fms restart
+          psinfile: true
+          datapath: Data/staticb/
+          filename_core: 20201215.000000.cor_rh_1.fv_core.res.nc
+          filename_trcr: 20201215.000000.cor_rh_1.fv_tracer.res.nc
+          filename_sfcd: 20201215.000000.cor_rh_1.sfc_data.nc
+          filename_sfcw: 20201215.000000.cor_rh_1.fv_srf_wnd.res.nc
+          filename_cplr: 20201215.000000.cor_rh_1.coupler.res
+      - parameter: rh
+        component: 2
+        file:
+          set datetime on read: true
+          datetime: 2020-12-15T00:00:00Z
+          filetype: fms restart
+          psinfile: true
+          datapath: Data/staticb/
+          filename_core: 20201215.000000.cor_rh_2.fv_core.res.nc
+          filename_trcr: 20201215.000000.cor_rh_2.fv_tracer.res.nc
+          filename_sfcd: 20201215.000000.cor_rh_2.sfc_data.nc
+          filename_sfcw: 20201215.000000.cor_rh_2.fv_srf_wnd.res.nc
+          filename_cplr: 20201215.000000.cor_rh_2.coupler.res
       - parameter: nicas_a
         component: 1
         file:

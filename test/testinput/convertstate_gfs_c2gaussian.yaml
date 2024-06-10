@@ -33,4 +33,4 @@ states:
 
 test:
   reference filename: testoutput/convertstate_gfs_c2gaussian.ref
-  test output filename: testoutput/convertstate_gfs_c2gaussianax.test.out
+  test output filename: testoutput/convertstate_gfs_c2gaussian.test.out

@@ -128,4 +128,4 @@ variational:
       tstep: PT3H
 test:
   reference filename: testoutput/hyb-fgat_gfs_aero.ref
-  test output filename: testoutput/hyb-3dvar-fgat_gfs_aero.test.out
+  test output filename: testoutput/hyb-fgat_gfs_aero.test.out
