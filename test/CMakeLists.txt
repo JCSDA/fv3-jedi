@@ -218,6 +218,7 @@ list( APPEND fv3jedi_testinput
   testinput/letkf.yaml
   testinput/letkf3d.yaml
   testinput/lgetkf.yaml
+  testinput/lgetkf_linearobserver.yaml
   testinput/3dvar_snow.yaml
   testinput/letkf_snow.yaml
   testinput/letkf_observer_soil_moisture.yaml
@@ -366,6 +367,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/letkf_snow.ref
   testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
+  testoutput/lgetkf_linearobserver.ref
   testoutput/adjointforecast.ref
   testoutput/staticb_dirac_global_gfs_6pe.ref
   testoutput/staticb_dirac_global_gfs_12pe.ref
@@ -1543,6 +1545,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_validate
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf
                   MPI      6
                   ARGS     --no-validate testinput/lgetkf.yaml
+                  COMMAND  fv3jedi_letkf.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_linearobserver
+                  MPI      6
+                  ARGS     --no-validate testinput/lgetkf_linearobserver.yaml
                   COMMAND  fv3jedi_letkf.x )
 
 # Land DA

@@ -158,41 +158,6 @@ observations:
       soar horizontal decay: 0.000018
       lengthscale: 2000e3
       max nobs: 1000
-  - obs space:
-      name: Aircraft
-      distribution:
-        name: Halo
-        halo size: 5000e3
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: Data/hofx/aircraft_lgetkf-geos_2020121500_m.nc4
-      simulated variables: [windEastward,windNorthward,airTemperature]
-    obs operator:
-      name: VertInterp
-      vertical coordinate: air_pressure
-      observation vertical coordinate: pressure
-      observation vertical coordinate group: MetaData
-      interpolation method: log-linear
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    - filter: PreQC
-      maxvalue: 3
-    - filter: Background Check
-      filter variables:
-      - name: windEastward
-      - name: windNorthward
-      - name: airTemperature
-      threshold: 6.0
-    obs localizations:
-    - localization method: Horizontal Gaspari-Cohn
-      lengthscale: 5000e3
-      max nobs: 50
 
 driver:
   save posterior ensemble: false
@@ -200,6 +165,7 @@ driver:
 
 local ensemble DA:
   solver: GETKF
+  use linear observer: true
   vertical localization:
     fraction of retained variance: .5
     lengthscale: 1.5
@@ -229,7 +195,7 @@ output increment:
 
 
 test:
-  reference filename: testoutput/lgetkf.ref
-  test output filename: testoutput/lgetkf.test.out
-  float absolute tolerance: 1.0e-7
+  reference filename: testoutput/lgetkf_linearobserver.ref
+  test output filename: testoutput/lgetkf_linearobserver.test.out
+  float absolute tolerance: 1.0e-3
   float relative tolerance: 1.0e-3
