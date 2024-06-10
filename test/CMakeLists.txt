@@ -143,9 +143,11 @@ list( APPEND fv3jedi_testinput
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
   testinput/diffstates_lam_cmaq.yaml
+  testinput/diffusionparameters.yaml
   testinput/dirac_geos.yaml
   testinput/dirac_geos_gsi_global.yaml
   testinput/dirac_gfs.yaml
+  testinput/dirac_gfs_diffusion.yaml
   testinput/dirac_gfs_gsi_global.yaml
   testinput/eda_3dvar_control_pert.yaml
   testinput/eda_4dvar_fv3lm_1.yaml
@@ -154,7 +156,7 @@ list( APPEND fv3jedi_testinput
   testinput/eda_block_3dvar_1.yaml
   testinput/eda_block_3dvar_2.yaml
   testinput/eda_block_3dvar.yaml
-  testinput/ensemble_ufs_forecast.yaml 
+  testinput/ensemble_ufs_forecast.yaml
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
@@ -316,6 +318,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/diffstates_gfs.ref
   testoutput/diffstates_lam_cmaq.ref
   testoutput/dirac_geos.ref
+  testoutput/dirac_gfs_diffusion.ref
   testoutput/dirac_gfs.ref
   testoutput/dirac_geos_gsi_global.ref
   testoutput/dirac_gfs_gsi_global.ref
@@ -661,6 +664,7 @@ ecbuild_add_executable( TARGET  test_fv3jedi_variablechange.x
 
 #Make some output directories for test data
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/bump)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/diffusion)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/gsirf)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/hofx/eda)
@@ -744,13 +748,13 @@ if (FV3_FORECAST_MODEL MATCHES "UFS")
     ecbuild_add_test( TARGET  fv3jedi_setup_ufs_rundir_warmstart
                       TYPE    SCRIPT
                       COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT}
-                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART} 
+                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART}
                       TEST_DEPENDS fv3jedi_setup_ufs_c48_data)
 
     ecbuild_add_test( TARGET  fv3jedi_setup_ufs_rundir_warmstart_2
                       TYPE    SCRIPT
                       COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT}
-                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2} 
+                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2}
                       TEST_DEPENDS fv3jedi_setup_ufs_c48_data)
 
   else()
@@ -1013,7 +1017,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_converttogauss_gfs
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_comparestates_gfs_restart2history2restart.yaml
                   MPI      6
                   ARGS     testinput/comparestates_gfs_restart2history2restart.yaml
-                  COMMAND  test_fv3jedi_comparestates.x 
+                  COMMAND  test_fv3jedi_comparestates.x
                   TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_history2restart )
 
 # Remaining interface tests
@@ -1214,6 +1218,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_bumpparameters_nicas_lam_cmaq
                   ARGS     testinput/bumpparameters_nicas_lam_cmaq.yaml
                   COMMAND  fv3jedi_error_covariance_toolbox.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_diffusionparameters
+                  MPI      6
+                  ARGS     testinput/diffusionparameters.yaml
+                  COMMAND  fv3jedi_error_covariance_toolbox.x )
+
 if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_bumpparameters_nicas_geos_p12
                     MPI      12
@@ -1254,6 +1263,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_geos
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
                   MPI      6
                   ARGS     testinput/dirac_gfs.yaml
+                  COMMAND  fv3jedi_error_covariance_toolbox.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_diffusion
+                  MPI      6
+                  ARGS     testinput/dirac_gfs_diffusion.yaml
                   COMMAND  fv3jedi_error_covariance_toolbox.x )
 
 if( ${gsibec_FOUND} )
