@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "eckit/config/Configuration.h"
 
@@ -180,8 +181,8 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
     // that must be because there were only D-grid winds and these were hidden from OOPS.
     if (dx.variables().has("ua") || dx.variables().has("eastward_wind")) {
       if (!(vars_long.has("eastward_wind") || vars_long.has("u_component_of_native_D_grid_wind"))) {
-        vars = oops::Variables({"u_component_of_native_D_grid_wind",
-                                "v_component_of_native_D_grid_wind"});
+        vars = oops::Variables((std::vector<std::string>){"u_component_of_native_D_grid_wind",
+                                                          "v_component_of_native_D_grid_wind"});
         vars += vars_long;
       }
     }

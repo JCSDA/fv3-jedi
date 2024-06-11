@@ -246,7 +246,7 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
   std::vector<size_t> varSizes;
   // Loop through arrays and search metadata map for the levels
   for (size_t it = 0; it < vars.size(); it++) {
-    varSizes.push_back(fieldsMeta_->getLevels(vars[it]));
+    varSizes.push_back(fieldsMeta_->getLevels(vars[it].name()));
   }
   return varSizes;
 }
