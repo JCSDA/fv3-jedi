@@ -13,7 +13,7 @@ variable change tests:
   - variable change:
       variable change name: Analysis2Model
       input variables: [ua,va,t,ps]
-      output variables: [u,v,ua,va,delp,t,sphum,vtype,u_srf,v_srf]
+      output variables: [u,v,ua,va,delp,t]
     state:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
