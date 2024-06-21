@@ -204,6 +204,7 @@ if( FV3_FORECAST_MODEL MATCHES UFS )
                            mom6
                            cice
                            cmeps
+                           cdeps
                            PIO::PIO_Fortran
                            PIO::PIO_C
                            ccpp_framework
