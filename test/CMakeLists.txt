@@ -227,6 +227,7 @@ list( APPEND fv3jedi_testinput
   testinput/linearmodel.yaml
   testinput/linearvariablechange_geos.yaml
   testinput/linearvariablechange_gfs.yaml
+  testinput/linearization_error.yaml
   testinput/localization_bump.yaml
   testinput/model_fv3lm.yaml
   testinput/model_fv3lm_tracers.yaml
@@ -368,6 +369,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
   testoutput/lgetkf_linearobserver.ref
+  testoutput/linearization_error.ref
   testoutput/adjointforecast.ref
   testoutput/staticb_dirac_global_gfs_6pe.ref
   testoutput/staticb_dirac_global_gfs_12pe.ref
@@ -1096,6 +1098,12 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hybrid_linear_model
                   MPI      6
                   ARGS     testinput/hybrid_linear_model.yaml
                   COMMAND  test_fv3jedi_linearmodel.x
+                  TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearization_error
+                  MPI      6
+                  ARGS     testinput/linearization_error.yaml
+                  COMMAND  fv3jedi_linearization_error.x
                   TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
 
 # Forecast tests
