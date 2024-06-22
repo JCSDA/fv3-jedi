@@ -120,7 +120,7 @@ ecbuild_add_executable( TARGET  fv3jedi_genenspertB.x
 
 ecbuild_add_executable( TARGET  fv3jedi_linearization_error.x
                         SOURCES fv3jediLinearizationError.cc
-                        LIBS    fv3jedi
+                        LIBS    ${FV3JEDI_LIBRARIES}
                       )
 
 # Plotting utility
