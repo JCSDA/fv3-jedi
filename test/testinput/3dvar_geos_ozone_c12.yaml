@@ -1,6 +1,6 @@
 cost function:
   cost type: 3D-Var
-  analysis variables: &3dvars [ps,o3ppmv]
+  analysis variables: &avars [ps,o3ppmv]
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -42,10 +42,11 @@ cost function:
       processor layout x direction: 3
       processor layout y direction: 2
       debugging mode: false
+      state variables to inverse: &bvars [surface_pressure,mole_fraction_of_ozone_in_air]
     linear variable change:
       linear variable change name: Control2Analysis
-      input variables: [surface_pressure,mole_fraction_of_ozone_in_air]
-      output variables: *3dvars
+      input variables: *bvars
+      output variables: *avars
 
 #   - covariance:
 #       covariance model: ensemble
@@ -54,7 +55,7 @@ cost function:
 #           datetime: 2020-12-15T00:00:00Z
 #           filetype: cube sphere history
 #           provider: geos
-#           state variables: *3dvars
+#           state variables: *avars
 #           datapath: Data/inputs/geos_c12/ensemble
 #           filename: mem%mem%/x0044.traj_lcv.20201215_0000z.nc4
 #         pattern: '%mem%'
@@ -64,8 +65,8 @@ cost function:
 #         localization method: SABER
 #         saber block:
 #           saber block name: BUMP_NICAS
-#           input variables: *3dvars
-#           output variables: *3dvars
+#           input variables: *avars
+#           output variables: *avars
 #           read:
 #             prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
 #             method: loc
@@ -116,22 +117,22 @@ cost function:
         maxvalue: 1000
         action:
           name: reject
-#     # Reject SZA > 84
-#     - filter: Bounds Check
-#       filter variables:
-#       - name: ozoneTotal
-#       test variables:
-#       - name: MetaData/solarZenithAngle
-#       maxvalue: 84.
-#       action:
-#         name: reject
-#     # Gross check
-#     - filter: Background Check
-#       filter variables:
-#       - name: ozoneTotal
-#       threshold: 5.0
-#       action:
-#         name: reject
+      # Reject SZA > 84
+      - filter: Bounds Check
+        filter variables:
+        - name: ozoneTotal
+        test variables:
+        - name: MetaData/solarZenithAngle
+        maxvalue: 84.
+        action:
+          name: reject
+      # Gross check
+      - filter: Background Check
+        filter variables:
+        - name: ozoneTotal
+        threshold: 5.0
+        action:
+          name: reject
 
     - obs space:
         name: omi_aura
@@ -180,22 +181,22 @@ cost function:
         action:
           name: reject
       # Reject rows 25+ (somewhat stringent but thats what we do in GEOS)
-#     - filter: Bounds Check
-#       filter variables:
-#       - name: ozoneTotal
-#       test variables:
-#       - name: MetaData/sensorScanPosition
-#       minvalue: 3
-#       maxvalue: 24
-#       action:
-#         name: reject
-#     # Gross check
-#     - filter: Background Check
-#       filter variables:
-#       - name: ozoneTotal
-#       threshold: 5.0
-#       action:
-#         name: reject
+      - filter: Bounds Check
+        filter variables:
+        - name: ozoneTotal
+        test variables:
+        - name: MetaData/sensorScanPosition
+        minvalue: 3
+        maxvalue: 24
+        action:
+          name: reject
+      # Gross check
+      - filter: Background Check
+        filter variables:
+        - name: ozoneTotal
+        threshold: 5.0
+        action:
+          name: reject
 
 
 
@@ -255,6 +256,6 @@ variational:
 
 test:
   reference filename: testoutput/3dvar_geos_ozone.ref
-  float relative tolerance: 1.0e-1
+  float relative tolerance: 1.0e-2
   integer tolerance: 3
   test output filename: testoutput/3dvar_geos_ozone.test.out

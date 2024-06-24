@@ -1,7 +1,6 @@
 cost function:
   cost type: 3D-Var
-# analysis variables: &3dvars [ua,va,t,ps,q,qi,ql,o3ppmv]
-  analysis variables: &3dvars [ua,va,t,ps,q]
+  analysis variables: &avars [ua,va,t,ps,q,o3ppmv,phis,frocean,frlake,frseaice]
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -21,7 +20,7 @@ cost function:
     provider: geos
     datapath: Data/inputs/geos_c12
     filename: geos.bkg.20201215_000000z.nc4
-    state variables: [ua,va,t,delp,ps,q,phis]
+    state variables: [u,v,ua,va,t,delp,ps,q,o3ppmv,phis,ts,frocean,frlake,frseaice]
 #   state variables: [ua,va,t,ps,q,qi,ql,qr,qs,o3ppmv,phis,frocean,frlake,frseaice,vtype,
 #                     stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
 #---------------------------------
@@ -47,13 +46,17 @@ cost function:
           processor layout x direction: 3
           processor layout y direction: 2
           debugging mode: false
+          state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                                   fraction_of_ocean,fraction_of_lake,fraction_of_ice,
+                                   mole_fraction_of_ozone_in_air,
+                                   sfc_geopotential_height_times_grav,
+                                   specific_humidity]
         linear variable change:
           linear variable change name: Control2Analysis
-          input variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                                   specific_humidity]
-          output variables: *3dvars
+          input variables: *bvars
+          output variables: *avars
       weight:
-        value: 0.01
+        value: 0.50
 
     - covariance:
         covariance model: ensemble
@@ -170,10 +173,10 @@ cost function:
         linear variable change:
           linear variable change name: Control2Analysis
           input variables: *bvars
-          output variables: *3dvars
+          output variables: *avars
 
       weight:
-        value: 1.00
+        value: 0.50
 
 #---------------------------------
   observations:
@@ -302,6 +305,6 @@ variational:
 
 test:
   reference filename: testoutput/hyb-3dvar_geos_sondes_c12.ref
-  float relative tolerance: 1.0e-1
+  float relative tolerance: 1.0e-2
   integer tolerance: 3
   test output filename: testoutput/hyb-3dvar_geos_sondes_c12.test.out

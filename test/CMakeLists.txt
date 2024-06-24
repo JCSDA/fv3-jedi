@@ -83,6 +83,8 @@ LINK_FILES( "${fv3jedi_test_fv3files}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRE
 # gsibec config files
 # -------------------
 list( APPEND gsibec_test_gsibec
+Data/gsibec/dirac_gsi_geos_global.nml
+Data/gsibec/dirac_gsi_gfs_global.nml
 Data/gsibec/geos_gsi_global_72x46x72.nml
 Data/gsibec/geos_gsi_global_o3_72x46x72.nml
 Data/gsibec/gfs_gsi_global_192x96x127.nml

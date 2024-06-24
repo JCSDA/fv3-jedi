@@ -1,5 +1,5 @@
  &SETUP
- mockbkg=.true.,
+ mockbkg=.false.,
  /
  &GRIDOPTS
    JCAP=62,NLAT=46,NLON=72,nsig=72,use_sp_eqspace=.true.,

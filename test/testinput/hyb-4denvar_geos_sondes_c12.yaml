@@ -1,6 +1,6 @@
 cost function:
   cost type: 4D-Ens-Var
-  analysis variables: &anavars [ua,va,t,ps,q]
+  analysis variables: &avars [ua,va,t,ps,q,o3ppmv,phis,frocean,frlake,frseaice]
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -23,13 +23,13 @@ cost function:
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201214_210000z.nc4
-      state variables: [ua,va,t,delp,ps,q,phis]
+      state variables: &statevars [u,v,ua,va,t,delp,ps,q,o3ppmv,phis,ts,frocean,frlake,frseaice]
     - datetime: 2020-12-15T03:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201215_030000z.nc4
-      state variables: [ua,va,t,delp,ps,q,phis]
+      state variables: *statevars
 #----------------------------------------------------------
   background error:
     covariance model: hybrid
@@ -53,11 +53,15 @@ cost function:
           processor layout x direction: 3
           processor layout y direction: 2
           debugging mode: false
+          state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                                              fraction_of_ocean,fraction_of_lake,fraction_of_ice,
+                                              mole_fraction_of_ozone_in_air,
+                                              sfc_geopotential_height_times_grav,
+                                              specific_humidity]
         linear variable change:
           linear variable change name: Control2Analysis
-          input variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                                   specific_humidity]
-          output variables: *anavars
+          input variables: *bvars
+          output variables: *avars
       weight:
         value: 0.50
 
@@ -69,8 +73,7 @@ cost function:
             - datetime: 2020-12-14T21:00:00Z
               filetype: cube sphere history
               provider: geos
-              state variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                                       specific_humidity]
+              state variables: *bvars
               datapath: Data/inputs/geos_c12/
               filename: geos.mem%mem%.20201214_210000z.nc4
             - datetime: 2020-12-15T03:00:00Z
@@ -183,7 +186,7 @@ cost function:
         linear variable change:
           linear variable change name: Control2Analysis
           input variables: *bvars
-          output variables: *anavars
+          output variables: *avars
 
       weight:
         value: 0.50

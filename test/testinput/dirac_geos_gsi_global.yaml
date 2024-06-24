@@ -15,7 +15,7 @@ background:
   provider: geos
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
-  state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
+  state variables: &vars [ua,va,t,ps,q,o3ppmv,phis]
 background error:
   covariance model: SABER
   saber central block:
@@ -23,7 +23,7 @@ background error:
     read:
       gsi akbk: Data/fv3files/akbk72.nc4
       gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-      gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
+      gsi berror namelist file: Data/gsibec/dirac_gsi_geos_global.nml
       processor layout x direction: 3
       processor layout y direction: 2
   #   debugging bypass gsi: true
@@ -32,15 +32,17 @@ background error:
   - saber block name: gsi interpolation to model grid
     gsi akbk: Data/fv3files/akbk72.nc4
     gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-    gsi berror namelist file: Data/gsibec/geos_gsi_global_72x46x72.nml
+    gsi berror namelist file: Data/gsibec/dirac_gsi_geos_global.nml
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false
+    state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
+                                        mole_fraction_of_ozone_in_air,
+                                        sfc_geopotential_height_times_grav,
+                                        specific_humidity]
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,
-                      specific_humidity,cloud_liquid_ice,cloud_liquid_water,
-                      mole_fraction_of_ozone_in_air]
+    input variables: *bvars
     output variables: *vars
 dirac:
   ndir: 1
