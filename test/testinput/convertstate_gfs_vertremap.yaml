@@ -23,7 +23,7 @@ variable change:
   npz: *npzout
   nwat: *nwat
   hydrostatic: false
-  source of inputs: FV3GFS GAUSSIAN NETCDF FILE
+  data source fv3gfs: false
   input variables: &input [ps_cold,w_cold,zh_cold,t_cold,delp_cold,sphum_cold,liq_wat_cold,
                            o3mr_cold,ice_wat_cold,rainwat_cold,snowwat_cold,graupel_cold,ud_cold,
                            vd_cold,orog_filt]
@@ -42,7 +42,7 @@ states:
   output:
     filetype: fms restart
     datapath: Data/convertstate/
-    prefix: 20200101.000000.cold2fv3
+    prefix: cold2fv3
 
 test:
   reference filename: testoutput/convertstate_gfs_vertremap.ref

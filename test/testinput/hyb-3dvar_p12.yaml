@@ -315,7 +315,7 @@ final:
 output:
   filetype: fms restart
   datapath: Data/analysis/
-  prefix: 20201215.000000.hyb-3dvar.c24_p12
+  prefix: hyb-3dvar.c24_p12
   frequency: PT1H
 
 test:

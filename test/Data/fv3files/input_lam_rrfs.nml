@@ -10,5 +10,4 @@
 
 &fv_grid_nml
     grid_file = 'Data/inputs/lam_rrfs/INPUT/C403_mosaic.halo3.nc'
-    mosaic_path = 'Data/inputs/lam_rrfs/INPUT'
 /
