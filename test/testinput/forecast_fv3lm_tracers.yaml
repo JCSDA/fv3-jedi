@@ -34,7 +34,6 @@ output:
   type: fc
   exp: forecast_fv3_aero
   date: 2021-08-01T06:00:00Z
-  prefix: 20210801.060000.forecast_fv3_aero
   frequency: PT15M
 forecast to structured grid:
   grid type: latlon

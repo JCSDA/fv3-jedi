@@ -36,7 +36,7 @@ state2: #background
 output:
   filetype: fms restart
   datapath: Data/increment/
-  prefix: hyb-3dvar-gfs.c24
+  prefix: 20201215.000000.hyb-3dvar-gfs.c24
 
 test:
   reference filename: testoutput/diffstates_gfs.ref

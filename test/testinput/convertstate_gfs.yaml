@@ -29,7 +29,7 @@ states:
   output:
     filetype: fms restart
     datapath: Data/
-    prefix: c24
+    prefix: 20201215.000000.c24
 - input:
     analytic init:
       method: dcmip-test-4-0

@@ -36,7 +36,7 @@ states:
   output:
     filetype: fms restart
     datapath: Data/convertstate/
-    prefix: coldstartwinds
+    prefix: 20200101.000000.coldstartwinds
 
 test:
   reference filename: testoutput/convertstate_gfs_coldstartwinds.ref

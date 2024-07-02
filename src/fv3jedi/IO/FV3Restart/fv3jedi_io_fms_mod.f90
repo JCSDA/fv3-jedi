@@ -217,7 +217,7 @@ if (self%input_is_date_templated) call setup_date(self, vdate)
 ! ---------------------
 if (self%has_prefix) then
   do n = 1, numfiles
-    self%filenames(n) = trim(self%prefix)//"."//trim(self%filenames(n))
+    self%filenames(n) = trim(self%prefix)//"."//trim(self%filenames_conf(n))
   enddo
 endif
 
@@ -456,14 +456,6 @@ date(4) = isecs/3600
 date(5) = (isecs - date(4)*3600)/60
 date(6) = isecs - (date(4)*3600 + date(5)*60)
 
-! Use prefix if present
-! ---------------------
-if (self%has_prefix) then
-  do n = 1, numfiles
-    self%filenames(n) = trim(self%prefix)//"."//trim(self%filenames(n))
-  enddo
-endif
-
 ! Convert integer datetime into string and prepend file names
 ! -----------------------------------------------------------
 write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2,A1)') date(1),date(2),date(3),".",&
@@ -472,6 +464,14 @@ write(datefile,'(I4,I0.2,I0.2,A1,I0.2,I0.2,I0.2,A1)') date(1),date(2),date(3),".
 if (self%prepend_date) then
   do n = 1, numfiles
     self%filenames(n) = trim(datefile)//trim(self%filenames(n))
+  enddo
+endif
+
+! Use prefix if present
+! ---------------------
+if (self%has_prefix) then
+  do n = 1, numfiles
+    self%filenames(n) = trim(self%prefix)//"."//trim(self%filenames_conf(n))
   enddo
 endif
 

@@ -42,7 +42,7 @@ states:
   output:
     filetype: fms restart
     datapath: Data/convertstate/
-    prefix: cold2fv3
+    prefix: 20200101.000000.cold2fv3
 
 test:
   reference filename: testoutput/convertstate_gfs_vertremap.ref
