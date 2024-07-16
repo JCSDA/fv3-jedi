@@ -24,9 +24,9 @@ baseline=`echo $lastupdate  | awk -F "/" '{print $1}' | awk -F " " '{print $5}'`
 
 cd input-data
 # pull the latest fixe files, input data and restart files from aws backup of rt.sh
-aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20221101/FV3_fix FV3_fix
-aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20221101/FV3_fix_tiled/C48 FV3_fix
-aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20221101/FV3_input_data48 FV3_input_data48
+aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20240501/FV3_fix FV3_fix
+aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20240501/FV3_fix_tiled/C48 FV3_fix
+aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/input-data-20240501/FV3_input_data48 FV3_input_data48
 aws s3 sync --no-sign-request s3://noaa-ufs-regtests-pds/$baseline/control_c48_intel/RESTART RESTART
 
 # set dummy values here so that run_test.py will think it is running on a supported platform
@@ -86,19 +86,26 @@ cp $INPUTDATA_ROOT/RESTART/* INPUT
 cd INPUT
 for file in 20210323.060000.*; do new=$(echo $file | cut -c 17-) && mv -v -- "$file" "$new" ; done
 ${SED} -i 's/3    22/3    23/g' coupler.res
+pwd
+#for file in ${INPUTDATA_ROOT}/FV3_input_data48/INPUT_L127/*; do cp $file .; done
+cp ${INPUTDATA_ROOT}/FV3_input_data48/INPUT_L127/grid_spec.nc .
+cp ${INPUTDATA_ROOT}/FV3_input_data48/INPUT_L127/C48_gr*.nc .
+cp ${INPUTDATA_ROOT}/FV3_input_data48/INPUT_L127/C48_mosai*.nc .
+cp ${INPUTDATA_ROOT}/FV3_input_data48/INPUT_L127/gfs*.nc .
+cp ${INPUTDATA_ROOT}/FV3_input_data48/INPUT_L127/oro*.nc .
+pwd
+ls -l
 cd ..
-
 # Link missing files from fix directory
+for file in ${INPUTDATA_ROOT}/FV3_fix/C48*; do cp $file .; done
 ln -svf ${INPUTDATA_ROOT}/FV3_fix/CCN_ACTIVATE.BIN .
 ln -svf ${INPUTDATA_ROOT}/FV3_fix/global_glacier.2x2.grb .
 ln -svf ${INPUTDATA_ROOT}/FV3_fix/global_maxice.2x2.grb .
 ln -svf ${INPUTDATA_ROOT}/FV3_fix/RTGSST.1982.2012.monthly.clim.grb .
 ln -svf ${INPUTDATA_ROOT}/FV3_fix/IMS-NIC.blended.ice.monthly.clim.grb .
-ln -svf ${INPUTDATA_ROOT}/FV3_fix/C48* .
 ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_slmask.t62.192.94.grb .
 ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_soilmgldas.statsgo.t92.192.94.grb .
 ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_snoclim.1.875.grb .
-
 # update model_configure file to turn off write component and do a warm start for our regression test
 ${SED} -i 's/quilting:                .true./quilting:                .false./g' model_configure
 ${SED} -i 's/start_day:               22/start_day:               23/g' model_configure
