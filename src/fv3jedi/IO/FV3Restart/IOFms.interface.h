@@ -12,8 +12,8 @@ namespace fv3jedi {
   extern "C" {
   void fv3jedi_io_fms_create_f90(F90iofms &, const eckit::Configuration &, const F90geom &);
   void fv3jedi_io_fms_delete_f90(F90iofms &);
-  void fv3jedi_io_fms_read_state_f90(const F90iofms &, F90state &);
-  void fv3jedi_io_fms_read_increment_f90(const F90iofms &, F90inc &);
+  void fv3jedi_io_fms_read_state_f90(const F90iofms &, const F90geom &, F90state &);
+  void fv3jedi_io_fms_read_increment_f90(const F90iofms &, const F90geom &, F90inc &);
   void fv3jedi_io_fms_write_state_f90(const F90iofms &, const F90state &);
   void fv3jedi_io_fms_write_increment_f90(const F90iofms &, const F90inc &);
   }  // extern "C"

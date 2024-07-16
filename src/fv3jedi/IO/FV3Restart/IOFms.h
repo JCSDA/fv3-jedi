@@ -93,6 +93,7 @@ class IOFms : public IOBase, private util::ObjectCounter<IOFms> {
 
  private:
   F90iofms objectKeyForFortran_;
+  const Geometry & geom_;
   void print(std::ostream &) const override;
 };
 

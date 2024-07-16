@@ -102,47 +102,53 @@ end subroutine c_fv3jedi_io_fms_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_fms_read_state(c_key_self, c_key_state) &
+subroutine c_fv3jedi_io_fms_read_state(c_key_self, c_key_geom, c_key_state) &
            bind (c,name='fv3jedi_io_fms_read_state_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
+integer(c_int),     intent(in) :: c_key_geom
 integer(c_int),     intent(in) :: c_key_state
 
 type(fv3jedi_io_fms), pointer :: f_self
+type(fv3jedi_geom),   pointer :: f_geom
 type(fv3jedi_state),  pointer :: f_state
 
 ! Linked list
 ! -----------
 call fv3jedi_io_fms_registry%get(c_key_self, f_self)
+call fv3jedi_geom_registry%get(c_key_geom, f_geom)
 call fv3jedi_state_registry%get(c_key_state, f_state)
 
 ! Call implementation
 ! -------------------
-call f_self%read(f_state%time, f_state%fields)
+call f_self%read(f_state%time, f_geom, f_state%fields)
 
 end subroutine c_fv3jedi_io_fms_read_state
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_fms_read_increment(c_key_self, c_key_increment) &
+subroutine c_fv3jedi_io_fms_read_increment(c_key_self, c_key_geom, c_key_increment) &
            bind (c,name='fv3jedi_io_fms_read_increment_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
+integer(c_int),     intent(in) :: c_key_geom
 integer(c_int),     intent(in) :: c_key_increment
 
 type(fv3jedi_io_fms),    pointer :: f_self
+type(fv3jedi_geom),      pointer :: f_geom
 type(fv3jedi_increment), pointer :: f_increment
 
 ! Linked list
 ! -----------
 call fv3jedi_io_fms_registry%get(c_key_self, f_self)
+call fv3jedi_geom_registry%get(c_key_geom, f_geom)
 call fv3jedi_increment_registry%get(c_key_increment, f_increment)
 
 ! Call implementation
 ! -------------------
-call f_self%read(f_increment%time, f_increment%fields)
+call f_self%read(f_increment%time, f_geom, f_increment%fields)
 
 end subroutine c_fv3jedi_io_fms_read_increment
 

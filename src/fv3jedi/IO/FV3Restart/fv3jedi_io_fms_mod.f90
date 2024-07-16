@@ -23,6 +23,7 @@ use mpp_mod,                      only: mpp_pe, mpp_root_pe
 use fv3jedi_field_mod,            only: fv3jedi_field, hasfield, field_clen
 use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text, add_iteration
 use fv3jedi_kinds_mod,            only: kind_real
+use fv3jedi_geom_mod,             only: fv3jedi_geom
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -201,10 +202,11 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read(self, vdate, fields)
+subroutine read(self, vdate, geom, fields)
 
 class(fv3jedi_io_fms), intent(inout) :: self
 type(datetime),        intent(inout) :: vdate
+type(fv3jedi_geom),    intent(in)    :: geom
 type(fv3jedi_field),   intent(inout) :: fields(:)
 
 integer :: n
@@ -227,7 +229,7 @@ if (.not. self%skip_coupler) call read_meta(self, vdate)
 
 ! Read fields
 ! -----------
-call read_fields(self, fields)
+call read_fields(self, geom, fields)
 
 end subroutine read
 
@@ -334,9 +336,10 @@ end subroutine read_meta
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_fields(self, fields)
+subroutine read_fields(self, geom, fields)
 
 type(fv3jedi_io_fms), intent(inout) :: self
+type(fv3jedi_geom),   intent(in)    :: geom
 type(fv3jedi_field),  intent(inout) :: fields(:)
 
 type(restart_file_type) :: restart(numfiles)
@@ -418,7 +421,7 @@ if (indexof_ps > 0) then
   else
     delp = fields(indexof_delp)%array
   endif
-  fields(indexof_ps)%array(:,:,1) = sum(delp,3)
+  fields(indexof_ps)%array(:,:,1) = geom%ptop + sum(delp,3)
   fields(indexof_ps)%io_name = 'ps'
 endif
 
