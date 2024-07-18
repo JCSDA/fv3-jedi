@@ -18,11 +18,11 @@ linear model:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      tlm variables: [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
+      tlm variables: &linvars [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
       trajectory:
         model variables: &modelvars [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
   update tstep: PT3H
-  variables: [ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
+  variables: &vars [ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
   coefficients:
     update variables: [eastward_wind,northward_wind]
     influence region size: 3
@@ -120,13 +120,23 @@ x2:
   filename_cplr: 20201214.210000.coupler.res
   state variables: *bgvars
 
-#output on latlon grid:
-#  local interpolator type: oops unstructured grid interpolator
-#  resolution in degrees: 6.0
-#  model levels: [120, 114, 108, 102, 96, 90, 84, 78, 72, 66, 60, 54, 48, 42, 36, 30, 24, 18, 12, 6, 0]
-#  variables to output: *linvars
-#  datapath: /net/home/h02/tohill/JEDI/linearization_error_plotting/
-#  filename prefix: linearization-error-HTLM
+#output on structured grid (latlon)    
+output on structured grid:
+  local interpolator type: oops unstructured grid interpolator
+  grid type: latlon
+  type: inc  
+  resolution in degrees: 6.0
+  all model levels: true
+  bottom model level: false
+  variables to output: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity] 
+  datapath: Data
+  exp: linearization-error-HTLM
+
+#output on native grid
+#output:
+#  filetype: fms restart
+#  datapath: Data
+#  prefix: linearization-error-native
 
 test:
   reference filename: testoutput/linearization_error.ref
