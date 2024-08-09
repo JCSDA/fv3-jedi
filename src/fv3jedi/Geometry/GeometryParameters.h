@@ -79,6 +79,8 @@ class GeometryParameters : public oops::Parameters {
   oops::Parameter<double> targetLon{ "target_lon", 0.0, this};
   oops::Parameter<bool> useInternalNamelist{ "use internal namelist", false, this};
   oops::Parameter<bool> writeGeom{ "write geom", false, this};
+  oops::Parameter<bool> writeGmsh{ "write to gmsh", false, this};
+  oops::Parameter<std::string> writeGmshFilename{ "gmsh filename", "out.msh", this};
 
   // Include FieldsMetadataParameters
   FieldsMetadataParameters fieldsMetadataParameters{this};

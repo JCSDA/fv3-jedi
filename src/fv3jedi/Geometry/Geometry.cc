@@ -13,6 +13,7 @@
 #include "atlas/mesh/actions/BuildHalo.h"
 #include "atlas/mesh/Mesh.h"
 #include "atlas/mesh/MeshBuilder.h"
+#include "atlas/output/Gmsh.h"
 
 #include "oops/mpi/mpi.h"
 #include "oops/util/abor1_cpp.h"
@@ -75,7 +76,7 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
     const int num_elements = num_tri_elements + num_quad_elements;
     std::vector<int> num_elements_per_rank(comm_.size());
     comm_.allGather(num_elements, num_elements_per_rank.begin(), num_elements_per_rank.end());
-    int global_element_index = 0;
+    int global_element_index = 1;  // 1-based global index
     for (size_t i = 0; i < comm_.rank(); ++i) {
       global_element_index += num_elements_per_rank[i];
     }
@@ -111,8 +112,8 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
     std::transform(remote_indices.begin(), remote_indices.end(), atlas_remote_indices.begin(),
                    [](const int index) {return atlas::idx_t{index};});
 
-    eckit::LocalConfiguration config{};
-    config.set("mpi_comm", comm_.name());
+    eckit::LocalConfiguration atlas_config{};
+    atlas_config.set("mpi_comm", comm_.name());
 
     // establish connectivity
     const atlas::mesh::MeshBuilder mesh_builder{};
@@ -128,10 +129,20 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
         tri_global_indices,
         quad_boundary_nodes,
         quad_global_indices,
-        config);
+        atlas_config);
 
     atlas::mesh::actions::build_halo(mesh, 1);
-    functionSpace_ = atlas::functionspace::NodeColumns(mesh, config);
+    functionSpace_ = atlas::functionspace::NodeColumns(mesh, atlas_config);
+
+    // Optionally write atlas mesh for viewing with gmsh
+    if (params.writeGmsh) {
+      const std::string filename = params.writeGmshFilename;
+      eckit::LocalConfiguration gmsh_config{};
+      gmsh_config.set("coordinates", "xyz");
+      gmsh_config.set("ghost", true);  // enables viewing halos per task
+      atlas::output::Gmsh gmsh(filename, gmsh_config);
+      gmsh.write(mesh);
+    }
   }
 
   // Create function space without halo, for constructing the bump interpolator from fv3jedi
