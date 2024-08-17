@@ -84,6 +84,7 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
 // -------------------------------------------------------------------------------------------------
 
 void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & vars_out) const {
+  oops::Log::trace() << "LinearVariableChange::changeVarTL starting" << std::endl;
   // Make sure vars are longname
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
@@ -168,6 +169,7 @@ void LinearVariableChange::changeVarInverseTL(Increment & dx,
 
 void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & vars_out,
                                        const bool force_varchange) const {
+  oops::Log::trace() << "LinearVariableChange::changeVarAD starting" << std::endl;
   // Make sure vars are longname
   const oops::Variables vars_long = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
