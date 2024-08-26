@@ -20,7 +20,7 @@ cost function:
         obsdatain:
           engine:
             type: H5File
-            obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m_renamed_var.nc4
+            obsfile: Data/obs/testinput_tier_1/obsappend1/aircraft_obs_2020121500_m_renamed_var.nc4
         obsdataout:
           engine:
             type: H5File
@@ -112,31 +112,41 @@ variational:
     diagnostics:
       departures: ombg
     linear model:
-      simple linear model:
-        linear model:
-          name: FV3JEDITLM
-          namelist filename: Data/fv3files/input_gfs_c12.nml
-          linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
-          tstep: PT1H
-          lm_do_dyn: 1
-          lm_do_trb: 0
-          lm_do_mst: 0
-          tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
-          trajectory:
-            model variables: *modelvars
-      update tstep: PT3H
-      variables: *anavars
-      coefficients:
-        input:
-          base filepath: Data/hybrid_linear_model_coeffs
-          one file per task: true
-        update variables: [eastward_wind,northward_wind]
-        influence region size: 3
-        time window:
-          begin: 2020-12-14T21:00:00Z
-          length: PT6H
-      name: HTLM
+      name: FV3JEDITLM
+      namelist filename: Data/fv3files/input_gfs_c12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT1H
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      trajectory:
+        model variables: *modelvars
+  - ninner: 2
+    gradient norm reduction: 1e-10
+    obs append directory: Data/obs/testinput_tier_1/obsappend2
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk127.nc4
+      npx: 13
+      npy: 13
+      npz: 127
+      field metadata override: Data/fieldmetadata/gfs-restart.yaml
+    diagnostics:
+      departures: ombg
+    linear model:
+      name: FV3JEDITLM
+      namelist filename: Data/fv3files/input_gfs_c12.nml
+      linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
+      tstep: PT1H
+      lm_do_dyn: 1
+      lm_do_trb: 0
+      lm_do_mst: 0
+      tlm variables: [u,v,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      trajectory:
+        model variables: *modelvars
+
 test:
-  reference filename: testoutput/4dvar_hybrid_linear_model.ref
-  test output filename: testoutput/4dvar_hybrid_linear_model.test.out
+  reference filename: testoutput/4dvar_append_obs.ref
+  test output filename: testoutput/4dvar_append_obs.test.out
   float relative tolerance: 1.0e-3
