@@ -574,11 +574,6 @@ if( crtm_FOUND AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Data/crtm")
                            ${crtm_coeff_files} )
 endif()
 
-# Backgrounds needed for Control-Pert
-execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-               ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/bkg
-               ${CMAKE_CURRENT_BINARY_DIR}/Data/inputs/gfs_c12/mem000)
-
 # --------------------------------------------------------------------------------------------------
 
 # Set the test tiering
