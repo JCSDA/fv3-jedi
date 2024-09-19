@@ -132,9 +132,9 @@ real(kind=kind_real), allocatable :: suralt(:,:,:)         !Surface altitude
 real(kind=kind_real), allocatable :: phis  (:,:,:)         !Surface geopotential height times gravity
 logical,  parameter :: use_compress = .true.
 
-! Hydrostatic layer thickness
-logical :: have_hydrostatic_delz
-real(kind=kind_real), allocatable :: hydrostatic_delz(:,:,:)
+! Layer thickness
+logical :: have_delz
+real(kind=kind_real), allocatable :: delz(:,:,:)
 
 ! Ozone
 logical :: have_o3
@@ -388,16 +388,16 @@ if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or. x
   have_geoph = .true.
 endif
 
-! Hydrostatic layer thickness
+! Layer thickness
 ! ---------------
-have_hydrostatic_delz = .false.
-if (xm%has_field('hydrostatic_layer_thickness')) then
-   call xm%get_field('hydrostatic_layer_thickness', hydrostatic_delz)
-   have_hydrostatic_delz = .true.
+have_delz = .false.
+if (xm%has_field('layer_thickness')) then
+   call xm%get_field('layer_thickness', delz)
+   have_delz = .true.
 elseif (have_geoph) then
-   allocate(hydrostatic_delz(self%isc:self%iec,self%jsc:self%jec,self%npz))
-   hydrostatic_delz = geophi(:,:,2:self%npz+1) - geophi(:,:,1:self%npz)
-   have_hydrostatic_delz = .true.
+   allocate(delz(self%isc:self%iec,self%jsc:self%jec,self%npz))
+   delz = geophi(:,:,2:self%npz+1) - geophi(:,:,1:self%npz)
+   have_delz = .true.
 endif
 
 ! Virtual temperature
@@ -935,10 +935,10 @@ do f = 1, size(fields_to_do)
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geophi
 
-  case ("hydrostatic_layer_thickness", "hydrostatic_delz")
+  case ("layer_thickness", "delz")
 
-    if (.not. have_hydrostatic_delz) call field_fail(fields_to_do(f))
-    field_ptr = hydrostatic_delz
+    if (.not. have_delz) call field_fail(fields_to_do(f))
+    field_ptr = delz
 
   case ("surface_altitude", "surface_geopotential_height", "surface_geometric_height")
 
@@ -1199,7 +1199,7 @@ if (allocated(phis)) deallocate(phis)
 if (allocated(geophi)) deallocate(geophi)
 if (allocated(geoph)) deallocate(geoph)
 if (allocated(suralt)) deallocate(suralt)
-if (allocated(hydrostatic_delz)) deallocate(hydrostatic_delz)
+if (allocated(delz)) deallocate(delz)
 if (allocated(o3mr)) deallocate(o3mr)
 if (allocated(o3ppmv)) deallocate(o3ppmv)
 if (allocated(ua)) deallocate(ua)
