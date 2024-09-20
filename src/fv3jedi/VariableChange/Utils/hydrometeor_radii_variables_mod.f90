@@ -18,6 +18,9 @@ module radii_vt_mod
       public calculateNumber
       public thompson08_snow
       public wgamma
+      public hydro_mixr_to_wpath
+      public hydro_mixr_to_wpath_tl
+      public hydro_mixr_to_wpath_ad
 
       character(len=256):: debug_msg
       real, parameter :: PI = ACOS(-1.)
@@ -221,60 +224,16 @@ enddo
 
 ! Convert hydrometeor mixing ratio to liquid/ice water path (kg/kg to kg/m^2)
 ! ---------------------------------------------------------------------------
-do k = 1,npz
-  do j = jsc,jec
-    do i = isc,iec
-         if (ql(i,j,k) .lt. min_qx) CYCLE
-         kgkg_to_kgm2 = delp(i,j,k) / grav
-         ql_ade(i,j,k) = ql(i,j,k) * kgkg_to_kgm2
-    enddo
-  enddo
-enddo
-
-do k = 1,npz
-  do j = jsc,jec
-    do i = isc,iec
-         if (qi(i,j,k) .lt. min_qx) CYCLE
-         kgkg_to_kgm2 = delp(i,j,k) / grav
-         qi_ade(i,j,k) = qi(i,j,k) * kgkg_to_kgm2
-    enddo
-  enddo
-enddo
-
+call hydro_mixr_to_wpath(geom,ql,delp,ql_ade)
+call hydro_mixr_to_wpath(geom,qi,delp,qi_ade)
 if( have_qr ) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-         if (qr(i,j,k) .lt. min_qx) CYCLE
-         kgkg_to_kgm2 = delp(i,j,k) / grav
-         qr_ade(i,j,k) = qr(i,j,k) * kgkg_to_kgm2
-      enddo
-    enddo
-  enddo
+  call hydro_mixr_to_wpath(geom,qr,delp,qr_ade)
 endif
-
 if( have_qs ) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-         if (qs(i,j,k) .lt. min_qx) CYCLE
-         kgkg_to_kgm2 = delp(i,j,k) / grav
-         qs_ade(i,j,k) = qs(i,j,k) * kgkg_to_kgm2
-      enddo
-    enddo
-  enddo
+  call hydro_mixr_to_wpath(geom,qs,delp,qs_ade)
 endif
-
 if( have_qg ) then
-  do k = 1,npz
-    do j = jsc,jec
-      do i = isc,iec
-         if (qg(i,j,k) .lt. min_qx) CYCLE
-         kgkg_to_kgm2 = delp(i,j,k) / grav
-         qg_ade(i,j,k) = qg(i,j,k) * kgkg_to_kgm2
-      enddo
-    enddo
-  enddo
+  call hydro_mixr_to_wpath(geom,qg,delp,qg_ade)
 endif
 
 ! Compute effective radius using various methods.
@@ -828,5 +787,133 @@ end subroutine crtm_ade_efr
 
       END FUNCTION WGAMMA
 !+---+-----------------------------------------------------------------+
+
+subroutine hydro_mixr_to_wpath(geom,qmx,delp,qwp)
+
+type(fv3jedi_geom)  , intent(in)  :: geom
+real(kind=kind_real), intent(in)  ::  qmx(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz) !Mixing ratio (kg/kg)
+real(kind=kind_real), intent(in)  :: delp(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz) !Pressure thickness (Pa)
+real(kind=kind_real), intent(out) ::  qwp(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz) !Water path (kg/m^2)
+
+real(kind=kind_real) :: kgkg_to_kgm2
+real(kind=kind_real) :: grav
+
+!..Any hydrometeor with less than min_qx is ignored as zero cloud/precip.
+real(kind=kind_real), parameter :: min_qx = 1.0E-8_kind_real
+
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+
+grav = constant('grav')
+
+! Grid convenience
+! ----------------
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
+
+! Convert hydrometeor mixing ratio to water path (kg/kg to kg/m^2)
+! ----------------------------------------------------------------
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+         if (qmx(i,j,k) .lt. min_qx) CYCLE
+         kgkg_to_kgm2 = delp(i,j,k) / grav
+         qwp(i,j,k) = qmx(i,j,k) * kgkg_to_kgm2
+    enddo
+  enddo
+enddo
+
+end subroutine hydro_mixr_to_wpath
+
+subroutine hydro_mixr_to_wpath_tl(geom,delp,qmx,qmx_tl,qwp_tl)
+
+type(fv3jedi_geom)  , intent(in)  :: geom
+real(kind=kind_real), intent(in)  ::    delp(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real), intent(in)  ::     qmx(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real), intent(in)  ::  qmx_tl(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real), intent(out) ::  qwp_tl(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+
+real(kind=kind_real) :: kgkg_to_kgm2,kgkg_to_kgm2_tl
+real(kind=kind_real) :: grav
+
+!..Any hydrometeor with less than min_qx is ignored as zero cloud/precip.
+real(kind=kind_real), parameter :: min_qx = 1.0E-8_kind_real
+
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+
+grav = constant('grav')
+
+! Grid convenience
+! ----------------
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
+
+! Convert hydrometeor mixing ratio to water path (kg/kg to kg/m^2)
+! ----------------------------------------------------------------
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+         if (qmx(i,j,k) .lt. min_qx) then
+            qwp_tl(i,j,k) = 0.0_kind_real
+            CYCLE
+         endif
+         kgkg_to_kgm2  = delp(i,j,k) / grav
+         qwp_tl(i,j,k) = qmx_tl(i,j,k) * kgkg_to_kgm2
+    enddo
+  enddo
+enddo
+
+end subroutine hydro_mixr_to_wpath_tl
+
+subroutine hydro_mixr_to_wpath_ad(geom,delp,qmx,qmx_ad,qwp_ad)
+
+type(fv3jedi_geom)  , intent(in)    :: geom
+real(kind=kind_real), intent(in)    ::    delp(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real), intent(in)    ::     qmx(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real), intent(inout) ::  qmx_ad(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+real(kind=kind_real), intent(inout) ::  qwp_ad(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)
+
+real(kind=kind_real) :: kgkg_to_kgm2,kgkg_to_kgm2_ad
+real(kind=kind_real) :: grav
+
+!..Any hydrometeor with less than min_qx is ignored as zero cloud/precip.
+real(kind=kind_real), parameter :: min_qx = 1.0E-8_kind_real
+
+integer :: isc,iec,jsc,jec,npz
+integer :: i,j,k
+
+grav = constant('grav')
+
+! Grid convenience
+! ----------------
+isc = geom%isc
+iec = geom%iec
+jsc = geom%jsc
+jec = geom%jec
+npz = geom%npz
+
+! Convert hydrometeor mixing ratio to water path (kg/kg to kg/m^2)
+! ----------------------------------------------------------------
+do k = 1,npz
+  do j = jsc,jec
+    do i = isc,iec
+         if (qmx(i,j,k) .lt. min_qx) then
+           qmx_ad (i,j,k) = 0.0_kind_real
+           CYCLE
+         endif
+         kgkg_to_kgm2   = delp(i,j,k) / grav
+         qmx_ad (i,j,k) = qmx_ad (i,j,k) + kgkg_to_kgm2 * qwp_ad(i,j,k)
+    enddo
+  enddo
+enddo
+
+end subroutine hydro_mixr_to_wpath_ad
 
 end module radii_vt_mod
