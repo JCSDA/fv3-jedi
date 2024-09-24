@@ -65,9 +65,6 @@ cost function:
       obs error:
         covariance model: diagonal
 
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: cube sphere history
   provider: geos
@@ -88,9 +85,6 @@ variational:
       npy: 13
       npz: 72
       field metadata override: Data/fieldmetadata/geos_cf.yaml
-    diagnostics:
-      departures: ombg
-
 test:
   reference filename: testoutput/3dvar_geos_cf.ref
   test output filename: testoutput/3dvar_geos_cf.test.out

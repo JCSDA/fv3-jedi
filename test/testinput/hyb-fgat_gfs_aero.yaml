@@ -98,9 +98,6 @@ cost function:
     npy: 13
     npz: 127
     field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: fms restart
   datapath: Data/analysis/
@@ -119,8 +116,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
-    diagnostics:
-      departures: ombg
     linear model:
       name: Identity
       increment variables: *aerovars

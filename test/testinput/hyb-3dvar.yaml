@@ -287,8 +287,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
     online diagnostics:
       write increment: true
       increment:
@@ -305,8 +303,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: innov2        # output from the 2nd outer-loop
     online diagnostics:
       write increment: true
       increment:
@@ -315,8 +311,6 @@ variational:
           datapath: Data/analysis
           prefix: 20201215.000000.iter2.hyb-3dvar.c24
 final:
-  diagnostics:
-    departures: oman
   increment to structured grid:
     grid type: latlon
     local interpolator type: oops unstructured grid interpolator

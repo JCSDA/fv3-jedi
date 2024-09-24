@@ -97,11 +97,7 @@ assimilation:
         npy: 13
         npz: 127
         field metadata override: Data/fieldmetadata/gfs-restart.yaml
-      diagnostics:
-        departures: ombg
   final:
-    diagnostics:
-      departures: oman
     increment to structured grid:
       grid type: latlon
       local interpolator type: oops unstructured grid interpolator

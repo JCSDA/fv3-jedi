@@ -1263,9 +1263,6 @@ cost function:
       obs filters:
       - filter: Background Check
         threshold: 1000
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: cube sphere history
   provider: geos
@@ -1286,8 +1283,6 @@ variational:
       npy: 13
       npz: 72
       field metadata override: Data/fieldmetadata/geos.yaml
-    diagnostics:
-      departures: ombg
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -1297,9 +1292,6 @@ variational:
       npy: 13
       npz: 72
       field metadata override: Data/fieldmetadata/geos.yaml
-    diagnostics:
-      departures: innov2         # output from the 2nd outer-loop
-
 test:
   reference filename: testoutput/hyb-3dvar_geos.ref
   integer tolerance: 3

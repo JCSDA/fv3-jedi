@@ -43,7 +43,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem002._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -56,7 +56,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem003._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -69,7 +69,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem004._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -82,7 +82,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem005._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -95,7 +95,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem006._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -108,7 +108,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem007._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -121,7 +121,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem008._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -134,7 +134,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem009._YYYY__MM__DD___HH_0000z.nc4
   output:
@@ -147,7 +147,7 @@ states:
     datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
     filetype: cube sphere history
     provider: geos
-    state variables: &readvars [ua,va,t,delp,sphum]
+    state variables: *readvars
     datapath: Data/inputs/geos_c12
     filename: geos.mem010._YYYY__MM__DD___HH_0000z.nc4
   output:

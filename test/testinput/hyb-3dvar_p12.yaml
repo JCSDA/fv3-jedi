@@ -281,8 +281,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
     online diagnostics:
       write increment: true
       increment:
@@ -300,8 +298,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
     online diagnostics:
       write increment: true
       increment:
@@ -309,9 +305,6 @@ variational:
           filetype: fms restart
           datapath: Data/analysis
           prefix: 20201215.000000.iter2.hyb-3dvar-p12.c24
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: fms restart
   datapath: Data/analysis/

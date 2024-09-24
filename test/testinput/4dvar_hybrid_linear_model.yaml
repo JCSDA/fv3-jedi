@@ -93,9 +93,6 @@ output:
   datapath: Data/analysis/eda/gfs/mem001
   prefix: eda-4dvar-gfs
   frequency: PT3H
-final:
-  diagnostics:
-    departures: oman
 variational:
   minimizer:
     algorithm: DRPCG
@@ -109,8 +106,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
     linear model:
       simple linear model:
         linear model:

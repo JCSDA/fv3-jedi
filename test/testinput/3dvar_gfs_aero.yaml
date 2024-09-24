@@ -144,8 +144,6 @@ variational:
       npy: 13
       npz: 64
       field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-    diagnostics:
-      departures: ombg
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -156,11 +154,6 @@ variational:
       npy: 13
       npz: 64
       field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-    diagnostics:
-      departures: innov2        # output from the 2nd outer-loop
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: fms restart
   datapath: Data/analysis/

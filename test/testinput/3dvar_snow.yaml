@@ -3,7 +3,7 @@ cost function:
   time window:
     begin: 2023-05-01T00:00:00Z
     length: PT24H
-  analysis variables: [totalSnowDepth] 
+  analysis variables: [totalSnowDepth]
   geometry: &geom
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -37,7 +37,7 @@ cost function:
           explicit length-scales: true
           horizontal length-scale:
           - groups: [totalSnowDepth]
-            value: 2500000.0         
+            value: 2500000.0
           vertical length-scale:
           - groups: [totalSnowDepth]
             value: 700.0
@@ -89,8 +89,6 @@ output:
   filename: Data/analysis/gfs_land/3dvar.snow
 
 final:
-  diagnostics:
-    departures: oman
   increment:
     geometry: *geom
     output:

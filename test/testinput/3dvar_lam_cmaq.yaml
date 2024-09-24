@@ -93,11 +93,6 @@ variational:
       namelist filename: Data/fv3files/input_lam_cmaq.nml
       akbk: Data/fv3files/akbk64.nc4
       field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-    diagnostics:
-      departures: ombg
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: fms restart
   datapath: Data/analysis/

@@ -128,8 +128,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
     fsoi:
       increment test: true
       input forecast sensitivity:
@@ -142,9 +140,6 @@ variational:
         filename_sfcd: 20201215.000000.iter1.hyb-3dvar_fsoi_forward.c24.sfc_data.nc
         filename_sfcw: 20201215.000000.iter1.hyb-3dvar_fsoi_forward.c24.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.iter1.hyb-3dvar_fsoi_forward.c24.coupler.res
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: fms restart
   datapath: Data/analysis/

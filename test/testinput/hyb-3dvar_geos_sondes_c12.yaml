@@ -247,10 +247,6 @@ cost function:
           error function:
             name: GsiFinalObsError/stationPressure
 
-
-final:
-  diagnostics:
-    departures: oman
 output:
   filetype: cube sphere history
   provider: geos
@@ -272,8 +268,6 @@ variational:
       npy: 13
       npz: 72
       field metadata override: Data/fieldmetadata/geos.yaml
-    diagnostics:
-      departures: ombg
 #   online diagnostics:
 #     write increment: true
 #     increment:
@@ -292,8 +286,6 @@ variational:
 #     npy: 13
 #     npz: 72
 #     field metadata override: Data/fieldmetadata/geos.yaml
-#   diagnostics:
-#     departures: ombg
 #   online diagnostics:
 #     write increment: true
 #     increment:

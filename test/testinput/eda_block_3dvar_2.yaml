@@ -130,9 +130,6 @@ output:
   datapath: Data/analysis/eda/gfs/mem002
   prefix: eda-3dvar-block-gfs
   frequency: PT1H
-final:
-  diagnostics:
-    departures: oman
 variational:
   minimizer:
     algorithm: DRPBlockLanczos
@@ -159,5 +156,3 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg

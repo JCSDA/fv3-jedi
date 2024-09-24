@@ -59,9 +59,6 @@ output:
   datapath: Data/analysis/
   prefix: 3dvar-gfs_0obs
   frequency: PT1H
-final:
-  diagnostics:
-    departures: oman
 variational:
   minimizer:
     algorithm: DRPCG
@@ -75,8 +72,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -86,9 +81,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: innov2       # output from the 2nd outer-loop
-
 test:
   reference filename: testoutput/3dvar_gfs_0obs.ref
   test output filename: testoutput/3dvar_gfs_0obs.test.out

@@ -29,7 +29,7 @@ states:
     state variables: *inputvars
     filename: restart2history.nc4
     provider: ufs
-    ufs soil nlev: 4	
+    ufs soil nlev: 4
     ufs fields split by level: [stc, smc]
   output:
     filetype: fms restart

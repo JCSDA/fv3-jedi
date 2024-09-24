@@ -248,9 +248,6 @@ output:
   datapath: Data/analysis/eda/gfs/mem001
   prefix: eda-4dvar-gfs
   frequency: PT3H
-final:
-  diagnostics:
-    departures: oman
 variational:
   minimizer:
     algorithm: DRPCG
@@ -264,8 +261,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: ombg
     linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -286,8 +281,6 @@ variational:
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-    diagnostics:
-      departures: innov2         # output from the 2nd outer-loop
     linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
