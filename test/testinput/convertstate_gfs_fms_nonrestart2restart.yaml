@@ -1,0 +1,44 @@
+input geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+output geometry:
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+variable change:
+  variable change name: Model2GeoVaLs
+  input variables: &vars [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
+                          slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                          u_srf,v_srf,f10m]  
+  output variables: *vars
+states:
+- input:
+    datetime: 2020-12-15T00:00:00Z
+    state variables: *vars
+    filetype: fms restart
+    is restart: false
+    datapath: Data/
+    filename is datetime templated: true
+    filename_nonrestart: fms_nonrestart.%yyyy%mm%dd.%hh%MM%ssz.nc
+  output:
+    state variables: *vars	
+    filetype: fms restart
+    datapath: Data/
+    filename_core: fms_nonrestart2restart.fv_core.res.nc
+    filename_trcr: fms_nonrestart2restart.fv_tracer.res.nc
+    filename_sfcd: fms_nonrestart2restart.sfc_data.nc
+    filename_sfcw: fms_nonrestart2restart.fv_srf_wnd.res.nc
+    filename_cplr: fms_nonrestart2restart.coupler.res
+
+test:
+  reference filename: testoutput/convertstate_gfs_restart2fms_nonrestart.ref
+  test output filename: testoutput/convertstate_gfs_fms_nonrestart2restart.test.out
+  float relative tolerance: 1.0e-3

@@ -9,7 +9,7 @@ linear variable change tests:
     linear variable change name: Analysis2Model
     testinverse: 1
     input variables: [ua,va,t,ps,sphum,ice_wat,liq_wat,o3mr]
-    output variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+    output variables: [ud,vd,T,delp,sphum,ice_wat,liq_wat,o3mr]
   tolerance inverse: 1000
 geometry:
   fms initialization:
@@ -29,4 +29,4 @@ background:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]

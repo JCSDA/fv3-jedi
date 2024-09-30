@@ -14,7 +14,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
 model aux control: null
 model aux error: null
 model test:
@@ -24,7 +24,7 @@ model test:
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
-  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis]
+  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201214.210000.fv_core.res.nc
   filename_trcr: 20201214.210000.fv_tracer.res.nc

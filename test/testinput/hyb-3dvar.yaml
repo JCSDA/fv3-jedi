@@ -20,7 +20,7 @@ cost function:
     prefix: 20201215.000000.c24
     # Note that u and v aren't used in the minimization since the model isn't run
     # but are included here to test the interpolation to lower resolution
-    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+    state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
   background error:

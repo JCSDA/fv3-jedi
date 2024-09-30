@@ -12,7 +12,7 @@ states to structured grid:
   state:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
-    state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+    state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m,ps]
     datapath: Data/inputs/gfs_c12/bkg

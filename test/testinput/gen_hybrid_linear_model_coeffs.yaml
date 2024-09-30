@@ -18,11 +18,11 @@ hybrid linear model:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      tlm variables: [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr]
+      tlm variables: [u,v,ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr]
       trajectory:
-        model variables: &modelvars [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
+        model variables: &modelvars [u,v,ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr,phis]
   update tstep: PT3H
-  variables: [ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr]
+  variables: [ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr]
   coefficients:
     output:
       base filepath: Data/hybrid_linear_model_coeffs
@@ -60,7 +60,7 @@ hybrid linear model:
         filename_sfcd: 20201214.210000.sfc_data.nc
         filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
         filename_cplr: 20201214.210000.coupler.res
-        state variables: &bgvars [u,v,ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr,phis]
+        state variables: &bgvars [u,v,ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr,phis]
       nonlinear ensemble:
         read:
           members from template:
@@ -80,7 +80,7 @@ hybrid linear model:
   name: HTLM
 
 test:
-  variables: [ua,va,T,DELP,sphum,liq_wat,ice_wat,o3mr]
+  variables: [ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr]
   reference filename: testoutput/gen_hybrid_linear_model_coeffs.ref
   test output filename: testoutput/gen_hybrid_linear_model_coeffs.test.out
   float relative tolerance: 1.0e-3

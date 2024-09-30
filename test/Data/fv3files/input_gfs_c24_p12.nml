@@ -16,6 +16,14 @@
   cf_compliance           = F
 /
 
+&fms2_io_nml
+  ncchksz               = 65536
+  netcdf_default_format = "64bit"
+  header_buffer_val     = 16384
+  deflate_level         = 0
+  shuffle               = .false.
+/
+
 &fv_core_nml
   layout = 1,2
   io_layout = 1,1

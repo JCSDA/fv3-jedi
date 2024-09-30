@@ -8,7 +8,7 @@ cost function:
     filename_sfcd: 20201214.210000.sfc_data.nc
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: [u,v,ua,va,T,ps,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+    state variables: [u,v,ua,va,T,ps,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
   background error:
@@ -231,7 +231,7 @@ cost function:
     lm_do_trb: 0
     lm_do_mst: 0
     tstep: PT1H
-    model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+    model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                       slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                       u_srf,v_srf,f10m]
   geometry:
@@ -266,12 +266,12 @@ variational:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      tlm variables: [ud,vd,T,delp,sphum,ice_wat,liq_wat,o3mr]
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
       trajectory:
-        model variables: [ud,vd,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+        model variables: [ud,vd,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
   - ninner: 1
     gradient norm reduction: 1e-10
     test: on
@@ -286,9 +286,9 @@ variational:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables: [ud,vd,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      tlm variables: [ud,vd,T,delp,sphum,ice_wat,liq_wat,o3mr]
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
       trajectory:
-        model variables: [ud,vd,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+        model variables: [ud,vd,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]

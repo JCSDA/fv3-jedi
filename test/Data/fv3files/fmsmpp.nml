@@ -15,3 +15,11 @@
        deflate_level           = -1
        cf_compliance           = F
 /
+
+&fms2_io_nml
+  ncchksz               = 65536
+  netcdf_default_format = "64bit"
+  header_buffer_val     = 16384
+  deflate_level         = 0
+  shuffle               = .false.
+/

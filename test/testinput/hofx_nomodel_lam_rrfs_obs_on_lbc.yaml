@@ -18,8 +18,8 @@ state:
   filename_sfcw: 20201215.000000.rrfs_C403.fv_srf_wnd.res.tile1.nc
   filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
   filename_cplr: 20201215.000000.rrfs_C403.coupler.res
-  state variables: [u,v,T,DELP,sphum]
-# state variables: [u,v,T,DELP,sphum,o3mr,ice_wat,liq_wat,
+  state variables: [u,v,T,delp,sphum]
+# state variables: [u,v,T,delp,sphum,o3mr,ice_wat,liq_wat,
 #                   rainwat,snowwat,graupel,water_nc,ice_nc,rain_nc,liq_aero,ice_aero,
 #                   phis,slmsk,sheleg,tsea,vtype,stype,vfrac,tslb,smois,snwdph,
 #                   u_srf,v_srf,f10m,zorl,t2m]

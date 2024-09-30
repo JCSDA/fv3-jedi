@@ -34,7 +34,6 @@ list( APPEND fv3jedi_src_files
   Increment/Increment.interface.h
   Increment/fv3jedi_increment_interface_mod.F90
   Increment/fv3jedi_increment_mod.F90
-  IO/FV3Restart/fv3jedi_io_fms_mod.f90
   IO/FV3Restart/IOFms.cc
   IO/FV3Restart/IOFms.h
   IO/FV3Restart/IOFms.interface.F90
@@ -149,6 +148,13 @@ list( APPEND fv3jedi_src_files
   Tlm/Traj.interface.F90
   Tlm/Traj.interface.h
 )
+
+# Source file FMS depending on the availability of FMS2 IO
+IF(HAS_FMS2_IO)
+  list( APPEND fv3jedi_src_files IO/FV3Restart/fv3jedi_io_fms2_mod.f90 )
+ELSE()
+  list( APPEND fv3jedi_src_files IO/FV3Restart/fv3jedi_io_fms_mod.f90 )
+ENDIF()
 
 # Precision of fv3
 IF(FV3_PRECISION MATCHES "DOUBLE" OR NOT FV3_PRECISION)

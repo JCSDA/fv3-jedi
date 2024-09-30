@@ -14,7 +14,7 @@ geometry:
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
-  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                     u_srf,v_srf,f10m]
   datapath: Data/inputs/gfs_c12/bkg/
@@ -30,7 +30,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                     u_srf,v_srf,f10m]
 observations:

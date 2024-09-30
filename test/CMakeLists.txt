@@ -142,6 +142,8 @@ list( APPEND fv3jedi_testinput
   testinput/convertstate_gfs_restart2history.yaml
   testinput/convertstate_gfs_history2restart.yaml
   testinput/comparestates_gfs_restart2history2restart.yaml
+  testinput/convertstate_gfs_restart2fms_nonrestart.yaml
+  testinput/convertstate_gfs_fms_nonrestart2restart.yaml
   testinput/converttogauss_gfs.yaml
   testinput/diffstates_geos.yaml
   testinput/diffstates_gfs.yaml
@@ -317,6 +319,8 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_gfs_c2gaussian.ref
   testoutput/convertstate_gfs_restart2history.ref
   testoutput/convertstate_gfs_history2restart.ref
+  testoutput/convertstate_gfs_restart2fms_nonrestart.ref
+  testoutput/convertstate_gfs_fms_nonrestart2restart.ref
   testoutput/convertstate_gchp_from_stretched_grid.ref
   testoutput/convertstate_gchp_to_stretched_grid.ref
   testoutput/converttogauss_gfs.ref
@@ -449,6 +453,7 @@ Data/fieldmetadata/ufs-aerosol.yaml
 Data/fieldmetadata/gfs-history.yaml
 Data/fieldmetadata/gfs_v17-land.yaml
 Data/fieldmetadata/gfs-restart.yaml
+Data/fieldmetadata/gfs-restart-DELP.yaml
 Data/fieldmetadata/gfs-restart-surface-masks.yaml
 Data/fieldmetadata/lam_cmaq.yaml
 Data/fieldmetadata/ufs.yaml
@@ -966,6 +971,19 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_history2restart
                   ARGS     testinput/convertstate_gfs_history2restart.yaml
                   COMMAND  fv3jedi_convertstate.x
                   TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_restart2history )
+
+if ( HAS_FMS2_IO )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_restart2fms_nonrestart
+                    MPI      6
+                    ARGS     testinput/convertstate_gfs_restart2fms_nonrestart.yaml
+                    COMMAND  fv3jedi_convertstate.x )
+
+  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_fms_nonrestart2restart
+                    MPI      6
+                    ARGS     testinput/convertstate_gfs_fms_nonrestart2restart.yaml
+                    COMMAND  fv3jedi_convertstate.x
+                    TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_restart2fms_nonrestart )
+endif()		  
 
 if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_coldstartwinds

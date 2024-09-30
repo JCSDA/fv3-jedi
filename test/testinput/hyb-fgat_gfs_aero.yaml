@@ -6,7 +6,7 @@ cost function:
     filename_core: 20201214.210000.fv_core.res.nc
     filename_trcr: 20201214.210000.fv_tracer.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: [T,DELP,sphum,
+    state variables: [T,delp,sphum,
                       so4,bc1,bc2,oc1,oc2,
                       dust1,dust2,dust3,dust4,dust5,
                       seas1,seas2,seas3,seas4]

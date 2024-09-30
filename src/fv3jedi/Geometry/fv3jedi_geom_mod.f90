@@ -20,7 +20,6 @@ use fckit_mpi_module,           only: fckit_mpi_comm
 use fckit_configuration_module, only: fckit_configuration
 
 ! fms uses
-use fms_io_mod,                 only: nullify_domain
 use fms_mod,                    only: fms_init
 use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
@@ -409,7 +408,6 @@ call setup_domain( self%domain_fix, self%npx-1, self%npy-1, &
                    self%ntiles, self%layout, self%io_layout, 3)
 
 self%domain => self%domain_fix
-call nullify_domain()
 
 ! Optionally write the geometry to file
 ! -------------------------------------
@@ -843,7 +841,7 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
                          symmetry=is_symmetry, tile_id=tile_id, &
                          name='cubic_grid')
 
-  if (io_layout(1) /= 1 .or. io_layout(2) /= 1) call mpp_define_io_domain(domain, io_layout)
+  call mpp_define_io_domain(domain, io_layout)
 
   deallocate(pe_start, pe_end)
   deallocate(layout2D, global_indices)

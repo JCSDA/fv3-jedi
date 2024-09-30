@@ -16,7 +16,7 @@ state test:
     filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     tile is a dimension: [true]
     clobber existing files: [false]
-    state variables: [DELP,NO2,NO,O3,PS,SPHU]
+    state variables: [delp,NO2,NO,O3,PS,SPHU]
   state generate:
     analytic init:
       method: dcmip-test-4-0

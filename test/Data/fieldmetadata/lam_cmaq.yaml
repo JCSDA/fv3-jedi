@@ -9,9 +9,6 @@ field metadata:
 - long name: air_temperature
   io name: T
 
-- long name: air_pressure_thickness
-  io name: DELP
-
 - long name: volume_mixing_ratio_of_no2
   io name: no2
   units: mol mol-1 dry

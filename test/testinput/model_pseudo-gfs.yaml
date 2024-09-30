@@ -33,6 +33,6 @@ initial condition:
   filename_sfcd: 20201214.210000.sfc_data.nc
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
-  state variables: [u,v,ua,va,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr,phis,
+  state variables: [u,v,ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                     u_srf,v_srf,f10m]

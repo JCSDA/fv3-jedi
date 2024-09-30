@@ -9,9 +9,6 @@ field metadata:
 - long name: air_temperature
   io name: T
 
-- long name: air_pressure_thickness
-  io name: DELP
-
 - long name: stc
   io file: surface
 

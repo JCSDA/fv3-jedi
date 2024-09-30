@@ -15,7 +15,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4,dust5]
+  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4,dust5]
 model aux control: null
 model aux error: null
 model test:
@@ -25,7 +25,7 @@ model test:
 initial condition:
   datetime: 2021-08-01T06:00:00Z
   filetype: fms restart
-  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4,dust5]
+  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4,dust5]
   datapath: Data/inputs/gfs_aero_c12/bkg
   filename_core: 20210801.060000.fv_core.res.nc
   filename_trcr: 20210801.060000.fv_tracer.res.nc

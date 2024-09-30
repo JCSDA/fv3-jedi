@@ -23,7 +23,7 @@ initial condition:
   filetype: cube sphere history
   datapath: Data/inputs/geos_c12
   filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  state variables: [DELP,volume_mixing_ratio_of_no2,volume_mixing_ratio_of_no,volume_mixing_ratio_of_o3,PS,SPHU]
+  state variables: [delp,volume_mixing_ratio_of_no2,volume_mixing_ratio_of_no,volume_mixing_ratio_of_o3,PS,SPHU]
 observations:
   observers:
   - obs space:

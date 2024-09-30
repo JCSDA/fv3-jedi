@@ -34,7 +34,7 @@ variable change tests:
       femps_levelprocs: -1
       femps_path2fv3gridfiles: Data/femps
       input variables: [psi,chi,t,tv,delp,ps,q,rh,qi,ql,o3]
-      output variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      output variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
     state:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
@@ -44,6 +44,6 @@ variable change tests:
       filename_sfcd: 20201215.000000.sfc_data.nc
       filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
       filename_cplr: 20201215.000000.coupler.res
-      state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+      state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
     tolerance inverse: 1.0e-4
     inverse first: true #Switched input and output variables

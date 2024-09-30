@@ -16,7 +16,7 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4]
+  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4]
 
 initial condition:
   datetime: 2021-08-01T06:00:00Z
@@ -26,7 +26,7 @@ initial condition:
   filename_trcr: 20210801.060000.fv_tracer.res.nc
   filename_sfcw: 20210801.060000.fv_srf_wnd.res.nc
   filename_cplr: 20210801.060000.coupler.res
-  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4]
+  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4]
 
 output:
   filetype: fms restart

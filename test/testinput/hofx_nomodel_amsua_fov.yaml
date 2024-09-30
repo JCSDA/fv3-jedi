@@ -28,7 +28,7 @@ state:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-  state variables: [u,v,ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr,phis,
+  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                     u_srf,v_srf,f10m]
 observations:

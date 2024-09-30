@@ -15,7 +15,7 @@ state test:
     filename_sfcd: 20200903.180000.sfc_data.res.tile1.nc
     filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
     filename_cplr: 20200903.180000.coupler.res
-    state variables: [u,v,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr,
+    state variables: [u,v,T,delp,ps,sphum,ice_wat,liq_wat,o3mr,
                       volume_mixing_ratio_of_no2,
                       volume_mixing_ratio_of_no,
                       volume_mixing_ratio_of_o3,

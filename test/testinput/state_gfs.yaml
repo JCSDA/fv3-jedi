@@ -18,7 +18,7 @@ state test:
     filename_sfcd: 20201215.000000.sfc_data.nc
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
-    state variables: [u,v,ua,va,T,DELP,ps,sphum,ice_wat,liq_wat,o3mr]
+    state variables: [u,v,ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
   state generate:
     analytic init:
       method: dcmip-test-4-0

@@ -22,7 +22,7 @@ state1: #Analysis
   filename_sfcd: 20201215.000000.hyb-3dvar.c24.sfc_data.nc
   filename_sfcw: 20201215.000000.hyb-3dvar.c24.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.hyb-3dvar.c24.coupler.res
-  state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+  state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
 state2: #background
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -32,7 +32,7 @@ state2: #background
   filename_sfcd: 20201215.000000.c24.sfc_data.nc
   filename_sfcw: 20201215.000000.c24.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.c24.coupler.res
-  state variables: [ua,va,T,DELP,sphum,ice_wat,liq_wat,o3mr]
+  state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
 output:
   filetype: fms restart
   datapath: Data/increment/
