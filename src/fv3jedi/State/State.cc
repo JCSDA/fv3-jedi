@@ -15,10 +15,13 @@
 #include "boost/none_t.hpp"
 
 #include "atlas/field.h"
+#include "atlas/functionspace.h"
 
 #include "eckit/exception/Exceptions.h"
 
+#include "oops/base/GeometryData.h"
 #include "oops/base/Variables.h"
+#include "oops/generic/GlobalInterpolator.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
@@ -99,8 +102,7 @@ State::State(const Geometry & resol, const State & other)
 {
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
-  fv3jedi_state_change_resol_f90(keyState_, geom_.toFortran(), other.keyState_,
-                                 other.geom_.toFortran());
+  this->changeResolution(other);
   oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
 }
 
@@ -144,8 +146,37 @@ State & State::operator=(const State & rhs) {
 // -------------------------------------------------------------------------------------------------
 
 void State::changeResolution(const State & other) {
-  fv3jedi_state_change_resol_f90(keyState_, geom_.toFortran(), other.keyState_,
-                                 other.geom_.toFortran());
+  // If both states have same resolution, then copy instead of interpolating
+  if (geom_.isEqual(other.geom_)) {
+    fv3jedi_state_copy_f90(keyState_, other.keyState_);
+    time_ = other.time_;
+    return;
+  }
+
+  // Build oops interpolator -- this takes a few extra steps at this level
+  const oops::GeometryData source_geom(other.geom_.functionSpace(),
+                                       other.geom_.fields(),
+                                       other.geom_.levelsAreTopDown(),
+                                       other.geom_.getComm());
+  const atlas::FunctionSpace target_fs = geom_.functionSpace();
+  eckit::LocalConfiguration conf;
+  // Use oops interpolator to handle integer/categorical fields correctly
+  // Once the atlas interpolator gains support for this feature, we could make this configurable
+  // from the user-facing yaml file; for now though, the atlas interpolator would be wrong for the
+  // many integer fields of fv3-jedi.
+  conf.set("local interpolator type", "oops unstructured grid interpolator");
+  oops::GlobalInterpolator interp(conf, source_geom, target_fs, geom_.getComm());
+
+  atlas::FieldSet source{};
+  atlas::FieldSet target{};
+
+  // Interpolate atlas::FieldSet representation of fv3 data
+  other.toFieldSet(source);
+  interp.apply(source, target);
+  this->fromFieldSet(target);
+
+  // Interpolation did not act on interface fields
+  this->setInterfaceFieldsOutOfDate(true);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -257,6 +288,7 @@ void State::accumul(const double & zz, const State & xx) {
 // -------------------------------------------------------------------------------------------------
 
 double State::norm() const {
+  this->synchronizeInterfaceFields();
   double zz = 0.0;
   fv3jedi_state_norm_f90(keyState_, zz);
   return zz;

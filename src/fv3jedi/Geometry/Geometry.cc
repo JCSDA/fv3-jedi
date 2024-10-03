@@ -210,6 +210,14 @@ Geometry::~Geometry() {
 
 // -------------------------------------------------------------------------------------------------
 
+bool Geometry::isEqual(const Geometry & other) const {
+  bool equal = false;
+  fv3jedi_geom_is_equal_f90(keyGeom_, other.keyGeom_, equal);
+  return equal;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 GeometryIterator Geometry::begin() const {
   // return start of the geometry on this mpi tile
   int ist, iend, jst, jend, kst, kend, npz;

@@ -9,7 +9,6 @@ input geometry:
   field metadata override: Data/fieldmetadata/geos.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
-  interpolation method: bump
   npx: 25
   npy: 25
   npz: 72

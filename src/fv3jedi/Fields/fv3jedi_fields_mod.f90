@@ -22,7 +22,6 @@ use string_utils
 use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_field, put_field, &
                                      hasfield, create_field
 use fv3jedi_geom_mod,          only: fv3jedi_geom
-use fv3jedi_interpolation_mod, only: field2field_interp
 use fv3jedi_kinds_mod,         only: kind_real
 use fields_metadata_mod,       only: field_metadata
 use wind_vt_mod,               only: a_to_d
@@ -57,8 +56,6 @@ type :: fv3jedi_fields
     procedure, public :: copy
     procedure, public :: zero
     procedure, public :: norm
-    procedure, public :: change_resol
-    procedure, public :: change_resol_ad
     procedure, public :: minmaxrms
     procedure, public :: accumul
     procedure, public :: serialize
@@ -261,85 +258,6 @@ call self%f_comm%allreduce(ii,iisum,fckit_mpi_sum())
 normout = sqrt(normout/real(iisum,kind_real))
 
 endsubroutine norm
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine change_resol(self, geom, other, geom_other)
-
-implicit none
-class(fv3jedi_fields), intent(inout) :: self
-type(fv3jedi_geom),    intent(inout) :: geom
-class(fv3jedi_fields), intent(in)    :: other
-type(fv3jedi_geom),    intent(inout) :: geom_other
-
-! Interpolation
-integer :: var
-type(field2field_interp) :: interp
-logical :: integer_interp = .false.
-
-call checksame(self%fields, other%fields, "fv3jedi_fields_mod.change_resol")
-
-if ((other%iec-other%isc+1)-(self%iec-self%isc+1) == 0 .AND. &
-     geom%stretch_fac == geom_other%stretch_fac .AND. &
-     geom%target_lat == geom_other%target_lat .AND. &
-     geom%target_lon == geom_other%target_lon) then
-
-     call self%copy(other)
-
-else
-
-  ! Check if integer interp needed
-  do var = 1, self%nf
-    if (trim(other%fields(var)%interpolation_type) == "integer") integer_interp = .true.
-  enddo
-
-  call interp%create(geom%interp_method, integer_interp, geom_other, geom)
-  call interp%apply(self%nf, geom_other, other%fields, geom, self%fields)
-  call interp%delete()
-
-  ! Flag fields as out-of-date in anticipation of upcoming code change making interpolator generic,
-  ! so that it would no longer act on interface-specific fields. Today this out-of-date flag is not
-  ! needed, but by putting it in now we can anticipate synchronizations needed after this change.
-  ! TODO(FH) make this interpolator change!
-  if (self%ninterface_specific > 0) then
-    self%interface_fields_are_out_of_date = .true.
-  end if
-
-endif
-
-end subroutine change_resol
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine change_resol_ad(self, geom, other, geom_other)
-
-implicit none
-class(fv3jedi_fields), intent(inout) :: self       ! Target fields
-type(fv3jedi_geom),    intent(in)    :: geom       ! Target geometry
-class(fv3jedi_fields), intent(in)    :: other      ! Source fields
-type(fv3jedi_geom),    intent(in)    :: geom_other ! Source geometry
-
-integer                  :: var
-type(field2field_interp) :: interp
-logical                  :: integer_interp = .false.
-
-call checksame(self%fields, other%fields, "fv3jedi_fields_mod.change_resol_ad")
-
-if ((other%iec - other%isc + 1) - (self%iec - self%isc + 1) == 0 .AND. &
-  geom%stretch_fac == geom_other%stretch_fac .AND. &
-  geom%target_lat == geom_other%target_lat .AND. &
-  geom%target_lon == geom_other%target_lon) then
-  call self%copy(other)
-else
-  do var = 1, self%nf
-    if (trim(other%fields(var)%interpolation_type) == "integer") integer_interp = .true.
-  enddo
-  call interp%create(geom_other%interp_method, integer_interp, geom, geom_other)
-  call interp%apply_ad(self%nf, geom, self%fields, geom_other, other%fields)
-  call interp%delete()
-endif
-
-end subroutine change_resol_ad
 
 ! --------------------------------------------------------------------------------------------------
 

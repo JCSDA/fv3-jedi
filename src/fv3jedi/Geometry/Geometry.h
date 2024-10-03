@@ -47,6 +47,9 @@ class Geometry : public util::Printable,
 
   Geometry & operator=(const Geometry &) = delete;
 
+  // For use by other fv3jedi code
+  bool isEqual(const Geometry &) const;
+
   bool levelsAreTopDown() const {return true;}
 
   GeometryIterator begin() const;

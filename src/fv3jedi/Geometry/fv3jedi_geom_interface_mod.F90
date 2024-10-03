@@ -175,6 +175,31 @@ end subroutine c_fv3jedi_geom_delete
 
 ! --------------------------------------------------------------------------------------------------
 
+subroutine c_fv3jedi_geom_is_equal(c_key_self, c_key_other, c_equal) &
+    bind(c,name='fv3jedi_geom_is_equal_f90')
+
+integer(c_int), intent(in) :: c_key_self
+integer(c_int), intent(in) :: c_key_other
+logical(c_bool), intent(inout) :: c_equal
+
+type(fv3jedi_geom), pointer :: self
+type(fv3jedi_geom), pointer :: other
+logical :: equal
+
+! LinkedList
+! ----------
+call fv3jedi_geom_registry%get(c_key_self, self)
+call fv3jedi_geom_registry%get(c_key_other, other)
+
+! Call implementation
+! -------------------
+call self%is_equal(other, equal)
+c_equal = equal
+
+end subroutine c_fv3jedi_geom_is_equal
+
+! --------------------------------------------------------------------------------------------------
+
 subroutine c_fv3jedi_geom_print(c_key_self, c_cube) bind(c,name='fv3jedi_geom_print_f90')
 
 integer(c_int), intent(in)    :: c_key_self

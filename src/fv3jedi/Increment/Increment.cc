@@ -16,11 +16,14 @@
 #include <vector>
 
 #include "atlas/field.h"
+#include "atlas/functionspace.h"
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
+#include "oops/base/GeometryData.h"
 #include "oops/base/Variables.h"
+#include "oops/generic/GlobalInterpolator.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
@@ -51,13 +54,48 @@ Increment::Increment(const Geometry & geom, const Increment & other, const bool 
 {
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
-  if (ad) {
-    fv3jedi_increment_change_resol_ad_f90(keyInc_, geom_.toFortran(), other.keyInc_,
-                                          other.geom_.toFortran());
-  } else {
-    fv3jedi_increment_change_resol_f90(keyInc_, geom_.toFortran(), other.keyInc_,
-                                       other.geom_.toFortran());
+
+  // If both increments have same resolution, then copy instead of interpolating
+  if (geom_.isEqual(other.geom_)) {
+    fv3jedi_increment_copy_f90(keyInc_, other.keyInc_);
+    time_ = other.time_;
+    return;
   }
+
+  eckit::LocalConfiguration conf;
+  // Use oops interpolator for consistency with State resolution change.
+  conf.set("local interpolator type", "oops unstructured grid interpolator");
+
+  atlas::FieldSet source{};
+  atlas::FieldSet target{};
+
+  if (ad) {
+    const oops::GeometryData source_geom(geom_.functionSpace(),
+                                         geom_.fields(),
+                                         geom_.levelsAreTopDown(),
+                                         geom_.getComm());
+    const atlas::FunctionSpace target_fs = other.geom_.functionSpace();
+    oops::GlobalInterpolator interp(conf, source_geom, target_fs, geom_.getComm());
+
+    other.toFieldSet(target);
+    interp.applyAD(source, target);
+    this->fromFieldSet(source);
+  } else {
+    const oops::GeometryData source_geom(other.geom_.functionSpace(),
+                                         other.geom_.fields(),
+                                         other.geom_.levelsAreTopDown(),
+                                         other.geom_.getComm());
+    const atlas::FunctionSpace target_fs = geom_.functionSpace();
+    oops::GlobalInterpolator interp(conf, source_geom, target_fs, geom_.getComm());
+
+    other.toFieldSet(source);
+    interp.apply(source, target);
+    this->fromFieldSet(target);
+  }
+
+  // Interpolation did not act on interface fields
+  this->setInterfaceFieldsOutOfDate(true);
+
   oops::Log::trace() << "Increment::Increment (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -230,6 +268,7 @@ void Increment::write(const eckit::Configuration & config) const {
 }
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {
+  this->synchronizeInterfaceFields();
   double zz = 0.0;
   fv3jedi_increment_norm_f90(keyInc_, zz);
   return zz;

@@ -9,7 +9,6 @@ input geometry:
   field metadata override: Data/fieldmetadata/gchp.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
-  interpolation method: bump
   npx: 13
   npy: 13
   npz: 72

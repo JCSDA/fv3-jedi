@@ -97,10 +97,8 @@ list( APPEND fv3jedi_src_files
   Utilities/fv3jedi_communication_mod.f90
   Utilities/fv3jedi_constants_mod.f90
   Utilities/fv3jedi_fmsnamelist_mod.f90
-  Utilities/fv3jedi_interpolation_mod.f90
   Utilities/fv3jedi_kinds_mod.f90
   Utilities/fv3jedi_netcdf_utils_mod.F90
-  Utilities/slow_unstructured_interpolation_mod.F90
   VariableChange/VaderCookbook.h
   VariableChange/VariableChange.cc
   VariableChange/VariableChange.h

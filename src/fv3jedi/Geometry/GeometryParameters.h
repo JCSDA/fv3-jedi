@@ -58,7 +58,6 @@ class GeometryParameters : public oops::Parameters {
   oops::Parameter<bool> doSchmidt{ "do_schmidt", false, this};
   oops::OptionalParameter<FMSinitParameters> fmsInit{ "fms initialization", this};
   oops::Parameter<bool> hydrostatic{ "hydrostatic", true, this};
-  oops::Parameter<std::string> interpMethod{ "interpolation method", "barycent", this};
   oops::Parameter<std::vector<int>> ioLayout{ "io_layout", {1, 1}, this};
   oops::Parameter<std::vector<int>> layout{ "layout", {1, 1}, this};
   // vertical coordinate: sigma (default), logp or orography

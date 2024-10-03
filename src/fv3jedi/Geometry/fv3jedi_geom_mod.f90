@@ -55,7 +55,6 @@ type :: fv3jedi_geom
   real(kind=kind_real) :: ptop                                                      !Pressure at top of domain
   type(domain2D) :: domain_fix                                                      !MPP domain
   type(domain2D), pointer :: domain                                                 !MPP domain
-  character(len=10) :: interp_method                                                !Interpolation type
   real(kind=kind_real) :: stretch_fac, target_lon, target_lat
   real(kind=kind_real), allocatable, dimension(:)       :: ak, bk                   !Model level coefficients
   real(kind=kind_real), allocatable, dimension(:,:)     :: grid_lon, grid_lat       !Lat/lon centers
@@ -102,6 +101,7 @@ type :: fv3jedi_geom
     procedure, public :: create
     procedure, public :: clone
     procedure, public :: delete
+    procedure, public :: is_equal
     procedure, public :: fill_bump_lonlat
     procedure, public :: set_and_fill_geometry_fields
     procedure, public :: get_data
@@ -188,12 +188,6 @@ type(fv3jedi_fmsnamelist) :: fmsnamelist
 ! Add the communicator to the geometry
 ! ------------------------------------
 self%f_comm = comm
-
-! Interpolation type
-! ------------------
-call conf%get_or_die("interpolation method",str)
-self%interp_method = str
-deallocate(str)
 
 ! Stretch factor, target_lon, and target_lat
 ! --------------
@@ -519,7 +513,6 @@ self%a12             = other%a12
 self%a21             = other%a21
 self%a22             = other%a22
 self%f_comm          = other%f_comm
-self%interp_method   = other%interp_method
 self%stretch_fac     = other%stretch_fac
 self%target_lon      = other%target_lon
 self%target_lat      = other%target_lat
@@ -616,6 +609,33 @@ call self%afunctionspace_for_bump%final()
 !call mpp_exit
 
 end subroutine delete
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine is_equal(self, other, equal)
+
+class(fv3jedi_geom), intent(in) :: self
+class(fv3jedi_geom), intent(in) :: other
+logical, intent(out) :: equal
+
+equal = .false.
+
+! At the moment, equality is based on the fundamental integer-type members; could make more
+! rigorous by comparing more data
+if (self%npx == other%npx .and. self%npy == other%npy .and. self%npz == other%npz &
+    .and. self%ntile == other%ntile .and. self%ntiles == other%ntiles &
+    .and. self%isc == other%isc .and. self%iec == other%iec &
+    .and. self%jsc == other%jsc .and. self%jec == other%jec &
+    .and. self%kec == other%kec &
+    .and. self%layout(1) == other%layout(1) .and. self%layout(2) == other%layout(2) &
+    .and. self%layout(1) == other%layout(1) .and. self%layout(2) == other%layout(2) &
+    .and. self%stretch_fac == other%stretch_fac &
+    .and. self%target_lon == other%target_lon &
+    .and. self%target_lat == other%target_lat) then
+  equal = .true.
+end if
+
+end subroutine is_equal
 
 ! --------------------------------------------------------------------------------------------------
 

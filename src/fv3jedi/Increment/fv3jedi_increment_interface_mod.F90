@@ -442,52 +442,6 @@ end subroutine fv3jedi_increment_diff_states_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_increment_change_resol_c(c_key_inc,c_key_geom,c_key_rhs,c_key_geom_rhs) &
-           bind(c,name='fv3jedi_increment_change_resol_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_inc
-integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_rhs
-integer(c_int), intent(in) :: c_key_geom_rhs
-
-type(fv3jedi_increment), pointer :: self, other
-type(fv3jedi_geom),  pointer :: geom, geom_other
-
-call fv3jedi_increment_registry%get(c_key_inc,self)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_increment_registry%get(c_key_rhs,other)
-call fv3jedi_geom_registry%get(c_key_geom_rhs, geom_other)
-
-call self%change_resol(geom, other, geom_other)
-
-end subroutine fv3jedi_increment_change_resol_c
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine fv3jedi_increment_change_resol_ad_c(c_key_inc,c_key_geom,c_key_rhs,c_key_geom_rhs) &
-           bind(c,name='fv3jedi_increment_change_resol_ad_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_inc
-integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_rhs
-integer(c_int), intent(in) :: c_key_geom_rhs
-
-type(fv3jedi_increment), pointer :: self, other
-type(fv3jedi_geom),  pointer :: geom, geom_other
-
-call fv3jedi_increment_registry%get(c_key_inc,self)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_increment_registry%get(c_key_rhs,other)
-call fv3jedi_geom_registry%get(c_key_geom_rhs, geom_other)
-
-call self%change_resol_ad(geom, other, geom_other)
-
-end subroutine fv3jedi_increment_change_resol_ad_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_increment_norm_c(c_key_inc, prms) bind(c,name='fv3jedi_increment_norm_f90')
 
 implicit none

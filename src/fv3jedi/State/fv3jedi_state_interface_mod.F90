@@ -171,29 +171,6 @@ end subroutine fv3jedi_state_add_increment_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_change_resol_c(c_key_state,c_key_geom,c_key_rhs,c_key_geom_rhs) &
-           bind(c,name='fv3jedi_state_change_resol_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_state
-integer(c_int), intent(in) :: c_key_geom
-integer(c_int), intent(in) :: c_key_rhs
-integer(c_int), intent(in) :: c_key_geom_rhs
-
-type(fv3jedi_state), pointer :: self, other
-type(fv3jedi_geom),  pointer :: geom, geom_other
-
-call fv3jedi_state_registry%get(c_key_state,self)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-call fv3jedi_state_registry%get(c_key_rhs, other)
-call fv3jedi_geom_registry%get(c_key_geom_rhs, geom_other)
-
-call self%change_resol(geom, other, geom_other)
-
-end subroutine fv3jedi_state_change_resol_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_state_analytic_init_c(c_key_state, c_key_geom, c_conf) &
            bind(c,name='fv3jedi_state_analytic_init_f90')
 
