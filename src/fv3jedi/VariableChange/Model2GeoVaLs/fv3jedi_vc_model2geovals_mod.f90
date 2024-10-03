@@ -1,4 +1,4 @@
-! (C) Copyright 2020 UCAR
+! (C) Copyright 2020-2024 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -167,6 +167,10 @@ real(kind=kind_real), allocatable :: f10m    (:,:,:)       !Surface wind reducti
 real(kind=kind_real), pointer     :: u_srf   (:,:,:)
 real(kind=kind_real), pointer     :: v_srf   (:,:,:)
 real(kind=kind_real) :: wspd
+
+!observable_domain_mask
+logical :: have_domain_mask
+real(kind=kind_real), allocatable :: observable_domain_mask(:,:,:)    !domain mask
 
 !qiql
 logical :: have_qiql
@@ -529,6 +533,14 @@ elseif ( xm%has_field( 'u_srf') .and. xm%has_field( 'v_srf') .and. have_winds ) 
   have_f10m = .true.
 endif
 
+! observable_domain_mask
+! -----------
+have_domain_mask = .false.
+allocate(observable_domain_mask(self%isc:self%iec, self%jsc:self%jec, 1))
+
+! the compute domain defines the interior of the domain. Set mask index = 0.
+observable_domain_mask(self%isc:self%iec, self%jsc:self%jec, 1) = 0.0_kind_real
+have_domain_mask = .true.
 
 ! CRTM mixing ratio
 ! -----------------
@@ -1079,6 +1091,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_f10m) call field_fail(fields_to_do(f))
     field_ptr = f10m
 
+  case ("observable_domain_mask")
+
+    if (.not. have_domain_mask) call field_fail(fields_to_do(f))
+    field_ptr = observable_domain_mask
+
   case ("leaf_area_index")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
@@ -1207,6 +1224,7 @@ if (allocated(va)) deallocate(va)
 if (allocated(slmsk)) deallocate(slmsk)
 if (allocated(sfc_rough)) deallocate(sfc_rough)
 if (allocated(f10m)) deallocate(f10m)
+if (allocated(observable_domain_mask)) deallocate(observable_domain_mask)
 if (allocated(ql)) deallocate(ql)
 if (allocated(qi)) deallocate(qi)
 if (allocated(qr)) deallocate(qr)

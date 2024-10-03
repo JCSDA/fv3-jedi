@@ -1354,6 +1354,16 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "observable_domain_mask";
+    md.shortName = "observable_domain_mask";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "surface_emissivity";
     md.shortName = "surface_emissivity";
     md.units = "none";

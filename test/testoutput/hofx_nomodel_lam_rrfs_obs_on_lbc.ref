@@ -10,4 +10,6 @@ specific_humidity                            | Min:+5.6446096657827757e-07 Max:+
 H(x): 
 Aircraft nobs= 3 Min=226.8180998981854, Max=293.580289611548, RMS=268.1696434421962
 
+Synthetic nobs= 1 Min=268.2361207570548, Max=268.2361207570548, RMS=268.2361207570548
+
 End H(x)
