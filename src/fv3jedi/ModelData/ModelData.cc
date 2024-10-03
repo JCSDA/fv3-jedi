@@ -48,7 +48,7 @@ const oops::Variables ModelData::defaultVariables() {
          "effective_radius_of_cloud_liquid_water_particle",
          "mass_content_of_cloud_ice_in_atmosphere_layer", "effective_radius_of_cloud_ice_particle",
          "surface_wind_speed", "surface_wind_from_direction",
-         "eastward_wind", "northward_wind"}));
+         "eastward_wind", "northward_wind", "surface_pressure"}));
 }
 
 // -------------------------------------------------------------------------------------------------
