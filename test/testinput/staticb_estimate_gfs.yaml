@@ -11,7 +11,7 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
   filename_core: 20201215.000000.fv_core.res.nc
@@ -67,7 +67,7 @@ background error:
           - var-mom_3D_2020121503_gfs_mom_000001_1
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           files prefix: cor_2D_gfs
           overriding sampling file: var-mom_2D_2020121421_gfs_sampling
@@ -160,7 +160,7 @@ background error:
           value: 3000.0e3
         - variables:
           - air_temperature
-          - surface_pressure
+          - air_pressure_at_surface
           - specific_humidity
           - cloud_liquid_water
           - ozone_mass_mixing_ratio
@@ -178,7 +178,7 @@ background error:
           files prefix: var_3D_gfs
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           files prefix: var_2D_gfs
       input model files:
@@ -271,7 +271,7 @@ background error:
           filename_sfcw: stddev.fv_srf_wnd.res.nc
           filename_cplr: stddev.coupler.res
   - saber block name: BUMP_VerticalBalance
-    active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
+    active variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface]
     calibration:
       general:
         universe length-scale: 2500.0e3
@@ -299,7 +299,7 @@ background error:
           unbalanced variable: stream_function
         - balanced variable: air_temperature
           unbalanced variable: stream_function
-        - balanced variable: surface_pressure
+        - balanced variable: air_pressure_at_surface
           unbalanced variable: stream_function
         pseudo inverse: true
         variance threshold: 0.1

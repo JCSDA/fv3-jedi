@@ -10,7 +10,7 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-analysis variables: &vars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+analysis variables: &vars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -45,7 +45,7 @@ background error:
           in file: fixed_2500km_0.3
         - in code: ozone_mass_mixing_ratio
           in file: fixed_2500km_0.3
-        - in code: surface_pressure
+        - in code: air_pressure_at_surface
           in file: fixed_2500km
       drivers:
         multivariate strategy: univariate
@@ -62,4 +62,4 @@ background error:
           - ozone_mass_mixing_ratio
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface

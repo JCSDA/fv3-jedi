@@ -14,7 +14,7 @@ background:
   provider: geos
   datapath: Data/staticb/balanced/mem001/
   filename: geos.20201215.000000z.nc4
-  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity]
 background error:
   covariance model: SABER
   saber central block:
@@ -43,7 +43,7 @@ background error:
           value: 3000.0e3
         - variables:
           - air_temperature
-          - surface_pressure
+          - air_pressure_at_surface
           - specific_humidity
 #         - cloud_liquid_water
 #         - ozone_mass_mixing_ratio
@@ -61,7 +61,7 @@ background error:
           files prefix: var_3D_geos
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           files prefix: var_2D_geos
       input model files:

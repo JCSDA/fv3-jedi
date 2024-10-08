@@ -9,7 +9,7 @@ specific_humidity                            | Min:+1.4263959012878502e-09 Max:+
 cloud_liquid_ice                             | Min:-7.7766709947912867e-22 Max:+3.7845767540385194e-04 RMS:+1.5641684671465961e-05
 cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
 ozone_mass_mixing_ratio                      | Min:+2.9744141544568681e-09 Max:+1.8493564124952562e-05 RMS:+4.3563600505976936e-06
-sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2967615326909834e+02 RMS:+2.2355440385275752e+01
 sea_surface_temperature                      | Min:+2.2949735751287963e+02 Max:+3.2799205713584388e+02 RMS:+2.8669969698198128e+02
@@ -34,7 +34,7 @@ specific_humidity                            | Min:+1.6385973223636026e-09 Max:+
 cloud_liquid_ice                             | Min:-4.6255892271795764e-22 Max:+3.8941726719795677e-04 RMS:+1.4392601796007845e-05
 cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470219e-05
 ozone_mass_mixing_ratio                      | Min:+7.8621485615378954e-09 Max:+1.8484501939361488e-05 RMS:+4.3561326195354938e-06
-sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2346611555686604e+02 RMS:+2.2143297049666721e+01
 sea_surface_temperature                      | Min:+2.2931513530174431e+02 Max:+3.2527073972809342e+02 RMS:+2.8670916021979809e+02
@@ -59,7 +59,7 @@ specific_humidity                            | Min:+1.0248780306053949e-09 Max:+
 cloud_liquid_ice                             | Min:-3.7867249550273297e-22 Max:+3.2313205135860927e-04 RMS:+1.4098162738454375e-05
 cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453737e-05
 ozone_mass_mixing_ratio                      | Min:-2.0401767509703437e-09 Max:+1.8151335654549060e-05 RMS:+4.3566629626813112e-06
-sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.3531036324479771e+02 RMS:+2.2473598746514273e+01
 sea_surface_temperature                      | Min:+2.3011878206044767e+02 Max:+3.2540570087232265e+02 RMS:+2.8671047941340396e+02
@@ -124,7 +124,7 @@ specific_humidity                            | Min:+2.6533231326286520e-09 Max:+
 cloud_liquid_ice                             | Min:-8.1056877836707305e-23 Max:+2.3818035301750512e-04 RMS:+1.2565715582387639e-05
 cloud_liquid_water                           | Min:-4.3366476921623137e-21 Max:+7.7383599349672625e-04 RMS:+3.0185804205647764e-05
 ozone_mass_mixing_ratio                      | Min:+1.5194360587250592e-08 Max:+1.7639618550469581e-05 RMS:+4.3558159841709518e-06
-sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111775e+04 RMS:+5.9494834270643069e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111775e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2948421069025403e+02 RMS:+2.2317204754910755e+01
 sea_surface_temperature                      | Min:+2.2964375829169052e+02 Max:+3.2591674251669855e+02 RMS:+2.8670592061058545e+02
@@ -149,7 +149,7 @@ specific_humidity                            | Min:+2.6533221504906868e-09 Max:+
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+2.3818035301750512e-04 RMS:+1.2525302221633031e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+7.5660729844509499e-04 RMS:+3.1179077579045490e-05
 ozone_mass_mixing_ratio                      | Min:+1.5196139685799743e-08 Max:+1.7639618280647788e-05 RMS:+4.3558175009003200e-06
-sfc_geopotential_height_times_grav           | Min:-2.6477954101562500e+02 Max:+4.9483356501111775e+04 RMS:+5.9494834270643069e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111775e+04 RMS:+5.9494834270643069e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6320345634919742e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2948421069025403e+02 RMS:+2.2317204754910755e+01
 sea_surface_temperature                      | Min:+2.2964375829169052e+02 Max:+3.2591674251669855e+02 RMS:+2.8670592061058545e+02

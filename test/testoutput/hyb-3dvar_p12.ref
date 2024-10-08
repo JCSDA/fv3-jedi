@@ -19,7 +19,7 @@ specific_humidity                            | Min:+0.0000000000000000e+00 Max:+
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+2.1218015732204712e-04 RMS:+9.1587804274767895e-06
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+5.7402378332124966e-04 RMS:+2.1997837745822799e-05
 ozone_mass_mixing_ratio                      | Min:+2.7251921645116703e-08 Max:+1.7072764414076378e-05 RMS:+4.3519273778933702e-06
-sfc_geopotential_height_times_grav           | Min:+0.0000000000000000e+00 Max:+3.7892930682172460e+04 RMS:+5.0354946045897923e+03
+geopotential_height_times_gravity_at_surface | Min:+0.0000000000000000e+00 Max:+3.7892930682172460e+04 RMS:+5.0354946045897923e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.5880784586841235e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+1.6788163230136718e+02 RMS:+1.9247612638551360e+01
 sea_surface_temperature                      | Min:+2.3603761036507754e+02 Max:+3.2355589407648756e+02 RMS:+2.8675281400821598e+02
@@ -71,7 +71,7 @@ specific_humidity                            | Min:+0.0000000000000000e+00 Max:+
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+2.1218015734061460e-04 RMS:+9.1587803681326905e-06
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+5.7402378326352197e-04 RMS:+2.1997838228613452e-05
 ozone_mass_mixing_ratio                      | Min:+2.7251921646153859e-08 Max:+1.7072764419882223e-05 RMS:+4.3519273780144756e-06
-sfc_geopotential_height_times_grav           | Min:+0.0000000000000000e+00 Max:+3.7892930682172460e+04 RMS:+5.0354946045897923e+03
+geopotential_height_times_gravity_at_surface | Min:+0.0000000000000000e+00 Max:+3.7892930682172460e+04 RMS:+5.0354946045897923e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.5880784586841235e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+1.6788163230136718e+02 RMS:+1.9247612638551360e+01
 sea_surface_temperature                      | Min:+2.3603761036507754e+02 Max:+3.2355589407648756e+02 RMS:+2.8675281400821598e+02

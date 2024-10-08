@@ -12,7 +12,7 @@ background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface]
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
   filename: geos.20201215.000000z.nc4
@@ -40,7 +40,7 @@ background error:
           unbalanced variable: stream_function
         - balanced variable: air_temperature
           unbalanced variable: stream_function
-        - balanced variable: surface_pressure
+        - balanced variable: air_pressure_at_surface
           unbalanced variable: stream_function
 
 test:

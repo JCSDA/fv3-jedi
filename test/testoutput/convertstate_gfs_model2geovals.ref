@@ -9,7 +9,7 @@ specific_humidity | Min:+1.2804727152986153e-09 Max:+1.8723704386097544e-02 RMS:
 cloud_liquid_ice | Min:-4.2004505407201364e-21 Max:+3.4908649350015467e-04 RMS:+1.4451341902862160e-05
 cloud_liquid_water | Min:-9.4095662968587237e-21 Max:+1.0694775100156446e-03 RMS:+3.4817857684731345e-05
 ozone_mass_mixing_ratio | Min:+2.8166011299632619e-09 Max:+1.7470989779275887e-05 RMS:+4.3563484867392158e-06
-sfc_geopotential_height_times_grav | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 slmsk | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
 sheleg | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509248e+01
 sea_surface_temperature | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798419e+02
@@ -24,17 +24,17 @@ surface_northward_wind | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01
 f10m | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, sfc_geopotential_height_times_grav, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, surface_eastward_wind, surface_northward_wind, f10m
-Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, surface_altitude, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
+Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, surface_eastward_wind, surface_northward_wind, f10m
+Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, height_above_mean_sea_level_at_surface, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 32 | cube sphere face size: C12
 relative_humidity | Min:+9.7386099756970810e-10 Max:+1.0241599791402913e+00 RMS:+4.7443026652312664e-01
-surface_pressure | Min:+5.3985382265251494e+04 Max:+1.0473542095347164e+05 RMS:+9.8984828087583708e+04
+air_pressure_at_surface | Min:+5.3985382265251494e+04 Max:+1.0473542095347164e+05 RMS:+9.8984828087583708e+04
 virtual_temperature | Min:+1.5865052804849046e+02 Max:+3.0815028399811615e+02 RMS:+2.5010088780792660e+02
 mole_fraction_of_ozone_in_air | Min:+1.6996711920336184e-03 Max:+1.0542826851928563e+01 RMS:+2.6288280390864065e+00
 geopotential_height | Min:-1.6837767841805256e+01 Max:+7.9805489051111916e+04 RMS:+2.4840160350346447e+04
-surface_altitude | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
+height_above_mean_sea_level_at_surface | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
 mole_fraction_of_carbon_dioxide_in_air | Min:+4.0700000000000000e+02 Max:+4.0700000000000000e+02 RMS:+4.0700000000000000e+02
 humidity_mixing_ratio | Min:+1.2804727169382260e-06 Max:+1.9080970843572338e+01 RMS:+4.7529192956846131e+00
 mass_content_of_cloud_liquid_water_in_atmosph | Min:+0.0000000000000000e+00 Max:+1.3538278602069012e-01 RMS:+3.3329400924364083e-03
@@ -66,11 +66,11 @@ Output state:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 32 | cube sphere face size: C12
 relative_humidity | Min:+9.7386099756970810e-10 Max:+1.0241599791402913e+00 RMS:+4.7443026652312664e-01
-surface_pressure | Min:+5.3985382265251494e+04 Max:+1.0473542095347164e+05 RMS:+9.8984828087583708e+04
+air_pressure_at_surface | Min:+5.3985382265251494e+04 Max:+1.0473542095347164e+05 RMS:+9.8984828087583708e+04
 virtual_temperature | Min:+1.5865052804849046e+02 Max:+3.0815028399811615e+02 RMS:+2.5010088780792660e+02
 mole_fraction_of_ozone_in_air | Min:+1.6996711920336184e-03 Max:+1.0542826851928563e+01 RMS:+2.6288280390864065e+00
 geopotential_height | Min:-1.6837767841805256e+01 Max:+7.9805489051111916e+04 RMS:+2.4840160350346447e+04
-surface_altitude | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
+height_above_mean_sea_level_at_surface | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209606e+02
 mole_fraction_of_carbon_dioxide_in_air | Min:+4.0700000000000000e+02 Max:+4.0700000000000000e+02 RMS:+4.0700000000000000e+02
 humidity_mixing_ratio | Min:+1.2804727169382260e-06 Max:+1.9080970843572338e+01 RMS:+4.7529192956846131e+00
 mass_content_of_cloud_liquid_water_in_atmosph | Min:+0.0000000000000000e+00 Max:+1.3538278602069012e-01 RMS:+3.3329400924364083e-03

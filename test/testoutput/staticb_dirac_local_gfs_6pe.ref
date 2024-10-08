@@ -4,7 +4,7 @@ Increment print | number of fields = 7 | cube sphere face size: C12
 eastward_wind                                | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_temperature                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+3.0188481500092435e-03
-surface_pressure                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
+air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
@@ -16,7 +16,7 @@ Increment print | number of fields = 7 | cube sphere face size: C12
 eastward_wind                                | Min:-1.6432429491691058e-02 Max:+1.6232829633706432e-02 RMS:+7.5009763809241834e-04
 northward_wind                               | Min:-2.4542488512558761e-02 Max:+2.0577277344200052e-02 RMS:+9.3189407288740277e-04
 air_temperature                              | Min:-6.1342138903816958e-03 Max:+7.1194850041557989e-01 RMS:+3.6001100492528007e-03
-surface_pressure                             | Min:-2.4693951673649014e-01 Max:+5.0491577763731456e-02 RMS:+3.1995404370289887e-02
+air_pressure_at_surface                      | Min:-2.4693951673649014e-01 Max:+5.0491577763731456e-02 RMS:+3.1995404370289887e-02
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00

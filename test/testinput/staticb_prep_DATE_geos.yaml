@@ -12,7 +12,7 @@ background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: &stateVariables [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity]
+  state variables: &stateVariables [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity]
   datapath: Data/staticb/balanced/mem001/
   filename: geos._YYYY__MM__DD_._HH_0000z.nc4
 background error:
@@ -69,7 +69,7 @@ background error:
           files prefix: var-mom_3D__YYYY__MM__DD__HH__geos
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           files prefix: var-mom_2D__YYYY__MM__DD__HH__geos
       output model files:
@@ -87,7 +87,7 @@ background error:
           filename: geos.m4._YYYY__MM__DD_._HH_0000.nc4
   saber outer blocks:
   - saber block name: BUMP_VerticalBalance
-    active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
+    active variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface]
     calibration:
       general:
         universe length-scale: 2500.0e3
@@ -111,7 +111,7 @@ background error:
           unbalanced variable: stream_function
         - balanced variable: air_temperature
           unbalanced variable: stream_function
-        - balanced variable: surface_pressure
+        - balanced variable: air_pressure_at_surface
           unbalanced variable: stream_function
         pseudo inverse: true
         variance threshold: 0.1

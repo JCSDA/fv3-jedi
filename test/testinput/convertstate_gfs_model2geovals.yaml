@@ -20,7 +20,7 @@ variable change:
   mask over: land
   input variables: &inputvars [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,slmsk,sheleg,tsea,
                                vtype,stype,vfrac,stc,smc,snwdph,u_srf,v_srf,f10m]
-  output variables: [rh,ps,tv,mole_fraction_of_ozone_in_air,geopotential_height,surface_altitude,
+  output variables: [rh,ps,tv,mole_fraction_of_ozone_in_air,geopotential_height,height_above_mean_sea_level_at_surface,
                      mole_fraction_of_carbon_dioxide_in_air,humidity_mixing_ratio,
                      mass_content_of_cloud_liquid_water_in_atmosphere_layer,
                      mass_content_of_cloud_ice_in_atmosphere_layer,

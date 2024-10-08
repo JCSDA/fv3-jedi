@@ -37,7 +37,7 @@ field metadata:
   io name: o3mr
   io file: tracer
 
-- long name: sfc_geopotential_height_times_grav
+- long name: geopotential_height_times_gravity_at_surface
   io name: phis
   io file: core
 

@@ -1,5 +1,5 @@
 cost function:
-  analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+  analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
   background:
     datetime: 2020-12-14T21:00:00Z
     filetype: cube sphere history
@@ -35,7 +35,7 @@ cost function:
                 in file: fixed_2500km_0.3
               - in code: mole_fraction_of_ozone_in_air
                 in file: fixed_2500km_0.3
-              - in code: surface_pressure
+              - in code: air_pressure_at_surface
                 in file: fixed_2500km
             drivers:
               multivariate strategy: univariate
@@ -52,7 +52,7 @@ cost function:
                 - mole_fraction_of_ozone_in_air
             - model:
                 variables:
-                - surface_pressure
+                - air_pressure_at_surface
       weight:
         value: 0.1
     - covariance:
@@ -62,7 +62,7 @@ cost function:
             datetime: 2020-12-14T21:00:00Z
             filetype: cube sphere history
             provider: geos
-            state variables: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,q,qi,ql,o3ppmv]
+            state variables: &bvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,q,qi,ql,o3ppmv]
             datapath: Data/inputs/geos_c12
             filename: geos.mem%mem%.20201214_210000z.nc4
           pattern: '%mem%'
@@ -72,7 +72,7 @@ cost function:
           localization method: SABER
           saber central block:
             saber block name: BUMP_NICAS
-            active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+            active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
             read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos

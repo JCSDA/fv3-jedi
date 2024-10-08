@@ -234,7 +234,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_pressure";
+    md.longName = "air_pressure_at_surface";
     md.shortName = "ps";
     md.units = "Pa";
     md.kind = "double";
@@ -484,7 +484,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "sfc_geopotential_height_times_grav";
+    md.longName = "geopotential_height_times_gravity_at_surface";
     md.shortName = "phis";
     md.units = "m";
     md.kind = "double";
@@ -964,8 +964,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "height";
-    md.shortName = "height";
+    md.longName = "height_above_mean_sea_level";
+    md.shortName = "height_above_mean_sea_level";
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
@@ -974,8 +974,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_altitude";
-    md.shortName = "surface_altitude";
+    md.longName = "height_above_mean_sea_level_at_surface";
+    md.shortName = "height_above_mean_sea_level_at_surface";
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
@@ -984,18 +984,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_geopotential_height";
-    md.shortName = "surface_geopotential_height";
-    md.units = "m";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "1";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "surface_geometric_height";
-    md.shortName = "surface_geometric_height";
+    md.longName = "geopotential_height_at_surface";
+    md.shortName = "geopotential_height_at_surface";
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";

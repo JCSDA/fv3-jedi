@@ -11,10 +11,10 @@ eastward_wind                                | Min:-1.0683786845071140e+02 Max:+
 northward_wind                               | Min:-1.0131617418180937e+02 Max:+1.1392584336225478e+02 RMS:+1.1336647547703576e+01
 air_temperature                              | Min:+1.6475955771465013e+02 Max:+3.0610207924286715e+02 RMS:+2.4634278453892284e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1869469826362774e+03 RMS:+1.9541187970414098e+03
-surface_pressure                             | Min:+5.3775617041310601e+04 Max:+1.0491548394048488e+05 RMS:+9.8974994641053825e+04
+air_pressure_at_surface                      | Min:+5.3775617041310601e+04 Max:+1.0491548394048488e+05 RMS:+9.8974994641053825e+04
 specific_humidity                            | Min:+7.6032568348887588e-08 Max:+1.9126818581745503e-02 RMS:+3.9559881641956429e-03
 mole_fraction_of_ozone_in_air                | Min:+1.2994716161816921e-02 Max:+3.6242731318423409e+01 RMS:+3.7263251380455920e+00
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 sea_surface_temperature                      | Min:+2.2610392580881532e+02 Max:+3.0870787055848893e+02 RMS:+2.8682898951704419e+02
 fraction_of_ocean                            | Min:-1.4456591717380914e-34 Max:+1.0000000000000002e+00 RMS:+8.3445820459710485e-01
 fraction_of_lake                             | Min:-1.9689612191611005e-32 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
@@ -28,10 +28,10 @@ eastward_wind                                | Min:-1.0566766838146272e+02 Max:+
 northward_wind                               | Min:-1.0835327713297643e+02 Max:+1.0437369209739860e+02 RMS:+1.1395340754882273e+01
 air_temperature                              | Min:+1.6498922199663483e+02 Max:+3.0925885051459551e+02 RMS:+2.4634254478761338e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1790224046984131e+03 RMS:+1.9540450684869877e+03
-surface_pressure                             | Min:+5.3840085218887514e+04 Max:+1.0475665747869908e+05 RMS:+9.8971671894855070e+04
+air_pressure_at_surface                      | Min:+5.3840085218887514e+04 Max:+1.0475665747869908e+05 RMS:+9.8971671894855070e+04
 specific_humidity                            | Min:+1.2064897176566912e-07 Max:+1.9739863563736672e-02 RMS:+3.9621536823306498e-03
 mole_fraction_of_ozone_in_air                | Min:+1.1789795489480769e-02 Max:+3.8785588293412168e+01 RMS:+3.7113911584990213e+00
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 sea_surface_temperature                      | Min:+2.2687131446198816e+02 Max:+3.2256655933426657e+02 RMS:+2.8684088737254677e+02
 fraction_of_ocean                            | Min:-1.4456591717380914e-34 Max:+1.0000000000000002e+00 RMS:+8.3445820459710485e-01
 fraction_of_lake                             | Min:-1.9689612191611005e-32 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02

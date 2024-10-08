@@ -18,7 +18,7 @@ variable change:
   input variables: &inputvars [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
                                slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
                                u_srf,v_srf,f10m]
-  output variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,surface_geopotential_height,
+  output variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,geopotential_height_at_surface,
                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdphMeters,
                      u_srf,v_srf,f10m]
 states:

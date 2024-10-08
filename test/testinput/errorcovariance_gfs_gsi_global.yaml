@@ -46,7 +46,7 @@ background error:
   # Does nothing except rename the variables seen by saber (psi -> stream_function etc).
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: &bvars [stream_function,velocity_potential,air_temperature,surface_pressure,
+    input variables: &bvars [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,
                              specific_humidity,cloud_liquid_ice,cloud_liquid_water,
                              ozone_mass_mixing_ratio]
     output variables: *anavars

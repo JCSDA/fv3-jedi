@@ -32,7 +32,7 @@ namespace fv3jedi {
       // delp: from p
       {"air_pressure_thickness",       {"AirPressureThickness_A"}},
       // ps: from delp
-      {"surface_pressure",             {"SurfaceAirPressure_A"}},
+      {"air_pressure_at_surface",      {"SurfaceAirPressure_A"}},
       // tv: from t and q
       {"virtual_temperature",          {"AirVirtualTemperature_A"}}
     };

@@ -6,9 +6,9 @@ DRPCGMinimizer: reduction in residual norm = 2.4400379050966972e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 4 | cube sphere face size: C12
-surface_pressure                             | Min:+5.3773865675393987e+04 Max:+1.0482524400256196e+05 RMS:+9.8975197490751860e+04
+air_pressure_at_surface                      | Min:+5.3773865675393987e+04 Max:+1.0482524400256196e+05 RMS:+9.8975197490751860e+04
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934658e+03
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 mole_fraction_of_ozone_in_air                | Min:+1.1916968940086054e-02 Max:+3.8071975374780095e+01 RMS:+3.7104878033376734e+00
 ----------------------------------------------------------------------------------------------------
 

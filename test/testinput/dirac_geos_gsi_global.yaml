@@ -36,9 +36,9 @@ background error:
     processor layout x direction: 3
     processor layout y direction: 2
     debugging mode: false
-    state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,surface_pressure,
+    state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,
                                         mole_fraction_of_ozone_in_air,
-                                        sfc_geopotential_height_times_grav,
+                                        geopotential_height_times_gravity_at_surface,
                                         specific_humidity]
   linear variable change:
     linear variable change name: Control2Analysis

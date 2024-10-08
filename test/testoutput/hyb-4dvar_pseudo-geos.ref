@@ -13,12 +13,12 @@ eastward_wind                                | Min:-1.0683894072310358e+02 Max:+
 northward_wind                               | Min:-1.0131538354870597e+02 Max:+1.1392380238453526e+02 RMS:+1.1336995064799517e+01
 air_temperature                              | Min:+1.6475966765055227e+02 Max:+3.0610194333841923e+02 RMS:+2.4634246723205581e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1869469826362774e+03 RMS:+1.9541187970414098e+03
-surface_pressure                             | Min:+5.3775458926314284e+04 Max:+1.0491548535993125e+05 RMS:+9.8974274782061198e+04
+air_pressure_at_surface                      | Min:+5.3775458926314284e+04 Max:+1.0491548535993125e+05 RMS:+9.8974274782061198e+04
 specific_humidity                            | Min:+0.0000000000000000e+00 Max:+1.9124084675094209e-02 RMS:+3.9559869595142700e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+6.1431691857837781e-04 RMS:+1.3947932765130303e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+3.6822282803200231e-04 RMS:+2.2018290349853303e-05
 mole_fraction_of_ozone_in_air                | Min:+1.2994716169909057e-02 Max:+3.6242733031138570e+01 RMS:+3.7263249064664263e+00
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 initial_mass_fraction_of_large_scale_cloud_c | Min:+0.0000000000000000e+00 Max:+6.3442928439675153e-04 RMS:+2.1051464999263055e-05
 initial_mass_fraction_of_convective_cloud_co | Min:+0.0000000000000000e+00 Max:+3.8100883639843484e-04 RMS:+7.8852715163517128e-06
 convective_cloud_area_fraction               | Min:+0.0000000000000000e+00 Max:+9.7491795754037258e-01 RMS:+4.4261669473537484e-02

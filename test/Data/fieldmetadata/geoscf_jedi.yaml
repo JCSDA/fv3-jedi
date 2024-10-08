@@ -11,7 +11,7 @@ field metadata:
   io name: PM25
   units: ug m-3
 
-- long name: surface_pressure
+- long name: air_pressure_at_surface
   io name: PS
 
 - long name: volume_mixing_ratio_of_no2

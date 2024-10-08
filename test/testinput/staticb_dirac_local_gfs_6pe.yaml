@@ -10,7 +10,7 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: &state_vars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  state variables: &state_vars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
   datapath: Data/inputs/gfs_c12/bkg
   filename_core: 20201215.000000.fv_core.res.nc
   filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -21,7 +21,7 @@ background error:
   covariance model: SABER
   saber central block:
     saber block name: BUMP_NICAS
-    active variables: &active_vars [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    active variables: &active_vars [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
     read:
       io:
         data directory: Data/staticb
@@ -43,7 +43,7 @@ background error:
           overriding universe radius file: cor_3D_gfs_universe_radius
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           overriding universe radius file: cor_2D_gfs_universe_radius
   saber outer blocks:
@@ -62,7 +62,7 @@ background error:
         filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
         filename_cplr: 20201215.000000.stddev.coupler.res
   - saber block name: BUMP_VerticalBalance
-    active variables: [stream_function,velocity_potential,air_temperature,surface_pressure]
+    active variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface]
     read:
       general:
         universe length-scale: 2000.0e3
@@ -79,11 +79,11 @@ background error:
           unbalanced variable: stream_function
         - balanced variable: air_temperature
           unbalanced variable: stream_function
-        - balanced variable: surface_pressure
+        - balanced variable: air_pressure_at_surface
           unbalanced variable: stream_function
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+    input variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
     output variables: *state_vars
 output dirac:
   filetype: fms restart

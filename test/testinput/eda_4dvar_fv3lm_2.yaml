@@ -36,7 +36,7 @@ cost function:
                 in file: fixed_2500km_0.3
               - in code: ozone_mass_mixing_ratio
                 in file: fixed_2500km_0.3
-              - in code: surface_pressure
+              - in code: air_pressure_at_surface
                 in file: fixed_2500km
             drivers:
               multivariate strategy: univariate
@@ -53,7 +53,7 @@ cost function:
                 - ozone_mass_mixing_ratio
             - model:
                 variables:
-                - surface_pressure
+                - air_pressure_at_surface
       weight:
         value: 0.1
     - covariance:
@@ -62,7 +62,7 @@ cost function:
           template:
             datetime: 2020-12-14T21:00:00Z
             filetype: fms restart
-            state variables: &incvars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+            state variables: &incvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
             datapath: Data/inputs/gfs_c12/mem%mem%/
             filename_core: 20201214.210000.fv_core.res.nc
             filename_trcr: 20201214.210000.fv_tracer.res.nc

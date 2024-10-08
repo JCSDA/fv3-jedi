@@ -28,7 +28,7 @@ states to structured grid:
     interpolation method:
       type: finite-element
     number of latitude gridpoints: 12
-    variables to output: [air_temperature, eastward_wind, northward_wind, geopotential_height, surface_pressure]
+    variables to output: [air_temperature, eastward_wind, northward_wind, geopotential_height, air_pressure_at_surface]
     pressure levels in hPa: [925, 850, 700, 500, 250]
     all model levels: true
     bottom model level: false

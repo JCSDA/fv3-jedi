@@ -19,7 +19,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8769479904947054e+08 Max:+1.7382141458841684e+08 RMS:+4.9832006819285586e+07
 velocity_potential                           | Min:-1.1251570682284379e+08 Max:+1.4113515927269787e+08 RMS:+1.1496015479877396e+07
 air_temperature                              | Min:+1.5972471858425604e+02 Max:+3.0871541720656609e+02 RMS:+2.4963185509433359e+02
-surface_pressure                             | Min:+5.4063812476149375e+04 Max:+1.0468464029556207e+05 RMS:+9.8983349696263802e+04
+air_pressure_at_surface                      | Min:+5.4063812476149375e+04 Max:+1.0468464029556207e+05 RMS:+9.8983349696263802e+04
 specific_humidity                            | Min:+1.3767969074500562e-09 Max:+1.8453535922646300e-02 RMS:+4.6893586089918424e-03
 cloud_liquid_water                           | Min:-6.0555267374720369e-21 Max:+9.0914669459978361e-04 RMS:+3.2700232384683059e-05
 cloud_liquid_ice                             | Min:-1.3400658062223731e-22 Max:+7.8003661551861666e-04 RMS:+1.6738256082411523e-05
@@ -31,7 +31,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8769479904947054e+08 Max:+1.7382141458841684e+08 RMS:+4.9832006819285586e+07
 velocity_potential                           | Min:-1.1251570682284379e+08 Max:+1.4113515927269787e+08 RMS:+1.1496015479877396e+07
 air_temperature                              | Min:+1.5972471858425604e+02 Max:+3.0871541720656609e+02 RMS:+2.4963185509433359e+02
-surface_pressure                             | Min:+5.4063812476149375e+04 Max:+1.0468464029556207e+05 RMS:+9.8983349696263802e+04
+air_pressure_at_surface                      | Min:+5.4063812476149375e+04 Max:+1.0468464029556207e+05 RMS:+9.8983349696263802e+04
 specific_humidity                            | Min:+1.3767969074500562e-09 Max:+1.8453535922646300e-02 RMS:+4.6893586089918424e-03
 cloud_liquid_water                           | Min:-6.0555267374720369e-21 Max:+9.0914669459978361e-04 RMS:+3.2700232384683059e-05
 cloud_liquid_ice                             | Min:-1.3400658062223731e-22 Max:+7.8003661551861666e-04 RMS:+1.6738256082411523e-05
@@ -58,7 +58,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8776466207803124e+08 Max:+1.7260873260209587e+08 RMS:+4.9849242579870000e+07
 velocity_potential                           | Min:-1.2294504328905138e+08 Max:+1.4172742001837519e+08 RMS:+1.1514967491390873e+07
 air_temperature                              | Min:+1.5994370386032176e+02 Max:+3.0813778309972963e+02 RMS:+2.4964129112056787e+02
-surface_pressure                             | Min:+5.4061028100368989e+04 Max:+1.0466598829008575e+05 RMS:+9.8982909981858364e+04
+air_pressure_at_surface                      | Min:+5.4061028100368989e+04 Max:+1.0466598829008575e+05 RMS:+9.8982909981858364e+04
 specific_humidity                            | Min:+6.3325390343886979e-09 Max:+1.8431563068622724e-02 RMS:+4.7035251872143370e-03
 cloud_liquid_water                           | Min:-6.4671551681079184e-21 Max:+1.0228245560939589e-03 RMS:+3.4494635677201021e-05
 cloud_liquid_ice                             | Min:-1.0269296393451337e-22 Max:+4.1714550332641782e-04 RMS:+1.3983651554808258e-05
@@ -70,7 +70,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8776466207803124e+08 Max:+1.7260873260209587e+08 RMS:+4.9849242579870000e+07
 velocity_potential                           | Min:-1.2294504328905138e+08 Max:+1.4172742001837519e+08 RMS:+1.1514967491390873e+07
 air_temperature                              | Min:+1.5994370386032176e+02 Max:+3.0813778309972963e+02 RMS:+2.4964129112056787e+02
-surface_pressure                             | Min:+5.4061028100368989e+04 Max:+1.0466598829008575e+05 RMS:+9.8982909981858364e+04
+air_pressure_at_surface                      | Min:+5.4061028100368989e+04 Max:+1.0466598829008575e+05 RMS:+9.8982909981858364e+04
 specific_humidity                            | Min:+6.3325390343886979e-09 Max:+1.8431563068622724e-02 RMS:+4.7035251872143370e-03
 cloud_liquid_water                           | Min:-6.4671551681079184e-21 Max:+1.0228245560939589e-03 RMS:+3.4494635677201021e-05
 cloud_liquid_ice                             | Min:-1.0269296393451337e-22 Max:+4.1714550332641782e-04 RMS:+1.3983651554808258e-05
@@ -97,7 +97,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8629805709369266e+08 Max:+1.7146371148009676e+08 RMS:+4.9860386707439676e+07
 velocity_potential                           | Min:-1.0847212845471121e+08 Max:+1.4138111299844575e+08 RMS:+1.1446266541506790e+07
 air_temperature                              | Min:+1.5982143865682215e+02 Max:+3.0875854818143819e+02 RMS:+2.4963975630884383e+02
-surface_pressure                             | Min:+5.4075645029611216e+04 Max:+1.0469797773396278e+05 RMS:+9.8982877835233230e+04
+air_pressure_at_surface                      | Min:+5.4075645029611216e+04 Max:+1.0469797773396278e+05 RMS:+9.8982877835233230e+04
 specific_humidity                            | Min:+1.1217075454413099e-09 Max:+1.8590565613163600e-02 RMS:+4.7096783846883880e-03
 cloud_liquid_water                           | Min:-1.0527094727479304e-20 Max:+9.2642903936111429e-04 RMS:+3.3640701043330757e-05
 cloud_liquid_ice                             | Min:-1.5175568459436338e-22 Max:+3.8309127611988857e-04 RMS:+1.5000739302248574e-05
@@ -109,7 +109,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8629805709369266e+08 Max:+1.7146371148009676e+08 RMS:+4.9860386707439676e+07
 velocity_potential                           | Min:-1.0847212845471121e+08 Max:+1.4138111299844575e+08 RMS:+1.1446266541506790e+07
 air_temperature                              | Min:+1.5982143865682215e+02 Max:+3.0875854818143819e+02 RMS:+2.4963975630884383e+02
-surface_pressure                             | Min:+5.4075645029611216e+04 Max:+1.0469797773396278e+05 RMS:+9.8982877835233230e+04
+air_pressure_at_surface                      | Min:+5.4075645029611216e+04 Max:+1.0469797773396278e+05 RMS:+9.8982877835233230e+04
 specific_humidity                            | Min:+1.1217075454413099e-09 Max:+1.8590565613163600e-02 RMS:+4.7096783846883880e-03
 cloud_liquid_water                           | Min:-1.0527094727479304e-20 Max:+9.2642903936111429e-04 RMS:+3.3640701043330757e-05
 cloud_liquid_ice                             | Min:-1.5175568459436338e-22 Max:+3.8309127611988857e-04 RMS:+1.5000739302248574e-05
@@ -136,7 +136,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8959935957395959e+08 Max:+1.7370848992896682e+08 RMS:+4.9907017496102057e+07
 velocity_potential                           | Min:-1.1937301368375666e+08 Max:+1.4655011748482275e+08 RMS:+1.1535644051788326e+07
 air_temperature                              | Min:+1.5927693918826100e+02 Max:+3.0841270632257641e+02 RMS:+2.4964726967891698e+02
-surface_pressure                             | Min:+5.4068032310794719e+04 Max:+1.0466400108893542e+05 RMS:+9.8984934987738554e+04
+air_pressure_at_surface                      | Min:+5.4068032310794719e+04 Max:+1.0466400108893542e+05 RMS:+9.8984934987738554e+04
 specific_humidity                            | Min:+1.0251224630590500e-09 Max:+1.8470597918966623e-02 RMS:+4.7137625908938788e-03
 cloud_liquid_water                           | Min:-9.7710790105503044e-21 Max:+8.4649614590113446e-04 RMS:+3.2133990577150273e-05
 cloud_liquid_ice                             | Min:-6.2170589429667716e-23 Max:+4.5089708455054383e-04 RMS:+1.3071436321378449e-05
@@ -148,7 +148,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8959935957395959e+08 Max:+1.7370848992896682e+08 RMS:+4.9907017496102057e+07
 velocity_potential                           | Min:-1.1937301368375666e+08 Max:+1.4655011748482275e+08 RMS:+1.1535644051788326e+07
 air_temperature                              | Min:+1.5927693918826100e+02 Max:+3.0841270632257641e+02 RMS:+2.4964726967891698e+02
-surface_pressure                             | Min:+5.4068032310794719e+04 Max:+1.0466400108893542e+05 RMS:+9.8984934987738554e+04
+air_pressure_at_surface                      | Min:+5.4068032310794719e+04 Max:+1.0466400108893542e+05 RMS:+9.8984934987738554e+04
 specific_humidity                            | Min:+1.0251224630590500e-09 Max:+1.8470597918966623e-02 RMS:+4.7137625908938788e-03
 cloud_liquid_water                           | Min:-9.7710790105503044e-21 Max:+8.4649614590113446e-04 RMS:+3.2133990577150273e-05
 cloud_liquid_ice                             | Min:-6.2170589429667716e-23 Max:+4.5089708455054383e-04 RMS:+1.3071436321378449e-05
@@ -175,7 +175,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8944268500332373e+08 Max:+1.7453143179200274e+08 RMS:+4.9975292153987311e+07
 velocity_potential                           | Min:-1.1863174260369547e+08 Max:+1.4493175151295894e+08 RMS:+1.1520090268562833e+07
 air_temperature                              | Min:+1.5948941417496411e+02 Max:+3.0858883433460738e+02 RMS:+2.4962768778735273e+02
-surface_pressure                             | Min:+5.4053769606280664e+04 Max:+1.0462947632730042e+05 RMS:+9.8982193608134679e+04
+air_pressure_at_surface                      | Min:+5.4053769606280664e+04 Max:+1.0462947632730042e+05 RMS:+9.8982193608134679e+04
 specific_humidity                            | Min:+3.3864784277570368e-09 Max:+1.8508307871421180e-02 RMS:+4.6782625559367063e-03
 cloud_liquid_water                           | Min:-1.8892038813665178e-20 Max:+9.4742384290540940e-04 RMS:+3.2321243313774081e-05
 cloud_liquid_ice                             | Min:-1.0914625044245478e-21 Max:+4.7403166010021524e-04 RMS:+1.6014580925900740e-05
@@ -187,7 +187,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8944268500332373e+08 Max:+1.7453143179200274e+08 RMS:+4.9975292153987311e+07
 velocity_potential                           | Min:-1.1863174260369547e+08 Max:+1.4493175151295894e+08 RMS:+1.1520090268562833e+07
 air_temperature                              | Min:+1.5948941417496411e+02 Max:+3.0858883433460738e+02 RMS:+2.4962768778735273e+02
-surface_pressure                             | Min:+5.4053769606280664e+04 Max:+1.0462947632730042e+05 RMS:+9.8982193608134679e+04
+air_pressure_at_surface                      | Min:+5.4053769606280664e+04 Max:+1.0462947632730042e+05 RMS:+9.8982193608134679e+04
 specific_humidity                            | Min:+3.3864784277570368e-09 Max:+1.8508307871421180e-02 RMS:+4.6782625559367063e-03
 cloud_liquid_water                           | Min:-1.8892038813665178e-20 Max:+9.4742384290540940e-04 RMS:+3.2321243313774081e-05
 cloud_liquid_ice                             | Min:-1.0914625044245478e-21 Max:+4.7403166010021524e-04 RMS:+1.6014580925900740e-05
@@ -214,7 +214,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.9037699663299435e+08 Max:+1.7254268027451938e+08 RMS:+4.9824739015136562e+07
 velocity_potential                           | Min:-1.2166082890721706e+08 Max:+1.3734828525480363e+08 RMS:+1.1364884232148243e+07
 air_temperature                              | Min:+1.6018117637511222e+02 Max:+3.0857096378321285e+02 RMS:+2.4963652540345200e+02
-surface_pressure                             | Min:+5.4086065698563871e+04 Max:+1.0468210637078245e+05 RMS:+9.8982325450383010e+04
+air_pressure_at_surface                      | Min:+5.4086065698563871e+04 Max:+1.0468210637078245e+05 RMS:+9.8982325450383010e+04
 specific_humidity                            | Min:+1.1895311305321946e-09 Max:+1.8158242544937801e-02 RMS:+4.6770453135447192e-03
 cloud_liquid_water                           | Min:-1.6898817557998145e-20 Max:+1.0143220641289394e-03 RMS:+3.4101153601489083e-05
 cloud_liquid_ice                             | Min:-6.2743870838646737e-23 Max:+4.0389659855692738e-04 RMS:+1.5254394499768530e-05
@@ -226,7 +226,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.9037699663299435e+08 Max:+1.7254268027451938e+08 RMS:+4.9824739015136562e+07
 velocity_potential                           | Min:-1.2166082890721706e+08 Max:+1.3734828525480363e+08 RMS:+1.1364884232148243e+07
 air_temperature                              | Min:+1.6018117637511222e+02 Max:+3.0857096378321285e+02 RMS:+2.4963652540345200e+02
-surface_pressure                             | Min:+5.4086065698563871e+04 Max:+1.0468210637078245e+05 RMS:+9.8982325450383010e+04
+air_pressure_at_surface                      | Min:+5.4086065698563871e+04 Max:+1.0468210637078245e+05 RMS:+9.8982325450383010e+04
 specific_humidity                            | Min:+1.1895311305321946e-09 Max:+1.8158242544937801e-02 RMS:+4.6770453135447192e-03
 cloud_liquid_water                           | Min:-1.6898817557998145e-20 Max:+1.0143220641289394e-03 RMS:+3.4101153601489083e-05
 cloud_liquid_ice                             | Min:-6.2743870838646737e-23 Max:+4.0389659855692738e-04 RMS:+1.5254394499768530e-05
@@ -253,7 +253,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8812154515618449e+08 Max:+1.6964947902766392e+08 RMS:+4.9969931325024225e+07
 velocity_potential                           | Min:-1.1491881373287545e+08 Max:+1.3769157763457289e+08 RMS:+1.1600732340164239e+07
 air_temperature                              | Min:+1.5933181595810530e+02 Max:+3.0977878529955302e+02 RMS:+2.4963500174341223e+02
-surface_pressure                             | Min:+5.4053958714395587e+04 Max:+1.0465801966351677e+05 RMS:+9.8985048747732420e+04
+air_pressure_at_surface                      | Min:+5.4053958714395587e+04 Max:+1.0465801966351677e+05 RMS:+9.8985048747732420e+04
 specific_humidity                            | Min:+1.4322570602022207e-09 Max:+1.8650035621635343e-02 RMS:+4.7021337914017278e-03
 cloud_liquid_water                           | Min:-1.3586411487133057e-20 Max:+9.4272719639645181e-04 RMS:+3.2080240288191631e-05
 cloud_liquid_ice                             | Min:-2.9263145319473122e-22 Max:+4.0286789440951672e-04 RMS:+1.3422107601373634e-05
@@ -265,7 +265,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8812154515618449e+08 Max:+1.6964947902766392e+08 RMS:+4.9969931325024225e+07
 velocity_potential                           | Min:-1.1491881373287545e+08 Max:+1.3769157763457289e+08 RMS:+1.1600732340164239e+07
 air_temperature                              | Min:+1.5933181595810530e+02 Max:+3.0977878529955302e+02 RMS:+2.4963500174341223e+02
-surface_pressure                             | Min:+5.4053958714395587e+04 Max:+1.0465801966351677e+05 RMS:+9.8985048747732420e+04
+air_pressure_at_surface                      | Min:+5.4053958714395587e+04 Max:+1.0465801966351677e+05 RMS:+9.8985048747732420e+04
 specific_humidity                            | Min:+1.4322570602022207e-09 Max:+1.8650035621635343e-02 RMS:+4.7021337914017278e-03
 cloud_liquid_water                           | Min:-1.3586411487133057e-20 Max:+9.4272719639645181e-04 RMS:+3.2080240288191631e-05
 cloud_liquid_ice                             | Min:-2.9263145319473122e-22 Max:+4.0286789440951672e-04 RMS:+1.3422107601373634e-05
@@ -292,7 +292,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8874342144649202e+08 Max:+1.7675015423419240e+08 RMS:+5.0004661114406653e+07
 velocity_potential                           | Min:-1.1756167883054318e+08 Max:+1.4286431268072551e+08 RMS:+1.1449547822186839e+07
 air_temperature                              | Min:+1.5926738597747232e+02 Max:+3.0907851202481845e+02 RMS:+2.4962649151892944e+02
-surface_pressure                             | Min:+5.4058837794995408e+04 Max:+1.0470388405005874e+05 RMS:+9.8985085205845462e+04
+air_pressure_at_surface                      | Min:+5.4058837794995408e+04 Max:+1.0470388405005874e+05 RMS:+9.8985085205845462e+04
 specific_humidity                            | Min:+1.9764746974411260e-09 Max:+1.8503309122687574e-02 RMS:+4.6946904742653289e-03
 cloud_liquid_water                           | Min:-9.7452144196667078e-21 Max:+9.7672061760949126e-04 RMS:+3.3877828513494194e-05
 cloud_liquid_ice                             | Min:-2.3589092984142548e-21 Max:+3.6522671973335447e-04 RMS:+1.3966460860931230e-05
@@ -304,7 +304,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8874342144649202e+08 Max:+1.7675015423419240e+08 RMS:+5.0004661114406653e+07
 velocity_potential                           | Min:-1.1756167883054318e+08 Max:+1.4286431268072551e+08 RMS:+1.1449547822186839e+07
 air_temperature                              | Min:+1.5926738597747232e+02 Max:+3.0907851202481845e+02 RMS:+2.4962649151892944e+02
-surface_pressure                             | Min:+5.4058837794995408e+04 Max:+1.0470388405005874e+05 RMS:+9.8985085205845462e+04
+air_pressure_at_surface                      | Min:+5.4058837794995408e+04 Max:+1.0470388405005874e+05 RMS:+9.8985085205845462e+04
 specific_humidity                            | Min:+1.9764746974411260e-09 Max:+1.8503309122687574e-02 RMS:+4.6946904742653289e-03
 cloud_liquid_water                           | Min:-9.7452144196667078e-21 Max:+9.7672061760949126e-04 RMS:+3.3877828513494194e-05
 cloud_liquid_ice                             | Min:-2.3589092984142548e-21 Max:+3.6522671973335447e-04 RMS:+1.3966460860931230e-05
@@ -331,7 +331,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8831656859375709e+08 Max:+1.7298749044085363e+08 RMS:+4.9886186330369219e+07
 velocity_potential                           | Min:-1.1122407690436228e+08 Max:+1.3663725129891941e+08 RMS:+1.1296476779469026e+07
 air_temperature                              | Min:+1.5892900013468406e+02 Max:+3.0904151064228262e+02 RMS:+2.4963151716687315e+02
-surface_pressure                             | Min:+5.4072919391473421e+04 Max:+1.0467205880124759e+05 RMS:+9.8983634320032259e+04
+air_pressure_at_surface                      | Min:+5.4072919391473421e+04 Max:+1.0467205880124759e+05 RMS:+9.8983634320032259e+04
 specific_humidity                            | Min:+1.3778866294907439e-09 Max:+1.8299834889024667e-02 RMS:+4.7079600975830698e-03
 cloud_liquid_water                           | Min:-2.0911203541149827e-20 Max:+7.9318964553570564e-04 RMS:+3.2042813998563387e-05
 cloud_liquid_ice                             | Min:-1.5897481083237536e-22 Max:+3.9494742780160261e-04 RMS:+1.4568666559548346e-05
@@ -343,7 +343,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.8831656859375709e+08 Max:+1.7298749044085363e+08 RMS:+4.9886186330369219e+07
 velocity_potential                           | Min:-1.1122407690436228e+08 Max:+1.3663725129891941e+08 RMS:+1.1296476779469026e+07
 air_temperature                              | Min:+1.5892900013468406e+02 Max:+3.0904151064228262e+02 RMS:+2.4963151716687315e+02
-surface_pressure                             | Min:+5.4072919391473421e+04 Max:+1.0467205880124759e+05 RMS:+9.8983634320032259e+04
+air_pressure_at_surface                      | Min:+5.4072919391473421e+04 Max:+1.0467205880124759e+05 RMS:+9.8983634320032259e+04
 specific_humidity                            | Min:+1.3778866294907439e-09 Max:+1.8299834889024667e-02 RMS:+4.7079600975830698e-03
 cloud_liquid_water                           | Min:-2.0911203541149827e-20 Max:+7.9318964553570564e-04 RMS:+3.2042813998563387e-05
 cloud_liquid_ice                             | Min:-1.5897481083237536e-22 Max:+3.9494742780160261e-04 RMS:+1.4568666559548346e-05
@@ -370,7 +370,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.9018846372799826e+08 Max:+1.7457906916418844e+08 RMS:+4.9937920072629236e+07
 velocity_potential                           | Min:-1.1430670050456131e+08 Max:+1.3817751201591733e+08 RMS:+1.1293140248366168e+07
 air_temperature                              | Min:+1.5976018442934699e+02 Max:+3.0867003686857436e+02 RMS:+2.4963139561563187e+02
-surface_pressure                             | Min:+5.4047949561970374e+04 Max:+1.0470101775990454e+05 RMS:+9.8982460840468077e+04
+air_pressure_at_surface                      | Min:+5.4047949561970374e+04 Max:+1.0470101775990454e+05 RMS:+9.8982460840468077e+04
 specific_humidity                            | Min:+2.1853567059287031e-09 Max:+1.8336426325834820e-02 RMS:+4.6910450751475969e-03
 cloud_liquid_water                           | Min:-5.9811427625448997e-21 Max:+9.4128050972268936e-04 RMS:+3.2761103548287627e-05
 cloud_liquid_ice                             | Min:-3.5291307101716140e-22 Max:+2.5840255855781786e-04 RMS:+1.1835634769780951e-05
@@ -382,7 +382,7 @@ State print | number of fields = 8 | cube sphere face size: C12
 stream_function                              | Min:-2.9018846372799826e+08 Max:+1.7457906916418844e+08 RMS:+4.9937920072629236e+07
 velocity_potential                           | Min:-1.1430670050456131e+08 Max:+1.3817751201591733e+08 RMS:+1.1293140248366168e+07
 air_temperature                              | Min:+1.5976018442934699e+02 Max:+3.0867003686857436e+02 RMS:+2.4963139561563187e+02
-surface_pressure                             | Min:+5.4047949561970374e+04 Max:+1.0470101775990454e+05 RMS:+9.8982460840468077e+04
+air_pressure_at_surface                      | Min:+5.4047949561970374e+04 Max:+1.0470101775990454e+05 RMS:+9.8982460840468077e+04
 specific_humidity                            | Min:+2.1853567059287031e-09 Max:+1.8336426325834820e-02 RMS:+4.6910450751475969e-03
 cloud_liquid_water                           | Min:-5.9811427625448997e-21 Max:+9.4128050972268936e-04 RMS:+3.2761103548287627e-05
 cloud_liquid_ice                             | Min:-3.5291307101716140e-22 Max:+2.5840255855781786e-04 RMS:+1.1835634769780951e-05

@@ -124,11 +124,11 @@ real(kind=kind_real), allocatable :: t     (:,:,:)         !Temperature
 logical :: have_tv
 real(kind=kind_real), allocatable :: tv    (:,:,:)         !Virtual temperature
 
-! Geopotential heights
+! Heights
 logical :: have_geoph
 real(kind=kind_real), allocatable :: geophi(:,:,:)         !Geopotential height, interfaces
 real(kind=kind_real), allocatable :: geoph (:,:,:)         !Geopotential height
-real(kind=kind_real), allocatable :: suralt(:,:,:)         !Surface altitude
+real(kind=kind_real), allocatable :: suralt(:,:,:)         !Surface height above mean sea level pressure
 real(kind=kind_real), allocatable :: phis  (:,:,:)         !Surface geopotential height times gravity
 logical,  parameter :: use_compress = .true.
 
@@ -375,14 +375,15 @@ endif
 ! Geopotential height
 ! -------------------
 have_geoph = .false.
-if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or. xm%has_field('surface_geopotential_height') )) then
+if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or.&
+    xm%has_field('geopotential_height_at_surface') )) then
   if (.not.allocated(phis)) allocate(phis(self%isc:self%iec,self%jsc:self%jec,1))
   if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
   if ( xm%has_field( 'phis') ) then
      call xm%get_field('phis',  phis)
      suralt = phis / constant('grav')
   else
-     call xm%get_field('surface_geopotential_height', suralt)
+     call xm%get_field('geopotential_height_at_surface', suralt)
      phis = suralt * constant('grav')
   end if
   if (.not.allocated(geophi)) allocate(geophi(self%isc:self%iec,self%jsc:self%jec,self%npz+1))
@@ -932,12 +933,17 @@ do f = 1, size(fields_to_do)
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3ppmv
 
-  case ("sfc_geopotential_height_times_grav", "phis")
+  case ("geopotential_height_times_gravity_at_surface", "phis")
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = phis
 
-  case ("geopotential_height", "height")
+  case ("geopotential_height_at_surface")
+
+    if (.not. have_geoph) call field_fail(fields_to_do(f))
+    field_ptr = suralt
+
+  case ("geopotential_height")
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geoph
@@ -947,15 +953,20 @@ do f = 1, size(fields_to_do)
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geophi
 
+  case ("height_above_mean_sea_level_at_surface")
+
+    if (.not. have_geoph) call field_fail(fields_to_do(f))
+    field_ptr = suralt
+
+  case ("height_above_mean_sea_level")
+
+    if (.not. have_geoph) call field_fail(fields_to_do(f))
+    field_ptr = geoph
+
   case ("layer_thickness", "delz")
 
     if (.not. have_delz) call field_fail(fields_to_do(f))
     field_ptr = delz
-
-  case ("surface_altitude", "surface_geopotential_height", "surface_geometric_height")
-
-    if (.not. have_geoph) call field_fail(fields_to_do(f))
-    field_ptr = suralt
 
   case ("mole_fraction_of_carbon_dioxide_in_air", "co2")
 

@@ -1,6 +1,6 @@
 cost function:
   cost type: 3D-FGAT
-  analysis variables: &fgatvars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+  analysis variables: &fgatvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -37,7 +37,7 @@ cost function:
         covariance model: SABER
         saber central block:
           saber block name: BUMP_NICAS
-          active variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air,surface_pressure]
+          active variables: [eastward_wind,northward_wind,air_temperature,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air,air_pressure_at_surface]
           read:
             io:
               files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos
@@ -56,7 +56,7 @@ cost function:
                 in file: fixed_2500km_0.3
               - in code: mole_fraction_of_ozone_in_air
                 in file: fixed_2500km_0.3
-              - in code: surface_pressure
+              - in code: air_pressure_at_surface
                 in file: fixed_2500km
             drivers:
               multivariate strategy: univariate
@@ -73,7 +73,7 @@ cost function:
                 - mole_fraction_of_ozone_in_air
             - model:
                 variables:
-                - surface_pressure
+                - air_pressure_at_surface
       weight:
         value: 0.1
     - covariance:
@@ -93,7 +93,7 @@ cost function:
           localization method: SABER
           saber central block:
             saber block name: BUMP_NICAS
-            active variables: [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+            active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
             read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos

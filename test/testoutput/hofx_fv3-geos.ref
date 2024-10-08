@@ -11,7 +11,7 @@ specific_humidity                            | Min:+7.6032568348887588e-08 Max:+
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+6.1421459708836375e-04 RMS:+1.0716262724714961e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+3.7443301525624470e-04 RMS:+1.9669492594747819e-05
 mole_fraction_of_ozone_in_air                | Min:+1.2994716161816921e-02 Max:+3.6242733027236810e+01 RMS:+3.7263249065015596e+00
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4336055637502587e-01
@@ -38,7 +38,7 @@ specific_humidity                            | Min:+7.8208049596503233e-07 Max:+
 cloud_liquid_ice                             | Min:-7.7584568600407391e-08 Max:+5.5283994185514429e-04 RMS:+7.6177933361037595e-06
 cloud_liquid_water                           | Min:-4.4979453304360889e-07 Max:+2.7373929042869309e-04 RMS:+1.5733992156693509e-05
 mole_fraction_of_ozone_in_air                | Min:+1.3056040440861737e-02 Max:+3.3851091037080479e+01 RMS:+3.7065465440679595e+00
-sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4336055637502587e-01

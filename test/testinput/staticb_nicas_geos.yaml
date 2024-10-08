@@ -12,7 +12,7 @@ background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity]
   datapath: Data/staticb/unbalanced/mem001
   filename: geos.20201215.000000z.nc4
 background error:
@@ -55,7 +55,7 @@ background error:
           overriding universe radius file: cor_3D_geos_universe_radius
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           overriding universe radius file: cor_2D_geos_universe_radius
       input model files:

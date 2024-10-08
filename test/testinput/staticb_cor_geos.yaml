@@ -12,7 +12,7 @@ background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [stream_function,velocity_potential,air_temperature,surface_pressure,specific_humidity]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity]
   datapath: Data/staticb/unbalanced/mem001
   filename: geos.20201215.000000z.nc4
 background error:
@@ -63,7 +63,7 @@ background error:
           - var-mom_3D_2020121503_geos_mom_000001_1
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
         io:
           files prefix: cor_2D_geos
           overriding sampling file: var-mom_2D_2020121421_geos_sampling

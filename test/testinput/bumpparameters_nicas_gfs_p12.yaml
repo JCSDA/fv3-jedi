@@ -17,7 +17,7 @@ background:
   filename_sfcd: 20201214.210000.sfc_data.nc
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
-  state variables: [air_temperature,surface_pressure]
+  state variables: [air_temperature,air_pressure_at_surface]
 background error:
   covariance model: SABER
   saber central block:
@@ -30,7 +30,7 @@ background error:
         alias:
         - in code: air_temperature
           in file: fixed_2500km_0.3
-        - in code: surface_pressure
+        - in code: air_pressure_at_surface
           in file: fixed_2500km
       drivers:
         multivariate strategy: univariate
@@ -44,14 +44,14 @@ background error:
           - air_temperature
           value: 2500000.0
         - groups:
-          - surface_pressure
+          - air_pressure_at_surface
           value: 2500000.0
         vertical length-scale:
         - groups:
           - air_temperature
           value: 0.3
         - groups:
-          - surface_pressure
+          - air_pressure_at_surface
           value: 0.0
       grids:
       - model:
@@ -59,7 +59,7 @@ background error:
           - air_temperature
       - model:
           variables:
-          - surface_pressure
+          - air_pressure_at_surface
       output model files:
       - parameter: cor_rh
         file:
