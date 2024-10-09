@@ -1,7 +1,7 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Radiosonde) = 2.5407802341930674e+03, nobs = 1347, Jo/n = 1.8862511018508294e+00, err = 2.0631474620187360e+00
-CostFunction: Nonlinear J = 2.5407802341930674e+03
-DRPCGMinimizer: reduction in residual norm = 1.6523245598046039e-10
+CostJo   : Nonlinear Jo(Radiosonde) = 2.5407802341930642e+03, nobs = 1347, Jo/n = 1.8862511018508272e+00, err = 2.0631474620187360e+00
+CostFunction: Nonlinear J = 2.5407802341930642e+03
+DRPCGMinimizer: reduction in residual norm = 1.6523245598047050e-10
 FSOI increment test within tolerance.
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
@@ -17,20 +17,20 @@ ozone_mass_mixing_ratio                      | Min:+1.3095454682601925e-08 Max:+
 geopotential_height_times_gravity_at_surface | Min:-5.4568412849859591e+01 Max:+4.3948109384976997e+04 RMS:+5.2739420192307034e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6644961744500431e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+1.9710794340624895e+02 RMS:+2.0174606478112217e+01
-sea_surface_temperature                      | Min:+2.2956405282840373e+02 Max:+3.2358911863552072e+02 RMS:+2.8676003110050823e+02
+skin_temperature                             | Min:+2.2956405282840373e+02 Max:+3.2358911863552078e+02 RMS:+2.8676003110050817e+02
 vtype                                        | Min:+0.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+5.7669336001161087e+00
 stype                                        | Min:+0.0000000000000000e+00 Max:+1.6000000000000000e+01 RMS:+4.3113424372358908e+00
-vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.0099684912129285e-01 RMS:+1.7002978972243499e-01
-stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519187e+02 RMS:+2.8896462580706935e+02
-soilMoistureVolumetric                       | Min:+2.2235492720152687e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101550e-01
-totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130140e+02
-surface_eastward_wind                        | Min:-1.5439447482564121e+01 Max:+1.7720841484763238e+01 RMS:+5.0996670981342183e+00
-surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486119e+01 RMS:+4.0591533502251620e+00
-f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062904e-01
+vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.0099684912129285e-01 RMS:+1.7002978972243504e-01
+stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519182e+02 RMS:+2.8896462580706935e+02
+soilMoistureVolumetric                       | Min:+2.2235492720152690e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101550e-01
+totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130143e+02
+surface_eastward_wind                        | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
+surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251620e+00
+f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062882e-01
 ----------------------------------------------------------------------------------------------------
 
 
 
 CostJb   : Nonlinear Jb = 0
-CostJo   : Nonlinear Jo(Radiosonde) = 2540.780234193067, nobs = 1347, Jo/n = 1.886251101850829, err = 2.063147462018736
-CostFunction: Nonlinear J = 2540.780234193067
+CostJo   : Nonlinear Jo(Radiosonde) = 2540.780234193064, nobs = 1347, Jo/n = 1.886251101850827, err = 2.063147462018736
+CostFunction: Nonlinear J = 2540.780234193064

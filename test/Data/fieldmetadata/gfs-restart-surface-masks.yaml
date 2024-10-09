@@ -52,3 +52,6 @@ field metadata:
 
 - long name: surface_snow_thickness
   interpolation source point mask: snow_mask
+
+- long name: skin_temperature
+  io name: tsea

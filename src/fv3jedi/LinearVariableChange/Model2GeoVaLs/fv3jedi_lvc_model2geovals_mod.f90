@@ -35,15 +35,23 @@ public :: fv3jedi_lvc_model2geovals
 
 type :: fv3jedi_lvc_model2geovals
   integer :: isc, iec, jsc, jec, npz
-  real(kind=kind_real), allocatable ::   t(:,:,:)
-  real(kind=kind_real), allocatable ::   q(:,:,:)
-  real(kind=kind_real), allocatable ::  o3(:,:,:)
-  real(kind=kind_real), allocatable ::  ql(:,:,:)
-  real(kind=kind_real), allocatable ::  qi(:,:,:)
-  real(kind=kind_real), allocatable ::  qr(:,:,:)
-  real(kind=kind_real), allocatable ::  qs(:,:,:)
-  real(kind=kind_real), allocatable ::  qg(:,:,:)
-  real(kind=kind_real), allocatable ::delp(:,:,:)
+  real(kind=kind_real), allocatable ::      t(:,:,:)
+  real(kind=kind_real), allocatable ::      q(:,:,:)
+  real(kind=kind_real), allocatable ::     o3(:,:,:)
+  real(kind=kind_real), allocatable ::     ql(:,:,:)
+  real(kind=kind_real), allocatable ::     qi(:,:,:)
+  real(kind=kind_real), allocatable ::     qr(:,:,:)
+  real(kind=kind_real), allocatable ::     qs(:,:,:)
+  real(kind=kind_real), allocatable ::     qg(:,:,:)
+  real(kind=kind_real), allocatable ::   delp(:,:,:)
+  real(kind=kind_real), allocatable ::  slmsk(:,:,:)
+  real(kind=kind_real), allocatable :: sheleg(:,:,:)
+  real(kind=kind_real), allocatable :: frseaice(:,:,:)
+  real(kind=kind_real), allocatable :: frland(:,:,:)
+  real(kind=kind_real), allocatable :: frsnow(:,:,:)
+  real(kind=kind_real), allocatable ::frocean(:,:,:)
+  real(kind=kind_real), allocatable :: frlake(:,:,:)
+  real(kind=kind_real), allocatable ::     ts(:,:,:)
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -65,6 +73,13 @@ type(fv3jedi_state),              intent(in)    :: bg
 type(fv3jedi_state),              intent(in)    :: fg
 type(fckit_configuration),        intent(in)    :: dummyconf
 
+integer :: i,j
+logical :: have_fractions,have_slmsk,have_ts
+real(kind=kind_real), allocatable :: local_swe(:,:,:)
+
+!Locals
+real(kind=kind_real), parameter :: minswe = 1.0_kind_real / 10.0_kind_real
+
 !!! DO NOT USE CONF !!!
 
 ! Grid convenience
@@ -85,6 +100,87 @@ if (bg%has_field('cloud_liquid_ice'))   call bg%get_field('cloud_liquid_ice'  , 
 if (bg%has_field('rain_water'))         call bg%get_field('rain_water'        , self%qr)
 if (bg%has_field('snow_water'))         call bg%get_field('snow_water'        , self%qs)
 if (bg%has_field('graupel'))            call bg%get_field('graupel'           , self%qg)
+if (bg%has_field('fraction_of_ice'))    call bg%get_field('fraction_of_ice'   , self%frseaice)
+if (bg%has_field('fraction_of_snow'))   call bg%get_field('fraction_of_snow'  , self%frsnow)
+if (bg%has_field('fraction_of_land'))   call bg%get_field('fraction_of_land'  , self%frland)
+if (bg%has_field('fraction_of_lake'))   call bg%get_field('fraction_of_lake'  , self%frlake)
+if (bg%has_field('fraction_of_ocean'))  call bg%get_field('fraction_of_ocean' , self%frocean)
+if (bg%has_field('slmsk'))              call bg%get_field('slmsk'             , self%slmsk)
+if (bg%has_field('sheleg'))             call bg%get_field('sheleg'            , self%sheleg)
+
+have_ts=.false.
+if (bg%has_field('ts')) then
+   call bg%get_field('ts', self%ts)
+   have_ts=.true.
+else if (bg%has_field('tsea')) then
+   call bg%get_field('tsea'              , self%ts)
+   have_ts=.true.
+endif
+
+have_fractions=allocated(self%frlake) .and. allocated(self%frocean) .and. &
+               allocated(self%frseaice)
+
+! Land sea mask
+! -------------
+have_slmsk = .false.
+if (allocated(self%slmsk)) then
+  have_slmsk = .true.
+elseif ( have_fractions .and. have_ts ) then
+
+  allocate(self%slmsk(self%isc:self%iec,self%jsc:self%jec,1))
+  self%slmsk = 1.0_kind_real !Land
+  do j = self%jsc,self%jec
+    do i = self%isc,self%iec
+      if ( self%frocean(i,j,1) + self%frlake(i,j,1) >= 0.6_kind_real) then
+        self%slmsk(i,j,1) = 0.0_kind_real ! Water
+      endif
+      if ( self%slmsk(i,j,1) == 0.0_kind_real .and. self%frseaice(i,j,1) > 0.5_kind_real) then
+        self%slmsk(i,j,1) = 2.0_kind_real ! Ice
+      endif
+      if ( self%slmsk(i,j,1) == 0.0_kind_real .and. self%ts(i,j,1) < 271.4_kind_real ) then
+        self%slmsk(i,j,1) = 2.0_kind_real ! Ice
+      endif
+    enddo
+  enddo
+  have_slmsk = .true.
+endif
+
+! Land sea mask
+! -------------
+if (have_slmsk) then
+
+  if(.not.allocated(self%frocean)) allocate(self%frocean(self%isc:self%iec,self%jsc:self%jec,1))
+  if(.not.allocated(self%frland)) allocate(self%frland(self%isc:self%iec,self%jsc:self%jec,1))
+  if(.not.allocated(self%frseaice)) allocate(self%frseaice(self%isc:self%iec,self%jsc:self%jec,1))
+  if(.not.allocated(self%frsnow)) allocate(self%frsnow(self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(local_swe(geom%isc:geom%iec,geom%jsc:geom%jec,1))
+
+  ! Potential for missing values in snow water equivalent (if missing set to 0.0)
+  local_swe = self%sheleg  ! SWE is named "sheleg" in backgrounds
+  where (abs(local_swe) > 10.0e10_kind_real) local_swe = 0.0_kind_real
+                         
+  ! Note: The GFS slmsk has values {0,1,2} denoting {sea,land,ice}.
+  !       Locally within this function, we also use an additional value (3) to denote snow.
+  self%slmsk = nint(self%slmsk)
+  where (self%slmsk >= 1 .and. local_swe > minswe) self%slmsk = 3
+
+  do j = self%jsc,self%jec
+    do i = self%isc,self%iec
+      if ( self%slmsk(i,j,1) == 0.0_kind_real) then
+        self%frocean(i,j,1) = 1.0_kind_real
+      elseif ( self%slmsk(i,j,1) == 1.0_kind_real) then
+        self%frland(i,j,1) = 1.0_kind_real
+      elseif ( self%slmsk(i,j,1) == 2.0_kind_real) then
+        self%frseaice(i,j,1) = 1.0_kind_real
+      elseif ( self%slmsk(i,j,1) == 3.0_kind_real) then
+        self%frsnow(i,j,1) = 1.0_kind_real
+      endif
+    enddo
+  enddo
+
+  deallocate(local_swe)
+
+endif
 
 end subroutine create
 
@@ -94,6 +190,13 @@ subroutine delete(self)
 
 class(fv3jedi_lvc_model2geovals), intent(inout) :: self
 
+if (allocated(self%slmsk)) deallocate(self%slmsk)
+if (allocated(self%sheleg)) deallocate(self%sheleg)
+if (allocated(self%frocean)) deallocate(self%frocean  )
+if (allocated(self%frlake)) deallocate(self%frlake  )
+if (allocated(self%frland)) deallocate(self%frland  )
+if (allocated(self%frsnow)) deallocate(self%frsnow  )
+if (allocated(self%frseaice)) deallocate(self%frseaice  )
 if (allocated(self%qg  )) deallocate(self%qg  )
 if (allocated(self%qs  )) deallocate(self%qs  )
 if (allocated(self%qr  )) deallocate(self%qr  )
@@ -157,6 +260,9 @@ logical :: have_ps
 real(kind=kind_real), pointer     :: ps  (:,:,:)         !Surface pressure
 real(kind=kind_real), pointer     :: delp(:,:,:)         !Pressure thickness
 
+!Skin temperature
+logical :: have_tskin
+real(kind=kind_real), pointer     :: tskin(:,:,:)        !Skin temperature
 
 ! Identity part of the change of fields
 ! -------------------------------------
@@ -206,6 +312,7 @@ elseif (dxm%has_field('ua')) then
     call dxm%get_field('va', va)
     have_winds = .true.
 endif
+
 
 
 ! Virtual temperature needed but now done in VADER
@@ -317,6 +424,13 @@ elseif (dxm%has_field('delp')) then
   have_ps = .true.
 endif
 
+! Skin temperature
+! ----------------
+have_tskin = .false.
+if (dxm%has_field( 'skin_temperature')) then
+  call dxm%get_field('skin_temperature', tskin)
+  have_tskin = .true.
+endif
 
 ! Loop over the fields not found in the input state and work through cases
 ! ------------------------------------------------------------------------
@@ -344,6 +458,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_ps) call field_fail(fields_to_do(f))
     field_ptr = ps
 
+  case ("skin_temperature")
+
+    if (.not. have_tskin) call field_fail(fields_to_do(f))
+    field_ptr = tskin
+
   case ("humidity_mixing_ratio")
 
     if (.not. have_qmr) call field_fail(fields_to_do(f))
@@ -355,6 +474,7 @@ do f = 1, size(fields_to_do)
     field_ptr = o3ppmv
 
   case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
+
     if (have_ql) field_ptr = clwpath
 
   case ("mass_content_of_cloud_ice_in_atmosphere_layer")
@@ -367,6 +487,7 @@ do f = 1, size(fields_to_do)
     if (have_qs) field_ptr = cswpath
 
   case ("mass_content_of_graupel_in_atmosphere_layer")
+
     if (have_qg) field_ptr = cgwpath
 
   ! Simulated but not assimilated
@@ -464,6 +585,15 @@ integer :: ps_index
 real(kind=kind_real), pointer     :: ps   (:,:,:)         !Surface pressure
 real(kind=kind_real), allocatable :: delp (:,:,:)         !Pressure thickness
 
+!Skin temperature
+logical :: have_tsea,have,have_tland,have_tice,have_tsnow,have_tskin
+integer :: tskin_index
+real(kind=kind_real), pointer     :: dtsea   (:,:,:)       !Sea surface temperature
+real(kind=kind_real), pointer     :: dtland  (:,:,:)       !Land surface temperature
+real(kind=kind_real), pointer     :: dtice   (:,:,:)       !Ice surface temperature
+real(kind=kind_real), pointer     :: dtsnow  (:,:,:)       !Snow surface temperature
+
+! initialize pointers
 ps_index=0
 ql_index=0
 qi_index=0
@@ -616,6 +746,39 @@ if (allocated(self%qg).and.allocated(self%delp).and.dxm%has_field('graupel').and
   dqg=0.0_kind_real
   call hydro_mixr_to_wpath_ad (geom, self%delp, self%qg, dqg, wpath)
   have_qg = .true.
+endif
+
+! Skin temperature
+! ----------------
+have_tland = .false.
+have_tsea  = .false.
+have_tice  = .false.
+have_tsnow = .false.
+have_tskin = .false.
+if (dxm%has_field('skin_temperature',tskin_index)) then
+  have_tskin = .true.
+else if (dxm%has_field('tsea',tskin_index)) then
+  have_tskin = .true.
+else if (dxm%has_field('ts',tskin_index)) then
+  have_tskin = .true.
+endif
+if (dxm%has_field('skin_temperature',tskin_index)) then
+   if ( allocated(self%frland).and.dxg%has_field('surface_temperature_where_land') ) then
+     call dxg%get_field('surface_temperature_where_land',dtland)
+     have_tland = .true.
+   endif
+   if ( allocated(self%frocean).and.dxg%has_field('surface_temperature_where_sea') ) then
+     call dxg%get_field('surface_temperature_where_sea',dtsea)
+     have_tsea = .true.
+   endif
+   if ( allocated(self%frseaice).and.dxg%has_field('surface_temperature_where_ice') ) then
+     call dxg%get_field('surface_temperature_where_ice',dtice)
+     have_tice = .true.
+   endif
+   if ( allocated(self%frsnow).and.dxg%has_field('surface_temperature_where_snow') ) then
+     call dxg%get_field('surface_temperature_where_snow',dtsnow)
+     have_tsnow = .true.
+   endif
 endif
 
 ! Ozone
@@ -776,6 +939,35 @@ do fm = 1, size(fields_to_do)
       field_ptr = field_ptr + dqg
     endif
 
+  case ("ts","skin_temperature", "tsea")
+
+    if (have_tsea) then
+      field_passed(tskin_index) = .true.
+      where (self%frocean>0.0_kind_real)
+        field_ptr = field_ptr + dtsea
+      endwhere
+    endif
+
+    if (have_tland) then
+      field_passed(tskin_index) = .true.
+      where (self%frland>0.0_kind_real)
+        field_ptr = field_ptr + dtland
+      endwhere
+    endif
+
+    if (have_tice) then
+      field_passed(tskin_index) = .true.
+      where (self%frseaice>0.0_kind_real)
+        field_ptr = field_ptr + dtice
+      endwhere
+    endif
+
+    if (have_tsnow) then
+      field_passed(tskin_index) = .true.
+      where (self%frsnow>0.0_kind_real)
+        field_ptr = field_ptr + dtsnow
+      endwhere
+    endif
 
   end select
 

@@ -87,6 +87,7 @@ Data/gsibec/dirac_gsi_geos_global.nml
 Data/gsibec/dirac_gsi_gfs_global.nml
 Data/gsibec/geos_gsi_global_72x46x72.nml
 Data/gsibec/geos_gsi_global_o3_72x46x72.nml
+Data/gsibec/geos_gsi_global_tskin_72x46x72.nml
 Data/gsibec/gfs_gsi_global_192x96x127.nml
 Data/gsibec/gfs_gsicv_global_192x96x127.nml
 )
@@ -101,8 +102,10 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 # Test input scripts
 # ------------------
 list( APPEND fv3jedi_testinput
+  testinput/3denvar_gfs_tskin_c12.yaml
   testinput/3dvar_geos_cf.yaml
   testinput/3dvar_geos_ozone_c12.yaml
+  testinput/3dvar_geos_tskin.yaml
   testinput/3dvar_gfs_sondes_c12.yaml
   testinput/3dvar_gfs_0obs.yaml
   testinput/3dvar_gfs_aero.yaml
@@ -286,6 +289,7 @@ LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_B
 list( APPEND fv3jedi_testoutput
   testoutput/3dvar_geos_cf.ref
   testoutput/3dvar_geos_ozone.ref
+  testoutput/3dvar_geos_tskin.ref
   testoutput/3dvar_gfs_sondes.ref
   testoutput/3dvar_lam_cmaq.ref
   testoutput/3dvar_gfs_0obs.ref
@@ -339,6 +343,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/ensmeanvariance_gfs.ref
   testoutput/enspert_geos_cf.ref
   testoutput/ensrecenter_gfs.ref
+  testoutput/3denvar_gfs_tskin.ref
   testoutput/forecast_fv3-geos.ref
   testoutput/forecast_fv3-gfs.ref
   testoutput/forecast_fv3lm.ref
@@ -1309,6 +1314,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_ozone
                   ARGS     testinput/3dvar_geos_ozone_c12.yaml
                   COMMAND  fv3jedi_var.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_tskin
+                  MPI      6
+                  ARGS     testinput/3dvar_geos_tskin.yaml
+                  COMMAND  fv3jedi_var.x )
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_geos_sondes
                   MPI      6
                   ARGS     testinput/hyb-3dvar_geos_sondes_c12.yaml
@@ -1974,6 +1984,13 @@ if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
                     ARGS     testinput/hyb-3dvar_geos.yaml
                     COMMAND  fv3jedi_var.x
                     TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_geos )
+
+  # 3DEnVar
+  # -------
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_3denvar_gfs_tskin
+                    MPI      6
+                    ARGS     testinput/3denvar_gfs_tskin_c12.yaml
+                    COMMAND  fv3jedi_var.x)
 
   # EDA 4DVar
   # ---------

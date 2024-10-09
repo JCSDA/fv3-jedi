@@ -1,12 +1,12 @@
-Norm of input parameter StdDev: 4.8422805741030513e+05
+Norm of input parameter StdDev: 4.8422805741030542e+05
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Aircraft) = 5.0599073063497926e+03, nobs = 2814, Jo/n = 1.7981191564853563e+00, err = 2.2001534474462638e+00
-CostJo   : Nonlinear Jo(Radiosonde) = 2.5407802341930669e+03, nobs = 1347, Jo/n = 1.8862511018508292e+00, err = 2.0631474620187364e+00
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 3.9833790236667858e+02, nobs = 123, Jo/n = 3.2385195314364110e+00, err = 2.9829099160316844e-04
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.9080343238271473e+02, nobs = 855, Jo/n = 8.0795723085697635e-01, err = 9.6460709104119360e+00
+CostJo   : Nonlinear Jo(Aircraft) = 5.0599073063497744e+03, nobs = 2814, Jo/n = 1.7981191564853498e+00, err = 2.2001534474462638e+00
+CostJo   : Nonlinear Jo(Radiosonde) = 2.5407802341930642e+03, nobs = 1347, Jo/n = 1.8862511018508272e+00, err = 2.0631474620187364e+00
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 3.9833790236708938e+02, nobs = 123, Jo/n = 3.2385195314397510e+00, err = 2.9829099160316849e-04
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.9080343238156615e+02, nobs = 855, Jo/n = 8.0795723085563298e-01, err = 9.6460709104119360e+00
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
-CostFunction: Nonlinear J = 8.6898288752922526e+03
-DRPCGMinimizer: reduction in residual norm = 3.0821149020071251e-04
+CostFunction: Nonlinear J = 8.6898288752914941e+03
+DRPCGMinimizer: reduction in residual norm = 3.0819439431017400e-04
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
@@ -22,15 +22,15 @@ ozone_mass_mixing_ratio                      | Min:+1.3329741175439670e-08 Max:+
 geopotential_height_times_gravity_at_surface | Min:-5.4568412849859591e+01 Max:+4.3948109384976997e+04 RMS:+5.2739420192307034e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6644961744500431e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+1.9710794340624895e+02 RMS:+2.0174606478112217e+01
-sea_surface_temperature                      | Min:+2.2956405282840373e+02 Max:+3.2358911863552072e+02 RMS:+2.8676003110050823e+02
+skin_temperature                             | Min:+2.2956405282840373e+02 Max:+3.2358911863552078e+02 RMS:+2.8676003110050823e+02
 vtype                                        | Min:+0.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+5.7669336001161087e+00
 stype                                        | Min:+0.0000000000000000e+00 Max:+1.6000000000000000e+01 RMS:+4.3113424372358908e+00
-vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.0099684912129285e-01 RMS:+1.7002978972243502e-01
-stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519187e+02 RMS:+2.8896462580706935e+02
-soilMoistureVolumetric                       | Min:+2.2235492720152687e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101572e-01
-totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130146e+02
-surface_eastward_wind                        | Min:-1.5439447482564121e+01 Max:+1.7720841484763238e+01 RMS:+5.0996670981342165e+00
-surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486119e+01 RMS:+4.0591533502251629e+00
+vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.0099684912129285e-01 RMS:+1.7002978972243504e-01
+stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519182e+02 RMS:+2.8896462580706935e+02
+soilMoistureVolumetric                       | Min:+2.2235492720152690e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101572e-01
+totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130143e+02
+surface_eastward_wind                        | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
+surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251629e+00
 f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062893e-01
 ----------------------------------------------------------------------------------------------------
 
@@ -40,15 +40,15 @@ f10m                                         | Min:+9.4244403554383871e-01 Max:+
 
 
 
-Norm of input parameter StdDev: 484228.0574103051
-CostJb   : Nonlinear Jb = 104.6129175458914
-CostJo   : Nonlinear Jo(Aircraft) = 4005.193869960073, nobs = 2814, Jo/n = 1.423309832963779, err = 2.200153447446264
-CostJo   : Nonlinear Jo(Radiosonde) = 1964.012002207814, nobs = 1347, Jo/n = 1.458063847221837, err = 2.063147462018736
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 273.5736047339634, nobs = 123, Jo/n = 2.224175648243604, err = 0.0002982909916031684
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 562.9061556724276, nobs = 855, Jo/n = 0.6583697727162896, err = 9.646070910411936
+Norm of input parameter StdDev: 484228.0574103054
+CostJb   : Nonlinear Jb = 104.66561041754
+CostJo   : Nonlinear Jo(Aircraft) = 4005.210331770488, nobs = 2814, Jo/n = 1.423315682931943, err = 2.200153447446264
+CostJo   : Nonlinear Jo(Radiosonde) = 1964.019580871626, nobs = 1347, Jo/n = 1.458069473549833, err = 2.063147462018736
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 273.5737821989625, nobs = 123, Jo/n = 2.224177091048475, err = 0.0002982909916031685
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 562.906307362677, nobs = 855, Jo/n = 0.658369950131786, err = 9.646070910411936
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
-CostFunction: Nonlinear J = 6910.298550120169
-DRPCGMinimizer: reduction in residual norm = 0.0152156688626198
+CostFunction: Nonlinear J = 6910.375612621292
+DRPCGMinimizer: reduction in residual norm = 0.01521485723668672
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
@@ -64,15 +64,15 @@ ozone_mass_mixing_ratio                      | Min:+1.3388885561544231e-08 Max:+
 geopotential_height_times_gravity_at_surface | Min:-5.4568412849859591e+01 Max:+4.3948109384976997e+04 RMS:+5.2739420192307034e+03
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6644961744500431e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+1.9710794340624895e+02 RMS:+2.0174606478112217e+01
-sea_surface_temperature                      | Min:+2.2956405282840373e+02 Max:+3.2358911863552072e+02 RMS:+2.8676003110050823e+02
+skin_temperature                             | Min:+2.2956405282840373e+02 Max:+3.2358911863552078e+02 RMS:+2.8676003110050823e+02
 vtype                                        | Min:+0.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+5.7669336001161087e+00
 stype                                        | Min:+0.0000000000000000e+00 Max:+1.6000000000000000e+01 RMS:+4.3113424372358908e+00
-vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.0099684912129285e-01 RMS:+1.7002978972243502e-01
-stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519187e+02 RMS:+2.8896462580706935e+02
-soilMoistureVolumetric                       | Min:+2.2235492720152687e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101572e-01
-totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130146e+02
-surface_eastward_wind                        | Min:-1.5439447482564121e+01 Max:+1.7720841484763238e+01 RMS:+5.0996670981342165e+00
-surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486119e+01 RMS:+4.0591533502251629e+00
+vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.0099684912129285e-01 RMS:+1.7002978972243504e-01
+stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519182e+02 RMS:+2.8896462580706935e+02
+soilMoistureVolumetric                       | Min:+2.2235492720152690e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101572e-01
+totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130143e+02
+surface_eastward_wind                        | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
+surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251629e+00
 f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062893e-01
 ----------------------------------------------------------------------------------------------------
 
@@ -82,10 +82,10 @@ f10m                                         | Min:+9.4244403554383871e-01 Max:+
 
 
 
-CostJb   : Nonlinear Jb = 114.1153448227041
-CostJo   : Nonlinear Jo(Aircraft) = 3973.946127242139, nobs = 2814, Jo/n = 1.412205446781144, err = 2.200153447446264
-CostJo   : Nonlinear Jo(Radiosonde) = 1952.096682592046, nobs = 1347, Jo/n = 1.449218027165587, err = 2.063147462018736
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 267.5562268655975, nobs = 123, Jo/n = 2.175253876956078, err = 0.0002982909916031684
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 560.3914203307229, nobs = 855, Jo/n = 0.6554285617903192, err = 9.646070910411936
+CostJb   : Nonlinear Jb = 114.1696737521087
+CostJo   : Nonlinear Jo(Aircraft) = 3973.963243822991, nobs = 2814, Jo/n = 1.412211529432477, err = 2.200153447446264
+CostJo   : Nonlinear Jo(Radiosonde) = 1952.104607276208, nobs = 1347, Jo/n = 1.449223910375804, err = 2.063147462018736
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 267.5561276451528, nobs = 123, Jo/n = 2.175253070285795, err = 0.0002982909916031685
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 560.3915694161776, nobs = 855, Jo/n = 0.6554287361592721, err = 9.646070910411936
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
-CostFunction: Nonlinear J = 6868.105801853209
+CostFunction: Nonlinear J = 6868.185221912638

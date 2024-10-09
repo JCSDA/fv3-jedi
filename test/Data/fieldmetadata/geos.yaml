@@ -30,8 +30,11 @@ field metadata:
 # Surface fields
 # --------------
 
-- long name: sea_surface_temperature
+- long name: skin_temperature
   io name: ts
+
+- long name: sea_surface_temperature
+  io name: ts_found
 
 - long name: surface_eastward_wind
   io name: u10m

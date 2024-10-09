@@ -554,8 +554,18 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "skin_temperature";
+    md.shortName = "ts";
+    md.units = "K";
+    md.kind = "double";
+    md.tracer = "false";
+    md.horizontalStaggerLocation = "center";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "sea_surface_temperature";
-    md.shortName = "tsea";
+    md.shortName = "sst";
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
@@ -1541,16 +1551,6 @@ namespace fv3jedi {
     md.tracer = "false";
     md.horizontalStaggerLocation = "center";
     md.levels = "full";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "sea_surface_foundation_temperature";
-    md.shortName = "sea_surface_foundation_temperature";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 

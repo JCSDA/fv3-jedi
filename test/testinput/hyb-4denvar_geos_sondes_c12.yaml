@@ -1,6 +1,6 @@
 cost function:
   cost type: 4D-Ens-Var
-  analysis variables: &avars [ua,va,t,ps,q,o3ppmv,phis,frocean,frlake,frseaice]
+  analysis variables: &avars [ua,va,t,ps,q,o3ppmv,phis,frocean,frlake,frseaice,ts]
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -23,7 +23,7 @@ cost function:
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201214_210000z.nc4
-      state variables: &statevars [u,v,ua,va,t,delp,ps,q,o3ppmv,phis,ts,frocean,frlake,frseaice]
+      state variables: &statevars [u,v,ua,va,t,delp,ps,q,o3ppmv,phis,sheleg,ts,frocean,frlake,frseaice]
     - datetime: 2020-12-15T03:00:00Z
       filetype: cube sphere history
       provider: geos
@@ -56,6 +56,7 @@ cost function:
           state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,
                                               fraction_of_ocean,fraction_of_lake,fraction_of_ice,
                                               mole_fraction_of_ozone_in_air,
+                                              skin_temperature,
                                               geopotential_height_times_gravity_at_surface,
                                               specific_humidity]
         linear variable change:

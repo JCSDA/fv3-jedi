@@ -159,7 +159,6 @@ real(kind=kind_real), allocatable :: slmsk   (:,:,:)       !Land-sea mask
 real(kind=kind_real), pointer     :: frocean (:,:,:)       !Fraction ocean
 real(kind=kind_real), pointer     :: frlake  (:,:,:)       !Fraction lake
 real(kind=kind_real), pointer     :: frseaice(:,:,:)       !Fraction seaice
-real(kind=kind_real), pointer     :: tsea    (:,:,:)       !Surface temperature
 
 !f10m
 logical :: have_f10m
@@ -227,6 +226,10 @@ real(kind=kind_real), allocatable :: co2     (:,:,:)
 logical :: have_sss
 real(kind=kind_real), allocatable :: sss     (:,:,:)
 
+!Skin Temperature
+logical :: have_tskin
+real(kind=kind_real), pointer     :: tskin   (:,:,:)
+
 !CRTM surface
 logical :: have_crtm_surface, have_soilt, have_soilm
 integer :: sec_of_year
@@ -258,6 +261,7 @@ real(kind=kind_real), allocatable :: surface_snow_thickness                    (
 real(kind=kind_real), allocatable :: surface_wind_speed                        (:,:,:)
 real(kind=kind_real), allocatable :: surface_wind_from_direction               (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
+real(kind=kind_real), allocatable :: skin_temperature                          (:,:,:)
 
 ! Snow depth
 logical :: have_snwdph
@@ -470,11 +474,11 @@ if (xm%has_field( 'slmsk')) then
   call xm%get_field('slmsk', slmsk)
   have_slmsk = .true.
 elseif ( xm%has_field('frocean' ) .and. xm%has_field('frlake'  ) .and. &
-         xm%has_field('frseaice') .and. xm%has_field('tsea'    ) ) then
+         xm%has_field('frseaice') .and. xm%has_field('ts'    ) ) then
   call xm%get_field('frocean' , frocean )
   call xm%get_field('frlake'  , frlake  )
   call xm%get_field('frseaice', frseaice)
-  call xm%get_field('tsea'    , tsea    )
+  call xm%get_field('ts'      , tskin   )
 
   allocate(slmsk(self%isc:self%iec,self%jsc:self%jec,1))
   slmsk = 1.0_kind_real !Land
@@ -486,7 +490,7 @@ elseif ( xm%has_field('frocean' ) .and. xm%has_field('frlake'  ) .and. &
       if ( slmsk(i,j,1) == 0.0_kind_real .and. frseaice(i,j,1) > 0.5_kind_real) then
         slmsk(i,j,1) = 2.0_kind_real ! Ice
       endif
-      if ( slmsk(i,j,1) == 0.0_kind_real .and. tsea(i,j,1) < 271.4_kind_real ) then
+      if ( slmsk(i,j,1) == 0.0_kind_real .and. tskin(i,j,1) < 271.4_kind_real ) then
         slmsk(i,j,1) = 2.0_kind_real ! Ice
       endif
     enddo
@@ -765,16 +769,25 @@ elseif (xm%has_field( 'smc' )) then
   have_soilm = .true.
 endif
 
+! Skin temperature
+! ----------------
+have_tskin = .false.
+if ( xm%has_field( 'ts') ) then
+   allocate(skin_temperature(self%isc:self%iec,self%jsc:self%jec,1))
+   call xm%get_field('ts', skin_temperature)
+   have_tskin = .true.
+endif
+
 have_crtm_surface = .false.
 have_sss = .false.
 if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
-     xm%has_field( 'tsea'  ) .and. xm%has_field( 'vtype' ) .and. &
+     xm%has_field( 'ts')     .and. xm%has_field( 'vtype' ) .and. &
      xm%has_field( 'stype' ) .and. xm%has_field( 'vfrac' ) .and. &
      have_soilt .and. have_soilm .and. &
      xm%has_field( 'u_srf' ) .and. xm%has_field( 'v_srf' ) ) then
 
   call xm%get_field('sheleg', sheleg)
-  call xm%get_field('tsea'  , tsea  )
+  call xm%get_field('ts'    , tskin )
   call xm%get_field('vtype' , vtype )
   call xm%get_field('stype' , stype )
   call xm%get_field('vfrac' , vfrac )
@@ -827,7 +840,7 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   ! mapping from the fv3-jedi land type to the USGS land type must be added to `crtm_surface`. This
   ! would exactly follow the code currently in place for the NPOESS and IGBP classifications.
   call crtm_surface( geom, fractional_day_of_year, &
-                     slmsk, sheleg, tsea, vtype, stype, vfrac, soilt, soilm, u_srf, v_srf, &
+                     slmsk, sheleg, skin_temperature, vtype, stype, vfrac, soilt, soilm, u_srf, v_srf, &
                      f10m, sss, land_type_index_npoess, land_type_index_igbp, &
                      vegetation_type_index, soil_type, &
                      water_area_fraction, land_area_fraction, ice_area_fraction, &
@@ -893,7 +906,6 @@ elseif (trim(self%tropprs_method) == "thompson") then
     have_tropprs = .true.
   endif
 endif
-
 
 ! Loop over the fields not found in the input state and work through cases
 ! ------------------------------------------------------------------------
@@ -1062,6 +1074,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_sss) call field_fail(fields_to_do(f))
     field_ptr = sea_surface_salinity
 
+  case ("skin_temperature")
+
+    if (.not. have_tskin) call field_fail(fields_to_do(f))
+    field_ptr = skin_temperature
+
   case ("surface_temperature_where_land")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
@@ -1201,7 +1218,7 @@ if (associated(vd)) nullify(vd)
 if (associated(frocean)) nullify(frocean)
 if (associated(frlake)) nullify(frlake)
 if (associated(frseaice)) nullify(frseaice)
-if (associated(tsea)) nullify(tsea)
+if (associated(tskin)) nullify(tskin)
 if (associated(u_srf)) nullify(u_srf)
 if (associated(v_srf)) nullify(v_srf)
 if (associated(qils)) nullify(qils)
@@ -1279,6 +1296,7 @@ if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
 if (allocated(surface_wind_speed)) deallocate(surface_wind_speed)
 if (allocated(surface_wind_from_direction)) deallocate(surface_wind_from_direction)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
+if (allocated(skin_temperature)) deallocate(skin_temperature)
 if (allocated(snwdph)) deallocate(snwdph)
 if (allocated(snwdph_meters)) deallocate(snwdph_meters)
 if (allocated(vort)) deallocate(vort)

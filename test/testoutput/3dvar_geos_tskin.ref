@@ -1,0 +1,23 @@
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
+CostJo   : Nonlinear Jo(SeaSurfaceTemp) = 7.8170892135127974e+02, nobs = 88, Jo/n = 8.8830559244463601e+00, err = 7.3178641941236078e-01
+CostFunction: Nonlinear J = 7.8170892135127974e+02
+DRPCGMinimizer: reduction in residual norm = 5.9223474129256562e-02
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 9 | cube sphere face size: C12
+surface_pressure                             | Min:+5.3773865675393987e+04 Max:+1.0482524400256196e+05 RMS:+9.8975197490751860e+04
+air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934658e+03
+sfc_geopotential_height_times_grav           | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+sheleg                                       | Min:+0.0000000000000000e+00 Max:+9.9999998699110425e+14 RMS:+8.2710302491634025e+14
+skin_temperature                             | Min:+2.2621925356315646e+02 Max:+3.1423808800311696e+02 RMS:+2.8679916675447657e+02
+fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710485e-01
+fraction_of_land                             | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+5.0978827022558637e-01
+fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4332917188695557e-01
+fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
+----------------------------------------------------------------------------------------------------
+
+
+
+CostJb   : Nonlinear Jb = 69.68284891668331
+CostJo   : Nonlinear Jo(SeaSurfaceTemp) = 133.1431256806795, nobs = 88, Jo/n = 1.512990064553176, err = 0.7317864194123608
+CostFunction: Nonlinear J = 202.8259745973628

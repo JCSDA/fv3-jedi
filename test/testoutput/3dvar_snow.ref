@@ -1,17 +1,18 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Snow depth) = 2.1399855067457779e+03, nobs = 6757, Jo/n = 3.1670645356604676e-01, err = 4.0000000000000000e+01
-CostFunction: Nonlinear J = 2.1399855067457779e+03
-DRPCGMinimizer: reduction in residual norm = 1.3050161052516449e-11
+CostJo   : Nonlinear Jo(Snow depth) = 2.1399855067457847e+03, nobs = 6757, Jo/n = 3.1670645356604776e-01, err = 4.0000000000000000e+01
+CostFunction: Nonlinear J = 2.1399855067457847e+03
+DRPCGMinimizer: reduction in residual norm = 1.3050161052516491e-11
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 3 | cube sphere face size: C48
-totalSnowDepth                               | Min:-1.7558877772891295e+00 Max:+1.9267236010567788e+03 RMS:+1.7206684593368047e+02
+State print | number of fields = 4 | cube sphere face size: C48
+totalSnowDepth                               | Min:-1.7558877772891752e+00 Max:+1.9267236010567788e+03 RMS:+1.7206684593368044e+02
 vtype                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+01 RMS:+5.9580662333294638e+00
+sheleg                                       | Min:+0.0000000000000000e+00 Max:+3.5867762934643093e+02 RMS:+2.6093081788808018e+01
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.8949626002799513e-01
 ----------------------------------------------------------------------------------------------------
 
 
 
-CostJb   : Nonlinear Jb = 6.906560947120346
-CostJo   : Nonlinear Jo(Snow depth) = 2124.138048887633, nobs = 6757, Jo/n = 0.3143611142352573, err = 40
-CostFunction: Nonlinear J = 2131.044609834754
+CostJb   : Nonlinear Jb = 6.90656094712041
+CostJo   : Nonlinear Jo(Snow depth) = 2124.138048887639, nobs = 6757, Jo/n = 0.3143611142352581, err = 40
+CostFunction: Nonlinear J = 2131.04460983476

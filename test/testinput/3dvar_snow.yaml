@@ -16,7 +16,7 @@ cost function:
   background:
     datetime: 2023-05-01T12:00:00Z
     filetype: fms restart
-    state variables: [totalSnowDepth,vtype,slmsk]
+    state variables: [totalSnowDepth,vtype,sheleg,slmsk]
     datapath: Data/inputs/gfs_land_c48/mem001/   # TODO: change to bg instead of
                                                  # artificial member (needs data update)
     filename_sfcd: 20230501.120000.sfc_data.nc

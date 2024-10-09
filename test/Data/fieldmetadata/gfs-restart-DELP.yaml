@@ -15,6 +15,14 @@ field metadata:
 - long name: stc
   io file: surface
 
+- long name: skin_temperature
+  io name: tsea
+  io file: surface
+
+# NOTE: GFS model needs to pass SST to JEDI (tsea in restart is actually t-skin!)
+#- long name: sea_surface_temperature
+#  io name: sst
+
 # this yaml is appropriate for gfs v16
 - long name: soilMoistureVolumetric
   io name: smc
